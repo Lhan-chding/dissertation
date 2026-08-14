@@ -15,6 +15,8 @@ from compbias.recoverability.counterfactual_metrics import (
 )
 from compbias.recoverability.natural_inference import (
     NaturalPrevalenceCounts,
+    NaturalPrevalenceObservation,
+    analyze_natural_prevalence,
     summarize_natural_prevalence,
 )
 from compbias.recoverability.paired_effects import (
@@ -24,7 +26,10 @@ from compbias.recoverability.paired_effects import (
     paired_scene_effect,
 )
 from compbias.recoverability.power import (
+    PowerCurve,
+    PowerCurvePoint,
     PowerSimulationConfig,
+    build_fixed_sample_plan,
     simulate_paired_power,
 )
 
@@ -62,7 +67,7 @@ def test_phase_n_is_inconclusive_when_support_is_below_the_frozen_minimum() -> N
     assert summary.one_sided_cp_upper < 0.05
     assert summary.h1_supported is False
     assert summary.inconclusive is True
-    assert summary.reason_code == "insufficient_operator_sensitive_support"
+    assert summary.reason_code == "phase_n_eligible_below_preregistered_minimum"
 
 
 def test_phase_n_reports_fail_closed_parse_failure_sensitivity_bounds() -> None:
@@ -76,6 +81,24 @@ def test_phase_n_reports_fail_closed_parse_failure_sensitivity_bounds() -> None:
     assert summary.parse_rate == 0.95
     assert summary.parse_failure_sensitivity_lower == 10 / 1000
     assert summary.parse_failure_sensitivity_upper == 210 / 1000
+
+
+def test_phase_n_observation_contract_rejects_duplicates_and_inconsistent_labels() -> None:
+    parsed = NaturalPrevalenceObservation("scene_1", True, True, False)
+    parse_failure = NaturalPrevalenceObservation("scene_2", False, None, None)
+    report = analyze_natural_prevalence(
+        (parsed, parse_failure),
+        null_rate=0.05,
+        alpha=0.05,
+        minimum_eligible=1,
+    )
+    assert report.parse_rate == 0.5
+    with pytest.raises(ValueError, match="unique"):
+        analyze_natural_prevalence((parsed, parsed), null_rate=0.05, alpha=0.05, minimum_eligible=1)
+    with pytest.raises(ValueError, match="parse failure"):
+        NaturalPrevalenceObservation("scene_bad", False, True, False)
+    with pytest.raises(ValueError, match="candidate"):
+        NaturalPrevalenceObservation("scene_bad", True, False, True)
 
 
 def test_counterfactual_metrics_require_both_worlds_not_direction_alone() -> None:
@@ -154,9 +177,7 @@ def test_paired_effect_resamples_scenes_and_standardizes_equally_by_family() -> 
 
 
 def test_paired_effect_rejects_unbalanced_or_duplicate_scene_records() -> None:
-    balanced = _scene(
-        "scene_1", "cross_series", valid=(True,) * 8, ablated=(False,) * 8
-    )
+    balanced = _scene("scene_1", "cross_series", valid=(True,) * 8, ablated=(False,) * 8)
     unbalanced = replace(
         balanced,
         scene_id="scene_2",
@@ -193,6 +214,8 @@ def _passing_gate() -> CausalGateEvidence:
     return CausalGateEvidence(
         parser_rate_lower=0.985,
         program_answer_consistency_lower=0.96,
+        eligible_scenes=800,
+        power_target_scenes=800,
         confirmatory_families=(
             ConfirmatoryFamilyEvidence("cross_series", 267, 0.02, True),
             ConfirmatoryFamilyEvidence("trend", 267, 0.01, True),
@@ -220,31 +243,44 @@ def test_causal_gate_passing_fixture_authorizes_only_future_rl() -> None:
 @pytest.mark.parametrize(
     ("field", "value", "reason"),
     [
-        ("parser_rate_lower", 0.979, "parser_rate_lower_below_98_percent"),
+        ("parser_rate_lower", 0.979, "grammar_parse_lower_below_threshold"),
         (
             "program_answer_consistency_lower",
             0.949,
-            "program_answer_consistency_lower_below_95_percent",
+            "program_consistency_lower_below_threshold",
         ),
-        ("recoverability_interaction_ci_low", 0.0, "recoverability_interaction_not_positive"),
+        ("eligible_scenes", 799, "eligible_scenes_below_power_target"),
+        (
+            "recoverability_interaction_ci_low",
+            0.0,
+            "recoverability_interaction_lower_not_positive",
+        ),
         (
             "nonrecoverable_equivalence_passed",
             False,
-            "nonrecoverable_effect_not_equivalent",
+            "nonrecoverable_equivalence_failed",
         ),
-        ("sham_equivalence_passed", False, "sham_effect_not_equivalent"),
+        ("sham_equivalence_passed", False, "sham_equivalence_failed"),
         (
             "operator_invariant_equivalence_passed",
             False,
-            "operator_invariant_effect_not_equivalent",
+            "operator_invariant_equivalence_failed",
         ),
-        ("counterfactual_target_ci_low", 0.0, "counterfactual_target_effect_not_positive"),
+        (
+            "counterfactual_target_ci_low",
+            0.0,
+            "counterfactual_target_shift_lower_not_positive",
+        ),
         (
             "counterfactual_original_ci_low",
             0.0,
-            "counterfactual_original_effect_not_positive",
+            "counterfactual_original_suppression_lower_not_positive",
         ),
-        ("counterfactual_control_passed", False, "counterfactual_control_failed"),
+        (
+            "counterfactual_control_passed",
+            False,
+            "counterfactual_control_gate_failed",
+        ),
         ("complete_matched_sets", False, "incomplete_matched_sets"),
         ("all_traces_included", False, "correct_only_selection_detected"),
     ],
@@ -262,9 +298,7 @@ def test_each_causal_gate_clause_fails_closed_with_stable_reason(
 def test_causal_gate_requires_both_preregistered_families_and_holm_support() -> None:
     one_family = replace(
         _passing_gate(),
-        confirmatory_families=(
-            ConfirmatoryFamilyEvidence("cross_series", 267, 0.02, True),
-        ),
+        confirmatory_families=(ConfirmatoryFamilyEvidence("cross_series", 267, 0.02, True),),
     )
     weak_family = replace(
         _passing_gate(),
@@ -275,12 +309,11 @@ def test_causal_gate_requires_both_preregistered_families_and_holm_support() -> 
     )
 
     assert evaluate_causal_gate(one_family).reason_codes == (
-        "confirmatory_family_set_incomplete",
+        "confirmatory_family_below_power_target",
     )
     result = evaluate_causal_gate(weak_family)
-    assert "confirmatory_family_support_below_quota" in result.reason_codes
-    assert "confirmatory_family_effect_not_positive" in result.reason_codes
-    assert "confirmatory_family_holm_test_failed" in result.reason_codes
+    assert "confirmatory_family_below_power_target" in result.reason_codes
+    assert "recoverable_effect_lower_not_positive" in result.reason_codes
 
 
 def test_power_simulation_is_seeded_and_treats_forks_as_nested_repeats() -> None:
@@ -310,9 +343,7 @@ def test_power_simulation_common_random_numbers_are_monotone_for_large_effect_ch
     low = PowerSimulationConfig(300, 8, 0.20, 0.01, 0.20, 0.25, 0.05, 300, 9)
     high = replace(low, target_effect=0.10)
 
-    assert simulate_paired_power(high).estimated_power >= simulate_paired_power(
-        low
-    ).estimated_power
+    assert simulate_paired_power(high).estimated_power >= simulate_paired_power(low).estimated_power
 
 
 @pytest.mark.parametrize(
@@ -334,3 +365,61 @@ def test_power_configuration_rejects_invalid_or_adaptive_inputs(
     base = PowerSimulationConfig(300, 8, 0.20, 0.05, 0.20, 0.25, 0.05, 100, 9)
     with pytest.raises((TypeError, ValueError)):
         replace(base, **updates)
+
+
+def test_fixed_sample_plan_uses_the_maximum_frozen_scenario_requirement() -> None:
+    curves = (
+        PowerCurve(
+            "recoverable_effect",
+            (
+                PowerCurvePoint(400, 0.70),
+                PowerCurvePoint(600, 0.91),
+                PowerCurvePoint(800, 0.97),
+            ),
+        ),
+        PowerCurve(
+            "sham_equivalence",
+            (
+                PowerCurvePoint(400, 0.60),
+                PowerCurvePoint(600, 0.85),
+                PowerCurvePoint(800, 0.92),
+            ),
+        ),
+        PowerCurve(
+            "counterfactual_direction",
+            (
+                PowerCurvePoint(400, 0.75),
+                PowerCurvePoint(600, 0.93),
+                PowerCurvePoint(800, 0.98),
+            ),
+        ),
+    )
+
+    plan = build_fixed_sample_plan(
+        curves,
+        target_power=0.90,
+        eligibility_rate_lower=0.15,
+        intake_scenes=6000,
+        family_quotas={"cross_series": 267, "trend": 267, "duplicate_encoding": 266},
+    )
+
+    assert plan.required_eligible_scenes == 800
+    assert plan.required_intake_scenes == 5334
+    assert plan.registered_intake_scenes == 6000
+    assert plan.feasible is True
+    assert plan.independent_unit == "semantic_scene"
+
+
+def test_fixed_sample_plan_fails_before_server_when_intake_cannot_support_quota() -> None:
+    curves = (PowerCurve("recoverable_effect", (PowerCurvePoint(800, 0.95),)),)
+
+    plan = build_fixed_sample_plan(
+        curves,
+        target_power=0.90,
+        eligibility_rate_lower=0.10,
+        intake_scenes=6000,
+        family_quotas={"cross_series": 267, "trend": 267, "duplicate_encoding": 266},
+    )
+
+    assert plan.required_intake_scenes == 8000
+    assert plan.feasible is False
