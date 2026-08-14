@@ -19,6 +19,7 @@ from compbias.recoverability.bridge import (
     run_bridge_protocol,
 )
 from compbias.recoverability.config import load_recoverability_protocol
+from compbias.recoverability.evidence import verify_protocol_lock
 
 
 def _read_scenes(dataset: Path) -> tuple[BridgeScene, ...]:
@@ -53,13 +54,19 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--paths", type=Path, required=True)
     parser.add_argument("--protocol", type=Path, required=True)
+    parser.add_argument("--server-package-lock", type=Path)
     parser.add_argument("--execute", action="store_true")
     args = parser.parse_args()
     if not args.execute:
         print("BLOCKED: bridge inference requires explicit --execute on the reviewed GPU server")
         return 2
+    if args.server_package_lock is None:
+        print("BLOCKED: bridge inference requires the reviewed server package lock")
+        return 2
     os.environ["HF_HUB_OFFLINE"] = "1"
     os.environ["TRANSFORMERS_OFFLINE"] = "1"
+    repository_root = Path(__file__).resolve().parents[2]
+    verify_protocol_lock(args.server_package_lock, repository_root=repository_root)
     paths = load_pilot_paths(args.paths)
     protocol = load_recoverability_protocol(args.protocol)
     dataset = paths.data / "generated" / ACTIVE_PILOT_OUTPUT_SLUG
