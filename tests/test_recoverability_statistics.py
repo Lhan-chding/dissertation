@@ -31,6 +31,7 @@ from compbias.recoverability.power import (
     PowerSimulationConfig,
     build_fixed_sample_plan,
     simulate_paired_power,
+    simulate_paired_tost_power,
 )
 
 
@@ -344,6 +345,23 @@ def test_power_simulation_common_random_numbers_are_monotone_for_large_effect_ch
     high = replace(low, target_effect=0.10)
 
     assert simulate_paired_power(high).estimated_power >= simulate_paired_power(low).estimated_power
+
+
+def test_equivalence_power_uses_scene_level_90_percent_interval() -> None:
+    config = PowerSimulationConfig(800, 8, 0.20, 0.0, 0.10, 0.10, 0.05, 500, 11)
+
+    result = simulate_paired_tost_power(config, margin=0.02)
+
+    assert result.independent_unit == "semantic_scene"
+    assert result.scenes == 800
+    assert result.forks_per_arm == 8
+    assert result.estimated_power >= 0.90
+
+
+def test_equivalence_power_rejects_a_true_effect_at_the_margin() -> None:
+    config = PowerSimulationConfig(800, 8, 0.20, 0.02, 0.10, 0.10, 0.05, 300, 12)
+
+    assert simulate_paired_tost_power(config, margin=0.02).estimated_power < 0.10
 
 
 @pytest.mark.parametrize(

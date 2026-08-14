@@ -9,12 +9,17 @@ import pytest
 
 from compbias.recoverability.config import load_recoverability_protocol
 from compbias.recoverability.design import build_design_report
-from compbias.recoverability.evidence import load_negative_pilot_record, verify_protocol_lock
+from compbias.recoverability.evidence import (
+    load_negative_pilot_record,
+    verify_power_artifact,
+    verify_protocol_lock,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "configs" / "recoverability" / "recoverability_v1.yaml"
 NEGATIVE = ROOT / "configs" / "recoverability" / "v0_3_negative_pilot.yaml"
 LOCK = ROOT / "configs" / "recoverability" / "protocol_lock_v1.yaml"
+POWER = ROOT / "configs" / "recoverability" / "power_plan_v1.json"
 
 
 def test_negative_v0_3_pilot_is_final_failed_and_training_was_not_run() -> None:
@@ -110,6 +115,47 @@ def test_design_counts_are_exact_and_forks_never_become_independent_n() -> None:
     assert report.confirmatory_forks == 25_600
     assert report.diagnostic_forks == 12_800
     assert report.independent_analysis_unit == "semantic_scene"
+
+
+def test_analysis_thresholds_and_family_roles_are_frozen_before_server_execution() -> None:
+    analysis = load_recoverability_protocol(CONFIG).analysis
+
+    assert analysis.alpha == 0.05
+    assert analysis.confidence == 0.95
+    assert analysis.tost_confidence == 0.90
+    assert analysis.target_power == 0.90
+    assert analysis.target_effect == 0.05
+    assert analysis.equivalence_margin == 0.02
+    assert analysis.bootstrap_resamples == 10_000
+    assert analysis.phase_n_minimum_eligible == 800
+    assert analysis.phase_n_null_rate == 0.05
+    assert analysis.required_eligible_scenes == 800
+    assert analysis.confirmatory_families == ("cross_series", "trend")
+    assert analysis.exploratory_families == ("duplicate_encoding",)
+    assert analysis.power_artifact_path == "configs/recoverability/power_plan_v1.json"
+    assert len(analysis.power_artifact_sha256) == 64
+
+
+def test_power_artifact_is_externally_hashed_and_freezes_scene_level_n() -> None:
+    protocol = load_recoverability_protocol(CONFIG)
+    report = verify_power_artifact(
+        POWER,
+        expected_sha256=protocol.analysis.power_artifact_sha256,
+    )
+
+    assert report.verified is True
+    assert report.required_eligible_scenes == 800
+    assert report.registered_intake_scenes == 6000
+    assert report.independent_unit == "semantic_scene"
+    assert report.forks_per_arm == 8
+    assert report.target_power == 0.90
+    assert set(report.scenarios) == {
+        "counterfactual_original_suppression",
+        "counterfactual_target_shift",
+        "nonrecoverable_equivalence",
+        "recoverable_effect",
+        "sham_equivalence",
+    }
 
 
 def test_protocol_lock_binds_frozen_v0_3_sources_without_modifying_them() -> None:
