@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import math
+import random
 import re
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -12,7 +13,7 @@ from pathlib import Path
 from compbias.gpu_pilot.structured_generation import validate_pilot_trajectory
 from compbias.models.structured_parser import ParseStatus, parse_trajectory
 
-from .dsl.executor import evaluate_program
+from .dsl.executor import TrustedBinding, evaluate_program
 
 _OPERATION = frozenset({"difference", "sum", "max_minus_min"})
 _IDENTIFIER = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}\Z")
@@ -83,6 +84,12 @@ class BridgeReport:
     mean_stage1_response_bytes: float
     mean_stage2_response_bytes: float
     equivalence_margin: float
+    accuracy_difference: float
+    accuracy_difference_ci90: tuple[float, float]
+    perception_difference: float
+    perception_difference_ci90: tuple[float, float]
+    equivalence_resamples: int
+    equivalence_seed: int
     protocols_mergeable: bool
     independent_unit: str
 
@@ -180,7 +187,6 @@ def build_stage2_messages(
             "evidence": public,
             "question": question,
             "operation": operation,
-            "cue_condition": "ablated",
             "image_available": False,
         },
         ensure_ascii=True,
@@ -210,6 +216,23 @@ def _mean(values: list[int]) -> float:
     return sum(values) / len(values) if values else 0.0
 
 
+def _paired_bootstrap_interval(
+    differences: tuple[int, ...], *, confidence: float, resamples: int, seed: int
+) -> tuple[float, float]:
+    if not differences:
+        raise ValueError("paired differences must be non-empty")
+    randomizer = random.Random(seed)
+    count = len(differences)
+    estimates = sorted(
+        sum(differences[randomizer.randrange(count)] for _ in range(count)) / count
+        for _ in range(resamples)
+    )
+    tail = (1.0 - confidence) / 2.0
+    low_index = max(0, math.floor(tail * resamples))
+    high_index = min(resamples - 1, math.ceil((1.0 - tail) * resamples) - 1)
+    return estimates[low_index], estimates[high_index]
+
+
 def run_bridge_protocol(
     scenes: tuple[BridgeScene, ...],
     *,
@@ -217,6 +240,8 @@ def run_bridge_protocol(
     stage1_generate: Callable[[BridgeScene, tuple[dict[str, object], ...]], str],
     stage2_generate: Callable[[BridgeScene, tuple[dict[str, object], ...]], str],
     equivalence_margin: float,
+    equivalence_resamples: int = 10_000,
+    equivalence_seed: int = 2026081604,
 ) -> tuple[BridgeReport, tuple[BridgeRecord, ...]]:
     """Run fixed calls once per scene; failures remain failures and are never retried."""
 
@@ -234,6 +259,10 @@ def run_bridge_protocol(
         or not 0 < float(equivalence_margin) < 1
     ):
         raise ValueError("equivalence_margin must lie in (0, 1)")
+    if type(equivalence_resamples) is not int or equivalence_resamples < 1_000:
+        raise ValueError("equivalence_resamples must be an integer of at least 1000")
+    if type(equivalence_seed) is not int or equivalence_seed < 0:
+        raise ValueError("equivalence_seed must be a non-negative integer")
     records: list[BridgeRecord] = []
     legacy_lengths: list[int] = []
     stage1_lengths: list[int] = []
@@ -265,7 +294,11 @@ def run_bridge_protocol(
                 ),
             )
             model_calls += 1
-            evaluation = evaluate_program(stage2_raw, constraint_bindings={})
+            trusted = {
+                name: TrustedBinding(f"stage1_target_{name}", value)
+                for name, value in zip(("a", "b", "c", "d"), evidence.target_facts, strict=True)
+            }
+            evaluation = evaluate_program(stage2_raw, constraint_bindings=trusted)
             stage2_lengths.append(len(stage2_raw.encode("utf-8")))
         two_stage_correct = bool(
             evaluation.program_parse_success
@@ -302,12 +335,34 @@ def run_bridge_protocol(
     program_consistency = sum(item.program_answer_match for item in records) / total
     two_stage_accuracy = sum(item.two_stage_answer_correct for item in records) / total
     margin = float(equivalence_margin)
+    accuracy_differences = tuple(
+        int(item.two_stage_answer_correct) - int(item.legacy_answer_correct) for item in records
+    )
+    perception_differences = tuple(
+        int(item.stage1_perception_error) - int(item.legacy_perception_error) for item in records
+    )
+    accuracy_ci = _paired_bootstrap_interval(
+        accuracy_differences,
+        confidence=0.90,
+        resamples=equivalence_resamples,
+        seed=equivalence_seed,
+    )
+    perception_ci = _paired_bootstrap_interval(
+        perception_differences,
+        confidence=0.90,
+        resamples=equivalence_resamples,
+        seed=equivalence_seed + 1,
+    )
+    accuracy_difference = _mean(list(accuracy_differences))
+    perception_difference = _mean(list(perception_differences))
     protocols_mergeable = bool(
         legacy_parse_rate >= 0.95
         and stage1_parse_rate >= 0.98
         and program_consistency >= 0.95
-        and abs(legacy_accuracy - two_stage_accuracy) <= margin
-        and abs(legacy_perception - stage1_perception) <= margin
+        and accuracy_ci[0] > -margin
+        and accuracy_ci[1] < margin
+        and perception_ci[0] > -margin
+        and perception_ci[1] < margin
     )
     return (
         BridgeReport(
@@ -325,6 +380,12 @@ def run_bridge_protocol(
             mean_stage1_response_bytes=_mean(stage1_lengths),
             mean_stage2_response_bytes=_mean(stage2_lengths),
             equivalence_margin=margin,
+            accuracy_difference=accuracy_difference,
+            accuracy_difference_ci90=accuracy_ci,
+            perception_difference=perception_difference,
+            perception_difference_ci90=perception_ci,
+            equivalence_resamples=equivalence_resamples,
+            equivalence_seed=equivalence_seed,
             protocols_mergeable=protocols_mergeable,
             independent_unit="semantic_scene",
         ),

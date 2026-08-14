@@ -116,8 +116,17 @@ def build_stage2_payload(
         raise ValueError("cue_constraint_ids must reference visible redundant facts")
     if registered_condition is CueCondition.ABLATED and cue_constraint_ids:
         raise ValueError("ablated payload must not expose cue constraints")
+    selected = frozenset(cue_constraint_ids)
+    public_evidence = Stage2Evidence(
+        observed_values=evidence.observed_values,
+        redundant_facts=tuple(
+            item for item in evidence.redundant_facts if item.constraint_id in selected
+        ),
+        axis_facts=evidence.axis_facts,
+        max_mismatches=evidence.max_mismatches,
+    )
     return Stage2Payload(
-        evidence=evidence,
+        evidence=public_evidence,
         operation=registered_operation,
         question=question,
         cue_condition=registered_condition,
@@ -168,8 +177,6 @@ def serialize_stage2_payload(payload: Stage2Payload) -> dict[str, Any]:
         },
         "operation": payload.operation.value,
         "question": payload.question,
-        "cue_condition": payload.cue_condition.value,
-        "cue_constraint_ids": list(payload.cue_constraint_ids),
         "randomized_cue_id": payload.randomized_cue_id,
         "dsl_instructions": payload.dsl_instructions,
         "image_available": False,

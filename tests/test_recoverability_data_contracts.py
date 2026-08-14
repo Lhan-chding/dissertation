@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import inspect
+import json
 from dataclasses import FrozenInstanceError, asdict, replace
 
 import pytest
@@ -222,7 +223,7 @@ def test_stage2_payload_contains_only_visible_post_error_information() -> None:
     )
 
     assert payload.image_available is False
-    assert payload.evidence is evidence
+    assert payload.evidence == evidence
     assert payload.operation is Operation.DIFFERENCE
     assert payload.cue_condition is CueCondition.VALID
     assert payload.evidence.max_mismatches == 1

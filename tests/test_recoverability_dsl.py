@@ -297,7 +297,7 @@ def test_parser_and_executor_do_not_mutate_caller_inputs() -> None:
         steps=[{"op": "read", "inputs": ["a"], "output": "result"}],
         answer=8,
     )
-    bindings = {"a": "observed_a"}
+    bindings = {"a": TrustedBinding("observed_a", 8)}
     original = dict(bindings)
 
     first = execute_program(parse_program(raw), constraint_bindings=bindings)

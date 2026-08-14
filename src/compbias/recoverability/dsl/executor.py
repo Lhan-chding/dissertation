@@ -17,6 +17,21 @@ class ProgramExecutionError(ValueError):
 
 
 @dataclass(frozen=True, slots=True)
+class TrustedBinding:
+    constraint_id: str
+    expected_value: int
+
+    def __post_init__(self) -> None:
+        if (
+            not isinstance(self.constraint_id, str)
+            or _IDENTIFIER.fullmatch(self.constraint_id) is None
+        ):
+            raise ValueError("trusted constraint identifier is invalid")
+        if type(self.expected_value) is not int:
+            raise TypeError("trusted expected value must be an exact integer")
+
+
+@dataclass(frozen=True, slots=True)
 class ProgramExecutionResult:
     program_execution_success: bool
     executed_result: int
@@ -94,25 +109,28 @@ def _execute_step(step: ProgramStep, values: tuple[int, ...]) -> int:
 
 
 def _bindings(
-    program: Program, constraint_bindings: Mapping[str, str]
+    program: Program, constraint_bindings: Mapping[str, TrustedBinding]
 ) -> dict[str, frozenset[str]]:
     if not isinstance(constraint_bindings, Mapping):
         raise TypeError("constraint_bindings must be a mapping")
     variable_names = {name for name, _value in program.variables}
     result: dict[str, frozenset[str]] = {name: frozenset() for name in variable_names}
-    for variable, constraint_id in constraint_bindings.items():
+    program_values = program.variable_dict()
+    for variable, binding in constraint_bindings.items():
         if variable not in variable_names:
             raise ProgramExecutionError("constraint binding references an unknown variable")
-        if not isinstance(constraint_id, str) or _IDENTIFIER.fullmatch(constraint_id) is None:
-            raise ProgramExecutionError("constraint binding identifier is invalid")
-        result[variable] = frozenset({constraint_id})
+        if not isinstance(binding, TrustedBinding):
+            raise ProgramExecutionError("constraint binding must be trusted evidence")
+        if program_values[variable] != binding.expected_value:
+            raise ProgramExecutionError("program variable differs from trusted evidence")
+        result[variable] = frozenset({binding.constraint_id})
     return result
 
 
 def execute_program(
     program: Program,
     *,
-    constraint_bindings: Mapping[str, str],
+    constraint_bindings: Mapping[str, TrustedBinding],
 ) -> ProgramExecutionResult:
     """Execute without mutation and trace only constraints reaching the final result."""
 
@@ -141,7 +159,7 @@ def execute_program(
 def evaluate_program(
     raw: str,
     *,
-    constraint_bindings: Mapping[str, str],
+    constraint_bindings: Mapping[str, TrustedBinding],
 ) -> ProgramEvaluation:
     """Preserve parse and execution failures as data instead of repairing output."""
 

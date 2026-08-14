@@ -4,6 +4,7 @@ from .executor import (
     ProgramEvaluation,
     ProgramExecutionError,
     ProgramExecutionResult,
+    TrustedBinding,
     evaluate_program,
     execute_program,
 )
@@ -17,6 +18,7 @@ __all__ = [
     "ProgramExecutionResult",
     "ProgramParseError",
     "ProgramStep",
+    "TrustedBinding",
     "evaluate_program",
     "execute_program",
     "parse_program",

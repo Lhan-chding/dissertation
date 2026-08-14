@@ -212,7 +212,9 @@ def test_bridge_requires_paired_equivalence_intervals_not_point_differences() ->
         equivalence_margin=0.03,
     )
 
-    assert abs(report.legacy_answer_accuracy - report.two_stage_answer_accuracy) == 0.05
+    assert abs(report.legacy_answer_accuracy - report.two_stage_answer_accuracy) == pytest.approx(
+        0.05
+    )
     assert report.accuracy_difference_ci90[1] > 0.03
     assert report.protocols_mergeable is False
 
