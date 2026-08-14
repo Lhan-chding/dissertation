@@ -165,7 +165,7 @@ def test_bridge_parse_failure_is_a_failure_and_never_retried_or_sent_to_stage2()
 
 
 def test_bridge_cli_requires_explicit_server_execution_flag() -> None:
-    script = ROOT / "experiments" / "recoverability_v1" / "02_bridge.py"
+    script = ROOT / "experiments" / "recoverability_v1" / "03_bridge.py"
     completed = subprocess.run(
         [sys.executable, str(script), "--help"],
         cwd=ROOT,

@@ -114,7 +114,9 @@ def test_capture_rejects_metric_tamper_and_does_not_publish(tmp_path: Path) -> N
 
 def test_capture_rejects_bad_record_count_symlinks_and_overwrite(tmp_path: Path) -> None:
     inputs = _write_inputs(tmp_path)
-    inputs["records_path"].write_text("{}\n", encoding="utf-8")
+    inputs["records_path"].write_text(
+        json.dumps({"sample_id": "calibration-000000"}) + "\n", encoding="utf-8"
+    )
     output = tmp_path / "evidence.json"
     with pytest.raises(ValueError, match="exactly 200"):
         capture_v03_evidence(
@@ -124,7 +126,9 @@ def test_capture_rejects_bad_record_count_symlinks_and_overwrite(tmp_path: Path)
         )
 
     inputs = _write_inputs(tmp_path)
-    linked_log = tmp_path / "linked.log"
+    link_directory = tmp_path / "links"
+    link_directory.mkdir()
+    linked_log = link_directory / "pilot-data-v0.3.log"
     linked_log.symlink_to(inputs["pilot_data_log_path"])
     inputs["pilot_data_log_path"] = linked_log
     with pytest.raises(ValueError, match="regular file"):
@@ -145,9 +149,7 @@ def test_capture_rejects_bad_record_count_symlinks_and_overwrite(tmp_path: Path)
 
 
 def test_capture_cli_is_metadata_only_and_bridge_is_step_three() -> None:
-    capture_script = (
-        ROOT / "experiments" / "recoverability_v1" / "02_capture_v03_evidence.py"
-    )
+    capture_script = ROOT / "experiments" / "recoverability_v1" / "02_capture_v03_evidence.py"
     bridge_script = ROOT / "experiments" / "recoverability_v1" / "03_bridge.py"
     help_result = subprocess.run(
         [sys.executable, str(capture_script), "--help"],
