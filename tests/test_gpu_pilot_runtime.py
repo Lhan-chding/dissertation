@@ -958,8 +958,7 @@ def test_gpu_lock_and_runbook_bind_portable_security_review() -> None:
     parsed = [Requirement(line) for line in lock_lines]
     normalized_names = [canonicalize_name(requirement.name) for requirement in parsed]
     locked = {
-        canonicalize_name(requirement.name): str(requirement.specifier)
-        for requirement in parsed
+        canonicalize_name(requirement.name): str(requirement.specifier) for requirement in parsed
     }
 
     assert len(lock_lines) == 125
@@ -985,12 +984,22 @@ def test_gpu_lock_and_runbook_bind_portable_security_review() -> None:
     assert locked["torch"] == "==2.8.0+cu128"
 
     candidate = (root / "requirements-gpu.in").read_text(encoding="utf-8")
+    candidate_exact = {
+        canonicalize_name(requirement.name): str(requirement.specifier)
+        for requirement in (
+            Requirement(line)
+            for line in candidate.splitlines()
+            if line.strip() and not line.startswith("#")
+        )
+    }
+    assert {name: locked.get(name) for name in candidate_exact} == candidate_exact
     for name, version in security_overlay.items():
         assert f"{name}=={version.removeprefix('==')}" in candidate.casefold()
 
     runbook = (root / "docs" / "SERVER_SETUP.md").read_text(encoding="utf-8")
     assert "python -m pip list --format=freeze --exclude-editable" in runbook
     assert "pip freeze --all" not in runbook
+    assert "records resolved versions but not original installation provenance" in runbook
     assert "pip-audit==2.10.1" in runbook
     assert "d928379a590e5071d9b5042fe99d480f57ab187f0cb3a74e13af219a6048aeb3" in runbook
 
