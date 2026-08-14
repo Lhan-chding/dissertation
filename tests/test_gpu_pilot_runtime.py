@@ -329,6 +329,22 @@ def test_structured_prompt_example_matches_expected_value_count() -> None:
     assert "exactly 4 integers" in four
 
 
+def test_structured_prompt_requires_full_scene_transcription_for_partial_operations() -> None:
+    from compbias.gpu_pilot.structured_generation import build_structured_messages
+
+    messages = build_structured_messages(
+        question="What is the sum of the first two values?",
+        operation="sum",
+        retry_index=0,
+        expected_value_count=4,
+    )
+    rendered = json.dumps(messages, sort_keys=True)
+
+    assert "transcribe all 4 labeled values" in rendered.lower()
+    assert "even when the question uses only some of them" in rendered.lower()
+    assert "do not insert \\n or any escape sequence" in rendered.lower()
+
+
 def test_structured_generation_stops_after_two_format_retries() -> None:
     from compbias.gpu_pilot.structured_generation import generate_with_format_retries
 
@@ -683,6 +699,31 @@ def _small_data_config() -> PilotDataConfig:
         counterfactual_pairs=2,
         natural_audit=2,
     )
+
+
+def test_chart_renderer_uses_axis_ticks_instead_of_direct_value_labels(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    from compbias.gpu_pilot import chart_data
+
+    labels: list[str] = []
+
+    def capture_text(_draw: object, _position: object, text: object, **_kwargs: object) -> None:
+        labels.append(str(text))
+
+    monkeypatch.setattr(chart_data.ImageDraw.ImageDraw, "text", capture_text)
+    chart_data._draw_chart(
+        tmp_path / "chart.png",
+        chart_type="grouped_bar",
+        values=(3, 7, 13, 17),
+        size=(512, 384),
+        ood=False,
+    )
+
+    numeric_labels = {label for label in labels if label.isdigit()}
+    assert numeric_labels == {str(value) for value in range(0, 21, 2)}
+    assert {"3", "7", "13", "17"}.isdisjoint(numeric_labels)
 
 
 def test_dataset_generation_is_deterministic_and_no_clobber(tmp_path: Path) -> None:
