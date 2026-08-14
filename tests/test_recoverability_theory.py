@@ -112,9 +112,7 @@ def test_inconsistent_visible_information_is_invalid_not_recoverable() -> None:
         CompatibilityQuery(
             observed_values=(8, 4, 6, 2),
             operation=Operation.DIFFERENCE,
-            constraints=(
-                KnownValueConstraint(constraint_id="impossible", index=0, value=20),
-            ),
+            constraints=(KnownValueConstraint(constraint_id="impossible", index=0, value=20),),
             value_domain=tuple(range(0, 11)),
             max_mismatches=1,
         )
