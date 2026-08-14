@@ -1,0 +1,10 @@
+schema_version: 1
+files:
+  - path: configs/recoverability/recoverability_v1.yaml
+    sha256: 51400ccda1f8f36389faacbf7667c900782fa92da434566b093dd0f73c46071c
+  - path: configs/recoverability/power_plan_v1.json
+    sha256: 651e30d824b36eadec6c3595ef462c432400be4ee7022411cafd3a2097dcbc23
+  - path: configs/recoverability/server_runtime_v1.yaml
+    sha256: 95da8662a89ddb6a6d4a70dfa46f61b5949f363b2270c8894ad278f52829bc17
+  - path: requirements-gpu.lock.txt
+    sha256: d928379a590e5071d9b5042fe99d480f57ab187f0cb3a74e13af219a6048aeb3

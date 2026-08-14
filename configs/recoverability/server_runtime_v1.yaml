@@ -1,0 +1,16 @@
+schema_version: 1
+status: PREREGISTERED_NOT_RUN
+requirements_lock_path: requirements-gpu.lock.txt
+requirements_lock_sha256: d928379a590e5071d9b5042fe99d480f57ab187f0cb3a74e13af219a6048aeb3
+exact_packages:
+  accelerate: "1.14.0"
+  numpy: "2.5.2"
+  peft: "0.19.1"
+  qwen-vl-utils: "0.0.14"
+  scipy: "1.18.0"
+  torch: "2.8.0+cu128"
+  transformers: "5.14.1"
+offline_required: true
+downloads_allowed: false
+model_loading_allowed: false
+training_authorized: false
