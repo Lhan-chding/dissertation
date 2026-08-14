@@ -52,12 +52,18 @@ def test_paths_config_is_closed_and_supports_environment_override(tmp_path: Path
 def test_pilot_data_contract_freezes_registered_counts_and_tasks() -> None:
     from compbias.gpu_pilot.config import load_pilot_data_config
 
-    config = load_pilot_data_config(Path("configs/data/cva_chart_pilot_v0_2.yaml"))
+    config = load_pilot_data_config(Path("configs/data/cva_chart_pilot_v0_3.yaml"))
+    previous = load_pilot_data_config(Path("configs/data/cva_chart_pilot_v0_2.yaml"))
     legacy = load_pilot_data_config(Path("configs/data/cva_chart_pilot.yaml"))
 
-    assert config.dataset_id == "CVA-Chart-Pilot-v0.2"
-    assert config.output_slug == "cva_chart_pilot_v0_2"
-    assert config.render_mode == "axis_scale_v0_2"
+    assert config.dataset_id == "CVA-Chart-Pilot-v0.3"
+    assert config.seed == 20260815
+    assert config.output_slug == "cva_chart_pilot_v0_3"
+    assert config.render_mode == "axis_scale_v0_3"
+    assert previous.dataset_id == "CVA-Chart-Pilot-v0.2"
+    assert previous.seed == 20260814
+    assert previous.output_slug == "cva_chart_pilot_v0_2"
+    assert previous.render_mode == "axis_scale_v0_2"
     assert legacy.dataset_id == "CVA-Chart-Pilot-v0.1"
     assert legacy.output_slug == "cva_chart_pilot_v0_1"
     assert legacy.render_mode == "direct_labels_v0_1"
@@ -240,6 +246,22 @@ def test_gpu_entrypoints_exist_and_do_not_enable_training_by_default() -> None:
         )
         assert completed.returncode == 2
         assert "BLOCKED" in completed.stdout
+
+
+@pytest.mark.parametrize(
+    ("stage", "path"),
+    [
+        ("pilot_a", Path("configs/train/pilot_a.yaml")),
+        ("pilot_b_lm_only", Path("configs/train/pilot_b_lm_only.yaml")),
+    ],
+)
+def test_gpu_stage_configs_bind_only_the_active_v0_3_dataset(stage: str, path: Path) -> None:
+    from compbias.gpu_pilot.stages import load_stage_config
+
+    config = load_stage_config(path, stage)
+
+    assert config["data_config"] == "configs/data/cva_chart_pilot_v0_3.yaml"
+    assert config["dataset_manifest"] == "data/generated/cva_chart_pilot_v0_3/manifest.json"
 
 
 def test_gpu_stage_rejects_escaping_output_subdirectory(tmp_path: Path) -> None:

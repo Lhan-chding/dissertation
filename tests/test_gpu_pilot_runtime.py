@@ -40,6 +40,55 @@ def test_natural_error_type_distinguishes_exact_perception_from_reasoning_error(
     assert _error_type(record, wrong) == "reasoning_error"
 
 
+@pytest.mark.parametrize(
+    ("record", "raw", "expected"),
+    [
+        (
+            {
+                "values": [11, 12, 10, 2],
+                "answer": 10,
+                "operation": "max_minus_min",
+            },
+            '<perception>{"values":[10,12,10,2]}</perception>'
+            '<reasoning>{"operation":"max_minus_min"}</reasoning><answer>10</answer>',
+            "operator_invariant_visual_error",
+        ),
+        (
+            {
+                "values": [11, 11, 3, 2],
+                "answer": 22,
+                "operation": "sum",
+            },
+            '<perception>{"values":[10,10,3,2]}</perception>'
+            '<reasoning>{"operation":"sum"}</reasoning><answer>22</answer>',
+            "compensated_visual_error",
+        ),
+        (
+            {
+                "values": [11, 11, 3, 2],
+                "answer": 22,
+                "operation": "sum",
+            },
+            '<perception>{"values":[10,10,3,2]}</perception>'
+            '<reasoning>{"operation":"sum"}</reasoning><answer>20</answer>',
+            "visual_error",
+        ),
+    ],
+)
+def test_v0_3_taxonomy_separates_invariance_from_compensation(
+    record: dict[str, object],
+    raw: str,
+    expected: str,
+) -> None:
+    from compbias.gpu_pilot.collection import _error_type
+    from compbias.gpu_pilot.execution_gate import _derived_error_type
+
+    parsed = parse_trajectory(raw, sample_id="taxonomy-fixture")
+
+    assert _error_type(record, parsed) == expected
+    assert _derived_error_type(record, parsed) == expected
+
+
 def test_pilot_a_rows_skip_parse_failures_and_use_canonical_mediator() -> None:
     from compbias.gpu_pilot.training import _pilot_a_rows
 
@@ -645,6 +694,71 @@ def test_natural_collection_never_resamples_a_parse_failure(
     assert saved["parsed"]["status"] == "malformed"
 
 
+def test_natural_collection_counts_operator_invariance_as_perception_error(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    from compbias.gpu_pilot import collection
+
+    dataset = tmp_path / "dataset"
+    dataset.mkdir()
+    record = {
+        "sample_id": "calibration-000000",
+        "split": "calibration",
+        "operation": "max_minus_min",
+        "question": "What is the maximum value minus the minimum value?",
+        "values": [11, 12, 10, 2],
+        "answer": 10,
+        "image": "images/calibration-000000.png",
+    }
+    (dataset / "records.jsonl").write_text(json.dumps(record) + "\n", encoding="utf-8")
+    (dataset / "manifest.json").write_text(
+        json.dumps({"images_sha256": "a" * 64}), encoding="utf-8"
+    )
+    monkeypatch.setattr(collection, "load_local_qwen", lambda _path: (object(), object()))
+    monkeypatch.setattr(collection, "model_snapshot_sha256", lambda _path: "b" * 64)
+    monkeypatch.setattr(
+        "compbias.gpu_pilot.execution_gate._validate_canonical_dataset",
+        lambda *_args: None,
+    )
+
+    raw = (
+        '<perception>{"values":[10,12,10,2]}</perception>'
+        '<reasoning>{"operation":"max_minus_min"}</reasoning><answer>10</answer>'
+    )
+    parsed = parse_trajectory(raw, sample_id=record["sample_id"])
+    monkeypatch.setattr(
+        collection,
+        "generate_with_format_retries",
+        lambda *_args, **_kwargs: StructuredGeneration(
+            raw_text=raw,
+            parsed=parsed,
+            attempts=(
+                {
+                    "attempt_index": 0,
+                    "raw_text": raw,
+                    "status": parsed.status.value,
+                    "error_code": parsed.error_code,
+                },
+            ),
+        ),
+    )
+
+    output = tmp_path / "natural.jsonl"
+    report = collection.collect_split(
+        dataset,
+        tmp_path / "model",
+        output,
+        split="calibration",
+        data_config_path=tmp_path / "data.yaml",
+    )
+
+    saved = json.loads(output.read_text(encoding="utf-8"))
+    assert saved["error_type"] == "operator_invariant_visual_error"
+    assert report["natural_perception_error_rate"] == 1.0
+    assert report["error_counts"] == {"operator_invariant_visual_error": 1}
+
+
 def test_natural_collection_failure_does_not_publish_partial_records(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
@@ -762,6 +876,33 @@ def test_chart_renderer_uses_axis_ticks_instead_of_direct_value_labels(
     numeric_labels = {label for label in labels if label.isdigit()}
     assert numeric_labels == {str(value) for value in range(0, 21, 2)}
     assert {"3", "7", "13", "17"}.isdisjoint(numeric_labels)
+
+
+@pytest.mark.parametrize("chart_type", ["grouped_bar", "line"])
+def test_v0_3_renderer_uses_integer_axis_ticks_without_direct_value_labels(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    chart_type: str,
+) -> None:
+    from compbias.gpu_pilot import chart_data
+
+    labels: list[str] = []
+
+    def capture_text(_draw: object, _position: object, text: object, **_kwargs: object) -> None:
+        labels.append(str(text))
+
+    monkeypatch.setattr(chart_data.ImageDraw.ImageDraw, "text", capture_text)
+    chart_data._draw_chart(
+        tmp_path / "chart.png",
+        chart_type=chart_type,
+        values=(3, 7, 13, 17),
+        size=(512, 384),
+        ood=False,
+        render_mode="axis_scale_v0_3",
+    )
+
+    numeric_labels = {label for label in labels if label.isdigit()}
+    assert numeric_labels == {str(value) for value in range(21)}
 
 
 def test_versioned_renderer_preserves_legacy_labels_and_scales_value_21(
