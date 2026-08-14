@@ -44,7 +44,9 @@ def test_fixture_is_order_independent_seeded_and_byte_canonical() -> None:
 
     assert first == second
     assert serialize_fixture(first) == serialize_fixture(second)
-    assert len(fixture_sha256(first)) == 64
+    assert fixture_sha256(first) == (
+        "a8816926c22002c6219c98f7d1c9a61c1f6c0ec2d916d7d5d44c93ca6db94838"
+    )
     assert fixture_sha256(first) == fixture_sha256(tuple(reversed(tuple(reversed(first)))))
     assert generate_fixture_50(seed=2026081607) != first
 

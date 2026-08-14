@@ -1,0 +1,44 @@
+{
+  "artifact_type": "recoverability_v1_local_fixture_audit",
+  "audit_passed": true,
+  "exactly_recoverable_valid": 50,
+  "family_counts": [
+    [
+      "cross_series",
+      17
+    ],
+    [
+      "duplicate_encoding",
+      17
+    ],
+    [
+      "trend",
+      16
+    ]
+  ],
+  "fixture_sha256": "a8816926c22002c6219c98f7d1c9a61c1f6c0ec2d916d7d5d44c93ca6db94838",
+  "gold_free_stage2_payloads": 50,
+  "gpu_invoked": false,
+  "legal_counterfactuals": 50,
+  "model_loaded": false,
+  "nonrecoverable_ablated": 50,
+  "operation_counts": [
+    [
+      "difference",
+      17
+    ],
+    [
+      "max_minus_min",
+      16
+    ],
+    [
+      "sum",
+      17
+    ]
+  ],
+  "records": 50,
+  "schema_version": 1,
+  "training_invoked": false,
+  "unique_numeric_tables": 50,
+  "valid_sham_surface_matched": 50
+}
