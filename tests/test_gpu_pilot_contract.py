@@ -312,8 +312,8 @@ def test_gpu_stage_cannot_execute_without_smoke_and_calibration_evidence(
         "stage": "pilot_a",
         "paths_config": "configs/paths.yaml",
         "model_config": "configs/model/qwen25vl3b.yaml",
-        "data_config": "configs/data/cva_chart_pilot_v0_2.yaml",
-        "dataset_manifest": "data/generated/cva_chart_pilot_v0_2/manifest.json",
+        "data_config": "configs/data/cva_chart_pilot_v0_3.yaml",
+        "dataset_manifest": "data/generated/cva_chart_pilot_v0_3/manifest.json",
         "natural_records": "trajectories/natural/pilot_train_records.jsonl",
         "output_subdir": "pilot_a",
         "training": {},
@@ -446,7 +446,7 @@ def test_gpu_execution_gate_accepts_only_complete_bound_evidence(
             "latency_seconds": 3.0,
             "peak_memory_gib": 8.0,
         },
-        paths.trajectories / "natural" / "calibration_records.summary.json": {
+        paths.trajectories / "natural" / "calibration_records_v0_3.summary.json": {
             "schema_version": 1,
             "split": "calibration",
             "records": 200,
@@ -459,13 +459,13 @@ def test_gpu_execution_gate_accepts_only_complete_bound_evidence(
                 "reasoning_error": 40,
                 "compensated_visual_error": 40,
             },
-            "output": str(paths.trajectories / "natural" / "calibration_records.jsonl"),
+            "output": str(paths.trajectories / "natural" / "calibration_records_v0_3.jsonl"),
             "gate_failures": [],
             "gate_passed": True,
         },
-        tmp_path / "data" / "generated" / "cva_chart_pilot_v0_2" / "manifest.json": {
+        tmp_path / "data" / "generated" / "cva_chart_pilot_v0_3" / "manifest.json": {
             "schema_version": 1,
-            "dataset_id": "CVA-Chart-Pilot-v0.2",
+            "dataset_id": "CVA-Chart-Pilot-v0.3",
             "record_count": 2_800,
             "split_counts": {
                 "calibration": 200,
@@ -488,7 +488,7 @@ def test_gpu_execution_gate_accepts_only_complete_bound_evidence(
     for path, report in reports.items():
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(report, allow_nan=False), encoding="utf-8")
-    manifest_path = tmp_path / "data" / "generated" / "cva_chart_pilot_v0_2" / "manifest.json"
+    manifest_path = tmp_path / "data" / "generated" / "cva_chart_pilot_v0_3" / "manifest.json"
     import hashlib
 
     manifest_hash = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
@@ -498,11 +498,11 @@ def test_gpu_execution_gate_accepts_only_complete_bound_evidence(
         "dataset_images_sha256": "2" * 64,
     }
     calibration_path = (
-        paths.outputs.parent / "trajectories" / "natural" / "calibration_records.summary.json"
+        paths.outputs.parent / "trajectories" / "natural" / "calibration_records_v0_3.summary.json"
     )
     calibration_report = {**reports[calibration_path], **provenance}
     calibration_path.write_text(json.dumps(calibration_report), encoding="utf-8")
-    (paths.trajectories / "natural" / "calibration_records.jsonl").write_text(
+    (paths.trajectories / "natural" / "calibration_records_v0_3.jsonl").write_text(
         "{}\n", encoding="utf-8"
     )
     (paths.trajectories / "natural" / "pilot_train_records.jsonl").write_text(
@@ -517,13 +517,13 @@ def test_gpu_execution_gate_accepts_only_complete_bound_evidence(
     (paths.trajectories / "natural" / "pilot_train_records.summary.json").write_text(
         json.dumps(pilot_summary), encoding="utf-8"
     )
-    dataset_root = tmp_path / "data" / "generated" / "cva_chart_pilot_v0_2"
+    dataset_root = tmp_path / "data" / "generated" / "cva_chart_pilot_v0_3"
     (dataset_root / "records.jsonl").write_text("{}\n", encoding="utf-8")
     (dataset_root / "counterfactual_pairs.jsonl").write_text("{}\n", encoding="utf-8")
     stage_config = tmp_path / "configs" / "train" / "pilot_a.yaml"
     paths_config = tmp_path / "configs" / "paths.yaml"
     model_config = tmp_path / "configs" / "model" / "qwen25vl3b.yaml"
-    data_config = tmp_path / "configs" / "data" / "cva_chart_pilot_v0_2.yaml"
+    data_config = tmp_path / "configs" / "data" / "cva_chart_pilot_v0_3.yaml"
     for path in (stage_config, paths_config, model_config, data_config):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("schema_version: 1\n", encoding="utf-8")
@@ -531,8 +531,8 @@ def test_gpu_execution_gate_accepts_only_complete_bound_evidence(
         "stage": "pilot_a",
         "paths_config": "configs/paths.yaml",
         "model_config": "configs/model/qwen25vl3b.yaml",
-        "data_config": "configs/data/cva_chart_pilot_v0_2.yaml",
-        "dataset_manifest": "data/generated/cva_chart_pilot_v0_2/manifest.json",
+        "data_config": "configs/data/cva_chart_pilot_v0_3.yaml",
+        "dataset_manifest": "data/generated/cva_chart_pilot_v0_3/manifest.json",
         "natural_records": "trajectories/natural/pilot_train_records.jsonl",
     }
     derived = {

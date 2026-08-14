@@ -53,6 +53,9 @@ def _draw_chart(
     elif render_mode == "axis_scale_v0_2":
         max_value = max(20, max(values) + max(values) % 2)
         ticks = tuple(range(0, max_value + 1, 2))
+    elif render_mode == "axis_scale_v0_3":
+        max_value = max(20, max(values))
+        ticks = tuple(range(0, max_value + 1))
     else:
         raise ValueError(f"unsupported render mode: {render_mode}")
     x_step = (plot_right - plot_left) / len(values)

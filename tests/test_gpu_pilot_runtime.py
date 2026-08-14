@@ -24,7 +24,7 @@ from compbias.models.structured_parser import parse_trajectory
 def test_natural_error_type_distinguishes_exact_perception_from_reasoning_error() -> None:
     from compbias.gpu_pilot.collection import _error_type
 
-    record = {"values": [3, 7, 5], "answer": 4}
+    record = {"values": [3, 7, 5], "answer": 4, "operation": "max_minus_min"}
     correct = parse_trajectory(
         '<perception>{"values":[3,7,5]}</perception>'
         '<reasoning>{"operation":"max_minus_min"}</reasoning><answer>4</answer>',
@@ -840,7 +840,7 @@ def test_natural_collection_failure_does_not_publish_partial_records(
         "generate_with_format_retries",
         lambda *_args, **_kwargs: (_ for _ in ()).throw(RuntimeError("decoder failed")),
     )
-    target = tmp_path / "natural" / "calibration_records.jsonl"
+    target = tmp_path / "natural" / "calibration_records_v0_3.jsonl"
 
     with pytest.raises(RuntimeError, match="decoder failed"):
         collection.collect_split(
@@ -856,22 +856,62 @@ def test_natural_collection_failure_does_not_publish_partial_records(
     assert not list(target.parent.glob(f".{target.name}.*"))
 
 
-def test_failed_calibration_can_be_archived_before_reviewed_rerun(tmp_path: Path) -> None:
-    from compbias.gpu_pilot.collection import _archive_failed_collection
+@pytest.mark.parametrize("gate_passed", [False, True])
+def test_completed_v0_3_calibration_cannot_be_archived_or_rerun(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    gate_passed: bool,
+) -> None:
+    from compbias.gpu_pilot import collection
 
-    root = tmp_path / "trajectories"
-    records = root / "natural/calibration_records.jsonl"
-    summary = root / "natural/calibration_records.summary.json"
+    trajectories = tmp_path / "trajectories"
+    records = trajectories / "natural/calibration_records_v0_3.jsonl"
+    summary = trajectories / "natural/calibration_records_v0_3.summary.json"
     records.parent.mkdir(parents=True)
-    records.write_text("{}\n", encoding="utf-8")
-    summary.write_text(json.dumps({"gate_passed": False}), encoding="utf-8")
+    records.write_text('{"dataset_id":"CVA-Chart-Pilot-v0.3"}\n', encoding="utf-8")
+    summary.write_text(json.dumps({"gate_passed": gate_passed}), encoding="utf-8")
+    paths = SimpleNamespace(
+        project_root=tmp_path,
+        model_path=tmp_path / "model",
+        data=tmp_path / "data",
+        trajectories=trajectories,
+    )
+    monkeypatch.setattr(collection, "load_pilot_paths", lambda _path: paths)
+    invoked = False
 
-    archive = _archive_failed_collection(root, records, summary)
+    def forbidden_collect(*_args: object, **_kwargs: object) -> dict[str, object]:
+        nonlocal invoked
+        invoked = True
+        return {}
 
-    assert not records.exists()
-    assert not summary.exists()
-    assert (archive / records.name).is_file()
-    assert (archive / summary.name).is_file()
+    monkeypatch.setattr(collection, "collect_split", forbidden_collect)
+
+    result = collection.main(
+        ["--paths", str(tmp_path / "paths.yaml"), "--execute"], calibration=True
+    )
+
+    assert result == 3
+    assert not invoked
+    assert records.is_file()
+    assert summary.is_file()
+
+
+def test_training_gate_rejects_archived_v0_3_calibration_but_ignores_v0_2(
+    tmp_path: Path,
+) -> None:
+    from compbias.gpu_pilot.execution_gate import _reject_archived_active_calibrations
+
+    attempts = tmp_path / "natural/attempts/failed-evidence"
+    attempts.mkdir(parents=True)
+    legacy = attempts / "calibration_records.jsonl"
+    legacy.write_text('{"dataset_id":"CVA-Chart-Pilot-v0.2"}\n', encoding="utf-8")
+
+    _reject_archived_active_calibrations(tmp_path)
+
+    active = attempts / "calibration_records_v0_3.jsonl"
+    active.write_text('{"dataset_id":"CVA-Chart-Pilot-v0.3"}\n', encoding="utf-8")
+    with pytest.raises(RuntimeError, match=r"archived v0\.3 calibration"):
+        _reject_archived_active_calibrations(tmp_path)
 
 
 def _small_data_config() -> PilotDataConfig:
@@ -1108,7 +1148,7 @@ def test_execution_gate_replays_the_full_registered_dataset(tmp_path: Path) -> N
 
     output = tmp_path / "dataset"
     manifest = generate_dataset(
-        load_pilot_data_config(Path("configs/data/cva_chart_pilot_v0_2.yaml")),
+        load_pilot_data_config(Path("configs/data/cva_chart_pilot_v0_3.yaml")),
         output,
     )
 

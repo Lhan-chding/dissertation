@@ -2,8 +2,8 @@ schema_version: 1
 stage: pilot_b_lm_only
 paths_config: configs/paths.yaml
 model_config: configs/model/qwen25vl3b.yaml
-data_config: configs/data/cva_chart_pilot_v0_2.yaml
-dataset_manifest: data/generated/cva_chart_pilot_v0_2/manifest.json
+data_config: configs/data/cva_chart_pilot_v0_3.yaml
+dataset_manifest: data/generated/cva_chart_pilot_v0_3/manifest.json
 natural_records: trajectories/natural/natural_records.jsonl
 output_subdir: pilot_b_lm_only
 training:

@@ -16,9 +16,16 @@ from compbias.io.yaml_config import load_yaml_mapping
 from compbias.models.structured_parser import parse_trajectory
 
 from .chart_data import generate_dataset
-from .config import ACTIVE_PILOT_DATASET_ID, PilotPaths, load_pilot_data_config
+from .config import (
+    ACTIVE_CALIBRATION_RECORDS_NAME,
+    ACTIVE_CALIBRATION_SUMMARY_NAME,
+    ACTIVE_PILOT_DATASET_ID,
+    PilotPaths,
+    load_pilot_data_config,
+)
 from .preflight import model_snapshot_sha256
 from .structured_generation import numeric_answer_matches, validate_pilot_trajectory
+from .taxonomy import PERCEPTION_ERROR_TYPES, natural_error_type
 
 _PREFLIGHT_KEYS = frozenset(
     {
@@ -377,7 +384,7 @@ def _validate_calibration(
     manifest: Mapping[str, object],
 ) -> None:
     _exact_mapping(report, _CALIBRATION_KEYS, label="calibration report")
-    expected_output = paths.trajectories / "natural" / "calibration_records.jsonl"
+    expected_output = paths.trajectories / "natural" / ACTIVE_CALIBRATION_RECORDS_NAME
     if (
         report["schema_version"] != 1
         or report["split"] != "calibration"
@@ -450,6 +457,22 @@ def _validate_pilot_a_summary(
         or report["dataset_images_sha256"] != manifest["images_sha256"]
     ):
         raise RuntimeError("Pilot A natural records are not bound to this model and dataset")
+
+
+def _reject_archived_active_calibrations(trajectories_root: Path) -> None:
+    """Refuse training if a completed v0.3 calibration was moved aside."""
+
+    attempts_root = trajectories_root / "natural" / "attempts"
+    if not attempts_root.exists() and not attempts_root.is_symlink():
+        return
+    if attempts_root.is_symlink() or not attempts_root.is_dir():
+        raise RuntimeError("natural calibration attempts path must be a real directory")
+    active_names = {ACTIVE_CALIBRATION_RECORDS_NAME, ACTIVE_CALIBRATION_SUMMARY_NAME}
+    for candidate in attempts_root.rglob("*"):
+        if candidate.is_symlink():
+            raise RuntimeError("natural calibration attempts must not contain symlinks")
+        if candidate.is_file() and candidate.name in active_names:
+            raise RuntimeError("archived v0.3 calibration evidence is forbidden")
 
 
 def _validate_manifest(report: Mapping[str, object]) -> None:
@@ -660,7 +683,7 @@ def _validate_canonical_dataset(
 def _validate_registered_data_config(path: Path) -> None:
     config = load_pilot_data_config(path)
     if (
-        config.seed != 20260814
+        config.seed != 20260815
         or config.dataset_id != ACTIVE_PILOT_DATASET_ID
         or config.image_size != (512, 384)
         or config.chart_types != ("grouped_bar", "line")
@@ -669,7 +692,7 @@ def _validate_registered_data_config(path: Path) -> None:
         or config.counterfactual_pairs != 150
         or config.natural_audit != 150
     ):
-        raise RuntimeError("pilot data config does not equal the registered v0.2 design")
+        raise RuntimeError("pilot data config does not equal the registered v0.3 design")
 
 
 def _validate_model_config(path: Path, paths: PilotPaths) -> None:
@@ -689,19 +712,7 @@ def _validate_model_config(path: Path, paths: PilotPaths) -> None:
 
 
 def _derived_error_type(record: Mapping[str, object], parsed: object) -> str:
-    if parsed.status.value != "ok":  # type: ignore[attr-defined]
-        return "parse_failure"
-    perceived = parsed.perceived_scene  # type: ignore[attr-defined]
-    perceived_values = perceived.get("values") if isinstance(perceived, Mapping) else None
-    perception_correct = perceived_values == tuple(record["values"])  # type: ignore[arg-type]
-    answer_correct = numeric_answer_matches(parsed.answer, record["answer"])  # type: ignore[attr-defined]
-    if perception_correct and answer_correct:
-        return "none"
-    if not perception_correct and answer_correct:
-        return "compensated_visual_error"
-    if not perception_correct:
-        return "visual_error"
-    return "reasoning_error"
+    return natural_error_type(record, parsed)
 
 
 def _validate_natural_records(
@@ -774,7 +785,7 @@ def _validate_natural_records(
         counts[error_type] += 1
         correct += int(answer_correct)
         parsed_count += int(parsed.status.value == "ok")
-    visual = counts["visual_error"] + counts["compensated_visual_error"]
+    visual = sum(counts[error_type] for error_type in PERCEPTION_ERROR_TYPES)
     return {
         "records": expected_count,
         "answer_accuracy": correct / expected_count,
@@ -808,7 +819,7 @@ def validate_execution_evidence(
     evidence_paths = {
         "preflight": preflight_path,
         "smoke": smoke_path,
-        "calibration": paths.trajectories / "natural" / "calibration_records.summary.json",
+        "calibration": paths.trajectories / "natural" / ACTIVE_CALIBRATION_SUMMARY_NAME,
         "dataset_manifest": resolve_project_file(
             project_root,
             config.get("dataset_manifest"),
@@ -827,6 +838,7 @@ def validate_execution_evidence(
             label="data_config",
         ),
     }
+    _reject_archived_active_calibrations(paths.trajectories)
     for label, path in evidence_paths.items():
         _regular_file(path, label=label)
 
@@ -852,7 +864,7 @@ def validate_execution_evidence(
         paths.cache,
     )
     dataset_records = _validate_dataset_bundle(evidence_paths["dataset_manifest"], manifest)
-    calibration_trajectory = paths.trajectories / "natural" / "calibration_records.jsonl"
+    calibration_trajectory = paths.trajectories / "natural" / ACTIVE_CALIBRATION_RECORDS_NAME
     calibration_derived = _validate_natural_records(
         calibration_trajectory,
         split="calibration",

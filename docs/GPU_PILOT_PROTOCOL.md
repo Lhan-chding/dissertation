@@ -4,11 +4,12 @@ The pilot is intentionally smaller than the later A100/H100 multi-interface
 study. It runs only after preflight, offline model smoke, data generation, and
 base calibration.
 
-The active dataset is `CVA-Chart-Pilot-v0.2`. It retains the frozen v0.1
-tasks, splits, values, and audit prefix, but replaces printed point values with
-a visible integer y-axis scale. The legacy `configs/data/cva_chart_pilot.yaml`
-and v0.1 renderer remain available for byte-level replay of the first failed
-calibration; new collection and training accept only v0.2.
+The active dataset is `CVA-Chart-Pilot-v0.3`. It retains the frozen tasks,
+splits, value range, and audit prefix, uses a new registered seed, and renders
+every integer y-axis tick and horizontal grid line without printing point
+values. The v0.1 direct-label and v0.2 even-tick renderers remain registered for
+byte-level replay of their failed calibrations; new collection and training
+accept only v0.3.
 
 ## Pilot A: fixed natural mediator
 
@@ -19,7 +20,9 @@ natural evidence errors. It does not test whether RL changes the model's visual
 error distribution. Only validated `visual_error` and
 `compensated_visual_error` first responses enter this treatment; parse failures
 and reasoning-only errors remain in the audit but are not treated as fixed
-visual mediators. The mediator is canonical parsed JSON, not raw model text,
+visual mediators. `operator_invariant_visual_error` is retained as an audit
+family but is excluded because the perceived values already produce the true
+answer under the registered operation. The mediator is canonical parsed JSON, not raw model text,
 and the prompt remains a normal text-only Qwen chat message.
 
 ## Pilot B: online image, LM-only LoRA
@@ -38,11 +41,23 @@ Training is prohibited unless calibration records:
 - structured evidence parse rate at least `95%`;
 - at least three natural error families with at least ten observations each.
 
-If a gate fails, adjust the renderer/task difficulty and rerun calibration. Do
-not start training merely because the model loads. On a reviewed rerun, the
-collector moves the complete failed attempt into a unique
-`trajectories/natural/attempts/failed-*` directory before publishing the new
-attempt. It never overwrites or archives an accepted calibration.
+The three supported families remain exactly `visual_error`,
+`compensated_visual_error`, and `reasoning_error`. A compensated visual error
+requires wrong perceived values, an incorrect result when the registered
+ground-truth operation is applied to those values, and a correct final answer.
+Wrong perceived values that still produce the true result are classified as
+`operator_invariant_visual_error`; they count toward the perception-error rate
+but cannot satisfy the compensation-family gate.
+
+If a gate fails, stop and review the registered design. Do not start training
+merely because the model loads. The single reviewed v0.3 calibration is never
+overwritten or automatically archived.
+The active v0.3 records use the versioned names
+`calibration_records_v0_3.jsonl` and
+`calibration_records_v0_3.summary.json`, leaving the historical v0.1/v0.2
+evidence untouched. If either active file already exists, collection refuses a
+second attempt regardless of the summary's mutable gate boolean. Training also
+rejects any archived v0.3 calibration artifact.
 
 The smoke and natural collector preserve the strict three-tag parser. The
 smoke permits at most two deterministic, format-only retries. Its retry prompt
@@ -61,7 +76,7 @@ that order even when the arithmetic question uses only A and B. Two-value
 evidence is rejected rather than reinterpreted. The prompt states that `sum`
 means A+B and `difference` means A-B, and prohibits escaped line breaks inside
 the perception JSON. These instructions improve format compliance without
-loosening the parser or changing the natural-error taxonomy.
+loosening the parser.
 
 The training launchers do not trust summary booleans. Immediately before any
 training import, they rerun the live hardware audit and known-answer smoke,

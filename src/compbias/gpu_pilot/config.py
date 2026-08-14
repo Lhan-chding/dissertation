@@ -44,12 +44,15 @@ _ENV_OVERRIDES = {
     "cache": "COMPBIAS_CACHE_DIR",
 }
 
-ACTIVE_PILOT_DATASET_ID = "CVA-Chart-Pilot-v0.2"
-ACTIVE_PILOT_DATA_CONFIG = "configs/data/cva_chart_pilot_v0_2.yaml"
-ACTIVE_PILOT_OUTPUT_SLUG = "cva_chart_pilot_v0_2"
+ACTIVE_PILOT_DATASET_ID = "CVA-Chart-Pilot-v0.3"
+ACTIVE_PILOT_DATA_CONFIG = "configs/data/cva_chart_pilot_v0_3.yaml"
+ACTIVE_PILOT_OUTPUT_SLUG = "cva_chart_pilot_v0_3"
+ACTIVE_CALIBRATION_RECORDS_NAME = "calibration_records_v0_3.jsonl"
+ACTIVE_CALIBRATION_SUMMARY_NAME = "calibration_records_v0_3.summary.json"
 _DATASET_DESIGNS = {
     "CVA-Chart-Pilot-v0.1": ("cva_chart_pilot_v0_1", "direct_labels_v0_1"),
-    ACTIVE_PILOT_DATASET_ID: (ACTIVE_PILOT_OUTPUT_SLUG, "axis_scale_v0_2"),
+    "CVA-Chart-Pilot-v0.2": ("cva_chart_pilot_v0_2", "axis_scale_v0_2"),
+    ACTIVE_PILOT_DATASET_ID: (ACTIVE_PILOT_OUTPUT_SLUG, "axis_scale_v0_3"),
 }
 
 

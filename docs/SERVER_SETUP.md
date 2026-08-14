@@ -99,9 +99,9 @@ export TRANSFORMERS_OFFLINE=1
 
 python experiments/gpu_pilot/02_generate_pilot_data.py \
   --paths configs/paths.yaml \
-  --config configs/data/cva_chart_pilot_v0_2.yaml
+  --config configs/data/cva_chart_pilot_v0_3.yaml
 
-test -f data/generated/cva_chart_pilot_v0_2/manifest.json
+test -f data/generated/cva_chart_pilot_v0_3/manifest.json
 
 python experiments/gpu_pilot/03_base_calibration.py \
   --paths configs/paths.yaml \
@@ -116,17 +116,21 @@ the strict dataset/smoke/calibration replay gate succeeds. Do not edit a report
 to force a pass: its source records and referenced bytes are rehashed and
 recomputed at launch.
 
-The v0.2 generator writes to a new directory and never replaces the existing
-`cva_chart_pilot_v0_1` evidence. Do not rename or delete the v0.1 directory:
-its legacy config `configs/data/cva_chart_pilot.yaml` and direct-label renderer
-are retained solely to replay the first calibration audit. All new calibration
-and training gates bind to v0.2.
+The v0.3 generator writes to a new directory and never replaces the existing
+v0.1 or v0.2 evidence. Do not rename or delete either historical directory:
+their registered seeds and renderers are retained solely for byte-exact replay.
+All new calibration and training gates bind to v0.3. Its integer ticks and grid
+lines address the v0.2 odd-value interpolation imbalance, while its stricter
+taxonomy separates operation-invariant perception errors from genuine
+compensation without changing any numeric gate.
 
-If calibration exits nonzero, the same command may be run again after the
-reviewed task adjustment. The collector archives the prior complete failed
-attempt under `trajectories/natural/attempts/failed-*`; a successful attempt is
-never replaced. Interrupted collections publish neither final records nor a
-summary and can also be rerun without deleting evidence manually.
+Run exactly one complete v0.3 calibration. If it exits nonzero, stop and
+archive the new taxonomy rather than making another renderer adjustment or
+relaxing the parser. v0.3 publishes versioned calibration filenames and refuses
+another run if either one already exists; it never archives or replaces the
+active attempt. Historical v0.1/v0.2 files remain in place. An interruption
+before final publication leaves neither active records nor a summary and can be
+retried; an ambiguous records-only state is deliberately fail-closed.
 
 At each eventual training launch, the server audit and known-answer smoke run
 again. The launcher regenerates the complete dataset from the committed seed

@@ -9,16 +9,21 @@ import tempfile
 from collections.abc import Mapping, Sequence
 from functools import partial
 from pathlib import Path
-from uuid import uuid4
 
 from compbias.io.strict_json import load_strict_json_mapping
 from compbias.models.structured_parser import ParseStatus
 
-from .config import ACTIVE_PILOT_DATA_CONFIG, ACTIVE_PILOT_OUTPUT_SLUG, load_pilot_paths
+from .config import (
+    ACTIVE_CALIBRATION_RECORDS_NAME,
+    ACTIVE_PILOT_DATA_CONFIG,
+    ACTIVE_PILOT_OUTPUT_SLUG,
+    load_pilot_paths,
+)
 from .preflight import model_snapshot_sha256
 from .qwen_smoke import decode_qwen_once, load_local_qwen
-from .safe_io import atomic_write_json_text, prepare_new_output_directory, prepare_output_path
+from .safe_io import atomic_write_json_text, prepare_output_path
 from .structured_generation import generate_with_format_retries, numeric_answer_matches
+from .taxonomy import PERCEPTION_ERROR_TYPES, natural_error_type
 
 
 def _sha256(path: Path) -> str:
@@ -43,23 +48,7 @@ def _read_jsonl(path: Path) -> tuple[dict[str, object], ...]:
 
 
 def _error_type(record: Mapping[str, object], parsed: object) -> str:
-    if parsed.status is not ParseStatus.OK:  # type: ignore[attr-defined]
-        return "parse_failure"
-    perceived = parsed.perceived_scene  # type: ignore[attr-defined]
-    expected_values = record.get("values")
-    perceived_values = perceived.get("values") if isinstance(perceived, Mapping) else None
-    perception_correct = perceived_values == tuple(expected_values)  # type: ignore[arg-type]
-    answer_correct = numeric_answer_matches(  # type: ignore[attr-defined]
-        parsed.answer,
-        record.get("answer"),
-    )
-    if perception_correct and answer_correct:
-        return "none"
-    if not perception_correct and answer_correct:
-        return "compensated_visual_error"
-    if not perception_correct:
-        return "visual_error"
-    return "reasoning_error"
+    return natural_error_type(record, parsed)
 
 
 def collect_split(
@@ -165,7 +154,7 @@ def collect_split(
             staging_path.unlink()
     finally:
         staging_path.unlink(missing_ok=True)
-    visual_errors = counts.get("visual_error", 0) + counts.get("compensated_visual_error", 0)
+    visual_errors = sum(counts.get(error_type, 0) for error_type in PERCEPTION_ERROR_TYPES)
     return {
         "schema_version": 1,
         "split": split,
@@ -203,22 +192,6 @@ def calibration_gate(report: Mapping[str, object]) -> tuple[str, ...]:
     return tuple(failures)
 
 
-def _archive_failed_collection(root: Path, records: Path, summary: Path) -> Path:
-    previous = load_strict_json_mapping(summary, label="previous natural collection summary")
-    if previous.get("gate_passed") is not False:
-        raise FileExistsError(f"accepted collection summary already exists: {summary}")
-    prepare_output_path(root, records, allow_existing=True)
-    prepare_output_path(root, summary, allow_existing=True)
-    archive = prepare_new_output_directory(
-        root,
-        root / "natural" / "attempts" / f"failed-{uuid4().hex}",
-    )
-    archive.mkdir()
-    os.replace(records, archive / records.name)
-    os.replace(summary, archive / summary.name)
-    return archive
-
-
 def main(argv: Sequence[str] | None = None, *, calibration: bool = False) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--paths", type=Path, required=True)
@@ -231,10 +204,19 @@ def main(argv: Sequence[str] | None = None, *, calibration: bool = False) -> int
     try:
         paths = load_pilot_paths(args.paths)
         dataset = paths.data / "generated" / ACTIVE_PILOT_OUTPUT_SLUG
-        target = paths.trajectories / "natural" / f"{args.split}_records.jsonl"
+        target_name = (
+            ACTIVE_CALIBRATION_RECORDS_NAME
+            if calibration and args.split == "calibration"
+            else f"{args.split}_records.jsonl"
+        )
+        target = paths.trajectories / "natural" / target_name
         report_path = target.with_suffix(".summary.json")
-        if report_path.exists() or report_path.is_symlink():
-            _archive_failed_collection(paths.trajectories, target, report_path)
+        if calibration and any(
+            path.exists() or path.is_symlink() for path in (target, report_path)
+        ):
+            raise FileExistsError(
+                "completed or ambiguous v0.3 calibration evidence already exists; rerun refused"
+            )
         report = collect_split(
             dataset,
             paths.model_path,
@@ -242,7 +224,7 @@ def main(argv: Sequence[str] | None = None, *, calibration: bool = False) -> int
             split=args.split,
             data_config_path=paths.project_root / ACTIVE_PILOT_DATA_CONFIG,
             output_root=paths.trajectories,
-            replace_incomplete=target.exists(),
+            replace_incomplete=not calibration and target.exists(),
         )
         failures = calibration_gate(report) if calibration else ()
         report = {**report, "gate_failures": list(failures), "gate_passed": not failures}

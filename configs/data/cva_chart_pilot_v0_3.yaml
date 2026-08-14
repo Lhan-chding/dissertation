@@ -1,0 +1,15 @@
+schema_version: 1
+dataset_id: CVA-Chart-Pilot-v0.3
+seed: 20260815
+image_size: [512, 384]
+chart_types: [grouped_bar, line]
+operations: [difference, sum, max_minus_min]
+split_counts:
+  calibration: 200
+  smoke_train: 600
+  pilot_train: 1200
+  dev: 200
+  iid_test: 300
+  mechanism_ood: 300
+counterfactual_pairs: 150
+natural_audit: 150
