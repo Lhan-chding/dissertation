@@ -48,7 +48,11 @@ and all generated state must remain under:
 The public Pilot A/B launchers are fail-closed: merely cloning the repository,
 parsing a YAML file, or running `--help` cannot start training. The current
 status is `GPU PILOT PENDING`; no Qwen training or evaluation result is
-recorded.
+recorded. A preliminary server check loaded the local checkpoint within about
+7.1 GiB peak VRAM, but its first response omitted the required structured tags;
+that attempt is a failed smoke, not evidence. The updated smoke retries at most
+twice for format and exits nonzero unless both closed-schema parsing and the
+known-answer check pass.
 
 Current explicit non-claims are:
 

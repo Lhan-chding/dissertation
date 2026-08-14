@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 import yaml
@@ -74,16 +76,32 @@ def test_preflight_rejects_low_vram_and_accepts_valid_fixture(tmp_path: Path) ->
     model = tmp_path / "model"
     model.mkdir()
     for name in (
+        "chat_template.json",
         "config.json",
+        "configuration.json",
         "generation_config.json",
+        "merges.txt",
         "preprocessor_config.json",
         "tokenizer.json",
         "tokenizer_config.json",
+        "vocab.json",
         "model-00001-of-00002.safetensors",
         "model-00002-of-00002.safetensors",
         "model.safetensors.index.json",
     ):
         (model / name).write_bytes(b"fixture")
+    (model / "model.safetensors.index.json").write_text(
+        json.dumps(
+            {
+                "metadata": {},
+                "weight_map": {
+                    "layer.0": "model-00001-of-00002.safetensors",
+                    "layer.1": "model-00002-of-00002.safetensors",
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
     paths = PilotPaths(
         project_root=tmp_path,
         model_path=model,
@@ -117,6 +135,10 @@ def test_preflight_rejects_low_vram_and_accepts_valid_fixture(tmp_path: Path) ->
     assert report["ready"] is True
     assert report["large_gpu_started"] is False
     assert report["model_path"] == str(model.resolve())
+    first_model_hash = report["model_snapshot_sha256"]
+    (model / "extra-loadable.json").write_text("{}", encoding="utf-8")
+    changed = audit_server(paths, hardware=valid, free_disk_gib=180.0)
+    assert changed["model_snapshot_sha256"] != first_model_hash
 
 
 def test_qwen_loader_is_offline_and_disables_remote_code(tmp_path: Path) -> None:
@@ -183,6 +205,335 @@ def test_gpu_entrypoints_exist_and_do_not_enable_training_by_default() -> None:
         )
         assert completed.returncode == 2
         assert "BLOCKED" in completed.stdout
+
+
+def test_gpu_stage_rejects_escaping_output_subdirectory(tmp_path: Path) -> None:
+    from compbias.gpu_pilot.stages import load_stage_config
+
+    source = yaml.safe_load(Path("configs/train/pilot_a.yaml").read_text(encoding="utf-8"))
+    source["output_subdir"] = "../../outside"
+    config = tmp_path / "pilot_a.yaml"
+    config.write_text(yaml.safe_dump(source), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="output_subdir"):
+        load_stage_config(config, "pilot_a")
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "message"),
+    [
+        ("max_steps", 1_000_000_000, "registered budget"),
+        ("learning_rate", float("nan"), "registered budget"),
+        ("num_generations", True, "registered budget"),
+    ],
+)
+def test_gpu_stage_rejects_unregistered_training_values(
+    tmp_path: Path,
+    field: str,
+    value: object,
+    message: str,
+) -> None:
+    from compbias.gpu_pilot.stages import load_stage_config
+
+    source = yaml.safe_load(Path("configs/train/pilot_a.yaml").read_text(encoding="utf-8"))
+    source["training"][field] = value
+    config = tmp_path / "pilot_a.yaml"
+    config.write_text(yaml.safe_dump(source), encoding="utf-8")
+
+    with pytest.raises(ValueError, match=message):
+        load_stage_config(config, "pilot_a")
+
+
+def test_gpu_stage_cannot_execute_without_smoke_and_calibration_evidence(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    from compbias.gpu_pilot import stages, training
+
+    config = {
+        "schema_version": 1,
+        "stage": "pilot_a",
+        "paths_config": "configs/paths.yaml",
+        "model_config": "configs/model/qwen25vl3b.yaml",
+        "data_config": "configs/data/cva_chart_pilot.yaml",
+        "dataset_manifest": "data/generated/cva_chart_pilot_v0_1/manifest.json",
+        "natural_records": "trajectories/natural/pilot_train_records.jsonl",
+        "output_subdir": "pilot_a",
+        "training": {},
+        "freeze": {},
+        "claims": {},
+    }
+    paths = SimpleNamespace(
+        project_root=tmp_path,
+        model_path=tmp_path / "model",
+        outputs=tmp_path / "outputs",
+        trajectories=tmp_path / "trajectories",
+    )
+    called = False
+
+    def fake_training(_config: dict[str, object]) -> None:
+        nonlocal called
+        called = True
+
+    monkeypatch.setattr(stages, "load_stage_config", lambda _path, _stage: config)
+    monkeypatch.setattr(stages, "load_pilot_paths", lambda _path: paths, raising=False)
+    monkeypatch.setattr(training, "run_grpo_stage", fake_training)
+    monkeypatch.setenv(
+        "COMPBIAS_GPU_EXECUTION_ACK",
+        "I_UNDERSTAND_THIS_STARTS_GPU_TRAINING",
+    )
+
+    exit_code = stages.main_for_stage(
+        "pilot_a",
+        ["--config", str(tmp_path / "pilot_a.yaml"), "--execute"],
+    )
+
+    assert exit_code == 3
+    assert called is False
+
+
+def test_gpu_execution_gate_accepts_only_complete_bound_evidence(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    from compbias.gpu_pilot import execution_gate
+    from compbias.gpu_pilot.config import PilotPaths
+    from compbias.gpu_pilot.preflight import model_snapshot_sha256
+    from compbias.models.structured_parser import parse_trajectory
+
+    paths = PilotPaths(
+        project_root=tmp_path,
+        model_path=(tmp_path / "model").resolve(),
+        data=(tmp_path / "data").resolve(),
+        outputs=(tmp_path / "outputs").resolve(),
+        checkpoints=(tmp_path / "checkpoints").resolve(),
+        trajectories=(tmp_path / "trajectories").resolve(),
+        cache=(tmp_path / "cache").resolve(),
+    )
+    for path in paths.to_mapping().values():
+        Path(path).mkdir(parents=True, exist_ok=True)
+    for name in (
+        "chat_template.json",
+        "config.json",
+        "configuration.json",
+        "generation_config.json",
+        "merges.txt",
+        "preprocessor_config.json",
+        "tokenizer.json",
+        "tokenizer_config.json",
+        "vocab.json",
+        "model-00001-of-00002.safetensors",
+        "model-00002-of-00002.safetensors",
+        "model.safetensors.index.json",
+    ):
+        (paths.model_path / name).write_bytes(b"fixture")
+    (paths.model_path / "model.safetensors.index.json").write_text(
+        json.dumps(
+            {
+                "metadata": {},
+                "weight_map": {
+                    "layer.0": "model-00001-of-00002.safetensors",
+                    "layer.1": "model-00002-of-00002.safetensors",
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    model_hash = model_snapshot_sha256(paths.model_path)
+
+    raw = (
+        '<perception>{"values":[3,7,5]}</perception>'
+        '<reasoning>{"operation":"max_minus_min"}</reasoning><answer>4</answer>'
+    )
+    parsed = parse_trajectory(raw, sample_id="smoke-000001").to_mapping()
+    reports = {
+        paths.outputs / "preflight" / "report.json": {
+            "schema_version": 1,
+            "artifact_type": "compbias_gpu_pilot_preflight",
+            "ready": True,
+            "large_gpu_started": False,
+            "hardware": {
+                "cuda_available": True,
+                "device_name": "NVIDIA GeForce RTX 4090",
+                "total_vram_gib": 47.37,
+                "bf16_supported": True,
+                "torch_version": "2.8.0+cu128",
+                "torch_cuda_runtime": "12.8",
+            },
+            "free_disk_gib": 180.0,
+            "model_path": str(paths.model_path),
+            "model_snapshot_sha256": model_hash,
+            "storage": paths.to_mapping(),
+        },
+        paths.outputs / "smoke" / "smoke_report.json": {
+            "schema_version": 1,
+            "artifact_type": "qwen25vl3b_offline_smoke",
+            "training_invoked": False,
+            "model_path": str(paths.model_path),
+            "model_snapshot_sha256": model_hash,
+            "expected_answer": 4,
+            "raw_response": raw,
+            "parsed": parsed,
+            "format_attempts": [
+                {
+                    "attempt_index": 0,
+                    "raw_text": raw,
+                    "status": "ok",
+                    "error_code": None,
+                }
+            ],
+            "format_retries": 0,
+            "format_passed": True,
+            "smoke_passed": True,
+            "answer_correct": True,
+            "latency_seconds": 3.0,
+            "peak_memory_gib": 8.0,
+        },
+        paths.trajectories / "natural" / "calibration_records.summary.json": {
+            "schema_version": 1,
+            "split": "calibration",
+            "records": 200,
+            "answer_accuracy": 0.55,
+            "parse_rate": 1.0,
+            "natural_perception_error_rate": 0.4,
+            "error_counts": {
+                "none": 80,
+                "visual_error": 40,
+                "reasoning_error": 40,
+                "compensated_visual_error": 40,
+            },
+            "output": str(paths.trajectories / "natural" / "calibration_records.jsonl"),
+            "gate_failures": [],
+            "gate_passed": True,
+        },
+        tmp_path / "data" / "generated" / "cva_chart_pilot_v0_1" / "manifest.json": {
+            "schema_version": 1,
+            "dataset_id": "CVA-Chart-Pilot-v0.1",
+            "record_count": 2_800,
+            "split_counts": {
+                "calibration": 200,
+                "smoke_train": 600,
+                "pilot_train": 1_200,
+                "dev": 200,
+                "iid_test": 300,
+                "mechanism_ood": 300,
+            },
+            "counterfactual_pairs": 150,
+            "natural_audit_ids": [f"calibration-{index:06d}" for index in range(150)],
+            "records_path": "records.jsonl",
+            "records_sha256": "0" * 64,
+            "counterfactual_path": "counterfactual_pairs.jsonl",
+            "counterfactual_sha256": "1" * 64,
+            "images_generated": 2_950,
+            "images_sha256": "2" * 64,
+        },
+    }
+    for path, report in reports.items():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(report, allow_nan=False), encoding="utf-8")
+    manifest_path = tmp_path / "data" / "generated" / "cva_chart_pilot_v0_1" / "manifest.json"
+    import hashlib
+
+    manifest_hash = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+    provenance = {
+        "model_snapshot_sha256": model_hash,
+        "dataset_manifest_sha256": manifest_hash,
+        "dataset_images_sha256": "2" * 64,
+    }
+    calibration_path = (
+        paths.outputs.parent / "trajectories" / "natural" / "calibration_records.summary.json"
+    )
+    calibration_report = {**reports[calibration_path], **provenance}
+    calibration_path.write_text(json.dumps(calibration_report), encoding="utf-8")
+    (paths.trajectories / "natural" / "calibration_records.jsonl").write_text(
+        "{}\n", encoding="utf-8"
+    )
+    (paths.trajectories / "natural" / "pilot_train_records.jsonl").write_text(
+        "{}\n", encoding="utf-8"
+    )
+    pilot_summary = {
+        **calibration_report,
+        "split": "pilot_train",
+        "records": 1_200,
+        "output": str(paths.trajectories / "natural" / "pilot_train_records.jsonl"),
+    }
+    (paths.trajectories / "natural" / "pilot_train_records.summary.json").write_text(
+        json.dumps(pilot_summary), encoding="utf-8"
+    )
+    dataset_root = tmp_path / "data" / "generated" / "cva_chart_pilot_v0_1"
+    (dataset_root / "records.jsonl").write_text("{}\n", encoding="utf-8")
+    (dataset_root / "counterfactual_pairs.jsonl").write_text("{}\n", encoding="utf-8")
+    stage_config = tmp_path / "configs" / "train" / "pilot_a.yaml"
+    paths_config = tmp_path / "configs" / "paths.yaml"
+    model_config = tmp_path / "configs" / "model" / "qwen25vl3b.yaml"
+    data_config = tmp_path / "configs" / "data" / "cva_chart_pilot.yaml"
+    for path in (stage_config, paths_config, model_config, data_config):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("schema_version: 1\n", encoding="utf-8")
+    config = {
+        "stage": "pilot_a",
+        "paths_config": "configs/paths.yaml",
+        "model_config": "configs/model/qwen25vl3b.yaml",
+        "data_config": "configs/data/cva_chart_pilot.yaml",
+        "dataset_manifest": "data/generated/cva_chart_pilot_v0_1/manifest.json",
+        "natural_records": "trajectories/natural/pilot_train_records.jsonl",
+    }
+    derived = {
+        "records": 200,
+        "answer_accuracy": 0.55,
+        "parse_rate": 1.0,
+        "natural_perception_error_rate": 0.4,
+        "error_counts": {
+            "none": 80,
+            "visual_error": 40,
+            "reasoning_error": 40,
+            "compensated_visual_error": 40,
+        },
+    }
+    monkeypatch.setattr(execution_gate, "_validate_dataset_bundle", lambda *_args: {})
+    monkeypatch.setattr(execution_gate, "_validate_canonical_dataset", lambda *_args: None)
+    monkeypatch.setattr(execution_gate, "_validate_registered_data_config", lambda *_args: None)
+    monkeypatch.setattr(execution_gate, "_validate_model_config", lambda *_args: None)
+    monkeypatch.setattr(
+        execution_gate,
+        "_validate_natural_records",
+        lambda *_args, **_kwargs: derived,
+    )
+
+    hashes = execution_gate.validate_execution_evidence(
+        config,
+        paths,
+        stage_config_path=stage_config,
+        paths_config_path=paths_config,
+    )
+    assert set(hashes) == {
+        "preflight",
+        "smoke",
+        "calibration",
+        "dataset_manifest",
+        "stage_config",
+        "paths_config",
+        "model_config",
+        "model_snapshot",
+        "data_config",
+        "natural_records",
+        "natural_records_summary",
+        "dataset_records",
+        "dataset_counterfactuals",
+        "calibration_records",
+    }
+    assert all(len(value) == 64 for value in hashes.values())
+
+    smoke_path = paths.outputs / "smoke" / "smoke_report.json"
+    failed_smoke = {**reports[smoke_path], "smoke_passed": False}
+    smoke_path.write_text(json.dumps(failed_smoke), encoding="utf-8")
+    with pytest.raises(RuntimeError, match="successful known-answer"):
+        execution_gate.validate_execution_evidence(
+            config,
+            paths,
+            stage_config_path=stage_config,
+            paths_config_path=paths_config,
+        )
 
 
 def test_public_configuration_contains_no_online_model_identifier_as_path() -> None:

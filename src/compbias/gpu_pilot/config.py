@@ -57,7 +57,7 @@ def _absolute_path(value: object, label: str) -> Path:
     path = Path(value)
     if not path.is_absolute():
         raise ValueError(f"{label} must be absolute")
-    return path.resolve(strict=False)
+    return Path(os.path.abspath(os.fspath(path)))
 
 
 def _positive_int(value: object, label: str, *, maximum: int) -> int:
@@ -83,7 +83,23 @@ class PilotPaths:
             path = getattr(self, field_name)
             if not isinstance(path, Path) or not path.is_absolute():
                 raise ValueError(f"{field_name} must be an absolute pathlib.Path")
-            object.__setattr__(self, field_name, path.resolve(strict=False))
+            object.__setattr__(self, field_name, Path(os.path.abspath(os.fspath(path))))
+        writable_names = ("data", "outputs", "checkpoints", "trajectories", "cache")
+        writable = {name: getattr(self, name) for name in writable_names}
+        for left_name, left in writable.items():
+            if left == self.project_root or self.project_root.is_relative_to(left):
+                raise ValueError(f"{left_name} must not equal or contain project_root")
+            if (
+                left == self.model_path
+                or left.is_relative_to(self.model_path)
+                or self.model_path.is_relative_to(left)
+            ):
+                raise ValueError(f"{left_name} must be disjoint from model_path")
+            for right_name, right in writable.items():
+                if left_name >= right_name:
+                    continue
+                if left == right or left.is_relative_to(right) or right.is_relative_to(left):
+                    raise ValueError(f"{left_name} and {right_name} must be disjoint storage roots")
 
     def to_mapping(self) -> dict[str, str]:
         return {

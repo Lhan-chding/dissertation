@@ -29,6 +29,11 @@ _PACKAGES = (
     "PyYAML",
     "torch",
     "transformers",
+    "accelerate",
+    "datasets",
+    "peft",
+    "qwen-vl-utils",
+    "trl",
     "verl",
     "vllm",
 )

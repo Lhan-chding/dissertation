@@ -1,4 +1,4 @@
-"""Conservative CPU analysis gate for completed GPU pilot artifacts."""
+"""Conservative post-GPU claim gate (authentication intentionally pending)."""
 
 from __future__ import annotations
 
@@ -15,28 +15,23 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--paths", type=Path, required=True)
     args = parser.parse_args(argv)
     try:
-        paths = load_pilot_paths(args.paths)
-        required = {
-            "calibration": paths.trajectories / "natural" / "calibration_records.summary.json",
-            "pilot_a": paths.outputs / "pilot_a" / "final_adapter",
-            "pilot_b": paths.outputs / "pilot_b_lm_only" / "final_adapter",
-        }
-        missing = [name for name, path in required.items() if not path.exists()]
+        load_pilot_paths(args.paths)
         report = {
             "schema_version": 1,
             "artifact_type": "gpu_pilot_analysis_readiness",
-            "ready": not missing,
-            "missing": missing,
-            "claims_permitted": [] if missing else ["operational_pilot_comparison_only"],
+            "ready": False,
+            "missing": ["authenticated_post_gpu_analysis_gate_not_implemented"],
+            "claims_permitted": [],
             "claims_forbidden": [
+                "operational_pilot_comparison_only",
                 "unique_perception_reasoning_boundary",
                 "visual_acquisition_improved",
                 "synthetic_equals_natural",
             ],
         }
         print(json.dumps(report, indent=2, sort_keys=True))
-        return 0 if not missing else 2
-    except (OSError, TypeError, ValueError) as error:
+        return 2
+    except (OSError, RuntimeError, TypeError, ValueError) as error:
         print(f"ERROR: {error}")
         return 3
 

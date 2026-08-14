@@ -3,14 +3,588 @@ from __future__ import annotations
 import json
 import subprocess
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
+import yaml
 
 from compbias.gpu_pilot.analysis import main as analysis_main
 from compbias.gpu_pilot.chart_data import generate_dataset
 from compbias.gpu_pilot.collection import calibration_gate
 from compbias.gpu_pilot.config import PilotDataConfig
+from compbias.gpu_pilot.structured_generation import StructuredGeneration
 from compbias.gpu_pilot.training import outcome_reward
+from compbias.models.structured_parser import parse_trajectory
+
+
+def test_natural_error_type_distinguishes_exact_perception_from_reasoning_error() -> None:
+    from compbias.gpu_pilot.collection import _error_type
+
+    record = {"values": [3, 7, 5], "answer": 4}
+    correct = parse_trajectory(
+        '<perception>{"values":[3,7,5]}</perception>'
+        '<reasoning>{"operation":"max_minus_min"}</reasoning><answer>4</answer>',
+        sample_id="correct",
+    )
+    wrong = parse_trajectory(
+        '<perception>{"values":[3,7,5]}</perception>'
+        '<reasoning>{"operation":"max_minus_min"}</reasoning><answer>3</answer>',
+        sample_id="wrong",
+    )
+
+    assert _error_type(record, correct) == "none"
+    assert _error_type(record, wrong) == "reasoning_error"
+
+
+def test_pilot_a_rows_skip_parse_failures_and_use_canonical_mediator() -> None:
+    from compbias.gpu_pilot.training import _pilot_a_rows
+
+    parse_failure = {
+        "error_type": "parse_failure",
+        "parsed": {"perceived_scene": None},
+        "question": "ignored",
+        "answer": 0,
+        "operation": "sum",
+        "values": [1, 2, 3, 4],
+    }
+    visual_error = {
+        "sample_id": "pilot_train-000000",
+        "error_type": "visual_error",
+        "parsed": {"perceived_scene": {"values": [4, 7, 5]}},
+        "question": "What is max minus min?",
+        "answer": 3,
+        "operation": "max_minus_min",
+        "values": [3, 7, 5],
+    }
+
+    rows = _pilot_a_rows([parse_failure, visual_error])
+
+    assert len(rows) == 1
+    assert rows[0]["prompt"] == [
+        {
+            "role": "user",
+            "content": (
+                "The image is unavailable. Treat the following naturally produced visual "
+                'evidence as fixed. Evidence: {"values":[4,7,5]}\n'
+                "Question: What is max minus min?\n"
+                "Return <perception>{...}</perception><reasoning>{...}</reasoning>"
+                "<answer>...</answer>."
+            ),
+        }
+    ]
+
+
+def test_audited_reward_retains_raw_completion_and_reward(tmp_path: Path) -> None:
+    from compbias.gpu_pilot.training import _audited_reward
+
+    raw = (
+        '<perception>{"values":[3,7,5]}</perception>'
+        '<reasoning>{"operation":"max_minus_min"}</reasoning><answer>4</answer>'
+    )
+    target = tmp_path / "rollouts.jsonl"
+    reward = _audited_reward(target)
+
+    assert reward(
+        [raw],
+        [4],
+        ["max_minus_min"],
+        [3],
+        ["sample-1"],
+    ) == [1.0]
+    saved = json.loads(target.read_text(encoding="utf-8"))
+    assert saved["raw_completion"] == raw
+    assert saved["reward"] == 1.0
+
+
+def test_gpu_artifact_publication_rejects_target_and_parent_symlinks(tmp_path: Path) -> None:
+    from compbias.gpu_pilot.safe_io import atomic_write_json_text
+
+    root = tmp_path / "outputs"
+    root.mkdir()
+    victim = tmp_path / "victim.json"
+    victim.write_text("unchanged", encoding="utf-8")
+    target = root / "report.json"
+    target.symlink_to(victim)
+    with pytest.raises(RuntimeError, match="not a regular file"):
+        atomic_write_json_text(root, target, "changed")
+    assert victim.read_text(encoding="utf-8") == "unchanged"
+
+    target.unlink()
+    escaped = tmp_path / "escaped"
+    escaped.mkdir()
+    (root / "nested").symlink_to(escaped, target_is_directory=True)
+    with pytest.raises(RuntimeError, match="parent is not a regular directory"):
+        atomic_write_json_text(root, root / "nested/report.json", "changed")
+    assert not (escaped / "report.json").exists()
+
+
+def test_gpu_artifact_publication_rejects_parent_component_escape(tmp_path: Path) -> None:
+    from compbias.gpu_pilot.safe_io import atomic_write_json_text
+
+    root = tmp_path / "outputs"
+    root.mkdir()
+    victim = tmp_path / "victim.json"
+    victim.write_text("unchanged", encoding="utf-8")
+
+    with pytest.raises(RuntimeError, match="escapes its approved root"):
+        atomic_write_json_text(root, root / "../victim.json", "changed")
+    assert victim.read_text(encoding="utf-8") == "unchanged"
+
+
+def test_pilot_paths_normalize_parent_components_before_disjoint_check(tmp_path: Path) -> None:
+    from compbias.gpu_pilot.config import PilotPaths
+
+    with pytest.raises(ValueError, match="disjoint storage roots"):
+        PilotPaths(
+            project_root=tmp_path / "project",
+            model_path=tmp_path / "model",
+            data=tmp_path / "storage/data",
+            outputs=tmp_path / "storage/data/../data",
+            checkpoints=tmp_path / "storage/checkpoints",
+            trajectories=tmp_path / "storage/trajectories",
+            cache=tmp_path / "storage/cache",
+        )
+
+
+def test_gpu_stage_can_allocate_a_new_run_after_an_incomplete_run(tmp_path: Path) -> None:
+    from compbias.gpu_pilot.safe_io import prepare_new_output_directory
+
+    root = tmp_path / "outputs"
+    old = root / "pilot_a/runs/run-old"
+    old.mkdir(parents=True)
+    (old / "partial.txt").write_text("interrupted", encoding="utf-8")
+    new = root / "pilot_a/runs/run-new"
+
+    assert prepare_new_output_directory(root, new) == new
+    assert not new.exists()
+    assert (old / "partial.txt").is_file()
+
+
+def test_training_executor_requires_ack_before_any_heavy_import(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from compbias.gpu_pilot.training import run_grpo_stage
+
+    monkeypatch.delenv("COMPBIAS_GPU_EXECUTION_ACK", raising=False)
+    with pytest.raises(RuntimeError, match="ACK is missing"):
+        run_grpo_stage({})
+
+
+def test_training_executor_rejects_mutated_in_memory_budget(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from compbias.gpu_pilot.training import run_grpo_stage
+
+    config = yaml.safe_load(Path("configs/train/pilot_a.yaml").read_text(encoding="utf-8"))
+    config["training"]["max_steps"] = 999
+    config.update(
+        {
+            "validated_stage_config_path": str(Path("configs/train/pilot_a.yaml").resolve()),
+            "validated_paths_config_path": str(Path("configs/paths.yaml").resolve()),
+        }
+    )
+    monkeypatch.setenv(
+        "COMPBIAS_GPU_EXECUTION_ACK",
+        "I_UNDERSTAND_THIS_STARTS_GPU_TRAINING",
+    )
+
+    with pytest.raises(RuntimeError, match="differs from the validated stage config"):
+        run_grpo_stage(config)
+
+
+def test_training_executor_requires_live_hardware_audit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from compbias.gpu_pilot import preflight, training
+
+    project_root = Path(__file__).resolve().parents[1]
+    config = yaml.safe_load(Path("configs/train/pilot_a.yaml").read_text(encoding="utf-8"))
+    config.update(
+        {
+            "validated_stage_config_path": str(Path("configs/train/pilot_a.yaml").resolve()),
+            "validated_paths_config_path": str(Path("configs/paths.yaml").resolve()),
+        }
+    )
+    paths = SimpleNamespace(project_root=project_root, outputs=project_root / "outputs")
+    monkeypatch.setattr(training, "load_pilot_paths", lambda _path: paths)
+    monkeypatch.setattr(
+        training,
+        "capture_environment",
+        lambda **_kwargs: {
+            "git_commit": "c" * 40,
+            "git_dirty": False,
+            "package_versions": {},
+            "cuda_available": False,
+            "gpu_devices": [],
+        },
+    )
+    monkeypatch.setattr(
+        preflight,
+        "audit_server",
+        lambda _paths: (_ for _ in ()).throw(RuntimeError("live audit invoked")),
+    )
+    monkeypatch.setenv(
+        "COMPBIAS_GPU_EXECUTION_ACK",
+        "I_UNDERSTAND_THIS_STARTS_GPU_TRAINING",
+    )
+
+    with pytest.raises(RuntimeError, match="live audit invoked"):
+        training.run_grpo_stage(config)
+
+
+def test_structured_generation_retries_without_echoing_invalid_output() -> None:
+    from compbias.gpu_pilot.structured_generation import generate_with_format_retries
+
+    invalid = '```json\n{"values":[4,7,5]}\n```'
+    valid = (
+        '<perception>{"values":[3,7,5]}</perception>'
+        '<reasoning>{"operation":"max_minus_min"}</reasoning>'
+        "<answer>4</answer>"
+    )
+    responses = iter((invalid, valid))
+    prompts: list[tuple[dict[str, object], ...]] = []
+
+    def generate(messages: tuple[dict[str, object], ...]) -> str:
+        prompts.append(messages)
+        return next(responses)
+
+    result = generate_with_format_retries(
+        generate,
+        question="Read the chart and compute max minus min.",
+        operation="max_minus_min",
+        sample_id="smoke-000001",
+        expected_value_count=3,
+    )
+
+    assert result.parsed.status.value == "ok"
+    assert result.raw_text == valid
+    assert len(result.attempts) == 2
+    assert [attempt["status"] for attempt in result.attempts] == ["malformed", "ok"]
+    assert invalid not in json.dumps(prompts[1], sort_keys=True)
+    assert "previous attempt failed" in json.dumps(prompts[1]).lower()
+
+
+def test_structured_generation_stops_after_two_format_retries() -> None:
+    from compbias.gpu_pilot.structured_generation import generate_with_format_retries
+
+    calls = 0
+
+    def generate(_messages: tuple[dict[str, object], ...]) -> str:
+        nonlocal calls
+        calls += 1
+        return '{"values":[4,7,5]}'
+
+    result = generate_with_format_retries(
+        generate,
+        question="Read the chart and compute max minus min.",
+        operation="max_minus_min",
+        sample_id="smoke-000001",
+        expected_value_count=3,
+    )
+
+    assert calls == 3
+    assert result.parsed.status.value == "malformed"
+    assert len(result.attempts) == 3
+
+
+def test_structured_generation_rejects_invalid_prompt_and_budget_inputs() -> None:
+    from compbias.gpu_pilot.structured_generation import (
+        build_structured_messages,
+        generate_with_format_retries,
+    )
+
+    with pytest.raises(ValueError, match="question must be a non-empty string"):
+        build_structured_messages(question="", operation="sum", retry_index=0)
+    with pytest.raises(ValueError, match="question must not contain NUL"):
+        build_structured_messages(question="unsafe\x00text", operation="sum", retry_index=0)
+    with pytest.raises(ValueError, match="unsupported operation"):
+        build_structured_messages(question="question", operation="product", retry_index=0)
+    with pytest.raises(TypeError, match="retry_index must be an integer"):
+        build_structured_messages(question="question", operation="sum", retry_index=True)
+    with pytest.raises(ValueError, match="retry_index must be between"):
+        build_structured_messages(question="question", operation="sum", retry_index=3)
+    with pytest.raises(ValueError, match="max_format_retries must be between"):
+        generate_with_format_retries(
+            lambda _messages: "unused",
+            question="question",
+            operation="sum",
+            sample_id="sample",
+            expected_value_count=4,
+            max_format_retries=3,
+        )
+    with pytest.raises(TypeError, match="model decoder must return a string"):
+        generate_with_format_retries(
+            lambda _messages: None,  # type: ignore[return-value]
+            question="question",
+            operation="sum",
+            sample_id="sample",
+            expected_value_count=4,
+        )
+
+
+def test_pilot_schema_failure_retries_and_rejects_string_answer() -> None:
+    from compbias.gpu_pilot.structured_generation import generate_with_format_retries
+
+    invalid = '<perception>{}</perception><reasoning>{}</reasoning><answer>"4"</answer>'
+    valid = (
+        '<perception>{"values":[3,7,5]}</perception>'
+        '<reasoning>{"operation":"max_minus_min"}</reasoning>'
+        "<answer>4.0</answer>"
+    )
+    responses = iter((invalid, valid))
+    result = generate_with_format_retries(
+        lambda _messages: next(responses),
+        question="Read the chart and compute max minus min.",
+        operation="max_minus_min",
+        sample_id="smoke-000001",
+        expected_value_count=3,
+    )
+
+    assert [attempt["status"] for attempt in result.attempts] == ["invalid_type", "ok"]
+    assert result.parsed.status.value == "ok"
+    assert result.parsed.answer == 4.0
+
+
+@pytest.mark.parametrize(
+    ("raw", "error_code"),
+    [
+        (
+            '<perception>{"values":[3,7,5],"extra":1}</perception>'
+            '<reasoning>{"operation":"max_minus_min"}</reasoning><answer>4</answer>',
+            "pilot_perception_schema",
+        ),
+        (
+            '<perception>{"values":[3,7]}</perception>'
+            '<reasoning>{"operation":"max_minus_min"}</reasoning><answer>4</answer>',
+            "pilot_values_shape",
+        ),
+        (
+            '<perception>{"values":[3,true,5]}</perception>'
+            '<reasoning>{"operation":"max_minus_min"}</reasoning><answer>4</answer>',
+            "pilot_values_type",
+        ),
+        (
+            '<perception>{"values":[3,7,5]}</perception>'
+            '<reasoning>{"operation":"sum"}</reasoning><answer>4</answer>',
+            "pilot_operation_mismatch",
+        ),
+        (
+            '<perception>{"values":[3,7,5]}</perception>'
+            '<reasoning>{"operation":"max_minus_min","extra":1}</reasoning>'
+            "<answer>4</answer>",
+            "pilot_reasoning_schema",
+        ),
+        (
+            '<perception>{"values":[3,7,5]}</perception>'
+            '<reasoning>{"operation":"max_minus_min"}</reasoning><answer>true</answer>',
+            "pilot_answer_type",
+        ),
+    ],
+)
+def test_pilot_schema_is_closed(raw: str, error_code: str) -> None:
+    from compbias.gpu_pilot.structured_generation import validate_pilot_trajectory
+
+    parsed = validate_pilot_trajectory(
+        parse_trajectory(raw, sample_id="fixture"),
+        operation="max_minus_min",
+        expected_value_count=3,
+    )
+
+    assert parsed.status.value == "invalid_type"
+    assert parsed.error_code == error_code
+
+
+def test_pilot_numeric_validation_rejects_huge_integers_without_overflow() -> None:
+    from compbias.gpu_pilot.structured_generation import (
+        numeric_answer_matches,
+        validate_pilot_trajectory,
+    )
+
+    huge = 10**1_000
+    raw = (
+        f'<perception>{{"values":[3,{huge},5]}}</perception>'
+        '<reasoning>{"operation":"max_minus_min"}</reasoning>'
+        f"<answer>{huge}</answer>"
+    )
+    parsed = validate_pilot_trajectory(
+        parse_trajectory(raw, sample_id="fixture"),
+        operation="max_minus_min",
+        expected_value_count=3,
+    )
+
+    assert parsed.status.value == "invalid_type"
+    assert numeric_answer_matches(huge, 4) is False
+
+
+def test_smoke_main_returns_nonzero_for_malformed_protocol(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    from compbias.gpu_pilot import qwen_smoke
+
+    monkeypatch.setattr(
+        qwen_smoke,
+        "load_pilot_paths",
+        lambda _path: SimpleNamespace(model_path=tmp_path, outputs=tmp_path),
+    )
+    monkeypatch.setattr(
+        qwen_smoke,
+        "run_smoke",
+        lambda _model, _output: {
+            "parsed": {"status": "malformed"},
+            "smoke_passed": False,
+            "answer_correct": False,
+        },
+    )
+
+    assert qwen_smoke.main(["--paths", str(tmp_path / "paths.yaml")]) == 3
+
+    monkeypatch.setattr(
+        qwen_smoke,
+        "run_smoke",
+        lambda _model, _output: {
+            "parsed": {"status": "ok"},
+            "smoke_passed": True,
+            "answer_correct": False,
+        },
+    )
+    assert qwen_smoke.main(["--paths", str(tmp_path / "paths.yaml")]) == 3
+
+
+def test_natural_collection_never_resamples_a_parse_failure(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    from compbias.gpu_pilot import collection
+
+    dataset = tmp_path / "dataset"
+    dataset.mkdir()
+    record = {
+        "sample_id": "calibration-000001",
+        "split": "calibration",
+        "operation": "max_minus_min",
+        "question": "What is the maximum value minus the minimum value?",
+        "values": [3, 7, 5],
+        "answer": 4,
+        "image": "images/calibration-000001.png",
+    }
+    (dataset / "records.jsonl").write_text(json.dumps(record) + "\n", encoding="utf-8")
+    (dataset / "manifest.json").write_text(
+        json.dumps({"images_sha256": "a" * 64}), encoding="utf-8"
+    )
+    monkeypatch.setattr(collection, "load_local_qwen", lambda _path: (object(), object()))
+    monkeypatch.setattr(collection, "model_snapshot_sha256", lambda _path: "b" * 64)
+    monkeypatch.setattr(
+        "compbias.gpu_pilot.execution_gate._validate_canonical_dataset",
+        lambda *_args: None,
+    )
+    observed_retry_budgets: list[int] = []
+
+    def fake_generate(
+        _generate_once: object,
+        **kwargs: object,
+    ) -> StructuredGeneration:
+        observed_retry_budgets.append(int(kwargs["max_format_retries"]))
+        raw = '{"values":[4,7,5]}'
+        parsed = parse_trajectory(raw, sample_id=str(kwargs["sample_id"]))
+        return StructuredGeneration(
+            raw_text=raw,
+            parsed=parsed,
+            attempts=(
+                {
+                    "attempt_index": 0,
+                    "raw_text": raw,
+                    "status": parsed.status.value,
+                    "error_code": parsed.error_code,
+                },
+            ),
+        )
+
+    monkeypatch.setattr(collection, "generate_with_format_retries", fake_generate)
+    report = collection.collect_split(
+        dataset,
+        tmp_path / "model",
+        tmp_path / "natural.jsonl",
+        split="calibration",
+        data_config_path=tmp_path / "data.yaml",
+    )
+
+    assert observed_retry_budgets == [0]
+    assert report["parse_rate"] == 0.0
+    saved = json.loads((tmp_path / "natural.jsonl").read_text(encoding="utf-8"))
+    assert saved["format_retries"] == 0
+    assert saved["parsed"]["status"] == "malformed"
+
+
+def test_natural_collection_failure_does_not_publish_partial_records(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    from compbias.gpu_pilot import collection
+
+    dataset = tmp_path / "dataset"
+    dataset.mkdir()
+    records = [
+        {
+            "sample_id": f"calibration-{index:06d}",
+            "split": "calibration",
+            "operation": "sum",
+            "question": "What is the sum of the first two values?",
+            "values": [3, 7, 5, 2],
+            "answer": 10,
+            "image": f"images/calibration-{index:06d}.png",
+        }
+        for index in range(2)
+    ]
+    (dataset / "records.jsonl").write_text(
+        "".join(json.dumps(record) + "\n" for record in records), encoding="utf-8"
+    )
+    (dataset / "manifest.json").write_text(
+        json.dumps({"images_sha256": "a" * 64}), encoding="utf-8"
+    )
+    monkeypatch.setattr(collection, "load_local_qwen", lambda _path: (object(), object()))
+    monkeypatch.setattr(collection, "model_snapshot_sha256", lambda _path: "b" * 64)
+    monkeypatch.setattr(
+        "compbias.gpu_pilot.execution_gate._validate_canonical_dataset",
+        lambda *_args: None,
+    )
+    monkeypatch.setattr(
+        collection,
+        "generate_with_format_retries",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(RuntimeError("decoder failed")),
+    )
+    target = tmp_path / "natural" / "calibration_records.jsonl"
+
+    with pytest.raises(RuntimeError, match="decoder failed"):
+        collection.collect_split(
+            dataset,
+            tmp_path / "model",
+            target,
+            split="calibration",
+            data_config_path=tmp_path / "data.yaml",
+            output_root=tmp_path,
+        )
+
+    assert not target.exists()
+    assert not list(target.parent.glob(f".{target.name}.*"))
+
+
+def test_failed_calibration_can_be_archived_before_reviewed_rerun(tmp_path: Path) -> None:
+    from compbias.gpu_pilot.collection import _archive_failed_collection
+
+    root = tmp_path / "trajectories"
+    records = root / "natural/calibration_records.jsonl"
+    summary = root / "natural/calibration_records.summary.json"
+    records.parent.mkdir(parents=True)
+    records.write_text("{}\n", encoding="utf-8")
+    summary.write_text(json.dumps({"gate_passed": False}), encoding="utf-8")
+
+    archive = _archive_failed_collection(root, records, summary)
+
+    assert not records.exists()
+    assert not summary.exists()
+    assert (archive / records.name).is_file()
+    assert (archive / summary.name).is_file()
 
 
 def _small_data_config() -> PilotDataConfig:
@@ -43,11 +617,112 @@ def test_dataset_generation_is_deterministic_and_no_clobber(tmp_path: Path) -> N
     assert manifest["images_generated"] == 28
     assert len(manifest["records_sha256"]) == 64
     assert len(manifest["counterfactual_sha256"]) == 64
+    assert len(manifest["images_sha256"]) == 64
 
     manifest_bytes = (output / "manifest.json").read_bytes()
     with pytest.raises(FileExistsError, match="already exists"):
         generate_dataset(_small_data_config(), output)
     assert (output / "manifest.json").read_bytes() == manifest_bytes
+
+
+def test_execution_gate_replays_seeded_dataset_pixels(tmp_path: Path) -> None:
+    from compbias.gpu_pilot.execution_gate import _validate_canonical_dataset
+
+    output = tmp_path / "dataset"
+    config = _small_data_config()
+    generate_dataset(config, output)
+    config_path = tmp_path / "data.yaml"
+    config_path.write_text(
+        yaml.safe_dump(
+            {
+                "schema_version": 1,
+                "dataset_id": config.dataset_id,
+                "seed": config.seed,
+                "image_size": list(config.image_size),
+                "chart_types": list(config.chart_types),
+                "operations": list(config.operations),
+                "split_counts": dict(config.split_counts),
+                "counterfactual_pairs": config.counterfactual_pairs,
+                "natural_audit": config.natural_audit,
+            },
+            sort_keys=False,
+        ),
+        encoding="utf-8",
+    )
+    cache = tmp_path / "cache"
+
+    _validate_canonical_dataset(output / "manifest.json", config_path, cache)
+    image = next((output / "images").glob("*.png"))
+    image.write_bytes(image.read_bytes() + b"tampered")
+
+    with pytest.raises(RuntimeError, match="committed seed"):
+        _validate_canonical_dataset(output / "manifest.json", config_path, cache)
+
+
+def test_execution_gate_replays_the_full_registered_dataset(tmp_path: Path) -> None:
+    from compbias.gpu_pilot.config import load_pilot_data_config
+    from compbias.gpu_pilot.execution_gate import (
+        _validate_dataset_bundle,
+        _validate_natural_records,
+    )
+
+    output = tmp_path / "dataset"
+    manifest = generate_dataset(
+        load_pilot_data_config(Path("configs/data/cva_chart_pilot.yaml")),
+        output,
+    )
+
+    records = _validate_dataset_bundle(output / "manifest.json", manifest)
+    assert len(records) == 2_800
+    assert set(record["split"] for record in records.values()) == {
+        "calibration",
+        "smoke_train",
+        "pilot_train",
+        "dev",
+        "iid_test",
+        "mechanism_ood",
+    }
+    natural_path = tmp_path / "calibration_records.jsonl"
+    with natural_path.open("x", encoding="utf-8") as stream:
+        for index in range(200):
+            sample_id = f"calibration-{index:06d}"
+            source = records[sample_id]
+            raw = (
+                f'<perception>{{"values":{json.dumps(source["values"])}}}</perception>'
+                f'<reasoning>{{"operation":{json.dumps(source["operation"])}}}</reasoning>'
+                f"<answer>{json.dumps(source['answer'])}</answer>"
+            )
+            parsed = parse_trajectory(raw, sample_id=sample_id)
+            payload = {
+                **source,
+                "rollout_id": f"calibration-rollout-{index:06d}",
+                "raw_text": raw,
+                "parsed": parsed.to_mapping(),
+                "format_attempts": [
+                    {
+                        "attempt_index": 0,
+                        "raw_text": raw,
+                        "status": "ok",
+                        "error_code": None,
+                    }
+                ],
+                "format_retries": 0,
+                "reward": 1,
+                "error_type": "none",
+            }
+            stream.write(json.dumps(payload, sort_keys=True, allow_nan=False) + "\n")
+    replay = _validate_natural_records(
+        natural_path,
+        split="calibration",
+        dataset_records=records,
+    )
+    assert replay == {
+        "records": 200,
+        "answer_accuracy": 1.0,
+        "parse_rate": 1.0,
+        "natural_perception_error_rate": 0.0,
+        "error_counts": {"none": 200},
+    }
 
 
 @pytest.mark.parametrize(
@@ -58,7 +733,11 @@ def test_dataset_generation_is_deterministic_and_no_clobber(tmp_path: Path) -> N
                 "answer_accuracy": 0.55,
                 "natural_perception_error_rate": 0.25,
                 "parse_rate": 0.98,
-                "error_counts": {"visual": 20, "reasoning": 20, "parse": 20},
+                "error_counts": {
+                    "visual_error": 20,
+                    "compensated_visual_error": 20,
+                    "reasoning_error": 20,
+                },
             },
             True,
         ),
@@ -67,7 +746,11 @@ def test_dataset_generation_is_deterministic_and_no_clobber(tmp_path: Path) -> N
                 "answer_accuracy": 0.90,
                 "natural_perception_error_rate": 0.25,
                 "parse_rate": 0.98,
-                "error_counts": {"visual": 20, "reasoning": 20, "parse": 20},
+                "error_counts": {
+                    "visual_error": 20,
+                    "compensated_visual_error": 20,
+                    "reasoning_error": 20,
+                },
             },
             False,
         ),
@@ -76,7 +759,24 @@ def test_dataset_generation_is_deterministic_and_no_clobber(tmp_path: Path) -> N
                 "answer_accuracy": 0.55,
                 "natural_perception_error_rate": 0.25,
                 "parse_rate": 0.94,
-                "error_counts": {"visual": 20, "reasoning": 20, "parse": 20},
+                "error_counts": {
+                    "visual_error": 20,
+                    "compensated_visual_error": 20,
+                    "reasoning_error": 20,
+                },
+            },
+            False,
+        ),
+        (
+            {
+                "answer_accuracy": 0.55,
+                "natural_perception_error_rate": 0.25,
+                "parse_rate": 0.98,
+                "error_counts": {
+                    "visual_error": 20,
+                    "reasoning_error": 20,
+                    "parse_failure": 20,
+                },
             },
             False,
         ),
@@ -101,10 +801,42 @@ def test_outcome_reward_requires_a_strict_structured_answer() -> None:
             ],
             [{"content": "7"}],
             [{"content": "<answer>8</answer>"}],
+            [
+                {
+                    "content": (
+                        '<perception>{}</perception><reasoning>{}</reasoning><answer>"7"</answer>'
+                    )
+                }
+            ],
+            [
+                {
+                    "content": (
+                        '<perception>{"values":[4,3]}</perception>'
+                        '<reasoning>{"operation":"sum"}</reasoning>'
+                        "<answer>7.0</answer>"
+                    )
+                }
+            ],
         ],
-        answer=["7", "7", "7"],
+        answer=[7, 7, 7, 7, 7],
+        operation=["sum"] * 5,
+        expected_value_count=[2] * 5,
     )
-    assert rewards == [1.0, 0.0, 0.0]
+    assert rewards == [1.0, 0.0, 0.0, 0.0, 1.0]
+
+
+def test_pilot_a_prompt_uses_validated_perception_instead_of_missing_raw_field() -> None:
+    from compbias.gpu_pilot.training import _prompt_for_a
+
+    prompt = _prompt_for_a(
+        {
+            "question": "What is the maximum minus the minimum?",
+            "parsed": {"perceived_scene": {"values": [4, 7, 5]}},
+        }
+    )
+
+    assert 'Evidence: {"values":[4,7,5]}' in prompt[0]["content"]
+    assert "Evidence: None" not in prompt[0]["content"]
 
 
 def test_server_scripts_parse_and_gpu_requirements_do_not_replace_torch() -> None:

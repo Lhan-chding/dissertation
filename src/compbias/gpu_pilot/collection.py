@@ -5,13 +5,30 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import tempfile
 from collections.abc import Mapping, Sequence
+from functools import partial
 from pathlib import Path
+from uuid import uuid4
 
-from compbias.models.structured_parser import ParseStatus, parse_trajectory
+from compbias.io.strict_json import load_strict_json_mapping
+from compbias.models.structured_parser import ParseStatus
 
 from .config import load_pilot_paths
-from .qwen_smoke import load_local_qwen
+from .preflight import model_snapshot_sha256
+from .qwen_smoke import decode_qwen_once, load_local_qwen
+from .safe_io import atomic_write_json_text, prepare_new_output_directory, prepare_output_path
+from .structured_generation import generate_with_format_retries, numeric_answer_matches
+
+
+def _sha256(path: Path) -> str:
+    import hashlib
+
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def _read_jsonl(path: Path) -> tuple[dict[str, object], ...]:
@@ -25,54 +42,17 @@ def _read_jsonl(path: Path) -> tuple[dict[str, object], ...]:
     return tuple(records)
 
 
-def _prompt(record: Mapping[str, object]) -> str:
-    return (
-        "Read the chart. Return exactly "
-        '<perception>{"values":[...]}</perception>'
-        f'<reasoning>{{"operation":"{record["operation"]}"}}</reasoning>'
-        "<answer>NUMBER</answer>. Do not add any other text.\n"
-        f"Question: {record['question']}"
-    )
-
-
-def _model_answer(model: object, processor: object, image: Path, prompt: str) -> str:
-    import torch
-    from qwen_vl_utils import process_vision_info
-
-    messages = [
-        {
-            "role": "user",
-            "content": [
-                {"type": "image", "image": str(image)},
-                {"type": "text", "text": prompt},
-            ],
-        }
-    ]
-    rendered = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)  # type: ignore[attr-defined]
-    image_inputs, video_inputs = process_vision_info(messages)
-    inputs = processor(  # type: ignore[operator]
-        text=[rendered],
-        images=image_inputs,
-        videos=video_inputs,
-        padding=True,
-        return_tensors="pt",
-    ).to("cuda:0")
-    with torch.inference_mode():
-        generated = model.generate(**inputs, max_new_tokens=256, do_sample=False)  # type: ignore[attr-defined]
-    trimmed = [
-        output[len(source) :] for source, output in zip(inputs.input_ids, generated, strict=True)
-    ]
-    return processor.batch_decode(trimmed, skip_special_tokens=True)[0]  # type: ignore[attr-defined]
-
-
 def _error_type(record: Mapping[str, object], parsed: object) -> str:
     if parsed.status is not ParseStatus.OK:  # type: ignore[attr-defined]
         return "parse_failure"
     perceived = parsed.perceived_scene  # type: ignore[attr-defined]
     expected_values = record.get("values")
     perceived_values = perceived.get("values") if isinstance(perceived, Mapping) else None
-    perception_correct = perceived_values == expected_values
-    answer_correct = str(parsed.answer).strip() == str(record.get("answer")).strip()  # type: ignore[attr-defined]
+    perception_correct = perceived_values == tuple(expected_values)  # type: ignore[arg-type]
+    answer_correct = numeric_answer_matches(  # type: ignore[attr-defined]
+        parsed.answer,
+        record.get("answer"),
+    )
     if perception_correct and answer_correct:
         return "none"
     if not perception_correct and answer_correct:
@@ -88,11 +68,24 @@ def collect_split(
     output_path: Path,
     *,
     split: str,
+    data_config_path: Path,
+    output_root: Path | None = None,
+    replace_incomplete: bool = False,
 ) -> dict[str, object]:
-    if output_path.exists():
-        raise FileExistsError(f"collection output already exists: {output_path}")
+    approved_root = output_path.parent if output_root is None else output_root
+    prepare_output_path(approved_root, output_path, allow_existing=replace_incomplete)
     os.environ["HF_HUB_OFFLINE"] = "1"
     os.environ["TRANSFORMERS_OFFLINE"] = "1"
+    manifest_path = dataset_dir / "manifest.json"
+    manifest_before = load_strict_json_mapping(manifest_path, label="pilot dataset manifest")
+    dataset_manifest_hash_before = _sha256(manifest_path)
+    dataset_images_hash = manifest_before.get("images_sha256")
+    if not isinstance(dataset_images_hash, str) or len(dataset_images_hash) != 64:
+        raise ValueError("pilot dataset manifest lacks images_sha256")
+    from .execution_gate import _validate_canonical_dataset
+
+    _validate_canonical_dataset(manifest_path, data_config_path, output_path.parent)
+    model_hash_before = model_snapshot_sha256(model_path)
     source = tuple(
         record
         for record in _read_jsonl(dataset_dir / "records.jsonl")
@@ -101,37 +94,77 @@ def collect_split(
     if not source:
         raise ValueError(f"no records found for split {split}")
     model, processor = load_local_qwen(model_path)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, staging_name = tempfile.mkstemp(
+        prefix=f".{output_path.name}.", dir=output_path.parent
+    )
+    os.close(descriptor)
+    staging_path = Path(staging_name)
     counts: dict[str, int] = {}
     correct = 0
     parsed_count = 0
-    with output_path.open("x", encoding="utf-8") as stream:
-        for index, record in enumerate(source):
-            raw = _model_answer(
-                model,
-                processor,
-                dataset_dir / str(record["image"]),
-                _prompt(record),
-            )
-            parsed = parse_trajectory(raw, sample_id=str(record["sample_id"]))
-            error_type = _error_type(record, parsed)
-            counts[error_type] = counts.get(error_type, 0) + 1
-            answer_correct = (
-                parsed.status is ParseStatus.OK
-                and str(parsed.answer).strip() == str(record["answer"]).strip()
-            )
-            correct += int(answer_correct)
-            parsed_count += int(parsed.status is ParseStatus.OK)
-            result = {
-                **record,
-                "rollout_id": f"{split}-rollout-{index:06d}",
-                "raw_text": raw,
-                "parsed": parsed.to_mapping(),
-                "reward": int(answer_correct),
-                "error_type": error_type,
-            }
-            stream.write(json.dumps(result, sort_keys=True, allow_nan=False) + "\n")
-    total = len(source)
+    try:
+        with staging_path.open("w", encoding="utf-8") as stream:
+            for index, record in enumerate(source):
+                image_path = dataset_dir / str(record["image"])
+                operation = record.get("operation")
+                question = record.get("question")
+                sample_id = record.get("sample_id")
+                if not isinstance(operation, str):
+                    raise ValueError("dataset operation must be a string")
+                if not isinstance(question, str):
+                    raise ValueError("dataset question must be a string")
+                if not isinstance(sample_id, str):
+                    raise ValueError("dataset sample_id must be a string")
+                expected_values = record.get("values")
+                if not isinstance(expected_values, list) or not all(
+                    isinstance(value, int) and not isinstance(value, bool)
+                    for value in expected_values
+                ):
+                    raise ValueError("dataset values must be an integer list")
+                generation = generate_with_format_retries(
+                    partial(decode_qwen_once, model, processor, image_path),
+                    question=question,
+                    operation=operation,
+                    sample_id=sample_id,
+                    expected_value_count=len(expected_values),
+                    max_format_retries=0,
+                )
+                parsed = generation.parsed
+                error_type = _error_type(record, parsed)
+                counts[error_type] = counts.get(error_type, 0) + 1
+                answer_correct = parsed.status is ParseStatus.OK and numeric_answer_matches(
+                    parsed.answer, record["answer"]
+                )
+                correct += int(answer_correct)
+                parsed_count += int(parsed.status is ParseStatus.OK)
+                result = {
+                    **record,
+                    "rollout_id": f"{split}-rollout-{index:06d}",
+                    "raw_text": generation.raw_text,
+                    "parsed": parsed.to_mapping(),
+                    "format_attempts": list(generation.attempts),
+                    "format_retries": len(generation.attempts) - 1,
+                    "reward": int(answer_correct),
+                    "error_type": error_type,
+                }
+                stream.write(json.dumps(result, sort_keys=True, allow_nan=False) + "\n")
+        total = len(source)
+        model_hash_after = model_snapshot_sha256(model_path)
+        manifest_after = load_strict_json_mapping(manifest_path, label="pilot dataset manifest")
+        _validate_canonical_dataset(manifest_path, data_config_path, output_path.parent)
+        if (
+            model_hash_after != model_hash_before
+            or _sha256(manifest_path) != dataset_manifest_hash_before
+            or manifest_after.get("images_sha256") != dataset_images_hash
+        ):
+            raise RuntimeError("model or dataset changed during natural trajectory collection")
+        if replace_incomplete:
+            os.replace(staging_path, output_path)
+        else:
+            os.link(staging_path, output_path)
+            staging_path.unlink()
+    finally:
+        staging_path.unlink(missing_ok=True)
     visual_errors = counts.get("visual_error", 0) + counts.get("compensated_visual_error", 0)
     return {
         "schema_version": 1,
@@ -142,6 +175,9 @@ def collect_split(
         "natural_perception_error_rate": visual_errors / total,
         "error_counts": counts,
         "output": str(output_path),
+        "model_snapshot_sha256": model_hash_before,
+        "dataset_manifest_sha256": dataset_manifest_hash_before,
+        "dataset_images_sha256": dataset_images_hash,
     }
 
 
@@ -152,7 +188,10 @@ def calibration_gate(report: Mapping[str, object]) -> tuple[str, ...]:
     error_rate = float(report["natural_perception_error_rate"])
     counts = report["error_counts"]
     assert isinstance(counts, Mapping)
-    supported = sum(int(count) >= 10 for name, count in counts.items() if name != "none")
+    supported = sum(
+        int(counts.get(name, 0)) >= 10
+        for name in ("visual_error", "compensated_visual_error", "reasoning_error")
+    )
     if not 0.30 <= accuracy <= 0.75:
         failures.append("base_answer_accuracy_outside_30_75_percent")
     if not 0.15 <= error_rate <= 0.50:
@@ -162,6 +201,22 @@ def calibration_gate(report: Mapping[str, object]) -> tuple[str, ...]:
     if supported < 3:
         failures.append("fewer_than_three_supported_natural_error_families")
     return tuple(failures)
+
+
+def _archive_failed_collection(root: Path, records: Path, summary: Path) -> Path:
+    previous = load_strict_json_mapping(summary, label="previous natural collection summary")
+    if previous.get("gate_passed") is not False:
+        raise FileExistsError(f"accepted collection summary already exists: {summary}")
+    prepare_output_path(root, records, allow_existing=True)
+    prepare_output_path(root, summary, allow_existing=True)
+    archive = prepare_new_output_directory(
+        root,
+        root / "natural" / "attempts" / f"failed-{uuid4().hex}",
+    )
+    archive.mkdir()
+    os.replace(records, archive / records.name)
+    os.replace(summary, archive / summary.name)
+    return archive
 
 
 def main(argv: Sequence[str] | None = None, *, calibration: bool = False) -> int:
@@ -177,13 +232,24 @@ def main(argv: Sequence[str] | None = None, *, calibration: bool = False) -> int
         paths = load_pilot_paths(args.paths)
         dataset = paths.data / "generated" / "cva_chart_pilot_v0_1"
         target = paths.trajectories / "natural" / f"{args.split}_records.jsonl"
-        report = collect_split(dataset, paths.model_path, target, split=args.split)
+        report_path = target.with_suffix(".summary.json")
+        if report_path.exists() or report_path.is_symlink():
+            _archive_failed_collection(paths.trajectories, target, report_path)
+        report = collect_split(
+            dataset,
+            paths.model_path,
+            target,
+            split=args.split,
+            data_config_path=paths.project_root / "configs/data/cva_chart_pilot.yaml",
+            output_root=paths.trajectories,
+            replace_incomplete=target.exists(),
+        )
         failures = calibration_gate(report) if calibration else ()
         report = {**report, "gate_failures": list(failures), "gate_passed": not failures}
-        report_path = target.with_suffix(".summary.json")
-        report_path.write_text(
+        atomic_write_json_text(
+            paths.trajectories,
+            report_path,
             json.dumps(report, indent=2, sort_keys=True, allow_nan=False) + "\n",
-            encoding="utf-8",
         )
         print(json.dumps(report, indent=2, sort_keys=True, allow_nan=False))
         return 0 if not failures else 3

@@ -10,7 +10,11 @@ The image is removed. A naturally generated erroneous evidence mediator is
 held fixed and language LoRA is trained with outcome-only reward. This tests
 whether downstream reasoning can systematically compensate for operational
 natural evidence errors. It does not test whether RL changes the model's visual
-error distribution.
+error distribution. Only validated `visual_error` and
+`compensated_visual_error` first responses enter this treatment; parse failures
+and reasoning-only errors remain in the audit but are not treated as fixed
+visual mediators. The mediator is canonical parsed JSON, not raw model text,
+and the prompt remains a normal text-only Qwen chat message.
 
 ## Pilot B: online image, LM-only LoRA
 
@@ -29,7 +33,43 @@ Training is prohibited unless calibration records:
 - at least three natural error families with at least ten observations each.
 
 If a gate fails, adjust the renderer/task difficulty and rerun calibration. Do
-not start training merely because the model loads.
+not start training merely because the model loads. On a reviewed rerun, the
+collector moves the complete failed attempt into a unique
+`trajectories/natural/attempts/failed-*` directory before publishing the new
+attempt. It never overwrites or archives an accepted calibration.
+
+The smoke and natural collector preserve the strict three-tag parser. The
+smoke permits at most two deterministic, format-only retries. Its retry prompt
+never quotes the prior model output, and every raw attempt is retained in the
+local evidence record. The natural collector never resamples a parse failure:
+its first response remains the canonical natural trajectory, preventing
+parse-conditioned selection from changing the measured error distribution.
+Exhausting the smoke retries makes it exit nonzero; partial JSON is never
+reinterpreted as a valid trajectory. A valid pilot trajectory must have exactly
+one integer `values` array of the expected length, exactly the requested
+`operation`, and a non-boolean finite numeric answer. The smoke passes only
+when this closed schema and the known-answer check both pass.
+
+The training launchers do not trust summary booleans. Immediately before any
+training import, they rerun the live hardware audit and known-answer smoke,
+then bind the required local model bytes, stage/path/model/data configs,
+dataset manifest, records, counterfactuals, image bundle, smoke report, and
+calibration trajectory by SHA-256. They regenerate all 2,950 PNGs from the
+committed seed and renderer for byte-exact comparison, strictly replay all
+2,800 records and 200 calibration responses, and recompute every calibration
+gate. Natural-collection summaries bind both the model snapshot and canonical
+dataset before and after collection. Pilot A additionally replays all 1,200
+first-response natural trajectories.
+
+Training also requires a clean Git commit and the exact registered stage
+budget, paths, freeze policy, and claim boundary. Each completed stage keeps
+stage-local copies of its volatile authorization reports, raw completions and
+rewards in `rollouts.jsonl`, trainer history in `metrics.jsonl`, timestamps,
+package/environment provenance, and SHA-256 hashes for the final adapter and
+evidence files. The current analysis entrypoint nevertheless remains
+unconditionally blocked: semantic replay and authenticated cross-stage
+comparison are post-GPU work, so neither file existence nor self-hashes permit
+a scientific claim yet.
 
 ## Ordered entrypoints
 
@@ -47,3 +87,10 @@ not start training merely because the model loads.
 Pilot A/B require both `--execute` and the exact
 `COMPBIAS_GPU_EXECUTION_ACK` value documented in the server runbook. This
 double gate prevents a config parse or repository clone from starting training.
+
+The launcher enforces code, model, data, trajectory, live-hardware, and
+known-answer inference gates. The acknowledgement is also the operator's
+manual assertion that the reviewed GPU lock and vulnerability review are
+complete. Those external supply-chain approvals are not
+authenticated by this repository and must not be described as automated or
+third-party authorization.

@@ -80,6 +80,16 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _image_bundle_sha256(root: Path, relative_paths: Sequence[str]) -> str:
+    digest = hashlib.sha256()
+    for relative in sorted(relative_paths):
+        digest.update(relative.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(_sha256(root / relative).encode("ascii"))
+        digest.update(b"\n")
+    return digest.hexdigest()
+
+
 def _records(config: PilotDataConfig) -> Iterator[dict[str, object]]:
     rng = random.Random(config.seed)
     global_index = 0
@@ -175,6 +185,11 @@ def generate_dataset(config: PilotDataConfig, output_dir: Path) -> dict[str, obj
             "counterfactual_path": "counterfactual_pairs.jsonl",
             "counterfactual_sha256": _sha256(pairs_path),
             "images_generated": len(records) + len(pairs),
+            "images_sha256": _image_bundle_sha256(
+                output_dir,
+                [str(record["image"]) for record in records]
+                + [str(pair["image"]) for pair in pairs],
+            ),
         }
         (output_dir / "manifest.json").write_text(
             json.dumps(manifest, indent=2, sort_keys=True, allow_nan=False) + "\n",

@@ -3,24 +3,33 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import shutil
+import stat
 import tempfile
 from collections.abc import Sequence
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
+from compbias.io.strict_json import load_strict_json_mapping
+
 from .config import PilotPaths, load_pilot_paths
+from .safe_io import atomic_write_json_text
 
 _MINIMUM_VRAM_GIB = 45.0
 _MINIMUM_FREE_DISK_GIB = 150.0
 _MODEL_FILES = (
+    "chat_template.json",
     "config.json",
+    "configuration.json",
     "generation_config.json",
+    "merges.txt",
     "preprocessor_config.json",
     "tokenizer.json",
     "tokenizer_config.json",
+    "vocab.json",
     "model-00001-of-00002.safetensors",
     "model-00002-of-00002.safetensors",
     "model.safetensors.index.json",
@@ -77,6 +86,57 @@ def _validate_model_tree(model_path: Path) -> None:
         candidate = model_path / name
         if candidate.is_symlink() or not candidate.is_file() or not os.access(candidate, os.R_OK):
             raise RuntimeError(f"required readable model file is missing: {candidate}")
+    index = load_strict_json_mapping(
+        model_path / "model.safetensors.index.json",
+        label="model safetensors index",
+        max_bytes=1024 * 1024,
+    )
+    weight_map = index.get("weight_map")
+    if not isinstance(weight_map, dict) or any(
+        not isinstance(name, str) or not isinstance(shard, str)
+        for name, shard in weight_map.items()
+    ):
+        raise RuntimeError("model safetensors index has an invalid weight_map")
+    expected_shards = {
+        "model-00001-of-00002.safetensors",
+        "model-00002-of-00002.safetensors",
+    }
+    if not weight_map or set(weight_map.values()) != expected_shards:
+        raise RuntimeError("model safetensors index does not reference the exact two shards")
+
+
+def model_snapshot_sha256(model_path: Path) -> str:
+    """Hash every model byte that the offline pilot is allowed to load."""
+
+    _validate_model_tree(model_path)
+    digest = hashlib.sha256()
+    file_count = 0
+    for directory, directory_names, file_names in os.walk(model_path, followlinks=False):
+        directory_names.sort()
+        file_names.sort()
+        current = Path(directory)
+        for name in directory_names:
+            child = current / name
+            if child.is_symlink():
+                raise RuntimeError(f"model snapshot contains a symlink directory: {child}")
+        for name in file_names:
+            path = current / name
+            metadata = path.lstat()
+            if path.is_symlink() or not stat.S_ISREG(metadata.st_mode):
+                raise RuntimeError(f"model snapshot contains a non-regular file: {path}")
+            file_count += 1
+            if file_count > 10_000:
+                raise RuntimeError("model snapshot contains more than 10000 files")
+            relative = path.relative_to(model_path).as_posix()
+            digest.update(relative.encode("utf-8"))
+            digest.update(b"\0")
+            with path.open("rb") as stream:
+                for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                    digest.update(chunk)
+            digest.update(b"\n")
+    if file_count < len(_MODEL_FILES):
+        raise RuntimeError("model snapshot file closure is incomplete")
+    return digest.hexdigest()
 
 
 def audit_server(
@@ -126,6 +186,7 @@ def audit_server(
         "hardware": asdict(snapshot),
         "free_disk_gib": available,
         "model_path": str(paths.model_path),
+        "model_snapshot_sha256": model_snapshot_sha256(paths.model_path),
         "storage": paths.to_mapping(),
     }
 
@@ -140,8 +201,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         report = audit_server(paths)
         payload = json.dumps(report, indent=2, sort_keys=True, allow_nan=False) + "\n"
         if args.output is not None:
-            args.output.parent.mkdir(parents=True, exist_ok=True)
-            args.output.write_text(payload, encoding="utf-8")
+            atomic_write_json_text(paths.outputs, args.output, payload)
         print(payload, end="")
     except (OSError, RuntimeError, TypeError, ValueError) as error:
         print(f"ERROR: {error}")
