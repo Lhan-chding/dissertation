@@ -346,6 +346,44 @@ def test_structured_prompt_requires_full_scene_transcription_for_partial_operati
     assert "do not insert \\n or any escape sequence" in rendered.lower()
 
 
+@pytest.mark.parametrize("operation", ["sum", "difference", "max_minus_min"])
+def test_structured_prompt_binds_exact_array_delimiters(operation: str) -> None:
+    from compbias.gpu_pilot.structured_generation import build_structured_instruction
+
+    instruction = build_structured_instruction(
+        operation=operation,
+        expected_value_count=4,
+    )
+
+    assert (
+        '<perception>{"values":[INTEGER,INTEGER,INTEGER,INTEGER]}</perception>'
+        in instruction
+    )
+    assert (
+        "the values field is one json array: keep the opening [ and closing ] around all four "
+        "integers"
+        in instruction.lower()
+    )
+
+
+def test_unbracketed_value_lists_remain_strictly_rejected() -> None:
+    from compbias.gpu_pilot.structured_generation import validate_pilot_trajectory
+
+    raw = (
+        '<perception>{"values":12,18,3,13}</perception>'
+        '<reasoning>{"operation":"difference"}</reasoning>'
+        "<answer>-6</answer>"
+    )
+    parsed = validate_pilot_trajectory(
+        parse_trajectory(raw, sample_id="calibration-000000"),
+        operation="difference",
+        expected_value_count=4,
+    )
+
+    assert parsed.status.value == "invalid_json"
+    assert parsed.error_code == "invalid_perception_json"
+
+
 def test_structured_generation_stops_after_two_format_retries() -> None:
     from compbias.gpu_pilot.structured_generation import generate_with_format_retries
 
