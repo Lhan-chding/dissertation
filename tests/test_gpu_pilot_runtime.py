@@ -90,9 +90,7 @@ def test_pilot_b_prompt_reuses_closed_structured_grammar() -> None:
     assert prompt[0]["role"] == "user"
     assert prompt[0]["content"][0] == {"type": "image"}
     text = prompt[0]["content"][1]["text"]
-    assert (
-        '<perception>{"values":[INTEGER,INTEGER,INTEGER,INTEGER]}</perception>' in text
-    )
+    assert '<perception>{"values":[INTEGER,INTEGER,INTEGER,INTEGER]}</perception>' in text
     assert '<reasoning>{"operation":"sum"}</reasoning>' in text
     assert "exactly 4 integers" in text
     assert text.endswith("</answer>")
@@ -357,14 +355,10 @@ def test_structured_prompt_binds_exact_array_delimiters(operation: str) -> None:
         expected_value_count=4,
     )
 
-    assert (
-        '<perception>{"values":[INTEGER,INTEGER,INTEGER,INTEGER]}</perception>'
-        in instruction
-    )
+    assert '<perception>{"values":[INTEGER,INTEGER,INTEGER,INTEGER]}</perception>' in instruction
     assert (
         "the values field is one json array: keep the opening [ and closing ] around all four "
-        "integers"
-        in instruction.lower()
+        "integers" in instruction.lower()
     )
 
 
