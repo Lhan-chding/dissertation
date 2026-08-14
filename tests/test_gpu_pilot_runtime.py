@@ -999,7 +999,11 @@ def test_gpu_lock_and_runbook_bind_portable_security_review() -> None:
     runbook = (root / "docs" / "SERVER_SETUP.md").read_text(encoding="utf-8")
     assert "python -m pip list --format=freeze --exclude-editable" in runbook
     assert "pip freeze --all" not in runbook
-    assert "records resolved versions but not original installation provenance" in runbook
+    assert "records resolved versions but not" in runbook
+    assert "original installation provenance" in runbook
+    assert "not a standalone proof that no package originally came from a" in runbook
+    assert "skipped the local-version `torch`, `torchaudio`, and `torchvision`" in runbook
+    assert "because the `+cu128` builds are not published on PyPI" in runbook
     assert "pip-audit==2.10.1" in runbook
     assert "d928379a590e5071d9b5042fe99d480f57ab187f0cb3a74e13af219a6048aeb3" in runbook
 
