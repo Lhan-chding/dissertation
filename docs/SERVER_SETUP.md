@@ -1,5 +1,11 @@
 # Validated pilot server
 
+> **Current boundary (2026-08-15).** The one permitted v0.3 calibration has
+> already completed and failed. The older generation/calibration commands below
+> are retained only as historical documentation and must not be run again. Pilot
+> A/B are terminated. The only authorized next model execution is the fixed
+> Recoverability v1 bridge described at the end of this document.
+
 ```text
 GPU: NVIDIA GeForce RTX 4090, 47.37 GiB VRAM, compute capability 8.9
 CPU: 16 cores
@@ -73,7 +79,7 @@ also warns that compatibility is not guaranteed for every model/version. The
 local known-answer smoke therefore remains mandatory; the first registered
 pilot must be monitored and stopped on any runtime incompatibility.
 
-## First server commands
+## Historical first server commands — do not rerun
 
 Run these commands in order. They prepare paths, preserve the validated PyTorch
 build, and perform inference-only checks. They do not launch Pilot A or B.
@@ -141,3 +147,48 @@ training authorization. The explicit acknowledgement also represents human
 review of the final GPU lock and vulnerability status;
 these supply-chain approvals are manual rather than cryptographically
 authenticated by the launcher.
+
+## Recoverability v1 server handoff
+
+The following sequence is the next authorized server work. It first verifies
+the exact offline runtime without importing PyTorch or loading the model. It
+then captures hashes of the existing v0.3 evidence without making any model
+call. Only the final bridge command starts GPU inference; it performs no
+training and refuses to overwrite an existing bridge output.
+
+```bash
+cd /cloud/cloud-ssd1/dissertation
+git -c http.version=HTTP/1.1 pull --ff-only origin main
+source .venv/bin/activate
+
+export PYTHONPATH=/cloud/cloud-ssd1/dissertation/src
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
+
+python experiments/recoverability_v1/00_preflight.py \
+  --runtime configs/recoverability/server_runtime_v1.yaml \
+  --server-package-lock configs/recoverability/server_package_lock_v1.yaml \
+  --project-root /cloud/cloud-ssd1/dissertation
+
+mkdir -p /cloud/cloud-ssd1/recoverability-v1-evidence
+
+python experiments/recoverability_v1/02_capture_v03_evidence.py \
+  --negative-pilot configs/recoverability/v0_3_negative_pilot.yaml \
+  --records trajectories/natural/calibration_records_v0_3.jsonl \
+  --summary trajectories/natural/calibration_records_v0_3.summary.json \
+  --pilot-data-log /cloud/cloud-ssd1/pilot-data-v0.3.log \
+  --calibration-log /cloud/cloud-ssd1/base-calibration-v0.3.log \
+  --output /cloud/cloud-ssd1/recoverability-v1-evidence/v0_3_external_evidence.json
+
+python experiments/recoverability_v1/03_bridge.py \
+  --paths configs/paths.yaml \
+  --protocol configs/recoverability/recoverability_v1.yaml \
+  --server-package-lock configs/recoverability/server_package_lock_v1.yaml \
+  --execute
+```
+
+Stop after the bridge even if it exits zero. Return
+`outputs/recoverability_v1/cva_recoverability_bridge_v1/bridge_report.json`,
+the SHA-256 of `bridge_records.jsonl`, and the external-evidence manifest for
+review. Do not start Phase N, Phase C, Pilot A, Pilot B, or any RL training in
+the same session.

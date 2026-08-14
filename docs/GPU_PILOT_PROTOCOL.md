@@ -1,5 +1,11 @@
 # RTX 4090 GPU Pilot protocol
 
+> **Historical final status.** The single registered v0.3 calibration completed
+> with `gate_passed=false` and exit code `3`; Pilot A/B were terminated without
+> training. Do not rerun v0.3 as a confirmatory calibration. The successor
+> measurement and causal-capacity design is frozen in
+> `docs/RECOVERABILITY_V1_PROTOCOL.md`.
+
 The pilot is intentionally smaller than the later A100/H100 multi-interface
 study. It runs only after preflight, offline model smoke, data generation, and
 base calibration.

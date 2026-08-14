@@ -32,8 +32,15 @@ optimizer states, checkpoints, tokens, and machine-private execution evidence.
 The research overview is in `docs/RESEARCH_QUESTION.md`; the server runbook and
 ordered pilot are in `docs/SERVER_SETUP.md` and `docs/GPU_PILOT_PROTOCOL.md`.
 
-The next target is an offline Qwen2.5-VL-3B-Instruct pilot on the validated
-RTX 4090 server with 47.37 GiB VRAM. The model must be read from:
+The single registered Qwen2.5-VL-3B-Instruct v0.3 calibration on the validated
+RTX 4090 server is complete and failed its preregistered gate. It produced 200
+responses, accuracy `0.355`, parse rate `0.935`, perception-error rate `0.225`,
+and only one strict compensated visual error. Pilot A/B were terminated without
+training, and v0.3 must not be rerun as a confirmatory attempt. The frozen
+negative record is in `configs/recoverability/v0_3_negative_pilot.yaml`.
+
+The revised next target is the recoverability-gated measurement bridge in
+`docs/RECOVERABILITY_V1_PROTOCOL.md`. The model must still be read from:
 
 ```text
 /model/ModelScope/Qwen/Qwen2.5-VL-3B-Instruct
@@ -45,14 +52,11 @@ and all generated state must remain under:
 /cloud/cloud-ssd1/dissertation
 ```
 
-The public Pilot A/B launchers are fail-closed: merely cloning the repository,
-parsing a YAML file, or running `--help` cannot start training. The current
-status is `GPU PILOT PENDING`; no Qwen training or evaluation result is
-recorded. A preliminary server check loaded the local checkpoint within about
-7.1 GiB peak VRAM, but its first response omitted the required structured tags;
-that attempt is a failed smoke, not evidence. The updated smoke retries at most
-twice for format and exits nonzero unless both closed-schema parsing and the
-known-answer check pass.
+The new protocol status is `PREREGISTERED_NOT_RUN`; its local fixture, power,
+preflight, evidence-capture, and bridge contracts are implemented, but no new
+Qwen result is recorded. The first GPU step is a fixed 300-scene measurement
+bridge, not RL training. Server execution requires an explicit `--execute`;
+metadata preflight and evidence capture cannot load the model.
 
 Current explicit non-claims are:
 
