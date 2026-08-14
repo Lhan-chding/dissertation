@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import math
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
@@ -38,17 +39,57 @@ def _bounded_text(value: str, *, label: str, maximum_bytes: int) -> str:
     return value
 
 
+def _validate_expected_value_count(expected_value_count: int) -> int:
+    if (
+        not isinstance(expected_value_count, int)
+        or isinstance(expected_value_count, bool)
+        or not 2 <= expected_value_count <= 32
+    ):
+        raise ValueError("expected_value_count must be an integer between 2 and 32")
+    return expected_value_count
+
+
+def build_structured_instruction(*, operation: str, expected_value_count: int) -> str:
+    """Return one closed grammar shared by smoke, collection, and training."""
+
+    if operation not in _ALLOWED_OPERATIONS:
+        raise ValueError(f"unsupported operation: {operation!r}")
+    expected_value_count = _validate_expected_value_count(expected_value_count)
+    example_values = (2, 8, *([5] * (expected_value_count - 2)))
+    example_answer = {
+        "sum": example_values[0] + example_values[1],
+        "difference": example_values[0] - example_values[1],
+        "max_minus_min": max(example_values) - min(example_values),
+    }[operation]
+    example_perception = json.dumps(
+        {"values": example_values},
+        separators=(",", ":"),
+        allow_nan=False,
+    )
+    return (
+        "Required grammar: "
+        '<perception>{"values":[INTEGER,...]}</perception>'
+        f'<reasoning>{{"operation":"{operation}"}}</reasoning>'
+        "<answer>INTEGER_OR_FINITE_NUMBER</answer> "
+        f"The values array must contain exactly {expected_value_count} integers. "
+        "The response's final character must be >; add no trailing punctuation or prose. "
+        "Example format only, not the answer to this task: "
+        f"<perception>{example_perception}</perception>"
+        f'<reasoning>{{"operation":"{operation}"}}</reasoning>'
+        f"<answer>{example_answer}</answer>"
+    )
+
+
 def build_structured_messages(
     *,
     question: str,
     operation: str,
     retry_index: int,
+    expected_value_count: int,
 ) -> tuple[dict[str, object], ...]:
     """Build a strict prompt without quoting an untrusted prior response."""
 
     question = _bounded_text(question, label="question", maximum_bytes=_MAX_QUESTION_BYTES)
-    if operation not in _ALLOWED_OPERATIONS:
-        raise ValueError(f"unsupported operation: {operation!r}")
     if not isinstance(retry_index, int) or isinstance(retry_index, bool):
         raise TypeError("retry_index must be an integer")
     if not 0 <= retry_index <= _MAX_FORMAT_RETRIES:
@@ -65,17 +106,11 @@ def build_structured_messages(
         "You are a strict structured-output interface. Return exactly one line containing the "
         "three required tags in order. Do not use Markdown fences or add prose."
     )
-    example_answer = {"sum": 10, "difference": -6, "max_minus_min": 6}[operation]
-    user = (
-        f"{question}{retry_instruction} Required grammar: "
-        '<perception>{"values":[INTEGER,...]}</perception>'
-        f'<reasoning>{{"operation":"{operation}"}}</reasoning>'
-        "<answer>INTEGER_OR_FINITE_NUMBER</answer>. "
-        "Example format only, not the answer to this image: "
-        '<perception>{"values":[2,8,5]}</perception>'
-        f'<reasoning>{{"operation":"{operation}"}}</reasoning>'
-        f"<answer>{example_answer}</answer>."
+    instruction = build_structured_instruction(
+        operation=operation,
+        expected_value_count=expected_value_count,
     )
+    user = f"{question}{retry_instruction} {instruction}"
     return (
         {"role": "system", "content": system},
         {"role": "user", "content": user},
@@ -111,12 +146,7 @@ def validate_pilot_trajectory(
 
     if operation not in _ALLOWED_OPERATIONS:
         raise ValueError(f"unsupported operation: {operation!r}")
-    if (
-        not isinstance(expected_value_count, int)
-        or isinstance(expected_value_count, bool)
-        or not 2 <= expected_value_count <= 32
-    ):
-        raise ValueError("expected_value_count must be an integer between 2 and 32")
+    expected_value_count = _validate_expected_value_count(expected_value_count)
     if parsed.status is not ParseStatus.OK:
         return parsed
 
@@ -179,6 +209,7 @@ def generate_with_format_retries(
             question=question,
             operation=operation,
             retry_index=retry_index,
+            expected_value_count=expected_value_count,
         )
         raw = generate_once(messages)
         if not isinstance(raw, str):

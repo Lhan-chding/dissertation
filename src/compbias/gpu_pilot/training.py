@@ -21,7 +21,11 @@ from compbias.models.structured_parser import ParseStatus, parse_trajectory
 from .config import load_pilot_paths
 from .qwen_smoke import load_local_qwen
 from .safe_io import atomic_write_json_text, prepare_new_output_directory
-from .structured_generation import numeric_answer_matches, validate_pilot_trajectory
+from .structured_generation import (
+    build_structured_instruction,
+    numeric_answer_matches,
+    validate_pilot_trajectory,
+)
 
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -222,11 +226,20 @@ def _prompt_for_a(record: dict[str, Any]) -> list[dict[str, str]]:
     question = record.get("question")
     if not isinstance(question, str) or not question:
         raise ValueError("Pilot A record lacks a validated question")
+    operation = record.get("operation")
+    values = record.get("values")
+    if not isinstance(operation, str) or not isinstance(values, list):
+        raise ValueError("Pilot A record lacks validated operation or values")
+    instruction = build_structured_instruction(
+        operation=operation,
+        expected_value_count=len(values),
+    )
     text = (
         "The image is unavailable. Treat the following naturally produced visual evidence "
         "as fixed. "
         f"Evidence: {mediator}\nQuestion: {question}\n"
-        "Return <perception>{...}</perception><reasoning>{...}</reasoning><answer>...</answer>."
+        "Copy the fixed evidence values exactly into the perception field. "
+        f"{instruction}"
     )
     return [{"role": "user", "content": text}]
 
@@ -247,6 +260,20 @@ def _pilot_a_rows(records: list[dict[str, Any]]) -> list[dict[str, object]]:
 
 
 def _prompt_for_b(record: dict[str, Any]) -> list[dict[str, object]]:
+    question = record.get("question")
+    operation = record.get("operation")
+    values = record.get("values")
+    if (
+        not isinstance(question, str)
+        or not question
+        or not isinstance(operation, str)
+        or not isinstance(values, list)
+    ):
+        raise ValueError("Pilot B record lacks validated question, operation, or values")
+    instruction = build_structured_instruction(
+        operation=operation,
+        expected_value_count=len(values),
+    )
     return [
         {
             "role": "user",
@@ -254,10 +281,7 @@ def _prompt_for_b(record: dict[str, Any]) -> list[dict[str, object]]:
                 {"type": "image"},
                 {
                     "type": "text",
-                    "text": (
-                        f"{record['question']} Return exactly tagged JSON perception, reasoning, "
-                        "and answer fields."
-                    ),
+                    "text": f"{question} {instruction}",
                 },
             ],
         }

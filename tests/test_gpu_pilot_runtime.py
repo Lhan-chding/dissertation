@@ -60,18 +60,37 @@ def test_pilot_a_rows_skip_parse_failures_and_use_canonical_mediator() -> None:
     rows = _pilot_a_rows([parse_failure, visual_error])
 
     assert len(rows) == 1
-    assert rows[0]["prompt"] == [
+    assert isinstance(rows[0]["prompt"], list)
+    prompt = rows[0]["prompt"][0]
+    assert prompt["role"] == "user"
+    content = prompt["content"]
+    assert 'Evidence: {"values":[4,7,5]}' in content
+    assert '<perception>{"values":[INTEGER,...]}</perception>' in content
+    assert '<reasoning>{"operation":"max_minus_min"}</reasoning>' in content
+    assert "exactly 3 integers" in content
+    assert content.endswith("</answer>")
+    assert "</answer>." not in content
+
+
+def test_pilot_b_prompt_reuses_closed_structured_grammar() -> None:
+    from compbias.gpu_pilot.training import _prompt_for_b
+
+    prompt = _prompt_for_b(
         {
-            "role": "user",
-            "content": (
-                "The image is unavailable. Treat the following naturally produced visual "
-                'evidence as fixed. Evidence: {"values":[4,7,5]}\n'
-                "Question: What is max minus min?\n"
-                "Return <perception>{...}</perception><reasoning>{...}</reasoning>"
-                "<answer>...</answer>."
-            ),
+            "question": "What is the sum of the first two values?",
+            "operation": "sum",
+            "values": [4, 7, 5, 6],
         }
-    ]
+    )
+
+    assert prompt[0]["role"] == "user"
+    assert prompt[0]["content"][0] == {"type": "image"}
+    text = prompt[0]["content"][1]["text"]
+    assert '<perception>{"values":[INTEGER,...]}</perception>' in text
+    assert '<reasoning>{"operation":"sum"}</reasoning>' in text
+    assert "exactly 4 integers" in text
+    assert text.endswith("</answer>")
+    assert "</answer>." not in text
 
 
 def test_audited_reward_retains_raw_completion_and_reward(tmp_path: Path) -> None:
@@ -264,6 +283,49 @@ def test_structured_generation_retries_without_echoing_invalid_output() -> None:
     assert "previous attempt failed" in json.dumps(prompts[1]).lower()
 
 
+def test_structured_prompt_does_not_teach_a_trailing_period() -> None:
+    from compbias.gpu_pilot.structured_generation import build_structured_messages
+
+    messages = build_structured_messages(
+        question="Read the chart and compute max minus min.",
+        operation="max_minus_min",
+        retry_index=1,
+        expected_value_count=3,
+    )
+    rendered = json.dumps(messages, sort_keys=True)
+
+    assert "</answer>." not in rendered
+    assert "final character must be >" in rendered.lower()
+
+
+def test_structured_prompt_example_matches_expected_value_count() -> None:
+    from compbias.gpu_pilot.structured_generation import build_structured_messages
+
+    three = json.dumps(
+        build_structured_messages(
+            question="question",
+            operation="max_minus_min",
+            retry_index=0,
+            expected_value_count=3,
+        ),
+        sort_keys=True,
+    )
+    four = json.dumps(
+        build_structured_messages(
+            question="question",
+            operation="sum",
+            retry_index=0,
+            expected_value_count=4,
+        ),
+        sort_keys=True,
+    )
+
+    assert '\\"values\\":[2,8,5]' in three
+    assert '\\"values\\":[2,8,5,5]' in four
+    assert "exactly 3 integers" in three
+    assert "exactly 4 integers" in four
+
+
 def test_structured_generation_stops_after_two_format_retries() -> None:
     from compbias.gpu_pilot.structured_generation import generate_with_format_retries
 
@@ -294,15 +356,28 @@ def test_structured_generation_rejects_invalid_prompt_and_budget_inputs() -> Non
     )
 
     with pytest.raises(ValueError, match="question must be a non-empty string"):
-        build_structured_messages(question="", operation="sum", retry_index=0)
+        build_structured_messages(
+            question="", operation="sum", retry_index=0, expected_value_count=4
+        )
     with pytest.raises(ValueError, match="question must not contain NUL"):
-        build_structured_messages(question="unsafe\x00text", operation="sum", retry_index=0)
+        build_structured_messages(
+            question="unsafe\x00text",
+            operation="sum",
+            retry_index=0,
+            expected_value_count=4,
+        )
     with pytest.raises(ValueError, match="unsupported operation"):
-        build_structured_messages(question="question", operation="product", retry_index=0)
+        build_structured_messages(
+            question="question", operation="product", retry_index=0, expected_value_count=4
+        )
     with pytest.raises(TypeError, match="retry_index must be an integer"):
-        build_structured_messages(question="question", operation="sum", retry_index=True)
+        build_structured_messages(
+            question="question", operation="sum", retry_index=True, expected_value_count=4
+        )
     with pytest.raises(ValueError, match="retry_index must be between"):
-        build_structured_messages(question="question", operation="sum", retry_index=3)
+        build_structured_messages(
+            question="question", operation="sum", retry_index=3, expected_value_count=4
+        )
     with pytest.raises(ValueError, match="max_format_retries must be between"):
         generate_with_format_retries(
             lambda _messages: "unused",
@@ -831,6 +906,8 @@ def test_pilot_a_prompt_uses_validated_perception_instead_of_missing_raw_field()
     prompt = _prompt_for_a(
         {
             "question": "What is the maximum minus the minimum?",
+            "operation": "max_minus_min",
+            "values": [3, 7, 5],
             "parsed": {"perceived_scene": {"values": [4, 7, 5]}},
         }
     )
