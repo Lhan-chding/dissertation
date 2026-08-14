@@ -94,7 +94,8 @@ def test_design_counts_are_exact_and_forks_never_become_independent_n() -> None:
 
     assert report.phase_n_scenes == 4000
     assert report.bridge_scenes == 300
-    assert report.bridge_model_calls == 600
+    assert report.bridge_protocol_trajectories == 600
+    assert report.bridge_model_calls == 900
     assert report.phase_c_intake_scenes == 6000
     assert dict(report.selected_family_quotas) == {
         "cross_series": 267,
