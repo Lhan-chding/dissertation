@@ -45,11 +45,41 @@ def test_natural_error_type_distinguishes_exact_perception_from_reasoning_error(
     [
         (
             {
+                "values": [13, 8, 11, 3],
+                "answer": 21,
+                "operation": "sum",
+            },
+            '<perception>{"values":[13,8,10,2]}</perception>'
+            '<reasoning>{"operation":"sum"}</reasoning><answer>21</answer>',
+            "operator_invariant_visual_error",
+        ),
+        (
+            {
+                "values": [11, 18, 3, 2],
+                "answer": -7,
+                "operation": "difference",
+            },
+            '<perception>{"values":[10,17,3,2]}</perception>'
+            '<reasoning>{"operation":"difference"}</reasoning><answer>-7</answer>',
+            "operator_invariant_visual_error",
+        ),
+        (
+            {
                 "values": [11, 12, 10, 2],
                 "answer": 10,
                 "operation": "max_minus_min",
             },
             '<perception>{"values":[10,12,10,2]}</perception>'
+            '<reasoning>{"operation":"max_minus_min"}</reasoning><answer>10</answer>',
+            "operator_invariant_visual_error",
+        ),
+        (
+            {
+                "values": [3, 13, 8, 6],
+                "answer": 10,
+                "operation": "max_minus_min",
+            },
+            '<perception>{"values":[4,14,8,6]}</perception>'
             '<reasoning>{"operation":"max_minus_min"}</reasoning><answer>10</answer>',
             "operator_invariant_visual_error",
         ),
@@ -72,6 +102,15 @@ def test_natural_error_type_distinguishes_exact_perception_from_reasoning_error(
             '<perception>{"values":[10,10,3,2]}</perception>'
             '<reasoning>{"operation":"sum"}</reasoning><answer>20</answer>',
             "visual_error",
+        ),
+        (
+            {
+                "values": [11, 11, 3, 2],
+                "answer": 22,
+                "operation": "sum",
+            },
+            '{"values":[11,11,3,2]}',
+            "parse_failure",
         ),
     ],
 )
@@ -109,8 +148,13 @@ def test_pilot_a_rows_skip_parse_failures_and_use_canonical_mediator() -> None:
         "operation": "max_minus_min",
         "values": [3, 7, 5],
     }
+    invariant_error = {
+        **visual_error,
+        "sample_id": "pilot_train-000001",
+        "error_type": "operator_invariant_visual_error",
+    }
 
-    rows = _pilot_a_rows([parse_failure, visual_error])
+    rows = _pilot_a_rows([parse_failure, invariant_error, visual_error])
 
     assert len(rows) == 1
     assert isinstance(rows[0]["prompt"], list)
@@ -886,12 +930,29 @@ def test_v0_3_renderer_uses_integer_axis_ticks_without_direct_value_labels(
 ) -> None:
     from compbias.gpu_pilot import chart_data
 
-    labels: list[str] = []
+    labels: list[tuple[tuple[float, float], str]] = []
+    lines: list[tuple[tuple[float, ...], str | None]] = []
+    original_line = chart_data.ImageDraw.ImageDraw.line
 
-    def capture_text(_draw: object, _position: object, text: object, **_kwargs: object) -> None:
-        labels.append(str(text))
+    def capture_text(
+        _draw: object,
+        position: tuple[float, float],
+        text: object,
+        **_kwargs: object,
+    ) -> None:
+        labels.append((position, str(text)))
+
+    def capture_line(
+        draw: object,
+        coordinates: tuple[float, ...] | list[tuple[float, float]],
+        **kwargs: object,
+    ) -> None:
+        if isinstance(coordinates, tuple):
+            lines.append((coordinates, kwargs.get("fill")))  # type: ignore[arg-type]
+        original_line(draw, coordinates, **kwargs)
 
     monkeypatch.setattr(chart_data.ImageDraw.ImageDraw, "text", capture_text)
+    monkeypatch.setattr(chart_data.ImageDraw.ImageDraw, "line", capture_line)
     chart_data._draw_chart(
         tmp_path / "chart.png",
         chart_type=chart_type,
@@ -901,8 +962,15 @@ def test_v0_3_renderer_uses_integer_axis_ticks_without_direct_value_labels(
         render_mode="axis_scale_v0_3",
     )
 
-    numeric_labels = {label for label in labels if label.isdigit()}
-    assert numeric_labels == {str(value) for value in range(21)}
+    numeric_labels = [(position, label) for position, label in labels if label.isdigit()]
+    assert [label for _position, label in numeric_labels] == [str(value) for value in range(21)]
+    assert all(position[0] == 42 for position, _label in numeric_labels)
+    grid_lines = [
+        coordinates
+        for coordinates, fill in lines
+        if fill == "#e5e7eb" and coordinates[0] == 70 and coordinates[2] == 472
+    ]
+    assert len(grid_lines) == 20
 
 
 def test_versioned_renderer_preserves_legacy_labels_and_scales_value_21(
@@ -938,6 +1006,18 @@ def test_versioned_renderer_preserves_legacy_labels_and_scales_value_21(
     )
     assert "22" in labels
     assert "21" not in labels
+
+    labels.clear()
+    chart_data._draw_chart(
+        tmp_path / "v0_3.png",
+        chart_type="line",
+        values=(21, 7, 13, 17),
+        size=(512, 384),
+        ood=True,
+        render_mode="axis_scale_v0_3",
+    )
+    assert "21" in labels
+    assert "22" not in labels
 
 
 def test_dataset_generation_is_deterministic_and_no_clobber(tmp_path: Path) -> None:
@@ -1145,6 +1225,24 @@ def test_execution_gate_replays_the_full_registered_dataset(tmp_path: Path) -> N
 def test_calibration_gate_is_closed(metrics: dict[str, object], expected: bool) -> None:
     failures = calibration_gate(metrics)
     assert (not failures) is expected
+
+
+def test_operator_invariance_cannot_substitute_for_compensation_gate_support() -> None:
+    failures = calibration_gate(
+        {
+            "answer_accuracy": 0.55,
+            "natural_perception_error_rate": 0.25,
+            "parse_rate": 0.98,
+            "error_counts": {
+                "visual_error": 20,
+                "operator_invariant_visual_error": 20,
+                "compensated_visual_error": 9,
+                "reasoning_error": 20,
+            },
+        }
+    )
+
+    assert failures == ("fewer_than_three_supported_natural_error_families",)
 
 
 def test_outcome_reward_requires_a_strict_structured_answer() -> None:
