@@ -1,0 +1,441 @@
+{
+  "artifacts": {
+    "figure": "artifacts/figures/neural_trajectories.png",
+    "logs": "artifacts/logs/neural_phase_c",
+    "metrics": "artifacts/metrics/neural_summary.json",
+    "runs": "artifacts/predictions/neural_runs.csv",
+    "trajectories": "artifacts/predictions/neural_trajectories.csv"
+  },
+  "checkpoint_count": 2450,
+  "experiment": "phase_c_small_neural",
+  "gates": {
+    "all_passed": true,
+    "at_least_10_seeds": {
+      "passed": true,
+      "required": 10,
+      "unique_seed_count": 10
+    },
+    "compensatory_ood_gap_larger": {
+      "bootstrap_95_ci": [
+        0.9256844376176405,
+        0.9256894546441302
+      ],
+      "bootstrap_seed": 20261813,
+      "compensatory_mean_iid_ood_gap": 0.9270675273004588,
+      "compensatory_minus_truthful_gap": 0.9256869377353294,
+      "passed": true,
+      "truthful_mean_iid_ood_gap": 0.0013805895651293864
+    },
+    "joint_dual_equilibria": {
+      "all_iid_accuracy_at_least_0_75": true,
+      "both_endpoints_observed": true,
+      "equilibrium_counts": {
+        "compensatory": 5,
+        "truthful": 5
+      },
+      "passed": true,
+      "seed_count": 10
+    },
+    "three_training_modes": {
+      "both_blocks_updated_in_joint": true,
+      "observed": [
+        "joint",
+        "perception_only",
+        "reasoning_only"
+      ],
+      "passed": true,
+      "perception_frozen_in_reasoning_only": true,
+      "reasoner_frozen_in_perception_only": true,
+      "required": [
+        "joint",
+        "perception_only",
+        "reasoning_only"
+      ]
+    },
+    "two_profile_direction": {
+      "observations": {
+        "spurious": {
+          "expected_perception_loss_shift": "positive",
+          "mean_perception_shift": 0.45516776332300424,
+          "passed": true
+        },
+        "truth_aligned": {
+          "expected_perception_loss_shift": "negative",
+          "mean_perception_shift": -0.45516776332300435,
+          "passed": true
+        }
+      },
+      "passed": true
+    }
+  },
+  "groups": [
+    {
+      "canonical_reasoning_accuracy": {
+        "bootstrap_95_ci": [
+          0.85,
+          0.85
+        ],
+        "mean": 0.85,
+        "n": 10,
+        "std": 0.0
+      },
+      "equilibrium_counts": {
+        "truthful": 10
+      },
+      "iid_accuracy": {
+        "bootstrap_95_ci": [
+          0.818617434326103,
+          0.818617434326103
+        ],
+        "mean": 0.818617434326103,
+        "n": 10,
+        "std": 0.0
+      },
+      "iid_ood_gap": {
+        "bootstrap_95_ci": [
+          0.006724835501549342,
+          0.006724835501549342
+        ],
+        "mean": 0.006724835501549342,
+        "n": 10,
+        "std": 0.0
+      },
+      "mode": "perception_only",
+      "ood_accuracy": {
+        "bootstrap_95_ci": [
+          0.8118925988245536,
+          0.8118925988245536
+        ],
+        "mean": 0.8118925988245536,
+        "n": 10,
+        "std": 1.1702778228589004e-16
+      },
+      "perception_accuracy": {
+        "bootstrap_95_ci": [
+          0.9551677633230045,
+          0.9551677633230045
+        ],
+        "mean": 0.9551677633230045,
+        "n": 10,
+        "std": 1.1702778228589004e-16
+      },
+      "perception_shift": {
+        "bootstrap_95_ci": [
+          -0.45516776332300435,
+          -0.45516776332300435
+        ],
+        "mean": -0.45516776332300435,
+        "n": 10,
+        "std": 0.0
+      },
+      "profile": "truth_aligned",
+      "seed_count": 10
+    },
+    {
+      "canonical_reasoning_accuracy": {
+        "bootstrap_95_ci": [
+          0.14999999999999997,
+          0.14999999999999997
+        ],
+        "mean": 0.14999999999999997,
+        "n": 10,
+        "std": 2.925694557147251e-17
+      },
+      "equilibrium_counts": {
+        "compensatory": 10
+      },
+      "iid_accuracy": {
+        "bootstrap_95_ci": [
+          0.818617434326103,
+          0.818617434326103
+        ],
+        "mean": 0.818617434326103,
+        "n": 10,
+        "std": 1.1702778228589004e-16
+      },
+      "iid_ood_gap": {
+        "bootstrap_95_ci": [
+          0.8118925988245536,
+          0.8118925988245536
+        ],
+        "mean": 0.8118925988245536,
+        "n": 10,
+        "std": 0.0
+      },
+      "mode": "perception_only",
+      "ood_accuracy": {
+        "bootstrap_95_ci": [
+          0.006724835501549361,
+          0.006724835501549361
+        ],
+        "mean": 0.006724835501549361,
+        "n": 10,
+        "std": 9.14279549108516e-19
+      },
+      "perception_accuracy": {
+        "bootstrap_95_ci": [
+          0.04483223667699575,
+          0.04483223667699575
+        ],
+        "mean": 0.04483223667699575,
+        "n": 10,
+        "std": 0.0
+      },
+      "perception_shift": {
+        "bootstrap_95_ci": [
+          0.45516776332300424,
+          0.45516776332300424
+        ],
+        "mean": 0.45516776332300424,
+        "n": 10,
+        "std": 0.0
+      },
+      "profile": "spurious",
+      "seed_count": 10
+    },
+    {
+      "canonical_reasoning_accuracy": {
+        "bootstrap_95_ci": [
+          0.9551677633230045,
+          0.9551677633230045
+        ],
+        "mean": 0.9551677633230045,
+        "n": 10,
+        "std": 1.1702778228589004e-16
+      },
+      "equilibrium_counts": {
+        "truthful": 10
+      },
+      "iid_accuracy": {
+        "bootstrap_95_ci": [
+          0.818617434326103,
+          0.818617434326103
+        ],
+        "mean": 0.818617434326103,
+        "n": 10,
+        "std": 0.0
+      },
+      "iid_ood_gap": {
+        "bootstrap_95_ci": [
+          0.006724835501549342,
+          0.006724835501549342
+        ],
+        "mean": 0.006724835501549342,
+        "n": 10,
+        "std": 0.0
+      },
+      "mode": "reasoning_only",
+      "ood_accuracy": {
+        "bootstrap_95_ci": [
+          0.8118925988245536,
+          0.8118925988245536
+        ],
+        "mean": 0.8118925988245536,
+        "n": 10,
+        "std": 1.1702778228589004e-16
+      },
+      "perception_accuracy": {
+        "bootstrap_95_ci": [
+          0.85,
+          0.85
+        ],
+        "mean": 0.85,
+        "n": 10,
+        "std": 0.0
+      },
+      "perception_shift": {
+        "bootstrap_95_ci": [
+          0.0,
+          0.0
+        ],
+        "mean": 0.0,
+        "n": 10,
+        "std": 0.0
+      },
+      "profile": "truth_aligned",
+      "seed_count": 10
+    },
+    {
+      "canonical_reasoning_accuracy": {
+        "bootstrap_95_ci": [
+          0.04483223667699575,
+          0.04483223667699575
+        ],
+        "mean": 0.04483223667699575,
+        "n": 10,
+        "std": 0.0
+      },
+      "equilibrium_counts": {
+        "compensatory": 10
+      },
+      "iid_accuracy": {
+        "bootstrap_95_ci": [
+          0.818617434326103,
+          0.818617434326103
+        ],
+        "mean": 0.818617434326103,
+        "n": 10,
+        "std": 1.1702778228589004e-16
+      },
+      "iid_ood_gap": {
+        "bootstrap_95_ci": [
+          0.8118925988245536,
+          0.8118925988245536
+        ],
+        "mean": 0.8118925988245536,
+        "n": 10,
+        "std": 0.0
+      },
+      "mode": "reasoning_only",
+      "ood_accuracy": {
+        "bootstrap_95_ci": [
+          0.006724835501549361,
+          0.006724835501549361
+        ],
+        "mean": 0.006724835501549361,
+        "n": 10,
+        "std": 9.14279549108516e-19
+      },
+      "perception_accuracy": {
+        "bootstrap_95_ci": [
+          0.14999999999999997,
+          0.14999999999999997
+        ],
+        "mean": 0.14999999999999997,
+        "n": 10,
+        "std": 2.925694557147251e-17
+      },
+      "perception_shift": {
+        "bootstrap_95_ci": [
+          0.0,
+          0.0
+        ],
+        "mean": 0.0,
+        "n": 10,
+        "std": 0.0
+      },
+      "profile": "spurious",
+      "seed_count": 10
+    },
+    {
+      "canonical_reasoning_accuracy": {
+        "bootstrap_95_ci": [
+          0.22229845701238204,
+          0.7777140643383207
+        ],
+        "mean": 0.5000068973543674,
+        "n": 10,
+        "std": 0.48787281195037485
+      },
+      "equilibrium_counts": {
+        "compensatory": 5,
+        "truthful": 5
+      },
+      "iid_accuracy": {
+        "bootstrap_95_ci": [
+          0.9284464334854595,
+          0.9284503491267462
+        ],
+        "mean": 0.9284483397902038,
+        "n": 10,
+        "std": 3.37594753422045e-06
+      },
+      "iid_ood_gap": {
+        "bootstrap_95_ci": [
+          0.18651774116891834,
+          0.7419307426935023
+        ],
+        "mean": 0.4642240584327942,
+        "n": 10,
+        "std": 0.48787985392362754
+      },
+      "mode": "joint",
+      "ood_accuracy": {
+        "bootstrap_95_ci": [
+          0.18651766960056684,
+          0.7419309246016931
+        ],
+        "mean": 0.4642242813574097,
+        "n": 10,
+        "std": 0.4878800712046902
+      },
+      "perception_accuracy": {
+        "bootstrap_95_ci": [
+          0.22227844063843896,
+          0.7777097740668599
+        ],
+        "mean": 0.4999933255702481,
+        "n": 10,
+        "std": 0.48788711794266343
+      },
+      "perception_shift": {
+        "bootstrap_95_ci": [
+          -0.1768966499716521,
+          0.17511144372159929
+        ],
+        "mean": -0.0007933255702480601,
+        "n": 10,
+        "std": 0.30789975958755567
+      },
+      "profile": "spurious",
+      "seed_count": 10
+    }
+  ],
+  "protocol": {
+    "bootstrap_seed": 20260814,
+    "conditions_executed": [
+      [
+        "truth_aligned",
+        "perception_only"
+      ],
+      [
+        "spurious",
+        "perception_only"
+      ],
+      [
+        "truth_aligned",
+        "reasoning_only"
+      ],
+      [
+        "spurious",
+        "reasoning_only"
+      ],
+      [
+        "spurious",
+        "joint"
+      ]
+    ],
+    "device": "cpu",
+    "joint_profile": "spurious",
+    "learning_rate": 0.8,
+    "modes": [
+      "perception_only",
+      "reasoning_only",
+      "joint"
+    ],
+    "notes": [
+      "perception_shift is final minus initial perception loss; negative means improvement",
+      "OOD accuracy executes paired error catalogs while preserving canonical solutions",
+      "joint dynamics are profile-invariant in the current core API; all joint runs are deduplicated and labeled profile=spurious"
+    ],
+    "profiles": [
+      "truth_aligned",
+      "spurious"
+    ],
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "steps": 48
+  },
+  "run_count": 50,
+  "schema_version": 1
+}

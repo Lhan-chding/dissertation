@@ -1,0 +1,36 @@
+{
+  "analytic_basin_mismatches": 0,
+  "delta": 1.0,
+  "epsilon": 1.0,
+  "experiment": "phase_b_tabular_all",
+  "gates": {
+    "basin_mismatches_max": 0,
+    "minimum_seeds": 20,
+    "seeded_mismatches_max": 0
+  },
+  "grid_points": 361,
+  "passed": true,
+  "run": {
+    "command": "python scripts/train_tabular.py --config configs/tabular/all.yaml --overwrite",
+    "config": "configs/tabular/all.yaml",
+    "config_sha256": "bedfe03c315586c8502f5089ff8fd5e2c33a0c7937aa55422cbaa5045f23e145",
+    "device": "cpu",
+    "ended_at_utc": "2026-08-14T01:07:54.599460+00:00",
+    "git": {
+      "commit": "84eda3bbaeaf4822f9cb238f3080ead3cd6c9c0b",
+      "dirty": false
+    },
+    "numpy": "2.5.2",
+    "python": "3.12.13",
+    "scipy": "1.18.0",
+    "started_at_utc": "2026-08-14T01:07:18.580257+00:00"
+  },
+  "schema_version": 1,
+  "seeded_equilibrium_counts": {
+    "compensatory": 10,
+    "separatrix": 0,
+    "truthful": 10
+  },
+  "seeded_initializations": 20,
+  "seeded_mismatches": 0
+}

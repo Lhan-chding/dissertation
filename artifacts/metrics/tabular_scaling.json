@@ -1,0 +1,63 @@
+{
+  "baseline_severity": 0.9500000000000001,
+  "beta": 1.0,
+  "experiment": "phase_b_tabular_all",
+  "gates": {
+    "average_gain_spread_max": 1e-12,
+    "derivative_finite_difference_max_abs_error": 1e-07,
+    "directional_shift_min_abs": 0.04,
+    "directions_passed": true,
+    "uniform_direction_max_abs": 1e-12
+  },
+  "kappa": 0.05,
+  "maximum_average_gain_difference": 0.0,
+  "maximum_derivative_finite_difference_error": 1.067464783233163e-09,
+  "passed": true,
+  "path_names": [
+    "truth_gain",
+    "uniform_gain",
+    "error_gain"
+  ],
+  "paths": {
+    "error_gain": {
+      "average_gain": 1.0,
+      "covariance_derivative": 2.9806170600205215,
+      "derivative_abs_error": 1.067464783233163e-09,
+      "finite_difference_derivative": 2.9806170610879863,
+      "selected_severity": 1.074886225409469,
+      "severity_shift": 0.12488622540946903
+    },
+    "truth_gain": {
+      "average_gain": 1.0,
+      "covariance_derivative": -0.9576743185968268,
+      "derivative_abs_error": 3.329858611067493e-11,
+      "finite_difference_derivative": -0.9576743185635282,
+      "selected_severity": 0.9022839915096903,
+      "severity_shift": -0.04771600849030977
+    },
+    "uniform_gain": {
+      "average_gain": 1.0,
+      "covariance_derivative": 0.0,
+      "derivative_abs_error": 0.0,
+      "finite_difference_derivative": 0.0,
+      "selected_severity": 0.9500000000000001,
+      "severity_shift": 0.0
+    }
+  },
+  "run": {
+    "command": "python scripts/train_tabular.py --config configs/tabular/all.yaml --overwrite",
+    "config": "configs/tabular/all.yaml",
+    "config_sha256": "bedfe03c315586c8502f5089ff8fd5e2c33a0c7937aa55422cbaa5045f23e145",
+    "device": "cpu",
+    "ended_at_utc": "2026-08-14T01:07:50.120981+00:00",
+    "git": {
+      "commit": "84eda3bbaeaf4822f9cb238f3080ead3cd6c9c0b",
+      "dirty": false
+    },
+    "numpy": "2.5.2",
+    "python": "3.12.13",
+    "scipy": "1.18.0",
+    "started_at_utc": "2026-08-14T01:07:18.580257+00:00"
+  },
+  "schema_version": 1
+}

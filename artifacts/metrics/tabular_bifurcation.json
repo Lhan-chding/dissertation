@@ -1,0 +1,68 @@
+{
+  "a": 1.0,
+  "beta_over_a": [
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.45,
+    0.48,
+    0.5,
+    0.52,
+    0.6
+  ],
+  "experiment": "phase_b_tabular_all",
+  "gate_max_branch_abs_error": 1e-05,
+  "max_branch_abs_error": 2.101316915026352e-06,
+  "max_symmetry_abs_error": 0.0,
+  "observed_negative_m": [
+    -0.9999091217145663,
+    -0.9856238716338465,
+    -0.9073323166423822,
+    -0.7104117834910965,
+    -0.5254295126655962,
+    -0.3408292406724338,
+    0.0,
+    -2.101316915026352e-06,
+    -5.685163451119024e-11
+  ],
+  "observed_positive_m": [
+    0.999909121692597,
+    0.9856238715156178,
+    0.9073323166048546,
+    0.7104117835032007,
+    0.5254295126897752,
+    0.34082924067919107,
+    0.0,
+    2.1013149433812828e-06,
+    2.2973400959358514e-11
+  ],
+  "passed": true,
+  "predicted_positive_m": [
+    0.9999091217152325,
+    0.9856238716346568,
+    0.9073323166453099,
+    0.7104117834878704,
+    0.5254295126580084,
+    0.34082924064665693,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "run": {
+    "command": "python scripts/train_tabular.py --config configs/tabular/all.yaml --overwrite",
+    "config": "configs/tabular/all.yaml",
+    "config_sha256": "bedfe03c315586c8502f5089ff8fd5e2c33a0c7937aa55422cbaa5045f23e145",
+    "device": "cpu",
+    "ended_at_utc": "2026-08-14T01:07:54.599460+00:00",
+    "git": {
+      "commit": "84eda3bbaeaf4822f9cb238f3080ead3cd6c9c0b",
+      "dirty": false
+    },
+    "numpy": "2.5.2",
+    "python": "3.12.13",
+    "scipy": "1.18.0",
+    "started_at_utc": "2026-08-14T01:07:18.580257+00:00"
+  },
+  "schema_version": 1
+}

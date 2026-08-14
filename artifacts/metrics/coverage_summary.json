@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "experiment": "whole_project_cpu_coverage",
+  "source_commit": "84eda3bbaeaf4822f9cb238f3080ead3cd6c9c0b",
+  "tracked_worktree_clean": true,
+  "tests": {
+    "passed": 1024,
+    "failed": 0,
+    "errors": 0,
+    "duration_seconds": 887.14
+  },
+  "coverage": {
+    "source_packages": [
+      "compbias",
+      "scripts"
+    ],
+    "branch_coverage": true,
+    "covered_statements": 10696,
+    "total_statements": 12340,
+    "statement_percent": 86.677471636953,
+    "covered_branches": 3379,
+    "total_branches": 4708,
+    "branch_percent": 71.7714528462192,
+    "combined_percent": 82.56100422336931,
+    "display_percent": 83,
+    "fail_under_percent": 80,
+    "gate_passed": true
+  },
+  "raw_coverage_artifact": {
+    "path": "artifacts/metrics/coverage.json",
+    "sha256": "0cbda5472847078ccb44e625eed1b25a49982fcc218fc0f141d5554b78b3a9c0",
+    "coverage_py_version": "7.15.4",
+    "format_version": 3
+  }
+}

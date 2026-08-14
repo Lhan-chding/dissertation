@@ -1,0 +1,204 @@
+{
+  "all_crossed_risk_identities_pass": true,
+  "claim_scope": "small_neural_operational_mechanism_only",
+  "config_sha256": "946ff9dbec15ac8bbf926e871e678d3e21519c34f52d69cc26f49f3c1eb8381e",
+  "counts": {
+    "forked_continuations": 20480000,
+    "natural_mediators": 640000,
+    "semantic_states": 1000,
+    "synthetic_mediators": 20000,
+    "training_seeds": 20,
+    "visual_realizations": 8000
+  },
+  "error_families": [
+    "bar_chart_aggregate",
+    "count_transform",
+    "digit_offset",
+    "gauge_calibration",
+    "relation_rule"
+  ],
+  "experiment": "small_neural_natural_replay_v2",
+  "family_estimates": [
+    {
+      "c_fork": {
+        "ci_high": 0.961248231481203,
+        "ci_low": 0.956261642892822,
+        "mean": 0.9587580029967608
+      },
+      "c_sel": {
+        "ci_high": 0.9603553470592383,
+        "ci_low": 0.9542403700610743,
+        "mean": 0.957216550636694
+      },
+      "c_syn": {
+        "ci_high": 0.8920707031249999,
+        "ci_low": 0.8788669921874999,
+        "mean": 0.8853515625000001
+      },
+      "error_family": "bar_chart_aggregate",
+      "mediator_gap": {
+        "ci_high": -0.00021280429628462572,
+        "ci_low": -0.0029670189447501796,
+        "mean": -0.0015414523600670083
+      },
+      "n_seeds": 20,
+      "transport_gap": {
+        "ci_high": -0.06898717957839502,
+        "ci_low": -0.0776106268853888,
+        "mean": -0.0734064404967609
+      }
+    },
+    {
+      "c_fork": {
+        "ci_high": 0.9610719861178237,
+        "ci_low": 0.9561266967279506,
+        "mean": 0.9586242858039101
+      },
+      "c_sel": {
+        "ci_high": 0.9602056833865854,
+        "ci_low": 0.9542647018528764,
+        "mean": 0.9572244159354625
+      },
+      "c_syn": {
+        "ci_high": 0.8920083984374999,
+        "ci_low": 0.8795232421875,
+        "mean": 0.8857109375000001
+      },
+      "error_family": "count_transform",
+      "mediator_gap": {
+        "ci_high": 0.00023374175506514047,
+        "ci_low": -0.003069224106122353,
+        "mean": -0.0013998698684479006
+      },
+      "n_seeds": 20,
+      "transport_gap": {
+        "ci_high": -0.06903614694204917,
+        "ci_low": -0.07677611630645455,
+        "mean": -0.07291334830391019
+      }
+    },
+    {
+      "c_fork": {
+        "ci_high": 0.9611751465248053,
+        "ci_low": 0.956432695154419,
+        "mean": 0.958799413265431
+      },
+      "c_sel": {
+        "ci_high": 0.962037717290316,
+        "ci_low": 0.9551942595820688,
+        "mean": 0.9587298565397366
+      },
+      "c_syn": {
+        "ci_high": 0.8928048828124999,
+        "ci_low": 0.8784609375000001,
+        "mean": 0.8856093749999998
+      },
+      "error_family": "digit_offset",
+      "mediator_gap": {
+        "ci_high": 0.0015200739444350484,
+        "ci_low": -0.001728339837930443,
+        "mean": -6.955672569409765e-05
+      },
+      "n_seeds": 20,
+      "transport_gap": {
+        "ci_high": -0.06816063884421183,
+        "ci_low": -0.07800642541179806,
+        "mean": -0.07319003826543088
+      }
+    },
+    {
+      "c_fork": {
+        "ci_high": 0.9610751687578225,
+        "ci_low": 0.9560688722644491,
+        "mean": 0.9585657997258673
+      },
+      "c_sel": {
+        "ci_high": 0.9623904872399929,
+        "ci_low": 0.9571256373830547,
+        "mean": 0.9596797477409147
+      },
+      "c_syn": {
+        "ci_high": 0.8926953124999999,
+        "ci_low": 0.8787966796875,
+        "mean": 0.8856953124999999
+      },
+      "error_family": "gauge_calibration",
+      "mediator_gap": {
+        "ci_high": 0.002363967807326439,
+        "ci_low": -6.687678697705404e-05,
+        "mean": 0.0011139480150477276
+      },
+      "n_seeds": 20,
+      "transport_gap": {
+        "ci_high": -0.06810161565375038,
+        "ci_low": -0.07749478631980956,
+        "mean": -0.07287048722586723
+      }
+    },
+    {
+      "c_fork": {
+        "ci_high": 0.961165056579942,
+        "ci_low": 0.9562207150467087,
+        "mean": 0.9586688655170665
+      },
+      "c_sel": {
+        "ci_high": 0.962075822397347,
+        "ci_low": 0.9571110926171934,
+        "mean": 0.9596356446482691
+      },
+      "c_syn": {
+        "ci_high": 0.8945939453124999,
+        "ci_low": 0.8803671875000001,
+        "mean": 0.8875390624999999
+      },
+      "error_family": "relation_rule",
+      "mediator_gap": {
+        "ci_high": 0.0024296817545650332,
+        "ci_low": -0.0004009553176633772,
+        "mean": 0.0009667791312026718
+      },
+      "n_seeds": 20,
+      "transport_gap": {
+        "ci_high": -0.06622917440124937,
+        "ci_low": -0.07617528851812626,
+        "mean": -0.07112980301706638
+      }
+    }
+  ],
+  "input_source": "cva_renderer_pil",
+  "model_path": "cnn_perceiver_to_image_blind_mlp_reasoner",
+  "provenance": {
+    "command": [
+      "python",
+      "scripts/run_small_natural_replay.py",
+      "--config",
+      "configs/natural_replay/small_neural.yaml"
+    ],
+    "cuda_available": false,
+    "dataset_manifest_hash": null,
+    "git_commit": "a9c7ae017d3fde4f7ed117f0bea65c1b3419fdfa",
+    "git_dirty": false,
+    "gpu_devices": [],
+    "model_revision": "local-small-cnn-v2",
+    "package_versions": {
+      "Pillow": "12.3.0",
+      "PyYAML": "6.0.3",
+      "compbias": "0.1.0",
+      "matplotlib": "3.11.1",
+      "numpy": "2.5.2",
+      "pandas": "2.3.3",
+      "scipy": "1.18.0",
+      "torch": "2.13.0",
+      "transformers": null,
+      "verl": null,
+      "vllm": null
+    },
+    "python_version": "3.12.13",
+    "seed": 20260814,
+    "start_timestamp": "2026-08-14T07:01:02.705857Z",
+    "verl_revision": null
+  },
+  "schema_version": 2,
+  "status": "CONFIRMATORY_COMPLETE",
+  "synthetic_is_natural_evidence": false
+}

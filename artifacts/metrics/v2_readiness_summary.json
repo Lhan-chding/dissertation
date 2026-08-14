@@ -1,0 +1,32 @@
+{
+  "artifact_type": "compbias_v2_cpu_readiness_summary",
+  "coverage": {
+    "covered_branches": 3735,
+    "covered_lines": 12345,
+    "instrumented_timeout_case_rerun": {
+      "passed": 1,
+      "seconds_inside_pytest": 18.28
+    },
+    "missing_branches": 1609,
+    "missing_lines": 1948,
+    "num_branches": 5344,
+    "num_statements": 14293,
+    "percent_branches_covered": 69.89146706586827,
+    "percent_combined_covered": 81.88623516830474,
+    "percent_statements_covered": 86.37095081508431,
+    "raw_local_coverage_json_sha256": "63abb76f529c0ba4302db77752791f01069c3eaa195724e20ae3cb608f91bf5e",
+    "threshold": 80.0,
+    "threshold_passed": true
+  },
+  "git_commit": "8eed5548b2f71f1cf60b0ba4a4d231fe24b5c146",
+  "schema_version": 2,
+  "tests": {
+    "command": "PYTHONPATH=.:src .venv/bin/python -m pytest -q",
+    "errors": 0,
+    "failed": 0,
+    "passed": 1061,
+    "seconds": 982.39
+  },
+  "verification_note": "The instrumented full run had one 30-second subprocess timeout after 1060 passes. The private-string rejection was moved ahead of deterministic dataset replay, the same case passed under coverage instrumentation, and the complete current-commit uninstrumented suite then passed 1061/1061.",
+  "status": "PASS"
+}

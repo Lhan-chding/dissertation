@@ -1,0 +1,163 @@
+{
+  "bifurcation": {
+    "a": 1.0,
+    "analytic_critical_beta": 0.5,
+    "branch_residual_boundary_margin": 1.4901161193847656e-08,
+    "critical_beta_abs_error": 0.0,
+    "critical_beta_abs_tolerance": 0.001,
+    "float_saturated_branch_points": 21,
+    "max_nonzero_branch_residual": 1.0871070710294362e-10,
+    "observed_critical_beta": 0.5,
+    "passed": true
+  },
+  "coordination": {
+    "analytic_basin_mismatches": 0,
+    "fixture_endpoint_abs_tolerance": 1e-07,
+    "fixtures": [
+      {
+        "expected_endpoint": [
+          1.0,
+          1.0
+        ],
+        "initial": [
+          0.7,
+          0.4
+        ],
+        "max_abs_error": 2.245870156514229e-12,
+        "name": "truthful",
+        "observed_endpoint": [
+          0.999999999998035,
+          0.9999999999977541
+        ],
+        "passed": true,
+        "tolerance": 1e-07
+      },
+      {
+        "expected_endpoint": [
+          0.0,
+          0.0
+        ],
+        "initial": [
+          0.6,
+          0.3
+        ],
+        "max_abs_error": 2.245829646367719e-12,
+        "name": "compensatory",
+        "observed_endpoint": [
+          2.245829646367719e-12,
+          1.9651009403834966e-12
+        ],
+        "passed": true,
+        "tolerance": 1e-07
+      },
+      {
+        "expected_endpoint": [
+          0.5,
+          0.5
+        ],
+        "initial": [
+          0.7,
+          0.3
+        ],
+        "max_abs_error": 6.680526087876615e-08,
+        "name": "separatrix",
+        "observed_endpoint": [
+          0.5000000668052609,
+          0.4999999332985426
+        ],
+        "passed": true,
+        "tolerance": 1e-07
+      }
+    ],
+    "grid_points": 361,
+    "passed": true
+  },
+  "experiment": "phase_a_theory_verification",
+  "outputs": {
+    "basin_figure": "artifacts/figures/basin_map.png",
+    "bifurcation_figure": "artifacts/figures/bifurcation.png",
+    "property_tests": "artifacts/theory_verification/random_property_tests.json",
+    "report": "artifacts/theory_verification/report.md"
+  },
+  "passed": true,
+  "property_tests": {
+    "identities": {
+      "bregman_three_point": {
+        "checks": 1000,
+        "max_abs_error": 1.1368683772161603e-13,
+        "mean_abs_error": 7.469498676130953e-15,
+        "p95_abs_error": 2.842170943040401e-14,
+        "passed": true,
+        "tolerance": 1e-08
+      },
+      "coordination_jacobian": {
+        "checks": 1000,
+        "max_abs_error": 9.216516438925737e-12,
+        "mean_abs_error": 2.2799536673759683e-12,
+        "p95_abs_error": 5.083111709325293e-12,
+        "passed": true,
+        "tolerance": 1e-08
+      },
+      "exact_kl_projection": {
+        "checks": 1000,
+        "max_abs_error": 4.2348936857283803e-16,
+        "mean_abs_error": 1.2089448840342346e-16,
+        "p95_abs_error": 2.2898349882893854e-16,
+        "passed": true,
+        "tolerance": 1e-08
+      },
+      "pairwise_odds": {
+        "checks": 1000,
+        "max_abs_error": 1.7763568394002505e-15,
+        "mean_abs_error": 4.251772545149635e-16,
+        "p95_abs_error": 8.881784197001252e-16,
+        "passed": true,
+        "tolerance": 1e-08
+      },
+      "repeated_selection_closed_form": {
+        "checks": 1000,
+        "max_abs_error": 4.996003610813204e-16,
+        "mean_abs_error": 5.6485979840088e-17,
+        "p95_abs_error": 2.220446049250313e-16,
+        "passed": true,
+        "tolerance": 1e-08
+      },
+      "scaling_finite_difference": {
+        "checks": 1000,
+        "max_abs_error": 5.166227862174466e-11,
+        "mean_abs_error": 6.007460656156597e-12,
+        "p95_abs_error": 1.65712272029439e-11,
+        "passed": true,
+        "tolerance": 1e-08
+      },
+      "selection_covariance": {
+        "checks": 1000,
+        "max_abs_error": 4.440892098500626e-16,
+        "mean_abs_error": 5.4357885380384996e-17,
+        "p95_abs_error": 1.5612511283791264e-16,
+        "passed": true,
+        "tolerance": 1e-08
+      }
+    },
+    "identity_checks": 7000,
+    "passed": true,
+    "random_cases": 1000,
+    "seed": 20260814
+  },
+  "run": {
+    "command": "python scripts/verify_theory.py --config configs/theory/all.yaml --overwrite",
+    "config": "configs/theory/all.yaml",
+    "config_sha256": "c24587a8a4191815553b2a26358a7cdff09d9bbcd2bfeccc30661cfd2692178b",
+    "device": "cpu",
+    "ended_at_utc": "2026-08-14T01:06:57.328640+00:00",
+    "git": {
+      "commit": "84eda3bbaeaf4822f9cb238f3080ead3cd6c9c0b",
+      "dirty": false
+    },
+    "numpy": "2.5.2",
+    "python": "3.12.13",
+    "scipy": "1.18.0",
+    "started_at_utc": "2026-08-14T01:06:51.922220+00:00"
+  },
+  "schema_version": 1
+}
