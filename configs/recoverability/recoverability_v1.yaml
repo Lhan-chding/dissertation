@@ -19,10 +19,10 @@ phase_c:
   dataset_id: CVA-Recoverability-Causal-v1
   output_subdirectory: cva_recoverability_causal_v1
   seed: 2026081603
-  intake_scenes: 6000
+  intake_scenes: 8000
   selected_family_quotas:
-    cross_series: 267
-    trend: 267
+    cross_series: 400
+    trend: 400
     duplicate_encoding: 266
   arms:
     - ablated
@@ -55,11 +55,11 @@ analysis:
   power_seed: 2026081605
   phase_n_minimum_eligible: 800
   phase_n_null_rate: 0.05
-  required_eligible_scenes: 800
+  required_eligible_scenes: 1066
   confirmatory_families:
     - cross_series
     - trend
   exploratory_families:
     - duplicate_encoding
   power_artifact_path: configs/recoverability/power_plan_v1.json
-  power_artifact_sha256: 651e30d824b36eadec6c3595ef462c432400be4ee7022411cafd3a2097dcbc23
+  power_artifact_sha256: e5703c0e4511b89aa5fd090209ae5860682fefe6eeaac2105df886476464bc01

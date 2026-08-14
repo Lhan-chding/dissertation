@@ -17,7 +17,7 @@ from compbias.recoverability.power import (
     simulate_paired_tost_power,
 )
 
-SCENE_GRID = (267, 400, 600, 800)
+SCENE_GRID = (400, 600, 800, 1066)
 REPETITIONS = 2_000
 SEED = 2026081605
 
@@ -29,14 +29,15 @@ class Scenario:
     discordance: float
     scene_icc: float
     true_effect: float
+    alpha: float
 
 
 SCENARIOS = (
-    Scenario("recoverable_effect", "one_sided_positive", 0.30, 0.40, 0.05),
-    Scenario("counterfactual_target_shift", "one_sided_positive", 0.30, 0.40, 0.05),
-    Scenario("counterfactual_original_suppression", "one_sided_positive", 0.25, 0.35, 0.05),
-    Scenario("sham_equivalence", "paired_tost", 0.10, 0.10, 0.00),
-    Scenario("nonrecoverable_equivalence", "paired_tost", 0.10, 0.10, 0.00),
+    Scenario("recoverable_effect", "one_sided_positive", 0.30, 0.40, 0.05, 0.025),
+    Scenario("counterfactual_target_shift", "one_sided_positive", 0.30, 0.40, 0.05, 0.025),
+    Scenario("counterfactual_original_suppression", "one_sided_positive", 0.25, 0.35, 0.05, 0.025),
+    Scenario("sham_equivalence", "paired_tost", 0.10, 0.10, 0.00, 0.05),
+    Scenario("nonrecoverable_equivalence", "paired_tost", 0.10, 0.10, 0.00, 0.05),
 )
 
 
@@ -51,7 +52,7 @@ def _curve(scenario: Scenario, scenario_index: int) -> tuple[PowerCurve, dict[st
             target_effect=scenario.true_effect,
             discordance=scenario.discordance,
             scene_icc=scenario.scene_icc,
-            alpha=0.05,
+            alpha=scenario.alpha,
             repetitions=REPETITIONS,
             seed=SEED + scenario_index * 100 + grid_index,
         )
@@ -68,6 +69,8 @@ def _curve(scenario: Scenario, scenario_index: int) -> tuple[PowerCurve, dict[st
         "discordance": scenario.discordance,
         "scene_icc": scenario.scene_icc,
         "true_effect": scenario.true_effect,
+        "alpha": scenario.alpha,
+        "baseline_rate": 0.20,
         "curve": serialized,
     }
 
@@ -78,10 +81,10 @@ def build_payload() -> dict[str, object]:
         tuple(curve for curve, _item in built),
         target_power=0.90,
         eligibility_rate_lower=0.15,
-        intake_scenes=6000,
-        family_quotas={"cross_series": 267, "trend": 267, "duplicate_encoding": 266},
+        intake_scenes=8000,
+        family_quotas={"cross_series": 400, "trend": 400, "duplicate_encoding": 266},
     )
-    if not plan.feasible or plan.required_eligible_scenes != 800:
+    if not plan.feasible or plan.required_eligible_scenes != 1066:
         raise RuntimeError("frozen Phase C design is not adequately powered")
     return {
         "schema_version": 1,
@@ -94,7 +97,7 @@ def build_payload() -> dict[str, object]:
         "equivalence_margin": 0.02,
         "repetitions": REPETITIONS,
         "seed": SEED,
-        "registered_intake_scenes": 6000,
+        "registered_intake_scenes": 8000,
         "required_eligible_scenes": plan.required_eligible_scenes,
         "eligibility_rate_lower": plan.eligibility_rate_lower,
         "required_intake_scenes": plan.required_intake_scenes,

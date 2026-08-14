@@ -187,13 +187,13 @@ def verify_power_artifact(path: Path, *, expected_sha256: str) -> PowerArtifactR
         "equivalence_margin": 0.02,
         "repetitions": 2_000,
         "seed": 2026081605,
-        "registered_intake_scenes": 6000,
-        "required_eligible_scenes": 800,
+        "registered_intake_scenes": 8000,
+        "required_eligible_scenes": 1066,
         "feasible": True,
         "family_quotas": {
-            "cross_series": 267,
+            "cross_series": 400,
             "duplicate_encoding": 266,
-            "trend": 267,
+            "trend": 400,
         },
     }
     if any(payload[key] != value for key, value in fixed.items()):
@@ -212,6 +212,8 @@ def verify_power_artifact(path: Path, *, expected_sha256: str) -> PowerArtifactR
             "discordance",
             "scene_icc",
             "true_effect",
+            "alpha",
+            "baseline_rate",
             "curve",
         }:
             raise ValueError("power scenario schema is invalid")
@@ -220,7 +222,7 @@ def verify_power_artifact(path: Path, *, expected_sha256: str) -> PowerArtifactR
             raise ValueError("power scenario names must be unique strings")
         if item["test"] not in {"one_sided_positive", "paired_tost"}:
             raise ValueError("power scenario test is invalid")
-        for key in ("discordance", "scene_icc", "true_effect"):
+        for key in ("discordance", "scene_icc", "true_effect", "alpha", "baseline_rate"):
             value = item[key]
             if (
                 isinstance(value, bool)
@@ -230,7 +232,7 @@ def verify_power_artifact(path: Path, *, expected_sha256: str) -> PowerArtifactR
                 raise ValueError("power scenario numeric setting is invalid")
         curve = item["curve"]
         scene_grid = [point.get("scenes") for point in curve] if isinstance(curve, list) else []
-        if scene_grid != [267, 400, 600, 800]:
+        if scene_grid != [400, 600, 800, 1066]:
             raise ValueError("power scenario curve uses an invalid scene grid")
         if any(
             not isinstance(point, dict)
@@ -244,8 +246,8 @@ def verify_power_artifact(path: Path, *, expected_sha256: str) -> PowerArtifactR
     return PowerArtifactResult(
         verified=True,
         sha256=actual,
-        required_eligible_scenes=800,
-        registered_intake_scenes=6000,
+        required_eligible_scenes=1066,
+        registered_intake_scenes=8000,
         independent_unit="semantic_scene",
         forks_per_arm=8,
         target_power=0.90,

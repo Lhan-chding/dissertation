@@ -197,7 +197,7 @@ def _phase_c(value: object) -> PhaseCConfig:
             (_safe(key, "family"), _positive_int(count, key)) for key, count in quotas_value.items()
         )
     )
-    if dict(quotas) != {"cross_series": 267, "duplicate_encoding": 266, "trend": 267}:
+    if dict(quotas) != {"cross_series": 400, "duplicate_encoding": 266, "trend": 400}:
         raise ValueError("phase_c selected family quotas are not preregistered")
     arms_value = mapping["arms"]
     confirmatory_value = mapping["confirmatory_arms"]
@@ -229,8 +229,8 @@ def _phase_c(value: object) -> PhaseCConfig:
     ):
         raise ValueError("phase_c arm partitions are invalid")
     intake = _positive_int(mapping["intake_scenes"], "phase_c.intake_scenes")
-    if intake != 6000:
-        raise ValueError("phase_c.intake_scenes must equal the preregistered 6000")
+    if intake != 8000:
+        raise ValueError("phase_c.intake_scenes must equal the preregistered 8000")
     forks = _positive_int(mapping["forks_per_arm"], "phase_c.forks_per_arm")
     if forks != 8:
         raise ValueError("phase_c.forks_per_arm must equal eight")
@@ -297,7 +297,7 @@ def _analysis(value: object) -> AnalysisConfig:
         "power_repetitions": 2_000,
         "power_seed": 2026081605,
         "phase_n_minimum_eligible": 800,
-        "required_eligible_scenes": 800,
+        "required_eligible_scenes": 1066,
     }
     parsed_integers = {
         key: _positive_int(mapping[key], f"analysis.{key}") for key in fixed_integers

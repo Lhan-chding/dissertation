@@ -4,35 +4,37 @@
   "eligibility_rate_lower": 0.15,
   "equivalence_margin": 0.02,
   "family_quotas": {
-    "cross_series": 267,
+    "cross_series": 400,
     "duplicate_encoding": 266,
-    "trend": 267
+    "trend": 400
   },
   "feasible": true,
   "forks_per_arm": 8,
   "independent_unit": "semantic_scene",
-  "registered_intake_scenes": 6000,
+  "registered_intake_scenes": 8000,
   "repetitions": 2000,
-  "required_eligible_scenes": 800,
-  "required_intake_scenes": 5334,
+  "required_eligible_scenes": 1066,
+  "required_intake_scenes": 7107,
   "scenarios": [
     {
+      "alpha": 0.025,
+      "baseline_rate": 0.2,
       "curve": [
         {
-          "estimated_power": 0.898,
-          "scenes": 267
-        },
-        {
-          "estimated_power": 0.972,
+          "estimated_power": 0.9425,
           "scenes": 400
         },
         {
-          "estimated_power": 0.9975,
+          "estimated_power": 0.993,
           "scenes": 600
         },
         {
-          "estimated_power": 1.0,
+          "estimated_power": 0.9995,
           "scenes": 800
+        },
+        {
+          "estimated_power": 1.0,
+          "scenes": 1066
         }
       ],
       "discordance": 0.3,
@@ -42,22 +44,24 @@
       "true_effect": 0.05
     },
     {
+      "alpha": 0.025,
+      "baseline_rate": 0.2,
       "curve": [
         {
-          "estimated_power": 0.8985,
-          "scenes": 267
-        },
-        {
-          "estimated_power": 0.971,
+          "estimated_power": 0.942,
           "scenes": 400
         },
         {
-          "estimated_power": 0.9975,
+          "estimated_power": 0.994,
           "scenes": 600
         },
         {
-          "estimated_power": 1.0,
+          "estimated_power": 0.999,
           "scenes": 800
+        },
+        {
+          "estimated_power": 1.0,
+          "scenes": 1066
         }
       ],
       "discordance": 0.3,
@@ -67,22 +71,24 @@
       "true_effect": 0.05
     },
     {
+      "alpha": 0.025,
+      "baseline_rate": 0.2,
       "curve": [
         {
-          "estimated_power": 0.9605,
-          "scenes": 267
-        },
-        {
-          "estimated_power": 0.9975,
+          "estimated_power": 0.9885,
           "scenes": 400
         },
         {
-          "estimated_power": 0.9995,
+          "estimated_power": 1.0,
           "scenes": 600
         },
         {
           "estimated_power": 1.0,
           "scenes": 800
+        },
+        {
+          "estimated_power": 1.0,
+          "scenes": 1066
         }
       ],
       "discordance": 0.25,
@@ -92,22 +98,24 @@
       "true_effect": 0.05
     },
     {
+      "alpha": 0.05,
+      "baseline_rate": 0.2,
       "curve": [
         {
-          "estimated_power": 0.752,
-          "scenes": 267
-        },
-        {
-          "estimated_power": 0.931,
+          "estimated_power": 0.921,
           "scenes": 400
         },
         {
-          "estimated_power": 0.985,
+          "estimated_power": 0.991,
           "scenes": 600
         },
         {
-          "estimated_power": 0.998,
+          "estimated_power": 0.999,
           "scenes": 800
+        },
+        {
+          "estimated_power": 1.0,
+          "scenes": 1066
         }
       ],
       "discordance": 0.1,
@@ -117,13 +125,11 @@
       "true_effect": 0.0
     },
     {
+      "alpha": 0.05,
+      "baseline_rate": 0.2,
       "curve": [
         {
-          "estimated_power": 0.7555,
-          "scenes": 267
-        },
-        {
-          "estimated_power": 0.929,
+          "estimated_power": 0.927,
           "scenes": 400
         },
         {
@@ -131,8 +137,12 @@
           "scenes": 600
         },
         {
-          "estimated_power": 0.9985,
+          "estimated_power": 0.999,
           "scenes": 800
+        },
+        {
+          "estimated_power": 0.9995,
+          "scenes": 1066
         }
       ],
       "discordance": 0.1,

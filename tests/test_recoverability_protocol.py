@@ -96,13 +96,13 @@ def test_design_counts_are_exact_and_forks_never_become_independent_n() -> None:
     assert report.bridge_scenes == 300
     assert report.bridge_protocol_trajectories == 600
     assert report.bridge_model_calls == 900
-    assert report.phase_c_intake_scenes == 6000
+    assert report.phase_c_intake_scenes == 8000
     assert dict(report.selected_family_quotas) == {
-        "cross_series": 267,
+        "cross_series": 400,
         "duplicate_encoding": 266,
-        "trend": 267,
+        "trend": 400,
     }
-    assert report.selected_independent_scenes == 800
+    assert report.selected_independent_scenes == 1066
     assert report.arms == (
         "ablated",
         "valid",
@@ -112,9 +112,9 @@ def test_design_counts_are_exact_and_forks_never_become_independent_n() -> None:
         "operator_swap",
     )
     assert report.forks_per_arm == 8
-    assert report.total_downstream_forks == 38_400
-    assert report.confirmatory_forks == 25_600
-    assert report.diagnostic_forks == 12_800
+    assert report.total_downstream_forks == 51_168
+    assert report.confirmatory_forks == 34_112
+    assert report.diagnostic_forks == 17_056
     assert report.independent_analysis_unit == "semantic_scene"
 
 
@@ -130,7 +130,7 @@ def test_analysis_thresholds_and_family_roles_are_frozen_before_server_execution
     assert analysis.bootstrap_resamples == 10_000
     assert analysis.phase_n_minimum_eligible == 800
     assert analysis.phase_n_null_rate == 0.05
-    assert analysis.required_eligible_scenes == 800
+    assert analysis.required_eligible_scenes == 1066
     assert analysis.confirmatory_families == ("cross_series", "trend")
     assert analysis.exploratory_families == ("duplicate_encoding",)
     assert analysis.power_artifact_path == "configs/recoverability/power_plan_v1.json"
@@ -145,8 +145,8 @@ def test_power_artifact_is_externally_hashed_and_freezes_scene_level_n() -> None
     )
 
     assert report.verified is True
-    assert report.required_eligible_scenes == 800
-    assert report.registered_intake_scenes == 6000
+    assert report.required_eligible_scenes == 1066
+    assert report.registered_intake_scenes == 8000
     assert report.independent_unit == "semantic_scene"
     assert report.forks_per_arm == 8
     assert report.target_power == 0.90

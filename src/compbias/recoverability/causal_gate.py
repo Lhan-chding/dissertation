@@ -7,7 +7,8 @@ import re
 from dataclasses import dataclass
 
 _IDENTIFIER = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}\Z")
-_FAMILY_QUOTAS = {"cross_series": 267, "trend": 267}
+_FAMILY_QUOTAS = {"cross_series": 400, "trend": 400}
+_POWER_TARGET_SCENES = 1066
 
 
 @dataclass(frozen=True, slots=True)
@@ -74,6 +75,8 @@ class CausalGateEvidence:
         ):
             if type(value) is not int or value < 1:
                 raise ValueError(f"{label} must be a positive integer")
+        if self.power_target_scenes != _POWER_TARGET_SCENES:
+            raise ValueError("power_target_scenes must equal the preregistered 1066")
         names = [item.family for item in self.confirmatory_families]
         if len(set(names)) != len(names):
             raise ValueError("confirmatory family names must be unique")
