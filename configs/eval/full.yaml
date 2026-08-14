@@ -1,0 +1,69 @@
+# Frozen evaluation/analysis plan. Paths become valid only after recorded runs.
+schema_version: 1
+experiment: full_checkpoint_evaluation
+execution_status: not_started
+selection:
+  calibration_split_only: true
+  test_set_checkpoint_selection: forbidden
+inputs:
+  iid_predictions: artifacts/predictions/iid.jsonl
+  ood_predictions: artifacts/predictions/error_mechanism.jsonl
+  dataset_manifest: artifacts/manifests/cva_v2.json
+  prediction_manifest: artifacts/manifests/full_prediction_manifest.json
+  prediction_manifest_sha256: null
+  execution_audit: artifacts/logs/private_vlm_evidence/full_evaluation_execution_audit.json
+  execution_audit_sha256: null
+  phase_d_audit: artifacts/metrics/cva_v2_audit.json
+  phase_d_audit_sha256: null
+  max_jsonl_bytes: 1073741824
+  max_jsonl_line_bytes: 1048576
+metrics:
+  outcome:
+    - exact_answer_accuracy
+    - numeric_mae
+    - numeric_mse
+  perception:
+    - state_exact_match
+    - mean_severity
+    - error_family_frequency
+  reasoning:
+    - oracle_state_accuracy
+    - perceived_state_canonicality
+    - compensator_mode_frequency
+  compensability:
+    - per_prompt_compensability
+    - severity_compensability_covariance
+    - relative_compensability_gain
+    - pairwise_odds_residual
+  coupling:
+    - perception_loss
+    - reasoning_loss
+    - coupling
+    - outcome_loss
+    - normalized_cancellation
+  ood:
+    - error_mechanism_generalization_gap
+    - compensation_generalization_gap
+statistics:
+  vlm_seeds:
+    - 11
+    - 17
+    - 23
+  bootstrap_resamples: 10000
+  confidence: 0.95
+  paired_bootstrap: true
+  multiple_comparisons: holm
+shifts:
+  primary: error_mechanism
+  held_constant:
+    - task_rule
+    - semantic_state
+    - answer_distribution
+provenance:
+  model_revision: 66285546d2b821cf421d4f5eb2576359d3770cd3
+  verl_revision: 7aed6b230776f963fa09509c10d9c3a767d1102c
+  decoder_revision: structured_parser_v1
+outputs:
+  metrics: artifacts/metrics/full.json
+  report: artifacts/reports/full_evaluation.md
+  log_root: artifacts/logs

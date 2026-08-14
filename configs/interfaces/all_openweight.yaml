@@ -1,0 +1,41 @@
+schema_version: 2
+experiment: qwen25vl3b_v2_multi_interface
+model:
+  name: Qwen/Qwen2.5-VL-3B-Instruct
+  revision: 66285546d2b821cf421d4f5eb2576359d3770cd3
+interfaces:
+  - id: natural_evidence_prefix
+    mode: behavioral
+    image_cut_mode: remove_image_context
+  - id: structured_scene_json
+    mode: behavioral
+    image_cut_mode: remove_image_context
+  - id: post_projector_activation
+    mode: activation
+    image_cut_mode: frozen_image_kv
+  - id: mid_fusion_activation
+    mode: activation
+    image_cut_mode: disable_new_cross_attention
+  - id: pre_answer_evidence_state
+    mode: activation
+    image_cut_mode: frozen_image_kv
+validity_gates:
+  oracle_loss_max: 0.01
+  replay_js_max: 0.05
+  replay_accuracy_gap_max: 0.03
+  image_exclusion_gap_max: 0.01
+  parser_reliability_min: 0.95
+  natural_states_per_error_min: 200
+  natural_inputs_per_error_min: 50
+statistics:
+  bootstrap_draws: 10000
+  confidence: 0.95
+  simultaneous_method: max_stat
+gate:
+  execution_permitted: false
+  require_two_valid_interface_types: true
+  require_authenticated_extension: true
+outputs:
+  validity: artifacts/partial_id/interface_validity_table.json
+  gamma: artifacts/partial_id/gamma_by_interface.json
+  certificate: artifacts/partial_id/partial_identification_interval.json

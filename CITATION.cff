@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite this repository and record the exact Git revision you ran."
+title: "CompBias: Auditable Compensability-Bias Experiments"
+type: software
+authors:
+  - name: "CompBias contributors"
+version: 0.1.0
+license: MIT
+abstract: >-
+  An auditable implementation of exact, tabular, small-neural, controlled
+  visual-world experiments and safety-gated VLM experiment plans for studying
+  compensability bias and spurious compensation equilibria under outcome-only
+  reinforcement learning.
+keywords:
+  - multimodal reinforcement learning
+  - compensability bias
+  - error coupling
+  - reproducibility

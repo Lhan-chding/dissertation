@@ -1,0 +1,40 @@
+schema_version: 1
+experiment: visual_neural_phase_c
+input:
+  source: cva_renderer_pil
+  image_size: 16
+  scene_seed: 23
+  iid_error_mechanism: offset_plus_2
+  ood_error_mechanism: offset_minus_2
+model:
+  class: ModularPerceiverReasoner
+  hidden_dim: 4
+  perceived_states: 2
+  reasoning_actions: 2
+training:
+  objective: outcome_only_expected_reward
+  profiles:
+    - truth_aligned
+    - spurious
+  modes:
+    - perception_only
+    - reasoning_only
+    - joint
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  steps: 32
+  perception_learning_rate: 0.35
+  reasoning_learning_rate: 0.35
+  device: cpu
+gates:
+  minimum_profile_shift: 0.02
+  minimum_joint_iid_accuracy: 0.70
+  minimum_ood_gap_margin: 0.20
+  ood_gap_bootstrap_resamples: 10000
+  ood_gap_confidence_level: 0.95
+  ood_gap_bootstrap_seed: 20260814
+outputs:
+  metrics: artifacts/metrics/visual_neural_summary.json
+  runs: artifacts/predictions/visual_neural_runs.csv
+  trajectories: artifacts/predictions/visual_neural_trajectories.csv
+  figure: artifacts/figures/visual_neural_trajectories.png
+  logs: artifacts/logs

@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-08-14",
+  "recorded_timezone": "Asia/Singapore (UTC+08)",
+  "source": {
+    "name": "MeasureBench",
+    "repository_url": "https://github.com/flageval-baai/MeasureBench",
+    "commit": "d5bb8652dbde6b1b5507f89d37f73993af28b830",
+    "commit_url": "https://github.com/flageval-baai/MeasureBench/commit/d5bb8652dbde6b1b5507f89d37f73993af28b830",
+    "paper_url": "https://arxiv.org/abs/2510.26865",
+    "project_url": "https://flageval-baai.github.io/MeasureBenchPage/"
+  },
+  "scope": {
+    "initial_source": "official synthetic generator only",
+    "real_images": "excluded from the initial external-validation stage",
+    "official_evaluator": "must remain unchanged",
+    "local_adapter": "may only preserve executable ground-truth metadata and provenance"
+  },
+  "status": {
+    "repository_retrieved": false,
+    "commit_checked_out": false,
+    "license_reviewed": false,
+    "generator_api_audited": false,
+    "synthetic_data_generated": false,
+    "external_validation_executed": false
+  },
+  "integrity": {
+    "commit_format": "40 lowercase hexadecimal characters",
+    "checkout_tree_sha256": null,
+    "license_sha256": null,
+    "generator_config_sha256": null,
+    "dataset_manifest_sha256": null,
+    "official_evaluator_sha256": null,
+    "results_sha256": null
+  },
+  "preregistration": "external/measurebench/preregistration.md",
+  "claim_boundary": "This pin records intended provenance only; it is not evidence that MeasureBench was downloaded, generated, evaluated, or validated."
+}

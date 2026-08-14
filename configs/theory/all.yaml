@@ -1,0 +1,45 @@
+schema_version: 1
+experiment: phase_a_theory_verification
+seed: 20260814
+
+property_tests:
+  cases: 1000
+  identity_abs_tolerance: 1.0e-8
+  finite_difference_step: 1.0e-5
+
+coordination:
+  delta: 1.0
+  epsilon: 1.0
+  horizon: 30.0
+  separatrix_tolerance: 1.0e-8
+  fixture_endpoint_abs_tolerance: 1.0e-7
+  basin_grid:
+    start: 0.05
+    stop: 0.95
+    count: 19
+  fixtures:
+    - name: truthful
+      initial: [0.7, 0.4]
+      expected: [1.0, 1.0]
+    - name: compensatory
+      initial: [0.6, 0.3]
+      expected: [0.0, 0.0]
+    - name: separatrix
+      initial: [0.7, 0.3]
+      expected: [0.5, 0.5]
+
+bifurcation:
+  a: 1.0
+  critical_search_interval: [0.1, 0.9]
+  critical_beta_abs_tolerance: 1.0e-3
+  plot_beta_over_a:
+    start: 0.0
+    stop: 0.7
+    count: 281
+
+outputs:
+  report: artifacts/theory_verification/report.md
+  property_tests: artifacts/theory_verification/random_property_tests.json
+  bifurcation_figure: artifacts/figures/bifurcation.png
+  basin_figure: artifacts/figures/basin_map.png
+  logs: artifacts/logs

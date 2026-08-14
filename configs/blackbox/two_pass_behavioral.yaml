@@ -1,0 +1,25 @@
+schema_version: 2
+experiment: blackbox_v2_two_pass_behavioral
+interface:
+  id: natural_evidence_prefix
+  mode: behavioral
+  first_call: image_question_to_compact_evidence
+  second_call: evidence_question_without_image
+  evidence_editing_permitted: false
+sampling:
+  pilot_inputs: 100
+  natural_mediators_per_input: 4
+  forks_per_mediator: 4
+  prompt_templates: [compact_scene_json, atomic_visual_facts]
+controls:
+  image_cut_required: true
+  paired_counterfactual_required: true
+  replay_fidelity_required: true
+  interface_sensitivity_required: true
+claim_scope: operational_compensation_certificate_only
+gate:
+  execution_permitted: false
+  api_provider_not_configured: true
+outputs:
+  natural_records: artifacts/natural_mediators/blackbox_records.jsonl
+  forked_records: artifacts/forked_replays/blackbox_forks.jsonl

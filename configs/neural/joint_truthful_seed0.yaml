@@ -1,0 +1,6 @@
+# Even seed initializes the registered truthful side of the joint-training basin.
+profile: spurious
+mode: joint
+seed: 0
+steps: 48
+device: cpu

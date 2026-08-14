@@ -1,0 +1,113 @@
+schema_version: 1
+experiment: phase_b_tabular_all
+task: all
+seed: 20260814
+
+errors:
+  ids: [truth, e1, e2, e3]
+  severity: [0.0, 1.0, 2.0, 3.0]
+  base_probs: [0.45, 0.25, 0.20, 0.10]
+
+selection:
+  beta: 0.5
+  profiles:
+    truth_aligned: [0.90, 0.70, 0.45, 0.20]
+    flat: [0.55, 0.55, 0.55, 0.55]
+    spurious: [0.35, 0.45, 0.70, 0.90]
+  mirror_descent:
+    step_size: 0.625
+    steps: 80
+    coarse_step_size: 4.25
+  reinforce:
+    seed_start: 0
+    num_seeds: 20
+    learning_rate: 0.20
+    sensitivity_learning_rates: [0.10, 0.30]
+    steps: 400
+    batch_size: 128
+  ppo_like:
+    seed_start: 0
+    num_seeds: 20
+    learning_rate: 0.20
+    sensitivity_learning_rates: [0.10, 0.30]
+    steps: 400
+    batch_size: 128
+    clip_ratio: 0.20
+    epochs_per_batch: 2
+  grpo_like:
+    seed_start: 0
+    num_seeds: 20
+    learning_rate: 0.20
+    sensitivity_learning_rates: [0.10, 0.30]
+    steps: 400
+    group_size: 64
+  bootstrap:
+    seed: 314159
+    resamples: 2000
+  gates:
+    exact_l1_max: 1.0e-10
+    mirror_l1_max: 1.0e-8
+    mirror_pairwise_odds_max_abs_residual: 1.0e-8
+    flat_mean_shift_abs_max: 0.03
+    directional_mean_shift_min: 0.05
+    raw_fixed_reasoner_outcome_sign_accuracy_min: 0.90
+    raw_fixed_reasoner_outcome_update_sensitivity_min: 1.0e-6
+    raw_fixed_reasoner_conditional_max_abs_error: 0.03
+    collapsed_diagnostic_sign_accuracy_min: 0.95
+    collapsed_diagnostic_mean_kl_improvement: true
+    collapsed_diagnostic_update_sensitivity_min: 1.0e-6
+    natural_mirror_trajectory_max_abs_error: 1.0e-12
+    natural_mirror_endpoint_l1_max: 1.0e-12
+
+scaling:
+  beta: 1.0
+  kappa: 0.05
+  finite_difference_step: 1.0e-5
+  # Each path has the same base-policy mean gain (=1) but a different
+  # severity covariance, isolating relative improvement rather than accuracy.
+  gains:
+    truth_gain: [2.2222222222222223, 0.0, 0.0, 0.0]
+    uniform_gain: [1.0, 1.0, 1.0, 1.0]
+    error_gain: [0.0, 0.0, 0.0, 10.0]
+  gates:
+    average_gain_spread_max: 1.0e-12
+    derivative_finite_difference_max_abs_error: 1.0e-7
+    uniform_direction_max_abs: 1.0e-12
+    directional_shift_min_abs: 0.04
+
+coordination:
+  delta: 1.0
+  epsilon: 1.0
+  horizon: 30.0
+  separatrix_tolerance: 1.0e-8
+  grid:
+    start: 0.05
+    stop: 0.95
+    count: 19
+  seeded_initializations:
+    seed_start: 0
+    num_seeds: 20
+    p_range: [0.25, 0.45]
+    gap_range: [0.08, 0.15]
+  bifurcation:
+    a: 1.0
+    beta_over_a: [0.10, 0.20, 0.30, 0.40, 0.45, 0.48, 0.50, 0.52, 0.60]
+    horizon: 600.0
+    branch_initial: [0.10, 0.90]
+    max_branch_abs_error: 1.0e-5
+  gates:
+    basin_mismatches_max: 0
+    seeded_mismatches_max: 0
+
+outputs:
+  selection_metrics: artifacts/metrics/tabular_selection.json
+  scaling_metrics: artifacts/metrics/tabular_scaling.json
+  coordination_metrics: artifacts/metrics/tabular_coordination.json
+  bifurcation_metrics: artifacts/metrics/tabular_bifurcation.json
+  selection_predictions: artifacts/predictions/tabular_selection.csv
+  scaling_predictions: artifacts/predictions/tabular_scaling.csv
+  coordination_predictions: artifacts/predictions/tabular_coordination.csv
+  bifurcation_predictions: artifacts/predictions/tabular_bifurcation.csv
+  selection_figure: artifacts/figures/selection_predicted_vs_observed.png
+  coordination_figure: artifacts/figures/tabular_coordination.png
+  logs: artifacts/logs

@@ -1,0 +1,74 @@
+# Preregistered protocol only. No Qwen rollout or compensability estimate is
+# recorded in the project registry.
+schema_version: 1
+experiment: compensability_qwen25vl3b
+execution_status: not_started
+model:
+  name: Qwen/Qwen2.5-VL-3B-Instruct
+  revision: 66285546d2b821cf421d4f5eb2576359d3770cd3
+checkpoint_role: pre_rl_fixed_reasoner
+input:
+  split: calibration
+  view: interventional
+  # Desired rollout contract only. The CPU interface check cannot prove this
+  # without the separate-worker audit and reviewed adapter hash below.
+  image_access: forbidden
+  require_image_is_none: true
+  error_catalog: exhaustive_per_sample
+  dataset_manifest: artifacts/manifests/cva_v2.json
+  max_jsonl_bytes: 1073741824
+  max_jsonl_line_bytes: 1048576
+sampling:
+  rollout_seeds:
+    - 1000
+    - 1001
+    - 1002
+    - 1003
+    - 1004
+    - 1005
+    - 1006
+    - 1007
+    - 1008
+    - 1009
+    - 1010
+    - 1011
+    - 1012
+    - 1013
+    - 1014
+    - 1015
+    - 1016
+    - 1017
+    - 1018
+    - 1019
+    - 1020
+    - 1021
+    - 1022
+    - 1023
+    - 1024
+    - 1025
+    - 1026
+    - 1027
+    - 1028
+    - 1029
+    - 1030
+    - 1031
+statistics:
+  confidence: 0.95
+  interval: wilson
+  covariance_scope: per_prompt
+  pooled_covariance_is_primary: false
+provenance:
+  checkpoint_path: artifacts/checkpoints/qwen25vl3b/pre_rl
+  checkpoint_sha256: null
+  execution_audit: artifacts/logs/private_vlm_evidence/compensability_execution_audit.json
+  execution_audit_sha256: null
+  phase_d_audit: artifacts/metrics/cva_v2_audit.json
+  phase_d_audit_sha256: null
+  rollout_manifest: artifacts/manifests/compensability_rollouts.json
+  rollout_manifest_sha256: null
+  verl_revision: 7aed6b230776f963fa09509c10d9c3a767d1102c
+outputs:
+  rollouts: artifacts/rollouts/interventional.jsonl
+  long_table: artifacts/metrics/compensability_long.csv
+  prompt_covariances: artifacts/metrics/compensability_by_prompt.csv
+  log_root: artifacts/logs

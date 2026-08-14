@@ -1,0 +1,3 @@
+# Preserve the server's validated CUDA build. This is a constraint, not an
+# instruction to replace the installed torch wheel.
+torch==2.8.0

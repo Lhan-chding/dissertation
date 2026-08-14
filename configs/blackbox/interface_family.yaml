@@ -1,0 +1,16 @@
+schema_version: 2
+experiment: blackbox_v2_interface_family
+interfaces:
+  - compact_scene_json
+  - atomic_visual_facts
+minimum_valid_interfaces: 2
+statistics:
+  bootstrap_draws: 10000
+  confidence: 0.95
+  simultaneous_method: max_stat
+claim_scope: operational_compensation_certificate_only
+gate:
+  execution_permitted: false
+  require_image_cut_controls: true
+  require_paired_counterfactuals: true
+output: artifacts/partial_id/blackbox_partial_identification_interval.json

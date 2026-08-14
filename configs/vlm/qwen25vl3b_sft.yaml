@@ -1,0 +1,44 @@
+# Metadata-only SFT preflight input. The project registry records no large-GPU
+# execution for this plan.
+experiment: qwen25vl3b_structured_sft
+execution_status: not_started
+large_gpu_started: false
+model:
+  name: Qwen/Qwen2.5-VL-3B-Instruct
+  revision: 66285546d2b821cf421d4f5eb2576359d3770cd3
+training:
+  stage: structured_sft
+  framework: verl
+  transformers_revision: "5.3.0"
+  verl_revision: 7aed6b230776f963fa09509c10d9c3a767d1102c
+  vllm_revision: "0.20.2"
+gate:
+  acknowledge_large_gpu_run: false
+  require_cuda_device_audit: true
+  # Structured SFT defers veRL configuration and forbids a veRL API audit here.
+  require_verl_api_audit: false
+  minimum_parse_rate: 0.98
+compatibility_audit:
+  status: audited_container_route_pending_target_hardware_smoke
+  official_release: https://github.com/verl-project/verl/releases/tag/v0.8.0
+  reason: >-
+    The pinned veRL revision's setup.py vLLM extra is stale and inconsistent
+    with its official stable Dockerfile. Do not install .[vllm]. Treat the
+    upstream Dockerfile as a dependency reference only after retrieving its
+    exact-commit bytes and verifying the recorded hash; first vendor a hardened
+    descendant with immutable base/download/wheel/Git/CUDA inputs, then install
+    veRL with --no-deps. The current plan keeps hardened
+    image/offline-wheelhouse/SBOM/vulnerability evidence pending; a future
+    authenticated gate must bind it before any execution can be permitted.
+  dockerfile_path_at_verl_revision: docker/Dockerfile.stable.vllm
+  dockerfile_url_at_verl_revision: >-
+    https://github.com/verl-project/verl/blob/7aed6b230776f963fa09509c10d9c3a767d1102c/docker/Dockerfile.stable.vllm
+  dockerfile_sha256: be8bd117fc415690c2d433e2e3c8832e6a96dd6de4e799be6a4be05c9eb4f300
+  dockerfile_packages:
+    torch: "2.11.0"
+    transformers: "5.3.0"
+    vllm: "0.20.2"
+  prohibited_install: "pip install -e .[vllm]"
+  permitted_verl_install_after_container_build: "pip install --no-deps -e ."
+  upstream_dockerfile_reproducible_as_is: false
+  hardened_descendant_vendor_pending: true

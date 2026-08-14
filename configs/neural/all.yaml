@@ -1,0 +1,30 @@
+schema_version: 1
+experiment: neural_phase_c
+profiles:
+  - truth_aligned
+  - spurious
+modes:
+  - perception_only
+  - reasoning_only
+  - joint
+joint_profile: spurious
+seeds:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+steps: 48
+learning_rate: 0.8
+device: cpu
+outputs:
+  metrics: artifacts/metrics/neural_summary.json
+  runs: artifacts/predictions/neural_runs.csv
+  trajectories: artifacts/predictions/neural_trajectories.csv
+  figure: artifacts/figures/neural_trajectories.png
+  logs: artifacts/logs

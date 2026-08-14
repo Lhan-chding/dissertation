@@ -1,0 +1,37 @@
+# Frozen Phase-D generation contract. This file records intent; generated data
+# and its manifest are separate evidence and must not be inferred from this YAML.
+dataset:
+  name: cva_v2
+  schema_version: "2.0"
+  output: artifacts/datasets/cva_v2/dataset.jsonl
+  manifest: artifacts/manifests/cva_v2.json
+  seed: 20260814
+  samples_per_family_per_split: 10
+  # With full IID crossing enabled, this count applies to OOD repeats only.
+  realizations_per_semantic: 2
+  fully_cross_iid_visual_styles: true
+  visual_styles:
+    - baseline
+    - font_weight_bold
+    - size_compact
+    - rotation_tilted
+    - contrast_low
+    - background_grid
+    - occlusion_local
+    - blur_mild
+    - distractor_marks
+    - layout_shifted
+  preregistered_ood_factors:
+    - visual_style
+    - error_mechanism
+  train_error_mechanism: offset_plus_2
+  ood_error_mechanism: offset_minus_2
+rendering:
+  width: 256
+  height: 256
+  images_dir: artifacts/datasets/cva_v2/images
+  contact_sheet_dir: artifacts/figures/cva_v2
+  samples_per_contact_sheet: 25
+logging:
+  root: artifacts/logs
+  experiment: cva_v2_generation

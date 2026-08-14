@@ -1,0 +1,11 @@
+# Preserve the byte-exact, hash-bound legacy audit CSV across platforms.
+artifacts/claim_evidence/v1_claim_audit.csv -text
+
+# Keep source, configuration, and documentation line endings deterministic.
+*.json text eol=lf
+*.md text eol=lf
+*.py text eol=lf
+*.sh text eol=lf
+*.toml text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf

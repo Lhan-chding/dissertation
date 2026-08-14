@@ -1,0 +1,6 @@
+# Odd seed initializes the registered compensatory side of the joint-training basin.
+profile: spurious
+mode: joint
+seed: 1
+steps: 48
+device: cpu

@@ -1,0 +1,33 @@
+schema_version: 2
+experiment: qwen25vl3b_v2_vision_lora
+model:
+  name: Qwen/Qwen2.5-VL-3B-Instruct
+  revision: 66285546d2b821cf421d4f5eb2576359d3770cd3
+regime:
+  id: vision_lora
+  vision_update: lora
+  projector_update: full
+  language_update: lora
+training:
+  framework: verl
+  algorithm: grpo
+  checkpoints: [base, 10pct, 25pct, 50pct, 75pct, final]
+  seeds: [0, 1, 2]
+  pilot_inputs: 100
+  mediators_per_input: 4
+  forks_per_mediator: 4
+interfaces:
+  - natural_evidence_prefix
+  - structured_scene_json
+  - post_projector_activation
+  - mid_fusion_activation
+  - pre_answer_evidence_state
+resources:
+  minimum_gpu_vram_gb: 48
+  precision: bf16
+gate:
+  execution_permitted: false
+  require_phase_d_human_review: true
+  require_authenticated_extension: true
+  require_target_gpu_smoke: true
+output_plan: artifacts/logs/private_vlm_plans/qwen25vl3b_v2_vision_lora.json

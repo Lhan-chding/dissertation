@@ -1,0 +1,35 @@
+schema_version: 1
+experiment: coordination_basin_and_bifurcation
+task: coordination
+seed: 20260814
+
+coordination:
+  delta: 1.0
+  epsilon: 1.0
+  horizon: 30.0
+  separatrix_tolerance: 1.0e-8
+  grid:
+    start: 0.05
+    stop: 0.95
+    count: 19
+  seeded_initializations:
+    seed_start: 0
+    num_seeds: 20
+    p_range: [0.25, 0.45]
+    gap_range: [0.08, 0.15]
+  bifurcation:
+    a: 1.0
+    beta_over_a: [0.10, 0.20, 0.30, 0.40, 0.45, 0.48, 0.50, 0.52, 0.60]
+    horizon: 600.0
+    branch_initial: [0.10, 0.90]
+    max_branch_abs_error: 1.0e-5
+  gates:
+    basin_mismatches_max: 0
+    seeded_mismatches_max: 0
+
+outputs:
+  coordination_metrics: artifacts/metrics/tabular_coordination_grid.json
+  bifurcation_metrics: artifacts/metrics/tabular_coordination_grid_bifurcation.json
+  coordination_predictions: artifacts/predictions/tabular_coordination_grid.csv
+  bifurcation_predictions: artifacts/predictions/tabular_coordination_grid_bifurcation.csv
+  logs: artifacts/logs

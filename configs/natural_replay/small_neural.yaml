@@ -1,0 +1,35 @@
+schema_version: 2
+experiment: small_neural_natural_replay_v2
+data:
+  samples_per_family_per_split: 40
+  realizations_per_semantic: 8
+  data_seed: 20260814
+  splits: [train, calibration, val, iid_test, ood_test]
+  task_families:
+    - digit_offset
+    - count_transform
+    - gauge_calibration
+    - bar_chart_aggregate
+    - relation_rule
+replay:
+  n_mediators: 32
+  n_forks: 32
+  bootstrap_draws: 10000
+training:
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+  steps: 16
+  batch_size: 256
+  image_size: 16
+  hidden_dim: 8
+  learning_rate: 0.20
+  device: cpu
+synthetic:
+  error_mass: 0.80
+  role: off_support_stress_test
+confirmatory: true
+outputs:
+  summary: artifacts/metrics/small_neural_natural_replay_v2.json
+  compensabilities: artifacts/transport/small_neural_three_compensabilities.csv
+  crossed_risks: artifacts/crossed_risks/small_neural_risk_table.csv
+  selection: artifacts/checkpoint_selection/small_neural_selection_dynamics.csv
+  manifest: artifacts/natural_mediators/small_neural_manifest.json

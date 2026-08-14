@@ -1,0 +1,6 @@
+# CPU-only fixed-reasoner diagnostic. Consumed by scripts/train_neural.py.
+profile: truth_aligned
+mode: perception_only
+seed: 0
+steps: 48
+device: cpu

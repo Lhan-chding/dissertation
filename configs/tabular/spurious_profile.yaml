@@ -1,0 +1,65 @@
+schema_version: 1
+experiment: tabular_spurious_profile
+task: selection
+seed: 20260814
+
+errors:
+  ids: [truth, e1, e2, e3]
+  severity: [0.0, 1.0, 2.0, 3.0]
+  base_probs: [0.45, 0.25, 0.20, 0.10]
+
+selection:
+  beta: 0.5
+  profiles:
+    truth_aligned: [0.90, 0.70, 0.45, 0.20]
+    flat: [0.55, 0.55, 0.55, 0.55]
+    spurious: [0.35, 0.45, 0.70, 0.90]
+  mirror_descent:
+    step_size: 0.625
+    steps: 80
+    coarse_step_size: 4.25
+  reinforce:
+    seed_start: 0
+    num_seeds: 20
+    learning_rate: 0.20
+    sensitivity_learning_rates: [0.10, 0.30]
+    steps: 400
+    batch_size: 128
+  ppo_like:
+    seed_start: 0
+    num_seeds: 20
+    learning_rate: 0.20
+    sensitivity_learning_rates: [0.10, 0.30]
+    steps: 400
+    batch_size: 128
+    clip_ratio: 0.20
+    epochs_per_batch: 2
+  grpo_like:
+    seed_start: 0
+    num_seeds: 20
+    learning_rate: 0.20
+    sensitivity_learning_rates: [0.10, 0.30]
+    steps: 400
+    group_size: 64
+  bootstrap:
+    seed: 314159
+    resamples: 2000
+  gates:
+    exact_l1_max: 1.0e-10
+    mirror_l1_max: 1.0e-8
+    mirror_pairwise_odds_max_abs_residual: 1.0e-8
+    flat_mean_shift_abs_max: 0.03
+    directional_mean_shift_min: 0.05
+    raw_fixed_reasoner_outcome_sign_accuracy_min: 0.90
+    raw_fixed_reasoner_outcome_update_sensitivity_min: 1.0e-6
+    raw_fixed_reasoner_conditional_max_abs_error: 0.03
+    collapsed_diagnostic_sign_accuracy_min: 0.95
+    collapsed_diagnostic_mean_kl_improvement: true
+    collapsed_diagnostic_update_sensitivity_min: 1.0e-6
+    natural_mirror_trajectory_max_abs_error: 1.0e-12
+    natural_mirror_endpoint_l1_max: 1.0e-12
+
+outputs:
+  selection_metrics: artifacts/metrics/tabular_spurious_profile.json
+  selection_predictions: artifacts/predictions/tabular_spurious_profile.csv
+  logs: artifacts/logs
