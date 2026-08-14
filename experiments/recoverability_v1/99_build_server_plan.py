@@ -30,6 +30,8 @@ def main() -> int:
         "protocol_lock_verified": lock.verified,
         "phase_n_scenes": design.phase_n_scenes,
         "bridge_scenes": design.bridge_scenes,
+        "bridge_protocol_trajectories": design.bridge_protocol_trajectories,
+        "bridge_model_calls": design.bridge_model_calls,
         "phase_c_intake_scenes": design.phase_c_intake_scenes,
         "selected_independent_scenes": design.selected_independent_scenes,
         "total_downstream_forks": design.total_downstream_forks,

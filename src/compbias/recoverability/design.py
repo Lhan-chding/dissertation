@@ -11,6 +11,7 @@ from .config import RecoverabilityProtocol
 class DesignReport:
     phase_n_scenes: int
     bridge_scenes: int
+    bridge_protocol_trajectories: int
     bridge_model_calls: int
     phase_c_intake_scenes: int
     selected_family_quotas: tuple[tuple[str, int], ...]
@@ -35,7 +36,8 @@ def build_design_report(protocol: RecoverabilityProtocol) -> DesignReport:
     return DesignReport(
         phase_n_scenes=protocol.phase_n.scenes,
         bridge_scenes=protocol.bridge.scenes,
-        bridge_model_calls=protocol.bridge.scenes * protocol.bridge.protocols_per_scene,
+        bridge_protocol_trajectories=(protocol.bridge.scenes * protocol.bridge.protocols_per_scene),
+        bridge_model_calls=protocol.bridge.scenes * 3,
         phase_c_intake_scenes=protocol.phase_c.intake_scenes,
         selected_family_quotas=protocol.phase_c.selected_family_quotas,
         selected_independent_scenes=selected,
