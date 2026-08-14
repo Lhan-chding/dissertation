@@ -187,7 +187,7 @@ def test_protocol_rejects_adaptive_or_ambiguous_sample_plans(tmp_path: Path) -> 
 def test_local_server_plan_is_metadata_only_and_cannot_execute_gpu() -> None:
     command = [
         sys.executable,
-        str(ROOT / "experiments" / "recoverability_v1" / "03_build_server_plan.py"),
+        str(ROOT / "experiments" / "recoverability_v1" / "99_build_server_plan.py"),
         "--config",
         str(CONFIG),
         "--protocol-lock",

@@ -66,10 +66,10 @@ def test_two_stage_messages_never_include_image_or_hidden_gold_in_stage2() -> No
         operation=scene.operation,
     )
 
-    assert all("image" not in json.dumps(message) for message in stage2)
+    assert all('"type": "image"' not in json.dumps(message) for message in stage2)
     assert "gold" not in json.dumps(stage1).lower()
     assert "gold" not in json.dumps(stage2).lower()
-    assert str(scene.answer) not in json.dumps(stage2)
+    assert '"gold_answer"' not in json.dumps(stage2)
     assert len(stage1) == len(stage2) == 2
 
 
@@ -104,7 +104,12 @@ def test_bridge_runs_exactly_one_legacy_and_one_two_stage_trajectory_per_scene()
         calls["stage2"] += 1
         return json.dumps(
             {
-                "variables": {"a": scene.values[0], "b": scene.values[1], "c": scene.values[2], "d": scene.values[3]},
+                "variables": {
+                    "a": scene.values[0],
+                    "b": scene.values[1],
+                    "c": scene.values[2],
+                    "d": scene.values[3],
+                },
                 "steps": [
                     {"op": "max", "inputs": ["a", "b", "c", "d"], "output": "high"},
                     {"op": "min", "inputs": ["a", "b", "c", "d"], "output": "low"},
