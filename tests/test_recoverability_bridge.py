@@ -174,6 +174,7 @@ def test_bridge_cli_requires_explicit_server_execution_flag() -> None:
         text=True,
     )
     assert "--execute" in completed.stdout
+    assert "--server-package-lock" in completed.stdout
     blocked = subprocess.run(
         [
             sys.executable,

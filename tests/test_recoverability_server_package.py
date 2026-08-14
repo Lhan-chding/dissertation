@@ -112,7 +112,7 @@ def test_preflight_rejects_online_mode_or_failed_dependency_check() -> None:
         )
 
 
-def test_server_package_lock_binds_runtime_protocol_power_and_requirements() -> None:
+def test_server_package_lock_binds_runtime_protocol_runners_and_parsers() -> None:
     result = verify_protocol_lock(SERVER_LOCK, repository_root=ROOT)
 
     assert result.verified is True
@@ -120,7 +120,22 @@ def test_server_package_lock_binds_runtime_protocol_power_and_requirements() -> 
         "configs/recoverability/recoverability_v1.yaml",
         "configs/recoverability/power_plan_v1.json",
         "configs/recoverability/server_runtime_v1.yaml",
+        "configs/recoverability/v0_3_negative_pilot.yaml",
+        "experiments/recoverability_v1/00_preflight.py",
+        "experiments/recoverability_v1/02_capture_v03_evidence.py",
+        "experiments/recoverability_v1/03_bridge.py",
         "requirements-gpu.lock.txt",
+        "src/compbias/gpu_pilot/config.py",
+        "src/compbias/gpu_pilot/qwen_smoke.py",
+        "src/compbias/gpu_pilot/structured_generation.py",
+        "src/compbias/models/structured_parser.py",
+        "src/compbias/recoverability/bridge.py",
+        "src/compbias/recoverability/dsl/executor.py",
+        "src/compbias/recoverability/dsl/parser.py",
+        "src/compbias/recoverability/dsl/schema.py",
+        "src/compbias/recoverability/evidence.py",
+        "src/compbias/recoverability/evidence_capture.py",
+        "src/compbias/recoverability/preflight.py",
     }
 
 
