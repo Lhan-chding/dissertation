@@ -12,7 +12,7 @@ from pathlib import Path
 
 from compbias.io.yaml_config import load_yaml_mapping, reject_unknown_fields
 
-from .config import load_pilot_paths
+from .config import ACTIVE_PILOT_DATA_CONFIG, load_pilot_paths
 from .execution_gate import resolve_project_file
 
 _TOP = frozenset(
@@ -90,16 +90,16 @@ _EXPECTED_STATIC = {
     "pilot_a": {
         "paths_config": "configs/paths.yaml",
         "model_config": "configs/model/qwen25vl3b.yaml",
-        "data_config": "configs/data/cva_chart_pilot.yaml",
-        "dataset_manifest": "data/generated/cva_chart_pilot_v0_1/manifest.json",
+        "data_config": ACTIVE_PILOT_DATA_CONFIG,
+        "dataset_manifest": "data/generated/cva_chart_pilot_v0_2/manifest.json",
         "natural_records": "trajectories/natural/pilot_train_records.jsonl",
         "output_subdir": "pilot_a",
     },
     "pilot_b_lm_only": {
         "paths_config": "configs/paths.yaml",
         "model_config": "configs/model/qwen25vl3b.yaml",
-        "data_config": "configs/data/cva_chart_pilot.yaml",
-        "dataset_manifest": "data/generated/cva_chart_pilot_v0_1/manifest.json",
+        "data_config": ACTIVE_PILOT_DATA_CONFIG,
+        "dataset_manifest": "data/generated/cva_chart_pilot_v0_2/manifest.json",
         "natural_records": "trajectories/natural/natural_records.jsonl",
         "output_subdir": "pilot_b_lm_only",
     },

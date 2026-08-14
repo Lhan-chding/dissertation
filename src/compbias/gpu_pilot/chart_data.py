@@ -1,4 +1,4 @@
-"""Deterministic CVA-Chart-Pilot-v0.1 renderer and manifest writer."""
+"""Versioned deterministic CVA-Chart-Pilot renderer and manifest writer."""
 
 from __future__ import annotations
 
@@ -39,6 +39,7 @@ def _draw_chart(
     values: tuple[int, ...],
     size: tuple[int, int],
     ood: bool,
+    render_mode: str,
 ) -> None:
     width, height = size
     image = Image.new("RGB", size, "#f4f1e8" if ood else "white")
@@ -46,15 +47,29 @@ def _draw_chart(
     plot_left, plot_top, plot_right, plot_bottom = 70, 50, width - 40, height - 55
     draw.line((plot_left, plot_top, plot_left, plot_bottom), fill="black", width=2)
     draw.line((plot_left, plot_bottom, plot_right, plot_bottom), fill="black", width=2)
-    max_value = max(values) + 2
+    if render_mode == "direct_labels_v0_1":
+        max_value = max(values) + 2
+        ticks: tuple[int, ...] = ()
+    elif render_mode == "axis_scale_v0_2":
+        max_value = max(20, max(values) + max(values) % 2)
+        ticks = tuple(range(0, max_value + 1, 2))
+    else:
+        raise ValueError(f"unsupported render mode: {render_mode}")
     x_step = (plot_right - plot_left) / len(values)
+    for tick in ticks:
+        y = plot_bottom - tick / max_value * (plot_bottom - plot_top)
+        if tick:
+            draw.line((plot_left, y, plot_right, y), fill="#e5e7eb", width=1)
+        draw.line((plot_left - 4, y, plot_left, y), fill="black", width=1)
+        draw.text((plot_left - 28, y - 6), str(tick), fill="#374151")
     points: list[tuple[float, float]] = []
     for index, value in enumerate(values):
         x = plot_left + (index + 0.5) * x_step
         y = plot_bottom - value / max_value * (plot_bottom - plot_top)
         points.append((x, y))
         draw.text((x - 4, plot_bottom + 12), chr(ord("A") + index), fill="black")
-        draw.text((x - 4, y - 18), str(value), fill="black")
+        if render_mode == "direct_labels_v0_1":
+            draw.text((x - 4, y - 18), str(value), fill="black")
     if chart_type == "grouped_bar":
         colors = ("#1d4ed8", "#ea580c", "#059669", "#7c3aed")
         for (x, y), color in zip(points, colors, strict=True):
@@ -137,6 +152,7 @@ def generate_dataset(config: PilotDataConfig, output_dir: Path) -> dict[str, obj
                 values=tuple(int(value) for value in record["values"]),  # type: ignore[arg-type]
                 size=config.image_size,
                 ood=record["split"] == "mechanism_ood",
+                render_mode=config.render_mode,
             )
         records_path = output_dir / "records.jsonl"
         _write_jsonl(records_path, records)
@@ -154,6 +170,7 @@ def generate_dataset(config: PilotDataConfig, output_dir: Path) -> dict[str, obj
                 values=changed,
                 size=config.image_size,
                 ood=True,
+                render_mode=config.render_mode,
             )
             pairs.append(
                 {
@@ -210,7 +227,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         paths = load_pilot_paths(args.paths)
         config = load_pilot_data_config(args.config)
-        target = paths.data / "generated" / "cva_chart_pilot_v0_1"
+        target = paths.data / "generated" / config.output_slug
         manifest = generate_dataset(config, target)
     except (OSError, TypeError, ValueError) as error:
         print(f"ERROR: {error}")

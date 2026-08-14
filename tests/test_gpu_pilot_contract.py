@@ -52,9 +52,15 @@ def test_paths_config_is_closed_and_supports_environment_override(tmp_path: Path
 def test_pilot_data_contract_freezes_registered_counts_and_tasks() -> None:
     from compbias.gpu_pilot.config import load_pilot_data_config
 
-    config = load_pilot_data_config(Path("configs/data/cva_chart_pilot.yaml"))
+    config = load_pilot_data_config(Path("configs/data/cva_chart_pilot_v0_2.yaml"))
+    legacy = load_pilot_data_config(Path("configs/data/cva_chart_pilot.yaml"))
 
     assert config.dataset_id == "CVA-Chart-Pilot-v0.2"
+    assert config.output_slug == "cva_chart_pilot_v0_2"
+    assert config.render_mode == "axis_scale_v0_2"
+    assert legacy.dataset_id == "CVA-Chart-Pilot-v0.1"
+    assert legacy.output_slug == "cva_chart_pilot_v0_1"
+    assert legacy.render_mode == "direct_labels_v0_1"
     assert config.split_counts == {
         "calibration": 200,
         "smoke_train": 600,
@@ -67,6 +73,35 @@ def test_pilot_data_contract_freezes_registered_counts_and_tasks() -> None:
     assert config.operations == ("difference", "sum", "max_minus_min")
     assert config.counterfactual_pairs == 150
     assert config.natural_audit == 150
+
+
+def test_active_manifest_rejects_legacy_v0_1_dataset() -> None:
+    from compbias.gpu_pilot.execution_gate import _validate_manifest
+
+    legacy_manifest = {
+        "schema_version": 1,
+        "dataset_id": "CVA-Chart-Pilot-v0.1",
+        "record_count": 2_800,
+        "split_counts": {
+            "calibration": 200,
+            "smoke_train": 600,
+            "pilot_train": 1_200,
+            "dev": 200,
+            "iid_test": 300,
+            "mechanism_ood": 300,
+        },
+        "counterfactual_pairs": 150,
+        "natural_audit_ids": [f"calibration-{index:06d}" for index in range(150)],
+        "records_path": "records.jsonl",
+        "records_sha256": "0" * 64,
+        "counterfactual_path": "counterfactual_pairs.jsonl",
+        "counterfactual_sha256": "1" * 64,
+        "images_generated": 2_950,
+        "images_sha256": "2" * 64,
+    }
+
+    with pytest.raises(RuntimeError, match="registered contract"):
+        _validate_manifest(legacy_manifest)
 
 
 def test_preflight_rejects_low_vram_and_accepts_valid_fixture(tmp_path: Path) -> None:
@@ -255,7 +290,7 @@ def test_gpu_stage_cannot_execute_without_smoke_and_calibration_evidence(
         "stage": "pilot_a",
         "paths_config": "configs/paths.yaml",
         "model_config": "configs/model/qwen25vl3b.yaml",
-        "data_config": "configs/data/cva_chart_pilot.yaml",
+        "data_config": "configs/data/cva_chart_pilot_v0_2.yaml",
         "dataset_manifest": "data/generated/cva_chart_pilot_v0_2/manifest.json",
         "natural_records": "trajectories/natural/pilot_train_records.jsonl",
         "output_subdir": "pilot_a",
@@ -466,7 +501,7 @@ def test_gpu_execution_gate_accepts_only_complete_bound_evidence(
     stage_config = tmp_path / "configs" / "train" / "pilot_a.yaml"
     paths_config = tmp_path / "configs" / "paths.yaml"
     model_config = tmp_path / "configs" / "model" / "qwen25vl3b.yaml"
-    data_config = tmp_path / "configs" / "data" / "cva_chart_pilot.yaml"
+    data_config = tmp_path / "configs" / "data" / "cva_chart_pilot_v0_2.yaml"
     for path in (stage_config, paths_config, model_config, data_config):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("schema_version: 1\n", encoding="utf-8")
@@ -474,7 +509,7 @@ def test_gpu_execution_gate_accepts_only_complete_bound_evidence(
         "stage": "pilot_a",
         "paths_config": "configs/paths.yaml",
         "model_config": "configs/model/qwen25vl3b.yaml",
-        "data_config": "configs/data/cva_chart_pilot.yaml",
+        "data_config": "configs/data/cva_chart_pilot_v0_2.yaml",
         "dataset_manifest": "data/generated/cva_chart_pilot_v0_2/manifest.json",
         "natural_records": "trajectories/natural/pilot_train_records.jsonl",
     }

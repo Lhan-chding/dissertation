@@ -44,6 +44,14 @@ _ENV_OVERRIDES = {
     "cache": "COMPBIAS_CACHE_DIR",
 }
 
+ACTIVE_PILOT_DATASET_ID = "CVA-Chart-Pilot-v0.2"
+ACTIVE_PILOT_DATA_CONFIG = "configs/data/cva_chart_pilot_v0_2.yaml"
+ACTIVE_PILOT_OUTPUT_SLUG = "cva_chart_pilot_v0_2"
+_DATASET_DESIGNS = {
+    "CVA-Chart-Pilot-v0.1": ("cva_chart_pilot_v0_1", "direct_labels_v0_1"),
+    ACTIVE_PILOT_DATASET_ID: (ACTIVE_PILOT_OUTPUT_SLUG, "axis_scale_v0_2"),
+}
+
 
 def _mapping(value: object, label: str) -> Mapping[str, object]:
     if not isinstance(value, Mapping) or any(not isinstance(key, str) for key in value):
@@ -125,14 +133,23 @@ class PilotDataConfig:
     natural_audit: int
 
     def __post_init__(self) -> None:
-        if self.dataset_id != "CVA-Chart-Pilot-v0.1":
-            raise ValueError("dataset_id must equal CVA-Chart-Pilot-v0.1")
+        if self.dataset_id not in _DATASET_DESIGNS:
+            supported = ", ".join(sorted(_DATASET_DESIGNS))
+            raise ValueError(f"dataset_id must equal one of: {supported}")
         if self.chart_types != ("grouped_bar", "line"):
             raise ValueError("chart_types must equal grouped_bar and line")
         if self.operations != ("difference", "sum", "max_minus_min"):
             raise ValueError("operations must equal difference, sum, and max_minus_min")
         if tuple(self.split_counts) != _SPLITS:
             raise ValueError("split_counts must contain the registered ordered split set")
+
+    @property
+    def output_slug(self) -> str:
+        return _DATASET_DESIGNS[self.dataset_id][0]
+
+    @property
+    def render_mode(self) -> str:
+        return _DATASET_DESIGNS[self.dataset_id][1]
 
 
 def load_pilot_paths(

@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import subprocess
+from dataclasses import replace
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -295,7 +296,7 @@ def test_structured_prompt_does_not_teach_a_trailing_period() -> None:
         retry_index=1,
         expected_value_count=3,
     )
-    rendered = json.dumps(messages, sort_keys=True)
+    rendered = " ".join(str(message["content"]) for message in messages)
 
     assert "</answer>." not in rendered
     assert "final character must be >" in rendered.lower()
@@ -338,7 +339,7 @@ def test_structured_prompt_requires_full_scene_transcription_for_partial_operati
         retry_index=0,
         expected_value_count=4,
     )
-    rendered = json.dumps(messages, sort_keys=True)
+    rendered = " ".join(str(message["content"]) for message in messages)
 
     assert "transcribe all 4 labeled values" in rendered.lower()
     assert "even when the question uses only some of them" in rendered.lower()
@@ -701,7 +702,35 @@ def _small_data_config() -> PilotDataConfig:
     )
 
 
+@pytest.mark.parametrize("chart_type", ["grouped_bar", "line"])
 def test_chart_renderer_uses_axis_ticks_instead_of_direct_value_labels(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    chart_type: str,
+) -> None:
+    from compbias.gpu_pilot import chart_data
+
+    labels: list[str] = []
+
+    def capture_text(_draw: object, _position: object, text: object, **_kwargs: object) -> None:
+        labels.append(str(text))
+
+    monkeypatch.setattr(chart_data.ImageDraw.ImageDraw, "text", capture_text)
+    chart_data._draw_chart(
+        tmp_path / "chart.png",
+        chart_type=chart_type,
+        values=(3, 7, 13, 17),
+        size=(512, 384),
+        ood=False,
+        render_mode="axis_scale_v0_2",
+    )
+
+    numeric_labels = {label for label in labels if label.isdigit()}
+    assert numeric_labels == {str(value) for value in range(0, 21, 2)}
+    assert {"3", "7", "13", "17"}.isdisjoint(numeric_labels)
+
+
+def test_versioned_renderer_preserves_legacy_labels_and_scales_value_21(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
@@ -714,16 +743,26 @@ def test_chart_renderer_uses_axis_ticks_instead_of_direct_value_labels(
 
     monkeypatch.setattr(chart_data.ImageDraw.ImageDraw, "text", capture_text)
     chart_data._draw_chart(
-        tmp_path / "chart.png",
-        chart_type="grouped_bar",
+        tmp_path / "legacy.png",
+        chart_type="line",
         values=(3, 7, 13, 17),
         size=(512, 384),
         ood=False,
+        render_mode="direct_labels_v0_1",
     )
+    assert {"3", "7", "13", "17"}.issubset(labels)
 
-    numeric_labels = {label for label in labels if label.isdigit()}
-    assert numeric_labels == {str(value) for value in range(0, 21, 2)}
-    assert {"3", "7", "13", "17"}.isdisjoint(numeric_labels)
+    labels.clear()
+    chart_data._draw_chart(
+        tmp_path / "v0_2.png",
+        chart_type="line",
+        values=(21, 7, 13, 17),
+        size=(512, 384),
+        ood=True,
+        render_mode="axis_scale_v0_2",
+    )
+    assert "22" in labels
+    assert "21" not in labels
 
 
 def test_dataset_generation_is_deterministic_and_no_clobber(tmp_path: Path) -> None:
@@ -742,6 +781,33 @@ def test_dataset_generation_is_deterministic_and_no_clobber(tmp_path: Path) -> N
     with pytest.raises(FileExistsError, match="already exists"):
         generate_dataset(_small_data_config(), output)
     assert (output / "manifest.json").read_bytes() == manifest_bytes
+
+
+def test_v0_1_and_v0_2_coexist_without_semantic_task_drift(tmp_path: Path) -> None:
+    current = _small_data_config()
+    legacy = replace(current, dataset_id="CVA-Chart-Pilot-v0.1")
+    legacy_root = tmp_path / legacy.output_slug
+    current_root = tmp_path / current.output_slug
+    replay_root = tmp_path / "legacy-replay"
+
+    legacy_manifest = generate_dataset(legacy, legacy_root)
+    current_manifest = generate_dataset(current, current_root)
+    replay_manifest = generate_dataset(legacy, replay_root)
+
+    def normalized_records(path: Path) -> list[dict[str, object]]:
+        rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
+        return [{**row, "dataset_id": "normalized"} for row in rows]
+
+    assert legacy_root.is_dir()
+    assert current_root.is_dir()
+    assert normalized_records(legacy_root / "records.jsonl") == normalized_records(
+        current_root / "records.jsonl"
+    )
+    assert (legacy_root / "counterfactual_pairs.jsonl").read_bytes() == (
+        current_root / "counterfactual_pairs.jsonl"
+    ).read_bytes()
+    assert legacy_manifest["images_sha256"] != current_manifest["images_sha256"]
+    assert legacy_manifest["images_sha256"] == replay_manifest["images_sha256"]
 
 
 def test_execution_gate_replays_seeded_dataset_pixels(tmp_path: Path) -> None:
@@ -787,7 +853,7 @@ def test_execution_gate_replays_the_full_registered_dataset(tmp_path: Path) -> N
 
     output = tmp_path / "dataset"
     manifest = generate_dataset(
-        load_pilot_data_config(Path("configs/data/cva_chart_pilot.yaml")),
+        load_pilot_data_config(Path("configs/data/cva_chart_pilot_v0_2.yaml")),
         output,
     )
 

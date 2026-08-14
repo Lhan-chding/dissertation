@@ -99,7 +99,9 @@ export TRANSFORMERS_OFFLINE=1
 
 python experiments/gpu_pilot/02_generate_pilot_data.py \
   --paths configs/paths.yaml \
-  --config configs/data/cva_chart_pilot.yaml
+  --config configs/data/cva_chart_pilot_v0_2.yaml
+
+test -f data/generated/cva_chart_pilot_v0_2/manifest.json
 
 python experiments/gpu_pilot/03_base_calibration.py \
   --paths configs/paths.yaml \
@@ -113,6 +115,12 @@ The launcher will still refuse execution unless the Git worktree is clean and
 the strict dataset/smoke/calibration replay gate succeeds. Do not edit a report
 to force a pass: its source records and referenced bytes are rehashed and
 recomputed at launch.
+
+The v0.2 generator writes to a new directory and never replaces the existing
+`cva_chart_pilot_v0_1` evidence. Do not rename or delete the v0.1 directory:
+its legacy config `configs/data/cva_chart_pilot.yaml` and direct-label renderer
+are retained solely to replay the first calibration audit. All new calibration
+and training gates bind to v0.2.
 
 If calibration exits nonzero, the same command may be run again after the
 reviewed task adjustment. The collector archives the prior complete failed

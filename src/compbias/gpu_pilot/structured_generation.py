@@ -66,12 +66,17 @@ def build_structured_instruction(*, operation: str, expected_value_count: int) -
         separators=(",", ":"),
         allow_nan=False,
     )
+    labels = ", ".join(chr(ord("A") + index) for index in range(expected_value_count))
     return (
         "Required grammar: "
         '<perception>{"values":[INTEGER,...]}</perception>'
         f'<reasoning>{{"operation":"{operation}"}}</reasoning>'
         "<answer>INTEGER_OR_FINITE_NUMBER</answer> "
         f"The values array must contain exactly {expected_value_count} integers. "
+        f"Transcribe all {expected_value_count} labeled values in {labels} order, even when the "
+        "question uses only some of them. For sum use A+B; for difference use A-B; all other "
+        "displayed values still belong in perception. "
+        "Do not insert \\n or any escape sequence between the perception JSON and its closing tag. "
         "The response's final character must be >; add no trailing punctuation or prose. "
         "Example format only, not the answer to this task: "
         f"<perception>{example_perception}</perception>"

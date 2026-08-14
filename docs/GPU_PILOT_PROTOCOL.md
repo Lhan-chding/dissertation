@@ -4,6 +4,12 @@ The pilot is intentionally smaller than the later A100/H100 multi-interface
 study. It runs only after preflight, offline model smoke, data generation, and
 base calibration.
 
+The active dataset is `CVA-Chart-Pilot-v0.2`. It retains the frozen v0.1
+tasks, splits, values, and audit prefix, but replaces printed point values with
+a visible integer y-axis scale. The legacy `configs/data/cva_chart_pilot.yaml`
+and v0.1 renderer remain available for byte-level replay of the first failed
+calibration; new collection and training accept only v0.2.
+
 ## Pilot A: fixed natural mediator
 
 The image is removed. A naturally generated erroneous evidence mediator is
@@ -49,6 +55,13 @@ reinterpreted as a valid trajectory. A valid pilot trajectory must have exactly
 one integer `values` array of the expected length, exactly the requested
 `operation`, and a non-boolean finite numeric answer. The smoke passes only
 when this closed schema and the known-answer check both pass.
+
+For every four-value pilot chart, perception must report A, B, C, and D in
+that order even when the arithmetic question uses only A and B. Two-value
+evidence is rejected rather than reinterpreted. The prompt states that `sum`
+means A+B and `difference` means A-B, and prohibits escaped line breaks inside
+the perception JSON. These instructions improve format compliance without
+loosening the parser or changing the natural-error taxonomy.
 
 The training launchers do not trust summary booleans. Immediately before any
 training import, they rerun the live hardware audit and known-answer smoke,

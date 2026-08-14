@@ -16,7 +16,7 @@ from compbias.io.yaml_config import load_yaml_mapping
 from compbias.models.structured_parser import parse_trajectory
 
 from .chart_data import generate_dataset
-from .config import PilotPaths, load_pilot_data_config
+from .config import ACTIVE_PILOT_DATASET_ID, PilotPaths, load_pilot_data_config
 from .preflight import model_snapshot_sha256
 from .structured_generation import numeric_answer_matches, validate_pilot_trajectory
 
@@ -456,7 +456,7 @@ def _validate_manifest(report: Mapping[str, object]) -> None:
     _exact_mapping(report, _MANIFEST_KEYS, label="pilot dataset manifest")
     if (
         report["schema_version"] != 1
-        or report["dataset_id"] != "CVA-Chart-Pilot-v0.1"
+        or report["dataset_id"] != ACTIVE_PILOT_DATASET_ID
         or report["record_count"] != 2_800
         or report["split_counts"] != _EXPECTED_SPLITS
         or report["counterfactual_pairs"] != 150
@@ -522,7 +522,7 @@ def _validate_dataset_record(
     expected_image = f"images/{sample_id}.png"
     if (
         record["schema_version"] != 1
-        or record["dataset_id"] != "CVA-Chart-Pilot-v0.1"
+        or record["dataset_id"] != ACTIVE_PILOT_DATASET_ID
         or record["sample_id"] != sample_id
         or record["split"] != split
         or record["chart_type"] != ("grouped_bar", "line")[global_index % 2]
@@ -647,7 +647,7 @@ def _validate_canonical_dataset(
     config = load_pilot_data_config(data_config_path)
     cache_root.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix=".dataset-replay-", dir=cache_root) as temporary:
-        replay_root = Path(temporary) / "cva_chart_pilot_v0_1"
+        replay_root = Path(temporary) / config.output_slug
         generate_dataset(config, replay_root)
         expected = _regular_tree_hashes(replay_root)
     actual = _regular_tree_hashes(manifest_path.parent)
@@ -661,6 +661,7 @@ def _validate_registered_data_config(path: Path) -> None:
     config = load_pilot_data_config(path)
     if (
         config.seed != 20260814
+        or config.dataset_id != ACTIVE_PILOT_DATASET_ID
         or config.image_size != (512, 384)
         or config.chart_types != ("grouped_bar", "line")
         or config.operations != ("difference", "sum", "max_minus_min")
@@ -668,7 +669,7 @@ def _validate_registered_data_config(path: Path) -> None:
         or config.counterfactual_pairs != 150
         or config.natural_audit != 150
     ):
-        raise RuntimeError("pilot data config does not equal the registered v0.1 design")
+        raise RuntimeError("pilot data config does not equal the registered v0.2 design")
 
 
 def _validate_model_config(path: Path, paths: PilotPaths) -> None:

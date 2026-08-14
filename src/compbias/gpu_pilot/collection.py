@@ -14,7 +14,7 @@ from uuid import uuid4
 from compbias.io.strict_json import load_strict_json_mapping
 from compbias.models.structured_parser import ParseStatus
 
-from .config import load_pilot_paths
+from .config import ACTIVE_PILOT_DATA_CONFIG, ACTIVE_PILOT_OUTPUT_SLUG, load_pilot_paths
 from .preflight import model_snapshot_sha256
 from .qwen_smoke import decode_qwen_once, load_local_qwen
 from .safe_io import atomic_write_json_text, prepare_new_output_directory, prepare_output_path
@@ -230,7 +230,7 @@ def main(argv: Sequence[str] | None = None, *, calibration: bool = False) -> int
         return 2
     try:
         paths = load_pilot_paths(args.paths)
-        dataset = paths.data / "generated" / "cva_chart_pilot_v0_1"
+        dataset = paths.data / "generated" / ACTIVE_PILOT_OUTPUT_SLUG
         target = paths.trajectories / "natural" / f"{args.split}_records.jsonl"
         report_path = target.with_suffix(".summary.json")
         if report_path.exists() or report_path.is_symlink():
@@ -240,7 +240,7 @@ def main(argv: Sequence[str] | None = None, *, calibration: bool = False) -> int
             paths.model_path,
             target,
             split=args.split,
-            data_config_path=paths.project_root / "configs/data/cva_chart_pilot.yaml",
+            data_config_path=paths.project_root / ACTIVE_PILOT_DATA_CONFIG,
             output_root=paths.trajectories,
             replace_incomplete=target.exists(),
         )
