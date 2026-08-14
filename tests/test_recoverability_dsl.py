@@ -168,8 +168,8 @@ def test_program_answer_mismatch_is_recorded_and_never_overwrites_the_answer() -
         '{"variables":{"a":NaN},"steps":[],"answer":0}',
         '{"variables":{"a":Infinity},"steps":[],"answer":0}',
         '{"variables":{},"steps":[],"answer":1.0}',
-        '[]',
-        'not-json',
+        "[]",
+        "not-json",
     ],
 )
 def test_parser_rejects_noncanonical_or_nonfinite_json(raw: str) -> None:
@@ -207,10 +207,7 @@ def test_parser_rejects_duplicate_outputs_and_excess_steps_or_bytes() -> None:
 
     too_many = _raw(
         variables={"a": 1},
-        steps=[
-            {"op": "read", "inputs": ["a"], "output": f"value_{index}"}
-            for index in range(33)
-        ],
+        steps=[{"op": "read", "inputs": ["a"], "output": f"value_{index}"} for index in range(33)],
     )
     with pytest.raises(ProgramParseError, match="steps"):
         parse_program(too_many)

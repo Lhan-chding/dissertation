@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import hashlib
+import json
+import math
 import re
 from collections.abc import Mapping
 from dataclasses import dataclass
@@ -125,6 +127,130 @@ class LockedFile:
 class ProtocolLockResult:
     verified: bool
     files: tuple[LockedFile, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class PowerArtifactResult:
+    verified: bool
+    sha256: str
+    required_eligible_scenes: int
+    registered_intake_scenes: int
+    independent_unit: str
+    forks_per_arm: int
+    target_power: float
+    scenarios: tuple[str, ...]
+
+
+def verify_power_artifact(path: Path, *, expected_sha256: str) -> PowerArtifactResult:
+    """Verify the externally anchored power artifact and its closed schema."""
+
+    if not isinstance(expected_sha256, str) or _SHA256.fullmatch(expected_sha256) is None:
+        raise ValueError("expected power artifact SHA-256 is invalid")
+    if path.is_symlink() or not path.is_file():
+        raise ValueError("power artifact must be a regular file")
+    actual = _sha256(path)
+    if actual != expected_sha256:
+        raise ValueError("power artifact SHA-256 mismatch")
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise ValueError("power artifact must be valid UTF-8 JSON") from error
+    fields = {
+        "schema_version",
+        "artifact_type",
+        "status",
+        "independent_unit",
+        "forks_per_arm",
+        "target_power",
+        "alpha",
+        "equivalence_margin",
+        "repetitions",
+        "seed",
+        "registered_intake_scenes",
+        "required_eligible_scenes",
+        "eligibility_rate_lower",
+        "required_intake_scenes",
+        "feasible",
+        "family_quotas",
+        "scenarios",
+    }
+    if not isinstance(payload, dict) or set(payload) != fields:
+        raise ValueError("power artifact schema is invalid")
+    fixed = {
+        "schema_version": 1,
+        "artifact_type": "recoverability_v1_phase_c_power",
+        "status": "PREREGISTERED_NOT_RUN",
+        "independent_unit": "semantic_scene",
+        "forks_per_arm": 8,
+        "target_power": 0.90,
+        "alpha": 0.05,
+        "equivalence_margin": 0.02,
+        "repetitions": 2_000,
+        "seed": 2026081605,
+        "registered_intake_scenes": 6000,
+        "required_eligible_scenes": 800,
+        "feasible": True,
+        "family_quotas": {
+            "cross_series": 267,
+            "duplicate_encoding": 266,
+            "trend": 267,
+        },
+    }
+    if any(payload[key] != value for key, value in fixed.items()):
+        raise ValueError("power artifact differs from the preregistration")
+    for key in ("eligibility_rate_lower", "required_intake_scenes"):
+        if isinstance(payload[key], bool) or not isinstance(payload[key], (int, float)):
+            raise ValueError(f"power artifact {key} is invalid")
+    scenarios = payload["scenarios"]
+    if not isinstance(scenarios, list) or not scenarios:
+        raise ValueError("power artifact scenarios must be a non-empty list")
+    names: list[str] = []
+    for item in scenarios:
+        if not isinstance(item, dict) or set(item) != {
+            "name",
+            "test",
+            "discordance",
+            "scene_icc",
+            "true_effect",
+            "curve",
+        }:
+            raise ValueError("power scenario schema is invalid")
+        name = item["name"]
+        if not isinstance(name, str) or name in names:
+            raise ValueError("power scenario names must be unique strings")
+        if item["test"] not in {"one_sided_positive", "paired_tost"}:
+            raise ValueError("power scenario test is invalid")
+        for key in ("discordance", "scene_icc", "true_effect"):
+            value = item[key]
+            if (
+                isinstance(value, bool)
+                or not isinstance(value, (int, float))
+                or not math.isfinite(value)
+            ):
+                raise ValueError("power scenario numeric setting is invalid")
+        curve = item["curve"]
+        scene_grid = [point.get("scenes") for point in curve] if isinstance(curve, list) else []
+        if scene_grid != [267, 400, 600, 800]:
+            raise ValueError("power scenario curve uses an invalid scene grid")
+        if any(
+            not isinstance(point, dict)
+            or set(point) != {"estimated_power", "scenes"}
+            or isinstance(point["estimated_power"], bool)
+            or not 0 <= point["estimated_power"] <= 1
+            for point in curve
+        ):
+            raise ValueError("power scenario curve is invalid")
+        names.append(name)
+    return PowerArtifactResult(
+        verified=True,
+        sha256=actual,
+        required_eligible_scenes=800,
+        registered_intake_scenes=6000,
+        independent_unit="semantic_scene",
+        forks_per_arm=8,
+        target_power=0.90,
+        scenarios=tuple(names),
+    )
 
 
 def verify_protocol_lock(path: Path, *, repository_root: Path) -> ProtocolLockResult:

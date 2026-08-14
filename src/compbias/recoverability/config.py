@@ -11,6 +11,8 @@ from typing import Literal
 from compbias.io.yaml_config import load_yaml_mapping, reject_unknown_fields
 
 _SAFE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}\Z")
+_RELATIVE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_./-]{0,255}\Z")
+_SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 
 
 def _safe(value: object, label: str) -> str:
@@ -29,6 +31,15 @@ def _false(value: object, label: str) -> bool:
     if value is not False:
         raise ValueError(f"{label} must be false; adaptive sample extension is forbidden")
     return False
+
+
+def _probability(value: object, label: str) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise TypeError(f"{label} must be numeric")
+    result = float(value)
+    if not 0 < result < 1:
+        raise ValueError(f"{label} must lie in (0, 1)")
+    return result
 
 
 def _mapping(value: object, label: str) -> Mapping[str, object]:
@@ -73,6 +84,27 @@ class PhaseCConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class AnalysisConfig:
+    alpha: float
+    confidence: float
+    tost_confidence: float
+    target_power: float
+    target_effect: float
+    equivalence_margin: float
+    bootstrap_resamples: int
+    bootstrap_seed: int
+    power_repetitions: int
+    power_seed: int
+    phase_n_minimum_eligible: int
+    phase_n_null_rate: float
+    required_eligible_scenes: int
+    confirmatory_families: tuple[str, ...]
+    exploratory_families: tuple[str, ...]
+    power_artifact_path: str
+    power_artifact_sha256: str
+
+
+@dataclass(frozen=True, slots=True)
 class RecoverabilityProtocol:
     schema_version: int
     status: Literal["PREREGISTERED_NOT_RUN"]
@@ -80,6 +112,7 @@ class RecoverabilityProtocol:
     phase_n: PhaseNConfig
     bridge: BridgeConfig
     phase_c: PhaseCConfig
+    analysis: AnalysisConfig
 
 
 def _phase_n(value: object) -> PhaseNConfig:
@@ -220,11 +253,94 @@ def _phase_c(value: object) -> PhaseCConfig:
     )
 
 
+def _analysis(value: object) -> AnalysisConfig:
+    mapping = _mapping(value, "analysis")
+    fields = {
+        "alpha",
+        "confidence",
+        "tost_confidence",
+        "target_power",
+        "target_effect",
+        "equivalence_margin",
+        "bootstrap_resamples",
+        "bootstrap_seed",
+        "power_repetitions",
+        "power_seed",
+        "phase_n_minimum_eligible",
+        "phase_n_null_rate",
+        "required_eligible_scenes",
+        "confirmatory_families",
+        "exploratory_families",
+        "power_artifact_path",
+        "power_artifact_sha256",
+    }
+    reject_unknown_fields(mapping, fields, label="analysis")
+    if set(mapping) != fields:
+        raise ValueError("analysis must contain every registered field")
+    fixed_probabilities = {
+        "alpha": 0.05,
+        "confidence": 0.95,
+        "tost_confidence": 0.90,
+        "target_power": 0.90,
+        "target_effect": 0.05,
+        "equivalence_margin": 0.02,
+        "phase_n_null_rate": 0.05,
+    }
+    parsed_probabilities = {
+        key: _probability(mapping[key], f"analysis.{key}") for key in fixed_probabilities
+    }
+    if parsed_probabilities != fixed_probabilities:
+        raise ValueError("analysis probability thresholds differ from the preregistration")
+    fixed_integers = {
+        "bootstrap_resamples": 10_000,
+        "bootstrap_seed": 2026081604,
+        "power_repetitions": 2_000,
+        "power_seed": 2026081605,
+        "phase_n_minimum_eligible": 800,
+        "required_eligible_scenes": 800,
+    }
+    parsed_integers = {
+        key: _positive_int(mapping[key], f"analysis.{key}") for key in fixed_integers
+    }
+    if parsed_integers != fixed_integers:
+        raise ValueError("analysis integer settings differ from the preregistration")
+    confirmatory = mapping["confirmatory_families"]
+    exploratory = mapping["exploratory_families"]
+    if confirmatory != ["cross_series", "trend"]:
+        raise ValueError("analysis confirmatory families must remain cross_series and trend")
+    if exploratory != ["duplicate_encoding"]:
+        raise ValueError("analysis exploratory family must remain duplicate_encoding")
+    artifact_path = mapping["power_artifact_path"]
+    artifact_sha256 = mapping["power_artifact_sha256"]
+    if not isinstance(artifact_path, str) or _RELATIVE.fullmatch(artifact_path) is None:
+        raise ValueError("analysis power artifact path is invalid")
+    if artifact_path != "configs/recoverability/power_plan_v1.json":
+        raise ValueError("analysis power artifact path is not preregistered")
+    if not isinstance(artifact_sha256, str) or _SHA256.fullmatch(artifact_sha256) is None:
+        raise ValueError("analysis power artifact SHA-256 is invalid")
+    return AnalysisConfig(
+        **parsed_probabilities,
+        **parsed_integers,
+        confirmatory_families=("cross_series", "trend"),
+        exploratory_families=("duplicate_encoding",),
+        power_artifact_path=artifact_path,
+        power_artifact_sha256=artifact_sha256,
+    )
+
+
 def load_recoverability_protocol(path: Path) -> RecoverabilityProtocol:
     """Load the closed v1 protocol and reject adaptive or cross-stage drift."""
 
     mapping = load_yaml_mapping(path, label="recoverability protocol")
-    fields = {"schema_version", "status", "model_id", "phase_n", "bridge", "phase_c"}
+    fields = {
+        "schema_version",
+        "status",
+        "model_id",
+        "phase_n",
+        "bridge",
+        "phase_c",
+        "analysis",
+    }
     reject_unknown_fields(mapping, fields, label="recoverability protocol")
     if set(mapping) != fields:
         raise ValueError("recoverability protocol must contain every registered field")
@@ -239,6 +355,7 @@ def load_recoverability_protocol(path: Path) -> RecoverabilityProtocol:
         phase_n=_phase_n(mapping["phase_n"]),
         bridge=_bridge(mapping["bridge"]),
         phase_c=_phase_c(mapping["phase_c"]),
+        analysis=_analysis(mapping["analysis"]),
     )
     identifiers = {
         protocol.phase_n.dataset_id,

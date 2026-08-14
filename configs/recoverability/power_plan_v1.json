@@ -1,0 +1,149 @@
+{
+  "alpha": 0.05,
+  "artifact_type": "recoverability_v1_phase_c_power",
+  "eligibility_rate_lower": 0.15,
+  "equivalence_margin": 0.02,
+  "family_quotas": {
+    "cross_series": 267,
+    "duplicate_encoding": 266,
+    "trend": 267
+  },
+  "feasible": true,
+  "forks_per_arm": 8,
+  "independent_unit": "semantic_scene",
+  "registered_intake_scenes": 6000,
+  "repetitions": 2000,
+  "required_eligible_scenes": 800,
+  "required_intake_scenes": 5334,
+  "scenarios": [
+    {
+      "curve": [
+        {
+          "estimated_power": 0.898,
+          "scenes": 267
+        },
+        {
+          "estimated_power": 0.972,
+          "scenes": 400
+        },
+        {
+          "estimated_power": 0.9975,
+          "scenes": 600
+        },
+        {
+          "estimated_power": 1.0,
+          "scenes": 800
+        }
+      ],
+      "discordance": 0.3,
+      "name": "recoverable_effect",
+      "scene_icc": 0.4,
+      "test": "one_sided_positive",
+      "true_effect": 0.05
+    },
+    {
+      "curve": [
+        {
+          "estimated_power": 0.8985,
+          "scenes": 267
+        },
+        {
+          "estimated_power": 0.971,
+          "scenes": 400
+        },
+        {
+          "estimated_power": 0.9975,
+          "scenes": 600
+        },
+        {
+          "estimated_power": 1.0,
+          "scenes": 800
+        }
+      ],
+      "discordance": 0.3,
+      "name": "counterfactual_target_shift",
+      "scene_icc": 0.4,
+      "test": "one_sided_positive",
+      "true_effect": 0.05
+    },
+    {
+      "curve": [
+        {
+          "estimated_power": 0.9605,
+          "scenes": 267
+        },
+        {
+          "estimated_power": 0.9975,
+          "scenes": 400
+        },
+        {
+          "estimated_power": 0.9995,
+          "scenes": 600
+        },
+        {
+          "estimated_power": 1.0,
+          "scenes": 800
+        }
+      ],
+      "discordance": 0.25,
+      "name": "counterfactual_original_suppression",
+      "scene_icc": 0.35,
+      "test": "one_sided_positive",
+      "true_effect": 0.05
+    },
+    {
+      "curve": [
+        {
+          "estimated_power": 0.752,
+          "scenes": 267
+        },
+        {
+          "estimated_power": 0.931,
+          "scenes": 400
+        },
+        {
+          "estimated_power": 0.985,
+          "scenes": 600
+        },
+        {
+          "estimated_power": 0.998,
+          "scenes": 800
+        }
+      ],
+      "discordance": 0.1,
+      "name": "sham_equivalence",
+      "scene_icc": 0.1,
+      "test": "paired_tost",
+      "true_effect": 0.0
+    },
+    {
+      "curve": [
+        {
+          "estimated_power": 0.7555,
+          "scenes": 267
+        },
+        {
+          "estimated_power": 0.929,
+          "scenes": 400
+        },
+        {
+          "estimated_power": 0.9935,
+          "scenes": 600
+        },
+        {
+          "estimated_power": 0.9985,
+          "scenes": 800
+        }
+      ],
+      "discordance": 0.1,
+      "name": "nonrecoverable_equivalence",
+      "scene_icc": 0.1,
+      "test": "paired_tost",
+      "true_effect": 0.0
+    }
+  ],
+  "schema_version": 1,
+  "seed": 2026081605,
+  "status": "PREREGISTERED_NOT_RUN",
+  "target_power": 0.9
+}

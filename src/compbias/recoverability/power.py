@@ -158,6 +158,49 @@ def simulate_paired_power(config: PowerSimulationConfig) -> PowerSimulationResul
     )
 
 
+def simulate_paired_tost_power(
+    config: PowerSimulationConfig,
+    *,
+    margin: float,
+) -> PowerSimulationResult:
+    """Simulate paired TOST using a strict scene-level 90% interval."""
+
+    if not isinstance(config, PowerSimulationConfig):
+        raise TypeError("config must be PowerSimulationConfig")
+    margin_value = _probability(margin, "margin")
+    rng = np.random.default_rng(config.seed)
+    critical = float(norm.ppf(1.0 - config.alpha))
+    equivalent = 0
+    for _rep in range(config.repetitions):
+        shared = rng.random(config.scenes)
+        independent = rng.random((config.scenes, config.forks_per_arm))
+        sharing = rng.random((config.scenes, config.forks_per_arm)) < config.scene_icc
+        uniform = np.where(sharing, shared[:, None], independent)
+        scene_differences = _paired_difference(
+            uniform,
+            effect=config.target_effect,
+            discordance=config.discordance,
+        ).mean(axis=1)
+        estimate = float(scene_differences.mean())
+        standard_deviation = float(scene_differences.std(ddof=1))
+        half_width = (
+            0.0
+            if standard_deviation == 0
+            else critical * standard_deviation / math.sqrt(config.scenes)
+        )
+        equivalent += int(
+            estimate - half_width > -margin_value and estimate + half_width < margin_value
+        )
+    return PowerSimulationResult(
+        estimated_power=equivalent / config.repetitions,
+        scenes=config.scenes,
+        forks_per_arm=config.forks_per_arm,
+        repetitions=config.repetitions,
+        independent_unit="semantic_scene",
+        seed=config.seed,
+    )
+
+
 def build_fixed_sample_plan(
     curves: tuple[PowerCurve, ...],
     *,

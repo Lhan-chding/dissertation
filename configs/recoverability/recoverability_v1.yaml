@@ -42,3 +42,24 @@ phase_c:
   forks_per_arm: 8
   allow_quota_redistribution: false
   allow_sample_extension: false
+analysis:
+  alpha: 0.05
+  confidence: 0.95
+  tost_confidence: 0.90
+  target_power: 0.90
+  target_effect: 0.05
+  equivalence_margin: 0.02
+  bootstrap_resamples: 10000
+  bootstrap_seed: 2026081604
+  power_repetitions: 2000
+  power_seed: 2026081605
+  phase_n_minimum_eligible: 800
+  phase_n_null_rate: 0.05
+  required_eligible_scenes: 800
+  confirmatory_families:
+    - cross_series
+    - trend
+  exploratory_families:
+    - duplicate_encoding
+  power_artifact_path: configs/recoverability/power_plan_v1.json
+  power_artifact_sha256: 651e30d824b36eadec6c3595ef462c432400be4ee7022411cafd3a2097dcbc23
