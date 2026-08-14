@@ -73,12 +73,33 @@ class KnownValueConstraint:
 
 
 @dataclass(frozen=True, slots=True)
+class ArithmeticProgressionConstraint:
+    constraint_id: str
+    indices: tuple[int, int, int]
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "constraint_id", _identifier(self.constraint_id, "constraint_id"))
+        if not isinstance(self.indices, tuple) or len(self.indices) != 3:
+            raise ValueError("arithmetic-progression indices must contain three positions")
+        indices = tuple(_index(value, "progression index") for value in self.indices)
+        if len(set(indices)) != 3:
+            raise ValueError("arithmetic-progression indices must be distinct")
+        object.__setattr__(self, "indices", indices)
+
+    def accepts(self, values: tuple[int, int, int, int]) -> bool:
+        left, middle, right = (values[index] for index in self.indices)
+        return 2 * middle == left + right
+
+
+@dataclass(frozen=True, slots=True)
 class CompatibilityQuery:
     """A closed operational query with no gold scene, answer, or error position."""
 
     observed_values: tuple[int, int, int, int]
     operation: Operation
-    constraints: tuple[PairSumConstraint | KnownValueConstraint, ...]
+    constraints: tuple[
+        PairSumConstraint | KnownValueConstraint | ArithmeticProgressionConstraint, ...
+    ]
     value_domain: tuple[int, ...]
     max_mismatches: int
 
@@ -93,7 +114,10 @@ class CompatibilityQuery:
             raise ValueError("operation is not registered") from error
         object.__setattr__(self, "operation", operation)
         if not isinstance(self.constraints, tuple) or any(
-            not isinstance(item, (PairSumConstraint, KnownValueConstraint))
+            not isinstance(
+                item,
+                (PairSumConstraint, KnownValueConstraint, ArithmeticProgressionConstraint),
+            )
             for item in self.constraints
         ):
             raise TypeError("constraints must be a tuple of registered visible constraints")
