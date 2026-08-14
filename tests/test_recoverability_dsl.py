@@ -7,6 +7,7 @@ import pytest
 from compbias.recoverability.dsl import (
     ProgramExecutionError,
     ProgramParseError,
+    TrustedBinding,
     evaluate_program,
     execute_program,
     parse_program,
@@ -136,12 +137,35 @@ def test_executor_tracks_only_external_constraint_bindings_on_real_dataflow() ->
 
     result = execute_program(
         parse_program(raw),
-        constraint_bindings={"total": "sum_ab", "unused": "sham_unused"},
+        constraint_bindings={
+            "total": TrustedBinding("sum_ab", 13),
+            "unused": TrustedBinding("sham_unused", 99),
+        },
     )
 
     assert result.executed_result == 5
     assert result.consumed_constraint_ids == ("sum_ab",)
     assert "sham_unused" not in result.consumed_constraint_ids
+
+
+def test_executor_rejects_model_declared_values_that_disagree_with_trusted_evidence() -> None:
+    raw = _raw(
+        variables={"total": 99, "b": 4},
+        steps=[
+            {
+                "op": "solve_sum_constraint",
+                "inputs": ["total", "b"],
+                "output": "a_recovered",
+            }
+        ],
+        answer=95,
+    )
+
+    with pytest.raises(ProgramExecutionError, match="trusted evidence"):
+        execute_program(
+            parse_program(raw),
+            constraint_bindings={"total": TrustedBinding("sum_ab", 13)},
+        )
 
 
 def test_program_answer_mismatch_is_recorded_and_never_overwrites_the_answer() -> None:

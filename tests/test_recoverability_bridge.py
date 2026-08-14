@@ -70,6 +70,8 @@ def test_two_stage_messages_never_include_image_or_hidden_gold_in_stage2() -> No
     assert "gold" not in json.dumps(stage1).lower()
     assert "gold" not in json.dumps(stage2).lower()
     assert '"gold_answer"' not in json.dumps(stage2)
+    assert "cue_condition" not in json.dumps(stage2)
+    assert "ablated" not in json.dumps(stage2)
     assert len(stage1) == len(stage2) == 2
 
 
@@ -136,6 +138,8 @@ def test_bridge_runs_exactly_one_legacy_and_one_two_stage_trajectory_per_scene()
     assert report.stage1_parse_rate == 1.0
     assert report.program_answer_consistency == 1.0
     assert report.protocols_mergeable is True
+    assert report.accuracy_difference_ci90 == (0.0, 0.0)
+    assert report.perception_difference_ci90 == (0.0, 0.0)
     assert report.model_calls == 18
     assert report.independent_unit == "semantic_scene"
 
@@ -161,6 +165,55 @@ def test_bridge_parse_failure_is_a_failure_and_never_retried_or_sent_to_stage2()
     assert report.stage1_parse_rate == 0.0
     assert report.two_stage_answer_accuracy == 0.0
     assert all(record.stage1_parse_success is False for record in records)
+    assert report.protocols_mergeable is False
+
+
+def test_bridge_requires_paired_equivalence_intervals_not_point_differences() -> None:
+    scenes = tuple(_scene(index) for index in range(20))
+
+    def legacy(scene: BridgeScene) -> str:
+        values = ",".join(str(value) for value in scene.values)
+        answer = scene.answer if int(scene.scene_id[-3:]) else scene.answer + 1
+        return (
+            f'<perception>{{"values":[{values}]}}</perception>'
+            '<reasoning>{"operation":"max_minus_min"}</reasoning>'
+            f"<answer>{answer}</answer>"
+        )
+
+    def stage1(scene: BridgeScene, _messages: tuple[dict[str, object], ...]) -> str:
+        return json.dumps(
+            {
+                "target_facts": list(scene.values),
+                "redundant_facts": [],
+                "axis_facts": ["integer_ticks"],
+            },
+            separators=(",", ":"),
+        )
+
+    def stage2(scene: BridgeScene, _messages: tuple[dict[str, object], ...]) -> str:
+        return json.dumps(
+            {
+                "variables": dict(zip(("a", "b", "c", "d"), scene.values, strict=True)),
+                "steps": [
+                    {"op": "max", "inputs": ["a", "b", "c", "d"], "output": "hi"},
+                    {"op": "min", "inputs": ["a", "b", "c", "d"], "output": "lo"},
+                    {"op": "subtract", "inputs": ["hi", "lo"], "output": "result"},
+                ],
+                "answer": scene.answer,
+            },
+            separators=(",", ":"),
+        )
+
+    report, _ = run_bridge_protocol(
+        scenes,
+        legacy_generate=legacy,
+        stage1_generate=stage1,
+        stage2_generate=stage2,
+        equivalence_margin=0.03,
+    )
+
+    assert abs(report.legacy_answer_accuracy - report.two_stage_answer_accuracy) == 0.05
+    assert report.accuracy_difference_ci90[1] > 0.03
     assert report.protocols_mergeable is False
 
 

@@ -239,14 +239,47 @@ def test_stage2_payload_contains_only_visible_post_error_information() -> None:
         "evidence",
         "operation",
         "question",
-        "cue_condition",
-        "cue_constraint_ids",
         "randomized_cue_id",
         "dsl_instructions",
         "image_available",
     }
+    assert serialized["evidence"]["redundant_facts"] == [
+        {
+            "constraint_id": "sum_ab",
+            "kind": "pair_sum",
+            "left_index": 0,
+            "right_index": 1,
+            "total": 12,
+        }
+    ]
     reject_forbidden_payload_content(serialized)
     assert asdict(payload)["image_available"] is False
+
+
+def test_ablated_stage2_payload_removes_all_cue_facts_and_arm_labels() -> None:
+    evidence = Stage2Evidence(
+        observed_values=(7, 4, 5, 9),
+        redundant_facts=(PairSumConstraint("sum_ab", 0, 1, 12),),
+        axis_facts=("integer_ticks",),
+        max_mismatches=1,
+    )
+    payload = build_stage2_payload(
+        evidence=evidence,
+        operation=Operation.DIFFERENCE,
+        question="What is A minus B?",
+        cue_condition=CueCondition.ABLATED,
+        cue_constraint_ids=(),
+        randomized_cue_id="cue_000002",
+        dsl_instructions="recoverability_dsl_v1",
+    )
+
+    public = serialize_stage2_payload(payload)
+
+    assert public["evidence"]["redundant_facts"] == []
+    encoded = json.dumps(public, sort_keys=True)
+    assert "ablated" not in encoded
+    assert "cue_condition" not in encoded
+    assert "cue_constraint_ids" not in encoded
 
 
 @pytest.mark.parametrize(
