@@ -54,7 +54,7 @@ def test_pilot_data_contract_freezes_registered_counts_and_tasks() -> None:
 
     config = load_pilot_data_config(Path("configs/data/cva_chart_pilot.yaml"))
 
-    assert config.dataset_id == "CVA-Chart-Pilot-v0.1"
+    assert config.dataset_id == "CVA-Chart-Pilot-v0.2"
     assert config.split_counts == {
         "calibration": 200,
         "smoke_train": 600,
@@ -256,7 +256,7 @@ def test_gpu_stage_cannot_execute_without_smoke_and_calibration_evidence(
         "paths_config": "configs/paths.yaml",
         "model_config": "configs/model/qwen25vl3b.yaml",
         "data_config": "configs/data/cva_chart_pilot.yaml",
-        "dataset_manifest": "data/generated/cva_chart_pilot_v0_1/manifest.json",
+        "dataset_manifest": "data/generated/cva_chart_pilot_v0_2/manifest.json",
         "natural_records": "trajectories/natural/pilot_train_records.jsonl",
         "output_subdir": "pilot_a",
         "training": {},
@@ -406,9 +406,9 @@ def test_gpu_execution_gate_accepts_only_complete_bound_evidence(
             "gate_failures": [],
             "gate_passed": True,
         },
-        tmp_path / "data" / "generated" / "cva_chart_pilot_v0_1" / "manifest.json": {
+        tmp_path / "data" / "generated" / "cva_chart_pilot_v0_2" / "manifest.json": {
             "schema_version": 1,
-            "dataset_id": "CVA-Chart-Pilot-v0.1",
+            "dataset_id": "CVA-Chart-Pilot-v0.2",
             "record_count": 2_800,
             "split_counts": {
                 "calibration": 200,
@@ -431,7 +431,7 @@ def test_gpu_execution_gate_accepts_only_complete_bound_evidence(
     for path, report in reports.items():
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(report, allow_nan=False), encoding="utf-8")
-    manifest_path = tmp_path / "data" / "generated" / "cva_chart_pilot_v0_1" / "manifest.json"
+    manifest_path = tmp_path / "data" / "generated" / "cva_chart_pilot_v0_2" / "manifest.json"
     import hashlib
 
     manifest_hash = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
@@ -460,7 +460,7 @@ def test_gpu_execution_gate_accepts_only_complete_bound_evidence(
     (paths.trajectories / "natural" / "pilot_train_records.summary.json").write_text(
         json.dumps(pilot_summary), encoding="utf-8"
     )
-    dataset_root = tmp_path / "data" / "generated" / "cva_chart_pilot_v0_1"
+    dataset_root = tmp_path / "data" / "generated" / "cva_chart_pilot_v0_2"
     (dataset_root / "records.jsonl").write_text("{}\n", encoding="utf-8")
     (dataset_root / "counterfactual_pairs.jsonl").write_text("{}\n", encoding="utf-8")
     stage_config = tmp_path / "configs" / "train" / "pilot_a.yaml"
@@ -475,7 +475,7 @@ def test_gpu_execution_gate_accepts_only_complete_bound_evidence(
         "paths_config": "configs/paths.yaml",
         "model_config": "configs/model/qwen25vl3b.yaml",
         "data_config": "configs/data/cva_chart_pilot.yaml",
-        "dataset_manifest": "data/generated/cva_chart_pilot_v0_1/manifest.json",
+        "dataset_manifest": "data/generated/cva_chart_pilot_v0_2/manifest.json",
         "natural_records": "trajectories/natural/pilot_train_records.jsonl",
     }
     derived = {

@@ -683,7 +683,7 @@ def test_failed_calibration_can_be_archived_before_reviewed_rerun(tmp_path: Path
 
 def _small_data_config() -> PilotDataConfig:
     return PilotDataConfig(
-        dataset_id="CVA-Chart-Pilot-v0.1",
+        dataset_id="CVA-Chart-Pilot-v0.2",
         seed=20260814,
         image_size=(320, 240),
         chart_types=("grouped_bar", "line"),
