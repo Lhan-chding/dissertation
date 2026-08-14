@@ -215,11 +215,11 @@ def _passing_gate() -> CausalGateEvidence:
     return CausalGateEvidence(
         parser_rate_lower=0.985,
         program_answer_consistency_lower=0.96,
-        eligible_scenes=800,
-        power_target_scenes=800,
+        eligible_scenes=1066,
+        power_target_scenes=1066,
         confirmatory_families=(
-            ConfirmatoryFamilyEvidence("cross_series", 267, 0.02, True),
-            ConfirmatoryFamilyEvidence("trend", 267, 0.01, True),
+            ConfirmatoryFamilyEvidence("cross_series", 400, 0.02, True),
+            ConfirmatoryFamilyEvidence("trend", 400, 0.01, True),
         ),
         recoverability_interaction_ci_low=0.015,
         nonrecoverable_equivalence_passed=True,
@@ -239,6 +239,11 @@ def test_causal_gate_passing_fixture_authorizes_only_future_rl() -> None:
     assert result.gate_passed is True
     assert result.rl_authorized is True
     assert result.reason_codes == ()
+
+
+def test_causal_gate_rejects_caller_attempt_to_downgrade_frozen_power_target() -> None:
+    with pytest.raises(ValueError, match="preregistered"):
+        replace(_passing_gate(), power_target_scenes=1)
 
 
 @pytest.mark.parametrize(
@@ -417,13 +422,13 @@ def test_fixed_sample_plan_uses_the_maximum_frozen_scenario_requirement() -> Non
         curves,
         target_power=0.90,
         eligibility_rate_lower=0.15,
-        intake_scenes=6000,
-        family_quotas={"cross_series": 267, "trend": 267, "duplicate_encoding": 266},
+        intake_scenes=8000,
+        family_quotas={"cross_series": 400, "trend": 400, "duplicate_encoding": 266},
     )
 
-    assert plan.required_eligible_scenes == 800
-    assert plan.required_intake_scenes == 5334
-    assert plan.registered_intake_scenes == 6000
+    assert plan.required_eligible_scenes == 1066
+    assert plan.required_intake_scenes == 7107
+    assert plan.registered_intake_scenes == 8000
     assert plan.feasible is True
     assert plan.independent_unit == "semantic_scene"
 
