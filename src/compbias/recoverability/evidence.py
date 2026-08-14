@@ -15,6 +15,39 @@ from compbias.io.yaml_config import load_yaml_mapping, reject_unknown_fields
 
 _SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 _RELATIVE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_./-]{0,255}\Z")
+SERVER_PACKAGE_LOCK_PATH = "configs/recoverability/server_package_lock_v1.yaml"
+SERVER_PACKAGE_PATHS = frozenset(
+    {
+        "configs/data/cva_chart_pilot_v0_3.yaml",
+        "configs/recoverability/recoverability_v1.yaml",
+        "configs/recoverability/power_plan_v1.json",
+        "configs/recoverability/server_runtime_v1.yaml",
+        "configs/recoverability/v0_3_negative_pilot.yaml",
+        "experiments/recoverability_v1/00_preflight.py",
+        "experiments/recoverability_v1/02_capture_v03_evidence.py",
+        "experiments/recoverability_v1/03_bridge.py",
+        "requirements-gpu.lock.txt",
+        "src/compbias/gpu_pilot/chart_data.py",
+        "src/compbias/gpu_pilot/config.py",
+        "src/compbias/gpu_pilot/execution_gate.py",
+        "src/compbias/gpu_pilot/preflight.py",
+        "src/compbias/gpu_pilot/qwen_smoke.py",
+        "src/compbias/gpu_pilot/safe_io.py",
+        "src/compbias/gpu_pilot/structured_generation.py",
+        "src/compbias/gpu_pilot/taxonomy.py",
+        "src/compbias/io/strict_json.py",
+        "src/compbias/io/yaml_config.py",
+        "src/compbias/models/structured_parser.py",
+        "src/compbias/recoverability/bridge.py",
+        "src/compbias/recoverability/config.py",
+        "src/compbias/recoverability/dsl/executor.py",
+        "src/compbias/recoverability/dsl/parser.py",
+        "src/compbias/recoverability/dsl/schema.py",
+        "src/compbias/recoverability/evidence.py",
+        "src/compbias/recoverability/evidence_capture.py",
+        "src/compbias/recoverability/preflight.py",
+    }
+)
 
 
 def _sha256(path: Path) -> str:
@@ -30,6 +63,10 @@ class NegativePilotRecord:
     status: str
     server_revision_observed: str
     model_snapshot_sha256: str
+    dataset_manifest_sha256: str
+    dataset_records_sha256: str
+    dataset_images_sha256: str
+    counterfactual_sha256: str
     records: int
     answer_accuracy: float
     parse_rate: float
@@ -104,6 +141,10 @@ def load_negative_pilot_record(path: Path) -> NegativePilotRecord:
         status=mapping["status"],
         server_revision_observed=mapping["server_revision_observed"],
         model_snapshot_sha256=mapping["model_snapshot_sha256"],
+        dataset_manifest_sha256=mapping["dataset_manifest_sha256"],
+        dataset_records_sha256=mapping["dataset_records_sha256"],
+        dataset_images_sha256=mapping["dataset_images_sha256"],
+        counterfactual_sha256=mapping["counterfactual_sha256"],
         records=200,
         answer_accuracy=float(mapping["answer_accuracy"]),
         parse_rate=float(mapping["parse_rate"]),
@@ -285,3 +326,19 @@ def verify_protocol_lock(path: Path, *, repository_root: Path) -> ProtocolLockRe
     if len({item.relative_path for item in locked}) != len(locked):
         raise ValueError("protocol lock contains duplicate paths")
     return ProtocolLockResult(verified=True, files=tuple(locked))
+
+
+def verify_server_package_lock(path: Path, *, repository_root: Path) -> ProtocolLockResult:
+    """Require the canonical, closed server import package rather than a caller subset."""
+
+    root = repository_root.resolve()
+    expected_path = root / SERVER_PACKAGE_LOCK_PATH
+    if path.resolve() != expected_path or path.is_symlink():
+        raise ValueError("server package lock must use the canonical repository path")
+    result = verify_protocol_lock(path, repository_root=root)
+    observed = frozenset(item.relative_path for item in result.files)
+    if observed != SERVER_PACKAGE_PATHS:
+        missing = sorted(SERVER_PACKAGE_PATHS - observed)
+        extra = sorted(observed - SERVER_PACKAGE_PATHS)
+        raise ValueError(f"server package lock closure mismatch; missing={missing}, extra={extra}")
+    return result

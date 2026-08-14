@@ -7,6 +7,10 @@ import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
+from compbias.gpu_pilot.execution_gate import (
+    _DATASET_RECORD_KEYS,
+    _validate_natural_records,
+)
 from compbias.recoverability.evidence import load_negative_pilot_record
 
 
@@ -52,8 +56,9 @@ def _load_summary(path: Path) -> dict[str, object]:
     return payload
 
 
-def _verify_records(path: Path, *, expected_records: int) -> None:
+def _verify_records(path: Path, *, expected_records: int) -> dict[str, object]:
     seen: set[str] = set()
+    sources: dict[str, dict[str, object]] = {}
     count = 0
     try:
         with path.open("r", encoding="utf-8") as stream:
@@ -61,20 +66,36 @@ def _verify_records(path: Path, *, expected_records: int) -> None:
                 if not line.strip():
                     raise ValueError("v0.3 records must not contain blank lines")
                 row = json.loads(line)
-                if not isinstance(row, dict) or not isinstance(row.get("sample_id"), str):
+                if not isinstance(row, dict) or set(row) < _DATASET_RECORD_KEYS:
+                    raise ValueError("every v0.3 record must contain the full dataset source")
+                if not isinstance(row.get("sample_id"), str):
                     raise ValueError("every v0.3 record must contain a string sample_id")
                 sample_id = row["sample_id"]
                 if sample_id in seen:
                     raise ValueError("v0.3 record sample_id values must be unique")
                 seen.add(sample_id)
+                sources[sample_id] = {key: row[key] for key in _DATASET_RECORD_KEYS}
                 count += 1
     except (UnicodeDecodeError, json.JSONDecodeError) as error:
         raise ValueError("v0.3 records must be valid UTF-8 JSONL") from error
     if count != expected_records:
         raise ValueError(f"v0.3 evidence must contain exactly {expected_records} records")
+    try:
+        return _validate_natural_records(
+            path,
+            split="calibration",
+            dataset_records=sources,
+        )
+    except RuntimeError as error:
+        raise ValueError(f"v0.3 records fail strict semantic replay: {error}") from error
 
 
-def _verify_summary(summary: dict[str, object], *, negative_pilot_path: Path) -> None:
+def _verify_summary(
+    summary: dict[str, object],
+    *,
+    negative_pilot_path: Path,
+    derived: dict[str, object],
+) -> None:
     expected = load_negative_pilot_record(negative_pilot_path)
     fixed = {
         "answer_accuracy": expected.answer_accuracy,
@@ -90,6 +111,15 @@ def _verify_summary(summary: dict[str, object], *, negative_pilot_path: Path) ->
     for key, value in fixed.items():
         if summary.get(key) != value:
             raise ValueError(f"v0.3 summary {key} differs from the frozen failed pilot")
+    for key in (
+        "records",
+        "answer_accuracy",
+        "parse_rate",
+        "natural_perception_error_rate",
+        "error_counts",
+    ):
+        if summary.get(key) != derived[key]:
+            raise ValueError(f"v0.3 summary {key} does not replay from raw records")
 
 
 def capture_v03_evidence(
@@ -121,9 +151,13 @@ def capture_v03_evidence(
         _regular_file(path, label=label, expected_basename=basename)
         for label, (path, basename) in inputs.items()
     )
-    _verify_records(records_path, expected_records=negative.records)
+    derived = _verify_records(records_path, expected_records=negative.records)
     summary = _load_summary(summary_path)
-    _verify_summary(summary, negative_pilot_path=negative_pilot_path)
+    _verify_summary(
+        summary,
+        negative_pilot_path=negative_pilot_path,
+        derived=derived,
+    )
     try:
         calibration_log = calibration_log_path.read_text(encoding="utf-8")
         pilot_log = pilot_data_log_path.read_text(encoding="utf-8")
@@ -160,6 +194,10 @@ def capture_v03_evidence(
         "negative_pilot_sha256": _sha256(negative_pilot_path),
         "server_revision_observed": negative.server_revision_observed,
         "model_snapshot_sha256": negative.model_snapshot_sha256,
+        "dataset_manifest_sha256": negative.dataset_manifest_sha256,
+        "dataset_records_sha256": negative.dataset_records_sha256,
+        "dataset_images_sha256": negative.dataset_images_sha256,
+        "counterfactual_sha256": negative.counterfactual_sha256,
         "records": report.records,
         "answer_accuracy": negative.answer_accuracy,
         "parse_rate": negative.parse_rate,

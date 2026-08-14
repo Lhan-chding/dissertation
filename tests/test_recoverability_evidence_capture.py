@@ -7,6 +7,9 @@ from pathlib import Path
 
 import pytest
 
+from compbias.gpu_pilot.structured_generation import validate_pilot_trajectory
+from compbias.gpu_pilot.taxonomy import natural_error_type
+from compbias.models.structured_parser import parse_trajectory
 from compbias.recoverability.evidence_capture import capture_v03_evidence
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -15,10 +18,83 @@ NEGATIVE_PILOT = ROOT / "configs" / "recoverability" / "v0_3_negative_pilot.yaml
 
 def _write_inputs(tmp_path: Path) -> dict[str, Path]:
     records = tmp_path / "calibration_records_v0_3.jsonl"
+    categories = (
+        ["none"] * 67
+        + ["parse_failure"] * 13
+        + ["reasoning_error"] * 75
+        + ["visual_error"] * 41
+        + ["compensated_visual_error"]
+        + ["operator_invariant_visual_error"] * 3
+    )
+
+    def row(index: int, category: str) -> dict[str, object]:
+        sample_id = f"calibration-{index:06d}"
+        truth = [8, 4, 5, 9]
+        perceived = {
+            "none": truth,
+            "reasoning_error": truth,
+            "visual_error": [7, 4, 5, 9],
+            "compensated_visual_error": [7, 4, 5, 9],
+            "operator_invariant_visual_error": [9, 5, 5, 9],
+        }.get(category)
+        answer = {
+            "none": 4,
+            "reasoning_error": 5,
+            "visual_error": 3,
+            "compensated_visual_error": 4,
+            "operator_invariant_visual_error": 4,
+        }.get(category)
+        raw = "malformed"
+        if perceived is not None and answer is not None:
+            raw = (
+                f'<perception>{{"values":{json.dumps(perceived)}}}</perception>'
+                '<reasoning>{"operation":"difference"}</reasoning>'
+                f"<answer>{answer}</answer>"
+            )
+        parsed = validate_pilot_trajectory(
+            parse_trajectory(raw, sample_id=sample_id),
+            operation="difference",
+            expected_value_count=4,
+        )
+        source = {
+            "schema_version": 1,
+            "dataset_id": "CVA-Chart-Pilot-v0.3",
+            "sample_id": sample_id,
+            "split": "calibration",
+            "chart_type": "grouped_bar",
+            "operation": "difference",
+            "values": truth,
+            "question": "What is the first value minus the second value?",
+            "answer": 4,
+            "image": f"images/{sample_id}.png",
+            "mechanism": "iid",
+        }
+        derived = natural_error_type(source, parsed)
+        assert derived == category
+        return {
+            **source,
+            "rollout_id": f"calibration-rollout-{index:06d}",
+            "raw_text": raw,
+            "parsed": parsed.to_mapping(),
+            "format_attempts": [
+                {
+                    "attempt_index": 0,
+                    "raw_text": raw,
+                    "status": parsed.status.value,
+                    "error_code": parsed.error_code,
+                }
+            ],
+            "format_retries": 0,
+            "reward": int(
+                category in {"none", "compensated_visual_error", "operator_invariant_visual_error"}
+            ),
+            "error_type": category,
+        }
+
     records.write_text(
         "".join(
-            json.dumps({"sample_id": f"calibration-{index:06d}"}, sort_keys=True) + "\n"
-            for index in range(200)
+            json.dumps(row(index, category), sort_keys=True) + "\n"
+            for index, category in enumerate(categories)
         ),
         encoding="utf-8",
     )
@@ -112,11 +188,29 @@ def test_capture_rejects_metric_tamper_and_does_not_publish(tmp_path: Path) -> N
     assert not output.exists()
 
 
-def test_capture_rejects_bad_record_count_symlinks_and_overwrite(tmp_path: Path) -> None:
+def test_capture_rejects_sample_id_only_records_even_with_matching_claimed_summary(
+    tmp_path: Path,
+) -> None:
     inputs = _write_inputs(tmp_path)
     inputs["records_path"].write_text(
-        json.dumps({"sample_id": "calibration-000000"}) + "\n", encoding="utf-8"
+        "".join(
+            json.dumps({"sample_id": f"calibration-{index:06d}"}) + "\n" for index in range(200)
+        ),
+        encoding="utf-8",
     )
+
+    with pytest.raises(ValueError, match="full dataset source"):
+        capture_v03_evidence(
+            negative_pilot_path=NEGATIVE_PILOT,
+            output_path=tmp_path / "evidence.json",
+            **inputs,
+        )
+
+
+def test_capture_rejects_bad_record_count_symlinks_and_overwrite(tmp_path: Path) -> None:
+    inputs = _write_inputs(tmp_path)
+    first_record = inputs["records_path"].read_text(encoding="utf-8").splitlines()[0]
+    inputs["records_path"].write_text(first_record + "\n", encoding="utf-8")
     output = tmp_path / "evidence.json"
     with pytest.raises(ValueError, match="exactly 200"):
         capture_v03_evidence(

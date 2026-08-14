@@ -6,7 +6,10 @@ from pathlib import Path
 
 import pytest
 
-from compbias.recoverability.evidence import verify_protocol_lock
+from compbias.recoverability.evidence import (
+    SERVER_PACKAGE_PATHS,
+    verify_server_package_lock,
+)
 from compbias.recoverability.preflight import (
     load_runtime_spec,
     run_metadata_preflight,
@@ -27,6 +30,14 @@ def _versions() -> dict[str, str]:
         "torch": "2.8.0+cu128",
         "transformers": "5.14.1",
     }
+
+
+def _inventory() -> dict[str, str]:
+    result: dict[str, str] = {}
+    for line in (ROOT / "requirements-gpu.lock.txt").read_text(encoding="utf-8").splitlines():
+        name, version = line.split("==", 1)
+        result[name] = version
+    return result
 
 
 def test_runtime_spec_is_exact_offline_and_never_authorizes_training() -> None:
@@ -54,6 +65,7 @@ def test_metadata_preflight_passes_without_importing_or_loading_the_model() -> N
         load_runtime_spec(RUNTIME),
         repository_root=ROOT,
         version_lookup=lookup,
+        inventory_lookup=_inventory,
         pip_check=lambda: (0, "No broken requirements found."),
         environ={"HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1"},
     )
@@ -86,6 +98,7 @@ def test_metadata_preflight_fails_closed_on_missing_or_mismatched_packages(
             load_runtime_spec(RUNTIME),
             repository_root=ROOT,
             version_lookup=lookup,
+            inventory_lookup=_inventory,
             pip_check=lambda: (0, "No broken requirements found."),
             environ={"HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1"},
         )
@@ -99,6 +112,7 @@ def test_preflight_rejects_online_mode_or_failed_dependency_check() -> None:
             spec,
             repository_root=ROOT,
             version_lookup=lookup,
+            inventory_lookup=_inventory,
             pip_check=lambda: (0, "No broken requirements found."),
             environ={},
         )
@@ -107,36 +121,32 @@ def test_preflight_rejects_online_mode_or_failed_dependency_check() -> None:
             spec,
             repository_root=ROOT,
             version_lookup=lookup,
+            inventory_lookup=_inventory,
             pip_check=lambda: (1, "broken"),
             environ={"HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1"},
         )
 
 
 def test_server_package_lock_binds_runtime_protocol_runners_and_parsers() -> None:
-    result = verify_protocol_lock(SERVER_LOCK, repository_root=ROOT)
+    result = verify_server_package_lock(SERVER_LOCK, repository_root=ROOT)
 
     assert result.verified is True
-    assert {item.relative_path for item in result.files} == {
-        "configs/recoverability/recoverability_v1.yaml",
-        "configs/recoverability/power_plan_v1.json",
-        "configs/recoverability/server_runtime_v1.yaml",
-        "configs/recoverability/v0_3_negative_pilot.yaml",
-        "experiments/recoverability_v1/00_preflight.py",
-        "experiments/recoverability_v1/02_capture_v03_evidence.py",
-        "experiments/recoverability_v1/03_bridge.py",
-        "requirements-gpu.lock.txt",
-        "src/compbias/gpu_pilot/config.py",
-        "src/compbias/gpu_pilot/qwen_smoke.py",
-        "src/compbias/gpu_pilot/structured_generation.py",
-        "src/compbias/models/structured_parser.py",
-        "src/compbias/recoverability/bridge.py",
-        "src/compbias/recoverability/dsl/executor.py",
-        "src/compbias/recoverability/dsl/parser.py",
-        "src/compbias/recoverability/dsl/schema.py",
-        "src/compbias/recoverability/evidence.py",
-        "src/compbias/recoverability/evidence_capture.py",
-        "src/compbias/recoverability/preflight.py",
-    }
+    assert {item.relative_path for item in result.files} == SERVER_PACKAGE_PATHS
+
+
+def test_server_package_lock_rejects_caller_selected_subset(tmp_path: Path) -> None:
+    subset = tmp_path / "server_package_lock_v1.yaml"
+    subset.write_text(
+        "schema_version: 1\nfiles:\n"
+        "  - path: README.md\n"
+        "    sha256: "
+        + __import__("hashlib").sha256((ROOT / "README.md").read_bytes()).hexdigest()
+        + "\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="canonical"):
+        verify_server_package_lock(subset, repository_root=ROOT)
 
 
 def test_preflight_cli_has_no_execute_or_model_loading_surface() -> None:
@@ -152,6 +162,7 @@ def test_preflight_cli_has_no_execute_or_model_loading_surface() -> None:
 
     assert "--runtime" in help_result.stdout
     assert "--server-package-lock" in help_result.stdout
+    assert "--output" in help_result.stdout
     assert "--execute" not in help_result.stdout
     assert "import torch" not in source
     assert "from_pretrained" not in source

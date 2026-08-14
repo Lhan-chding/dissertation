@@ -131,6 +131,7 @@ def run_metadata_preflight(
     *,
     repository_root: Path,
     version_lookup: Callable[[str], str],
+    inventory_lookup: Callable[[], Mapping[str, str]],
     pip_check: Callable[[], tuple[int, str]],
     environ: Mapping[str, str],
 ) -> MetadataPreflightReport:
@@ -148,6 +149,21 @@ def run_metadata_preflight(
     actual_lock_digest = _sha256(lock_path)
     if actual_lock_digest != spec.requirements_lock_sha256:
         raise RuntimeError("requirements lock SHA-256 mismatch")
+    expected_inventory: dict[str, str] = {}
+    for line in lock_path.read_text(encoding="utf-8").splitlines():
+        if "==" not in line:
+            raise RuntimeError("requirements lock must contain only exact name==version entries")
+        name, version = line.split("==", 1)
+        normalized = re.sub(r"[-_.]+", "-", name).lower()
+        if not normalized or not version or normalized in expected_inventory:
+            raise RuntimeError("requirements lock package inventory is invalid")
+        expected_inventory[normalized] = version
+    observed_inventory = {
+        re.sub(r"[-_.]+", "-", name).lower(): version
+        for name, version in inventory_lookup().items()
+    }
+    if observed_inventory != expected_inventory:
+        raise RuntimeError("installed package inventory differs from the exact requirements lock")
     installed: list[tuple[str, str]] = []
     for package, expected in spec.exact_packages.items():
         try:
