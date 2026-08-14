@@ -66,12 +66,19 @@ def build_structured_instruction(*, operation: str, expected_value_count: int) -
         separators=(",", ":"),
         allow_nan=False,
     )
+    value_slots = ",".join("INTEGER" for _ in range(expected_value_count))
+    count_label = {2: "two", 3: "three", 4: "four"}.get(
+        expected_value_count,
+        str(expected_value_count),
+    )
     labels = ", ".join(chr(ord("A") + index) for index in range(expected_value_count))
     return (
         "Required grammar: "
-        '<perception>{"values":[INTEGER,...]}</perception>'
+        f'<perception>{{"values":[{value_slots}]}}</perception>'
         f'<reasoning>{{"operation":"{operation}"}}</reasoning>'
         "<answer>INTEGER_OR_FINITE_NUMBER</answer> "
+        "The values field is one JSON array: keep the opening [ and closing ] around all "
+        f"{count_label} integers. "
         f"The values array must contain exactly {expected_value_count} integers. "
         f"Transcribe all {expected_value_count} labeled values in {labels} order, even when the "
         "question uses only some of them. For sum use A+B; for difference use A-B; all other "

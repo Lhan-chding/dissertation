@@ -69,7 +69,7 @@ def test_pilot_a_rows_skip_parse_failures_and_use_canonical_mediator() -> None:
     assert prompt["role"] == "user"
     content = prompt["content"]
     assert 'Evidence: {"values":[4,7,5]}' in content
-    assert '<perception>{"values":[INTEGER,...]}</perception>' in content
+    assert '<perception>{"values":[INTEGER,INTEGER,INTEGER]}</perception>' in content
     assert '<reasoning>{"operation":"max_minus_min"}</reasoning>' in content
     assert "exactly 3 integers" in content
     assert content.endswith("</answer>")
@@ -90,7 +90,9 @@ def test_pilot_b_prompt_reuses_closed_structured_grammar() -> None:
     assert prompt[0]["role"] == "user"
     assert prompt[0]["content"][0] == {"type": "image"}
     text = prompt[0]["content"][1]["text"]
-    assert '<perception>{"values":[INTEGER,...]}</perception>' in text
+    assert (
+        '<perception>{"values":[INTEGER,INTEGER,INTEGER,INTEGER]}</perception>' in text
+    )
     assert '<reasoning>{"operation":"sum"}</reasoning>' in text
     assert "exactly 4 integers" in text
     assert text.endswith("</answer>")
