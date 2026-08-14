@@ -57,20 +57,26 @@ def test_protocol_physically_separates_natural_bridge_and_causal_studies() -> No
     assert protocol.phase_n.dataset_id == "CVA-Natural-Prevalence-v1"
     assert protocol.bridge.dataset_id == "CVA-Recoverability-Bridge-v1"
     assert protocol.phase_c.dataset_id == "CVA-Recoverability-Causal-v1"
-    assert len(
-        {
-            protocol.phase_n.output_subdirectory,
-            protocol.bridge.output_subdirectory,
-            protocol.phase_c.output_subdirectory,
-        }
-    ) == 3
-    assert len(
-        {
-            protocol.phase_n.seed,
-            protocol.bridge.seed,
-            protocol.phase_c.seed,
-        }
-    ) == 3
+    assert (
+        len(
+            {
+                protocol.phase_n.output_subdirectory,
+                protocol.bridge.output_subdirectory,
+                protocol.phase_c.output_subdirectory,
+            }
+        )
+        == 3
+    )
+    assert (
+        len(
+            {
+                protocol.phase_n.seed,
+                protocol.bridge.seed,
+                protocol.phase_c.seed,
+            }
+        )
+        == 3
+    )
     assert protocol.phase_n.source_protocol == "CVA-Chart-Pilot-v0.3"
     assert protocol.phase_n.max_format_retries == 0
     assert protocol.phase_n.allow_sample_extension is False
@@ -124,7 +130,9 @@ def test_protocol_lock_binds_frozen_v0_3_sources_without_modifying_them() -> Non
 def test_protocol_rejects_adaptive_or_ambiguous_sample_plans(tmp_path: Path) -> None:
     source = CONFIG.read_text(encoding="utf-8")
     invalid = tmp_path / "invalid.yaml"
-    invalid.write_text(source.replace("allow_sample_extension: false", "allow_sample_extension: true", 1))
+    invalid.write_text(
+        source.replace("allow_sample_extension: false", "allow_sample_extension: true", 1)
+    )
 
     with pytest.raises(ValueError, match="sample extension"):
         load_recoverability_protocol(invalid)

@@ -1,0 +1,44 @@
+schema_version: 1
+status: PREREGISTERED_NOT_RUN
+model_id: Qwen2.5-VL-3B-Instruct
+phase_n:
+  dataset_id: CVA-Natural-Prevalence-v1
+  output_subdirectory: cva_natural_prevalence_v1
+  seed: 2026081601
+  scenes: 4000
+  source_protocol: CVA-Chart-Pilot-v0.3
+  max_format_retries: 0
+  allow_sample_extension: false
+bridge:
+  dataset_id: CVA-Recoverability-Bridge-v1
+  output_subdirectory: cva_recoverability_bridge_v1
+  seed: 2026081602
+  scenes: 300
+  protocols_per_scene: 2
+phase_c:
+  dataset_id: CVA-Recoverability-Causal-v1
+  output_subdirectory: cva_recoverability_causal_v1
+  seed: 2026081603
+  intake_scenes: 6000
+  selected_family_quotas:
+    cross_series: 267
+    trend: 267
+    duplicate_encoding: 266
+  arms:
+    - ablated
+    - valid
+    - sham
+    - counterfactual
+    - oracle_perception
+    - operator_swap
+  confirmatory_arms:
+    - ablated
+    - valid
+    - sham
+    - counterfactual
+  diagnostic_arms:
+    - oracle_perception
+    - operator_swap
+  forks_per_arm: 8
+  allow_quota_redistribution: false
+  allow_sample_extension: false

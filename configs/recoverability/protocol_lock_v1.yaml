@@ -1,0 +1,12 @@
+schema_version: 1
+files:
+  - path: configs/data/cva_chart_pilot_v0_3.yaml
+    sha256: a1218187f58256576c1efa0137fac639d9209d355f499ec6d042cf3ffd74f219
+  - path: src/compbias/gpu_pilot/chart_data.py
+    sha256: fbd02f9ff682856ebdd2b52a0b7003969946c360a3b02bd8c91837ab49ffbd8a
+  - path: src/compbias/gpu_pilot/structured_generation.py
+    sha256: 7a196122205ba32fcbefce17cb1815d4c425923fb3b3e23850cd881e4349e539
+  - path: src/compbias/gpu_pilot/taxonomy.py
+    sha256: 04fb703767e4b9446c7f1c7888c952b63aae5d76b51b87280c82f1152ecf5530
+  - path: src/compbias/models/structured_parser.py
+    sha256: 68888de778708d31acb728c8c2a0c67df2a9c9de072db2d4e4e074ecfc3859a4

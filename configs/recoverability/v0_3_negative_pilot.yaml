@@ -1,0 +1,27 @@
+status: final_failed_preregistered_pilot
+server_revision_observed: c5e4c6f
+model_snapshot_sha256: e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87
+records: 200
+answer_accuracy: 0.355
+parse_rate: 0.935
+natural_perception_error_rate: 0.225
+error_counts:
+  none: 67
+  parse_failure: 13
+  reasoning_error: 75
+  visual_error: 41
+  compensated_visual_error: 1
+  operator_invariant_visual_error: 3
+gate_passed: false
+calibration_exit: 3
+original_pilot_a: terminated_not_run
+original_pilot_b: terminated_not_run
+dataset_manifest_sha256: ce59a56ab9dd2e40555e7502f9378f83480f6e252a43b8de097cf6da36883cb6
+dataset_records_sha256: 92ccdf54b11e2a6c12e12ef5273137824c6f3b94f38224abeb32d8319b83a62b
+dataset_images_sha256: 1f622c74bcb6d2d8fcff71a3bb5c87c2fd738c97e0d9b8a046fda6faaa9ed614
+counterfactual_sha256: 4947a9e8778bbaaa8c80bbd1cf6922bdc13d7bba4dfe5e47be039c9e8b68df88
+required_server_artifacts:
+  - calibration_records_v0_3.jsonl
+  - calibration_records_v0_3.summary.json
+  - pilot-data-v0.3.log
+  - base-calibration-v0.3.log
