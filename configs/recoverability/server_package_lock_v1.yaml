@@ -15,7 +15,7 @@ files:
   - path: experiments/recoverability_v1/02_capture_v03_evidence.py
     sha256: 50fe491b4a5029b8e4d41a1762064a904d216057862ab019b19039e811588527
   - path: experiments/recoverability_v1/03_bridge.py
-    sha256: 180c9b7145e69d1c0dcf954b0e65aa5c7473a284b6049bc22439810716114654
+    sha256: b11cc7f11a0a2b1c430f51cbcef751b41d9672bcf69122632dbaa6f8b319382c
   - path: requirements-gpu.lock.txt
     sha256: d928379a590e5071d9b5042fe99d480f57ab187f0cb3a74e13af219a6048aeb3
   - path: src/compbias/gpu_pilot/chart_data.py

@@ -81,24 +81,24 @@ def _bootstrap_server_lock() -> None:
 _bootstrap_server_lock()
 
 from compbias.gpu_pilot.config import ACTIVE_PILOT_OUTPUT_SLUG, load_pilot_paths  # noqa: E402
-from compbias.gpu_pilot.execution_gate import (
+from compbias.gpu_pilot.execution_gate import (  # noqa: E402
     _validate_dataset_bundle,
     _validate_manifest,
     _validate_natural_records,
-)  # noqa: E402
+)
 from compbias.gpu_pilot.preflight import model_snapshot_sha256  # noqa: E402
 from compbias.gpu_pilot.qwen_smoke import decode_qwen_once, load_local_qwen  # noqa: E402
 from compbias.gpu_pilot.structured_generation import build_structured_messages  # noqa: E402
-from compbias.recoverability.bridge import (
+from compbias.recoverability.bridge import (  # noqa: E402
     BridgeScene,
     decode_text_qwen_once,
     run_bridge_protocol,
-)  # noqa: E402
+)
 from compbias.recoverability.config import load_recoverability_protocol  # noqa: E402
-from compbias.recoverability.evidence import (
+from compbias.recoverability.evidence import (  # noqa: E402
     load_negative_pilot_record,
     verify_server_package_lock,
-)  # noqa: E402
+)
 
 
 def _load_json(path: Path, *, label: str) -> dict[str, object]:

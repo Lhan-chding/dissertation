@@ -33,6 +33,7 @@ def test_fifty_scene_fixture_passes_every_pre_model_design_audit() -> None:
     assert report.nonrecoverable_ablated == 50
     assert report.legal_counterfactuals == 50
     assert report.valid_sham_surface_matched == 50
+    assert report.nonrecoverable_sham == 50
     assert report.gold_free_stage2_payloads == 50
     assert report.unique_numeric_tables == 50
     assert report.audit_passed is True
@@ -45,7 +46,7 @@ def test_fixture_is_order_independent_seeded_and_byte_canonical() -> None:
     assert first == second
     assert serialize_fixture(first) == serialize_fixture(second)
     assert fixture_sha256(first) == (
-        "a8816926c22002c6219c98f7d1c9a61c1f6c0ec2d916d7d5d44c93ca6db94838"
+        "20c079fff4e26293dc8cfc4c9ae126a5331e4ae7e40c81841cd7b956329ea6df"
     )
     assert fixture_sha256(first) == fixture_sha256(tuple(reversed(tuple(reversed(first)))))
     assert generate_fixture_50(seed=2026081607) != first

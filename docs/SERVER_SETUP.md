@@ -165,12 +165,13 @@ export PYTHONPATH=/cloud/cloud-ssd1/dissertation/src
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 
+mkdir -p /cloud/cloud-ssd1/recoverability-v1-evidence
+
 python experiments/recoverability_v1/00_preflight.py \
   --runtime configs/recoverability/server_runtime_v1.yaml \
   --server-package-lock configs/recoverability/server_package_lock_v1.yaml \
-  --project-root /cloud/cloud-ssd1/dissertation
-
-mkdir -p /cloud/cloud-ssd1/recoverability-v1-evidence
+  --project-root /cloud/cloud-ssd1/dissertation \
+  --output /cloud/cloud-ssd1/recoverability-v1-evidence/preflight.json
 
 python experiments/recoverability_v1/02_capture_v03_evidence.py \
   --negative-pilot configs/recoverability/v0_3_negative_pilot.yaml \
@@ -184,6 +185,9 @@ python experiments/recoverability_v1/03_bridge.py \
   --paths configs/paths.yaml \
   --protocol configs/recoverability/recoverability_v1.yaml \
   --server-package-lock configs/recoverability/server_package_lock_v1.yaml \
+  --preflight-report /cloud/cloud-ssd1/recoverability-v1-evidence/preflight.json \
+  --external-evidence /cloud/cloud-ssd1/recoverability-v1-evidence/v0_3_external_evidence.json \
+  --v03-records trajectories/natural/calibration_records_v0_3.jsonl \
   --execute
 ```
 

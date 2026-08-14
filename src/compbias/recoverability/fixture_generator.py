@@ -6,6 +6,7 @@ import hashlib
 import json
 from collections import Counter
 from dataclasses import dataclass
+from itertools import product
 
 from .compatibility import (
     ArithmeticProgressionConstraint,
@@ -21,7 +22,7 @@ from .interventions import (
     serialize_stage2_payload,
 )
 from .leakage import reject_forbidden_payload_content
-from .operators import Operation
+from .operators import Operation, apply_operation
 from .worlds import CounterfactualPair, SemanticWorld, validate_counterfactual_pair
 
 Constraint = PairSumConstraint | KnownValueConstraint | ArithmeticProgressionConstraint
@@ -35,6 +36,7 @@ class FixtureScene:
     counterfactual: CounterfactualPair
     valid_surface: str
     sham_surface: str
+    sham_constraints: tuple[Constraint, ...]
     stage2_payload: dict[str, object]
 
 
@@ -47,6 +49,7 @@ class FixtureAudit:
     nonrecoverable_ablated: int
     legal_counterfactuals: int
     valid_sham_surface_matched: int
+    nonrecoverable_sham: int
     gold_free_stage2_payloads: int
     unique_numeric_tables: int
     fixture_sha256: str
@@ -135,40 +138,63 @@ def _surface(constraints: tuple[Constraint, ...]) -> str:
     )
 
 
-def _same_width_alternative(value: int) -> int:
-    candidate = value + 1
-    return candidate if len(str(candidate)) == len(str(value)) else value - 1
+def _matched_nonrecoverable_sham(
+    observed: tuple[int, int, int, int],
+    operation: Operation,
+    constraints: tuple[Constraint, ...],
+) -> tuple[Constraint, ...]:
+    target_width = len(_surface(constraints).encode("utf-8"))
+    option_groups: list[tuple[Constraint, ...]] = []
 
+    def compatible_answers(candidate: tuple[Constraint, ...]) -> set[int]:
+        worlds = {observed}
+        for index in range(4):
+            for value in DOMAIN:
+                changed = list(observed)
+                changed[index] = value
+                worlds.add(tuple(changed))  # type: ignore[arg-type]
+        return {
+            apply_operation(world, operation)
+            for world in worlds
+            if all(item.accepts(world) for item in candidate)
+        }
 
-def _sham_constraints(constraints: tuple[Constraint, ...]) -> tuple[Constraint, ...]:
-    sham: list[Constraint] = []
     for item in constraints:
         if isinstance(item, PairSumConstraint):
-            sham.append(
-                PairSumConstraint(
-                    item.constraint_id,
-                    item.left_index,
-                    item.right_index,
-                    _same_width_alternative(item.total),
+            option_groups.append(
+                tuple(
+                    PairSumConstraint(item.constraint_id, left, right, total)
+                    for left in range(4)
+                    for right in range(left + 1, 4)
+                    for total in range(2, 37)
+                    if (left, right, total) != (item.left_index, item.right_index, item.total)
                 )
             )
         elif isinstance(item, KnownValueConstraint):
-            sham.append(
-                KnownValueConstraint(
-                    item.constraint_id,
-                    item.index,
-                    _same_width_alternative(item.value),
+            option_groups.append(
+                tuple(
+                    KnownValueConstraint(item.constraint_id, index, value)
+                    for index in range(4)
+                    for value in DOMAIN
+                    if (index, value) != (item.index, item.value)
                 )
             )
         else:
-            left, middle, right = item.indices
-            sham.append(
-                ArithmeticProgressionConstraint(
-                    item.constraint_id,
-                    (middle, left, right),
+            indices = tuple(range(4))
+            option_groups.append(
+                tuple(
+                    ArithmeticProgressionConstraint(item.constraint_id, candidate)
+                    for candidate in product(indices, repeat=3)
+                    if len(set(candidate)) == 3 and candidate != item.indices
                 )
             )
-    return tuple(sham)
+    for candidate in product(*option_groups):
+        typed = tuple(candidate)
+        if len(_surface(typed).encode("utf-8")) > target_width:
+            continue
+        if len(compatible_answers(typed)) > 1:
+            return typed
+    raise RuntimeError("no matched nonrecoverable sham exists for fixture scene")
 
 
 def _queries(
@@ -245,12 +271,16 @@ def _build_scene(
     )
     serialized = serialize_stage2_payload(payload)
     reject_forbidden_payload_content(serialized)
+    sham_constraints = _matched_nonrecoverable_sham(observed, operation, constraints)
+    valid_surface = _surface(constraints)
+    sham_surface = _surface(sham_constraints)
     return FixtureScene(
         world=world,
         observed_values=observed,
         counterfactual=pair,
-        valid_surface=_surface(constraints),
-        sham_surface=_surface(_sham_constraints(constraints)),
+        valid_surface=valid_surface,
+        sham_surface=sham_surface.ljust(len(valid_surface)),
+        sham_constraints=sham_constraints,
         stage2_payload=serialized,
     )
 
@@ -388,6 +418,7 @@ def audit_fixture(scenes: tuple[FixtureScene, ...]) -> FixtureAudit:
     ablated = 0
     legal_cf = 0
     matched = 0
+    sham_nonrecoverable = 0
     gold_free = 0
     for scene in scenes:
         valid_query, ablated_query = _queries(
@@ -419,6 +450,18 @@ def audit_fixture(scenes: tuple[FixtureScene, ...]) -> FixtureAudit:
         matched += int(
             len(scene.valid_surface.encode("utf-8")) == len(scene.sham_surface.encode("utf-8"))
         )
+        sham_report = analyze_compatibility(
+            CompatibilityQuery(
+                scene.observed_values,
+                scene.world.operation,
+                scene.sham_constraints,
+                DOMAIN,
+                1,
+            )
+        )
+        sham_nonrecoverable += int(
+            sham_report.status == "ok" and len(sham_report.compatible_answers) > 1
+        )
         serialized_stage2 = json.dumps(scene.stage2_payload, sort_keys=True)
         gold_free += int(
             "gold_answer" not in serialized_stage2 and "gold_scene" not in serialized_stage2
@@ -427,7 +470,7 @@ def audit_fixture(scenes: tuple[FixtureScene, ...]) -> FixtureAudit:
     operation_counts = Counter(item.world.operation.value for item in scenes)
     unique_tables = len({item.world.values for item in scenes})
     audit_passed = (
-        valid == ablated == legal_cf == matched == gold_free == 50
+        valid == ablated == legal_cf == matched == sham_nonrecoverable == gold_free == 50
         and family_counts == Counter({"cross_series": 17, "duplicate_encoding": 17, "trend": 16})
         and min(operation_counts.values()) >= 16
         and unique_tables == 50
@@ -440,6 +483,7 @@ def audit_fixture(scenes: tuple[FixtureScene, ...]) -> FixtureAudit:
         nonrecoverable_ablated=ablated,
         legal_counterfactuals=legal_cf,
         valid_sham_surface_matched=matched,
+        nonrecoverable_sham=sham_nonrecoverable,
         gold_free_stage2_payloads=gold_free,
         unique_numeric_tables=unique_tables,
         fixture_sha256=fixture_sha256(scenes),
