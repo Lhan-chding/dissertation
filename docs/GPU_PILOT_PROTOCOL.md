@@ -57,7 +57,7 @@ The active v0.3 records use the versioned names
 `calibration_records_v0_3.summary.json`, leaving the historical v0.1/v0.2
 evidence untouched. If either active file already exists, collection refuses a
 second attempt regardless of the summary's mutable gate boolean. Training also
-rejects any archived v0.3 calibration artifact.
+rejects archived calibration artifacts that retain a canonical v0.3 filename.
 
 The smoke and natural collector preserve the strict three-tag parser. The
 smoke permits at most two deterministic, format-only retries. Its retry prompt

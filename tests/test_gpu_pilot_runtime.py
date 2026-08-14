@@ -856,20 +856,26 @@ def test_natural_collection_failure_does_not_publish_partial_records(
     assert not list(target.parent.glob(f".{target.name}.*"))
 
 
-@pytest.mark.parametrize("gate_passed", [False, True])
+@pytest.mark.parametrize(
+    ("existing_name", "content"),
+    [
+        ("calibration_records_v0_3.jsonl", '{"dataset_id":"CVA-Chart-Pilot-v0.3"}\n'),
+        ("calibration_records_v0_3.summary.json", '{"gate_passed":false}'),
+        ("calibration_records_v0_3.summary.json", '{"gate_passed":true}'),
+    ],
+)
 def test_completed_v0_3_calibration_cannot_be_archived_or_rerun(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
-    gate_passed: bool,
+    existing_name: str,
+    content: str,
 ) -> None:
     from compbias.gpu_pilot import collection
 
     trajectories = tmp_path / "trajectories"
-    records = trajectories / "natural/calibration_records_v0_3.jsonl"
-    summary = trajectories / "natural/calibration_records_v0_3.summary.json"
-    records.parent.mkdir(parents=True)
-    records.write_text('{"dataset_id":"CVA-Chart-Pilot-v0.3"}\n', encoding="utf-8")
-    summary.write_text(json.dumps({"gate_passed": gate_passed}), encoding="utf-8")
+    existing = trajectories / "natural" / existing_name
+    existing.parent.mkdir(parents=True)
+    existing.write_text(content, encoding="utf-8")
     paths = SimpleNamespace(
         project_root=tmp_path,
         model_path=tmp_path / "model",
@@ -892,12 +898,16 @@ def test_completed_v0_3_calibration_cannot_be_archived_or_rerun(
 
     assert result == 3
     assert not invoked
-    assert records.is_file()
-    assert summary.is_file()
+    assert existing.is_file()
 
 
+@pytest.mark.parametrize(
+    "active_name",
+    ["calibration_records_v0_3.jsonl", "calibration_records_v0_3.summary.json"],
+)
 def test_training_gate_rejects_archived_v0_3_calibration_but_ignores_v0_2(
     tmp_path: Path,
+    active_name: str,
 ) -> None:
     from compbias.gpu_pilot.execution_gate import _reject_archived_active_calibrations
 
@@ -908,9 +918,30 @@ def test_training_gate_rejects_archived_v0_3_calibration_but_ignores_v0_2(
 
     _reject_archived_active_calibrations(tmp_path)
 
-    active = attempts / "calibration_records_v0_3.jsonl"
-    active.write_text('{"dataset_id":"CVA-Chart-Pilot-v0.3"}\n', encoding="utf-8")
+    active = attempts / active_name
+    active.write_text("{}\n", encoding="utf-8")
     with pytest.raises(RuntimeError, match=r"archived v0\.3 calibration"):
+        _reject_archived_active_calibrations(tmp_path)
+
+
+@pytest.mark.parametrize("symlink_at_root", [False, True])
+def test_training_gate_rejects_symlinks_in_calibration_attempts(
+    tmp_path: Path,
+    symlink_at_root: bool,
+) -> None:
+    from compbias.gpu_pilot.execution_gate import _reject_archived_active_calibrations
+
+    target = tmp_path / "outside"
+    target.mkdir()
+    attempts = tmp_path / "natural/attempts"
+    attempts.parent.mkdir(parents=True)
+    if symlink_at_root:
+        attempts.symlink_to(target, target_is_directory=True)
+    else:
+        attempts.mkdir()
+        (attempts / "linked").symlink_to(target, target_is_directory=True)
+
+    with pytest.raises(RuntimeError, match=r"must not contain symlinks|must be a real directory"):
         _reject_archived_active_calibrations(tmp_path)
 
 
