@@ -1002,8 +1002,9 @@ def test_gpu_lock_and_runbook_bind_portable_security_review() -> None:
     assert "records resolved versions but not" in runbook
     assert "original installation provenance" in runbook
     assert "not a standalone proof that no package originally came from a" in runbook
-    assert "skipped the local-version `torch`, `torchaudio`, and `torchvision`" in runbook
-    assert "because the `+cu128` builds are not published on PyPI" in runbook
+    assert "skipped the" in runbook
+    assert "local-version `torch`, `torchaudio`, and `torchvision` builds" in runbook
+    assert "`+cu128` builds are not published on PyPI" in runbook
     assert "pip-audit==2.10.1" in runbook
     assert "d928379a590e5071d9b5042fe99d480f57ab187f0cb3a74e13af219a6048aeb3" in runbook
 

@@ -1,5 +1,18 @@
 # Candidate upper-layer snapshot for the validated server's existing
 # Python 3.12.11 + torch 2.8.0+cu128 environment. Do not install torch here.
+# These exact security-overlay versions shadow vulnerable packages inherited
+# from the server's system-site-packages environment without requesting or
+# upgrading torch.
+filelock==3.20.3
+Jinja2==3.1.6
+pip==26.1.2
+protobuf==6.33.5
+Pygments==2.20.0
+setuptools==84.0.0
+tornado==6.5.7
+uv==0.11.15
+wheel==0.46.3
+
 accelerate==1.14.0
 datasets==5.0.0
 matplotlib==3.11.1

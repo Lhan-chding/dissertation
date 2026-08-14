@@ -32,11 +32,41 @@ parse failures cannot silently resample the natural error distribution.
 
 ## Environment policy
 
-`requirements-gpu.in` is a candidate upper-layer snapshot based on current
-official package releases. `constraints-gpu.txt` protects torch 2.8.0. It is
-not yet evidence of server compatibility. After preflight and smoke succeed,
-record `pip freeze --all` as `requirements-gpu.lock.txt` and commit it in a
-separate reviewed change.
+`requirements-gpu.in` is the tested upper-layer snapshot, including nine
+security-overlay versions that shadow vulnerable packages inherited from the
+server image. `constraints-gpu.txt` protects torch 2.8.0. After preflight and
+smoke succeed, export the installed inventory without the editable project or
+machine-local direct references:
+
+```bash
+python -m pip list --format=freeze --exclude-editable \
+  | LC_ALL=C sort -f > requirements-gpu.lock.txt
+```
+
+The reviewed server inventory contains 125 unique exact versions and has
+SHA-256
+`d928379a590e5071d9b5042fe99d480f57ab187f0cb3a74e13af219a6048aeb3`.
+It matches every exact version in `requirements-gpu.in`. Because this export
+uses `pip list` rather than `pip freeze`, it records resolved versions but not
+original installation provenance. Treat it as an interpreter/platform
+inventory, not a standalone proof that no package originally came from a
+direct URL, a resolver-produced lock, or an artifact-hashed cryptographic
+lock.
+
+On 2026-08-14, an isolated `pip-audit==2.10.1` scan of the complete inventory
+with `--no-deps --disable-pip` reported no known vulnerabilities for the
+auditable packages from the PyPI advisory service, but skipped the
+local-version `torch`, `torchaudio`, and `torchvision` builds because the
+`+cu128` builds are not published on PyPI. The OSV service additionally
+reported advisories against the inherited `torch==2.8.0+cu128` build. That
+build is retained only as a time-bounded exception for this single-user
+offline pilot: the repository has no `torch.load` path, accepts only the
+hashed allowlisted local safetensors snapshot, and enforces
+`local_files_only=True` plus `trust_remote_code=False`. Never use this
+exception for untrusted `.pt` or `.pth` files, external optimizer/resume
+state, a network service, or a multi-tenant notebook. The environment must
+not be described as vulnerability-clean; a separate torch 2.10+ CUDA 12.8
+validation remains post-pilot work.
 
 The official TRL documentation lists Qwen2.5-VL as a supported GRPO VLM, but
 also warns that compatibility is not guaranteed for every model/version. The
