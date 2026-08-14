@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import subprocess
 from pathlib import Path
@@ -7,6 +8,8 @@ from types import SimpleNamespace
 
 import pytest
 import yaml
+from packaging.requirements import Requirement
+from packaging.utils import canonicalize_name
 
 from compbias.gpu_pilot.analysis import main as analysis_main
 from compbias.gpu_pilot.chart_data import generate_dataset
@@ -945,6 +948,51 @@ def test_server_scripts_parse_and_gpu_requirements_do_not_replace_torch() -> Non
         "pytest==9.0.3",
     ):
         assert dependency in requirements
+
+
+def test_gpu_lock_and_runbook_bind_portable_security_review() -> None:
+    root = Path(__file__).resolve().parents[1]
+    lock_path = root / "requirements-gpu.lock.txt"
+    lock_bytes = lock_path.read_bytes()
+    lock_lines = lock_bytes.decode("utf-8").splitlines()
+    parsed = [Requirement(line) for line in lock_lines]
+    normalized_names = [canonicalize_name(requirement.name) for requirement in parsed]
+    locked = {
+        canonicalize_name(requirement.name): str(requirement.specifier)
+        for requirement in parsed
+    }
+
+    assert len(lock_lines) == 125
+    assert lock_lines == sorted(lock_lines, key=str.casefold)
+    assert len(normalized_names) == len(set(normalized_names))
+    assert all(requirement.url is None for requirement in parsed)
+    assert hashlib.sha256(lock_bytes).hexdigest() == (
+        "d928379a590e5071d9b5042fe99d480f57ab187f0cb3a74e13af219a6048aeb3"
+    )
+
+    security_overlay = {
+        "filelock": "==3.20.3",
+        "jinja2": "==3.1.6",
+        "pip": "==26.1.2",
+        "protobuf": "==6.33.5",
+        "pygments": "==2.20.0",
+        "setuptools": "==84.0.0",
+        "tornado": "==6.5.7",
+        "uv": "==0.11.15",
+        "wheel": "==0.46.3",
+    }
+    assert {name: locked.get(name) for name in security_overlay} == security_overlay
+    assert locked["torch"] == "==2.8.0+cu128"
+
+    candidate = (root / "requirements-gpu.in").read_text(encoding="utf-8")
+    for name, version in security_overlay.items():
+        assert f"{name}=={version.removeprefix('==')}" in candidate.casefold()
+
+    runbook = (root / "docs" / "SERVER_SETUP.md").read_text(encoding="utf-8")
+    assert "python -m pip list --format=freeze --exclude-editable" in runbook
+    assert "pip freeze --all" not in runbook
+    assert "pip-audit==2.10.1" in runbook
+    assert "d928379a590e5071d9b5042fe99d480f57ab187f0cb3a74e13af219a6048aeb3" in runbook
 
 
 def test_pilot_a_consumes_the_natural_collection_output() -> None:
