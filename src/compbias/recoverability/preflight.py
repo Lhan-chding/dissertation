@@ -163,7 +163,26 @@ def run_metadata_preflight(
         for name, version in inventory_lookup().items()
     }
     if observed_inventory != expected_inventory:
-        raise RuntimeError("installed package inventory differs from the exact requirements lock")
+        missing = {
+            name: expected_inventory[name]
+            for name in sorted(expected_inventory.keys() - observed_inventory.keys())
+        }
+        extra = {
+            name: observed_inventory[name]
+            for name in sorted(observed_inventory.keys() - expected_inventory.keys())
+        }
+        version_mismatch = {
+            name: {
+                "expected": expected_inventory[name],
+                "observed": observed_inventory[name],
+            }
+            for name in sorted(expected_inventory.keys() & observed_inventory.keys())
+            if expected_inventory[name] != observed_inventory[name]
+        }
+        raise RuntimeError(
+            "installed package inventory differs from the exact requirements lock: "
+            f"missing={missing}; extra={extra}; version_mismatch={version_mismatch}"
+        )
     installed: list[tuple[str, str]] = []
     for package, expected in spec.exact_packages.items():
         try:

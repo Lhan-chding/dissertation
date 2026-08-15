@@ -16,12 +16,21 @@ from compbias.recoverability.evidence import verify_server_package_lock
 from compbias.recoverability.preflight import load_runtime_spec, run_metadata_preflight
 
 
+def _metadata_subprocess_environment() -> dict[str, str]:
+    """Return the installed-package environment without repository source metadata."""
+
+    environment = dict(os.environ)
+    environment.pop("PYTHONPATH", None)
+    return environment
+
+
 def _pip_check() -> tuple[int, str]:
     completed = subprocess.run(
         [sys.executable, "-m", "pip", "check"],
         check=False,
         capture_output=True,
         text=True,
+        env=_metadata_subprocess_environment(),
     )
     return completed.returncode, completed.stdout + completed.stderr
 
@@ -32,6 +41,7 @@ def _pip_inventory() -> dict[str, str]:
         check=True,
         capture_output=True,
         text=True,
+        env=_metadata_subprocess_environment(),
     )
     rows = json.loads(completed.stdout)
     return {row["name"]: row["version"] for row in rows}

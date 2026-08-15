@@ -11,7 +11,7 @@ files:
   - path: configs/recoverability/v0_3_negative_pilot.yaml
     sha256: 0d05faf901d5756577fdf10edc13cfa8925dd0cf0cb7160f6b7b1a54eb9b087e
   - path: experiments/recoverability_v1/00_preflight.py
-    sha256: 13b37acb10363f0f3f501d35ca83157c7bbeb61e0be54bfd4fc0b857fc94000f
+    sha256: 5144a757cf8d84e4bc879c921e059281591376b3d5e781527c30ff3535c1c91a
   - path: experiments/recoverability_v1/02_capture_v03_evidence.py
     sha256: 50fe491b4a5029b8e4d41a1762064a904d216057862ab019b19039e811588527
   - path: experiments/recoverability_v1/03_bridge.py
@@ -55,4 +55,4 @@ files:
   - path: src/compbias/recoverability/evidence_capture.py
     sha256: 721bc74acb7ed1b5dae36116f481823d2093b4f75705a8388838ea3b9f4437c7
   - path: src/compbias/recoverability/preflight.py
-    sha256: 834f8531f1f578878462fa9b6ec4deff78ced86ed787c06b7d84135c66bceae3
+    sha256: 648ca5111c6a2554c5c81ad4203217621f316654d661041c857532c2719a3661
