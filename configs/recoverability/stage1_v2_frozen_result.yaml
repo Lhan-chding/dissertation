@@ -1,0 +1,23 @@
+schema_version: 1
+status: FINAL_PASSED_DEVELOPMENT_PROBE
+dataset_id: CVA-Recoverability-Stage1-V2-Dev-Probe
+source_dataset_id: CVA-Chart-Pilot-v0.3
+source_split: dev
+model_snapshot_sha256: e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87
+scenes: 24
+model_calls: 24
+parse_rate: 1.0
+exact_transcriptions: 22
+exact_transcription_rate: 0.9166666666666666
+mismatch_scene_ids:
+  - dev-000003
+  - dev-000019
+probe_passed: true
+hypothesis_tested: false
+confirmatory_execution_authorized: false
+training_invoked: false
+source_sha256:
+  console: 95028b7bcc29f9533e5570068673c3258661a9c18167055df4ff8cfd956e80e8
+  preflight: e37e980468f445baf9568df7e40a364c5174c00034eb97fcce889057345eee5f
+  probe_records: 0b6f0518c84c83bb4b4d78c6d08db526e9449a4b022fcfc10ba607e79cfae7fa
+  probe_report: a838645b55117c63114e529cdf38b5f124ed7f404a077823e214093d21c42f3a

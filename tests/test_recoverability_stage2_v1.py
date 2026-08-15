@@ -14,7 +14,6 @@ from compbias.recoverability.stage2_v1 import (
     run_stage2_v1_probe,
 )
 
-
 ROOT = Path(__file__).resolve().parents[1]
 PROBE_CONFIG = ROOT / "configs" / "recoverability" / "stage2_v1_probe.yaml"
 FROZEN_STAGE1 = ROOT / "configs" / "recoverability" / "stage1_v2_frozen_result.yaml"
@@ -53,9 +52,7 @@ def test_stage2_v1_prompt_is_exact_evidence_bound_and_gold_free(
 
     assert tuple(inspect.signature(build_stage2_v1_messages).parameters) == ("scene",)
     assert len(messages) == 2
-    assert (
-        '"variables":{"a":8,"b":4,"c":5,"d":9}' in system
-    )
+    assert '"variables":{"a":8,"b":4,"c":5,"d":9}' in system
     assert step_fragment in system
     assert '"answer":INTEGER' in system
     assert all(

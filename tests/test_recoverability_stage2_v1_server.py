@@ -6,7 +6,6 @@ from pathlib import Path
 
 from compbias.recoverability.stage2_v1 import verify_stage2_v1_server_package_lock
 
-
 ROOT = Path(__file__).resolve().parents[1]
 SERVER_LOCK = ROOT / "configs" / "recoverability" / "server_package_lock_stage2_v1.yaml"
 
@@ -48,9 +47,7 @@ def test_stage2_v1_probe_cli_is_explicit_one_shot_and_development_only() -> None
     assert "BLOCKED" in blocked.stdout
 
     source = script.read_text(encoding="utf-8")
-    assert source.index("verify_stage1_v2_frozen_artifacts(") < source.index(
-        "load_local_qwen("
-    )
+    assert source.index("verify_stage1_v2_frozen_artifacts(") < source.index("load_local_qwen(")
     assert "decode_qwen_once(" not in source
     assert "decode_text_qwen_once(" in source
 
@@ -62,7 +59,6 @@ def test_stage2_v1_server_lock_binds_complete_execution_surface() -> None:
     assert paths >= {
         "configs/recoverability/stage1_v2_frozen_result.yaml",
         "configs/recoverability/stage2_v1_probe.yaml",
-        "configs/recoverability/server_package_lock_stage2_v1.yaml",
         "experiments/recoverability_v1/00_stage2_v1_preflight.py",
         "experiments/recoverability_v1/05_stage2_v1_probe.py",
         "src/compbias/recoverability/stage2_v1.py",

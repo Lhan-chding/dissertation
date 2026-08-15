@@ -1,0 +1,13 @@
+schema_version: 1
+status: DEVELOPMENT_PROBE_NOT_RUN
+dataset_id: CVA-Recoverability-Stage2-V1-Dev-Probe
+output_subdirectory: stage2_v1_dev_probe
+source_dataset_id: CVA-Chart-Pilot-v0.3
+source_split: dev
+scenes: 24
+format_retries: 0
+required_program_parse_rate: 1.0
+required_execution_rate: 1.0
+required_program_answer_consistency: 1.0
+allow_rerun: false
+hypothesis_test: false
