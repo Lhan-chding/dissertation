@@ -203,3 +203,11 @@ Stop after the probe even if it exits zero. Return
 of `probe_records.jsonl`, and the console output for review. Do not rerun the
 probe, run a full Bridge v2, or start Phase N, Phase C, Pilot A, Pilot B, or any
 RL training in the same session.
+
+If commit `52cb92f` stopped before model loading with
+`Bridge v1 console log does not preserve bridge_exit=3`, preserve that failed
+preflight and console as evidence. It did not create the Stage-1 v2 attempt
+marker and did not consume the one-shot probe. After pulling the corrected
+commit, first prove that both the probe output and attempt marker are absent,
+then use new versioned preflight and console filenames; never delete or
+overwrite the earlier files.

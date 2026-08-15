@@ -59,6 +59,10 @@ drifts. Consequently the bridge did not test the recoverability hypothesis;
 the zero two-stage accuracy is a mechanical consequence of the Stage-1
 measurement failure. The source hashes and this interpretation are frozen in
 `configs/recoverability/bridge_v1_failure.yaml`. Bridge v1 must not be rerun.
+The shell printed `bridge_exit=3` outside the redirected Bridge console file;
+its exit status is therefore derived from the frozen failed report together
+with the hash-locked Bridge CLI, while the console bytes remain independently
+hash-bound.
 
 The next step is a separate development-only Stage-1 v2 probe on 24 frozen
 `dev` scenes (four per chart-type by operation stratum). Its prompt receives no

@@ -40,6 +40,7 @@ class BridgeV1FailureRecord:
     dataset_id: str
     model_snapshot_sha256: str
     bridge_exit: int
+    bridge_exit_evidence: str
     scenes: int
     model_calls: int
     legacy_parse_rate: float
@@ -126,6 +127,7 @@ def load_bridge_v1_failure(path: Path) -> BridgeV1FailureRecord:
         "dataset_id",
         "model_snapshot_sha256",
         "bridge_exit",
+        "bridge_exit_evidence",
         "scenes",
         "model_calls",
         "legacy_parse_rate",
@@ -147,6 +149,7 @@ def load_bridge_v1_failure(path: Path) -> BridgeV1FailureRecord:
         dataset_id=str(mapping["dataset_id"]),
         model_snapshot_sha256=_digest(mapping["model_snapshot_sha256"], "model_snapshot_sha256"),
         bridge_exit=_exact_int(mapping["bridge_exit"], "bridge_exit"),
+        bridge_exit_evidence=str(mapping["bridge_exit_evidence"]),
         scenes=_exact_int(mapping["scenes"], "scenes", minimum=1),
         model_calls=_exact_int(mapping["model_calls"], "model_calls", minimum=1),
         legacy_parse_rate=_rate(mapping["legacy_parse_rate"], "legacy_parse_rate"),
@@ -167,6 +170,7 @@ def load_bridge_v1_failure(path: Path) -> BridgeV1FailureRecord:
         "status": "FINAL_FAILED_STAGE1_INTERFACE",
         "dataset_id": "CVA-Recoverability-Bridge-v1",
         "bridge_exit": 3,
+        "bridge_exit_evidence": "derived_from_frozen_report_and_locked_cli",
         "scenes": 300,
         "model_calls": 600,
         "stage1_parse_rate": 0.0,
@@ -179,6 +183,7 @@ def load_bridge_v1_failure(path: Path) -> BridgeV1FailureRecord:
         "status": record.status,
         "dataset_id": record.dataset_id,
         "bridge_exit": record.bridge_exit,
+        "bridge_exit_evidence": record.bridge_exit_evidence,
         "scenes": record.scenes,
         "model_calls": record.model_calls,
         "stage1_parse_rate": record.stage1_parse_rate,
@@ -320,8 +325,6 @@ def verify_bridge_v1_failure_artifacts(
     attempt = _load_json_object(attempt_marker_path, label="Bridge v1 attempt marker")
     if attempt != {"schema_version": 1, "status": "BRIDGE_ATTEMPT_STARTED"}:
         raise ValueError("Bridge v1 attempt marker is invalid")
-    if "bridge_exit=3" not in console_log_path.read_text(encoding="utf-8"):
-        raise ValueError("Bridge v1 console log does not preserve bridge_exit=3")
     return BridgeV1FailureVerification(
         verified=True,
         records=replay.records,

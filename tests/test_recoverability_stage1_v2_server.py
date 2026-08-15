@@ -162,6 +162,7 @@ def test_bridge_v1_failure_artifacts_are_hash_bound_and_replayed(tmp_path: Path)
         dataset_id="CVA-Recoverability-Bridge-v1",
         model_snapshot_sha256="a" * 64,
         bridge_exit=3,
+        bridge_exit_evidence="derived_from_frozen_report_and_locked_cli",
         scenes=3,
         model_calls=6,
         legacy_parse_rate=0.96,

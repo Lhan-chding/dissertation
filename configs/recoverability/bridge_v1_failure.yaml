@@ -3,6 +3,7 @@ status: FINAL_FAILED_STAGE1_INTERFACE
 dataset_id: CVA-Recoverability-Bridge-v1
 model_snapshot_sha256: e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87
 bridge_exit: 3
+bridge_exit_evidence: derived_from_frozen_report_and_locked_cli
 scenes: 300
 model_calls: 600
 legacy_parse_rate: 0.9633333333333334

@@ -5,7 +5,7 @@ files:
   - path: configs/paths.example.yaml
     sha256: 9fd6adf1fb418c680024b1e939e47ee83bf12ca8ee60474ed2ddc94deb94bff2
   - path: configs/recoverability/bridge_v1_failure.yaml
-    sha256: 5c1cfaa5d2a2248cd4e4d7873fa726712307abac90e96a6fbda6175d0ee26d9e
+    sha256: bc01afeef4e17da94df06a9ed8b647caaba37456a5f4f78c2038bd3a1bd77e8a
   - path: configs/recoverability/power_plan_v1.json
     sha256: e5703c0e4511b89aa5fd090209ae5860682fefe6eeaac2105df886476464bc01
   - path: configs/recoverability/recoverability_v1.yaml
@@ -55,7 +55,7 @@ files:
   - path: src/compbias/recoverability/bridge.py
     sha256: d1dbfd93e6695f8c0b9c200e0491bc1ded94b02bac3c6d30ff297b5c7c93398a
   - path: src/compbias/recoverability/bridge_v1_failure.py
-    sha256: d258315ead066600ac974eee3aa94e8f0d199d72cee9a093c418a35b87888706
+    sha256: 300d472b2b61049aca476a56cdbf1423301e1e73edeb8712c2fca7cee30541d8
   - path: src/compbias/recoverability/config.py
     sha256: 9a61fae501e4c1514b1557cd1c79312e605c4fa4df21fe5b751af03fe4806518
   - path: src/compbias/recoverability/dsl/executor.py
