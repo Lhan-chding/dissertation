@@ -14,7 +14,10 @@ from compbias.recoverability.bridge_v1_failure import (
     replay_bridge_v1_records,
     verify_bridge_v1_failure_artifacts,
 )
-from compbias.recoverability.stage1_v2 import verify_stage1_v2_server_package_lock
+from compbias.recoverability.stage1_v2 import (
+    validate_stage1_v2_runtime_paths,
+    verify_stage1_v2_server_package_lock,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 FAILURE_CONFIG = ROOT / "configs" / "recoverability" / "bridge_v1_failure.yaml"
@@ -248,7 +251,7 @@ def test_stage1_v2_server_lock_binds_the_complete_new_execution_surface() -> Non
 
     assert verification.verified is True
     assert {
-        "configs/paths.yaml",
+        "configs/paths.example.yaml",
         "configs/recoverability/bridge_v1_failure.yaml",
         "configs/recoverability/stage1_v2_probe.yaml",
         "experiments/recoverability_v1/04_stage1_v2_probe.py",
@@ -257,6 +260,19 @@ def test_stage1_v2_server_lock_binds_the_complete_new_execution_surface() -> Non
     }.issubset(paths)
     assert "experiments/recoverability_v1/03_bridge.py" in paths
     assert all(not path.startswith("tests/") for path in paths)
+
+
+def test_stage1_v2_runtime_paths_must_byte_match_the_locked_example(tmp_path: Path) -> None:
+    registered = tmp_path / "paths.example.yaml"
+    runtime = tmp_path / "paths.yaml"
+    registered.write_text("schema_version: 1\nproject_root: /fixed\n", encoding="utf-8")
+    runtime.write_bytes(registered.read_bytes())
+
+    validate_stage1_v2_runtime_paths(runtime, registered_example=registered)
+
+    runtime.write_text("schema_version: 1\nproject_root: /changed\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="byte-match"):
+        validate_stage1_v2_runtime_paths(runtime, registered_example=registered)
 
 
 def test_stage1_v2_preflight_is_metadata_only_and_uses_the_new_lock() -> None:
