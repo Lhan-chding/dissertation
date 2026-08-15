@@ -67,8 +67,7 @@ def _fixture(
     )
     console = tmp_path / "measurement-qualification-data.log"
     console.write_text(
-        json.dumps(manifest, indent=2, sort_keys=True)
-        + "\nqualification_data_exit=0\n",
+        json.dumps(manifest, indent=2, sort_keys=True) + "\nqualification_data_exit=0\n",
         encoding="utf-8",
     )
     frozen = load_measurement_qualification_data_anchor(ANCHOR)
