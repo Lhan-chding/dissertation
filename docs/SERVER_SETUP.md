@@ -6,9 +6,9 @@
 > A/B are terminated. The Stage-2 v1 development probe has completed and must
 > not be rerun. Its model-free diagnostic is complete. The one-shot 24-call,
 > text-only Stage-2 v2 development probe also completed successfully and must
-> not be rerun. The only next server action is a zero-model-call evidence replay
-> at the end of this document. Bridge v2, Phase N/C, Pilot A/B, and all training
-> remain unauthorized.
+> not be rerun. Its zero-model-call evidence replay also completed successfully
+> and must not be rerun. No further server action is authorized. Bridge v2,
+> Phase N/C, Pilot A/B, and all training remain unauthorized.
 
 ```text
 GPU: NVIDIA GeForce RTX 4090, 47.37 GiB VRAM, compute capability 8.9
@@ -438,14 +438,15 @@ Its parse, execution, and executor-answer rates were all `1.0`; it used zero
 retries and did not test a scientific hypothesis. The historical block above
 must not be executed again.
 
-## Stage-2 v2 model-free evidence capture handoff
+## Historical: completed Stage-2 v2 model-free evidence capture
 
-This is the only authorized next server action. It loads no model, makes no
-model or CUDA calls, and does not run a hypothesis test or training. It verifies
+This completed action loaded no model, made no
+model or CUDA calls, and did not run a hypothesis test or training. It verified
 the exact evidence-capture code package, checks all five externally supplied
 artifact hashes, re-parses and executes every stored raw graph, and rejects any
 stored flag or aggregate that does not reproduce. It writes one new evidence
-manifest exclusively and refuses overwrite or path substitution.
+manifest exclusively and refuses overwrite or path substitution. The following
+block is immutable run history and must not be executed again.
 
 ```bash
 cd /cloud/cloud-ssd1/dissertation
@@ -480,6 +481,15 @@ test "$capture_rc" -eq 0 || exit "$capture_rc"
 sha256sum "$STAGE2_V2_EVIDENCE"
 ```
 
-Stop after this capture. Return the complete manifest,
-`stage2_v2_capture_exit`, and its SHA-256. Do not rerun any probe or start
-Bridge v2, Phase N, Phase C, Pilot A, Pilot B, or training.
+The capture returned exit `0`, `verified=true`, and reproduced all 24 parses,
+executions, and executor-correct results with `model_calls=0`. Its manifest
+SHA-256 is
+`3a9e521cfe718cc3dea9aee4f1591aac761fa47f893c986eb1ba722a44374577`.
+It is anchored in
+`configs/recoverability/stage2_v2_external_evidence_anchor.yaml` and must not be
+rerun.
+
+There is no authorized next server action. Keep the server stopped. Do not run
+Bridge v2, Phase N, Phase C, Pilot A, Pilot B, another development probe, or
+training. A future server handoff requires a new reviewed section that freezes
+an untouched data split and a separate closed package before any model call.

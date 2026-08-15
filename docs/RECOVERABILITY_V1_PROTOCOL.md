@@ -118,7 +118,13 @@ only the mechanical viability of the executor-authoritative interface; it is
 not evidence for recoverability and does not authorize Bridge v2, Phase N,
 Phase C, or RL. Its externally supplied hashes are frozen in
 `configs/recoverability/stage2_v2_frozen_result.yaml`; the remaining evidence
-step is a zero-model-call replay of all 24 stored raw graphs.
+step was a zero-model-call replay of all 24 stored raw graphs. That replay is
+now complete: it verified all five source hashes and reproduced 24 parses, 24
+executions, and 24 executor-correct results without a model call. Its external
+manifest SHA-256 is
+`3a9e521cfe718cc3dea9aee4f1591aac761fa47f893c986eb1ba722a44374577`,
+anchored in
+`configs/recoverability/stage2_v2_external_evidence_anchor.yaml`.
 
 ### Phase N: natural prevalence
 
@@ -191,6 +197,7 @@ Stage-2 v1 development probe, model-free v1 failure diagnostic, and successful
 Stage-2 v2 development probe are frozen; none is evidence for or against
 recoverability. Phase N, Phase C, Pilot A, Pilot B, Bridge v2, any additional
 development probe, and all RL training remain unauthorized. The only next
-server action is the zero-model-call Stage-2 v2 evidence capture in
-`docs/SERVER_SETUP.md`. Stop after it and return its immutable evidence for
-review.
+server action was the zero-model-call Stage-2 v2 evidence capture; it is now
+complete and must not be rerun. No further server action is authorized. A
+future Bridge v2 would first require a separately reviewed protocol with an
+explicit untouched split, frozen sample plan, and new closed server package.

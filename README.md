@@ -63,10 +63,11 @@ and all generated state must remain under:
 ```
 
 The Phase N/C protocol remains unrun and unauthorized. There is no authorized
-next GPU step. The only next server action is a zero-model-call replay that
-hash-binds the five Stage-2 v2 artifacts and independently re-parses and executes
-all 24 stored raw graphs. Passing that evidence capture still cannot authorize
-Bridge v2 or any confirmatory phase.
+next GPU or server step. The zero-model-call replay of the five Stage-2 v2
+artifacts completed successfully: all 24 stored raw graphs independently parsed,
+executed, and reproduced their registered results. The external evidence SHA-256
+is `3a9e521cfe718cc3dea9aee4f1591aac761fa47f893c986eb1ba722a44374577`.
+This still does not authorize Bridge v2 or any confirmatory phase.
 
 Current explicit non-claims are:
 
