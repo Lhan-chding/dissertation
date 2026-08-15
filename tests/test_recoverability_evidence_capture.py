@@ -111,6 +111,10 @@ def _write_inputs(tmp_path: Path) -> dict[str, Path]:
                     "reasoning_error": 75,
                     "visual_error": 41,
                 },
+                "gate_failures": [
+                    "evidence_parse_rate_below_95_percent",
+                    "fewer_than_three_supported_natural_error_families",
+                ],
                 "gate_passed": False,
                 "model_snapshot_sha256": (
                     "e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87"
@@ -129,7 +133,10 @@ def _write_inputs(tmp_path: Path) -> dict[str, Path]:
     pilot_log = tmp_path / "pilot-data-v0.3.log"
     pilot_log.write_text("dataset generation completed\n", encoding="utf-8")
     calibration_log = tmp_path / "base-calibration-v0.3.log"
-    calibration_log.write_text("calibration_exit=3\n", encoding="utf-8")
+    calibration_log.write_text(
+        'Loading weights: 100%\n{"gate_passed": false, "records": 200}\n',
+        encoding="utf-8",
+    )
     return {
         "records_path": records,
         "summary_path": summary,
@@ -155,6 +162,13 @@ def test_capture_binds_external_bytes_and_fixed_failed_metrics(tmp_path: Path) -
     assert report.gate_passed is False
     assert payload["artifact_type"] == "recoverability_v1_v0_3_external_evidence"
     assert payload["status"] == "FROZEN_FAILED_NOT_TO_BE_RERUN"
+    assert payload["calibration_exit_evidence"] == (
+        "replayed_raw_records_and_frozen_calibration_gate"
+    )
+    assert payload["calibration_gate_failures"] == [
+        "evidence_parse_rate_below_95_percent",
+        "fewer_than_three_supported_natural_error_families",
+    ]
     assert payload["source_files"] == [
         {
             "basename": item.basename,
@@ -186,6 +200,32 @@ def test_capture_rejects_metric_tamper_and_does_not_publish(tmp_path: Path) -> N
         )
 
     assert not output.exists()
+
+
+def test_capture_rejects_gate_failure_tamper(tmp_path: Path) -> None:
+    inputs = _write_inputs(tmp_path)
+    summary = json.loads(inputs["summary_path"].read_text(encoding="utf-8"))
+    summary["gate_failures"] = []
+    inputs["summary_path"].write_text(json.dumps(summary) + "\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="gate_failures"):
+        capture_v03_evidence(
+            negative_pilot_path=NEGATIVE_PILOT,
+            output_path=tmp_path / "evidence.json",
+            **inputs,
+        )
+
+
+def test_capture_rejects_empty_calibration_log(tmp_path: Path) -> None:
+    inputs = _write_inputs(tmp_path)
+    inputs["calibration_log_path"].write_text("", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="calibration log must not be empty"):
+        capture_v03_evidence(
+            negative_pilot_path=NEGATIVE_PILOT,
+            output_path=tmp_path / "evidence.json",
+            **inputs,
+        )
 
 
 def test_capture_rejects_sample_id_only_records_even_with_matching_claimed_summary(
