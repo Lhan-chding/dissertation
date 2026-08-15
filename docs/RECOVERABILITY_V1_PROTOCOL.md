@@ -96,10 +96,26 @@ scenes, but only `13/24` had an `answer` equal to the executed result. The
 remaining failures were five strict parse failures and six program-answer
 mismatches. This is not evidence against recoverability: the probe supplied no
 repair cue and tested only whether the base model could satisfy the registered
-DSL contract. It must not be rerun. Before any replacement interface is
-designed, the only authorized action is a zero-model-call replay of all 24 raw
-outputs using the frozen hashes in
-`configs/recoverability/stage2_v1_failure.yaml`.
+DSL contract. It must not be rerun. The required zero-model-call replay is now
+complete and externally anchored. It verified all 24 raw outputs, the `19/24`
+parse/execution count, the `13/24` executed-result matches, and the five/six
+failure split. The diagnostic SHA-256 is
+`d85510ea829a000bc31002f874e5a0ec795421aadec9f9042438d78337d9e7b4`.
+
+The failure exposes one removable interface defect: v1 asked the model to emit
+both an executable graph and a second numeric `answer`, even though those two
+fields could disagree. Stage-2 v2 therefore preserves the strict parser,
+zero-retry rule, trusted value bindings, and operation graph, but replaces the
+numeric answer with a final result pointer (`"return":"result"`). The trusted
+executor is the sole source of the numeric final answer. This does not repair,
+normalize, or reinterpret model output.
+
+Exactly one 24-scene, text-only Stage-2 v2 development probe is now authorized.
+It reuses the externally hash-bound Stage-1 v2 records and the completed v1
+diagnostic, performs no image calls or training, and tests only whether this
+executor-authoritative interface is mechanically viable. Passing requires
+`24/24` strict parses, executions, and correct executor results. It is not a
+recoverability test and cannot authorize Bridge v2, Phase N, Phase C, or RL.
 
 ### Phase N: natural prevalence
 
@@ -167,10 +183,10 @@ or confirmatory RL after inspecting a failed result.
 
 ## Current execution boundary
 
-The one-shot Bridge v1 failure, successful Stage-1 v2 development probe, and
-failed Stage-2 v1 development probe are fully frozen; none is evidence for or
-against recoverability. Phase N, Phase C, Pilot A, Pilot B, Bridge v2, further
-development probes, and all RL training remain unauthorized. The only next
-server action is the reviewed zero-model-call Stage-2 failure diagnostic in
-`docs/SERVER_SETUP.md`. Do not design or run another model-facing interface
-until that replay has received a separate local review.
+The one-shot Bridge v1 failure, successful Stage-1 v2 development probe, failed
+Stage-2 v1 development probe, and model-free v1 failure diagnostic are fully
+frozen; none is evidence for or against recoverability. Phase N, Phase C, Pilot
+A, Pilot B, Bridge v2, any other development probe, and all RL training remain
+unauthorized. The only next server action is the one-shot 24-call Stage-2 v2
+development probe in `docs/SERVER_SETUP.md`. Stop after it regardless of exit
+status and return its immutable evidence for review.

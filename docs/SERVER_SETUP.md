@@ -4,9 +4,10 @@
 > already completed and failed. The older generation/calibration commands below
 > are retained only as historical documentation and must not be run again. Pilot
 > A/B are terminated. The Stage-2 v1 development probe has completed and must
-> not be rerun. No model execution is currently authorized. The only next
-> server action is the zero-model-call diagnostic described at the end of this
-> document. Bridge v2 remains unauthorized.
+> not be rerun. Its model-free diagnostic is complete. Exactly one 24-call,
+> text-only Stage-2 v2 development probe is now authorized at the end of this
+> document. Bridge v2, Phase N/C, Pilot A/B, and all training remain
+> unauthorized.
 
 ```text
 GPU: NVIDIA GeForce RTX 4090, 47.37 GiB VRAM, compute capability 8.9
@@ -306,13 +307,13 @@ program-answer mismatches. Its preflight, console, report, and raw records are
 frozen in `configs/recoverability/stage2_v1_failure.yaml`. The historical block
 above must not be executed again.
 
-## Recoverability Stage-2 v1 failure diagnostic handoff
+## Historical: completed Stage-2 v1 failure diagnostic
 
-No model execution is authorized. The only next action is this deterministic,
-read-only replay of the 24 frozen outputs. It verifies every supplied SHA-256,
-recomputes all stored parse/execution flags, groups failures by operation and
-raw-output signature, and records representative malformed/mismatched outputs.
-It makes zero model calls and refuses to overwrite an existing diagnostic.
+This deterministic replay of the 24 frozen outputs is complete. It verified
+every supplied SHA-256, recomputed all stored parse/execution flags, grouped
+failures by operation and raw-output signature, and recorded representative
+malformed/mismatched outputs. It made zero model calls. The following block is
+immutable run history and must not be executed again.
 
 ```bash
 cd /cloud/cloud-ssd1/dissertation
@@ -344,6 +345,88 @@ echo "diagnostic_exit=$diagnostic_rc"
 sha256sum "$DIAG_OUTPUT"
 ```
 
-Return the complete diagnostic JSON, `diagnostic_exit`, and its SHA-256. Do not
-rerun any probe or run Bridge v2, Phase N, Phase C, Pilot A, Pilot B, or any
-training.
+The replay returned `diagnostic_exit=0`, `verified=true`, and SHA-256
+`d85510ea829a000bc31002f874e5a0ec795421aadec9f9042438d78337d9e7b4`.
+
+## Recoverability Stage-2 v2 development probe handoff
+
+The only authorized model-facing action is one 24-scene, text-only development
+probe of the executor-authoritative Stage-2 v2 interface. The model returns a
+strict graph plus `"return":"result"`; it does not return a numeric answer.
+The trusted executor supplies the sole numeric final answer. This probe uses no
+images, retries, repair, Legacy calls, cues, or training and does not test the
+recoverability hypothesis.
+
+The metadata preflight loads no model. Both commands verify the exact closed
+server package. The probe additionally binds the frozen Stage-1 v2 record hash,
+the completed Stage-2 v1 diagnostic hash, and the unchanged model snapshot. An
+exclusive attempt marker is created before model loading, so any interruption
+after that point consumes the one authorized attempt and must not be retried.
+
+```bash
+cd /cloud/cloud-ssd1/dissertation
+git -c http.version=HTTP/1.1 pull --ff-only origin main
+git rev-parse --short HEAD
+source .venv/bin/activate
+
+export PYTHONPATH=/cloud/cloud-ssd1/dissertation/src
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
+
+mkdir -p /cloud/cloud-ssd1/recoverability-v1-evidence
+
+STAGE2_V2_PREFLIGHT=/cloud/cloud-ssd1/recoverability-v1-evidence/stage2-v2-preflight.json
+STAGE2_V2_CONSOLE=/cloud/cloud-ssd1/recoverability-v1-evidence/stage2-v2-console.log
+STAGE2_V2_OUTPUT=outputs/recoverability_v1/stage2_v2_dev_probe
+STAGE2_V2_ATTEMPT=outputs/recoverability_v1/stage2_v2_dev_probe.attempted.json
+
+for candidate in \
+  "$STAGE2_V2_PREFLIGHT" \
+  "$STAGE2_V2_CONSOLE" \
+  "$STAGE2_V2_OUTPUT" \
+  "$STAGE2_V2_ATTEMPT"
+do
+  test ! -e "$candidate" || {
+    echo "BLOCKED: Stage-2 v2 evidence already exists: $candidate"
+    exit 1
+  }
+done
+
+python experiments/recoverability_v1/00_stage2_v2_preflight.py \
+  --runtime configs/recoverability/server_runtime_v1.yaml \
+  --server-package-lock configs/recoverability/server_package_lock_stage2_v2.yaml \
+  --project-root /cloud/cloud-ssd1/dissertation \
+  --output "$STAGE2_V2_PREFLIGHT"
+
+set -o pipefail
+(
+  python experiments/recoverability_v1/07_stage2_v2_probe.py \
+    --paths configs/paths.yaml \
+    --runtime configs/recoverability/server_runtime_v1.yaml \
+    --probe-config configs/recoverability/stage2_v2_probe.yaml \
+    --stage1-result configs/recoverability/stage1_v2_frozen_result.yaml \
+    --stage2-v1-diagnostic-anchor configs/recoverability/stage2_v1_diagnostic_result.yaml \
+    --server-package-lock configs/recoverability/server_package_lock_stage2_v2.yaml \
+    --preflight-report "$STAGE2_V2_PREFLIGHT" \
+    --stage1-records outputs/recoverability_v1/stage1_v2_dev_probe/probe_records.jsonl \
+    --stage2-v1-diagnostic /cloud/cloud-ssd1/recoverability-v1-evidence/stage2-v1-failure-diagnostic.json \
+    --execute
+  stage2_v2_rc=$?
+  echo "stage2_v2_probe_exit=$stage2_v2_rc"
+  exit "$stage2_v2_rc"
+) 2>&1 | tee "$STAGE2_V2_CONSOLE"
+stage2_v2_rc=$?
+
+echo "stage2_v2_probe_exit=$stage2_v2_rc"
+sha256sum "$STAGE2_V2_PREFLIGHT" "$STAGE2_V2_CONSOLE"
+if [ -f "$STAGE2_V2_OUTPUT/probe_report.json" ]; then
+  sha256sum \
+    "$STAGE2_V2_OUTPUT/probe_report.json" \
+    "$STAGE2_V2_OUTPUT/probe_records.jsonl" \
+    "$STAGE2_V2_ATTEMPT"
+fi
+```
+
+Stop after this probe even if it exits zero. Return the complete report,
+`stage2_v2_probe_exit`, and all printed SHA-256 values. Do not rerun any probe
+or start Bridge v2, Phase N, Phase C, Pilot A, Pilot B, or training.

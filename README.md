@@ -42,9 +42,11 @@ negative record is in `configs/recoverability/v0_3_negative_pilot.yaml`.
 The subsequent one-shot recoverability measurement Bridge v1 also completed.
 Its legacy path remained operational, but strict Stage 1 parsed `0/300`, so
 Stage 2 was never called. This is frozen as an interface failure rather than a
-test of the recoverability hypothesis; Bridge v1 must not be rerun. The next
-target in `docs/RECOVERABILITY_V1_PROTOCOL.md` is only a 24-scene,
-development-only Stage-1 v2 prompt probe. The model must still be read from:
+test of the recoverability hypothesis; Bridge v1 must not be rerun. The later
+Stage-1 v2 development probe passed (`24/24` parsed, `22/24` exact), while
+Stage-2 v1 exposed a separate duplicate-answer interface failure (`19/24`
+programs parsed/executed, `13/24` answers agreed with execution). Both are
+frozen and must not be rerun. The model must still be read from:
 
 ```text
 /model/ModelScope/Qwen/Qwen2.5-VL-3B-Instruct
@@ -56,10 +58,12 @@ and all generated state must remain under:
 /cloud/cloud-ssd1/dissertation
 ```
 
-The Phase N/C protocol remains unrun and unauthorized. The next GPU step makes
-exactly 24 question-free Stage-1 image calls on the frozen `dev` split, with no
-retries, Stage 2, hypothesis test, or training. Server execution requires an
-explicit `--execute`; its separate metadata preflight cannot load the model.
+The Phase N/C protocol remains unrun and unauthorized. The only next GPU step
+is one 24-call, text-only Stage-2 v2 development probe. It removes the duplicate
+model-supplied numeric answer: the model emits a strict graph and final result
+pointer, and the trusted executor is the sole numeric answer source. The probe
+uses frozen Stage-1 evidence, zero retries, no image calls, no hypothesis test,
+and no training. Passing cannot authorize Bridge v2 or any confirmatory phase.
 
 Current explicit non-claims are:
 
