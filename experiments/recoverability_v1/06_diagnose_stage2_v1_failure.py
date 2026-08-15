@@ -11,10 +11,51 @@ import sys
 from dataclasses import asdict
 from pathlib import Path
 
-_BOOTSTRAP_EXTRA_PATHS = frozenset(
+_BOOTSTRAP_DIAGNOSTIC_PATHS = frozenset(
     {
+        "configs/data/cva_chart_pilot_v0_3.yaml",
+        "configs/paths.example.yaml",
+        "configs/recoverability/bridge_v1_failure.yaml",
+        "configs/recoverability/power_plan_v1.json",
+        "configs/recoverability/recoverability_v1.yaml",
+        "configs/recoverability/server_runtime_v1.yaml",
+        "configs/recoverability/stage1_v2_frozen_result.yaml",
+        "configs/recoverability/stage1_v2_probe.yaml",
         "configs/recoverability/stage2_v1_failure.yaml",
+        "configs/recoverability/stage2_v1_probe.yaml",
+        "configs/recoverability/v0_3_negative_pilot.yaml",
+        "experiments/recoverability_v1/00_preflight.py",
+        "experiments/recoverability_v1/00_stage1_v2_preflight.py",
+        "experiments/recoverability_v1/00_stage2_v1_preflight.py",
+        "experiments/recoverability_v1/02_capture_v03_evidence.py",
+        "experiments/recoverability_v1/03_bridge.py",
+        "experiments/recoverability_v1/04_stage1_v2_probe.py",
+        "experiments/recoverability_v1/05_stage2_v1_probe.py",
         "experiments/recoverability_v1/06_diagnose_stage2_v1_failure.py",
+        "requirements-gpu.lock.txt",
+        "src/compbias/gpu_pilot/chart_data.py",
+        "src/compbias/gpu_pilot/collection.py",
+        "src/compbias/gpu_pilot/config.py",
+        "src/compbias/gpu_pilot/execution_gate.py",
+        "src/compbias/gpu_pilot/preflight.py",
+        "src/compbias/gpu_pilot/qwen_smoke.py",
+        "src/compbias/gpu_pilot/safe_io.py",
+        "src/compbias/gpu_pilot/structured_generation.py",
+        "src/compbias/gpu_pilot/taxonomy.py",
+        "src/compbias/io/strict_json.py",
+        "src/compbias/io/yaml_config.py",
+        "src/compbias/models/structured_parser.py",
+        "src/compbias/recoverability/bridge.py",
+        "src/compbias/recoverability/bridge_v1_failure.py",
+        "src/compbias/recoverability/config.py",
+        "src/compbias/recoverability/dsl/executor.py",
+        "src/compbias/recoverability/dsl/parser.py",
+        "src/compbias/recoverability/dsl/schema.py",
+        "src/compbias/recoverability/evidence.py",
+        "src/compbias/recoverability/evidence_capture.py",
+        "src/compbias/recoverability/preflight.py",
+        "src/compbias/recoverability/stage1_v2.py",
+        "src/compbias/recoverability/stage2_v1.py",
         "src/compbias/recoverability/stage2_v1_failure.py",
     }
 )
@@ -45,7 +86,7 @@ def _bootstrap_diagnostic_lock() -> None:
     digests = [line.split(":", 1)[1].strip() for line in lines if line.startswith("    sha256:")]
     if len(paths) != len(digests) or not paths:
         raise SystemExit("BLOCKED: diagnostic package lock is malformed")
-    if not _BOOTSTRAP_EXTRA_PATHS.issubset(paths) or len(paths) != len(set(paths)):
+    if frozenset(paths) != _BOOTSTRAP_DIAGNOSTIC_PATHS or len(paths) != len(set(paths)):
         raise SystemExit("BLOCKED: diagnostic package lock closure is incomplete")
     for relative, expected in zip(paths, digests, strict=True):
         candidate = root / relative
