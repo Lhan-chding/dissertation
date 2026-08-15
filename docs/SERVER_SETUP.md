@@ -8,8 +8,11 @@
 > text-only Stage-2 v2 development probe also completed successfully and must
 > not be rerun. Its zero-model-call evidence replay also completed successfully
 > and must not be rerun. The 300-scene measurement qualification subsequently
-> passed and is frozen. Phase N is now the only authorized next server action.
-> Bridge v2, Phase C, Pilot A/B, and all training remain unauthorized.
+> passed and is frozen. Phase N then completed and remains inconclusive under
+> its original `0.05` rule. A prospective `0.10` continuation amendment was
+> frozen before any Phase-C outcome. The 8,000-scene Phase-C v2 screen is now
+> the only authorized next server action. Bridge v2, six-arm execution, Pilot
+> A/B, and all training remain unauthorized.
 
 ```text
 GPU: NVIDIA GeForce RTX 4090, 47.37 GiB VRAM, compute capability 8.9
@@ -648,9 +651,9 @@ block above must not be rerun.
 The registered measurement-qualification execution package-lock SHA-256 is
 `a4179f3e4c6f90f6730ad15d3f38a4309564b1099459cfd1d3918cc7f36de691`.
 
-## Next authorized action: one-shot Phase N natural-prevalence screen
+## Completed historical action: one-shot Phase N natural-prevalence screen
 
-This is the only authorized next server action. It generates 4,000 fresh,
+This completed action generated 4,000 fresh,
 fixed, v0.3-rendered scenes that are disjoint from the earlier v0.3 and
 qualification numeric tables, then makes exactly one original unified-protocol
 image call per scene. There are zero retries, no sample extension, no
@@ -743,7 +746,105 @@ sha256sum \
   "$PHASE_N_LOG"
 ```
 
-After exit `0` or `3`, do not run Phase C, Bridge v2, Pilot A/B, RL, another
-Phase N attempt, or training. Return the complete printed report, seven SHA-256
-lines, both Phase N exit-code lines, the preflight exit, and the short Git
-revision.
+Do not rerun Phase N. Its original `0.05` decision remains inconclusive and its
+evidence is frozen. The prospective Phase-C v2 amendment below was registered
+after Phase N and before any Phase-C outcome.
+
+## Next authorized action: amended confirmatory Phase-C v2 screen
+
+This one-shot step generates 8,000 new v0.3-rendered scenes balanced over three
+redundancy families, two chart types, and three operations. Numeric tables are
+disjoint from the source, qualification, and Phase-N datasets. It makes exactly
+8,000 zero-retry Stage-1 v2 calls, retains only parsed one-position,
+operator-sensitive errors whose registered cue uniquely recovers the answer,
+and deterministically selects 400 cross-series, 400 trend, and 266
+duplicate-encoding scenes. It does not execute any arm or fork and cannot train.
+
+The original Phase-N result remains inconclusive at the original `0.05` rule.
+The v2 continuation amendment uses `0.10`; the observed one-sided upper bound
+`0.05243` passes only that amended continuation rule. Exit `0` means every
+frozen family quota was filled and authorizes packaging the six-arm execution.
+Exit `3` means final quota underfill; do not rerun or extend the screen.
+
+```bash
+cd /cloud/cloud-ssd1/dissertation
+git -c http.version=HTTP/1.1 pull --ff-only origin main
+git rev-parse --short HEAD
+source .venv/bin/activate
+
+export PYTHONPATH=/cloud/cloud-ssd1/dissertation/src
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
+
+PHASE_C_PREFLIGHT=/cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-screen-v2-preflight.json
+PHASE_C_DATA=/cloud/cloud-ssd1/dissertation/data/generated/cva_recoverability_causal_v2_screen
+PHASE_C_OUTPUT=/cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v2/phase_c_screen
+PHASE_C_ATTEMPT=/cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v2.screen.attempted.json
+PHASE_C_LOG=/cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-screen-v2-console.log
+
+for candidate in \
+  "$PHASE_C_PREFLIGHT" \
+  "$PHASE_C_DATA" \
+  "$PHASE_C_OUTPUT" \
+  "$PHASE_C_ATTEMPT" \
+  "$PHASE_C_LOG"
+do
+  test ! -e "$candidate" || {
+    echo "BLOCKED: Phase C screen evidence already exists: $candidate"
+    exit 1
+  }
+done
+
+python experiments/recoverability_v1/14_phase_c_screen_preflight.py \
+  --runtime configs/recoverability/server_runtime_v1.yaml \
+  --server-package-lock configs/recoverability/server_package_lock_phase_c_screen_v2.yaml \
+  --project-root /cloud/cloud-ssd1/dissertation \
+  --output "$PHASE_C_PREFLIGHT"
+
+phase_c_preflight_rc=$?
+echo "phase_c_screen_preflight_exit=$phase_c_preflight_rc"
+test "$phase_c_preflight_rc" -eq 0 || exit "$phase_c_preflight_rc"
+
+set -o pipefail
+(
+  python experiments/recoverability_v1/15_run_phase_c_screen.py \
+    --paths configs/paths.yaml \
+    --runtime configs/recoverability/server_runtime_v1.yaml \
+    --amendment configs/recoverability/recoverability_phase_c_v2_amendment.yaml \
+    --phase-n-result configs/recoverability/phase_n_frozen_result.yaml \
+    --server-package-lock configs/recoverability/server_package_lock_phase_c_screen_v2.yaml \
+    --preflight-report "$PHASE_C_PREFLIGHT" \
+    --phase-n-preflight /cloud/cloud-ssd1/recoverability-v1-evidence/phase-n-preflight.json \
+    --phase-n-attempt-marker /cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_natural_prevalence_v1.attempted.json \
+    --phase-n-dataset-root /cloud/cloud-ssd1/dissertation/data/generated/cva_natural_prevalence_v1 \
+    --phase-n-output-root /cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_natural_prevalence_v1 \
+    --phase-n-console-log /cloud/cloud-ssd1/recoverability-v1-evidence/phase-n-console.log \
+    --source-records /cloud/cloud-ssd1/dissertation/data/generated/cva_chart_pilot_v0_3/records.jsonl \
+    --qualification-records /cloud/cloud-ssd1/dissertation/data/generated/measurement_qualification_v1/records.jsonl \
+    --execute
+  phase_c_rc=$?
+  echo "phase_c_screen_exit=$phase_c_rc"
+  exit "$phase_c_rc"
+) 2>&1 | tee "$PHASE_C_LOG"
+phase_c_rc=$?
+
+echo "phase_c_screen_exit=$phase_c_rc"
+case "$phase_c_rc" in
+  0|3) ;;
+  *) echo "BLOCKED: unexpected Phase C screen failure"; exit "$phase_c_rc" ;;
+esac
+
+sha256sum \
+  "$PHASE_C_PREFLIGHT" \
+  "$PHASE_C_ATTEMPT" \
+  "$PHASE_C_DATA/manifest.json" \
+  "$PHASE_C_DATA/records.jsonl" \
+  "$PHASE_C_OUTPUT/screen_report.json" \
+  "$PHASE_C_OUTPUT/screen_records.jsonl" \
+  "$PHASE_C_LOG"
+```
+
+After exit `0` or `3`, stop and return the full report, seven SHA-256 lines,
+both screen exit-code lines, the preflight exit, and the short Git revision.
+Do not rerun the screen. Even after exit `0`, do not start training: the next
+separately packaged action is the frozen six-arm, eight-fork causal experiment.

@@ -1,0 +1,45 @@
+schema_version: 2
+status: AMENDED_AFTER_PHASE_N_BEFORE_PHASE_C
+amendment_id: recoverability-phase-c-v2-20260815
+amendment_date: "2026-08-15"
+original_protocol_path: configs/recoverability/recoverability_v1.yaml
+original_protocol_sha256: 6b7c8bf8df850cb026a6494c7c41530cc7a83d65add3ebaac0cbca857f0fb40c
+phase_n_result_path: configs/recoverability/phase_n_frozen_result.yaml
+original_continuation_threshold: 0.05
+amended_continuation_threshold: 0.10
+observed_phase_n_primary_rate: 0.039473684210526314
+observed_phase_n_one_sided_cp_upper: 0.05242826275410656
+original_phase_n_gate_passed: false
+original_phase_n_inconclusive: true
+phase_c_outcomes_observed: false
+confirmatory_phase_c_authorized: true
+amendment_reason: original_five_percent_continuation_boundary_was_judged_overly_subjective_and_too_strict
+dataset_id: CVA-Recoverability-Causal-v2
+output_subdirectory: cva_recoverability_causal_v2
+seed: 2026081801
+intake_scenes: 8000
+selected_family_quotas:
+  cross_series: 400
+  trend: 400
+  duplicate_encoding: 266
+arms:
+  - ablated
+  - valid
+  - sham
+  - counterfactual
+  - oracle_perception
+  - operator_swap
+confirmatory_arms:
+  - ablated
+  - valid
+  - sham
+  - counterfactual
+diagnostic_arms:
+  - oracle_perception
+  - operator_swap
+forks_per_arm: 8
+format_retries: 0
+allow_quota_redistribution: false
+allow_sample_extension: false
+training_authorized: false
+rl_authorized: false

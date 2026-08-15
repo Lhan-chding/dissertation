@@ -192,13 +192,32 @@ or confirmatory RL after inspecting a failed result.
 
 ## Current execution boundary
 
+### Prospective Phase-C v2 amendment after Phase N
+
+Phase N completed on 4,000 fixed scenes with 836 parsed operator-sensitive
+errors and 33 strict natural-repair candidates. The point estimate was
+`0.03947`, but the one-sided 95% Clopper-Pearson upper bound was `0.05243`.
+Consequently the original `0.05` low-prevalence gate remains failed and the
+original result remains inconclusive. Those facts and all seven server hashes
+are immutable in `configs/recoverability/phase_n_frozen_result.yaml`.
+
+Before any Phase-C scene, mediator, arm, fork, or outcome was generated, the
+continuation rule was prospectively amended to `0.10` in
+`configs/recoverability/recoverability_phase_c_v2_amendment.yaml`. This is a
+versioned protocol amendment, not a claim that the original gate passed. It
+authorizes the original fixed confirmatory Phase-C design under v2: an 8,000
+scene screen, exact quotas of 400 cross-series, 400 trend, and 266
+duplicate-encoding scenes, followed only after a successful screen by all six
+matched arms and eight fixed forks. No extension, rerun, redistribution, RL,
+or training is authorized by the amendment or the screen alone.
+
 The one-shot Bridge v1 failure, successful Stage-1 v2 development probe, failed
 Stage-2 v1 development probe, model-free v1 failure diagnostic, and successful
 Stage-2 v2 development probe are frozen; none is evidence for or against
 recoverability. Its zero-model-call evidence capture is also complete and must
-not be rerun. Phase C, Pilot A, Pilot B, Bridge v2, confirmatory execution, and
-all RL training remain unauthorized. Phase N is the only newly authorized
-action after the passed measurement qualification described below.
+not be rerun. Pilot A, Pilot B, Bridge v2, six-arm execution, and all RL
+training remain unauthorized. The amended confirmatory Phase-C v2 screen is
+the only newly authorized action.
 
 The model-free measurement-qualification dataset generation is complete and
 must not be rerun. It contains 300 new semantic scenes, exactly 50 per
@@ -222,13 +241,12 @@ five artifacts and exact metrics are frozen in
 `configs/recoverability/measurement_qualification_frozen_result.yaml` and the
 qualification must not be rerun.
 
-The next and only authorized server action is Phase N. It uses the original
-v0.3 unified prompt and strict parser, not the two-stage qualification
-interface. It makes exactly one zero-retry image call for each of 4,000 fixed
-fresh scenes and stops. It cannot automatically invoke Phase C, Bridge v2, RL,
-Pilot A/B, or training. Exit `0` supports the registered low-prevalence claim;
-exit `3` is a final inconclusive result. Both outcomes require stopping and
-freezing the evidence before any subsequent decision.
+Phase N is complete and must not be rerun. The next server action uses the
+qualified Stage-1 v2 transcription interface exactly once on each of 8,000
+fixed fresh Phase-C scenes. It only freezes eligible mediators and performs the
+deterministic family-quota selection. It cannot invoke any arm, fork, RL, or
+training. Exit `0` authorizes packaging the already specified six-arm
+experiment; exit `3` is a final quota-underfill stop.
 
 The controlled CVA dataset remains the primary mechanistic dataset because it
 supports registered redundancy constraints, cue ablations, legal coherent

@@ -12,7 +12,6 @@ from compbias.recoverability.phase_c_screen_execution import (
     verify_phase_c_screen_execution_package_lock,
 )
 
-
 ROOT = Path(__file__).resolve().parents[1]
 PREFLIGHT = ROOT / "experiments/recoverability_v1/14_phase_c_screen_preflight.py"
 EXECUTE = ROOT / "experiments/recoverability_v1/15_run_phase_c_screen.py"
@@ -20,9 +19,7 @@ SERVER_LOCK = ROOT / PHASE_C_SCREEN_EXECUTION_LOCK_PATH
 
 
 def test_phase_c_screen_package_lock_binds_exact_complete_surface() -> None:
-    verification = verify_phase_c_screen_execution_package_lock(
-        SERVER_LOCK, repository_root=ROOT
-    )
+    verification = verify_phase_c_screen_execution_package_lock(SERVER_LOCK, repository_root=ROOT)
     observed = frozenset(item.relative_path for item in verification.files)
     assert verification.verified is True
     assert observed == PHASE_C_SCREEN_EXECUTION_PACKAGE_PATHS

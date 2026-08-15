@@ -62,8 +62,13 @@ and all generated state must remain under:
 /cloud/cloud-ssd1/dissertation
 ```
 
-Phase N remains unrun but is now the only authorized next GPU action; Phase C
-and all training remain unauthorized. The zero-model-call
+Phase N completed at 4,000 scenes. Under the original `0.05` continuation rule
+it was inconclusive (`33/836`, one-sided 95% upper bound `0.05243`). A dated,
+prospective amendment made before any Phase-C outcome changes only the
+continuation boundary to `0.10`; it does not relabel the original Phase-N gate
+as passed. The one-shot 8,000-scene confirmatory Phase-C v2 screen is now the
+only authorized next GPU action. Six-arm execution and all training remain
+unauthorized until that screen fills every frozen family quota. The zero-model-call
 replay of the five Stage-2 v2
 artifacts completed successfully: all 24 stored raw graphs independently parsed,
 executed, and reproduced their registered results. The external evidence SHA-256
@@ -76,9 +81,7 @@ new balanced scenes with no v0.3 numeric-table overlap. Its records SHA-256 is
 The one-shot interface qualification subsequently passed on all registered
 lower-bound gates: Stage 1 parsed `299/300`, and all 299 downstream Stage-2
 programs parsed, executed, and returned the executor-authoritative answer. The
-result is frozen and must not be rerun. The only authorized next GPU action is
-the fixed 4,000-scene, zero-retry Phase N natural-prevalence screen. It cannot
-start Phase C, RL, or training automatically.
+result is frozen and must not be rerun.
 
 Current explicit non-claims are:
 
