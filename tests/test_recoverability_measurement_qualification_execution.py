@@ -13,10 +13,7 @@ from compbias.recoverability.measurement_qualification_execution import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
-PREFLIGHT = (
-    ROOT
-    / "experiments/recoverability_v1/10_measurement_qualification_preflight.py"
-)
+PREFLIGHT = ROOT / "experiments/recoverability_v1/10_measurement_qualification_preflight.py"
 EXECUTE = ROOT / "experiments/recoverability_v1/11_run_measurement_qualification.py"
 SERVER_LOCK = ROOT / MEASUREMENT_QUALIFICATION_EXECUTION_LOCK_PATH
 
@@ -48,9 +45,7 @@ def test_qualification_execution_lock_rejects_noncanonical_subset(tmp_path: Path
     subset.write_text(
         "schema_version: 1\nfiles:\n"
         "  - path: configs/recoverability/measurement_qualification_v1.yaml\n"
-        "    sha256: "
-        + "0" * 64
-        + "\n",
+        "    sha256: " + "0" * 64 + "\n",
         encoding="utf-8",
     )
 
