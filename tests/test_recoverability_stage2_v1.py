@@ -1,17 +1,21 @@
 from __future__ import annotations
 
+import hashlib
 import inspect
 import json
 from pathlib import Path
 
 import pytest
 
+from compbias.recoverability.stage1_v2 import Stage1V2Scene
 from compbias.recoverability.stage2_v1 import (
+    Stage1V2FrozenResult,
     Stage2V1Scene,
     build_stage2_v1_messages,
     load_stage1_v2_frozen_result,
     load_stage2_v1_probe_config,
     run_stage2_v1_probe,
+    verify_stage1_v2_frozen_artifacts,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -126,6 +130,165 @@ def test_stage1_v2_server_result_is_frozen_with_external_hashes() -> None:
         "probe_records": "0b6f0518c84c83bb4b4d78c6d08db526e9449a4b022fcfc10ba607e79cfae7fa",
         "probe_report": "a838645b55117c63114e529cdf38b5f124ed7f404a077823e214093d21c42f3a",
     }
+
+
+@pytest.mark.parametrize(
+    ("old", "new"),
+    [
+        ("parse_rate: 1.0", "parse_rate: true"),
+        ("probe_passed: true", "probe_passed: 1"),
+    ],
+)
+def test_stage1_v2_frozen_result_rejects_boolean_numeric_aliases(
+    tmp_path: Path,
+    old: str,
+    new: str,
+) -> None:
+    tampered = tmp_path / "stage1_v2_frozen_result.yaml"
+    tampered.write_text(
+        FROZEN_STAGE1.read_text(encoding="utf-8").replace(old, new),
+        encoding="utf-8",
+    )
+
+    with pytest.raises((TypeError, ValueError)):
+        load_stage1_v2_frozen_result(tampered)
+
+
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def test_stage1_v2_artifacts_are_hash_bound_and_semantically_replayed(tmp_path: Path) -> None:
+    preflight = tmp_path / "preflight.json"
+    preflight.write_text(
+        json.dumps(
+            {
+                "artifact_type": "recoverability_stage1_v2_metadata_preflight",
+                "ready": True,
+                "large_gpu_started": False,
+                "model_loaded": False,
+                "training_authorized": False,
+            }
+        ),
+        encoding="utf-8",
+    )
+    console = tmp_path / "console.log"
+    console.write_text("frozen successful probe\n", encoding="utf-8")
+    report = tmp_path / "probe_report.json"
+    report.write_text(
+        json.dumps(
+            {
+                "artifact_type": "recoverability_stage1_v2_development_probe",
+                "dataset_id": "CVA-Recoverability-Stage1-V2-Dev-Probe",
+                "source_dataset_id": "CVA-Chart-Pilot-v0.3",
+                "source_split": "dev",
+                "model_snapshot_sha256": "a" * 64,
+                "scenes": 24,
+                "model_calls": 24,
+                "parse_rate": 1.0,
+                "exact_transcription_rate": 22 / 24,
+                "probe_passed": True,
+                "hypothesis_tested": False,
+                "confirmatory_execution_authorized": False,
+                "training_invoked": False,
+            }
+        ),
+        encoding="utf-8",
+    )
+    records = tmp_path / "probe_records.jsonl"
+    canonical: list[Stage1V2Scene] = []
+    with records.open("x", encoding="utf-8") as stream:
+        for index in range(24):
+            scene_id = f"dev-{index:06d}"
+            values = (8, 4, 5, 9)
+            perceived = (7, 4, 5, 9) if index in {3, 19} else values
+            operation = ("difference", "max_minus_min", "sum")[index % 3]
+            chart_type = ("grouped_bar", "line")[index % 2]
+            canonical.append(
+                Stage1V2Scene(
+                    scene_id=scene_id,
+                    image_path=tmp_path / f"{scene_id}.png",
+                    chart_type=chart_type,
+                    operation=operation,
+                    values=values,
+                )
+            )
+            raw = json.dumps(
+                {
+                    "target_facts": perceived,
+                    "redundant_facts": [],
+                    "axis_facts": ["integer_ticks"],
+                },
+                separators=(",", ":"),
+            )
+            stream.write(
+                json.dumps(
+                    {
+                        "scene_id": scene_id,
+                        "chart_type": chart_type,
+                        "operation": operation,
+                        "raw_text": raw,
+                        "parse_success": True,
+                        "exact_transcription": perceived == values,
+                        "error_code": None,
+                    },
+                    sort_keys=True,
+                )
+                + "\n"
+            )
+    frozen = Stage1V2FrozenResult(
+        schema_version=1,
+        status="FINAL_PASSED_DEVELOPMENT_PROBE",
+        dataset_id="CVA-Recoverability-Stage1-V2-Dev-Probe",
+        source_dataset_id="CVA-Chart-Pilot-v0.3",
+        source_split="dev",
+        model_snapshot_sha256="a" * 64,
+        scenes=24,
+        model_calls=24,
+        parse_rate=1.0,
+        exact_transcriptions=22,
+        exact_transcription_rate=22 / 24,
+        mismatch_scene_ids=("dev-000003", "dev-000019"),
+        probe_passed=True,
+        hypothesis_tested=False,
+        confirmatory_execution_authorized=False,
+        training_invoked=False,
+        source_sha256=tuple(
+            sorted(
+                {
+                    "preflight": _sha256(preflight),
+                    "console": _sha256(console),
+                    "probe_report": _sha256(report),
+                    "probe_records": _sha256(records),
+                }.items()
+            )
+        ),
+    )
+
+    verification = verify_stage1_v2_frozen_artifacts(
+        frozen,
+        preflight_path=preflight,
+        console_path=console,
+        report_path=report,
+        records_path=records,
+        canonical_scenes=tuple(canonical),
+    )
+
+    assert verification.verified is True
+    assert verification.exact_transcriptions == 22
+    assert verification.mismatch_scene_ids == ("dev-000003", "dev-000019")
+    assert len(verification.scenes) == 24
+
+    report.write_text("{}\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="SHA-256"):
+        verify_stage1_v2_frozen_artifacts(
+            frozen,
+            preflight_path=preflight,
+            console_path=console,
+            report_path=report,
+            records_path=records,
+            canonical_scenes=tuple(canonical),
+        )
 
 
 def _scene(index: int, operation: str = "difference") -> Stage2V1Scene:
