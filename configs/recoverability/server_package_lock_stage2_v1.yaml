@@ -81,4 +81,4 @@ files:
   - path: src/compbias/recoverability/stage1_v2.py
     sha256: 33ca19a0788c2d62ddfeebed1d977b46c7efb7bbfd758228fc1d49aae9036592
   - path: src/compbias/recoverability/stage2_v1.py
-    sha256: ea7d4189369f5530e799a16ab830539c8e4c9c14e9453e4f2207f14b1075b436
+    sha256: 5d2b6704723fbe1ea31cf300ca209ba5e4cd253c47bbdfe6276cdad5516c754a

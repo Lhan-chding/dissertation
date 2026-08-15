@@ -105,6 +105,25 @@ def load_stage2_v1_probe_config(path: Path) -> Stage2V1ProbeConfig:
         "hypothesis_test": False,
     }
     reject_unknown_fields(mapping, set(expected), label="Stage-2 v1 probe config")
+    exact_types = {
+        "schema_version": int,
+        "status": str,
+        "dataset_id": str,
+        "output_subdirectory": str,
+        "source_dataset_id": str,
+        "source_split": str,
+        "scenes": int,
+        "format_retries": int,
+        "required_program_parse_rate": float,
+        "required_execution_rate": float,
+        "required_program_answer_consistency": float,
+        "allow_rerun": bool,
+        "hypothesis_test": bool,
+    }
+    if any(
+        type(mapping.get(key)) is not expected_type for key, expected_type in exact_types.items()
+    ):
+        raise TypeError("Stage-2 v1 probe config field type differs from the registered contract")
     if dict(mapping) != expected:
         raise ValueError("Stage-2 v1 probe config differs from the registered contract")
     return Stage2V1ProbeConfig(**expected)  # type: ignore[arg-type]
