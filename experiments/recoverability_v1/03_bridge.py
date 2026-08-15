@@ -23,6 +23,7 @@ _BOOTSTRAP_SERVER_PATHS = frozenset(
         "experiments/recoverability_v1/03_bridge.py",
         "requirements-gpu.lock.txt",
         "src/compbias/gpu_pilot/chart_data.py",
+        "src/compbias/gpu_pilot/collection.py",
         "src/compbias/gpu_pilot/config.py",
         "src/compbias/gpu_pilot/execution_gate.py",
         "src/compbias/gpu_pilot/preflight.py",
@@ -80,6 +81,7 @@ def _bootstrap_server_lock() -> None:
 
 _bootstrap_server_lock()
 
+from compbias.gpu_pilot.collection import calibration_gate  # noqa: E402
 from compbias.gpu_pilot.config import ACTIVE_PILOT_OUTPUT_SLUG, load_pilot_paths  # noqa: E402
 from compbias.gpu_pilot.execution_gate import (  # noqa: E402
     _validate_dataset_bundle,
@@ -141,9 +143,22 @@ def _validate_external_evidence(
         "dataset_records_sha256": negative.dataset_records_sha256,
         "dataset_images_sha256": negative.dataset_images_sha256,
         "counterfactual_sha256": negative.counterfactual_sha256,
+        "calibration_exit_evidence": "replayed_raw_records_and_frozen_calibration_gate",
     }
     if any(payload.get(key) != value for key, value in expected.items()):
         raise ValueError("v0.3 external evidence differs from the frozen negative pilot")
+    expected_failures = list(
+        calibration_gate(
+            {
+                "answer_accuracy": negative.answer_accuracy,
+                "natural_perception_error_rate": negative.natural_perception_error_rate,
+                "parse_rate": negative.parse_rate,
+                "error_counts": dict(negative.error_counts),
+            }
+        )
+    )
+    if payload.get("calibration_gate_failures") != expected_failures:
+        raise ValueError("v0.3 external evidence calibration gate failures differ")
     sources = payload.get("source_files")
     if not isinstance(sources, list):
         raise ValueError("v0.3 external evidence source registry is invalid")

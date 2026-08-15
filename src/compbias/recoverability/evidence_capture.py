@@ -7,6 +7,7 @@ import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
+from compbias.gpu_pilot.collection import calibration_gate
 from compbias.gpu_pilot.execution_gate import (
     _DATASET_RECORD_KEYS,
     _validate_natural_records,
@@ -43,6 +44,8 @@ class V03EvidenceCaptureReport:
     records: int
     gate_passed: bool
     calibration_exit: int
+    calibration_gate_failures: tuple[str, ...]
+    calibration_exit_evidence: str
     source_files: tuple[CapturedSourceFile, ...]
 
 
@@ -95,7 +98,7 @@ def _verify_summary(
     *,
     negative_pilot_path: Path,
     derived: dict[str, object],
-) -> None:
+) -> tuple[str, ...]:
     expected = load_negative_pilot_record(negative_pilot_path)
     fixed = {
         "answer_accuracy": expected.answer_accuracy,
@@ -120,6 +123,12 @@ def _verify_summary(
     ):
         if summary.get(key) != derived[key]:
             raise ValueError(f"v0.3 summary {key} does not replay from raw records")
+    gate_failures = calibration_gate(derived)
+    if not gate_failures:
+        raise ValueError("v0.3 raw records no longer derive a failed calibration gate")
+    if summary.get("gate_failures") != list(gate_failures):
+        raise ValueError("v0.3 summary gate_failures do not replay from raw records")
+    return gate_failures
 
 
 def capture_v03_evidence(
@@ -153,7 +162,7 @@ def capture_v03_evidence(
     )
     derived = _verify_records(records_path, expected_records=negative.records)
     summary = _load_summary(summary_path)
-    _verify_summary(
+    gate_failures = _verify_summary(
         summary,
         negative_pilot_path=negative_pilot_path,
         derived=derived,
@@ -163,8 +172,8 @@ def capture_v03_evidence(
         pilot_log = pilot_data_log_path.read_text(encoding="utf-8")
     except UnicodeDecodeError as error:
         raise ValueError("v0.3 logs must be UTF-8 text") from error
-    if "calibration_exit=3" not in calibration_log.splitlines():
-        raise ValueError("calibration log does not preserve calibration_exit=3")
+    if not calibration_log.strip():
+        raise ValueError("calibration log must not be empty")
     if not pilot_log.strip():
         raise ValueError("pilot data log must not be empty")
     sources = tuple(
@@ -185,6 +194,8 @@ def capture_v03_evidence(
         records=negative.records,
         gate_passed=False,
         calibration_exit=3,
+        calibration_gate_failures=gate_failures,
+        calibration_exit_evidence="replayed_raw_records_and_frozen_calibration_gate",
         source_files=sources,
     )
     payload = {
@@ -205,6 +216,8 @@ def capture_v03_evidence(
         "error_counts": dict(negative.error_counts),
         "gate_passed": report.gate_passed,
         "calibration_exit": report.calibration_exit,
+        "calibration_gate_failures": list(report.calibration_gate_failures),
+        "calibration_exit_evidence": report.calibration_exit_evidence,
         "original_pilot_a": negative.original_pilot_a,
         "original_pilot_b": negative.original_pilot_b,
         "source_files": [asdict(item) for item in sources],

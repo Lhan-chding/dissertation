@@ -28,6 +28,7 @@ SERVER_PACKAGE_PATHS = frozenset(
         "experiments/recoverability_v1/03_bridge.py",
         "requirements-gpu.lock.txt",
         "src/compbias/gpu_pilot/chart_data.py",
+        "src/compbias/gpu_pilot/collection.py",
         "src/compbias/gpu_pilot/config.py",
         "src/compbias/gpu_pilot/execution_gate.py",
         "src/compbias/gpu_pilot/preflight.py",

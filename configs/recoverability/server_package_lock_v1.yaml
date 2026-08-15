@@ -15,11 +15,13 @@ files:
   - path: experiments/recoverability_v1/02_capture_v03_evidence.py
     sha256: 50fe491b4a5029b8e4d41a1762064a904d216057862ab019b19039e811588527
   - path: experiments/recoverability_v1/03_bridge.py
-    sha256: b11cc7f11a0a2b1c430f51cbcef751b41d9672bcf69122632dbaa6f8b319382c
+    sha256: c67865488396c8d296324cc04f6e0dd83bf9c8830b5608dafa48e57c7dbc31ed
   - path: requirements-gpu.lock.txt
     sha256: d928379a590e5071d9b5042fe99d480f57ab187f0cb3a74e13af219a6048aeb3
   - path: src/compbias/gpu_pilot/chart_data.py
     sha256: fbd02f9ff682856ebdd2b52a0b7003969946c360a3b02bd8c91837ab49ffbd8a
+  - path: src/compbias/gpu_pilot/collection.py
+    sha256: 83d4cfc7b26e7e057b2bf2f85b809e742855df6a18901354b4b0ccedae699842
   - path: src/compbias/gpu_pilot/config.py
     sha256: c48e779f19f3bed18e14916eccf0b052b9abe95d3ec302b25bb112e0324fc8dd
   - path: src/compbias/gpu_pilot/execution_gate.py
@@ -51,8 +53,8 @@ files:
   - path: src/compbias/recoverability/dsl/schema.py
     sha256: 36e0bcccbccda674caad3863a92fda1ba192b3ddf09ee84cb4871de5bd7faed4
   - path: src/compbias/recoverability/evidence.py
-    sha256: be17b35b41d7d93415168da08e6587539bc873bb500f4156127499c633b5524e
+    sha256: e636bde583d36164a8a52bdb84d829f225c609aa5b800eb353db36b2479eeead
   - path: src/compbias/recoverability/evidence_capture.py
-    sha256: 721bc74acb7ed1b5dae36116f481823d2093b4f75705a8388838ea3b9f4437c7
+    sha256: 90174a46cf3185ecfaf29eb66f3b1209c703adb76252971d55a642997d3aca5c
   - path: src/compbias/recoverability/preflight.py
     sha256: 648ca5111c6a2554c5c81ad4203217621f316654d661041c857532c2719a3661
