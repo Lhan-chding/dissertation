@@ -196,8 +196,9 @@ The one-shot Bridge v1 failure, successful Stage-1 v2 development probe, failed
 Stage-2 v1 development probe, model-free v1 failure diagnostic, and successful
 Stage-2 v2 development probe are frozen; none is evidence for or against
 recoverability. Its zero-model-call evidence capture is also complete and must
-not be rerun. Phase N, Phase C, Pilot A, Pilot B, Bridge v2, confirmatory
-execution, and all RL training remain unauthorized.
+not be rerun. Phase C, Pilot A, Pilot B, Bridge v2, confirmatory execution, and
+all RL training remain unauthorized. Phase N is the only newly authorized
+action after the passed measurement qualification described below.
 
 The model-free measurement-qualification dataset generation is complete and
 must not be rerun. It contains 300 new semantic scenes, exactly 50 per
@@ -211,17 +212,23 @@ commit, and generation package lock are bound in
 `configs/recoverability/measurement_qualification_data_anchor.yaml` and are
 replayed before model loading.
 
-The next and only authorized server action is the one-shot measurement
-qualification. It is an interface gate, not Bridge v2 and not a hypothesis
-test. It makes at most 600 zero-retry calls: Stage-1 v2
-followed by Stage-2 v2 only when Stage 1 parses. One-sided 95%
-Clopper-Pearson lower bounds must each be at least `0.98` for Stage-1 parse,
-Stage-2 parse, Stage-2 execution, and executor-answer correctness. Exact visual
-transcription is reported but deliberately not gated, because natural
-perception errors are scientific outcomes rather than interface failures.
-Whether the gate passes or fails, the output is final and must be frozen before
-any further action. Phase N, Phase C, Bridge v2, Pilot A/B, confirmatory
-execution, RL, and all training remain unauthorized.
+The one-shot measurement qualification has completed and passed. Stage 1
+parsed `299/300` outputs (`0.9967`; one-sided 95% lower bound `0.9843`). All
+299 downstream Stage-2 programs parsed and executed, and the trusted executor
+returned the registered answer for all 299 (each one-sided lower bound
+`0.9900`). Exact transcription was `0.8533`; as preregistered, this was reported
+but not gated because natural perception errors are scientific outcomes. The
+five artifacts and exact metrics are frozen in
+`configs/recoverability/measurement_qualification_frozen_result.yaml` and the
+qualification must not be rerun.
+
+The next and only authorized server action is Phase N. It uses the original
+v0.3 unified prompt and strict parser, not the two-stage qualification
+interface. It makes exactly one zero-retry image call for each of 4,000 fixed
+fresh scenes and stops. It cannot automatically invoke Phase C, Bridge v2, RL,
+Pilot A/B, or training. Exit `0` supports the registered low-prevalence claim;
+exit `3` is a final inconclusive result. Both outcomes require stopping and
+freezing the evidence before any subsequent decision.
 
 The controlled CVA dataset remains the primary mechanistic dataset because it
 supports registered redundancy constraints, cue ablations, legal coherent

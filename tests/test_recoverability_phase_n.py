@@ -4,6 +4,7 @@ from collections import Counter
 from pathlib import Path
 
 from compbias.models.structured_parser import parse_trajectory
+from compbias.recoverability import phase_n as phase_n_module
 from compbias.recoverability.config import load_recoverability_protocol
 from compbias.recoverability.phase_n import (
     PhaseNDatasetRecord,
@@ -13,7 +14,6 @@ from compbias.recoverability.phase_n import (
     verify_phase_n_dataset,
     write_phase_n_dataset,
 )
-from compbias.recoverability import phase_n as phase_n_module
 
 ROOT = Path(__file__).resolve().parents[1]
 PROTOCOL = ROOT / "configs/recoverability/recoverability_v1.yaml"

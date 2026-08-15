@@ -7,8 +7,9 @@
 > not be rerun. Its model-free diagnostic is complete. The one-shot 24-call,
 > text-only Stage-2 v2 development probe also completed successfully and must
 > not be rerun. Its zero-model-call evidence replay also completed successfully
-> and must not be rerun. No further server action is authorized. Bridge v2,
-> Phase N/C, Pilot A/B, and all training remain unauthorized.
+> and must not be rerun. The 300-scene measurement qualification subsequently
+> passed and is frozen. Phase N is now the only authorized next server action.
+> Bridge v2, Phase C, Pilot A/B, and all training remain unauthorized.
 
 ```text
 GPU: NVIDIA GeForce RTX 4090, 47.37 GiB VRAM, compute capability 8.9
@@ -552,9 +553,9 @@ Its 300 records, six balanced strata, manifest, images, attempt marker, and
 console log are frozen in
 `configs/recoverability/measurement_qualification_data_anchor.yaml`.
 
-## Next authorized action: one-shot measurement qualification
+## Historical: completed one-shot measurement qualification
 
-This is the only authorized next server action. It is an interface
+This completed action was an interface
 qualification, not Bridge v2 or a scientific hypothesis test. The metadata
 preflight is model-free. The subsequent execution makes one Stage-1 v2 call
 per frozen scene and one Stage-2 v2 call only after a strict Stage-1 parse, for
@@ -638,5 +639,111 @@ the five SHA-256 lines, both exit-code lines, and the short Git revision. Do
 not run Bridge v2, Phase N, Phase C, Pilot A/B, another qualification attempt,
 RL, or any training.
 
+The run passed at revision `8511dbc`: Stage 1 parsed `299/300`; all 299
+downstream Stage-2 programs parsed, executed, and returned the correct trusted
+executor result. Its exact result is frozen in
+`configs/recoverability/measurement_qualification_frozen_result.yaml` and the
+block above must not be rerun.
+
 The registered measurement-qualification execution package-lock SHA-256 is
 `a4179f3e4c6f90f6730ad15d3f38a4309564b1099459cfd1d3918cc7f36de691`.
+
+## Next authorized action: one-shot Phase N natural-prevalence screen
+
+This is the only authorized next server action. It generates 4,000 fresh,
+fixed, v0.3-rendered scenes that are disjoint from the earlier v0.3 and
+qualification numeric tables, then makes exactly one original unified-protocol
+image call per scene. There are zero retries, no sample extension, no
+draw-until-error loop, no Stage 2, and no training. The qualification artifacts
+are hash-verified before Qwen loads. An exclusive Phase N attempt marker is
+created before dataset generation or model loading, so the job cannot be
+selected among reruns.
+
+Exit `0` means the one-sided registered low-prevalence claim passed both its
+confidence and minimum-eligible gates. Exit `3` means the result is
+inconclusive. Both are expected final scientific outcomes; after either one,
+stop and return the report and hashes.
+
+```bash
+cd /cloud/cloud-ssd1/dissertation
+git -c http.version=HTTP/1.1 pull --ff-only origin main
+git rev-parse --short HEAD
+source .venv/bin/activate
+
+export PYTHONPATH=/cloud/cloud-ssd1/dissertation/src
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
+
+PHASE_N_PREFLIGHT=/cloud/cloud-ssd1/recoverability-v1-evidence/phase-n-preflight.json
+PHASE_N_DATA=/cloud/cloud-ssd1/dissertation/data/generated/cva_natural_prevalence_v1
+PHASE_N_OUTPUT=/cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_natural_prevalence_v1
+PHASE_N_ATTEMPT=/cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_natural_prevalence_v1.attempted.json
+PHASE_N_LOG=/cloud/cloud-ssd1/recoverability-v1-evidence/phase-n-console.log
+
+for candidate in \
+  "$PHASE_N_PREFLIGHT" \
+  "$PHASE_N_DATA" \
+  "$PHASE_N_OUTPUT" \
+  "$PHASE_N_ATTEMPT" \
+  "$PHASE_N_LOG"
+do
+  test ! -e "$candidate" || {
+    echo "BLOCKED: Phase N evidence already exists: $candidate"
+    exit 1
+  }
+done
+
+python experiments/recoverability_v1/12_phase_n_preflight.py \
+  --runtime configs/recoverability/server_runtime_v1.yaml \
+  --server-package-lock configs/recoverability/server_package_lock_phase_n.yaml \
+  --project-root /cloud/cloud-ssd1/dissertation \
+  --output "$PHASE_N_PREFLIGHT"
+
+phase_n_preflight_rc=$?
+echo "phase_n_preflight_exit=$phase_n_preflight_rc"
+test "$phase_n_preflight_rc" -eq 0 || exit "$phase_n_preflight_rc"
+
+set -o pipefail
+(
+  python experiments/recoverability_v1/13_run_phase_n.py \
+    --paths configs/paths.yaml \
+    --runtime configs/recoverability/server_runtime_v1.yaml \
+    --protocol configs/recoverability/recoverability_v1.yaml \
+    --server-package-lock configs/recoverability/server_package_lock_phase_n.yaml \
+    --preflight-report "$PHASE_N_PREFLIGHT" \
+    --qualification-preflight /cloud/cloud-ssd1/recoverability-v1-evidence/measurement-qualification-preflight.json \
+    --qualification-attempt-marker /cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/measurement_qualification_v1.attempted.json \
+    --qualification-report /cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/measurement_qualification_v1/qualification_report.json \
+    --qualification-records /cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/measurement_qualification_v1/qualification_records.jsonl \
+    --qualification-console-log /cloud/cloud-ssd1/recoverability-v1-evidence/measurement-qualification-console.log \
+    --source-records /cloud/cloud-ssd1/dissertation/data/generated/cva_chart_pilot_v0_3/records.jsonl \
+    --qualification-dataset-root /cloud/cloud-ssd1/dissertation/data/generated/measurement_qualification_v1 \
+    --qualification-dataset-attempt-marker /cloud/cloud-ssd1/dissertation/data/generated/measurement_qualification_v1.attempted.json \
+    --qualification-dataset-console-log /cloud/cloud-ssd1/recoverability-v1-evidence/measurement-qualification-data.log \
+    --execute
+  phase_n_rc=$?
+  echo "phase_n_exit=$phase_n_rc"
+  exit "$phase_n_rc"
+) 2>&1 | tee "$PHASE_N_LOG"
+phase_n_rc=$?
+
+echo "phase_n_exit=$phase_n_rc"
+case "$phase_n_rc" in
+  0|3) ;;
+  *) echo "BLOCKED: unexpected Phase N execution failure"; exit "$phase_n_rc" ;;
+esac
+
+sha256sum \
+  "$PHASE_N_PREFLIGHT" \
+  "$PHASE_N_ATTEMPT" \
+  "$PHASE_N_DATA/manifest.json" \
+  "$PHASE_N_DATA/records.jsonl" \
+  "$PHASE_N_OUTPUT/phase_n_report.json" \
+  "$PHASE_N_OUTPUT/phase_n_records.jsonl" \
+  "$PHASE_N_LOG"
+```
+
+After exit `0` or `3`, do not run Phase C, Bridge v2, Pilot A/B, RL, another
+Phase N attempt, or training. Return the complete printed report, seven SHA-256
+lines, both Phase N exit-code lines, the preflight exit, and the short Git
+revision.
