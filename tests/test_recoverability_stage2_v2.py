@@ -7,6 +7,8 @@ from dataclasses import replace
 from pathlib import Path
 
 import pytest
+
+from compbias.recoverability.dsl.executor import TrustedBinding
 from compbias.recoverability.dsl.result_program import (
     ResultProgramParseError,
     evaluate_result_program,
@@ -19,15 +21,16 @@ from compbias.recoverability.stage2_v2 import (
     build_stage2_v2_messages,
     load_stage2_v1_diagnostic_anchor,
     load_stage2_v2_probe_config,
+    load_stage2_v2_scenes_from_stage1_records,
     run_stage2_v2_probe,
     verify_stage2_v1_diagnostic,
+    verify_stage2_v2_server_package_lock,
 )
-
-from compbias.recoverability.dsl.executor import TrustedBinding
 
 ROOT = Path(__file__).resolve().parents[1]
 PROBE_CONFIG = ROOT / "configs" / "recoverability" / "stage2_v2_probe.yaml"
 DIAGNOSTIC_ANCHOR = ROOT / "configs" / "recoverability" / "stage2_v1_diagnostic_result.yaml"
+SERVER_LOCK = ROOT / "configs" / "recoverability" / "server_package_lock_stage2_v2.yaml"
 
 
 def _raw(
@@ -137,11 +140,12 @@ def test_stage2_v2_prompt_is_exact_gold_free_and_has_no_numeric_answer_slot(
 
     messages = build_stage2_v2_messages(scene)
     serialized = json.dumps(messages, sort_keys=True)
+    system = str(messages[0]["content"])
 
     assert tuple(inspect.signature(build_stage2_v2_messages).parameters) == ("scene",)
     assert len(messages) == 2
-    assert '"return":"result"' in serialized
-    assert '"answer"' not in serialized
+    assert '"return":"result"' in system
+    assert '"answer"' not in system
     assert "gold" not in serialized.lower()
     assert "image" not in serialized.lower()
     assert "question" not in serialized.lower()
@@ -262,6 +266,55 @@ def test_stage2_v1_diagnostic_anchor_rejects_tampering(tmp_path: Path) -> None:
         verify_stage2_v1_diagnostic(changed, path)
 
 
+def test_stage2_v2_stage1_loader_is_hash_bound_and_strict(tmp_path: Path) -> None:
+    records = tmp_path / "probe_records.jsonl"
+    rows = []
+    for index in range(24):
+        rows.append(
+            {
+                "scene_id": f"dev-{index:06d}",
+                "chart_type": "line",
+                "operation": ("difference", "max_minus_min", "sum")[index % 3],
+                "raw_text": (
+                    '{"target_facts":[8,4,5,9],"redundant_facts":[],"axis_facts":["integer_ticks"]}'
+                ),
+                "parse_success": True,
+                "exact_transcription": True,
+                "error_code": None,
+            }
+        )
+    records.write_text(
+        "".join(json.dumps(row, sort_keys=True) + "\n" for row in reversed(rows)),
+        encoding="utf-8",
+    )
+    digest = hashlib.sha256(records.read_bytes()).hexdigest()
+
+    scenes = load_stage2_v2_scenes_from_stage1_records(records, expected_sha256=digest)
+
+    assert tuple(scene.scene_id for scene in scenes) == tuple(
+        f"dev-{index:06d}" for index in range(24)
+    )
+    assert all(scene.evidence == (8, 4, 5, 9) for scene in scenes)
+
+    records.write_text(records.read_text(encoding="utf-8") + "\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="SHA-256"):
+        load_stage2_v2_scenes_from_stage1_records(records, expected_sha256=digest)
+
+
+def test_stage2_v2_server_package_lock_matches_the_exact_current_closure() -> None:
+    result = verify_stage2_v2_server_package_lock(SERVER_LOCK, repository_root=ROOT)
+
+    assert result.verified is True
+    assert {item.relative_path for item in result.files} >= {
+        "configs/recoverability/stage2_v1_diagnostic_result.yaml",
+        "configs/recoverability/stage2_v2_probe.yaml",
+        "experiments/recoverability_v1/00_stage2_v2_preflight.py",
+        "experiments/recoverability_v1/07_stage2_v2_probe.py",
+        "src/compbias/recoverability/dsl/result_program.py",
+        "src/compbias/recoverability/stage2_v2.py",
+    }
+
+
 def test_stage2_v2_server_entrypoints_are_one_shot_and_package_locked() -> None:
     preflight = ROOT / "experiments" / "recoverability_v1" / "00_stage2_v2_preflight.py"
     probe = ROOT / "experiments" / "recoverability_v1" / "07_stage2_v2_probe.py"
@@ -285,6 +338,7 @@ def test_stage2_v2_server_entrypoints_are_one_shot_and_package_locked() -> None:
     assert "attempt_marker" in probe_source
     assert 'open("x"' in probe_source
     assert "load_local_qwen" in probe_source
+    assert "load_local_qwen" not in preflight_source
     assert "run_stage2_v1_probe" not in probe_source
     assert "confirmatory_execution_authorized" in probe_source
     assert "hypothesis_tested" in probe_source

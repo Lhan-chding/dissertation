@@ -1,0 +1,13 @@
+schema_version: 1
+status: FINAL_VERIFIED_STAGE2_V1_FAILURE_DO_NOT_RERUN
+diagnostic_sha256: d85510ea829a000bc31002f874e5a0ec795421aadec9f9042438d78337d9e7b4
+source_stage2_records_sha256: b8ce766b9ba0555fe780e88195a0e4d4d3294cc8813357e7a33a5cfeea19793c
+records: 24
+program_parse_successes: 19
+program_execution_successes: 19
+executor_answer_matches: 13
+verified: true
+model_calls: 0
+hypothesis_tested: false
+confirmatory_execution_authorized: false
+training_invoked: false
