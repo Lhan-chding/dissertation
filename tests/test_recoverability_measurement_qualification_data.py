@@ -4,13 +4,13 @@ import json
 from pathlib import Path
 
 import pytest
-from compbias.recoverability.measurement_qualification_data import (
-    verify_measurement_qualification_dataset,
-    write_measurement_qualification_dataset,
-)
 
 from compbias.recoverability.measurement_qualification import (
     load_measurement_qualification_config,
+)
+from compbias.recoverability.measurement_qualification_data import (
+    verify_measurement_qualification_dataset,
+    write_measurement_qualification_dataset,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -30,7 +30,11 @@ def test_qualification_dataset_is_complete_balanced_and_replayable(tmp_path: Pat
         reserved_numeric_tables=_reserved(),
         output_dir=output,
     )
-    verification = verify_measurement_qualification_dataset(output, config=config)
+    verification = verify_measurement_qualification_dataset(
+        output,
+        config=config,
+        reserved_numeric_tables=_reserved(),
+    )
 
     assert manifest["artifact_type"] == "recoverability_measurement_qualification_dataset"
     assert manifest["status"] == "FROZEN_DATASET_NOT_EVALUATED"
@@ -72,7 +76,11 @@ def test_qualification_dataset_refuses_overwrite_and_image_tampering(tmp_path: P
     image = output / "images" / "qualification-000000.png"
     image.write_bytes(image.read_bytes() + b"tamper")
     with pytest.raises(ValueError, match="image bundle SHA-256"):
-        verify_measurement_qualification_dataset(output, config=config)
+        verify_measurement_qualification_dataset(
+            output,
+            config=config,
+            reserved_numeric_tables=_reserved(),
+        )
 
 
 def test_qualification_dataset_rejects_record_selection_or_schema_tampering(
@@ -94,4 +102,8 @@ def test_qualification_dataset_rejects_record_selection_or_schema_tampering(
     )
 
     with pytest.raises(ValueError, match="records SHA-256"):
-        verify_measurement_qualification_dataset(output, config=config)
+        verify_measurement_qualification_dataset(
+            output,
+            config=config,
+            reserved_numeric_tables=_reserved(),
+        )
