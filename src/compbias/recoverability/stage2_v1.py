@@ -15,6 +15,8 @@ from compbias.io.yaml_config import load_yaml_mapping, reject_unknown_fields
 
 from .bridge import parse_stage1_evidence
 from .dsl.executor import TrustedBinding, evaluate_program
+from .dsl.parser import ProgramParseError, parse_program
+from .dsl.schema import ProgramOperation, ProgramStep
 from .evidence import ProtocolLockResult, verify_protocol_lock
 from .stage1_v2 import (
     STAGE1_V2_SERVER_PACKAGE_PATHS,
@@ -400,6 +402,25 @@ def _operation_result(scene: Stage2V1Scene) -> int:
     return max(a, b, c, d) - min(a, b, c, d)
 
 
+def _matches_registered_program(scene: Stage2V1Scene, raw: str) -> bool:
+    try:
+        program = parse_program(raw)
+    except ProgramParseError:
+        return False
+    expected_variables = tuple(zip(("a", "b", "c", "d"), scene.evidence, strict=True))
+    if scene.operation == "sum":
+        expected_steps = (ProgramStep(ProgramOperation.ADD, ("a", "b"), "result"),)
+    elif scene.operation == "difference":
+        expected_steps = (ProgramStep(ProgramOperation.SUBTRACT, ("a", "b"), "result"),)
+    else:
+        expected_steps = (
+            ProgramStep(ProgramOperation.MAX, ("a", "b", "c", "d"), "high"),
+            ProgramStep(ProgramOperation.MIN, ("a", "b", "c", "d"), "low"),
+            ProgramStep(ProgramOperation.SUBTRACT, ("high", "low"), "result"),
+        )
+    return program.variables == expected_variables and program.steps == expected_steps
+
+
 def build_stage2_v1_messages(scene: Stage2V1Scene) -> tuple[dict[str, object], ...]:
     """Build one operation-specific exact DSL grammar without hidden gold."""
 
@@ -477,19 +498,23 @@ def run_stage2_v1_probe(
     counts: Counter[str] = Counter()
     for scene in scenes:
         raw = generate(scene, build_stage2_v1_messages(scene))
+        contract_match = _matches_registered_program(scene, raw)
         trusted = {
             name: TrustedBinding(f"stage1_target_{name}", value)
             for name, value in zip(("a", "b", "c", "d"), scene.evidence, strict=True)
         }
         evaluation = evaluate_program(raw, constraint_bindings=trusted)
         result_correct = bool(
-            evaluation.program_parse_success
+            contract_match
+            and evaluation.program_parse_success
             and evaluation.program_execution_success
             and evaluation.program_answer_match
             and evaluation.final_answer == _operation_result(scene)
         )
         error_code = evaluation.error_code
-        if error_code is None and not evaluation.program_answer_match:
+        if error_code is None and not contract_match:
+            error_code = "program_contract_mismatch"
+        elif error_code is None and not evaluation.program_answer_match:
             error_code = "program_answer_mismatch"
         if error_code is None and not result_correct:
             error_code = "operation_result_mismatch"
