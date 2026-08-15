@@ -46,7 +46,11 @@ test of the recoverability hypothesis; Bridge v1 must not be rerun. The later
 Stage-1 v2 development probe passed (`24/24` parsed, `22/24` exact), while
 Stage-2 v1 exposed a separate duplicate-answer interface failure (`19/24`
 programs parsed/executed, `13/24` answers agreed with execution). Both are
-frozen and must not be rerun. The model must still be read from:
+frozen and must not be rerun. The executor-authoritative Stage-2 v2 development
+probe then passed: all `24/24` graphs parsed and executed, and the trusted
+executor produced the registered result for all `24/24` scenes. It is interface
+evidence only, not a recoverability result, and it must not be rerun. The model
+must still be read from:
 
 ```text
 /model/ModelScope/Qwen/Qwen2.5-VL-3B-Instruct
@@ -58,12 +62,11 @@ and all generated state must remain under:
 /cloud/cloud-ssd1/dissertation
 ```
 
-The Phase N/C protocol remains unrun and unauthorized. The only next GPU step
-is one 24-call, text-only Stage-2 v2 development probe. It removes the duplicate
-model-supplied numeric answer: the model emits a strict graph and final result
-pointer, and the trusted executor is the sole numeric answer source. The probe
-uses frozen Stage-1 evidence, zero retries, no image calls, no hypothesis test,
-and no training. Passing cannot authorize Bridge v2 or any confirmatory phase.
+The Phase N/C protocol remains unrun and unauthorized. There is no authorized
+next GPU step. The only next server action is a zero-model-call replay that
+hash-binds the five Stage-2 v2 artifacts and independently re-parses and executes
+all 24 stored raw graphs. Passing that evidence capture still cannot authorize
+Bridge v2 or any confirmatory phase.
 
 Current explicit non-claims are:
 

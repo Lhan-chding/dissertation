@@ -4,10 +4,11 @@
 > already completed and failed. The older generation/calibration commands below
 > are retained only as historical documentation and must not be run again. Pilot
 > A/B are terminated. The Stage-2 v1 development probe has completed and must
-> not be rerun. Its model-free diagnostic is complete. Exactly one 24-call,
-> text-only Stage-2 v2 development probe is now authorized at the end of this
-> document. Bridge v2, Phase N/C, Pilot A/B, and all training remain
-> unauthorized.
+> not be rerun. Its model-free diagnostic is complete. The one-shot 24-call,
+> text-only Stage-2 v2 development probe also completed successfully and must
+> not be rerun. The only next server action is a zero-model-call evidence replay
+> at the end of this document. Bridge v2, Phase N/C, Pilot A/B, and all training
+> remain unauthorized.
 
 ```text
 GPU: NVIDIA GeForce RTX 4090, 47.37 GiB VRAM, compute capability 8.9
@@ -348,20 +349,20 @@ sha256sum "$DIAG_OUTPUT"
 The replay returned `diagnostic_exit=0`, `verified=true`, and SHA-256
 `d85510ea829a000bc31002f874e5a0ec795421aadec9f9042438d78337d9e7b4`.
 
-## Recoverability Stage-2 v2 development probe handoff
+## Historical: completed Recoverability Stage-2 v2 development probe
 
-The only authorized model-facing action is one 24-scene, text-only development
-probe of the executor-authoritative Stage-2 v2 interface. The model returns a
+The completed model-facing action was one 24-scene, text-only development probe
+of the executor-authoritative Stage-2 v2 interface. The model returned a
 strict graph plus `"return":"result"`; it does not return a numeric answer.
 The trusted executor supplies the sole numeric final answer. This probe uses no
 images, retries, repair, Legacy calls, cues, or training and does not test the
 recoverability hypothesis.
 
-The metadata preflight loads no model. Both commands verify the exact closed
-server package. The probe additionally binds the frozen Stage-1 v2 record hash,
+The metadata preflight loaded no model. Both commands verified the exact closed
+server package. The probe additionally bound the frozen Stage-1 v2 record hash,
 the completed Stage-2 v1 diagnostic hash, and the unchanged model snapshot. An
-exclusive attempt marker is created before model loading, so any interruption
-after that point consumes the one authorized attempt and must not be retried.
+exclusive attempt marker was created before model loading. The following block
+is immutable run history and must not be executed again.
 
 ```bash
 cd /cloud/cloud-ssd1/dissertation
@@ -431,6 +432,54 @@ if [ -f "$STAGE2_V2_OUTPUT/probe_report.json" ]; then
 fi
 ```
 
-Stop after this probe even if it exits zero. Return the complete report,
-`stage2_v2_probe_exit`, and all printed SHA-256 values. Do not rerun any probe
-or start Bridge v2, Phase N, Phase C, Pilot A, Pilot B, or training.
+The probe returned exit `0`: all `24/24` strict graphs parsed and executed, and
+the trusted executor produced the registered operation result for every scene.
+Its parse, execution, and executor-answer rates were all `1.0`; it used zero
+retries and did not test a scientific hypothesis. The historical block above
+must not be executed again.
+
+## Stage-2 v2 model-free evidence capture handoff
+
+This is the only authorized next server action. It loads no model, makes no
+model or CUDA calls, and does not run a hypothesis test or training. It verifies
+the exact evidence-capture code package, checks all five externally supplied
+artifact hashes, re-parses and executes every stored raw graph, and rejects any
+stored flag or aggregate that does not reproduce. It writes one new evidence
+manifest exclusively and refuses overwrite or path substitution.
+
+```bash
+cd /cloud/cloud-ssd1/dissertation
+git -c http.version=HTTP/1.1 pull --ff-only origin main
+git rev-parse --short HEAD
+source .venv/bin/activate
+
+export PYTHONPATH=/cloud/cloud-ssd1/dissertation/src
+
+STAGE2_V2_EVIDENCE=/cloud/cloud-ssd1/recoverability-v1-evidence/stage2-v2-external-evidence.json
+
+test ! -e "$STAGE2_V2_EVIDENCE" || {
+  echo "BLOCKED: Stage-2 v2 external evidence already exists"
+  exit 1
+}
+
+python experiments/recoverability_v1/08_capture_stage2_v2_evidence.py \
+  --frozen-result configs/recoverability/stage2_v2_frozen_result.yaml \
+  --evidence-package-lock configs/recoverability/server_package_lock_stage2_v2_evidence.yaml \
+  --paths configs/paths.yaml \
+  --stage1-records outputs/recoverability_v1/stage1_v2_dev_probe/probe_records.jsonl \
+  --stage2-v2-preflight /cloud/cloud-ssd1/recoverability-v1-evidence/stage2-v2-preflight.json \
+  --stage2-v2-console /cloud/cloud-ssd1/recoverability-v1-evidence/stage2-v2-console.log \
+  --stage2-v2-report outputs/recoverability_v1/stage2_v2_dev_probe/probe_report.json \
+  --stage2-v2-records outputs/recoverability_v1/stage2_v2_dev_probe/probe_records.jsonl \
+  --attempt-marker outputs/recoverability_v1/stage2_v2_dev_probe.attempted.json \
+  --output "$STAGE2_V2_EVIDENCE"
+
+capture_rc=$?
+echo "stage2_v2_capture_exit=$capture_rc"
+test "$capture_rc" -eq 0 || exit "$capture_rc"
+sha256sum "$STAGE2_V2_EVIDENCE"
+```
+
+Stop after this capture. Return the complete manifest,
+`stage2_v2_capture_exit`, and its SHA-256. Do not rerun any probe or start
+Bridge v2, Phase N, Phase C, Pilot A, Pilot B, or training.

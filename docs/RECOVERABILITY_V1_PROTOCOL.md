@@ -110,12 +110,15 @@ numeric answer with a final result pointer (`"return":"result"`). The trusted
 executor is the sole source of the numeric final answer. This does not repair,
 normalize, or reinterpret model output.
 
-Exactly one 24-scene, text-only Stage-2 v2 development probe is now authorized.
-It reuses the externally hash-bound Stage-1 v2 records and the completed v1
-diagnostic, performs no image calls or training, and tests only whether this
-executor-authoritative interface is mechanically viable. Passing requires
-`24/24` strict parses, executions, and correct executor results. It is not a
-recoverability test and cannot authorize Bridge v2, Phase N, Phase C, or RL.
+The one-shot 24-scene, text-only Stage-2 v2 development probe is complete and
+must not be rerun. All `24/24` model graphs parsed and executed, and the trusted
+executor returned the registered operation result for all `24/24` scenes. The
+probe used no retries, image calls, hypothesis test, or training. This establishes
+only the mechanical viability of the executor-authoritative interface; it is
+not evidence for recoverability and does not authorize Bridge v2, Phase N,
+Phase C, or RL. Its externally supplied hashes are frozen in
+`configs/recoverability/stage2_v2_frozen_result.yaml`; the remaining evidence
+step is a zero-model-call replay of all 24 stored raw graphs.
 
 ### Phase N: natural prevalence
 
@@ -184,9 +187,10 @@ or confirmatory RL after inspecting a failed result.
 ## Current execution boundary
 
 The one-shot Bridge v1 failure, successful Stage-1 v2 development probe, failed
-Stage-2 v1 development probe, and model-free v1 failure diagnostic are fully
-frozen; none is evidence for or against recoverability. Phase N, Phase C, Pilot
-A, Pilot B, Bridge v2, any other development probe, and all RL training remain
-unauthorized. The only next server action is the one-shot 24-call Stage-2 v2
-development probe in `docs/SERVER_SETUP.md`. Stop after it regardless of exit
-status and return its immutable evidence for review.
+Stage-2 v1 development probe, model-free v1 failure diagnostic, and successful
+Stage-2 v2 development probe are frozen; none is evidence for or against
+recoverability. Phase N, Phase C, Pilot A, Pilot B, Bridge v2, any additional
+development probe, and all RL training remain unauthorized. The only next
+server action is the zero-model-call Stage-2 v2 evidence capture in
+`docs/SERVER_SETUP.md`. Stop after it and return its immutable evidence for
+review.
