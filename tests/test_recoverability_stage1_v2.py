@@ -9,9 +9,13 @@ import pytest
 from compbias.recoverability.stage1_v2 import (
     Stage1V2Scene,
     build_stage1_v2_messages,
+    load_stage1_v2_probe_config,
     run_stage1_v2_probe,
     select_stage1_v2_probe_scenes,
 )
+
+ROOT = Path(__file__).resolve().parents[1]
+PROBE_CONFIG = ROOT / "configs" / "recoverability" / "stage1_v2_probe.yaml"
 
 
 def _source_rows(*, per_stratum: int = 5) -> tuple[dict[str, object], ...]:
@@ -58,6 +62,21 @@ def test_stage1_v2_prompt_is_question_free_and_binds_four_literal_slots() -> Non
     assert "markdown" in prompt_text.lower()
     assert "do not compute" in prompt_text.lower()
     assert "gold" not in rendered.lower()
+
+
+def test_stage1_v2_probe_config_is_development_only_and_one_shot() -> None:
+    config = load_stage1_v2_probe_config(PROBE_CONFIG)
+
+    assert config.status == "DEVELOPMENT_PROBE_NOT_RUN"
+    assert config.dataset_id == "CVA-Recoverability-Stage1-V2-Dev-Probe"
+    assert config.source_dataset_id == "CVA-Chart-Pilot-v0.3"
+    assert config.source_split == "dev"
+    assert config.scenes == 24
+    assert config.per_stratum == 4
+    assert config.format_retries == 0
+    assert config.required_parse_rate == 1.0
+    assert config.allow_rerun is False
+    assert config.hypothesis_test is False
 
 
 def test_stage1_v2_probe_selection_is_fixed_balanced_and_order_independent(

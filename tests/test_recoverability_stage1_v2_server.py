@@ -222,6 +222,7 @@ def test_stage1_v2_probe_cli_is_explicit_one_shot_and_development_only() -> None
 
     for argument in (
         "--execute",
+        "--probe-config",
         "--server-package-lock",
         "--preflight-report",
         "--external-evidence",
