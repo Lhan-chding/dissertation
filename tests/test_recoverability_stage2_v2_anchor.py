@@ -14,12 +14,7 @@ from compbias.recoverability.stage2_v2_anchor import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
-ANCHOR = (
-    ROOT
-    / "configs"
-    / "recoverability"
-    / "stage2_v2_external_evidence_anchor.yaml"
-)
+ANCHOR = ROOT / "configs" / "recoverability" / "stage2_v2_external_evidence_anchor.yaml"
 
 
 def _sha256(path: Path) -> str:
