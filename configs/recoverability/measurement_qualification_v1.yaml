@@ -1,0 +1,17 @@
+schema_version: 1
+status: PREREGISTERED_NOT_RUN
+dataset_id: CVA-Recoverability-Measurement-Qualification-v1
+output_subdirectory: measurement_qualification_v1
+seed: 20260817
+image_size: [512, 384]
+source_dataset_id: CVA-Chart-Pilot-v0.3
+source_dataset_records_sha256: 92ccdf54b11e2a6c12e12ef5273137824c6f3b94f38224abeb32d8319b83a62b
+source_stage2_v2_external_evidence_sha256: 3a9e521cfe718cc3dea9aee4f1591aac761fa47f893c986eb1ba722a44374577
+scenes: 300
+per_stratum: 50
+format_retries: 0
+confidence: 0.95
+minimum_lower_bound: 0.98
+allow_rerun: false
+hypothesis_test: false
+confirmatory_execution_authorized: false
