@@ -1,0 +1,33 @@
+schema_version: 1
+status: FINAL_PASSED_MEASUREMENT_QUALIFICATION_DO_NOT_RERUN
+qualification_exit: 0
+qualification_passed: true
+dataset_id: CVA-Recoverability-Measurement-Qualification-v1
+model_snapshot_sha256: e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87
+server_package_lock_sha256: a4179f3e4c6f90f6730ad15d3f38a4309564b1099459cfd1d3918cc7f36de691
+scenes: 300
+model_calls: 599
+stage1_parse_successes: 299
+stage1_parse_rate: 0.9966666666666667
+stage1_parse_lower: 0.9842854451084161
+exact_transcription_rate: 0.8533333333333334
+stage2_program_parse_successes: 299
+stage2_program_parse_rate: 1.0
+stage2_program_parse_lower: 0.9900308532071007
+stage2_execution_successes: 299
+stage2_execution_rate: 1.0
+stage2_execution_lower: 0.9900308532071007
+executor_answer_successes: 299
+executor_answer_accuracy: 1.0
+executor_answer_lower: 0.9900308532071007
+gate_failures: []
+format_retries: 0
+hypothesis_tested: false
+confirmatory_execution_authorized: false
+training_invoked: false
+source_sha256:
+  attempt_marker: d8957deaa71283db638c7b644c51b69f0182843dbe447d3ba04750d5cb45e190
+  console: 2513a50896e863cd2d294f5b5cb9fde06c0934dda4290cd70551dbeb131d4311
+  preflight: 784149ae5482f4d1b7b31a2e22ea71cb8d0c04fc7441a5f6f07004a8e2328ffe
+  qualification_records: 55d5eea889ed1733bc58d75f5783ae0a34e00e827361ac20ccfcee4351f18e4d
+  qualification_report: 11a2d7f44d7fdf115954baacbac1b6c53269a8e00368c2b78f27ba53c24c640e

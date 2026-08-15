@@ -1,15 +1,17 @@
 from __future__ import annotations
 
 from pathlib import Path
+from dataclasses import asdict
+import json
 
+from compbias.recoverability import measurement_qualification_result as result_module
 from compbias.recoverability.measurement_qualification_result import (
     load_measurement_qualification_frozen_result,
+    verify_measurement_qualification_result_artifacts,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
-FROZEN_RESULT = (
-    ROOT / "configs/recoverability/measurement_qualification_frozen_result.yaml"
-)
+FROZEN_RESULT = ROOT / "configs/recoverability/measurement_qualification_frozen_result.yaml"
 
 
 def test_measurement_qualification_result_is_frozen_from_server_evidence() -> None:
@@ -49,3 +51,52 @@ def test_measurement_qualification_result_is_frozen_from_server_evidence() -> No
             "11a2d7f44d7fdf115954baacbac1b6c53269a8e00368c2b78f27ba53c24c640e"
         ),
     }
+
+
+def test_measurement_qualification_artifacts_are_bound_before_reuse(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    frozen = load_measurement_qualification_frozen_result(FROZEN_RESULT)
+    preflight = tmp_path / "preflight.json"
+    marker = tmp_path / "attempt.json"
+    report = tmp_path / "report.json"
+    records = tmp_path / "records.jsonl"
+    console = tmp_path / "console.log"
+    preflight.write_text("{}\n", encoding="utf-8")
+    marker.write_text(
+        json.dumps(
+            {
+                "status": "MEASUREMENT_QUALIFICATION_STARTED",
+                "model_snapshot_sha256": frozen.model_snapshot_sha256,
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    payload = asdict(frozen)
+    for key in ("status", "qualification_exit", "source_sha256"):
+        payload.pop(key)
+    payload["gate_failures"] = []
+    report.write_text(json.dumps(payload) + "\n", encoding="utf-8")
+    records.write_text("{}\n" * 300, encoding="utf-8")
+    console.write_text("measurement_qualification_exit=0\n", encoding="utf-8")
+    digest_by_name = {
+        "preflight.json": dict(frozen.source_sha256)["preflight"],
+        "attempt.json": dict(frozen.source_sha256)["attempt_marker"],
+        "report.json": dict(frozen.source_sha256)["qualification_report"],
+        "records.jsonl": dict(frozen.source_sha256)["qualification_records"],
+        "console.log": dict(frozen.source_sha256)["console"],
+    }
+    monkeypatch.setattr(result_module, "_sha256", lambda path: digest_by_name[path.name])
+
+    verified = verify_measurement_qualification_result_artifacts(
+        frozen,
+        preflight=preflight,
+        attempt_marker=marker,
+        report=report,
+        records=records,
+        console_log=console,
+    )
+
+    assert verified == frozen

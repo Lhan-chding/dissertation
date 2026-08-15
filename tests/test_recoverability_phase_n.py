@@ -10,7 +10,10 @@ from compbias.recoverability.phase_n import (
     build_phase_n_observation,
     build_phase_n_records,
     run_phase_n,
+    verify_phase_n_dataset,
+    write_phase_n_dataset,
 )
+from compbias.recoverability import phase_n as phase_n_module
 
 ROOT = Path(__file__).resolve().parents[1]
 PROTOCOL = ROOT / "configs/recoverability/recoverability_v1.yaml"
@@ -150,3 +153,32 @@ def test_phase_n_runs_exactly_one_legacy_call_per_scene_without_extension() -> N
     assert report.format_retries == 0
     assert report.allow_sample_extension is False
     assert report.training_invoked is False
+
+
+def test_phase_n_dataset_is_written_once_and_replayed_before_model_calls(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    protocol = load_recoverability_protocol(PROTOCOL)
+    target = tmp_path / "phase-n"
+
+    def fake_draw(path: Path, **_kwargs: object) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"fixed-image")
+
+    monkeypatch.setattr(phase_n_module, "_draw_chart", fake_draw)
+    manifest = write_phase_n_dataset(
+        protocol.phase_n,
+        reserved_numeric_tables={(2, 2, 2, 2)},
+        output_dir=target,
+    )
+    replayed, scenes = verify_phase_n_dataset(
+        protocol.phase_n,
+        reserved_numeric_tables={(2, 2, 2, 2)},
+        dataset_root=target,
+    )
+
+    assert replayed == manifest
+    assert len(scenes) == 4000
+    assert manifest["model_calls"] == 0
+    assert manifest["training_invoked"] is False
