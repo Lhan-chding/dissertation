@@ -72,6 +72,24 @@ scientific hypothesis. Passing requires strict parsing on all 24 scenes. The
 probe may guide a future preregistered Bridge v2 on an untouched split, but its
 development results cannot be reported as confirmatory evidence.
 
+That Stage-1 v2 probe is now complete and externally frozen. It parsed all
+`24/24` outputs and exactly transcribed `22/24`. The two mismatches were
+`dev-000003` and `dev-000019`; both were line charts whose A value was read one
+unit low. Direct visual review found clear integer-grid placement, adequate
+left padding, and no clipping or mark/axis overlap, so these remain natural
+model perception errors rather than renderer defects. The probe still did not
+test recoverability and does not authorize Bridge v2.
+
+Stage 2 was never reached in Bridge v1, so its model-facing restricted-DSL
+interface remains untested. The next registered step is therefore a separate
+one-shot Stage-2 v1 development probe. It reuses the 24 frozen Stage-1 outputs,
+makes exactly 24 text-only model calls, exposes no image, question, gold value,
+or correct answer, and uses zero retries. Each operation receives one exact
+DSL grammar whose variables are bound to the frozen perceived values. Passing
+requires `24/24` strict program parses, executions, program-answer matches, and
+matches to the deterministic operation applied to those perceived values. It
+does not test a scientific hypothesis or authorize confirmatory execution.
+
 ### Phase N: natural prevalence
 
 Phase N is frozen at 4,000 semantic scenes with exactly one natural Stage-1
@@ -138,11 +156,11 @@ or confirmatory RL after inspecting a failed result.
 
 ## Current execution boundary
 
-The one-shot Bridge v1 has failed at its Stage-1 measurement interface and is
-fully frozen; it is not evidence for or against recoverability. Phase N, Phase
-C, Pilot A, Pilot B, and all RL training remain unauthorized. The only next
-execution step is the reviewed offline-server Stage-1 v2 development probe in
-`docs/SERVER_SETUP.md`. Stop after its 24 image calls regardless of exit code.
-Do not construct or run a confirmatory Bridge v2 until that development result
-has received a separate local review and an untouched evaluation split has
-been frozen.
+The one-shot Bridge v1 failure and successful Stage-1 v2 development probe are
+fully frozen; neither is evidence for or against recoverability. Phase N,
+Phase C, Pilot A, Pilot B, Bridge v2, and all RL training remain unauthorized.
+The only next execution step is the reviewed offline-server Stage-2 v1
+development probe in `docs/SERVER_SETUP.md`. Stop after its 24 text calls
+regardless of exit code. Do not construct or run a confirmatory Bridge v2 until
+that result has received a separate local review and an untouched evaluation
+split has been frozen.

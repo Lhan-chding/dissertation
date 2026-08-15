@@ -4,7 +4,8 @@
 > already completed and failed. The older generation/calibration commands below
 > are retained only as historical documentation and must not be run again. Pilot
 > A/B are terminated. The only authorized next model execution is the fixed
-> Recoverability v1 bridge described at the end of this document.
+> 24-call, text-only Recoverability Stage-2 v1 development probe described at
+> the end of this document. Bridge v2 remains unauthorized.
 
 ```text
 GPU: NVIDIA GeForce RTX 4090, 47.37 GiB VRAM, compute capability 8.9
@@ -148,15 +149,16 @@ review of the final GPU lock and vulnerability status;
 these supply-chain approvals are manual rather than cryptographically
 authenticated by the launcher.
 
-## Recoverability Stage-1 v2 development-probe handoff
+## Historical: completed Recoverability Stage-1 v2 development probe
 
 Bridge v1 is complete and must not be rerun. Its strict Stage 1 parsed zero of
 300 outputs, so Stage 2 was never called and the recoverability hypothesis was
-not tested. The next authorized server work is only a one-shot 24-scene
-development probe of a question-free, exact-four-slot Stage-1 prompt. The
-probe uses the frozen `dev` split, four scenes per chart-type by operation
-stratum. It makes exactly 24 image calls, no retries, no Legacy or Stage-2
-calls, and no training.
+not tested. The one-shot follow-up was a 24-scene development probe of a
+question-free, exact-four-slot Stage-1 prompt. It used the frozen `dev` split,
+four scenes per chart-type by operation stratum, and made exactly 24 image
+calls with no retries, Legacy or Stage-2 calls, or training. That probe is now
+complete; the following block is retained only as immutable run history and
+must not be executed again.
 
 The sequence first verifies the new probe package without loading the model.
 The probe command then revalidates the frozen v0.3 evidence, all five Bridge v1
@@ -211,3 +213,91 @@ marker and did not consume the one-shot probe. After pulling the corrected
 commit, first prove that both the probe output and attempt marker are absent,
 then use new versioned preflight and console filenames; never delete or
 overwrite the earlier files.
+
+The Stage-1 v2 probe subsequently completed successfully with `24/24` strict
+parses and `22/24` exact transcriptions. Its report, records, preflight, and
+console hashes are frozen in
+`configs/recoverability/stage1_v2_frozen_result.yaml`. Do not execute the
+historical commands above again.
+
+## Recoverability Stage-2 v1 development-probe handoff
+
+The only authorized next server action is a one-shot 24-scene, text-only
+Stage-2 interface probe. It reuses the frozen Stage-1 v2 raw outputs, performs
+no image calls, uses no retries, invokes no Legacy protocol, and does not test
+the recoverability hypothesis. Each model output must be one strict executable
+DSL object whose variables exactly equal the frozen Stage-1 evidence. Passing
+requires all 24 programs to parse, execute, agree with their reported answers,
+and equal the registered operation applied to the perceived values.
+
+The preflight is metadata-only. The probe replays the v0.3 calibration evidence,
+the complete deterministic dataset, and all 24 Stage-1 v2 records before model
+loading. It refuses path overrides, symlinks, an existing attempt marker, or an
+existing output directory. Run this block once and stop regardless of outcome:
+
+```bash
+cd /cloud/cloud-ssd1/dissertation
+git -c http.version=HTTP/1.1 pull --ff-only origin main
+source .venv/bin/activate
+
+export PYTHONPATH=/cloud/cloud-ssd1/dissertation/src
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
+
+mkdir -p /cloud/cloud-ssd1/recoverability-v1-evidence
+
+STAGE2_PREFLIGHT=/cloud/cloud-ssd1/recoverability-v1-evidence/stage2-v1-preflight.json
+STAGE2_CONSOLE=/cloud/cloud-ssd1/recoverability-v1-evidence/stage2-v1-console.log
+
+for candidate in \
+  "$STAGE2_PREFLIGHT" \
+  "$STAGE2_CONSOLE" \
+  outputs/recoverability_v1/stage2_v1_dev_probe.attempted.json \
+  outputs/recoverability_v1/stage2_v1_dev_probe
+do
+  test ! -e "$candidate" || {
+    echo "BLOCKED: Stage-2 v1 evidence already exists: $candidate"
+    exit 1
+  }
+done
+
+python experiments/recoverability_v1/00_stage2_v1_preflight.py \
+  --runtime configs/recoverability/server_runtime_v1.yaml \
+  --server-package-lock configs/recoverability/server_package_lock_stage2_v1.yaml \
+  --project-root /cloud/cloud-ssd1/dissertation \
+  --output "$STAGE2_PREFLIGHT"
+
+(
+  python experiments/recoverability_v1/05_stage2_v1_probe.py \
+    --paths configs/paths.yaml \
+    --runtime configs/recoverability/server_runtime_v1.yaml \
+    --probe-config configs/recoverability/stage2_v1_probe.yaml \
+    --stage1-result configs/recoverability/stage1_v2_frozen_result.yaml \
+    --server-package-lock configs/recoverability/server_package_lock_stage2_v1.yaml \
+    --preflight-report "$STAGE2_PREFLIGHT" \
+    --external-evidence /cloud/cloud-ssd1/recoverability-v1-evidence/v0_3_external_evidence.json \
+    --v03-records trajectories/natural/calibration_records_v0_3.jsonl \
+    --stage1-preflight /cloud/cloud-ssd1/recoverability-v1-evidence/stage1-v2-preflight-v2.json \
+    --stage1-console-log /cloud/cloud-ssd1/recoverability-v1-evidence/stage1-v2-console-v2.log \
+    --stage1-report outputs/recoverability_v1/stage1_v2_dev_probe/probe_report.json \
+    --stage1-records outputs/recoverability_v1/stage1_v2_dev_probe/probe_records.jsonl \
+    --execute
+  stage2_rc=$?
+  echo "stage2_probe_exit=$stage2_rc"
+  exit "$stage2_rc"
+) 2>&1 | tee "$STAGE2_CONSOLE"
+
+stage2_rc=${PIPESTATUS[0]}
+echo "stage2_probe_exit=$stage2_rc"
+
+sha256sum "$STAGE2_PREFLIGHT" "$STAGE2_CONSOLE"
+if [ -f outputs/recoverability_v1/stage2_v1_dev_probe/probe_report.json ]; then
+  sha256sum \
+    outputs/recoverability_v1/stage2_v1_dev_probe/probe_report.json \
+    outputs/recoverability_v1/stage2_v1_dev_probe/probe_records.jsonl
+fi
+```
+
+Return the full final JSON report, `stage2_probe_exit`, and the four SHA-256
+lines. Do not rerun the probe and do not run Bridge v2, Phase N, Phase C, Pilot
+A, Pilot B, or any training in the same session.
