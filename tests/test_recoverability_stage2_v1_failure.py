@@ -11,6 +11,7 @@ from compbias.recoverability.stage2_v1 import Stage2V1Scene, run_stage2_v1_probe
 from compbias.recoverability.stage2_v1_failure import (
     Stage2V1FailureRecord,
     load_stage2_v1_failure,
+    verify_stage2_v1_diagnostic_package_lock,
     verify_stage2_v1_failure_artifacts,
 )
 
@@ -59,7 +60,9 @@ def _program(scene: Stage2V1Scene, *, answer_offset: int = 0) -> str:
     )
 
 
-def _write_frozen_artifacts(tmp_path: Path) -> tuple[
+def _write_frozen_artifacts(
+    tmp_path: Path,
+) -> tuple[
     Stage2V1FailureRecord,
     tuple[Stage2V1Scene, ...],
     dict[str, Path],
@@ -272,3 +275,8 @@ def test_stage2_v1_diagnostic_cli_is_read_only_and_package_locked() -> None:
     assert "cuda" not in source.lower()
     assert "stage2_v1_failure.py" in lock_text
     assert "06_diagnose_stage2_v1_failure.py" in lock_text
+    verification = verify_stage2_v1_diagnostic_package_lock(
+        DIAGNOSTIC_LOCK,
+        repository_root=ROOT,
+    )
+    assert verification.verified is True

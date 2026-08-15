@@ -1,0 +1,90 @@
+schema_version: 1
+files:
+  - path: configs/data/cva_chart_pilot_v0_3.yaml
+    sha256: a1218187f58256576c1efa0137fac639d9209d355f499ec6d042cf3ffd74f219
+  - path: configs/paths.example.yaml
+    sha256: 9fd6adf1fb418c680024b1e939e47ee83bf12ca8ee60474ed2ddc94deb94bff2
+  - path: configs/recoverability/bridge_v1_failure.yaml
+    sha256: bc01afeef4e17da94df06a9ed8b647caaba37456a5f4f78c2038bd3a1bd77e8a
+  - path: configs/recoverability/power_plan_v1.json
+    sha256: e5703c0e4511b89aa5fd090209ae5860682fefe6eeaac2105df886476464bc01
+  - path: configs/recoverability/recoverability_v1.yaml
+    sha256: 6b7c8bf8df850cb026a6494c7c41530cc7a83d65add3ebaac0cbca857f0fb40c
+  - path: configs/recoverability/server_runtime_v1.yaml
+    sha256: 95da8662a89ddb6a6d4a70dfa46f61b5949f363b2270c8894ad278f52829bc17
+  - path: configs/recoverability/stage1_v2_frozen_result.yaml
+    sha256: 0ea0bb56237932b4e4a7d33160f7ae6353b7a94e1e3dd5e3930f68a5983d5026
+  - path: configs/recoverability/stage1_v2_probe.yaml
+    sha256: a391c2049886bd4bcbd4cd3e5d7a45547ce7323a4ca6bc28d426a332e7b2a352
+  - path: configs/recoverability/stage2_v1_failure.yaml
+    sha256: 4e73aaa34d75a6b5f7464024c56cf5247522915104e9d48ee720ab2ad93a7383
+  - path: configs/recoverability/stage2_v1_probe.yaml
+    sha256: 54e6b7bdc67ffe344785042def3f9533c7d9bc3e0eb0d16207c3a15f66ea1794
+  - path: configs/recoverability/v0_3_negative_pilot.yaml
+    sha256: 0d05faf901d5756577fdf10edc13cfa8925dd0cf0cb7160f6b7b1a54eb9b087e
+  - path: experiments/recoverability_v1/00_preflight.py
+    sha256: 5144a757cf8d84e4bc879c921e059281591376b3d5e781527c30ff3535c1c91a
+  - path: experiments/recoverability_v1/00_stage1_v2_preflight.py
+    sha256: 3b0804202a5f8de799aeb7ca1ad6493be15d8c8ce63a9ae08f560bd56dd5c995
+  - path: experiments/recoverability_v1/00_stage2_v1_preflight.py
+    sha256: 703c72c889162d3d25b44b25868949bf0bfcda0c35221d942da518edb3e3d2ff
+  - path: experiments/recoverability_v1/02_capture_v03_evidence.py
+    sha256: 50fe491b4a5029b8e4d41a1762064a904d216057862ab019b19039e811588527
+  - path: experiments/recoverability_v1/03_bridge.py
+    sha256: c67865488396c8d296324cc04f6e0dd83bf9c8830b5608dafa48e57c7dbc31ed
+  - path: experiments/recoverability_v1/04_stage1_v2_probe.py
+    sha256: 1491e7e7e0ea17b6ff44a02c2691971ec06e2980c389a2ffd1825195f0304172
+  - path: experiments/recoverability_v1/05_stage2_v1_probe.py
+    sha256: dd466c59e9f3439abc9dfe31fe80345f48b9071c23d8836e1c74db442fc506ac
+  - path: experiments/recoverability_v1/06_diagnose_stage2_v1_failure.py
+    sha256: 8f9b3f799b9020e8b7a038804b3af561529110917873ebf5f4436e285ebd7ead
+  - path: requirements-gpu.lock.txt
+    sha256: d928379a590e5071d9b5042fe99d480f57ab187f0cb3a74e13af219a6048aeb3
+  - path: src/compbias/gpu_pilot/chart_data.py
+    sha256: fbd02f9ff682856ebdd2b52a0b7003969946c360a3b02bd8c91837ab49ffbd8a
+  - path: src/compbias/gpu_pilot/collection.py
+    sha256: 83d4cfc7b26e7e057b2bf2f85b809e742855df6a18901354b4b0ccedae699842
+  - path: src/compbias/gpu_pilot/config.py
+    sha256: c48e779f19f3bed18e14916eccf0b052b9abe95d3ec302b25bb112e0324fc8dd
+  - path: src/compbias/gpu_pilot/execution_gate.py
+    sha256: b86feb0d6e6218c6c02882c067d0428c21c84130f16b2a431a05eb1132490aa9
+  - path: src/compbias/gpu_pilot/preflight.py
+    sha256: 17e673d03593c7de4985a61d5730f8b9c291a72f1737c37cff493a22ce538503
+  - path: src/compbias/gpu_pilot/qwen_smoke.py
+    sha256: c9add221c92c3c663c9bc8dee8e4f26209b7bd0b1cf21c706404ec92b04e3596
+  - path: src/compbias/gpu_pilot/safe_io.py
+    sha256: a270ba7f20f16a306272d42aa57707384c06f138b9e0ab0cb8a3a0d4acfd2f70
+  - path: src/compbias/gpu_pilot/structured_generation.py
+    sha256: 7a196122205ba32fcbefce17cb1815d4c425923fb3b3e23850cd881e4349e539
+  - path: src/compbias/gpu_pilot/taxonomy.py
+    sha256: 04fb703767e4b9446c7f1c7888c952b63aae5d76b51b87280c82f1152ecf5530
+  - path: src/compbias/io/strict_json.py
+    sha256: 03f9e8ace180f7d37b58d6e9fd71cb8a62e2c15e0158231bf6892c19c2b3eddd
+  - path: src/compbias/io/yaml_config.py
+    sha256: a410d5ad02c5b2acbd05960090b09a5c66ed8215615769536ef325f6dd748db0
+  - path: src/compbias/models/structured_parser.py
+    sha256: 68888de778708d31acb728c8c2a0c67df2a9c9de072db2d4e4e074ecfc3859a4
+  - path: src/compbias/recoverability/bridge.py
+    sha256: d1dbfd93e6695f8c0b9c200e0491bc1ded94b02bac3c6d30ff297b5c7c93398a
+  - path: src/compbias/recoverability/bridge_v1_failure.py
+    sha256: 300d472b2b61049aca476a56cdbf1423301e1e73edeb8712c2fca7cee30541d8
+  - path: src/compbias/recoverability/config.py
+    sha256: 9a61fae501e4c1514b1557cd1c79312e605c4fa4df21fe5b751af03fe4806518
+  - path: src/compbias/recoverability/dsl/executor.py
+    sha256: 0d2d4681222243108cf2646db23181488b33c4efa318dca222b5c6d768c65949
+  - path: src/compbias/recoverability/dsl/parser.py
+    sha256: d83693ac0668c36dd8783b806cd5d89d2a0f3c60dc93d9dd32307da6b9bdd378
+  - path: src/compbias/recoverability/dsl/schema.py
+    sha256: 36e0bcccbccda674caad3863a92fda1ba192b3ddf09ee84cb4871de5bd7faed4
+  - path: src/compbias/recoverability/evidence.py
+    sha256: e636bde583d36164a8a52bdb84d829f225c609aa5b800eb353db36b2479eeead
+  - path: src/compbias/recoverability/evidence_capture.py
+    sha256: 90174a46cf3185ecfaf29eb66f3b1209c703adb76252971d55a642997d3aca5c
+  - path: src/compbias/recoverability/preflight.py
+    sha256: 648ca5111c6a2554c5c81ad4203217621f316654d661041c857532c2719a3661
+  - path: src/compbias/recoverability/stage1_v2.py
+    sha256: 33ca19a0788c2d62ddfeebed1d977b46c7efb7bbfd758228fc1d49aae9036592
+  - path: src/compbias/recoverability/stage2_v1.py
+    sha256: ef45b81b9b982c6068d3e26308ab0071cf69e2d61ef344e3ff044ad5c79d7ebd
+  - path: src/compbias/recoverability/stage2_v1_failure.py
+    sha256: edf6c4246853567b9eb067dc4517ca189728dccdfcdc50b70df00c540dac9159
