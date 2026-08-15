@@ -38,6 +38,11 @@ def test_qualification_dataset_is_complete_balanced_and_replayable(tmp_path: Pat
 
     assert manifest["artifact_type"] == "recoverability_measurement_qualification_dataset"
     assert manifest["status"] == "FROZEN_DATASET_NOT_EVALUATED"
+    assert manifest["image_size"] == [512, 384]
+    assert manifest["render_mode"] == "axis_scale_v0_3"
+    assert manifest["source_stage2_v2_external_evidence_sha256"] == (
+        "3a9e521cfe718cc3dea9aee4f1591aac761fa47f893c986eb1ba722a44374577"
+    )
     assert manifest["record_count"] == 300
     assert manifest["split_counts"] == {"qualification": 300}
     assert manifest["strata_counts"] == {
@@ -102,6 +107,27 @@ def test_qualification_dataset_rejects_record_selection_or_schema_tampering(
     )
 
     with pytest.raises(ValueError, match="records SHA-256"):
+        verify_measurement_qualification_dataset(
+            output,
+            config=config,
+            reserved_numeric_tables=_reserved(),
+        )
+
+
+def test_qualification_dataset_rejects_provenance_tampering(tmp_path: Path) -> None:
+    config = load_measurement_qualification_config(CONFIG)
+    output = tmp_path / "measurement_qualification_v1"
+    write_measurement_qualification_dataset(
+        config,
+        reserved_numeric_tables=_reserved(),
+        output_dir=output,
+    )
+    manifest_path = output / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["source_stage2_v2_external_evidence_sha256"] = "0" * 64
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="registered contract"):
         verify_measurement_qualification_dataset(
             output,
             config=config,
