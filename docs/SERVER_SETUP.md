@@ -398,6 +398,10 @@ python experiments/recoverability_v1/00_stage2_v2_preflight.py \
   --project-root /cloud/cloud-ssd1/dissertation \
   --output "$STAGE2_V2_PREFLIGHT"
 
+stage2_v2_preflight_rc=$?
+echo "stage2_v2_preflight_exit=$stage2_v2_preflight_rc"
+test "$stage2_v2_preflight_rc" -eq 0 || exit "$stage2_v2_preflight_rc"
+
 set -o pipefail
 (
   python experiments/recoverability_v1/07_stage2_v2_probe.py \
