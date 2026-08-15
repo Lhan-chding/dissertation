@@ -2,20 +2,138 @@
 
 from __future__ import annotations
 
-import json
+import hashlib
 import re
 from collections import Counter
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
+from compbias.io.yaml_config import load_yaml_mapping, reject_unknown_fields
+
 from .bridge import Stage1Evidence, parse_stage1_evidence
+from .evidence import SERVER_PACKAGE_PATHS, ProtocolLockResult, verify_protocol_lock
 
 _CHART_TYPES = frozenset({"grouped_bar", "line"})
 _OPERATIONS = frozenset({"difference", "max_minus_min", "sum"})
 _IDENTIFIER = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}\Z")
 _PROBE_PER_STRATUM = 4
 _PROBE_SCENES = len(_CHART_TYPES) * len(_OPERATIONS) * _PROBE_PER_STRATUM
+STAGE1_V2_SERVER_PACKAGE_LOCK_PATH = "configs/recoverability/server_package_lock_stage1_v2.yaml"
+STAGE1_V2_SERVER_PACKAGE_PATHS = SERVER_PACKAGE_PATHS | frozenset(
+    {
+        "configs/paths.example.yaml",
+        "configs/recoverability/bridge_v1_failure.yaml",
+        "configs/recoverability/stage1_v2_probe.yaml",
+        "experiments/recoverability_v1/00_stage1_v2_preflight.py",
+        "experiments/recoverability_v1/04_stage1_v2_probe.py",
+        "src/compbias/recoverability/bridge_v1_failure.py",
+        "src/compbias/recoverability/stage1_v2.py",
+    }
+)
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def validate_stage1_v2_runtime_paths(
+    runtime_path: Path,
+    *,
+    registered_example: Path,
+) -> None:
+    """Require the server-local paths file to match the locked template exactly."""
+
+    for candidate, label in (
+        (runtime_path, "runtime paths"),
+        (registered_example, "registered paths example"),
+    ):
+        if candidate.is_symlink() or not candidate.is_file():
+            raise ValueError(f"{label} must be a regular file")
+    if _sha256(runtime_path) != _sha256(registered_example):
+        raise ValueError("runtime paths must byte-match the locked registered example")
+
+
+def verify_stage1_v2_server_package_lock(
+    path: Path,
+    *,
+    repository_root: Path,
+) -> ProtocolLockResult:
+    """Verify the one registered v2 probe closure without changing the v1 verifier."""
+
+    root = repository_root.resolve()
+    expected_path = root / STAGE1_V2_SERVER_PACKAGE_LOCK_PATH
+    if path.resolve() != expected_path or path.is_symlink():
+        raise ValueError("Stage-1 v2 server package lock path is not canonical")
+    result = verify_protocol_lock(path, repository_root=root)
+    observed = frozenset(item.relative_path for item in result.files)
+    if observed != STAGE1_V2_SERVER_PACKAGE_PATHS:
+        missing = sorted(STAGE1_V2_SERVER_PACKAGE_PATHS - observed)
+        extra = sorted(observed - STAGE1_V2_SERVER_PACKAGE_PATHS)
+        raise ValueError(
+            f"Stage-1 v2 server package lock closure mismatch; missing={missing}, extra={extra}"
+        )
+    return result
+
+
+@dataclass(frozen=True, slots=True)
+class Stage1V2ProbeConfig:
+    schema_version: int
+    status: str
+    dataset_id: str
+    output_subdirectory: str
+    source_dataset_id: str
+    source_split: str
+    scenes: int
+    per_stratum: int
+    format_retries: int
+    required_parse_rate: float
+    allow_rerun: bool
+    hypothesis_test: bool
+
+
+def load_stage1_v2_probe_config(path: Path) -> Stage1V2ProbeConfig:
+    """Load the closed development-only one-shot probe contract."""
+
+    mapping = load_yaml_mapping(path, label="Stage-1 v2 probe config")
+    fields = {
+        "schema_version",
+        "status",
+        "dataset_id",
+        "output_subdirectory",
+        "source_dataset_id",
+        "source_split",
+        "scenes",
+        "per_stratum",
+        "format_retries",
+        "required_parse_rate",
+        "allow_rerun",
+        "hypothesis_test",
+    }
+    reject_unknown_fields(mapping, fields, label="Stage-1 v2 probe config")
+    if set(mapping) != fields:
+        raise ValueError("Stage-1 v2 probe config must contain every registered field")
+    expected: dict[str, object] = {
+        "schema_version": 1,
+        "status": "DEVELOPMENT_PROBE_NOT_RUN",
+        "dataset_id": "CVA-Recoverability-Stage1-V2-Dev-Probe",
+        "output_subdirectory": "stage1_v2_dev_probe",
+        "source_dataset_id": "CVA-Chart-Pilot-v0.3",
+        "source_split": "dev",
+        "scenes": _PROBE_SCENES,
+        "per_stratum": _PROBE_PER_STRATUM,
+        "format_retries": 0,
+        "required_parse_rate": 1.0,
+        "allow_rerun": False,
+        "hypothesis_test": False,
+    }
+    if dict(mapping) != expected:
+        raise ValueError("Stage-1 v2 probe config differs from the registered contract")
+    return Stage1V2ProbeConfig(**expected)  # type: ignore[arg-type]
 
 
 @dataclass(frozen=True, slots=True)
@@ -79,8 +197,7 @@ def build_stage1_v2_messages() -> tuple[dict[str, object], ...]:
         "Markdown fences, prose, reasoning, extra keys, or trailing text."
     )
     user = (
-        "Transcribe all four plotted values at positions A, B, C, and D. "
-        "Do not compute anything."
+        "Transcribe all four plotted values at positions A, B, C, and D. Do not compute anything."
     )
     return (
         {"role": "system", "content": system},

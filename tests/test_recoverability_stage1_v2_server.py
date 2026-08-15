@@ -222,6 +222,7 @@ def test_stage1_v2_probe_cli_is_explicit_one_shot_and_development_only() -> None
 
     for argument in (
         "--execute",
+        "--runtime",
         "--probe-config",
         "--server-package-lock",
         "--preflight-report",
@@ -243,6 +244,9 @@ def test_stage1_v2_probe_cli_is_explicit_one_shot_and_development_only() -> None
     )
     assert blocked.returncode == 2
     assert "BLOCKED" in blocked.stdout
+
+    source = script.read_text(encoding="utf-8")
+    assert source.index("run_metadata_preflight(") < source.index("load_local_qwen(")
 
 
 def test_stage1_v2_server_lock_binds_the_complete_new_execution_surface() -> None:
@@ -273,6 +277,18 @@ def test_stage1_v2_runtime_paths_must_byte_match_the_locked_example(tmp_path: Pa
     runtime.write_text("schema_version: 1\nproject_root: /changed\n", encoding="utf-8")
     with pytest.raises(ValueError, match="byte-match"):
         validate_stage1_v2_runtime_paths(runtime, registered_example=registered)
+
+    runtime.unlink()
+    with pytest.raises(ValueError, match="regular file"):
+        validate_stage1_v2_runtime_paths(runtime, registered_example=registered)
+
+
+def test_bridge_v1_replay_rejects_empty_record_file(tmp_path: Path) -> None:
+    records = tmp_path / "bridge_records.jsonl"
+    records.write_text("\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="non-empty"):
+        replay_bridge_v1_records(records)
 
 
 def test_stage1_v2_preflight_is_metadata_only_and_uses_the_new_lock() -> None:

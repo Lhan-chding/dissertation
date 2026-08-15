@@ -1,0 +1,24 @@
+schema_version: 1
+status: FINAL_FAILED_STAGE1_INTERFACE
+dataset_id: CVA-Recoverability-Bridge-v1
+model_snapshot_sha256: e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87
+bridge_exit: 3
+scenes: 300
+model_calls: 600
+legacy_parse_rate: 0.9633333333333334
+legacy_answer_accuracy: 0.39666666666666667
+legacy_perception_error_rate: 0.24
+stage1_parse_rate: 0.0
+stage2_invocations: 0
+hypothesis_tested: false
+training_invoked: false
+parse_error_counts:
+  not_exact_json_object: 100
+  schema_invalid: 8
+  target_facts_not_four_integers: 192
+source_sha256:
+  attempt_marker: d8a556c3bd494377a92d80e52fb4bf5b0a36d70897a17a6bc0e63f2424241269
+  bridge_console: e5b5e2110e7b5886ab420d8fb8039d8ab6d3b9ad771d1afbc8bd72481999c8b5
+  bridge_records: 3d57967b5699a623641f01112073a49075cdcf1dd4ef82064306c49913ace27d
+  bridge_report: db811a0b450a40454fef0d1c1270ecce18ee0ec391cd798f2b71c7519b58aa14
+  stage1_diagnostic: e305a2b66166b496341ee8379521e361a7cdbfa0ec996d45192c330fd18c5453

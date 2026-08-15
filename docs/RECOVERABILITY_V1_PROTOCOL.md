@@ -49,6 +49,25 @@ intervals for accuracy and perception differences lie strictly inside
 `+/-0.03`. A failure means subsequent results must be reported separately by
 protocol; it does not by itself establish or refute causal recoverability.
 
+Bridge v1 has now completed once and is frozen as
+`FINAL_FAILED_STAGE1_INTERFACE`. The legacy interface remained operational
+(`parse_rate=0.9633333333333334`, `answer_accuracy=0.39666666666666667`),
+whereas strict Stage 1 parsed `0/300` outputs and therefore invoked Stage 2
+zero times. Strict replay attributes the 300 failures to 192 partial
+`target_facts` arrays, 100 Markdown-wrapped objects, and eight schema-key
+drifts. Consequently the bridge did not test the recoverability hypothesis;
+the zero two-stage accuracy is a mechanical consequence of the Stage-1
+measurement failure. The source hashes and this interpretation are frozen in
+`configs/recoverability/bridge_v1_failure.yaml`. Bridge v1 must not be rerun.
+
+The next step is a separate development-only Stage-1 v2 probe on 24 frozen
+`dev` scenes (four per chart-type by operation stratum). Its prompt receives no
+downstream question and binds a literal four-slot JSON grammar. It makes one
+image call per scene, uses no retries, and neither invokes Stage 2 nor tests a
+scientific hypothesis. Passing requires strict parsing on all 24 scenes. The
+probe may guide a future preregistered Bridge v2 on an untouched split, but its
+development results cannot be reported as confirmatory evidence.
+
 ### Phase N: natural prevalence
 
 Phase N is frozen at 4,000 semantic scenes with exactly one natural Stage-1
@@ -115,14 +134,11 @@ or confirmatory RL after inspecting a failed result.
 
 ## Current execution boundary
 
-All contracts required before the measurement bridge are implemented locally.
-The tracked 50-scene fixture is model-free, requires valid cues to recover all
-50 scenes, and verifies that every matched sham remains nonrecoverable. No new
-VLM inference or training result is included in the repository. Phase C remains
-unauthorized until the bridge is reviewed and its final raw-data-to-gate
-analysis package receives a separate local review.
-
-The next execution step is the reviewed offline-server sequence in
-`docs/SERVER_SETUP.md`: metadata preflight, capture of the already-completed
-v0.3 bytes, then the fixed 300-scene bridge. Stop after the bridge and review
-its report before authorizing Phase N or Phase C.
+The one-shot Bridge v1 has failed at its Stage-1 measurement interface and is
+fully frozen; it is not evidence for or against recoverability. Phase N, Phase
+C, Pilot A, Pilot B, and all RL training remain unauthorized. The only next
+execution step is the reviewed offline-server Stage-1 v2 development probe in
+`docs/SERVER_SETUP.md`. Stop after its 24 image calls regardless of exit code.
+Do not construct or run a confirmatory Bridge v2 until that development result
+has received a separate local review and an untouched evaluation split has
+been frozen.

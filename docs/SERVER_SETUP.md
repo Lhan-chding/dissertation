@@ -148,13 +148,20 @@ review of the final GPU lock and vulnerability status;
 these supply-chain approvals are manual rather than cryptographically
 authenticated by the launcher.
 
-## Recoverability v1 server handoff
+## Recoverability Stage-1 v2 development-probe handoff
 
-The following sequence is the next authorized server work. It first verifies
-the exact offline runtime without importing PyTorch or loading the model. It
-then captures hashes of the existing v0.3 evidence without making any model
-call. Only the final bridge command starts GPU inference; it performs no
-training and refuses to overwrite an existing bridge output.
+Bridge v1 is complete and must not be rerun. Its strict Stage 1 parsed zero of
+300 outputs, so Stage 2 was never called and the recoverability hypothesis was
+not tested. The next authorized server work is only a one-shot 24-scene
+development probe of a question-free, exact-four-slot Stage-1 prompt. The
+probe uses the frozen `dev` split, four scenes per chart-type by operation
+stratum. It makes exactly 24 image calls, no retries, no Legacy or Stage-2
+calls, and no training.
+
+The sequence first verifies the new probe package without loading the model.
+The probe command then revalidates the frozen v0.3 evidence, all five Bridge v1
+failure artifacts, the dataset bundle, and the model snapshot before inference.
+Both commands refuse to overwrite existing outputs.
 
 ```bash
 cd /cloud/cloud-ssd1/dissertation
@@ -167,34 +174,32 @@ export TRANSFORMERS_OFFLINE=1
 
 mkdir -p /cloud/cloud-ssd1/recoverability-v1-evidence
 
-# Retain the earlier metadata-only preflight.json.  This v2 report binds the
-# post-capture-fix server package lock without overwriting prior evidence.
-python experiments/recoverability_v1/00_preflight.py \
+# Retain all earlier preflight and bridge evidence. This is a new probe-only
+# preflight and must have a new output path.
+python experiments/recoverability_v1/00_stage1_v2_preflight.py \
   --runtime configs/recoverability/server_runtime_v1.yaml \
-  --server-package-lock configs/recoverability/server_package_lock_v1.yaml \
+  --server-package-lock configs/recoverability/server_package_lock_stage1_v2.yaml \
   --project-root /cloud/cloud-ssd1/dissertation \
-  --output /cloud/cloud-ssd1/recoverability-v1-evidence/preflight-v2.json
+  --output /cloud/cloud-ssd1/recoverability-v1-evidence/stage1-v2-preflight.json
 
-python experiments/recoverability_v1/02_capture_v03_evidence.py \
-  --negative-pilot configs/recoverability/v0_3_negative_pilot.yaml \
-  --records trajectories/natural/calibration_records_v0_3.jsonl \
-  --summary trajectories/natural/calibration_records_v0_3.summary.json \
-  --pilot-data-log /cloud/cloud-ssd1/pilot-data-v0.3.log \
-  --calibration-log /cloud/cloud-ssd1/base-calibration-v0.3.log \
-  --output /cloud/cloud-ssd1/recoverability-v1-evidence/v0_3_external_evidence.json
-
-python experiments/recoverability_v1/03_bridge.py \
+python experiments/recoverability_v1/04_stage1_v2_probe.py \
   --paths configs/paths.yaml \
-  --protocol configs/recoverability/recoverability_v1.yaml \
-  --server-package-lock configs/recoverability/server_package_lock_v1.yaml \
-  --preflight-report /cloud/cloud-ssd1/recoverability-v1-evidence/preflight-v2.json \
+  --runtime configs/recoverability/server_runtime_v1.yaml \
+  --probe-config configs/recoverability/stage1_v2_probe.yaml \
+  --server-package-lock configs/recoverability/server_package_lock_stage1_v2.yaml \
+  --preflight-report /cloud/cloud-ssd1/recoverability-v1-evidence/stage1-v2-preflight.json \
   --external-evidence /cloud/cloud-ssd1/recoverability-v1-evidence/v0_3_external_evidence.json \
   --v03-records trajectories/natural/calibration_records_v0_3.jsonl \
+  --bridge-v1-records outputs/recoverability_v1/cva_recoverability_bridge_v1/bridge_records.jsonl \
+  --bridge-v1-report outputs/recoverability_v1/cva_recoverability_bridge_v1/bridge_report.json \
+  --bridge-v1-diagnostic /cloud/cloud-ssd1/recoverability-v1-evidence/bridge-stage1-diagnostic.json \
+  --bridge-v1-attempt-marker outputs/recoverability_v1/cva_recoverability_bridge_v1.attempted.json \
+  --bridge-v1-console-log /cloud/cloud-ssd1/recoverability-v1-evidence/bridge-console.log \
   --execute
 ```
 
-Stop after the bridge even if it exits zero. Return
-`outputs/recoverability_v1/cva_recoverability_bridge_v1/bridge_report.json`,
-the SHA-256 of `bridge_records.jsonl`, and the external-evidence manifest for
-review. Do not start Phase N, Phase C, Pilot A, Pilot B, or any RL training in
-the same session.
+Stop after the probe even if it exits zero. Return
+`outputs/recoverability_v1/stage1_v2_dev_probe/probe_report.json`, the SHA-256
+of `probe_records.jsonl`, and the console output for review. Do not rerun the
+probe, run a full Bridge v2, or start Phase N, Phase C, Pilot A, Pilot B, or any
+RL training in the same session.

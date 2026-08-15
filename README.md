@@ -39,8 +39,12 @@ and only one strict compensated visual error. Pilot A/B were terminated without
 training, and v0.3 must not be rerun as a confirmatory attempt. The frozen
 negative record is in `configs/recoverability/v0_3_negative_pilot.yaml`.
 
-The revised next target is the recoverability-gated measurement bridge in
-`docs/RECOVERABILITY_V1_PROTOCOL.md`. The model must still be read from:
+The subsequent one-shot recoverability measurement Bridge v1 also completed.
+Its legacy path remained operational, but strict Stage 1 parsed `0/300`, so
+Stage 2 was never called. This is frozen as an interface failure rather than a
+test of the recoverability hypothesis; Bridge v1 must not be rerun. The next
+target in `docs/RECOVERABILITY_V1_PROTOCOL.md` is only a 24-scene,
+development-only Stage-1 v2 prompt probe. The model must still be read from:
 
 ```text
 /model/ModelScope/Qwen/Qwen2.5-VL-3B-Instruct
@@ -52,11 +56,10 @@ and all generated state must remain under:
 /cloud/cloud-ssd1/dissertation
 ```
 
-The new protocol status is `PREREGISTERED_NOT_RUN`; its local fixture, power,
-preflight, evidence-capture, and bridge contracts are implemented, but no new
-Qwen result is recorded. The first GPU step is a fixed 300-scene measurement
-bridge, not RL training. Server execution requires an explicit `--execute`;
-metadata preflight and evidence capture cannot load the model.
+The Phase N/C protocol remains unrun and unauthorized. The next GPU step makes
+exactly 24 question-free Stage-1 image calls on the frozen `dev` split, with no
+retries, Stage 2, hypothesis test, or training. Server execution requires an
+explicit `--execute`; its separate metadata preflight cannot load the model.
 
 Current explicit non-claims are:
 

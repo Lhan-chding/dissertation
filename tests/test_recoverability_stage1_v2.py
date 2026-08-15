@@ -79,14 +79,23 @@ def test_stage1_v2_probe_config_is_development_only_and_one_shot() -> None:
     assert config.hypothesis_test is False
 
 
+def test_stage1_v2_probe_config_rejects_contract_drift(tmp_path: Path) -> None:
+    tampered = tmp_path / "stage1_v2_probe.yaml"
+    tampered.write_text(
+        PROBE_CONFIG.read_text(encoding="utf-8").replace("scenes: 24", "scenes: 25"),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="registered contract"):
+        load_stage1_v2_probe_config(tampered)
+
+
 def test_stage1_v2_probe_selection_is_fixed_balanced_and_order_independent(
     tmp_path: Path,
 ) -> None:
     rows = _source_rows()
     selected = select_stage1_v2_probe_scenes(rows, dataset_root=tmp_path)
-    reversed_selected = select_stage1_v2_probe_scenes(
-        tuple(reversed(rows)), dataset_root=tmp_path
-    )
+    reversed_selected = select_stage1_v2_probe_scenes(tuple(reversed(rows)), dataset_root=tmp_path)
 
     assert len(selected) == 24
     assert tuple(scene.scene_id for scene in selected) == tuple(
@@ -101,9 +110,7 @@ def test_stage1_v2_probe_selection_is_fixed_balanced_and_order_independent(
     assert set(counts.values()) == {4}
 
     with pytest.raises(ValueError, match="underfilled"):
-        select_stage1_v2_probe_scenes(
-            _source_rows(per_stratum=3), dataset_root=tmp_path
-        )
+        select_stage1_v2_probe_scenes(_source_rows(per_stratum=3), dataset_root=tmp_path)
 
 
 def test_stage1_v2_probe_makes_one_call_per_scene_and_never_retries() -> None:
@@ -126,10 +133,7 @@ def test_stage1_v2_probe_makes_one_call_per_scene_and_never_retries() -> None:
         nonlocal calls
         calls += 1
         assert messages == build_stage1_v2_messages()
-        return (
-            '{"target_facts":[3,7,5,2],"redundant_facts":[],'
-            '"axis_facts":["integer_ticks"]}'
-        )
+        return '{"target_facts":[3,7,5,2],"redundant_facts":[],"axis_facts":["integer_ticks"]}'
 
     report, records = run_stage1_v2_probe(scenes, generate=generate)
 
@@ -164,10 +168,9 @@ def test_stage1_v2_probe_keeps_fences_and_partial_arrays_as_failures() -> None:
     )
     outputs = iter(
         (
-            "```json\n{\"target_facts\":[3,7,5,2],\"redundant_facts\":[],"
-            '\"axis_facts\":[\"integer_ticks\"]}\n```',
-            '{"target_facts":[3,7],"redundant_facts":[],'
-            '"axis_facts":["integer_ticks"]}',
+            '```json\n{"target_facts":[3,7,5,2],"redundant_facts":[],'
+            '"axis_facts":["integer_ticks"]}\n```',
+            '{"target_facts":[3,7],"redundant_facts":[],"axis_facts":["integer_ticks"]}',
         )
     )
 
@@ -203,3 +206,23 @@ def test_stage1_v2_scene_rejects_invalid_or_mutable_inputs() -> None:
             operation="sum",
             values=(3, 7, 5, 2),
         )
+
+
+def test_stage1_v2_probe_rejects_invalid_collection_inputs() -> None:
+    scene = Stage1V2Scene(
+        scene_id="dev-000",
+        image_path=Path("/dataset/images/dev-000.png"),
+        chart_type="line",
+        operation="sum",
+        values=(3, 7, 5, 2),
+    )
+
+    with pytest.raises(ValueError, match="non-empty tuple"):
+        run_stage1_v2_probe((), generate=lambda _scene, _messages: "{}")
+    with pytest.raises(ValueError, match="unique"):
+        run_stage1_v2_probe(
+            (scene, scene),
+            generate=lambda _scene, _messages: "{}",
+        )
+    with pytest.raises(TypeError, match="callable"):
+        run_stage1_v2_probe((scene,), generate=None)  # type: ignore[arg-type]
