@@ -273,6 +273,9 @@ def test_stage2_v1_diagnostic_cli_is_read_only_and_package_locked() -> None:
     assert "decode_text_qwen_once" not in source
     assert "torch" not in source
     assert "cuda" not in source.lower()
+    assert "_BOOTSTRAP_DIAGNOSTIC_PATHS" in source
+    assert "frozenset(paths) != _BOOTSTRAP_DIAGNOSTIC_PATHS" in source
+    assert ".issubset(paths)" not in source
     assert "stage2_v1_failure.py" in lock_text
     assert "06_diagnose_stage2_v1_failure.py" in lock_text
     verification = verify_stage2_v1_diagnostic_package_lock(
