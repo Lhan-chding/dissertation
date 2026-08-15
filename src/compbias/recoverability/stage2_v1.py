@@ -176,6 +176,26 @@ def load_stage1_v2_frozen_result(path: Path) -> Stage1V2FrozenResult:
     reject_unknown_fields(mapping, fields, label="frozen Stage-1 v2 result")
     if set(mapping) != fields:
         raise ValueError("frozen Stage-1 v2 result is incomplete")
+    exact_types = {
+        "schema_version": int,
+        "status": str,
+        "dataset_id": str,
+        "source_dataset_id": str,
+        "source_split": str,
+        "model_snapshot_sha256": str,
+        "scenes": int,
+        "model_calls": int,
+        "parse_rate": float,
+        "exact_transcriptions": int,
+        "exact_transcription_rate": float,
+        "mismatch_scene_ids": list,
+        "probe_passed": bool,
+        "hypothesis_tested": bool,
+        "confirmatory_execution_authorized": bool,
+        "training_invoked": bool,
+    }
+    if any(type(mapping[key]) is not expected_type for key, expected_type in exact_types.items()):
+        raise TypeError("frozen Stage-1 v2 result field type differs from the registered evidence")
     fixed = {
         "schema_version": 1,
         "status": "FINAL_PASSED_DEVELOPMENT_PROBE",
