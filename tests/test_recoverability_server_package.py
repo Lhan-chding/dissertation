@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import importlib.util
+import os
 import subprocess
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -18,6 +21,15 @@ from compbias.recoverability.preflight import (
 ROOT = Path(__file__).resolve().parents[1]
 RUNTIME = ROOT / "configs" / "recoverability" / "server_runtime_v1.yaml"
 SERVER_LOCK = ROOT / "configs" / "recoverability" / "server_package_lock_v1.yaml"
+
+
+def _load_preflight_runner():
+    path = ROOT / "experiments" / "recoverability_v1" / "00_preflight.py"
+    spec = importlib.util.spec_from_file_location("recoverability_v1_preflight_runner", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def _versions() -> dict[str, str]:
@@ -76,6 +88,45 @@ def test_metadata_preflight_passes_without_importing_or_loading_the_model() -> N
     assert report.training_authorized is False
     assert report.pip_check_passed is True
     assert tuple(lookups) == tuple(_versions())
+
+
+def test_preflight_inventory_ignores_pythonpath_source_metadata(monkeypatch) -> None:
+    runner = _load_preflight_runner()
+    source_path = str(ROOT / "src")
+    monkeypatch.setenv("PYTHONPATH", source_path)
+    observed_environment = None
+
+    def fake_run(*args, **kwargs):
+        nonlocal observed_environment
+        observed_environment = kwargs.get("env")
+        return SimpleNamespace(stdout='[{"name":"alpha","version":"1.0"}]')
+
+    monkeypatch.setattr(runner.subprocess, "run", fake_run)
+
+    assert runner._pip_inventory() == {"alpha": "1.0"}
+    assert observed_environment is not None
+    assert "PYTHONPATH" not in observed_environment
+    assert os.environ["PYTHONPATH"] == source_path
+
+
+def test_inventory_failure_reports_exact_difference() -> None:
+    inventory = _inventory()
+    inventory["compbias"] = "0.1.0"
+
+    with pytest.raises(RuntimeError) as captured:
+        run_metadata_preflight(
+            load_runtime_spec(RUNTIME),
+            repository_root=ROOT,
+            version_lookup=_versions().__getitem__,
+            inventory_lookup=lambda: inventory,
+            pip_check=lambda: (0, "No broken requirements found."),
+            environ={"HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1"},
+        )
+
+    message = str(captured.value)
+    assert "missing={}" in message
+    assert "extra={'compbias': '0.1.0'}" in message
+    assert "version_mismatch={}" in message
 
 
 @pytest.mark.parametrize(
