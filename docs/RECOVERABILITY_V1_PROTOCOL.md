@@ -199,22 +199,29 @@ recoverability. Its zero-model-call evidence capture is also complete and must
 not be rerun. Phase N, Phase C, Pilot A, Pilot B, Bridge v2, confirmatory
 execution, and all RL training remain unauthorized.
 
-The next authorized server action is narrower: generate, without loading a
-model, the frozen measurement-qualification dataset. It contains 300 new
-semantic scenes, exactly 50 per chart-type by operation stratum. Its numeric
-tables are deterministically disjoint from every v0.3 table, and its fixed seed
-is `20260817`. This action writes only images, records, a manifest, and an
-exclusive attempt marker. The server must stop immediately after generation so
-that the returned record/image hashes can be anchored before any qualification
-model call.
+The model-free measurement-qualification dataset generation is complete and
+must not be rerun. It contains 300 new semantic scenes, exactly 50 per
+chart-type by operation stratum, and has no numeric-table overlap with v0.3.
+The fixed seed is `20260817`; records SHA-256 is
+`98c1ab1228480b58dc4309f7c64280c347e87ac44547d79e36ab6ceb52adff6d`,
+and the image-bundle SHA-256 is
+`e01ea67f4b5ace4cec3201018ceed9cb68a5699470711e4d233ce64b5263d760`.
+The attempt marker, manifest, records, image bundle, console log, generation
+commit, and generation package lock are bound in
+`configs/recoverability/measurement_qualification_data_anchor.yaml` and are
+replayed before model loading.
 
-The later measurement qualification is an interface gate, not Bridge v2 and
-not a hypothesis test. It will make at most 600 zero-retry calls: Stage-1 v2
+The next and only authorized server action is the one-shot measurement
+qualification. It is an interface gate, not Bridge v2 and not a hypothesis
+test. It makes at most 600 zero-retry calls: Stage-1 v2
 followed by Stage-2 v2 only when Stage 1 parses. One-sided 95%
 Clopper-Pearson lower bounds must each be at least `0.98` for Stage-1 parse,
 Stage-2 parse, Stage-2 execution, and executor-answer correctness. Exact visual
 transcription is reported but deliberately not gated, because natural
 perception errors are scientific outcomes rather than interface failures.
+Whether the gate passes or fails, the output is final and must be frozen before
+any further action. Phase N, Phase C, Bridge v2, Pilot A/B, confirmatory
+execution, RL, and all training remain unauthorized.
 
 The controlled CVA dataset remains the primary mechanistic dataset because it
 supports registered redundancy constraints, cue ablations, legal coherent

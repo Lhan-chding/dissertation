@@ -489,13 +489,14 @@ It is anchored in
 `configs/recoverability/stage2_v2_external_evidence_anchor.yaml` and must not be
 rerun.
 
-## Next authorized action: model-free measurement-qualification data
+## Historical: completed model-free measurement-qualification data
 
-This is the only authorized next server action. It does not load Qwen, import
+This completed action did not load Qwen, import
 Torch, make a model call, test a hypothesis, or authorize training. It verifies
 the exact closed package and the frozen Stage-2 v2 external evidence, then
 generates 300 new scenes with no numeric-table overlap with v0.3. It creates an
-exclusive attempt marker before generation and refuses any rerun.
+exclusive attempt marker before generation and refuses any rerun. The block
+below is immutable run history and must not be executed again.
 
 Pull the reviewed revision and run this block exactly once:
 
@@ -544,11 +545,98 @@ sha256sum \
   "$QUAL_LOG"
 ```
 
-The registered package-lock SHA-256 is
+The historical generation package-lock SHA-256 is
 `25808fffdf62981163550084c36c4b37428fada7c85bc8b3a5e286b4bc75ec4c`.
-After the command succeeds, stop. Return the complete printed manifest, the
-four SHA-256 lines, `qualification_data_exit=0`, and the short Git revision.
-Do not run measurement qualification, Bridge v2, Phase N, Phase C, Pilot A,
-Pilot B, another development probe, or any training. The generated manifest
-must first be frozen in a new local anchor and a separate model-call package
-must pass review.
+The run completed at revision `93bd5f5` with `qualification_data_exit=0`.
+Its 300 records, six balanced strata, manifest, images, attempt marker, and
+console log are frozen in
+`configs/recoverability/measurement_qualification_data_anchor.yaml`.
+
+## Next authorized action: one-shot measurement qualification
+
+This is the only authorized next server action. It is an interface
+qualification, not Bridge v2 or a scientific hypothesis test. The metadata
+preflight is model-free. The subsequent execution makes one Stage-1 v2 call
+per frozen scene and one Stage-2 v2 call only after a strict Stage-1 parse, for
+at most 600 calls total and zero retries. An exclusive attempt marker is
+created before Qwen is loaded. Exit `0` means the registered interface gate
+passed; exit `3` means it failed. Both are final evidence and neither
+authorizes Phase N, Phase C, RL, or training.
+
+Pull the reviewed revision and run this block exactly once:
+
+```bash
+cd /cloud/cloud-ssd1/dissertation
+git -c http.version=HTTP/1.1 pull --ff-only origin main
+git rev-parse --short HEAD
+source .venv/bin/activate
+
+export PYTHONPATH=/cloud/cloud-ssd1/dissertation/src
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
+
+QUAL_PREFLIGHT=/cloud/cloud-ssd1/recoverability-v1-evidence/measurement-qualification-preflight.json
+QUAL_OUTPUT=/cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/measurement_qualification_v1
+QUAL_RUN_ATTEMPT=/cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/measurement_qualification_v1.attempted.json
+QUAL_RUN_LOG=/cloud/cloud-ssd1/recoverability-v1-evidence/measurement-qualification-console.log
+
+for candidate in "$QUAL_PREFLIGHT" "$QUAL_OUTPUT" "$QUAL_RUN_ATTEMPT" "$QUAL_RUN_LOG"
+do
+  test ! -e "$candidate" || {
+    echo "BLOCKED: measurement qualification evidence already exists: $candidate"
+    exit 1
+  }
+done
+
+python experiments/recoverability_v1/10_measurement_qualification_preflight.py \
+  --runtime configs/recoverability/server_runtime_v1.yaml \
+  --server-package-lock configs/recoverability/server_package_lock_measurement_qualification.yaml \
+  --project-root /cloud/cloud-ssd1/dissertation \
+  --output "$QUAL_PREFLIGHT"
+
+qualification_preflight_rc=$?
+echo "qualification_preflight_exit=$qualification_preflight_rc"
+test "$qualification_preflight_rc" -eq 0 || exit "$qualification_preflight_rc"
+
+set -o pipefail
+(
+  python experiments/recoverability_v1/11_run_measurement_qualification.py \
+    --paths configs/paths.yaml \
+    --runtime configs/recoverability/server_runtime_v1.yaml \
+    --config configs/recoverability/measurement_qualification_v1.yaml \
+    --data-anchor configs/recoverability/measurement_qualification_data_anchor.yaml \
+    --server-package-lock configs/recoverability/server_package_lock_measurement_qualification.yaml \
+    --preflight-report "$QUAL_PREFLIGHT" \
+    --dataset-root /cloud/cloud-ssd1/dissertation/data/generated/measurement_qualification_v1 \
+    --dataset-attempt-marker /cloud/cloud-ssd1/dissertation/data/generated/measurement_qualification_v1.attempted.json \
+    --dataset-console-log /cloud/cloud-ssd1/recoverability-v1-evidence/measurement-qualification-data.log \
+    --source-records /cloud/cloud-ssd1/dissertation/data/generated/cva_chart_pilot_v0_3/records.jsonl \
+    --stage2-v2-external-evidence /cloud/cloud-ssd1/recoverability-v1-evidence/stage2-v2-external-evidence.json \
+    --execute
+  qualification_rc=$?
+  echo "measurement_qualification_exit=$qualification_rc"
+  exit "$qualification_rc"
+) 2>&1 | tee "$QUAL_RUN_LOG"
+qualification_rc=$?
+
+echo "measurement_qualification_exit=$qualification_rc"
+case "$qualification_rc" in
+  0|3) ;;
+  *) echo "BLOCKED: unexpected qualification failure"; exit "$qualification_rc" ;;
+esac
+
+sha256sum \
+  "$QUAL_PREFLIGHT" \
+  "$QUAL_RUN_ATTEMPT" \
+  "$QUAL_OUTPUT/qualification_report.json" \
+  "$QUAL_OUTPUT/qualification_records.jsonl" \
+  "$QUAL_RUN_LOG"
+```
+
+After exit `0` or `3`, stop. Return the complete printed qualification report,
+the five SHA-256 lines, both exit-code lines, and the short Git revision. Do
+not run Bridge v2, Phase N, Phase C, Pilot A/B, another qualification attempt,
+RL, or any training.
+
+The registered measurement-qualification execution package-lock SHA-256 is
+`a4179f3e4c6f90f6730ad15d3f38a4309564b1099459cfd1d3918cc7f36de691`.

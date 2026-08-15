@@ -62,12 +62,19 @@ and all generated state must remain under:
 /cloud/cloud-ssd1/dissertation
 ```
 
-The Phase N/C protocol remains unrun and unauthorized. There is no authorized
-next GPU or server step. The zero-model-call replay of the five Stage-2 v2
+The Phase N/C protocol remains unrun and unauthorized. The zero-model-call
+replay of the five Stage-2 v2
 artifacts completed successfully: all 24 stored raw graphs independently parsed,
 executed, and reproduced their registered results. The external evidence SHA-256
 is `3a9e521cfe718cc3dea9aee4f1591aac761fa47f893c986eb1ba722a44374577`.
 This still does not authorize Bridge v2 or any confirmatory phase.
+
+The separate model-free measurement-qualification dataset is now frozen at 300
+new balanced scenes with no v0.3 numeric-table overlap. Its records SHA-256 is
+`98c1ab1228480b58dc4309f7c64280c347e87ac44547d79e36ab6ceb52adff6d`.
+The only authorized next GPU action is its one-shot, zero-retry interface
+qualification (at most 600 model calls). It is not a hypothesis test and cannot
+authorize Phase N/C, Bridge v2, RL, or training by itself.
 
 Current explicit non-claims are:
 
