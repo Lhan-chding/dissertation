@@ -545,7 +545,7 @@ sha256sum \
 ```
 
 The registered package-lock SHA-256 is
-`dafd0c41fa896409dc5c85af74e10b94436a9af0d20807e575908c2c73c64a78`.
+`25808fffdf62981163550084c36c4b37428fada7c85bc8b3a5e286b4bc75ec4c`.
 After the command succeeds, stop. Return the complete printed manifest, the
 four SHA-256 lines, `qualification_data_exit=0`, and the short Git revision.
 Do not run measurement qualification, Bridge v2, Phase N, Phase C, Pilot A,
