@@ -85,6 +85,28 @@ def test_stage2_v1_probe_config_is_closed_development_only_and_one_shot() -> Non
     assert config.hypothesis_test is False
 
 
+@pytest.mark.parametrize(
+    ("old", "new"),
+    [
+        ("format_retries: 0", "format_retries: false"),
+        ("required_program_parse_rate: 1.0", "required_program_parse_rate: true"),
+    ],
+)
+def test_stage2_v1_probe_config_rejects_boolean_numeric_aliases(
+    tmp_path: Path,
+    old: str,
+    new: str,
+) -> None:
+    tampered = tmp_path / "stage2_v1_probe.yaml"
+    tampered.write_text(
+        PROBE_CONFIG.read_text(encoding="utf-8").replace(old, new),
+        encoding="utf-8",
+    )
+
+    with pytest.raises((TypeError, ValueError)):
+        load_stage2_v1_probe_config(tampered)
+
+
 def test_stage1_v2_server_result_is_frozen_with_external_hashes() -> None:
     frozen = load_stage1_v2_frozen_result(FROZEN_STAGE1)
 
