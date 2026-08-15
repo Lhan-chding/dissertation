@@ -14,9 +14,11 @@ from compbias.recoverability.bridge_v1_failure import (
     replay_bridge_v1_records,
     verify_bridge_v1_failure_artifacts,
 )
+from compbias.recoverability.stage1_v2 import verify_stage1_v2_server_package_lock
 
 ROOT = Path(__file__).resolve().parents[1]
 FAILURE_CONFIG = ROOT / "configs" / "recoverability" / "bridge_v1_failure.yaml"
+SERVER_LOCK = ROOT / "configs" / "recoverability" / "server_package_lock_stage1_v2.yaml"
 
 
 def _sha256(path: Path) -> str:
@@ -31,16 +33,11 @@ def _write_json(path: Path, payload: object) -> None:
 
 
 def _write_failure_artifacts(tmp_path: Path) -> tuple[Path, Path, Path, Path, Path]:
-    valid = (
-        '{"target_facts":[3,7,5,2],"redundant_facts":[],'
-        '"axis_facts":["integer_ticks"]}'
-    )
+    valid = '{"target_facts":[3,7,5,2],"redundant_facts":[],"axis_facts":["integer_ticks"]}'
     raw_outputs = (
         f"```json\n{valid}\n```",
-        '{"target_facts":[3,7],"redundant_facts":[],'
-        '"axis_facts":["integer_ticks"]}',
-        '{"target_facts":[3,7,5,2],"redundant_ffacts":[],'
-        '"axis_facts":["integer_ticks"]}',
+        '{"target_facts":[3,7],"redundant_facts":[],"axis_facts":["integer_ticks"]}',
+        '{"target_facts":[3,7,5,2],"redundant_ffacts":[],"axis_facts":["integer_ticks"]}',
     )
     records = tmp_path / "bridge_records.jsonl"
     with records.open("x", encoding="utf-8") as stream:
@@ -243,3 +240,38 @@ def test_stage1_v2_probe_cli_is_explicit_one_shot_and_development_only() -> None
     )
     assert blocked.returncode == 2
     assert "BLOCKED" in blocked.stdout
+
+
+def test_stage1_v2_server_lock_binds_the_complete_new_execution_surface() -> None:
+    verification = verify_stage1_v2_server_package_lock(SERVER_LOCK, repository_root=ROOT)
+    paths = {item.relative_path for item in verification.files}
+
+    assert verification.verified is True
+    assert {
+        "configs/recoverability/bridge_v1_failure.yaml",
+        "configs/recoverability/stage1_v2_probe.yaml",
+        "experiments/recoverability_v1/04_stage1_v2_probe.py",
+        "src/compbias/recoverability/bridge_v1_failure.py",
+        "src/compbias/recoverability/stage1_v2.py",
+    }.issubset(paths)
+    assert "experiments/recoverability_v1/03_bridge.py" in paths
+    assert all(not path.startswith("tests/") for path in paths)
+
+
+def test_stage1_v2_preflight_is_metadata_only_and_uses_the_new_lock() -> None:
+    script = ROOT / "experiments" / "recoverability_v1" / "00_stage1_v2_preflight.py"
+    completed = subprocess.run(
+        [sys.executable, str(script), "--help"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    source = script.read_text(encoding="utf-8")
+
+    assert "--server-package-lock" in completed.stdout
+    assert "--runtime" in completed.stdout
+    assert "--output" in completed.stdout
+    assert "--execute" not in completed.stdout
+    assert "import torch" not in source
+    assert "from_pretrained" not in source
