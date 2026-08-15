@@ -17,9 +17,7 @@ from compbias.recoverability.stage2_v2_evidence import (
 
 ROOT = Path(__file__).resolve().parents[1]
 FROZEN_RESULT = ROOT / "configs" / "recoverability" / "stage2_v2_frozen_result.yaml"
-EVIDENCE_LOCK = (
-    ROOT / "configs" / "recoverability" / "server_package_lock_stage2_v2_evidence.yaml"
-)
+EVIDENCE_LOCK = ROOT / "configs" / "recoverability" / "server_package_lock_stage2_v2_evidence.yaml"
 
 
 def _sha256(path: Path) -> str:
