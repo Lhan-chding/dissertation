@@ -90,6 +90,17 @@ requires `24/24` strict program parses, executions, program-answer matches, and
 matches to the deterministic operation applied to those perceived values. It
 does not test a scientific hypothesis or authorize confirmatory execution.
 
+That Stage-2 v1 probe is now complete and externally frozen as a failed
+development interface. Strict programs parsed and executed for `19/24`
+scenes, but only `13/24` had an `answer` equal to the executed result. The
+remaining failures were five strict parse failures and six program-answer
+mismatches. This is not evidence against recoverability: the probe supplied no
+repair cue and tested only whether the base model could satisfy the registered
+DSL contract. It must not be rerun. Before any replacement interface is
+designed, the only authorized action is a zero-model-call replay of all 24 raw
+outputs using the frozen hashes in
+`configs/recoverability/stage2_v1_failure.yaml`.
+
 ### Phase N: natural prevalence
 
 Phase N is frozen at 4,000 semantic scenes with exactly one natural Stage-1
@@ -156,11 +167,10 @@ or confirmatory RL after inspecting a failed result.
 
 ## Current execution boundary
 
-The one-shot Bridge v1 failure and successful Stage-1 v2 development probe are
-fully frozen; neither is evidence for or against recoverability. Phase N,
-Phase C, Pilot A, Pilot B, Bridge v2, and all RL training remain unauthorized.
-The only next execution step is the reviewed offline-server Stage-2 v1
-development probe in `docs/SERVER_SETUP.md`. Stop after its 24 text calls
-regardless of exit code. Do not construct or run a confirmatory Bridge v2 until
-that result has received a separate local review and an untouched evaluation
-split has been frozen.
+The one-shot Bridge v1 failure, successful Stage-1 v2 development probe, and
+failed Stage-2 v1 development probe are fully frozen; none is evidence for or
+against recoverability. Phase N, Phase C, Pilot A, Pilot B, Bridge v2, further
+development probes, and all RL training remain unauthorized. The only next
+server action is the reviewed zero-model-call Stage-2 failure diagnostic in
+`docs/SERVER_SETUP.md`. Do not design or run another model-facing interface
+until that replay has received a separate local review.
