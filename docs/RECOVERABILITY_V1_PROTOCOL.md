@@ -195,9 +195,32 @@ or confirmatory RL after inspecting a failed result.
 The one-shot Bridge v1 failure, successful Stage-1 v2 development probe, failed
 Stage-2 v1 development probe, model-free v1 failure diagnostic, and successful
 Stage-2 v2 development probe are frozen; none is evidence for or against
-recoverability. Phase N, Phase C, Pilot A, Pilot B, Bridge v2, any additional
-development probe, and all RL training remain unauthorized. The only next
-server action was the zero-model-call Stage-2 v2 evidence capture; it is now
-complete and must not be rerun. No further server action is authorized. A
-future Bridge v2 would first require a separately reviewed protocol with an
-explicit untouched split, frozen sample plan, and new closed server package.
+recoverability. Its zero-model-call evidence capture is also complete and must
+not be rerun. Phase N, Phase C, Pilot A, Pilot B, Bridge v2, confirmatory
+execution, and all RL training remain unauthorized.
+
+The next authorized server action is narrower: generate, without loading a
+model, the frozen measurement-qualification dataset. It contains 300 new
+semantic scenes, exactly 50 per chart-type by operation stratum. Its numeric
+tables are deterministically disjoint from every v0.3 table, and its fixed seed
+is `20260817`. This action writes only images, records, a manifest, and an
+exclusive attempt marker. The server must stop immediately after generation so
+that the returned record/image hashes can be anchored before any qualification
+model call.
+
+The later measurement qualification is an interface gate, not Bridge v2 and
+not a hypothesis test. It will make at most 600 zero-retry calls: Stage-1 v2
+followed by Stage-2 v2 only when Stage 1 parses. One-sided 95%
+Clopper-Pearson lower bounds must each be at least `0.98` for Stage-1 parse,
+Stage-2 parse, Stage-2 execution, and executor-answer correctness. Exact visual
+transcription is reported but deliberately not gated, because natural
+perception errors are scientific outcomes rather than interface failures.
+
+The controlled CVA dataset remains the primary mechanistic dataset because it
+supports registered redundancy constraints, cue ablations, legal coherent
+counterfactuals, and exact deterministic replay. Public benchmarks do not
+replace that role. A later external-validity section may evaluate on the
+human-authored subset of [ChartQA](https://github.com/vis-nlp/ChartQA) or on
+[ChartQAPro](https://github.com/vis-nlp/ChartQAPro), but those results must be
+reported as descriptive generalization rather than as evidence for the
+controlled causal estimands.

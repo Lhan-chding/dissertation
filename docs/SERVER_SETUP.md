@@ -489,7 +489,66 @@ It is anchored in
 `configs/recoverability/stage2_v2_external_evidence_anchor.yaml` and must not be
 rerun.
 
-There is no authorized next server action. Keep the server stopped. Do not run
-Bridge v2, Phase N, Phase C, Pilot A, Pilot B, another development probe, or
-training. A future server handoff requires a new reviewed section that freezes
-an untouched data split and a separate closed package before any model call.
+## Next authorized action: model-free measurement-qualification data
+
+This is the only authorized next server action. It does not load Qwen, import
+Torch, make a model call, test a hypothesis, or authorize training. It verifies
+the exact closed package and the frozen Stage-2 v2 external evidence, then
+generates 300 new scenes with no numeric-table overlap with v0.3. It creates an
+exclusive attempt marker before generation and refuses any rerun.
+
+Pull the reviewed revision and run this block exactly once:
+
+```bash
+cd /cloud/cloud-ssd1/dissertation
+git -c http.version=HTTP/1.1 pull --ff-only origin main
+git rev-parse --short HEAD
+source .venv/bin/activate
+
+export PYTHONPATH=/cloud/cloud-ssd1/dissertation/src
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
+
+QUAL_ROOT=/cloud/cloud-ssd1/dissertation/data/generated/measurement_qualification_v1
+QUAL_ATTEMPT=/cloud/cloud-ssd1/dissertation/data/generated/measurement_qualification_v1.attempted.json
+QUAL_LOG=/cloud/cloud-ssd1/recoverability-v1-evidence/measurement-qualification-data.log
+
+for candidate in "$QUAL_ROOT" "$QUAL_ATTEMPT" "$QUAL_LOG"
+do
+  test ! -e "$candidate" || {
+    echo "BLOCKED: measurement qualification data evidence already exists: $candidate"
+    exit 1
+  }
+done
+
+set -o pipefail
+(
+  python experiments/recoverability_v1/09_generate_measurement_qualification_data.py \
+    --paths configs/paths.yaml \
+    --config configs/recoverability/measurement_qualification_v1.yaml \
+    --server-package-lock configs/recoverability/server_package_lock_measurement_qualification_data.yaml \
+    --stage2-v2-external-evidence /cloud/cloud-ssd1/recoverability-v1-evidence/stage2-v2-external-evidence.json \
+    --execute
+  qualification_data_rc=$?
+  echo "qualification_data_exit=$qualification_data_rc"
+  exit "$qualification_data_rc"
+) 2>&1 | tee "$QUAL_LOG"
+qualification_data_rc=$?
+
+echo "qualification_data_exit=$qualification_data_rc"
+test "$qualification_data_rc" -eq 0 || exit "$qualification_data_rc"
+sha256sum \
+  "$QUAL_ATTEMPT" \
+  "$QUAL_ROOT/manifest.json" \
+  "$QUAL_ROOT/records.jsonl" \
+  "$QUAL_LOG"
+```
+
+The registered package-lock SHA-256 is
+`dafd0c41fa896409dc5c85af74e10b94436a9af0d20807e575908c2c73c64a78`.
+After the command succeeds, stop. Return the complete printed manifest, the
+four SHA-256 lines, `qualification_data_exit=0`, and the short Git revision.
+Do not run measurement qualification, Bridge v2, Phase N, Phase C, Pilot A,
+Pilot B, another development probe, or any training. The generated manifest
+must first be frozen in a new local anchor and a separate model-call package
+must pass review.
