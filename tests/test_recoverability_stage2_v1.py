@@ -375,6 +375,40 @@ def test_stage2_v1_probe_never_retries_or_repairs_failures(
     assert {record.error_code for record in records} == {expected_error}
 
 
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {
+            "variables": {"a": 8, "b": 4, "c": 5, "d": 9, "shortcut": 4},
+            "steps": [{"op": "read", "inputs": ["shortcut"], "output": "result"}],
+            "answer": 4,
+        },
+        {
+            "variables": {"a": 8, "b": 4, "c": 5, "d": 9},
+            "steps": [
+                {"op": "subtract", "inputs": ["a", "c"], "output": "almost"},
+                {"op": "add", "inputs": ["almost", "d"], "output": "result"},
+            ],
+            "answer": 12,
+        },
+    ],
+)
+def test_stage2_v1_probe_rejects_programs_outside_registered_operation_grammar(
+    payload: dict[str, object],
+) -> None:
+    scenes = tuple(_scene(index) for index in range(24))
+    raw = json.dumps(payload, separators=(",", ":"))
+
+    report, records = run_stage2_v1_probe(
+        scenes,
+        generate=lambda _scene_value, _messages: raw,
+    )
+
+    assert report.probe_passed is False
+    assert report.operation_result_accuracy == 0.0
+    assert {record.error_code for record in records} == {"program_contract_mismatch"}
+
+
 def test_stage2_v1_scene_rejects_invalid_inputs() -> None:
     with pytest.raises(ValueError):
         Stage2V1Scene(scene_id="../bad", operation="sum", evidence=(1, 2, 3, 4))
