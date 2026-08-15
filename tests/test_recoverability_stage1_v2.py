@@ -40,22 +40,24 @@ def test_stage1_v2_prompt_is_question_free_and_binds_four_literal_slots() -> Non
 
     messages = build_stage1_v2_messages()
     rendered = json.dumps(messages, ensure_ascii=False)
+    prompt_text = "\n".join(str(message["content"]) for message in messages)
     exact_grammar = (
         '{"target_facts":[INTEGER,INTEGER,INTEGER,INTEGER],'
         '"redundant_facts":[],"axis_facts":["integer_ticks"]}'
     )
 
     assert len(messages) == 2
-    assert exact_grammar in rendered
-    assert "A, B, C, and D" in rendered
-    assert "all four" in rendered.lower()
-    assert "even if" not in rendered.lower()
-    assert "sum of the first two" not in rendered.lower()
-    assert "maximum" not in rendered.lower()
-    assert "difference" not in rendered.lower()
-    assert "question" not in rendered.lower()
-    assert "markdown" in rendered.lower()
-    assert "do not compute" in rendered.lower()
+    assert exact_grammar in prompt_text
+    assert "A, B, C, and D" in prompt_text
+    assert "all four" in prompt_text.lower()
+    assert "even if" not in prompt_text.lower()
+    assert "sum of the first two" not in prompt_text.lower()
+    assert "maximum" not in prompt_text.lower()
+    assert "difference" not in prompt_text.lower()
+    assert "question" not in prompt_text.lower()
+    assert "markdown" in prompt_text.lower()
+    assert "do not compute" in prompt_text.lower()
+    assert "gold" not in rendered.lower()
 
 
 def test_stage1_v2_probe_selection_is_fixed_balanced_and_order_independent(
