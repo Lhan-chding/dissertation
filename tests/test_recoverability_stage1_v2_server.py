@@ -248,6 +248,7 @@ def test_stage1_v2_server_lock_binds_the_complete_new_execution_surface() -> Non
 
     assert verification.verified is True
     assert {
+        "configs/paths.yaml",
         "configs/recoverability/bridge_v1_failure.yaml",
         "configs/recoverability/stage1_v2_probe.yaml",
         "experiments/recoverability_v1/04_stage1_v2_probe.py",
