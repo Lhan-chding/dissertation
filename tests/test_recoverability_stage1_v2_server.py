@@ -101,7 +101,10 @@ def _write_failure_artifacts(tmp_path: Path) -> tuple[Path, Path, Path, Path, Pa
     attempted = tmp_path / "attempted.json"
     _write_json(attempted, {"schema_version": 1, "status": "BRIDGE_ATTEMPT_STARTED"})
     console = tmp_path / "bridge-console.log"
-    console.write_text("bridge_exit=3\n", encoding="utf-8")
+    console.write_text(
+        "frozen bridge output; the shell printed its exit status after redirection\n",
+        encoding="utf-8",
+    )
     return records, report, diagnostic, attempted, console
 
 
@@ -110,6 +113,7 @@ def test_bridge_v1_failure_is_frozen_as_interface_failure_not_hypothesis_result(
 
     assert failure.status == "FINAL_FAILED_STAGE1_INTERFACE"
     assert failure.bridge_exit == 3
+    assert failure.bridge_exit_evidence == "derived_from_frozen_report_and_locked_cli"
     assert failure.scenes == 300
     assert failure.model_calls == 600
     assert failure.legacy_parse_rate == pytest.approx(0.9633333333333334)
