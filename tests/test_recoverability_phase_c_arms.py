@@ -151,6 +151,41 @@ def test_trend_counterfactual_preserves_one_position_error_when_local_world_is_a
     ) == 1
 
 
+def test_frozen_eligible_scene_accepts_an_out_of_render_domain_natural_misread() -> None:
+    scene = _scene(
+        "server-boundary",
+        "cross_series",
+        (2, 4, 5, 9),
+        (1, 4, 5, 9),
+    )
+
+    assert scene.true_values == (2, 4, 5, 9)
+    assert scene.perceived_values == (1, 4, 5, 9)
+    amendment = load_phase_c_postscreen_amendment(
+        AMENDMENT,
+        screen=load_phase_c_screen_frozen_result(SCREEN_RESULT),
+    )
+    calls = build_phase_c_arm_calls((scene,), amendment=amendment)
+    assert len(calls) == 48
+
+
+def test_trend_counterfactual_preserves_an_unbounded_exact_integer_misread() -> None:
+    amendment = load_phase_c_postscreen_amendment(
+        AMENDMENT,
+        screen=load_phase_c_screen_frozen_result(SCREEN_RESULT),
+    )
+    scene = _scene(
+        "trend-unbounded-misread",
+        "trend",
+        (5, 8, 11, 2),
+        (5, 1000, 11, 2),
+        operation="sum",
+    )
+
+    calls = build_phase_c_arm_calls((scene,), amendment=amendment)
+    assert len(calls) == 48
+
+
 def _digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 

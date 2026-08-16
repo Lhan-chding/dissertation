@@ -99,4 +99,5 @@ def test_phase_c_arm_runner_is_explicit_one_shot_text_only_and_capped() -> None:
     assert 'open("x"' in source
     assert source.index("verify_phase_c_screen_artifacts(") < source.index("load_local_qwen(")
     assert source.index('open("x"') < source.index("load_local_qwen(")
+    assert "phase-c-arms-v3r1-preflight.json" in source
     assert "train(" not in source
