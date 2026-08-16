@@ -73,8 +73,10 @@ class FrozenEligibleScene:
         ):
             if not isinstance(values, tuple) or len(values) != 4:
                 raise ValueError(f"{label} must contain four integers")
-            if any(type(value) is not int or not 2 <= value <= 18 for value in values):
-                raise ValueError(f"{label} must lie in the registered domain")
+            if any(type(value) is not int for value in values):
+                raise TypeError(f"{label} must contain exact integers")
+        if any(not 2 <= value <= 18 for value in self.true_values):
+            raise ValueError("true_values must lie in the registered render domain")
         if sum(a != b for a, b in zip(self.true_values, self.perceived_values, strict=True)) != 1:
             raise ValueError("eligible scene must preserve the frozen one-position error")
 

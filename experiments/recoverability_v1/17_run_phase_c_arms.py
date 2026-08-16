@@ -324,7 +324,7 @@ def main() -> int:
     paths = load_pilot_paths(canonical["paths"], environ={})
     evidence_root = Path("/cloud/cloud-ssd1/recoverability-v1-evidence")
     expected_paths = {
-        "preflight_report": evidence_root / "phase-c-arms-v3-preflight.json",
+        "preflight_report": evidence_root / "phase-c-arms-v3r1-preflight.json",
         "screen_preflight": evidence_root / "phase-c-screen-v2-preflight.json",
         "screen_attempt_marker": (
             paths.outputs / "recoverability_v1/cva_recoverability_causal_v2.screen.attempted.json"

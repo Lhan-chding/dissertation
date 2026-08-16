@@ -859,9 +859,11 @@ observed. It preserves the original failed screen report and records that the
 fixed forks for all 580 scenes: exactly 27,840 text-only model calls. It cannot
 train and leaves `rl_authorized=false`.
 
-Run inside `tmux`:
+Run inside `tmux`. The outer subshell ensures that any fail-closed `exit` stops
+only this workflow and does not close the interactive tmux shell:
 
 ```bash
+(
 cd /cloud/cloud-ssd1/dissertation
 git -c http.version=HTTP/1.1 pull --ff-only origin main
 git rev-parse --short HEAD
@@ -871,10 +873,10 @@ export PYTHONPATH=/cloud/cloud-ssd1/dissertation/src
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 
-PHASE_C_ARMS_PREFLIGHT=/cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-arms-v3-preflight.json
+PHASE_C_ARMS_PREFLIGHT=/cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-arms-v3r1-preflight.json
 PHASE_C_ARMS_OUTPUT=/cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v3/phase_c_arms
 PHASE_C_ARMS_ATTEMPT=/cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v3.arms.attempted.json
-PHASE_C_ARMS_LOG=/cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-arms-v3-console.log
+PHASE_C_ARMS_LOG=/cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-arms-v3r1-console.log
 
 for candidate in \
   "$PHASE_C_ARMS_PREFLIGHT" \
@@ -931,6 +933,9 @@ sha256sum \
   "$PHASE_C_ARMS_OUTPUT/arm_report.json" \
   "$PHASE_C_ARMS_OUTPUT/arm_records.jsonl" \
   "$PHASE_C_ARMS_LOG"
+)
+phase_c_workflow_rc=$?
+echo "phase_c_workflow_exit=$phase_c_workflow_rc"
 ```
 
 Detach from `tmux` with `Ctrl-b`, then `d`; reconnect with `tmux attach -t

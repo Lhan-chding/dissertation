@@ -175,8 +175,6 @@ def _counterfactual(
         ):
             continue
         perceived_value = values[mismatch] + error_delta
-        if perceived_value not in _DOMAIN:
-            continue
         counterfactual_observed = list(values)
         counterfactual_observed[mismatch] = perceived_value
         observed = tuple(counterfactual_observed)  # type: ignore[assignment]
@@ -259,6 +257,21 @@ def _sham_constraints(
             )
         if len(_compatible_answers(scene.perceived_values, scene.operation, candidate)) > 1:
             return candidate
+    unchanged = next(
+        index
+        for index, (truth, perceived) in enumerate(
+            zip(scene.true_values, scene.perceived_values, strict=True)
+        )
+        if truth == perceived
+    )
+    fallback = tuple(
+        KnownValueConstraint(
+            f"sham-{index:02d}", unchanged, scene.perceived_values[unchanged]
+        )
+        for index in range(count)
+    )
+    if len(_compatible_answers(scene.perceived_values, scene.operation, fallback)) > 1:
+        return fallback
     raise ValueError(f"no matched nonrecoverable sham exists for {scene.scene_id}")
 
 
