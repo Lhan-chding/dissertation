@@ -248,6 +248,32 @@ deterministic family-quota selection. It cannot invoke any arm, fork, RL, or
 training. Exit `0` authorizes packaging the already specified six-arm
 experiment; exit `3` is a final quota-underfill stop.
 
+### Prospective Phase-C v3 post-screen amendment
+
+The one-shot v2 screen completed before any arm or fork was evaluated. It
+parsed 7,905/8,000 scenes and froze 580 scenes satisfying the full per-scene
+eligibility predicate: 208 cross-series, 190 trend, and 182
+duplicate-encoding. It exited `3` because the earlier planning quotas
+400/400/266 were underfilled. The failed v2 screen result, empty atomic
+selection, exit code, and seven server hashes remain unchanged in
+`configs/recoverability/phase_c_screen_v2_frozen_result.yaml`.
+
+Before observing any six-arm outcome, v3 withdraws the fixed family quotas as
+an execution gate and includes every one of the 580 already-frozen eligible
+scenes. This is an availability-based sample-size amendment, not a statement
+that the v2 quota gate passed. No screen rerun, top-up, redistribution, or
+eligible-scene exclusion is allowed. The original six arms, eight nested forks,
+outcome definition, scene-level pairing, 10,000-resample analysis, and
+confirmatory/exploratory family labels remain unchanged. The execution therefore
+contains exactly `580 * 6 * 8 = 27,840` text-only calls.
+
+The original 0.90 target power is explicitly not met. Replaying the frozen
+simulation assumptions at the available family sizes gives estimated power
+0.7375 for cross-series and 0.6865 for trend. These design sensitivities were
+recorded before arm outcomes and must accompany the confirmatory estimates.
+They do not authorize RL or training. The post-screen amendment is frozen in
+`configs/recoverability/recoverability_phase_c_v3_postscreen_amendment.yaml`.
+
 The controlled CVA dataset remains the primary mechanistic dataset because it
 supports registered redundancy constraints, cue ablations, legal coherent
 counterfactuals, and exact deterministic replay. Public benchmarks do not

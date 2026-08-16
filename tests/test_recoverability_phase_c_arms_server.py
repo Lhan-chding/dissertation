@@ -4,6 +4,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 from compbias.recoverability.phase_c_arm_execution import (
     PHASE_C_ARM_EXECUTION_LOCK_PATH,
     PHASE_C_ARM_EXECUTION_PACKAGE_PATHS,
@@ -30,6 +32,18 @@ def test_phase_c_arm_package_lock_binds_the_complete_new_surface() -> None:
         "src/compbias/recoverability/phase_c_screen_result.py",
     }
     assert all(not path.startswith("tests/") for path in observed)
+
+
+def test_phase_c_arm_lock_rejects_noncanonical_subset(tmp_path: Path) -> None:
+    subset = tmp_path / "subset.yaml"
+    subset.write_text(
+        "schema_version: 1\nfiles:\n"
+        "  - path: configs/recoverability/recoverability_v1.yaml\n"
+        "    sha256: " + "0" * 64 + "\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="canonical"):
+        verify_phase_c_arm_execution_package_lock(subset, repository_root=ROOT)
 
 
 def test_phase_c_arm_preflight_is_metadata_only() -> None:

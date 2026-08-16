@@ -848,3 +848,91 @@ After exit `0` or `3`, stop and return the full report, seven SHA-256 lines,
 both screen exit-code lines, the preflight exit, and the short Git revision.
 Do not rerun the screen. Even after exit `0`, do not start training: the next
 separately packaged action is the frozen six-arm, eight-fork causal experiment.
+
+## Next authorized action: Phase-C v3 frozen six-arm execution
+
+The v2 screen has already exited `3` and must not be rerun. Its 580 individually
+eligible scenes are frozen. The v3 amendment removes only the internally chosen
+400/400/266 availability quotas as an execution gate, before any arm outcome is
+observed. It preserves the original failed screen report and records that the
+0.90 power target is not met. This command runs all six original arms and eight
+fixed forks for all 580 scenes: exactly 27,840 text-only model calls. It cannot
+train and leaves `rl_authorized=false`.
+
+Run inside `tmux`:
+
+```bash
+cd /cloud/cloud-ssd1/dissertation
+git -c http.version=HTTP/1.1 pull --ff-only origin main
+git rev-parse --short HEAD
+source .venv/bin/activate
+
+export PYTHONPATH=/cloud/cloud-ssd1/dissertation/src
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
+
+PHASE_C_ARMS_PREFLIGHT=/cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-arms-v3-preflight.json
+PHASE_C_ARMS_OUTPUT=/cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v3/phase_c_arms
+PHASE_C_ARMS_ATTEMPT=/cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v3.arms.attempted.json
+PHASE_C_ARMS_LOG=/cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-arms-v3-console.log
+
+for candidate in \
+  "$PHASE_C_ARMS_PREFLIGHT" \
+  "$PHASE_C_ARMS_OUTPUT" \
+  "$PHASE_C_ARMS_ATTEMPT" \
+  "$PHASE_C_ARMS_LOG"
+do
+  test ! -e "$candidate" || {
+    echo "BLOCKED: Phase C arm evidence already exists: $candidate"
+    exit 1
+  }
+done
+
+python experiments/recoverability_v1/16_phase_c_arm_preflight.py \
+  --runtime configs/recoverability/server_runtime_v1.yaml \
+  --server-package-lock configs/recoverability/server_package_lock_phase_c_arms_v3.yaml \
+  --project-root /cloud/cloud-ssd1/dissertation \
+  --output "$PHASE_C_ARMS_PREFLIGHT"
+
+phase_c_arms_preflight_rc=$?
+echo "phase_c_arms_preflight_exit=$phase_c_arms_preflight_rc"
+test "$phase_c_arms_preflight_rc" -eq 0 || exit "$phase_c_arms_preflight_rc"
+
+set -o pipefail
+(
+  python experiments/recoverability_v1/17_run_phase_c_arms.py \
+    --paths configs/paths.yaml \
+    --runtime configs/recoverability/server_runtime_v1.yaml \
+    --postscreen-amendment configs/recoverability/recoverability_phase_c_v3_postscreen_amendment.yaml \
+    --screen-result configs/recoverability/phase_c_screen_v2_frozen_result.yaml \
+    --server-package-lock configs/recoverability/server_package_lock_phase_c_arms_v3.yaml \
+    --preflight-report "$PHASE_C_ARMS_PREFLIGHT" \
+    --screen-preflight /cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-screen-v2-preflight.json \
+    --screen-attempt-marker /cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v2.screen.attempted.json \
+    --screen-dataset-root /cloud/cloud-ssd1/dissertation/data/generated/cva_recoverability_causal_v2_screen \
+    --screen-output-root /cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v2/phase_c_screen \
+    --screen-console-log /cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-screen-v2-console.log \
+    --execute
+  phase_c_arms_rc=$?
+  echo "phase_c_arms_exit=$phase_c_arms_rc"
+  exit "$phase_c_arms_rc"
+) 2>&1 | tee "$PHASE_C_ARMS_LOG"
+phase_c_arms_rc=$?
+
+echo "phase_c_arms_exit=$phase_c_arms_rc"
+test "$phase_c_arms_rc" -eq 0 || {
+  echo "BLOCKED: unexpected Phase C arm execution failure"
+  exit "$phase_c_arms_rc"
+}
+
+sha256sum \
+  "$PHASE_C_ARMS_PREFLIGHT" \
+  "$PHASE_C_ARMS_ATTEMPT" \
+  "$PHASE_C_ARMS_OUTPUT/arm_report.json" \
+  "$PHASE_C_ARMS_OUTPUT/arm_records.jsonl" \
+  "$PHASE_C_ARMS_LOG"
+```
+
+Detach from `tmux` with `Ctrl-b`, then `d`; reconnect with `tmux attach -t
+test`. Completion means data collection and the frozen paired analysis finished,
+not that RL or training was authorized.

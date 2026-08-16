@@ -837,3 +837,16 @@ promote a blocked, partial, or not-run row.
 Perception/process rewards are controls only. The project must not claim a new
 reward, token-level advantage method, router, auxiliary head, or architecture as
 its contribution.
+
+### Current Recoverability Phase-C boundary
+
+The completed 8,000-scene v2 screen remains a quota-underfill result
+(`screen_passed=false`, exit `3`). It nevertheless froze 580 scenes that passed
+the full per-scene eligibility predicate. Before any arm outcome was observed,
+the v3 amendment withdrew the internally selected 400/400/266 availability
+quotas as an execution gate and froze all 580 eligible scenes for the unchanged
+six-arm, eight-fork crossover. The resulting next action is exactly 27,840
+text-only calls. The amendment records reduced design power (0.7375
+cross-series; 0.6865 trend), permits no screen rerun or sample extension, and
+does not authorize RL or training. See `docs/RECOVERABILITY_V1_PROTOCOL.md` and
+`docs/SERVER_SETUP.md` for the immutable evidence boundary and server command.

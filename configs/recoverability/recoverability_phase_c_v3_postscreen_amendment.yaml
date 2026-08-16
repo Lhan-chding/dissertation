@@ -1,0 +1,57 @@
+schema_version: 3
+status: AMENDED_AFTER_SCREEN_BEFORE_ARM_OUTCOMES
+amendment_id: recoverability-phase-c-v3-20260816
+amendment_date: "2026-08-16"
+screen_result_path: configs/recoverability/phase_c_screen_v2_frozen_result.yaml
+original_screen_passed: false
+original_screen_exit: 3
+arm_outcomes_observed: false
+fixed_family_quota_gate_withdrawn: true
+amendment_reason: fixed_family_quotas_were_internal_power_planning_targets_not_field_consensus_validity_criteria
+frozen_eligible_scenes: 580
+frozen_eligible_by_family:
+  cross_series: 208
+  trend: 190
+  duplicate_encoding: 182
+include_all_frozen_eligible_scenes: true
+original_fixed_family_quotas:
+  cross_series: 400
+  trend: 400
+  duplicate_encoding: 266
+original_target_power: 0.90
+original_target_power_met: false
+target_effect: 0.05
+holm_adjusted_one_sided_alpha: 0.025
+power_simulation_repetitions: 2000
+power_simulation_seed: 2026081901
+amended_power_by_confirmatory_family:
+  cross_series: 0.7375
+  trend: 0.6865
+dataset_id: CVA-Recoverability-Causal-v3
+output_subdirectory: cva_recoverability_causal_v3
+seed: 2026081901
+arms:
+  - ablated
+  - valid
+  - sham
+  - counterfactual
+  - oracle_perception
+  - operator_swap
+confirmatory_arms:
+  - ablated
+  - valid
+  - sham
+  - counterfactual
+diagnostic_arms:
+  - oracle_perception
+  - operator_swap
+forks_per_arm: 8
+model_call_cap: 27840
+format_retries: 0
+allow_screen_rerun: false
+allow_sample_extension: false
+allow_quota_redistribution: false
+allow_eligible_scene_exclusion: false
+confirmatory_arm_execution_authorized: true
+training_authorized: false
+rl_authorized: false

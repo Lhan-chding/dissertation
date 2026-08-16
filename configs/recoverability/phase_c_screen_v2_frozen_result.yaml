@@ -1,0 +1,41 @@
+schema_version: 1
+status: FINAL_PHASE_C_V2_SCREEN_QUOTA_UNDERFILL_DO_NOT_RERUN
+server_revision_observed: 0320792
+amendment_id: recoverability-phase-c-v2-20260815
+dataset_id: CVA-Recoverability-Causal-v2
+phase_c_screen_exit: 3
+scenes: 8000
+model_calls: 8000
+parse_successes: 7905
+parse_rate: 0.988125
+natural_perception_errors: 957
+one_position_errors: 907
+operator_sensitive_errors: 606
+design_recoverable_errors: 580
+eligible_scenes: 580
+eligible_by_family:
+  cross_series: 208
+  trend: 190
+  duplicate_encoding: 182
+selected_scenes: 0
+selected_by_family: {}
+screen_passed: false
+confirmatory_arm_execution_authorized: false
+failure_codes:
+  - phase_c_screen_family_quota_unmet
+format_retries: 0
+allow_sample_extension: false
+allow_quota_redistribution: false
+training_authorized: false
+rl_authorized: false
+training_invoked: false
+model_snapshot_sha256: e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87
+server_package_lock_sha256: 5ec95a6110323de556784981fd8c43160de2af27d63a6501479b213867ba2fec
+source_sha256:
+  preflight: 83c08c1c6afee9e525cdff591cacb8dec6976d47e6a869c4ea902e8a9c81b8fd
+  attempt_marker: 2aea0218ff056c2bd0386667a8440e7b9b0d073da2b9984b67f3bea780b93eaf
+  dataset_manifest: bc57389dc3164b6aeba8d4565aecfaea3fa7ba171b4df4843c8ec86cbee8a19f
+  dataset_records: 36e09f7e15107057fd1b942875d12259b1f281e0354b87c82ed17f420693c766
+  screen_report: 4921aa91844844e24626d4ad03517a84099569b390867c4f1cd12503f0ef10a1
+  screen_records: f964dd6c005bd7344804aca8c33de2f621cc8e171f8d0f4ccc73a08081f2414a
+  console: f87d675a2890d9594c5d406819d3f23ed051d740c5528e8062668a61612ea3c8
