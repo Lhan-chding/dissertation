@@ -1039,3 +1039,93 @@ echo "prompt_workflow_exit=$prompt_workflow_rc"
 
 Return the full report, five SHA-256 lines, both prompt exit-code lines, the
 preflight exit, and the short Git revision. Do not start another large run.
+
+## One-shot Phase-C world-recovery-only 12-call diagnostic
+
+The completed 36-call prompt qualification must not be rerun. This new workflow
+uses separate paths and performs exactly 12 greedy, text-only model calls. It
+writes the six-case hidden/public manifests and all rendered messages before
+loading the model. Run the entire block once inside `tmux`:
+
+```bash
+(
+cd /cloud/cloud-ssd1/dissertation
+git -c http.version=HTTP/1.1 pull --ff-only origin main
+git rev-parse --short HEAD
+source .venv/bin/activate
+
+export PYTHONPATH=/cloud/cloud-ssd1/dissertation/src
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
+
+WORLD_PREFLIGHT=/cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-world-recovery-v1-preflight.json
+WORLD_OUTPUT=/cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v3/phase_c_world_recovery_v1
+WORLD_ATTEMPT=/cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v3.world-recovery-v1.attempted.json
+WORLD_LOG=/cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-world-recovery-v1-console.log
+
+for candidate in \
+  "$WORLD_PREFLIGHT" \
+  "$WORLD_OUTPUT" \
+  "$WORLD_ATTEMPT" \
+  "$WORLD_LOG"
+do
+  test ! -e "$candidate" || {
+    echo "BLOCKED: world recovery evidence already exists: $candidate"
+    exit 1
+  }
+done
+
+python experiments/recoverability_v1/20_phase_c_world_recovery_preflight.py \
+  --runtime configs/recoverability/server_runtime_v1.yaml \
+  --server-package-lock configs/recoverability/server_package_lock_phase_c_world_recovery_v1.yaml \
+  --project-root /cloud/cloud-ssd1/dissertation \
+  --output "$WORLD_PREFLIGHT"
+
+world_preflight_rc=$?
+echo "world_recovery_preflight_exit=$world_preflight_rc"
+test "$world_preflight_rc" -eq 0 || exit "$world_preflight_rc"
+
+set -o pipefail
+(
+  python experiments/recoverability_v1/21_run_phase_c_world_recovery.py \
+    --paths configs/paths.yaml \
+    --runtime configs/recoverability/server_runtime_v1.yaml \
+    --qualification-config configs/recoverability/phase_c_world_recovery_v1.yaml \
+    --system-prompt prompts/world_recovery_v1_main.system.txt \
+    --screen-result configs/recoverability/phase_c_screen_v2_frozen_result.yaml \
+    --server-package-lock configs/recoverability/server_package_lock_phase_c_world_recovery_v1.yaml \
+    --preflight-report "$WORLD_PREFLIGHT" \
+    --screen-preflight /cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-screen-v2-preflight.json \
+    --screen-attempt-marker /cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v2.screen.attempted.json \
+    --screen-dataset-root /cloud/cloud-ssd1/dissertation/data/generated/cva_recoverability_causal_v2_screen \
+    --screen-output-root /cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v2/phase_c_screen \
+    --screen-console-log /cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-screen-v2-console.log \
+    --execute
+  world_rc=$?
+  echo "world_recovery_exit=$world_rc"
+  exit "$world_rc"
+) 2>&1 | tee "$WORLD_LOG"
+world_rc=$?
+
+echo "world_recovery_exit=$world_rc"
+test "$world_rc" -eq 0 || exit "$world_rc"
+
+python -m json.tool "$WORLD_OUTPUT/world_recovery_report.json"
+
+sha256sum \
+  "$WORLD_PREFLIGHT" \
+  "$WORLD_ATTEMPT" \
+  "$WORLD_OUTPUT/manifest.hidden.jsonl" \
+  "$WORLD_OUTPUT/manifest.public.jsonl" \
+  "$WORLD_OUTPUT/messages.jsonl" \
+  "$WORLD_OUTPUT/world_recovery_report.json" \
+  "$WORLD_OUTPUT/world_recovery_records.jsonl" \
+  "$WORLD_LOG"
+)
+world_workflow_rc=$?
+echo "world_recovery_workflow_exit=$world_workflow_rc"
+```
+
+Return the full report, eight SHA-256 lines, the preflight/runner/workflow exit
+codes, and the short Git revision. Do not tune the prompt on these six cases or
+add calls after inspecting the result.

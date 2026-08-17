@@ -853,8 +853,13 @@ does not authorize RL or training. See `docs/RECOVERABILITY_V1_PROTOCOL.md` and
 
 That v3 execution has now completed, but all 27,840 raw outputs failed the
 under-specified strict program interface, so its all-zero report is not treated
-as an interpretable scientific null. The only next action is a 36-call,
-text-only prompt qualification over nine frozen family-by-operation cells. It
-reports semantic inferred-world accuracy separately from JSON-format compliance,
-does not test the hypothesis, and cannot authorize scale, RL, or training. The
-one-shot command is in `docs/SERVER_SETUP.md`.
+as an interpretable scientific null. The completed 36-call prompt diagnostic
+then showed that downstream DSL and answer generation still confounded world
+recovery. The only next action is a new, one-shot 12-call text-only diagnostic:
+two frozen cases per redundancy family, each paired across `no_cue` and
+`valid_cue`, with greedy decoding and a four-integer CSV response. It scores
+both conditions against the same hidden truth and reports format compliance
+separately from semantic recovery. `duplicate_encoding` is reported only as a
+full-trusted-state restatement control; `cross_series` and `trend` are the two
+nontrivial recovery diagnostics. This run cannot authorize scale, RL, or
+training. The command is in `docs/SERVER_SETUP.md`.

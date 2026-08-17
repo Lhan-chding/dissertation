@@ -1,0 +1,22 @@
+schema_version: 1
+files:
+  - path: configs/recoverability/phase_c_world_recovery_v1.yaml
+    sha256: c21f30ca823a17de849f5e78c2df383b70290b86f1299b7ee2b6f4b20ca1f88b
+  - path: configs/recoverability/server_package_lock_phase_c_arms_v3.yaml
+    sha256: f1fb43e9a79692e811e97c8dd52c86d924b9c2194b5b487fa4a8c8bd1363bed4
+  - path: experiments/recoverability_v1/20_phase_c_world_recovery_preflight.py
+    sha256: 8e3ff979ddc336ef1aecc0c15baa5d4985f76c9a76340578d29bae623bb09806
+  - path: experiments/recoverability_v1/21_run_phase_c_world_recovery.py
+    sha256: 60a5dbdbce640646aba7423f22b1b1ba14f782d4e49f43a43ceea33001a61525
+  - path: prompts/no_cue.user.template.txt
+    sha256: f4968037e8191127230b24603a2cf9c4d66ce6895fc58ef003879705cb9b008b
+  - path: prompts/valid_cue.user.template.txt
+    sha256: 173e5d9738aa0d82caf088efbb80d27ad761057c84ccfa641efaf5cd99335a5b
+  - path: prompts/world_recovery_v1_ablation_no_examples.system.txt
+    sha256: e758c21f7b059bc638ee3df0aefa73416ade6f851fa82ffadf6678a605273475
+  - path: prompts/world_recovery_v1_main.system.txt
+    sha256: db7e52e77885764b1acdd6cb3ca3e471f69e81003482777ea52484f8a94311aa
+  - path: src/compbias/recoverability/phase_c_world_recovery.py
+    sha256: 83426a7c184e0d5481c4669cd228e0f10faf6bf1a426783d26973c650258e20c
+  - path: src/compbias/recoverability/phase_c_world_recovery_execution.py
+    sha256: 8278547b151e8c7ccc74849127ecd1049b5102dfe205253419bad5589ccfa2cb

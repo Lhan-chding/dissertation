@@ -86,7 +86,9 @@ def test_world_recovery_runner_is_text_only_greedy_and_capped_at_twelve() -> Non
         "--screen-result",
     ):
         assert argument in result.stdout
-    blocked = subprocess.run([sys.executable, str(EXECUTE)], cwd=ROOT, capture_output=True, text=True)
+    blocked = subprocess.run(
+        [sys.executable, str(EXECUTE)], cwd=ROOT, capture_output=True, text=True
+    )
     assert blocked.returncode == 2
     assert "BLOCKED" in blocked.stdout
     source = EXECUTE.read_text(encoding="utf-8")

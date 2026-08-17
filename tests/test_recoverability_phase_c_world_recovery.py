@@ -174,9 +174,7 @@ def test_summary_uses_mutually_exclusive_pair_categories_and_keeps_duplicate_sep
         else:
             values = tuple(value + 1 for value in call.observed_values)
         records.append(
-            evaluate_phase_c_world_recovery_call(
-                call, ",".join(str(value) for value in values)
-            )
+            evaluate_phase_c_world_recovery_call(call, ",".join(str(value) for value in values))
         )
     report = summarize_phase_c_world_recovery(tuple(records), config=_config())
     assert report["model_calls"] == 12
@@ -202,11 +200,7 @@ def test_case_validation_rejects_ambiguous_or_nonviolating_inputs() -> None:
         build_phase_c_world_recovery_calls((), config=config, system_prompt=system_prompt)
     with pytest.raises(ValueError, match="at least two eligible cases"):
         build_phase_c_world_recovery_calls(
-            tuple(
-                scene
-                for scene in _scenes()
-                if scene.scene_id not in {"trend-b", "trend-extra"}
-            ),
+            tuple(scene for scene in _scenes() if scene.scene_id not in {"trend-b", "trend-extra"}),
             config=config,
             system_prompt=system_prompt,
         )

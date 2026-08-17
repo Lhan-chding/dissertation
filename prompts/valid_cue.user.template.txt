@@ -1,0 +1,3 @@
+redundant_facts:
+{{facts_as_json_array}}
+observed_values: [{{a}},{{b}},{{c}},{{d}}]

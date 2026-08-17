@@ -299,6 +299,41 @@ records `hypothesis_tested=false` and `scale_authorized=false`. Any later scale
 decision requires explicit human review of all 36 raw records and a separately
 versioned prospective execution plan.
 
+### Phase-C world-recovery-only twelve-call diagnostic
+
+The completed 36-call prompt qualification is immutable and must not be rerun.
+Its fair post-hoc audit scores both conditions against the same hidden true
+world and shows that the combined recovery-plus-DSL interface remains
+unqualified. The next diagnostic therefore removes the operation, result
+program, and free-form explanation entirely. Its only requested output is the
+four recovered integers.
+
+The prospective plan selects exactly two deterministic held-out cases from each
+of `cross_series`, `duplicate_encoding`, and `trend`. Each case is evaluated
+once with no facts and once with its registered valid facts, giving exactly
+`3 * 2 * 2 = 12` calls. Decoding is greedy, `max_new_tokens=32`, and no retry,
+sampling, self-consistency, external solver, RL, or training is allowed. The
+system prompt, user templates, configuration, renderer, parser, runner, and
+inherited server package are SHA-256 locked before model loading. The selected
+hidden/public manifests and exact rendered messages are written before the
+model is loaded and are never overwritten.
+
+Both conditions are scored against the same hidden truth. Exact whole-response
+CSV compliance is separate from conservative semantic extraction, which may
+unwrap one complete Markdown fence and accepts exactly one full-line
+four-integer candidate. Pair categories are mutually exclusive and use the
+fixed order: format failure, corrected, both correct, ignored, over-edited,
+wrong single edit, other. No subjective pass threshold or hypothesis test is
+performed.
+
+The existing `duplicate_encoding` generator supplies a trusted `known_value`
+for all four positions. Its result is therefore a full-state restatement and
+instruction-following control, not a nontrivial recovery estimate, and it is
+not pooled into a primary recovery rate. `cross_series` and `trend` are reported
+as separate nontrivial diagnostics. With two cases per family, every pattern is
+descriptive only and cannot establish stable model capability, authorize a
+larger rerun, or authorize RL or training.
+
 The controlled CVA dataset remains the primary mechanistic dataset because it
 supports registered redundancy constraints, cue ablations, legal coherent
 counterfactuals, and exact deterministic replay. Public benchmarks do not
