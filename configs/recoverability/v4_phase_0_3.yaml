@@ -1,0 +1,6 @@
+schema_version: 1
+model_loading_allowed: true
+training_authorized: false
+rl_authorized: false
+resized_height: 280
+resized_width: 280

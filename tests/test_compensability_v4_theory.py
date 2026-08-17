@@ -74,7 +74,7 @@ def test_constraint_residual_matches_negative_error_column_identity() -> None:
     facts = [
         PairSumFact(0, 1, 12, "ab"),
         PairSumFact(0, 2, 15, "ac"),
-        ArithmeticProgressionFact((1, 2, 3), "bcd"),
+        KnownValueFact(3, 3, "d"),
     ]
     matrix, _ = facts_to_matrix(facts)
     delta = observed[0] - truth[0]
