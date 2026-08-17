@@ -70,9 +70,9 @@ def layerwise_candidate_logits(
     """Project every language-layer state through the runtime norm and head.
 
     Qwen/Hugging Face hidden-state output contains the embedding state followed
-    by one state per decoder layer.  The final state is already normalized;
-    earlier decoder states receive the same runtime final norm before the head.
-    A mandatory final-layer parity comparison guards this interpretation.
+    by one captured output per decoder layer.  The runtime final norm executes
+    after those captured outputs, so every decoder state receives that same
+    norm before the head.  Mandatory final-layer parity guards this contract.
     """
 
     try:
@@ -122,10 +122,9 @@ def _layerwise_candidate_logits_inference(
             raise RuntimeError("layerwise prompt contains no attended token")
     norm, head = _runtime_projection_modules(model)
     result: list[dict[str, float]] = []
-    for index, hidden in enumerate(hidden_states[1:]):
+    for hidden in hidden_states[1:]:
         token_hidden = hidden[0, final_index]
-        # The last returned hidden state is post-norm in Qwen2.5-VL.
-        projected_hidden = token_hidden if index == layer_count - 1 else norm(token_hidden)
+        projected_hidden = norm(token_hidden)
         vocabulary_logits = head(projected_hidden)
         result.append({label: _as_float(vocabulary_logits[token_id]) for label, token_id in pairs})
     standard_logits = output.logits[0, final_index]

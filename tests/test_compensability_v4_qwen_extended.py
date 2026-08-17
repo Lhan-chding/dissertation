@@ -404,7 +404,8 @@ class ProjectionModel:
         final = torch.tensor([[[0.0, 0.0], [5.0, 2.0], [8.0, 7.0]]])
         logits = torch.zeros((1, 3, 3))
         target = 1 if self.attention else 2
-        logits[0, target] = self.get_output_embeddings()(final[0, target])
+        normalized = self.model.norm(final[0, target])
+        logits[0, target] = self.get_output_embeddings()(normalized)
         return SimpleNamespace(hidden_states=(embedding, first, final), logits=logits)
 
 
@@ -427,7 +428,7 @@ def test_layerwise_projection_supports_composite_qwen_text_config() -> None:
 def test_layerwise_projection_uses_runtime_norm_head_and_forward_parity() -> None:
     batch = {"input_ids": torch.tensor([[4, 5, 0]]), "attention_mask": torch.tensor([[1, 1, 0]])}
     values = assimilation.layerwise_candidate_logits(ProjectionModel(), batch, {"A": 1, "B": 2})
-    assert values == [{"A": 2.0, "B": 4.0}, {"A": 5.0, "B": 2.0}]
+    assert values == [{"A": 2.0, "B": 4.0}, {"A": 6.0, "B": 3.0}]
     assert assimilation.layerwise_margins(values, true_label="A", observed_label="B") == (
         -2.0,
         3.0,
@@ -435,7 +436,7 @@ def test_layerwise_projection_uses_runtime_norm_head_and_forward_parity() -> Non
     no_attention = assimilation.layerwise_candidate_logits(
         ProjectionModel(attention=False), {"input_ids": torch.tensor([[4, 5, 6]])}, (1, 2)
     )
-    assert no_attention[-1] == {"1": 8.0, "2": 7.0}
+    assert no_attention[-1] == {"1": 9.0, "2": 8.0}
 
 
 @pytest.mark.parametrize(
