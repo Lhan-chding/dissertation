@@ -50,6 +50,63 @@ def test_qwen_composite_runtime_uses_language_model_norm() -> None:
     assert projection._runtime_projection_modules(model) == (norm, head)
 
 
+def test_forward_and_parameterized_projection_share_one_inference_context() -> None:
+    """Regression for inference tensors projected after inference_mode has exited."""
+
+    class TrackingLinear(torch.nn.Linear):
+        def __init__(self, in_features: int, out_features: int) -> None:
+            super().__init__(in_features, out_features, bias=False)
+            self.contexts: list[tuple[bool, bool]] = []
+
+        def forward(self, value: torch.Tensor) -> torch.Tensor:
+            self.contexts.append((torch.is_inference_mode_enabled(), torch.is_grad_enabled()))
+            return super().forward(value)
+
+    class ParameterizedProjectionModel:
+        def __init__(self) -> None:
+            self.config = SimpleNamespace(num_hidden_layers=2)
+            self.norm = TrackingLinear(2, 2)
+            self.head = TrackingLinear(2, 3)
+            self.model = SimpleNamespace(language_model=SimpleNamespace(norm=self.norm))
+            with torch.no_grad():
+                self.norm.weight.copy_(torch.eye(2))
+                self.head.weight.copy_(torch.tensor(((1.0, 0.0), (0.0, 1.0), (1.0, -1.0))))
+
+        def get_output_embeddings(self):
+            return self.head
+
+        def __call__(self, **arguments):
+            assert torch.is_inference_mode_enabled()
+            assert arguments["output_hidden_states"] is True
+            first = torch.tensor([[[1.0, 2.0]]])
+            second = self.norm(torch.tensor([[[3.0, 4.0]]]))
+            logits = self.head(second)
+            return SimpleNamespace(
+                hidden_states=(torch.zeros_like(first), first, second),
+                logits=logits,
+            )
+
+    model = ParameterizedProjectionModel()
+
+    result = projection.layerwise_candidate_logits(
+        model,
+        {
+            "input_ids": torch.tensor([[7]]),
+            "attention_mask": torch.tensor([[1]]),
+        },
+        {"A": 0, "B": 1, "C": 2},
+    )
+
+    assert len(result) == 2
+    assert result[-1] == pytest.approx({"A": 3.0, "B": 4.0, "C": -1.0})
+    assert model.norm.contexts == [(True, False), (True, False)]
+    assert model.head.contexts == [
+        (True, False),
+        (True, False),
+        (True, False),
+    ]
+
+
 def _messages(condition: CueCondition) -> tuple[dict[str, str], ...]:
     facts: list[dict[str, object]] = []
     if condition is not CueCondition.NO_CUE:
