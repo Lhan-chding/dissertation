@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import sys
 from collections import Counter
 from dataclasses import replace
 from pathlib import Path
@@ -12,6 +13,13 @@ from types import SimpleNamespace
 
 import pytest
 import torch
+
+from compensability_v4.qwen import layerwise_assimilation as projection
+from compensability_v4.qwen.phase2_candidate import (
+    CandidateScoringCall,
+    CandidateScoringRecord,
+    CueCondition,
+)
 from compensability_v4.qwen.phase2_layerwise import (
     build_layerwise_plan,
     execute_layerwise_plan,
@@ -19,15 +27,24 @@ from compensability_v4.qwen.phase2_layerwise import (
     write_layerwise_outputs,
 )
 
-from compensability_v4.qwen.phase2_candidate import (
-    CandidateScoringCall,
-    CandidateScoringRecord,
-    CueCondition,
-)
-
 LABELS = ("A", "B", "C", "D")
 LABEL_TOKEN_IDS = {"A": 1, "B": 2, "C": 3, "D": 4}
 CONDITIONS = tuple(CueCondition)
+
+
+def test_qwen_composite_runtime_uses_language_model_norm() -> None:
+    def norm(hidden):
+        return hidden
+
+    def head(hidden):
+        return hidden
+
+    model = SimpleNamespace(
+        model=SimpleNamespace(language_model=SimpleNamespace(norm=norm)),
+        get_output_embeddings=lambda: head,
+    )
+
+    assert projection._runtime_projection_modules(model) == (norm, head)
 
 
 def _messages(condition: CueCondition) -> tuple[dict[str, str], ...]:
@@ -389,7 +406,11 @@ def _load_script(path: Path):
     spec = importlib.util.spec_from_file_location("phase2_layerwise_script", path)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    sys.path.insert(0, str(path.parent))
+    try:
+        spec.loader.exec_module(module)
+    finally:
+        sys.path.pop(0)
     return module
 
 
