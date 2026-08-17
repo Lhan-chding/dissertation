@@ -20,7 +20,12 @@ from typing import Any
 from compbias.recoverability.phase_c_screen import build_family_constraints
 
 from .cache_continuation import CachedGenerationState, build_suffix_token_ids
-from .manual_generation import _mapping, _one_dimensional_ids, manual_greedy_generate
+from .manual_generation import (
+    _mapping,
+    _one_dimensional_ids,
+    _prepare_visual_chat_batch,
+    manual_greedy_generate,
+)
 from .phase2_candidate import CueCondition
 
 
@@ -162,35 +167,7 @@ def _prepare_full_history_batch(
     messages: Sequence[Mapping[str, Any]],
     model: object,
 ) -> object:
-    rendered = processor.apply_chat_template(
-        [dict(message) for message in messages],
-        tokenize=False,
-        add_generation_prompt=True,
-    )
-    if not isinstance(rendered, str) or not rendered:
-        raise RuntimeError("S5 full-history chat template is invalid")
-    try:
-        from qwen_vl_utils import process_vision_info
-    except ImportError as error:  # pragma: no cover - server-only dependency
-        raise RuntimeError("qwen-vl-utils is required for S5 full-history parity") from error
-    image_inputs, video_inputs = process_vision_info([dict(message) for message in messages])
-    batch = processor(
-        text=[rendered],
-        images=image_inputs,
-        videos=video_inputs,
-        padding=True,
-        return_tensors="pt",
-    )
-    device = getattr(model, "device", None)
-    move = getattr(batch, "to", None)
-    if device is not None and callable(move):
-        return move(device)
-    if isinstance(batch, Mapping) and device is not None:
-        return {
-            key: value.to(device) if callable(getattr(value, "to", None)) else value
-            for key, value in batch.items()
-        }
-    return batch
+    return _prepare_visual_chat_batch(processor, messages, model)
 
 
 def _first_positions(

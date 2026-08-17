@@ -82,7 +82,7 @@ files:
   - path: src/compensability_v4/qwen/layerwise_assimilation.py
     sha256: 0c0e20fdb6de4f1a43a25e9bbeb8710fb5cb3078fe13940025ed250c0935efef
   - path: src/compensability_v4/qwen/manual_generation.py
-    sha256: dda657cf825c7f83ff2e4fbbe10033ceaf7bfc7aabbc07e95dbc0e4ec39cb525
+    sha256: 847e9d93aab5109fcfc6d9ff0c7ae79b76567ae6f8d382749d6aee5d6329e983
   - path: src/compensability_v4/qwen/model_loader.py
     sha256: a6ec48bfe03acfdea54f609b44004cd01f053e58c5f70ed0947616157cbbee47
   - path: src/compensability_v4/qwen/phase2_candidate.py
@@ -90,7 +90,7 @@ files:
   - path: src/compensability_v4/qwen/phase2_layerwise.py
     sha256: c80fc4bd8a97891f5ff6c9ed78f48d3840238622cc4d63a809e71ef6d9d714b2
   - path: src/compensability_v4/qwen/phase3_cache.py
-    sha256: 2b2d0d17c6cb7d433a2199ba09e12021ceaae23e8919944ad11cf525ffa3161e
+    sha256: ae5342e75b4031b99846751ef646102e4976094ff9947d6df919498327240429
   - path: src/compensability_v4/schemas/__init__.py
     sha256: 99edf107a9fa07bade840089f40592ecf5c498a9167c0be7c46c5d08bb28b4aa
   - path: src/compensability_v4/schemas/_common.py

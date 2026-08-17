@@ -667,8 +667,15 @@ def test_visual_observation_capture_uses_fake_vision_runtime(monkeypatch) -> Non
                 input_ids=torch.tensor([[50, 5]]), image_grid_thw=torch.tensor([[1, 2, 3]])
             )
 
-        def apply_chat_template(self, messages: object, **kwargs: object) -> str:
-            assert kwargs == {"tokenize": False, "add_generation_prompt": True}
+        def apply_chat_template(
+            self,
+            messages: object,
+            *,
+            tokenize: bool,
+            add_generation_prompt: bool,
+        ) -> str:
+            assert tokenize is False
+            assert add_generation_prompt is True
             return "template"
 
         def __call__(self, **kwargs: object) -> Batch:
@@ -769,6 +776,40 @@ def test_visual_observation_uses_structured_chat_batch_with_runtime_grid(monkeyp
 
     assert result["state"].image_grid_thw == (1, 2, 3)  # type: ignore[union-attr]
     assert processor.batch.moved is True
+
+
+def test_structured_visual_batch_does_not_mask_internal_type_error(monkeypatch) -> None:
+    class Processor:
+        legacy_called = False
+
+        def apply_chat_template(self, _messages: object, **kwargs: object) -> object:
+            if kwargs["tokenize"] is True:
+                raise TypeError("structured image decoding failed")
+            self.legacy_called = True
+            return "legacy-template"
+
+        @staticmethod
+        def __call__(**_kwargs: object) -> object:
+            return {
+                "input_ids": torch.tensor([[50, 5]]),
+                "image_grid_thw": torch.tensor([[1, 2, 3]]),
+            }
+
+    processor = Processor()
+    monkeypatch.setitem(
+        sys.modules,
+        "qwen_vl_utils",
+        SimpleNamespace(process_vision_info=lambda _messages: (["image"], [])),
+    )
+
+    with pytest.raises(TypeError, match="structured image decoding failed"):
+        generation._prepare_visual_chat_batch(
+            processor,
+            ({"role": "user", "content": "image"},),
+            SimpleNamespace(device=torch.device("cpu")),
+        )
+
+    assert processor.legacy_called is False
 
 
 @pytest.mark.parametrize(("height", "width"), [(0, 280), (281, 280)])

@@ -486,7 +486,10 @@ def test_s5_real_trace_joins_qwen_vision_batch_manual_cache_and_full_paths(
         def __call__(self, **arguments):
             assert arguments["images"] == ["frozen-image"]
             assert arguments["videos"] == []
-            return {"input_ids": torch.tensor([full_ids])}
+            return {
+                "input_ids": torch.tensor([full_ids]),
+                "image_grid_thw": torch.tensor([[1, 20, 20]]),
+            }
 
     processor = RealPathProcessor()
     fake_vision_module = SimpleNamespace(

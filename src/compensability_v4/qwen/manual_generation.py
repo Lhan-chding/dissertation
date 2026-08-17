@@ -7,6 +7,7 @@ Heavy runtime dependencies are imported only inside execution functions.
 
 from __future__ import annotations
 
+import inspect
 import math
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -61,6 +62,86 @@ def _one_dimensional_ids(tensor: object) -> tuple[int, ...]:
     if not isinstance(value, Sequence):
         raise TypeError("token ids must be sequence-like")
     return tuple(int(token_id) for token_id in value)
+
+
+def _move_batch_to_model(batch: object, model: object) -> object:
+    device = getattr(model, "device", None)
+    move = getattr(batch, "to", None)
+    if device is not None and callable(move):
+        return move(device)
+    if isinstance(batch, Mapping) and device is not None:
+        return {
+            key: value.to(device) if callable(getattr(value, "to", None)) else value
+            for key, value in batch.items()
+        }
+    return batch
+
+
+def _require_visual_batch_metadata(batch: object) -> object:
+    prepared = _mapping(batch)
+    missing = tuple(key for key in ("input_ids", "image_grid_thw") if key not in prepared)
+    if missing:
+        raise RuntimeError(
+            "prepared Qwen visual batch is missing required runtime metadata: " + ", ".join(missing)
+        )
+    return batch
+
+
+def _supports_structured_chat_output(processor: object) -> bool:
+    apply_template = getattr(processor, "apply_chat_template", None)
+    if not callable(apply_template):
+        raise TypeError("Qwen processor exposes no callable chat template")
+    try:
+        parameters = inspect.signature(apply_template).parameters.values()
+    except (TypeError, ValueError):
+        return True
+    names = {parameter.name for parameter in parameters}
+    return any(parameter.kind is inspect.Parameter.VAR_KEYWORD for parameter in parameters) or {
+        "return_dict",
+        "return_tensors",
+    }.issubset(names)
+
+
+def _prepare_visual_chat_batch(
+    processor: object,
+    messages: Sequence[Mapping[str, Any]],
+    model: object,
+) -> object:
+    """Prepare one multimodal chat without discarding processor grid metadata."""
+
+    closed_messages = [dict(message) for message in messages]
+    if _supports_structured_chat_output(processor):
+        batch = processor.apply_chat_template(
+            closed_messages,
+            tokenize=True,
+            add_generation_prompt=True,
+            return_dict=True,
+            return_tensors="pt",
+        )
+        _require_visual_batch_metadata(batch)
+    else:
+        # Compatibility path for older processors without structured chat output.
+        template = processor.apply_chat_template(
+            closed_messages,
+            tokenize=False,
+            add_generation_prompt=True,
+        )
+        if not isinstance(template, str) or not template:
+            raise RuntimeError("Qwen visual chat template is invalid")
+        try:
+            from qwen_vl_utils import process_vision_info
+        except ImportError as error:  # pragma: no cover - server-only dependency
+            raise RuntimeError("qwen-vl-utils is required for visual state capture") from error
+        image_inputs, video_inputs = process_vision_info(closed_messages)
+        batch = processor(
+            text=[template],
+            images=image_inputs,
+            videos=video_inputs,
+            padding=True,
+            return_tensors="pt",
+        )
+        _require_visual_batch_metadata(batch)
+    return _move_batch_to_model(batch, model)
 
 
 def _position_tuple(position_ids: object | None, length: int) -> tuple[tuple[int, ...], ...]:
@@ -336,24 +417,7 @@ def generate_observation_with_cache(
             ),
         },
     )
-    template = processor.apply_chat_template(
-        list(messages), tokenize=False, add_generation_prompt=True
-    )
-    try:
-        from qwen_vl_utils import process_vision_info
-    except ImportError as error:  # pragma: no cover - server-only dependency
-        raise RuntimeError("qwen-vl-utils is required for visual state capture") from error
-    image_inputs, video_inputs = process_vision_info(list(messages))
-    batch = processor(
-        text=[template],
-        images=image_inputs,
-        videos=video_inputs,
-        padding=True,
-        return_tensors="pt",
-    )
-    device = getattr(model, "device", None)
-    if device is not None and callable(getattr(batch, "to", None)):
-        batch = batch.to(device)
+    batch = _prepare_visual_chat_batch(processor, messages, model)
     eos_ids = getattr(getattr(processor, "tokenizer", None), "eos_token_id", None)
     result = manual_greedy_generate(
         model,
