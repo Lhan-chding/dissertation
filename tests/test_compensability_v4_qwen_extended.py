@@ -408,6 +408,19 @@ class ProjectionModel:
         return SimpleNamespace(hidden_states=(embedding, first, final), logits=logits)
 
 
+def test_layerwise_projection_supports_composite_qwen_text_config() -> None:
+    model = ProjectionModel()
+    model.config = SimpleNamespace(text_config=SimpleNamespace(num_hidden_layers=2))
+
+    result = assimilation.layerwise_candidate_logits(
+        model,
+        {"input_ids": torch.tensor([[1, 2, 3]])},
+        {"A": 1, "B": 2},
+    )
+
+    assert len(result) == 2
+
+
 def test_layerwise_projection_uses_runtime_norm_head_and_forward_parity() -> None:
     batch = {"input_ids": torch.tensor([[4, 5, 0]]), "attention_mask": torch.tensor([[1, 1, 0]])}
     values = assimilation.layerwise_candidate_logits(ProjectionModel(), batch, {"A": 1, "B": 2})

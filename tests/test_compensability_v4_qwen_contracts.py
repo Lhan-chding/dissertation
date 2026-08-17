@@ -117,6 +117,22 @@ def test_model_introspection_uses_runtime_config_and_named_modules() -> None:
     assert "visual.merger" in result["module_names"]
 
 
+def test_model_introspection_supports_composite_qwen_text_config() -> None:
+    model = SimpleNamespace(
+        config=SimpleNamespace(
+            text_config=SimpleNamespace(num_hidden_layers=36),
+            vision_config=SimpleNamespace(depth=32),
+        ),
+        named_modules=lambda: iter(
+            (("", object()), ("model.language_model.layers.0", object()))
+        ),
+    )
+
+    result = introspect_model(model)
+
+    assert result["language_layers"] == 36
+
+
 def test_server_model_loader_is_pinned_and_fails_closed_locally(tmp_path) -> None:
     assert MODEL_PATH == "/model/ModelScope/Qwen/Qwen2.5-VL-3B-Instruct"
     assert MODEL_SNAPSHOT_SHA256 == (
