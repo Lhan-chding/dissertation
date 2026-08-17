@@ -106,6 +106,28 @@ phase_1_capability_chain:
   seed: 2026081701
   bootstrap_resamples: 10000
 
+phase_2_candidate_scoring:
+  source_scenes: 580
+  world_recoverable_scenes: 579
+  included_family_counts:
+    cross_series: 208
+    duplicate_encoding: 182
+    trend: 189
+  cue_conditions: [no_cue, valid_cue, sham_cue, counterfactual_cue]
+  candidate_count: 4
+  model_forward_cap: 2316
+  calls_per_scene: 4
+  true_label_slot_counts: [145, 145, 145, 144]
+  seed: 2026081701
+  bootstrap_resamples: 10000
+  generation_allowed: false
+  phase_1_revision: 0995637d488cfa822f6ccb6a2a47f1d96df333b9
+  phase_1_config_sha256: a26feecb95dddc13549fe802b96137d4117d9cea4cb833f6156022acf4694aa5
+  phase_1_package_lock_sha256: 27859072ab266f50cbd547e319973e7068f7a0a04ae65a770d4c15df265b73b7
+  capability_per_scene_sha256: d01c391e136ed0e5c0ed52e50fe70f6ec128d221d218e7012c9adbcb4293929f
+  capability_summary_sha256: 8837a7275915f5a90c91eae8378ff6bd0466819842381996db1be8e4925705c7
+  capability_paired_gaps_sha256: a2a5acb5b203719e7e5225e56643a25a4189277d13704cccd4ec86d61573e256
+
 artifacts:
   model_introspection: artifacts/v4/model_introspection.json
   module_manifest: artifacts/v4/module_manifest.txt
@@ -114,6 +136,7 @@ artifacts:
   capability_paired_gaps: artifacts/v4/capability_chain/paired_gaps.json
   candidate_labels: artifacts/v4/tokenizer/candidate_labels.json
   candidate_scores: artifacts/v4/candidate_scoring/per_scene.jsonl
+  candidate_score_summary: artifacts/v4/candidate_scoring/summary.json
   layerwise_profiles: artifacts/v4/layerwise_assimilation/per_scene.jsonl
   cache_parity: artifacts/v4/cache/cache_parity.json
   interface_records: artifacts/v4/interface_ladder/per_scene.jsonl

@@ -18,10 +18,9 @@ SFT, and RL are not authorized.
   `awaiting_hash_bound_server_evidence`; do not reconstruct it from prose.
 
 Run inside `tmux`. Stop at the first `BLOCKED` message and return the complete output. Every
-script except S0 is inert without `--execute`. S3-S6 remain no-overwrite, hash-bound pre-work
-surfaces only after the universal provenance checks pass. They do not execute the named
-phase-specific gates or model experiments, do not train, and do not invoke RL. Their manifest
-status is `PREWORK_MANIFEST_ONLY_PHASE_NOT_EXECUTED`.
+script except S0 is inert without `--execute`. S3 is a real no-overwrite, hash-bound
+teacher-forced scoring run. S4-S6 remain pre-work surfaces until the immediately preceding
+artifact hashes are returned and frozen. No Phase 0-3 script trains or invokes RL.
 
 ```bash
 cd /cloud/cloud-ssd1/dissertation
@@ -97,15 +96,47 @@ sha256sum artifacts/v4/capability_chain/per_scene.csv \
   artifacts/v4/capability_chain/paired_gaps.json
 ```
 
-## S3 - candidate scoring surface
+The completed S2 evidence is frozen exactly as follows:
+
+- `per_scene.csv`:
+  `d01c391e136ed0e5c0ed52e50fe70f6ec128d221d218e7012c9adbcb4293929f`
+- `summary_by_family.csv`:
+  `8837a7275915f5a90c91eae8378ff6bd0466819842381996db1be8e4925705c7`
+- `paired_gaps.json`:
+  `a2a5acb5b203719e7e5225e56643a25a4189277d13704cccd4ec86d61573e256`
+
+These are evidence inputs, not success criteria. Their accuracy values are reported but never
+used to permit or block S3.
+
+## S3 - teacher-forced candidate scoring
+
+S3 executes 579 scenes x 4 paired cue conditions = 2,316 standard forward passes. It never calls
+generation. It verifies four distinct single-token labels, four unique candidate worlds,
+balanced true-label slots (145 / 145 / 145 / 144), exact no-cue/valid-cue payload parity except
+for `facts`, and structural agreement between all three S2 artifacts and the selected scene set.
+It reports point estimates and scene-clustered confidence intervals without an empirical
+pass/fail threshold.
 
 ```bash
 python scripts/v4/03_score_candidates.py --execute \
   --input "$SCREEN" \
-  --input-sha256 f964dd6c005bd7344804aca8c33de2f621cc8e171f8d0f4ccc73a08081f2414a
+  --input-sha256 f964dd6c005bd7344804aca8c33de2f621cc8e171f8d0f4ccc73a08081f2414a \
+  --input artifacts/v4/capability_chain/per_scene.csv \
+  --input-sha256 d01c391e136ed0e5c0ed52e50fe70f6ec128d221d218e7012c9adbcb4293929f \
+  --input artifacts/v4/capability_chain/summary_by_family.csv \
+  --input-sha256 8837a7275915f5a90c91eae8378ff6bd0466819842381996db1be8e4925705c7 \
+  --input artifacts/v4/capability_chain/paired_gaps.json \
+  --input-sha256 a2a5acb5b203719e7e5225e56643a25a4189277d13704cccd4ec86d61573e256
+sha256sum artifacts/v4/tokenizer/candidate_labels.json \
+  artifacts/v4/candidate_scoring/per_scene.jsonl \
+  artifacts/v4/candidate_scoring/summary.json
 ```
 
 ## S4 - layerwise assimilation surface
+
+Do not execute S4 yet. Its input contract will be frozen only after S3 returns the three hashes
+above; this prevents a caller-selected candidate-label or score file from entering the layerwise
+analysis.
 
 ```bash
 python scripts/v4/04_layerwise_assimilation.py --execute \

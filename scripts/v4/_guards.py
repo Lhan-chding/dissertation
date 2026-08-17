@@ -21,6 +21,9 @@ ROOT = Path(__file__).resolve().parents[2]
 CONFIG_PATH = ROOT / "configs/recoverability/v4_phase_0_3.yaml"
 PACKAGE_LOCK_PATH = ROOT / "configs/recoverability/v4/server_package_lock_phase_0_3.yaml"
 LEGACY_SCREEN_RECORDS_SHA256 = "f964dd6c005bd7344804aca8c33de2f621cc8e171f8d0f4ccc73a08081f2414a"
+CAPABILITY_PER_SCENE_SHA256 = "d01c391e136ed0e5c0ed52e50fe70f6ec128d221d218e7012c9adbcb4293929f"
+CAPABILITY_SUMMARY_SHA256 = "8837a7275915f5a90c91eae8378ff6bd0466819842381996db1be8e4925705c7"
+CAPABILITY_PAIRED_GAPS_SHA256 = "a2a5acb5b203719e7e5225e56643a25a4189277d13704cccd4ec86d61573e256"
 MODEL_INTROSPECTION_PATH = ROOT / "artifacts/v4/model_introspection.json"
 MODULE_MANIFEST_PATH = ROOT / "artifacts/v4/module_manifest.txt"
 MODEL_INTROSPECTION_SHA256 = "ed96d19a238d68497617071e29604313e0aae9a41a9e3bd24dbad451d87a0640"
@@ -156,6 +159,45 @@ def _load_config(path: Path) -> dict[str, object]:
         or phase_1 != expected_phase_1
     ):
         raise RuntimeError("v4 Phase 1 capability execution contract drifted")
+    phase_2 = payload.get("phase_2_candidate_scoring")
+    expected_phase_2 = {
+        "source_scenes": 580,
+        "world_recoverable_scenes": 579,
+        "included_family_counts": {
+            "cross_series": 208,
+            "duplicate_encoding": 182,
+            "trend": 189,
+        },
+        "cue_conditions": [
+            "no_cue",
+            "valid_cue",
+            "sham_cue",
+            "counterfactual_cue",
+        ],
+        "candidate_count": 4,
+        "model_forward_cap": 2316,
+        "calls_per_scene": 4,
+        "true_label_slot_counts": [145, 145, 145, 144],
+        "seed": 2026081701,
+        "bootstrap_resamples": 10000,
+        "generation_allowed": False,
+        "phase_1_revision": "0995637d488cfa822f6ccb6a2a47f1d96df333b9",
+        "phase_1_config_sha256": (
+            "a26feecb95dddc13549fe802b96137d4117d9cea4cb833f6156022acf4694aa5"
+        ),
+        "phase_1_package_lock_sha256": (
+            "27859072ab266f50cbd547e319973e7068f7a0a04ae65a770d4c15df265b73b7"
+        ),
+        "capability_per_scene_sha256": CAPABILITY_PER_SCENE_SHA256,
+        "capability_summary_sha256": CAPABILITY_SUMMARY_SHA256,
+        "capability_paired_gaps_sha256": CAPABILITY_PAIRED_GAPS_SHA256,
+    }
+    if (
+        not isinstance(phase_2, dict)
+        or set(phase_2) != set(expected_phase_2)
+        or phase_2 != expected_phase_2
+    ):
+        raise RuntimeError("v4 Phase 2 candidate-scoring execution contract drifted")
     return payload
 
 

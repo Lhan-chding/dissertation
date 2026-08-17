@@ -97,6 +97,38 @@ def valid_config() -> dict[str, object]:
             "seed": 2026081701,
             "bootstrap_resamples": 10000,
         },
+        "phase_2_candidate_scoring": {
+            "source_scenes": 580,
+            "world_recoverable_scenes": 579,
+            "included_family_counts": {
+                "cross_series": 208,
+                "duplicate_encoding": 182,
+                "trend": 189,
+            },
+            "cue_conditions": [
+                "no_cue",
+                "valid_cue",
+                "sham_cue",
+                "counterfactual_cue",
+            ],
+            "candidate_count": 4,
+            "model_forward_cap": 2316,
+            "calls_per_scene": 4,
+            "true_label_slot_counts": [145, 145, 145, 144],
+            "seed": 2026081701,
+            "bootstrap_resamples": 10000,
+            "generation_allowed": False,
+            "phase_1_revision": "0995637d488cfa822f6ccb6a2a47f1d96df333b9",
+            "phase_1_config_sha256": (
+                "a26feecb95dddc13549fe802b96137d4117d9cea4cb833f6156022acf4694aa5"
+            ),
+            "phase_1_package_lock_sha256": (
+                "27859072ab266f50cbd547e319973e7068f7a0a04ae65a770d4c15df265b73b7"
+            ),
+            "capability_per_scene_sha256": GUARDS.CAPABILITY_PER_SCENE_SHA256,
+            "capability_summary_sha256": GUARDS.CAPABILITY_SUMMARY_SHA256,
+            "capability_paired_gaps_sha256": GUARDS.CAPABILITY_PAIRED_GAPS_SHA256,
+        },
     }
 
 
@@ -530,6 +562,184 @@ def test_candidate_scoring_entrypoint_uses_runtime_execution(monkeypatch) -> Non
     assert captured["output_paths"]["summary"].endswith(
         "artifacts/v4/candidate_scoring/summary.json"
     )
+
+
+def test_candidate_scoring_cli_executes_frozen_contract(monkeypatch, tmp_path, capsys) -> None:
+    inputs = tuple(
+        tmp_path / name for name in ("screen.jsonl", "per.csv", "summary.csv", "gaps.json")
+    )
+    for path in inputs:
+        path.write_text("evidence\n", encoding="utf-8")
+    config = valid_config()
+    validation = GUARDS.ValidatedServerInputs(
+        "new-config", "new-lock", "model", tuple({"sha256": str(index)} for index in range(4))
+    )
+    families = ("cross_series",) * 208 + ("duplicate_encoding",) * 182 + ("trend",) * 189
+    scenes = tuple(
+        type("Scene", (), {"scene_id": f"scene-{index}", "family": family})()
+        for index, family in enumerate(families)
+    )
+    selection = type("Selection", (), {"source_eligible_scenes": 580, "scenes": scenes})()
+    labels = ("A", "B", "C", "D")
+    calls = tuple(
+        type(
+            "Call",
+            (),
+            {
+                "condition": condition,
+                "candidate_labels": labels,
+                "true_label": labels[index % 4],
+            },
+        )()
+        for index in range(579)
+        for condition in CANDIDATE_SCRIPT.CueCondition
+    )
+    records = tuple(object() for _ in range(2316))
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "03_score_candidates.py",
+            "--execute",
+            *[
+                item
+                for path, digest in zip(inputs, ("a", "b", "c", "d"), strict=True)
+                for item in ("--input", str(path), "--input-sha256", digest)
+            ],
+        ],
+    )
+    monkeypatch.setattr(CANDIDATE_SCRIPT, "validate_server_inputs", lambda **_kwargs: validation)
+    monkeypatch.setattr(CANDIDATE_SCRIPT, "_load_config", lambda _path: config)
+    monkeypatch.setattr(CANDIDATE_SCRIPT, "validate_runtime_evidence", lambda _runtime: {})
+    monkeypatch.setattr(
+        CANDIDATE_SCRIPT,
+        "_load_prompt_contract",
+        lambda _path: ("candidate prompt", labels),
+    )
+    monkeypatch.setattr(
+        CANDIDATE_SCRIPT, "select_legacy_capability_scenes", lambda _path: selection
+    )
+    monkeypatch.setattr(
+        CANDIDATE_SCRIPT, "validate_phase1_candidate_source", lambda *_args, **_kwargs: {}
+    )
+    monkeypatch.setattr(
+        CANDIDATE_SCRIPT, "build_candidate_scoring_plan", lambda *_args, **_kwargs: calls
+    )
+    processor = type("Processor", (), {"tokenizer": object()})()
+    monkeypatch.setattr(
+        CANDIDATE_SCRIPT, "load_pinned_qwen", lambda **_kwargs: (object(), processor)
+    )
+    monkeypatch.setattr(
+        CANDIDATE_SCRIPT, "find_single_token_labels", lambda *_args, **_kwargs: labels
+    )
+    monkeypatch.setattr(
+        CANDIDATE_SCRIPT,
+        "build_candidate_label_evidence",
+        lambda *_args, **_kwargs: {"generation_invoked": False},
+    )
+    monkeypatch.setattr(
+        CANDIDATE_SCRIPT,
+        "execute_candidate_scoring_plan",
+        lambda *_args, progress, **_kwargs: (progress(2316, 2316), records)[1],
+    )
+    monkeypatch.setattr(
+        CANDIDATE_SCRIPT,
+        "summarize_candidate_scoring",
+        lambda *_args, **_kwargs: {"subjective_success_threshold_applied": False},
+    )
+    written: dict[str, object] = {}
+    monkeypatch.setattr(
+        CANDIDATE_SCRIPT,
+        "write_candidate_scoring_outputs",
+        lambda **kwargs: written.update(kwargs),
+    )
+
+    result = CANDIDATE_SCRIPT.run_candidate_scoring_cli(
+        phase="phase_2_candidate_scoring",
+        expected_input_sha256=("a", "b", "c", "d"),
+        output_paths={
+            "labels": str(tmp_path / "candidate_labels.json"),
+            "per_scene": str(tmp_path / "per_scene.jsonl"),
+            "summary": str(tmp_path / "summary.json"),
+        },
+    )
+
+    assert result == 0
+    assert written["summary"]["subjective_success_threshold_applied"] is False
+    assert (
+        written["summary"]["phase_1_revision"]
+        == config["phase_2_candidate_scoring"]["phase_1_revision"]
+    )
+    assert written["summary"]["hash_bound_inputs"] == list(validation.inputs)
+    assert "PROGRESS: 2316/2316" in capsys.readouterr().out
+
+
+def test_candidate_scoring_rejects_plan_drift_before_model_load(
+    monkeypatch, tmp_path, capsys
+) -> None:
+    inputs = tuple(tmp_path / f"input-{index}.json" for index in range(4))
+    for path in inputs:
+        path.write_text("{}", encoding="utf-8")
+    families = ("cross_series",) * 208 + ("duplicate_encoding",) * 182 + ("trend",) * 189
+    scenes = tuple(
+        type("Scene", (), {"scene_id": f"scene-{index}", "family": family})()
+        for index, family in enumerate(families)
+    )
+    selection = type("Selection", (), {"source_eligible_scenes": 580, "scenes": scenes})()
+    model_load_attempted = False
+
+    def record_model_load(**_kwargs):
+        nonlocal model_load_attempted
+        model_load_attempted = True
+        return object(), object()
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "03_score_candidates.py",
+            "--execute",
+            *[
+                item
+                for path, digest in zip(inputs, ("a", "b", "c", "d"), strict=True)
+                for item in ("--input", str(path), "--input-sha256", digest)
+            ],
+        ],
+    )
+    monkeypatch.setattr(
+        CANDIDATE_SCRIPT,
+        "validate_server_inputs",
+        lambda **_kwargs: GUARDS.ValidatedServerInputs("config", "lock", "model", ()),
+    )
+    monkeypatch.setattr(CANDIDATE_SCRIPT, "_load_config", lambda _path: valid_config())
+    monkeypatch.setattr(CANDIDATE_SCRIPT, "validate_runtime_evidence", lambda _runtime: {})
+    monkeypatch.setattr(
+        CANDIDATE_SCRIPT, "_load_prompt_contract", lambda _path: ("prompt", ("A", "B", "C", "D"))
+    )
+    monkeypatch.setattr(
+        CANDIDATE_SCRIPT, "select_legacy_capability_scenes", lambda _path: selection
+    )
+    monkeypatch.setattr(
+        CANDIDATE_SCRIPT, "validate_phase1_candidate_source", lambda *_args, **_kwargs: {}
+    )
+    monkeypatch.setattr(
+        CANDIDATE_SCRIPT, "build_candidate_scoring_plan", lambda *_args, **_kwargs: ()
+    )
+    monkeypatch.setattr(CANDIDATE_SCRIPT, "load_pinned_qwen", record_model_load)
+
+    result = CANDIDATE_SCRIPT.run_candidate_scoring_cli(
+        phase="phase_2_candidate_scoring",
+        expected_input_sha256=("a", "b", "c", "d"),
+        output_paths={
+            "labels": str(tmp_path / "labels.json"),
+            "per_scene": str(tmp_path / "records.jsonl"),
+            "summary": str(tmp_path / "summary.json"),
+        },
+    )
+
+    assert result == 2
+    assert model_load_attempted is False
+    assert "model-forward plan drifted" in capsys.readouterr().out
 
 
 def test_capability_chain_cli_executes_frozen_contract(monkeypatch, tmp_path, capsys) -> None:

@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import csv
 import json
 import math
-import csv
 from collections import Counter
 from pathlib import Path
 from typing import ClassVar

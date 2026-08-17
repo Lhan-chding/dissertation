@@ -36,6 +36,9 @@ prompts:
   correction_suffix: >-
     Using the newly supplied facts, revise the earlier four values if required. Reply with exactly
     four comma-separated integers a,b,c,d and no other text.
+  candidate_scoring: >-
+    Select the one candidate world best supported by the supplied facts. Reply with exactly its
+    candidate label and no other text.
 
 candidate_label_search_order:
   - A
