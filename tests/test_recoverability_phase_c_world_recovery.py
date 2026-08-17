@@ -54,6 +54,8 @@ def _scenes() -> tuple[FrozenEligibleScene, ...]:
 def test_world_recovery_config_freezes_exactly_twelve_calls() -> None:
     config = _config()
     assert config.schema_version == 1
+    assert config.qualification_id == "recoverability-phase-c-world-recovery-v1r1"
+    assert config.output_subdirectory.endswith("phase_c_world_recovery_v1r1")
     assert config.conditions == WORLD_RECOVERY_CONDITIONS
     assert config.families == ("cross_series", "duplicate_encoding", "trend")
     assert config.cases_per_family == 2
@@ -204,3 +206,21 @@ def test_case_validation_rejects_ambiguous_or_nonviolating_inputs() -> None:
             config=config,
             system_prompt=system_prompt,
         )
+
+
+def test_ambiguous_candidates_are_skipped_before_frozen_selection() -> None:
+    ambiguous = FrozenEligibleScene(
+        scene_id="trend-ambiguous",
+        family="trend",
+        chart_type="line",
+        operation="difference",
+        true_values=(2, 2, 3, 4),
+        perceived_values=(2, 2, 2, 4),
+    )
+    calls = build_phase_c_world_recovery_calls(
+        (ambiguous, *_scenes()),
+        config=_config(),
+        system_prompt=PROMPT.read_text(encoding="utf-8"),
+    )
+    assert len(calls) == 12
+    assert "trend-ambiguous" not in {call.scene_id for call in calls}

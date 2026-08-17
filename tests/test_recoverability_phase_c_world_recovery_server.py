@@ -99,6 +99,8 @@ def test_world_recovery_runner_is_text_only_greedy_and_capped_at_twelve() -> Non
     assert "attempted.json" in source
     assert "manifest.hidden.jsonl" in source
     assert "manifest.public.jsonl" in source
+    assert "phase-c-world-recovery-v1r1-preflight.json" in source
+    assert "world-recovery-v1r1.attempted.json" in source
     assert 'open("x"' in source
     assert source.index("verify_phase_c_screen_artifacts(") < source.index("load_local_qwen(")
     assert source.index("model_hash = model_snapshot_sha256") < source.index("output.mkdir()")
