@@ -1,0 +1,54 @@
+{
+  "artifact_type": "v4_legacy_evidence_hash_manifest",
+  "evidence_scope": "frozen_repository_files_only",
+  "inputs": [
+    {
+      "relative_path": "docs/Qwen25VL_Constraint_Assimilation_Natural_State_RL_Codex_Plan_v4.md",
+      "sha256": "01e532f8c7fe5439c70e8cd8de81ff3448465d8d401dbbf478c76aebaf49641e"
+    },
+    {
+      "relative_path": "README.md",
+      "sha256": "83f006edb3476c101a9f002651e747501346820e4736ee231656c86b0c5b151f"
+    },
+    {
+      "relative_path": "docs/RECOVERABILITY_V1_PROTOCOL.md",
+      "sha256": "046e148662440aad874eb3a667e34acd0308101b8a8113e531ca99960c3654df"
+    },
+    {
+      "relative_path": "configs/recoverability/stage2_v2_frozen_result.yaml",
+      "sha256": "e16b52ecb84fb5730bf3272d3bfb8495084b18789dd870aadf6472c7516a018b"
+    },
+    {
+      "relative_path": "configs/recoverability/phase_c_screen_v2_frozen_result.yaml",
+      "sha256": "304aac217995f9eeec68526d7032711014295b9b89e8fdda80c495f7d44bceeb"
+    },
+    {
+      "relative_path": "configs/recoverability/recoverability_phase_c_v3_postscreen_amendment.yaml",
+      "sha256": "89934a5850747b44c7d296767c0e735b3af50e0b5bd75caba14ae02bb7e7f4bc"
+    },
+    {
+      "relative_path": "configs/recoverability/phase_c_world_recovery_v1.yaml",
+      "sha256": "671ad4e0e410e2a6bc2068d030670bea119e910c4b68d9c2d25cff8d9d31e48f"
+    },
+    {
+      "relative_path": "configs/recoverability/server_package_lock_phase_c_world_recovery_v1.yaml",
+      "sha256": "827e1cb60935a9862904f92413446237ecd27d546dcbd09e4cd47c9853feb53a"
+    },
+    {
+      "relative_path": "configs/recoverability/phase_c_world_recovery_100_v1.yaml",
+      "sha256": "18892eda258928cdeb4ebd68b3c2bfd4454d734d057d2cade019fb7f84291399"
+    },
+    {
+      "relative_path": "configs/recoverability/server_package_lock_phase_c_world_recovery_100_v1.yaml",
+      "sha256": "b7aa4d40a77836abea3be0b6d3a4504e578b3e4ae23ef84ea7e36bf0210c987b"
+    }
+  ],
+  "missing_evidence": [
+    {
+      "experiment_id": "qwen_world_only_no_cue_100",
+      "required_payload": "raw no-cue/valid-cue records plus aggregate summary",
+      "status": "awaiting_hash_bound_server_evidence"
+    }
+  ],
+  "schema_version": 1
+}

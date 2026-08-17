@@ -1,0 +1,119 @@
+# Qwen v4 Phase 0-3 server handoff
+
+This handoff stops before any new Qwen experiment. The archived v4 plan is byte-identical to
+the supplied specification (SHA-256
+`01e532f8c7fe5439c70e8cd8de81ff3448465d8d401dbbf478c76aebaf49641e`). Training, LoRA,
+SFT, and RL are not authorized.
+
+## Fixed boundaries
+
+- Project: `/cloud/cloud-ssd1/dissertation`
+- Model: `/model/ModelScope/Qwen/Qwen2.5-VL-3B-Instruct`
+- Model snapshot SHA-256:
+  `e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87`
+- Fixed image size: 280 x 280 pixels (both multiples of 28).
+- Existing screen records SHA-256:
+  `f964dd6c005bd7344804aca8c33de2f621cc8e171f8d0f4ccc73a08081f2414a`.
+- The absent hundred-call no-cue/valid-cue raw summary remains
+  `awaiting_hash_bound_server_evidence`; do not reconstruct it from prose.
+
+Run inside `tmux`. Stop at the first `BLOCKED` message and return the complete output. Every
+script except S0 is inert without `--execute`. S2-S6 create no-overwrite, hash-bound pre-work
+manifests only after the universal provenance checks pass. They do not execute the named
+phase-specific gates or model experiments, do not train, and do not invoke RL. Their manifest
+status is `PREWORK_MANIFEST_ONLY_PHASE_NOT_EXECUTED`.
+
+```bash
+cd /cloud/cloud-ssd1/dissertation
+source .venv/bin/activate
+export PYTHONPATH=/cloud/cloud-ssd1/dissertation/src
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
+git rev-parse HEAD
+```
+
+## S0 - frozen legacy audit
+
+```bash
+python scripts/v4/00_audit_legacy.py --artifact-root artifacts
+sha256sum artifacts/v4/audit/*
+```
+
+Exactly four files must exist: the experiment registry, claim-evidence matrix, scoring contract,
+and legacy hash manifest. No model is loaded.
+
+## S1 - runtime model introspection
+
+```bash
+python scripts/v4/01_introspect_qwen.py --execute
+sha256sum artifacts/v4/model_introspection.json artifacts/v4/module_manifest.txt
+```
+
+Layer and module counts come from the live snapshot; they are never hard-coded.
+
+## S2 - T1-T6 capability-chain surface
+
+This and S3-S6 are provenance preflight surfaces, not experiment runners. Do not interpret a
+produced manifest as a capability, scoring, layerwise, cache-parity, or interface result.
+
+```bash
+SCREEN=/cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v2/phase_c_screen/screen_records.jsonl
+python scripts/v4/02_run_capability_chain.py --execute \
+  --input "$SCREEN" \
+  --input-sha256 f964dd6c005bd7344804aca8c33de2f621cc8e171f8d0f4ccc73a08081f2414a
+```
+
+## S3 - candidate scoring surface
+
+```bash
+python scripts/v4/03_score_candidates.py --execute \
+  --input "$SCREEN" \
+  --input-sha256 f964dd6c005bd7344804aca8c33de2f621cc8e171f8d0f4ccc73a08081f2414a
+```
+
+## S4 - layerwise assimilation surface
+
+```bash
+python scripts/v4/04_layerwise_assimilation.py --execute \
+  --input "$SCREEN" \
+  --input-sha256 f964dd6c005bd7344804aca8c33de2f621cc8e171f8d0f4ccc73a08081f2414a
+```
+
+## S5 - exact-cache parity surface
+
+```bash
+python scripts/v4/05_validate_cache_runner.py --execute \
+  --input "$SCREEN" \
+  --input-sha256 f964dd6c005bd7344804aca8c33de2f621cc8e171f8d0f4ccc73a08081f2414a
+```
+
+I4 cannot enter a primary result unless greedy cached continuation matches full-history
+re-encoding, or every token difference is explicitly explained and the condition remains
+diagnostic. If assistant-text decoding and chat-template re-encoding do not preserve the cached
+token prefix, stop that sample before continuation and record I4 as diagnostic rather than as a
+failed recovery.
+
+## S6 - I0-I4 interface-ladder surface
+
+```bash
+python scripts/v4/06_run_interface_ladder.py --execute \
+  --input "$SCREEN" \
+  --input-sha256 f964dd6c005bd7344804aca8c33de2f621cc8e171f8d0f4ccc73a08081f2414a
+sha256sum artifacts/v4/server_preflight/*.json
+```
+
+## Reporting and stopping discipline
+
+There is no subjective empirical success gate: do not require an 80% visual repair rate, a
+minimum recovery accuracy, or any other result-dependent threshold. Hash agreement, unique
+candidates, split isolation, single-token labels, forward-logit parity, and cache parity are
+objective measurement-validity gates and may block execution.
+
+Return point estimates, scene-clustered 95% confidence intervals, paired effects, and
+family-stratified effects. When policy support is later measured, report every prompt's `p_i`,
+`G_K = 1 - p_i^K - (1-p_i)^K`, and actual within-group reward variance; until then record these
+as not measured, never as zero. The engineering requirement of at least 80% automated-test
+coverage is software QA only, not a scientific result threshold.
+
+Return S0-S6 console output, the Git revision, every produced SHA-256 line, and any `BLOCKED`
+message. Do not begin Phase 4, training, LoRA, SFT, or RL.

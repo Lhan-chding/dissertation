@@ -71,8 +71,7 @@ class PairSumFact:
 
     def matrix_row(self) -> tuple[MatrixRow, int]:
         row = tuple(
-            1 if position in {self.left_index, self.right_index} else 0
-            for position in range(4)
+            1 if position in {self.left_index, self.right_index} else 0 for position in range(4)
         )
         return row, self.total  # type: ignore[return-value]
 
@@ -87,7 +86,9 @@ class ArithmeticProgressionFact:
             raise TypeError("indices must be a sequence")
         if len(self.indices) != 3:
             raise ValueError("arithmetic-progression indices must contain exactly three entries")
-        indices = tuple(_index(value, f"indices[{position}]") for position, value in enumerate(self.indices))
+        indices = tuple(
+            _index(value, f"indices[{position}]") for position, value in enumerate(self.indices)
+        )
         if len(set(indices)) != 3:
             raise ValueError("arithmetic-progression indices must be distinct")
         object.__setattr__(self, "indices", indices)
@@ -125,7 +126,10 @@ def fact_from_mapping(value: Mapping[str, object]) -> ConstraintFact:
     if fact_type == "pair_sum":
         _closed(value, {"type", "left_index", "right_index", "total"}, {"fact_id"})
         return PairSumFact(
-            value["left_index"], value["right_index"], value["total"], fact_id  # type: ignore[arg-type]
+            value["left_index"],
+            value["right_index"],
+            value["total"],
+            fact_id,  # type: ignore[arg-type]
         )
     if fact_type == "arithmetic_progression":
         _closed(value, {"type", "indices"}, {"fact_id"})
@@ -153,7 +157,11 @@ def facts_to_matrix(facts: Iterable[object]) -> tuple[tuple[MatrixRow, ...], tup
 def satisfies_all_facts(world: Sequence[int], facts: Iterable[object]) -> bool:
     canonical_world = validate_world(world)
     matrix, targets = facts_to_matrix(facts)
-    return all(sum(coefficient * value for coefficient, value in zip(row, canonical_world, strict=True)) == target for row, target in zip(matrix, targets, strict=True))
+    return all(
+        sum(coefficient * value for coefficient, value in zip(row, canonical_world, strict=True))
+        == target
+        for row, target in zip(matrix, targets, strict=True)
+    )
 
 
 def constraint_residual(world: Sequence[int], facts: Iterable[object]) -> tuple[int, ...]:

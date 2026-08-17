@@ -37,9 +37,7 @@ def localization_gap(given_index_accuracy: float, inferred_index_accuracy: float
 
 
 def interface_gap(cache_accuracy: float, hard_text_accuracy: float) -> float:
-    return _rate(cache_accuracy, "cache_accuracy") - _rate(
-        hard_text_accuracy, "hard_text_accuracy"
-    )
+    return _rate(cache_accuracy, "cache_accuracy") - _rate(hard_text_accuracy, "hard_text_accuracy")
 
 
 @dataclass(frozen=True, slots=True)
@@ -58,7 +56,7 @@ class RecoverabilityGaps:
         t6: float,
         cache: float,
         hard_text: float,
-    ) -> "RecoverabilityGaps":
+    ) -> RecoverabilityGaps:
         return cls(
             search=search_gap(t5, t6),
             localization=localization_gap(t4_given_index, t3),

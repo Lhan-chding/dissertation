@@ -1,6 +1,80 @@
 schema_version: 1
-model_loading_allowed: true
-training_authorized: false
-rl_authorized: false
-resized_height: 280
-resized_width: 280
+status: SERVER_EXECUTION_REQUIRED_PHASE_0_3_ONLY
+plan_version: v4.0
+project_root: /cloud/cloud-ssd1/dissertation
+
+model:
+  model_id: Qwen2.5-VL-3B-Instruct
+  local_path: /model/ModelScope/Qwen/Qwen2.5-VL-3B-Instruct
+  snapshot_sha256: e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87
+  model_loading_allowed: true
+  offline_only: true
+
+authorization:
+  phases_authorized:
+    - phase_0_legacy_audit
+    - phase_1_capability_chain
+    - phase_2_candidate_scoring
+    - phase_2_layerwise_assimilation
+    - phase_3_interface_ladder
+  training_authorized: false
+  rl_authorized: false
+  downloads_authorized: false
+
+vision_input:
+  resized_height: 280
+  resized_width: 280
+  patch_multiple: 28
+  require_saved_image_grid_thw: true
+  require_saved_visual_token_count: true
+
+decoding:
+  do_sample: false
+  temperature: 0.0
+  world_output_format: a,b,c,d
+  candidate_scoring_generation_allowed: false
+
+cue_conditions:
+  - no_cue
+  - valid_cue
+  - sham_cue
+  - counterfactual_cue
+
+integrity_gates:
+  require_hash_bound_inputs: true
+  require_unique_candidate_worlds: true
+  require_single_token_candidate_labels: true
+  require_no_cue_valid_cue_prompt_parity: true
+  require_final_layer_forward_logit_parity: true
+  require_cache_full_reencode_parity: true
+  require_legacy_confirm_split_exclusion: true
+  forbid_artifact_overwrite: true
+
+reporting:
+  subjective_success_thresholds_forbidden: true
+  report_scene_clustered_confidence_intervals: true
+  report_paired_and_family_stratified_effects: true
+  report_policy_support_and_reward_variance: true
+  confidence_level: 0.95
+  scene_is_statistical_unit: true
+  report_point_estimates: true
+  report_observation_copy_rate: true
+  report_exact_world_recovery: true
+  report_candidate_true_vs_observed_margin: true
+  report_per_prompt_policy_support_p_i: true
+  report_informative_group_probability_g_k: true
+  report_actual_within_group_reward_variance: true
+  note: Empirical values are reported, never used as subjective execution gates.
+
+artifacts:
+  model_introspection: artifacts/v4/model_introspection.json
+  module_manifest: artifacts/v4/module_manifest.txt
+  capability_per_scene: artifacts/v4/capability_chain/per_scene.csv
+  capability_summary: artifacts/v4/capability_chain/summary_by_family.csv
+  capability_paired_gaps: artifacts/v4/capability_chain/paired_gaps.json
+  candidate_labels: artifacts/v4/tokenizer/candidate_labels.json
+  candidate_scores: artifacts/v4/candidate_scoring/per_scene.jsonl
+  layerwise_profiles: artifacts/v4/layerwise_assimilation/per_scene.jsonl
+  cache_parity: artifacts/v4/cache/cache_parity.json
+  interface_records: artifacts/v4/interface_ladder/per_scene.jsonl
+  interface_summary: artifacts/v4/interface_ladder/summary.json

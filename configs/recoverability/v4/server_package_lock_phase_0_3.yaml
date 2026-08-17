@@ -1,0 +1,105 @@
+schema_version: 1
+status: FROZEN_PHASE_0_3_SERVER_SURFACE
+files:
+  - path: configs/recoverability/v4_phase_0_3.yaml
+    sha256: d80c64d8f056884689683caee2f99556a9ed0c1a345c1dd05a2c61c1414979df
+  - path: configs/recoverability/v4/phase_1_3_prompts.yaml
+    sha256: 8a6ace84813c97f15a923f599481495115f61ff917eb4be29aa2af8e6bb37b7b
+  - path: docs/Qwen25VL_Constraint_Assimilation_Natural_State_RL_Codex_Plan_v4.md
+    sha256: 01e532f8c7fe5439c70e8cd8de81ff3448465d8d401dbbf478c76aebaf49641e
+  - path: docs/QWEN_V4_SERVER_HANDOFF.md
+    sha256: afaf2102b23b8a45579a0a6c5be38ade1031177580c2aaa40b3270cf4c37395b
+  - path: pyproject.toml
+    sha256: 6f874b01dc23c49bb3f65d7aa36d7be70cf4338699a640c0a94cd56db32bb365
+  - path: requirements-gpu.lock.txt
+    sha256: d928379a590e5071d9b5042fe99d480f57ab187f0cb3a74e13af219a6048aeb3
+  - path: scripts/v4/00_audit_legacy.py
+    sha256: a58c45d325dcd0fc52d92a28bc8abcf05a5acd637aa031d3d2388198ad107ff9
+  - path: scripts/v4/01_introspect_qwen.py
+    sha256: f9f1f92397ffbaddba6c898a33a56ac0cf2c896d9d31152f32ce02750b23b976
+  - path: scripts/v4/02_run_capability_chain.py
+    sha256: 603524dbc5541955248bdb06e4d9a45d72be4e8dac8386cac01d0082628c5440
+  - path: scripts/v4/03_score_candidates.py
+    sha256: 377b6fad0428fdd51ebcefc5d32ec434006b1fcefbecbb5909d0d00f698f4797
+  - path: scripts/v4/04_layerwise_assimilation.py
+    sha256: 993bd95700f282384f48c1422ec53c8b3f7106fad4dc99e4ce2a6dbfadbf39ef
+  - path: scripts/v4/05_validate_cache_runner.py
+    sha256: 9945795df8548ff88b6730973072514b53a160205a2697760417d0caea3144ec
+  - path: scripts/v4/06_run_interface_ladder.py
+    sha256: 0a06901e850d41213e678598ce0ff72d0620cb57873026c04e10b6434f0fb268
+  - path: scripts/v4/_guards.py
+    sha256: 3e97ac79a98c1ca0fd0ad0561906e02dae93814c484fecb49e326739624c65f8
+  - path: scripts/v4/_phase_cli.py
+    sha256: 0faabed0ac085d3ce7be846a3c89c2b2a60a082a179f0d930e612c0411bacc3c
+  - path: src/compensability_v4/__init__.py
+    sha256: 1160a5d323c0fe1ee2b7dc62a45b0cd4e1210e28fa3a3c943c3e8a7e9990fc7a
+  - path: src/compensability_v4/data/__init__.py
+    sha256: d819c52260aa320c7149c6b12c838f7b3d15b62487d7b32281304b686a2e25d6
+  - path: src/compensability_v4/data/natural_error_pool.py
+    sha256: a1cc066a1cb1a311fb0f0583a804419528ed79dff9854ec6690b5e60dfc142b2
+  - path: src/compensability_v4/data/ood_generator.py
+    sha256: 795f3155e1ee17a0f91ee53a3d3e0fafd6acb7f93d4f1d5b2e295524d1695dcc
+  - path: src/compensability_v4/data/splits.py
+    sha256: f789e222313c831286618c04088dcd4d9ae10bd62a31ae6aaa90e298da7a748a
+  - path: src/compensability_v4/data/v4_generator.py
+    sha256: 0fc46e2ac5bafcf36dc37b0af24657b5fb5c2fc55af3ed9b6ab0d4abf049de7e
+  - path: src/compensability_v4/diagnostics/__init__.py
+    sha256: 97326ce0461439dce7d8135600799b31a19583525e05c7ea1911cb4bf9d6fc61
+  - path: src/compensability_v4/diagnostics/capability_chain.py
+    sha256: edd845ebb2659d02f0bbf0c02d7da0a6a93a411b72118b1cdd1204a75266f07b
+  - path: src/compensability_v4/diagnostics/interface_ladder.py
+    sha256: 5491022135ab8421db92ab79b707d35ecd664fba528e2f9e4f0fe9436bc6aa50
+  - path: src/compensability_v4/diagnostics/legacy_audit.py
+    sha256: 6e347786381fa213a7b7c9673e1abd314781cb541cf3c9b026842644e49f7e81
+  - path: src/compensability_v4/diagnostics/observation_anchor.py
+    sha256: 0823542155df45a3a4e554828f749200c4967ccefe8f2c1164be556a17bcd639
+  - path: src/compensability_v4/eval/__init__.py
+    sha256: 86325833b265324d297cee65bde18f4f99027e4444a51469e3fd5501f61c369e
+  - path: src/compensability_v4/eval/answer_source.py
+    sha256: 35294f4389cfd9d162dd26b8e610d79d581bac662eb2537d9830e5e7876d8410
+  - path: src/compensability_v4/eval/counterfactual.py
+    sha256: e00b04d2a3d05bbef389c19b2b6c515571a5944f8432acd165e52e3010a1c301
+  - path: src/compensability_v4/eval/ood.py
+    sha256: 569bf31072241ae599762f82e691e7e9bb2d8d22588804a276b96fe946e40cc0
+  - path: src/compensability_v4/eval/statistics.py
+    sha256: 2950013d4b61a6e4a20009fd9d8094bf145fb254b2cf4d7fc46c860efa63aaf8
+  - path: src/compensability_v4/eval/support_metrics.py
+    sha256: 9ee63fce0043a7b93dc038056096e3b142fa078c5c447d1da0f1b0c3baf1c81e
+  - path: src/compensability_v4/eval/world_recovery.py
+    sha256: 6f7cac956aa1c88e356f3cf3618d66a618b1cb4923145aeae053ba29d702c827
+  - path: src/compensability_v4/qwen/__init__.py
+    sha256: 3e507be33edddb9f09210018716e3ab9283b68f35382adc059f7575e58ca5aa2
+  - path: src/compensability_v4/qwen/cache_continuation.py
+    sha256: 50f94d711db17c3df85de203654eab834c9e4bef6c52505e28ae61619804e7a6
+  - path: src/compensability_v4/qwen/candidate_scoring.py
+    sha256: c678bfba9212fc3acdcf8dfebbf07fd30982f159ee875fd37130c1a615e8542d
+  - path: src/compensability_v4/qwen/interface_runner.py
+    sha256: d58c3bba51a93b8221c4e0970778b78c3e06623459847b9e99b3486a643ca11a
+  - path: src/compensability_v4/qwen/introspect_model.py
+    sha256: 7c1a37ef6b1ee28c0496c50294018806847029197688cfd3ddd50d2af4ea0f6e
+  - path: src/compensability_v4/qwen/layerwise_assimilation.py
+    sha256: 4f51f6a9ab2a7629e4e18b9544ddf0cebbe5434064d90ccfd8cac5609ad8df9c
+  - path: src/compensability_v4/qwen/manual_generation.py
+    sha256: 3c716496daa5771b62c4edd59f80f0a2bcf269169490195ecec5094af8753ee8
+  - path: src/compensability_v4/qwen/model_loader.py
+    sha256: a6ec48bfe03acfdea54f609b44004cd01f053e58c5f70ed0947616157cbbee47
+  - path: src/compensability_v4/schemas/__init__.py
+    sha256: 99edf107a9fa07bade840089f40592ecf5c498a9167c0be7c46c5d08bb28b4aa
+  - path: src/compensability_v4/schemas/_common.py
+    sha256: 75577256072dcabab258f5eeba2eade55032dbd2a406f60b2db2bf322beccbd8
+  - path: src/compensability_v4/schemas/observation.py
+    sha256: b08801dbdca1dbfea44fd12f3a991d0b4f1784195c13a2408b93851b6edeaf3c
+  - path: src/compensability_v4/schemas/record.py
+    sha256: c1a5fcf1ef5e5df15bebdc63305c7a0dfa332dc125a726aab88944599e6b66db
+  - path: src/compensability_v4/schemas/scene.py
+    sha256: 1c90b4374b84f2e8f1592f664082096ac8a039d6b49be0fe687b903c8cf931be
+  - path: src/compensability_v4/theory/__init__.py
+    sha256: 71061d8126d210149831fa22af40cffadd8670d0a625a9a16c47ac861919c1cf
+  - path: src/compensability_v4/theory/candidate_space.py
+    sha256: 6faba7f334cd95d867e833ce95d7732f2e277558265423e8055636bc2f23a337
+  - path: src/compensability_v4/theory/constraint_system.py
+    sha256: 7845503b5e6a598c370fa0a68af4189a18e803939b5722711ce3db732232347a
+  - path: src/compensability_v4/theory/policy_support.py
+    sha256: dd71ee50d3ba44bcf93e18a644ebed2e5566d8f5e337b6f4e681cf0995f2d0c4
+  - path: src/compensability_v4/theory/recoverability_hierarchy.py
+    sha256: 36400d66a71f8dd1eefb4a61ddfb9706864a17d76e39f35cd89938a51b6a62cc

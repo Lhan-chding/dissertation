@@ -1,8 +1,38 @@
-"""Immutable experiment-record schema."""
+"""Immutable model-output record with reproducibility provenance."""
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
+
+from ._common import (
+    require_closed_keys,
+    require_identifier,
+    require_mapping,
+    require_sha256,
+)
+
+_FIELDS = {
+    "record_id",
+    "scene_id",
+    "observation_id",
+    "interface",
+    "cue_condition",
+    "prompt_hash",
+    "tokenizer_version",
+    "model_snapshot_hash",
+    "output_text",
+}
+_INTERFACES = {
+    "symbolic_downstream_recovery",
+    "soft_report_diagnostic",
+    "candidate_world_diagnostic",
+    "same_conversation_visual_revision",
+    "natural_visual_revision",
+    "exact_cached_natural_continuation",
+    "text_replay",
+}
+_CUES = {"no_cue", "valid_cue", "sham_cue", "counterfactual_cue"}
 
 
 @dataclass(frozen=True, slots=True)
@@ -17,19 +47,31 @@ class ExperimentRecord:
     model_snapshot_hash: str
     output_text: str
 
-    @classmethod
-    def from_mapping(cls, mapping: dict[str, object]) -> "ExperimentRecord":
-        return cls(
-            record_id=str(mapping["record_id"]),
-            scene_id=str(mapping["scene_id"]),
-            observation_id=str(mapping["observation_id"]),
-            interface=str(mapping["interface"]),
-            cue_condition=str(mapping["cue_condition"]),
-            prompt_hash=str(mapping["prompt_hash"]),
-            tokenizer_version=str(mapping["tokenizer_version"]),
-            model_snapshot_hash=str(mapping["model_snapshot_hash"]),
-            output_text=str(mapping["output_text"]),
+    def __post_init__(self) -> None:
+        for name in ("record_id", "scene_id", "observation_id", "tokenizer_version"):
+            object.__setattr__(self, name, require_identifier(getattr(self, name), name))
+        interface = require_identifier(self.interface, "interface")
+        if interface not in _INTERFACES:
+            raise ValueError("interface is not registered by v4")
+        object.__setattr__(self, "interface", interface)
+        cue = require_identifier(self.cue_condition, "cue_condition")
+        if cue not in _CUES:
+            raise ValueError("cue_condition is not registered by v4")
+        object.__setattr__(self, "cue_condition", cue)
+        object.__setattr__(self, "prompt_hash", require_sha256(self.prompt_hash, "prompt_hash"))
+        object.__setattr__(
+            self,
+            "model_snapshot_hash",
+            require_sha256(self.model_snapshot_hash, "model_snapshot_hash"),
         )
+        if not isinstance(self.output_text, str):
+            raise TypeError("output_text must be a string")
+
+    @classmethod
+    def from_mapping(cls, value: Mapping[str, object]) -> ExperimentRecord:
+        mapping = require_mapping(value, "experiment record")
+        require_closed_keys(mapping, required=_FIELDS, name="experiment record")
+        return cls(**mapping)  # type: ignore[arg-type]
 
     def to_mapping(self) -> dict[str, object]:
         return {

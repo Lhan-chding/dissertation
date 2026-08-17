@@ -1,0 +1,58 @@
+schema_version: 1
+status: FROZEN_BEFORE_SERVER_EXECUTION
+output_contracts:
+  T1: YES_OR_NO
+  T2: CONFLICT_OR_CONSISTENT
+  T3: SINGLE_INDEX_0_TO_3
+  T4: SINGLE_INTEGER
+  T5: SINGLE_TOKEN_CANDIDATE_LABEL
+  T6: FOUR_INTEGER_CSV
+  I0: FOUR_INTEGER_CSV
+  I3: FOUR_INTEGER_CSV
+  I4: FOUR_INTEGER_CSV
+
+prompts:
+  T1: >-
+    Check only whether the candidate world satisfies the one supplied fact. Reply with exactly
+    YES or NO and no other text.
+  T2: >-
+    Check whether the observed four-value world is jointly consistent with all supplied facts.
+    Reply with exactly CONFLICT or CONSISTENT and no other text.
+  T3: >-
+    Exactly one position in the observed four-value world is wrong under the supplied facts.
+    Reply only with its zero-based index: 0, 1, 2, or 3.
+  T4: >-
+    The supplied zero-based position is the only wrong position. Recover its unique true integer
+    value under all supplied facts. Reply with that integer only.
+  T5: >-
+    Select the one candidate world that satisfies all supplied facts. Reply with exactly its
+    candidate label and no other text.
+  T6: >-
+    Recover the unique true four-value world from the observed world and supplied facts. Reply
+    with exactly four comma-separated integers a,b,c,d and no other text.
+  stage_1_observation: >-
+    Read the chart and report the four values in fixed position order. Reply with exactly four
+    comma-separated integers a,b,c,d and no other text.
+  correction_suffix: >-
+    Using the newly supplied facts, revise the earlier four values if required. Reply with exactly
+    four comma-separated integers a,b,c,d and no other text.
+
+candidate_label_search_order:
+  - A
+  - B
+  - C
+  - D
+  - E
+  - F
+  - G
+  - H
+  - I
+  - J
+
+prompt_integrity:
+  same_template_across_cue_conditions: true
+  cue_condition_changes_facts_only: true
+  explanations_forbidden: true
+  dsl_for_world_recovery_forbidden: true
+  external_solver_at_model_inference_forbidden: true
+  candidate_order_seeded_and_balanced: true

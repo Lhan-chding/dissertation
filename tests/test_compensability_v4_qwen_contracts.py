@@ -18,7 +18,11 @@ from compensability_v4.qwen.candidate_scoring import (
 from compensability_v4.qwen.interface_runner import InterfaceName, interface_family
 from compensability_v4.qwen.introspect_model import introspect_model
 from compensability_v4.qwen.layerwise_assimilation import validate_final_layer_logits
-from compensability_v4.qwen.model_loader import MODEL_PATH, MODEL_SNAPSHOT_SHA256, require_server_model
+from compensability_v4.qwen.model_loader import (
+    MODEL_PATH,
+    MODEL_SNAPSHOT_SHA256,
+    require_server_model,
+)
 
 
 class FakeTokenizer:
@@ -41,12 +45,20 @@ class FakeModel:
 
 
 def test_candidate_labels_are_single_token_and_world_mapping_survives_order_changes() -> None:
-    labels = find_single_token_labels(FakeTokenizer(), candidates=["AA", "D", "B", "A", "C"], minimum=4)
+    labels = find_single_token_labels(
+        FakeTokenizer(), candidates=["AA", "D", "B", "A", "C"], minimum=4
+    )
     assert labels == ("D", "B", "A", "C")
     worlds = [(8, 4, 5, 6), (9, 4, 5, 6), (7, 4, 5, 6), (10, 4, 5, 6)]
 
     first = score_candidate_labels(FakeModel(), FakeProcessor(), "prompt", labels, worlds)
-    second = score_candidate_labels(FakeModel(), FakeProcessor(), "prompt", tuple(reversed(labels)), tuple(reversed(worlds)))
+    second = score_candidate_labels(
+        FakeModel(),
+        FakeProcessor(),
+        "prompt",
+        tuple(reversed(labels)),
+        tuple(reversed(worlds)),
+    )
 
     assert first == second
     assert first[(9, 4, 5, 6)] == 2.5
@@ -95,7 +107,9 @@ def test_interface_names_preserve_visual_revision_claim_boundary() -> None:
 def test_model_introspection_uses_runtime_config_and_named_modules() -> None:
     model = SimpleNamespace(
         config=SimpleNamespace(num_hidden_layers=36, vision_config=SimpleNamespace(depth=32)),
-        named_modules=lambda: iter([("", object()), ("model.layers.0", object()), ("visual.merger", object())]),
+        named_modules=lambda: iter(
+            [("", object()), ("model.layers.0", object()), ("visual.merger", object())]
+        ),
     )
     result = introspect_model(model)
     assert result["language_layers"] == 36
@@ -105,6 +119,8 @@ def test_model_introspection_uses_runtime_config_and_named_modules() -> None:
 
 def test_server_model_loader_is_pinned_and_fails_closed_locally(tmp_path) -> None:
     assert MODEL_PATH == "/model/ModelScope/Qwen/Qwen2.5-VL-3B-Instruct"
-    assert MODEL_SNAPSHOT_SHA256 == "e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87"
+    assert MODEL_SNAPSHOT_SHA256 == (
+        "e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87"
+    )
     with pytest.raises(RuntimeError, match="snapshot"):
         require_server_model(tmp_path / "missing", MODEL_SNAPSHOT_SHA256)

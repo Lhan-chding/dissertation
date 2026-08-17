@@ -143,8 +143,7 @@ def test_counterfactual_world_must_be_distinct_legal_and_uniquely_fact_supported
 
 def test_statistical_aggregation_uses_scene_not_rollout_as_the_unit() -> None:
     rows = [
-        {"scene_id": "scene-a", "rollout_id": index, "success": True}
-        for index in range(10)
+        {"scene_id": "scene-a", "rollout_id": index, "success": True} for index in range(10)
     ] + [{"scene_id": "scene-b", "rollout_id": 0, "success": False}]
 
     result = aggregate_scene_metrics(rows, metric="success")

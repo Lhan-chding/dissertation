@@ -49,7 +49,9 @@ def test_one_edit_candidate_space_is_unique_sorted_and_includes_observation() ->
     assert candidates == sorted(set(candidates))
     assert observed in candidates
     assert len(candidates) == 1 + 4 * 4
-    assert all(sum(a != b for a, b in zip(observed, world, strict=True)) <= 1 for world in candidates)
+    assert all(
+        sum(a != b for a, b in zip(observed, world, strict=True)) <= 1 for world in candidates
+    )
 
 
 def test_unique_projection_and_failure_modes_are_distinct() -> None:
@@ -86,9 +88,9 @@ def test_informative_group_formula_matches_monte_carlo_and_mean() -> None:
     probability = informative_group_probability(0.17, 8)
     rng = random.Random(20260817)
     trials = 30_000
-    empirical = sum(
-        0 < sum(rng.random() < 0.17 for _ in range(8)) < 8 for _ in range(trials)
-    ) / trials
+    empirical = (
+        sum(0 < sum(rng.random() < 0.17 for _ in range(8)) < 8 for _ in range(trials)) / trials
+    )
 
     assert math.isclose(probability, empirical, abs_tol=0.01)
     assert mean_informative_group_rate([0.0, 0.5, 1.0], 4) == pytest.approx(0.2916666667)

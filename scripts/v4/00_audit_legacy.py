@@ -5,7 +5,6 @@ from pathlib import Path
 
 from compensability_v4.diagnostics.legacy_audit import write_legacy_audit
 
-
 ROOT = Path(__file__).resolve().parents[2]
 
 
