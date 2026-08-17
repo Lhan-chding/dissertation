@@ -51,7 +51,7 @@ def test_qwen_composite_runtime_uses_language_model_norm() -> None:
 
 
 def test_forward_and_parameterized_projection_share_one_inference_context() -> None:
-    """Regression for inference tensors projected after inference_mode has exited."""
+    """Project every captured decoder state through the runtime final norm."""
 
     class TrackingLinear(torch.nn.Linear):
         def __init__(self, in_features: int, out_features: int) -> None:
@@ -69,7 +69,7 @@ def test_forward_and_parameterized_projection_share_one_inference_context() -> N
             self.head = TrackingLinear(2, 3)
             self.model = SimpleNamespace(language_model=SimpleNamespace(norm=self.norm))
             with torch.no_grad():
-                self.norm.weight.copy_(torch.eye(2))
+                self.norm.weight.copy_(torch.tensor(((2.0, 0.0), (0.0, 0.5))))
                 self.head.weight.copy_(torch.tensor(((1.0, 0.0), (0.0, 1.0), (1.0, -1.0))))
 
         def get_output_embeddings(self):
@@ -79,8 +79,9 @@ def test_forward_and_parameterized_projection_share_one_inference_context() -> N
             assert torch.is_inference_mode_enabled()
             assert arguments["output_hidden_states"] is True
             first = torch.tensor([[[1.0, 2.0]]])
-            second = self.norm(torch.tensor([[[3.0, 4.0]]]))
-            logits = self.head(second)
+            second = torch.tensor([[[3.0, 4.0]]])
+            normalized_output = self.norm(second)
+            logits = self.head(normalized_output)
             return SimpleNamespace(
                 hidden_states=(torch.zeros_like(first), first, second),
                 logits=logits,
@@ -95,11 +96,17 @@ def test_forward_and_parameterized_projection_share_one_inference_context() -> N
             "attention_mask": torch.tensor([[1]]),
         },
         {"A": 0, "B": 1, "C": 2},
+        absolute_tolerance=0.0,
+        relative_tolerance=0.0,
     )
 
     assert len(result) == 2
-    assert result[-1] == pytest.approx({"A": 3.0, "B": 4.0, "C": -1.0})
-    assert model.norm.contexts == [(True, False), (True, False)]
+    assert result[-1] == {"A": 6.0, "B": 2.0, "C": 4.0}
+    assert model.norm.contexts == [
+        (True, False),
+        (True, False),
+        (True, False),
+    ]
     assert model.head.contexts == [
         (True, False),
         (True, False),
