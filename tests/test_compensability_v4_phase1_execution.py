@@ -93,6 +93,41 @@ def test_v4_selection_allows_noisy_observation_outside_truth_domain(tmp_path) ->
     assert selection.scenes[0].value_domain == tuple(range(2, 19))
 
 
+def test_capability_world_candidates_stay_inside_truth_domain_for_boundary_noise(tmp_path) -> None:
+    baseline = {**_screen_row(0), "scene_id": "aaa-baseline"}
+    boundary_noise = {
+        **_screen_row(1),
+        "scene_id": "zzz-boundary-noise",
+        "values": [2, 4, 5, 9],
+        "perceived_values": [1, 4, 5, 9],
+    }
+    source = tmp_path / "screen_records.jsonl"
+    source.write_text(
+        "\n".join(json.dumps(row) for row in (baseline, boundary_noise)) + "\n",
+        encoding="utf-8",
+    )
+    selection = select_legacy_capability_scenes(
+        source,
+        expected_source_scenes=2,
+        expected_scenes=2,
+        expected_family_counts={"cross_series": 2},
+        expected_excluded_family_counts={},
+    )
+
+    calls = build_capability_calls(
+        selection.scenes,
+        prompts=PROMPTS,
+        candidate_labels=("A", "B", "C", "D"),
+        seed=2026081701,
+    )
+    boundary_calls = tuple(call for call in calls if call.scene_id == "zzz-boundary-noise")
+    t1 = next(call for call in boundary_calls if call.task_type is CapabilityTaskType.T1)
+    t1_payload = json.loads(t1.messages[1]["content"])
+    assert all(value in range(2, 19) for value in t1_payload["candidate_world"])
+    t5 = next(call for call in boundary_calls if call.task_type is CapabilityTaskType.T5)
+    assert all(value in range(2, 19) for world in t5.candidate_worlds for value in world)
+
+
 def test_v4_selection_excludes_only_objectively_ambiguous_legacy_world(tmp_path) -> None:
     unique = _screen_row(0)
     ambiguous = {
