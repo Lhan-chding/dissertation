@@ -151,14 +151,23 @@ def _position_tuple(position_ids: object | None, length: int) -> tuple[tuple[int
     value = to_list() if callable(to_list) else position_ids
     if not isinstance(value, Sequence) or not value:
         raise RuntimeError("position_ids are empty")
-    # Qwen MRoPE is commonly [3, batch, sequence], while ordinary models use
-    # [batch, sequence]. Normalize both to tuple[axis][sequence].
-    if len(value) == 3 and all(isinstance(axis, Sequence) and len(axis) == 1 for axis in value):
+    # Qwen MRoPE is commonly [3, batch, sequence]. Generation may prepend a
+    # text-only packing axis, yielding [4, batch, sequence]; Qwen's model
+    # forward strips that first axis before applying the rotary embeddings.
+    packed_layout = len(value) in (3, 4) and all(
+        isinstance(axis, Sequence) and len(axis) == 1 and isinstance(axis[0], Sequence)
+        for axis in value
+    )
+    if packed_layout:
         axes = tuple(tuple(int(item) for item in axis[0]) for axis in value)
     elif len(value) == 1 and isinstance(value[0], Sequence):
         axes = (tuple(int(item) for item in value[0]),)
+    elif len(value) == 4:
+        raise RuntimeError("unsupported rank-two four-axis position_ids")
     else:
         axes = tuple(tuple(int(item) for item in axis) for axis in value)  # type: ignore[arg-type]
+    if packed_layout and len(axes) == 4:
+        axes = axes[1:]
     if any(len(axis) < length for axis in axes):
         raise RuntimeError("runtime position_ids do not align with the token sequence")
     return tuple(axis[-length:] for axis in axes)
@@ -274,13 +283,18 @@ def manual_greedy_generate(
             position_tensor.unsqueeze(1) if len(full_positions) == 3 else position_tensor
         )
     prompt_ids = prior_ids + suffix_prompt_ids
-    initialize_cache_position = getattr(model, "_get_initial_cache_position", None)
-    if callable(initialize_cache_position):
-        initial = initialize_cache_position(full_input_ids, initial)
     attention_mask = initial.get("attention_mask")
     if attention_mask is None:
         attention_mask = torch.ones_like(full_input_ids)
         initial["attention_mask"] = attention_mask
+    prepare_position_ids = getattr(model, "_prepare_position_ids_for_generation", None)
+    if initial.get("position_ids") is None and callable(prepare_position_ids):
+        position_ids = prepare_position_ids(full_input_ids, initial)
+        if position_ids is not None:
+            initial["position_ids"] = position_ids
+    initialize_cache_position = getattr(model, "_get_initial_cache_position", None)
+    if callable(initialize_cache_position):
+        initial = initialize_cache_position(full_input_ids, initial)
     eos = _eos_set(eos_token_ids)
     generated: list[int] = []
     active_cache: object | None = past_key_values
