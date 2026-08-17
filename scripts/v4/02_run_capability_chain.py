@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 from pathlib import Path
 
 import yaml
@@ -18,8 +19,10 @@ from _guards import (
 )
 
 from compensability_v4.diagnostics.capability_chain import (
+    CapabilityCall,
+    CapabilityTaskType,
     build_capability_calls,
-    load_legacy_capability_scenes,
+    select_legacy_capability_scenes,
     summarize_capability_run,
 )
 from compensability_v4.qwen.candidate_scoring import find_single_token_labels
@@ -48,6 +51,27 @@ def _load_prompt_contract(path: Path) -> tuple[dict[str, str], tuple[str, ...]]:
     if any(not isinstance(label, str) or not label.strip() for label in labels):
         raise RuntimeError("candidate label search order is invalid")
     return {name: prompts[name] for name in required}, tuple(labels)
+
+
+def _validate_call_plan(
+    calls: tuple[CapabilityCall, ...], phase_1: dict[str, object], labels: tuple[str, ...]
+) -> None:
+    if len(calls) != phase_1["model_call_cap"]:
+        raise RuntimeError("Phase 1 model-call plan drifted from the frozen contract")
+    t1_counts = Counter(
+        call.expected_output for call in calls if call.task_type is CapabilityTaskType.T1
+    )
+    if t1_counts != Counter({"YES": phase_1["t1_yes_calls"], "NO": phase_1["t1_no_calls"]}):
+        raise RuntimeError("Phase 1 T1 allocation drifted from the frozen contract")
+    t5_counts = Counter(
+        call.expected_output for call in calls if call.task_type is CapabilityTaskType.T5
+    )
+    slot_counts = phase_1["t5_true_label_slot_counts"]
+    if not isinstance(slot_counts, list):
+        raise RuntimeError("Phase 1 T5 slot allocation contract is malformed")
+    expected_t5 = Counter(dict(zip(labels, slot_counts, strict=True)))
+    if t5_counts != expected_t5:
+        raise RuntimeError("Phase 1 T5 label allocation drifted from the frozen contract")
 
 
 def run_capability_chain_cli(
@@ -89,7 +113,24 @@ def run_capability_chain_cli(
         if not isinstance(phase_1, dict):
             raise RuntimeError("Phase 1 execution contract is malformed")
         prompts, search_order = _load_prompt_contract(arguments.prompt_config)
-        scenes = load_legacy_capability_scenes(arguments.input[0])
+        selection = select_legacy_capability_scenes(arguments.input[0])
+        scenes = selection.scenes
+        if (
+            selection.source_eligible_scenes != phase_1["source_scenes"]
+            or len(scenes) != phase_1["world_recoverable_scenes"]
+            or len(selection.exclusions) != phase_1["excluded_ambiguous_scenes"]
+        ):
+            raise RuntimeError("Phase 1 v4 world-recoverability selection drifted")
+        provisional_labels = search_order[:4]
+        if len(provisional_labels) != 4:
+            raise RuntimeError("Phase 1 requires four candidate label placeholders")
+        provisional_calls = build_capability_calls(
+            scenes,
+            prompts=prompts,
+            candidate_labels=provisional_labels,
+            seed=int(phase_1["seed"]),
+        )
+        _validate_call_plan(provisional_calls, phase_1, provisional_labels)
         model, processor = load_pinned_qwen(model_path=arguments.model_path)
         tokenizer = getattr(processor, "tokenizer", processor)
         labels = find_single_token_labels(tokenizer, search_order, minimum=4)[:4]
@@ -99,8 +140,7 @@ def run_capability_chain_cli(
             candidate_labels=labels,
             seed=int(phase_1["seed"]),
         )
-        if len(calls) != phase_1["model_call_cap"]:
-            raise RuntimeError("Phase 1 model-call plan drifted from the frozen contract")
+        _validate_call_plan(calls, phase_1, labels)
 
         def report_progress(completed: int, total: int) -> None:
             if completed == total or completed % 50 == 0:
@@ -122,7 +162,17 @@ def run_capability_chain_cli(
             {
                 "schema_version": 1,
                 "status": "PHASE_1_EXECUTED",
-                "source_scenes": len(scenes),
+                "source_eligible_scenes": selection.source_eligible_scenes,
+                "world_recoverable_scenes": len(scenes),
+                "excluded_scenes": [
+                    {
+                        "scene_id": item.scene_id,
+                        "family": item.family,
+                        "reason": item.reason,
+                        "supported_worlds": [list(world) for world in item.supported_worlds],
+                    }
+                    for item in selection.exclusions
+                ],
                 "model_calls": len(records),
                 "candidate_labels": list(labels),
                 "do_sample": False,

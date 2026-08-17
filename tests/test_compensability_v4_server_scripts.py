@@ -538,7 +538,50 @@ def test_capability_chain_cli_executes_frozen_contract(monkeypatch, tmp_path, ca
             "exclusions": (exclusion,),
         },
     )()
-    calls = tuple(type("Call", (), {"call_id": str(index)})() for index in range(3474))
+    calls = []
+    for index in range(579):
+        calls.append(
+            type(
+                "Call",
+                (),
+                {
+                    "call_id": f"T1-{index}",
+                    "task_type": CAPABILITY_SCRIPT.CapabilityTaskType.T1,
+                    "expected_output": "YES" if index < 290 else "NO",
+                },
+            )()
+        )
+    for index, label in enumerate(("A",) * 145 + ("B",) * 145 + ("C",) * 145 + ("D",) * 144):
+        calls.append(
+            type(
+                "Call",
+                (),
+                {
+                    "call_id": f"T5-{index}",
+                    "task_type": CAPABILITY_SCRIPT.CapabilityTaskType.T5,
+                    "expected_output": label,
+                },
+            )()
+        )
+    for task_type in (
+        CAPABILITY_SCRIPT.CapabilityTaskType.T2,
+        CAPABILITY_SCRIPT.CapabilityTaskType.T3,
+        CAPABILITY_SCRIPT.CapabilityTaskType.T4,
+        CAPABILITY_SCRIPT.CapabilityTaskType.T6,
+    ):
+        calls.extend(
+            type(
+                "Call",
+                (),
+                {
+                    "call_id": f"{task_type.value}-{index}",
+                    "task_type": task_type,
+                    "expected_output": "unused",
+                },
+            )()
+            for index in range(579)
+        )
+    calls = tuple(calls)
     records = tuple(object() for _ in range(3474))
     monkeypatch.setattr(
         sys,
@@ -625,6 +668,75 @@ def test_capability_chain_cli_is_inert_without_execute(monkeypatch, capsys) -> N
         == 2
     )
     assert "BLOCKED" in capsys.readouterr().out
+
+
+def test_capability_chain_rejects_static_plan_drift_before_model_load(
+    monkeypatch, tmp_path, capsys
+) -> None:
+    source = tmp_path / "screen_records.jsonl"
+    source.write_text('{"eligible":true}\n', encoding="utf-8")
+    selection = type(
+        "Selection",
+        (),
+        {
+            "source_eligible_scenes": 580,
+            "scenes": tuple(object() for _ in range(579)),
+            "exclusions": (object(),),
+        },
+    )()
+    model_load_attempted = False
+
+    def record_model_load(**_kwargs):
+        nonlocal model_load_attempted
+        model_load_attempted = True
+        return object(), object()
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "02_run_capability_chain.py",
+            "--execute",
+            "--input",
+            str(source),
+            "--input-sha256",
+            GUARDS.LEGACY_SCREEN_RECORDS_SHA256,
+        ],
+    )
+    monkeypatch.setattr(
+        CAPABILITY_SCRIPT,
+        "validate_server_inputs",
+        lambda **_kwargs: GUARDS.ValidatedServerInputs("config", "lock", "model", ()),
+    )
+    monkeypatch.setattr(CAPABILITY_SCRIPT, "_load_config", lambda _path: valid_config())
+    monkeypatch.setattr(CAPABILITY_SCRIPT, "validate_runtime_evidence", lambda _runtime: {})
+    monkeypatch.setattr(
+        CAPABILITY_SCRIPT,
+        "_load_prompt_contract",
+        lambda _path: (
+            {name: name for name in ("T1", "T2", "T3", "T4", "T5", "T6")},
+            ("A", "B", "C", "D"),
+        ),
+    )
+    monkeypatch.setattr(
+        CAPABILITY_SCRIPT, "select_legacy_capability_scenes", lambda _path: selection
+    )
+    monkeypatch.setattr(CAPABILITY_SCRIPT, "build_capability_calls", lambda *_a, **_k: ())
+    monkeypatch.setattr(CAPABILITY_SCRIPT, "load_pinned_qwen", record_model_load)
+
+    result = CAPABILITY_SCRIPT.run_capability_chain_cli(
+        phase="phase_1_capability_chain",
+        expected_input_sha256=(GUARDS.LEGACY_SCREEN_RECORDS_SHA256,),
+        output_paths={
+            "per_scene": "per_scene.csv",
+            "summary_by_family": "summary_by_family.csv",
+            "paired_gaps": "paired_gaps.json",
+        },
+    )
+
+    assert result == 2
+    assert model_load_attempted is False
+    assert "model-call plan drifted" in capsys.readouterr().out
 
 
 def test_introspection_cli_dry_run_never_loads_model(monkeypatch, tmp_path, capsys) -> None:

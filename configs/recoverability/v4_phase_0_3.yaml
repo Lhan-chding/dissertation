@@ -86,12 +86,21 @@ runtime_evidence:
 
 phase_1_capability_chain:
   source_scenes: 580
-  model_call_cap: 3480
+  world_recoverable_scenes: 579
+  excluded_ambiguous_scenes: 1
+  included_family_counts:
+    cross_series: 208
+    duplicate_encoding: 182
+    trend: 189
+  excluded_family_counts:
+    trend: 1
+  model_call_cap: 3474
   calls_per_scene: 6
   t1_calls_per_scene: 1
-  t1_yes_no_balanced: true
+  t1_yes_calls: 290
+  t1_no_calls: 289
   t5_candidate_count: 4
-  t5_true_label_balanced: true
+  t5_true_label_slot_counts: [145, 145, 145, 144]
   max_new_tokens: 32
   do_sample: false
   seed: 2026081701

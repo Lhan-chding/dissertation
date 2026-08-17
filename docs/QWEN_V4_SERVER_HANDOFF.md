@@ -69,10 +69,18 @@ evidence before loading Qwen:
   `model.language_model.layers.0`, `model.language_model.layers.35`,
   `model.language_model.norm`, `lm_head`
 
-Phase 1 must execute exactly 580 eligible scenes x 6 calls = 3,480 model calls. Gates remain
-objective only: hash-bound screen records, S1 runtime evidence, one eligible natural error per
-scene, T1 yes/no balancing, four unique T5 candidates with single-token labels, no overwrite,
-and strict minimal-output parsing.
+The legacy file contains 580 answer-recoverable scenes, but the frozen v4 audit found that one
+`trend` scene admits two fact-supported one-edit worlds. V4 therefore excludes that scene by the
+exact-world uniqueness equation before any model call and executes 579 scenes x 6 calls = 3,474
+model calls. Included family counts are 208 `cross_series`, 182 `duplicate_encoding`, and 189
+`trend`; the excluded-family count is exactly one `trend`. T1 is allocated 290 YES / 289 NO and
+the four T5 true-label slots are allocated 145 / 145 / 145 / 144. These are deterministic design
+allocations, not empirical success thresholds.
+
+Gates remain objective only: hash-bound screen records, S1 runtime evidence, one eligible natural
+error per source scene, exact-world uniqueness, four unique T5 candidates with single-token
+labels, no overwrite, and strict minimal-output parsing. The excluded scene and both supported
+worlds are recorded in `paired_gaps.json`.
 
 ```bash
 SCREEN=/cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v2/phase_c_screen/screen_records.jsonl

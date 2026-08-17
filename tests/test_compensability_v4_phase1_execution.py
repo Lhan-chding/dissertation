@@ -88,6 +88,16 @@ def test_v4_selection_excludes_only_objectively_ambiguous_legacy_world(tmp_path)
         encoding="utf-8",
     )
 
+    legacy_scenes = load_legacy_capability_scenes(
+        source,
+        expected_scenes=2,
+        expected_family_counts={"cross_series": 1, "trend": 1},
+    )
+    assert tuple(scene.scene_id for scene in legacy_scenes) == (
+        "scene-000",
+        "trend-ambiguous",
+    )
+
     selection = select_legacy_capability_scenes(
         source,
         expected_source_scenes=2,

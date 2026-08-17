@@ -20,8 +20,8 @@ from compbias.recoverability.compatibility import (
 from compbias.recoverability.phase_c_screen import build_family_constraints
 from compensability_v4.eval.statistics import scene_clustered_bootstrap_ci
 from compensability_v4.theory.candidate_space import (
+    constraint_supported_candidates,
     enumerate_one_edit_candidates,
-    unique_constraint_projection,
 )
 from compensability_v4.theory.constraint_system import (
     World,
@@ -157,7 +157,9 @@ def build_t6_expected_output(world: World) -> str:
 
 
 _LEGACY_FAMILIES = ("cross_series", "duplicate_encoding", "trend")
-_LEGACY_FAMILY_COUNTS = {"cross_series": 208, "duplicate_encoding": 182, "trend": 190}
+_LEGACY_ALL_FAMILY_COUNTS = {"cross_series": 208, "duplicate_encoding": 182, "trend": 190}
+_V4_LEGACY_FAMILY_COUNTS = {"cross_series": 208, "duplicate_encoding": 182, "trend": 189}
+_V4_EXCLUDED_FAMILY_COUNTS = {"trend": 1}
 _LEGACY_VALUE_DOMAIN = tuple(range(2, 19))
 
 
@@ -199,6 +201,21 @@ class LegacyCapabilityScene:
     value_domain: tuple[int, ...]
 
 
+@dataclass(frozen=True, slots=True)
+class LegacyCapabilityExclusion:
+    scene_id: str
+    family: str
+    reason: str
+    supported_worlds: tuple[World, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class LegacyCapabilitySelection:
+    source_eligible_scenes: int
+    scenes: tuple[LegacyCapabilityScene, ...]
+    exclusions: tuple[LegacyCapabilityExclusion, ...]
+
+
 def _legacy_scene(row: Mapping[str, object]) -> LegacyCapabilityScene:
     required_true = (
         "parse_success",
@@ -228,9 +245,9 @@ def _legacy_scene(row: Mapping[str, object]) -> LegacyCapabilityScene:
     if len(mismatches) != 1:
         raise ValueError("legacy capability scene must contain exactly one observed error")
     facts = tuple(_fact_mapping(item) for item in build_family_constraints(str(family), truth))
-    domain = tuple(sorted(set(_LEGACY_VALUE_DOMAIN) | set(observed)))
-    if unique_constraint_projection(observed, facts, domain) != truth:
-        raise ValueError("legacy capability facts do not uniquely recover the hidden truth")
+    domain = _LEGACY_VALUE_DOMAIN
+    if any(value not in domain for value in observed):
+        raise ValueError("legacy observed values lie outside the frozen v4 value domain")
     return LegacyCapabilityScene(
         scene_id=scene_id,
         family=str(family),
@@ -242,14 +259,7 @@ def _legacy_scene(row: Mapping[str, object]) -> LegacyCapabilityScene:
     )
 
 
-def load_legacy_capability_scenes(
-    path: Path,
-    *,
-    expected_scenes: int = 580,
-    expected_family_counts: Mapping[str, int] = _LEGACY_FAMILY_COUNTS,
-) -> tuple[LegacyCapabilityScene, ...]:
-    """Load the exact eligible legacy slice after its bytes pass the outer SHA gate."""
-
+def _load_eligible_legacy_scenes(path: Path) -> tuple[LegacyCapabilityScene, ...]:
     if path.is_symlink() or not path.is_file():
         raise ValueError("legacy capability input must be a regular file")
     scenes: list[LegacyCapabilityScene] = []
@@ -263,11 +273,79 @@ def load_legacy_capability_scenes(
             if row.get("eligible") is True:
                 scenes.append(_legacy_scene(row))
     frozen = tuple(sorted(scenes, key=lambda item: item.scene_id))
-    if len(frozen) != expected_scenes or len({item.scene_id for item in frozen}) != len(frozen):
-        raise ValueError("legacy capability eligible scene count or identifiers differ")
-    if Counter(item.family for item in frozen) != Counter(dict(expected_family_counts)):
-        raise ValueError("legacy capability family counts differ from frozen evidence")
+    if len({item.scene_id for item in frozen}) != len(frozen):
+        raise ValueError("legacy capability eligible identifiers are not unique")
     return frozen
+
+
+def select_legacy_capability_scenes(
+    path: Path,
+    *,
+    expected_source_scenes: int = 580,
+    expected_scenes: int = 579,
+    expected_family_counts: Mapping[str, int] = _V4_LEGACY_FAMILY_COUNTS,
+    expected_excluded_family_counts: Mapping[str, int] = _V4_EXCLUDED_FAMILY_COUNTS,
+) -> LegacyCapabilitySelection:
+    """Apply the v4 exact-world criterion to the hash-bound legacy diagnostics."""
+
+    source_scenes = _load_eligible_legacy_scenes(path)
+    scenes: list[LegacyCapabilityScene] = []
+    exclusions: list[LegacyCapabilityExclusion] = []
+    for scene in source_scenes:
+        supported = constraint_supported_candidates(scene.observed, scene.facts, scene.value_domain)
+        if supported == (scene.truth,):
+            scenes.append(scene)
+            continue
+        reason = (
+            "no_supported_world"
+            if not supported
+            else "unique_but_not_truth"
+            if len(supported) == 1
+            else "ambiguous_world"
+        )
+        exclusions.append(
+            LegacyCapabilityExclusion(
+                scene_id=scene.scene_id,
+                family=scene.family,
+                reason=reason,
+                supported_worlds=supported,
+            )
+        )
+    frozen = tuple(sorted(scenes, key=lambda item: item.scene_id))
+    frozen_exclusions = tuple(sorted(exclusions, key=lambda item: item.scene_id))
+    if len(source_scenes) != expected_source_scenes:
+        raise ValueError("legacy source eligible scene count differs from frozen evidence")
+    if len(frozen) != expected_scenes or len({item.scene_id for item in frozen}) != len(frozen):
+        raise ValueError("v4 world-recoverable scene count or identifiers differ")
+    if Counter(item.family for item in frozen) != Counter(dict(expected_family_counts)):
+        raise ValueError("v4 world-recoverable family counts differ from frozen evidence")
+    if Counter(item.family for item in frozen_exclusions) != Counter(
+        dict(expected_excluded_family_counts)
+    ):
+        raise ValueError("v4 excluded family counts differ from frozen evidence")
+    if any(item.reason != "ambiguous_world" for item in frozen_exclusions):
+        raise ValueError("v4 legacy exclusion reason differs from the frozen criterion")
+    return LegacyCapabilitySelection(
+        source_eligible_scenes=len(source_scenes),
+        scenes=frozen,
+        exclusions=frozen_exclusions,
+    )
+
+
+def load_legacy_capability_scenes(
+    path: Path,
+    *,
+    expected_scenes: int = 580,
+    expected_family_counts: Mapping[str, int] = _LEGACY_ALL_FAMILY_COUNTS,
+) -> tuple[LegacyCapabilityScene, ...]:
+    """Load the eligible legacy slice without applying the stricter v4 criterion."""
+
+    scenes = _load_eligible_legacy_scenes(path)
+    if len(scenes) != expected_scenes:
+        raise ValueError("legacy capability eligible scene count differs from frozen evidence")
+    if Counter(item.family for item in scenes) != Counter(dict(expected_family_counts)):
+        raise ValueError("legacy capability family counts differ from frozen evidence")
+    return scenes
 
 
 @dataclass(frozen=True, slots=True)
