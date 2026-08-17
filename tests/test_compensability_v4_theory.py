@@ -54,6 +54,15 @@ def test_one_edit_candidate_space_is_unique_sorted_and_includes_observation() ->
     )
 
 
+def test_one_edit_candidate_space_repairs_at_most_one_unbounded_observation() -> None:
+    candidates = enumerate_one_edit_candidates((1000, 4, 5, 9), range(2, 19))
+
+    assert len(candidates) == 17
+    assert all(world[1:] == (4, 5, 9) for world in candidates)
+    assert all(value in range(2, 19) for world in candidates for value in world)
+    assert enumerate_one_edit_candidates((1000, -1000, 5, 9), range(2, 19)) == []
+
+
 def test_unique_projection_and_failure_modes_are_distinct() -> None:
     observed = (7, 4, 7, 3)
     facts = [

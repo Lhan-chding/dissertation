@@ -246,8 +246,8 @@ def _legacy_scene(row: Mapping[str, object]) -> LegacyCapabilityScene:
         raise ValueError("legacy capability scene must contain exactly one observed error")
     facts = tuple(_fact_mapping(item) for item in build_family_constraints(str(family), truth))
     domain = _LEGACY_VALUE_DOMAIN
-    if any(value not in domain for value in observed):
-        raise ValueError("legacy observed values lie outside the frozen v4 value domain")
+    if any(value not in domain for value in truth):
+        raise ValueError("legacy truth values lie outside the frozen v4 value domain")
     return LegacyCapabilityScene(
         scene_id=scene_id,
         family=str(family),
@@ -388,7 +388,9 @@ def _messages(prompt: str, payload: Mapping[str, object]) -> tuple[Mapping[str, 
 
 
 def _negative_t1_world(scene: LegacyCapabilityScene, fact: Mapping[str, object]) -> World:
-    if not satisfies_all_facts(scene.observed, (fact,)):
+    if all(value in scene.value_domain for value in scene.observed) and not satisfies_all_facts(
+        scene.observed, (fact,)
+    ):
         return scene.observed
     for candidate in enumerate_one_edit_candidates(scene.truth, scene.value_domain):
         if candidate != scene.truth and not satisfies_all_facts(candidate, (fact,)):
@@ -410,7 +412,11 @@ def _t5_mapping(
         and not satisfies_all_facts(candidate, scene.facts)
     )
     ranked = sorted(distractors, key=lambda world: (_rank(seed, scene.scene_id, world), world))
-    worlds = (scene.truth, scene.observed, *ranked[:2])
+    observed_candidate = (
+        (scene.observed,) if all(value in scene.value_domain for value in scene.observed) else ()
+    )
+    required_distractors = 3 - len(observed_candidate)
+    worlds = (scene.truth, *observed_candidate, *ranked[:required_distractors])
     if len(worlds) != 4 or len(set(worlds)) != 4:
         raise RuntimeError("T5 requires four unique matched one-edit candidates")
     remaining = sorted(

@@ -82,6 +82,11 @@ error per source scene, exact-world uniqueness, four unique T5 candidates with s
 labels, no overwrite, and strict minimal-output parsing. The excluded scene and both supported
 worlds are recorded in `paired_gaps.json`.
 
+The frozen integer domain `2..18` constrains latent truth and candidate worlds, not the noisy
+observation itself. In `o = x* + delta e_j`, `delta` is an exact integer and is not restricted to
+`+/-1`; the observation may therefore be arbitrarily far outside the render domain at its single
+error coordinate. Its one-edit candidates are still enumerated only inside `2..18`.
+
 ```bash
 SCREEN=/cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v2/phase_c_screen/screen_records.jsonl
 python scripts/v4/02_run_capability_chain.py --execute \

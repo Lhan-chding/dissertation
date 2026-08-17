@@ -72,11 +72,14 @@ def test_legacy_scene_loader_rejects_ineligible_semantic_drift(tmp_path) -> None
         )
 
 
-def test_v4_selection_allows_noisy_observation_outside_truth_domain(tmp_path) -> None:
+@pytest.mark.parametrize("observed_value", (1, 19, 1000))
+def test_v4_selection_allows_noisy_observation_outside_truth_domain(
+    tmp_path, observed_value
+) -> None:
     row = {
         **_screen_row(0),
         "values": [2, 4, 5, 9],
-        "perceived_values": [1, 4, 5, 9],
+        "perceived_values": [observed_value, 4, 5, 9],
     }
     source = tmp_path / "screen_records.jsonl"
     source.write_text(json.dumps(row) + "\n", encoding="utf-8")
@@ -89,17 +92,17 @@ def test_v4_selection_allows_noisy_observation_outside_truth_domain(tmp_path) ->
         expected_excluded_family_counts={},
     )
 
-    assert selection.scenes[0].observed == (1, 4, 5, 9)
+    assert selection.scenes[0].observed == (observed_value, 4, 5, 9)
     assert selection.scenes[0].value_domain == tuple(range(2, 19))
 
 
-def test_capability_world_candidates_stay_inside_truth_domain_for_boundary_noise(tmp_path) -> None:
+def test_capability_world_candidates_stay_inside_truth_domain_for_unbounded_noise(tmp_path) -> None:
     baseline = {**_screen_row(0), "scene_id": "aaa-baseline"}
     boundary_noise = {
         **_screen_row(1),
-        "scene_id": "zzz-boundary-noise",
+        "scene_id": "zzz-unbounded-noise",
         "values": [2, 4, 5, 9],
-        "perceived_values": [1, 4, 5, 9],
+        "perceived_values": [1000, 4, 5, 9],
     }
     source = tmp_path / "screen_records.jsonl"
     source.write_text(
@@ -120,11 +123,11 @@ def test_capability_world_candidates_stay_inside_truth_domain_for_boundary_noise
         candidate_labels=("A", "B", "C", "D"),
         seed=2026081701,
     )
-    boundary_calls = tuple(call for call in calls if call.scene_id == "zzz-boundary-noise")
-    t1 = next(call for call in boundary_calls if call.task_type is CapabilityTaskType.T1)
+    noisy_calls = tuple(call for call in calls if call.scene_id == "zzz-unbounded-noise")
+    t1 = next(call for call in noisy_calls if call.task_type is CapabilityTaskType.T1)
     t1_payload = json.loads(t1.messages[1]["content"])
     assert all(value in range(2, 19) for value in t1_payload["candidate_world"])
-    t5 = next(call for call in boundary_calls if call.task_type is CapabilityTaskType.T5)
+    t5 = next(call for call in noisy_calls if call.task_type is CapabilityTaskType.T5)
     assert all(value in range(2, 19) for world in t5.candidate_worlds for value in world)
 
 

@@ -8,7 +8,7 @@ files:
   - path: docs/Qwen25VL_Constraint_Assimilation_Natural_State_RL_Codex_Plan_v4.md
     sha256: 01e532f8c7fe5439c70e8cd8de81ff3448465d8d401dbbf478c76aebaf49641e
   - path: docs/QWEN_V4_SERVER_HANDOFF.md
-    sha256: e5c6ae13a618e3d146caa9d8046448407f2bb7094c19fc857997b0339c2160ca
+    sha256: 4ef138dea396afb8450d3b0d346caee35c88405b5f4c96a4bc688eb0637d77e3
   - path: pyproject.toml
     sha256: 6f874b01dc23c49bb3f65d7aa36d7be70cf4338699a640c0a94cd56db32bb365
   - path: requirements-gpu.lock.txt
@@ -46,7 +46,7 @@ files:
   - path: src/compensability_v4/diagnostics/__init__.py
     sha256: 97326ce0461439dce7d8135600799b31a19583525e05c7ea1911cb4bf9d6fc61
   - path: src/compensability_v4/diagnostics/capability_chain.py
-    sha256: e7cf4739815cb4fe3dd42fae090aa48deeb5f0369e5b217bd15098719c57aa9b
+    sha256: 11a49194721721c60d20b90dfeec55f720772582615a6e98122d5312a6ff571b
   - path: src/compensability_v4/diagnostics/interface_ladder.py
     sha256: 5491022135ab8421db92ab79b707d35ecd664fba528e2f9e4f0fe9436bc6aa50
   - path: src/compensability_v4/diagnostics/legacy_audit.py
@@ -98,7 +98,7 @@ files:
   - path: src/compensability_v4/theory/__init__.py
     sha256: 71061d8126d210149831fa22af40cffadd8670d0a625a9a16c47ac861919c1cf
   - path: src/compensability_v4/theory/candidate_space.py
-    sha256: 6faba7f334cd95d867e833ce95d7732f2e277558265423e8055636bc2f23a337
+    sha256: 17757a4d7b22e7fcf8158e0b1c4bcaa8bfde2f830238dfa94288e2f88faacb8c
   - path: src/compensability_v4/theory/constraint_system.py
     sha256: 7845503b5e6a598c370fa0a68af4189a18e803939b5722711ce3db732232347a
   - path: src/compensability_v4/theory/policy_support.py

@@ -41,16 +41,17 @@ def enumerate_one_edit_candidates(
 
     canonical_observed = validate_world(observed, "observed")
     values = _value_domain(value_domain)
-    if any(value not in values for value in canonical_observed):
-        raise ValueError("observed values must lie in value_domain")
-    candidates: set[World] = {canonical_observed}
+    candidates: set[World] = set()
+    if all(value in values for value in canonical_observed):
+        candidates.add(canonical_observed)
     for index in range(4):
         for value in values:
             if value == canonical_observed[index]:
                 continue
             candidate = list(canonical_observed)
             candidate[index] = value
-            candidates.add(tuple(candidate))  # type: ignore[arg-type]
+            if all(item in values for item in candidate):
+                candidates.add(tuple(candidate))  # type: ignore[arg-type]
     return sorted(candidates)
 
 
