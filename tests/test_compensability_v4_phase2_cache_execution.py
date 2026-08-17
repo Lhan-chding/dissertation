@@ -526,6 +526,47 @@ def test_s5_real_trace_joins_qwen_vision_batch_manual_cache_and_full_paths(
     assert "past_key_values" not in calls[1]
 
 
+def test_s5_full_history_uses_structured_chat_batch_with_runtime_grid() -> None:
+    class Batch(dict):
+        moved = False
+
+        def to(self, device):
+            assert str(device) == "cpu"
+            self.moved = True
+            return self
+
+    batch = Batch(
+        input_ids=torch.tensor([[10, 50, 20, 31, 41]]),
+        image_grid_thw=torch.tensor([[1, 20, 20]]),
+        pixel_values=torch.tensor([[1.0]]),
+    )
+
+    class StructuredProcessor:
+        @staticmethod
+        def apply_chat_template(messages, **arguments):
+            assert messages[-1]["content"] == "no cue"
+            assert arguments == {
+                "tokenize": True,
+                "add_generation_prompt": True,
+                "return_dict": True,
+                "return_tensors": "pt",
+            }
+            return batch
+
+        def __call__(self, **_arguments):
+            raise AssertionError("structured multimodal chat must not be retokenized")
+
+    prepared = phase3_cache._prepare_full_history_batch(
+        StructuredProcessor(),
+        (*_state(0).chat_messages, {"role": "user", "content": "no cue"}),
+        SimpleNamespace(device=torch.device("cpu")),
+    )
+
+    assert prepared is batch
+    assert prepared["image_grid_thw"].tolist() == [[1, 20, 20]]
+    assert batch.moved is True
+
+
 def test_s5_plan_summary_and_writer_reject_incomplete_inputs(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="positive integer"):
         build_cache_parity_plan((), condition_turns={}, expected_scenes=0)

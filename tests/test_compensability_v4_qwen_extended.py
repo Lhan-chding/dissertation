@@ -710,6 +710,67 @@ def test_visual_observation_capture_uses_fake_vision_runtime(monkeypatch) -> Non
     assert processor.batch.moved is True
 
 
+def test_visual_observation_uses_structured_chat_batch_with_runtime_grid(monkeypatch) -> None:
+    class Batch(dict):
+        moved = False
+
+        def to(self, device: object) -> Batch:
+            assert str(device) == "cpu"
+            self.moved = True
+            return self
+
+    tokenizer = TableTokenizer()
+
+    class Processor:
+        def __init__(self) -> None:
+            self.tokenizer = tokenizer
+            self.batch = Batch(
+                input_ids=torch.tensor([[50, 5]]),
+                image_grid_thw=torch.tensor([[1, 2, 3]]),
+                pixel_values=torch.tensor([[1.0]]),
+            )
+
+        def apply_chat_template(self, messages: object, **kwargs: object) -> object:
+            assert kwargs == {
+                "tokenize": True,
+                "add_generation_prompt": True,
+                "return_dict": True,
+                "return_tensors": "pt",
+            }
+            return self.batch
+
+        def __call__(self, **_kwargs: object) -> object:
+            raise AssertionError("structured multimodal chat must not be retokenized")
+
+    processor = Processor()
+    fake_result = generation.ManualGenerationResult(
+        prompt_token_ids=(50, 5),
+        generated_token_ids=(9,),
+        all_token_ids=(50, 5, 9),
+        attention_mask=(1, 1, 1),
+        position_ids=((0, 1, 2),),
+        past_key_values="cache",
+        generation_config={"do_sample": False},
+        rng_seed=7,
+    )
+    monkeypatch.setattr(generation, "manual_greedy_generate", lambda *_args, **_kwargs: fake_result)
+    model = SimpleNamespace(device=torch.device("cpu"), config=SimpleNamespace(image_token_id=50))
+
+    result = generation.generate_observation_with_cache(
+        model,
+        processor,
+        "image",
+        "prompt",
+        sample_id="scene",
+        resized_height=280,
+        resized_width=280,
+        rng_seed=7,
+    )
+
+    assert result["state"].image_grid_thw == (1, 2, 3)  # type: ignore[union-attr]
+    assert processor.batch.moved is True
+
+
 @pytest.mark.parametrize(("height", "width"), [(0, 280), (281, 280)])
 def test_visual_observation_rejects_noncanonical_dimensions(height: int, width: int) -> None:
     with pytest.raises(ValueError, match=r"positive|multiples"):
