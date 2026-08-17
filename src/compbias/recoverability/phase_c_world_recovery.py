@@ -1,4 +1,4 @@
-"""Frozen twelve-call diagnostic for four-integer world recovery."""
+"""Frozen paired diagnostics for four-integer world recovery."""
 
 from __future__ import annotations
 
@@ -36,6 +36,23 @@ _NO_CUE_TEMPLATE = "redundant_facts: []\nobserved_values: [{{a}},{{b}},{{c}},{{d
 _VALID_CUE_TEMPLATE = (
     "redundant_facts:\n{{facts_as_json_array}}\nobserved_values: [{{a}},{{b}},{{c}},{{d}}]\n"
 )
+
+_FROZEN_CONFIGS = {
+    "recoverability-phase-c-world-recovery-v1r1": {
+        "output_subdirectory": "cva_recoverability_causal_v3/phase_c_world_recovery_v1r1",
+        "families": ("cross_series", "duplicate_encoding", "trend"),
+        "cases_per_family": 2,
+        "model_call_cap": 12,
+        "seed": 2026082101,
+    },
+    "recoverability-phase-c-world-recovery-100-v1": {
+        "output_subdirectory": "cva_recoverability_causal_v3/phase_c_world_recovery_100_v1",
+        "families": ("cross_series", "trend"),
+        "cases_per_family": 25,
+        "model_call_cap": 100,
+        "seed": 2026082201,
+    },
+}
 
 
 class _AmbiguousWorldRecoveryCase(ValueError):
@@ -125,18 +142,21 @@ def load_phase_c_world_recovery_config(path: Path) -> PhaseCWorldRecoveryConfig:
             "conditions": tuple(mapping["conditions"]),
         }
     )
+    profile = _FROZEN_CONFIGS.get(candidate.qualification_id)
+    if profile is None:
+        raise ValueError("Phase C world recovery qualification is not frozen")
     expected = {
         "schema_version": 1,
         "status": "DIAGNOSTIC_WORLD_RECOVERY_NOT_HYPOTHESIS_TEST",
-        "qualification_id": "recoverability-phase-c-world-recovery-v1r1",
+        "qualification_id": candidate.qualification_id,
         "dataset_id": "CVA-Recoverability-Causal-v3",
         "source_screen_result": "configs/recoverability/phase_c_screen_v2_frozen_result.yaml",
-        "output_subdirectory": "cva_recoverability_causal_v3/phase_c_world_recovery_v1r1",
-        "families": _FAMILIES,
+        "output_subdirectory": profile["output_subdirectory"],
+        "families": profile["families"],
         "conditions": WORLD_RECOVERY_CONDITIONS,
-        "cases_per_family": 2,
-        "model_call_cap": 12,
-        "seed": 2026082101,
+        "cases_per_family": profile["cases_per_family"],
+        "model_call_cap": profile["model_call_cap"],
+        "seed": profile["seed"],
         "max_new_tokens": 32,
         "do_sample": False,
         "format_retries": 0,
@@ -146,7 +166,7 @@ def load_phase_c_world_recovery_config(path: Path) -> PhaseCWorldRecoveryConfig:
         "rl_authorized": False,
     }
     if any(getattr(candidate, key) != value for key, value in expected.items()):
-        raise ValueError("Phase C world recovery differs from the frozen twelve-call diagnostic")
+        raise ValueError("Phase C world recovery differs from its frozen diagnostic profile")
     return candidate
 
 
@@ -259,7 +279,8 @@ def build_phase_c_world_recovery_calls(
             ),
         )
         if len(ranked) < config.cases_per_family:
-            raise ValueError(f"at least two eligible cases are required for {family}")
+            minimum = "two" if config.cases_per_family == 2 else str(config.cases_per_family)
+            raise ValueError(f"at least {minimum} eligible cases are required for {family}")
         selected.extend(
             (scene, facts, index)
             for index, (scene, facts) in enumerate(ranked[: config.cases_per_family])
@@ -298,7 +319,9 @@ def build_phase_c_world_recovery_calls(
             )
     frozen = tuple(sorted(calls, key=lambda call: call.call_id))
     if len(frozen) != config.model_call_cap:
-        raise RuntimeError("world recovery plan must contain exactly twelve calls")
+        raise RuntimeError(
+            f"world recovery plan must contain exactly {config.model_call_cap} calls"
+        )
     return frozen
 
 
@@ -401,12 +424,16 @@ def _condition_summary(
     records: tuple[PhaseCWorldRecoveryRecord, ...],
 ) -> dict[str, object]:
     total = len(records)
+    recoveries = sum(item.true_world_recovery for item in records)
+    copies = sum(item.observation_copy for item in records)
     return {
         "model_calls": total,
         "semantic_parse_successes": sum(item.semantic_parse_success for item in records),
         "exact_format_compliant": sum(item.exact_format_compliance for item in records),
-        "true_world_recoveries": sum(item.true_world_recovery for item in records),
-        "observation_copies": sum(item.observation_copy for item in records),
+        "true_world_recoveries": recoveries,
+        "true_world_recovery_rate": recoveries / total if total else 0.0,
+        "observation_copies": copies,
+        "observation_copy_rate": copies / total if total else 0.0,
         "parse_failures": sum(item.parse_failure for item in records),
     }
 
@@ -417,13 +444,16 @@ def summarize_phase_c_world_recovery(
     config: PhaseCWorldRecoveryConfig,
 ) -> dict[str, object]:
     if len(records) != config.model_call_cap:
-        raise ValueError("summary requires the exact frozen twelve-call diagnostic")
+        raise ValueError("summary requires the exact frozen world recovery diagnostic")
     if len({item.call_id for item in records}) != len(records):
         raise ValueError("world recovery record identifiers must be unique")
     grouped: dict[str, dict[str, PhaseCWorldRecoveryRecord]] = defaultdict(dict)
     for record in records:
         grouped[record.scene_id][record.condition] = record
-    if len(grouped) != 6 or any(set(pair) != set(config.conditions) for pair in grouped.values()):
+    expected_pairs = config.cases_per_family * len(config.families)
+    if len(grouped) != expected_pairs or any(
+        set(pair) != set(config.conditions) for pair in grouped.values()
+    ):
         raise ValueError("world recovery matched pairs are incomplete")
 
     pair_rows = []
@@ -444,6 +474,8 @@ def summarize_phase_c_world_recovery(
         )
         for condition in config.conditions
     }
+    valid_rate = float(by_condition["valid_cue"]["true_world_recovery_rate"])
+    no_cue_rate = float(by_condition["no_cue"]["true_world_recovery_rate"])
     by_family = {
         family: {
             "role": (
@@ -473,9 +505,16 @@ def summarize_phase_c_world_recovery(
         "pair_category_counts": category_counts,
         "pairs": pair_rows,
         "by_condition": by_condition,
+        "valid_minus_no_cue_true_world_recovery_rate": valid_rate - no_cue_rate,
         "by_family": by_family,
-        "nontrivial_families": ["cross_series", "trend"],
-        "duplicate_encoding_role": ("full_trusted_state_restatement_instruction_following_control"),
+        "nontrivial_families": [
+            family for family in config.families if family != "duplicate_encoding"
+        ],
+        "duplicate_encoding_role": (
+            "full_trusted_state_restatement_instruction_following_control"
+            if "duplicate_encoding" in config.families
+            else "excluded_from_nontrivial_hundred_call_audit"
+        ),
         "format_retries": 0,
         "hypothesis_tested": False,
         "scale_authorized": False,

@@ -1,7 +1,7 @@
 schema_version: 1
 files:
-  - path: configs/recoverability/phase_c_world_recovery_v1.yaml
-    sha256: 671ad4e0e410e2a6bc2068d030670bea119e910c4b68d9c2d25cff8d9d31e48f
+  - path: configs/recoverability/phase_c_world_recovery_100_v1.yaml
+    sha256: 18892eda258928cdeb4ebd68b3c2bfd4454d734d057d2cade019fb7f84291399
   - path: configs/recoverability/server_package_lock_phase_c_arms_v3.yaml
     sha256: f1fb43e9a79692e811e97c8dd52c86d924b9c2194b5b487fa4a8c8bd1363bed4
   - path: experiments/recoverability_v1/20_phase_c_world_recovery_preflight.py

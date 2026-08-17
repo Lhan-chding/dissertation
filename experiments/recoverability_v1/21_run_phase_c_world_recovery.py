@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Execute the frozen text-only twelve-call world-recovery diagnostic once."""
+"""Execute one frozen text-only world-recovery diagnostic."""
 
 from __future__ import annotations
 
@@ -12,12 +12,22 @@ import subprocess
 import sys
 from pathlib import Path
 
-_LOCK_RELATIVE = "configs/recoverability/server_package_lock_phase_c_world_recovery_v1.yaml"
 _INHERITED_LOCK_RELATIVE = "configs/recoverability/server_package_lock_phase_c_arms_v3.yaml"
 _EXPECTED_MODEL_SHA256 = "e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87"
-_ADDITIONS = frozenset(
+_PROFILES = {
+    "configs/recoverability/phase_c_world_recovery_v1.yaml": {
+        "lock": "configs/recoverability/server_package_lock_phase_c_world_recovery_v1.yaml",
+        "preflight": "phase-c-world-recovery-v1r1-preflight.json",
+        "attempt": "cva_recoverability_causal_v3.world-recovery-v1r1.attempted.json",
+    },
+    "configs/recoverability/phase_c_world_recovery_100_v1.yaml": {
+        "lock": "configs/recoverability/server_package_lock_phase_c_world_recovery_100_v1.yaml",
+        "preflight": "phase-c-world-recovery-100-v1-preflight.json",
+        "attempt": "cva_recoverability_causal_v3.world-recovery-100-v1.attempted.json",
+    },
+}
+_COMMON_ADDITIONS = frozenset(
     {
-        "configs/recoverability/phase_c_world_recovery_v1.yaml",
         _INHERITED_LOCK_RELATIVE,
         "experiments/recoverability_v1/20_phase_c_world_recovery_preflight.py",
         "experiments/recoverability_v1/21_run_phase_c_world_recovery.py",
@@ -52,17 +62,27 @@ def _bootstrap_server_lock() -> None:
     if __name__ != "__main__" or "--execute" not in sys.argv:
         return
     try:
-        supplied = Path(sys.argv[sys.argv.index("--server-package-lock") + 1]).resolve()
+        supplied_lock = Path(sys.argv[sys.argv.index("--server-package-lock") + 1]).resolve()
+        supplied_config = Path(sys.argv[sys.argv.index("--qualification-config") + 1]).resolve()
     except (ValueError, IndexError) as error:
-        raise SystemExit("BLOCKED: canonical world recovery lock is required") from error
+        raise SystemExit("BLOCKED: canonical world recovery profile is required") from error
     root = Path(__file__).resolve().parents[2]
-    canonical = root / _LOCK_RELATIVE
     inherited = root / _INHERITED_LOCK_RELATIVE
-    if supplied != canonical or canonical.is_symlink() or inherited.is_symlink():
-        raise SystemExit("BLOCKED: world recovery lock path is not canonical")
+    matched = next(
+        (
+            (config_relative, profile)
+            for config_relative, profile in _PROFILES.items()
+            if supplied_config == root / config_relative and supplied_lock == root / profile["lock"]
+        ),
+        None,
+    )
+    if matched is None or supplied_config.is_symlink() or supplied_lock.is_symlink():
+        raise SystemExit("BLOCKED: world recovery profile paths are not canonical")
+    config_relative, _profile = matched
     inherited_rows = _lock_rows(inherited)
-    rows = _lock_rows(canonical)
-    if frozenset(relative for relative, _digest in rows) != _ADDITIONS:
+    rows = _lock_rows(supplied_lock)
+    expected = _COMMON_ADDITIONS | {config_relative}
+    if frozenset(relative for relative, _digest in rows) != expected:
         raise SystemExit("BLOCKED: world recovery package closure is incomplete")
     for relative, expected in inherited_rows + rows:
         candidate = root / relative
@@ -146,7 +166,13 @@ def _exclusive_jsonl(path: Path, rows: tuple[dict[str, object], ...]) -> None:
             stream.write(json.dumps(row, sort_keys=True, allow_nan=False) + "\n")
 
 
-def _validate_preflight(path: Path, *, lock: Path, package_files: list[str]) -> None:
+def _validate_preflight(
+    path: Path,
+    *,
+    lock: Path,
+    package_files: list[str],
+    model_call_cap: int,
+) -> None:
     payload = load_strict_json_mapping(
         path, label="Phase C world recovery preflight", max_bytes=512 * 1024
     )
@@ -154,7 +180,10 @@ def _validate_preflight(path: Path, *, lock: Path, package_files: list[str]) -> 
         raise ValueError("world recovery preflight artifact type is invalid")
     if payload.get("ready") is not True or payload.get("model_loaded") is not False:
         raise ValueError("world recovery preflight is not ready")
-    if payload.get("model_call_cap") != 12 or payload.get("scale_authorized") is not False:
+    if (
+        payload.get("model_call_cap") != model_call_cap
+        or payload.get("scale_authorized") is not False
+    ):
         raise ValueError("world recovery preflight call cap differs")
     if payload.get("training_authorized") is not False:
         raise ValueError("world recovery preflight must not authorize training")
@@ -228,13 +257,25 @@ def main() -> int:
         raise RuntimeError("world recovery forbids COMPBIAS path overrides")
 
     root = Path(__file__).resolve().parents[2]
+    matched = next(
+        (
+            (config_relative, profile)
+            for config_relative, profile in _PROFILES.items()
+            if args.qualification_config.resolve() == root / config_relative
+            and args.server_package_lock.resolve() == root / profile["lock"]
+        ),
+        None,
+    )
+    if matched is None:
+        raise ValueError("world recovery profile paths are not canonical")
+    config_relative, profile = matched
     canonical = {
         "paths": root / "configs/paths.yaml",
         "runtime": root / "configs/recoverability/server_runtime_v1.yaml",
-        "qualification_config": root / "configs/recoverability/phase_c_world_recovery_v1.yaml",
+        "qualification_config": root / config_relative,
         "system_prompt": root / "prompts/world_recovery_v1_main.system.txt",
         "screen_result": root / "configs/recoverability/phase_c_screen_v2_frozen_result.yaml",
-        "server_package_lock": root / _LOCK_RELATIVE,
+        "server_package_lock": root / profile["lock"],
     }
     for argument, expected in canonical.items():
         supplied = getattr(args, argument)
@@ -245,6 +286,7 @@ def main() -> int:
         canonical["server_package_lock"], repository_root=root
     )
     package_files = [item.relative_path for item in package.files]
+    config = load_phase_c_world_recovery_config(canonical["qualification_config"])
     current = run_metadata_preflight(
         load_runtime_spec(canonical["runtime"]),
         repository_root=root,
@@ -259,12 +301,13 @@ def main() -> int:
         args.preflight_report,
         lock=canonical["server_package_lock"],
         package_files=package_files,
+        model_call_cap=config.model_call_cap,
     )
 
     paths = load_pilot_paths(canonical["paths"], environ={})
     evidence_root = Path("/cloud/cloud-ssd1/recoverability-v1-evidence")
     expected_paths = {
-        "preflight_report": evidence_root / "phase-c-world-recovery-v1r1-preflight.json",
+        "preflight_report": evidence_root / profile["preflight"],
         "screen_preflight": evidence_root / "phase-c-screen-v2-preflight.json",
         "screen_attempt_marker": (
             paths.outputs / "recoverability_v1/cva_recoverability_causal_v2.screen.attempted.json"
@@ -290,7 +333,6 @@ def main() -> int:
         screen_records=args.screen_output_root / "screen_records.jsonl",
         console_log=args.screen_console_log,
     )
-    config = load_phase_c_world_recovery_config(canonical["qualification_config"])
     system_prompt = canonical["system_prompt"].read_text(encoding="utf-8")
     no_cue_template_path = root / "prompts/no_cue.user.template.txt"
     valid_cue_template_path = root / "prompts/valid_cue.user.template.txt"
@@ -301,8 +343,10 @@ def main() -> int:
         no_cue_template=no_cue_template_path.read_text(encoding="utf-8"),
         valid_cue_template=valid_cue_template_path.read_text(encoding="utf-8"),
     )
-    if len(calls) != 12 or len({call.call_id for call in calls}) != 12:
-        raise RuntimeError("world recovery plan must contain exactly twelve calls")
+    if len(calls) != config.model_call_cap or len({call.call_id for call in calls}) != len(calls):
+        raise RuntimeError(
+            f"world recovery plan must contain exactly {config.model_call_cap} calls"
+        )
     if config.hypothesis_tested or config.scale_authorized or config.training_authorized:
         raise RuntimeError("world recovery must remain diagnostic and low-cost")
 
@@ -313,7 +357,7 @@ def main() -> int:
     output_parent = paths.outputs / "recoverability_v1"
     output_parent.mkdir(parents=True, exist_ok=True)
     output = output_parent / config.output_subdirectory
-    attempt = output_parent / "cva_recoverability_causal_v3.world-recovery-v1r1.attempted.json"
+    attempt = output_parent / profile["attempt"]
     if output.exists() or output.is_symlink() or attempt.exists() or attempt.is_symlink():
         raise FileExistsError("refusing to overwrite world recovery evidence")
     output.mkdir()
@@ -344,9 +388,9 @@ def main() -> int:
             "schema_version": 1,
             "status": "PHASE_C_WORLD_RECOVERY_STARTED_DO_NOT_RERUN",
             "qualification_id": config.qualification_id,
-            "selected_cases": 6,
+            "selected_cases": config.cases_per_family * len(config.families),
             "conditions": list(config.conditions),
-            "model_call_cap": 12,
+            "model_call_cap": config.model_call_cap,
             "format_retries": 0,
             "do_sample": False,
             "hypothesis_tested": False,
@@ -369,7 +413,7 @@ def main() -> int:
 
     model, processor = load_local_qwen(paths.model_path)
     records: list[PhaseCWorldRecoveryRecord] = []
-    for call in calls:
+    for index, call in enumerate(calls, start=1):
         raw = decode_text_qwen_greedy_once(
             model,
             processor,
@@ -377,8 +421,10 @@ def main() -> int:
             max_new_tokens=config.max_new_tokens,
         )
         records.append(evaluate_phase_c_world_recovery_call(call, raw))
+        if index % 10 == 0 or index == len(calls):
+            print(f"world_recovery_progress={index}/{len(calls)}", flush=True)
     if len(records) != config.model_call_cap:
-        raise RuntimeError("world recovery did not stop at exactly twelve calls")
+        raise RuntimeError(f"world recovery did not stop at exactly {config.model_call_cap} calls")
     if model_snapshot_sha256(paths.model_path) != model_hash:
         raise RuntimeError("model snapshot changed during world recovery")
 

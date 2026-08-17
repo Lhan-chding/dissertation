@@ -1,0 +1,22 @@
+schema_version: 1
+status: DIAGNOSTIC_WORLD_RECOVERY_NOT_HYPOTHESIS_TEST
+qualification_id: recoverability-phase-c-world-recovery-100-v1
+dataset_id: CVA-Recoverability-Causal-v3
+source_screen_result: configs/recoverability/phase_c_screen_v2_frozen_result.yaml
+output_subdirectory: cva_recoverability_causal_v3/phase_c_world_recovery_100_v1
+families:
+  - cross_series
+  - trend
+conditions:
+  - no_cue
+  - valid_cue
+cases_per_family: 25
+model_call_cap: 100
+seed: 2026082201
+max_new_tokens: 32
+do_sample: false
+format_retries: 0
+hypothesis_tested: false
+scale_authorized: false
+training_authorized: false
+rl_authorized: false

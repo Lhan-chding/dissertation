@@ -346,3 +346,23 @@ human-authored subset of [ChartQA](https://github.com/vis-nlp/ChartQA) or on
 [ChartQAPro](https://github.com/vis-nlp/ChartQAPro), but those results must be
 reported as descriptive generalization rather than as evidence for the
 controlled causal estimands.
+
+### Phase-C nontrivial world-recovery hundred-call audit
+
+The completed v1r1 diagnostic had exact-format and semantic parse success on all
+12 calls. The valid cue recovered one of six hidden worlds, while the no-cue
+condition recovered none. The only correction occurred in `duplicate_encoding`,
+which is a full-state restatement control; all four `cross_series` and `trend`
+pairs ignored the cue. At the user's explicit request, one larger exploratory
+audit is frozen before inspecting any additional model output.
+
+The audit selects 25 deterministic eligible cases from each nontrivial family,
+`cross_series` and `trend`, after excluding prompt-example collisions and worlds
+that are not uniquely identified by the registered facts. Every scene is run
+once under `no_cue` and once under `valid_cue`, for exactly
+`2 * 25 * 2 = 100` greedy text-only calls. The prompt, model snapshot, maximum
+32 generated tokens, zero format retries, scoring rules, and hidden-truth
+comparison remain unchanged from v1r1. `duplicate_encoding` is excluded because
+the purpose is to estimate nontrivial constraint-based recovery rather than
+full-state copying. This audit is not a hypothesis test, invokes no training or
+RL, and does not authorize any calls beyond its frozen cap.

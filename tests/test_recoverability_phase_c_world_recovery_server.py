@@ -7,6 +7,8 @@ from pathlib import Path
 import pytest
 
 from compbias.recoverability.phase_c_world_recovery_execution import (
+    PHASE_C_WORLD_RECOVERY_100_LOCK_PATH,
+    PHASE_C_WORLD_RECOVERY_100_PACKAGE_PATHS,
     PHASE_C_WORLD_RECOVERY_LOCK_PATH,
     PHASE_C_WORLD_RECOVERY_PACKAGE_PATHS,
     verify_phase_c_world_recovery_package_lock,
@@ -17,9 +19,7 @@ PREFLIGHT = ROOT / "experiments/recoverability_v1/20_phase_c_world_recovery_pref
 EXECUTE = ROOT / "experiments/recoverability_v1/21_run_phase_c_world_recovery.py"
 SERVER_LOCK = ROOT / PHASE_C_WORLD_RECOVERY_LOCK_PATH
 CONFIG_100 = ROOT / "configs/recoverability/phase_c_world_recovery_100_v1.yaml"
-SERVER_LOCK_100 = (
-    ROOT / "configs/recoverability/server_package_lock_phase_c_world_recovery_100_v1.yaml"
-)
+SERVER_LOCK_100 = ROOT / PHASE_C_WORLD_RECOVERY_100_LOCK_PATH
 
 
 def test_world_recovery_lock_binds_the_complete_twelve_call_surface() -> None:
@@ -67,8 +67,8 @@ def test_world_recovery_preflight_is_metadata_only_and_capped_at_twelve() -> Non
     assert "recoverability_phase_c_world_recovery_metadata_preflight" in source
     assert 'open("x"' in source
     assert "load_local_qwen" not in source
-    assert '"model_call_cap": 12' in source
-    assert '"scale_authorized": False' in source
+    assert '"model_call_cap": config.model_call_cap' in source
+    assert '"scale_authorized": config.scale_authorized' in source
 
 
 def test_world_recovery_runner_is_text_only_greedy_and_capped_at_twelve() -> None:
@@ -97,7 +97,7 @@ def test_world_recovery_runner_is_text_only_greedy_and_capped_at_twelve() -> Non
     assert "BLOCKED" in blocked.stdout
     source = EXECUTE.read_text(encoding="utf-8")
     assert "decode_text_qwen_greedy_once" in source
-    assert "len(calls) != 12" in source
+    assert "len(calls) != config.model_call_cap" in source
     assert "do_sample=False" in source
     assert "max_format_retries = 0" in source
     assert "attempted.json" in source
@@ -125,3 +125,8 @@ def test_world_recovery_server_supports_frozen_hundred_call_profile() -> None:
     assert "world-recovery-100-v1.attempted.json" in runner_source
     assert "config.model_call_cap" in preflight_source
     assert "config.model_call_cap" in runner_source
+    assert "world_recovery_progress=" in runner_source
+    verification = verify_phase_c_world_recovery_package_lock(SERVER_LOCK_100, repository_root=ROOT)
+    assert frozenset(item.relative_path for item in verification.files) == (
+        PHASE_C_WORLD_RECOVERY_100_PACKAGE_PATHS
+    )

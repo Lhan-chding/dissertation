@@ -1081,6 +1081,7 @@ done
 
 python experiments/recoverability_v1/20_phase_c_world_recovery_preflight.py \
   --runtime configs/recoverability/server_runtime_v1.yaml \
+  --qualification-config configs/recoverability/phase_c_world_recovery_v1.yaml \
   --server-package-lock configs/recoverability/server_package_lock_phase_c_world_recovery_v1.yaml \
   --project-root /cloud/cloud-ssd1/dissertation \
   --output "$WORLD_PREFLIGHT"
@@ -1133,3 +1134,97 @@ echo "world_recovery_workflow_exit=$world_workflow_rc"
 Return the full report, eight SHA-256 lines, the preflight/runner/workflow exit
 codes, and the short Git revision. Do not tune the prompt on these six cases or
 add calls after inspecting the result.
+
+## One-shot Phase-C nontrivial world-recovery 100-call audit
+
+The completed v1r1 diagnostic must not be rerun. This user-authorized follow-up
+uses the identical frozen prompt and greedy decoder on 25 paired cases from each
+nontrivial family (`cross_series` and `trend`). Each scene receives `no_cue` and
+`valid_cue`, giving exactly 100 inference calls. It excludes the
+`duplicate_encoding` full-state restatement control, performs no training or RL,
+and uses fresh exclusive evidence paths. Run this entire block once inside
+`tmux`:
+
+```bash
+(
+cd /cloud/cloud-ssd1/dissertation
+git -c http.version=HTTP/1.1 pull --ff-only origin main
+git rev-parse --short HEAD
+source .venv/bin/activate
+
+export PYTHONPATH=/cloud/cloud-ssd1/dissertation/src
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
+
+WORLD100_PREFLIGHT=/cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-world-recovery-100-v1-preflight.json
+WORLD100_OUTPUT=/cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v3/phase_c_world_recovery_100_v1
+WORLD100_ATTEMPT=/cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v3.world-recovery-100-v1.attempted.json
+WORLD100_LOG=/cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-world-recovery-100-v1-console.log
+
+for candidate in \
+  "$WORLD100_PREFLIGHT" \
+  "$WORLD100_OUTPUT" \
+  "$WORLD100_ATTEMPT" \
+  "$WORLD100_LOG"
+do
+  test ! -e "$candidate" || {
+    echo "BLOCKED: 100-call world recovery evidence already exists: $candidate"
+    exit 1
+  }
+done
+
+python experiments/recoverability_v1/20_phase_c_world_recovery_preflight.py \
+  --runtime configs/recoverability/server_runtime_v1.yaml \
+  --qualification-config configs/recoverability/phase_c_world_recovery_100_v1.yaml \
+  --server-package-lock configs/recoverability/server_package_lock_phase_c_world_recovery_100_v1.yaml \
+  --project-root /cloud/cloud-ssd1/dissertation \
+  --output "$WORLD100_PREFLIGHT"
+
+world100_preflight_rc=$?
+echo "world_recovery_100_preflight_exit=$world100_preflight_rc"
+test "$world100_preflight_rc" -eq 0 || exit "$world100_preflight_rc"
+
+set -o pipefail
+(
+  python experiments/recoverability_v1/21_run_phase_c_world_recovery.py \
+    --paths configs/paths.yaml \
+    --runtime configs/recoverability/server_runtime_v1.yaml \
+    --qualification-config configs/recoverability/phase_c_world_recovery_100_v1.yaml \
+    --system-prompt prompts/world_recovery_v1_main.system.txt \
+    --screen-result configs/recoverability/phase_c_screen_v2_frozen_result.yaml \
+    --server-package-lock configs/recoverability/server_package_lock_phase_c_world_recovery_100_v1.yaml \
+    --preflight-report "$WORLD100_PREFLIGHT" \
+    --screen-preflight /cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-screen-v2-preflight.json \
+    --screen-attempt-marker /cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v2.screen.attempted.json \
+    --screen-dataset-root /cloud/cloud-ssd1/dissertation/data/generated/cva_recoverability_causal_v2_screen \
+    --screen-output-root /cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v2/phase_c_screen \
+    --screen-console-log /cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-screen-v2-console.log \
+    --execute
+  world100_rc=$?
+  echo "world_recovery_100_exit=$world100_rc"
+  exit "$world100_rc"
+) 2>&1 | tee "$WORLD100_LOG"
+world100_rc=$?
+
+echo "world_recovery_100_exit=$world100_rc"
+test "$world100_rc" -eq 0 || exit "$world100_rc"
+
+python -m json.tool "$WORLD100_OUTPUT/world_recovery_report.json"
+
+sha256sum \
+  "$WORLD100_PREFLIGHT" \
+  "$WORLD100_ATTEMPT" \
+  "$WORLD100_OUTPUT/manifest.hidden.jsonl" \
+  "$WORLD100_OUTPUT/manifest.public.jsonl" \
+  "$WORLD100_OUTPUT/messages.jsonl" \
+  "$WORLD100_OUTPUT/world_recovery_report.json" \
+  "$WORLD100_OUTPUT/world_recovery_records.jsonl" \
+  "$WORLD100_LOG"
+)
+world100_workflow_rc=$?
+echo "world_recovery_100_workflow_exit=$world100_workflow_rc"
+```
+
+Return the full report, eight SHA-256 lines, all three exit codes, and the short
+Git revision. Do not tune the prompt, replace cases, or add calls after seeing
+the result.

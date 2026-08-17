@@ -79,9 +79,7 @@ def _hundred_call_scenes() -> tuple[FrozenEligibleScene, ...]:
         for index in range(25)
     )
     progressions = tuple(
-        (start, step)
-        for step, upper in ((1, 16), (2, 13))
-        for start in range(2, upper)
+        (start, step) for step, upper in ((1, 16), (2, 13)) for start in range(2, upper)
     )
     trend = tuple(
         FrozenEligibleScene(
@@ -265,6 +263,7 @@ def test_summary_uses_mutually_exclusive_pair_categories_and_keeps_duplicate_sep
         "cue_overedited": 2,
     }
     assert report["nontrivial_families"] == ["cross_series", "trend"]
+    assert report["valid_minus_no_cue_true_world_recovery_rate"] == pytest.approx(1 / 3)
     assert report["duplicate_encoding_role"] == (
         "full_trusted_state_restatement_instruction_following_control"
     )

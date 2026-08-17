@@ -857,8 +857,8 @@ as an interpretable scientific null. The completed 36-call prompt diagnostic
 then showed that downstream DSL and answer generation still confounded world
 recovery. The original world-only launch then stopped before model loading and
 made zero calls because an operator-recoverable source scene was not uniquely
-world-recoverable. The only next action is the amended `v1r1` one-shot 12-call
-text-only diagnostic:
+world-recoverable. The amended `v1r1` one-shot 12-call text-only diagnostic then
+completed:
 two frozen cases per redundancy family, each paired across `no_cue` and
 `valid_cue`, with greedy decoding and a four-integer CSV response. It scores
 both conditions against the same hidden truth and reports format compliance
@@ -866,4 +866,10 @@ separately from semantic recovery. `duplicate_encoding` is reported only as a
 full-trusted-state restatement control; `cross_series` and `trend` are the two
 nontrivial recovery diagnostics. This run cannot authorize scale, RL, or
 training. Ambiguous source scenes are excluded before deterministic seeded
-selection. The command is in `docs/SERVER_SETUP.md`.
+selection. It produced valid four-integer outputs on all 12 calls but recovered
+only one of six valid-cue worlds, and that success was confined to the
+`duplicate_encoding` instruction-following control. A user-authorized follow-up
+therefore freezes 25 paired cases from each nontrivial family (`cross_series`
+and `trend`): 50 scenes times two conditions equals exactly 100 greedy inference
+calls. It remains exploratory, performs no training or RL, and cannot authorize
+further scale. The command is in `docs/SERVER_SETUP.md`.
