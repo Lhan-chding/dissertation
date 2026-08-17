@@ -26,6 +26,7 @@ def load_script(name: str, filename: str):
 
 GUARDS = load_script("_guards", "_guards.py")
 PHASE_CLI = load_script("_phase_cli", "_phase_cli.py")
+CAPABILITY_SCRIPT = load_script("test_capability_chain_script", "02_run_capability_chain.py")
 
 
 def valid_config() -> dict[str, object]:
@@ -50,6 +51,29 @@ def valid_config() -> dict[str, object]:
         },
         "integrity_gates": {"hash_parity": True, "token_parity": True},
         "vision_input": {"resized_height": 280, "resized_width": 280},
+        "runtime_evidence": {
+            "model_introspection_path": "artifacts/v4/model_introspection.json",
+            "model_introspection_sha256": (
+                "ed96d19a238d68497617071e29604313e0aae9a41a9e3bd24dbad451d87a0640"
+            ),
+            "module_manifest_path": "artifacts/v4/module_manifest.txt",
+            "module_manifest_sha256": (
+                "1c98fd8ba74fa5c30b8f585ffee5020544baf5be61f23e0c28c61a132973e8f0"
+            ),
+            "model_class": "Qwen2_5_VLForConditionalGeneration",
+            "language_layers": 36,
+            "vision_layers": 32,
+            "module_count": 839,
+            "required_modules": [
+                "model.visual.blocks.0",
+                "model.visual.blocks.31",
+                "model.visual.merger",
+                "model.language_model.layers.0",
+                "model.language_model.layers.35",
+                "model.language_model.norm",
+                "lm_head",
+            ],
+        },
     }
 
 
@@ -100,6 +124,10 @@ def test_load_config_accepts_only_objective_reporting_contract(tmp_path, monkeyp
         ),
         (lambda value: value["vision_input"].update(resized_height=224), "280x280"),
         (lambda value: value["integrity_gates"].update(hash_parity=False), "integrity gates"),
+        (
+            lambda value: value["runtime_evidence"].update(language_layers=35),
+            "runtime evidence",
+        ),
     ],
 )
 def test_load_config_fails_closed_on_contract_drift(tmp_path, monkeypatch, mutate, message) -> None:
@@ -196,6 +224,47 @@ def test_raw_input_validation_hash_binds_json_and_jsonl(tmp_path) -> None:
         GUARDS._validate_raw_input(empty, GUARDS.sha256(empty))
     with pytest.raises(RuntimeError, match="non-empty regular"):
         GUARDS._validate_raw_input(tmp_path / "missing", "0" * 64)
+
+
+def test_runtime_evidence_requires_exact_s1_artifacts(tmp_path, monkeypatch) -> None:
+    introspection = tmp_path / "model_introspection.json"
+    manifest = tmp_path / "module_manifest.txt"
+    modules = [
+        "model.visual.blocks.0",
+        "model.visual.blocks.31",
+        "model.visual.merger",
+        "model.language_model.layers.0",
+        "model.language_model.layers.35",
+        "model.language_model.norm",
+        "lm_head",
+    ]
+    introspection.write_text(
+        json.dumps(
+            {
+                "model_class": "Qwen2_5_VLForConditionalGeneration",
+                "language_layers": 36,
+                "module_count": len(modules),
+                "vision_config": {"depth": 32},
+            }
+        ),
+        encoding="utf-8",
+    )
+    manifest.write_text("\n".join(modules) + "\n", encoding="utf-8")
+    runtime = {
+        **valid_config()["runtime_evidence"],
+        "model_introspection_sha256": GUARDS.sha256(introspection),
+        "module_manifest_sha256": GUARDS.sha256(manifest),
+        "module_count": len(modules),
+    }
+    monkeypatch.setattr(GUARDS, "MODEL_INTROSPECTION_PATH", introspection)
+    monkeypatch.setattr(GUARDS, "MODULE_MANIFEST_PATH", manifest)
+
+    validated = GUARDS.validate_runtime_evidence(runtime)
+
+    assert validated["language_layers"] == 36
+    manifest.write_text("lm_head\n", encoding="utf-8")
+    with pytest.raises(RuntimeError, match="SHA-256"):
+        GUARDS.validate_runtime_evidence(runtime)
 
 
 def test_validate_server_inputs_runs_all_gates_before_return(monkeypatch, tmp_path) -> None:
@@ -373,7 +442,6 @@ def test_phase_cli_execute_success_and_failure_are_reported(monkeypatch, tmp_pat
 @pytest.mark.parametrize(
     ("filename", "phase"),
     [
-        ("02_run_capability_chain.py", "phase_1_capability_chain"),
         ("03_score_candidates.py", "phase_2_candidate_scoring"),
         ("04_layerwise_assimilation.py", "phase_2_layerwise_assimilation"),
         ("05_validate_cache_runner.py", "phase_3_cache_parity"),
@@ -391,6 +459,20 @@ def test_phase_entrypoints_delegate_only_to_preflight(monkeypatch, filename, pha
     assert captured["integrity_gates"]
     assert captured["expected_input_sha256"] == (GUARDS.LEGACY_SCREEN_RECORDS_SHA256,)
     assert all("percent" not in gate and "rate" not in gate for gate in captured["integrity_gates"])
+
+
+def test_capability_chain_entrypoint_uses_runtime_execution(monkeypatch) -> None:
+    captured: dict[str, object] = {}
+    monkeypatch.setattr(
+        CAPABILITY_SCRIPT,
+        "run_capability_chain_cli",
+        lambda **kwargs: captured.update(kwargs) or 11,
+    )
+
+    assert CAPABILITY_SCRIPT.main() == 11
+    assert captured["phase"] == "phase_1_capability_chain"
+    assert captured["expected_input_sha256"] == (GUARDS.LEGACY_SCREEN_RECORDS_SHA256,)
+    assert captured["output_paths"]["per_scene"].endswith("artifacts/v4/capability_chain/per_scene.csv")
 
 
 def test_introspection_cli_dry_run_never_loads_model(monkeypatch, tmp_path, capsys) -> None:
