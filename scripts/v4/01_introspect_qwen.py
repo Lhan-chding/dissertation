@@ -28,9 +28,18 @@ def main() -> int:
     arguments = parser.parse_args()
     if blocked_unless_execute(arguments.execute):
         return 2
+    canonical_artifact_root = ROOT / "artifacts"
     output = arguments.artifact_root / "v4"
     targets = (output / "model_introspection.json", output / "module_manifest.txt")
     try:
+        if (
+            arguments.artifact_root.is_symlink()
+            or arguments.artifact_root.resolve() != canonical_artifact_root.resolve()
+            or output.is_symlink()
+        ):
+            raise RuntimeError(
+                f"artifact root must be the canonical repository path: {canonical_artifact_root}"
+            )
         if any(path.exists() or path.is_symlink() for path in targets):
             raise FileExistsError("refusing to overwrite Qwen introspection evidence")
         validate_server_inputs(

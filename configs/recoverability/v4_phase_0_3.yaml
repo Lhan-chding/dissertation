@@ -66,6 +66,37 @@ reporting:
   report_actual_within_group_reward_variance: true
   note: Empirical values are reported, never used as subjective execution gates.
 
+runtime_evidence:
+  model_introspection_path: artifacts/v4/model_introspection.json
+  model_introspection_sha256: ed96d19a238d68497617071e29604313e0aae9a41a9e3bd24dbad451d87a0640
+  module_manifest_path: artifacts/v4/module_manifest.txt
+  module_manifest_sha256: 1c98fd8ba74fa5c30b8f585ffee5020544baf5be61f23e0c28c61a132973e8f0
+  model_class: Qwen2_5_VLForConditionalGeneration
+  language_layers: 36
+  vision_layers: 32
+  module_count: 839
+  required_modules:
+    - model.visual.blocks.0
+    - model.visual.blocks.31
+    - model.visual.merger
+    - model.language_model.layers.0
+    - model.language_model.layers.35
+    - model.language_model.norm
+    - lm_head
+
+phase_1_capability_chain:
+  source_scenes: 580
+  model_call_cap: 3480
+  calls_per_scene: 6
+  t1_calls_per_scene: 1
+  t1_yes_no_balanced: true
+  t5_candidate_count: 4
+  t5_true_label_balanced: true
+  max_new_tokens: 32
+  do_sample: false
+  seed: 2026081701
+  bootstrap_resamples: 10000
+
 artifacts:
   model_introspection: artifacts/v4/model_introspection.json
   module_manifest: artifacts/v4/module_manifest.txt

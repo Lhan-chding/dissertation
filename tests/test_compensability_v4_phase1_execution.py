@@ -6,6 +6,7 @@ import json
 from collections import Counter
 
 import pytest
+import torch
 
 from compensability_v4.diagnostics.capability_chain import (
     CapabilityTaskType,
@@ -18,7 +19,6 @@ from compensability_v4.qwen.capability_runner import (
     execute_capability_calls,
     write_capability_outputs,
 )
-
 
 PROMPTS = {task.value: f"frozen prompt for {task.value}" for task in CapabilityTaskType}
 
@@ -183,6 +183,57 @@ def test_runtime_executes_each_frozen_call_once(tmp_path) -> None:
     assert progress[-1] == (6, 6)
 
 
+class _TensorProcessor:
+    tokenizer = None
+
+    def apply_chat_template(self, messages, *, tokenize, add_generation_prompt):
+        assert messages and tokenize is False and add_generation_prompt is True
+        return "rendered"
+
+    def __call__(self, *, text, padding, return_tensors):
+        assert text == ["rendered"] and padding is True and return_tensors == "pt"
+        return {"input_ids": torch.tensor([[1, 2]])}
+
+    def batch_decode(self, token_ids, **options):
+        assert token_ids.tolist() == [[3]]
+        assert options["skip_special_tokens"] is True
+        return ["YES"]
+
+
+class _TensorModel:
+    device = None
+
+    def generate(self, **arguments):
+        assert arguments["max_new_tokens"] == 32
+        assert arguments["do_sample"] is False
+        return torch.tensor([[1, 2, 3]])
+
+
+def test_runtime_real_path_is_greedy_and_decodes_only_continuation(tmp_path) -> None:
+    source = tmp_path / "screen_records.jsonl"
+    source.write_text(json.dumps(_screen_row(0)) + "\n", encoding="utf-8")
+    scene = load_legacy_capability_scenes(
+        source,
+        expected_scenes=1,
+        expected_family_counts={"cross_series": 1},
+    )
+    call = build_capability_calls(
+        scene,
+        prompts=PROMPTS,
+        candidate_labels=("A", "B", "C", "D"),
+        seed=2026081701,
+    )[0]
+
+    records = execute_capability_calls(
+        _TensorModel(), _TensorProcessor(), (call,), max_new_tokens=32
+    )
+
+    assert records[0].raw_output == "YES"
+    assert records[0].is_correct is True
+    with pytest.raises(RuntimeError, match="frozen at 32"):
+        execute_capability_calls(_TensorModel(), _TensorProcessor(), (call,), max_new_tokens=31)
+
+
 def test_output_writer_emits_exact_three_no_overwrite_artifacts(tmp_path) -> None:
     source = tmp_path / "screen_records.jsonl"
     source.write_text(json.dumps(_screen_row(0)) + "\n", encoding="utf-8")
@@ -213,8 +264,11 @@ def test_output_writer_emits_exact_three_no_overwrite_artifacts(tmp_path) -> Non
         "summary_by_family.csv",
         "paired_gaps.json",
     }
-    assert json.loads((output / "paired_gaps.json").read_text())[
-        "subjective_success_threshold_applied"
-    ] is False
+    assert (
+        json.loads((output / "paired_gaps.json").read_text())[
+            "subjective_success_threshold_applied"
+        ]
+        is False
+    )
     with pytest.raises(FileExistsError, match="overwrite"):
         write_capability_outputs(output, records=records, summaries=summaries, gaps=gaps)

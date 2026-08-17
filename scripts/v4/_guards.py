@@ -21,6 +21,19 @@ ROOT = Path(__file__).resolve().parents[2]
 CONFIG_PATH = ROOT / "configs/recoverability/v4_phase_0_3.yaml"
 PACKAGE_LOCK_PATH = ROOT / "configs/recoverability/v4/server_package_lock_phase_0_3.yaml"
 LEGACY_SCREEN_RECORDS_SHA256 = "f964dd6c005bd7344804aca8c33de2f621cc8e171f8d0f4ccc73a08081f2414a"
+MODEL_INTROSPECTION_PATH = ROOT / "artifacts/v4/model_introspection.json"
+MODULE_MANIFEST_PATH = ROOT / "artifacts/v4/module_manifest.txt"
+MODEL_INTROSPECTION_SHA256 = "ed96d19a238d68497617071e29604313e0aae9a41a9e3bd24dbad451d87a0640"
+MODULE_MANIFEST_SHA256 = "1c98fd8ba74fa5c30b8f585ffee5020544baf5be61f23e0c28c61a132973e8f0"
+REQUIRED_RUNTIME_MODULES = (
+    "model.visual.blocks.0",
+    "model.visual.blocks.31",
+    "model.visual.merger",
+    "model.language_model.layers.0",
+    "model.language_model.layers.35",
+    "model.language_model.norm",
+    "lm_head",
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -61,7 +74,8 @@ def _load_config(path: Path) -> dict[str, object]:
     reporting = payload.get("reporting")
     integrity = payload.get("integrity_gates")
     vision = payload.get("vision_input")
-    sections = (model, authorization, reporting, integrity, vision)
+    runtime = payload.get("runtime_evidence")
+    sections = (model, authorization, reporting, integrity, vision, runtime)
     if not all(isinstance(item, dict) for item in sections):
         raise RuntimeError("v4 config sections are incomplete")
     assert isinstance(model, dict)
@@ -69,6 +83,7 @@ def _load_config(path: Path) -> dict[str, object]:
     assert isinstance(reporting, dict)
     assert isinstance(integrity, dict)
     assert isinstance(vision, dict)
+    assert isinstance(runtime, dict)
     if (
         model.get("local_path") != MODEL_PATH
         or model.get("snapshot_sha256") != MODEL_SNAPSHOT_SHA256
@@ -97,6 +112,82 @@ def _load_config(path: Path) -> dict[str, object]:
         raise RuntimeError("v4 fixed visual budget must remain 280x280")
     if any(value is not True for value in integrity.values()):
         raise RuntimeError("all objective v4 integrity gates must remain enabled")
+    expected_runtime = {
+        "model_introspection_path": "artifacts/v4/model_introspection.json",
+        "model_introspection_sha256": MODEL_INTROSPECTION_SHA256,
+        "module_manifest_path": "artifacts/v4/module_manifest.txt",
+        "module_manifest_sha256": MODULE_MANIFEST_SHA256,
+        "model_class": "Qwen2_5_VLForConditionalGeneration",
+        "language_layers": 36,
+        "vision_layers": 32,
+        "module_count": 839,
+        "required_modules": list(REQUIRED_RUNTIME_MODULES),
+    }
+    if set(runtime) != set(expected_runtime) or any(
+        runtime.get(key) != value for key, value in expected_runtime.items()
+    ):
+        raise RuntimeError("v4 runtime evidence contract drifted")
+    phase_1 = payload.get("phase_1_capability_chain")
+    expected_phase_1 = {
+        "source_scenes": 580,
+        "model_call_cap": 3480,
+        "calls_per_scene": 6,
+        "t1_calls_per_scene": 1,
+        "t1_yes_no_balanced": True,
+        "t5_candidate_count": 4,
+        "t5_true_label_balanced": True,
+        "max_new_tokens": 32,
+        "do_sample": False,
+        "seed": 2026081701,
+        "bootstrap_resamples": 10000,
+    }
+    if (
+        not isinstance(phase_1, dict)
+        or set(phase_1) != set(expected_phase_1)
+        or phase_1 != expected_phase_1
+    ):
+        raise RuntimeError("v4 Phase 1 capability execution contract drifted")
+    return payload
+
+
+def validate_runtime_evidence(runtime: dict[str, object]) -> dict[str, object]:
+    if not isinstance(runtime, dict):
+        raise RuntimeError("runtime evidence section must be a mapping")
+    if runtime.get("model_introspection_path") != "artifacts/v4/model_introspection.json":
+        raise RuntimeError("runtime evidence introspection path drifted")
+    if runtime.get("module_manifest_path") != "artifacts/v4/module_manifest.txt":
+        raise RuntimeError("runtime evidence module path drifted")
+    _canonical_file(MODEL_INTROSPECTION_PATH, MODEL_INTROSPECTION_PATH, "model introspection")
+    _canonical_file(MODULE_MANIFEST_PATH, MODULE_MANIFEST_PATH, "module manifest")
+    expected_intro = runtime.get("model_introspection_sha256")
+    expected_manifest = runtime.get("module_manifest_sha256")
+    if (
+        not isinstance(expected_intro, str)
+        or not isinstance(expected_manifest, str)
+        or sha256(MODEL_INTROSPECTION_PATH) != expected_intro
+        or sha256(MODULE_MANIFEST_PATH) != expected_manifest
+    ):
+        raise RuntimeError("runtime evidence SHA-256 mismatch")
+    payload = json.loads(MODEL_INTROSPECTION_PATH.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise RuntimeError("runtime introspection artifact is malformed")
+    if payload.get("model_class") != runtime.get("model_class"):
+        raise RuntimeError("runtime evidence model class drifted")
+    if payload.get("language_layers") != runtime.get("language_layers"):
+        raise RuntimeError("runtime evidence language layer count drifted")
+    if payload.get("module_count") != runtime.get("module_count"):
+        raise RuntimeError("runtime evidence module count drifted")
+    vision = payload.get("vision_config")
+    if not isinstance(vision, dict) or vision.get("depth") != runtime.get("vision_layers"):
+        raise RuntimeError("runtime evidence vision depth drifted")
+    modules = tuple(MODULE_MANIFEST_PATH.read_text(encoding="utf-8").splitlines())
+    required_modules = runtime.get("required_modules")
+    if len(modules) != runtime.get("module_count") or len(set(modules)) != len(modules):
+        raise RuntimeError("runtime evidence module manifest count or uniqueness drifted")
+    if not isinstance(required_modules, list) or any(
+        not isinstance(module, str) or module not in modules for module in required_modules
+    ):
+        raise RuntimeError("runtime evidence required modules drifted")
     return payload
 
 
@@ -240,11 +331,14 @@ def write_execution_manifest(
 __all__ = [
     "CONFIG_PATH",
     "LEGACY_SCREEN_RECORDS_SHA256",
+    "MODEL_INTROSPECTION_PATH",
+    "MODULE_MANIFEST_PATH",
     "PACKAGE_LOCK_PATH",
     "ROOT",
     "ValidatedServerInputs",
     "blocked_unless_execute",
     "sha256",
+    "validate_runtime_evidence",
     "validate_server_inputs",
     "write_execution_manifest",
 ]

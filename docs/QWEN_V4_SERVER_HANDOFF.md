@@ -18,8 +18,8 @@ SFT, and RL are not authorized.
   `awaiting_hash_bound_server_evidence`; do not reconstruct it from prose.
 
 Run inside `tmux`. Stop at the first `BLOCKED` message and return the complete output. Every
-script except S0 is inert without `--execute`. S2-S6 create no-overwrite, hash-bound pre-work
-manifests only after the universal provenance checks pass. They do not execute the named
+script except S0 is inert without `--execute`. S3-S6 remain no-overwrite, hash-bound pre-work
+surfaces only after the universal provenance checks pass. They do not execute the named
 phase-specific gates or model experiments, do not train, and do not invoke RL. Their manifest
 status is `PREWORK_MANIFEST_ONLY_PHASE_NOT_EXECUTED`.
 
@@ -51,16 +51,37 @@ sha256sum artifacts/v4/model_introspection.json artifacts/v4/module_manifest.txt
 
 Layer and module counts come from the live snapshot; they are never hard-coded.
 
-## S2 - T1-T6 capability-chain surface
+## S2 - T1-T6 capability-chain execution
 
-This and S3-S6 are provenance preflight surfaces, not experiment runners. Do not interpret a
-produced manifest as a capability, scoring, layerwise, cache-parity, or interface result.
+S2 is the actual hard-text Phase 1 runner. It requires the exact August 17, 2026 S1 runtime
+evidence before loading Qwen:
+
+- `artifacts/v4/model_introspection.json`
+  SHA-256 `ed96d19a238d68497617071e29604313e0aae9a41a9e3bd24dbad451d87a0640`
+- `artifacts/v4/module_manifest.txt`
+  SHA-256 `1c98fd8ba74fa5c30b8f585ffee5020544baf5be61f23e0c28c61a132973e8f0`
+- `model_class = Qwen2_5_VLForConditionalGeneration`
+- `language_layers = 36`
+- `vision depth = 32`
+- `module_count = 839`
+- required modules:
+  `model.visual.blocks.0`, `model.visual.blocks.31`, `model.visual.merger`,
+  `model.language_model.layers.0`, `model.language_model.layers.35`,
+  `model.language_model.norm`, `lm_head`
+
+Phase 1 must execute exactly 580 eligible scenes x 6 calls = 3,480 model calls. Gates remain
+objective only: hash-bound screen records, S1 runtime evidence, one eligible natural error per
+scene, T1 yes/no balancing, four unique T5 candidates with single-token labels, no overwrite,
+and strict minimal-output parsing.
 
 ```bash
 SCREEN=/cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v2/phase_c_screen/screen_records.jsonl
 python scripts/v4/02_run_capability_chain.py --execute \
   --input "$SCREEN" \
   --input-sha256 f964dd6c005bd7344804aca8c33de2f621cc8e171f8d0f4ccc73a08081f2414a
+sha256sum artifacts/v4/capability_chain/per_scene.csv \
+  artifacts/v4/capability_chain/summary_by_family.csv \
+  artifacts/v4/capability_chain/paired_gaps.json
 ```
 
 ## S3 - candidate scoring surface
@@ -106,8 +127,8 @@ sha256sum artifacts/v4/server_preflight/*.json
 
 There is no subjective empirical success gate: do not require an 80% visual repair rate, a
 minimum recovery accuracy, or any other result-dependent threshold. Hash agreement, unique
-candidates, split isolation, single-token labels, forward-logit parity, and cache parity are
-objective measurement-validity gates and may block execution.
+candidates, split isolation, S1 runtime-evidence agreement, single-token labels, forward-logit
+parity, and cache parity are objective measurement-validity gates and may block execution.
 
 Return point estimates, scene-clustered 95% confidence intervals, paired effects, and
 family-stratified effects. When policy support is later measured, report every prompt's `p_i`,

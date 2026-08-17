@@ -499,6 +499,102 @@ def test_capability_chain_entrypoint_uses_runtime_execution(monkeypatch) -> None
     )
 
 
+def test_capability_chain_cli_executes_frozen_contract(monkeypatch, tmp_path, capsys) -> None:
+    source = tmp_path / "screen_records.jsonl"
+    source.write_text('{"eligible":true}\n', encoding="utf-8")
+    config = valid_config()
+    validation = GUARDS.ValidatedServerInputs("config", "lock", "model", ({"sha256": "raw"},))
+    output_dir = tmp_path / "capability"
+    outputs = {
+        "per_scene": str(output_dir / "per_scene.csv"),
+        "summary_by_family": str(output_dir / "summary_by_family.csv"),
+        "paired_gaps": str(output_dir / "paired_gaps.json"),
+    }
+    scenes = tuple(object() for _ in range(580))
+    calls = tuple(type("Call", (), {"call_id": str(index)})() for index in range(3480))
+    records = tuple(object() for _ in range(3480))
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "02_run_capability_chain.py",
+            "--execute",
+            "--input",
+            str(source),
+            "--input-sha256",
+            GUARDS.LEGACY_SCREEN_RECORDS_SHA256,
+        ],
+    )
+    monkeypatch.setattr(CAPABILITY_SCRIPT, "validate_server_inputs", lambda **_kwargs: validation)
+    monkeypatch.setattr(CAPABILITY_SCRIPT, "_load_config", lambda _path: config)
+    monkeypatch.setattr(CAPABILITY_SCRIPT, "validate_runtime_evidence", lambda _runtime: {})
+    monkeypatch.setattr(
+        CAPABILITY_SCRIPT,
+        "_load_prompt_contract",
+        lambda _path: (
+            {name: name for name in ("T1", "T2", "T3", "T4", "T5", "T6")},
+            ("A", "B", "C", "D"),
+        ),
+    )
+    monkeypatch.setattr(CAPABILITY_SCRIPT, "load_legacy_capability_scenes", lambda _path: scenes)
+    monkeypatch.setattr(
+        CAPABILITY_SCRIPT, "load_pinned_qwen", lambda **_kwargs: (object(), object())
+    )
+    monkeypatch.setattr(
+        CAPABILITY_SCRIPT,
+        "find_single_token_labels",
+        lambda _tokenizer, _order, minimum: ("A", "B", "C", "D"),
+    )
+    monkeypatch.setattr(
+        CAPABILITY_SCRIPT, "build_capability_calls", lambda *_args, **_kwargs: calls
+    )
+    monkeypatch.setattr(
+        CAPABILITY_SCRIPT,
+        "execute_capability_calls",
+        lambda *_args, progress, **_kwargs: (progress(3480, 3480), records)[1],
+    )
+    monkeypatch.setattr(
+        CAPABILITY_SCRIPT,
+        "summarize_capability_run",
+        lambda *_args, **_kwargs: (({"family": "x", "task_type": "T1"},), {"G_loc": {}}),
+    )
+    written = {}
+    monkeypatch.setattr(
+        CAPABILITY_SCRIPT,
+        "write_capability_outputs",
+        lambda path, **kwargs: written.update(path=path, **kwargs),
+    )
+
+    result = CAPABILITY_SCRIPT.run_capability_chain_cli(
+        phase="phase_1_capability_chain",
+        expected_input_sha256=(GUARDS.LEGACY_SCREEN_RECORDS_SHA256,),
+        output_paths=outputs,
+    )
+
+    assert result == 0
+    assert written["path"] == output_dir
+    assert written["gaps"]["subjective_success_threshold_applied"] is False
+    assert written["gaps"]["model_calls"] == 3480
+    assert "PROGRESS: 3480/3480" in capsys.readouterr().out
+
+
+def test_capability_chain_cli_is_inert_without_execute(monkeypatch, capsys) -> None:
+    monkeypatch.setattr(sys, "argv", ["02_run_capability_chain.py"])
+    assert (
+        CAPABILITY_SCRIPT.run_capability_chain_cli(
+            phase="phase_1_capability_chain",
+            expected_input_sha256=(GUARDS.LEGACY_SCREEN_RECORDS_SHA256,),
+            output_paths={
+                "per_scene": "per_scene.csv",
+                "summary_by_family": "summary_by_family.csv",
+                "paired_gaps": "paired_gaps.json",
+            },
+        )
+        == 2
+    )
+    assert "BLOCKED" in capsys.readouterr().out
+
+
 def test_introspection_cli_dry_run_never_loads_model(monkeypatch, tmp_path, capsys) -> None:
     module = load_script("test_introspect_qwen_script", "01_introspect_qwen.py")
     monkeypatch.setattr(sys, "argv", ["01_introspect_qwen.py", "--artifact-root", str(tmp_path)])
@@ -507,3 +603,20 @@ def test_introspection_cli_dry_run_never_loads_model(monkeypatch, tmp_path, caps
     )
     assert module.main() == 2
     assert "BLOCKED" in capsys.readouterr().out
+
+
+def test_introspection_cli_rejects_redirected_artifact_root(monkeypatch, tmp_path, capsys) -> None:
+    module = load_script("test_introspect_qwen_redirect", "01_introspect_qwen.py")
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["01_introspect_qwen.py", "--execute", "--artifact-root", str(tmp_path)],
+    )
+    monkeypatch.setattr(
+        module,
+        "validate_server_inputs",
+        lambda **_kwargs: pytest.fail("redirected path must fail before server validation"),
+    )
+
+    assert module.main() == 2
+    assert "canonical" in capsys.readouterr().out
