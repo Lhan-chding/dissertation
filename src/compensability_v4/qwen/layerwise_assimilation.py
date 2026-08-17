@@ -75,6 +75,30 @@ def layerwise_candidate_logits(
     A mandatory final-layer parity comparison guards this interpretation.
     """
 
+    try:
+        import torch
+    except ImportError as error:  # pragma: no cover - only real runtime needs torch
+        raise RuntimeError("layerwise Qwen projection requires torch") from error
+    with torch.inference_mode():
+        return _layerwise_candidate_logits_inference(
+            model,
+            batch,
+            label_token_ids,
+            absolute_tolerance=absolute_tolerance,
+            relative_tolerance=relative_tolerance,
+        )
+
+
+def _layerwise_candidate_logits_inference(
+    model: object,
+    batch: object,
+    label_token_ids: Mapping[str, int] | Sequence[int],
+    *,
+    absolute_tolerance: float,
+    relative_tolerance: float,
+) -> list[dict[str, float]]:
+    """Run forward, projection, and parity inside one inference context."""
+
     pairs = _candidate_ids(label_token_ids)
     output, arguments = _forward(model, batch)
     hidden_states = tuple(getattr(output, "hidden_states", ()) or ())
