@@ -129,6 +129,39 @@ def valid_config() -> dict[str, object]:
             "capability_summary_sha256": GUARDS.CAPABILITY_SUMMARY_SHA256,
             "capability_paired_gaps_sha256": GUARDS.CAPABILITY_PAIRED_GAPS_SHA256,
         },
+        "phase_2_layerwise_assimilation": {
+            "source_scenes": 580,
+            "world_recoverable_scenes": 579,
+            "included_family_counts": {
+                "cross_series": 208,
+                "duplicate_encoding": 182,
+                "trend": 189,
+            },
+            "cue_conditions": [
+                "no_cue",
+                "valid_cue",
+                "sham_cue",
+                "counterfactual_cue",
+            ],
+            "model_forward_cap": 2316,
+            "calls_per_scene": 4,
+            "language_layers": 36,
+            "final_logit_absolute_tolerance": 1e-5,
+            "final_logit_relative_tolerance": 1e-5,
+            "numerical_equality_tolerance": 1e-8,
+            "bootstrap_resamples": 10000,
+            "generation_allowed": False,
+            "phase_2_revision": "fa8f9e64cf37190ffa8ba70206691fb043be3f1f",
+            "phase_2_config_sha256": (
+                "39ac4534cf2786f18ea26bfa84d3230edfdd205f3397502934a90b792724401f"
+            ),
+            "phase_2_package_lock_sha256": (
+                "75fc91ef1fa1b217c07485242b3036bb3a789e4a9ebbd715f2e61639541c6c7a"
+            ),
+            "candidate_labels_sha256": GUARDS.CANDIDATE_LABELS_SHA256,
+            "candidate_scores_sha256": GUARDS.CANDIDATE_SCORES_SHA256,
+            "candidate_summary_sha256": GUARDS.CANDIDATE_SUMMARY_SHA256,
+        },
     }
 
 
@@ -190,6 +223,10 @@ def test_load_config_accepts_only_objective_reporting_contract(tmp_path, monkeyp
         (
             lambda value: value["phase_1_capability_chain"].update(model_call_cap=3479),
             "Phase 1",
+        ),
+        (
+            lambda value: value["phase_2_layerwise_assimilation"].update(language_layers=35),
+            "layerwise",
         ),
     ],
 )
@@ -506,7 +543,6 @@ def test_phase_cli_execute_success_and_failure_are_reported(monkeypatch, tmp_pat
 @pytest.mark.parametrize(
     ("filename", "phase"),
     [
-        ("04_layerwise_assimilation.py", "phase_2_layerwise_assimilation"),
         ("05_validate_cache_runner.py", "phase_3_cache_parity"),
         ("06_run_interface_ladder.py", "phase_3_interface_ladder"),
     ],

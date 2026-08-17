@@ -19,7 +19,7 @@ SFT, and RL are not authorized.
 
 Run inside `tmux`. Stop at the first `BLOCKED` message and return the complete output. Every
 script except S0 is inert without `--execute`. S3 is a real no-overwrite, hash-bound
-teacher-forced scoring run. S4-S6 remain pre-work surfaces until the immediately preceding
+teacher-forced scoring run. S4 is the real layerwise diagnostic. S5-S6 remain pre-work surfaces until the immediately preceding
 artifact hashes are returned and frozen. No Phase 0-3 script trains or invokes RL.
 
 ```bash
@@ -134,14 +134,43 @@ sha256sum artifacts/v4/tokenizer/candidate_labels.json \
 
 ## S4 - layerwise assimilation surface
 
-Do not execute S4 yet. Its input contract will be frozen only after S3 returns the three hashes
-above; this prevents a caller-selected candidate-label or score file from entering the layerwise
-analysis.
+S3 completed on 579 scenes and 2,316 teacher-forced forwards. Its frozen evidence is:
+
+- `candidate_labels.json`:
+  `a7a448f230038698c4127b220362c95d47f57cef90cc7904e71b1dacacc04dbd`
+- `candidate_scoring/per_scene.jsonl`:
+  `c303731438760a30fb2f78a489d20465a1c1e292b01941795f29351a0e234a62`
+- `candidate_scoring/summary.json`:
+  `5e366dfecb2a4fd530407f896326bc99d3605385cfdadea34c0f478392280c73`
+- labels and token IDs: `A=32`, `B=33`, `C=34`, `D=35`
+
+The S3 valid-minus-no-cue point estimate was positive, but the sham-minus-no-cue estimate was
+similar and slightly larger. This is reported evidence, not a stop rule. S4 therefore measures
+all four conditions and includes valid-minus-sham and counterfactual-minus-sham layerwise paired
+contrasts; no effect magnitude determines whether S4 executes.
+
+S4 executes 579 scenes x 4 conditions = 2,316 hidden-state forwards. Every forward must expose
+exactly 36 language-layer states, and its projected final-layer candidate logits must match the
+same standard forward. Any parity mismatch is an objective measurement-validity failure.
 
 ```bash
 python scripts/v4/04_layerwise_assimilation.py --execute \
   --input "$SCREEN" \
-  --input-sha256 f964dd6c005bd7344804aca8c33de2f621cc8e171f8d0f4ccc73a08081f2414a
+  --input-sha256 f964dd6c005bd7344804aca8c33de2f621cc8e171f8d0f4ccc73a08081f2414a \
+  --input artifacts/v4/capability_chain/per_scene.csv \
+  --input-sha256 d01c391e136ed0e5c0ed52e50fe70f6ec128d221d218e7012c9adbcb4293929f \
+  --input artifacts/v4/capability_chain/summary_by_family.csv \
+  --input-sha256 8837a7275915f5a90c91eae8378ff6bd0466819842381996db1be8e4925705c7 \
+  --input artifacts/v4/capability_chain/paired_gaps.json \
+  --input-sha256 a2a5acb5b203719e7e5225e56643a25a4189277d13704cccd4ec86d61573e256 \
+  --input artifacts/v4/tokenizer/candidate_labels.json \
+  --input-sha256 a7a448f230038698c4127b220362c95d47f57cef90cc7904e71b1dacacc04dbd \
+  --input artifacts/v4/candidate_scoring/per_scene.jsonl \
+  --input-sha256 c303731438760a30fb2f78a489d20465a1c1e292b01941795f29351a0e234a62 \
+  --input artifacts/v4/candidate_scoring/summary.json \
+  --input-sha256 5e366dfecb2a4fd530407f896326bc99d3605385cfdadea34c0f478392280c73
+sha256sum artifacts/v4/layerwise_assimilation/per_scene.jsonl \
+  artifacts/v4/layerwise_assimilation/summary.json
 ```
 
 ## S5 - exact-cache parity surface

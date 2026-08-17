@@ -34,7 +34,8 @@ def _runtime_projection_modules(model: object) -> tuple[object, object]:
     get_head = getattr(model, "get_output_embeddings", None)
     head = get_head() if callable(get_head) else getattr(model, "lm_head", None)
     backbone = getattr(model, "model", None)
-    norm = getattr(backbone, "norm", None)
+    language_model = getattr(backbone, "language_model", backbone)
+    norm = getattr(language_model, "norm", None)
     if head is None or not callable(head):
         raise RuntimeError("runtime model exposes no output embedding/lm head")
     if norm is None or not callable(norm):
@@ -62,6 +63,9 @@ def layerwise_candidate_logits(
     model: object,
     batch: object,
     label_token_ids: Mapping[str, int] | Sequence[int],
+    *,
+    absolute_tolerance: float = 1e-5,
+    relative_tolerance: float = 1e-5,
 ) -> list[dict[str, float]]:
     """Project every language-layer state through the runtime norm and head.
 
@@ -102,7 +106,12 @@ def layerwise_candidate_logits(
         result.append({label: _as_float(vocabulary_logits[token_id]) for label, token_id in pairs})
     standard_logits = output.logits[0, final_index]
     standard = {label: _as_float(standard_logits[token_id]) for label, token_id in pairs}
-    validate_final_layer_logits(result, standard)
+    validate_final_layer_logits(
+        result,
+        standard,
+        absolute_tolerance=absolute_tolerance,
+        relative_tolerance=relative_tolerance,
+    )
     return result
 
 
@@ -115,8 +124,13 @@ def validate_final_layer_logits(
 ) -> None:
     """Fail closed unless the final projected candidates match normal forward."""
 
-    if absolute_tolerance < 0 or relative_tolerance < 0:
-        raise ValueError("logit tolerances must be non-negative")
+    if (
+        absolute_tolerance < 0
+        or relative_tolerance < 0
+        or not math.isfinite(absolute_tolerance)
+        or not math.isfinite(relative_tolerance)
+    ):
+        raise ValueError("logit tolerances must be finite and non-negative")
     if not layerwise_logits or set(layerwise_logits[-1]) != set(forward_logits):
         raise RuntimeError("final-layer candidate logits do not match the standard forward pass")
     for label, expected in forward_logits.items():

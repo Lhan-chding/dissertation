@@ -2,13 +2,13 @@ schema_version: 1
 status: FROZEN_PHASE_0_3_SERVER_SURFACE
 files:
   - path: configs/recoverability/v4_phase_0_3.yaml
-    sha256: 39ac4534cf2786f18ea26bfa84d3230edfdd205f3397502934a90b792724401f
+    sha256: ec8743b979b62af3594d9d4303458ddcdd099e35553664903c6d0d386f1e101f
   - path: configs/recoverability/v4/phase_1_3_prompts.yaml
     sha256: c4fa65062527b76bd0b29bbad6a5bd35e596fcc2bfef4dd0c81d7fe008610d10
   - path: docs/Qwen25VL_Constraint_Assimilation_Natural_State_RL_Codex_Plan_v4.md
     sha256: 01e532f8c7fe5439c70e8cd8de81ff3448465d8d401dbbf478c76aebaf49641e
   - path: docs/QWEN_V4_SERVER_HANDOFF.md
-    sha256: e488a73b5f5ab92e8c29da4c549092ca2c93c2f47aeb07fd2495618a79b1ad2f
+    sha256: e17e5b0224edd6d0f2b01a03963de10fe03aa0ee42b4f374a7b3f5d6fbbf0041
   - path: pyproject.toml
     sha256: 6f874b01dc23c49bb3f65d7aa36d7be70cf4338699a640c0a94cd56db32bb365
   - path: requirements-gpu.lock.txt
@@ -22,13 +22,13 @@ files:
   - path: scripts/v4/03_score_candidates.py
     sha256: 8dfadc1890b550c46b295696640070ff03b97ad55feecbfd4eabd8a318567e86
   - path: scripts/v4/04_layerwise_assimilation.py
-    sha256: 993bd95700f282384f48c1422ec53c8b3f7106fad4dc99e4ce2a6dbfadbf39ef
+    sha256: 29686167836ba547a68c1ea7737a8f2db75718577017146f22a86de15a57a8b4
   - path: scripts/v4/05_validate_cache_runner.py
     sha256: 9945795df8548ff88b6730973072514b53a160205a2697760417d0caea3144ec
   - path: scripts/v4/06_run_interface_ladder.py
     sha256: 0a06901e850d41213e678598ce0ff72d0620cb57873026c04e10b6434f0fb268
   - path: scripts/v4/_guards.py
-    sha256: f51608853a9847a1da3c42591ca0e49dee6552833dc6426c54c63de1f1ef3768
+    sha256: cdb96993fc39eaf6fdf9da9fcf2be0b2f3a63e60763501a0e729dc2503f205c5
   - path: scripts/v4/_phase_cli.py
     sha256: 0faabed0ac085d3ce7be846a3c89c2b2a60a082a179f0d930e612c0411bacc3c
   - path: src/compensability_v4/__init__.py
@@ -80,13 +80,15 @@ files:
   - path: src/compensability_v4/qwen/introspect_model.py
     sha256: 4ea946164edf164e8363d74985ee3f469808d9cd3920a6283bdee7b970032e82
   - path: src/compensability_v4/qwen/layerwise_assimilation.py
-    sha256: 47cf927ba1ea0392ac901c655746499ac20a53e56bd85976d065d5ff9b497a4b
+    sha256: ef6e8c981a873ad7a43d758d914852e240021ca665e7f91602e0db35e5735d39
   - path: src/compensability_v4/qwen/manual_generation.py
     sha256: 3c716496daa5771b62c4edd59f80f0a2bcf269169490195ecec5094af8753ee8
   - path: src/compensability_v4/qwen/model_loader.py
     sha256: a6ec48bfe03acfdea54f609b44004cd01f053e58c5f70ed0947616157cbbee47
   - path: src/compensability_v4/qwen/phase2_candidate.py
     sha256: 4604def3e35401b9498ff703e49a6c1a499c3e436bb0a921329582daf5a00fcc
+  - path: src/compensability_v4/qwen/phase2_layerwise.py
+    sha256: c80fc4bd8a97891f5ff6c9ed78f48d3840238622cc4d63a809e71ef6d9d714b2
   - path: src/compensability_v4/schemas/__init__.py
     sha256: 99edf107a9fa07bade840089f40592ecf5c498a9167c0be7c46c5d08bb28b4aa
   - path: src/compensability_v4/schemas/_common.py

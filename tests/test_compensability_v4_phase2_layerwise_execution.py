@@ -23,7 +23,10 @@ from compensability_v4.qwen.phase2_candidate import (
 from compensability_v4.qwen.phase2_layerwise import (
     build_layerwise_plan,
     execute_layerwise_plan,
+    load_candidate_label_evidence,
+    load_candidate_scoring_records,
     summarize_layerwise_records,
+    validate_candidate_scoring_summary,
     write_layerwise_outputs,
 )
 
@@ -343,6 +346,29 @@ def test_layerwise_execution_fails_closed_on_final_forward_mismatch() -> None:
         )
 
 
+def test_layerwise_execution_consumes_frozen_numeric_tolerances() -> None:
+    scoring_calls, scoring_records = _source(1)
+    plan = build_layerwise_plan(
+        scoring_calls,
+        scoring_records,
+        expected_scenes=1,
+        expected_language_layers=36,
+    )
+
+    records = execute_layerwise_plan(
+        _LayerwiseModel(corrupt_final_forward=True),
+        _Processor(),
+        plan,
+        label_token_ids=LABEL_TOKEN_IDS,
+        final_logit_absolute_tolerance=0.02,
+        final_logit_relative_tolerance=0.0,
+        numerical_equality_tolerance=0.0,
+    )
+
+    assert len(records) == 4
+    assert all(record.final_forward_parity_verified for record in records)
+
+
 def test_layerwise_summary_and_outputs_are_complete_objective_and_no_overwrite(
     tmp_path: Path,
 ) -> None:
@@ -402,6 +428,70 @@ def test_layerwise_summary_and_outputs_are_complete_objective_and_no_overwrite(
         )
 
 
+def test_s4_loads_exact_s3_artifacts_without_outcome_thresholds(tmp_path: Path) -> None:
+    model_hash, config_hash, lock_hash = "a" * 64, "b" * 64, "c" * 64
+    labels_path = tmp_path / "labels.json"
+    labels_path.write_text(
+        json.dumps(
+            {
+                "status": "PHASE_2_SINGLE_TOKEN_LABELS_VERIFIED",
+                "model_snapshot_sha256": model_hash,
+                "config_sha256": config_hash,
+                "package_lock_sha256": lock_hash,
+                "generation_invoked": False,
+                "subjective_success_threshold_applied": False,
+                "labels": [
+                    {"label": label, "token_id": token_id}
+                    for label, token_id in LABEL_TOKEN_IDS.items()
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    assert load_candidate_label_evidence(
+        labels_path,
+        expected_model_snapshot_sha256=model_hash,
+        expected_config_sha256=config_hash,
+        expected_package_lock_sha256=lock_hash,
+    ) == (LABELS, LABEL_TOKEN_IDS)
+
+    call = _scoring_call(0, CueCondition.NO_CUE)
+    record = _scoring_record(call)
+    records_path = tmp_path / "records.jsonl"
+    records_path.write_text(json.dumps(record.to_mapping()) + "\n", encoding="utf-8")
+    assert load_candidate_scoring_records(records_path) == (record,)
+
+    summary_path = tmp_path / "summary.json"
+    summary = {
+        "status": "PHASE_2_CANDIDATE_SCORING_EXECUTED",
+        "number_of_scenes": 1,
+        "number_of_forward_calls": 4,
+        "family_counts": {"cross_series": 1},
+        "condition_counts": {condition.value: 1 for condition in CueCondition},
+        "model_snapshot_sha256": model_hash,
+        "config_sha256": config_hash,
+        "package_lock_sha256": lock_hash,
+        "generation_invoked": False,
+        "training_invoked": False,
+        "rl_invoked": False,
+        "subjective_success_threshold_applied": False,
+        "paired_effects": {"valid_minus_sham_margin": {"estimate": 0.0}},
+    }
+    summary_path.write_text(json.dumps(summary), encoding="utf-8")
+    assert (
+        validate_candidate_scoring_summary(
+            summary_path,
+            expected_scenes=1,
+            expected_forward_calls=4,
+            expected_family_counts={"cross_series": 1},
+            expected_model_snapshot_sha256=model_hash,
+            expected_config_sha256=config_hash,
+            expected_package_lock_sha256=lock_hash,
+        )
+        == summary
+    )
+
+
 def _load_script(path: Path):
     spec = importlib.util.spec_from_file_location("phase2_layerwise_script", path)
     assert spec is not None and spec.loader is not None
@@ -442,3 +532,211 @@ def test_04_entrypoint_delegates_to_real_hash_bound_runner(monkeypatch) -> None:
         isinstance(value, str) and len(value) == 64 and set(value) <= set("0123456789abcdef")
         for value in expected_hashes
     )
+
+
+def test_s4_cli_executes_frozen_contract(monkeypatch, tmp_path: Path, capsys) -> None:
+    module = _load_script(
+        Path(__file__).resolve().parents[1] / "scripts/v4/04_layerwise_assimilation.py"
+    )
+    inputs = tuple(tmp_path / f"input-{index}.json" for index in range(7))
+    for path in inputs:
+        path.write_text("{}", encoding="utf-8")
+    contract = {
+        "source_scenes": 3,
+        "world_recoverable_scenes": 2,
+        "included_family_counts": {"cross_series": 2},
+        "cue_conditions": [condition.value for condition in CueCondition],
+        "model_forward_cap": 8,
+        "language_layers": 36,
+        "generation_allowed": False,
+        "bootstrap_resamples": 100,
+        "final_logit_absolute_tolerance": 1e-5,
+        "final_logit_relative_tolerance": 1e-5,
+        "numerical_equality_tolerance": 1e-8,
+        "phase_2_revision": "revision",
+        "phase_2_config_sha256": "b" * 64,
+        "phase_2_package_lock_sha256": "c" * 64,
+    }
+    config = {
+        "runtime_evidence": {},
+        "phase_2_candidate_scoring": {"seed": 2026081701},
+        "phase_2_layerwise_assimilation": contract,
+    }
+    scenes = tuple(
+        SimpleNamespace(scene_id=f"scene-{index}", family="cross_series") for index in range(2)
+    )
+    selection = SimpleNamespace(source_eligible_scenes=3, scenes=scenes)
+    validation = SimpleNamespace(
+        config_sha256="new-config",
+        package_lock_sha256="new-lock",
+        model_snapshot_sha256="a" * 64,
+        inputs=tuple({"sha256": str(index)} for index in range(7)),
+    )
+    calls = tuple(SimpleNamespace(call_id=f"call-{index}") for index in range(8))
+    records = tuple(SimpleNamespace(call_id=f"record-{index}") for index in range(8))
+    processor = SimpleNamespace(tokenizer=object())
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "04_layerwise_assimilation.py",
+            "--execute",
+            *[
+                item
+                for path, digest in zip(inputs, tuple("abcdefg"), strict=True)
+                for item in ("--input", str(path), "--input-sha256", digest)
+            ],
+        ],
+    )
+    monkeypatch.setattr(module, "validate_server_inputs", lambda **_kwargs: validation)
+    monkeypatch.setattr(module, "_load_config", lambda _path: config)
+    monkeypatch.setattr(module, "validate_runtime_evidence", lambda _runtime: {})
+    monkeypatch.setattr(module, "select_legacy_capability_scenes", lambda _path: selection)
+    monkeypatch.setattr(module, "validate_phase1_candidate_source", lambda *_a, **_k: {})
+    monkeypatch.setattr(
+        module,
+        "load_candidate_label_evidence",
+        lambda *_a, **_k: (LABELS, LABEL_TOKEN_IDS),
+    )
+    monkeypatch.setattr(module, "load_candidate_scoring_records", lambda _path: records)
+    monkeypatch.setattr(module, "validate_candidate_scoring_summary", lambda *_a, **_k: {})
+    monkeypatch.setattr(module, "_load_prompt_contract", lambda _path: "prompt")
+    monkeypatch.setattr(module, "build_candidate_scoring_plan", lambda *_a, **_k: calls)
+    monkeypatch.setattr(module, "build_layerwise_plan", lambda *_a, **_k: calls)
+    monkeypatch.setattr(module, "load_pinned_qwen", lambda **_kwargs: (object(), processor))
+    monkeypatch.setattr(
+        module,
+        "build_candidate_label_evidence",
+        lambda *_a, **_k: {
+            "labels": [
+                {"label": label, "token_id": token_id}
+                for label, token_id in LABEL_TOKEN_IDS.items()
+            ]
+        },
+    )
+    execution: dict[str, object] = {}
+    monkeypatch.setattr(
+        module,
+        "execute_layerwise_plan",
+        lambda *_a, progress, **kwargs: (
+            execution.update(kwargs),
+            progress(8, 8),
+            records,
+        )[2],
+    )
+    monkeypatch.setattr(
+        module,
+        "summarize_layerwise_records",
+        lambda *_a, **_k: {"subjective_success_threshold_applied": False},
+    )
+    written: dict[str, object] = {}
+    monkeypatch.setattr(module, "write_layerwise_outputs", lambda **kwargs: written.update(kwargs))
+
+    result = module.run_layerwise_assimilation_cli(
+        phase="phase_2_layerwise_assimilation",
+        expected_input_sha256=tuple("abcdefg"),
+        expected_scenes=2,
+        expected_conditions=4,
+        expected_language_layers=36,
+        output_paths={
+            "per_scene": str(tmp_path / "output/per_scene.jsonl"),
+            "summary": str(tmp_path / "output/summary.json"),
+        },
+    )
+
+    assert result == 0
+    assert written["summary"]["subjective_success_threshold_applied"] is False
+    assert written["summary"]["hash_bound_inputs"] == list(validation.inputs)
+    assert written["summary"]["phase_2_config_sha256"] == "b" * 64
+    assert execution["final_logit_absolute_tolerance"] == 1e-5
+    assert execution["final_logit_relative_tolerance"] == 1e-5
+    assert execution["numerical_equality_tolerance"] == 1e-8
+    assert "PROGRESS: 8/8" in capsys.readouterr().out
+
+
+def test_s4_plan_drift_blocks_before_model_load(monkeypatch, tmp_path: Path, capsys) -> None:
+    module = _load_script(
+        Path(__file__).resolve().parents[1] / "scripts/v4/04_layerwise_assimilation.py"
+    )
+    inputs = tuple(tmp_path / f"drift-{index}.json" for index in range(7))
+    for path in inputs:
+        path.write_text("{}", encoding="utf-8")
+    contract = {
+        "source_scenes": 1,
+        "world_recoverable_scenes": 1,
+        "included_family_counts": {"cross_series": 1},
+        "cue_conditions": [condition.value for condition in CueCondition],
+        "model_forward_cap": 4,
+        "language_layers": 36,
+        "generation_allowed": False,
+        "phase_2_config_sha256": "b" * 64,
+        "phase_2_package_lock_sha256": "c" * 64,
+    }
+    model_load_attempted = False
+
+    def record_model_load(**_kwargs):
+        nonlocal model_load_attempted
+        model_load_attempted = True
+        return object(), object()
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "04_layerwise_assimilation.py",
+            "--execute",
+            *[
+                item
+                for path, digest in zip(inputs, tuple("abcdefg"), strict=True)
+                for item in ("--input", str(path), "--input-sha256", digest)
+            ],
+        ],
+    )
+    validation = SimpleNamespace(model_snapshot_sha256="a" * 64)
+    monkeypatch.setattr(module, "validate_server_inputs", lambda **_kwargs: validation)
+    monkeypatch.setattr(
+        module,
+        "_load_config",
+        lambda _path: {
+            "runtime_evidence": {},
+            "phase_2_candidate_scoring": {"seed": 1},
+            "phase_2_layerwise_assimilation": contract,
+        },
+    )
+    monkeypatch.setattr(module, "validate_runtime_evidence", lambda _runtime: {})
+    monkeypatch.setattr(
+        module,
+        "select_legacy_capability_scenes",
+        lambda _path: SimpleNamespace(
+            source_eligible_scenes=1,
+            scenes=(SimpleNamespace(scene_id="scene", family="cross_series"),),
+        ),
+    )
+    monkeypatch.setattr(module, "validate_phase1_candidate_source", lambda *_a, **_k: {})
+    monkeypatch.setattr(
+        module,
+        "load_candidate_label_evidence",
+        lambda *_a, **_k: (LABELS, LABEL_TOKEN_IDS),
+    )
+    monkeypatch.setattr(module, "load_candidate_scoring_records", lambda _path: (object(),) * 4)
+    monkeypatch.setattr(module, "validate_candidate_scoring_summary", lambda *_a, **_k: {})
+    monkeypatch.setattr(module, "_load_prompt_contract", lambda _path: "prompt")
+    monkeypatch.setattr(module, "build_candidate_scoring_plan", lambda *_a, **_k: (object(),) * 4)
+    monkeypatch.setattr(module, "build_layerwise_plan", lambda *_a, **_k: ())
+    monkeypatch.setattr(module, "load_pinned_qwen", record_model_load)
+
+    result = module.run_layerwise_assimilation_cli(
+        phase="phase_2_layerwise_assimilation",
+        expected_input_sha256=tuple("abcdefg"),
+        expected_scenes=1,
+        expected_conditions=4,
+        expected_language_layers=36,
+        output_paths={
+            "per_scene": str(tmp_path / "drift-output/per_scene.jsonl"),
+            "summary": str(tmp_path / "drift-output/summary.json"),
+        },
+    )
+
+    assert result == 2
+    assert model_load_attempted is False
+    assert "model-forward plan drifted" in capsys.readouterr().out

@@ -128,6 +128,29 @@ phase_2_candidate_scoring:
   capability_summary_sha256: 8837a7275915f5a90c91eae8378ff6bd0466819842381996db1be8e4925705c7
   capability_paired_gaps_sha256: a2a5acb5b203719e7e5225e56643a25a4189277d13704cccd4ec86d61573e256
 
+phase_2_layerwise_assimilation:
+  source_scenes: 580
+  world_recoverable_scenes: 579
+  included_family_counts:
+    cross_series: 208
+    duplicate_encoding: 182
+    trend: 189
+  cue_conditions: [no_cue, valid_cue, sham_cue, counterfactual_cue]
+  model_forward_cap: 2316
+  calls_per_scene: 4
+  language_layers: 36
+  final_logit_absolute_tolerance: 1.0e-5
+  final_logit_relative_tolerance: 1.0e-5
+  numerical_equality_tolerance: 1.0e-8
+  bootstrap_resamples: 10000
+  generation_allowed: false
+  phase_2_revision: fa8f9e64cf37190ffa8ba70206691fb043be3f1f
+  phase_2_config_sha256: 39ac4534cf2786f18ea26bfa84d3230edfdd205f3397502934a90b792724401f
+  phase_2_package_lock_sha256: 75fc91ef1fa1b217c07485242b3036bb3a789e4a9ebbd715f2e61639541c6c7a
+  candidate_labels_sha256: a7a448f230038698c4127b220362c95d47f57cef90cc7904e71b1dacacc04dbd
+  candidate_scores_sha256: c303731438760a30fb2f78a489d20465a1c1e292b01941795f29351a0e234a62
+  candidate_summary_sha256: 5e366dfecb2a4fd530407f896326bc99d3605385cfdadea34c0f478392280c73
+
 artifacts:
   model_introspection: artifacts/v4/model_introspection.json
   module_manifest: artifacts/v4/module_manifest.txt
@@ -138,6 +161,7 @@ artifacts:
   candidate_scores: artifacts/v4/candidate_scoring/per_scene.jsonl
   candidate_score_summary: artifacts/v4/candidate_scoring/summary.json
   layerwise_profiles: artifacts/v4/layerwise_assimilation/per_scene.jsonl
+  layerwise_summary: artifacts/v4/layerwise_assimilation/summary.json
   cache_parity: artifacts/v4/cache/cache_parity.json
   interface_records: artifacts/v4/interface_ladder/per_scene.jsonl
   interface_summary: artifacts/v4/interface_ladder/summary.json
