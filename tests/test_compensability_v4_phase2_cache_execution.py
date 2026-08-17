@@ -471,6 +471,31 @@ def test_s5_tensor_logit_parity_is_exact_and_hashes_tensor_bytes() -> None:
     )
 
 
+def test_s5_tensor_logit_mismatch_reports_complete_objective_diagnostics() -> None:
+    cached = torch.tensor([[1.0, 2.0, 0.0]], dtype=torch.bfloat16)
+    full = torch.tensor([[3.0, 1.5, 0.25]], dtype=torch.float32)
+
+    with pytest.raises(RuntimeError) as raised:
+        phase3_cache._assert_logit_parity(
+            (cached,),
+            (full,),
+            absolute_tolerance=0.0,
+            relative_tolerance=0.0,
+        )
+
+    message = str(raised.value)
+    assert "step=0" in message
+    assert "cached_shape=(1, 3)" in message
+    assert "full_shape=(1, 3)" in message
+    assert "cached_dtype=torch.bfloat16" in message
+    assert "full_dtype=torch.float32" in message
+    assert "cached_argmax=1" in message
+    assert "full_argmax=0" in message
+    assert "max_abs_diff=2.0" in message
+    assert "max_rel_diff=1.0" in message
+    assert "nonzero_count=3" in message
+
+
 def test_s5_real_trace_joins_qwen_vision_batch_manual_cache_and_full_paths(
     monkeypatch,
 ) -> None:
