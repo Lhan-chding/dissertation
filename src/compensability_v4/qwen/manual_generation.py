@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import inspect
 import math
+import operator
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from types import MappingProxyType
@@ -203,18 +204,68 @@ def _prepared_forward(
     model: object,
     full_input_ids: object,
     model_kwargs: dict[str, Any],
-) -> tuple[object, dict[str, Any]]:
+    *,
+    next_sequence_length: int,
+    is_first_iteration: bool,
+) -> tuple[object, dict[str, Any], tuple[int, ...] | None]:
     prepare = getattr(model, "prepare_inputs_for_generation", None)
     if callable(prepare):
-        prepared = prepare(full_input_ids, **model_kwargs)
+        prepared = prepare(
+            full_input_ids,
+            **{
+                **model_kwargs,
+                "next_sequence_length": next_sequence_length,
+                "is_first_iteration": is_first_iteration,
+            },
+        )
         arguments = _mapping(prepared)
     else:
         arguments = dict(model_kwargs)
         arguments["input_ids"] = full_input_ids
     arguments["use_cache"] = True
     arguments["return_dict"] = True
+    cache_positions = _cache_position_trace(arguments)
     output = model(**arguments)
-    return output, arguments
+    return output, arguments, cache_positions
+
+
+def _cache_position_trace(arguments: Mapping[str, Any]) -> tuple[int, ...] | None:
+    """Capture explicit positions or derive them from the pre-forward KV length."""
+
+    explicit = arguments.get("cache_position")
+    if explicit is not None:
+        return _one_dimensional_ids(explicit)
+
+    input_ids = arguments.get("input_ids")
+    inputs_embeds = arguments.get("inputs_embeds")
+    active_input = input_ids if input_ids is not None else inputs_embeds
+    if active_input is None:
+        return None
+    shape = getattr(active_input, "shape", None)
+    if shape is None:
+        return None
+    sequence_axis = -1 if input_ids is not None else -2
+    try:
+        sequence_length = operator.index(shape[sequence_axis])
+    except (IndexError, TypeError) as error:
+        raise RuntimeError("S5 runtime input exposes no valid sequence length") from error
+    if sequence_length <= 0:
+        raise RuntimeError("S5 runtime input sequence length must be positive")
+
+    cache = arguments.get("past_key_values")
+    if cache is None:
+        start = 0
+    else:
+        get_seq_length = getattr(cache, "get_seq_length", None)
+        if not callable(get_seq_length):
+            return None
+        try:
+            start = operator.index(get_seq_length())
+        except TypeError as error:
+            raise RuntimeError("S5 runtime cache exposes no valid sequence length") from error
+        if start < 0:
+            raise RuntimeError("S5 runtime cache sequence length must be non-negative")
+    return tuple(range(start, start + sequence_length))
 
 
 def manual_greedy_generate(
@@ -305,14 +356,19 @@ def manual_greedy_generate(
 
     with torch.inference_mode():
         for _ in range(max_new_tokens):
-            output, last_prepared = _prepared_forward(model, full_input_ids, initial)
+            processed_length = len(suffix_prompt_ids) if not generated else 1
+            output, last_prepared, prepared_cache_positions = _prepared_forward(
+                model,
+                full_input_ids,
+                initial,
+                next_sequence_length=processed_length,
+                is_first_iteration=not generated,
+            )
             prepared_positions = last_prepared.get("position_ids")
             if prepared_positions is not None:
-                processed_length = len(suffix_prompt_ids) if not generated else 1
                 position_history.append(_position_tuple(prepared_positions, processed_length))
-            prepared_cache_position = last_prepared.get("cache_position")
-            if prepared_cache_position is not None:
-                cache_position_history.append(_one_dimensional_ids(prepared_cache_position))
+            if prepared_cache_positions is not None:
+                cache_position_history.append(prepared_cache_positions)
             generated_logits.append(output.logits[:, -1, :].detach().to("cpu", torch.float32))
             next_token = int(torch.argmax(output.logits[:, -1, :], dim=-1).item())
             next_tensor = torch.tensor(
@@ -353,11 +409,19 @@ def manual_greedy_generate(
         # Each forward cache excludes the token just selected from its logits.
         # Consume that last token once, so suffix continuation starts exactly
         # after all token_ids recorded below.
-        final_output, last_prepared = _prepared_forward(model, full_input_ids, initial)
+        final_output, last_prepared, prepared_cache_positions = _prepared_forward(
+            model,
+            full_input_ids,
+            initial,
+            next_sequence_length=1,
+            is_first_iteration=False,
+        )
         active_cache = final_output.past_key_values
         prepared_positions = last_prepared.get("position_ids")
         if prepared_positions is not None:
             position_history.append(_position_tuple(prepared_positions, 1))
+        if prepared_cache_positions is not None:
+            cache_position_history.append(prepared_cache_positions)
 
     all_ids = _one_dimensional_ids(full_input_ids)
     final_attention = _one_dimensional_ids(initial["attention_mask"])
