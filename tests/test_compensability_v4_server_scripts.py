@@ -74,6 +74,19 @@ def valid_config() -> dict[str, object]:
                 "lm_head",
             ],
         },
+        "phase_1_capability_chain": {
+            "source_scenes": 580,
+            "model_call_cap": 3480,
+            "calls_per_scene": 6,
+            "t1_calls_per_scene": 1,
+            "t1_yes_no_balanced": True,
+            "t5_candidate_count": 4,
+            "t5_true_label_balanced": True,
+            "max_new_tokens": 32,
+            "do_sample": False,
+            "seed": 2026081701,
+            "bootstrap_resamples": 10000,
+        },
     }
 
 
@@ -127,6 +140,14 @@ def test_load_config_accepts_only_objective_reporting_contract(tmp_path, monkeyp
         (
             lambda value: value["runtime_evidence"].update(language_layers=35),
             "runtime evidence",
+        ),
+        (
+            lambda value: value["runtime_evidence"].update(unreviewed_field=True),
+            "runtime evidence",
+        ),
+        (
+            lambda value: value["phase_1_capability_chain"].update(model_call_cap=3479),
+            "Phase 1",
         ),
     ],
 )
@@ -230,6 +251,7 @@ def test_runtime_evidence_requires_exact_s1_artifacts(tmp_path, monkeypatch) -> 
     introspection = tmp_path / "model_introspection.json"
     manifest = tmp_path / "module_manifest.txt"
     modules = [
+        "",
         "model.visual.blocks.0",
         "model.visual.blocks.31",
         "model.visual.merger",
@@ -472,7 +494,9 @@ def test_capability_chain_entrypoint_uses_runtime_execution(monkeypatch) -> None
     assert CAPABILITY_SCRIPT.main() == 11
     assert captured["phase"] == "phase_1_capability_chain"
     assert captured["expected_input_sha256"] == (GUARDS.LEGACY_SCREEN_RECORDS_SHA256,)
-    assert captured["output_paths"]["per_scene"].endswith("artifacts/v4/capability_chain/per_scene.csv")
+    assert captured["output_paths"]["per_scene"].endswith(
+        "artifacts/v4/capability_chain/per_scene.csv"
+    )
 
 
 def test_introspection_cli_dry_run_never_loads_model(monkeypatch, tmp_path, capsys) -> None:

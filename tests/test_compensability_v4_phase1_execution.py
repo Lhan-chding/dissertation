@@ -14,6 +14,10 @@ from compensability_v4.diagnostics.capability_chain import (
     load_legacy_capability_scenes,
     summarize_capability_run,
 )
+from compensability_v4.qwen.capability_runner import (
+    execute_capability_calls,
+    write_capability_outputs,
+)
 
 
 PROMPTS = {task.value: f"frozen prompt for {task.value}" for task in CapabilityTaskType}
@@ -139,3 +143,78 @@ def test_phase1_scoring_reports_paired_gaps_without_success_thresholds(tmp_path)
     assert gaps["G_loc"]["estimate"] == pytest.approx(0.5)
     assert gaps["subjective_success_threshold_applied"] is False
     assert gaps["T5_establishes_full_recovery"] is False
+
+
+class _FakeModel:
+    def __init__(self, outputs: tuple[str, ...]) -> None:
+        self._outputs = iter(outputs)
+
+    def complete_text(self, messages: object) -> str:
+        assert messages
+        return next(self._outputs)
+
+
+def test_runtime_executes_each_frozen_call_once(tmp_path) -> None:
+    source = tmp_path / "screen_records.jsonl"
+    source.write_text(json.dumps(_screen_row(0)) + "\n", encoding="utf-8")
+    scenes = load_legacy_capability_scenes(
+        source,
+        expected_scenes=1,
+        expected_family_counts={"cross_series": 1},
+    )
+    calls = build_capability_calls(
+        scenes,
+        prompts=PROMPTS,
+        candidate_labels=("A", "B", "C", "D"),
+        seed=2026081701,
+    )
+    progress: list[tuple[int, int]] = []
+
+    records = execute_capability_calls(
+        _FakeModel(tuple(call.expected_output for call in calls)),
+        object(),
+        calls,
+        max_new_tokens=32,
+        progress=lambda completed, total: progress.append((completed, total)),
+    )
+
+    assert len(records) == 6
+    assert all(record.is_correct for record in records)
+    assert progress[-1] == (6, 6)
+
+
+def test_output_writer_emits_exact_three_no_overwrite_artifacts(tmp_path) -> None:
+    source = tmp_path / "screen_records.jsonl"
+    source.write_text(json.dumps(_screen_row(0)) + "\n", encoding="utf-8")
+    scenes = load_legacy_capability_scenes(
+        source,
+        expected_scenes=1,
+        expected_family_counts={"cross_series": 1},
+    )
+    calls = build_capability_calls(
+        scenes,
+        prompts=PROMPTS,
+        candidate_labels=("A", "B", "C", "D"),
+        seed=2026081701,
+    )
+    records = tuple(evaluate_capability_call(call, call.expected_output) for call in calls)
+    summaries, computed_gaps = summarize_capability_run(records, bootstrap_resamples=20)
+    gaps = {
+        **computed_gaps,
+        "subjective_success_threshold_applied": False,
+        "T5_establishes_full_recovery": False,
+    }
+    output = tmp_path / "capability_chain"
+
+    write_capability_outputs(output, records=records, summaries=summaries, gaps=gaps)
+
+    assert {path.name for path in output.iterdir()} == {
+        "per_scene.csv",
+        "summary_by_family.csv",
+        "paired_gaps.json",
+    }
+    assert json.loads((output / "paired_gaps.json").read_text())[
+        "subjective_success_threshold_applied"
+    ] is False
+    with pytest.raises(FileExistsError, match="overwrite"):
+        write_capability_outputs(output, records=records, summaries=summaries, gaps=gaps)
