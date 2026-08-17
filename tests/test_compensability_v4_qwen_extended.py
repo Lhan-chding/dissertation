@@ -414,7 +414,10 @@ def test_layerwise_projection_supports_composite_qwen_text_config() -> None:
 
     result = assimilation.layerwise_candidate_logits(
         model,
-        {"input_ids": torch.tensor([[1, 2, 3]])},
+        {
+            "input_ids": torch.tensor([[1, 2, 3]]),
+            "attention_mask": torch.tensor([[1, 1, 0]]),
+        },
         {"A": 1, "B": 2},
     )
 

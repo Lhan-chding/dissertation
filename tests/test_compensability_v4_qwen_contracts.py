@@ -123,9 +123,7 @@ def test_model_introspection_supports_composite_qwen_text_config() -> None:
             text_config=SimpleNamespace(num_hidden_layers=36),
             vision_config=SimpleNamespace(depth=32),
         ),
-        named_modules=lambda: iter(
-            (("", object()), ("model.language_model.layers.0", object()))
-        ),
+        named_modules=lambda: iter((("", object()), ("model.language_model.layers.0", object()))),
     )
 
     result = introspect_model(model)

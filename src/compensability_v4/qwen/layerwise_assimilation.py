@@ -5,6 +5,8 @@ from __future__ import annotations
 import math
 from collections.abc import Mapping, Sequence
 
+from .introspect_model import language_layer_count
+
 
 def _as_float(value: object) -> float:
     item = getattr(value, "item", None)
@@ -72,9 +74,13 @@ def layerwise_candidate_logits(
     pairs = _candidate_ids(label_token_ids)
     output, arguments = _forward(model, batch)
     hidden_states = tuple(getattr(output, "hidden_states", ()) or ())
-    layer_count = getattr(getattr(model, "config", None), "num_hidden_layers", None)
-    if isinstance(layer_count, bool) or not isinstance(layer_count, int) or layer_count <= 0:
-        raise RuntimeError("runtime config has no valid language-layer count")
+    config = getattr(model, "config", None)
+    if config is None:
+        raise RuntimeError("runtime model has no config")
+    try:
+        layer_count = language_layer_count(config)
+    except RuntimeError as error:
+        raise RuntimeError(f"runtime config has no valid language-layer count: {error}") from error
     if len(hidden_states) != layer_count + 1:
         raise RuntimeError(
             "runtime hidden-state count does not match num_hidden_layers: "
