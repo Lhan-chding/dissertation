@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import json
 import math
+import csv
 from collections import Counter
 from pathlib import Path
+from typing import ClassVar
 
 import pytest
 
@@ -16,6 +18,7 @@ from compensability_v4.qwen.phase2_candidate import (
     build_candidate_scoring_plan,
     execute_candidate_scoring_plan,
     summarize_candidate_scoring,
+    validate_phase1_candidate_source,
     write_candidate_scoring_outputs,
 )
 from compensability_v4.theory.candidate_space import constraint_supported_candidates
@@ -84,17 +87,20 @@ def test_candidate_plan_is_four_condition_balanced_and_prompt_paired() -> None:
             counterfactual.value_domain,
         ) == (counterfactual.counterfactual_world,)
         sham = next(call for call in group if call.condition is CueCondition.SHAM_CUE)
-        assert len(
-            constraint_supported_candidates(
-                sham.observed_world,
-                sham.facts,
-                sham.value_domain,
+        assert (
+            len(
+                constraint_supported_candidates(
+                    sham.observed_world,
+                    sham.facts,
+                    sham.value_domain,
+                )
             )
-        ) > 1
+            > 1
+        )
 
 
 class _Tokenizer:
-    table = {"A": 1, "B": 2, "C": 3, "D": 4}
+    table: ClassVar[dict[str, int]] = {"A": 1, "B": 2, "C": 3, "D": 4}
 
     def encode(self, value: str, *, add_special_tokens: bool) -> list[int]:
         assert add_special_tokens is False
@@ -214,3 +220,69 @@ def test_candidate_labels_and_outputs_are_immutable_and_no_overwrite(tmp_path: P
             records=records,
             summary=summary,
         )
+
+
+def test_phase1_candidate_source_validation_is_structural_not_outcome_gated(
+    tmp_path: Path,
+) -> None:
+    scenes = (_scene(0), _scene(1))
+    per_scene = tmp_path / "per_scene.csv"
+    with per_scene.open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(
+            stream,
+            fieldnames=("call_id", "scene_id", "family", "task_type"),
+        )
+        writer.writeheader()
+        for scene in scenes:
+            for task in ("T1", "T2", "T3", "T4", "T5", "T6"):
+                writer.writerow(
+                    {
+                        "call_id": f"{scene.scene_id}.{task}",
+                        "scene_id": scene.scene_id,
+                        "family": scene.family,
+                        "task_type": task,
+                    }
+                )
+    summary = tmp_path / "summary.csv"
+    with summary.open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(
+            stream,
+            fieldnames=("family", "task_type", "number_of_scenes", "parse_rate", "accuracy"),
+        )
+        writer.writeheader()
+        for task in ("T1", "T2", "T3", "T4", "T5", "T6"):
+            writer.writerow(
+                {
+                    "family": "duplicate_encoding",
+                    "task_type": task,
+                    "number_of_scenes": 2,
+                    "parse_rate": 0.0,
+                    "accuracy": 0.0,
+                }
+            )
+    gaps = tmp_path / "gaps.json"
+    gaps.write_text(
+        json.dumps(
+            {
+                "status": "PHASE_1_EXECUTED",
+                "source_eligible_scenes": 3,
+                "world_recoverable_scenes": 2,
+                "model_calls": 12,
+                "training_invoked": False,
+                "rl_invoked": False,
+                "subjective_success_threshold_applied": False,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    evidence = validate_phase1_candidate_source(
+        scenes,
+        per_scene_path=per_scene,
+        summary_path=summary,
+        gaps_path=gaps,
+        expected_source_scenes=3,
+        expected_family_counts={"duplicate_encoding": 2},
+    )
+
+    assert evidence == {"number_of_scenes": 2, "number_of_records": 12}

@@ -27,6 +27,7 @@ def load_script(name: str, filename: str):
 GUARDS = load_script("_guards", "_guards.py")
 PHASE_CLI = load_script("_phase_cli", "_phase_cli.py")
 CAPABILITY_SCRIPT = load_script("test_capability_chain_script", "02_run_capability_chain.py")
+CANDIDATE_SCRIPT = load_script("test_candidate_scoring_script", "03_score_candidates.py")
 
 
 def valid_config() -> dict[str, object]:
@@ -473,7 +474,6 @@ def test_phase_cli_execute_success_and_failure_are_reported(monkeypatch, tmp_pat
 @pytest.mark.parametrize(
     ("filename", "phase"),
     [
-        ("03_score_candidates.py", "phase_2_candidate_scoring"),
         ("04_layerwise_assimilation.py", "phase_2_layerwise_assimilation"),
         ("05_validate_cache_runner.py", "phase_3_cache_parity"),
         ("06_run_interface_ladder.py", "phase_3_interface_ladder"),
@@ -505,6 +505,30 @@ def test_capability_chain_entrypoint_uses_runtime_execution(monkeypatch) -> None
     assert captured["expected_input_sha256"] == (GUARDS.LEGACY_SCREEN_RECORDS_SHA256,)
     assert captured["output_paths"]["per_scene"].endswith(
         "artifacts/v4/capability_chain/per_scene.csv"
+    )
+
+
+def test_candidate_scoring_entrypoint_uses_runtime_execution(monkeypatch) -> None:
+    captured: dict[str, object] = {}
+    monkeypatch.setattr(
+        CANDIDATE_SCRIPT,
+        "run_candidate_scoring_cli",
+        lambda **kwargs: captured.update(kwargs) or 13,
+    )
+
+    assert CANDIDATE_SCRIPT.main() == 13
+    assert captured["phase"] == "phase_2_candidate_scoring"
+    assert captured["expected_input_sha256"] == (
+        GUARDS.LEGACY_SCREEN_RECORDS_SHA256,
+        GUARDS.CAPABILITY_PER_SCENE_SHA256,
+        GUARDS.CAPABILITY_SUMMARY_SHA256,
+        GUARDS.CAPABILITY_PAIRED_GAPS_SHA256,
+    )
+    assert captured["output_paths"]["labels"].endswith(
+        "artifacts/v4/tokenizer/candidate_labels.json"
+    )
+    assert captured["output_paths"]["summary"].endswith(
+        "artifacts/v4/candidate_scoring/summary.json"
     )
 
 
