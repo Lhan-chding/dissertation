@@ -12,7 +12,7 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from compensability_v4.qwen import phase3_cache
+from compensability_v4.qwen import manual_generation, phase3_cache
 from compensability_v4.qwen.cache_continuation import CachedGenerationState
 from compensability_v4.qwen.phase2_candidate import CueCondition
 from compensability_v4.qwen.phase3_cache import (
@@ -527,6 +527,87 @@ def test_s5_real_trace_joins_qwen_vision_batch_manual_cache_and_full_paths(
     assert calls[0]["past_key_values"] is not state.past_key_values
     assert calls[0]["prior_token_ids"] == state.token_ids
     assert "past_key_values" not in calls[1]
+
+
+def test_manual_cached_trace_derives_cache_positions_when_prepare_omits_them() -> None:
+    """Match the Transformers 5.14.1 prepare-inputs cache contract."""
+
+    class Cache:
+        def __init__(self, sequence_length: int) -> None:
+            self.sequence_length = sequence_length
+
+        def get_seq_length(self) -> int:
+            return self.sequence_length
+
+    class Model:
+        device = torch.device("cpu")
+
+        def __init__(self) -> None:
+            self.prepare_calls: list[tuple[int, bool, int, int]] = []
+
+        def prepare_inputs_for_generation(self, input_ids, **arguments):
+            next_length = arguments.pop("next_sequence_length")
+            first_iteration = arguments.pop("is_first_iteration")
+            cache = arguments["past_key_values"]
+            prepared_ids = input_ids[:, -next_length:]
+            self.prepare_calls.append(
+                (
+                    next_length,
+                    first_iteration,
+                    cache.get_seq_length(),
+                    int(prepared_ids.shape[-1]),
+                )
+            )
+            positions = arguments["position_ids"][:, :, -next_length:]
+            return {
+                **arguments,
+                "input_ids": prepared_ids,
+                "position_ids": positions,
+                # Transformers 5.14.1 may omit cache_position here.
+            }
+
+        def __call__(self, **arguments):
+            prepared_length = int(arguments["input_ids"].shape[-1])
+            prior_length = arguments["past_key_values"].get_seq_length()
+            logits = torch.zeros((1, prepared_length, 8))
+            logits[0, -1, 4] = 1.0
+            return SimpleNamespace(
+                logits=logits,
+                past_key_values=Cache(prior_length + prepared_length),
+            )
+
+        @staticmethod
+        def _update_model_kwargs_for_generation(output, arguments, *, is_encoder_decoder):
+            assert is_encoder_decoder is False
+            return {
+                **arguments,
+                "past_key_values": output.past_key_values,
+                "attention_mask": torch.cat(
+                    (arguments["attention_mask"], torch.ones((1, 1), dtype=torch.long)),
+                    dim=-1,
+                ),
+            }
+
+    model = Model()
+
+    result = manual_generation.manual_greedy_generate(
+        model,
+        {
+            "input_ids": torch.tensor([[30, 31]]),
+            "attention_mask": torch.tensor([[1, 1, 1, 1]]),
+        },
+        max_new_tokens=1,
+        past_key_values=Cache(2),
+        prior_token_ids=(10, 20),
+        prior_position_ids=((0, 1), (0, 1), (0, 1)),
+    )
+
+    assert model.prepare_calls == [
+        (2, True, 2, 2),
+        (1, False, 4, 1),
+    ]
+    assert result.forward_cache_positions == ((2, 3), (4,))
+    assert result.generated_token_ids == (4,)
 
 
 def test_s5_full_history_uses_structured_chat_batch_with_runtime_grid() -> None:
