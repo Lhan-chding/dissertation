@@ -582,6 +582,42 @@ class PreparedGreedyModel(GreedyModel):
         }
 
 
+class QwenPackedPositionModel(PreparedGreedyModel):
+    def __init__(self) -> None:
+        super().__init__()
+        self.position_prepare_calls = 0
+
+    def _prepare_position_ids_for_generation(
+        self,
+        inputs_tensor: torch.Tensor,
+        model_kwargs: dict,
+    ) -> torch.Tensor:
+        assert inputs_tensor.tolist() == [[1, 2]]
+        assert model_kwargs["attention_mask"].tolist() == [[1, 1]]
+        self.position_prepare_calls += 1
+        return torch.tensor(
+            [[[10, 11]], [[0, 1]], [[2, 3]], [[4, 5]]],
+            dtype=torch.long,
+        )
+
+
+def test_manual_generation_prepares_and_captures_qwen_packed_positions() -> None:
+    model = QwenPackedPositionModel()
+
+    result = generation.manual_greedy_generate(
+        model,
+        {"input_ids": torch.tensor([[1, 2]]), "attention_mask": torch.tensor([[1, 1]])},
+        max_new_tokens=1,
+    )
+
+    assert model.position_prepare_calls == 1
+    assert result.position_ids == (
+        (0, 1, 2),
+        (2, 3, 4),
+        (4, 5, 6),
+    )
+
+
 def test_manual_generation_supports_paired_prior_cache_and_prepare_hooks() -> None:
     result = generation.manual_greedy_generate(
         PreparedGreedyModel(),
@@ -651,10 +687,7 @@ def test_position_helpers_cover_qwen_mrope_and_rank_validation() -> None:
 
 @pytest.mark.parametrize(
     "packed_positions",
-    (
-        torch.tensor([[10, 11], [0, 1], [2, 3], [4, 5]]),
-        torch.tensor([[[10, 11]], [[0, 1]], [[2, 3]], [[4, 5]]]),
-    ),
+    (torch.tensor([[[10, 11]], [[0, 1]], [[2, 3]], [[4, 5]]]),),
 )
 def test_position_tuple_strips_qwen_packed_text_axis(packed_positions: torch.Tensor) -> None:
     assert generation._position_tuple(packed_positions, 2) == (
@@ -662,6 +695,14 @@ def test_position_tuple_strips_qwen_packed_text_axis(packed_positions: torch.Ten
         (2, 3),
         (4, 5),
     )
+
+
+def test_position_tuple_rejects_rank_two_four_axis_input() -> None:
+    with pytest.raises(RuntimeError, match=r"unsupported.*four-axis"):
+        generation._position_tuple(
+            torch.tensor([[10, 11], [0, 1], [2, 3], [4, 5]]),
+            2,
+        )
 
 
 def test_visual_observation_capture_uses_fake_vision_runtime(monkeypatch) -> None:
