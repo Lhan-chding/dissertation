@@ -19,11 +19,16 @@ from compbias.recoverability.phase_c_world_recovery import (
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "configs/recoverability/phase_c_world_recovery_v1.yaml"
+CONFIG_100 = ROOT / "configs/recoverability/phase_c_world_recovery_100_v1.yaml"
 PROMPT = ROOT / "prompts/world_recovery_v1_main.system.txt"
 
 
 def _config() -> PhaseCWorldRecoveryConfig:
     return load_phase_c_world_recovery_config(CONFIG)
+
+
+def _config_100() -> PhaseCWorldRecoveryConfig:
+    return load_phase_c_world_recovery_config(CONFIG_100)
 
 
 def _scenes() -> tuple[FrozenEligibleScene, ...]:
@@ -51,6 +56,48 @@ def _scenes() -> tuple[FrozenEligibleScene, ...]:
     )
 
 
+def _hundred_call_scenes() -> tuple[FrozenEligibleScene, ...]:
+    cross_series = tuple(
+        FrozenEligibleScene(
+            scene_id=f"cross-100-{index:02d}",
+            family="cross_series",
+            chart_type="line",
+            operation="difference",
+            true_values=(
+                2 + index % 17,
+                2 + index // 17,
+                3 + (index * 2) % 16,
+                18 - index % 17,
+            ),
+            perceived_values=(
+                3 + index % 17 if index % 17 < 16 else 17,
+                2 + index // 17,
+                3 + (index * 2) % 16,
+                18 - index % 17,
+            ),
+        )
+        for index in range(25)
+    )
+    progressions = tuple(
+        (start, step)
+        for step, upper in ((1, 16), (2, 13))
+        for start in range(2, upper)
+    )
+    trend = tuple(
+        FrozenEligibleScene(
+            scene_id=f"trend-100-{index:02d}",
+            family="trend",
+            chart_type="line",
+            operation="difference",
+            true_values=(start, start + step, start + 2 * step, start + 3 * step),
+            perceived_values=(start + 1, start + step, start + 2 * step, start + 3 * step),
+        )
+        for index, (start, step) in enumerate(progressions)
+    )
+    assert len(cross_series) == len(trend) == 25
+    return cross_series + trend
+
+
 def test_world_recovery_config_freezes_exactly_twelve_calls() -> None:
     config = _config()
     assert config.schema_version == 1
@@ -67,6 +114,38 @@ def test_world_recovery_config_freezes_exactly_twelve_calls() -> None:
     assert config.scale_authorized is False
     assert config.training_authorized is False
     assert config.rl_authorized is False
+
+
+def test_world_recovery_100_config_freezes_fifty_nontrivial_pairs() -> None:
+    config = _config_100()
+    assert config.qualification_id == "recoverability-phase-c-world-recovery-100-v1"
+    assert config.output_subdirectory.endswith("phase_c_world_recovery_100_v1")
+    assert config.conditions == WORLD_RECOVERY_CONDITIONS
+    assert config.families == ("cross_series", "trend")
+    assert config.cases_per_family == 25
+    assert config.model_call_cap == 100
+    assert config.max_new_tokens == 32
+    assert config.do_sample is False
+    assert config.format_retries == 0
+    assert config.hypothesis_tested is False
+    assert config.scale_authorized is False
+    assert config.training_authorized is False
+    assert config.rl_authorized is False
+
+
+def test_hundred_call_plan_is_balanced_paired_and_excludes_control_family() -> None:
+    system_prompt = PROMPT.read_text(encoding="utf-8")
+    calls = build_phase_c_world_recovery_calls(
+        _hundred_call_scenes(), config=_config_100(), system_prompt=system_prompt
+    )
+    assert len(calls) == 100
+    assert len({call.scene_id for call in calls}) == 50
+    assert Counter((call.family, call.condition) for call in calls) == {
+        (family, condition): 25
+        for family in ("cross_series", "trend")
+        for condition in WORLD_RECOVERY_CONDITIONS
+    }
+    assert {call.family for call in calls} == {"cross_series", "trend"}
 
 
 def test_call_plan_is_deterministic_balanced_and_world_only() -> None:

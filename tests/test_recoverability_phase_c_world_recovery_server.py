@@ -16,6 +16,10 @@ ROOT = Path(__file__).resolve().parents[1]
 PREFLIGHT = ROOT / "experiments/recoverability_v1/20_phase_c_world_recovery_preflight.py"
 EXECUTE = ROOT / "experiments/recoverability_v1/21_run_phase_c_world_recovery.py"
 SERVER_LOCK = ROOT / PHASE_C_WORLD_RECOVERY_LOCK_PATH
+CONFIG_100 = ROOT / "configs/recoverability/phase_c_world_recovery_100_v1.yaml"
+SERVER_LOCK_100 = (
+    ROOT / "configs/recoverability/server_package_lock_phase_c_world_recovery_100_v1.yaml"
+)
 
 
 def test_world_recovery_lock_binds_the_complete_twelve_call_surface() -> None:
@@ -108,3 +112,16 @@ def test_world_recovery_runner_is_text_only_greedy_and_capped_at_twelve() -> Non
     assert "train(" not in source
     assert '"hypothesis_tested": False' in source
     assert '"scale_authorized": False' in source
+
+
+def test_world_recovery_server_supports_frozen_hundred_call_profile() -> None:
+    preflight_source = PREFLIGHT.read_text(encoding="utf-8")
+    runner_source = EXECUTE.read_text(encoding="utf-8")
+    assert CONFIG_100.is_file()
+    assert SERVER_LOCK_100.is_file()
+    assert "phase_c_world_recovery_100_v1.yaml" in preflight_source
+    assert "phase_c_world_recovery_100_v1.yaml" in runner_source
+    assert "phase-c-world-recovery-100-v1-preflight.json" in runner_source
+    assert "world-recovery-100-v1.attempted.json" in runner_source
+    assert "config.model_call_cap" in preflight_source
+    assert "config.model_call_cap" in runner_source
