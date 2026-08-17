@@ -272,14 +272,17 @@ class _Processor:
 
 class _Head:
     def __call__(self, hidden: torch.Tensor) -> torch.Tensor:
+        first = hidden[..., 0]
+        second = hidden[..., 1]
         return torch.stack(
             (
-                torch.tensor(0.0),
-                hidden[0],
-                hidden[1],
-                -hidden[0],
-                -hidden[1],
-            )
+                torch.zeros_like(first),
+                first,
+                second,
+                -first,
+                -second,
+            ),
+            dim=-1,
         )
 
 
@@ -309,13 +312,13 @@ class _LayerwiseModel:
             hidden = torch.zeros((1, 2, 2))
             hidden[0, -1] = torch.tensor((cue + layer / 100.0, 1.0))
             hidden_states.append(hidden)
-        final_logits = self._head(hidden_states[-1][0, -1])
+        logits_to_keep = arguments["logits_to_keep"]
+        final_hidden = hidden_states[-1].index_select(1, logits_to_keep)
+        final_logits = self._head(final_hidden)
         if self.corrupt_final_forward:
             final_logits = final_logits.clone()
-            final_logits[1] += 0.01
-        logits = torch.zeros((1, 2, 5))
-        logits[0, -1] = final_logits
-        return SimpleNamespace(hidden_states=tuple(hidden_states), logits=logits)
+            final_logits[0, 0, 1] += 0.01
+        return SimpleNamespace(hidden_states=tuple(hidden_states), logits=final_logits)
 
     def generate(self, **_arguments):
         self.generate_calls += 1

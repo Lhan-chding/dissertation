@@ -395,18 +395,21 @@ class ProjectionModel:
         self.attention = attention
 
     def get_output_embeddings(self):
-        return lambda hidden: torch.tensor([0.0, float(hidden[0]), float(hidden[1])])
+        return lambda hidden: torch.stack(
+            (torch.zeros_like(hidden[..., 0]), hidden[..., 0], hidden[..., 1]),
+            dim=-1,
+        )
 
     def __call__(self, **kwargs: object) -> object:
         assert kwargs["output_hidden_states"] is True
         embedding = torch.zeros((1, 3, 2))
         first = torch.tensor([[[0.0, 0.0], [1.0, 3.0], [9.0, 9.0]]])
         final = torch.tensor([[[0.0, 0.0], [5.0, 2.0], [8.0, 7.0]]])
-        logits = torch.zeros((1, 3, 3))
-        target = 1 if self.attention else 2
-        normalized = self.model.norm(final[0, target])
-        logits[0, target] = self.get_output_embeddings()(normalized)
-        return SimpleNamespace(hidden_states=(embedding, first, final), logits=logits)
+        normalized = self.model.norm(final)
+        logits_to_keep = kwargs["logits_to_keep"]
+        selected = normalized.index_select(1, logits_to_keep)
+        logits = self.get_output_embeddings()(selected)
+        return SimpleNamespace(hidden_states=(embedding, first, normalized), logits=logits)
 
 
 def test_layerwise_projection_supports_composite_qwen_text_config() -> None:

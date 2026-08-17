@@ -80,7 +80,7 @@ files:
   - path: src/compensability_v4/qwen/introspect_model.py
     sha256: 4ea946164edf164e8363d74985ee3f469808d9cd3920a6283bdee7b970032e82
   - path: src/compensability_v4/qwen/layerwise_assimilation.py
-    sha256: f29f4a8298e9d3912cf1503464b39000c198d62fc7507dfb38605e1a73bbbf7f
+    sha256: 0c0e20fdb6de4f1a43a25e9bbeb8710fb5cb3078fe13940025ed250c0935efef
   - path: src/compensability_v4/qwen/manual_generation.py
     sha256: 3c716496daa5771b62c4edd59f80f0a2bcf269169490195ecec5094af8753ee8
   - path: src/compensability_v4/qwen/model_loader.py

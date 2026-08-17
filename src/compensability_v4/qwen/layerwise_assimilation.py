@@ -43,20 +43,37 @@ def _runtime_projection_modules(model: object) -> tuple[object, object]:
     return norm, head
 
 
-def _forward(model: object, batch: object) -> tuple[object, Mapping[str, object]]:
+def _forward(model: object, batch: object) -> tuple[object, Mapping[str, object], int]:
     arguments = dict(batch) if isinstance(batch, Mapping) else vars(batch)
     try:
         import torch
     except ImportError as error:  # pragma: no cover - only real runtime needs torch
         raise RuntimeError("layerwise Qwen projection requires torch") from error
+    attention_mask = arguments.get("attention_mask")
+    reference = attention_mask if attention_mask is not None else arguments.get("input_ids")
+    if reference is None or getattr(reference, "ndim", 0) != 2 or reference.shape[0] != 1:
+        raise RuntimeError("layerwise scoring requires one rank-2 token batch")
+    if attention_mask is None:
+        final_index = int(reference.shape[-1]) - 1
+    else:
+        attended = torch.nonzero(attention_mask[0], as_tuple=False).flatten()
+        if attended.numel() == 0:
+            raise RuntimeError("layerwise prompt contains no attended token")
+        final_index = int(attended[-1].item())
+    logits_to_keep = torch.tensor(
+        [final_index],
+        dtype=torch.long,
+        device=getattr(reference, "device", None),
+    )
     with torch.inference_mode():
         output = model(
             **arguments,
             output_hidden_states=True,
             use_cache=False,
             return_dict=True,
+            logits_to_keep=logits_to_keep,
         )
-    return output, arguments
+    return output, arguments, final_index
 
 
 def layerwise_candidate_logits(
@@ -70,9 +87,10 @@ def layerwise_candidate_logits(
     """Project every language-layer state through the runtime norm and head.
 
     Qwen/Hugging Face hidden-state output contains the embedding state followed
-    by one captured output per decoder layer.  The runtime final norm executes
-    after those captured outputs, so every decoder state receives that same
-    norm before the head.  Mandatory final-layer parity guards this contract.
+    by decoder outputs; its capture wrapper replaces the last decoder capture
+    with the post-final-norm model output.  Earlier states receive the runtime
+    final norm, while the last does not.  Shape-identical final parity guards
+    this contract without an empirical effect threshold.
     """
 
     try:
@@ -100,7 +118,7 @@ def _layerwise_candidate_logits_inference(
     """Run forward, projection, and parity inside one inference context."""
 
     pairs = _candidate_ids(label_token_ids)
-    output, arguments = _forward(model, batch)
+    output, _arguments, final_index = _forward(model, batch)
     hidden_states = tuple(getattr(output, "hidden_states", ()) or ())
     config = getattr(model, "config", None)
     if config is None:
@@ -114,20 +132,17 @@ def _layerwise_candidate_logits_inference(
             "runtime hidden-state count does not match num_hidden_layers: "
             f"{len(hidden_states)} versus {layer_count + 1}"
         )
-    attention_mask = arguments.get("attention_mask")
-    final_index = -1
-    if attention_mask is not None:
-        final_index = int(attention_mask[0].sum().item()) - 1  # type: ignore[index,union-attr]
-        if final_index < 0:
-            raise RuntimeError("layerwise prompt contains no attended token")
     norm, head = _runtime_projection_modules(model)
     result: list[dict[str, float]] = []
-    for hidden in hidden_states[1:]:
-        token_hidden = hidden[0, final_index]
-        projected_hidden = norm(token_hidden)
-        vocabulary_logits = head(projected_hidden)
+    for index, hidden in enumerate(hidden_states[1:]):
+        token_hidden = hidden[:, final_index : final_index + 1, :]
+        projected_hidden = token_hidden if index == layer_count - 1 else norm(token_hidden)
+        vocabulary_logits = head(projected_hidden)[0, 0]
         result.append({label: _as_float(vocabulary_logits[token_id]) for label, token_id in pairs})
-    standard_logits = output.logits[0, final_index]
+    logits = output.logits
+    if getattr(logits, "ndim", 0) != 3 or logits.shape[:2] != (1, 1):
+        raise RuntimeError("runtime model did not honor the single-position logits contract")
+    standard_logits = logits[0, 0]
     standard = {label: _as_float(standard_logits[token_id]) for label, token_id in pairs}
     validate_final_layer_logits(
         result,
