@@ -274,6 +274,31 @@ recorded before arm outcomes and must accompany the confirmatory estimates.
 They do not authorize RL or training. The post-screen amendment is frozen in
 `configs/recoverability/recoverability_phase_c_v3_postscreen_amendment.yaml`.
 
+### Phase-C prompt-interface qualification after v3 execution
+
+The v3 six-arm execution completed all 27,840 calls, but its strict program
+parse rate was zero. The stored raw responses show that the prompt did not
+define the three constraint payloads or the exact step-object schema with enough
+specificity. Consequently the all-zero strict report is treated as an
+interface-invalid measurement of the intended semantic comparison; it is not
+relabelled as a scientific null and the costly arm run is not repeated.
+
+The next action is a bounded diagnostic prompt qualification, not a new
+confirmatory experiment. It selects one already-frozen eligible scene from each
+of the nine family-by-operation cells, compares a no-cue prompt with a valid-cue
+prompt, and uses two fixed forks per condition: exactly 36 text-only calls. The
+prompt explicitly defines index-to-variable mapping, `known_value`, `pair_sum`,
+`arithmetic_progression`, the at-most-one-error rule, and an exact JSON example
+for each operation. Reporting separates strict schema parsing from conservative
+format-independent recovery of the four inferred integers and the answer
+computed from those integers.
+
+This diagnostic has no preregistered pass threshold, performs no hypothesis
+test, and cannot authorize a scaled run, RL, or training. Its report always
+records `hypothesis_tested=false` and `scale_authorized=false`. Any later scale
+decision requires explicit human review of all 36 raw records and a separately
+versioned prospective execution plan.
+
 The controlled CVA dataset remains the primary mechanistic dataset because it
 supports registered redundancy constraints, cue ablations, legal coherent
 counterfactuals, and exact deterministic replay. Public benchmarks do not

@@ -1,0 +1,29 @@
+schema_version: 1
+status: DIAGNOSTIC_PROMPT_QUALIFICATION_NOT_HYPOTHESIS_TEST
+qualification_id: recoverability-phase-c-prompt-qualification-v1
+dataset_id: CVA-Recoverability-Causal-v3
+source_screen_result: configs/recoverability/phase_c_screen_v2_frozen_result.yaml
+output_subdirectory: cva_recoverability_causal_v3/phase_c_prompt_qualification_v1
+families:
+  - cross_series
+  - duplicate_encoding
+  - trend
+operations:
+  - difference
+  - sum
+  - max_minus_min
+conditions:
+  - no_cue
+  - valid_cue
+scenes_per_cell: 1
+forks_per_condition: 2
+model_call_cap: 36
+seed: 2026082001
+max_new_tokens: 256
+temperature: 0.2
+top_p: 0.9
+format_retries: 0
+hypothesis_tested: false
+scale_authorized: false
+training_authorized: false
+rl_authorized: false

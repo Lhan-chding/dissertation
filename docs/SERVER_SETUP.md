@@ -941,3 +941,101 @@ echo "phase_c_workflow_exit=$phase_c_workflow_rc"
 Detach from `tmux` with `Ctrl-b`, then `d`; reconnect with `tmux attach -t
 test`. Completion means data collection and the frozen paired analysis finished,
 not that RL or training was authorized.
+
+## Low-cost Phase-C prompt qualification after the unusable v3 arm interface
+
+The completed v3 arm run must not be rerun. It made all 27,840 calls, but the
+strict result-program parser accepted none of them. The raw responses are
+preserved; this is an interface failure, not evidence that every model answer
+was semantically wrong. Before considering another large run, the repaired
+prompt is tested on only nine frozen scenes: one deterministic scene for every
+family-by-operation cell. Each scene receives `no_cue` and `valid_cue`, with two
+fixed forks per condition, for exactly `3 * 3 * 2 * 2 = 36` text-only calls.
+
+The prompt now defines the index mapping, all three constraint kinds, the
+one-error rule, and the exact operation-specific JSON template. The report
+separates strict-format parsing from format-independent extraction of the four
+inferred values and their computed answer. This diagnostic performs no
+hypothesis test and always leaves `scale_authorized=false`, `rl_authorized=false`,
+and `training_authorized=false`; the human decision about whether the prompt is
+good enough comes only after inspecting its raw 36 records.
+
+Run this once. It uses new paths and does not overwrite the v3 arm evidence:
+
+```bash
+(
+cd /cloud/cloud-ssd1/dissertation
+git -c http.version=HTTP/1.1 pull --ff-only origin main
+git rev-parse --short HEAD
+source .venv/bin/activate
+
+export PYTHONPATH=/cloud/cloud-ssd1/dissertation/src
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
+
+PROMPT_PREFLIGHT=/cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-prompt-qualification-v1-preflight.json
+PROMPT_OUTPUT=/cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v3/phase_c_prompt_qualification_v1
+PROMPT_ATTEMPT=/cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v3.prompt-qualification-v1.attempted.json
+PROMPT_LOG=/cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-prompt-qualification-v1-console.log
+
+for candidate in \
+  "$PROMPT_PREFLIGHT" \
+  "$PROMPT_OUTPUT" \
+  "$PROMPT_ATTEMPT" \
+  "$PROMPT_LOG"
+do
+  test ! -e "$candidate" || {
+    echo "BLOCKED: prompt qualification evidence already exists: $candidate"
+    exit 1
+  }
+done
+
+python experiments/recoverability_v1/18_phase_c_prompt_qualification_preflight.py \
+  --runtime configs/recoverability/server_runtime_v1.yaml \
+  --server-package-lock configs/recoverability/server_package_lock_phase_c_prompt_qualification_v1.yaml \
+  --project-root /cloud/cloud-ssd1/dissertation \
+  --output "$PROMPT_PREFLIGHT"
+
+prompt_preflight_rc=$?
+echo "prompt_qualification_preflight_exit=$prompt_preflight_rc"
+test "$prompt_preflight_rc" -eq 0 || exit "$prompt_preflight_rc"
+
+set -o pipefail
+(
+  python experiments/recoverability_v1/19_run_phase_c_prompt_qualification.py \
+    --paths configs/paths.yaml \
+    --runtime configs/recoverability/server_runtime_v1.yaml \
+    --qualification-config configs/recoverability/phase_c_prompt_qualification_v1.yaml \
+    --screen-result configs/recoverability/phase_c_screen_v2_frozen_result.yaml \
+    --server-package-lock configs/recoverability/server_package_lock_phase_c_prompt_qualification_v1.yaml \
+    --preflight-report "$PROMPT_PREFLIGHT" \
+    --screen-preflight /cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-screen-v2-preflight.json \
+    --screen-attempt-marker /cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v2.screen.attempted.json \
+    --screen-dataset-root /cloud/cloud-ssd1/dissertation/data/generated/cva_recoverability_causal_v2_screen \
+    --screen-output-root /cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v2/phase_c_screen \
+    --screen-console-log /cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-screen-v2-console.log \
+    --execute
+  prompt_rc=$?
+  echo "prompt_qualification_exit=$prompt_rc"
+  exit "$prompt_rc"
+) 2>&1 | tee "$PROMPT_LOG"
+prompt_rc=$?
+
+echo "prompt_qualification_exit=$prompt_rc"
+test "$prompt_rc" -eq 0 || exit "$prompt_rc"
+
+python -m json.tool "$PROMPT_OUTPUT/prompt_qualification_report.json"
+
+sha256sum \
+  "$PROMPT_PREFLIGHT" \
+  "$PROMPT_ATTEMPT" \
+  "$PROMPT_OUTPUT/prompt_qualification_report.json" \
+  "$PROMPT_OUTPUT/prompt_qualification_records.jsonl" \
+  "$PROMPT_LOG"
+)
+prompt_workflow_rc=$?
+echo "prompt_workflow_exit=$prompt_workflow_rc"
+```
+
+Return the full report, five SHA-256 lines, both prompt exit-code lines, the
+preflight exit, and the short Git revision. Do not start another large run.

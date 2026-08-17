@@ -850,3 +850,11 @@ text-only calls. The amendment records reduced design power (0.7375
 cross-series; 0.6865 trend), permits no screen rerun or sample extension, and
 does not authorize RL or training. See `docs/RECOVERABILITY_V1_PROTOCOL.md` and
 `docs/SERVER_SETUP.md` for the immutable evidence boundary and server command.
+
+That v3 execution has now completed, but all 27,840 raw outputs failed the
+under-specified strict program interface, so its all-zero report is not treated
+as an interpretable scientific null. The only next action is a 36-call,
+text-only prompt qualification over nine frozen family-by-operation cells. It
+reports semantic inferred-world accuracy separately from JSON-format compliance,
+does not test the hypothesis, and cannot authorize scale, RL, or training. The
+one-shot command is in `docs/SERVER_SETUP.md`.

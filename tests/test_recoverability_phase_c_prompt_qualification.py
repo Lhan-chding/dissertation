@@ -147,6 +147,23 @@ def test_scoring_keeps_format_and_semantic_content_as_separate_metrics() -> None
     assert fenced.semantic_world_exact is True
     assert fenced.semantic_answer_correct is True
 
+    malformed_outer_json = (
+        '{"variables":'
+        + json.dumps(dict(zip("abcd", call.expected_values, strict=True)))
+        + ',"steps":[{"op":"add","inputs":[a,b],"output":"result"}],'
+        '"return":"result"}'
+    )
+    semantic_only = evaluate_phase_c_prompt_qualification_call(call, malformed_outer_json)
+    assert semantic_only.strict_parse_success is False
+    assert semantic_only.semantic_values == call.expected_values
+    assert semantic_only.semantic_answer_correct is True
+
+    array_world = evaluate_phase_c_prompt_qualification_call(
+        call, json.dumps({"variables": list(call.expected_values)})
+    )
+    assert array_world.strict_parse_success is False
+    assert array_world.semantic_values == call.expected_values
+
 
 def test_summary_never_turns_the_diagnostic_into_scale_authorization() -> None:
     calls = build_phase_c_prompt_qualification_calls(_scenes(), config=_config())
@@ -167,6 +184,14 @@ def test_summary_never_turns_the_diagnostic_into_scale_authorization() -> None:
     assert report["training_invoked"] is False
     assert set(report["by_condition"]) == set(PROMPT_QUALIFICATION_CONDITIONS)
 
+    failures = tuple(
+        evaluate_phase_c_prompt_qualification_call(call, "not JSON") for call in calls
+    )
+    failed_report = summarize_phase_c_prompt_qualification(failures, config=_config())
+    assert failed_report["semantic_world_extraction_rate"] == 0.0
+    assert failed_report["semantic_world_exact_rate_among_extracted"] == 0.0
+    assert failed_report["semantic_answer_accuracy_among_extracted"] == 0.0
+
 
 def test_config_rejects_any_attempt_to_expand_the_call_cap(tmp_path: Path) -> None:
     mutated = CONFIG.read_text(encoding="utf-8").replace("model_call_cap: 36", "model_call_cap: 37")
@@ -174,3 +199,31 @@ def test_config_rejects_any_attempt_to_expand_the_call_cap(tmp_path: Path) -> No
     path.write_text(mutated, encoding="utf-8")
     with pytest.raises(ValueError, match="frozen 36-call diagnostic"):
         load_phase_c_prompt_qualification_config(path)
+
+
+def test_call_plan_and_summary_reject_incomplete_or_ambiguous_inputs() -> None:
+    config = _config()
+    with pytest.raises(ValueError, match="non-empty tuple"):
+        build_phase_c_prompt_qualification_calls((), config=config)
+    with pytest.raises(TypeError, match="invalid item"):
+        build_phase_c_prompt_qualification_calls((object(),), config=config)  # type: ignore[arg-type]
+    with pytest.raises(ValueError, match="identifiers must be unique"):
+        build_phase_c_prompt_qualification_calls((*_scenes(), _scenes()[0]), config=config)
+    with pytest.raises(ValueError, match=r"no eligible scene for trend\|max_minus_min"):
+        build_phase_c_prompt_qualification_calls(_scenes()[:-1], config=config)
+    with pytest.raises(TypeError, match="config must be"):
+        build_phase_c_prompt_qualification_calls(_scenes(), config=object())  # type: ignore[arg-type]
+
+    calls = build_phase_c_prompt_qualification_calls(_scenes(), config=config)
+    with pytest.raises(TypeError, match="call must be"):
+        evaluate_phase_c_prompt_qualification_call(object(), "{}")  # type: ignore[arg-type]
+    with pytest.raises(TypeError, match="raw_text must be text"):
+        evaluate_phase_c_prompt_qualification_call(calls[0], object())  # type: ignore[arg-type]
+    with pytest.raises(ValueError, match="exact frozen 36-call diagnostic"):
+        summarize_phase_c_prompt_qualification((), config=config)
+
+    records = tuple(
+        evaluate_phase_c_prompt_qualification_call(call, "not JSON") for call in calls
+    )
+    with pytest.raises(ValueError, match="identifiers must be unique"):
+        summarize_phase_c_prompt_qualification((*records[:-1], records[0]), config=config)
