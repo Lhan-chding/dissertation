@@ -86,6 +86,17 @@ def test_v4_runtime_config_forbids_training_and_rl() -> None:
     assert "resized_width: 280" in text
 
 
+def test_v4_research_config_forbids_subjective_success_thresholds() -> None:
+    text = (ROOT / "configs/recoverability/v4_phase_0_3.yaml").read_text(encoding="utf-8")
+
+    assert "subjective_success_thresholds_forbidden: true" in text
+    assert "report_scene_clustered_confidence_intervals: true" in text
+    assert "report_paired_and_family_stratified_effects: true" in text
+    assert "report_policy_support_and_reward_variance: true" in text
+    assert "minimum_visual_repair_rate" not in text
+    assert "minimum_recovery_accuracy" not in text
+
+
 def test_training_scripts_are_not_part_of_the_phase_zero_to_three_surface() -> None:
     assert not (ROOT / "scripts/v4/07_build_support_data.py").exists()
     assert not (ROOT / "scripts/v4/08_train_controls.py").exists()
