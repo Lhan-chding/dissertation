@@ -25,6 +25,7 @@ def test_phase_zero_audit_uses_narrow_frozen_evidence_statuses() -> None:
     assert registry["qwen_world_only_valid_cue_50"]["interface_family"] == "text_replay"
     assert registry["qwen_world_only_valid_cue_50"]["true_world_recoveries"] == "0"
     assert registry["qwen_world_only_no_cue_100"]["evidence_status"] == "awaiting_hash_bound_server_evidence"
+    assert registry["qwen_world_only_no_cue_100"]["model_calls"] == "100"
     assert claims["qwen_world_only_copying"]["status"] == "allowed"
     assert claims["qwen_natural_visual_state_absence"]["status"] == "forbidden"
 
