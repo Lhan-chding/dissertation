@@ -1,9 +1,9 @@
 schema_version: 1
 status: DIAGNOSTIC_WORLD_RECOVERY_NOT_HYPOTHESIS_TEST
-qualification_id: recoverability-phase-c-world-recovery-v1
+qualification_id: recoverability-phase-c-world-recovery-v1r1
 dataset_id: CVA-Recoverability-Causal-v3
 source_screen_result: configs/recoverability/phase_c_screen_v2_frozen_result.yaml
-output_subdirectory: cva_recoverability_causal_v3/phase_c_world_recovery_v1
+output_subdirectory: cva_recoverability_causal_v3/phase_c_world_recovery_v1r1
 families:
   - cross_series
   - duplicate_encoding

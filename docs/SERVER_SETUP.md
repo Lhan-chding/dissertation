@@ -1040,12 +1040,16 @@ echo "prompt_workflow_exit=$prompt_workflow_rc"
 Return the full report, five SHA-256 lines, both prompt exit-code lines, the
 preflight exit, and the short Git revision. Do not start another large run.
 
-## One-shot Phase-C world-recovery-only 12-call diagnostic
+## One-shot Phase-C world-recovery-only 12-call diagnostic v1r1
 
 The completed 36-call prompt qualification must not be rerun. This new workflow
 uses separate paths and performs exactly 12 greedy, text-only model calls. It
 writes the six-case hidden/public manifests and all rendered messages before
-loading the model. Run the entire block once inside `tmux`:
+loading the model. The original v1 launch stopped before model loading or any
+model call because one source scene was not uniquely recoverable under the
+world-only criterion. Revision v1r1 preserves that failed preflight/log evidence,
+filters such ambiguous source scenes before deterministic seeded selection, and
+uses fresh evidence paths. Run the entire block once inside `tmux`:
 
 ```bash
 (
@@ -1058,10 +1062,10 @@ export PYTHONPATH=/cloud/cloud-ssd1/dissertation/src
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 
-WORLD_PREFLIGHT=/cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-world-recovery-v1-preflight.json
-WORLD_OUTPUT=/cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v3/phase_c_world_recovery_v1
-WORLD_ATTEMPT=/cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v3.world-recovery-v1.attempted.json
-WORLD_LOG=/cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-world-recovery-v1-console.log
+WORLD_PREFLIGHT=/cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-world-recovery-v1r1-preflight.json
+WORLD_OUTPUT=/cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v3/phase_c_world_recovery_v1r1
+WORLD_ATTEMPT=/cloud/cloud-ssd1/dissertation/outputs/recoverability_v1/cva_recoverability_causal_v3.world-recovery-v1r1.attempted.json
+WORLD_LOG=/cloud/cloud-ssd1/recoverability-v1-evidence/phase-c-world-recovery-v1r1-console.log
 
 for candidate in \
   "$WORLD_PREFLIGHT" \

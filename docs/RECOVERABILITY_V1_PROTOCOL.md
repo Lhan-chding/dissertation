@@ -299,7 +299,7 @@ records `hypothesis_tested=false` and `scale_authorized=false`. Any later scale
 decision requires explicit human review of all 36 raw records and a separately
 versioned prospective execution plan.
 
-### Phase-C world-recovery-only twelve-call diagnostic
+### Phase-C world-recovery-only twelve-call diagnostic v1r1
 
 The completed 36-call prompt qualification is immutable and must not be rerun.
 Its fair post-hoc audit scores both conditions against the same hidden true
@@ -308,9 +308,13 @@ unqualified. The next diagnostic therefore removes the operation, result
 program, and free-form explanation entirely. Its only requested output is the
 four recovered integers.
 
-The prospective plan selects exactly two deterministic held-out cases from each
-of `cross_series`, `duplicate_encoding`, and `trend`. Each case is evaluated
-once with no facts and once with its registered valid facts, giving exactly
+The original v1 launch stopped before model loading and made zero calls because
+the validator encountered an operator-recoverable source scene that was not
+uniquely recoverable as a full world. Revision v1r1 preserves that failed
+preflight/log evidence and excludes such ambiguous source scenes before the
+frozen seeded ranking. It then selects exactly two deterministic held-out cases
+from each of `cross_series`, `duplicate_encoding`, and `trend`. Each case is
+evaluated once with no facts and once with its registered valid facts, giving exactly
 `3 * 2 * 2 = 12` calls. Decoding is greedy, `max_new_tokens=32`, and no retry,
 sampling, self-consistency, external solver, RL, or training is allowed. The
 system prompt, user templates, configuration, renderer, parser, runner, and

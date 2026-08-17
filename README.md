@@ -855,11 +855,15 @@ That v3 execution has now completed, but all 27,840 raw outputs failed the
 under-specified strict program interface, so its all-zero report is not treated
 as an interpretable scientific null. The completed 36-call prompt diagnostic
 then showed that downstream DSL and answer generation still confounded world
-recovery. The only next action is a new, one-shot 12-call text-only diagnostic:
+recovery. The original world-only launch then stopped before model loading and
+made zero calls because an operator-recoverable source scene was not uniquely
+world-recoverable. The only next action is the amended `v1r1` one-shot 12-call
+text-only diagnostic:
 two frozen cases per redundancy family, each paired across `no_cue` and
 `valid_cue`, with greedy decoding and a four-integer CSV response. It scores
 both conditions against the same hidden truth and reports format compliance
 separately from semantic recovery. `duplicate_encoding` is reported only as a
 full-trusted-state restatement control; `cross_series` and `trend` are the two
 nontrivial recovery diagnostics. This run cannot authorize scale, RL, or
-training. The command is in `docs/SERVER_SETUP.md`.
+training. Ambiguous source scenes are excluded before deterministic seeded
+selection. The command is in `docs/SERVER_SETUP.md`.

@@ -38,6 +38,10 @@ _VALID_CUE_TEMPLATE = (
 )
 
 
+class _AmbiguousWorldRecoveryCase(ValueError):
+    """A source scene that does not identify one world under the new task."""
+
+
 @dataclass(frozen=True, slots=True)
 class PhaseCWorldRecoveryConfig:
     schema_version: int
@@ -124,10 +128,10 @@ def load_phase_c_world_recovery_config(path: Path) -> PhaseCWorldRecoveryConfig:
     expected = {
         "schema_version": 1,
         "status": "DIAGNOSTIC_WORLD_RECOVERY_NOT_HYPOTHESIS_TEST",
-        "qualification_id": "recoverability-phase-c-world-recovery-v1",
+        "qualification_id": "recoverability-phase-c-world-recovery-v1r1",
         "dataset_id": "CVA-Recoverability-Causal-v3",
         "source_screen_result": "configs/recoverability/phase_c_screen_v2_frozen_result.yaml",
-        "output_subdirectory": "cva_recoverability_causal_v3/phase_c_world_recovery_v1",
+        "output_subdirectory": "cva_recoverability_causal_v3/phase_c_world_recovery_v1r1",
         "families": _FAMILIES,
         "conditions": WORLD_RECOVERY_CONDITIONS,
         "cases_per_family": 2,
@@ -188,7 +192,9 @@ def _validated_constraints(scene: FrozenEligibleScene) -> tuple[VisibleConstrain
     if all(item.accepts(scene.perceived_values) for item in constraints):
         raise ValueError("world recovery observed values must violate a fact")
     if _candidate_worlds(scene.perceived_values, constraints) != (scene.true_values,):
-        raise ValueError("world recovery facts must identify one unique valid world")
+        raise _AmbiguousWorldRecoveryCase(
+            "world recovery facts must identify one unique valid world"
+        )
     return constraints
 
 
@@ -237,7 +243,11 @@ def build_phase_c_world_recovery_calls(
     for scene in scenes:
         if scene.true_values in _EXAMPLE_TUPLES or scene.perceived_values in _EXAMPLE_TUPLES:
             continue
-        grouped[scene.family].append((scene, _validated_constraints(scene)))
+        try:
+            constraints = _validated_constraints(scene)
+        except _AmbiguousWorldRecoveryCase:
+            continue
+        grouped[scene.family].append((scene, constraints))
 
     selected: list[tuple[FrozenEligibleScene, tuple[VisibleConstraint, ...], int]] = []
     for family in config.families:

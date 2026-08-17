@@ -264,7 +264,7 @@ def main() -> int:
     paths = load_pilot_paths(canonical["paths"], environ={})
     evidence_root = Path("/cloud/cloud-ssd1/recoverability-v1-evidence")
     expected_paths = {
-        "preflight_report": evidence_root / "phase-c-world-recovery-v1-preflight.json",
+        "preflight_report": evidence_root / "phase-c-world-recovery-v1r1-preflight.json",
         "screen_preflight": evidence_root / "phase-c-screen-v2-preflight.json",
         "screen_attempt_marker": (
             paths.outputs / "recoverability_v1/cva_recoverability_causal_v2.screen.attempted.json"
@@ -313,7 +313,7 @@ def main() -> int:
     output_parent = paths.outputs / "recoverability_v1"
     output_parent.mkdir(parents=True, exist_ok=True)
     output = output_parent / config.output_subdirectory
-    attempt = output_parent / "cva_recoverability_causal_v3.world-recovery-v1.attempted.json"
+    attempt = output_parent / "cva_recoverability_causal_v3.world-recovery-v1r1.attempted.json"
     if output.exists() or output.is_symlink() or attempt.exists() or attempt.is_symlink():
         raise FileExistsError("refusing to overwrite world recovery evidence")
     output.mkdir()
