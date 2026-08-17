@@ -51,15 +51,17 @@ def test_qwen_composite_runtime_uses_language_model_norm() -> None:
 
 
 def test_forward_and_parameterized_projection_share_one_inference_context() -> None:
-    """Project every captured decoder state through the runtime final norm."""
+    """Match Qwen capture shapes and request only the final attended logit."""
 
     class TrackingLinear(torch.nn.Linear):
         def __init__(self, in_features: int, out_features: int) -> None:
             super().__init__(in_features, out_features, bias=False)
             self.contexts: list[tuple[bool, bool]] = []
+            self.input_shapes: list[tuple[int, ...]] = []
 
         def forward(self, value: torch.Tensor) -> torch.Tensor:
             self.contexts.append((torch.is_inference_mode_enabled(), torch.is_grad_enabled()))
+            self.input_shapes.append(tuple(value.shape))
             return super().forward(value)
 
     class ParameterizedProjectionModel:
@@ -68,6 +70,7 @@ def test_forward_and_parameterized_projection_share_one_inference_context() -> N
             self.norm = TrackingLinear(2, 2)
             self.head = TrackingLinear(2, 3)
             self.model = SimpleNamespace(language_model=SimpleNamespace(norm=self.norm))
+            self.logits_to_keep: torch.Tensor | None = None
             with torch.no_grad():
                 self.norm.weight.copy_(torch.tensor(((2.0, 0.0), (0.0, 0.5))))
                 self.head.weight.copy_(torch.tensor(((1.0, 0.0), (0.0, 1.0), (1.0, -1.0))))
@@ -78,12 +81,19 @@ def test_forward_and_parameterized_projection_share_one_inference_context() -> N
         def __call__(self, **arguments):
             assert torch.is_inference_mode_enabled()
             assert arguments["output_hidden_states"] is True
-            first = torch.tensor([[[1.0, 2.0]]])
-            second = torch.tensor([[[3.0, 4.0]]])
-            normalized_output = self.norm(second)
-            logits = self.head(normalized_output)
+            assert isinstance(arguments.get("logits_to_keep"), torch.Tensor)
+            self.logits_to_keep = arguments["logits_to_keep"]
+            assert self.logits_to_keep.dtype == torch.long
+            assert self.logits_to_keep.tolist() == [1]
+            first = torch.tensor([[[0.0, 0.0], [1.0, 2.0]]])
+            final_pre_norm = torch.tensor([[[0.0, 0.0], [3.0, 4.0]]])
+            final_post_norm = self.norm(final_pre_norm)
+            selected = final_post_norm.index_select(1, self.logits_to_keep)
+            logits = self.head(selected)
             return SimpleNamespace(
-                hidden_states=(torch.zeros_like(first), first, second),
+                # capture_outputs(tie_last_hidden_states=True) replaces the
+                # final decoder capture with the post-final-norm model output.
+                hidden_states=(torch.zeros_like(first), first, final_post_norm),
                 logits=logits,
             )
 
@@ -92,8 +102,8 @@ def test_forward_and_parameterized_projection_share_one_inference_context() -> N
     result = projection.layerwise_candidate_logits(
         model,
         {
-            "input_ids": torch.tensor([[7]]),
-            "attention_mask": torch.tensor([[1]]),
+            "input_ids": torch.tensor([[7, 8]]),
+            "attention_mask": torch.tensor([[1, 1]]),
         },
         {"A": 0, "B": 1, "C": 2},
         absolute_tolerance=0.0,
@@ -102,8 +112,11 @@ def test_forward_and_parameterized_projection_share_one_inference_context() -> N
 
     assert len(result) == 2
     assert result[-1] == {"A": 6.0, "B": 2.0, "C": 4.0}
+    assert model.logits_to_keep is not None
+    assert model.logits_to_keep.tolist() == [1]
+    assert model.norm.input_shapes == [(1, 2, 2), (1, 1, 2)]
+    assert model.head.input_shapes == [(1, 1, 2), (1, 1, 2), (1, 1, 2)]
     assert model.norm.contexts == [
-        (True, False),
         (True, False),
         (True, False),
     ]
