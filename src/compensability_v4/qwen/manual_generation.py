@@ -26,6 +26,9 @@ class ManualGenerationResult:
     past_key_values: object
     generation_config: Mapping[str, Any]
     rng_seed: int
+    generated_logits: tuple[object, ...] = ()
+    forward_position_ids: tuple[tuple[tuple[int, ...], ...], ...] = ()
+    forward_cache_positions: tuple[tuple[int, ...], ...] = ()
 
     def __post_init__(self) -> None:
         if self.all_token_ids != self.prompt_token_ids + self.generated_token_ids:
@@ -75,9 +78,9 @@ def _position_tuple(position_ids: object | None, length: int) -> tuple[tuple[int
         axes = (tuple(int(item) for item in value[0]),)
     else:
         axes = tuple(tuple(int(item) for item in axis) for axis in value)  # type: ignore[arg-type]
-    if any(len(axis) != length for axis in axes):
+    if any(len(axis) < length for axis in axes):
         raise RuntimeError("runtime position_ids do not align with the token sequence")
-    return axes
+    return tuple(axis[-length:] for axis in axes)
 
 
 def _eos_set(eos_token_ids: int | Sequence[int] | None) -> frozenset[int]:
@@ -164,11 +167,31 @@ def manual_greedy_generate(
     if (past_key_values is None) != (not prior_ids):
         raise ValueError("prior token ids and past_key_values must be provided together")
     if past_key_values is not None:
+        prior_positions = tuple(tuple(int(item) for item in axis) for axis in prior_position_ids)
+        if not prior_positions or any(len(axis) != len(prior_ids) for axis in prior_positions):
+            raise ValueError("prior position ids must align with cached token ids")
         prior_tensor = torch.tensor(
             [prior_ids], dtype=full_input_ids.dtype, device=full_input_ids.device
         )
         full_input_ids = torch.cat((prior_tensor, full_input_ids), dim=-1)
         initial["past_key_values"] = past_key_values
+        suffix_length = len(suffix_prompt_ids)
+        suffix_positions = tuple(
+            tuple(axis[-1] + offset for offset in range(1, suffix_length + 1))
+            for axis in prior_positions
+        )
+        full_positions = tuple(
+            prior_positions[index] + suffix_positions[index]
+            for index in range(len(prior_positions))
+        )
+        position_tensor = torch.tensor(
+            full_positions,
+            dtype=torch.long,
+            device=full_input_ids.device,
+        )
+        initial["position_ids"] = (
+            position_tensor.unsqueeze(1) if len(full_positions) == 3 else position_tensor
+        )
     prompt_ids = prior_ids + suffix_prompt_ids
     initialize_cache_position = getattr(model, "_get_initial_cache_position", None)
     if callable(initialize_cache_position):
@@ -182,14 +205,20 @@ def manual_greedy_generate(
     active_cache: object | None = past_key_values
     last_prepared: dict[str, Any] = {}
     position_history: list[tuple[tuple[int, ...], ...]] = []
+    cache_position_history: list[tuple[int, ...]] = []
+    generated_logits: list[object] = []
 
     with torch.inference_mode():
         for _ in range(max_new_tokens):
             output, last_prepared = _prepared_forward(model, full_input_ids, initial)
             prepared_positions = last_prepared.get("position_ids")
             if prepared_positions is not None:
-                processed_length = int(output.logits.shape[1])
+                processed_length = len(suffix_prompt_ids) if not generated else 1
                 position_history.append(_position_tuple(prepared_positions, processed_length))
+            prepared_cache_position = last_prepared.get("cache_position")
+            if prepared_cache_position is not None:
+                cache_position_history.append(_one_dimensional_ids(prepared_cache_position))
+            generated_logits.append(output.logits[:, -1, :].detach().to("cpu", torch.float32))
             next_token = int(torch.argmax(output.logits[:, -1, :], dim=-1).item())
             next_tensor = torch.tensor(
                 [[next_token]], dtype=full_input_ids.dtype, device=full_input_ids.device
@@ -215,6 +244,12 @@ def manual_greedy_generate(
                 )
                 if initial.get("position_ids") is not None:
                     initial["position_ids"] = _extend_position_ids(initial["position_ids"], 1)
+            current_positions = initial.get("position_ids")
+            if current_positions is not None:
+                current_length = int(current_positions.shape[-1])
+                missing = int(full_input_ids.shape[-1]) - current_length
+                if missing > 0:
+                    initial["position_ids"] = _extend_position_ids(current_positions, missing)
             if next_token in eos:
                 break
 
@@ -227,9 +262,7 @@ def manual_greedy_generate(
         active_cache = final_output.past_key_values
         prepared_positions = last_prepared.get("position_ids")
         if prepared_positions is not None:
-            position_history.append(
-                _position_tuple(prepared_positions, int(final_output.logits.shape[1]))
-            )
+            position_history.append(_position_tuple(prepared_positions, 1))
 
     all_ids = _one_dimensional_ids(full_input_ids)
     final_attention = _one_dimensional_ids(initial["attention_mask"])
@@ -265,6 +298,9 @@ def manual_greedy_generate(
         past_key_values=active_cache,
         generation_config=config,
         rng_seed=rng_seed,
+        generated_logits=tuple(generated_logits),
+        forward_position_ids=tuple(position_history),
+        forward_cache_positions=tuple(cache_position_history),
     )
 
 

@@ -27,6 +27,10 @@ CAPABILITY_PAIRED_GAPS_SHA256 = "a2a5acb5b203719e7e5225e56643a25a4189277d13704cc
 CANDIDATE_LABELS_SHA256 = "a7a448f230038698c4127b220362c95d47f57cef90cc7904e71b1dacacc04dbd"
 CANDIDATE_SCORES_SHA256 = "c303731438760a30fb2f78a489d20465a1c1e292b01941795f29351a0e234a62"
 CANDIDATE_SUMMARY_SHA256 = "5e366dfecb2a4fd530407f896326bc99d3605385cfdadea34c0f478392280c73"
+LAYERWISE_PROFILES_SHA256 = "e696d12bb8cb3e6142a3d6ecc6de9474c3e72e3ac85e0c7334005a249556a4af"
+LAYERWISE_SUMMARY_SHA256 = "53eab07dcd70fce6970a63ce1831ec6369164e92320f051e717decdeb1b790c0"
+PHASE_C_DATASET_MANIFEST_SHA256 = "bc57389dc3164b6aeba8d4565aecfaea3fa7ba171b4df4843c8ec86cbee8a19f"
+PHASE_C_DATASET_RECORDS_SHA256 = "36e09f7e15107057fd1b942875d12259b1f281e0354b87c82ed17f420693c766"
 MODEL_INTROSPECTION_PATH = ROOT / "artifacts/v4/model_introspection.json"
 MODULE_MANIFEST_PATH = ROOT / "artifacts/v4/module_manifest.txt"
 MODEL_INTROSPECTION_SHA256 = "ed96d19a238d68497617071e29604313e0aae9a41a9e3bd24dbad451d87a0640"
@@ -241,6 +245,43 @@ def _load_config(path: Path) -> dict[str, object]:
         or layerwise != expected_layerwise
     ):
         raise RuntimeError("v4 Phase 2 layerwise execution contract drifted")
+    cache_parity = payload.get("phase_3_cache_parity")
+    expected_cache_parity = {
+        "world_recoverable_scenes": 579,
+        "included_family_counts": {
+            "cross_series": 208,
+            "duplicate_encoding": 182,
+            "trend": 189,
+        },
+        "cue_conditions": [
+            "no_cue",
+            "valid_cue",
+            "sham_cue",
+            "counterfactual_cue",
+        ],
+        "calls_per_scene": 4,
+        "parity_call_cap": 2316,
+        "max_new_tokens": 32,
+        "do_sample": False,
+        "temperature": 0.0,
+        "logit_absolute_tolerance": 0.0,
+        "logit_relative_tolerance": 0.0,
+        "mrope_axes": 3,
+        "require_exact_generated_tokens": True,
+        "require_exact_generated_logits": True,
+        "require_exact_suffix_positions": True,
+        "require_exact_cache_positions": True,
+        "phase_c_dataset_manifest_sha256": PHASE_C_DATASET_MANIFEST_SHA256,
+        "phase_c_dataset_records_sha256": PHASE_C_DATASET_RECORDS_SHA256,
+        "layerwise_profiles_sha256": LAYERWISE_PROFILES_SHA256,
+        "layerwise_summary_sha256": LAYERWISE_SUMMARY_SHA256,
+    }
+    if (
+        not isinstance(cache_parity, dict)
+        or set(cache_parity) != set(expected_cache_parity)
+        or cache_parity != expected_cache_parity
+    ):
+        raise RuntimeError("v4 Phase 3 cache-parity execution contract drifted")
     return payload
 
 
@@ -424,6 +465,8 @@ def write_execution_manifest(
 
 __all__ = [
     "CONFIG_PATH",
+    "LAYERWISE_PROFILES_SHA256",
+    "LAYERWISE_SUMMARY_SHA256",
     "LEGACY_SCREEN_RECORDS_SHA256",
     "MODEL_INTROSPECTION_PATH",
     "MODULE_MANIFEST_PATH",

@@ -162,6 +162,36 @@ def valid_config() -> dict[str, object]:
             "candidate_scores_sha256": GUARDS.CANDIDATE_SCORES_SHA256,
             "candidate_summary_sha256": GUARDS.CANDIDATE_SUMMARY_SHA256,
         },
+        "phase_3_cache_parity": {
+            "world_recoverable_scenes": 579,
+            "included_family_counts": {
+                "cross_series": 208,
+                "duplicate_encoding": 182,
+                "trend": 189,
+            },
+            "cue_conditions": [
+                "no_cue",
+                "valid_cue",
+                "sham_cue",
+                "counterfactual_cue",
+            ],
+            "calls_per_scene": 4,
+            "parity_call_cap": 2316,
+            "max_new_tokens": 32,
+            "do_sample": False,
+            "temperature": 0.0,
+            "logit_absolute_tolerance": 0.0,
+            "logit_relative_tolerance": 0.0,
+            "mrope_axes": 3,
+            "require_exact_generated_tokens": True,
+            "require_exact_generated_logits": True,
+            "require_exact_suffix_positions": True,
+            "require_exact_cache_positions": True,
+            "phase_c_dataset_manifest_sha256": GUARDS.PHASE_C_DATASET_MANIFEST_SHA256,
+            "phase_c_dataset_records_sha256": GUARDS.PHASE_C_DATASET_RECORDS_SHA256,
+            "layerwise_profiles_sha256": GUARDS.LAYERWISE_PROFILES_SHA256,
+            "layerwise_summary_sha256": GUARDS.LAYERWISE_SUMMARY_SHA256,
+        },
     }
 
 
@@ -543,7 +573,6 @@ def test_phase_cli_execute_success_and_failure_are_reported(monkeypatch, tmp_pat
 @pytest.mark.parametrize(
     ("filename", "phase"),
     [
-        ("05_validate_cache_runner.py", "phase_3_cache_parity"),
         ("06_run_interface_ladder.py", "phase_3_interface_ladder"),
     ],
 )

@@ -1,4 +1,4 @@
-"""RED contracts for real S5 exact-cache continuation parity execution."""
+"""Contracts for real S5 exact-cache continuation parity execution."""
 
 from __future__ import annotations
 
@@ -7,17 +7,22 @@ import json
 import sys
 from collections import Counter
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
+import torch
+
+from compensability_v4.qwen import phase3_cache
+from compensability_v4.qwen.cache_continuation import CachedGenerationState
+from compensability_v4.qwen.phase2_candidate import CueCondition
 from compensability_v4.qwen.phase3_cache import (
     build_cache_parity_plan,
+    build_condition_turns,
     execute_cache_parity_plan,
+    facts_for_condition,
     summarize_cache_parity,
     write_cache_parity_outputs,
 )
-
-from compensability_v4.qwen.cache_continuation import CachedGenerationState
-from compensability_v4.qwen.phase2_candidate import CueCondition
 
 S4_PER_SCENE_SHA256 = "e696d12bb8cb3e6142a3d6ecc6de9474c3e72e3ac85e0c7334005a249556a4af"
 S4_SUMMARY_SHA256 = "53eab07dcd70fce6970a63ce1831ec6369164e92320f051e717decdeb1b790c0"
@@ -322,3 +327,225 @@ def test_cache_cli_blocks_hash_drift_before_model_loading(
     assert result == 2
     assert model_loaded is False
     assert "S4 hash drift" in capsys.readouterr().out
+
+
+def test_cache_cli_rejects_any_output_ancestor_symlink_before_config_or_model_load(
+    monkeypatch, tmp_path: Path, capsys
+) -> None:
+    module = _load_script(
+        Path(__file__).resolve().parents[1] / "scripts/v4/05_validate_cache_runner.py"
+    )
+    target = tmp_path / "external"
+    target.mkdir()
+    linked = tmp_path / "linked"
+    linked.symlink_to(target, target_is_directory=True)
+    inputs = (tmp_path / "per_scene.jsonl", tmp_path / "summary.json")
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "05_validate_cache_runner.py",
+            "--execute",
+            "--input",
+            str(inputs[0]),
+            "--input-sha256",
+            S4_PER_SCENE_SHA256,
+            "--input",
+            str(inputs[1]),
+            "--input-sha256",
+            S4_SUMMARY_SHA256,
+        ],
+    )
+    monkeypatch.setattr(module, "validate_server_inputs", lambda **_arguments: object())
+    monkeypatch.setattr(
+        module,
+        "_load_config",
+        lambda _path: (_ for _ in ()).throw(AssertionError("config loaded before output guard")),
+    )
+
+    result = module.run_cache_parity_cli(
+        phase="phase_3_cache_parity",
+        expected_input_sha256=(S4_PER_SCENE_SHA256, S4_SUMMARY_SHA256),
+        expected_scenes=579,
+        expected_conditions=4,
+        output_path=str(linked / "cache" / "cache_parity.json"),
+    )
+
+    assert result == 2
+    assert "symlink" in capsys.readouterr().out.lower()
+
+
+def test_s5_condition_facts_rebuild_all_frozen_cue_families() -> None:
+    truth = (6, 14, 10, 10)
+    observed = (5, 14, 10, 10)
+    counterfactual = (5, 15, 10, 10)
+
+    assert (
+        facts_for_condition(
+            family="trend",
+            truth=truth,
+            observed=observed,
+            counterfactual=counterfactual,
+            condition=CueCondition.NO_CUE,
+        )
+        == ()
+    )
+    valid_by_family = {
+        family: facts_for_condition(
+            family=family,
+            truth=truth,
+            observed=observed,
+            counterfactual=counterfactual,
+            condition=CueCondition.VALID_CUE,
+        )
+        for family in ("cross_series", "duplicate_encoding", "trend")
+    }
+    assert {row["type"] for row in valid_by_family["cross_series"]} == {"pair_sum"}
+    assert {row["type"] for row in valid_by_family["duplicate_encoding"]} == {"known_value"}
+    assert {row["type"] for row in valid_by_family["trend"]} == {"arithmetic_progression"}
+    sham = facts_for_condition(
+        family="trend",
+        truth=truth,
+        observed=observed,
+        counterfactual=counterfactual,
+        condition=CueCondition.SHAM_CUE,
+    )
+    counterfactual_facts = facts_for_condition(
+        family="trend",
+        truth=truth,
+        observed=observed,
+        counterfactual=counterfactual,
+        condition=CueCondition.COUNTERFACTUAL_CUE,
+    )
+    assert all(row["index"] == 1 and row["value"] == 14 for row in sham)
+    assert tuple(row["value"] for row in counterfactual_facts) == counterfactual
+    turns = build_condition_turns(
+        correction_prompt="Revise from facts.",
+        family="trend",
+        truth=truth,
+        observed=observed,
+        counterfactual=counterfactual,
+    )
+    assert set(turns) == set(CueCondition)
+    assert all(turn.startswith("Revise from facts.\n") for turn in turns.values())
+    with pytest.raises(ValueError, match="non-empty"):
+        build_condition_turns(
+            correction_prompt=" ",
+            family="trend",
+            truth=truth,
+            observed=observed,
+            counterfactual=counterfactual,
+        )
+
+
+def test_s5_tensor_logit_parity_is_exact_and_hashes_tensor_bytes() -> None:
+    left = torch.tensor([[1.0, 2.0]], dtype=torch.float32)
+    right = left.clone()
+
+    phase3_cache._assert_logit_parity(
+        (left,),
+        (right,),
+        absolute_tolerance=0.0,
+        relative_tolerance=0.0,
+    )
+    assert phase3_cache._logit_hash(left) == phase3_cache._logit_hash(right)
+    with pytest.raises(RuntimeError, match="step 0"):
+        phase3_cache._assert_logit_parity(
+            (left,),
+            (torch.tensor([[1.0, 2.1]]),),
+            absolute_tolerance=0.0,
+            relative_tolerance=0.0,
+        )
+    with pytest.raises(RuntimeError, match="step 0"):
+        phase3_cache._assert_logit_parity(
+            (left,),
+            (torch.tensor([[1.0], [2.0]]),),
+            absolute_tolerance=0.0,
+            relative_tolerance=0.0,
+        )
+    phase3_cache._assert_logit_parity(
+        (left,),
+        (torch.tensor([[1.0, 2.0001]]),),
+        absolute_tolerance=0.001,
+        relative_tolerance=0.0,
+    )
+
+
+def test_s5_real_trace_joins_qwen_vision_batch_manual_cache_and_full_paths(
+    monkeypatch,
+) -> None:
+    state = _state(0)
+    call = build_cache_parity_plan(
+        (state,),
+        condition_turns=_turns(1),
+        expected_scenes=1,
+    )[0]
+    full_ids = state.token_ids + call.suffix_token_ids
+
+    class RealPathProcessor(_Processor):
+        def __call__(self, **arguments):
+            assert arguments["images"] == ["frozen-image"]
+            assert arguments["videos"] == []
+            return {"input_ids": torch.tensor([full_ids])}
+
+    processor = RealPathProcessor()
+    fake_vision_module = SimpleNamespace(
+        process_vision_info=lambda _messages: (["frozen-image"], [])
+    )
+    monkeypatch.setitem(sys.modules, "qwen_vl_utils", fake_vision_module)
+    calls: list[dict[str, object]] = []
+
+    def fake_manual(_model, batch, **arguments):
+        calls.append({"batch": batch, **arguments})
+        cached = len(calls) == 1
+        return SimpleNamespace(
+            generated_token_ids=(71, 72),
+            generated_logits=(torch.tensor([[1.0, 2.0]]), torch.tensor([[3.0, 4.0]])),
+            forward_position_ids=(
+                ((3, 4), (3, 4), (3, 4))
+                if cached
+                else ((0, 1, 2, 3, 4), (0, 1, 2, 3, 4), (0, 1, 2, 3, 4)),
+            ),
+            forward_cache_positions=((3, 4) if cached else (0, 1, 2, 3, 4),),
+        )
+
+    monkeypatch.setattr(phase3_cache, "manual_greedy_generate", fake_manual)
+
+    trace = phase3_cache._real_cache_full_trace(
+        SimpleNamespace(device=torch.device("cpu")),
+        processor,
+        call,
+        max_new_tokens=4,
+    )
+
+    assert trace["cached_generated_token_ids"] == trace["full_generated_token_ids"]
+    assert trace["cached_suffix_position_ids"] == trace["full_suffix_position_ids"]
+    assert trace["cached_cache_position"] == trace["full_cache_position"] == (3, 4)
+    assert calls[0]["past_key_values"] is not state.past_key_values
+    assert calls[0]["prior_token_ids"] == state.token_ids
+    assert "past_key_values" not in calls[1]
+
+
+def test_s5_plan_summary_and_writer_reject_incomplete_inputs(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="positive integer"):
+        build_cache_parity_plan((), condition_turns={}, expected_scenes=0)
+    with pytest.raises(RuntimeError, match="count or identifiers"):
+        build_cache_parity_plan((_state(0),), condition_turns=_turns(1), expected_scenes=2)
+    with pytest.raises(RuntimeError, match="align"):
+        build_cache_parity_plan((_state(0),), condition_turns={}, expected_scenes=1)
+    incomplete_turns = _turns(1)
+    incomplete_turns["scene-000"].pop(CueCondition.SHAM_CUE)
+    with pytest.raises(RuntimeError, match="all four"):
+        build_cache_parity_plan(
+            (_state(0),),
+            condition_turns=incomplete_turns,
+            expected_scenes=1,
+        )
+    with pytest.raises(ValueError, match="non-empty"):
+        summarize_cache_parity(())
+    with pytest.raises(ValueError, match="must not be empty"):
+        write_cache_parity_outputs(
+            tmp_path / "empty.json",
+            records=(),
+            summary={},
+        )

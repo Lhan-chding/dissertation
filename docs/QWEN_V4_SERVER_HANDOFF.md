@@ -1,7 +1,7 @@
 # Qwen v4 Phase 0-3 server handoff
 
-This handoff stops before any new Qwen experiment. The archived v4 plan is byte-identical to
-the supplied specification (SHA-256
+This handoff executes the authorized Phase 0-3 diagnostics and stops before training or RL. The
+archived v4 plan is byte-identical to the supplied specification (SHA-256
 `01e532f8c7fe5439c70e8cd8de81ff3448465d8d401dbbf478c76aebaf49641e`). Training, LoRA,
 SFT, and RL are not authorized.
 
@@ -19,8 +19,9 @@ SFT, and RL are not authorized.
 
 Run inside `tmux`. Stop at the first `BLOCKED` message and return the complete output. Every
 script except S0 is inert without `--execute`. S3 is a real no-overwrite, hash-bound
-teacher-forced scoring run. S4 is the real layerwise diagnostic. S5-S6 remain pre-work surfaces until the immediately preceding
-artifact hashes are returned and frozen. No Phase 0-3 script trains or invokes RL.
+teacher-forced scoring run, S4 is the real layerwise diagnostic, and S5 is the real exact-cache
+parity run. S6 remains a pre-work surface until the S5 artifact hash is returned and frozen. No
+Phase 0-3 script trains or invokes RL.
 
 ```bash
 cd /cloud/cloud-ssd1/dissertation
@@ -173,19 +174,44 @@ sha256sum artifacts/v4/layerwise_assimilation/per_scene.jsonl \
   artifacts/v4/layerwise_assimilation/summary.json
 ```
 
-## S5 - exact-cache parity surface
+## S5 - exact-cache parity execution
+
+S4 completed on 579 scenes and 2,316 layerwise forwards. Its frozen evidence is:
+
+- `layerwise_assimilation/per_scene.jsonl`:
+  `e696d12bb8cb3e6142a3d6ecc6de9474c3e72e3ac85e0c7334005a249556a4af`
+- `layerwise_assimilation/summary.json`:
+  `53eab07dcd70fce6970a63ce1831ec6369164e92320f051e717decdeb1b790c0`
+
+S5 regenerates one immutable natural visual observation/cache for each of those 579 scenes, then
+compares cached continuation with full-history re-encoding under all four cue conditions. Each
+of the 2,316 paired calls uses deterministic greedy decoding. Generated token IDs, every
+next-token vocabulary-logit tensor, the exact chat-template suffix, all three Qwen MRoPE axes,
+and `cache_position` must agree. These are measurement-validity equalities, not empirical-effect
+thresholds.
+
+Before model loading, S5 also verifies the complete 8,000-scene frozen Phase C visual source:
+
+- `manifest.json` SHA-256:
+  `bc57389dc3164b6aeba8d4565aecfaea3fa7ba171b4df4843c8ec86cbee8a19f`
+- `records.jsonl` SHA-256:
+  `36e09f7e15107057fd1b942875d12259b1f281e0354b87c82ed17f420693c766`
+- the manifest-bound hash of all 8,000 PNG files.
 
 ```bash
 python scripts/v4/05_validate_cache_runner.py --execute \
-  --input "$SCREEN" \
-  --input-sha256 f964dd6c005bd7344804aca8c33de2f621cc8e171f8d0f4ccc73a08081f2414a
+  --input artifacts/v4/layerwise_assimilation/per_scene.jsonl \
+  --input-sha256 e696d12bb8cb3e6142a3d6ecc6de9474c3e72e3ac85e0c7334005a249556a4af \
+  --input artifacts/v4/layerwise_assimilation/summary.json \
+  --input-sha256 53eab07dcd70fce6970a63ce1831ec6369164e92320f051e717decdeb1b790c0
+sha256sum artifacts/v4/cache/cache_parity.json
+python -m json.tool artifacts/v4/cache/cache_parity.json
 ```
 
-I4 cannot enter a primary result unless greedy cached continuation matches full-history
-re-encoding, or every token difference is explicitly explained and the condition remains
-diagnostic. If assistant-text decoding and chat-template re-encoding do not preserve the cached
-token prefix, stop that sample before continuation and record I4 as diagnostic rather than as a
-failed recovery.
+I4 cannot enter a primary result unless every objective equality passes. Any prefix, token,
+logit, MRoPE, or cache-position difference blocks S5 and produces no parity artifact; it is never
+counted as a failed recovery. A successful artifact certifies the measurement interface only—it
+does not claim that visual revision succeeded.
 
 ## S6 - I0-I4 interface-ladder surface
 
