@@ -649,6 +649,21 @@ def test_position_helpers_cover_qwen_mrope_and_rank_validation() -> None:
         generation._position_tuple([[0]], 2)
 
 
+@pytest.mark.parametrize(
+    "packed_positions",
+    (
+        torch.tensor([[10, 11], [0, 1], [2, 3], [4, 5]]),
+        torch.tensor([[[10, 11]], [[0, 1]], [[2, 3]], [[4, 5]]]),
+    ),
+)
+def test_position_tuple_strips_qwen_packed_text_axis(packed_positions: torch.Tensor) -> None:
+    assert generation._position_tuple(packed_positions, 2) == (
+        (0, 1),
+        (2, 3),
+        (4, 5),
+    )
+
+
 def test_visual_observation_capture_uses_fake_vision_runtime(monkeypatch) -> None:
     class Batch(dict):
         moved = False
