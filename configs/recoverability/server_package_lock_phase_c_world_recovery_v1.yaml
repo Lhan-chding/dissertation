@@ -7,7 +7,7 @@ files:
   - path: experiments/recoverability_v1/20_phase_c_world_recovery_preflight.py
     sha256: 8e3ff979ddc336ef1aecc0c15baa5d4985f76c9a76340578d29bae623bb09806
   - path: experiments/recoverability_v1/21_run_phase_c_world_recovery.py
-    sha256: 60a5dbdbce640646aba7423f22b1b1ba14f782d4e49f43a43ceea33001a61525
+    sha256: 3bd0fcb7b78813d07986399aaaabd282ccaef924b47af37baa8a5b8232f50988
   - path: prompts/no_cue.user.template.txt
     sha256: f4968037e8191127230b24603a2cf9c4d66ce6895fc58ef003879705cb9b008b
   - path: prompts/valid_cue.user.template.txt

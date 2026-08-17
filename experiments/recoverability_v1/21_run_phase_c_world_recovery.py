@@ -306,6 +306,10 @@ def main() -> int:
     if config.hypothesis_tested or config.scale_authorized or config.training_authorized:
         raise RuntimeError("world recovery must remain diagnostic and low-cost")
 
+    model_hash = model_snapshot_sha256(paths.model_path)
+    if model_hash != _EXPECTED_MODEL_SHA256 or model_hash != screen.model_snapshot_sha256:
+        raise RuntimeError("model snapshot differs from the frozen Phase C screen")
+
     output_parent = paths.outputs / "recoverability_v1"
     output_parent.mkdir(parents=True, exist_ok=True)
     output = output_parent / config.output_subdirectory
@@ -334,9 +338,6 @@ def main() -> int:
         ),
     )
 
-    model_hash = model_snapshot_sha256(paths.model_path)
-    if model_hash != _EXPECTED_MODEL_SHA256 or model_hash != screen.model_snapshot_sha256:
-        raise RuntimeError("model snapshot differs from the frozen Phase C screen")
     _exclusive_json(
         attempt,
         {

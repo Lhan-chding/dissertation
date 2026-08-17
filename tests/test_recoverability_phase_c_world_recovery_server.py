@@ -101,6 +101,7 @@ def test_world_recovery_runner_is_text_only_greedy_and_capped_at_twelve() -> Non
     assert "manifest.public.jsonl" in source
     assert 'open("x"' in source
     assert source.index("verify_phase_c_screen_artifacts(") < source.index("load_local_qwen(")
+    assert source.index("model_hash = model_snapshot_sha256") < source.index("output.mkdir()")
     assert source.index('open("x"') < source.index("load_local_qwen(")
     assert "train(" not in source
     assert '"hypothesis_tested": False' in source
