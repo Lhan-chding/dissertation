@@ -13,6 +13,7 @@ from compensability_v4.diagnostics.capability_chain import (
     build_capability_calls,
     evaluate_capability_call,
     load_legacy_capability_scenes,
+    select_legacy_capability_scenes,
     summarize_capability_run,
 )
 from compensability_v4.qwen.capability_runner import (
@@ -69,6 +70,41 @@ def test_legacy_scene_loader_rejects_ineligible_semantic_drift(tmp_path) -> None
             expected_scenes=1,
             expected_family_counts={"cross_series": 1},
         )
+
+
+def test_v4_selection_excludes_only_objectively_ambiguous_legacy_world(tmp_path) -> None:
+    unique = _screen_row(0)
+    ambiguous = {
+        **_screen_row(1),
+        "scene_id": "trend-ambiguous",
+        "family": "trend",
+        "operation": "sum",
+        "values": [6, 14, 10, 10],
+        "perceived_values": [5, 14, 10, 10],
+    }
+    source = tmp_path / "screen_records.jsonl"
+    source.write_text(
+        "\n".join(json.dumps(row) for row in (unique, ambiguous)) + "\n",
+        encoding="utf-8",
+    )
+
+    selection = select_legacy_capability_scenes(
+        source,
+        expected_source_scenes=2,
+        expected_scenes=1,
+        expected_family_counts={"cross_series": 1},
+        expected_excluded_family_counts={"trend": 1},
+    )
+
+    assert selection.source_eligible_scenes == 2
+    assert tuple(scene.scene_id for scene in selection.scenes) == ("scene-000",)
+    assert len(selection.exclusions) == 1
+    assert selection.exclusions[0].scene_id == "trend-ambiguous"
+    assert selection.exclusions[0].reason == "ambiguous_world"
+    assert selection.exclusions[0].supported_worlds == (
+        (5, 15, 10, 10),
+        (6, 14, 10, 10),
+    )
 
 
 def test_capability_plan_is_complete_balanced_and_deterministic(tmp_path) -> None:

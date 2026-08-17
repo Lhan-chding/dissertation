@@ -76,12 +76,21 @@ def valid_config() -> dict[str, object]:
         },
         "phase_1_capability_chain": {
             "source_scenes": 580,
-            "model_call_cap": 3480,
+            "world_recoverable_scenes": 579,
+            "excluded_ambiguous_scenes": 1,
+            "included_family_counts": {
+                "cross_series": 208,
+                "duplicate_encoding": 182,
+                "trend": 189,
+            },
+            "excluded_family_counts": {"trend": 1},
+            "model_call_cap": 3474,
             "calls_per_scene": 6,
             "t1_calls_per_scene": 1,
-            "t1_yes_no_balanced": True,
+            "t1_yes_calls": 290,
+            "t1_no_calls": 289,
             "t5_candidate_count": 4,
-            "t5_true_label_balanced": True,
+            "t5_true_label_slot_counts": [145, 145, 145, 144],
             "max_new_tokens": 32,
             "do_sample": False,
             "seed": 2026081701,
@@ -510,9 +519,27 @@ def test_capability_chain_cli_executes_frozen_contract(monkeypatch, tmp_path, ca
         "summary_by_family": str(output_dir / "summary_by_family.csv"),
         "paired_gaps": str(output_dir / "paired_gaps.json"),
     }
-    scenes = tuple(object() for _ in range(580))
-    calls = tuple(type("Call", (), {"call_id": str(index)})() for index in range(3480))
-    records = tuple(object() for _ in range(3480))
+    exclusion = type(
+        "Exclusion",
+        (),
+        {
+            "scene_id": "trend-ambiguous",
+            "family": "trend",
+            "reason": "ambiguous_world",
+            "supported_worlds": ((5, 15, 10, 10), (6, 14, 10, 10)),
+        },
+    )()
+    selection = type(
+        "Selection",
+        (),
+        {
+            "source_eligible_scenes": 580,
+            "scenes": tuple(object() for _ in range(579)),
+            "exclusions": (exclusion,),
+        },
+    )()
+    calls = tuple(type("Call", (), {"call_id": str(index)})() for index in range(3474))
+    records = tuple(object() for _ in range(3474))
     monkeypatch.setattr(
         sys,
         "argv",
@@ -536,7 +563,9 @@ def test_capability_chain_cli_executes_frozen_contract(monkeypatch, tmp_path, ca
             ("A", "B", "C", "D"),
         ),
     )
-    monkeypatch.setattr(CAPABILITY_SCRIPT, "load_legacy_capability_scenes", lambda _path: scenes)
+    monkeypatch.setattr(
+        CAPABILITY_SCRIPT, "select_legacy_capability_scenes", lambda _path: selection
+    )
     monkeypatch.setattr(
         CAPABILITY_SCRIPT, "load_pinned_qwen", lambda **_kwargs: (object(), object())
     )
@@ -551,7 +580,7 @@ def test_capability_chain_cli_executes_frozen_contract(monkeypatch, tmp_path, ca
     monkeypatch.setattr(
         CAPABILITY_SCRIPT,
         "execute_capability_calls",
-        lambda *_args, progress, **_kwargs: (progress(3480, 3480), records)[1],
+        lambda *_args, progress, **_kwargs: (progress(3474, 3474), records)[1],
     )
     monkeypatch.setattr(
         CAPABILITY_SCRIPT,
@@ -574,8 +603,11 @@ def test_capability_chain_cli_executes_frozen_contract(monkeypatch, tmp_path, ca
     assert result == 0
     assert written["path"] == output_dir
     assert written["gaps"]["subjective_success_threshold_applied"] is False
-    assert written["gaps"]["model_calls"] == 3480
-    assert "PROGRESS: 3480/3480" in capsys.readouterr().out
+    assert written["gaps"]["source_eligible_scenes"] == 580
+    assert written["gaps"]["world_recoverable_scenes"] == 579
+    assert written["gaps"]["excluded_scenes"][0]["reason"] == "ambiguous_world"
+    assert written["gaps"]["model_calls"] == 3474
+    assert "PROGRESS: 3474/3474" in capsys.readouterr().out
 
 
 def test_capability_chain_cli_is_inert_without_execute(monkeypatch, capsys) -> None:
