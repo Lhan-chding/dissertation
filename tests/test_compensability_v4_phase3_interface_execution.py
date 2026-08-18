@@ -93,6 +93,8 @@ def _records(
         output = TRUTH if scene_index % 2 == 0 else OBSERVED
         for condition in CONDITIONS:
             for interface in INTERFACES:
+                if interface is Interface.I1_SOFT_REPORT and condition is not CueCondition.NO_CUE:
+                    continue
                 i4_token_diagnostic = (
                     interface is Interface.I4_EXACT_CACHE
                     and condition is CueCondition.NO_CUE
@@ -164,18 +166,36 @@ def test_s6_requires_579_scenes_four_cues_five_interfaces_and_separates_i4_diagn
         expected_source_sha256=SOURCE_SHA256,
     )
 
-    assert len(frozen) == 579 * 4 * 5
+    assert len(frozen) == 579 * 17
     assert len({row.call_id for row in frozen}) == len(frozen)
     assert len({row.scene_id for row in frozen}) == 579
     assert Counter(row.interface for row in frozen) == Counter(
-        {interface: 579 * 4 for interface in INTERFACES}
+        {
+            Interface.I0_HARD_TEXT: 579 * 4,
+            Interface.I1_SOFT_REPORT: 579,
+            Interface.I2_CANDIDATE_WORLD: 579 * 4,
+            Interface.I3_SAME_CONVERSATION: 579 * 4,
+            Interface.I4_EXACT_CACHE: 579 * 4,
+        }
     )
     assert Counter(row.condition for row in frozen) == Counter(
-        {condition: 579 * 5 for condition in CONDITIONS}
+        {
+            CueCondition.NO_CUE: 579 * 5,
+            CueCondition.VALID_CUE: 579 * 4,
+            CueCondition.SHAM_CUE: 579 * 4,
+            CueCondition.COUNTERFACTUAL_CUE: 579 * 4,
+        }
     )
     assert Counter(row.family for row in frozen) == Counter(
-        {"cross_series": 208 * 20, "duplicate_encoding": 182 * 20, "trend": 189 * 20}
+        {"cross_series": 208 * 17, "duplicate_encoding": 182 * 17, "trend": 189 * 17}
     )
+    by_scene = {
+        scene_id: tuple(row for row in frozen if row.scene_id == scene_id)
+        for scene_id in {row.scene_id for row in frozen}
+    }
+    assert all(len(rows) == 17 for rows in by_scene.values())
+    assert all({row.interface for row in rows} == set(INTERFACES) for rows in by_scene.values())
+    assert all({row.condition for row in rows} == set(CONDITIONS) for rows in by_scene.values())
     i4 = tuple(row for row in frozen if row.interface is Interface.I4_EXACT_CACHE)
     assert sum(row.primary_eligible for row in i4) == 579 * 4 - 33
     assert sum(row.diagnostic_reason == "token_divergence" for row in i4) == 33
@@ -232,12 +252,12 @@ def test_s6_summary_uses_only_complete_scene_pairs_and_reports_objective_strata(
     assert summary["schema_version"] == 1
     assert summary["status"] == "PHASE_3_INTERFACE_LADDER_EXECUTED_WITH_DIAGNOSTICS"
     assert summary["number_of_source_scenes"] == 2
-    assert summary["number_of_cells"] == 40
+    assert summary["number_of_cells"] == 34
     assert summary["primary_paired_scene_count"] == 1
     assert summary["excluded_primary_scene_ids"] == ["scene-001"]
     assert summary["i4_exact_eligible_call_count"] == 7
     assert summary["i4_token_diagnostic_call_count"] == 1
-    assert summary["intervention_diagnostic_cell_count"] == 16
+    assert summary["intervention_diagnostic_cell_count"] == 10
     assert summary["primary_analysis_cell_count"] == 12
     assert summary["diagnostic_call_ids"] == [
         "scene-001.no_cue.I4_exact_cached_natural_continuation"
@@ -278,6 +298,31 @@ def test_s6_validation_fails_closed_on_missing_cells_hash_or_structural_drift():
     with pytest.raises(RuntimeError, match=r"complete|missing"):
         subject.validate_interface_ladder_records(
             rows[:-1],
+            expected_scenes=1,
+            expected_conditions=4,
+            expected_interfaces=5,
+            expected_source_sha256=SOURCE_SHA256,
+        )
+    i1 = next(row for row in rows if row.interface is Interface.I1_SOFT_REPORT)
+    without_i1 = tuple(row for row in rows if row.call_id != i1.call_id)
+    with pytest.raises(RuntimeError, match=r"I1|soft.report|no.cue|complete|missing"):
+        subject.validate_interface_ladder_records(
+            without_i1,
+            expected_scenes=1,
+            expected_conditions=4,
+            expected_interfaces=5,
+            expected_source_sha256=SOURCE_SHA256,
+        )
+    with pytest.raises(RuntimeError, match=r"I1|soft.report|no.cue|cell"):
+        subject.validate_interface_ladder_records(
+            (
+                *rows,
+                replace(
+                    i1,
+                    call_id=i1.call_id.replace("no_cue", "valid_cue"),
+                    condition=CueCondition.VALID_CUE,
+                ),
+            ),
             expected_scenes=1,
             expected_conditions=4,
             expected_interfaces=5,
@@ -325,7 +370,6 @@ def test_s6_validation_fails_closed_on_missing_cells_hash_or_structural_drift():
             expected_interfaces=5,
             expected_source_sha256=SOURCE_SHA256,
         )
-    i1 = next(row for row in rows if row.interface is Interface.I1_SOFT_REPORT)
     with pytest.raises(RuntimeError, match=r"diagnostic|top-k|payload"):
         subject.validate_interface_ladder_records(
             (
@@ -372,7 +416,7 @@ def test_s6_writes_per_scene_and_summary_without_overwrite(tmp_path: Path):
     )
 
     payloads = [json.loads(line) for line in per_scene.read_text().splitlines()]
-    assert len(payloads) == 20
+    assert len(payloads) == 17
     persisted_i1 = next(
         row
         for row in payloads
@@ -428,6 +472,7 @@ def test_06_entrypoint_delegates_to_real_hash_bound_execution(monkeypatch):
     assert captured["expected_scenes"] == 579
     assert captured["expected_conditions"] == 4
     assert captured["expected_interfaces"] == 5
+    assert captured["expected_cells_per_scene"] == 17
     assert captured["required_sources"] == (
         "screen",
         "capability_per_scene",
