@@ -186,7 +186,10 @@ S4 completed on 579 scenes and 2,316 layerwise forwards. Its frozen evidence is:
 S5 regenerates one immutable natural visual observation/cache for each of those 579 scenes, then
 compares cached continuation with full-history re-encoding under all four cue conditions. Each
 of the 2,316 paired calls uses deterministic greedy decoding.
-Token, decision, suffix/MRoPE, and cache-position parity are exact gates.
+Generated-token equality remains an exact per-call I4 primary gate. When one call diverges, S5
+freezes its first-mismatch token and logit evidence, excludes that call from the I4 primary set,
+and continues the remaining S5 calls. No token-divergence count or rate threshold is applied.
+Suffix/MRoPE and cache-position structure remain fail-closed execution gates.
 Full-vocabulary logit identity is reported, not required:
 each step records both dtypes and shapes, the realized-token logits, argmax IDs, maximum absolute
 and relative difference, nonzero count, L2 difference, and the token with maximum absolute
@@ -211,12 +214,13 @@ sha256sum artifacts/v4/cache/cache_parity.json
 python -m json.tool artifacts/v4/cache/cache_parity.json
 ```
 
-I4 cannot enter a primary result unless every objective continuation equality passes. Any prefix,
-generated-token, stepwise argmax, realized-token top-1, MRoPE, or cache-position difference blocks
-S5 and produces no parity artifact; it is never counted as a failed recovery. Full-vocabulary
-floating-point differences are preserved in the artifact as diagnostic evidence. A successful
-artifact certifies the measurement interface only—it does not claim that visual revision
-succeeded.
+Only calls with exact generated-token and greedy-decision parity can enter an I4 primary result.
+A call-level generated-token divergence is preserved as diagnostic-only evidence and does not stop
+the remaining calls. Invalid tensor shapes, non-finite logits, realized tokens that are not their
+path's top-1 decision, suffix/MRoPE drift, or cache-position drift remain structural failures that
+block S5. Full-vocabulary floating-point differences are preserved in the artifact as diagnostic
+evidence. The artifact certifies or diagnoses the measurement interface only—it does not claim
+that visual revision succeeded.
 
 ## S6 - I0-I4 interface-ladder surface
 

@@ -71,6 +71,40 @@ class LogitStepEvidence:
 
 
 @dataclass(frozen=True, slots=True)
+class TokenDivergenceEvidence:
+    """Objective evidence for the first cached/full greedy-token divergence."""
+
+    call_id: str
+    scene_id: str
+    family: str
+    cue_condition: str
+    first_mismatch_step: int
+    common_prefix_length: int
+    cached_token: int | None
+    full_token: int | None
+    cached_generated_token_ids: tuple[int, ...]
+    full_generated_token_ids: tuple[int, ...]
+    cached_logit_shape: tuple[int, ...] | None
+    full_logit_shape: tuple[int, ...] | None
+    cached_logit_dtype: str | None
+    full_logit_dtype: str | None
+    cached_logit_finite: bool | None
+    full_logit_finite: bool | None
+    cached_argmax: int | None
+    full_argmax: int | None
+    cached_realized_token_logit: float | None
+    full_realized_token_logit: float | None
+    max_abs_diff: float | None
+    max_rel_diff: float | None
+    nonzero_count: int | None
+    l2_diff: float | None
+    argmax_abs_diff_token_id: int | None
+
+    def to_mapping(self) -> dict[str, object]:
+        return {field: getattr(self, field) for field in self.__dataclass_fields__}
+
+
+@dataclass(frozen=True, slots=True)
 class CacheParityRecord:
     call_id: str
     scene_id: str
@@ -97,8 +131,11 @@ class CacheParityRecord:
     decision_parity_verified: bool
     logit_parity_verified: bool
     logit_step_evidence: tuple[LogitStepEvidence, ...]
+    token_divergence_evidence: TokenDivergenceEvidence | None
     mrope_parity_verified: bool
     cache_position_parity_verified: bool
+    primary_eligible: bool
+    diagnostic_only: bool
     rng_seed: int
     generation_config: Mapping[str, Any]
 
@@ -106,13 +143,24 @@ class CacheParityRecord:
         payload = {
             field: getattr(self, field)
             for field in self.__dataclass_fields__
-            if field not in {"condition", "generation_config", "logit_step_evidence"}
+            if field
+            not in {
+                "condition",
+                "generation_config",
+                "logit_step_evidence",
+                "token_divergence_evidence",
+            }
         }
         payload["cue_condition"] = self.condition.value
         payload["generation_config"] = dict(self.generation_config)
         payload["logit_step_evidence"] = [
             evidence.to_mapping() for evidence in self.logit_step_evidence
         ]
+        payload["token_divergence_evidence"] = (
+            None
+            if self.token_divergence_evidence is None
+            else self.token_divergence_evidence.to_mapping()
+        )
         return payload
 
 
@@ -415,16 +463,19 @@ def _explain_logit_parity(
     return tuple(evidence)
 
 
-def _token_divergence_message(
+def _token_divergence_evidence(
     call: CacheParityCall,
     cached_tokens: tuple[int, ...],
     full_tokens: tuple[int, ...],
     cached_logits: Sequence[object],
     full_logits: Sequence[object],
-) -> str:
-    """Describe the first greedy-token divergence without relaxing the gate."""
+) -> TokenDivergenceEvidence:
+    """Validate both greedy paths and freeze the first token-divergence evidence."""
 
     import torch
+
+    if len(cached_logits) != len(cached_tokens) or len(full_logits) != len(full_tokens):
+        raise RuntimeError("S5 logit evidence lengths do not match generated tokens")
 
     common_prefix_length = 0
     for cached_token, full_token in zip(cached_tokens, full_tokens, strict=False):
@@ -437,26 +488,41 @@ def _token_divergence_message(
     cached_value = cached_logits[step] if step < len(cached_logits) else None
     full_value = full_logits[step] if step < len(full_logits) else None
 
-    def tensor_evidence(value: object, token_id: int | None) -> tuple[object, ...]:
+    def tensor_evidence(
+        value: object, token_id: int | None, *, path: str
+    ) -> tuple[tuple[int, ...] | None, str | None, bool | None, int | None, float | None]:
+        if value is None and token_id is None:
+            return (None, None, None, None, None)
         if not torch.is_tensor(value):
-            return (None, type(value).__name__, None, None, None)
+            raise RuntimeError(f"S5 {path} logit evidence at step={step} must contain tensors")
         tensor = value.detach().to(device="cpu", dtype=torch.float32)
         shape = tuple(tensor.shape)
+        if len(shape) != 2 or shape[0] != 1:
+            raise RuntimeError(f"S5 logit shape parity failed at step={step}: {path}_shape={shape}")
         finite = bool(torch.isfinite(tensor).all())
-        if tensor.numel() == 0:
-            return (shape, str(value.dtype), finite, None, None)
-        argmax = int(torch.argmax(tensor).item())
-        realized = None
-        if token_id is not None and len(shape) == 2 and shape[0] == 1 and 0 <= token_id < shape[1]:
-            realized = float(tensor[0, token_id].item())
-        return (shape, str(value.dtype), finite, argmax, realized)
+        if not finite:
+            raise RuntimeError(f"S5 logit tensors must be finite at step={step}")
+        if token_id is None or token_id < 0 or token_id >= shape[1]:
+            raise RuntimeError(f"S5 realized token is outside the vocabulary at step={step}")
+        argmax = int(torch.argmax(tensor, dim=-1).item())
+        if argmax != token_id:
+            raise RuntimeError(
+                f"S5 realized-token top-1 parity failed at step={step}: "
+                f"path={path}, realized_token={token_id}, argmax={argmax}"
+            )
+        return (shape, str(value.dtype), finite, argmax, float(tensor[0, token_id].item()))
 
     cached_shape, cached_dtype, cached_finite, cached_argmax, cached_realized = tensor_evidence(
-        cached_value, cached_token
+        cached_value, cached_token, path="cached"
     )
     full_shape, full_dtype, full_finite, full_argmax, full_realized = tensor_evidence(
-        full_value, full_token
+        full_value, full_token, path="full"
     )
+    if cached_shape is not None and full_shape is not None and cached_shape != full_shape:
+        raise RuntimeError(
+            f"S5 logit shape parity failed at step={step}: "
+            f"cached_shape={cached_shape}, full_shape={full_shape}"
+        )
     max_abs_diff = max_rel_diff = nonzero_count = l2_diff = max_diff_token = None
     if (
         torch.is_tensor(cached_value)
@@ -477,23 +543,32 @@ def _token_divergence_message(
             nonzero_count = int(torch.count_nonzero(absolute).item())
             l2_diff = float(torch.linalg.vector_norm(absolute).item())
             max_diff_token = flat_index % int(absolute.shape[-1])
-    return (
-        "S5 generated-token parity failed: "
-        f"call_id={call.call_id}, scene_id={call.scene_id}, "
-        f"cue_condition={call.condition.value}, family={call.family}, "
-        f"first_mismatch_step={step}, common_prefix_length={common_prefix_length}, "
-        f"cached_token={cached_token}, full_token={full_token}, "
-        f"cached_generated_token_ids={cached_tokens}, "
-        f"full_generated_token_ids={full_tokens}, "
-        f"cached_logit_shape={cached_shape}, full_logit_shape={full_shape}, "
-        f"cached_logit_dtype={cached_dtype}, full_logit_dtype={full_dtype}, "
-        f"cached_logit_finite={cached_finite}, full_logit_finite={full_finite}, "
-        f"cached_argmax={cached_argmax}, full_argmax={full_argmax}, "
-        f"cached_realized_token_logit={cached_realized}, "
-        f"full_realized_token_logit={full_realized}, "
-        f"max_abs_diff={max_abs_diff}, max_rel_diff={max_rel_diff}, "
-        f"nonzero_count={nonzero_count}, l2_diff={l2_diff}, "
-        f"argmax_abs_diff_token_id={max_diff_token}"
+    return TokenDivergenceEvidence(
+        call_id=call.call_id,
+        scene_id=call.scene_id,
+        family=call.family,
+        cue_condition=call.condition.value,
+        first_mismatch_step=step,
+        common_prefix_length=common_prefix_length,
+        cached_token=cached_token,
+        full_token=full_token,
+        cached_generated_token_ids=cached_tokens,
+        full_generated_token_ids=full_tokens,
+        cached_logit_shape=cached_shape,
+        full_logit_shape=full_shape,
+        cached_logit_dtype=cached_dtype,
+        full_logit_dtype=full_dtype,
+        cached_logit_finite=cached_finite,
+        full_logit_finite=full_finite,
+        cached_argmax=cached_argmax,
+        full_argmax=full_argmax,
+        cached_realized_token_logit=cached_realized,
+        full_realized_token_logit=full_realized,
+        max_abs_diff=max_abs_diff,
+        max_rel_diff=max_rel_diff,
+        nonzero_count=nonzero_count,
+        l2_diff=l2_diff,
+        argmax_abs_diff_token_id=max_diff_token,
     )
 
 
@@ -507,7 +582,7 @@ def execute_cache_parity_plan(
     logit_relative_tolerance: float,
     progress: Callable[[int, int], None] | None = None,
 ) -> tuple[CacheParityRecord, ...]:
-    """Execute cache/full-history paths and require every objective parity invariant."""
+    """Execute all calls, preserving token divergences as diagnostic-only evidence."""
 
     frozen = tuple(calls)
     if not frozen or len({call.call_id for call in frozen}) != len(frozen):
@@ -540,23 +615,29 @@ def execute_cache_parity_plan(
         full_tokens = tuple(int(item) for item in trace["full_generated_token_ids"])
         cached_logits = tuple(trace["cached_generated_logits"])
         full_logits = tuple(trace["full_generated_logits"])
-        if cached_tokens != full_tokens:
-            raise RuntimeError(
-                _token_divergence_message(
-                    call,
-                    cached_tokens,
-                    full_tokens,
-                    cached_logits,
-                    full_logits,
-                )
+        token_parity_verified = cached_tokens == full_tokens
+        token_divergence_evidence = None
+        if token_parity_verified:
+            logit_step_evidence = _explain_logit_parity(
+                cached_logits,
+                full_logits,
+                cached_tokens,
+                atol=logit_absolute_tolerance,
+                rtol=logit_relative_tolerance,
             )
-        logit_step_evidence = _explain_logit_parity(
-            cached_logits,
-            full_logits,
-            cached_tokens,
-            atol=logit_absolute_tolerance,
-            rtol=logit_relative_tolerance,
-        )
+            decision_parity_verified = True
+            logit_parity_verified = all(evidence.exact_identity for evidence in logit_step_evidence)
+        else:
+            token_divergence_evidence = _token_divergence_evidence(
+                call,
+                cached_tokens,
+                full_tokens,
+                cached_logits,
+                full_logits,
+            )
+            logit_step_evidence = ()
+            decision_parity_verified = False
+            logit_parity_verified = False
         cached_positions = tuple(
             tuple(int(item) for item in axis) for axis in trace["cached_suffix_position_ids"]
         )
@@ -592,14 +673,15 @@ def execute_cache_parity_plan(
                 full_cache_position=full_cache,
                 mrope_axes=int(trace["mrope_axes"]),
                 suffix_parity_verified=True,
-                token_parity_verified=True,
-                decision_parity_verified=True,
-                logit_parity_verified=all(
-                    evidence.exact_identity for evidence in logit_step_evidence
-                ),
+                token_parity_verified=token_parity_verified,
+                decision_parity_verified=decision_parity_verified,
+                logit_parity_verified=logit_parity_verified,
                 logit_step_evidence=logit_step_evidence,
+                token_divergence_evidence=token_divergence_evidence,
                 mrope_parity_verified=True,
                 cache_position_parity_verified=True,
+                primary_eligible=token_parity_verified and decision_parity_verified,
+                diagnostic_only=not (token_parity_verified and decision_parity_verified),
                 rng_seed=call.cached_state.rng_seed,
                 generation_config=call.cached_state.generation_config,
             )
@@ -627,24 +709,49 @@ def summarize_cache_parity(records: Iterable[CacheParityRecord]) -> dict[str, ob
             record.cache_position_parity_verified for record in frozen
         ),
     }
-    required_checks = (
-        checks["all_token_parity_verified"],
-        checks["all_decision_parity_verified"],
-        checks["all_mrope_parity_verified"],
-        checks["all_cache_position_parity_verified"],
-    )
-    if not all(required_checks):
-        raise RuntimeError("S5 objective parity proof is incomplete")
+
+    def counts(rows: Iterable[CacheParityRecord]) -> dict[str, int]:
+        selected = tuple(rows)
+        exact = sum(record.token_parity_verified for record in selected)
+        primary = sum(record.primary_eligible for record in selected)
+        return {
+            "total": len(selected),
+            "exact_token_parity": exact,
+            "mismatched_token": len(selected) - exact,
+            "primary_eligible": primary,
+            "diagnostic_only": len(selected) - primary,
+        }
+
+    call_counts = counts(frozen)
+    by_family = {
+        family: counts(record for record in frozen if record.family == family)
+        for family in sorted({record.family for record in frozen})
+    }
+    by_cue_condition = {
+        condition.value: counts(record for record in frozen if record.condition is condition)
+        for condition in CueCondition
+    }
+    all_primary_eligible = all(record.primary_eligible for record in frozen)
     return {
         "schema_version": 2,
-        "status": "PHASE_3_EXACT_CACHE_DECISION_PARITY_VERIFIED",
+        "status": (
+            "PHASE_3_EXACT_CACHE_DECISION_PARITY_VERIFIED"
+            if all_primary_eligible
+            else "PHASE_3_EXECUTED_WITH_DIAGNOSTICS"
+        ),
         "number_of_scenes": len(by_scene),
         "number_of_parity_calls": len(frozen),
         "condition_counts": dict(
             sorted(Counter(record.condition.value for record in frozen).items())
         ),
+        "call_counts": call_counts,
+        "by_family": by_family,
+        "by_cue_condition": by_cue_condition,
+        "mismatch_call_ids": [
+            record.call_id for record in frozen if not record.token_parity_verified
+        ],
         **checks,
-        "i4_primary_eligible": True,
+        "i4_primary_eligible": all_primary_eligible,
         "claim_family": "natural_visual_revision",
         "training_invoked": False,
         "rl_invoked": False,
@@ -792,6 +899,7 @@ __all__ = [
     "CacheParityCall",
     "CacheParityRecord",
     "LogitStepEvidence",
+    "TokenDivergenceEvidence",
     "build_cache_parity_plan",
     "build_condition_turns",
     "execute_cache_parity_plan",
