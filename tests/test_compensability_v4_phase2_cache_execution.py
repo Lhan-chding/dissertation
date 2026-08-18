@@ -6,7 +6,7 @@ import importlib.util
 import json
 import sys
 from collections import Counter
-from dataclasses import FrozenInstanceError, is_dataclass
+from dataclasses import FrozenInstanceError, is_dataclass, replace
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -248,9 +248,7 @@ def test_cache_execution_requires_exact_token_decision_mrope_and_cache_position_
     assert all(record.claim_family == "natural_visual_revision" for record in records)
 
 
-@pytest.mark.parametrize(
-    "drift", ("token", "argmax", "realized_not_top1", "mrope", "cache_position")
-)
+@pytest.mark.parametrize("drift", ("argmax", "realized_not_top1", "mrope", "cache_position"))
 def test_cache_execution_fails_closed_on_any_parity_drift(drift: str) -> None:
     plan = build_cache_parity_plan(
         (_state(0),),
@@ -269,8 +267,155 @@ def test_cache_execution_fails_closed_on_any_parity_drift(drift: str) -> None:
         )
 
 
-def test_s5_token_divergence_reports_call_step_tokens_and_logit_evidence() -> None:
+def test_s5_token_divergence_is_immutable_diagnostic_and_does_not_stop_later_calls(
+    tmp_path: Path,
+) -> None:
     class TokenDivergenceModel(_ParityModel):
+        def compare_cache_and_full_history(self, call, processor, *, max_new_tokens):
+            trace = super().compare_cache_and_full_history(
+                call,
+                processor,
+                max_new_tokens=max_new_tokens,
+            )
+            if call.condition is not CueCondition.NO_CUE:
+                return trace
+            return {
+                **trace,
+                "full_generated_token_ids": (1, 2),
+                "full_generated_logits": (
+                    torch.tensor([[1.0, 4.0, 2.0]], dtype=torch.bfloat16),
+                    torch.tensor([[2.0, 4.0, 6.0]], dtype=torch.float32),
+                ),
+            }
+
+    calls = tuple(
+        replace(call, family="trend")
+        for call in build_cache_parity_plan(
+            (_state(0),),
+            condition_turns=_turns(1),
+            expected_scenes=1,
+        )
+    )
+    model = TokenDivergenceModel()
+    progress: list[tuple[int, int]] = []
+
+    records = execute_cache_parity_plan(
+        model,
+        PROCESSOR,
+        calls,
+        max_new_tokens=4,
+        logit_absolute_tolerance=0.0,
+        logit_relative_tolerance=0.0,
+        progress=lambda completed, total: progress.append((completed, total)),
+    )
+
+    assert len(records) == 4
+    assert model.calls == 4
+    assert progress == [(1, 4), (2, 4), (3, 4), (4, 4)]
+    assert tuple(record.call_id for record in records) == tuple(call.call_id for call in calls)
+    mismatch = records[0]
+    assert mismatch.condition is CueCondition.NO_CUE
+    assert mismatch.token_parity_verified is False
+    assert mismatch.decision_parity_verified is False
+    assert mismatch.logit_parity_verified is False
+    assert mismatch.primary_eligible is False
+    assert mismatch.diagnostic_only is True
+    with pytest.raises(FrozenInstanceError):
+        mismatch.diagnostic_only = False
+
+    evidence = mismatch.token_divergence_evidence
+    assert evidence is not None
+    assert is_dataclass(evidence)
+    with pytest.raises(FrozenInstanceError):
+        evidence.first_mismatch_step = 0
+    assert evidence.call_id == "scene-000.no_cue"
+    assert evidence.scene_id == "scene-000"
+    assert evidence.family == "trend"
+    assert evidence.cue_condition == "no_cue"
+    assert evidence.first_mismatch_step == 1
+    assert evidence.cached_token == 1
+    assert evidence.full_token == 2
+    assert evidence.common_prefix_length == 1
+    assert evidence.cached_generated_token_ids == (1, 1)
+    assert evidence.full_generated_token_ids == (1, 2)
+    assert evidence.cached_logit_shape == (1, 3)
+    assert evidence.full_logit_shape == (1, 3)
+    assert evidence.cached_logit_dtype == "torch.bfloat16"
+    assert evidence.full_logit_dtype == "torch.float32"
+    assert evidence.cached_argmax == 1
+    assert evidence.full_argmax == 2
+    assert evidence.cached_realized_token_logit == 5.0
+    assert evidence.full_realized_token_logit == 6.0
+    assert evidence.max_abs_diff == 5.0
+    assert evidence.max_rel_diff == pytest.approx(5.0 / 6.0)
+    assert evidence.nonzero_count == 2
+    assert evidence.l2_diff == pytest.approx(26.0**0.5)
+    assert evidence.argmax_abs_diff_token_id == 2
+
+    for record in records[1:]:
+        assert record.token_parity_verified is True
+        assert record.decision_parity_verified is True
+        assert record.primary_eligible is True
+        assert record.diagnostic_only is False
+        assert record.token_divergence_evidence is None
+
+    summary = summarize_cache_parity(records)
+    expected_counts = {
+        "total": 4,
+        "exact_token_parity": 3,
+        "mismatched_token": 1,
+        "primary_eligible": 3,
+        "diagnostic_only": 1,
+    }
+    assert summary["status"] == "PHASE_3_EXECUTED_WITH_DIAGNOSTICS"
+    assert summary["call_counts"] == expected_counts
+    assert summary["by_family"] == {"trend": expected_counts}
+    assert set(summary["by_cue_condition"]) == {condition.value for condition in CueCondition}
+    assert summary["by_cue_condition"]["no_cue"] == {
+        "total": 1,
+        "exact_token_parity": 0,
+        "mismatched_token": 1,
+        "primary_eligible": 0,
+        "diagnostic_only": 1,
+    }
+    assert summary["by_cue_condition"]["valid_cue"] == {
+        "total": 1,
+        "exact_token_parity": 1,
+        "mismatched_token": 0,
+        "primary_eligible": 1,
+        "diagnostic_only": 0,
+    }
+    assert summary["mismatch_call_ids"] == ["scene-000.no_cue"]
+    assert summary["all_token_parity_verified"] is False
+    assert summary["all_decision_parity_verified"] is False
+    assert summary["i4_primary_eligible"] is False
+    assert summary["subjective_success_threshold_applied"] is False
+    assert "allowed_mismatch_rate" not in summary
+    assert "maximum_allowed_mismatches" not in summary
+
+    output = tmp_path / "cache_parity.json"
+    write_cache_parity_outputs(output, records=records, summary=summary)
+    payload = json.loads(output.read_text(encoding="utf-8"))
+    persisted = payload["records"][0]
+    assert persisted["diagnostic_only"] is True
+    assert persisted["primary_eligible"] is False
+    assert persisted["token_divergence_evidence"]["first_mismatch_step"] == 1
+    assert persisted["token_divergence_evidence"]["cached_generated_token_ids"] == [1, 1]
+    assert persisted["token_divergence_evidence"]["full_generated_token_ids"] == [1, 2]
+
+
+@pytest.mark.parametrize(
+    ("divergent_logit", "message"),
+    [
+        (torch.tensor([[2.0], [4.0], [6.0]], dtype=torch.float32), "shape"),
+        (torch.tensor([[2.0, float("nan"), 6.0]], dtype=torch.float32), "finite"),
+    ],
+)
+def test_s5_token_divergence_still_requires_structurally_valid_logit_evidence(
+    divergent_logit: torch.Tensor,
+    message: str,
+) -> None:
+    class MalformedTokenDivergenceModel(_ParityModel):
         def compare_cache_and_full_history(self, call, processor, *, max_new_tokens):
             trace = super().compare_cache_and_full_history(
                 call,
@@ -281,8 +426,8 @@ def test_s5_token_divergence_reports_call_step_tokens_and_logit_evidence() -> No
                 **trace,
                 "full_generated_token_ids": (1, 2),
                 "full_generated_logits": (
-                    torch.tensor([[1.0, 4.0, 2.0]], dtype=torch.float32),
-                    torch.tensor([[2.0, 4.0, 6.0]], dtype=torch.float32),
+                    torch.tensor([[1.0, 4.0, 2.0]], dtype=torch.bfloat16),
+                    divergent_logit,
                 ),
             }
 
@@ -292,40 +437,15 @@ def test_s5_token_divergence_reports_call_step_tokens_and_logit_evidence() -> No
         expected_scenes=1,
     )[0]
 
-    with pytest.raises(RuntimeError) as raised:
+    with pytest.raises(RuntimeError, match=message):
         execute_cache_parity_plan(
-            TokenDivergenceModel(),
+            MalformedTokenDivergenceModel(),
             PROCESSOR,
             (call,),
             max_new_tokens=4,
             logit_absolute_tolerance=0.0,
             logit_relative_tolerance=0.0,
         )
-
-    message = str(raised.value)
-    assert "call_id=scene-000.no_cue" in message
-    assert "scene_id=scene-000" in message
-    assert "cue_condition=no_cue" in message
-    assert "first_mismatch_step=1" in message
-    assert "cached_token=1" in message
-    assert "full_token=2" in message
-    assert "common_prefix_length=1" in message
-    assert "cached_generated_token_ids=(1, 1)" in message
-    assert "full_generated_token_ids=(1, 2)" in message
-    assert "cached_logit_shape=(1, 3)" in message
-    assert "full_logit_shape=(1, 3)" in message
-    assert "cached_logit_dtype=torch.bfloat16" in message
-    assert "full_logit_dtype=torch.float32" in message
-    assert "cached_argmax=1" in message
-    assert "full_argmax=2" in message
-    assert "cached_realized_token_logit=5.0" in message
-    assert "full_realized_token_logit=6.0" in message
-    assert "max_abs_diff=5.0" in message
-    assert "max_rel_diff=" in message
-    assert "nonzero_count=2" in message
-    assert "l2_diff=" in message
-    assert "argmax_abs_diff_token_id=2" in message
-    assert "allowed_divergence" not in message
 
 
 def test_cache_summary_and_output_are_objective_and_no_overwrite(tmp_path: Path) -> None:
