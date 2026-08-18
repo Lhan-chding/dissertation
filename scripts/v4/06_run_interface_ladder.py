@@ -196,12 +196,12 @@ def _build_soft_report_payload(
     parsed = _parse_world(raw)
     if parsed is None:
         raise RuntimeError("S6 Stage-1 output is not a four-integer CSV")
+    emitted_tokens_by_value = _numeric_token_sequences(tokenizer, parsed)
+    numeric_domain_valid = all(value in tokens_by_value for value in parsed)
     positions: list[dict[str, object]] = []
     cursor = 0
     for index, generated_value in enumerate(parsed):
-        expected_tokens = tokens_by_value.get(generated_value)
-        if expected_tokens is None:
-            raise RuntimeError("S6 Stage-1 output lies outside the frozen numeric domain")
+        expected_tokens = emitted_tokens_by_value[generated_value]
         generated_step, next_cursor = _find_token_span(generated, expected_tokens, start=cursor)
         cursor = next_cursor
         step_logits = logits[generated_step]
@@ -241,6 +241,9 @@ def _build_soft_report_payload(
         {
             "top_k": top_k,
             "score_basis": "first_token_logit",
+            "raw_output": raw,
+            "output_format_valid": True,
+            "numeric_domain_valid": numeric_domain_valid,
             "positions": positions,
         },
     )

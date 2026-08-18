@@ -26,7 +26,7 @@ files:
   - path: scripts/v4/05_validate_cache_runner.py
     sha256: 1d3b72dd2616990b691420d485526b23422c036c214537fb53be05a0ec90ef91
   - path: scripts/v4/06_run_interface_ladder.py
-    sha256: 494a6b891ecd7b5baf6b943730aa1e7b24c2ba19c1d93a432982981da0476df1
+    sha256: 7af4c3926f5a04f762ed4b45d8b5c4184ca21d6814d7c2dee4298e1e43abfda1
   - path: scripts/v4/07_build_support_data.py
     sha256: 51063c3db2f07c372de87b2b17025632f11176b4f999a0b9def111953edf0191
   - path: scripts/v4/08_train_phase4_lora.py

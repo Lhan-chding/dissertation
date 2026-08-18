@@ -618,3 +618,36 @@ def test_s6_soft_report_preserves_multi_token_numeric_literals_without_truncatio
         {"value": 10, "relative_logit": 0.0, "token_ids": [10, 91]},
         {"value": 14, "relative_logit": 0.0, "token_ids": [10, 14]},
     ]
+
+
+def test_s6_soft_report_records_domain_escape_as_diagnostic_not_execution_failure():
+    module = _load_script(
+        Path(__file__).resolve().parents[1] / "scripts/v4/06_run_interface_ladder.py"
+    )
+
+    class Tokenizer:
+        @staticmethod
+        def encode(value, *, add_special_tokens):
+            assert add_special_tokens is False
+            table = {"2": 2, "3": 3, "4": 4, "1": 1, "9": 9, ",": 30}
+            return [table[character] for character in value]
+
+        @staticmethod
+        def decode(token_ids, *, skip_special_tokens):
+            assert skip_special_tokens is True
+            table = {2: "2", 3: "3", 4: "4", 1: "1", 9: "9", 30: ","}
+            return "".join(table[token_id] for token_id in token_ids)
+
+    raw, parsed, payload = module._build_soft_report_payload(
+        Tokenizer(),
+        generated_token_ids=(2, 30, 1, 30, 9, 30, 3),
+        generated_logits=tuple(torch.zeros((1, 32)) for _ in range(7)),
+        value_domain=(2, 3, 4),
+        top_k=2,
+    )
+
+    assert raw == "2,1,9,3"
+    assert parsed == (2, 1, 9, 3)
+    assert payload["output_format_valid"] is True
+    assert payload["numeric_domain_valid"] is False
+    assert len(payload["positions"]) == 4

@@ -271,6 +271,16 @@ valid_minus_sham_margin =
 | 首次阻断后服务器重跑 | 本报告生成时未记录 |
 | S6 `per_scene.jsonl` / `summary.json` | 本报告生成时仍不存在 |
 
+### S6 第二次服务器执行记录
+
+| 字段 | 记录 |
+| --- | --- |
+| 已完成场景数 | 25 / 579 |
+| 已完成模型加载 | `Loading weights: 824/824` |
+| 阻断消息 | `BLOCKED: S6 Stage-1 output lies outside the frozen numeric domain` |
+| 输出 artifacts | 未生成 `artifacts/v4/interface_ladder/per_scene.jsonl`；未生成 `artifacts/v4/interface_ladder/summary.json` |
+| 阻断后的代码修订 | I1 payload 保留 `raw_output`、`output_format_valid=true` 和 `numeric_domain_valid=false`；域外数值作为 I1 diagnostic 记录，不再终止 S6 |
+
 ### 首次 S6 服务器运行记录
 
 | 字段 | 值 |
