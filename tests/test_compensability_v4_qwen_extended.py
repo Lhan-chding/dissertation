@@ -752,6 +752,7 @@ def test_visual_observation_capture_uses_fake_vision_runtime(monkeypatch) -> Non
         past_key_values="cache",
         generation_config={"do_sample": False},
         rng_seed=7,
+        generated_logits=(torch.tensor([[0.0, 1.0]]),),
     )
     monkeypatch.setattr(generation, "manual_greedy_generate", lambda *_args, **_kwargs: fake_result)
     model = SimpleNamespace(device=torch.device("cpu"), config=SimpleNamespace(image_token_id=50))
@@ -768,6 +769,7 @@ def test_visual_observation_capture_uses_fake_vision_runtime(monkeypatch) -> Non
     )
 
     assert result["text"] == "decoded:9"
+    assert result["generated_logits"] == fake_result.generated_logits
     assert result["state"].image_grid_thw == (1, 2, 3)  # type: ignore[union-attr]
     assert result["state"].image_token_positions == (0,)  # type: ignore[union-attr]
     assert processor.batch.moved is True

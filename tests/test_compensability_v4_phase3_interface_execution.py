@@ -11,6 +11,7 @@ from dataclasses import FrozenInstanceError, replace
 from pathlib import Path
 
 import pytest
+import torch
 
 from compensability_v4.diagnostics.interface_ladder import CueCondition, Interface
 
@@ -515,3 +516,79 @@ def test_06_entrypoint_delegates_to_real_hash_bound_execution(monkeypatch):
         "per_scene": "artifacts/v4/interface_ladder/per_scene.jsonl",
         "summary": "artifacts/v4/interface_ladder/summary.json",
     }
+
+
+def test_s6_soft_report_uses_stage1_numeric_logits_at_each_csv_position():
+    module = _load_script(
+        Path(__file__).resolve().parents[1] / "scripts/v4/06_run_interface_ladder.py"
+    )
+
+    class Tokenizer:
+        @staticmethod
+        def encode(value, *, add_special_tokens):
+            assert add_special_tokens is False
+            return [int(value)] if value.isdigit() else [99]
+
+        @staticmethod
+        def decode(token_ids, *, skip_special_tokens):
+            assert skip_special_tokens is True
+            table = {5: "5", 6: "6", 10: "10", 14: "14", 99: ","}
+            return "".join(table[token_id] for token_id in token_ids)
+
+    generated = (5, 99, 14, 99, 10, 99, 10)
+    numeric_scores = (
+        {5: 4.0, 6: 3.0, 10: 1.0, 14: 0.0},
+        {5: 0.0, 6: 1.0, 10: 3.0, 14: 4.0},
+        {5: 0.0, 6: 1.0, 10: 4.0, 14: 3.0},
+        {5: 0.0, 6: 2.0, 10: 4.0, 14: 3.0},
+    )
+    generated_logits = []
+    numeric_step = 0
+    for token_id in generated:
+        logits = torch.full((1, 120), -100.0)
+        if token_id != 99:
+            for candidate, score in numeric_scores[numeric_step].items():
+                logits[0, candidate] = score
+            numeric_step += 1
+        generated_logits.append(logits)
+
+    raw, parsed, payload = module._build_soft_report_payload(
+        Tokenizer(),
+        generated_token_ids=generated,
+        generated_logits=tuple(generated_logits),
+        value_domain=(5, 6, 10, 14),
+        top_k=2,
+    )
+
+    assert raw == "5,14,10,10"
+    assert parsed == (5, 14, 10, 10)
+    assert payload["top_k"] == 2
+    assert [row["generated_step"] for row in payload["positions"]] == [0, 2, 4, 6]
+    assert [row["candidates"][0]["value"] for row in payload["positions"]] == [5, 14, 10, 10]
+    assert all(row["candidates"][0]["relative_logit"] == 0.0 for row in payload["positions"])
+
+
+def test_s6_soft_report_fails_closed_when_numeric_values_are_not_single_tokens():
+    module = _load_script(
+        Path(__file__).resolve().parents[1] / "scripts/v4/06_run_interface_ladder.py"
+    )
+
+    class Tokenizer:
+        @staticmethod
+        def encode(value, *, add_special_tokens):
+            assert add_special_tokens is False
+            return [1, 2] if value == "14" else [int(value)]
+
+        @staticmethod
+        def decode(_token_ids, *, skip_special_tokens):
+            assert skip_special_tokens is True
+            return "5,14,10,10"
+
+    with pytest.raises(RuntimeError, match=r"single.token|numeric"):
+        module._build_soft_report_payload(
+            Tokenizer(),
+            generated_token_ids=(5, 14, 10, 10),
+            generated_logits=tuple(torch.zeros((1, 32)) for _ in range(4)),
+            value_domain=(5, 6, 10, 14),
+            top_k=2,
+        )
