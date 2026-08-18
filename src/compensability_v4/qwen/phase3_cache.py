@@ -415,6 +415,88 @@ def _explain_logit_parity(
     return tuple(evidence)
 
 
+def _token_divergence_message(
+    call: CacheParityCall,
+    cached_tokens: tuple[int, ...],
+    full_tokens: tuple[int, ...],
+    cached_logits: Sequence[object],
+    full_logits: Sequence[object],
+) -> str:
+    """Describe the first greedy-token divergence without relaxing the gate."""
+
+    import torch
+
+    common_prefix_length = 0
+    for cached_token, full_token in zip(cached_tokens, full_tokens, strict=False):
+        if cached_token != full_token:
+            break
+        common_prefix_length += 1
+    step = common_prefix_length
+    cached_token = cached_tokens[step] if step < len(cached_tokens) else None
+    full_token = full_tokens[step] if step < len(full_tokens) else None
+    cached_value = cached_logits[step] if step < len(cached_logits) else None
+    full_value = full_logits[step] if step < len(full_logits) else None
+
+    def tensor_evidence(value: object, token_id: int | None) -> tuple[object, ...]:
+        if not torch.is_tensor(value):
+            return (None, type(value).__name__, None, None, None)
+        tensor = value.detach().to(device="cpu", dtype=torch.float32)
+        shape = tuple(tensor.shape)
+        finite = bool(torch.isfinite(tensor).all())
+        if tensor.numel() == 0:
+            return (shape, str(value.dtype), finite, None, None)
+        argmax = int(torch.argmax(tensor).item())
+        realized = None
+        if token_id is not None and len(shape) == 2 and shape[0] == 1 and 0 <= token_id < shape[1]:
+            realized = float(tensor[0, token_id].item())
+        return (shape, str(value.dtype), finite, argmax, realized)
+
+    cached_shape, cached_dtype, cached_finite, cached_argmax, cached_realized = tensor_evidence(
+        cached_value, cached_token
+    )
+    full_shape, full_dtype, full_finite, full_argmax, full_realized = tensor_evidence(
+        full_value, full_token
+    )
+    max_abs_diff = max_rel_diff = nonzero_count = l2_diff = max_diff_token = None
+    if (
+        torch.is_tensor(cached_value)
+        and torch.is_tensor(full_value)
+        and cached_shape == full_shape
+        and cached_finite
+        and full_finite
+    ):
+        cached_tensor = cached_value.detach().to(device="cpu", dtype=torch.float32)
+        full_tensor = full_value.detach().to(device="cpu", dtype=torch.float32)
+        absolute = torch.abs(cached_tensor - full_tensor)
+        scale = torch.maximum(torch.abs(cached_tensor), torch.abs(full_tensor))
+        relative = torch.where(scale > 0, absolute / scale, torch.zeros_like(absolute))
+        if absolute.numel():
+            flat_index = int(torch.argmax(absolute).item())
+            max_abs_diff = float(torch.max(absolute).item())
+            max_rel_diff = float(torch.max(relative).item())
+            nonzero_count = int(torch.count_nonzero(absolute).item())
+            l2_diff = float(torch.linalg.vector_norm(absolute).item())
+            max_diff_token = flat_index % int(absolute.shape[-1])
+    return (
+        "S5 generated-token parity failed: "
+        f"call_id={call.call_id}, scene_id={call.scene_id}, "
+        f"cue_condition={call.condition.value}, family={call.family}, "
+        f"first_mismatch_step={step}, common_prefix_length={common_prefix_length}, "
+        f"cached_token={cached_token}, full_token={full_token}, "
+        f"cached_generated_token_ids={cached_tokens}, "
+        f"full_generated_token_ids={full_tokens}, "
+        f"cached_logit_shape={cached_shape}, full_logit_shape={full_shape}, "
+        f"cached_logit_dtype={cached_dtype}, full_logit_dtype={full_dtype}, "
+        f"cached_logit_finite={cached_finite}, full_logit_finite={full_finite}, "
+        f"cached_argmax={cached_argmax}, full_argmax={full_argmax}, "
+        f"cached_realized_token_logit={cached_realized}, "
+        f"full_realized_token_logit={full_realized}, "
+        f"max_abs_diff={max_abs_diff}, max_rel_diff={max_rel_diff}, "
+        f"nonzero_count={nonzero_count}, l2_diff={l2_diff}, "
+        f"argmax_abs_diff_token_id={max_diff_token}"
+    )
+
+
 def execute_cache_parity_plan(
     model: object,
     processor: object,
@@ -456,10 +538,18 @@ def execute_cache_parity_plan(
             raise RuntimeError("S5 exact suffix parity failed")
         cached_tokens = tuple(int(item) for item in trace["cached_generated_token_ids"])
         full_tokens = tuple(int(item) for item in trace["full_generated_token_ids"])
-        if cached_tokens != full_tokens:
-            raise RuntimeError("S5 generated-token parity failed")
         cached_logits = tuple(trace["cached_generated_logits"])
         full_logits = tuple(trace["full_generated_logits"])
+        if cached_tokens != full_tokens:
+            raise RuntimeError(
+                _token_divergence_message(
+                    call,
+                    cached_tokens,
+                    full_tokens,
+                    cached_logits,
+                    full_logits,
+                )
+            )
         logit_step_evidence = _explain_logit_parity(
             cached_logits,
             full_logits,
