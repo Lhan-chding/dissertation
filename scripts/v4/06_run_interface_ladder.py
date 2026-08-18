@@ -107,6 +107,65 @@ def _jsonl(path: Path) -> tuple[dict[str, object], ...]:
     return rows
 
 
+def _numeric_token_sequences(
+    tokenizer: object, value_domain: Sequence[int]
+) -> dict[int, tuple[int, ...]]:
+    """Return lossless tokenizer renderings for the frozen numeric domain.
+
+    Qwen's BPE represents some integers (for example, two-digit values) with
+    more than one token.  The S6 diagnostic records the *first-token logit*
+    for every complete numeric rendering, rather than silently selecting a
+    digit token and calling it a score for the whole integer.
+    """
+
+    encode, decode = getattr(tokenizer, "encode", None), getattr(tokenizer, "decode", None)
+    if not callable(encode) or not callable(decode):
+        raise TypeError("S6 tokenizer must expose encode() and decode()")
+    sequences: dict[int, tuple[int, ...]] = {}
+    for value in value_domain:
+        rendered = str(value)
+        encoded = encode(rendered, add_special_tokens=False)
+        if isinstance(encoded, (str, bytes)) or not isinstance(encoded, Sequence) or not encoded:
+            raise RuntimeError("S6 numeric value has no stable tokenizer rendering")
+        try:
+            token_ids = tuple(int(token_id) for token_id in encoded)
+            decoded = decode(token_ids, skip_special_tokens=True)
+        except (TypeError, ValueError) as error:
+            raise RuntimeError("S6 numeric value tokenizer rendering is malformed") from error
+        if decoded != rendered:
+            raise RuntimeError("S6 numeric value tokenizer rendering does not round-trip")
+        sequences[value] = token_ids
+    if len(set(sequences.values())) != len(sequences):
+        raise RuntimeError("S6 numeric tokenizer renderings are not unique")
+    return sequences
+
+
+def _find_token_span(
+    generated: Sequence[int], expected: Sequence[int], *, start: int
+) -> tuple[int, int]:
+    """Locate the next complete tokenizer rendering without truncating it."""
+
+    if not expected:
+        raise RuntimeError("S6 numeric tokenizer rendering is empty")
+    width = len(expected)
+    for index in range(start, len(generated) - width + 1):
+        if tuple(generated[index : index + width]) == tuple(expected):
+            return index, index + width
+    raise RuntimeError("S6 could not align a complete Stage-1 numeric rendering to its logits")
+
+
+def _preflight_soft_report_tokenization(
+    tokenizer: object, value_domains: Sequence[Sequence[int]]
+) -> None:
+    """Fail before scene inference when a frozen numeric domain cannot be audited."""
+
+    domains = {tuple(int(value) for value in domain) for domain in value_domains}
+    if not domains:
+        raise RuntimeError("S6 tokenizer preflight has no numeric domain")
+    for domain in sorted(domains):
+        _numeric_token_sequences(tokenizer, domain)
+
+
 def _build_soft_report_payload(
     tokenizer: object,
     *,
@@ -127,14 +186,7 @@ def _build_soft_report_payload(
         or not 0 < top_k <= len(domain)
     ):
         raise ValueError("S6 numeric value domain/top-k contract is invalid")
-    token_by_value: dict[int, int] = {}
-    for value in domain:
-        encoded = encode(str(value), add_special_tokens=False)
-        if not isinstance(encoded, Sequence) or len(encoded) != 1:
-            raise RuntimeError("S6 numeric values must each be a stable single token")
-        token_by_value[value] = int(encoded[0])
-    if len(set(token_by_value.values())) != len(domain):
-        raise RuntimeError("S6 numeric single-token mapping is not unique")
+    tokens_by_value = _numeric_token_sequences(tokenizer, domain)
 
     generated = tuple(int(token_id) for token_id in generated_token_ids)
     logits = tuple(generated_logits)
@@ -147,25 +199,20 @@ def _build_soft_report_payload(
     positions: list[dict[str, object]] = []
     cursor = 0
     for index, generated_value in enumerate(parsed):
-        expected_token = token_by_value.get(generated_value)
-        if expected_token is None:
+        expected_tokens = tokens_by_value.get(generated_value)
+        if expected_tokens is None:
             raise RuntimeError("S6 Stage-1 output lies outside the frozen numeric domain")
-        try:
-            generated_step = generated.index(expected_token, cursor)
-        except ValueError as error:
-            raise RuntimeError(
-                "S6 could not align a Stage-1 numeric token to its logits"
-            ) from error
-        cursor = generated_step + 1
+        generated_step, next_cursor = _find_token_span(generated, expected_tokens, start=cursor)
+        cursor = next_cursor
         step_logits = logits[generated_step]
         shape = getattr(step_logits, "shape", None)
         if shape is None or len(shape) not in (1, 2) or (len(shape) == 2 and shape[0] != 1):
             raise RuntimeError("S6 Stage-1 logits have an invalid shape")
         row = step_logits[0] if len(shape) == 2 else step_logits
         scored: list[tuple[int, float]] = []
-        for value, token_id in token_by_value.items():
+        for value, token_ids in tokens_by_value.items():
             try:
-                score = float(row[token_id].item())
+                score = float(row[token_ids[0]].item())
             except (AttributeError, IndexError, TypeError) as error:
                 raise RuntimeError("S6 numeric token is outside the Stage-1 vocabulary") from error
             if not math.isfinite(score):
@@ -177,13 +224,26 @@ def _build_soft_report_payload(
             {
                 "index": index,
                 "generated_step": generated_step,
+                "generated_token_ids": list(expected_tokens),
                 "candidates": [
-                    {"value": value, "relative_logit": score - best}
+                    {
+                        "value": value,
+                        "relative_logit": score - best,
+                        "token_ids": list(tokens_by_value[value]),
+                    }
                     for value, score in ranked[:top_k]
                 ],
             }
         )
-    return raw, parsed, {"top_k": top_k, "positions": positions}
+    return (
+        raw,
+        parsed,
+        {
+            "top_k": top_k,
+            "score_basis": "first_token_logit",
+            "positions": positions,
+        },
+    )
 
 
 def _load_prompts(path: Path) -> tuple[str, str]:
@@ -578,6 +638,7 @@ def run_interface_ladder_cli(
         observation_prompt, recovery_prompt = _load_prompts(args.prompt_config)
         model, processor = load_pinned_qwen(model_path=args.model_path)
         tokenizer = getattr(processor, "tokenizer", processor)
+        _preflight_soft_report_tokenization(tokenizer, [scene.value_domain for scene in scenes])
         runtime_hash = _runtime_sha(
             validation.model_snapshot_sha256, sha256(args.prompt_config), hashes
         )

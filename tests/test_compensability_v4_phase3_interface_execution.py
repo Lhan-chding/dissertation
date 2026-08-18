@@ -568,7 +568,7 @@ def test_s6_soft_report_uses_stage1_numeric_logits_at_each_csv_position():
     assert all(row["candidates"][0]["relative_logit"] == 0.0 for row in payload["positions"])
 
 
-def test_s6_soft_report_fails_closed_when_numeric_values_are_not_single_tokens():
+def test_s6_soft_report_preserves_multi_token_numeric_literals_without_truncation():
     module = _load_script(
         Path(__file__).resolve().parents[1] / "scripts/v4/06_run_interface_ladder.py"
     )
@@ -577,18 +577,44 @@ def test_s6_soft_report_fails_closed_when_numeric_values_are_not_single_tokens()
         @staticmethod
         def encode(value, *, add_special_tokens):
             assert add_special_tokens is False
-            return [1, 2] if value == "14" else [int(value)]
+            table = {"0": 91, "1": 10, "4": 14, "5": 5, "6": 6, ",": 99}
+            return [table[character] for character in value]
 
         @staticmethod
-        def decode(_token_ids, *, skip_special_tokens):
+        def decode(token_ids, *, skip_special_tokens):
             assert skip_special_tokens is True
-            return "5,14,10,10"
+            table = {91: "0", 10: "1", 14: "4", 5: "5", 6: "6", 99: ","}
+            return "".join(table[token_id] for token_id in token_ids)
 
-    with pytest.raises(RuntimeError, match=r"single.token|numeric"):
-        module._build_soft_report_payload(
-            Tokenizer(),
-            generated_token_ids=(5, 14, 10, 10),
-            generated_logits=tuple(torch.zeros((1, 32)) for _ in range(4)),
-            value_domain=(5, 6, 10, 14),
-            top_k=2,
-        )
+    generated = (5, 99, 10, 14, 99, 10, 91, 99, 10, 91)
+    generated_logits = []
+    for step in range(len(generated)):
+        logits = torch.full((1, 120), -100.0)
+        if step in (0, 2, 5, 8):
+            logits[0, 5] = 2.0
+            logits[0, 6] = 1.0
+            logits[0, 10] = 3.0
+        generated_logits.append(logits)
+
+    raw, parsed, payload = module._build_soft_report_payload(
+        Tokenizer(),
+        generated_token_ids=generated,
+        generated_logits=tuple(generated_logits),
+        value_domain=(5, 6, 10, 14),
+        top_k=2,
+    )
+
+    assert raw == "5,14,10,10"
+    assert parsed == (5, 14, 10, 10)
+    assert payload["score_basis"] == "first_token_logit"
+    assert [row["generated_step"] for row in payload["positions"]] == [0, 2, 5, 8]
+    assert [row["generated_token_ids"] for row in payload["positions"]] == [
+        [5],
+        [10, 14],
+        [10, 91],
+        [10, 91],
+    ]
+    assert payload["positions"][1]["candidates"] == [
+        {"value": 10, "relative_logit": 0.0, "token_ids": [10, 91]},
+        {"value": 14, "relative_logit": 0.0, "token_ids": [10, 14]},
+    ]

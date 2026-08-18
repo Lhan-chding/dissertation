@@ -1,9 +1,11 @@
-# Qwen v4 Phase 0-3 server handoff
+# Qwen v4 Phase 0-4 server handoff
 
-This handoff executes the authorized Phase 0-3 diagnostics and stops before training or RL. The
+This handoff executes the authorized Phase 0-3 diagnostics and the separately guarded Phase 4
+language-only LoRA support injection. It stops before Phase 5 policy-support measurement and all
+RL. The
 archived v4 plan is byte-identical to the supplied specification (SHA-256
-`01e532f8c7fe5439c70e8cd8de81ff3448465d8d401dbbf478c76aebaf49641e`). Training, LoRA,
-SFT, and RL are not authorized.
+`01e532f8c7fe5439c70e8cd8de81ff3448465d8d401dbbf478c76aebaf49641e`). Phase 4 SFT/LoRA is
+authorized only by `configs/recoverability/v4_phase_4.yaml`; RL remains unauthorized.
 
 ## Fixed boundaries
 
@@ -21,7 +23,8 @@ Run inside `tmux`. Stop at the first `BLOCKED` message and return the complete o
 script except S0 is inert without `--execute`. S3 is a real no-overwrite, hash-bound
 teacher-forced scoring run, S4 is the real layerwise diagnostic, and S5 is the real exact-cache
 parity run. S6 is the real hash-bound I0--I4 interface-ladder execution over the frozen S5
-artifact. No Phase 0-3 script trains or invokes RL.
+artifact. No Phase 0-3 script trains or invokes RL. Phase 4 has its own input, package-lock,
+trainability, CUDA/bf16, dependency, acknowledgement, and no-overwrite gates.
 
 ```bash
 cd /cloud/cloud-ssd1/dissertation
@@ -279,5 +282,60 @@ family-stratified effects. When policy support is later measured, report every p
 as not measured, never as zero. The engineering requirement of at least 80% automated-test
 coverage is software QA only, not a scientific result threshold.
 
-Return S0-S6 console output, the Git revision, every produced SHA-256 line, and any `BLOCKED`
-message. Do not begin Phase 4, training, LoRA, SFT, or RL.
+## Phase 4 - language-only LoRA support injection
+
+Phase 4 accepts only three independently collected, hash-bound JSONL inputs:
+
+- symbolic support scenes with split `symbolic_support_train`;
+- natural support scenes with split `natural_error_support_train`;
+- one frozen-base Stage-1 natural observation per natural support scene, with exactly one error.
+
+The builder rejects confirm splits, unpaired observations, duplicated provenance, and scenes with
+anything other than the declared single-position natural error. It does not create a synthetic
+substitute for natural observations. The training command checks the support corpus hash and its
+summary, package lock, offline environment, GPU dependency installation, CUDA, bf16 capability,
+model snapshot, exact `named_modules()` LoRA targets, frozen base hashes, trainable parameters,
+and output non-overwrite before constructing an optimizer step. It trains C0, C1, and T in order.
+
+Set the three input paths and execute the following commands from the repository root. The run
+directory must not exist; the parameter manifests must not already exist under
+`artifacts/v4/training`.
+
+```bash
+SYMBOLIC_SCENES=/absolute/path/to/symbolic_support_train_scenes.jsonl
+NATURAL_SCENES=/absolute/path/to/natural_error_support_train_scenes.jsonl
+NATURAL_OBSERVATIONS=/absolute/path/to/frozen_base_stage1_natural_observations.jsonl
+
+python scripts/v4/07_build_support_data.py --execute \
+  --symbolic-scenes "$SYMBOLIC_SCENES" \
+  --symbolic-scenes-sha256 "$(sha256sum "$SYMBOLIC_SCENES" | awk '{print $1}')" \
+  --natural-scenes "$NATURAL_SCENES" \
+  --natural-scenes-sha256 "$(sha256sum "$NATURAL_SCENES" | awk '{print $1}')" \
+  --natural-observations "$NATURAL_OBSERVATIONS" \
+  --natural-observations-sha256 "$(sha256sum "$NATURAL_OBSERVATIONS" | awk '{print $1}')"
+
+SUPPORT_SHA="$(sha256sum artifacts/v4/training/support.jsonl | awk '{print $1}')"
+RUN_ROOT=artifacts/v4/training/runs/phase4-20260818-r1
+
+python scripts/v4/08_train_phase4_lora.py --execute --preflight-only \
+  --support artifacts/v4/training/support.jsonl --support-sha256 "$SUPPORT_SHA" \
+  --support-summary artifacts/v4/training/support_summary.json --output-root "$RUN_ROOT"
+
+export COMPBIAS_V4_TRAINING_ACK=I_UNDERSTAND_THIS_STARTS_PHASE_4_LORA_TRAINING
+python scripts/v4/08_train_phase4_lora.py --execute \
+  --support artifacts/v4/training/support.jsonl --support-sha256 "$SUPPORT_SHA" \
+  --support-summary artifacts/v4/training/support_summary.json --output-root "$RUN_ROOT"
+```
+
+The required output evidence is:
+
+```text
+artifacts/v4/training/trainable_parameter_manifest.json
+artifacts/v4/training/frozen_hashes.json
+artifacts/v4/training/runs/<run>/C0_format_only/final_adapter
+artifacts/v4/training/runs/<run>/C1_forward_arithmetic/final_adapter
+artifacts/v4/training/runs/<run>/T_constraint_recovery/final_adapter
+```
+
+Return S0-S6 and Phase 4 console output, the Git revision, every produced SHA-256 line, and any
+`BLOCKED` message. Do not begin Phase 5, policy-support measurement, or any RL stage.

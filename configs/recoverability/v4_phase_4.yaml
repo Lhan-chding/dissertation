@@ -1,0 +1,42 @@
+schema_version: 1
+status: PHASE_4_LANGUAGE_ONLY_LORA_AUTHORIZED
+
+model:
+  local_path: /model/ModelScope/Qwen/Qwen2.5-VL-3B-Instruct
+  snapshot_sha256: e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87
+
+authorization:
+  training_authorized: true
+  rl_authorized: false
+  downloads_authorized: false
+
+training:
+  precision: bf16
+  lora_rank: 16
+  lora_alpha: 32
+  lora_dropout: 0.0
+  gradient_checkpointing: true
+  vision_frozen: true
+  merger_frozen: true
+  learning_rate: 2.0e-05
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 8
+  num_train_epochs: 1
+  max_sequence_length: 512
+  seed: 2026081804
+  selection_split: support_dev
+
+integrity_gates:
+  require_hash_bound_inputs: true
+  require_confirm_split_exclusion: true
+  require_language_only_lora: true
+  require_frozen_hashes: true
+  forbid_artifact_overwrite: true
+  require_explicit_gpu_acknowledgement: true
+
+artifacts:
+  support_jsonl: artifacts/v4/training/support.jsonl
+  support_summary: artifacts/v4/training/support_summary.json
+  trainable_parameter_manifest: artifacts/v4/training/trainable_parameter_manifest.json
+  frozen_hashes: artifacts/v4/training/frozen_hashes.json
+  adapter_runs: artifacts/v4/training/runs

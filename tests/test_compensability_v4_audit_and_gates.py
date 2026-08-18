@@ -104,7 +104,14 @@ def test_v4_research_config_forbids_subjective_success_thresholds() -> None:
     assert "minimum_recovery_accuracy" not in text
 
 
-def test_training_scripts_are_not_part_of_the_phase_zero_to_three_surface() -> None:
-    assert not (ROOT / "scripts/v4/07_build_support_data.py").exists()
-    assert not (ROOT / "scripts/v4/08_train_controls.py").exists()
-    assert not (ROOT / "scripts/v4/09_train_recovery_lora.py").exists()
+def test_phase_four_training_surface_is_guarded() -> None:
+    phase_zero_to_three = (ROOT / "configs/recoverability/v4_phase_0_3.yaml").read_text(
+        encoding="utf-8"
+    )
+    assert "training_authorized: false" in phase_zero_to_three
+    phase_four = (ROOT / "configs/recoverability/v4_phase_4.yaml").read_text(encoding="utf-8")
+    assert "training_authorized: true" in phase_four
+    assert "rl_authorized: false" in phase_four
+    assert "require_explicit_gpu_acknowledgement: true" in phase_four
+    assert (ROOT / "scripts/v4/07_build_support_data.py").is_file()
+    assert (ROOT / "scripts/v4/08_train_phase4_lora.py").is_file()
