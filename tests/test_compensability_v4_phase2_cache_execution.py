@@ -269,6 +269,65 @@ def test_cache_execution_fails_closed_on_any_parity_drift(drift: str) -> None:
         )
 
 
+def test_s5_token_divergence_reports_call_step_tokens_and_logit_evidence() -> None:
+    class TokenDivergenceModel(_ParityModel):
+        def compare_cache_and_full_history(self, call, processor, *, max_new_tokens):
+            trace = super().compare_cache_and_full_history(
+                call,
+                processor,
+                max_new_tokens=max_new_tokens,
+            )
+            return {
+                **trace,
+                "full_generated_token_ids": (1, 2),
+                "full_generated_logits": (
+                    torch.tensor([[1.0, 4.0, 2.0]], dtype=torch.float32),
+                    torch.tensor([[2.0, 4.0, 6.0]], dtype=torch.float32),
+                ),
+            }
+
+    call = build_cache_parity_plan(
+        (_state(0),),
+        condition_turns=_turns(1),
+        expected_scenes=1,
+    )[0]
+
+    with pytest.raises(RuntimeError) as raised:
+        execute_cache_parity_plan(
+            TokenDivergenceModel(),
+            PROCESSOR,
+            (call,),
+            max_new_tokens=4,
+            logit_absolute_tolerance=0.0,
+            logit_relative_tolerance=0.0,
+        )
+
+    message = str(raised.value)
+    assert "call_id=scene-000.no_cue" in message
+    assert "scene_id=scene-000" in message
+    assert "cue_condition=no_cue" in message
+    assert "first_mismatch_step=1" in message
+    assert "cached_token=1" in message
+    assert "full_token=2" in message
+    assert "common_prefix_length=1" in message
+    assert "cached_generated_token_ids=(1, 1)" in message
+    assert "full_generated_token_ids=(1, 2)" in message
+    assert "cached_logit_shape=(1, 3)" in message
+    assert "full_logit_shape=(1, 3)" in message
+    assert "cached_logit_dtype=torch.bfloat16" in message
+    assert "full_logit_dtype=torch.float32" in message
+    assert "cached_argmax=1" in message
+    assert "full_argmax=2" in message
+    assert "cached_realized_token_logit=5.0" in message
+    assert "full_realized_token_logit=6.0" in message
+    assert "max_abs_diff=5.0" in message
+    assert "max_rel_diff=" in message
+    assert "nonzero_count=2" in message
+    assert "l2_diff=" in message
+    assert "argmax_abs_diff_token_id=2" in message
+    assert "allowed_divergence" not in message
+
+
 def test_cache_summary_and_output_are_objective_and_no_overwrite(tmp_path: Path) -> None:
     plan = build_cache_parity_plan(
         (_state(0), _state(1)),
