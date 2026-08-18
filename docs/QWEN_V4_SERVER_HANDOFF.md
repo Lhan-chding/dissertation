@@ -20,8 +20,8 @@ SFT, and RL are not authorized.
 Run inside `tmux`. Stop at the first `BLOCKED` message and return the complete output. Every
 script except S0 is inert without `--execute`. S3 is a real no-overwrite, hash-bound
 teacher-forced scoring run, S4 is the real layerwise diagnostic, and S5 is the real exact-cache
-parity run. S6 remains a pre-work surface until the S5 artifact hash is returned and frozen. No
-Phase 0-3 script trains or invokes RL.
+parity run. S6 is the real hash-bound I0--I4 interface-ladder execution over the frozen S5
+artifact. No Phase 0-3 script trains or invokes RL.
 
 ```bash
 cd /cloud/cloud-ssd1/dissertation
@@ -224,11 +224,46 @@ that visual revision succeeded.
 
 ## S6 - I0-I4 interface-ladder surface
 
+S5 completed all 2,316 cache/full-history comparisons. Its frozen artifact is:
+
+- `cache/cache_parity.json`:
+  `c52cb71d42c83e3a32c57c00e006f5117631b9cab25a2ef8fbe62001ff572351`
+
+S6 produces exactly 17 immutable cells per scene (9,843 total): I0, I2, I3, and I4 under all
+four cue conditions, plus one pre-cue/no-cue I1 soft-report diagnostic. I0 is measured by fresh
+text-only runtime calls; I1 records top-k relative logits at each of the four generated numeric
+positions; I2 consumes the frozen S3 candidate decision; I3 decodes S5 full-history output; and
+I4 decodes S5 cached-continuation output. I1 and I2 are intervention diagnostics only.
+
+If any I4 call for a scene has token divergence, every cell is retained but that entire scene is
+excluded from the complete-case I0/I3/I4 paired primary estimands. The number or rate of such
+scenes is reported and is never used as an empirical execution threshold.
+
 ```bash
 python scripts/v4/06_run_interface_ladder.py --execute \
   --input "$SCREEN" \
-  --input-sha256 f964dd6c005bd7344804aca8c33de2f621cc8e171f8d0f4ccc73a08081f2414a
-sha256sum artifacts/v4/server_preflight/*.json
+  --input-sha256 f964dd6c005bd7344804aca8c33de2f621cc8e171f8d0f4ccc73a08081f2414a \
+  --input artifacts/v4/capability_chain/per_scene.csv \
+  --input-sha256 d01c391e136ed0e5c0ed52e50fe70f6ec128d221d218e7012c9adbcb4293929f \
+  --input artifacts/v4/capability_chain/summary_by_family.csv \
+  --input-sha256 8837a7275915f5a90c91eae8378ff6bd0466819842381996db1be8e4925705c7 \
+  --input artifacts/v4/capability_chain/paired_gaps.json \
+  --input-sha256 a2a5acb5b203719e7e5225e56643a25a4189277d13704cccd4ec86d61573e256 \
+  --input artifacts/v4/tokenizer/candidate_labels.json \
+  --input-sha256 a7a448f230038698c4127b220362c95d47f57cef90cc7904e71b1dacacc04dbd \
+  --input artifacts/v4/candidate_scoring/per_scene.jsonl \
+  --input-sha256 c303731438760a30fb2f78a489d20465a1c1e292b01941795f29351a0e234a62 \
+  --input artifacts/v4/candidate_scoring/summary.json \
+  --input-sha256 5e366dfecb2a4fd530407f896326bc99d3605385cfdadea34c0f478392280c73 \
+  --input artifacts/v4/layerwise_assimilation/per_scene.jsonl \
+  --input-sha256 e696d12bb8cb3e6142a3d6ecc6de9474c3e72e3ac85e0c7334005a249556a4af \
+  --input artifacts/v4/layerwise_assimilation/summary.json \
+  --input-sha256 53eab07dcd70fce6970a63ce1831ec6369164e92320f051e717decdeb1b790c0 \
+  --input artifacts/v4/cache/cache_parity.json \
+  --input-sha256 c52cb71d42c83e3a32c57c00e006f5117631b9cab25a2ef8fbe62001ff572351
+sha256sum artifacts/v4/interface_ladder/per_scene.jsonl \
+  artifacts/v4/interface_ladder/summary.json
+python -m json.tool artifacts/v4/interface_ladder/summary.json
 ```
 
 ## Reporting and stopping discipline

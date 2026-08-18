@@ -198,6 +198,44 @@ def valid_config() -> dict[str, object]:
             "layerwise_profiles_sha256": GUARDS.LAYERWISE_PROFILES_SHA256,
             "layerwise_summary_sha256": GUARDS.LAYERWISE_SUMMARY_SHA256,
         },
+        "phase_3_interface_ladder": {
+            "world_recoverable_scenes": 579,
+            "included_family_counts": {
+                "cross_series": 208,
+                "duplicate_encoding": 182,
+                "trend": 189,
+            },
+            "cue_conditions": [
+                "no_cue",
+                "valid_cue",
+                "sham_cue",
+                "counterfactual_cue",
+            ],
+            "interfaces": [
+                "I0_hard_text_symbolic_recovery",
+                "I1_soft_report_diagnostic",
+                "I2_candidate_world_diagnostic",
+                "I3_same_conversation_visual_revision",
+                "I4_exact_cached_natural_continuation",
+            ],
+            "cells_per_scene": 17,
+            "interface_cell_count": 9843,
+            "i0_runtime_calls": 2316,
+            "i1_runtime_calls": 579,
+            "i1_pre_cue_condition": "no_cue",
+            "i1_soft_report_top_k": 4,
+            "i2_source": "S3_candidate",
+            "i3_source": "S5_cache.full_history",
+            "i4_source": "S5_cache.cached_continuation",
+            "max_new_tokens": 32,
+            "do_sample": False,
+            "temperature": 0.0,
+            "bootstrap_resamples": 10000,
+            "exclude_i4_diagnostic_scenes_from_paired_primary": True,
+            "retain_all_diagnostic_cells": True,
+            "subjective_success_thresholds_forbidden": True,
+            "cache_parity_sha256": GUARDS.CACHE_PARITY_SHA256,
+        },
     }
 
 
@@ -574,25 +612,6 @@ def test_phase_cli_execute_success_and_failure_are_reported(monkeypatch, tmp_pat
         == 2
     )
     assert "hash drift" in capsys.readouterr().out
-
-
-@pytest.mark.parametrize(
-    ("filename", "phase"),
-    [
-        ("06_run_interface_ladder.py", "phase_3_interface_ladder"),
-    ],
-)
-def test_phase_entrypoints_delegate_only_to_preflight(monkeypatch, filename, phase) -> None:
-    module = load_script("test_" + filename.replace(".py", ""), filename)
-    captured: dict[str, object] = {}
-    monkeypatch.setattr(
-        module, "run_phase_preflight", lambda **kwargs: captured.update(kwargs) or 7
-    )
-    assert module.main() == 7
-    assert captured["phase"] == phase
-    assert captured["integrity_gates"]
-    assert captured["expected_input_sha256"] == (GUARDS.LEGACY_SCREEN_RECORDS_SHA256,)
-    assert all("percent" not in gate and "rate" not in gate for gate in captured["integrity_gates"])
 
 
 def test_capability_chain_entrypoint_uses_runtime_execution(monkeypatch) -> None:

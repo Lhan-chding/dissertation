@@ -29,6 +29,7 @@ CANDIDATE_SCORES_SHA256 = "c303731438760a30fb2f78a489d20465a1c1e292b01941795f293
 CANDIDATE_SUMMARY_SHA256 = "5e366dfecb2a4fd530407f896326bc99d3605385cfdadea34c0f478392280c73"
 LAYERWISE_PROFILES_SHA256 = "e696d12bb8cb3e6142a3d6ecc6de9474c3e72e3ac85e0c7334005a249556a4af"
 LAYERWISE_SUMMARY_SHA256 = "53eab07dcd70fce6970a63ce1831ec6369164e92320f051e717decdeb1b790c0"
+CACHE_PARITY_SHA256 = "c52cb71d42c83e3a32c57c00e006f5117631b9cab25a2ef8fbe62001ff572351"
 PHASE_C_DATASET_MANIFEST_SHA256 = "bc57389dc3164b6aeba8d4565aecfaea3fa7ba171b4df4843c8ec86cbee8a19f"
 PHASE_C_DATASET_RECORDS_SHA256 = "36e09f7e15107057fd1b942875d12259b1f281e0354b87c82ed17f420693c766"
 MODEL_INTROSPECTION_PATH = ROOT / "artifacts/v4/model_introspection.json"
@@ -288,6 +289,51 @@ def _load_config(path: Path) -> dict[str, object]:
         or cache_parity != expected_cache_parity
     ):
         raise RuntimeError("v4 Phase 3 cache-parity execution contract drifted")
+    interface_ladder = payload.get("phase_3_interface_ladder")
+    expected_interface_ladder = {
+        "world_recoverable_scenes": 579,
+        "included_family_counts": {
+            "cross_series": 208,
+            "duplicate_encoding": 182,
+            "trend": 189,
+        },
+        "cue_conditions": [
+            "no_cue",
+            "valid_cue",
+            "sham_cue",
+            "counterfactual_cue",
+        ],
+        "interfaces": [
+            "I0_hard_text_symbolic_recovery",
+            "I1_soft_report_diagnostic",
+            "I2_candidate_world_diagnostic",
+            "I3_same_conversation_visual_revision",
+            "I4_exact_cached_natural_continuation",
+        ],
+        "cells_per_scene": 17,
+        "interface_cell_count": 9843,
+        "i0_runtime_calls": 2316,
+        "i1_runtime_calls": 579,
+        "i1_pre_cue_condition": "no_cue",
+        "i1_soft_report_top_k": 4,
+        "i2_source": "S3_candidate",
+        "i3_source": "S5_cache.full_history",
+        "i4_source": "S5_cache.cached_continuation",
+        "max_new_tokens": 32,
+        "do_sample": False,
+        "temperature": 0.0,
+        "bootstrap_resamples": 10000,
+        "exclude_i4_diagnostic_scenes_from_paired_primary": True,
+        "retain_all_diagnostic_cells": True,
+        "subjective_success_thresholds_forbidden": True,
+        "cache_parity_sha256": CACHE_PARITY_SHA256,
+    }
+    if (
+        not isinstance(interface_ladder, dict)
+        or set(interface_ladder) != set(expected_interface_ladder)
+        or interface_ladder != expected_interface_ladder
+    ):
+        raise RuntimeError("v4 Phase 3 interface-ladder execution contract drifted")
     return payload
 
 

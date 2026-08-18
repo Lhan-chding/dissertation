@@ -535,7 +535,12 @@ def generate_observation_with_cache(
         generated_token_ids=result.generated_token_ids,
         processor=processor,
     )
-    return {"text": decoded, "generated_token_ids": result.generated_token_ids, "state": state}
+    return {
+        "text": decoded,
+        "generated_token_ids": result.generated_token_ids,
+        "generated_logits": result.generated_logits,
+        "state": state,
+    }
 
 
 __all__ = [

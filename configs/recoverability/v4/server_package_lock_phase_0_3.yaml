@@ -2,13 +2,13 @@ schema_version: 1
 status: FROZEN_PHASE_0_3_SERVER_SURFACE
 files:
   - path: configs/recoverability/v4_phase_0_3.yaml
-    sha256: c92495a5128ebc2fc8ef14dcc4a437f0d7a39f6a49a24437da340e3031123714
+    sha256: 3e8ed5f3f82274ba1bb7ac0d8083c9fb1a984b8ab4b3dffef271a892429baac7
   - path: configs/recoverability/v4/phase_1_3_prompts.yaml
     sha256: c4fa65062527b76bd0b29bbad6a5bd35e596fcc2bfef4dd0c81d7fe008610d10
   - path: docs/Qwen25VL_Constraint_Assimilation_Natural_State_RL_Codex_Plan_v4.md
     sha256: 01e532f8c7fe5439c70e8cd8de81ff3448465d8d401dbbf478c76aebaf49641e
   - path: docs/QWEN_V4_SERVER_HANDOFF.md
-    sha256: 4b864091e7251a0ef9a71336056f915b8795413835b63ef02e93b7f1418ec21e
+    sha256: 3186cb9dc4d9e90b627ff8d666af8847d5f3107c2fa6b4e67115f4a5e610bf57
   - path: pyproject.toml
     sha256: 6f874b01dc23c49bb3f65d7aa36d7be70cf4338699a640c0a94cd56db32bb365
   - path: requirements-gpu.lock.txt
@@ -26,9 +26,9 @@ files:
   - path: scripts/v4/05_validate_cache_runner.py
     sha256: 1d3b72dd2616990b691420d485526b23422c036c214537fb53be05a0ec90ef91
   - path: scripts/v4/06_run_interface_ladder.py
-    sha256: 0a06901e850d41213e678598ce0ff72d0620cb57873026c04e10b6434f0fb268
+    sha256: 77caadd9b5e8124438851a0ace9b1528752054e26ec05e7f034bfb4c9a8150bc
   - path: scripts/v4/_guards.py
-    sha256: 277eac1ee1dc2dd55fcee239daf74b52eb311cd509551ca8e3306f395966f2e6
+    sha256: f43ee1d8d94a10db5d15e3bb0e0483fbb42ffc23283ceec864ddafb00a7e15fb
   - path: scripts/v4/_phase_cli.py
     sha256: 0faabed0ac085d3ce7be846a3c89c2b2a60a082a179f0d930e612c0411bacc3c
   - path: src/compensability_v4/__init__.py
@@ -82,7 +82,7 @@ files:
   - path: src/compensability_v4/qwen/layerwise_assimilation.py
     sha256: 0c0e20fdb6de4f1a43a25e9bbeb8710fb5cb3078fe13940025ed250c0935efef
   - path: src/compensability_v4/qwen/manual_generation.py
-    sha256: 11f92c029f5aaecab3f11285a112a4dbf5fb1f3607dfca8da991efced8bdb8b3
+    sha256: 9e98f083556dc9cdd1fbbca94a5e0964752a2d283f533aa0b94364cb6ff43134
   - path: src/compensability_v4/qwen/model_loader.py
     sha256: a6ec48bfe03acfdea54f609b44004cd01f053e58c5f70ed0947616157cbbee47
   - path: src/compensability_v4/qwen/phase2_candidate.py
@@ -91,6 +91,8 @@ files:
     sha256: c80fc4bd8a97891f5ff6c9ed78f48d3840238622cc4d63a809e71ef6d9d714b2
   - path: src/compensability_v4/qwen/phase3_cache.py
     sha256: bf18beb14c4c03c97e122080540e980e52da86cfdfd21463f9e2d4742b580541
+  - path: src/compensability_v4/qwen/phase3_interface.py
+    sha256: de14788b8bcfbb2a7c0eb610a02997be853ed92ef20dc00115b860fc4ba017a8
   - path: src/compensability_v4/schemas/__init__.py
     sha256: 99edf107a9fa07bade840089f40592ecf5c498a9167c0be7c46c5d08bb28b4aa
   - path: src/compensability_v4/schemas/_common.py
