@@ -132,16 +132,23 @@ def test_s5_frozen_config_gates_decisions_and_reports_full_logit_drift() -> None
     assert contract["require_stepwise_argmax_parity"] is True
     assert contract["require_realized_token_top1"] is True
     assert contract["report_stepwise_logit_drift"] is True
+    assert contract["continue_after_call_level_token_divergence"] is True
+    assert contract["report_token_divergence_evidence"] is True
+    assert contract["exclude_token_divergent_calls_from_i4_primary"] is True
     assert contract["logit_absolute_tolerance"] == 0.0
     assert contract["logit_relative_tolerance"] == 0.0
     assert "maximum_logit_drift" not in contract
+    assert "allowed_token_divergence_count" not in contract
+    assert "allowed_token_divergence_rate" not in contract
 
 
 def test_s5_handoff_states_exact_decision_gate_without_logit_magnitude_threshold() -> None:
     root = Path(__file__).resolve().parents[1]
     handoff = (root / "docs/QWEN_V4_SERVER_HANDOFF.md").read_text(encoding="utf-8")
 
-    assert "Token, decision, suffix/MRoPE, and cache-position parity are exact gates." in handoff
+    assert "Generated-token equality remains an exact per-call I4 primary gate." in handoff
+    assert "continues the remaining S5 calls" in handoff
+    assert "No token-divergence count or rate threshold is applied." in handoff
     assert "Full-vocabulary logit identity is reported, not required" in handoff
     assert "No logit-drift magnitude threshold is applied." in handoff
 
