@@ -311,7 +311,7 @@ def _assert_logit_parity(
             left_tensor = left.detach().to(device="cpu", dtype=torch.float32)
             right_tensor = right.detach().to(device="cpu", dtype=torch.float32)
             if left_tensor.shape != right_tensor.shape:
-                raise RuntimeError(f"S5 generated-logit parity failed at step {step}")
+                raise RuntimeError(_tensor_logit_mismatch(step, left, right))
             equal = (
                 torch.equal(left_tensor, right_tensor)
                 if absolute_tolerance == 0.0 and relative_tolerance == 0.0
@@ -324,7 +324,7 @@ def _assert_logit_parity(
                 )
             )
             if not equal:
-                raise RuntimeError(f"S5 generated-logit parity failed at step {step}")
+                raise RuntimeError(_tensor_logit_mismatch(step, left, right))
             continue
         left_values, right_values = _nested_floats(left), _nested_floats(right)
         if len(left_values) != len(right_values) or any(
@@ -332,6 +332,38 @@ def _assert_logit_parity(
             for a, b in zip(left_values, right_values, strict=True)
         ):
             raise RuntimeError(f"S5 generated-logit parity failed at step {step}")
+
+
+def _tensor_logit_mismatch(step: int, cached: object, full: object) -> str:
+    """Return complete objective evidence for one tensor-parity failure."""
+
+    import torch
+
+    cached_tensor = cached.detach().to(device="cpu", dtype=torch.float32)
+    full_tensor = full.detach().to(device="cpu", dtype=torch.float32)
+    cached_shape = tuple(cached_tensor.shape)
+    full_shape = tuple(full_tensor.shape)
+    cached_argmax = int(torch.argmax(cached_tensor).item()) if cached_tensor.numel() else None
+    full_argmax = int(torch.argmax(full_tensor).item()) if full_tensor.numel() else None
+    if cached_shape == full_shape:
+        absolute = torch.abs(cached_tensor - full_tensor)
+        scale = torch.maximum(torch.abs(cached_tensor), torch.abs(full_tensor))
+        relative = torch.where(scale > 0, absolute / scale, torch.zeros_like(absolute))
+        max_abs_diff = float(torch.max(absolute).item()) if absolute.numel() else 0.0
+        max_rel_diff = float(torch.max(relative).item()) if relative.numel() else 0.0
+        nonzero_count = int(torch.count_nonzero(absolute).item())
+    else:
+        max_abs_diff = None
+        max_rel_diff = None
+        nonzero_count = None
+    return (
+        f"S5 generated-logit parity failed at step {step}: "
+        f"step={step}, cached_shape={cached_shape}, full_shape={full_shape}, "
+        f"cached_dtype={cached.dtype}, full_dtype={full.dtype}, "
+        f"cached_argmax={cached_argmax}, full_argmax={full_argmax}, "
+        f"max_abs_diff={max_abs_diff}, max_rel_diff={max_rel_diff}, "
+        f"nonzero_count={nonzero_count}"
+    )
 
 
 def execute_cache_parity_plan(
