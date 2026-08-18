@@ -6,11 +6,13 @@ import importlib.util
 import json
 import sys
 from collections import Counter
+from dataclasses import FrozenInstanceError, is_dataclass
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 import torch
+import yaml
 
 from compensability_v4.qwen import manual_generation, phase3_cache
 from compensability_v4.qwen.cache_continuation import CachedGenerationState
@@ -119,6 +121,31 @@ def test_cache_plan_is_exactly_579_by_four_with_exact_chat_suffixes() -> None:
         }
 
 
+def test_s5_frozen_config_gates_decisions_and_reports_full_logit_drift() -> None:
+    root = Path(__file__).resolve().parents[1]
+    payload = yaml.safe_load(
+        (root / "configs/recoverability/v4_phase_0_3.yaml").read_text(encoding="utf-8")
+    )
+
+    contract = payload["phase_3_cache_parity"]
+    assert contract["require_exact_generated_logits"] is False
+    assert contract["require_stepwise_argmax_parity"] is True
+    assert contract["require_realized_token_top1"] is True
+    assert contract["report_stepwise_logit_drift"] is True
+    assert contract["logit_absolute_tolerance"] == 0.0
+    assert contract["logit_relative_tolerance"] == 0.0
+    assert "maximum_logit_drift" not in contract
+
+
+def test_s5_handoff_states_exact_decision_gate_without_logit_magnitude_threshold() -> None:
+    root = Path(__file__).resolve().parents[1]
+    handoff = (root / "docs/QWEN_V4_SERVER_HANDOFF.md").read_text(encoding="utf-8")
+
+    assert "Token, decision, suffix/MRoPE, and cache-position parity are exact gates." in handoff
+    assert "Full-vocabulary logit identity is reported, not required" in handoff
+    assert "No logit-drift magnitude threshold is applied." in handoff
+
+
 class _ParityModel:
     def __init__(self, drift: str | None = None) -> None:
         self.drift = drift
@@ -142,10 +169,16 @@ class _ParityModel:
         )
         trace = {
             "suffix_token_ids": call.suffix_token_ids,
-            "cached_generated_token_ids": (71, 72),
-            "full_generated_token_ids": (71, 72),
-            "cached_generated_logits": ((1.0, 2.0), (3.0, 4.0)),
-            "full_generated_logits": ((1.0, 2.0), (3.0, 4.0)),
+            "cached_generated_token_ids": (1, 1),
+            "full_generated_token_ids": (1, 1),
+            "cached_generated_logits": (
+                torch.tensor([[1.0, 4.0, 2.0]], dtype=torch.bfloat16),
+                torch.tensor([[2.0, 5.0, 1.0]], dtype=torch.bfloat16),
+            ),
+            "full_generated_logits": (
+                torch.tensor([[1.0, 4.0, 2.0]], dtype=torch.bfloat16),
+                torch.tensor([[2.0, 5.0, 1.0]], dtype=torch.bfloat16),
+            ),
             "cached_suffix_position_ids": suffix_mrope,
             "full_suffix_position_ids": suffix_mrope,
             "cached_cache_position": cache_positions,
@@ -153,9 +186,22 @@ class _ParityModel:
             "mrope_axes": 3,
         }
         if self.drift == "token":
-            trace["full_generated_token_ids"] = (71, 73)
+            trace["full_generated_token_ids"] = (1, 2)
         elif self.drift == "logit":
-            trace["full_generated_logits"] = ((1.0, 2.0), (3.0, 4.01))
+            trace["full_generated_logits"] = (
+                torch.tensor([[1.5, 4.75, 1.75]], dtype=torch.bfloat16),
+                torch.tensor([[2.25, 5.5, 0.75]], dtype=torch.bfloat16),
+            )
+        elif self.drift == "argmax":
+            trace["full_generated_logits"] = (
+                torch.tensor([[5.0, 4.0, 2.0]], dtype=torch.bfloat16),
+                torch.tensor([[2.0, 5.0, 1.0]], dtype=torch.bfloat16),
+            )
+        elif self.drift == "realized_not_top1":
+            trace["cached_generated_logits"] = trace["full_generated_logits"] = (
+                torch.tensor([[5.0, 4.0, 2.0]], dtype=torch.bfloat16),
+                torch.tensor([[2.0, 5.0, 1.0]], dtype=torch.bfloat16),
+            )
         elif self.drift == "mrope":
             trace["full_suffix_position_ids"] = ((3, 4), (3, 4), (4, 5))
         elif self.drift == "cache_position":
@@ -167,7 +213,7 @@ class _ParityModel:
         raise AssertionError("S5 must use the auditable manual cache/full-history paths")
 
 
-def test_cache_execution_requires_exact_token_logit_mrope_and_cache_position_parity() -> None:
+def test_cache_execution_requires_exact_token_decision_mrope_and_cache_position_parity() -> None:
     plan = build_cache_parity_plan(
         (_state(0),),
         condition_turns=_turns(1),
@@ -191,7 +237,9 @@ def test_cache_execution_requires_exact_token_logit_mrope_and_cache_position_par
     assert model.generate_calls == 0
     assert progress[-1] == (4, 4)
     assert all(record.token_parity_verified for record in records)
+    assert all(record.decision_parity_verified for record in records)
     assert all(record.logit_parity_verified for record in records)
+    assert all(len(record.logit_step_evidence) == 2 for record in records)
     assert all(record.mrope_parity_verified for record in records)
     assert all(record.cache_position_parity_verified for record in records)
     assert all(record.suffix_parity_verified for record in records)
@@ -200,7 +248,9 @@ def test_cache_execution_requires_exact_token_logit_mrope_and_cache_position_par
     assert all(record.claim_family == "natural_visual_revision" for record in records)
 
 
-@pytest.mark.parametrize("drift", ("token", "logit", "mrope", "cache_position"))
+@pytest.mark.parametrize(
+    "drift", ("token", "argmax", "realized_not_top1", "mrope", "cache_position")
+)
 def test_cache_execution_fails_closed_on_any_parity_drift(drift: str) -> None:
     plan = build_cache_parity_plan(
         (_state(0),),
@@ -226,7 +276,7 @@ def test_cache_summary_and_output_are_objective_and_no_overwrite(tmp_path: Path)
         expected_scenes=2,
     )
     records = execute_cache_parity_plan(
-        _ParityModel(),
+        _ParityModel("logit"),
         PROCESSOR,
         plan,
         max_new_tokens=4,
@@ -238,11 +288,14 @@ def test_cache_summary_and_output_are_objective_and_no_overwrite(tmp_path: Path)
 
     assert summary["number_of_scenes"] == 2
     assert summary["number_of_parity_calls"] == 8
+    assert summary["schema_version"] == 2
     assert summary["condition_counts"] == {condition.value: 2 for condition in CONDITIONS}
     assert summary["all_token_parity_verified"] is True
-    assert summary["all_logit_parity_verified"] is True
+    assert summary["all_decision_parity_verified"] is True
+    assert summary["all_logit_parity_verified"] is False
     assert summary["all_mrope_parity_verified"] is True
     assert summary["all_cache_position_parity_verified"] is True
+    assert summary["i4_primary_eligible"] is True
     assert summary["subjective_success_threshold_applied"] is False
     assert "minimum_recovery_accuracy" not in summary
     output = tmp_path / "artifacts/v4/cache/cache_parity.json"
@@ -251,6 +304,9 @@ def test_cache_summary_and_output_are_objective_and_no_overwrite(tmp_path: Path)
     payload = json.loads(output.read_text())
     assert len(payload["records"]) == 8
     assert payload["summary"]["number_of_parity_calls"] == 8
+    assert payload["records"][0]["decision_parity_verified"] is True
+    assert payload["records"][0]["logit_parity_verified"] is False
+    assert payload["records"][0]["logit_step_evidence"][0]["exact_identity"] is False
     with pytest.raises(FileExistsError, match="overwrite"):
         write_cache_parity_outputs(output, records=records, summary=summary)
 
@@ -438,62 +494,118 @@ def test_s5_condition_facts_rebuild_all_frozen_cue_families() -> None:
         )
 
 
-def test_s5_tensor_logit_parity_is_exact_and_hashes_tensor_bytes() -> None:
-    left = torch.tensor([[1.0, 2.0]], dtype=torch.float32)
-    right = left.clone()
+def test_s5_logit_nonidentity_returns_frozen_stepwise_decision_evidence() -> None:
+    cached = torch.tensor([[1.0, 4.0, 2.0]], dtype=torch.bfloat16)
+    full = torch.tensor([[1.5, 4.75, 1.75]], dtype=torch.bfloat16)
 
-    phase3_cache._assert_logit_parity(
-        (left,),
-        (right,),
-        absolute_tolerance=0.0,
-        relative_tolerance=0.0,
-    )
-    assert phase3_cache._logit_hash(left) == phase3_cache._logit_hash(right)
-    with pytest.raises(RuntimeError, match="step 0"):
-        phase3_cache._assert_logit_parity(
-            (left,),
-            (torch.tensor([[1.0, 2.1]]),),
-            absolute_tolerance=0.0,
-            relative_tolerance=0.0,
-        )
-    with pytest.raises(RuntimeError, match="step 0"):
-        phase3_cache._assert_logit_parity(
-            (left,),
-            (torch.tensor([[1.0], [2.0]]),),
-            absolute_tolerance=0.0,
-            relative_tolerance=0.0,
-        )
-    phase3_cache._assert_logit_parity(
-        (left,),
-        (torch.tensor([[1.0, 2.0001]]),),
-        absolute_tolerance=0.001,
-        relative_tolerance=0.0,
+    evidence = phase3_cache._explain_logit_parity(
+        (cached,),
+        (full,),
+        (1,),
+        atol=0.0,
+        rtol=0.0,
     )
 
+    assert len(evidence) == 1
+    step = evidence[0]
+    assert isinstance(step, phase3_cache.LogitStepEvidence)
+    assert is_dataclass(step)
+    with pytest.raises(FrozenInstanceError):
+        step.exact_identity = True
+    assert step.step_index == 0
+    assert step.cached_shape == (1, 3)
+    assert step.full_shape == (1, 3)
+    assert step.cached_dtype == "torch.bfloat16"
+    assert step.full_dtype == "torch.bfloat16"
+    assert step.realized_token_id == 1
+    assert step.cached_argmax_token_id == 1
+    assert step.full_argmax_token_id == 1
+    assert step.cached_realized_token_logit == 4.0
+    assert step.full_realized_token_logit == 4.75
+    assert step.realized_token_logit_delta == 0.75
+    assert step.max_abs_diff == 0.75
+    assert step.max_rel_diff == pytest.approx(1.0 / 3.0)
+    assert step.nonzero_count == 3
+    assert step.l2_diff == pytest.approx(0.9354143467)
+    assert step.argmax_abs_diff_token_id == 1
+    assert step.exact_identity is False
+    assert step.decision_parity_verified is True
+    assert phase3_cache._logit_hash(cached) != phase3_cache._logit_hash(full)
 
-def test_s5_tensor_logit_mismatch_reports_complete_objective_diagnostics() -> None:
-    cached = torch.tensor([[1.0, 2.0, 0.0]], dtype=torch.bfloat16)
-    full = torch.tensor([[3.0, 1.5, 0.25]], dtype=torch.float32)
 
-    with pytest.raises(RuntimeError) as raised:
-        phase3_cache._assert_logit_parity(
+@pytest.mark.parametrize(
+    ("cached", "full", "tokens", "message"),
+    [
+        (
+            torch.tensor([[1.0, 4.0, 2.0]]),
+            torch.tensor([[1.0], [4.0], [2.0]]),
+            (1,),
+            "shape",
+        ),
+        (
+            torch.tensor([[1.0, float("nan"), 2.0]]),
+            torch.tensor([[1.0, 4.0, 2.0]]),
+            (1,),
+            "finite",
+        ),
+        (
+            torch.tensor([[1.0, 4.0, 2.0]]),
+            torch.tensor([[float("inf"), 4.0, 2.0]]),
+            (1,),
+            "finite",
+        ),
+        (
+            torch.tensor([[1.0, 4.0, 2.0]]),
+            torch.tensor([[5.0, 4.0, 2.0]]),
+            (1,),
+            "argmax",
+        ),
+        (
+            torch.tensor([[1.0, 4.0, 2.0]]),
+            torch.tensor([[1.5, 4.75, 1.75]]),
+            (2,),
+            "realized",
+        ),
+    ],
+)
+def test_s5_logit_evidence_fails_closed_on_objective_decision_invalidity(
+    cached: torch.Tensor,
+    full: torch.Tensor,
+    tokens: tuple[int, ...],
+    message: str,
+) -> None:
+    with pytest.raises(RuntimeError, match=message):
+        phase3_cache._explain_logit_parity(
             (cached,),
             (full,),
-            absolute_tolerance=0.0,
-            relative_tolerance=0.0,
+            tokens,
+            atol=0.0,
+            rtol=0.0,
         )
 
-    message = str(raised.value)
-    assert "step=0" in message
-    assert "cached_shape=(1, 3)" in message
-    assert "full_shape=(1, 3)" in message
-    assert "cached_dtype=torch.bfloat16" in message
-    assert "full_dtype=torch.float32" in message
-    assert "cached_argmax=1" in message
-    assert "full_argmax=0" in message
-    assert "max_abs_diff=2.0" in message
-    assert "max_rel_diff=1.0" in message
-    assert "nonzero_count=3" in message
+
+def test_s5_execution_accepts_decision_exact_logit_drift_and_records_it() -> None:
+    plan = build_cache_parity_plan(
+        (_state(0),),
+        condition_turns=_turns(1),
+        expected_scenes=1,
+    )
+
+    records = execute_cache_parity_plan(
+        _ParityModel("logit"),
+        PROCESSOR,
+        plan,
+        max_new_tokens=4,
+        logit_absolute_tolerance=0.0,
+        logit_relative_tolerance=0.0,
+    )
+
+    assert len(records) == 4
+    assert all(record.decision_parity_verified is True for record in records)
+    assert all(record.logit_parity_verified is False for record in records)
+    assert all(
+        all(not step.exact_identity for step in record.logit_step_evidence) for record in records
+    )
 
 
 def test_s5_real_trace_joins_qwen_vision_batch_manual_cache_and_full_paths(
@@ -527,7 +639,7 @@ def test_s5_real_trace_joins_qwen_vision_batch_manual_cache_and_full_paths(
         calls.append({"batch": batch, **arguments})
         cached = len(calls) == 1
         return SimpleNamespace(
-            generated_token_ids=(71, 72),
+            generated_token_ids=(1, 1),
             generated_logits=(torch.tensor([[1.0, 2.0]]), torch.tensor([[3.0, 4.0]])),
             forward_position_ids=(
                 ((3, 4), (3, 4), (3, 4))
@@ -594,7 +706,7 @@ def test_manual_cached_trace_derives_cache_positions_when_prepare_omits_them() -
         def __call__(self, **arguments):
             prepared_length = int(arguments["input_ids"].shape[-1])
             prior_length = arguments["past_key_values"].get_seq_length()
-            logits = torch.zeros((1, prepared_length, 8))
+            logits = torch.zeros((1, prepared_length, 8), dtype=torch.bfloat16)
             logits[0, -1, 4] = 1.0
             return SimpleNamespace(
                 logits=logits,
@@ -633,6 +745,7 @@ def test_manual_cached_trace_derives_cache_positions_when_prepare_omits_them() -
     ]
     assert result.forward_cache_positions == ((2, 3), (4,))
     assert result.generated_token_ids == (4,)
+    assert result.generated_logits[0].dtype == torch.bfloat16
 
 
 def test_s5_full_history_uses_structured_chat_batch_with_runtime_grid() -> None:
