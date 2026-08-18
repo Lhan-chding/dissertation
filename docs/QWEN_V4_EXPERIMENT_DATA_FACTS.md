@@ -292,6 +292,33 @@ valid_minus_sham_margin =
 | 本地回归集合 | S6 interface、server scripts、Phase 4 training、audit gates：`68 passed` |
 | 服务器重跑状态 | 本报告更新时尚未记录第三次 S6 服务器执行或 S6 输出文件 |
 
+### S6 第三次服务器执行记录（完成）
+
+| 字段 | 记录值 |
+| --- | --- |
+| status | `PHASE_3_INTERFACE_LADDER_EXECUTED_WITH_DIAGNOSTICS` |
+| schema version | 1 |
+| number of source scenes | 579 |
+| number of cells | 9,843 |
+| I4 exact eligible call count | 2,283 |
+| I4 token diagnostic call count | 33 |
+| intervention diagnostic cell count | 2,895 |
+| primary analysis cell count | 6,552 |
+| primary paired scene count | 546 |
+| statistical unit | scene (`scene_is_statistical_unit=true`) |
+| training invoked | false |
+| RL invoked | false |
+| subjective success threshold applied | false |
+| model snapshot SHA-256 | `e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87` |
+| package lock SHA-256 | `2ae9d3da275f3fa7292cddc73d49502c15f2e907ad1abab822a565ef7132e194` |
+| S3 candidate source SHA-256 | `c303731438760a30fb2f78a489d20465a1c1e292b01941795f29351a0e234a62` |
+| S5 cache source SHA-256 | `c52cb71d42c83e3a32c57c00e006f5117631b9cab25a2ef8fbe62001ff572351` |
+| S6 runtime source SHA-256 | `c1a0fe7800952c05d8761c2347a3ffd4d58d5e667b8c0fdfeb5d4cb179252f36` |
+| source-stage cell counts | S3 candidate: 2,316; S5 cache: 4,632; S6 runtime: 2,895 |
+| server output paths | `artifacts/v4/interface_ladder/per_scene.jsonl`; `artifacts/v4/interface_ladder/summary.json` |
+
+该表仅转录服务器控制台显示的 summary 字段；服务器上完整 JSON 保留其余分层指标和效应字段。本地工作区未复制该服务器 output 文件。
+
 ### 首次 S6 服务器运行记录
 
 | 字段 | 值 |
