@@ -281,6 +281,17 @@ valid_minus_sham_margin =
 | 输出 artifacts | 未生成 `artifacts/v4/interface_ladder/per_scene.jsonl`；未生成 `artifacts/v4/interface_ladder/summary.json` |
 | 阻断后的代码修订 | I1 payload 保留 `raw_output`、`output_format_valid=true` 和 `numeric_domain_valid=false`；域外数值作为 I1 diagnostic 记录，不再终止 S6 |
 
+### S6 第二次阻断后的追加代码记录
+
+| 字段 | 记录值 |
+| --- | --- |
+| 修改对象 | I1 Stage-1 soft-report payload 与 I1 payload 结构验证 |
+| 非四数字格式输出 | 保存原始 `raw_output`；`output_format_valid=false`；`numeric_domain_valid=false`；`positions=[]` |
+| 域外但四数字格式输出 | 保存原始 `raw_output`；`output_format_valid=true`；`numeric_domain_valid=false`；保留 4 个生成位置的候选 logit 记录 |
+| I1 接口角色 | `diagnostic_only=true`；不计入 I0/I3/I4 主配对估计 |
+| 本地回归集合 | S6 interface、server scripts、Phase 4 training、audit gates：`68 passed` |
+| 服务器重跑状态 | 本报告更新时尚未记录第三次 S6 服务器执行或 S6 输出文件 |
+
 ### 首次 S6 服务器运行记录
 
 | 字段 | 值 |

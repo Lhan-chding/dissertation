@@ -26,7 +26,7 @@ files:
   - path: scripts/v4/05_validate_cache_runner.py
     sha256: 1d3b72dd2616990b691420d485526b23422c036c214537fb53be05a0ec90ef91
   - path: scripts/v4/06_run_interface_ladder.py
-    sha256: 7af4c3926f5a04f762ed4b45d8b5c4184ca21d6814d7c2dee4298e1e43abfda1
+    sha256: 7741e5c39b52a92f6e90f06db869a8ed75c97508d0716a494e4b9c56a407a48b
   - path: scripts/v4/07_build_support_data.py
     sha256: 51063c3db2f07c372de87b2b17025632f11176b4f999a0b9def111953edf0191
   - path: scripts/v4/08_train_phase4_lora.py
@@ -96,7 +96,7 @@ files:
   - path: src/compensability_v4/qwen/phase3_cache.py
     sha256: bf18beb14c4c03c97e122080540e980e52da86cfdfd21463f9e2d4742b580541
   - path: src/compensability_v4/qwen/phase3_interface.py
-    sha256: de14788b8bcfbb2a7c0eb610a02997be853ed92ef20dc00115b860fc4ba017a8
+    sha256: 24da66ddc9c787b0a8913c6a4e1ba507527e6ee32d63c7aa326bfe930e6d8fd8
   - path: src/compensability_v4/schemas/__init__.py
     sha256: 99edf107a9fa07bade840089f40592ecf5c498a9167c0be7c46c5d08bb28b4aa
   - path: src/compensability_v4/schemas/_common.py

@@ -54,6 +54,9 @@ def _source_branch(interface: Interface) -> str:
 def _soft_report_payload() -> dict[str, object]:
     return {
         "top_k": 2,
+        "raw_output": "9,4,5,6",
+        "output_format_valid": True,
+        "numeric_domain_valid": True,
         "positions": [
             {
                 "index": index,
@@ -282,6 +285,35 @@ def test_s6_summary_uses_only_complete_scene_pairs_and_reports_objective_strata(
     assert summary["subjective_success_threshold_applied"] is False
     assert "minimum_recovery_accuracy" not in summary
     assert "maximum_diagnostic_rate" not in summary
+
+
+def test_s6_validation_retains_invalid_i1_format_as_diagnostic_evidence():
+    subject = _subject()
+    rows = _records(subject, scenes=1)
+    i1 = next(row for row in rows if row.interface is Interface.I1_SOFT_REPORT)
+    invalid_format_payload = {
+        **dict(i1.diagnostic_payload),
+        "raw_output": "unparseable",
+        "output_format_valid": False,
+        "numeric_domain_valid": False,
+        "positions": [],
+    }
+
+    frozen = subject.validate_interface_ladder_records(
+        (
+            replace(i1, diagnostic_payload=invalid_format_payload),
+            *(row for row in rows if row != i1),
+        ),
+        expected_scenes=1,
+        expected_conditions=4,
+        expected_interfaces=5,
+        expected_source_sha256=SOURCE_SHA256,
+    )
+
+    persisted = next(row for row in frozen if row.call_id == i1.call_id)
+    assert persisted.diagnostic_only is True
+    assert persisted.diagnostic_payload["raw_output"] == "unparseable"
+    assert persisted.diagnostic_payload["positions"] == ()
 
 
 def test_s6_validation_fails_closed_on_missing_cells_hash_or_structural_drift():
@@ -651,3 +683,34 @@ def test_s6_soft_report_records_domain_escape_as_diagnostic_not_execution_failur
     assert payload["output_format_valid"] is True
     assert payload["numeric_domain_valid"] is False
     assert len(payload["positions"]) == 4
+
+
+def test_s6_soft_report_records_invalid_format_without_inventing_candidate_positions():
+    module = _load_script(
+        Path(__file__).resolve().parents[1] / "scripts/v4/06_run_interface_ladder.py"
+    )
+
+    class Tokenizer:
+        @staticmethod
+        def encode(value, *, add_special_tokens):
+            assert add_special_tokens is False
+            return [ord(character) for character in value]
+
+        @staticmethod
+        def decode(token_ids, *, skip_special_tokens):
+            assert skip_special_tokens is True
+            return "".join(chr(token_id) for token_id in token_ids)
+
+    raw, parsed, payload = module._build_soft_report_payload(
+        Tokenizer(),
+        generated_token_ids=tuple(ord(character) for character in "unparseable"),
+        generated_logits=tuple(torch.zeros((1, 256)) for _ in "unparseable"),
+        value_domain=(2, 3, 4),
+        top_k=2,
+    )
+
+    assert raw == "unparseable"
+    assert parsed is None
+    assert payload["output_format_valid"] is False
+    assert payload["numeric_domain_valid"] is False
+    assert payload["positions"] == []

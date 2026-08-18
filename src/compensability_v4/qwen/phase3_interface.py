@@ -199,8 +199,22 @@ def _validate_soft_report(payload: ImmutablePayload | None) -> None:
         raise RuntimeError("I1 diagnostic top-k payload is required")
     top_k = payload.get("top_k")
     positions = payload.get("positions")
-    if type(top_k) is not int or top_k <= 0 or not isinstance(positions, tuple):
+    format_valid = payload.get("output_format_valid")
+    domain_valid = payload.get("numeric_domain_valid")
+    raw_output = payload.get("raw_output")
+    if (
+        type(top_k) is not int
+        or top_k <= 0
+        or not isinstance(positions, tuple)
+        or not isinstance(format_valid, bool)
+        or not isinstance(domain_valid, bool)
+        or not isinstance(raw_output, str)
+    ):
         raise RuntimeError("I1 diagnostic top-k payload is malformed")
+    if not format_valid:
+        if domain_valid or positions:
+            raise RuntimeError("I1 invalid-format diagnostic payload is malformed")
+        return
     if len(positions) != 4:
         raise RuntimeError("I1 diagnostic payload must cover four positions")
     for expected_index, position in enumerate(positions):

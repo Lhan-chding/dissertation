@@ -173,7 +173,7 @@ def _build_soft_report_payload(
     generated_logits: Sequence[object],
     value_domain: Sequence[int],
     top_k: int,
-) -> tuple[str, tuple[int, int, int, int], dict[str, object]]:
+) -> tuple[str, tuple[int, int, int, int] | None, dict[str, object]]:
     encode, decode = getattr(tokenizer, "encode", None), getattr(tokenizer, "decode", None)
     if not callable(encode) or not callable(decode):
         raise TypeError("S6 tokenizer must expose encode() and decode()")
@@ -195,7 +195,18 @@ def _build_soft_report_payload(
     raw = decode(generated, skip_special_tokens=True)
     parsed = _parse_world(raw)
     if parsed is None:
-        raise RuntimeError("S6 Stage-1 output is not a four-integer CSV")
+        return (
+            raw,
+            None,
+            {
+                "top_k": top_k,
+                "score_basis": "unavailable_invalid_format",
+                "raw_output": raw,
+                "output_format_valid": False,
+                "numeric_domain_valid": False,
+                "positions": [],
+            },
+        )
     emitted_tokens_by_value = _numeric_token_sequences(tokenizer, parsed)
     numeric_domain_valid = all(value in tokens_by_value for value in parsed)
     positions: list[dict[str, object]] = []
