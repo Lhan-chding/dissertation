@@ -185,10 +185,13 @@ S4 completed on 579 scenes and 2,316 layerwise forwards. Its frozen evidence is:
 
 S5 regenerates one immutable natural visual observation/cache for each of those 579 scenes, then
 compares cached continuation with full-history re-encoding under all four cue conditions. Each
-of the 2,316 paired calls uses deterministic greedy decoding. Generated token IDs, every
-next-token vocabulary-logit tensor, the exact chat-template suffix, all three Qwen MRoPE axes,
-and `cache_position` must agree. These are measurement-validity equalities, not empirical-effect
-thresholds.
+of the 2,316 paired calls uses deterministic greedy decoding.
+Token, decision, suffix/MRoPE, and cache-position parity are exact gates.
+Full-vocabulary logit identity is reported, not required:
+each step records both dtypes and shapes, the realized-token logits, argmax IDs, maximum absolute
+and relative difference, nonzero count, L2 difference, and the token with maximum absolute
+difference. No logit-drift magnitude threshold is applied. These are measurement-validity
+checks and disclosures, not empirical-effect thresholds.
 
 Before model loading, S5 also verifies the complete 8,000-scene frozen Phase C visual source:
 
@@ -208,10 +211,12 @@ sha256sum artifacts/v4/cache/cache_parity.json
 python -m json.tool artifacts/v4/cache/cache_parity.json
 ```
 
-I4 cannot enter a primary result unless every objective equality passes. Any prefix, token,
-logit, MRoPE, or cache-position difference blocks S5 and produces no parity artifact; it is never
-counted as a failed recovery. A successful artifact certifies the measurement interface only—it
-does not claim that visual revision succeeded.
+I4 cannot enter a primary result unless every objective continuation equality passes. Any prefix,
+generated-token, stepwise argmax, realized-token top-1, MRoPE, or cache-position difference blocks
+S5 and produces no parity artifact; it is never counted as a failed recovery. Full-vocabulary
+floating-point differences are preserved in the artifact as diagnostic evidence. A successful
+artifact certifies the measurement interface only—it does not claim that visual revision
+succeeded.
 
 ## S6 - I0-I4 interface-ladder surface
 

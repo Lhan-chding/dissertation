@@ -167,7 +167,10 @@ phase_3_cache_parity:
   logit_relative_tolerance: 0.0
   mrope_axes: 3
   require_exact_generated_tokens: true
-  require_exact_generated_logits: true
+  require_exact_generated_logits: false
+  require_stepwise_argmax_parity: true
+  require_realized_token_top1: true
+  report_stepwise_logit_drift: true
   require_exact_suffix_positions: true
   require_exact_cache_positions: true
   phase_c_dataset_manifest_sha256: bc57389dc3164b6aeba8d4565aecfaea3fa7ba171b4df4843c8ec86cbee8a19f

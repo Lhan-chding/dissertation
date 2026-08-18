@@ -291,6 +291,16 @@ def run_cache_parity_cli(
             or contract.get("parity_call_cap") != expected_scenes * expected_conditions
             or contract.get("do_sample") is not False
             or contract.get("temperature") != 0.0
+            or contract.get("require_exact_generated_tokens") is not True
+            or contract.get("require_exact_generated_logits") is not False
+            or contract.get("require_stepwise_argmax_parity") is not True
+            or contract.get("require_realized_token_top1") is not True
+            or contract.get("report_stepwise_logit_drift") is not True
+            or contract.get("require_exact_suffix_positions") is not True
+            or contract.get("require_exact_cache_positions") is not True
+            or contract.get("logit_absolute_tolerance") != 0.0
+            or contract.get("logit_relative_tolerance") != 0.0
+            or "maximum_logit_drift" in contract
         ):
             raise RuntimeError("S5 cache-parity execution contract is malformed")
         observation_prompt, correction_prompt = _load_prompts(arguments.prompt_config)

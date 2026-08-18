@@ -369,7 +369,7 @@ def manual_greedy_generate(
                 position_history.append(_position_tuple(prepared_positions, processed_length))
             if prepared_cache_positions is not None:
                 cache_position_history.append(prepared_cache_positions)
-            generated_logits.append(output.logits[:, -1, :].detach().to("cpu", torch.float32))
+            generated_logits.append(output.logits[:, -1, :].detach().to("cpu"))
             next_token = int(torch.argmax(output.logits[:, -1, :], dim=-1).item())
             next_tensor = torch.tensor(
                 [[next_token]], dtype=full_input_ids.dtype, device=full_input_ids.device
