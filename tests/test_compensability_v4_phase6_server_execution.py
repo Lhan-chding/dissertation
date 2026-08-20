@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import ast
 import importlib.util
+import inspect
 import json
 import sys
+import types
 from pathlib import Path
 
 import pytest
@@ -90,6 +92,82 @@ def test_phase6_execution_scripts_cover_data_grpo_resume_and_evaluation() -> Non
     prepare_source = (SCRIPT_DIR / "12_prepare_phase6_rl_data.py").read_text(encoding="utf-8")
     assert "Phase 5 summary no longer matches the execution manifest" in prepare_source
     assert "Phase 5 source hashes drifted from the execution manifest" in prepare_source
+
+
+def test_phase6_accepts_the_locked_trl_1_9_grpo_api_without_max_prompt_length(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    train = _load("test_phase6_train_trl_api", SCRIPT_DIR / "13_train_phase6_grpo.py")
+
+    class FakeGRPOConfig:
+        pass
+
+    class FakeGRPOTrainer:
+        pass
+
+    config_names = (
+        "output_dir",
+        "learning_rate",
+        "max_steps",
+        "num_generations",
+        "per_device_train_batch_size",
+        "gradient_accumulation_steps",
+        "max_completion_length",
+        "bf16",
+        "temperature",
+        "top_p",
+        "top_k",
+        "beta",
+        "use_vllm",
+    )
+    trainer_names = (
+        "model",
+        "reward_funcs",
+        "args",
+        "train_dataset",
+        "processing_class",
+        "callbacks",
+    )
+    FakeGRPOConfig.__signature__ = inspect.Signature(  # type: ignore[attr-defined]
+        inspect.Parameter(name, inspect.Parameter.KEYWORD_ONLY) for name in config_names
+    )
+    FakeGRPOTrainer.__signature__ = inspect.Signature(  # type: ignore[attr-defined]
+        inspect.Parameter(name, inspect.Parameter.KEYWORD_ONLY) for name in trainer_names
+    )
+    trl = types.ModuleType("trl")
+    trl.GRPOConfig = FakeGRPOConfig  # type: ignore[attr-defined]
+    trl.GRPOTrainer = FakeGRPOTrainer  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "trl", trl)
+
+    assert train._trl_api() == (FakeGRPOConfig, FakeGRPOTrainer)
+
+
+def test_phase6_enforces_the_frozen_prompt_limit_outside_trl() -> None:
+    train = _load("test_phase6_train_prompt_limit", SCRIPT_DIR / "13_train_phase6_grpo.py")
+
+    class FakeTokenizer:
+        def __call__(self, prompts, **kwargs):
+            assert kwargs == {
+                "add_special_tokens": True,
+                "padding": False,
+                "truncation": False,
+            }
+            return {
+                "input_ids": [[index] * len(prompt.split()) for index, prompt in enumerate(prompts)]
+            }
+
+    processor = types.SimpleNamespace(tokenizer=FakeTokenizer())
+    train._validate_prompt_lengths(
+        (types.SimpleNamespace(prompt="one two"),),
+        processor,
+        max_prompt_length=2,
+    )
+    with pytest.raises(RuntimeError, match="frozen 2-token limit"):
+        train._validate_prompt_lengths(
+            (types.SimpleNamespace(prompt="one two three"),),
+            processor,
+            max_prompt_length=2,
+        )
 
 
 def test_phase6_reward_trace_has_stable_call_groups_and_checkpoint_restore(
