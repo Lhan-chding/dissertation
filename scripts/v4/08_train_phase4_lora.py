@@ -42,12 +42,17 @@ _LOCKED_PATHS = (
     "docs/QWEN_V4_SERVER_HANDOFF.md",
     "pyproject.toml",
     "requirements-gpu.lock.txt",
+    "scripts/v4/07_prepare_phase4_support_sources.py",
     "scripts/v4/07_build_support_data.py",
     "scripts/v4/08_train_phase4_lora.py",
     "src/compensability_v4/training/__init__.py",
     "src/compensability_v4/training/phase4.py",
+    "src/compensability_v4/training/phase4_sources.py",
 )
 _ACK = "I_UNDERSTAND_THIS_STARTS_PHASE_4_LORA_TRAINING"
+PREPARED_SUPPORT = ROOT / "artifacts/v4/training/support.jsonl"
+PREPARED_SUMMARY = ROOT / "artifacts/v4/training/support_summary.json"
+DEFAULT_RUN_ROOT = ROOT / "artifacts/v4/training/runs/phase4-r1"
 
 
 def _validate_support_summary(path: Path, *, support_path: Path, expected_sha256: str) -> None:
@@ -62,6 +67,16 @@ def _validate_support_summary(path: Path, *, support_path: Path, expected_sha256
         or payload.get("final_recovery_format") != "a,b,c,d"
     ):
         raise RuntimeError("Phase 4 support summary/provenance is malformed")
+
+
+def _prepared_support_sha256(path: Path) -> str:
+    if path.is_symlink() or not path.is_file():
+        raise RuntimeError("Phase 4 prepared support summary is missing")
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    digest = payload.get("support_jsonl_sha256") if isinstance(payload, dict) else None
+    if not isinstance(digest, str) or len(digest) != 64:
+        raise RuntimeError("Phase 4 prepared support summary/provenance is malformed")
+    return digest
 
 
 def _prepare_model(
@@ -92,10 +107,11 @@ def main() -> int:
     parser.add_argument("--preflight-only", action="store_true")
     parser.add_argument("--config", type=Path, default=CONFIG)
     parser.add_argument("--package-lock", type=Path, default=LOCK)
-    parser.add_argument("--support", type=Path, required=True)
-    parser.add_argument("--support-sha256", required=True)
-    parser.add_argument("--support-summary", type=Path, required=True)
-    parser.add_argument("--output-root", type=Path, required=True)
+    parser.add_argument("--prepared-support", action="store_true")
+    parser.add_argument("--support", type=Path)
+    parser.add_argument("--support-sha256")
+    parser.add_argument("--support-summary", type=Path)
+    parser.add_argument("--output-root", type=Path, default=DEFAULT_RUN_ROOT)
     parser.add_argument("--artifact-root", type=Path, default=ROOT / "artifacts/v4/training")
     arguments = parser.parse_args()
     if not arguments.execute:
@@ -111,16 +127,34 @@ def main() -> int:
         verify_phase4_package_lock(
             lock_path=arguments.package_lock, repository_root=ROOT, expected_paths=_LOCKED_PATHS
         )
-        if len(arguments.support_sha256) != 64:
+        explicit = (arguments.support, arguments.support_sha256, arguments.support_summary)
+        if arguments.prepared_support:
+            if any(item is not None for item in explicit):
+                raise ValueError("--prepared-support cannot be mixed with explicit support flags")
+            support_path = PREPARED_SUPPORT
+            support_summary = PREPARED_SUMMARY
+            support_sha256 = _prepared_support_sha256(support_summary)
+        else:
+            if any(item is None for item in explicit):
+                raise ValueError(
+                    "explicit support path, SHA-256, and summary are required unless "
+                    "--prepared-support is used"
+                )
+            assert arguments.support is not None
+            assert arguments.support_sha256 is not None
+            assert arguments.support_summary is not None
+            support_path = arguments.support
+            support_sha256 = arguments.support_sha256
+            support_summary = arguments.support_summary
+        if len(support_sha256) != 64:
             raise RuntimeError("Phase 4 support SHA-256 is malformed")
         _validate_support_summary(
-            arguments.support_summary,
-            support_path=arguments.support,
-            expected_sha256=arguments.support_sha256,
+            support_summary,
+            support_path=support_path,
+            expected_sha256=support_sha256,
         )
         rows = {
-            variant: load_support_rows(arguments.support, variant=variant)
-            for variant in SupportVariant
+            variant: load_support_rows(support_path, variant=variant) for variant in SupportVariant
         }
         validate_phase4_preflight(config=config, output_root=arguments.output_root)
         require_server_model(Path(MODEL_PATH))

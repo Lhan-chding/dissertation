@@ -18,6 +18,10 @@ from compensability_v4.training.phase4 import (  # noqa: E402
     verify_phase4_package_lock,
     write_support_artifact,
 )
+from compensability_v4.training.phase4_sources import (  # noqa: E402
+    PreparedSourcePaths,
+    validate_prepared_source_summary,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 CONFIG = ROOT / "configs/recoverability/v4_phase_4.yaml"
@@ -28,11 +32,14 @@ _LOCKED_PATHS = (
     "docs/QWEN_V4_SERVER_HANDOFF.md",
     "pyproject.toml",
     "requirements-gpu.lock.txt",
+    "scripts/v4/07_prepare_phase4_support_sources.py",
     "scripts/v4/07_build_support_data.py",
     "scripts/v4/08_train_phase4_lora.py",
     "src/compensability_v4/training/__init__.py",
     "src/compensability_v4/training/phase4.py",
+    "src/compensability_v4/training/phase4_sources.py",
 )
+PREPARED_ROOT = ROOT / "artifacts/v4/training/sources"
 
 
 def _require_hash(path: Path, expected: str, label: str) -> str:
@@ -51,12 +58,14 @@ def main() -> int:
     parser.add_argument("--execute", action="store_true")
     parser.add_argument("--config", type=Path, default=CONFIG)
     parser.add_argument("--package-lock", type=Path, default=LOCK)
-    parser.add_argument("--symbolic-scenes", type=Path, required=True)
-    parser.add_argument("--symbolic-scenes-sha256", required=True)
-    parser.add_argument("--natural-scenes", type=Path, required=True)
-    parser.add_argument("--natural-scenes-sha256", required=True)
-    parser.add_argument("--natural-observations", type=Path, required=True)
-    parser.add_argument("--natural-observations-sha256", required=True)
+    parser.add_argument("--prepared-sources", action="store_true")
+    parser.add_argument("--prepared-source-root", type=Path, default=PREPARED_ROOT)
+    parser.add_argument("--symbolic-scenes", type=Path)
+    parser.add_argument("--symbolic-scenes-sha256")
+    parser.add_argument("--natural-scenes", type=Path)
+    parser.add_argument("--natural-scenes-sha256")
+    parser.add_argument("--natural-observations", type=Path)
+    parser.add_argument("--natural-observations-sha256")
     parser.add_argument("--output", type=Path, default=ROOT / "artifacts/v4/training/support.jsonl")
     parser.add_argument(
         "--summary", type=Path, default=ROOT / "artifacts/v4/training/support_summary.json"
@@ -70,23 +79,60 @@ def main() -> int:
         verify_phase4_package_lock(
             lock_path=arguments.package_lock, repository_root=ROOT, expected_paths=_LOCKED_PATHS
         )
-        source_hashes = {
-            "symbolic_scenes": _require_hash(
-                arguments.symbolic_scenes, arguments.symbolic_scenes_sha256, "symbolic scenes"
-            ),
-            "natural_scenes": _require_hash(
-                arguments.natural_scenes, arguments.natural_scenes_sha256, "natural scenes"
-            ),
-            "natural_observations": _require_hash(
-                arguments.natural_observations,
-                arguments.natural_observations_sha256,
-                "natural observations",
-            ),
-        }
+        explicit = (
+            arguments.symbolic_scenes,
+            arguments.symbolic_scenes_sha256,
+            arguments.natural_scenes,
+            arguments.natural_scenes_sha256,
+            arguments.natural_observations,
+            arguments.natural_observations_sha256,
+        )
+        if arguments.prepared_sources:
+            if any(item is not None for item in explicit):
+                raise ValueError("--prepared-sources cannot be mixed with explicit source flags")
+            prepared = PreparedSourcePaths(
+                symbolic_scenes=arguments.prepared_source_root / "symbolic_scenes.jsonl",
+                natural_scenes=arguments.prepared_source_root / "natural_scenes.jsonl",
+                natural_observations=arguments.prepared_source_root / "natural_observations.jsonl",
+                selection_trace=arguments.prepared_source_root / "selection_trace.jsonl",
+                summary=arguments.prepared_source_root / "source_summary.json",
+            )
+            source_hashes = validate_prepared_source_summary(prepared.summary, paths=prepared)
+            symbolic_path = prepared.symbolic_scenes
+            natural_path = prepared.natural_scenes
+            observation_path = prepared.natural_observations
+        else:
+            if any(item is None for item in explicit):
+                raise ValueError(
+                    "explicit Phase 4 source paths and SHA-256 values are required unless "
+                    "--prepared-sources is used"
+                )
+            assert arguments.symbolic_scenes is not None
+            assert arguments.symbolic_scenes_sha256 is not None
+            assert arguments.natural_scenes is not None
+            assert arguments.natural_scenes_sha256 is not None
+            assert arguments.natural_observations is not None
+            assert arguments.natural_observations_sha256 is not None
+            symbolic_path = arguments.symbolic_scenes
+            natural_path = arguments.natural_scenes
+            observation_path = arguments.natural_observations
+            source_hashes = {
+                "symbolic_scenes": _require_hash(
+                    symbolic_path, arguments.symbolic_scenes_sha256, "symbolic scenes"
+                ),
+                "natural_scenes": _require_hash(
+                    natural_path, arguments.natural_scenes_sha256, "natural scenes"
+                ),
+                "natural_observations": _require_hash(
+                    observation_path,
+                    arguments.natural_observations_sha256,
+                    "natural observations",
+                ),
+            }
         symbolic, natural, errors = load_support_sources(
-            symbolic_scenes_path=arguments.symbolic_scenes,
-            natural_scenes_path=arguments.natural_scenes,
-            natural_observations_path=arguments.natural_observations,
+            symbolic_scenes_path=symbolic_path,
+            natural_scenes_path=natural_path,
+            natural_observations_path=observation_path,
         )
         write_support_artifact(
             output_path=arguments.output,

@@ -6,16 +6,20 @@ files:
   - path: docs/Qwen25VL_Constraint_Assimilation_Natural_State_RL_Codex_Plan_v4.md
     sha256: 01e532f8c7fe5439c70e8cd8de81ff3448465d8d401dbbf478c76aebaf49641e
   - path: docs/QWEN_V4_SERVER_HANDOFF.md
-    sha256: 071c96b74bb2f377475f7cc1e37c0353212514511dee3964717617e2194c68ff
+    sha256: f9c1840644a2a80a48835700dd8e9fb9693e0069c0080fff152c8719106a480d
   - path: pyproject.toml
     sha256: 6f874b01dc23c49bb3f65d7aa36d7be70cf4338699a640c0a94cd56db32bb365
   - path: requirements-gpu.lock.txt
     sha256: d928379a590e5071d9b5042fe99d480f57ab187f0cb3a74e13af219a6048aeb3
+  - path: scripts/v4/07_prepare_phase4_support_sources.py
+    sha256: 3dd124a10e08d68527431c7a1cdcc40951a33a09c5b98a18f2c38ad6eaa5c8ed
   - path: scripts/v4/07_build_support_data.py
-    sha256: 51063c3db2f07c372de87b2b17025632f11176b4f999a0b9def111953edf0191
+    sha256: 65a493f0e121e347030a68b813dfc7cc588e9163ec505f28abb2ad9eae67b1f1
   - path: scripts/v4/08_train_phase4_lora.py
-    sha256: 6625b817fe688fe1f6bcd55fdf184950fb21c8ed0adb6d087c891dfeca291ec3
+    sha256: e9bd019ff8b8d5c2d57f9bfb68892af5500090a0dd7fcdea14d5f0628e2cdc8d
   - path: src/compensability_v4/training/__init__.py
     sha256: 624bf0ec63047fd0118de8095e20bdc3ff82cec6222b9428fa46c23c2602d331
   - path: src/compensability_v4/training/phase4.py
     sha256: 183b5172df546d21bc77ece24167a2a814c42e24af1617a47384b9f081e388ac
+  - path: src/compensability_v4/training/phase4_sources.py
+    sha256: 9749ef2aceb4f4007628c1da2e31c3da7004a2370918f541ea234472202b8855

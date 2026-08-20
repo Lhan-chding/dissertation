@@ -284,47 +284,49 @@ coverage is software QA only, not a scientific result threshold.
 
 ## Phase 4 - language-only LoRA support injection
 
-Phase 4 accepts only three independently collected, hash-bound JSONL inputs:
+Phase 4 consumes three hash-bound JSONL inputs:
 
 - symbolic support scenes with split `symbolic_support_train`;
 - natural support scenes with split `natural_error_support_train`;
 - one frozen-base Stage-1 natural observation per natural support scene, with exactly one error.
 
-The builder rejects confirm splits, unpaired observations, duplicated provenance, and scenes with
-anything other than the declared single-position natural error. It does not create a synthetic
-substitute for natural observations. The training command checks the support corpus hash and its
-summary, package lock, offline environment, GPU dependency installation, CUDA, bf16 capability,
-model snapshot, exact `named_modules()` LoRA targets, frozen base hashes, trainable parameters,
-and output non-overwrite before constructing an optimizer step. It trains C0, C1, and T in order.
+The source-preparation command needs no user-supplied paths. It generates 579 deterministic
+`symbolic_support_train` scenes with seed `2026081804`, reads the completed S6 17-cell artifact,
+reconstructs the 579 frozen I1 Stage-1 observations against the hash-pinned Phase-C visual dataset,
+and retains every observation with exactly one in-domain position error. S6 is legacy diagnostic
+evidence and is not a confirm split. Malformed, zero-error, multiple-error, and out-of-domain I1
+outputs remain in `selection_trace.jsonl` and are not training examples. The command fails if S6
+closure, model provenance, visual-dataset hashes, or natural single-error support are absent.
 
-Set the three input paths and execute the following commands from the repository root. The run
-directory must not exist; the parameter manifests must not already exist under
+The builder rejects confirm splits, unpaired observations, duplicated provenance, and scenes with
+anything other than the declared single-position natural error. The training command checks the
+support corpus hash and its summary, package lock, offline environment, GPU dependency
+installation, CUDA, bf16 capability, model snapshot, exact `named_modules()` LoRA targets, frozen
+base hashes, trainable parameters, and output non-overwrite before constructing an optimizer step.
+It trains C0, C1, and T in order.
+
+Execute the following commands from the repository root. No path substitution is required. The
+run directory must not exist; the parameter manifests must not already exist under
 `artifacts/v4/training`.
 
 ```bash
-SYMBOLIC_SCENES=/absolute/path/to/symbolic_support_train_scenes.jsonl
-NATURAL_SCENES=/absolute/path/to/natural_error_support_train_scenes.jsonl
-NATURAL_OBSERVATIONS=/absolute/path/to/frozen_base_stage1_natural_observations.jsonl
+python scripts/v4/07_prepare_phase4_support_sources.py --execute
+python scripts/v4/07_build_support_data.py --execute --prepared-sources
 
-python scripts/v4/07_build_support_data.py --execute \
-  --symbolic-scenes "$SYMBOLIC_SCENES" \
-  --symbolic-scenes-sha256 "$(sha256sum "$SYMBOLIC_SCENES" | awk '{print $1}')" \
-  --natural-scenes "$NATURAL_SCENES" \
-  --natural-scenes-sha256 "$(sha256sum "$NATURAL_SCENES" | awk '{print $1}')" \
-  --natural-observations "$NATURAL_OBSERVATIONS" \
-  --natural-observations-sha256 "$(sha256sum "$NATURAL_OBSERVATIONS" | awk '{print $1}')"
+sha256sum \
+  artifacts/v4/training/sources/symbolic_scenes.jsonl \
+  artifacts/v4/training/sources/natural_scenes.jsonl \
+  artifacts/v4/training/sources/natural_observations.jsonl \
+  artifacts/v4/training/sources/selection_trace.jsonl \
+  artifacts/v4/training/sources/source_summary.json \
+  artifacts/v4/training/support.jsonl \
+  artifacts/v4/training/support_summary.json
 
-SUPPORT_SHA="$(sha256sum artifacts/v4/training/support.jsonl | awk '{print $1}')"
-RUN_ROOT=artifacts/v4/training/runs/phase4-20260818-r1
-
-python scripts/v4/08_train_phase4_lora.py --execute --preflight-only \
-  --support artifacts/v4/training/support.jsonl --support-sha256 "$SUPPORT_SHA" \
-  --support-summary artifacts/v4/training/support_summary.json --output-root "$RUN_ROOT"
+python scripts/v4/08_train_phase4_lora.py \
+  --execute --preflight-only --prepared-support
 
 export COMPBIAS_V4_TRAINING_ACK=I_UNDERSTAND_THIS_STARTS_PHASE_4_LORA_TRAINING
-python scripts/v4/08_train_phase4_lora.py --execute \
-  --support artifacts/v4/training/support.jsonl --support-sha256 "$SUPPORT_SHA" \
-  --support-summary artifacts/v4/training/support_summary.json --output-root "$RUN_ROOT"
+python scripts/v4/08_train_phase4_lora.py --execute --prepared-support
 ```
 
 The required output evidence is:
@@ -332,9 +334,9 @@ The required output evidence is:
 ```text
 artifacts/v4/training/trainable_parameter_manifest.json
 artifacts/v4/training/frozen_hashes.json
-artifacts/v4/training/runs/<run>/C0_format_only/final_adapter
-artifacts/v4/training/runs/<run>/C1_forward_arithmetic/final_adapter
-artifacts/v4/training/runs/<run>/T_constraint_recovery/final_adapter
+artifacts/v4/training/runs/phase4-r1/C0_format_only/final_adapter
+artifacts/v4/training/runs/phase4-r1/C1_forward_arithmetic/final_adapter
+artifacts/v4/training/runs/phase4-r1/T_constraint_recovery/final_adapter
 ```
 
 Return S0-S6 and Phase 4 console output, the Git revision, every produced SHA-256 line, and any

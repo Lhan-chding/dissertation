@@ -388,3 +388,210 @@ def test_phase4_preparation_rejects_incomplete_s6_cell_closure():
             value_domain=range(2, 19),
             image_grid_thw=(1, 20, 20),
         )
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "message"),
+    [
+        ({"candidate_cap": 0, "selection_seed": 1}, "candidate_cap"),
+        ({"candidate_cap": 1, "selection_seed": True}, "selection_seed"),
+    ],
+)
+def test_phase4_independent_selection_rejects_invalid_controls(kwargs, message):
+    from compensability_v4.training.phase4_sources import build_independent_natural_scenes
+
+    with pytest.raises((TypeError, ValueError), match=message):
+        build_independent_natural_scenes(
+            (_record("source-001"),),
+            confirm_scene_ids=frozenset(),
+            **kwargs,
+        )
+
+
+def test_phase4_independent_selection_rejects_duplicates_and_insufficient_pool():
+    from compensability_v4.training.phase4_sources import build_independent_natural_scenes
+
+    with pytest.raises(ValueError, match="not unique"):
+        build_independent_natural_scenes(
+            (_record("source-001"), _record("source-001")),
+            confirm_scene_ids=frozenset(),
+            candidate_cap=1,
+            selection_seed=1,
+        )
+    with pytest.raises(RuntimeError, match="smaller"):
+        build_independent_natural_scenes(
+            (_record("source-001"),),
+            confirm_scene_ids=frozenset({"source-001"}),
+            candidate_cap=1,
+            selection_seed=1,
+        )
+
+
+@pytest.mark.parametrize(
+    ("records", "image_paths", "grid", "message"),
+    [
+        ((), {}, (1, 19, 20), "image_grid_thw"),
+        ((object(),), {}, (1, 20, 20), "must be mappings"),
+        (
+            (
+                {
+                    "interface": "I1_soft_report_diagnostic",
+                    "cue_condition": "valid_cue",
+                    "source_stage": "S6_runtime",
+                    "source_branch": "stage1_soft_report_runtime",
+                },
+            ),
+            {},
+            (1, 20, 20),
+            "provenance",
+        ),
+        ((), {}, (1, 20, 20), "contains no I1"),
+    ],
+)
+def test_phase4_legacy_candidate_builder_fails_closed(records, image_paths, grid, message):
+    from compensability_v4.training.phase4_sources import build_legacy_s6_natural_candidates
+
+    with pytest.raises((RuntimeError, TypeError, ValueError), match=message):
+        build_legacy_s6_natural_candidates(
+            records,
+            image_paths=image_paths,
+            image_grid_thw=grid,
+        )
+
+
+def test_phase4_prepared_summary_detects_missing_or_drifted_files(tmp_path: Path):
+    from compensability_v4.training.phase4_sources import validate_prepared_source_summary
+
+    with pytest.raises(RuntimeError, match="missing"):
+        validate_prepared_source_summary(tmp_path / "missing.json")
+
+    summary = tmp_path / "source_summary.json"
+    summary.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "artifact_type": "phase_4_prepared_support_sources",
+                "status": "PHASE_4_SUPPORT_SOURCES_PREPARED_FROM_FROZEN_S6",
+                "contains_confirmatory_data": False,
+                "counts": {"symbolic_scenes": 1, "natural_single_error_scenes": 1},
+                "output_hashes": {
+                    "symbolic_scenes": "a" * 64,
+                    "natural_scenes": "b" * 64,
+                    "natural_observations": "c" * 64,
+                    "selection_trace": "d" * 64,
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(RuntimeError, match="hash mismatch"):
+        validate_prepared_source_summary(summary)
+
+
+def test_phase4_prepared_summary_rejects_boolean_counts(tmp_path: Path):
+    from compensability_v4.training.phase4_sources import validate_prepared_source_summary
+
+    summary = tmp_path / "source_summary.json"
+    summary.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "artifact_type": "phase_4_prepared_support_sources",
+                "status": "PHASE_4_SUPPORT_SOURCES_PREPARED_FROM_FROZEN_S6",
+                "contains_confirmatory_data": False,
+                "counts": {
+                    "symbolic_scenes": True,
+                    "natural_single_error_scenes": 1,
+                },
+                "output_hashes": {
+                    "symbolic_scenes": "a" * 64,
+                    "natural_scenes": "b" * 64,
+                    "natural_observations": "c" * 64,
+                    "selection_trace": "d" * 64,
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(RuntimeError, match="malformed"):
+        validate_prepared_source_summary(summary)
+
+
+def test_phase4_natural_filter_records_multiple_errors_and_target_truncation():
+    from compensability_v4.training.phase4_sources import (
+        NaturalObservationCapture,
+        build_independent_natural_scenes,
+        retain_natural_single_error_scenes,
+    )
+
+    scene = build_independent_natural_scenes(
+        (_record("natural-filter", values=(6, 9, 12, 15)),),
+        confirm_scene_ids=frozenset(),
+        candidate_cap=1,
+        selection_seed=1,
+    )[0]
+    retained, observations, traces = retain_natural_single_error_scenes(
+        (scene,),
+        (NaturalObservationCapture(scene.scene_id, "7,10,12,15", (1, 20, 20), 100),),
+        model_snapshot_sha256="a" * 64,
+        target_count=0,
+    )
+    assert retained == observations == ()
+    assert traces[0]["selection_status"] == "rejected_multiple_errors"
+
+    retained, observations, traces = retain_natural_single_error_scenes(
+        (scene,),
+        (NaturalObservationCapture(scene.scene_id, "7,9,12,15", (1, 20, 20), 100),),
+        model_snapshot_sha256="a" * 64,
+        target_count=0,
+    )
+    assert retained == observations == ()
+    assert traces[0]["retained"] is False
+
+
+def test_phase4_preparation_rejects_summary_and_source_hash_drift(tmp_path: Path):
+    from compensability_v4.training.phase4_sources import (
+        prepare_legacy_s6_support_sources,
+        write_prepared_support_sources,
+    )
+
+    rows = _s6_rows("legacy-001", family="trend", truth=(2, 4, 6, 8), raw_output="2,4,7,8")
+    with pytest.raises(RuntimeError, match="summary contract"):
+        prepare_legacy_s6_support_sources(
+            interface_records=rows,
+            interface_summary={"status": "wrong"},
+            dataset_records=(_record("legacy-001", values=(2, 4, 6, 8)),),
+            model_snapshot_sha256="a" * 64,
+            expected_scenes=1,
+            symbolic_scene_count=1,
+            symbolic_seed=17,
+            value_domain=range(2, 19),
+            image_grid_thw=(1, 20, 20),
+        )
+
+    prepared = prepare_legacy_s6_support_sources(
+        interface_records=rows,
+        interface_summary={
+            "status": "PHASE_3_INTERFACE_LADDER_EXECUTED_WITH_DIAGNOSTICS",
+            "number_of_source_scenes": 1,
+            "number_of_cells": 17,
+            "model_snapshot_sha256": "a" * 64,
+            "training_invoked": False,
+            "rl_invoked": False,
+            "subjective_success_threshold_applied": False,
+        },
+        dataset_records=(_record("legacy-001", values=(2, 4, 6, 8)),),
+        model_snapshot_sha256="a" * 64,
+        expected_scenes=1,
+        symbolic_scene_count=1,
+        symbolic_seed=17,
+        value_domain=range(2, 19),
+        image_grid_thw=(1, 20, 20),
+    )
+    with pytest.raises(ValueError, match="input hashes"):
+        write_prepared_support_sources(
+            output_root=tmp_path / "bad-hashes",
+            prepared=prepared,
+            source_hashes={"s6_per_scene": "not-a-hash"},
+        )

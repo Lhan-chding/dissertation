@@ -8,7 +8,7 @@ files:
   - path: docs/Qwen25VL_Constraint_Assimilation_Natural_State_RL_Codex_Plan_v4.md
     sha256: 01e532f8c7fe5439c70e8cd8de81ff3448465d8d401dbbf478c76aebaf49641e
   - path: docs/QWEN_V4_SERVER_HANDOFF.md
-    sha256: 071c96b74bb2f377475f7cc1e37c0353212514511dee3964717617e2194c68ff
+    sha256: f9c1840644a2a80a48835700dd8e9fb9693e0069c0080fff152c8719106a480d
   - path: pyproject.toml
     sha256: 6f874b01dc23c49bb3f65d7aa36d7be70cf4338699a640c0a94cd56db32bb365
   - path: requirements-gpu.lock.txt
@@ -28,9 +28,9 @@ files:
   - path: scripts/v4/06_run_interface_ladder.py
     sha256: 7741e5c39b52a92f6e90f06db869a8ed75c97508d0716a494e4b9c56a407a48b
   - path: scripts/v4/07_build_support_data.py
-    sha256: 51063c3db2f07c372de87b2b17025632f11176b4f999a0b9def111953edf0191
+    sha256: 65a493f0e121e347030a68b813dfc7cc588e9163ec505f28abb2ad9eae67b1f1
   - path: scripts/v4/08_train_phase4_lora.py
-    sha256: 6625b817fe688fe1f6bcd55fdf184950fb21c8ed0adb6d087c891dfeca291ec3
+    sha256: e9bd019ff8b8d5c2d57f9bfb68892af5500090a0dd7fcdea14d5f0628e2cdc8d
   - path: scripts/v4/_guards.py
     sha256: f43ee1d8d94a10db5d15e3bb0e0483fbb42ffc23283ceec864ddafb00a7e15fb
   - path: scripts/v4/_phase_cli.py

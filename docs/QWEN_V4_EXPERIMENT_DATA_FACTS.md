@@ -4,7 +4,7 @@
 
 - 文档范围：Qwen2.5-VL v4 的既有审计、能力链、候选打分、层间同化、缓存一致性和接口阶梯运行记录，以及计划中后续阶段的执行状态。
 - 本文只记录输入、配置、命令、哈希、计数、数值、输出路径、状态和控制台错误；不包含对结果的解释、推断或结论。
-- 记录时间：2026-08-18；本地代码修订：`1bb39955711f3065c6d9479cb65df908117d3f75`。
+- 记录更新时间：2026-08-20；S6 完成事实记录提交：`2216c6d5fa77e7d71f1d2bb039f51a1961010f31`。
 - 项目根目录：`/cloud/cloud-ssd1/dissertation`。
 - 计划文件：`docs/Qwen25VL_Constraint_Assimilation_Natural_State_RL_Codex_Plan_v4.md`，SHA-256 为 `01e532f8c7fe5439c70e8cd8de81ff3448465d8d401dbbf478c76aebaf49641e`。
 - 下表中的“本地可见”仅指本报告生成时的当前工作区；服务器上已生成、但未同步到当前工作区的文件，保留其服务器路径和已记录哈希。
@@ -43,8 +43,8 @@ S1 运行时清单要求的模块名：`model.visual.blocks.0`、`model.visual.b
 | S3 / Phase 2 candidate scoring | `03_score_candidates.py` | 已完成；作为后续哈希绑定输入 | 579 scenes；2,316 forwards | 见 S3 表 |
 | S4 / Phase 2 layerwise | `04_layerwise_assimilation.py` | `PHASE_2_LAYERWISE_ASSIMILATION_EXECUTED` | 579 scenes；2,316 forwards；36 layers | 见 S4 表 |
 | S5 / Phase 3 cache | `05_validate_cache_runner.py` | `PHASE_3_EXECUTED_WITH_DIAGNOSTICS` | 579 scenes；2,316 parity calls | `c52cb71d42c83e3a32c57c00e006f5117631b9cab25a2ef8fbe62001ff572351` |
-| S6 / Phase 3 interface ladder | `06_run_interface_ladder.py` | 首次服务器执行受阻；无 S6 输出产物 | 预定 579 scenes；9,843 cells | 无 |
-| Phase 4 LoRA | 计划中的支持注入式训练 | 本报告记录时未执行 | 无已记录训练调用 | 无 |
+| S6 / Phase 3 interface ladder | `06_run_interface_ladder.py` | `PHASE_3_INTERFACE_LADDER_EXECUTED_WITH_DIAGNOSTICS` | 579 scenes；9,843 cells | 服务器控制台未记录两个输出文件的 SHA-256 |
+| Phase 4 LoRA | source preparation、support build 和 LoRA executor 已实现；服务器尚未执行 | 未执行训练 | 0 个已记录训练调用 | 无 |
 | Phase 5 policy support | 计划中的 checkpoint 测量 | 未执行 | 无 | 无 |
 | Phase 6 RL | 计划中的 RL 实验 | 未执行 | 无 | 无 |
 | Phase 7 multimodal | 计划中的真实多模态评估 | 未执行 | 无 | 无 |
@@ -342,7 +342,8 @@ valid_minus_sham_margin =
 | S5 | `S5 generated-logit parity failed at step 0` | 后续修订后重新运行 |
 | S5 | `S5 generated-token parity failed` | 后续修订后改为保存逐 call diagnostics 并继续其余 calls |
 | S5 | `S5 generated-token parity failed: call_id=phase-c-screen-000118.sham_cue, ... cached_token=16, full_token=23, ...` | 后续修订后完成全部 2,316 calls 和 579 visual states |
-| S6 | `S6 numeric values must each be a stable single token` | 本报告生成时 S6 尚无输出文件 |
+| S6 | `S6 numeric values must each be a stable single token` | 后续改为完整 token sequence 后重跑 |
+| S6 | `S6 Stage-1 output lies outside the frozen numeric domain` | 后续保留为 I1 diagnostic，第三次服务器执行完成 579 scenes / 9,843 cells |
 
 ## 计划中 Phase 4--7 的执行状态与已冻结参数
 
@@ -369,6 +370,14 @@ valid_minus_sham_margin =
 | `merger_frozen` | true |
 | 训练数据类别 | `symbolic_support_train`；`natural_error_support_train` |
 | `support_dev` | 用于预先冻结 learning rate、batch、epoch |
+| source preparation | `scripts/v4/07_prepare_phase4_support_sources.py --execute` |
+| symbolic source | 程序生成 579 个 `symbolic_support_train` scenes；seed=`2026081804`；value domain=`2..18` |
+| natural source | 完成的 S6 artifact 中 579 个 I1/no-cue frozen Stage-1 raw outputs；仅保留单位置、域内错误 |
+| source trace | `artifacts/v4/training/sources/selection_trace.jsonl` 保存每个 I1 candidate 的 accepted/rejected status |
+| prepared source outputs | `symbolic_scenes.jsonl`；`natural_scenes.jsonl`；`natural_observations.jsonl`；`selection_trace.jsonl`；`source_summary.json` |
+| support build | `scripts/v4/07_build_support_data.py --execute --prepared-sources` |
+| GPU preflight | `scripts/v4/08_train_phase4_lora.py --execute --preflight-only --prepared-support` |
+| training command | 设置固定 acknowledgement 后执行 `scripts/v4/08_train_phase4_lora.py --execute --prepared-support` |
 
 ### Phase 5--7
 
@@ -414,6 +423,10 @@ export TRANSFORMERS_OFFLINE=1
 | S4 | `python scripts/v4/04_layerwise_assimilation.py --execute` | 是 | 7 |
 | S5 | `python scripts/v4/05_validate_cache_runner.py --execute` | 是 | 2 |
 | S6 | `python scripts/v4/06_run_interface_ladder.py --execute` | 是 | 10 |
+| Phase 4 source preparation | `python scripts/v4/07_prepare_phase4_support_sources.py --execute` | 是 | 默认读取已完成 S6 与冻结视觉数据集 |
+| Phase 4 support build | `python scripts/v4/07_build_support_data.py --execute --prepared-sources` | 是 | 读取 3 个 prepared JSONL 与 source summary |
+| Phase 4 GPU preflight | `python scripts/v4/08_train_phase4_lora.py --execute --preflight-only --prepared-support` | 是 | 读取 support corpus 与 summary |
+| Phase 4 LoRA training | `python scripts/v4/08_train_phase4_lora.py --execute --prepared-support` | 是；另需固定 ACK 环境变量 | 读取 support corpus 与 summary |
 
 完整 S6 命令中的 10 个输入及其 SHA-256 已列于“哈希绑定的执行输入清单”。脚本的完整命令行定义位于 `docs/QWEN_V4_SERVER_HANDOFF.md` 的 S6 节。
 
