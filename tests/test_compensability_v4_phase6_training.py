@@ -6,6 +6,7 @@ import pytest
 
 from compensability_v4.data.splits import DatasetSplit
 from compensability_v4.schemas.observation import NaturalObservation
+from compensability_v4.schemas.scene import RecoveryScene
 from compensability_v4.training.phase6 import (
     Phase6Example,
     Phase6TrainingConfig,
@@ -20,39 +21,35 @@ from compensability_v4.training.phase6 import (
 
 
 def _scene(scene_id: str = "natural-a") -> dict[str, object]:
-    return {
-        "schema_version": 1,
-        "scene_id": scene_id,
-        "split": DatasetSplit.NATURAL_ERROR_SUPPORT_TRAIN.value,
-        "semantic_scene_id": f"semantic-{scene_id}",
-        "numeric_table_id": f"numeric-{scene_id}",
-        "constraint_graph_id": f"graph-{scene_id}",
-        "truth": [2, 3, 5, 7],
-        "facts": [
+    return RecoveryScene(
+        scene_id=scene_id,
+        split=DatasetSplit.NATURAL_ERROR_SUPPORT_TRAIN,
+        semantic_scene_id=f"semantic-{scene_id}",
+        numeric_table_id=f"numeric-{scene_id}",
+        constraint_graph_id=f"graph-{scene_id}",
+        truth=(2, 3, 5, 7),
+        facts=(
             {"type": "known_value", "index": 1, "value": 3},
             {"type": "known_value", "index": 2, "value": 5},
             {"type": "known_value", "index": 3, "value": 7},
             {"type": "pair_sum", "left_index": 0, "right_index": 1, "total": 5},
-        ],
-        "resized_height": 280,
-        "resized_width": 280,
-        "image_path": f"images/{scene_id}.png",
-    }
+        ),
+        resized_height=280,
+        resized_width=280,
+        image_path=f"images/{scene_id}.png",
+    ).to_mapping()
 
 
 def _observation(scene_id: str = "natural-a") -> dict[str, object]:
-    return {
-        "schema_version": 1,
-        "observation_id": f"obs-{scene_id}",
-        "scene_id": scene_id,
-        "split": DatasetSplit.NATURAL_ERROR_SUPPORT_TRAIN.value,
-        "model_snapshot_sha256": "a" * 64,
-        "observed_values": [2, 3, 8, 7],
-        "raw_output": "2,3,8,7",
-        "parse_success": True,
-        "error_count": 1,
-        "error_index": 2,
-    }
+    return NaturalObservation(
+        observation_id=f"obs-{scene_id}",
+        scene_id=scene_id,
+        observed_values=(2, 3, 8, 7),
+        error_index=2,
+        stage1_model_hash="a" * 64,
+        image_grid_thw=(1, 20, 20),
+        visual_token_count=100,
+    ).to_mapping()
 
 
 def _record(scene_id: str = "natural-a") -> dict[str, object]:

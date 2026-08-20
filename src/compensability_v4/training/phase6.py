@@ -269,10 +269,7 @@ def build_phase6_examples(
     output: list[Phase6Example] = []
     for scene_id in sorted(scenes):
         scene, observation, record = scenes[scene_id], observations[scene_id], records[scene_id]
-        if (
-            scene.get("split") != DatasetSplit.NATURAL_ERROR_SUPPORT_TRAIN.value
-            or observation.get("split") != DatasetSplit.NATURAL_ERROR_SUPPORT_TRAIN.value
-        ):
+        if scene.get("split") != DatasetSplit.NATURAL_ERROR_SUPPORT_TRAIN.value:
             raise ValueError("Phase 6 examples must use natural_error_support_train")
         truth = _world(scene.get("truth"), "truth")
         observed = _world(observation.get("observed_values"), "observation")
