@@ -19,6 +19,7 @@ from compensability_v4.training.phase4 import (
     _parameter_bytes,
     build_support_sets,
     discover_language_lora_targets,
+    freeze_base_parameters,
     load_phase4_config,
     validate_phase4_preflight,
     verify_phase4_package_lock,
@@ -241,6 +242,37 @@ def test_frozen_parameter_hash_serializes_bfloat16_without_loss() -> None:
     for parameter in parameters:
         expected = parameter.reshape(-1).view(torch.uint8).numpy().tobytes()
         assert _parameter_bytes(parameter) == expected
+
+
+def test_freeze_base_parameters_separates_visual_merger_from_vision() -> None:
+    torch = pytest.importorskip("torch")
+
+    class _QwenNamedParameters:
+        def named_parameters(self):
+            return iter(
+                (
+                    (
+                        "model.visual.blocks.0.attn.qkv.weight",
+                        torch.nn.Parameter(torch.ones(2, dtype=torch.bfloat16)),
+                    ),
+                    (
+                        "model.visual.merger.mlp.0.weight",
+                        torch.nn.Parameter(torch.ones(2, dtype=torch.bfloat16)),
+                    ),
+                    (
+                        "model.language_model.layers.0.self_attn.q_proj.weight",
+                        torch.nn.Parameter(torch.ones(2, dtype=torch.bfloat16)),
+                    ),
+                )
+            )
+
+    frozen = freeze_base_parameters(_QwenNamedParameters())
+
+    assert frozen["parameter_counts"] == {
+        "language_base": 1,
+        "merger": 1,
+        "vision": 1,
+    }
 
 
 def test_preflight_requires_cuda_bf16_and_all_gpu_dependencies(
