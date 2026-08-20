@@ -18,6 +18,9 @@ import yaml
 
 from compensability_v4.data.splits import CONFIRM_SPLITS, DatasetSplit
 from compensability_v4.eval.statistics import holm_adjust
+from compensability_v4.qwen.phase7_interface_audit import (
+    summarize_phase7_interface_evidence as summarize_phase7_interface_evidence,
+)
 
 _SHA256 = re.compile(r"[0-9a-f]{64}")
 _FAMILIES = frozenset({"cross_series", "duplicate_encoding", "trend"})
@@ -65,6 +68,8 @@ PHASE7_LOCKED_PATHS = (
     "requirements-gpu.lock.txt",
     "scripts/v4/15_prepare_phase7_multimodal.py",
     "scripts/v4/16_evaluate_phase7_multimodal.py",
+    "scripts/v4/17_audit_phase7_interface.py",
+    "src/compensability_v4/qwen/phase7_interface_audit.py",
     "src/compensability_v4/qwen/phase7_runtime.py",
 )
 
@@ -786,15 +791,9 @@ def verify_phase7_package_lock(
     return hashlib.sha256(lock_path.read_bytes()).hexdigest()
 
 
-__all__ = [
-    "PHASE7_LOCKED_PATHS",
-    "Phase7ChainRow",
-    "Phase7PlanConfig",
-    "build_phase7_execution_manifest",
-    "load_phase7_config",
-    "summarize_phase7",
-    "validate_phase7_execution_manifest",
-    "validate_phase7_rows",
-    "verify_phase7_package_lock",
-    "write_phase7_outputs",
-]
+__all__ = (  # noqa: SIM905 - compact explicit public surface keeps module within 800 lines
+    "PHASE7_LOCKED_PATHS Phase7ChainRow Phase7PlanConfig build_phase7_execution_manifest "
+    "load_phase7_config summarize_phase7 summarize_phase7_interface_evidence "
+    "validate_phase7_execution_manifest validate_phase7_rows verify_phase7_package_lock "
+    "write_phase7_outputs"
+).split()

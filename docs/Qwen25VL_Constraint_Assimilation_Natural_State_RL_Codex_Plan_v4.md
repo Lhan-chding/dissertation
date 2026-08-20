@@ -994,6 +994,16 @@ image -> natural observation -> revision/recovery -> chart operation -> final an
 - trace mismatch；
 - OOD error-mechanism shift。
 
+在 `support_dev` 上完成完整链后，必须从冻结 trace 另行报告两个不互相替代的
+最终答案端点：
+
+- `free_generation_answer_exact`：保留严格单整数生成与原始解析合同；
+- `deterministic_chain_answer_exact`：只使用模型恢复出的世界和模型选择的操作，
+  由确定性执行器计算答案。
+
+该审计不得放宽解析器、改写原始生成或覆盖 Phase 7 主输出。两者的差异单独记录为
+接口贡献，避免把自由生成格式服从与世界恢复能力合并成一个结果。
+
 主结论必须区分：
 
 1. 模型看得更准；
@@ -1414,4 +1424,3 @@ Answer-only RL 提高答案但不提高 exact world recovery。
 12. answer-source decomposition；
 13. 全部配置、数据、prompt、代码和结果 hash；
 14. 原失败实验完整保留。
-

@@ -510,6 +510,21 @@ Recovery_LoRA_RecoveryOutcome_RL
 Recovery_LoRA_AnswerOnly_RL
 ```
 
+After the model evaluation completes, run the interface audit over the frozen trace caches. This
+does not load a model or perform any additional inference. It preserves the strict free-generation
+result and separately measures whether deterministic execution of the model-recovered world and
+model-chosen operation reaches the correct answer. It never relaxes the final-answer parser.
+
+```bash
+PHASE7_SUMMARY_SHA256="$(sha256sum artifacts/v4/phase7/evaluation/summary.json | awk '{print $1}')"
+
+python scripts/v4/17_audit_phase7_interface.py --execute \
+  --phase7-summary-sha256 "$PHASE7_SUMMARY_SHA256"
+
+sha256sum artifacts/v4/phase7/interface_audit.json
+python -m json.tool artifacts/v4/phase7/interface_audit.json
+```
+
 Each checkpoint runs the complete deterministic chain on the same 32 frozen support-dev scenes:
 
 ```text
