@@ -32,7 +32,7 @@
     },
     {
       "path": "scripts/v4/13_train_phase6_grpo.py",
-      "sha256": "226320331e5332441f094e6873fde1f11886f686ea67f1b448103e5c4a39aedd"
+      "sha256": "4cfa8f81d622f82c68d1a11a15d6b44cdc969e2fa14f2a3ae5f37b10a32ca8c6"
     },
     {
       "path": "scripts/v4/14_evaluate_phase6_rl.py",

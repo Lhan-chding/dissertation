@@ -152,7 +152,6 @@ def _trl_api() -> tuple[object, object]:
         "num_generations",
         "per_device_train_batch_size",
         "gradient_accumulation_steps",
-        "max_prompt_length",
         "max_completion_length",
         "bf16",
         "temperature",
@@ -161,16 +160,50 @@ def _trl_api() -> tuple[object, object]:
         "beta",
         "use_vllm",
     }
-    if not required_config.issubset(config_parameters) or not {
+    required_trainer = {
         "model",
         "reward_funcs",
         "args",
         "train_dataset",
         "processing_class",
         "callbacks",
-    }.issubset(trainer_parameters):
-        raise RuntimeError("Phase 6 installed TRL GRPO API differs from the frozen executor")
+    }
+    missing_config = sorted(required_config - config_parameters.keys())
+    missing_trainer = sorted(required_trainer - trainer_parameters.keys())
+    if missing_config or missing_trainer:
+        raise RuntimeError(
+            "Phase 6 installed TRL GRPO API differs from the frozen executor: "
+            f"missing_config={missing_config}, missing_trainer={missing_trainer}"
+        )
     return GRPOConfig, GRPOTrainer
+
+
+def _validate_prompt_lengths(
+    examples: Sequence[Phase6Example],
+    processor: object,
+    *,
+    max_prompt_length: int,
+) -> None:
+    tokenizer = getattr(processor, "tokenizer", None)
+    if not callable(tokenizer):
+        raise RuntimeError("Phase 6 processor exposes no callable tokenizer")
+    encoded = tokenizer(
+        [row.prompt for row in examples],
+        add_special_tokens=True,
+        padding=False,
+        truncation=False,
+    )
+    input_ids = encoded.get("input_ids") if isinstance(encoded, Mapping) else None
+    if not isinstance(input_ids, Sequence) or len(input_ids) != len(examples):
+        raise RuntimeError("Phase 6 tokenizer returned malformed prompt token IDs")
+    for row, token_ids in zip(examples, input_ids, strict=True):
+        if not isinstance(token_ids, Sequence):
+            raise RuntimeError("Phase 6 tokenizer returned malformed prompt token IDs")
+        if len(token_ids) > max_prompt_length:
+            raise RuntimeError(
+                f"Phase 6 prompt exceeds frozen {max_prompt_length}-token limit: "
+                f"example_id={row.example_id}, observed_tokens={len(token_ids)}"
+            )
 
 
 def _release(model: object) -> None:
@@ -464,7 +497,12 @@ def main() -> int:
             raise RuntimeError("Phase 6 recovery adapter is missing or unsafe")
         if arguments.preflight_only:
             for initial in (Phase6Variant.BASE_ANSWER_ONLY, Phase6Variant.RECOVERY_OUTCOME):
-                model, _processor, _manifests = _prepare_model(initial)
+                model, processor, _manifests = _prepare_model(initial)
+                _validate_prompt_lengths(
+                    examples[initial.reward_kind],
+                    processor,
+                    max_prompt_length=config.max_prompt_length,
+                )
                 _release(model)
             print("READY: Phase 6 data, TRL API, CUDA, models, and trainability preflight passed")
             return 0
@@ -490,6 +528,11 @@ def main() -> int:
                 )
             rows = examples[variant.reward_kind]
             model, processor, manifests = _prepare_model(variant)
+            _validate_prompt_lengths(
+                rows,
+                processor,
+                max_prompt_length=config.max_prompt_length,
+            )
             trace_path = variant_root / "reward_trace.jsonl"
             _restore_reward_trace(checkpoint, trace_path)
             training_args = GRPOConfig(
@@ -499,7 +542,6 @@ def main() -> int:
                 num_generations=config.group_size,
                 per_device_train_batch_size=config.per_device_train_batch_size,
                 gradient_accumulation_steps=config.gradient_accumulation_steps,
-                max_prompt_length=config.max_prompt_length,
                 max_completion_length=config.max_completion_length,
                 bf16=True,
                 fp16=False,

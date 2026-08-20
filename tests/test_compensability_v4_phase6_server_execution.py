@@ -158,13 +158,13 @@ def test_phase6_enforces_the_frozen_prompt_limit_outside_trl() -> None:
 
     processor = types.SimpleNamespace(tokenizer=FakeTokenizer())
     train._validate_prompt_lengths(
-        (types.SimpleNamespace(prompt="one two"),),
+        (types.SimpleNamespace(example_id="within-limit", prompt="one two"),),
         processor,
         max_prompt_length=2,
     )
     with pytest.raises(RuntimeError, match="frozen 2-token limit"):
         train._validate_prompt_lengths(
-            (types.SimpleNamespace(prompt="one two three"),),
+            (types.SimpleNamespace(example_id="over-limit", prompt="one two three"),),
             processor,
             max_prompt_length=2,
         )
