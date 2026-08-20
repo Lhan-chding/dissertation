@@ -16,8 +16,8 @@ files:
   - path: scripts/v4/09_prepare_phase5_support_dev.py
     sha256: a731eab42596b7f782df86fe1c36ca740a45bd53a98f301f73dae0f061646ae0
   - path: scripts/v4/10_measure_policy_support.py
-    sha256: 82fed02a3a5665083d1a5636fcd64b04e00370db7415a87cb88e85c1d08fb2cc
+    sha256: 70d9ad0baa2afd3b8a3c801aae77f033c95716a9afa2181d2f08af593bd52b19
   - path: src/compensability_v4/qwen/phase5_runtime.py
     sha256: 79bb2e943c869b7c0efd57fec73a739a63f2745da6d2c27f0d7cd3635e7bc3b1
   - path: src/compensability_v4/qwen/phase5_support.py
-    sha256: 65e717edd60aea87023b47bf8557c35bb83c7328d4938958c6780088f3672068
+    sha256: 99288b41f6971e0d38515228e27247ded0f00a7ccddaa49af0f1c7a4e11d62ee

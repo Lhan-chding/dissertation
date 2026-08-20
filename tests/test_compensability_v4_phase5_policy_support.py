@@ -269,9 +269,9 @@ def test_phase5_writer_emits_required_parquet_json_and_csv_without_overwrite(
 
 def test_phase5_writer_does_not_publish_partial_outputs(tmp_path: Path) -> None:
     pytest.importorskip("pyarrow")
-    error = _error()
+    error = _error("scene-a")
     rows = tuple(
-        _measurement(checkpoint=checkpoint, successes=(True, False, True, False))
+        _measurement(error.scene_id, checkpoint, (True, False, True, False))
         for checkpoint in PolicyCheckpoint
     )
     summary = summarize_phase5_policy_support(

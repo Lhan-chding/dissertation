@@ -209,7 +209,15 @@ def _preflight(output_paths: tuple[Path, ...]) -> None:
 
     if not torch.cuda.is_available() or not torch.cuda.is_bf16_supported():
         raise RuntimeError("Phase 5 requires CUDA with bf16 support")
-    if any(path.exists() or path.is_symlink() for path in output_paths):
+    output_roots = {path.parent for path in output_paths}
+    if len(output_roots) != 1:
+        raise RuntimeError("Phase 5 artifacts must share one publication directory")
+    output_root = output_roots.pop()
+    if (
+        output_root.exists()
+        or output_root.is_symlink()
+        or any(path.exists() or path.is_symlink() for path in output_paths)
+    ):
         raise FileExistsError("refusing to overwrite Phase 5 policy-support artifacts")
 
 

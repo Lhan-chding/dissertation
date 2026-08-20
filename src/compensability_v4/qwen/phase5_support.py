@@ -638,10 +638,18 @@ def write_phase5_outputs(
     summary: Mapping[str, object],
     source_sha256: Mapping[str, str],
 ) -> None:
-    """Write the three preregistered Phase 5 artifacts without overwriting."""
+    """Atomically publish the three preregistered Phase 5 artifacts."""
 
     paths = (parquet_path, informative_path, pass_at_k_path)
-    if any(path.exists() or path.is_symlink() for path in paths):
+    output_roots = {path.parent for path in paths}
+    if len(output_roots) != 1:
+        raise ValueError("Phase 5 artifacts must share one publication directory")
+    output_root = output_roots.pop()
+    if (
+        output_root.exists()
+        or output_root.is_symlink()
+        or any(path.exists() or path.is_symlink() for path in paths)
+    ):
         raise FileExistsError("refusing to overwrite a Phase 5 artifact")
     hashes = _validated_source_hashes(source_sha256)
     if summary.get("status") != "PHASE_5_POLICY_SUPPORT_EXECUTED":
@@ -649,26 +657,33 @@ def write_phase5_outputs(
     rows = [row.to_mapping() for row in measurements]
     if not rows:
         raise ValueError("Phase 5 measurements are empty")
-    for path in paths:
-        path.parent.mkdir(parents=True, exist_ok=True)
-    import pyarrow as pa
-    import pyarrow.parquet as pq
-
-    pq.write_table(pa.Table.from_pylist(rows), parquet_path, compression="zstd")
-    payload = {**dict(summary), "source_sha256": hashes}
-    payload.pop("pass_at_k_rows", None)
-    with informative_path.open("x", encoding="utf-8") as stream:
-        json.dump(payload, stream, sort_keys=True, indent=2, allow_nan=False)
-        stream.write("\n")
     pass_rows = summary.get("pass_at_k_rows")
     if not isinstance(pass_rows, list) or not pass_rows:
         raise ValueError("Phase 5 pass@K summary rows are malformed")
-    with pass_at_k_path.open("x", newline="", encoding="utf-8") as stream:
-        writer = csv.DictWriter(
-            stream, fieldnames=("checkpoint", "k", "scene_count", "mean_pass_at_k")
-        )
-        writer.writeheader()
-        writer.writerows(pass_rows)
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+
+    payload = {**dict(summary), "source_sha256": hashes}
+    payload.pop("pass_at_k_rows", None)
+    output_root.parent.mkdir(parents=True, exist_ok=True)
+    temporary = Path(tempfile.mkdtemp(prefix=".phase5-support-", dir=str(output_root.parent)))
+    temporary_paths = tuple(temporary / path.name for path in paths)
+    try:
+        pq.write_table(pa.Table.from_pylist(rows), temporary_paths[0], compression="zstd")
+        with temporary_paths[1].open("x", encoding="utf-8") as stream:
+            json.dump(payload, stream, sort_keys=True, indent=2, allow_nan=False)
+            stream.write("\n")
+        with temporary_paths[2].open("x", newline="", encoding="utf-8") as stream:
+            writer = csv.DictWriter(
+                stream, fieldnames=("checkpoint", "k", "scene_count", "mean_pass_at_k")
+            )
+            writer.writeheader()
+            writer.writerows(pass_rows)
+        temporary.rename(output_root)
+    except Exception:
+        if temporary.exists():
+            shutil.rmtree(temporary)
+        raise
 
 
 def write_support_dev_outputs(
