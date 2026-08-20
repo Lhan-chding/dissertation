@@ -16,6 +16,7 @@ from compensability_v4.schemas.scene import RecoveryScene
 from compensability_v4.training.phase4 import (
     Phase4TrainingConfig,
     SupportVariant,
+    _parameter_bytes,
     build_support_sets,
     discover_language_lora_targets,
     load_phase4_config,
@@ -228,6 +229,13 @@ def test_lora_targets_are_discovered_from_actual_language_modules_only() -> None
         "model.language_model.layers.0.self_attn.k_proj",
         "model.language_model.layers.0.self_attn.q_proj",
     )
+
+
+def test_frozen_parameter_hash_serializes_bfloat16_without_loss() -> None:
+    torch = pytest.importorskip("torch")
+    parameter = torch.tensor([1.0, -2.0, 3.5], dtype=torch.bfloat16)
+
+    assert _parameter_bytes(parameter) == parameter.view(torch.uint8).numpy().tobytes()
 
 
 def test_preflight_requires_cuda_bf16_and_all_gpu_dependencies(
