@@ -661,10 +661,10 @@ def freeze_base_parameters(model: object) -> dict[str, object]:
             raise TypeError(f"model parameter {name!r} lacks requires_grad")
         parameter.requires_grad = False
         group = (
-            "vision"
-            if ".visual." in name
-            else "merger"
+            "merger"
             if ".merger" in name
+            else "vision"
+            if ".visual." in name
             else "language_base"
             if ".language_model." in name
             else "other_base"
