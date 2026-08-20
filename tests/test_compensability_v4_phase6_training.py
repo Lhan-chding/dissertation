@@ -5,6 +5,7 @@ from dataclasses import FrozenInstanceError
 import pytest
 
 from compensability_v4.data.splits import DatasetSplit
+from compensability_v4.schemas.observation import NaturalObservation
 from compensability_v4.training.phase6 import (
     Phase6Example,
     Phase6TrainingConfig,
@@ -129,6 +130,28 @@ def test_phase6_training_rows_are_natural_train_only_and_keep_both_rewards() -> 
             natural_observations=(_observation(),),
             dataset_records=(_record(),),
         )
+
+
+def test_phase6_accepts_the_frozen_phase4_observation_schema_without_a_split_field() -> None:
+    observation = NaturalObservation(
+        observation_id="phase4-stage1-natural-a",
+        scene_id="natural-a",
+        observed_values=(2, 3, 8, 7),
+        error_index=2,
+        stage1_model_hash="a" * 64,
+        image_grid_thw=(1, 20, 20),
+        visual_token_count=100,
+    ).to_mapping()
+
+    assert "split" not in observation
+    rows = build_phase6_examples(
+        natural_scenes=(_scene(),),
+        natural_observations=(observation,),
+        dataset_records=(_record(),),
+    )
+
+    assert len(rows) == 2
+    assert all(row.split is DatasetSplit.NATURAL_ERROR_SUPPORT_TRAIN for row in rows)
 
 
 def test_phase6_rewards_distinguish_world_recovery_answer_and_copy() -> None:
