@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN_PHASE_6_RL_SURFACE",
+  "files": [
+    {
+      "path": "configs/recoverability/v4_phase_6.yaml",
+      "sha256": "2e97ceaccf200a4b01bfca035eb54665f6d39846110ff32615913054500ed349"
+    },
+    {
+      "path": "docs/Qwen25VL_Constraint_Assimilation_Natural_State_RL_Codex_Plan_v4.md",
+      "sha256": "01e532f8c7fe5439c70e8cd8de81ff3448465d8d401dbbf478c76aebaf49641e"
+    },
+    {
+      "path": "docs/QWEN_V4_SERVER_HANDOFF.md",
+      "sha256": "571a6fda4b507c6843ac5402b3b406db618dbc85213cc81c0ac6a6fe66b11996"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "6f874b01dc23c49bb3f65d7aa36d7be70cf4338699a640c0a94cd56db32bb365"
+    },
+    {
+      "path": "requirements-gpu.lock.txt",
+      "sha256": "d928379a590e5071d9b5042fe99d480f57ab187f0cb3a74e13af219a6048aeb3"
+    },
+    {
+      "path": "scripts/v4/11_prepare_phase6_rl.py",
+      "sha256": "31bb70c96ee4e467edfe142417d9bfa3ba5146d99da943bab66dadf27300390c"
+    },
+    {
+      "path": "src/compensability_v4/qwen/phase6_runtime.py",
+      "sha256": "37fc934c2bd0c3c99a1124667f9253b395bc882987158e05b79772816499967d"
+    }
+  ]
+}

@@ -45,8 +45,8 @@ S1 运行时清单要求的模块名：`model.visual.blocks.0`、`model.visual.b
 | S5 / Phase 3 cache | `05_validate_cache_runner.py` | `PHASE_3_EXECUTED_WITH_DIAGNOSTICS` | 579 scenes；2,316 parity calls | `c52cb71d42c83e3a32c57c00e006f5117631b9cab25a2ef8fbe62001ff572351` |
 | S6 / Phase 3 interface ladder | `06_run_interface_ladder.py` | `PHASE_3_INTERFACE_LADDER_EXECUTED_WITH_DIAGNOSTICS` | 579 scenes；9,843 cells | 服务器控制台未记录两个输出文件的 SHA-256 |
 | Phase 4 LoRA | source preparation、support build 和 LoRA executor 已实现；服务器尚未执行 | 未执行训练 | 0 个已记录训练调用 | 无 |
-| Phase 5 policy support | 计划中的 checkpoint 测量 | 未执行 | 无 | 无 |
-| Phase 6 RL | 计划中的 RL 实验 | 未执行 | 无 | 无 |
+| Phase 5 policy support | Base/C0/C1/T 的 held-out policy-support 测量 | 服务器执行完成 | 4 个 checkpoint 的 128 行 scene-level 测量 | 32 个 held-out natural errors |
+| Phase 6 RL | 计划中的 RL 实验；当前代码 surface 已补至 execution-manifest freeze | 未执行 RL | 无 | 无 |
 | Phase 7 multimodal | 计划中的真实多模态评估 | 未执行 | 无 | 无 |
 
 ## S0：冻结遗留证据审计
@@ -408,9 +408,47 @@ valid_minus_sham_margin =
 
 | 阶段 | 计划输出路径 | 本报告生成时的执行状态 |
 | --- | --- | --- |
-| Phase 5 policy support | `artifacts/v4/support/policy_support_by_scene.parquet`；`artifacts/v4/support/informative_group_rate.json`；`artifacts/v4/support/pass_at_k.csv` | 未执行；无输出文件 |
-| Phase 6 RL | Phase 6 训练与诊断输出未在当前工作区列出 | 未执行；无输出文件 |
+| Phase 5 policy support | `artifacts/v4/support/policy_support_by_scene.parquet`；`artifacts/v4/support/informative_group_rate.json`；`artifacts/v4/support/pass_at_k.csv` | 服务器执行完成；本地工作区未复制输出文件 |
+| Phase 6 RL | `artifacts/v4/phase6/execution_manifest.json` 为当前代码 surface 的下一阶段冻结输出；RL 训练/诊断输出尚未记录 | execution manifest 未在当前工作区生成；RL 未执行 |
 | Phase 7 real multimodal | Phase 7 评估输出未在当前工作区列出 | 未执行；无输出文件 |
+
+### Phase 5：policy-support 服务器执行记录
+
+| 字段 | 记录值 |
+| --- | --- |
+| status | `PHASE_5_POLICY_SUPPORT_EXECUTED` |
+| schema version | 1 |
+| number of held-out natural errors | 32 |
+| held-out family counts | `cross_series=16`；`duplicate_encoding=5`；`trend=11` |
+| number of checkpoint scene rows | 128 |
+| sampling rollouts per scene | 16 |
+| sampling temperature | 0.7 |
+| sampling seed | `2026082005` |
+| pass@K grid | `1, 2, 4, 8, 16` |
+| informative group size | 8 |
+| confirmatory data used | false |
+| scene is statistical unit | true |
+| subjective success threshold applied | false |
+| training invoked | false |
+| RL invoked | false |
+| model snapshot SHA-256 | `e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87` |
+| package lock SHA-256 | `e3fb68f121bfebfc238d896cd907561455a361d1292f38df965ad23f1f5bc152` |
+| support-dev summary SHA-256 | `f9dd52a363a97a961c8eb55fd69f305507a5b5ba0ad171aae1996642f330a9cf` |
+| Base source SHA-256 | `e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87` |
+| C0 adapter tree SHA-256 | `ff4fdf711b0b80e5effe6362b96f2d11dc4cf92e91523e6799c27d6c89fc194c` |
+| C1 adapter tree SHA-256 | `0568be719b4077790c86ef1e83a4980eef8d5d5896af0a1aa40d1beefd320d65` |
+| T adapter tree SHA-256 | `807a61c2e3f7b532b162554dee6e7df83d654fb1f10cc464e9dcb5f6f8efd5c7` |
+| support-dev source SHA-256 | `cafbd5e5a0face1622d62faac4bb6b9bfc1fa6cc8d4353ade82b9144d8b18136` |
+| config SHA-256 | `b06d242cf7a683f8c7b0ce14843b165035dfad2b1348e580fef22da135ae664a` |
+
+服务器可见的单个 checkpoint 片段（截图未显示 checkpoint 标签）：
+
+| 字段 | 记录值 |
+| --- | --- |
+| scene count | 32 |
+| pass@2 | `0.893798828125` |
+| pass@4 | `0.9030656814575195` |
+| pass@8 | `0.9059367423906224` |
 
 ## 哈希绑定的执行输入清单
 
@@ -454,6 +492,7 @@ export TRANSFORMERS_OFFLINE=1
 | Phase 4 LoRA training | `python scripts/v4/08_train_phase4_lora.py --execute --prepared-support` | 是；另需固定 ACK 环境变量 | 读取 support corpus 与 summary |
 | Phase 5 support-dev freeze | `python scripts/v4/09_prepare_phase5_support_dev.py --execute` | 是 | 默认读取冻结 8,000-scene 视觉数据和 Phase 4 selection trace/summary |
 | Phase 5 policy-support measurement | `python scripts/v4/10_measure_policy_support.py --execute` | 是 | 读取冻结 support-dev pool 和 C0/C1/T adapter trees |
+| Phase 6 execution-manifest freeze | `python scripts/v4/11_prepare_phase6_rl.py --execute` | 是 | 读取 Phase 5 `informative_group_rate.json` 与 Phase 4 adapter trees |
 
 完整 S6 命令中的 10 个输入及其 SHA-256 已列于“哈希绑定的执行输入清单”。脚本的完整命令行定义位于 `docs/QWEN_V4_SERVER_HANDOFF.md` 的 S6 节。
 

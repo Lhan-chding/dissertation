@@ -396,4 +396,30 @@ artifacts/v4/support/pass_at_k.csv
 ```
 
 Return both `READY` lines, all printed SHA-256 lines, the support-dev summary, and any `BLOCKED`
-message. Do not begin Phase 6 or any RL stage.
+message.
+
+## Phase 6 - RL execution-manifest freeze
+
+After Phase 5 completes, the next server-side step is to bind the executed Phase 5 policy-support
+summary and the frozen Phase 4 adapter trees into one hash-closed Phase 6 execution manifest. This
+command does not start RL, does not construct a Trainer, and does not import an optimizer.
+
+Run:
+
+```bash
+python scripts/v4/11_prepare_phase6_rl.py --execute \
+  --policy-support-summary artifacts/v4/support/informative_group_rate.json \
+  --policy-support-summary-sha256 "$(sha256sum artifacts/v4/support/informative_group_rate.json | awk '{print $1}')"
+
+sha256sum artifacts/v4/phase6/execution_manifest.json
+python -m json.tool artifacts/v4/phase6/execution_manifest.json
+```
+
+The formal Phase 6 manifest output is:
+
+```text
+artifacts/v4/phase6/execution_manifest.json
+```
+
+Return the `READY` line, the manifest SHA-256 line, the full manifest JSON, and any `BLOCKED`
+message.
