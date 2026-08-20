@@ -489,3 +489,97 @@ artifacts/v4/rl/evaluation/summary.json
 Return every `READY` line, all printed SHA-256 lines, the RL data summary, the three variant
 execution-evidence files, the three signal-diagnostic files, the evaluation summary, and any
 `BLOCKED` message.
+
+## Phase 7 - seven-checkpoint full-chain multimodal diagnostic
+
+This execution is the registered `support_dev` diagnostic that precedes the one-shot
+confirmatory evaluation. It does not consume a confirm split and must not be reported as the
+final confirmatory Phase 7 result. The confirmatory authorization remains false; style,
+constraint-graph, and error-mechanism OOD axes remain registered but are not measured by this
+IID support-dev run.
+
+The diagnostic compares exactly seven frozen checkpoints:
+
+```text
+Base
+C0
+C1
+T
+Base_AnswerOnly_RL
+Recovery_LoRA_RecoveryOutcome_RL
+Recovery_LoRA_AnswerOnly_RL
+```
+
+Each checkpoint runs the complete deterministic chain on the same 32 frozen support-dev scenes:
+
+```text
+image -> natural observation -> revision/recovery -> chart operation -> final answer
+```
+
+The manifest binds five source artifacts, the seven checkpoint trees, the actual 32-image
+bundle, the Stage-1 prompt configuration, the Phase 7 config, and the Phase 7 package lock. The
+evaluator records raw text, generated token IDs, parse status, recovered world, selected chart
+operation, final answer, and all nine registered objective labels. It writes one resumable trace
+cache per checkpoint. Cache reuse requires matching checkpoint, manifest, config, and package
+lock hashes; formal outputs are atomic and refuse overwrite.
+
+From the repository root, first prepare the manifest with the already-produced Phase 4--6
+artifacts. No path substitution is required:
+
+```bash
+DATASET_RECORDS=data/generated/cva_recoverability_causal_v2_screen/records.jsonl
+SUPPORT_DEV=artifacts/v4/support_dev/held_out_natural_errors.jsonl
+PHASE4_SUMMARY=artifacts/v4/training/support_summary.json
+PHASE5_SUMMARY=artifacts/v4/support/informative_group_rate.json
+PHASE6_EVALUATION=artifacts/v4/rl/evaluation/summary.json
+
+python scripts/v4/15_prepare_phase7_multimodal.py --execute \
+  --input dataset_records="$DATASET_RECORDS" \
+  --input-sha256 dataset_records="$(sha256sum "$DATASET_RECORDS" | awk '{print $1}')" \
+  --input support_dev="$SUPPORT_DEV" \
+  --input-sha256 support_dev="$(sha256sum "$SUPPORT_DEV" | awk '{print $1}')" \
+  --input phase4_summary="$PHASE4_SUMMARY" \
+  --input-sha256 phase4_summary="$(sha256sum "$PHASE4_SUMMARY" | awk '{print $1}')" \
+  --input phase5_summary="$PHASE5_SUMMARY" \
+  --input-sha256 phase5_summary="$(sha256sum "$PHASE5_SUMMARY" | awk '{print $1}')" \
+  --input phase6_evaluation="$PHASE6_EVALUATION" \
+  --input-sha256 phase6_evaluation="$(sha256sum "$PHASE6_EVALUATION" | awk '{print $1}')"
+
+sha256sum artifacts/v4/phase7/execution_manifest.json
+python -m json.tool artifacts/v4/phase7/execution_manifest.json
+```
+
+Run the load-only CUDA preflight. It loads and releases all seven checkpoints in sequence; it
+does not execute any scene, create a trace cache, or publish an evaluation output:
+
+```bash
+PHASE7_MANIFEST_SHA256="$(sha256sum artifacts/v4/phase7/execution_manifest.json | awk '{print $1}')"
+
+python scripts/v4/16_evaluate_phase7_multimodal.py \
+  --execute \
+  --preflight-only \
+  --execution-manifest-sha256 "$PHASE7_MANIFEST_SHA256"
+```
+
+After the preflight prints `READY`, execute the diagnostic:
+
+```bash
+python scripts/v4/16_evaluate_phase7_multimodal.py \
+  --execute \
+  --execution-manifest-sha256 "$PHASE7_MANIFEST_SHA256"
+
+sha256sum \
+  artifacts/v4/phase7/evaluation/per_scene.jsonl \
+  artifacts/v4/phase7/evaluation/summary.json
+python -m json.tool artifacts/v4/phase7/evaluation/summary.json
+```
+
+This run makes 32 scenes x 7 checkpoints x 4 deterministic generation calls, for 896 model
+generation calls. The formal summary reports all nine metrics globally, per checkpoint, by
+family, and by registered OOD axis present in the data; registered paired effects include point
+estimates, scene-clustered 95% bootstrap intervals, sign-flip p-values, Holm adjustment, the
+frozen equivalence margin, and seed-level variability. No empirical result threshold blocks
+publication.
+
+Return the manifest SHA-256, every `PREFLIGHT`, `PROGRESS`, `RESUMED`, `READY`, and `SHA256`
+line, both formal output hashes, the complete summary JSON, and any `BLOCKED` message.

@@ -65,6 +65,75 @@ def test_phase7_evaluator_has_full_multimodal_chain_and_confirmatory_fail_closed
     assert "support_dev" in source
     assert "confirmatory" in source.lower()
     assert "refusing to overwrite" in source
+    assert "--preflight-only" in source
+    assert "arguments.preflight_only" in source
+    assert "READY: Phase 7" in source
+    assert "support_dev_image_bundle_sha256" in source
+
+
+def test_phase7_evaluator_fails_closed_on_unparseable_answer_and_upstream_checkpoint_drift(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    evaluate = _load("test_phase7_evaluate_semantics", "16_evaluate_phase7_multimodal.py")
+
+    assert evaluate._trace_mismatch(answer_value=None, chosen_execution=3) is True
+    assert evaluate._trace_mismatch(answer_value=3, chosen_execution=None) is True
+    assert evaluate._trace_mismatch(answer_value=3, chosen_execution=3) is False
+
+    hashes = {
+        "C0": "1" * 64,
+        "C1": "2" * 64,
+        "T": "3" * 64,
+        "Base_AnswerOnly_RL": "4" * 64,
+        "Recovery_LoRA_RecoveryOutcome_RL": "5" * 64,
+        "Recovery_LoRA_AnswerOnly_RL": "6" * 64,
+    }
+    monkeypatch.setattr(
+        evaluate,
+        "tree_sha256",
+        lambda path: hashes[
+            {
+                "C0_format_only": "C0",
+                "C1_forward_arithmetic": "C1",
+                "T_constraint_recovery": "T",
+            }.get(path.parts[-2], path.parts[-2])
+        ],
+    )
+    monkeypatch.setattr(
+        evaluate,
+        "_json",
+        lambda path, _label: {
+            "status": "PHASE_6_VARIANT_TRAINED",
+            "variant": path.parts[-2],
+            "final_adapter_tree_sha256": hashes[path.parts[-2]],
+        },
+    )
+    phase5 = {
+        "source_sha256": {
+            "Base": evaluate.MODEL_SNAPSHOT_SHA256,
+            "C0": hashes["C0"],
+            "C1": hashes["C1"],
+            "T": "f" * 64,
+        }
+    }
+    phase6 = {
+        "checkpoint_sha256": {
+            name: hashes[name]
+            for name in (
+                "Base_AnswerOnly_RL",
+                "Recovery_LoRA_RecoveryOutcome_RL",
+                "Recovery_LoRA_AnswerOnly_RL",
+            )
+        }
+    }
+    with pytest.raises(RuntimeError, match="T hash differs"):
+        evaluate._checkpoint_hashes(
+            tmp_path / "phase4",
+            tmp_path / "phase6",
+            phase5_summary=phase5,
+            phase6_evaluation=phase6,
+        )
 
 
 def test_phase7_atomic_publication_refuses_overwrite_and_leaves_no_partial_outputs(

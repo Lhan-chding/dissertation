@@ -134,6 +134,30 @@ def test_phase7_chain_row_requires_complete_trace_and_consistent_derived_labels(
     with pytest.raises(ValueError, match="error cancellation"):
         subject.Phase7ChainRow.from_mapping(contradictory_cancellation)
 
+    overlapping_cancellation = _row(
+        scene_id="scene-a",
+        checkpoint="T",
+        post_revision_world_exact=False,
+        final_answer_exact=True,
+        operator_invariant_correct=True,
+        genuine_recovery=False,
+        error_cancellation=True,
+    )
+    with pytest.raises(ValueError, match="error cancellation"):
+        subject.Phase7ChainRow.from_mapping(overlapping_cancellation)
+
+    invariant_without_correct_answer = _row(
+        scene_id="scene-a",
+        checkpoint="T",
+        post_revision_world_exact=False,
+        final_answer_exact=False,
+        operator_invariant_correct=True,
+        genuine_recovery=False,
+        error_cancellation=False,
+    )
+    with pytest.raises(ValueError, match="operator-invariant"):
+        subject.Phase7ChainRow.from_mapping(invariant_without_correct_answer)
+
 
 def test_phase7_support_dev_diagnostics_are_allowed_but_confirm_splits_fail_closed() -> None:
     subject = _subject()
@@ -248,6 +272,42 @@ def test_phase7_rollouts_are_clustered_to_scenes_and_never_inflate_sample_size()
     assert answer["estimate"] == pytest.approx(0.75)
 
 
+def test_phase7_boundary_validation_fails_closed() -> None:
+    subject = _subject()
+    for field, value, message in (
+        ("checkpoint", "unknown", "checkpoint"),
+        ("family", "unknown", "family"),
+        ("ood_axis", "unknown", "ood_axis"),
+        ("split", "unknown", "split"),
+        ("checkpoint_sha256", "bad", "SHA-256"),
+        ("seed", -1, "at least"),
+        ("final_answer_exact", 1, "boolean"),
+    ):
+        payload = dict(_row(scene_id="s0", checkpoint="Base"))
+        payload[field] = value
+        with pytest.raises((TypeError, ValueError), match=message):
+            subject.Phase7ChainRow.from_mapping(payload)
+
+    row = subject.Phase7ChainRow.from_mapping(_row(scene_id="s0", checkpoint="Base"))
+    with pytest.raises(TypeError, match="confirmatory_evaluation_authorized"):
+        subject.validate_phase7_rows((row,), confirmatory_evaluation_authorized=1)
+    with pytest.raises(ValueError, match="must not be empty"):
+        subject.validate_phase7_rows((), confirmatory_evaluation_authorized=False)
+    with pytest.raises(TypeError, match="immutable"):
+        subject.validate_phase7_rows((object(),), confirmatory_evaluation_authorized=False)
+    with pytest.raises(ValueError, match="unique"):
+        subject.validate_phase7_rows((row, row), confirmatory_evaluation_authorized=False)
+
+    for kwargs, message in (
+        ({"bootstrap_resamples": 0}, "positive integer"),
+        ({"bootstrap_seed": 1.0}, "integer"),
+        ({"tost_margin": True}, "numeric"),
+        ({"tost_margin": float("nan")}, "positive and finite"),
+    ):
+        with pytest.raises((TypeError, ValueError), match=message):
+            subject.summarize_phase7((row,), **kwargs)
+
+
 def test_phase7_registered_paired_effects_include_holm_tost_and_seed_variability() -> None:
     subject = _subject()
     outcomes = {
@@ -306,10 +366,16 @@ def test_phase7_registered_paired_effects_include_holm_tost_and_seed_variability
             "tost",
         } <= set(effect)
         assert effect["tost"]["margin"] == 0.02
+        if effect["paired_scene_count"]:
+            assert effect["tost"]["confidence"] == 0.90
+            assert effect["tost"]["method"] == "scene_clustered_percentile_bootstrap_ci"
+    assert summary["registered_effects"]["seeded_rl_minus_base_rl"]["estimate"] == -0.5
     assert set(summary["seed_level_variability"]) == {"11", "17"}
 
 
-def test_phase7_execution_manifest_is_hash_bound_and_has_no_subjective_gate() -> None:
+def test_phase7_execution_manifest_is_hash_bound_and_has_no_subjective_gate(
+    tmp_path: Path,
+) -> None:
     subject = _subject()
     config = subject.load_phase7_config(ROOT / "configs/recoverability/v4_phase_7.yaml")
     source_hashes = {
@@ -336,3 +402,25 @@ def test_phase7_execution_manifest_is_hash_bound_and_has_no_subjective_gate() ->
     assert manifest["support_dev_diagnostic_authorized"] is True
     assert manifest["subjective_success_threshold_applied"] is False
     assert "success_threshold" not in manifest
+
+    complete = {
+        **manifest,
+        "execution_parameters": {"greedy_seed": 7},
+        "support_dev_image_bundle_sha256": "8" * 64,
+        "stage1_prompt_config_sha256": "9" * 64,
+    }
+    validated = subject.validate_phase7_execution_manifest(
+        complete,
+        config=config,
+        config_sha256="6" * 64,
+        package_lock_sha256="7" * 64,
+    )
+    assert validated == complete
+    drifted = {**complete, "chain": ["image", "answer"]}
+    with pytest.raises(ValueError, match="manifest"):
+        subject.validate_phase7_execution_manifest(
+            drifted,
+            config=config,
+            config_sha256="6" * 64,
+            package_lock_sha256="7" * 64,
+        )

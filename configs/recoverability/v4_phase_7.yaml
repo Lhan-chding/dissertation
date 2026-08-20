@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "status": "PHASE_7_MULTIMODAL_DIAGNOSTIC_AUTHORIZED",
+  "chain": [
+    "image",
+    "natural_observation",
+    "revision_or_recovery",
+    "chart_operation",
+    "final_answer"
+  ],
+  "checkpoints": [
+    "Base",
+    "C0",
+    "C1",
+    "T",
+    "Base_AnswerOnly_RL",
+    "Recovery_LoRA_RecoveryOutcome_RL",
+    "Recovery_LoRA_AnswerOnly_RL"
+  ],
+  "ood_axes": [
+    "iid",
+    "style_ood",
+    "constraint_graph_ood",
+    "error_mechanism_ood"
+  ],
+  "required_metrics": [
+    "stage1_visual_exact",
+    "post_revision_world_exact",
+    "reasoning_operator_exact",
+    "final_answer_exact",
+    "operator_invariant_correct",
+    "genuine_recovery",
+    "error_cancellation",
+    "trace_mismatch",
+    "error_mechanism_shift"
+  ],
+  "statistics": {
+    "bootstrap_confidence": 0.95,
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 2026082101,
+    "tost_margin": 0.02,
+    "holm_correction": true,
+    "scene_is_statistical_unit": true,
+    "rollout_is_statistical_unit": false
+  },
+  "authorization": {
+    "support_dev_diagnostic_authorized": true,
+    "confirmatory_evaluation_authorized": false,
+    "training_authorized": false,
+    "rl_authorized": false,
+    "downloads_authorized": false
+  },
+  "subjective_success_threshold": null,
+  "integrity_gates": {
+    "require_hash_bound_sources": true,
+    "require_hash_bound_checkpoints": true,
+    "require_complete_trace": true,
+    "forbid_artifact_overwrite": true
+  }
+}

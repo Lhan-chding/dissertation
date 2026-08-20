@@ -1,0 +1,19 @@
+schema_version: 1
+status: FROZEN_PHASE_7_MULTIMODAL_SURFACE
+files:
+  - path: configs/recoverability/v4_phase_7.yaml
+    sha256: f1baf59c0cced81300c88639a7b09f78f15fbc78f05d810cbcdf12fdacbaa4d9
+  - path: docs/Qwen25VL_Constraint_Assimilation_Natural_State_RL_Codex_Plan_v4.md
+    sha256: 01e532f8c7fe5439c70e8cd8de81ff3448465d8d401dbbf478c76aebaf49641e
+  - path: docs/QWEN_V4_SERVER_HANDOFF.md
+    sha256: 1c2165b715a37b0baec91e3d56404349a804ab47a941900f811ece2e705ef797
+  - path: pyproject.toml
+    sha256: 6f874b01dc23c49bb3f65d7aa36d7be70cf4338699a640c0a94cd56db32bb365
+  - path: requirements-gpu.lock.txt
+    sha256: d928379a590e5071d9b5042fe99d480f57ab187f0cb3a74e13af219a6048aeb3
+  - path: scripts/v4/15_prepare_phase7_multimodal.py
+    sha256: e84a649fd6871cab6735628d8f0a0094bd613728f66fd70d9e00038d2bbb85ae
+  - path: scripts/v4/16_evaluate_phase7_multimodal.py
+    sha256: 883974d4170454f3834fb0fc599bcba15beeeb38510ca5af7b661e7021b44771
+  - path: src/compensability_v4/qwen/phase7_runtime.py
+    sha256: d254c6ebd08b5cd34a91b68ac2ebd52169b4c11fbdd45a111861f9a66d917955

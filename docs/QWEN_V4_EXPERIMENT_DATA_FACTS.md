@@ -4,7 +4,7 @@
 
 - 文档范围：Qwen2.5-VL v4 的既有审计、能力链、候选打分、层间同化、缓存一致性和接口阶梯运行记录，以及计划中后续阶段的执行状态。
 - 本文只记录输入、配置、命令、哈希、计数、数值、输出路径、状态和控制台错误；不包含对结果的解释、推断或结论。
-- 记录更新时间：2026-08-20；S6 完成事实记录提交：`2216c6d5fa77e7d71f1d2bb039f51a1961010f31`。
+- 记录更新时间：2026-08-21；S6 完成事实记录提交：`2216c6d5fa77e7d71f1d2bb039f51a1961010f31`。
 - 项目根目录：`/cloud/cloud-ssd1/dissertation`。
 - 计划文件：`docs/Qwen25VL_Constraint_Assimilation_Natural_State_RL_Codex_Plan_v4.md`，SHA-256 为 `01e532f8c7fe5439c70e8cd8de81ff3448465d8d401dbbf478c76aebaf49641e`。
 - 下表中的“本地可见”仅指本报告生成时的当前工作区；服务器上已生成、但未同步到当前工作区的文件，保留其服务器路径和已记录哈希。
@@ -46,8 +46,8 @@ S1 运行时清单要求的模块名：`model.visual.blocks.0`、`model.visual.b
 | S6 / Phase 3 interface ladder | `06_run_interface_ladder.py` | `PHASE_3_INTERFACE_LADDER_EXECUTED_WITH_DIAGNOSTICS` | 579 scenes；9,843 cells | 服务器控制台未记录两个输出文件的 SHA-256 |
 | Phase 4 LoRA | source preparation、support build 与 C0/C1/T LoRA 训练 | 服务器执行完成 | 564/564 steps；1 epoch | 输出根目录见 Phase 4 表 |
 | Phase 5 policy support | Base/C0/C1/T 的 held-out policy-support 测量 | 服务器执行完成 | 4 个 checkpoint 的 128 行 scene-level 测量 | 32 个 held-out natural errors |
-| Phase 6 RL | execution manifest、双 reward 数据、3 个 GRPO arm 与 5 checkpoint 评估代码 | 未执行 RL | 0 个已记录 GRPO steps | 无 |
-| Phase 7 multimodal | 计划中的真实多模态评估 | 未执行 | 无 | 无 |
+| Phase 6 RL | execution manifest、双 reward 数据、3 个 GRPO arm 与 5 checkpoint 评估 | `PHASE_6_RL_EVALUATED` | 173 个 RL 场景；3 × 64 steps；32 个评估场景 | 见 Phase 6 表 |
+| Phase 7 multimodal | 七 checkpoint 完整多模态链的 support-dev diagnostic | 服务器执行面已定义；未执行服务器推理 | 计划 32 scenes × 7 checkpoints | 无服务器输出 |
 
 ## S0：冻结遗留证据审计
 
@@ -409,8 +409,8 @@ valid_minus_sham_margin =
 | 阶段 | 计划输出路径 | 本报告生成时的执行状态 |
 | --- | --- | --- |
 | Phase 5 policy support | `artifacts/v4/support/policy_support_by_scene.parquet`；`artifacts/v4/support/informative_group_rate.json`；`artifacts/v4/support/pass_at_k.csv` | 服务器执行完成；本地工作区未复制输出文件 |
-| Phase 6 RL | execution manifest、RL data、3 个 GRPO run roots、5-checkpoint evaluation | execution manifest 未在当前工作区生成；RL 未执行 |
-| Phase 7 real multimodal | Phase 7 评估输出未在当前工作区列出 | 未执行；无输出文件 |
+| Phase 6 RL | execution manifest、RL data、3 个 GRPO run roots、5-checkpoint evaluation | 服务器训练与评估完成；本地工作区未复制输出文件 |
+| Phase 7 real multimodal | `artifacts/v4/phase7/evaluation/per_scene.jsonl`；`artifacts/v4/phase7/evaluation/summary.json` | support-dev diagnostic 执行面已定义；服务器未执行；confirmatory 未授权 |
 
 ### Phase 5：policy-support 服务器执行记录
 
@@ -450,11 +450,11 @@ valid_minus_sham_margin =
 | pass@4 | `0.9030656814575195` |
 | pass@8 | `0.9059367423906224` |
 
-### Phase 6：冻结执行参数与当前状态
+### Phase 6：冻结执行参数与服务器结果
 
 | 字段 | 记录值 |
 | --- | --- |
-| 当前状态 | 代码与服务器执行命令已定义；服务器未执行 Phase 6 |
+| 当前状态 | 服务器执行完成；evaluation status=`PHASE_6_RL_EVALUATED` |
 | 比较组 | `Base`；`Base_AnswerOnly_RL`；`Recovery_LoRA`；`Recovery_LoRA_RecoveryOutcome_RL`；`Recovery_LoRA_AnswerOnly_RL` |
 | 实际 GRPO 训练组 | `Base_AnswerOnly_RL`；`Recovery_LoRA_RecoveryOutcome_RL`；`Recovery_LoRA_AnswerOnly_RL` |
 | Base initialization | 模型快照 SHA-256 `e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87` |
@@ -492,6 +492,69 @@ valid_minus_sham_margin =
 | RL data gate | 当前 Phase 5 summary SHA-256 与 `source_sha256` 必须同时匹配 execution manifest |
 | GRPO preflight gate | Base snapshot 与 Phase 4 `C0/C1/T` adapter tree SHA-256 必须匹配 execution manifest |
 | evaluation cache gate | checkpoint hash、support-dev input hash、config hash、package-lock hash、execution-manifest hash 必须同时匹配 |
+
+### Phase 6：服务器数据、训练信号与注册效应
+
+| 字段 | 记录值 |
+| --- | --- |
+| execution manifest | `artifacts/v4/phase6/execution_manifest.1759bc7.json` |
+| execution manifest SHA-256 | `47b9f10638dae1957d03beae0a227cdbc48c922f76554bd69ce02b86a6fd73ef` |
+| recovery-outcome RL data count | 173 |
+| answer-only RL data count | 173 |
+| recovery-outcome data SHA-256 | `7af9f17c1febd3e0bfa2cddb0d6f5cde35500c12405952f9ad071e278b4b1993` |
+| answer-only data SHA-256 | `3e72aa47c74f8e02191d949f968612d54bca9a81bfeb18f3cebd5d2394680d8e` |
+| RL data summary SHA-256 | `337a32fac096c6034f29f96a2a1e7f7217474511839b9b8de2cc3764e856d171` |
+| evaluation status | `PHASE_6_RL_EVALUATED` |
+| evaluation scenes | 32；`cross_series=16`、`duplicate_encoding=5`、`trend=11` |
+| training seeds | `[2026082006]` |
+| scene statistical unit | true |
+| subjective success threshold applied | false |
+
+三个 GRPO 训练分支的服务器诊断记录：
+
+| variant | final adapter tree SHA-256 | all-zero groups | all-one groups | non-degenerate groups | mean reward variance | mean KL | mean entropy |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `Base_AnswerOnly_RL` | `e1189e577b48a3f6cfe0d69c7e3b3c9d8e1e5e135c5dd1fec503f55a357c6b18` | 0.921875 | 0.0 | 0.078125 | 0.009765625 | 0.012808018779882304 | 0.8926465229855644 |
+| `Recovery_LoRA_RecoveryOutcome_RL` | `4d628eeb84ece36f992d684324f757789adc834e0605b5af99256c50968b6b2f` | 0.265625 | 0.21875 | 0.515625 | 0.089599609375 | 0.03233168982791222 | 0.2670032273172327 |
+| `Recovery_LoRA_AnswerOnly_RL` | `5d011bc40cba39c94b6593587f9b2b76d45480eeb397a9fa86c83baa0eb3a515` | 0.875 | 0.0 | 0.125 | 0.01611328125 | 0.011673480690704414 | 0.9363073353611288 |
+
+与各自初始 checkpoint 的 32-scene greedy 输出差异计数：
+
+| 比较 | recovery token sequence changed | answer token sequence changed |
+| --- | ---: | ---: |
+| `Base -> Base_AnswerOnly_RL` | 2/32 | 0/32 |
+| `Recovery_LoRA -> Recovery_LoRA_RecoveryOutcome_RL` | 0/32 | 0/32 |
+| `Recovery_LoRA -> Recovery_LoRA_AnswerOnly_RL` | 0/32 | 0/32 |
+
+全局四个注册效应的服务器输出均记录：estimate=`0.0`、95% CI=`[0.0, 0.0]`、two-sided sign-flip p-value=`1.0`、Holm-adjusted p-value=`1.0`。服务器截图中可见的 `duplicate_encoding`（5 scenes）与 `trend`（11 scenes）分层，对同四项效应也均记录 estimate=`0.0`、95% CI=`[0.0, 0.0]`、p-value=`1.0`。
+
+### Phase 7：已定义、未执行的 support-dev multimodal diagnostic
+
+| 字段 | 冻结值或状态 |
+| --- | --- |
+| config | `configs/recoverability/v4_phase_7.yaml` |
+| authorization status | `PHASE_7_MULTIMODAL_DIAGNOSTIC_AUTHORIZED` |
+| confirmatory evaluation authorized | false |
+| support-dev diagnostic authorized | true |
+| training / RL / downloads authorized | false / false / false |
+| evaluation scenes | 32 个 Phase 5 frozen support-dev natural errors |
+| checkpoints | `Base`、`C0`、`C1`、`T`、`Base_AnswerOnly_RL`、`Recovery_LoRA_RecoveryOutcome_RL`、`Recovery_LoRA_AnswerOnly_RL` |
+| chain | image -> natural observation -> revision/recovery -> chart operation -> final answer |
+| deterministic generation calls | 32 × 7 × 4 = 896 |
+| image resize | 280 × 280 |
+| max new tokens | Stage-1=32；recovery=32；operation=8；answer=8 |
+| generation seed | `2026082102` |
+| bootstrap | 10,000 scene-clustered resamples；seed=`2026082101` |
+| main confidence intervals | 95% |
+| equivalence interval | 90% scene-clustered percentile bootstrap interval；margin=`0.02` |
+| multiplicity | two-sided paired sign-flip p-values；Holm adjustment |
+| subjective success threshold | null |
+| formal output paths | `artifacts/v4/phase7/evaluation/per_scene.jsonl`；`summary.json` |
+| server execution status | 未执行；无 Phase 7 服务器结果或输出 SHA-256 |
+
+九个冻结指标：`stage1_visual_exact`、`post_revision_world_exact`、`reasoning_operator_exact`、`final_answer_exact`、`operator_invariant_correct`、`genuine_recovery`、`error_cancellation`、`trace_mismatch`、`error_mechanism_shift`。
+
+四个注册比较：`T_minus_C0`、`T_minus_C1`、`seeded_rl_minus_base_rl`、`recovery_reward_rl_minus_answer_only_rl`。当前 support-dev diagnostic 的 `ood_axis` 为 `iid`；`style_ood`、`constraint_graph_ood`、`error_mechanism_ood` 已注册但未由该服务器命令测量。
 
 ## 哈希绑定的执行输入清单
 
@@ -539,6 +602,8 @@ export TRANSFORMERS_OFFLINE=1
 | Phase 6 RL data freeze | `python scripts/v4/12_prepare_phase6_rl_data.py --execute` | 是 | 读取 execution manifest、Phase 4 natural sources、Phase-C records 与 Phase 5 formal artifacts |
 | Phase 6 GRPO preflight/training | `python scripts/v4/13_train_phase6_grpo.py --execute` | 是；真实训练另需固定 ACK 环境变量 | 读取 execution manifest、RL data、Base model 与 Phase 4 T adapter |
 | Phase 6 formal evaluation | `python scripts/v4/14_evaluate_phase6_rl.py --execute` | 是 | 读取 execution manifest、3 个 GRPO adapters、Base、T 与 frozen support-dev |
+| Phase 7 manifest freeze | `python scripts/v4/15_prepare_phase7_multimodal.py --execute` | 是 | 5 个命名且逐项 SHA-256 绑定的 Phase 4--6 / dataset / support-dev 输入 |
+| Phase 7 seven-checkpoint preflight/evaluation | `python scripts/v4/16_evaluate_phase7_multimodal.py --execute` | 是；preflight 可加 `--preflight-only` | 读取 Phase 7 execution manifest、7 个 checkpoint、32-scene image bundle 与 Stage-1 prompt |
 
 完整 S6 命令中的 10 个输入及其 SHA-256 已列于“哈希绑定的执行输入清单”。脚本的完整命令行定义位于 `docs/QWEN_V4_SERVER_HANDOFF.md` 的 S6 节。
 
