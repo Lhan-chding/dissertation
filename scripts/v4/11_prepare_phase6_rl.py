@@ -13,6 +13,7 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 from compensability_v4.qwen.phase6_runtime import (  # noqa: E402
+    PHASE6_LOCKED_PATHS,
     build_phase6_execution_manifest,
     load_phase5_policy_support_summary,
     load_phase6_config,
@@ -26,20 +27,12 @@ ROOT = Path(__file__).resolve().parents[2]
 def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
+
 CONFIG = ROOT / "configs/recoverability/v4_phase_6.yaml"
 LOCK = ROOT / "configs/recoverability/v4/server_package_lock_phase_6.yaml"
 POLICY_SUPPORT = ROOT / "artifacts/v4/support/informative_group_rate.json"
 PHASE4_RUN_ROOT = ROOT / "artifacts/v4/training/runs/phase4-r1"
 OUTPUT = ROOT / "artifacts/v4/phase6/execution_manifest.json"
-_LOCKED_PATHS = (
-    "configs/recoverability/v4_phase_6.yaml",
-    "docs/Qwen25VL_Constraint_Assimilation_Natural_State_RL_Codex_Plan_v4.md",
-    "docs/QWEN_V4_SERVER_HANDOFF.md",
-    "pyproject.toml",
-    "requirements-gpu.lock.txt",
-    "scripts/v4/11_prepare_phase6_rl.py",
-    "src/compensability_v4/qwen/phase6_runtime.py",
-)
 
 
 def main() -> int:
@@ -65,7 +58,7 @@ def main() -> int:
         lock_hash = verify_phase6_package_lock(
             lock_path=arguments.package_lock,
             repository_root=ROOT,
-            expected_paths=_LOCKED_PATHS,
+            expected_paths=PHASE6_LOCKED_PATHS,
         )
         summary = load_phase5_policy_support_summary(
             arguments.policy_support_summary,

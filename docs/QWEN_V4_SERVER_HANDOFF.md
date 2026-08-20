@@ -398,11 +398,17 @@ artifacts/v4/support/pass_at_k.csv
 Return both `READY` lines, all printed SHA-256 lines, the support-dev summary, and any `BLOCKED`
 message.
 
-## Phase 6 - RL execution-manifest freeze
+## Phase 6 - manifest, GRPO data, training, and evaluation
 
 After Phase 5 completes, the next server-side step is to bind the executed Phase 5 policy-support
-summary and the frozen Phase 4 adapter trees into one hash-closed Phase 6 execution manifest. This
-command does not start RL, does not construct a Trainer, and does not import an optimizer.
+summary and the frozen Phase 4 adapter trees into one hash-closed Phase 6 execution manifest. The
+manifest command does not start RL, construct a Trainer, or import an optimizer. Steps 12--14 must
+bind the exact manifest SHA-256 produced by step 11.
+Step 12 also refuses to run if the current Phase 5 summary hash or `source_sha256` mapping no
+longer matches that manifest. Step 13 re-verifies the Base snapshot plus the C0/C1/T Phase 4
+adapter trees against the manifest before any GRPO preflight or optimizer step. Step 14 reuses a
+checkpoint cache only when the checkpoint hash, input hashes, config hash, package-lock hash, and
+execution-manifest hash all still match.
 
 Run:
 
@@ -415,11 +421,71 @@ sha256sum artifacts/v4/phase6/execution_manifest.json
 python -m json.tool artifacts/v4/phase6/execution_manifest.json
 ```
 
+Freeze the two reward-specific natural-error training views:
+
+```bash
+PHASE6_MANIFEST_SHA256="$(sha256sum artifacts/v4/phase6/execution_manifest.json | awk '{print $1}')"
+
+python scripts/v4/12_prepare_phase6_rl_data.py --execute \
+  --execution-manifest-sha256 "$PHASE6_MANIFEST_SHA256"
+
+sha256sum \
+  artifacts/v4/rl/data/recovery_outcome.jsonl \
+  artifacts/v4/rl/data/answer_only.jsonl \
+  artifacts/v4/rl/data/summary.json
+python -m json.tool artifacts/v4/rl/data/summary.json
+```
+
+Run the CUDA/bf16, installed-TRL-API, data, Base initialization, T initialization, frozen-base,
+and trainability preflight before any optimizer step:
+
+```bash
+python scripts/v4/13_train_phase6_grpo.py \
+  --execute \
+  --preflight-only \
+  --execution-manifest-sha256 "$PHASE6_MANIFEST_SHA256"
+```
+
+After that command prints `READY`, execute the three registered GRPO arms. Each arm writes
+checkpoints every 16 steps and can resume from its last checkpoint. Reward traces are snapshotted
+with each checkpoint.
+
+```bash
+export COMPBIAS_V4_PHASE6_RL_ACK=I_UNDERSTAND_THIS_STARTS_PHASE_6_GRPO_TRAINING
+
+python scripts/v4/13_train_phase6_grpo.py \
+  --execute \
+  --execution-manifest-sha256 "$PHASE6_MANIFEST_SHA256"
+```
+
+Evaluate Base, Base + Answer-Only RL, Recovery LoRA, Recovery LoRA + Recovery-Outcome RL, and
+Recovery LoRA + Answer-Only RL on the frozen 32-scene support-dev set:
+
+```bash
+python scripts/v4/14_evaluate_phase6_rl.py \
+  --execute \
+  --execution-manifest-sha256 "$PHASE6_MANIFEST_SHA256"
+
+sha256sum \
+  artifacts/v4/rl/evaluation/by_scene.jsonl \
+  artifacts/v4/rl/evaluation/summary.json
+python -m json.tool artifacts/v4/rl/evaluation/summary.json
+```
+
 The formal Phase 6 manifest output is:
 
 ```text
 artifacts/v4/phase6/execution_manifest.json
+artifacts/v4/rl/data/recovery_outcome.jsonl
+artifacts/v4/rl/data/answer_only.jsonl
+artifacts/v4/rl/data/summary.json
+artifacts/v4/rl/runs/phase6-r1/<variant>/final_adapter/
+artifacts/v4/rl/runs/phase6-r1/<variant>/execution_evidence.json
+artifacts/v4/rl/runs/phase6-r1/<variant>/grpo_signal_diagnostics.json
+artifacts/v4/rl/evaluation/by_scene.jsonl
+artifacts/v4/rl/evaluation/summary.json
 ```
 
-Return the `READY` line, the manifest SHA-256 line, the full manifest JSON, and any `BLOCKED`
-message.
+Return every `READY` line, all printed SHA-256 lines, the RL data summary, the three variant
+execution-evidence files, the three signal-diagnostic files, the evaluation summary, and any
+`BLOCKED` message.

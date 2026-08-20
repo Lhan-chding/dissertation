@@ -44,9 +44,9 @@ S1 运行时清单要求的模块名：`model.visual.blocks.0`、`model.visual.b
 | S4 / Phase 2 layerwise | `04_layerwise_assimilation.py` | `PHASE_2_LAYERWISE_ASSIMILATION_EXECUTED` | 579 scenes；2,316 forwards；36 layers | 见 S4 表 |
 | S5 / Phase 3 cache | `05_validate_cache_runner.py` | `PHASE_3_EXECUTED_WITH_DIAGNOSTICS` | 579 scenes；2,316 parity calls | `c52cb71d42c83e3a32c57c00e006f5117631b9cab25a2ef8fbe62001ff572351` |
 | S6 / Phase 3 interface ladder | `06_run_interface_ladder.py` | `PHASE_3_INTERFACE_LADDER_EXECUTED_WITH_DIAGNOSTICS` | 579 scenes；9,843 cells | 服务器控制台未记录两个输出文件的 SHA-256 |
-| Phase 4 LoRA | source preparation、support build 和 LoRA executor 已实现；服务器尚未执行 | 未执行训练 | 0 个已记录训练调用 | 无 |
+| Phase 4 LoRA | source preparation、support build 与 C0/C1/T LoRA 训练 | 服务器执行完成 | 564/564 steps；1 epoch | 输出根目录见 Phase 4 表 |
 | Phase 5 policy support | Base/C0/C1/T 的 held-out policy-support 测量 | 服务器执行完成 | 4 个 checkpoint 的 128 行 scene-level 测量 | 32 个 held-out natural errors |
-| Phase 6 RL | 计划中的 RL 实验；当前代码 surface 已补至 execution-manifest freeze | 未执行 RL | 无 | 无 |
+| Phase 6 RL | execution manifest、双 reward 数据、3 个 GRPO arm 与 5 checkpoint 评估代码 | 未执行 RL | 0 个已记录 GRPO steps | 无 |
 | Phase 7 multimodal | 计划中的真实多模态评估 | 未执行 | 无 | 无 |
 
 ## S0：冻结遗留证据审计
@@ -409,7 +409,7 @@ valid_minus_sham_margin =
 | 阶段 | 计划输出路径 | 本报告生成时的执行状态 |
 | --- | --- | --- |
 | Phase 5 policy support | `artifacts/v4/support/policy_support_by_scene.parquet`；`artifacts/v4/support/informative_group_rate.json`；`artifacts/v4/support/pass_at_k.csv` | 服务器执行完成；本地工作区未复制输出文件 |
-| Phase 6 RL | `artifacts/v4/phase6/execution_manifest.json` 为当前代码 surface 的下一阶段冻结输出；RL 训练/诊断输出尚未记录 | execution manifest 未在当前工作区生成；RL 未执行 |
+| Phase 6 RL | execution manifest、RL data、3 个 GRPO run roots、5-checkpoint evaluation | execution manifest 未在当前工作区生成；RL 未执行 |
 | Phase 7 real multimodal | Phase 7 评估输出未在当前工作区列出 | 未执行；无输出文件 |
 
 ### Phase 5：policy-support 服务器执行记录
@@ -449,6 +449,49 @@ valid_minus_sham_margin =
 | pass@2 | `0.893798828125` |
 | pass@4 | `0.9030656814575195` |
 | pass@8 | `0.9059367423906224` |
+
+### Phase 6：冻结执行参数与当前状态
+
+| 字段 | 记录值 |
+| --- | --- |
+| 当前状态 | 代码与服务器执行命令已定义；服务器未执行 Phase 6 |
+| 比较组 | `Base`；`Base_AnswerOnly_RL`；`Recovery_LoRA`；`Recovery_LoRA_RecoveryOutcome_RL`；`Recovery_LoRA_AnswerOnly_RL` |
+| 实际 GRPO 训练组 | `Base_AnswerOnly_RL`；`Recovery_LoRA_RecoveryOutcome_RL`；`Recovery_LoRA_AnswerOnly_RL` |
+| Base initialization | 模型快照 SHA-256 `e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87` |
+| Recovery initialization | Phase 4 T adapter tree SHA-256 `807a61c2e3f7b532b162554dee6e7df83d654fb1f10cc464e9dcb5f6f8efd5c7` |
+| reward modes | `answer_only`；`recovery_outcome` |
+| precision | `bf16` |
+| learning rate | `0.000001` |
+| max steps per GRPO arm | 64 |
+| rollout group size | 8 |
+| temperature | 0.7 |
+| top-p | 1.0 |
+| top-k | 0 |
+| KL beta | 0.04 |
+| per-device train batch size | 1 |
+| gradient accumulation steps | 8 |
+| maximum prompt length | 512 |
+| maximum completion length | 32 |
+| checkpoint interval | 16 steps |
+| training seed | `2026082006` |
+| evaluation scenes | frozen support-dev 32 natural errors |
+| evaluation rollouts per scene | 16 |
+| evaluation seed | `2026082005` |
+| scene-clustered bootstrap resamples | 10,000 |
+| bootstrap seed | `2026082007` |
+| confidence interval | 95% |
+| registered-effect multiplicity | paired sign-flip p-values with Holm adjustment |
+| training seed count | 1；seed=`2026082006` |
+| confirmatory evaluation authorized | false |
+| downloads authorized | false |
+| execution-manifest output | `artifacts/v4/phase6/execution_manifest.json` |
+| RL data outputs | `artifacts/v4/rl/data/recovery_outcome.jsonl`；`answer_only.jsonl`；`summary.json` |
+| GRPO run root | `artifacts/v4/rl/runs/phase6-r1` |
+| formal evaluation outputs | `artifacts/v4/rl/evaluation/by_scene.jsonl`；`summary.json` |
+| execution manifest inputs | `artifacts/v4/support/informative_group_rate.json`；Phase 4 `C0/C1/T` adapter trees |
+| RL data gate | 当前 Phase 5 summary SHA-256 与 `source_sha256` 必须同时匹配 execution manifest |
+| GRPO preflight gate | Base snapshot 与 Phase 4 `C0/C1/T` adapter tree SHA-256 必须匹配 execution manifest |
+| evaluation cache gate | checkpoint hash、support-dev input hash、config hash、package-lock hash、execution-manifest hash 必须同时匹配 |
 
 ## 哈希绑定的执行输入清单
 
@@ -493,6 +536,9 @@ export TRANSFORMERS_OFFLINE=1
 | Phase 5 support-dev freeze | `python scripts/v4/09_prepare_phase5_support_dev.py --execute` | 是 | 默认读取冻结 8,000-scene 视觉数据和 Phase 4 selection trace/summary |
 | Phase 5 policy-support measurement | `python scripts/v4/10_measure_policy_support.py --execute` | 是 | 读取冻结 support-dev pool 和 C0/C1/T adapter trees |
 | Phase 6 execution-manifest freeze | `python scripts/v4/11_prepare_phase6_rl.py --execute` | 是 | 读取 Phase 5 `informative_group_rate.json` 与 Phase 4 adapter trees |
+| Phase 6 RL data freeze | `python scripts/v4/12_prepare_phase6_rl_data.py --execute` | 是 | 读取 execution manifest、Phase 4 natural sources、Phase-C records 与 Phase 5 formal artifacts |
+| Phase 6 GRPO preflight/training | `python scripts/v4/13_train_phase6_grpo.py --execute` | 是；真实训练另需固定 ACK 环境变量 | 读取 execution manifest、RL data、Base model 与 Phase 4 T adapter |
+| Phase 6 formal evaluation | `python scripts/v4/14_evaluate_phase6_rl.py --execute` | 是 | 读取 execution manifest、3 个 GRPO adapters、Base、T 与 frozen support-dev |
 
 完整 S6 命令中的 10 个输入及其 SHA-256 已列于“哈希绑定的执行输入清单”。脚本的完整命令行定义位于 `docs/QWEN_V4_SERVER_HANDOFF.md` 的 S6 节。
 

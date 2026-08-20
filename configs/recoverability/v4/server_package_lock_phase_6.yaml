@@ -4,7 +4,7 @@
   "files": [
     {
       "path": "configs/recoverability/v4_phase_6.yaml",
-      "sha256": "2e97ceaccf200a4b01bfca035eb54665f6d39846110ff32615913054500ed349"
+      "sha256": "13a1f6adfc89b17c6883fd7bf727668b31729a66b5cd89f82d7b9f5c450e4648"
     },
     {
       "path": "docs/Qwen25VL_Constraint_Assimilation_Natural_State_RL_Codex_Plan_v4.md",
@@ -12,7 +12,7 @@
     },
     {
       "path": "docs/QWEN_V4_SERVER_HANDOFF.md",
-      "sha256": "571a6fda4b507c6843ac5402b3b406db618dbc85213cc81c0ac6a6fe66b11996"
+      "sha256": "0b059ce569a9065c74403dbac424f4074a17eea0ccca917f60b2ae64350eaafd"
     },
     {
       "path": "pyproject.toml",
@@ -24,11 +24,27 @@
     },
     {
       "path": "scripts/v4/11_prepare_phase6_rl.py",
-      "sha256": "31bb70c96ee4e467edfe142417d9bfa3ba5146d99da943bab66dadf27300390c"
+      "sha256": "7013358fd3031f441bab12d16e1b1d4229cd66c3d515b40f7c4d11b4b5c8b34e"
+    },
+    {
+      "path": "scripts/v4/12_prepare_phase6_rl_data.py",
+      "sha256": "5ad081c8dfd45cbcf80678a8d2e8d1b315ab158d07f0bd26612358ef51e4e8e7"
+    },
+    {
+      "path": "scripts/v4/13_train_phase6_grpo.py",
+      "sha256": "226320331e5332441f094e6873fde1f11886f686ea67f1b448103e5c4a39aedd"
+    },
+    {
+      "path": "scripts/v4/14_evaluate_phase6_rl.py",
+      "sha256": "be25ab47164928e5cb2fd254de1d804c65812d8f538c43a420f8d1f0421ca737"
     },
     {
       "path": "src/compensability_v4/qwen/phase6_runtime.py",
-      "sha256": "37fc934c2bd0c3c99a1124667f9253b395bc882987158e05b79772816499967d"
+      "sha256": "4d80f0ce7b27ab52e21a885d061b619ddf2e24e33328c260627ec38bd4d00f4b"
+    },
+    {
+      "path": "src/compensability_v4/training/phase6.py",
+      "sha256": "1c9d0c58907f85a5e58ffe7d52f5cacddb46bddcf5852359bdbe20a2df1645bd"
     }
   ]
 }

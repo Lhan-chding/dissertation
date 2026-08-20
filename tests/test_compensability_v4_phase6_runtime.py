@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import json
 import hashlib
+import json
 from pathlib import Path
 
 import pytest
@@ -10,6 +10,7 @@ from compensability_v4.qwen.phase6_runtime import (
     build_phase6_execution_manifest,
     load_phase5_policy_support_summary,
     load_phase6_config,
+    load_phase6_execution_manifest,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -49,7 +50,12 @@ def _phase5_summary_payload(run_root: Path) -> dict[str, object]:
         "pass_at_k": [1, 2, 4, 8, 16],
         "informative_group_size": 8,
         "by_checkpoint": {
-            "Base": {"scene_count": 32, "mean_p_i": 0.25, "mean_G_K": 0.6, "pass_at_k": {"1": 0.25}},
+            "Base": {
+                "scene_count": 32,
+                "mean_p_i": 0.25,
+                "mean_G_K": 0.6,
+                "pass_at_k": {"1": 0.25},
+            },
             "C0": {"scene_count": 32, "mean_p_i": 0.4, "mean_G_K": 0.8, "pass_at_k": {"1": 0.4}},
             "C1": {"scene_count": 32, "mean_p_i": 0.5, "mean_G_K": 0.85, "pass_at_k": {"1": 0.5}},
             "T": {"scene_count": 32, "mean_p_i": 0.7, "mean_G_K": 0.9, "pass_at_k": {"1": 0.7}},
@@ -139,3 +145,53 @@ def test_phase6_execution_manifest_binds_phase5_summary_and_phase4_hashes(tmp_pa
     recovery_lora = next(arm for arm in manifest["arms"] if arm["name"] == "Recovery_LoRA")
     assert recovery_lora["initialization_checkpoint"] == "T"
     assert recovery_lora["initialization_sha256"] == summary["source_sha256"]["T"]
+
+    manifest_path = tmp_path / "execution_manifest.json"
+    manifest_path.write_text(json.dumps(manifest, sort_keys=True), encoding="utf-8")
+    manifest_sha256 = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+    loaded = load_phase6_execution_manifest(
+        manifest_path,
+        expected_sha256=manifest_sha256,
+        expected_config_sha256="1" * 64,
+        expected_package_lock_sha256="2" * 64,
+    )
+    assert loaded["phase5_policy_support_summary_sha256"] == summary_sha256
+
+    manifest["training_invoked"] = True
+    manifest_path.write_text(json.dumps(manifest, sort_keys=True), encoding="utf-8")
+    with pytest.raises(ValueError, match="execution manifest"):
+        load_phase6_execution_manifest(
+            manifest_path,
+            expected_sha256=hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
+            expected_config_sha256="1" * 64,
+            expected_package_lock_sha256="2" * 64,
+        )
+
+
+def test_phase6_execution_manifest_rejects_drifted_source_hash_mapping(tmp_path: Path) -> None:
+    config = load_phase6_config(ROOT / "configs/recoverability/v4_phase_6.yaml")
+    run_root = tmp_path / "phase4-r1"
+    summary = _phase5_summary_payload(run_root)
+    summary_path = tmp_path / "informative_group_rate.json"
+    summary_path.write_text(json.dumps(summary, sort_keys=True), encoding="utf-8")
+    manifest = build_phase6_execution_manifest(
+        config=config,
+        phase5_summary=summary,
+        phase5_summary_sha256=hashlib.sha256(summary_path.read_bytes()).hexdigest(),
+        phase4_run_root=run_root,
+        config_sha256="1" * 64,
+        package_lock_sha256="2" * 64,
+    )
+    manifest["source_sha256"] = {
+        "Base": "e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87"
+    }
+    manifest_path = tmp_path / "execution_manifest.json"
+    manifest_path.write_text(json.dumps(manifest, sort_keys=True), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="source hashes"):
+        load_phase6_execution_manifest(
+            manifest_path,
+            expected_sha256=hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
+            expected_config_sha256="1" * 64,
+            expected_package_lock_sha256="2" * 64,
+        )

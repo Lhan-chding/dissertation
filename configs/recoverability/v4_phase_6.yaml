@@ -1,13 +1,15 @@
 {
   "schema_version": 1,
-  "status": "PHASE_6_RL_PLAN_AUTHORIZED",
+  "status": "PHASE_6_GRPO_AUTHORIZED",
   "model": {
     "local_path": "/model/ModelScope/Qwen/Qwen2.5-VL-3B-Instruct",
     "snapshot_sha256": "e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87"
   },
   "authorization": {
     "manifest_preparation_authorized": true,
-    "local_training_authorized": false,
+    "server_training_authorized": true,
+    "rl_authorized": true,
+    "confirmatory_evaluation_authorized": false,
     "downloads_authorized": false
   },
   "phase5": {
@@ -20,55 +22,49 @@
     "required_source_sha256_keys": ["Base", "C0", "C1", "T", "support_dev"]
   },
   "arms": [
-    {
-      "name": "Base",
-      "initialization_checkpoint": "Base",
-      "reward_mode": "none",
-      "execute_rl": false
-    },
-    {
-      "name": "Base_AnswerOnly_RL",
-      "initialization_checkpoint": "Base",
-      "reward_mode": "answer_only",
-      "execute_rl": true
-    },
-    {
-      "name": "Recovery_LoRA",
-      "initialization_checkpoint": "T",
-      "reward_mode": "none",
-      "execute_rl": false
-    },
-    {
-      "name": "Recovery_LoRA_RecoveryOutcome_RL",
-      "initialization_checkpoint": "T",
-      "reward_mode": "recovery_outcome",
-      "execute_rl": true
-    },
-    {
-      "name": "Recovery_LoRA_AnswerOnly_RL",
-      "initialization_checkpoint": "T",
-      "reward_mode": "answer_only",
-      "execute_rl": true
-    }
+    {"name": "Base", "initialization_checkpoint": "Base", "reward_mode": "none", "execute_rl": false},
+    {"name": "Base_AnswerOnly_RL", "initialization_checkpoint": "Base", "reward_mode": "answer_only", "execute_rl": true},
+    {"name": "Recovery_LoRA", "initialization_checkpoint": "T", "reward_mode": "none", "execute_rl": false},
+    {"name": "Recovery_LoRA_RecoveryOutcome_RL", "initialization_checkpoint": "T", "reward_mode": "recovery_outcome", "execute_rl": true},
+    {"name": "Recovery_LoRA_AnswerOnly_RL", "initialization_checkpoint": "T", "reward_mode": "answer_only", "execute_rl": true}
   ],
+  "training": {
+    "precision": "bf16",
+    "learning_rate": 0.000001,
+    "max_steps": 64,
+    "group_size": 8,
+    "temperature": 0.7,
+    "top_p": 1.0,
+    "top_k": 0,
+    "kl_beta": 0.04,
+    "per_device_train_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "max_prompt_length": 512,
+    "max_completion_length": 32,
+    "checkpoint_steps": 16,
+    "seed": 2026082006,
+    "use_vllm": false
+  },
+  "evaluation": {
+    "checkpoints": ["Base", "Base_AnswerOnly_RL", "Recovery_LoRA", "Recovery_LoRA_RecoveryOutcome_RL", "Recovery_LoRA_AnswerOnly_RL"],
+    "support_dev_only": true,
+    "rollout_count": 16,
+    "group_size": 8,
+    "temperature": 0.7,
+    "top_p": 1.0,
+    "top_k": 0,
+    "max_new_tokens": 32,
+    "seed": 2026082005,
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 2026082007
+  },
   "optional_controls": {
     "enable_constraint_aware_rl": false,
     "planned_arm_name": "Recovery_LoRA_ConstraintAware_RL",
     "reward_mode": "constraint_aware"
   },
   "diagnostics": {
-    "required_metrics": [
-      "group_rewards",
-      "reward_variance",
-      "all_zero_group_rate",
-      "all_one_group_rate",
-      "non_degenerate_group_rate",
-      "kl",
-      "entropy",
-      "exact_world_recovery",
-      "observation_copy_rate",
-      "answer_accuracy"
-    ],
+    "required_metrics": ["group_rewards", "reward_variance", "all_zero_group_rate", "all_one_group_rate", "non_degenerate_group_rate", "kl", "entropy", "exact_world_recovery", "observation_copy_rate", "answer_accuracy"],
     "rollout_group_size": 8,
     "record_scene_level_metrics": true
   },
@@ -76,11 +72,17 @@
     "require_offline_execution": true,
     "require_hash_bound_phase5_summary": true,
     "require_phase4_adapter_hash_match": true,
+    "require_execution_manifest": true,
+    "require_reward_trace_checkpointing": true,
     "forbid_artifact_overwrite": true
   },
   "artifacts": {
     "phase4_run_root": "artifacts/v4/training/runs/phase4-r1",
     "policy_support_summary": "artifacts/v4/support/informative_group_rate.json",
-    "execution_manifest": "artifacts/v4/phase6/execution_manifest.json"
+    "execution_manifest": "artifacts/v4/phase6/execution_manifest.json",
+    "rl_data_root": "artifacts/v4/rl/data",
+    "rl_run_root": "artifacts/v4/rl/runs/phase6-r1",
+    "evaluation_work_root": "artifacts/v4/rl/evaluation_work/phase6-r1",
+    "evaluation_output_root": "artifacts/v4/rl/evaluation"
   }
 }
