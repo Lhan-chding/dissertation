@@ -233,9 +233,14 @@ def test_lora_targets_are_discovered_from_actual_language_modules_only() -> None
 
 def test_frozen_parameter_hash_serializes_bfloat16_without_loss() -> None:
     torch = pytest.importorskip("torch")
-    parameter = torch.tensor([1.0, -2.0, 3.5], dtype=torch.bfloat16)
+    parameters = (
+        torch.tensor([1.0, -2.0, 3.5], dtype=torch.bfloat16),
+        torch.tensor(1.0, dtype=torch.bfloat16),
+    )
 
-    assert _parameter_bytes(parameter) == parameter.view(torch.uint8).numpy().tobytes()
+    for parameter in parameters:
+        expected = parameter.reshape(-1).view(torch.uint8).numpy().tobytes()
+        assert _parameter_bytes(parameter) == expected
 
 
 def test_preflight_requires_cuda_bf16_and_all_gpu_dependencies(

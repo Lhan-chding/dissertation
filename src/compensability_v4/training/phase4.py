@@ -626,7 +626,21 @@ def _parameter_bytes(parameter: object) -> bytes:
             value = candidate()
     numpy = getattr(value, "numpy", None)
     if callable(numpy):
-        value = numpy()
+        try:
+            value = numpy()
+        except TypeError as error:
+            view = getattr(value, "view", None)
+            if not callable(view):
+                raise TypeError("model parameter dtype cannot be serialized losslessly") from error
+            torch = _import_torch()
+            try:
+                reshape = getattr(value, "reshape", None)
+                byte_source = reshape(-1) if callable(reshape) else value
+                value = byte_source.view(torch.uint8).numpy()
+            except (AttributeError, RuntimeError, TypeError) as fallback_error:
+                raise TypeError(
+                    "model parameter dtype cannot be serialized losslessly"
+                ) from fallback_error
     tobytes = getattr(value, "tobytes", None)
     if not callable(tobytes):
         raise TypeError("model parameter does not expose serializable tensor bytes")
