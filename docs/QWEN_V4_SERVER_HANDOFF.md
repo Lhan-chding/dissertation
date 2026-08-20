@@ -1,11 +1,12 @@
-# Qwen v4 Phase 0-4 server handoff
+# Qwen v4 Phase 0-5 server handoff
 
-This handoff executes the authorized Phase 0-3 diagnostics and the separately guarded Phase 4
-language-only LoRA support injection. It stops before Phase 5 policy-support measurement and all
-RL. The
+This handoff executes the authorized Phase 0-3 diagnostics, the separately guarded Phase 4
+language-only LoRA support injection, and inference-only Phase 5 policy-support measurement. It
+stops before all RL. The
 archived v4 plan is byte-identical to the supplied specification (SHA-256
 `01e532f8c7fe5439c70e8cd8de81ff3448465d8d401dbbf478c76aebaf49641e`). Phase 4 SFT/LoRA is
-authorized only by `configs/recoverability/v4_phase_4.yaml`; RL remains unauthorized.
+authorized only by `configs/recoverability/v4_phase_4.yaml`. Phase 5 is measurement-only under
+`configs/recoverability/v4_phase_5.yaml`; training and RL are unauthorized in that phase.
 
 ## Fixed boundaries
 
@@ -340,4 +341,59 @@ artifacts/v4/training/runs/phase4-r1/T_constraint_recovery/final_adapter
 ```
 
 Return S0-S6 and Phase 4 console output, the Git revision, every produced SHA-256 line, and any
-`BLOCKED` message. Do not begin Phase 5, policy-support measurement, or any RL stage.
+`BLOCKED` message.
+
+## Phase 5 - held-out policy-support measurement
+
+Phase 5 first freezes a new `support_dev` intake of 576 scenes from the pinned 8,000-scene visual
+dataset. All 579 scenes used by the Phase 4 S6 source-selection trace are excluded before model
+execution. The intake is balanced at 192 scenes for each of `cross_series`,
+`duplicate_encoding`, and `trend`. The frozen Base model receives exactly one Stage-1 visual call
+per scene, with no retry and no sample extension. Correct reads, invalid formats, out-of-domain
+values, and multiple-error reads remain in `selection_trace.jsonl`; every in-domain, exactly-one
+position error enters the held-out natural-error pool. No empirical success threshold is used.
+
+The second command evaluates the same held-out pool in the fixed order Base, C0, C1, T. Each
+checkpoint receives one greedy T6 completion, teacher-forced sequence log probabilities for the
+truth and frozen observation, and 16 temperature-0.7 rollouts per scene. The common rollout seed
+depends on scene and rollout index, not checkpoint. The registered K values are 1, 2, 4, 8, and
+16; the Phase 6 informative-group size is 8. The runtime loads a fresh Base model for every
+checkpoint, attaches at most one frozen adapter, disables gradients, and never constructs an
+optimizer or Trainer.
+
+Completed checkpoint evidence is written under `artifacts/v4/support_work/phase5-r1`. A matching
+rerun resumes those checkpoint files after verifying checkpoint, support-dev, and config hashes;
+therefore a later failure does not require repeating completed checkpoint inference. Formal
+outputs are not overwritten.
+
+Run the two commands in order:
+
+```bash
+python scripts/v4/09_prepare_phase5_support_dev.py --execute
+
+sha256sum \
+  artifacts/v4/support_dev/candidates.jsonl \
+  artifacts/v4/support_dev/held_out_natural_errors.jsonl \
+  artifacts/v4/support_dev/selection_trace.jsonl \
+  artifacts/v4/support_dev/summary.json
+python -m json.tool artifacts/v4/support_dev/summary.json
+
+python scripts/v4/10_measure_policy_support.py --execute
+
+sha256sum \
+  artifacts/v4/support/policy_support_by_scene.parquet \
+  artifacts/v4/support/informative_group_rate.json \
+  artifacts/v4/support/pass_at_k.csv
+python -m json.tool artifacts/v4/support/informative_group_rate.json
+```
+
+The formal Phase 5 outputs are:
+
+```text
+artifacts/v4/support/policy_support_by_scene.parquet
+artifacts/v4/support/informative_group_rate.json
+artifacts/v4/support/pass_at_k.csv
+```
+
+Return both `READY` lines, all printed SHA-256 lines, the support-dev summary, and any `BLOCKED`
+message. Do not begin Phase 6 or any RL stage.

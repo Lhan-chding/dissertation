@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
 from dataclasses import FrozenInstanceError
 from pathlib import Path
@@ -17,7 +18,6 @@ from compensability_v4.qwen.phase5_support import (
     summarize_phase5_policy_support,
     write_phase5_outputs,
 )
-
 
 SHA = "a" * 64
 
@@ -60,16 +60,14 @@ def test_support_dev_candidates_are_deterministic_and_exclude_all_phase4_scenes(
 def test_support_dev_candidates_fail_closed_on_duplicates_or_insufficient_pool() -> None:
     duplicate = [*_dataset_rows(2), _dataset_rows(2)[0]]
     with pytest.raises(ValueError, match="duplicated"):
-        build_support_dev_candidates(
-            duplicate, excluded_scene_ids=frozenset(), count=1, seed=1
-        )
+        build_support_dev_candidates(duplicate, excluded_scene_ids=frozenset(), count=1, seed=1)
     with pytest.raises(RuntimeError, match="smaller"):
         build_support_dev_candidates(
             _dataset_rows(2), excluded_scene_ids=frozenset({"scene-000"}), count=2, seed=1
         )
 
 
-def test_natural_error_retention_keeps_every_parseable_error_and_audits_all_candidates() -> None:
+def test_natural_error_retention_keeps_all_single_errors_and_audits_all_candidates() -> None:
     scenes = build_support_dev_candidates(
         _dataset_rows(5), excluded_scene_ids=frozenset(), count=5, seed=3
     )
@@ -90,12 +88,13 @@ def test_natural_error_retention_keeps_every_parseable_error_and_audits_all_cand
         scenes, output_by_scene=output_by_scene, stage1_model_sha256=SHA
     )
 
-    assert len(errors) == 3
-    assert [len(error.error_indices) for error in errors] == [1, 2, 2]
+    assert len(errors) == 1
+    assert [len(error.error_indices) for error in errors] == [1]
     assert len(traces) == 5
     assert {trace["selection_status"] for trace in traces} == {
         "excluded_correct",
         "excluded_unparseable",
+        "excluded_multiple_errors",
         "included_natural_error",
     }
     assert all(error.split is DatasetSplit.SUPPORT_DEV for error in errors)
@@ -134,9 +133,11 @@ def _measurement(
         family="cross_series",
         split=DatasetSplit.SUPPORT_DEV,
         checkpoint=checkpoint,
-        checkpoint_sha256=(checkpoint.value[0].lower() * 64),
+        checkpoint_sha256=hashlib.sha256(checkpoint.value.encode()).hexdigest(),
         truth=(2, 3, 4, 5),
         observed=(9, 3, 4, 5),
+        greedy_raw_output=",".join(map(str, greedy)),
+        greedy_token_ids=greedy,
         greedy_output=greedy,
         greedy_parse_success=True,
         greedy_success=greedy == (2, 3, 4, 5),
@@ -144,6 +145,9 @@ def _measurement(
         candidate_logp_true=-1.0,
         candidate_logp_observed=-2.0,
         candidate_margin_true_observed=1.0,
+        sample_raw_outputs=tuple("2,3,4,5" if success else "9,3,4,5" for success in outcomes),
+        sample_token_ids=tuple((2, 3, 4, 5) if success else (9, 3, 4, 5) for success in outcomes),
+        sample_seeds=tuple(range(len(outcomes))),
         sample_outputs=tuple((2, 3, 4, 5) if success else (9, 3, 4, 5) for success in outcomes),
         sample_parse_success=tuple(True for _ in outcomes),
         sample_success=outcomes,
@@ -185,7 +189,9 @@ def test_phase5_summary_reports_p_i_g_k_pass_at_k_and_copy_rate_without_threshol
 
 def test_phase5_summary_requires_complete_four_checkpoint_scene_closure() -> None:
     error = _error("scene-a")
-    rows = tuple(_measurement(error.scene_id, checkpoint, (True, False)) for checkpoint in PolicyCheckpoint)
+    rows = tuple(
+        _measurement(error.scene_id, checkpoint, (True, False)) for checkpoint in PolicyCheckpoint
+    )
     with pytest.raises(ValueError, match="closure"):
         summarize_phase5_policy_support(
             errors=(error,),
@@ -214,9 +220,10 @@ def test_phase5_writer_emits_required_parquet_json_and_csv_without_overwrite(
         sampling_temperature=0.7,
         sampling_seed=1,
     )
-    parquet_path = tmp_path / "policy_support_by_scene.parquet"
-    informative_path = tmp_path / "informative_group_rate.json"
-    pass_path = tmp_path / "pass_at_k.csv"
+    output_root = tmp_path / "support"
+    parquet_path = output_root / "policy_support_by_scene.parquet"
+    informative_path = output_root / "informative_group_rate.json"
+    pass_path = output_root / "pass_at_k.csv"
 
     write_phase5_outputs(
         parquet_path=parquet_path,
@@ -224,7 +231,13 @@ def test_phase5_writer_emits_required_parquet_json_and_csv_without_overwrite(
         pass_at_k_path=pass_path,
         measurements=rows,
         summary=summary,
-        source_sha256={"support_dev": SHA, "Base": "b" * 64, "C0": "c" * 64, "C1": "d" * 64, "T": "e" * 64},
+        source_sha256={
+            "support_dev": SHA,
+            "Base": "b" * 64,
+            "C0": "c" * 64,
+            "C1": "d" * 64,
+            "T": "e" * 64,
+        },
     )
 
     import pyarrow.parquet as pq
@@ -244,5 +257,61 @@ def test_phase5_writer_emits_required_parquet_json_and_csv_without_overwrite(
             pass_at_k_path=pass_path,
             measurements=rows,
             summary=summary,
-            source_sha256={"support_dev": SHA, "Base": "b" * 64, "C0": "c" * 64, "C1": "d" * 64, "T": "e" * 64},
+            source_sha256={
+                "support_dev": SHA,
+                "Base": "b" * 64,
+                "C0": "c" * 64,
+                "C1": "d" * 64,
+                "T": "e" * 64,
+            },
         )
+
+
+def test_phase5_writer_does_not_publish_partial_outputs(tmp_path: Path) -> None:
+    pytest.importorskip("pyarrow")
+    error = _error()
+    rows = tuple(
+        _measurement(checkpoint=checkpoint, successes=(True, False, True, False))
+        for checkpoint in PolicyCheckpoint
+    )
+    summary = summarize_phase5_policy_support(
+        errors=(error,),
+        measurements=rows,
+        pass_at_k=(1, 2, 4),
+        informative_group_size=4,
+        sampling_temperature=0.7,
+        sampling_seed=1,
+    )
+    summary["pass_at_k_rows"] = []
+    output_root = tmp_path / "support"
+
+    with pytest.raises(ValueError, match="pass@K"):
+        write_phase5_outputs(
+            parquet_path=output_root / "policy_support_by_scene.parquet",
+            informative_path=output_root / "informative_group_rate.json",
+            pass_at_k_path=output_root / "pass_at_k.csv",
+            measurements=rows,
+            summary=summary,
+            source_sha256={
+                "support_dev": SHA,
+                "Base": "b" * 64,
+                "C0": "c" * 64,
+                "C1": "d" * 64,
+                "T": "e" * 64,
+            },
+        )
+
+    assert not output_root.exists()
+
+
+def test_natural_error_retention_rejects_out_of_domain_outputs() -> None:
+    scene = build_support_dev_candidates(
+        _dataset_rows(1), excluded_scene_ids=frozenset(), count=1, seed=1
+    )[0]
+    errors, traces = retain_held_out_natural_errors(
+        (scene,),
+        output_by_scene={scene.scene_id: f"999,{scene.truth[1]},{scene.truth[2]},{scene.truth[3]}"},
+        stage1_model_sha256=SHA,
+    )
+    assert errors == ()
+    assert traces[0]["selection_status"] == "excluded_outside_domain"

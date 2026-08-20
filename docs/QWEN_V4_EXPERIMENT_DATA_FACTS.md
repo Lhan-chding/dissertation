@@ -345,13 +345,13 @@ valid_minus_sham_margin =
 | S6 | `S6 numeric values must each be a stable single token` | 后续改为完整 token sequence 后重跑 |
 | S6 | `S6 Stage-1 output lies outside the frozen numeric domain` | 后续保留为 I1 diagnostic，第三次服务器执行完成 579 scenes / 9,843 cells |
 
-## 计划中 Phase 4--7 的执行状态与已冻结参数
+## Phase 4--7 的执行状态与已冻结参数
 
 ### Phase 4：支持注入式 LoRA
 
 | 字段 | 已冻结计划值/状态 |
 | --- | --- |
-| 执行状态 | 未执行；未记录 checkpoint 或训练 artifact |
+| 执行状态 | 服务器执行完成；控制台记录 `READY: Phase 4 C0/C1/T LoRA adapters written below /cloud/cloud-ssd1/dissertation/artifacts/v4/training/runs/phase4-r1` |
 | 可训练范围 | 语言侧 attention/MLP LoRA |
 | 冻结范围 | vision tower；patch merger/projector；base language weights |
 | target list 生成方式 | 通过 `named_modules()` 生成精确 target list |
@@ -378,6 +378,31 @@ valid_minus_sham_margin =
 | support build | `scripts/v4/07_build_support_data.py --execute --prepared-sources` |
 | GPU preflight | `scripts/v4/08_train_phase4_lora.py --execute --preflight-only --prepared-support` |
 | training command | 设置固定 acknowledgement 后执行 `scripts/v4/08_train_phase4_lora.py --execute --prepared-support` |
+
+### Phase 4 服务器输入与输出记录
+
+| 字段 | 记录值 |
+| --- | --- |
+| 训练代码基线 | `b12c88d1c0129f9bba5c9e20871d18b3c5c6033b` 之后的 Phase 4 冻结/merger 修订；服务器训练完成画面未显示新的 `git rev-parse HEAD` |
+| symbolic scenes | 579 |
+| natural single-error scenes | 173 |
+| symbolic scenes SHA-256 | `852c4e26c87d0f4afb34737e59ee840a17bf2e0a2a5813f956d3e9bc7e175c80` |
+| natural scenes SHA-256 | `b3dacf9515ff85e8e8af27777af28fe1969161ad45ed8400d8fd8a627c5a1418` |
+| natural observations SHA-256 | `c7d5d7d67d11f8b8e3a552c73c69ea02cbf3a05085e8bbfd45d78188155f7ee0` |
+| selection trace SHA-256 | `5b47ab6d4848f297557ab45d721ee6b2258ba7637f66349aac6741e8322c433f` |
+| source summary SHA-256 | `32763a9648d12f841f9231e0a16db15597fac1a50c545f8871696108c41c8322` |
+| support corpus SHA-256 | `0bc003d7fdf4f2f67aecef42a25e8caf2f33433fa969aea1962df5ee397a9c5e` |
+| support summary SHA-256 | `ac0d3426eb0f9705b2e4af5d7096dc2c6c2e9b0ea681fe17600864d872b2d292` |
+| 最后显示的 checkpoint steps | 564/564 |
+| 最后显示的 epoch | 1 |
+| 最后显示的 train runtime | 1,509 秒；画面进度为 25:08 |
+| 最后显示的 train samples/second | 2.991 |
+| 最后显示的 train steps/second | 0.374 |
+| 最后显示的 train loss | 0.1395 |
+| 输出根目录 | `/cloud/cloud-ssd1/dissertation/artifacts/v4/training/runs/phase4-r1` |
+| C0 adapter | `C0_format_only/final_adapter`；服务器画面未显示 tree SHA-256 |
+| C1 adapter | `C1_forward_arithmetic/final_adapter`；服务器画面未显示 tree SHA-256 |
+| T adapter | `T_constraint_recovery/final_adapter`；服务器画面未显示 tree SHA-256 |
 
 ### Phase 5--7
 
@@ -427,6 +452,8 @@ export TRANSFORMERS_OFFLINE=1
 | Phase 4 support build | `python scripts/v4/07_build_support_data.py --execute --prepared-sources` | 是 | 读取 3 个 prepared JSONL 与 source summary |
 | Phase 4 GPU preflight | `python scripts/v4/08_train_phase4_lora.py --execute --preflight-only --prepared-support` | 是 | 读取 support corpus 与 summary |
 | Phase 4 LoRA training | `python scripts/v4/08_train_phase4_lora.py --execute --prepared-support` | 是；另需固定 ACK 环境变量 | 读取 support corpus 与 summary |
+| Phase 5 support-dev freeze | `python scripts/v4/09_prepare_phase5_support_dev.py --execute` | 是 | 默认读取冻结 8,000-scene 视觉数据和 Phase 4 selection trace/summary |
+| Phase 5 policy-support measurement | `python scripts/v4/10_measure_policy_support.py --execute` | 是 | 读取冻结 support-dev pool 和 C0/C1/T adapter trees |
 
 完整 S6 命令中的 10 个输入及其 SHA-256 已列于“哈希绑定的执行输入清单”。脚本的完整命令行定义位于 `docs/QWEN_V4_SERVER_HANDOFF.md` 的 S6 节。
 

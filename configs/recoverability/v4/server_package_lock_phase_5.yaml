@@ -1,0 +1,23 @@
+schema_version: 1
+status: FROZEN_PHASE_5_POLICY_SUPPORT_SURFACE
+files:
+  - path: configs/recoverability/v4_phase_5.yaml
+    sha256: b06d242cf7a683f8c7b0ce14843b165035dfad2b1348e580fef22da135ae664a
+  - path: configs/recoverability/v4/phase_1_3_prompts.yaml
+    sha256: c4fa65062527b76bd0b29bbad6a5bd35e596fcc2bfef4dd0c81d7fe008610d10
+  - path: docs/Qwen25VL_Constraint_Assimilation_Natural_State_RL_Codex_Plan_v4.md
+    sha256: 01e532f8c7fe5439c70e8cd8de81ff3448465d8d401dbbf478c76aebaf49641e
+  - path: docs/QWEN_V4_SERVER_HANDOFF.md
+    sha256: fa19b9700d16b024b6b39475884de257b74c9fd1495393c424f345795cea068d
+  - path: pyproject.toml
+    sha256: 6f874b01dc23c49bb3f65d7aa36d7be70cf4338699a640c0a94cd56db32bb365
+  - path: requirements-gpu.lock.txt
+    sha256: d928379a590e5071d9b5042fe99d480f57ab187f0cb3a74e13af219a6048aeb3
+  - path: scripts/v4/09_prepare_phase5_support_dev.py
+    sha256: a731eab42596b7f782df86fe1c36ca740a45bd53a98f301f73dae0f061646ae0
+  - path: scripts/v4/10_measure_policy_support.py
+    sha256: 82fed02a3a5665083d1a5636fcd64b04e00370db7415a87cb88e85c1d08fb2cc
+  - path: src/compensability_v4/qwen/phase5_runtime.py
+    sha256: 79bb2e943c869b7c0efd57fec73a739a63f2745da6d2c27f0d7cd3635e7bc3b1
+  - path: src/compensability_v4/qwen/phase5_support.py
+    sha256: 65e717edd60aea87023b47bf8557c35bb83c7328d4938958c6780088f3672068
