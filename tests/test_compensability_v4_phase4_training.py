@@ -110,10 +110,12 @@ def test_phase_four_package_lock_covers_the_complete_executable_surface() -> Non
         "docs/QWEN_V4_SERVER_HANDOFF.md",
         "pyproject.toml",
         "requirements-gpu.lock.txt",
+        "scripts/v4/07_prepare_phase4_support_sources.py",
         "scripts/v4/07_build_support_data.py",
         "scripts/v4/08_train_phase4_lora.py",
         "src/compensability_v4/training/__init__.py",
         "src/compensability_v4/training/phase4.py",
+        "src/compensability_v4/training/phase4_sources.py",
     )
 
     assert verify_phase4_package_lock(
@@ -167,10 +169,38 @@ def test_phase_four_scripts_are_inert_without_execute() -> None:
         text=True,
         check=False,
     )
+    prepare = subprocess.run(
+        [sys.executable, "scripts/v4/07_prepare_phase4_support_sources.py"],
+        cwd=ROOT,
+        env={**os.environ, "PYTHONPATH": str(ROOT / "src")},
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    prepared_build = subprocess.run(
+        [sys.executable, "scripts/v4/07_build_support_data.py", "--prepared-sources"],
+        cwd=ROOT,
+        env={**os.environ, "PYTHONPATH": str(ROOT / "src")},
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    prepared_train = subprocess.run(
+        [sys.executable, "scripts/v4/08_train_phase4_lora.py", "--prepared-support"],
+        cwd=ROOT,
+        env={**os.environ, "PYTHONPATH": str(ROOT / "src")},
+        capture_output=True,
+        text=True,
+        check=False,
+    )
 
-    assert build.returncode == train.returncode == 2
+    assert build.returncode == train.returncode == prepare.returncode == 2
+    assert prepared_build.returncode == prepared_train.returncode == 2
     assert "BLOCKED" in build.stdout
     assert "BLOCKED" in train.stdout
+    assert "BLOCKED" in prepare.stdout
+    assert "BLOCKED" in prepared_build.stdout
+    assert "BLOCKED" in prepared_train.stdout
 
 
 class _Leaf:

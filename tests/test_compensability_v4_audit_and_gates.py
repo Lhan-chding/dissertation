@@ -113,5 +113,6 @@ def test_phase_four_training_surface_is_guarded() -> None:
     assert "training_authorized: true" in phase_four
     assert "rl_authorized: false" in phase_four
     assert "require_explicit_gpu_acknowledgement: true" in phase_four
+    assert (ROOT / "scripts/v4/07_prepare_phase4_support_sources.py").is_file()
     assert (ROOT / "scripts/v4/07_build_support_data.py").is_file()
     assert (ROOT / "scripts/v4/08_train_phase4_lora.py").is_file()
