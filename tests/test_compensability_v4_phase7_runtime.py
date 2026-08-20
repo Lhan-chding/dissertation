@@ -373,6 +373,77 @@ def test_phase7_registered_paired_effects_include_holm_tost_and_seed_variability
     assert set(summary["seed_level_variability"]) == {"11", "17"}
 
 
+def test_phase7_interface_audit_separates_parse_generation_and_executor_evidence() -> None:
+    subject = _subject()
+    evidence = []
+    outcomes = {
+        "C0": (
+            ("s0", "To apply the operation", None, 4, 4),
+            ("s1", "The answer is 3", None, 3, 4),
+        ),
+        "T": (
+            ("s0", "4", 4, 4, 4),
+            ("s1", "2", 2, 3, 4),
+        ),
+    }
+    for checkpoint, rows in outcomes.items():
+        for scene_id, raw, parsed, executed, truth in rows:
+            evidence.append(
+                {
+                    "schema_version": 1,
+                    "chain_row": {
+                        "scene_id": scene_id,
+                        "checkpoint": checkpoint,
+                        "final_answer_exact": parsed == truth,
+                    },
+                    "final_answer_raw": raw,
+                    "final_answer_parse_success": parsed is not None,
+                    "final_answer": parsed,
+                    "chosen_operation_execution": executed,
+                    "ground_truth_answer": truth,
+                }
+            )
+
+    audit = subject.summarize_phase7_interface_evidence(
+        evidence,
+        bootstrap_resamples=100,
+        bootstrap_seed=7,
+        tost_margin=0.02,
+    )
+
+    assert audit["status"] == "PHASE_7_INTERFACE_DIAGNOSTIC_AUDITED"
+    assert audit["number_of_rows"] == 4
+    assert audit["number_of_scenes"] == 2
+    assert audit["free_generation_evidence_preserved"] is True
+    assert audit["post_hoc_parser_relaxation_applied"] is False
+    assert audit["by_checkpoint"]["C0"] == {
+        "number_of_rows": 2,
+        "number_of_scenes": 2,
+        "final_answer_parse_count": 0,
+        "final_answer_parse_rate": 0.0,
+        "free_generation_answer_exact_count": 0,
+        "free_generation_answer_exact_rate": 0.0,
+        "deterministic_chain_answer_exact_count": 1,
+        "deterministic_chain_answer_exact_rate": 0.5,
+        "parsed_trace_consistent_count": 0,
+        "parsed_trace_consistent_rate": 0.0,
+    }
+    assert audit["by_checkpoint"]["T"]["final_answer_parse_rate"] == 1.0
+    assert audit["by_checkpoint"]["T"]["free_generation_answer_exact_rate"] == 0.5
+    assert audit["by_checkpoint"]["T"]["deterministic_chain_answer_exact_rate"] == 0.5
+    assert audit["by_checkpoint"]["T"]["parsed_trace_consistent_rate"] == 0.5
+    effect = audit["deterministic_chain_effects"]["T_minus_C0"]
+    assert effect["estimate"] == 0.0
+    assert effect["paired_scene_count"] == 2
+    assert effect["free_generation_registered_estimate"] == 0.5
+    assert effect["interface_contribution_estimate"] == 0.5
+
+    malformed = [dict(evidence[0])]
+    malformed[0]["chosen_operation_execution"] = "4"
+    with pytest.raises((TypeError, ValueError), match="chosen_operation_execution"):
+        subject.summarize_phase7_interface_evidence(malformed)
+
+
 def test_phase7_execution_manifest_is_hash_bound_and_has_no_subjective_gate(
     tmp_path: Path,
 ) -> None:

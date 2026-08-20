@@ -213,4 +213,23 @@ def test_phase7_package_lock_closes_config_runtime_and_both_server_entrypoints()
         "src/compensability_v4/qwen/phase7_runtime.py",
         "scripts/v4/15_prepare_phase7_multimodal.py",
         "scripts/v4/16_evaluate_phase7_multimodal.py",
+        "scripts/v4/17_audit_phase7_interface.py",
     } <= set(subject.PHASE7_LOCKED_PATHS)
+
+
+def test_phase7_interface_audit_entrypoint_is_hash_bound_analysis_only() -> None:
+    source = (SCRIPT_DIR / "17_audit_phase7_interface.py").read_text(encoding="utf-8")
+    tree = ast.parse(source)
+    strings = {
+        node.value
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Constant) and isinstance(node.value, str)
+    }
+
+    assert "--execute" in source
+    assert "--phase7-summary-sha256" in source
+    assert "summarize_phase7_interface_evidence" in source
+    assert "generate_completion" not in source
+    assert "load_pinned_qwen" not in source
+    assert "Trainer(" not in source
+    assert any(value.startswith("BLOCKED: Phase 7") for value in strings)
