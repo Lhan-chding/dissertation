@@ -4,7 +4,7 @@
 
 ## 1. 固定代码与输入
 
-服务器仓库位置固定为 `/cloud/cloud-ssd1/dissertation`。本次实验实现对应代码提交 `ad6d041`；含本手册的交付提交可以更新，但必须包含该提交。
+服务器仓库位置固定为 `/cloud/cloud-ssd1/dissertation`。本次实验实现至少必须包含代码提交 `e0f970b`；该提交修复了 Phase 2a 的 `max_minus_min` 四坐标绑定。
 
 ```bash
 export V5_REPO=/cloud/cloud-ssd1/dissertation
@@ -13,7 +13,7 @@ set -euo pipefail
 git fetch origin codex/qwen-v5-structural-support
 git checkout codex/qwen-v5-structural-support
 git pull --ff-only origin codex/qwen-v5-structural-support
-git merge-base --is-ancestor ad6d041 HEAD
+git merge-base --is-ancestor e0f970b HEAD
 
 export PYTHONPATH="$V5_REPO/src"
 export HF_HUB_OFFLINE=1
