@@ -28,6 +28,7 @@ from compensability_v5.qwen.study_c_runtime import (
     STUDY_C_SEED,
     StudyCArm,
     StudyCError,
+    StudyCRewardTraceCallback,
     StudyCScene,
     build_grpo_config_kwargs,
     build_study_c_summary,
@@ -163,6 +164,41 @@ def test_reward_function_rejects_metadata_or_group_drift(tmp_path: Path) -> None
             ["9,2,3,4"] * 8,
             scene_id=["missing"],
         )
+
+
+def test_reward_trace_callback_implements_locked_transformers_event_surface(
+    tmp_path: Path,
+) -> None:
+    trace = tmp_path / "raw_reward_trace.jsonl"
+    trace.write_text('{"reward": 1.0}\n')
+    output = tmp_path / "arm"
+    callback = StudyCRewardTraceCallback(trace, output)
+    control = object()
+    passthrough_events = (
+        "on_init_end",
+        "on_train_begin",
+        "on_train_end",
+        "on_epoch_begin",
+        "on_epoch_end",
+        "on_step_begin",
+        "on_pre_optimizer_step",
+        "on_optimizer_step",
+        "on_substep_end",
+        "on_step_end",
+        "on_evaluate",
+        "on_predict",
+        "on_log",
+        "on_prediction_step",
+        "on_push_begin",
+    )
+
+    for event in passthrough_events:
+        assert getattr(callback, event)(object(), object(), control) is control
+
+    assert callback.on_save(
+        object(), SimpleNamespace(global_step=4), control
+    ) is control
+    assert (output / "checkpoint-4/raw_reward_trace.jsonl").read_text() == trace.read_text()
 
 
 class _FakeTrainer:
@@ -881,6 +917,29 @@ def test_study_c_cli_accepts_study_b_registered_adapter_digest(tmp_path: Path) -
     cli = _load_study_c_cli_module()
 
     assert cli._verify_tree(adapter, expected, "Study C B3 adapter") == expected
+
+
+def test_study_c_resume_restarts_only_empty_initialization_output(tmp_path: Path) -> None:
+    cli = _load_study_c_cli_module()
+    empty = tmp_path / "empty-arm"
+    empty.mkdir()
+
+    assert cli._prepare_arm_output(empty, resume=True) is None
+    assert not empty.exists()
+
+    partial = tmp_path / "partial-arm"
+    partial.mkdir()
+    (partial / "unexpected.json").write_text("{}\n")
+    with pytest.raises(StudyCError, match="partial output"):
+        cli._prepare_arm_output(partial, resume=True)
+    assert (partial / "unexpected.json").is_file()
+
+    checkpoint = partial / "checkpoint-8"
+    checkpoint.mkdir()
+    assert cli._prepare_arm_output(partial, resume=True) == checkpoint
+
+    with pytest.raises(StudyCError, match="authorized resumable checkpoint"):
+        cli._prepare_arm_output(partial, resume=False)
 
 
 def test_generic_study_c_runtime_uses_study_b_registered_adapter_digest(
