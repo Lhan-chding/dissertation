@@ -4,9 +4,9 @@
 
 - 文档范围：Qwen2.5-VL v4 的既有审计、能力链、候选打分、层间同化、缓存一致性和接口阶梯运行记录，以及计划中后续阶段的执行状态。
 - 本文只记录输入、配置、命令、哈希、计数、数值、输出路径、状态和控制台错误；不包含对结果的解释、推断或结论。
-- 记录更新时间：2026-08-21；S6 完成事实记录提交：`2216c6d5fa77e7d71f1d2bb039f51a1961010f31`。
+- 记录更新时间：2026-08-21；Phase 7 interface audit 代码提交：`73b3a4bed900d8b054504cf45fc79a217c3259af`。
 - 项目根目录：`/cloud/cloud-ssd1/dissertation`。
-- 计划文件：`docs/Qwen25VL_Constraint_Assimilation_Natural_State_RL_Codex_Plan_v4.md`，SHA-256 为 `01e532f8c7fe5439c70e8cd8de81ff3448465d8d401dbbf478c76aebaf49641e`。
+- 计划文件：`docs/Qwen25VL_Constraint_Assimilation_Natural_State_RL_Codex_Plan_v4.md`，Phase 7 interface audit 提交中的 SHA-256 为 `8bbd556828014262f3b02ba71b957361179d0389ec41258fb02ea6a57c77a58f`。
 - 下表中的“本地可见”仅指本报告生成时的当前工作区；服务器上已生成、但未同步到当前工作区的文件，保留其服务器路径和已记录哈希。
 
 ## 固定模型、数据与运行环境
@@ -47,7 +47,7 @@ S1 运行时清单要求的模块名：`model.visual.blocks.0`、`model.visual.b
 | Phase 4 LoRA | source preparation、support build 与 C0/C1/T LoRA 训练 | 服务器执行完成 | 564/564 steps；1 epoch | 输出根目录见 Phase 4 表 |
 | Phase 5 policy support | Base/C0/C1/T 的 held-out policy-support 测量 | 服务器执行完成 | 4 个 checkpoint 的 128 行 scene-level 测量 | 32 个 held-out natural errors |
 | Phase 6 RL | execution manifest、双 reward 数据、3 个 GRPO arm 与 5 checkpoint 评估 | `PHASE_6_RL_EVALUATED` | 173 个 RL 场景；3 × 64 steps；32 个评估场景 | 见 Phase 6 表 |
-| Phase 7 multimodal | 七 checkpoint 完整多模态链的 support-dev diagnostic | 服务器执行面已定义；未执行服务器推理 | 计划 32 scenes × 7 checkpoints | 无服务器输出 |
+| Phase 7 multimodal | 七 checkpoint 完整多模态链的 support-dev diagnostic 与冻结 trace interface audit | `PHASE_7_MULTIMODAL_DIAGNOSTIC_EVALUATED`；`PHASE_7_INTERFACE_DIAGNOSTIC_AUDITED` | 32 scenes × 7 checkpoints = 224 rows；896 deterministic generation calls | interface audit SHA-256 `abbd06e6d1f76bbd549009f4993a748d6be5feac2d8b8f1a899aea438cea004b` |
 
 ## S0：冻结遗留证据审计
 
@@ -410,7 +410,7 @@ valid_minus_sham_margin =
 | --- | --- | --- |
 | Phase 5 policy support | `artifacts/v4/support/policy_support_by_scene.parquet`；`artifacts/v4/support/informative_group_rate.json`；`artifacts/v4/support/pass_at_k.csv` | 服务器执行完成；本地工作区未复制输出文件 |
 | Phase 6 RL | execution manifest、RL data、3 个 GRPO run roots、5-checkpoint evaluation | 服务器训练与评估完成；本地工作区未复制输出文件 |
-| Phase 7 real multimodal | `artifacts/v4/phase7/evaluation/per_scene.jsonl`；`artifacts/v4/phase7/evaluation/summary.json` | support-dev diagnostic 执行面已定义；服务器未执行；confirmatory 未授权 |
+| Phase 7 real multimodal | `artifacts/v4/phase7/evaluation/per_scene.jsonl`；`summary.json`；`artifacts/v4/phase7/interface_audit.json` | support-dev diagnostic 与 interface audit 均在服务器执行完成；confirmatory 未授权 |
 
 ### Phase 5：policy-support 服务器执行记录
 
@@ -528,19 +528,23 @@ valid_minus_sham_margin =
 
 全局四个注册效应的服务器输出均记录：estimate=`0.0`、95% CI=`[0.0, 0.0]`、two-sided sign-flip p-value=`1.0`、Holm-adjusted p-value=`1.0`。服务器截图中可见的 `duplicate_encoding`（5 scenes）与 `trend`（11 scenes）分层，对同四项效应也均记录 estimate=`0.0`、95% CI=`[0.0, 0.0]`、p-value=`1.0`。
 
-### Phase 7：已定义、未执行的 support-dev multimodal diagnostic
+### Phase 7：support-dev multimodal diagnostic 与 interface audit 服务器记录
 
 | 字段 | 冻结值或状态 |
 | --- | --- |
 | config | `configs/recoverability/v4_phase_7.yaml` |
 | authorization status | `PHASE_7_MULTIMODAL_DIAGNOSTIC_AUTHORIZED` |
+| multimodal evaluation status | `PHASE_7_MULTIMODAL_DIAGNOSTIC_EVALUATED` |
+| interface audit status | `PHASE_7_INTERFACE_DIAGNOSTIC_AUDITED` |
 | confirmatory evaluation authorized | false |
 | support-dev diagnostic authorized | true |
+| confirmatory data used | false |
 | training / RL / downloads authorized | false / false / false |
 | evaluation scenes | 32 个 Phase 5 frozen support-dev natural errors |
 | checkpoints | `Base`、`C0`、`C1`、`T`、`Base_AnswerOnly_RL`、`Recovery_LoRA_RecoveryOutcome_RL`、`Recovery_LoRA_AnswerOnly_RL` |
 | chain | image -> natural observation -> revision/recovery -> chart operation -> final answer |
 | deterministic generation calls | 32 × 7 × 4 = 896 |
+| multimodal / audit rows | 224 / 224 |
 | image resize | 280 × 280 |
 | max new tokens | Stage-1=32；recovery=32；operation=8；answer=8 |
 | generation seed | `2026082102` |
@@ -549,12 +553,65 @@ valid_minus_sham_margin =
 | equivalence interval | 90% scene-clustered percentile bootstrap interval；margin=`0.02` |
 | multiplicity | two-sided paired sign-flip p-values；Holm adjustment |
 | subjective success threshold | null |
-| formal output paths | `artifacts/v4/phase7/evaluation/per_scene.jsonl`；`summary.json` |
-| server execution status | 未执行；无 Phase 7 服务器结果或输出 SHA-256 |
+| formal output paths | `artifacts/v4/phase7/evaluation/per_scene.jsonl`；`summary.json`；`artifacts/v4/phase7/interface_audit.json` |
+| interface audit SHA-256 | `abbd06e6d1f76bbd549009f4993a748d6be5feac2d8b8f1a899aea438cea004b` |
+| Phase 7 execution-manifest SHA-256 | `1fb6e640350c37dc966cbd76a6e8b6d7c388ebc3e2c55a0b0b8fd3e6dacb9010` |
+| Phase 6 evaluation source SHA-256 | `cfcd8aa5882ea9719f0acaad1da5a9b0f5776739f1140b35b59c6eeafbf3a9d9` |
 
 九个冻结指标：`stage1_visual_exact`、`post_revision_world_exact`、`reasoning_operator_exact`、`final_answer_exact`、`operator_invariant_correct`、`genuine_recovery`、`error_cancellation`、`trace_mismatch`、`error_mechanism_shift`。
 
 四个注册比较：`T_minus_C0`、`T_minus_C1`、`seeded_rl_minus_base_rl`、`recovery_reward_rl_minus_answer_only_rl`。当前 support-dev diagnostic 的 `ood_axis` 为 `iid`；`style_ood`、`constraint_graph_ood`、`error_mechanism_ood` 已注册但未由该服务器命令测量。
+
+服务器 summary 中可见的全局 224-row 指标：
+
+| metric | estimate | 95% CI | rows | scenes |
+| --- | ---: | --- | ---: | ---: |
+| `stage1_visual_exact` | 0.24107142857142855 | [0.15625, 0.33482142857142855] | 224 | 32 |
+| `post_revision_world_exact` | 0.24553571428571427 | 服务器截图未显示 | 224 | 32 |
+| `reasoning_operator_exact` | 1.0 | [1.0, 1.0] | 224 | 32 |
+| `trace_mismatch` | 0.8348214285714286 | [0.7544642857142857, 0.90625] | 224 | 32 |
+
+服务器自由生成注册效应：
+
+| effect | estimate | 95% CI | sign-flip p | Holm p | 90% TOST CI | equivalent at margin 0.02 |
+| --- | ---: | --- | ---: | ---: | --- | --- |
+| `T_minus_C0` | 0.21875 | [0.09375, 0.375] | 0.016998300169983 | 0.067993200679932 | [0.09375, 0.34375] | false |
+| `T_minus_C1` | 0.125 | [0.0, 0.28125] | 0.21357864213578642 | 0.6407359264073593 | [0.0, 0.25] | false |
+| `recovery_reward_rl_minus_answer_only_rl` | 0.0 | [0.0, 0.0] | 1.0 | 1.0 | [0.0, 0.0] | true |
+| `seeded_rl_minus_base_rl` | 0.03125 | [0.0, 0.09375] | 1.0 | 1.0 | [0.0, 0.09375] | false |
+
+冻结 trace 的 parser 与答案计数：
+
+| checkpoint | answer parse | free-generation answer exact | post-revision world exact | trace mismatch |
+| --- | ---: | ---: | ---: | ---: |
+| `Base` | 0/32 | 0/32 | 0/32 | 32/32 |
+| `Base_AnswerOnly_RL` | 0/32 | 0/32 | 1/32 | 32/32 |
+| `C0` | 0/32 | 0/32 | 3/32 | 32/32 |
+| `C1` | 32/32 | 3/32 | 4/32 | 26/32 |
+| `Recovery_LoRA_AnswerOnly_RL` | 32/32 | 8/32 | 16/32 | 21/32 |
+| `Recovery_LoRA_RecoveryOutcome_RL` | 32/32 | 7/32 | 16/32 | 21/32 |
+| `T` | 32/32 | 7/32 | 15/32 | 23/32 |
+
+服务器 `interface_audit.json` 的 checkpoint 计数和率：
+
+| checkpoint | parse | free exact | deterministic chain exact | parsed trace consistent |
+| --- | ---: | ---: | ---: | ---: |
+| `Base` | 0/32 (0.0) | 0/32 (0.0) | 7/32 (0.21875) | 0/32 (0.0) |
+| `Base_AnswerOnly_RL` | 0/32 (0.0) | 0/32 (0.0) | 7/32 (0.21875) | 0/32 (0.0) |
+| `C0` | 0/32 (0.0) | 0/32 (0.0) | 8/32 (0.25) | 0/32 (0.0) |
+| `C1` | 32/32 (1.0) | 3/32 (0.09375) | 11/32 (0.34375) | 6/32 (0.1875) |
+| `Recovery_LoRA_AnswerOnly_RL` | 32/32 (1.0) | 8/32 (0.25) | 24/32 (0.75) | 11/32 (0.34375) |
+| `Recovery_LoRA_RecoveryOutcome_RL` | 32/32 (1.0) | 7/32 (0.21875) | 23/32 (0.71875) | 11/32 (0.34375) |
+| `T` | 32/32 (1.0) | 7/32 (0.21875) | 22/32 (0.6875) | 9/32 (0.28125) |
+
+服务器 deterministic-chain 配对效应：
+
+| effect | executor estimate | 95% CI | free-generation estimate | interface contribution | p | Holm p | 90% TOST CI | equivalent |
+| --- | ---: | --- | ---: | ---: | ---: | ---: | --- | --- |
+| `T_minus_C0` | 0.4375 | [0.1875, 0.65625] | 0.21875 | -0.21875 | 0.0021997800219978004 | 0.004399560043995601 | [0.25, 0.625] | false |
+| `T_minus_C1` | 0.34375 | [0.125, 0.5625] | 0.125 | -0.21875 | 0.0156984301569843 | 0.0156984301569843 | [0.15625, 0.53125] | false |
+
+Base、Base-AnswerOnly-RL 与 C0 的 `final_answer_raw` 频率表中记录了以下非整数开头：`To apply the "max_minus_min"`、`To apply the "difference" chart operation`、`The sum of the recovered values (`、`The chart operation "difference" subtracts`、`The recovered values are`。上述三个 checkpoint 的 `final_answer_parse_success` 均为 0/32；interface audit 记录 `post_hoc_parser_relaxation_applied=false` 与 `free_generation_evidence_preserved=true`。
 
 ## 哈希绑定的执行输入清单
 
@@ -604,6 +661,7 @@ export TRANSFORMERS_OFFLINE=1
 | Phase 6 formal evaluation | `python scripts/v4/14_evaluate_phase6_rl.py --execute` | 是 | 读取 execution manifest、3 个 GRPO adapters、Base、T 与 frozen support-dev |
 | Phase 7 manifest freeze | `python scripts/v4/15_prepare_phase7_multimodal.py --execute` | 是 | 5 个命名且逐项 SHA-256 绑定的 Phase 4--6 / dataset / support-dev 输入 |
 | Phase 7 seven-checkpoint preflight/evaluation | `python scripts/v4/16_evaluate_phase7_multimodal.py --execute` | 是；preflight 可加 `--preflight-only` | 读取 Phase 7 execution manifest、7 个 checkpoint、32-scene image bundle 与 Stage-1 prompt |
+| Phase 7 frozen-trace interface audit | `python scripts/v4/17_audit_phase7_interface.py --execute` | 是 | 读取 Phase 7 summary 与 7 个 checkpoint trace JSONL；不加载模型且不执行新推理 |
 
 完整 S6 命令中的 10 个输入及其 SHA-256 已列于“哈希绑定的执行输入清单”。脚本的完整命令行定义位于 `docs/QWEN_V4_SERVER_HANDOFF.md` 的 S6 节。
 
