@@ -9,6 +9,8 @@ from pathlib import Path
 
 import pytest
 
+from compbias.recoverability.phase_c_screen import build_family_constraints
+
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_DIR = ROOT / "scripts/v4"
 
@@ -81,6 +83,32 @@ def test_phase8_data_freeze_builds_all_four_axes_and_preserves_all_natural_error
     ):
         assert symbol in source
     assert "selection_uses_model_outcome_threshold" in source
+
+
+@pytest.mark.parametrize("family", ("cross_series", "duplicate_encoding", "trend"))
+def test_phase8_generated_constraints_are_serialized_as_recovery_scene_facts(family: str) -> None:
+    subject = _execution_subject()
+    truth = (2, 4, 6, 8)
+    constraints = build_family_constraints(family, truth)
+    facts = tuple(subject.constraint_to_fact(constraint) for constraint in constraints)
+
+    scene = subject.build_scene(
+        template=subject.Phase8Template(
+            source_scene_id=f"source-{family}",
+            family=family,
+            truth=truth,
+            chart_type="line",
+            operation="sum",
+            question="What is the sum of the first two values?",
+            answer=6,
+        ),
+        axis="iid",
+        index=0,
+        facts=facts,
+    )
+
+    assert scene.facts
+    assert all("type" in fact and "fact_id" in fact for fact in scene.facts)
 
 
 def test_phase8_evaluator_runs_full_chain_and_preserves_both_answer_endpoints() -> None:
