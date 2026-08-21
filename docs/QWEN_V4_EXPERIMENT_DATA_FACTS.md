@@ -662,6 +662,8 @@ export TRANSFORMERS_OFFLINE=1
 | Phase 7 manifest freeze | `python scripts/v4/15_prepare_phase7_multimodal.py --execute` | 是 | 5 个命名且逐项 SHA-256 绑定的 Phase 4--6 / dataset / support-dev 输入 |
 | Phase 7 seven-checkpoint preflight/evaluation | `python scripts/v4/16_evaluate_phase7_multimodal.py --execute` | 是；preflight 可加 `--preflight-only` | 读取 Phase 7 execution manifest、7 个 checkpoint、32-scene image bundle 与 Stage-1 prompt |
 | Phase 7 frozen-trace interface audit | `python scripts/v4/17_audit_phase7_interface.py --execute` | 是 | 读取 Phase 7 summary 与 7 个 checkpoint trace JSONL；不加载模型且不执行新推理 |
+| Phase 8 confirm 数据冻结 | `python scripts/v4/18_freeze_phase8_confirm_data.py --execute` | 是；另需固定 confirm ACK 环境变量 | 5 个命名且逐项 SHA-256 绑定的 legacy/train/support-dev/Phase 7 输入；执行 128 次 Base Stage-1 调用 |
+| Phase 8 seven-checkpoint preflight/evaluation | `python scripts/v4/19_evaluate_phase8_confirmatory.py --execute` | 是；preflight 可加 `--preflight-only`；另需固定 confirm ACK | 读取 Phase 8 execution manifest、冻结自然错误、图片 bundle、Stage-1 prompt 与 7 个 checkpoint |
 
 完整 S6 命令中的 10 个输入及其 SHA-256 已列于“哈希绑定的执行输入清单”。脚本的完整命令行定义位于 `docs/QWEN_V4_SERVER_HANDOFF.md` 的 S6 节。
 
@@ -677,3 +679,43 @@ export TRANSFORMERS_OFFLINE=1
 | `artifacts/v4/cache/` | 不存在 |
 | `artifacts/v4/interface_ladder/` | 不存在 |
 | 用户未跟踪 ownership 文件 | 存在；未由本报告修改 |
+
+## Phase 8 已冻结的执行合同与当前状态
+
+| 字段 | 冻结值 |
+| --- | --- |
+| 状态 | 代码与服务器入口已准备；正式 confirm 数据尚未生成；正式 confirm 评估尚未执行 |
+| checkpoint | `Base`、`C0`、`C1`、`T`、`Base_AnswerOnly_RL`、`Recovery_LoRA_RecoveryOutcome_RL`、`Recovery_LoRA_AnswerOnly_RL` |
+| confirm axes | `iid`、`style_ood`、`constraint_graph_ood`、`error_mechanism_ood` |
+| 每轴固定候选数 | 32 |
+| Base Stage-1 固定候选调用总数 | 128 |
+| generation seed | 2026082103 |
+| evaluation seed | 2026082104 |
+| bootstrap seed | 2026082105 |
+| bootstrap resamples | 10,000 |
+| bootstrap confidence | 0.95 |
+| TOST margin | 0.02 |
+| 统计单位 | scene |
+| 经验成功阈值 | 未设置 |
+| 训练 / RL | 不执行 |
+| 正式输出覆盖 | 拒绝 |
+
+Phase 8 数据冻结在任何 Base Stage-1 结果产生前固定四轴各 32 个候选。四轴使用新的 semantic scene ID、numeric table ID 与 constraint graph ID，并对 legacy diagnostic、`symbolic_support_train`、`natural_error_support_train` 与 `support_dev` 执行隔离检查。Base Stage-1 输出不可解析时，数据冻结返回 `BLOCKED`；不会以 ground truth 代替。固定候选中的全部可解析自然 Stage-1 error 都进入评估，不按错误数量或后续模型结果筛选。
+
+正式结果同时保存 free-generation answer endpoint 与 deterministic-chain answer endpoint。每个 checkpoint 的正式行包含 9 个已注册指标、`answer_source`、family、OOD axis、checkpoint SHA-256、image SHA-256 与 seed。summary 保存 global/checkpoint/family/OOD 分层、配对效应、scene-clustered bootstrap interval、sign-flip p-value、Holm correction、TOST 与 seed variability。
+
+Phase 8 所需固定确认字符串为：
+
+```text
+COMPBIAS_V4_PHASE8_CONFIRM_ACK=I_UNDERSTAND_THIS_CONSUMES_THE_FROZEN_PHASE_8_CONFIRM_SET
+```
+
+截至本地实现阶段，以下服务器产物尚不存在，因此本报告没有记录任何 Phase 8 实验数值：
+
+- `artifacts/v4/phase8/confirm_data/confirm_scenes.jsonl`
+- `artifacts/v4/phase8/confirm_data/confirm_observations.jsonl`
+- `artifacts/v4/phase8/confirm_data/selection_trace.jsonl`
+- `artifacts/v4/phase8/confirm_data/summary.json`
+- `artifacts/v4/phase8/confirm_data/execution_manifest.json`
+- `artifacts/v4/phase8/evaluation/per_scene.jsonl`
+- `artifacts/v4/phase8/evaluation/summary.json`

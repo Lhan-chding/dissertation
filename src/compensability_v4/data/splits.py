@@ -18,6 +18,7 @@ class DatasetSplit(str, Enum):
     CONFIRM_IID = "confirm_iid"
     CONFIRM_STYLE_OOD = "confirm_style_ood"
     CONFIRM_CONSTRAINT_OOD = "confirm_constraint_ood"
+    CONFIRM_ERROR_MECHANISM_OOD = "confirm_error_mechanism_ood"
 
 
 CONFIRM_SPLITS = frozenset(
@@ -25,6 +26,7 @@ CONFIRM_SPLITS = frozenset(
         DatasetSplit.CONFIRM_IID,
         DatasetSplit.CONFIRM_STYLE_OOD,
         DatasetSplit.CONFIRM_CONSTRAINT_OOD,
+        DatasetSplit.CONFIRM_ERROR_MECHANISM_OOD,
     }
 )
 

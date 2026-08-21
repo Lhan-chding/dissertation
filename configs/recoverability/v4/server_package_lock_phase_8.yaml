@@ -1,0 +1,25 @@
+schema_version: 1
+status: FROZEN_PHASE_8_CONFIRMATORY_SURFACE
+files:
+  - path: configs/recoverability/v4_phase_8.yaml
+    sha256: 548b1ef76ef7dfc7f7ec523dcbd6793bd41db69886d6d12fe02d5fbc176ea254
+  - path: configs/recoverability/v4/phase_1_3_prompts.yaml
+    sha256: c4fa65062527b76bd0b29bbad6a5bd35e596fcc2bfef4dd0c81d7fe008610d10
+  - path: docs/Qwen25VL_Constraint_Assimilation_Natural_State_RL_Codex_Plan_v4.md
+    sha256: b55c38ef2009727a63ace57704992ab28c36b1c1bab5665b9710650220009758
+  - path: docs/QWEN_V4_SERVER_HANDOFF.md
+    sha256: 59ded52406b93e8b85ddfcb8668c9f0761d6a8242e3d8fbe796f2af61133be42
+  - path: pyproject.toml
+    sha256: 6f874b01dc23c49bb3f65d7aa36d7be70cf4338699a640c0a94cd56db32bb365
+  - path: requirements-gpu.lock.txt
+    sha256: d928379a590e5071d9b5042fe99d480f57ab187f0cb3a74e13af219a6048aeb3
+  - path: scripts/v4/18_freeze_phase8_confirm_data.py
+    sha256: ae3c13e2530de0793e6ea232a346ba0692db4c90923562f31d3d022a1d21eeea
+  - path: scripts/v4/19_evaluate_phase8_confirmatory.py
+    sha256: 5a4bd4c482f0fc872e0968a3e67f5d41dfcc45e27fd0063f5d4e98bfdb325df3
+  - path: src/compensability_v4/data/splits.py
+    sha256: 0dc41c9c2b8805eef29ace827b7051abcbf8e689e88261239733bd4a8e519de0
+  - path: src/compensability_v4/qwen/phase8_confirm_runtime.py
+    sha256: 34967215360843b29bcff5fcda88a7d482cf4036200393237ec1af5de4a8a5e5
+  - path: src/compensability_v4/qwen/phase8_execution.py
+    sha256: 1c9f0597253a17901931a593c52507b1ebc15f3f769049ae1d9769f91297148a

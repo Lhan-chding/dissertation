@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "status": "PHASE_8_CONFIRMATORY_EVALUATION_AUTHORIZED",
+  "checkpoints": [
+    "Base",
+    "C0",
+    "C1",
+    "T",
+    "Base_AnswerOnly_RL",
+    "Recovery_LoRA_RecoveryOutcome_RL",
+    "Recovery_LoRA_AnswerOnly_RL"
+  ],
+  "ood_axes": [
+    "iid",
+    "style_ood",
+    "constraint_graph_ood",
+    "error_mechanism_ood"
+  ],
+  "fixed_scene_counts": {
+    "iid": 32,
+    "style_ood": 32,
+    "constraint_graph_ood": 32,
+    "error_mechanism_ood": 32
+  },
+  "required_metrics": [
+    "stage1_visual_exact",
+    "post_revision_world_exact",
+    "reasoning_operator_exact",
+    "final_answer_exact",
+    "operator_invariant_correct",
+    "genuine_recovery",
+    "error_cancellation",
+    "trace_mismatch",
+    "error_mechanism_shift"
+  ],
+  "seeds": {
+    "generation": 2026082103,
+    "evaluation": 2026082104,
+    "bootstrap": 2026082105
+  },
+  "statistics": {
+    "bootstrap_confidence": 0.95,
+    "bootstrap_resamples": 10000,
+    "tost_margin": 0.02,
+    "holm_correction": true,
+    "scene_is_statistical_unit": true,
+    "rollout_is_statistical_unit": false
+  },
+  "authorization": {
+    "confirmatory_evaluation_authorized": true,
+    "require_explicit_ack": true,
+    "training_authorized": false,
+    "rl_authorized": false,
+    "downloads_authorized": false
+  },
+  "subjective_success_threshold": null,
+  "integrity_gates": {
+    "require_triple_isolation": true,
+    "require_all_natural_stage1_errors": true,
+    "require_hash_bound_sources": true,
+    "require_hash_bound_checkpoints": true,
+    "forbid_artifact_overwrite": true
+  }
+}

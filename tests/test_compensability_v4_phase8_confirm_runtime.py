@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib
+import json
 from collections.abc import Mapping
 from pathlib import Path
 
@@ -223,6 +224,25 @@ def test_phase8_freeze_uses_fixed_candidate_counts_and_includes_all_natural_stag
         )
 
 
+def test_phase8_freeze_keeps_multi_position_natural_stage1_errors() -> None:
+    subject = _subject()
+    scene = _scene("multi-error", split=DatasetSplit.CONFIRM_ERROR_MECHANISM_OOD)
+    observation = _observation(
+        "multi-error",
+        observed_values=(1, 4, 5, 7),
+        error_index=0,
+    )
+
+    frozen = subject.freeze_phase8_natural_errors(
+        (scene,),
+        (observation,),
+        fixed_scene_counts={"error_mechanism_ood": 1},
+    )
+
+    assert frozen.natural_error_count == 1
+    assert frozen.examples[0].error_indices == (0, 1)
+
+
 def test_phase8_result_rows_require_both_answer_endpoints_nine_metrics_and_answer_source() -> None:
     subject = _subject()
     valid = subject.Phase8ConfirmRow.from_mapping(_result_row(scene_id="confirm-a", checkpoint="T"))
@@ -240,6 +260,16 @@ def test_phase8_result_rows_require_both_answer_endpoints_nine_metrics_and_answe
     contradiction["answer_source"] = "genuine_recovery"
     with pytest.raises(ValueError, match="answer source"):
         subject.Phase8ConfirmRow.from_mapping(contradiction)
+
+    reread = dict(_result_row(scene_id="confirm-reread", checkpoint="T"))
+    reread.update(
+        {
+            "stage1_visual_exact": True,
+            "genuine_recovery": False,
+            "answer_source": "visual_reread",
+        }
+    )
+    assert subject.Phase8ConfirmRow.from_mapping(reread).answer_source.value == "visual_reread"
 
 
 def test_phase8_summary_analyzes_metrics_endpoints_and_answer_sources_by_registered_strata() -> (
@@ -328,6 +358,12 @@ def test_phase8_registered_effects_use_paired_scenes_holm_tost_and_all_seven_che
         "recovery_reward_rl_minus_answer_only_rl",
     }
     assert required_effects <= set(summary["registered_effects"])
+    assert set(summary["registered_effects_by_answer_endpoint"]) == {
+        "free_generation_answer_exact",
+        "deterministic_chain_answer_exact",
+    }
+    for endpoint_effects in summary["registered_effects_by_answer_endpoint"].values():
+        assert required_effects <= set(endpoint_effects)
     for effect in summary["registered_effects"].values():
         assert {
             "estimate",
@@ -354,6 +390,8 @@ def test_phase8_manifest_binds_frozen_data_checkpoints_and_authorization_ack() -
         "confirm_scenes": "6" * 64,
         "confirm_observations": "7" * 64,
         "confirm_summary": "8" * 64,
+        "confirm_image_bundle": "b" * 64,
+        "prompt_config": "c" * 64,
     }
     checkpoint_hashes = {name: f"{index:x}" * 64 for index, name in enumerate(CHECKPOINTS, 1)}
 
@@ -381,3 +419,83 @@ def test_phase8_manifest_binds_frozen_data_checkpoints_and_authorization_ack() -
     assert manifest["confirmatory_evaluation_authorized"] is True
     assert manifest["authorization_ack_verified"] is True
     assert manifest["subjective_success_threshold_applied"] is False
+
+
+def test_phase8_config_and_isolation_validation_fail_closed(tmp_path: Path) -> None:
+    subject = _subject()
+    source = ROOT / "configs/recoverability/v4_phase_8.yaml"
+    payload = json.loads(source.read_text(encoding="utf-8"))
+    bad_seed = tmp_path / "bad-seed.json"
+    bad_seed.write_text(
+        json.dumps({**payload, "seeds": {**payload["seeds"], "evaluation": 2026082103}}),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="distinct"):
+        subject.load_phase8_config(bad_seed)
+    with pytest.raises(ValueError, match="must not be empty"):
+        subject.validate_phase8_isolation((), ())
+    prior = (_scene("prior", split=DatasetSplit.SUPPORT_DEV),)
+    with pytest.raises(ValueError, match="registered confirm splits"):
+        subject.validate_phase8_isolation(prior, ())
+    confirm = (_scene("confirm", split=DatasetSplit.CONFIRM_IID),)
+    with pytest.raises(ValueError, match="prior regimes"):
+        subject.validate_phase8_isolation(confirm, confirm)
+    with pytest.raises(ValueError, match="scene_id"):
+        subject.validate_phase8_isolation(
+            confirm, (_scene("confirm", split=DatasetSplit.SUPPORT_DEV),)
+        )
+
+
+def test_phase8_freeze_and_result_row_structural_errors_fail_closed() -> None:
+    subject = _subject()
+    scene = _scene("scene-a", split=DatasetSplit.CONFIRM_IID)
+    observation = _observation("scene-a", observed_values=(2, 4, 5, 7), error_index=0)
+    with pytest.raises(ValueError, match="candidate scenes"):
+        subject.freeze_phase8_natural_errors((), (), fixed_scene_counts={"iid": 1})
+    with pytest.raises(ValueError, match="unknown OOD"):
+        subject.freeze_phase8_natural_errors(
+            (scene,), (observation,), fixed_scene_counts={"unknown": 1}
+        )
+    with pytest.raises(ValueError, match="duplicate scene"):
+        subject.freeze_phase8_natural_errors(
+            (scene,), (observation, observation), fixed_scene_counts={"iid": 1}
+        )
+    with pytest.raises(ValueError, match="error_index"):
+        subject.freeze_phase8_natural_errors(
+            (scene,), (observation,), fixed_scene_counts={"iid": 1}
+        )
+    with pytest.raises(ValueError, match="must not be empty"):
+        subject.validate_phase8_rows(())
+    valid = subject.Phase8ConfirmRow.from_mapping(_result_row(scene_id="scene-a", checkpoint="T"))
+    with pytest.raises(ValueError, match="identity"):
+        subject.validate_phase8_rows((valid, valid))
+
+
+def test_phase8_summary_and_manifest_boundary_types_fail_closed() -> None:
+    subject = _subject()
+    valid = subject.Phase8ConfirmRow.from_mapping(_result_row(scene_id="scene-a", checkpoint="T"))
+    with pytest.raises(ValueError, match="positive integer"):
+        subject.summarize_phase8((valid,), bootstrap_resamples=0)
+    with pytest.raises(TypeError, match="integer"):
+        subject.summarize_phase8((valid,), bootstrap_seed=1.5)
+    with pytest.raises(ValueError, match="positive and finite"):
+        subject.summarize_phase8((valid,), tost_margin=float("inf"))
+    config = subject.load_phase8_config(ROOT / "configs/recoverability/v4_phase_8.yaml")
+    with pytest.raises(ValueError, match="source hashes"):
+        subject.build_phase8_execution_manifest(
+            config=config,
+            source_sha256={},
+            checkpoint_sha256={name: SHA for name in CHECKPOINTS},
+            config_sha256=SHA,
+            package_lock_sha256=SHA,
+            authorization_ack="I_UNDERSTAND_THIS_CONSUMES_THE_FROZEN_PHASE_8_CONFIRM_SET",
+        )
+    with pytest.raises(ValueError, match="seven checkpoints"):
+        subject.build_phase8_execution_manifest(
+            config=config,
+            source_sha256={name: SHA for name in subject._SOURCE_KEYS},
+            checkpoint_sha256={"Base": SHA},
+            config_sha256=SHA,
+            package_lock_sha256=SHA,
+            authorization_ack="I_UNDERSTAND_THIS_CONSUMES_THE_FROZEN_PHASE_8_CONFIRM_SET",
+        )

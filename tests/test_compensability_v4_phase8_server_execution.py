@@ -17,6 +17,10 @@ def _subject():
     return importlib.import_module("compensability_v4.qwen.phase8_confirm_runtime")
 
 
+def _execution_subject():
+    return importlib.import_module("compensability_v4.qwen.phase8_execution")
+
+
 def _load(name: str, filename: str):
     path = SCRIPT_DIR / filename
     spec = importlib.util.spec_from_file_location(name, path)
@@ -94,6 +98,94 @@ def test_phase8_evaluator_runs_full_chain_and_preserves_both_answer_endpoints() 
         assert symbol in source
 
 
+def test_phase8_confirm_template_selection_fails_closed_when_constraints_are_exhausted(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    subject = _execution_subject()
+
+    def reject_all(_family: str, _truth: tuple[int, int, int, int]):
+        raise ValueError("unavailable")
+
+    monkeypatch.setattr(subject, "build_family_constraints", reject_all)
+    with pytest.raises(RuntimeError, match="candidate search exhausted"):
+        subject.select_confirm_templates(count=1, seed=2026082103, reserved_truths=set())
+
+
+def test_phase8_resumed_cache_requires_exact_checkpoint_scene_closure(tmp_path: Path) -> None:
+    subject = _execution_subject()
+    bindings = {
+        "checkpoint_sha256": "a" * 64,
+        "execution_manifest_sha256": "b" * 64,
+        "config_sha256": "c" * 64,
+        "package_lock_sha256": "d" * 64,
+    }
+    rows = (
+        {
+            "chain_row": {
+                "scene_id": "scene-a",
+                "checkpoint": "T",
+                "checkpoint_sha256": "a" * 64,
+            }
+        },
+        {
+            "chain_row": {
+                "scene_id": "scene-b",
+                "checkpoint": "T",
+                "checkpoint_sha256": "a" * 64,
+            }
+        },
+    )
+    subject.cache_checkpoint_rows(
+        root=tmp_path,
+        checkpoint="T",
+        rows=rows,
+        expected_scene_ids=frozenset({"scene-a", "scene-b"}),
+        **bindings,
+    )
+    assert (
+        subject.cache_checkpoint_rows(
+            root=tmp_path,
+            checkpoint="T",
+            rows=None,
+            expected_scene_ids=frozenset({"scene-a", "scene-b"}),
+            **bindings,
+        )
+        == rows
+    )
+    with pytest.raises(RuntimeError, match="checkpoint hash"):
+        subject.cache_checkpoint_rows(
+            root=tmp_path / "bad-hash",
+            checkpoint="T",
+            rows=({"chain_row": {**rows[0]["chain_row"], "checkpoint_sha256": "e" * 64}},),
+            expected_scene_ids=frozenset({"scene-a"}),
+            **bindings,
+        )
+    with pytest.raises(RuntimeError, match="scene closure"):
+        subject.cache_checkpoint_rows(
+            root=tmp_path,
+            checkpoint="T",
+            rows=None,
+            expected_scene_ids=frozenset({"scene-a", "scene-b", "scene-c"}),
+            **bindings,
+        )
+
+
+def test_phase8_rejects_nonformal_phase7_upstream_evidence() -> None:
+    subject = _execution_subject()
+    checkpoint_sha256 = {name: "a" * 64 for name in subject.SEVEN_CHECKPOINTS}
+    valid = {
+        "schema_version": 1,
+        "status": "PHASE_7_MULTIMODAL_DIAGNOSTIC_EVALUATED",
+        "confirmatory_data_used": False,
+        "support_dev_diagnostic": True,
+        "training_invoked": False,
+        "checkpoint_sha256": checkpoint_sha256,
+    }
+    assert subject.validate_phase7_evaluation(valid) == checkpoint_sha256
+    with pytest.raises(RuntimeError, match="formal diagnostic artifact"):
+        subject.validate_phase7_evaluation({**valid, "status": "NOT_PHASE_7"})
+
+
 def test_phase8_atomic_publication_refuses_overwrite_and_no_partial_output(tmp_path: Path) -> None:
     subject = _subject()
     row = subject.Phase8ConfirmRow.from_mapping(
@@ -167,6 +259,7 @@ def test_phase8_package_lock_closes_config_runtime_and_both_server_entrypoints()
     assert len(digest) == 64
     assert {
         "configs/recoverability/v4_phase_8.yaml",
+        "configs/recoverability/v4/phase_1_3_prompts.yaml",
         "src/compensability_v4/qwen/phase8_confirm_runtime.py",
         "scripts/v4/18_freeze_phase8_confirm_data.py",
         "scripts/v4/19_evaluate_phase8_confirmatory.py",

@@ -497,6 +497,7 @@ support_dev
 confirm_iid
 confirm_style_ood
 confirm_constraint_ood
+confirm_error_mechanism_ood
 ```
 
 ## 6.3 最终确认集
@@ -1424,3 +1425,40 @@ Answer-only RL 提高答案但不提高 exact world recovery。
 12. answer-source decomposition；
 13. 全部配置、数据、prompt、代码和结果 hash；
 14. 原失败实验完整保留。
+
+---
+
+# 27. Phase 8 最终确认执行修订（冻结）
+
+Phase 7 的 `support_dev` 完整链与接口审计仍为诊断证据，不作为最终确认集。最终一次性确认执行使用独立的 Phase 8 数据冻结和评估入口。
+
+## 27.1 固定数据设计
+
+- generation seed：`2026082103`；
+- evaluation seed：`2026082104`；
+- bootstrap seed：`2026082105`；
+- 每个轴先固定生成 32 个语义场景，共 128 个候选场景；
+- 四个轴分别为 IID、style OOD、constraint-graph OOD、error-mechanism OOD；
+- 每个轴使用独立语义场景、独立数值表和独立 constraint graph；
+- 候选数在 Stage-1 调用前冻结，不按恢复结果、答案结果或中途成功率扩展；
+- Base Stage-1 对全部 128 个候选各执行一次；在固定候选池中出现的全部自然 Stage-1 数值错误均进入七 checkpoint 评估；
+- 多位置自然 Stage-1 错误保留，不限于 single-edit；
+- Stage-1 输出若不能解析为四整数世界，数据冻结 fail-closed，不把解析失败替换成 truth；
+- legacy、symbolic support、natural-error support 与 support-dev 的数值表全部进入排除集合。
+
+## 27.2 冻结 checkpoint 与端点
+
+确认评估固定使用 Base、C0、C1、T、Base-AnswerOnly-RL、Recovery-LoRA-RecoveryOutcome-RL、Recovery-LoRA-AnswerOnly-RL 七个 checkpoint。checkpoint tree hashes 必须同时匹配冻结的 Phase 7 证据和 Phase 8 execution manifest。
+
+每个 checkpoint 保存完整原始 trace，并同时报告：
+
+- 严格单整数自由生成端点 `free_generation_answer_exact`；
+- 对模型恢复世界和模型选择操作进行确定性执行的 `deterministic_chain_answer_exact`；
+- 原计划九项完整链指标；
+- answer-source decomposition，包括 genuine recovery、operator invariance、error cancellation、visual reread 与 unresolved。
+
+两个答案端点均报告 checkpoint、family 与 OOD 轴分层结果；注册配对效应同时给出两个端点的结果。统计单位为 scene，使用 10,000 次 scene-clustered bootstrap、95% CI、sign-flip p-value、Holm correction 与冻结 TOST margin `0.02`。不设置经验成功门槛。
+
+## 27.3 一次性授权与完整性
+
+执行需要 `COMPBIAS_V4_PHASE8_CONFIRM_ACK=I_UNDERSTAND_THIS_CONSUMES_THE_FROZEN_PHASE_8_CONFIRM_SET`。数据、图片 bundle、Stage-1 prompt、七 checkpoint、配置、package lock、selection trace、execution manifest 和结果均使用 SHA-256 绑定；所有正式输出拒绝覆盖。Phase 8 不执行训练或 RL。

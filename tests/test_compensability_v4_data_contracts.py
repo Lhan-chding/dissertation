@@ -45,6 +45,7 @@ def test_v4_split_enum_is_closed_and_uses_the_preregistered_names() -> None:
         "confirm_iid",
         "confirm_style_ood",
         "confirm_constraint_ood",
+        "confirm_error_mechanism_ood",
     }
 
 

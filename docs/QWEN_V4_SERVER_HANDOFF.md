@@ -598,3 +598,78 @@ publication.
 
 Return the manifest SHA-256, every `PREFLIGHT`, `PROGRESS`, `RESUMED`, `READY`, and `SHA256`
 line, both formal output hashes, the complete summary JSON, and any `BLOCKED` message.
+
+## Phase 8 - one-shot final confirmatory evaluation
+
+Phase 8 consumes the newly generated confirm set. It performs no training and no RL. The freeze fixes 32 candidates on each of the four registered axes before Base Stage-1 screening, retains every parseable natural Stage-1 error in that fixed pool, and refuses to replace an unparseable Stage-1 output with ground truth. The four axes use fresh, mutually disjoint semantic IDs, numeric tables, and constraint graphs that are excluded from legacy, training, and support-dev inputs.
+
+Initialize the server environment and acknowledge one-time confirm-set consumption:
+
+```bash
+cd /cloud/cloud-ssd1/dissertation
+source .venv/bin/activate
+export PYTHONPATH=/cloud/cloud-ssd1/dissertation/src
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
+export COMPBIAS_V4_PHASE8_CONFIRM_ACK=I_UNDERSTAND_THIS_CONSUMES_THE_FROZEN_PHASE_8_CONFIRM_SET
+```
+
+Freeze the independent four-axis candidate pool, Base Stage-1 observations, all natural-error selections, image bundle, checkpoint hashes, and execution manifest:
+
+```bash
+LEGACY=data/generated/cva_recoverability_causal_v2_screen/records.jsonl
+SYMBOLIC=artifacts/v4/training/sources/symbolic_scenes.jsonl
+NATURAL=artifacts/v4/training/sources/natural_scenes.jsonl
+SUPPORT_DEV=artifacts/v4/support_dev/held_out_natural_errors.jsonl
+PHASE7=artifacts/v4/phase7/evaluation/summary.json
+
+python scripts/v4/18_freeze_phase8_confirm_data.py --execute \
+  --input legacy_diagnostic="$LEGACY" \
+  --input-sha256 legacy_diagnostic="$(sha256sum "$LEGACY" | awk '{print $1}')" \
+  --input symbolic_support_train="$SYMBOLIC" \
+  --input-sha256 symbolic_support_train="$(sha256sum "$SYMBOLIC" | awk '{print $1}')" \
+  --input natural_error_support_train="$NATURAL" \
+  --input-sha256 natural_error_support_train="$(sha256sum "$NATURAL" | awk '{print $1}')" \
+  --input support_dev="$SUPPORT_DEV" \
+  --input-sha256 support_dev="$(sha256sum "$SUPPORT_DEV" | awk '{print $1}')" \
+  --input phase7_evaluation="$PHASE7" \
+  --input-sha256 phase7_evaluation="$(sha256sum "$PHASE7" | awk '{print $1}')"
+
+sha256sum \
+  artifacts/v4/phase8/confirm_data/confirm_scenes.jsonl \
+  artifacts/v4/phase8/confirm_data/confirm_observations.jsonl \
+  artifacts/v4/phase8/confirm_data/selection_trace.jsonl \
+  artifacts/v4/phase8/confirm_data/summary.json \
+  artifacts/v4/phase8/confirm_data/execution_manifest.json
+python -m json.tool artifacts/v4/phase8/confirm_data/summary.json
+```
+
+The freeze performs exactly 128 Base Stage-1 calls. It does not condition the fixed candidate count on the number of observed errors. The formal evaluation then runs only the frozen natural-error rows through all seven checkpoints.
+
+Run the load-only seven-checkpoint preflight:
+
+```bash
+PHASE8_MANIFEST_SHA256="$(sha256sum artifacts/v4/phase8/confirm_data/execution_manifest.json | awk '{print $1}')"
+
+python scripts/v4/19_evaluate_phase8_confirmatory.py \
+  --execute \
+  --preflight-only \
+  --execution-manifest-sha256 "$PHASE8_MANIFEST_SHA256"
+```
+
+After every checkpoint prints `PREFLIGHT` and the command prints `READY`, run the one-shot final evaluation:
+
+```bash
+python scripts/v4/19_evaluate_phase8_confirmatory.py \
+  --execute \
+  --execution-manifest-sha256 "$PHASE8_MANIFEST_SHA256"
+
+sha256sum \
+  artifacts/v4/phase8/evaluation/per_scene.jsonl \
+  artifacts/v4/phase8/evaluation/summary.json
+python -m json.tool artifacts/v4/phase8/evaluation/summary.json
+```
+
+The evaluator preserves one resumable raw trace cache per checkpoint under `artifacts/v4/phase8/work/phase8-r1/`. Formal outputs contain both strict free-generation and deterministic-chain answer endpoints, all nine registered metrics, answer-source counts, checkpoint/family/OOD strata, registered paired effects, 10,000-resample scene-clustered intervals, sign-flip p-values, Holm corrections, and TOST results. No empirical threshold blocks publication.
+
+Return all `PROGRESS`, `PREFLIGHT`, `RESUMED`, `READY`, `SHA256`, and `BLOCKED` lines; the five freeze hashes; the complete freeze summary; the two evaluation hashes; and the complete evaluation summary.
