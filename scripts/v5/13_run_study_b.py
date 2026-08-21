@@ -94,6 +94,44 @@ def _load_json(path: Path, label: str) -> object:
         raise StudyBError(f"cannot read {label}: {error}") from error
 
 
+def _bind_study_a_manifest_provenance(
+    path: Path,
+    values: tuple[object, ...],
+) -> tuple[object, ...]:
+    """Bind Study A rows to the atomically published sibling manifest."""
+
+    manifest_path = path.parent / "manifest.json"
+    if manifest_path.is_symlink() or not manifest_path.is_file():
+        raise StudyBError("Study A manifest must be a regular non-symlink file")
+    manifest = _load_json(manifest_path, "Study A manifest")
+    if not isinstance(manifest, Mapping) or manifest.get("schema_version") != 1:
+        raise StudyBError("Study A manifest must be a schema_version 1 mapping")
+    if manifest.get("status") != "V5_STUDY_A_ATOMICALLY_PUBLISHED":
+        raise StudyBError("Study A manifest is not atomically published")
+    files = manifest.get("files")
+    file_record = files.get(path.name) if isinstance(files, Mapping) else None
+    if not isinstance(file_record, Mapping):
+        raise StudyBError("Study A manifest does not bind the evaluation artifact")
+    if file_record.get("sha256") != sha256_file(path):
+        raise StudyBError("Study A manifest evaluation SHA-256 mismatch")
+    recorded_size = file_record.get("size_bytes")
+    if (
+        not isinstance(recorded_size, int)
+        or isinstance(recorded_size, bool)
+        or recorded_size != path.stat().st_size
+    ):
+        raise StudyBError("Study A manifest evaluation size mismatch")
+    source_sha256 = manifest.get("source_sha256")
+    if not isinstance(source_sha256, Mapping):
+        raise StudyBError("Study A manifest lacks source_sha256")
+    return tuple(
+        {**dict(value), "source_sha256": dict(source_sha256)}
+        if isinstance(value, Mapping)
+        else value
+        for value in values
+    )
+
+
 def _load_evaluation(path: Path) -> tuple[dict[str, object], ...]:
     if path.suffix == ".jsonl":
         try:
@@ -114,7 +152,14 @@ def _load_evaluation(path: Path) -> tuple[dict[str, object], ...]:
     try:
         return validate_evaluation_rows(values)  # type: ignore[arg-type]
     except StudyBError:
-        return evaluation_rows_from_study_a(values)  # type: ignore[arg-type]
+        try:
+            return evaluation_rows_from_study_a(values)  # type: ignore[arg-type]
+        except StudyBError:
+            manifest_path = path.parent / "manifest.json"
+            if not manifest_path.exists() and not manifest_path.is_symlink():
+                raise
+            bound_values = _bind_study_a_manifest_provenance(path, values)
+            return evaluation_rows_from_study_a(bound_values)  # type: ignore[arg-type]
 
 
 def _validate_support_source_provenance(

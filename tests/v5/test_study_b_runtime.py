@@ -726,7 +726,7 @@ def test_study_b_cli_loads_study_a_per_scenario_jsonl_as_evaluation_rows(
 
     manifest["files"][path.name]["sha256"] = "0" * 64
     manifest_path.write_text(json.dumps(manifest, sort_keys=True) + "\n", encoding="utf-8")
-    with pytest.raises(StudyBError, match="manifest.*SHA-256 mismatch"):
+    with pytest.raises(StudyBError, match=r"manifest.*SHA-256 mismatch"):
         cli._load_evaluation(path)
 
 
