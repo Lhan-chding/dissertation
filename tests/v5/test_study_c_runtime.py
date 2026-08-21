@@ -978,3 +978,27 @@ def test_phase08_freeze_is_accepted_by_phase09_study_c_loader(tmp_path: Path) ->
     assert package["status"] == "V5_COMMON_ACTION_SPACE_FROZEN"
     assert selected_path == manifest.resolve()
     assert selected_package == package
+
+
+def test_study_c_loader_accepts_registered_max_minus_min_operation() -> None:
+    payload = {
+        "scene_id": "max-minus-min",
+        "prompt": "Observed values: 8,2,3,4. Return four comma-separated integers only.",
+        "truth": [9, 2, 3, 4],
+        "answer_operation": {
+            "operator": "max_minus_min",
+            "indices": [0, 1, 2, 3],
+        },
+        "reward_labels": {"answer": 7, "exact_state": [9, 2, 3, 4]},
+        "family": "trend",
+        "fiber_size": 4,
+        "fiber_bin": "multi_2_4",
+        "support_bin": "medium",
+        "role": "rl_train",
+    }
+
+    loaded = StudyCScene.from_mapping(payload)
+
+    assert loaded.answer_operator == "max_minus_min"
+    assert loaded.answer_indices == (0, 1, 2, 3)
+    assert loaded.answer_label == 7

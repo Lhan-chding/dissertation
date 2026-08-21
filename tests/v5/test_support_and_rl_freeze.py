@@ -757,6 +757,80 @@ def test_common_freeze_script_derives_study_a_support_bins_and_roles(tmp_path: P
     }
 
 
+def test_common_freeze_script_truth_anchors_empty_phase2a_fibers(tmp_path: Path) -> None:
+    scenes_path = tmp_path / "scenes.jsonl"
+    study_a_path = tmp_path / "study-a.jsonl"
+    scene_rows: list[str] = []
+    support_rows: list[str] = []
+    for index in range(96):
+        scene = _rl_scene(
+            scene_id=f"rl-{index:03d}",
+            family=("known_value", "pair_sum", "trend")[index % 3],
+            fiber_size=0 if index == 0 else 3,
+        )
+        scene.pop("policy_support")
+        scene.pop("candidate_worlds")
+        scene["natural_observation"] = [19, 2, 3, 4] if index == 0 else [8, 2, 3, 4]
+        scene["fiber_bin"] = "phase2a_child_bin"
+        scene["fiber_definition"] = {
+            "distance": "hamming_at_most_one",
+            "value_domain": [2, 18],
+        }
+        scene_rows.append(json.dumps(scene, sort_keys=True) + "\n")
+        support_rows.append(
+            json.dumps(
+                {
+                    "checkpoint": "T",
+                    "graph_axis": "canonical",
+                    "source_scene_id": scene["scene_id"],
+                    "exact_recovery_probability": index / 95,
+                },
+                sort_keys=True,
+            )
+            + "\n"
+        )
+    scenes_path.write_text("".join(scene_rows))
+    study_a_path.write_text("".join(support_rows))
+    output = tmp_path / "common-space.json"
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts/v5/08_freeze_common_space_rl.py"),
+            "--execute",
+            "--input-jsonl",
+            str(scenes_path),
+            "--study-a-rows",
+            str(study_a_path),
+            "--b3-initialization-sha256",
+            "a" * 64,
+            "--b2-initialization-sha256",
+            "b" * 64,
+            "--base-initialization-sha256",
+            "c" * 64,
+            "--output",
+            str(output),
+        ],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert completed.returncode == 0, completed.stderr + completed.stdout
+    package = json.loads(output.read_text())
+    empty_phase2a_scene = package["scenes"][0]
+    assert empty_phase2a_scene["fiber_size"] == 1
+    assert empty_phase2a_scene["fiber_bin"] == "singleton"
+    assert empty_phase2a_scene["candidate_worlds"] == [[9, 2, 3, 4]]
+    assert empty_phase2a_scene["fiber_definition"] == {
+        "candidate_construction": "one_edit_domain_union_truth",
+        "center": "natural_observation",
+        "includes_truth": True,
+        "value_domain": [2, 18],
+    }
+
+
 def test_advisor_script_writes_only_status_and_exits_nonzero_without_results(
     tmp_path: Path,
 ) -> None:
