@@ -8,6 +8,7 @@ from pathlib import Path
 
 from PIL import Image
 
+from compensability_v5.data.common_action_schema import WorldAction, apply_answer_operation
 from compensability_v5.data.pre_model_freeze import freeze_pre_model_factorial
 
 
@@ -53,6 +54,15 @@ def test_phase2a_freeze_is_deterministic_hash_bound_and_model_independent(tmp_pa
         assert _sha256(prompt) == row["prompt_sha256"]
         with Image.open(image) as opened:
             assert opened.size == (280, 280)
+
+        operation = row["answer_operation"]
+        assert isinstance(operation, dict)
+        assert apply_answer_operation(
+            WorldAction(tuple(row["truth"])),  # type: ignore[arg-type]
+            operation,
+        ) == row["correct_answer"]
+        if operation["operator"] == "max_minus_min":
+            assert operation["indices"] == [0, 1, 2, 3]
 
 
 def test_phase2a_freeze_refuses_to_overwrite_immutable_parent(tmp_path: Path) -> None:

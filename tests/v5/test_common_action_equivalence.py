@@ -56,4 +56,21 @@ def test_query_operator_changes_reward_not_action_protocol() -> None:
 
     assert apply_answer_operation(action, {"operator": "sum", "indices": [0, 2]}) == 13
     assert apply_answer_operation(action, {"operator": "difference", "indices": [0, 2]}) == 3
+    assert (
+        apply_answer_operation(
+            action,
+            {"operator": "max_minus_min", "indices": [0, 1, 2, 3]},
+        )
+        == 6
+    )
     assert action.to_mapping() == {"world": [8, 3, 5, 2]}
+
+
+def test_max_minus_min_requires_the_complete_four_value_query() -> None:
+    action = WorldAction.from_mapping({"world": [8, 3, 5, 2]})
+
+    with pytest.raises(ValueError, match="all four"):
+        apply_answer_operation(
+            action,
+            {"operator": "max_minus_min", "indices": [0, 1]},
+        )
