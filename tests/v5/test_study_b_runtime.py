@@ -664,7 +664,7 @@ def test_study_b_cli_loads_study_a_per_scenario_jsonl_as_evaluation_rows(
     tmp_path: Path,
 ) -> None:
     cli = _load_cli()
-    path = tmp_path / "study_a_per_scenario.jsonl"
+    path = tmp_path / "legacy_independent_per_scenario.jsonl"
     graph_axes = (
         "canonical",
         "variable_permuted",
@@ -683,7 +683,6 @@ def test_study_b_cli_loads_study_a_per_scenario_jsonl_as_evaluation_rows(
                     "checkpoint_sha256": MODEL_SHA,
                     "family": "cross_series",
                     "split": "independent_v4_support_dev",
-                    "source_sha256": {"raw_archive": RAW_SHA},
                     "graph_axis": graph_axis,
                     "truth": [9, 2, 3, 4],
                     "observed": [8, 2, 3, 4],
@@ -699,6 +698,19 @@ def test_study_b_cli_loads_study_a_per_scenario_jsonl_as_evaluation_rows(
         ),
         encoding="utf-8",
     )
+    manifest = {
+        "schema_version": 1,
+        "status": "V5_STUDY_A_ATOMICALLY_PUBLISHED",
+        "source_sha256": {"Base": MODEL_SHA, "T": "f" * 64, "raw_archive": RAW_SHA},
+        "files": {
+            path.name: {
+                "sha256": cli.sha256_file(path),
+                "size_bytes": path.stat().st_size,
+            }
+        },
+    }
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(json.dumps(manifest, sort_keys=True) + "\n", encoding="utf-8")
 
     rows = cli._load_evaluation(path)
 
@@ -710,6 +722,12 @@ def test_study_b_cli_loads_study_a_per_scenario_jsonl_as_evaluation_rows(
         "fact_order",
         "constraint_graph",
     }
+    assert all(row["source_sha256"] == {"raw_archive": RAW_SHA} for row in rows)
+
+    manifest["files"][path.name]["sha256"] = "0" * 64
+    manifest_path.write_text(json.dumps(manifest, sort_keys=True) + "\n", encoding="utf-8")
+    with pytest.raises(StudyBError, match="manifest.*SHA-256 mismatch"):
+        cli._load_evaluation(path)
 
 
 def test_study_b_cli_rehashes_phase2a_source_chain(tmp_path: Path) -> None:
