@@ -32,7 +32,7 @@ GRAPH_AXES = (
 )
 VARIABLE_PERMUTATION = (1, 2, 3, 0)
 PROMPT_VERSION = "v5-study-a-common-world-text-1"
-PHASE2A_PARENT_MANIFEST_SHA256 = "7ca604ec780176d23a890bc7aa0f7d8d73a5bef8fc4be1f524fc0191ec781cbf"
+PHASE2A_PARENT_MANIFEST_SHA256 = "152d2f6ce7a473449578396c6471e876c682b3aded38c8b70e599de532ecb3a3"
 OBSERVATION_PROMPT_VERSION = "v5-neutral-observation-1"
 OBSERVATION_PROMPT = (
     "Read the chart and report the four values in fixed position order. "

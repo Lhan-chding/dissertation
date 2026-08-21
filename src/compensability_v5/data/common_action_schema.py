@@ -9,7 +9,7 @@ from typing import Any
 _WORLD_SIZE = 4
 _ACTION_FIELDS = frozenset({"world"})
 _OPERATION_FIELDS = frozenset({"operator", "indices"})
-_OPERATORS = frozenset({"sum", "difference"})
+_OPERATORS = frozenset({"sum", "difference", "max_minus_min"})
 
 
 def _is_integer(value: object) -> bool:
@@ -65,24 +65,31 @@ class WorldAction:
         return {"world": list(self.world)}
 
 
-def _parse_answer_operation(operation: Mapping[str, object]) -> tuple[str, tuple[int, int]]:
+def _parse_answer_operation(operation: Mapping[str, object]) -> tuple[str, tuple[int, ...]]:
     if not isinstance(operation, Mapping):
         raise TypeError("answer operation must be a mapping")
     _require_exact_fields(operation, _OPERATION_FIELDS, schema_name="answer operation")
 
     operator = operation["operator"]
     if not isinstance(operator, str) or operator not in _OPERATORS:
-        raise ValueError("answer operation operator must be 'sum' or 'difference'")
+        raise ValueError(
+            "answer operation operator must be 'sum', 'difference', or 'max_minus_min'"
+        )
 
     raw_indices = operation["indices"]
-    if not isinstance(raw_indices, list) or len(raw_indices) != 2:
-        raise TypeError("answer operation indices must be a list of exactly two integers")
+    expected_count = _WORLD_SIZE if operator == "max_minus_min" else 2
+    if not isinstance(raw_indices, list) or len(raw_indices) != expected_count:
+        if operator == "max_minus_min":
+            raise ValueError("max_minus_min must query all four world indices")
+        raise TypeError("sum and difference indices must be a list of exactly two integers")
     if any(not _is_integer(index) for index in raw_indices):
         raise TypeError("answer operation indices must be integers (bool is not allowed)")
-    first, second = raw_indices
-    if first == second or not all(0 <= index < _WORLD_SIZE for index in (first, second)):
+    indices = tuple(raw_indices)
+    if len(set(indices)) != len(indices) or not all(0 <= index < _WORLD_SIZE for index in indices):
         raise ValueError("answer operation indices must be distinct world indices in [0, 3]")
-    return operator, (first, second)
+    if operator == "max_minus_min" and set(indices) != set(range(_WORLD_SIZE)):
+        raise ValueError("max_minus_min must query all four world indices")
+    return operator, indices
 
 
 def apply_answer_operation(action: WorldAction, operation: Mapping[str, Any]) -> int:
@@ -90,10 +97,15 @@ def apply_answer_operation(action: WorldAction, operation: Mapping[str, Any]) ->
 
     if not isinstance(action, WorldAction):
         raise TypeError("action must be a WorldAction")
-    operator, (first, second) = _parse_answer_operation(operation)
+    operator, indices = _parse_answer_operation(operation)
     if operator == "sum":
+        first, second = indices
         return action.world[first] + action.world[second]
-    return action.world[first] - action.world[second]
+    if operator == "difference":
+        first, second = indices
+        return action.world[first] - action.world[second]
+    values = tuple(action.world[index] for index in indices)
+    return max(values) - min(values)
 
 
 __all__ = ["WorldAction", "apply_answer_operation"]

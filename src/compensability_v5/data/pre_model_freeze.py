@@ -114,6 +114,7 @@ def freeze_pre_model_factorial(
                         _prompt(matrix, targets), encoding="utf-8"
                     )
                     operation = ("sum", "difference", "max_minus_min")[len(rows) % 3]
+                    operation_indices = [0, 1, 2, 3] if operation == "max_minus_min" else [0, 1]
                     if operation == "sum":
                         answer = truth[0] + truth[1]
                     elif operation == "difference":
@@ -143,7 +144,10 @@ def freeze_pre_model_factorial(
                                 "pair_sum": 1,
                                 "trend": 2,
                             }[family],
-                            "answer_operation": {"operator": operation, "indices": [0, 1]},
+                            "answer_operation": {
+                                "operator": operation,
+                                "indices": operation_indices,
+                            },
                             "correct_answer": answer,
                             "orbit_parent_id": parent_id,
                             "transformation": transformation,

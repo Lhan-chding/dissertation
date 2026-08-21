@@ -4,7 +4,7 @@ inputs:
   plan_sha256: e6a560e3db4a90353ed6e894cb531e9a85ef81b3157bc9c14eeb1f60a988f234
   fact_document_sha256: 8b838f4148e02c02d3f6f55efcb1e0293fd6d247fd2969b197f533e5101ae9d6
   raw_archive_sha256: f0ccb4d56415eecf90a2c456bfd7c92a33fc96a581f3603115edbcb253ba8c84
-  phase2a_manifest_sha256: 7ca604ec780176d23a890bc7aa0f7d8d73a5bef8fc4be1f524fc0191ec781cbf
+  phase2a_manifest_sha256: 152d2f6ce7a473449578396c6471e876c682b3aded38c8b70e599de532ecb3a3
 model:
   path: /model/ModelScope/Qwen/Qwen2.5-VL-3B-Instruct
   snapshot_sha256: e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87

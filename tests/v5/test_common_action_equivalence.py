@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import FrozenInstanceError
 
 import pytest
+
 from compensability_v5.data.common_action_schema import WorldAction, apply_answer_operation
 from compensability_v5.training.common_space_rewards import answer_reward, exact_state_reward
 

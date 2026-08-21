@@ -32,8 +32,8 @@ export V5_RAW_ARCHIVE=/absolute/path/to/qwen_v4_raw_rows_20260821.tar.gz
 | Base 模型快照 | `e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87` |
 | T adapter tree | `807a61c2e3f7b532b162554dee6e7df83d654fb1f10cc464e9dcb5f6f8efd5c7` |
 | v4 raw archive | `f0ccb4d56415eecf90a2c456bfd7c92a33fc96a581f3603115edbcb253ba8c84` |
-| Phase 2a parent manifest | `7ca604ec780176d23a890bc7aa0f7d8d73a5bef8fc4be1f524fc0191ec781cbf` |
-| Phase 2a rows | `86254f9c38fe1250e964226f1432f7f1d8bbaad09dce181bf351dc485a2e5559` |
+| Phase 2a parent manifest | `152d2f6ce7a473449578396c6471e876c682b3aded38c8b70e599de532ecb3a3` |
+| Phase 2a rows | `6506330bed1d86cc040eb041a6d9b80697a261343c10325cf1e78811d44a9d9d` |
 | Study B config | `3832a84e9bfefdf04bb4bdae65a780d975a738df04e56b811a7741884d3f9381` |
 | Study C config | `f167c20904f9720f7c606609d89f58d64921b4678e2352eabf5e80fb2d921984` |
 | Server package lock | `a8f351db7cadc904f6feecdd9cddb9e0d782c8356226cd866661710623b2e544` |

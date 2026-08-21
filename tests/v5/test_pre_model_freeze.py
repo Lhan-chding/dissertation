@@ -57,10 +57,13 @@ def test_phase2a_freeze_is_deterministic_hash_bound_and_model_independent(tmp_pa
 
         operation = row["answer_operation"]
         assert isinstance(operation, dict)
-        assert apply_answer_operation(
-            WorldAction(tuple(row["truth"])),  # type: ignore[arg-type]
-            operation,
-        ) == row["correct_answer"]
+        assert (
+            apply_answer_operation(
+                WorldAction(tuple(row["truth"])),  # type: ignore[arg-type]
+                operation,
+            )
+            == row["correct_answer"]
+        )
         if operation["operator"] == "max_minus_min":
             assert operation["indices"] == [0, 1, 2, 3]
 
