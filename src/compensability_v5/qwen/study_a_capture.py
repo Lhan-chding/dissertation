@@ -258,6 +258,7 @@ def capture_phase2a_natural_observations(
     expected_parent_count: int = 96,
     expected_parent_manifest_sha256: str = PHASE2A_PARENT_MANIFEST_SHA256,
     seed: int = 2026082101,
+    progress: Callable[[str, int, int], None] | None = None,
 ) -> tuple[tuple[dict[str, object], ...], str]:
     """Capture Base observations once and publish an append-only child manifest."""
 
@@ -296,6 +297,8 @@ def capture_phase2a_natural_observations(
         raise RuntimeError("Phase-2a observation trace contains unregistered rows")
     for key, row in completed.items():
         _validate_capture_row(row, key[1])
+    if completed and progress is not None:
+        progress("BaseObservation", len(completed), len(parents))
     for parent in parents:
         semantic_id = str(parent["semantic_scene_id"])
         key = ("BaseObservation", semantic_id)
@@ -324,6 +327,8 @@ def capture_phase2a_natural_observations(
             raise RuntimeError(
                 f"Phase-2a neutral observation is not deterministically parseable: {semantic_id}"
             )
+        if progress is not None:
+            progress("BaseObservation", len(completed), len(parents))
     captures = {key[1]: row for key, row in completed.items()}
     if set(captures) != {str(row["semantic_scene_id"]) for row in parents}:
         raise RuntimeError("Phase-2a observation capture closure is incomplete")
@@ -490,6 +495,7 @@ def run_phase2a_study_a(
                 expected_parent_count=expected_parent_count,
                 expected_parent_manifest_sha256=expected_parent_manifest_sha256,
                 seed=sampling_seed,
+                progress=progress,
             )
         finally:
             del base

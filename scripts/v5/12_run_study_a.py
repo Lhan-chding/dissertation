@@ -125,7 +125,7 @@ def main() -> int:
             k=K,
             sampling_seed=SAMPLING_SEED,
             progress=lambda checkpoint, complete, total: print(
-                f"PROGRESS: {checkpoint} {complete}/{total} checkpoint-scenarios complete",
+                f"PROGRESS: {checkpoint} {complete}/{total} complete",
                 flush=True,
             ),
         )

@@ -119,7 +119,7 @@ def run_orbit_audit(
         k=8,
         sampling_seed=2026082101,
         progress=lambda checkpoint, complete, total: print(
-            f"PROGRESS: {checkpoint} {complete}/{total} checkpoint-scenarios complete",
+            f"PROGRESS: {checkpoint} {complete}/{total} complete",
             flush=True,
         ),
     )
