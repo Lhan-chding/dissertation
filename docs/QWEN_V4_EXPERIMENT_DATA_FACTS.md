@@ -2,9 +2,9 @@
 
 ## 文档范围与证据规则
 
-- 文档范围：Qwen2.5-VL v4 的既有审计、能力链、候选打分、层间同化、缓存一致性和接口阶梯运行记录，以及计划中后续阶段的执行状态。
+- 文档范围：Qwen2.5-VL v4 的既有审计、能力链、候选打分、层间同化、缓存一致性、接口阶梯、LoRA、policy support、RL、真实多模态诊断与最终确认评估记录。
 - 本文只记录输入、配置、命令、哈希、计数、数值、输出路径、状态和控制台错误；不包含对结果的解释、推断或结论。
-- 记录更新时间：2026-08-21；Phase 7 interface audit 代码提交：`73b3a4bed900d8b054504cf45fc79a217c3259af`。
+- 记录更新时间：2026-08-21；Phase 7 interface audit 代码提交：`73b3a4bed900d8b054504cf45fc79a217c3259af`；Phase 8 正式实现提交：`dbd6a5ce0b6e187db55c63be13d0dcffcb842662`；Phase 8 constraint serialization 修复提交：`d79feb8900d779defd3d5e577f21f728596d4b2f`。
 - 项目根目录：`/cloud/cloud-ssd1/dissertation`。
 - 计划文件：`docs/Qwen25VL_Constraint_Assimilation_Natural_State_RL_Codex_Plan_v4.md`，Phase 7 interface audit 提交中的 SHA-256 为 `8bbd556828014262f3b02ba71b957361179d0389ec41258fb02ea6a57c77a58f`。
 - 下表中的“本地可见”仅指本报告生成时的当前工作区；服务器上已生成、但未同步到当前工作区的文件，保留其服务器路径和已记录哈希。
@@ -48,6 +48,7 @@ S1 运行时清单要求的模块名：`model.visual.blocks.0`、`model.visual.b
 | Phase 5 policy support | Base/C0/C1/T 的 held-out policy-support 测量 | 服务器执行完成 | 4 个 checkpoint 的 128 行 scene-level 测量 | 32 个 held-out natural errors |
 | Phase 6 RL | execution manifest、双 reward 数据、3 个 GRPO arm 与 5 checkpoint 评估 | `PHASE_6_RL_EVALUATED` | 173 个 RL 场景；3 × 64 steps；32 个评估场景 | 见 Phase 6 表 |
 | Phase 7 multimodal | 七 checkpoint 完整多模态链的 support-dev diagnostic 与冻结 trace interface audit | `PHASE_7_MULTIMODAL_DIAGNOSTIC_EVALUATED`；`PHASE_7_INTERFACE_DIAGNOSTIC_AUDITED` | 32 scenes × 7 checkpoints = 224 rows；896 deterministic generation calls | interface audit SHA-256 `abbd06e6d1f76bbd549009f4993a748d6be5feac2d8b8f1a899aea438cea004b` |
+| Phase 8 confirmatory | 四轴独立 confirm 数据冻结与七 checkpoint 最终评估 | `PHASE_8_CONFIRMATORY_EVALUATED` | 128 fixed candidates；98 selected natural-error scenes；686 rows | 正式输出文件 SHA-256 待服务器采集 |
 
 ## S0：冻结遗留证据审计
 
@@ -680,15 +681,17 @@ export TRANSFORMERS_OFFLINE=1
 | `artifacts/v4/interface_ladder/` | 不存在 |
 | 用户未跟踪 ownership 文件 | 存在；未由本报告修改 |
 
-## Phase 8 已冻结的执行合同与当前状态
+## Phase 8：独立最终确认评估
 
 | 字段 | 冻结值 |
 | --- | --- |
-| 状态 | 代码与服务器入口已准备；正式 confirm 数据尚未生成；正式 confirm 评估尚未执行 |
+| 状态 | `PHASE_8_CONFIRMATORY_EVALUATED` |
 | checkpoint | `Base`、`C0`、`C1`、`T`、`Base_AnswerOnly_RL`、`Recovery_LoRA_RecoveryOutcome_RL`、`Recovery_LoRA_AnswerOnly_RL` |
 | confirm axes | `iid`、`style_ood`、`constraint_graph_ood`、`error_mechanism_ood` |
 | 每轴固定候选数 | 32 |
 | Base Stage-1 固定候选调用总数 | 128 |
+| 纳入的自然 Stage-1 error scenes | 98 |
+| 正式评估行数 | 686（98 scenes × 7 checkpoints） |
 | generation seed | 2026082103 |
 | evaluation seed | 2026082104 |
 | bootstrap seed | 2026082105 |
@@ -699,6 +702,8 @@ export TRANSFORMERS_OFFLINE=1
 | 经验成功阈值 | 未设置 |
 | 训练 / RL | 不执行 |
 | 正式输出覆盖 | 拒绝 |
+| confirmatory data used | true |
+| statistical unit | scene |
 
 Phase 8 数据冻结在任何 Base Stage-1 结果产生前固定四轴各 32 个候选。四轴使用新的 semantic scene ID、numeric table ID 与 constraint graph ID，并对 legacy diagnostic、`symbolic_support_train`、`natural_error_support_train` 与 `support_dev` 执行隔离检查。Base Stage-1 输出不可解析时，数据冻结返回 `BLOCKED`；不会以 ground truth 代替。固定候选中的全部可解析自然 Stage-1 error 都进入评估，不按错误数量或后续模型结果筛选。
 
@@ -710,12 +715,80 @@ Phase 8 所需固定确认字符串为：
 COMPBIAS_V4_PHASE8_CONFIRM_ACK=I_UNDERSTAND_THIS_CONSUMES_THE_FROZEN_PHASE_8_CONFIRM_SET
 ```
 
-截至本地实现阶段，以下服务器产物尚不存在，因此本报告没有记录任何 Phase 8 实验数值：
+### Phase 8 已记录 source SHA-256
 
-- `artifacts/v4/phase8/confirm_data/confirm_scenes.jsonl`
-- `artifacts/v4/phase8/confirm_data/confirm_observations.jsonl`
-- `artifacts/v4/phase8/confirm_data/selection_trace.jsonl`
-- `artifacts/v4/phase8/confirm_data/summary.json`
-- `artifacts/v4/phase8/confirm_data/execution_manifest.json`
-- `artifacts/v4/phase8/evaluation/per_scene.jsonl`
-- `artifacts/v4/phase8/evaluation/summary.json`
+| source | SHA-256 |
+| --- | --- |
+| confirm image bundle | `df38cb939b906d4690d96dad2b6f3e27fcfe720e93497942d85afca37600779b` |
+| confirm observations | `7f0a91ca81d9764581b47c3d0ef94632812adee6aae14d5918c63e10cd41c2e2` |
+| confirm scenes | `7432bb9f3b0ceda7364efdda1e13594a71595eed62312062b12b5670cb3d9946` |
+| confirm summary | `3ac1c430149f464d15693da42f1c70fbc17fbb4f385f937049432f1016a38ca7` |
+| execution manifest | `52fe08b3b5db5e99327302f0e4e5f86e4f403684b136d275d179eeda1c52c776` |
+| legacy diagnostic | `36e09f7e15107057fd1b942875d12259b1f281e0354b87c82ed17f420693c766` |
+| natural-error support train | `b3dacf9515ff85e8e8af27777af28fe1969161ad45ed8400d8fd8a627c5a1418` |
+| Phase 7 evaluation | `fde66bae90f58eb64de5d6cb32e0a0f38f866c439775b17e7de64a31987d86db` |
+| prompt config | `c4fa65062527b76bd0b29bbad6a5bd35e596fcc2bfef4dd0c81d7fe008610d10` |
+| support dev | `cafbd5e5a0face1622d62faac4bb6b9bfc1fa6cc8d4353ade82b9144d8b18136` |
+| symbolic-support train | `852c4e26c87d0f4afb34737e59ee840a17bf2e0a2a5813f956d3e9bc7e175c80` |
+
+### Phase 8 已记录的全局指标
+
+下表的 `number_of_rollouts=686`、`number_of_scenes=98`、`confidence=0.95`。
+
+| metric | estimate | ci_low | ci_high |
+| --- | ---: | ---: | ---: |
+| `reasoning_operator_exact` | 1.0 | 1.0 | 1.0 |
+| `stage1_visual_exact` | 0.0597667638483965 | 0.02915451895043732 | 0.09329446064139942 |
+| `trace_mismatch` | 0.8440233236151603 | 0.8002915451895044 | 0.8848396501457725 |
+
+其余六个全局冻结指标及两个答案 endpoint 的精确全局数值待服务器 summary 采集。
+
+### Phase 8 free-generation endpoint 注册效应
+
+所有比较的 `paired_scene_count=98`；主区间为 95% scene-clustered percentile bootstrap CI；TOST 区间为 90%，margin=`0.02`。
+
+| effect | estimate | 95% CI | sign-flip p | Holm p | 90% TOST CI | equivalent |
+| --- | ---: | --- | ---: | ---: | --- | --- |
+| `T_minus_C0` | 0.1836734693877551 | [0.11224489795918367, 0.2653061224489796] | 0.00009999000099990002 | 0.00039996000399960006 | [0.12244897959183673, 0.25510204081632654] | false |
+| `T_minus_C1` | 0.12244897959183673 | [0.05102040816326531, 0.20408163265306123] | 0.004199580041995801 | 0.012598740125987402 | [0.061224489795918366, 0.1836734693877551] | false |
+| `recovery_reward_rl_minus_answer_only_rl` | 0.04081632653061224 | [0.01020408163265306, 0.08163265306122448] | 0.12058794120587941 | 0.24117588241175883 | [0.01020408163265306, 0.07142857142857142] | false |
+| `seeded_rl_minus_base_rl` | -0.04081632653061224 | [-0.08163265306122448, -0.01020408163265306] | 0.12238776122387761 | 0.24117588241175883 | [-0.07142857142857142, -0.01020408163265306] | false |
+
+### Phase 8 free-generation 注册效应按 OOD axis
+
+| OOD axis | effect | estimate | 95% CI | Holm p |
+| --- | --- | ---: | --- | ---: |
+| `constraint_graph_ood` | `T_minus_C0` | 0.07407407407407407 | [0.0, 0.18518518518518517] | 1.0 |
+| `constraint_graph_ood` | `T_minus_C1` | 0.037037037037037035 | [-0.07407407407407407, 0.14814814814814814] | 1.0 |
+| `constraint_graph_ood` | `recovery_reward_rl_minus_answer_only_rl` | 0.0 | [0.0, 0.0] | 1.0 |
+| `constraint_graph_ood` | `seeded_rl_minus_base_rl` | 0.0 | [0.0, 0.0] | 1.0 |
+| `error_mechanism_ood` | `T_minus_C0` | 0.3333333333333333 | [0.08333333333333333, 0.5833333333333334] | 0.5 |
+| `error_mechanism_ood` | `T_minus_C1` | 0.16666666666666666 | [0.0, 0.4166666666666667] | 1.0 |
+| `error_mechanism_ood` | `recovery_reward_rl_minus_answer_only_rl` | 0.08333333333333333 | [0.0, 0.25] | 1.0 |
+| `error_mechanism_ood` | `seeded_rl_minus_base_rl` | 0.0 | [0.0, 0.0] | 1.0 |
+| `iid` | `T_minus_C0` | 0.22580645161290322 | [0.0967741935483871, 0.3870967741935484] | 0.054394560543945605 |
+| `iid` | `T_minus_C1` | 0.16129032258064516 | [0.0, 0.3225806451612903] | 0.37916208379162086 |
+| `iid` | `recovery_reward_rl_minus_answer_only_rl` | 0.03225806451612903 | [0.0, 0.0967741935483871] | 1.0 |
+| `iid` | `seeded_rl_minus_base_rl` | -0.03225806451612903 | [-0.0967741935483871, 0.0] | 1.0 |
+| `style_ood` | `T_minus_C0` | 0.17857142857142858 | [0.03571428571428571, 0.32142857142857145] | 0.24757524247575244 |
+| `style_ood` | `T_minus_C1` | 0.14285714285714285 | [0.03571428571428571, 0.2857142857142857] | 0.3665633436656335 |
+| `style_ood` | `recovery_reward_rl_minus_answer_only_rl` | 0.07142857142857142 | [0.0, 0.17857142857142858] | 0.5013498650134987 |
+| `style_ood` | `seeded_rl_minus_base_rl` | -0.10714285714285714 | [-0.25, 0.0] | 0.48955104489551043 |
+
+### Phase 8 正式服务器产物
+
+| path | 状态 |
+| --- | --- |
+| `artifacts/v4/phase8/confirm_data/confirm_scenes.jsonl` | 已生成；SHA-256 见 source 表 |
+| `artifacts/v4/phase8/confirm_data/confirm_observations.jsonl` | 已生成；SHA-256 见 source 表 |
+| `artifacts/v4/phase8/confirm_data/selection_trace.jsonl` | 已生成；文件 SHA-256 待服务器采集 |
+| `artifacts/v4/phase8/confirm_data/summary.json` | 已生成；SHA-256=`3ac1c430149f464d15693da42f1c70fbc17fbb4f385f937049432f1016a38ca7` |
+| `artifacts/v4/phase8/confirm_data/execution_manifest.json` | 已生成；SHA-256=`52fe08b3b5db5e99327302f0e4e5f86e4f403684b136d275d179eeda1c52c776` |
+| `artifacts/v4/phase8/evaluation/per_scene.jsonl` | 已生成；文件 SHA-256 待服务器采集 |
+| `artifacts/v4/phase8/evaluation/summary.json` | 已生成；文件 SHA-256 待服务器采集 |
+
+### Phase 8 已记录的执行错误与修复
+
+| revision | server message | subsequent state |
+| --- | --- | --- |
+| `dbd6a5ce0b6e187db55c63be13d0dcffcb842662` | `BLOCKED: Phase 8 'PairSumConstraint' object is not iterable` | `d79feb8900d779defd3d5e577f21f728596d4b2f` 将三种 constraint dataclass 显式序列化为 recovery-scene fact mapping；随后完成数据冻结与正式评估 |
