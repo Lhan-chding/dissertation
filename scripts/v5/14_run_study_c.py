@@ -19,10 +19,15 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from compensability_v4.qwen.model_loader import MODEL_PATH, load_pinned_qwen  # noqa: E402
-from compensability_v4.qwen.phase5_runtime import tree_sha256  # noqa: E402
+from compensability_v4.qwen.phase5_runtime import (  # noqa: E402
+    tree_sha256 as study_c_output_tree_sha256,
+)
 from compensability_v4.training.phase4 import freeze_base_parameters  # noqa: E402
 from compensability_v5.data.common_action_freeze import (  # noqa: E402
     assert_common_action_preflight,
+)
+from compensability_v5.qwen.study_b_runtime import (  # noqa: E402
+    tree_sha256 as study_b_adapter_tree_sha256,
 )
 from compensability_v5.qwen.study_c_runtime import (  # noqa: E402
     ACTION_PARSER_ID,
@@ -103,7 +108,7 @@ def _verify_file(
 
 def _verify_tree(path: Path, expected: str | None, label: str) -> str:
     wanted = _require_digest(expected, label)
-    actual = tree_sha256(path)
+    actual = study_b_adapter_tree_sha256(path)
     if actual != wanted:
         raise StudyCError(f"{label} tree SHA-256 mismatch")
     return actual
@@ -266,7 +271,7 @@ def _verified_complete(arm: StudyCArm, output_dir: Path, provenance: dict[str, s
         or evidence.get("post_training_evaluation_invoked") is not True
         or evidence.get("eval_raw_rows_sha256") != sha256_file(eval_rows)
         or evidence.get("eval_summary_sha256") != sha256_file(eval_summary)
-        or evidence.get("final_adapter_tree_sha256") != tree_sha256(final_adapter)
+        or evidence.get("final_adapter_tree_sha256") != study_c_output_tree_sha256(final_adapter)
         or (
             arm.reward_function == "answer"
             and (

@@ -12,9 +12,9 @@ from pathlib import Path
 import yaml
 
 from compensability_v4.qwen.model_loader import MODEL_PATH, load_pinned_qwen
-from compensability_v4.qwen.phase5_runtime import tree_sha256
 from compensability_v4.training.phase4 import freeze_base_parameters
 from compensability_v5.data.common_action_freeze import assert_common_action_preflight
+from compensability_v5.qwen.study_b_runtime import tree_sha256
 from compensability_v5.qwen.study_c_runtime import (
     StudyCArm,
     StudyCError,

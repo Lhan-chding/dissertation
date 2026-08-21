@@ -22,6 +22,7 @@ from compensability_v5.data.common_action_freeze import (
 from compensability_v5.data.common_action_freeze import (
     freeze_common_action_space,
 )
+from compensability_v5.qwen.study_b_runtime import tree_sha256 as study_b_tree_sha256
 from compensability_v5.qwen.study_c_runtime import (
     STUDY_C_ACK,
     STUDY_C_SEED,
@@ -41,7 +42,6 @@ from compensability_v5.qwen.study_c_runtime import (
     validate_study_c_config_payload,
     validate_study_c_prompt_lengths,
 )
-from compensability_v5.qwen.study_b_runtime import tree_sha256 as study_b_tree_sha256
 from compensability_v5.server_runtime.study_c import (
     run_common_space_grpo,
     run_v5_evaluation,
