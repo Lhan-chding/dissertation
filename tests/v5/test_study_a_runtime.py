@@ -229,6 +229,7 @@ def test_phase2a_capture_freezes_all_parents_and_builds_five_audit_axes(
 ) -> None:
     child = tmp_path / "child"
     phase2a = _phase2a_fixture(tmp_path)
+    progress: list[tuple[str, int, int]] = []
     frozen, child_hash = capture_phase2a_natural_observations(
         phase2a_root=phase2a,
         output_root=child,
@@ -238,8 +239,10 @@ def test_phase2a_capture_freezes_all_parents_and_builds_five_audit_axes(
         expected_parent_count=1,
         expected_parent_manifest_sha256=_phase2a_manifest_sha(phase2a),
         seed=19,
+        progress=lambda phase, complete, total: progress.append((phase, complete, total)),
     )
 
+    assert progress == [("BaseObservation", 1, 1)]
     assert len(frozen) == 1
     assert frozen[0]["natural_observation"] == [9, 3, 4, 5]
     assert frozen[0]["capture_label"] == "primary_single_in_domain"
