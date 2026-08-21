@@ -223,7 +223,6 @@ class QwenStudyBBackend:  # pragma: no cover - requires the pinned CUDA/Qwen ser
         model, processor = session["model"], session["processor"]
         tokenizer = getattr(processor, "tokenizer", processor)
         model.eval()
-        output_rows: list[dict[str, object]] = []
         for row, prompt in zip(rows, prompts, strict=True):
             rendered = tokenizer.apply_chat_template(
                 [{"role": "user", "content": prompt}],
@@ -244,8 +243,7 @@ class QwenStudyBBackend:  # pragma: no cover - requires the pinned CUDA/Qwen ser
             completion = tokenizer.decode(
                 generated[0, prompt_length:], skip_special_tokens=True
             ).strip()
-            output_rows.append({"scene_id": row["scene_id"], "completion": completion})
-        return tuple(output_rows)
+            yield {"scene_id": row["scene_id"], "completion": completion}
 
     def release(self, session: Mapping[str, object]) -> None:
         if isinstance(session, dict):

@@ -513,9 +513,13 @@ def run_study_b(
     load_tokens: dict[str, str] = {}
     observed_tokens: set[str] = set()
     observed_flops_reference: float | None = None
-    for arm in ARMS:
+    for arm_index, arm in enumerate(ARMS, start=1):
         final_arm = arms_root / arm
         if final_arm.exists():
+            print(
+                f"PROGRESS: Study B arm {arm_index}/{len(ARMS)} {arm} verifying completed arm",
+                flush=True,
+            )
             result = _completed_arm_result(
                 final_arm,
                 arm=arm,
@@ -550,6 +554,10 @@ def run_study_b(
         attempt = Path(tempfile.mkdtemp(prefix=f"{arm}-", dir=attempts_root))
         session: Mapping[str, object] | None = None
         try:
+            print(
+                f"PROGRESS: Study B arm {arm_index}/{len(ARMS)} {arm} loading Base",
+                flush=True,
+            )
             session = backend.load_base(arm=arm, expected_model_sha256=expected_model_sha256)
             if not isinstance(session, Mapping):
                 raise StudyBError("backend load_base must return a mapping")
@@ -562,6 +570,10 @@ def run_study_b(
             load_tokens[arm] = load_token
             rows = validated_support["arms"][arm]
             budget = validated_support["budgets"][arm]
+            print(
+                f"PROGRESS: Study B {arm} training {budget['steps']} optimizer steps",
+                flush=True,
+            )
             training = backend.train(
                 session=session,
                 arm=arm,
@@ -606,7 +618,12 @@ def run_study_b(
             adapter_hash = tree_sha256(adapter)
             if not (attempt / "training_log.json").is_file():
                 raise StudyBError(f"{arm} backend did not write the required training log")
-            output_rows = tuple(
+            print(
+                f"PROGRESS: Study B {arm} training complete; evaluating {len(eval_rows)} scenes",
+                flush=True,
+            )
+            output_rows_list: list[Mapping[str, object]] = []
+            for evaluation_index, output_row in enumerate(
                 backend.evaluate(
                     session=session,
                     arm=arm,
@@ -614,8 +631,15 @@ def run_study_b(
                     prompts=prompts,
                     seed=seed,
                     output=attempt,
+                ),
+                start=1,
+            ):
+                output_rows_list.append(output_row)
+                print(
+                    f"PROGRESS: Study B {arm} evaluation {evaluation_index}/{len(eval_rows)}",
+                    flush=True,
                 )
-            )
+            output_rows = tuple(output_rows_list)
             evaluation_metrics, enriched = summarize_evaluations(eval_rows, output_rows)
             evaluation_path = attempt / "evaluation_rows.jsonl"
             if evaluation_path.exists() or evaluation_path.is_symlink():
@@ -642,6 +666,10 @@ def run_study_b(
             _write_json_new(attempt / "result.json", result)
             attempt.rename(final_arm)
             results[arm] = result
+            print(
+                f"PROGRESS: Study B arm {arm_index}/{len(ARMS)} {arm} complete",
+                flush=True,
+            )
         finally:
             if session is not None:
                 backend.release(session)
