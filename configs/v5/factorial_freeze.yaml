@@ -1,0 +1,19 @@
+schema_version: 1
+phase: phase2a_pre_model_freeze
+seed: 20260821
+canonical_per_family: 32
+value_domain: [2, 18]
+image_size: [280, 280]
+graph_axes:
+  - familiar
+  - variable_permuted
+  - fact_order_permuted
+  - equivalent_basis
+  - sparse_mixed_ood
+families: [known_value, pair_sum, trend]
+candidate_neighborhood:
+  edit_order: 1
+  value_domain: [2, 18]
+primary_predicate: exactly_one_in_domain_natural_error
+stress_predicate: multi_error_or_out_of_domain
+model_calls_allowed: false

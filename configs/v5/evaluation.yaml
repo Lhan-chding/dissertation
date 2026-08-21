@@ -1,0 +1,22 @@
+schema_version: 1
+phase: phase5_8_evaluation
+statistical_unit: semantic_scene
+bootstrap_resamples: 10000
+bootstrap_seed: 2026082401
+paired_test: exact_sign_flip
+multiplicity: holm
+primary:
+  error_order: 1
+  numeric_domain: [2, 18]
+  capability_type: relational
+confirm_data_reuse_allowed: false
+subjective_success_gate_allowed: false
+authorization:
+  inference_allowed: true
+  training_allowed: false
+  rl_allowed: false
+  downloads_allowed: false
+offline:
+  HF_HUB_OFFLINE: "1"
+  TRANSFORMERS_OFFLINE: "1"
+  HF_DATASETS_OFFLINE: "1"

@@ -1,0 +1,42 @@
+schema_version: 1
+phase: phase7_common_space_grpo
+action_schema: four_comma_separated_integers
+prompt_files_per_scene: 1
+reward_arms: [answer, exact_state]
+initializations: [B3, B2, Base]
+shared_rollout_seeds: true
+seeds: [2026082301]
+data_split:
+  train_role: rl_train
+  eval_role: rl_eval
+  train_scene_count: 72
+  eval_scene_count: 24
+  require_scene_id_disjoint: true
+training:
+  precision: bf16
+  learning_rate: 0.000001
+  max_steps: 64
+  group_size: 8
+  temperature: 0.7
+  top_p: 1.0
+  top_k: 0
+  kl_beta: 0.04
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 8
+  max_prompt_length: 512
+  max_completion_length: 32
+  checkpoint_steps: 16
+  use_vllm: false
+evaluation:
+  rollout_count: 16
+  bootstrap_resamples: 10000
+  bootstrap_seed: 2026082302
+authorization:
+  inference_allowed: true
+  training_allowed: true
+  rl_allowed: true
+  downloads_allowed: false
+offline:
+  HF_HUB_OFFLINE: "1"
+  TRANSFORMERS_OFFLINE: "1"
+  HF_DATASETS_OFFLINE: "1"

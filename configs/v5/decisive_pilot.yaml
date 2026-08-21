@@ -1,0 +1,41 @@
+schema_version: 1
+pilot_id: qwen-v5-4090-decisive-pilot-1
+status: NOT_RUN
+hardware:
+  gpu: NVIDIA_RTX_4090_48GB
+  count: 1
+model:
+  name: Qwen2.5-VL-3B-Instruct
+  path: /model/ModelScope/Qwen/Qwen2.5-VL-3B-Instruct
+  snapshot_sha256: e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87
+existing_t_adapter:
+  path: artifacts/v4/training/runs/phase4-r1/T_constraint_recovery/final_adapter
+  tree_sha256: 807a61c2e3f7b532b162554dee6e7df83d654fb1f10cc464e9dcb5f6f8efd5c7
+execution_order:
+  - study_a
+  - study_b
+  - study_c
+training_seeds:
+  study_b: [2026082201]
+  study_c: [2026082301]
+stop_after_first_clean_signal: true
+registered_stop_signals:
+  - B3_structural_OOD_exceeds_B2_with_paired_interval_excluding_zero
+  - reward_by_fiber_interaction_is_directionally_monotone_and_interval_excludes_zero
+  - answer_accuracy_increases_while_world_recovery_decreases_in_large_fibers
+forbidden_scale_up:
+  - additional_training_seeds
+  - Qwen_7B
+  - A100_or_H100
+  - large_scale_OOD
+  - full_gradient_alignment
+  - vision_LoRA
+required_export:
+  facts_markdown: artifacts/v5/final/QWEN_V5_PILOT_RESULT_FACTS.md
+  raw_archive: artifacts/v5/final/qwen_v5_pilot_raw_rows.tar.gz
+  hash_manifest: artifacts/v5/final/sha256_manifest.json
+authorization:
+  downloads_allowed: false
+  prompt_search_allowed: false
+  confirm_data_reuse_allowed: false
+  subjective_success_gate_allowed: false

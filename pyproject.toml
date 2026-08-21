@@ -51,7 +51,7 @@ markers = [
 
 [tool.coverage.run]
 branch = true
-source = ["compbias", "scripts"]
+source = ["compbias", "compensability_v5", "scripts"]
 parallel = true
 patch = ["subprocess"]
 
