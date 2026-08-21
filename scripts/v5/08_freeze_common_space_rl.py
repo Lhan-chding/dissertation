@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from collections.abc import Mapping
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -13,11 +14,25 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
+from compensability_v5.audit.fiber_multiplicity import (  # noqa: E402
+    enumerate_one_edit_worlds,
+)
 from compensability_v5.data.common_action_freeze import (  # noqa: E402
     ACTION_PARSER_ID,
     PILOT_SEED,
     freeze_common_action_space,
 )
+from compensability_v5.data.common_action_schema import (  # noqa: E402
+    WorldAction,
+    apply_answer_operation,
+)
+
+_FIBER_DEFINITION = {
+    "candidate_construction": "one_edit_domain_union_truth",
+    "center": "natural_observation",
+    "includes_truth": True,
+    "value_domain": [2, 18],
+}
 
 
 def _fixture_scene() -> list[dict[str, object]]:
@@ -71,9 +86,40 @@ def _attach_study_a_support(
         source = {
             key: value
             for key, value in scene.items()
-            if key not in {"fiber_bin", "support_bin", "role"}
+            if key not in {"fiber_bin", "role", "support_bin"}
         }
-        result.append({**source, "policy_support": support[str(semantic_id)]})
+        observed_payload = scene.get("natural_observation")
+        operation = scene.get("answer_operation")
+        if observed_payload is None:
+            result.append({**source, "policy_support": support[str(semantic_id)]})
+            continue
+        if not isinstance(operation, Mapping):
+            raise ValueError("Phase2a Study C scene lacks an answer operation")
+        source = {
+            key: value
+            for key, value in source.items()
+            if key not in {"candidate_worlds", "fiber_definition", "fiber_size"}
+        }
+        truth = WorldAction.from_mapping({"world": scene.get("truth")})
+        observed = WorldAction.from_mapping({"world": observed_payload})
+        if any(value < 2 or value > 18 for value in truth.world):
+            raise ValueError("Phase2a Study C truth must remain inside the registered 2..18 domain")
+        candidates = set(enumerate_one_edit_worlds(observed.world, range(2, 19)))
+        candidates.add(truth.world)
+        answer = apply_answer_operation(truth, operation)
+        fiber_size = sum(
+            apply_answer_operation(WorldAction(candidate), operation) == answer
+            for candidate in candidates
+        )
+        result.append(
+            {
+                **source,
+                "candidate_worlds": [list(candidate) for candidate in sorted(candidates)],
+                "fiber_definition": dict(_FIBER_DEFINITION),
+                "fiber_size": fiber_size,
+                "policy_support": support[str(semantic_id)],
+            }
+        )
     return result
 
 

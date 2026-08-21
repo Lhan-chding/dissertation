@@ -116,6 +116,14 @@ def _freeze_scene(scene: object, *, index: int) -> dict[str, object]:
             validated_candidates.append(list(action.world))
     else:
         validated_candidates = []
+    fiber_definition = scene.get("fiber_definition")
+    if fiber_definition is not None and fiber_definition != {
+        "candidate_construction": "one_edit_domain_union_truth",
+        "center": "natural_observation",
+        "includes_truth": True,
+        "value_domain": [2, 18],
+    }:
+        raise CommonActionFreezeError("fiber_definition must match the registered Study C rule")
     truth_payload = {"world": scene["truth"]}
     truth = WorldAction.from_mapping(truth_payload)
     answer_operation = scene["answer_operation"]
@@ -133,7 +141,15 @@ def _freeze_scene(scene: object, *, index: int) -> dict[str, object]:
             "exact_state": list(truth.world),
         },
     }
-    for field in ("family", "fiber_size", "fiber_bin", "support_bin", "policy_support", "role"):
+    for field in (
+        "family",
+        "fiber_size",
+        "fiber_definition",
+        "fiber_bin",
+        "support_bin",
+        "policy_support",
+        "role",
+    ):
         if field in scene:
             value = scene[field]
             if field in {"fiber_bin", "support_bin"} and (not isinstance(value, str) or not value):
@@ -204,6 +220,7 @@ def _scene_metadata_hash(scenes: Sequence[Mapping[str, object]]) -> str:
                     "answer_operation",
                     "family",
                     "fiber_size",
+                    "fiber_definition",
                     "fiber_bin",
                     "support_bin",
                     "candidate_worlds",

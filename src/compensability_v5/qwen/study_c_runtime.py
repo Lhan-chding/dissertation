@@ -299,7 +299,7 @@ class StudyCScene:
     prompt: str
     truth: tuple[int, int, int, int]
     answer_operator: str
-    answer_indices: tuple[int, int]
+    answer_indices: tuple[int, ...]
     answer_label: int
     family: str
     fiber_size: int
@@ -355,7 +355,6 @@ class StudyCScene:
             indices = operation.get("indices")
             if not isinstance(operator, str) or not isinstance(indices, list):
                 raise TypeError("answer operation is malformed")
-            first, second = indices
         except (TypeError, ValueError) as error:
             raise StudyCError(
                 f"Study C scene {scene_id} reward metadata is invalid: {error}"
@@ -365,7 +364,7 @@ class StudyCScene:
             prompt=prompt,
             truth=truth_action.world,
             answer_operator=operator,
-            answer_indices=(int(first), int(second)),
+            answer_indices=tuple(int(index) for index in indices),
             answer_label=answer,
             family=str(family),
             fiber_size=int(fiber_size),
