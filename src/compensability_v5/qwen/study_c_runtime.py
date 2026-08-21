@@ -558,6 +558,10 @@ def run_study_c_arm(
     pre_training_summary: dict[str, object] | None = None
     if pre_training_evaluation_sampler_factory is not None:
         if resume_from_checkpoint is None:
+            print(
+                f"PROGRESS: Study C {arm.name} pre-training frozen evaluation",
+                flush=True,
+            )
             pre_training_summary = run_pre_training_frozen_eval(
                 arm=arm,
                 scenes=evaluation_scenes,
@@ -565,7 +569,15 @@ def run_study_c_arm(
                 sampler=pre_training_evaluation_sampler_factory(trainer),
             )
         else:
+            print(
+                f"PROGRESS: Study C {arm.name} verifying resumed pre-training evaluation",
+                flush=True,
+            )
             pre_training_summary = _resume_pre_training_summary(output_dir)
+    print(
+        f"PROGRESS: Study C {arm.name} training {arm.steps} optimizer steps",
+        flush=True,
+    )
     trainer.train(
         resume_from_checkpoint=None
         if resume_from_checkpoint is None
@@ -579,6 +591,10 @@ def run_study_c_arm(
         raise StudyCError("Study C trainer did not save a final adapter")
     evaluation_summary: dict[str, object] | None = None
     if evaluation_sampler_factory is not None:
+        print(
+            f"PROGRESS: Study C {arm.name} training complete; post-training frozen evaluation",
+            flush=True,
+        )
         evaluation_summary = run_post_training_frozen_eval(
             arm=arm,
             scenes=evaluation_scenes,

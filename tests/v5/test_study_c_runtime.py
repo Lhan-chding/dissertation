@@ -336,10 +336,7 @@ def test_fake_trainer_runs_independent_frozen_16_rollout_evaluation(
     progress = capsys.readouterr().out
     assert f"PROGRESS: Study C {arm.name} pre-training frozen evaluation" in progress
     assert f"PROGRESS: Study C {arm.name} training {arm.steps} optimizer steps" in progress
-    assert (
-        f"PROGRESS: Study C {arm.name} post_training_frozen_eval scene 1/1 complete"
-        in progress
-    )
+    assert f"PROGRESS: Study C {arm.name} post_training_frozen_eval scene 1/1 complete" in progress
 
 
 def test_resume_reuses_hash_verified_pre_training_baseline(tmp_path: Path) -> None:
@@ -447,6 +444,103 @@ def test_qwen_eval_sampler_uses_each_fixed_seed_and_registered_decoding(
     progress = capsys.readouterr().out
     assert f"PROGRESS: Study C {arm.name} scene scene-1 rollout 1/2" in progress
     assert f"PROGRESS: Study C {arm.name} scene scene-1 rollout 2/2" in progress
+
+
+def test_qwen_eval_sampler_rejects_malformed_runtime_interfaces(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake_torch = types.ModuleType("torch")
+    fake_torch.manual_seed = lambda _seed: None  # type: ignore[attr-defined]
+    fake_torch.inference_mode = nullcontext  # type: ignore[attr-defined]
+    fake_torch.cuda = SimpleNamespace(is_available=lambda: False)  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "torch", fake_torch)
+
+    class IDs:
+        shape = (1, 3)
+
+    class Generated:
+        def __getitem__(self, key: object) -> list[list[int]]:
+            return [[4, 5]]
+
+    class Model:
+        def generate(self, **kwargs: object) -> Generated:
+            return Generated()
+
+    class Processor:
+        def apply_chat_template(self, messages: object, **kwargs: object) -> str:
+            return "templated"
+
+        def __call__(self, **kwargs: object) -> dict[str, object]:
+            return {"input_ids": IDs()}
+
+        def batch_decode(self, ids: object, **kwargs: object) -> list[str]:
+            return ["9,2,3,4"]
+
+    arm = registered_study_c_arms(initialization="B3", initialization_hash="a" * 64)[0]
+    scene = _scene()
+
+    with pytest.raises(StudyCError, match="chat template"):
+        qwen_text_evaluation_sampler(arm=arm, model=Model(), processor=object())(scene, (1,))
+
+    class EmptyPromptProcessor(Processor):
+        def apply_chat_template(self, messages: object, **kwargs: object) -> str:
+            return ""
+
+    with pytest.raises(StudyCError, match="invalid chat prompt"):
+        qwen_text_evaluation_sampler(arm=arm, model=Model(), processor=EmptyPromptProcessor())(
+            scene, (1,)
+        )
+
+    class NonCallableProcessor:
+        def apply_chat_template(self, messages: object, **kwargs: object) -> str:
+            return "templated"
+
+    with pytest.raises(StudyCError, match="processor is not callable"):
+        qwen_text_evaluation_sampler(arm=arm, model=Model(), processor=NonCallableProcessor())(
+            scene, (1,)
+        )
+
+    with pytest.raises(StudyCError, match="generate method"):
+        qwen_text_evaluation_sampler(arm=arm, model=object(), processor=Processor())(scene, (1,))
+
+    class MalformedBatchProcessor(Processor):
+        def __call__(self, **kwargs: object) -> object:
+            return object()
+
+    with pytest.raises(StudyCError, match="mapping-like"):
+        qwen_text_evaluation_sampler(arm=arm, model=Model(), processor=MalformedBatchProcessor())(
+            scene, (1,)
+        )
+
+    class MissingInputProcessor(Processor):
+        def __call__(self, **kwargs: object) -> dict[str, object]:
+            return {}
+
+    with pytest.raises(StudyCError, match="malformed input IDs"):
+        qwen_text_evaluation_sampler(arm=arm, model=Model(), processor=MissingInputProcessor())(
+            scene, (1,)
+        )
+
+    class NoDecoderProcessor:
+        def apply_chat_template(self, messages: object, **kwargs: object) -> str:
+            return "templated"
+
+        def __call__(self, **kwargs: object) -> dict[str, object]:
+            return {"input_ids": IDs()}
+
+    with pytest.raises(StudyCError, match="batch decoder"):
+        qwen_text_evaluation_sampler(arm=arm, model=Model(), processor=NoDecoderProcessor())(
+            scene, (1,)
+        )
+
+    class MalformedDecodeProcessor(Processor):
+        def batch_decode(self, ids: object, **kwargs: object) -> list[str]:
+            return []
+
+    with pytest.raises(StudyCError, match="malformed completion"):
+        qwen_text_evaluation_sampler(arm=arm, model=Model(), processor=MalformedDecodeProcessor())(
+            scene, (1,)
+        )
 
 
 def test_summary_reports_group_signal_scene_fibers_and_interaction(tmp_path: Path) -> None:

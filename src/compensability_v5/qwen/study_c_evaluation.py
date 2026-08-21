@@ -205,7 +205,7 @@ def qwen_text_evaluation_sampler(
         generate = getattr(model, "generate", None)
         if not callable(generate):
             raise StudyCError("Study C model exposes no generate method")
-        for seed in seeds:
+        for rollout_index, seed in enumerate(seeds, start=1):
             torch.manual_seed(seed)
             if torch.cuda.is_available():
                 torch.cuda.manual_seed_all(seed)
@@ -248,6 +248,11 @@ def qwen_text_evaluation_sampler(
             if not isinstance(decoded, Sequence) or len(decoded) != 1:
                 raise StudyCError("Study C decoder returned malformed completion text")
             outputs.append(str(decoded[0]))
+            print(
+                f"PROGRESS: Study C {arm.name} scene {scene.scene_id} rollout "
+                f"{rollout_index}/{len(seeds)}",
+                flush=True,
+            )
         return tuple(outputs)
 
     return sample
@@ -270,7 +275,7 @@ def _run_frozen_eval(
         raise StudyCError("Study C frozen evaluation overwrite is forbidden")
     reward = make_reward_function(scenes=scenes, arm=arm, trace_path=trace_path)
     rollout_seeds = tuple(STUDY_C_EVAL_SEED + index for index in range(STUDY_C_EVAL_ROLLOUTS))
-    for scene in scenes:
+    for scene_index, scene in enumerate(scenes, start=1):
         completions = tuple(sampler(scene, rollout_seeds))
         if len(completions) != STUDY_C_EVAL_ROLLOUTS:
             raise StudyCError(
@@ -283,6 +288,11 @@ def _run_frozen_eval(
                 scene_id=[scene.scene_id],
                 rollout_seed=rollout_seeds[start:stop],
             )
+        print(
+            f"PROGRESS: Study C {arm.name} {measurement_scope} scene "
+            f"{scene_index}/{len(scenes)} complete",
+            flush=True,
+        )
     rows = read_study_c_trace(trace_path)
     rewritten = tuple({**row, "trace_kind": trace_kind} for row in rows)
     temporary = trace_path.with_suffix(".rewrite.tmp")
