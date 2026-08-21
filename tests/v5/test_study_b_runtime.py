@@ -407,6 +407,7 @@ def test_summary_rejects_output_count_identity_schema_and_margin_drift() -> None
 
 def test_full_fake_study_b_is_fresh_base_budget_matched_and_hashes_adapters(
     tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     backend = _FakeBackend()
     output = tmp_path / "study-b"
@@ -435,6 +436,12 @@ def test_full_fake_study_b_is_fresh_base_budget_matched_and_hashes_adapters(
     }
     assert paired["relational_constraint_graph"]["exact_world"]["ci95"] == [1.0, 1.0]
     assert result["stop_signal"]["triggered"] is True
+    progress = capsys.readouterr().out
+    assert "PROGRESS: Study B arm 1/4 B0 loading Base" in progress
+    assert "PROGRESS: Study B B0 training 72 optimizer steps" in progress
+    assert "PROGRESS: Study B B0 evaluation 1/160" in progress
+    assert "PROGRESS: Study B B3 evaluation 160/160" in progress
+    assert "PROGRESS: Study B arm 4/4 B3 complete" in progress
     for arm in ("B0", "B1", "B2", "B3"):
         arm_result = json.loads((output / "arms" / arm / "result.json").read_text())
         assert arm_result["adapter_tree_sha256"] == tree_sha256(
