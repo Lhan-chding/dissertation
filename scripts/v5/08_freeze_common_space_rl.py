@@ -68,7 +68,12 @@ def _attach_study_a_support(
         semantic_id = scene.get("semantic_scene_id", scene.get("scene_id"))
         if semantic_id not in support:
             raise ValueError(f"Study A policy support is missing for {semantic_id}")
-        result.append({**scene, "policy_support": support[str(semantic_id)]})
+        source = {
+            key: value
+            for key, value in scene.items()
+            if key not in {"fiber_bin", "support_bin", "role"}
+        }
+        result.append({**source, "policy_support": support[str(semantic_id)]})
     return result
 
 
