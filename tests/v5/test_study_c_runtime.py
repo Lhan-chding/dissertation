@@ -41,6 +41,7 @@ from compensability_v5.qwen.study_c_runtime import (
     validate_study_c_config_payload,
     validate_study_c_prompt_lengths,
 )
+from compensability_v5.qwen.study_b_runtime import tree_sha256 as study_b_tree_sha256
 from compensability_v5.server_runtime.study_c import (
     run_common_space_grpo,
     run_v5_evaluation,
@@ -869,6 +870,30 @@ def test_study_c_cli_has_cpu_only_fixture_preflight() -> None:
     assert payload["status"] == "FIXTURE_DRY_RUN_OK"
     assert payload["seed"] == STUDY_C_SEED
     assert payload["arms"] == ["B3_answer", "B3_exact_state"]
+
+
+def test_study_c_cli_accepts_study_b_registered_adapter_digest(tmp_path: Path) -> None:
+    adapter = tmp_path / "adapter"
+    adapter.mkdir()
+    (adapter / "adapter_config.json").write_text('{"rank":16}\n')
+    (adapter / "adapter_model.safetensors").write_bytes(b"study-b-adapter")
+    expected = study_b_tree_sha256(adapter)
+    cli = _load_study_c_cli_module()
+
+    assert cli._verify_tree(adapter, expected, "Study C B3 adapter") == expected
+
+
+def test_generic_study_c_runtime_uses_study_b_registered_adapter_digest(
+    tmp_path: Path,
+) -> None:
+    from compensability_v5.server_runtime import study_c as server_study_c
+
+    adapter = tmp_path / "adapter"
+    adapter.mkdir()
+    (adapter / "adapter_config.json").write_text('{"rank":16}\n')
+    (adapter / "adapter_model.safetensors").write_bytes(b"study-b-adapter")
+
+    assert server_study_c.tree_sha256(adapter) == study_b_tree_sha256(adapter)
 
 
 def test_study_c_cli_is_explicitly_execute_gated() -> None:
