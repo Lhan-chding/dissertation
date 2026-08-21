@@ -1,0 +1,194 @@
+{
+  "environment": {
+    "git_commit": "cb316288ebd910c7666ed6767245faa7a44cc502",
+    "python": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python"
+  },
+  "inputs": {
+    "fact_file": {
+      "path": "docs/QWEN_V4_EXPERIMENT_DATA_FACTS.md",
+      "sha256": "8b838f4148e02c02d3f6f55efcb1e0293fd6d247fd2969b197f533e5101ae9d6"
+    },
+    "raw_archive": {
+      "path": "/Users/louis/Downloads/qwen_v4_raw_rows_20260821.tar.gz",
+      "sha256": "f0ccb4d56415eecf90a2c456bfd7c92a33fc96a581f3603115edbcb253ba8c84"
+    }
+  },
+  "sections": {
+    "answer_fiber_statistics": {
+      "max_size": 33,
+      "mean_size": 4.502890173410405,
+      "median_size": 2.0,
+      "scene_count": 173,
+      "singleton_count": 3
+    },
+    "candidate_validity_effects": {
+      "cross_series": {
+        "scene_count": 208,
+        "valid_minus_sham_target_margin_mean": -0.10516826923076923
+      },
+      "duplicate_encoding": {
+        "scene_count": 182,
+        "valid_minus_sham_target_margin_mean": 0.2541208791208791
+      },
+      "trend": {
+        "scene_count": 189,
+        "valid_minus_sham_target_margin_mean": -0.18783068783068782
+      }
+    },
+    "capability_chain": {
+      "cross_series": {
+        "T1": {
+          "accuracy": 0.4951923076923077,
+          "parse_rate": 1.0,
+          "scene_count": 208
+        },
+        "T2": {
+          "accuracy": 0.0,
+          "parse_rate": 1.0,
+          "scene_count": 208
+        },
+        "T3": {
+          "accuracy": 0.3269230769230769,
+          "parse_rate": 1.0,
+          "scene_count": 208
+        },
+        "T4": {
+          "accuracy": 0.1778846153846154,
+          "parse_rate": 1.0,
+          "scene_count": 208
+        },
+        "T5": {
+          "accuracy": 0.2548076923076923,
+          "parse_rate": 1.0,
+          "scene_count": 208
+        },
+        "T6": {
+          "accuracy": 0.0,
+          "parse_rate": 0.9807692307692307,
+          "scene_count": 208
+        }
+      },
+      "duplicate_encoding": {
+        "T1": {
+          "accuracy": 0.9120879120879121,
+          "parse_rate": 1.0,
+          "scene_count": 182
+        },
+        "T2": {
+          "accuracy": 0.4065934065934066,
+          "parse_rate": 1.0,
+          "scene_count": 182
+        },
+        "T3": {
+          "accuracy": 0.7362637362637363,
+          "parse_rate": 1.0,
+          "scene_count": 182
+        },
+        "T4": {
+          "accuracy": 0.1043956043956044,
+          "parse_rate": 1.0,
+          "scene_count": 182
+        },
+        "T5": {
+          "accuracy": 0.8461538461538461,
+          "parse_rate": 1.0,
+          "scene_count": 182
+        },
+        "T6": {
+          "accuracy": 0.10989010989010989,
+          "parse_rate": 1.0,
+          "scene_count": 182
+        }
+      },
+      "trend": {
+        "T1": {
+          "accuracy": 0.5185185185185185,
+          "parse_rate": 1.0,
+          "scene_count": 189
+        },
+        "T2": {
+          "accuracy": 0.13227513227513227,
+          "parse_rate": 1.0,
+          "scene_count": 189
+        },
+        "T3": {
+          "accuracy": 0.5396825396825397,
+          "parse_rate": 1.0,
+          "scene_count": 189
+        },
+        "T4": {
+          "accuracy": 0.07407407407407407,
+          "parse_rate": 1.0,
+          "scene_count": 189
+        },
+        "T5": {
+          "accuracy": 0.2804232804232804,
+          "parse_rate": 1.0,
+          "scene_count": 189
+        },
+        "T6": {
+          "accuracy": 0.0,
+          "parse_rate": 0.49206349206349204,
+          "scene_count": 189
+        }
+      }
+    },
+    "confirm_error_cardinality": {
+      "error_count_histogram": {
+        "0": 30,
+        "1": 36,
+        "2": 26,
+        "3": 21,
+        "4": 15
+      },
+      "out_of_domain_scene_count": 17
+    },
+    "natural_state_revision": {
+      "cross_series": {
+        "no_cue_exact_revision_rate": 0.6346153846153846,
+        "valid_exact_revision_rate": 0.6394230769230769,
+        "valid_minus_no_cue": 0.004807692307692291
+      },
+      "duplicate_encoding": {
+        "no_cue_exact_revision_rate": 0.6868131868131868,
+        "valid_exact_revision_rate": 0.989010989010989,
+        "valid_minus_no_cue": 0.30219780219780223
+      },
+      "trend": {
+        "no_cue_exact_revision_rate": 0.6296296296296297,
+        "valid_exact_revision_rate": 0.582010582010582,
+        "valid_minus_no_cue": -0.04761904761904767
+      }
+    },
+    "phase8_transitions": {
+      "free_generation_answer_exact": {
+        "Recovery_LoRA_AnswerOnly_RL": {
+          "gained": 0,
+          "lost": 4
+        },
+        "Recovery_LoRA_RecoveryOutcome_RL": {
+          "gained": 1,
+          "lost": 0
+        }
+      },
+      "post_revision_world_exact": {
+        "Recovery_LoRA_AnswerOnly_RL": {
+          "gained": 0,
+          "lost": 3
+        },
+        "Recovery_LoRA_RecoveryOutcome_RL": {
+          "gained": 2,
+          "lost": 1
+        }
+      }
+    },
+    "support_budget": {
+      "budget_ratio_T_to_C0": 6.0,
+      "counts_by_variant": {
+        "C0_format_only": 752,
+        "C1_forward_arithmetic": 752,
+        "T_constraint_recovery": 4512
+      }
+    }
+  }
+}
