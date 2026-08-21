@@ -699,6 +699,7 @@ def test_common_freeze_script_derives_study_a_support_bins_and_roles(tmp_path: P
             fiber_size=(1, 3, 6)[index % 3],
         )
         scene.pop("policy_support")
+        scene["fiber_bin"] = "phase2a_child_bin"
         scene_rows.append(json.dumps(scene, sort_keys=True) + "\n")
         support_rows.append(
             json.dumps(
@@ -748,6 +749,11 @@ def test_common_freeze_script_derives_study_a_support_bins_and_roles(tmp_path: P
         "low",
         "medium",
         "high",
+    }
+    assert {scene["fiber_bin"] for scene in package["scenes"]} == {
+        "singleton",
+        "multi_2_4",
+        "multi_5_plus",
     }
 
 
