@@ -81,6 +81,13 @@ def _support_package() -> dict[str, object]:
         "arms": arms,
         "budgets": budgets,
         "target_token_relative_tolerance": 0.01,
+        "pilot_schedule": {
+            "hardware": "single_RTX_4090",
+            "batch_size": 1,
+            "gradient_accumulation": 8,
+            "epochs": 1,
+            "optimizer_steps": 72,
+        },
         "source_provenance": {
             "parent_manifest_sha256": "1" * 64,
             "child_manifest_sha256": "2" * 64,
@@ -241,6 +248,8 @@ def test_support_validation_binds_actual_rows_sources_tokens_and_budget() -> Non
         lambda package: package["arms"].pop("B3"),
         lambda package: package.update(source_scene_count=95),
         lambda package: package.update(target_token_relative_tolerance=0.02),
+        lambda package: package["pilot_schedule"].update(optimizer_steps=71),
+        lambda package: package["pilot_schedule"].update(batch_size=2),
         lambda package: package["arms"]["B0"][0].pop("completion"),
         lambda package: package["arms"]["B0"][0].update(variant_index=0),
         lambda package: package["arms"]["B0"].pop(),
@@ -417,6 +426,15 @@ def test_full_fake_study_b_is_fresh_base_budget_matched_and_hashes_adapters(
     assert backend.prompts["B0"] == backend.prompts["B3"]
     assert result["primary_contrasts"]["B3_minus_B2"]["iid_exact_world_rate"] == 0.0
     assert result["primary_contrasts"]["B3_minus_B2"]["constraint_graph_exact_world_rate"] == 1.0
+    paired = result["primary_contrasts"]["paired_inference"]
+    assert paired["bootstrap"] == {
+        "method": "paired_scene_cluster_percentile",
+        "seed": 2026082202,
+        "resamples": 10_000,
+        "confidence_level": 0.95,
+    }
+    assert paired["relational_constraint_graph"]["exact_world"]["ci95"] == [1.0, 1.0]
+    assert result["stop_signal"]["triggered"] is True
     for arm in ("B0", "B1", "B2", "B3"):
         arm_result = json.loads((output / "arms" / arm / "result.json").read_text())
         assert arm_result["adapter_tree_sha256"] == tree_sha256(
@@ -473,6 +491,73 @@ def test_resume_skips_atomically_completed_arms_and_completed_run_is_idempotent(
     )
     assert repeated == result
     assert no_calls.loaded == []
+
+
+def test_resume_rejects_tampered_training_log(tmp_path: Path) -> None:
+    output = tmp_path / "study-b"
+    run_study_b(
+        support_package=_support_package(),
+        evaluation_rows=_evaluation_rows(),
+        output=output,
+        backend=_FakeBackend(),
+        expected_model_sha256=MODEL_SHA,
+    )
+    (output / "arms" / "B0" / "training_log.json").write_text(
+        '[{"step":1,"loss":0.0}]', encoding="utf-8"
+    )
+
+    with pytest.raises(StudyBError, match="training log changed"):
+        run_study_b(
+            support_package=_support_package(),
+            evaluation_rows=_evaluation_rows(),
+            output=output,
+            backend=_FakeBackend(),
+            expected_model_sha256=MODEL_SHA,
+            resume=True,
+        )
+
+
+def test_partial_resume_rebuilds_metrics_from_evaluation_evidence(tmp_path: Path) -> None:
+    output = tmp_path / "study-b"
+    with pytest.raises(RuntimeError, match="simulated interruption"):
+        run_study_b(
+            support_package=_support_package(),
+            evaluation_rows=_evaluation_rows(),
+            output=output,
+            backend=_FakeBackend(fail_once_on="B2"),
+            expected_model_sha256=MODEL_SHA,
+        )
+    result_path = output / "arms" / "B0" / "result.json"
+    result = json.loads(result_path.read_text())
+    result["evaluation_metrics"]["overall"]["exact_world_rate"] = 1.0
+    result_path.write_text(json.dumps(result), encoding="utf-8")
+
+    with pytest.raises(StudyBError, match="evaluation metrics drifted"):
+        run_study_b(
+            support_package=_support_package(),
+            evaluation_rows=_evaluation_rows(),
+            output=output,
+            backend=_FakeBackend(),
+            expected_model_sha256=MODEL_SHA,
+            resume=True,
+        )
+
+
+def test_run_rejects_reused_base_load_token(tmp_path: Path) -> None:
+    class _ReusedBaseBackend(_FakeBackend):
+        def load_base(self, *, arm: str, expected_model_sha256: str):
+            result = super().load_base(arm=arm, expected_model_sha256=expected_model_sha256)
+            result["load_token"] = "same-base-session"
+            return result
+
+    with pytest.raises(StudyBError, match="fresh Base"):
+        run_study_b(
+            support_package=_support_package(),
+            evaluation_rows=_evaluation_rows(),
+            output=tmp_path / "duplicate-base",
+            backend=_ReusedBaseBackend(),
+            expected_model_sha256=MODEL_SHA,
+        )
 
 
 def test_run_rejects_output_overwrite_missing_resume_and_manifest_drift(tmp_path: Path) -> None:
@@ -625,3 +710,52 @@ def test_study_b_cli_loads_study_a_per_scenario_jsonl_as_evaluation_rows(
         "fact_order",
         "constraint_graph",
     }
+
+
+def test_study_b_cli_rehashes_phase2a_source_chain(tmp_path: Path) -> None:
+    cli = _load_cli()
+    parent = tmp_path / "parent_manifest.json"
+    child = tmp_path / "child_manifest.json"
+    frozen = tmp_path / "frozen_scenes.jsonl"
+    parent.write_text('{"status":"FROZEN"}\n', encoding="utf-8")
+    frozen.write_text('{"semantic_scene_id":"train-parent-0"}\n', encoding="utf-8")
+    parent_hash = cli.sha256_file(parent)
+    frozen_hash = cli.sha256_file(frozen)
+    child.write_text(
+        json.dumps(
+            {
+                "status": "V5_PHASE2A_NATURAL_OBSERVATIONS_FROZEN",
+                "parent_manifest_sha256": parent_hash,
+                "parent_manifest_modified": False,
+                "frozen_scenes_sha256": frozen_hash,
+                "semantic_scene_count": 96,
+                "base_sha256": MODEL_SHA,
+            },
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    support = _support_package()
+    support["source_provenance"] = {
+        "parent_manifest_sha256": parent_hash,
+        "child_manifest_sha256": cli.sha256_file(child),
+        "frozen_scenes_sha256": frozen_hash,
+    }
+
+    observed = cli._validate_support_source_provenance(
+        support=support,
+        parent_manifest=parent,
+        child_manifest=child,
+        frozen_scenes=frozen,
+    )
+
+    assert observed == support["source_provenance"]
+    frozen.write_text('{"semantic_scene_id":"tampered"}\n', encoding="utf-8")
+    with pytest.raises(StudyBError, match="frozen_scenes_sha256"):
+        cli._validate_support_source_provenance(
+            support=support,
+            parent_manifest=parent,
+            child_manifest=child,
+            frozen_scenes=frozen,
+        )

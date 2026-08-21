@@ -13,20 +13,19 @@ from collections.abc import Mapping
 from pathlib import Path
 
 from compensability_v5.qwen.study_a_runtime import (
-    BASE_SHA256,
     RAW_ARCHIVE_SHA256,
     STUDY_A_ACK,
-    T_ADAPTER_SHA256,
     load_gpu_checkpoint,
     load_natural_errors,
     require_study_a_authorization,
     require_t_adapter,
-    run_study_a,
+    run_phase2a_study_a,
     sha256_file,
 )
 
 DEFERRED_STATUS = "DEFERRED_NOT_REQUIRED_BY_4090_DECISIVE_PILOT"
 T_ADAPTER_ENV = "COMPBIAS_V5_T_ADAPTER"
+PHASE2A_ROOT_ENV = "COMPBIAS_V5_PHASE2A_ROOT"
 
 
 def _validated_callback(
@@ -79,38 +78,6 @@ def _atomic_json(path: Path, payload: Mapping[str, object]) -> None:
         raise
 
 
-def _completed_summary(result_root: Path, raw_digest: str) -> dict[str, object] | None:
-    if not result_root.exists():
-        return None
-    summary_path, manifest_path = result_root / "summary.json", result_root / "manifest.json"
-    if (
-        result_root.is_symlink()
-        or not result_root.is_dir()
-        or summary_path.is_symlink()
-        or manifest_path.is_symlink()
-        or not summary_path.is_file()
-        or not manifest_path.is_file()
-    ):
-        raise RuntimeError("orbit callback found an incomplete Study A publication")
-    summary = json.loads(summary_path.read_text(encoding="utf-8"))
-    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    expected_sources = {
-        "raw_archive": raw_digest,
-        "Base": BASE_SHA256,
-        "T": T_ADAPTER_SHA256,
-    }
-    if (
-        not isinstance(summary, dict)
-        or summary.get("status") != "V5_STUDY_A_EXECUTED"
-        or summary.get("source_sha256") != expected_sources
-        or not isinstance(manifest, dict)
-        or manifest.get("status") != "V5_STUDY_A_ATOMICALLY_PUBLISHED"
-        or manifest.get("source_sha256") != expected_sources
-    ):
-        raise RuntimeError("orbit callback found incompatible completed Study A evidence")
-    return summary
-
-
 def run_orbit_audit(
     validation: Mapping[str, object], options: Mapping[str, object]
 ) -> dict[str, object]:
@@ -128,29 +95,34 @@ def run_orbit_audit(
     if not adapter_value:
         raise RuntimeError(f"orbit callback requires {T_ADAPTER_ENV}")
     adapter = require_t_adapter(Path(adapter_value))
+    phase2a_value = os.environ.get(PHASE2A_ROOT_ENV)
+    if not phase2a_value:
+        raise RuntimeError(f"orbit callback requires {PHASE2A_ROOT_ENV}")
     raw_archive = _raw_archive(inputs)
     errors, raw_digest = load_natural_errors(raw_archive)
     require_study_a_authorization(execute=True, acknowledgement=STUDY_A_ACK)
     result_root = output.parent / f"{output.stem}_study_a"
     work_root = output.parent / f".{output.stem}_study_a_work"
-    summary = _completed_summary(result_root, raw_digest)
-    if summary is None:
-        summary = run_study_a(
-            errors=errors,
-            raw_archive_sha256=raw_digest,
-            output_root=result_root,
-            work_root=work_root,
-            checkpoint_loader=lambda checkpoint: load_gpu_checkpoint(
-                checkpoint,
-                t_adapter=adapter,
-            ),
-            k=8,
-            sampling_seed=2026082101,
-            progress=lambda checkpoint, complete, total: print(
-                f"PROGRESS: {checkpoint} {complete}/{total} checkpoint-scenarios complete",
-                flush=True,
-            ),
-        )
+    summary = run_phase2a_study_a(
+        phase2a_root=Path(phase2a_value),
+        child_root=output.parent / f"{output.stem}_phase2a_child",
+        capture_work_root=output.parent / f".{output.stem}_capture_work",
+        output_root=result_root,
+        audit_work_root=work_root,
+        checkpoint_loader=lambda checkpoint: load_gpu_checkpoint(
+            checkpoint,
+            t_adapter=adapter,
+        ),
+        legacy_errors=errors,
+        legacy_raw_archive_sha256=raw_digest,
+        expected_parent_count=96,
+        k=8,
+        sampling_seed=2026082101,
+        progress=lambda checkpoint, complete, total: print(
+            f"PROGRESS: {checkpoint} {complete}/{total} checkpoint-scenarios complete",
+            flush=True,
+        ),
+    )
     payload: dict[str, object] = {
         "schema_version": 1,
         "status": "V5_STUDY_A_ORBIT_CALLBACK_COMPLETE",
@@ -187,6 +159,7 @@ def run_gradient_alignment(
 
 __all__ = [
     "DEFERRED_STATUS",
+    "PHASE2A_ROOT_ENV",
     "T_ADAPTER_ENV",
     "run_gradient_alignment",
     "run_orbit_audit",

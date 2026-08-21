@@ -62,9 +62,9 @@ def kl_reward_projection(
     supported_rewards = reward_array[support].astype(np.longdouble)
     reward_pivot = np.max(supported_rewards)
     with np.errstate(over="ignore", under="ignore", invalid="ignore"):
-        log_weights = np.log(supported_prior) + (
-            supported_rewards - reward_pivot
-        ) / np.longdouble(beta_value)
+        log_weights = np.log(supported_prior) + (supported_rewards - reward_pivot) / np.longdouble(
+            beta_value
+        )
         log_weights -= np.max(log_weights)
         weights = np.exp(log_weights)
     normalizer = np.sum(weights, dtype=np.longdouble)

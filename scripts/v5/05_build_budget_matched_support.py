@@ -4,8 +4,8 @@
 from __future__ import annotations
 
 import argparse
-import importlib
 import hashlib
+import importlib
 import json
 import sys
 from collections.abc import Callable
@@ -168,13 +168,6 @@ def main() -> int:
     ):
         print("BLOCKED: canonical Study B requires 96 sources and 576 rows per arm.")
         return 2
-    package["pilot_schedule"] = {
-        "hardware": "single_RTX_4090",
-        "batch_size": 1,
-        "gradient_accumulation": 8,
-        "epochs": 1,
-        "optimizer_steps": 72,
-    }
     _write_json(arguments.output, package)
     print(
         "V5_BUDGET_MATCHED_SUPPORT_FROZEN: "

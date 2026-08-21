@@ -8,15 +8,11 @@ from compensability_v5.training.train_support_lora import _offline_config_enable
 def test_offline_config_accepts_bool_string_and_integer_truthy_flags() -> None:
     assert _offline_config_enabled({"offline": True}) is True
     assert (
-        _offline_config_enabled(
-            {"offline": {"HF_HUB_OFFLINE": True, "TRANSFORMERS_OFFLINE": "1"}}
-        )
+        _offline_config_enabled({"offline": {"HF_HUB_OFFLINE": True, "TRANSFORMERS_OFFLINE": "1"}})
         is True
     )
     assert (
-        _offline_config_enabled(
-            {"offline": {"HF_HUB_OFFLINE": 1, "TRANSFORMERS_OFFLINE": 1}}
-        )
+        _offline_config_enabled({"offline": {"HF_HUB_OFFLINE": 1, "TRANSFORMERS_OFFLINE": 1}})
         is True
     )
 

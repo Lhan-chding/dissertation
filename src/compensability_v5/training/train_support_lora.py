@@ -200,9 +200,7 @@ def validate_server_execution(
     if acknowledgement != required_acknowledgement:
         raise ServerExecutionBlocked("exact execution acknowledgement is required")
     require_offline_environment(environment)
-    config_digest = _canonical_file(
-        config, canonical_config, config_sha256, f"{phase} config"
-    )
+    config_digest = _canonical_file(config, canonical_config, config_sha256, f"{phase} config")
     lock_digest = _canonical_file(
         package_lock,
         canonical_package_lock,
@@ -213,9 +211,7 @@ def validate_server_execution(
     _load_yaml_mapping(package_lock, "v5 server package lock")
     _require_hash_fields_bound(config_payload)
     if expected_config_phase is not None and config_payload.get("phase") != expected_config_phase:
-        raise ServerExecutionBlocked(
-            f"config phase must be exactly {expected_config_phase!r}"
-        )
+        raise ServerExecutionBlocked(f"config phase must be exactly {expected_config_phase!r}")
     if not _offline_config_enabled(config_payload):
         raise ServerExecutionBlocked("config must enforce offline execution")
     _require_authorization(config_payload, required_authorization)

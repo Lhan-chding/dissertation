@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import json
+import math
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 
 from compensability_v4.qwen.model_loader import MODEL_PATH
+from compensability_v5.qwen.study_b_metrics import paired_bootstrap_contrasts
 from compensability_v5.qwen.study_b_runtime import (
     MODEL_SNAPSHOT_SHA256,
     PILOT_SEED,
@@ -40,12 +42,68 @@ def _input_paths(validation: Mapping[str, object]) -> tuple[Path, ...]:
             or not path.is_file()
         ):
             raise StudyBError("validated callback input mapping is malformed")
+        if sha256_file(path) != digest:
+            raise StudyBError(f"validated callback input SHA-256 drifted: {path}")
         paths.append(path)
     return tuple(paths)
 
 
 def _json(path: Path) -> object:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _verify_callback_package_lock(expected: object) -> dict[str, object]:
+    if not isinstance(expected, str) or sha256_file(PACKAGE_LOCK) != expected:
+        raise StudyBError("generic callback package-lock SHA-256 drifted")
+    return verify_runtime_package_lock(PACKAGE_LOCK)
+
+
+def _axis_exact_rate(result: Mapping[str, object], axis: str) -> float:
+    metrics = result.get("evaluation_metrics")
+    by_axis = metrics.get("by_axis") if isinstance(metrics, Mapping) else None
+    block = by_axis.get(axis) if isinstance(by_axis, Mapping) else None
+    rate = block.get("exact_world_rate") if isinstance(block, Mapping) else None
+    if (
+        not isinstance(rate, (int, float))
+        or isinstance(rate, bool)
+        or not math.isfinite(float(rate))
+    ):
+        raise StudyBError(f"completed Study-B result has invalid {axis} rate")
+    return float(rate)
+
+
+def _evaluation_evidence(path: Path) -> tuple[dict[str, object], ...]:
+    rows = tuple(
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
+    )
+    if not rows or any(not isinstance(row, dict) for row in rows):
+        raise StudyBError("completed Study-B evaluation evidence is malformed")
+    return rows
+
+
+def _rebuild_primary_contrasts(
+    completed_path: Path, arm_results: Mapping[str, object]
+) -> dict[str, object]:
+    b2, b3 = arm_results["B2"], arm_results["B3"]
+    assert isinstance(b2, Mapping) and isinstance(b3, Mapping)
+    axes = (
+        "iid",
+        "variable_permutation",
+        "error_position",
+        "fact_order",
+        "constraint_graph",
+        "structural_ood",
+    )
+    rates = {
+        f"{axis}_exact_world_rate": _axis_exact_rate(b3, axis) - _axis_exact_rate(b2, axis)
+        for axis in axes
+    }
+    arms_root = completed_path.parent / "arms"
+    paired = paired_bootstrap_contrasts(
+        _evaluation_evidence(arms_root / "B2" / "evaluation_rows.jsonl"),
+        _evaluation_evidence(arms_root / "B3" / "evaluation_rows.jsonl"),
+    )
+    return {"B3_minus_B2": rates, "paired_inference": paired}
 
 
 def _discover_packages(
@@ -112,9 +170,7 @@ def run_budget_matched_lora(validation: Mapping[str, object]) -> dict[str, objec
         raise StudyBError("validated callback output is missing")
     support, evaluation = _discover_packages(validation)
     require_offline_environment()
-    if validation.get("package_lock_sha256") is None:
-        raise StudyBError("validated callback lacks the package-lock hash")
-    verify_runtime_package_lock(PACKAGE_LOCK)
+    _verify_callback_package_lock(validation.get("package_lock_sha256"))
     backend = QwenStudyBBackend(model_path=Path(MODEL_PATH), max_sequence_length=512)
     return run_study_b(
         support_package=support,
@@ -168,6 +224,69 @@ def run_orbit_support(
     }
     if not isinstance(contrast, Mapping) or set(contrast) != expected_contrast_fields:
         raise StudyBError("completed Study-B result lacks the B3-minus-B2 contrast")
+    paired = contrasts.get("paired_inference") if isinstance(contrasts, Mapping) else None
+    if not isinstance(paired, Mapping) or set(paired) != {
+        "bootstrap",
+        "relational_constraint_graph",
+        "structural_ood",
+        "stop_signal",
+    }:
+        raise StudyBError("completed Study-B result lacks paired inference")
+    if paired.get("bootstrap") != {
+        "method": "paired_scene_cluster_percentile",
+        "seed": 2026082202,
+        "resamples": 10_000,
+        "confidence_level": 0.95,
+    }:
+        raise StudyBError("completed Study-B paired-bootstrap registration drifted")
+    ci_lowers: list[float] = []
+    for section_name in ("relational_constraint_graph", "structural_ood"):
+        section = paired.get(section_name)
+        if not isinstance(section, Mapping) or set(section) != {
+            "exact_world",
+            "genuine_recovery",
+        }:
+            raise StudyBError(f"completed Study-B {section_name} inference is malformed")
+        for metric in section.values():
+            if not isinstance(metric, Mapping) or set(metric) != {
+                "semantic_scene_count",
+                "delta",
+                "ci95",
+            }:
+                raise StudyBError("completed Study-B paired metric is malformed")
+            count, delta, interval = (
+                metric["semantic_scene_count"],
+                metric["delta"],
+                metric["ci95"],
+            )
+            if (
+                not isinstance(count, int)
+                or isinstance(count, bool)
+                or count <= 0
+                or not isinstance(delta, (int, float))
+                or isinstance(delta, bool)
+                or not math.isfinite(float(delta))
+                or not isinstance(interval, list)
+                or len(interval) != 2
+                or any(
+                    not isinstance(value, (int, float))
+                    or isinstance(value, bool)
+                    or not math.isfinite(float(value))
+                    for value in interval
+                )
+                or float(interval[0]) > float(interval[1])
+            ):
+                raise StudyBError("completed Study-B paired metric values are malformed")
+            ci_lowers.append(float(interval[0]))
+    stop_signal = paired.get("stop_signal")
+    if (
+        not isinstance(stop_signal, Mapping)
+        or stop_signal.get("rule") != "B3_minus_B2_paired_CI95_lower_gt_zero"
+        or not isinstance(stop_signal.get("triggered"), bool)
+        or stop_signal.get("triggered") != (max(ci_lowers) > 0.0)
+        or completed.get("stop_signal") != stop_signal
+    ):
+        raise StudyBError("completed Study-B stop signal drifted")
     for arm in ("B0", "B1", "B2", "B3"):
         arm_result = arm_results[arm]
         if not isinstance(arm_result, Mapping):
@@ -190,6 +309,9 @@ def run_orbit_support(
             "evaluation_rows_sha256"
         ):
             raise StudyBError(f"completed Study-B {arm} evaluation rows drifted")
+    rebuilt_contrasts = _rebuild_primary_contrasts(completed_path, arm_results)
+    if contrasts != rebuilt_contrasts:
+        raise StudyBError("completed Study-B primary contrasts drifted")
     output_value = validation.get("output")
     if not isinstance(output_value, str) or not output_value:
         raise StudyBError("validated callback output is missing")
@@ -208,7 +330,7 @@ def run_orbit_support(
         "arm_evaluation_metrics": {
             arm: arm_results[arm]["evaluation_metrics"] for arm in ("B0", "B1", "B2", "B3")
         },
-        "primary_contrasts": contrasts,
+        "primary_contrasts": rebuilt_contrasts,
     }
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("x", encoding="utf-8") as stream:

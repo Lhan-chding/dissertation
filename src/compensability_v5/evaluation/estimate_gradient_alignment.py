@@ -43,9 +43,7 @@ def alignment_metrics(
         raise ValueError("fisher_diagonal entries must be strictly positive")
     return {
         "euclidean_cosine": _cosine(exact, reward, (1.0,) * len(exact)),
-        "diagonal_fisher_cosine": _cosine(
-            exact, reward, tuple(1.0 / value for value in fisher)
-        ),
+        "diagonal_fisher_cosine": _cosine(exact, reward, tuple(1.0 / value for value in fisher)),
     }
 
 

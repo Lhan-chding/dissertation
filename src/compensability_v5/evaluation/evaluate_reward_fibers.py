@@ -129,8 +129,7 @@ def evaluate_reward_fibers(
                     float(row["answer_fiber_prior_mass"]) for row in group
                 )
                 / len(group),
-                "mean_fiber_purity": sum(float(row["fiber_purity"]) for row in group)
-                / len(group),
+                "mean_fiber_purity": sum(float(row["fiber_purity"]) for row in group) / len(group),
             }
         )
     return {

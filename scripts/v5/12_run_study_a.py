@@ -139,6 +139,7 @@ def main() -> int:
     for optional in (
         "phase2a_per_scenario.jsonl",
         "phase2a_summary.json",
+        "phase2a_enriched_frozen_scenes.jsonl",
         "legacy_independent_per_scenario.jsonl",
         "legacy_independent_summary.json",
     ):

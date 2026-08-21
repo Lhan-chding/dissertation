@@ -31,6 +31,7 @@ from compensability_v5.qwen.study_c_runtime import (  # noqa: E402
     StudyCArm,
     StudyCError,
     StudyCScene,
+    build_grpo_config_kwargs,
     build_study_c_summary,
     load_study_c_scenes,
     qwen_text_evaluation_sampler,
@@ -202,7 +203,7 @@ def _factory_for_adapter(
             raise StudyCError("Study C requires CUDA with bf16 support")
         GRPOConfig, GRPOTrainer = _trl_api()
         model, processor = load_pinned_qwen(model_path=model_path, device_map="cuda:0")
-        validate_study_c_prompt_lengths(
+        max_observed = validate_study_c_prompt_lengths(
             scenes, processor, max_prompt_length=arm.max_prompt_length
         )
         freeze_base_parameters(model)
@@ -212,30 +213,11 @@ def _factory_for_adapter(
             if callable(method):
                 method()
         training_args = GRPOConfig(
-            output_dir=str(kwargs["output_dir"]),
-            learning_rate=arm.learning_rate,
-            max_steps=arm.steps,
-            num_generations=arm.group_size,
-            per_device_train_batch_size=arm.per_device_train_batch_size,
-            gradient_accumulation_steps=arm.gradient_accumulation_steps,
-            max_completion_length=arm.max_completion_length,
-            bf16=True,
-            fp16=False,
-            temperature=arm.temperature,
-            top_p=arm.top_p,
-            top_k=arm.top_k,
-            beta=arm.beta,
-            use_vllm=arm.use_vllm,
-            gradient_checkpointing=True,
-            logging_steps=1,
-            save_strategy="steps",
-            save_steps=arm.checkpoint_steps,
-            save_total_limit=2,
-            report_to="none",
-            remove_unused_columns=False,
-            seed=arm.seed,
-            data_seed=arm.seed,
-            optim=arm.optimizer,
+            **build_grpo_config_kwargs(
+                arm,
+                Path(str(kwargs["output_dir"])),
+                tuple(inspect.signature(GRPOConfig).parameters),
+            )
         )
         dataset_rows = kwargs.get("dataset")
         if not isinstance(dataset_rows, tuple):
@@ -248,15 +230,20 @@ def _factory_for_adapter(
             processing_class=processor,
             callbacks=list(kwargs["callbacks"]),  # type: ignore[arg-type]
         )
+        trainer._study_c_prompt_length_audit = {
+            "mode": "external_preflight",
+            "limit": arm.max_prompt_length,
+            "max_observed": max_observed,
+            "passed_to_grpo_config": "max_prompt_length"
+            in inspect.signature(GRPOConfig).parameters,
+        }
         holder.extend((model, processor, trainer))
         return trainer
 
     return factory
 
 
-def _verified_complete(
-    arm: StudyCArm, output_dir: Path, provenance: dict[str, str]
-) -> bool:
+def _verified_complete(arm: StudyCArm, output_dir: Path, provenance: dict[str, str]) -> bool:
     evidence_path = output_dir / "execution_evidence.json"
     if not evidence_path.exists():
         return False
@@ -266,6 +253,9 @@ def _verified_complete(
     metrics = output_dir / "trainer_log_history.json"
     eval_rows = output_dir / "eval_raw_rows.jsonl"
     eval_summary = output_dir / "eval_summary.json"
+    pre_rows = output_dir / "pre_training_eval_raw_rows.jsonl"
+    pre_summary = output_dir / "pre_training_eval_summary.json"
+    final_adapter = output_dir / "final_adapter"
     if (
         evidence.get("status") != "STUDY_C_ARM_COMPLETE"
         or evidence.get("arm") != arm.to_mapping()
@@ -276,9 +266,50 @@ def _verified_complete(
         or evidence.get("post_training_evaluation_invoked") is not True
         or evidence.get("eval_raw_rows_sha256") != sha256_file(eval_rows)
         or evidence.get("eval_summary_sha256") != sha256_file(eval_summary)
+        or evidence.get("final_adapter_tree_sha256") != tree_sha256(final_adapter)
+        or (
+            arm.reward_function == "answer"
+            and (
+                evidence.get("pre_training_evaluation_invoked") is not True
+                or evidence.get("pre_training_eval_raw_rows_sha256") != sha256_file(pre_rows)
+                or evidence.get("pre_training_eval_summary_sha256") != sha256_file(pre_summary)
+            )
+        )
     ):
         raise StudyCError(f"completed Study C evidence drifted for {arm.name}")
     return True
+
+
+def _build_summary_payload(
+    *,
+    traces: dict[str, Path],
+    baseline_traces: dict[str, Path],
+    group_size: int,
+    provenance: dict[str, str],
+    registered_contract: dict[str, object],
+) -> dict[str, object]:
+    summary = build_study_c_summary(
+        traces,
+        group_size=group_size,
+        baseline_trace_paths=baseline_traces,
+    )
+    return {
+        **summary,
+        "measurement_scope": "post_training_frozen_eval",
+        "rollouts_per_scene": 16,
+        "source_trace_sha256": {arm: sha256_file(path) for arm, path in sorted(traces.items())},
+        "baseline_trace_sha256": {
+            arm: sha256_file(path) for arm, path in sorted(baseline_traces.items())
+        },
+        "provenance_sha256": provenance,
+        "registered_contract": registered_contract,
+    }
+
+
+def _verify_existing_summary(summary_path: Path, expected: dict[str, object]) -> None:
+    existing = _load_json(summary_path, "Study C summary")
+    if existing != expected:
+        raise StudyCError("existing Study C summary content drifted from validated traces")
 
 
 def _fixture() -> dict[str, object]:
@@ -385,9 +416,12 @@ def main() -> int:
         except ValueError as error:
             raise StudyCError(f"Study C outputs must remain below {OUTPUT_ROOT}") from error
         traces: dict[str, Path] = {}
+        baseline_traces: dict[str, Path] = {}
         for arm in arms:
             arm_output = output_root / arm.name
             traces[arm.name] = arm_output / "eval_raw_rows.jsonl"
+            if arm.reward_function == "answer":
+                baseline_traces[arm.name] = arm_output / "pre_training_eval_raw_rows.jsonl"
             if _verified_complete(arm, arm_output, provenance):
                 if not arguments.resume:
                     raise StudyCError(
@@ -400,12 +434,11 @@ def main() -> int:
                 raise StudyCError(
                     f"{arm.name} has partial output without an authorized resumable checkpoint"
                 )
-            adapter = (
-                arguments.b3_adapter if arm.initialization == "B3" else arguments.b2_adapter
-            )
+            adapter = arguments.b3_adapter if arm.initialization == "B3" else arguments.b2_adapter
             if adapter is None:
                 raise StudyCError(f"missing adapter for {arm.initialization}")
             holder: list[object] = []
+
             def evaluation_factory(
                 _trainer: object,
                 selected: StudyCArm = arm,
@@ -431,6 +464,9 @@ def main() -> int:
                     ),
                     provenance_sha256=provenance,
                     resume_from_checkpoint=checkpoint,
+                    pre_training_evaluation_sampler_factory=(
+                        evaluation_factory if arm.reward_function == "answer" else None
+                    ),
                     evaluation_sampler_factory=evaluation_factory,
                 )
             finally:
@@ -438,26 +474,21 @@ def main() -> int:
                     _release(value)
             print(f"READY: Study C {arm.name} complete", flush=True)
         summary_path = output_root / "study_c_summary.json"
+        expected_summary = _build_summary_payload(
+            traces=traces,
+            baseline_traces=baseline_traces,
+            group_size=arms[0].group_size,
+            provenance=provenance,
+            registered_contract=registered_contract,
+        )
         if summary_path.exists():
             if not arguments.resume:
                 raise StudyCError("Study C summary exists; overwrite forbidden")
-            existing = _load_json(summary_path, "Study C summary")
-            if existing.get("source_trace_sha256") != {
-                arm: sha256_file(path) for arm, path in sorted(traces.items())
-            }:
-                raise StudyCError("existing Study C summary source hashes drifted")
+            _verify_existing_summary(summary_path, expected_summary)
         else:
-            summary = build_study_c_summary(traces, group_size=arms[0].group_size)
-            summary["measurement_scope"] = "post_training_frozen_eval"
-            summary["rollouts_per_scene"] = 16
-            summary["source_trace_sha256"] = {
-                arm: sha256_file(path) for arm, path in sorted(traces.items())
-            }
-            summary["provenance_sha256"] = provenance
-            summary["registered_contract"] = registered_contract
             summary_path.parent.mkdir(parents=True, exist_ok=True)
             with summary_path.open("x", encoding="utf-8") as stream:
-                json.dump(summary, stream, sort_keys=True, indent=2, allow_nan=False)
+                json.dump(expected_summary, stream, sort_keys=True, indent=2, allow_nan=False)
                 stream.write("\n")
         print(f"STUDY_C_COMPLETE: output={output_root} seed={STUDY_C_SEED}")
         return 0

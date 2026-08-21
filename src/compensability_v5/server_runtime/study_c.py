@@ -19,6 +19,7 @@ from compensability_v5.qwen.study_c_runtime import (
     StudyCArm,
     StudyCError,
     StudyCScene,
+    build_grpo_config_kwargs,
     build_study_c_summary,
     load_study_c_scenes,
     qwen_text_evaluation_sampler,
@@ -68,7 +69,7 @@ def _common_action_package(inputs: Mapping[str, str]) -> tuple[Path, dict[str, o
             payload = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, UnicodeError, json.JSONDecodeError):
             continue
-        if isinstance(payload, dict) and payload.get("status") == "COMMON_ACTION_SPACE_FROZEN":
+        if isinstance(payload, dict) and payload.get("status") == "V5_COMMON_ACTION_SPACE_FROZEN":
             matches.append((path, payload))
     if len(matches) != 1:
         raise StudyCError("exactly one hash-bound common-action freeze is required")
@@ -111,9 +112,7 @@ def _trainer_factory(
             "beta",
         }
         required_trainer = {"model", "reward_funcs", "args", "train_dataset"}
-        missing_config = sorted(
-            required_config - inspect.signature(GRPOConfig).parameters.keys()
-        )
+        missing_config = sorted(required_config - inspect.signature(GRPOConfig).parameters.keys())
         missing_trainer = sorted(
             required_trainer - inspect.signature(GRPOTrainer).parameters.keys()
         )
@@ -124,7 +123,7 @@ def _trainer_factory(
             )
         model_path = Path(os.environ.get("COMPBIAS_V5_MODEL_PATH", MODEL_PATH))
         model, processor = load_pinned_qwen(model_path=model_path, device_map="cuda:0")
-        validate_study_c_prompt_lengths(
+        max_observed = validate_study_c_prompt_lengths(
             scenes, processor, max_prompt_length=arm.max_prompt_length
         )
         freeze_base_parameters(model)
@@ -134,30 +133,11 @@ def _trainer_factory(
             if callable(method):
                 method()
         args = GRPOConfig(
-            output_dir=str(kwargs["output_dir"]),
-            learning_rate=arm.learning_rate,
-            max_steps=arm.steps,
-            num_generations=arm.group_size,
-            per_device_train_batch_size=arm.per_device_train_batch_size,
-            gradient_accumulation_steps=arm.gradient_accumulation_steps,
-            max_completion_length=arm.max_completion_length,
-            bf16=True,
-            fp16=False,
-            temperature=arm.temperature,
-            top_p=arm.top_p,
-            top_k=arm.top_k,
-            beta=arm.beta,
-            use_vllm=arm.use_vllm,
-            gradient_checkpointing=True,
-            logging_steps=1,
-            save_strategy="steps",
-            save_steps=arm.checkpoint_steps,
-            save_total_limit=2,
-            report_to="none",
-            remove_unused_columns=False,
-            seed=arm.seed,
-            data_seed=arm.seed,
-            optim=arm.optimizer,
+            **build_grpo_config_kwargs(
+                arm,
+                Path(str(kwargs["output_dir"])),
+                tuple(inspect.signature(GRPOConfig).parameters),
+            )
         )
         dataset = kwargs.get("dataset")
         if not isinstance(dataset, tuple):
@@ -170,6 +150,13 @@ def _trainer_factory(
             processing_class=processor,
             callbacks=list(kwargs["callbacks"]),  # type: ignore[arg-type]
         )
+        trainer._study_c_prompt_length_audit = {
+            "mode": "external_preflight",
+            "limit": arm.max_prompt_length,
+            "max_observed": max_observed,
+            "passed_to_grpo_config": "max_prompt_length"
+            in inspect.signature(GRPOConfig).parameters,
+        }
         holder.extend((model, processor, trainer))
         return trainer
 
@@ -237,12 +224,14 @@ def run_common_space_grpo(
         "package_lock": str(validation["package_lock_sha256"]),
     }
     traces: dict[str, Path] = {}
+    baseline_traces: dict[str, Path] = {}
     for arm in study_arms:
         adapter = b3_adapter if arm.initialization == "B3" else b2_adapter
         if adapter is None:
             raise StudyCError(f"missing adapter for {arm.initialization}")
         arm_output = output / arm.name
         holder: list[object] = []
+
         def evaluation_factory(
             _trainer: object,
             selected: StudyCArm = arm,
@@ -261,16 +250,28 @@ def run_common_space_grpo(
                 output_dir=arm_output,
                 trainer_factory=_trainer_factory(arm, adapter, scenes, holder),
                 provenance_sha256=provenance,
+                pre_training_evaluation_sampler_factory=(
+                    evaluation_factory if arm.reward_function == "answer" else None
+                ),
                 evaluation_sampler_factory=evaluation_factory,
             )
         finally:
             _release(holder)
         traces[arm.name] = arm_output / "eval_raw_rows.jsonl"
-    summary = build_study_c_summary(traces, group_size=study_arms[0].group_size)
+        if arm.reward_function == "answer":
+            baseline_traces[arm.name] = arm_output / "pre_training_eval_raw_rows.jsonl"
+    summary = build_study_c_summary(
+        traces,
+        group_size=study_arms[0].group_size,
+        baseline_trace_paths=baseline_traces,
+    )
     summary["measurement_scope"] = "post_training_frozen_eval"
     summary["rollouts_per_scene"] = 16
     summary["source_trace_sha256"] = {
         arm: sha256_file(path) for arm, path in sorted(traces.items())
+    }
+    summary["baseline_trace_sha256"] = {
+        arm: sha256_file(path) for arm, path in sorted(baseline_traces.items())
     }
     summary["provenance_sha256"] = provenance
     summary["registered_contract"] = registered_contract
@@ -290,6 +291,7 @@ def run_v5_evaluation(
     if request.get("task") != "evaluate_v5" or request.get("k") != 8:
         raise StudyCError("v5 evaluation request differs from Study C group size 8")
     traces: dict[str, Path] = {}
+    baseline_traces: dict[str, Path] = {}
     for name in input_hashes:
         path = Path(name)
         if path.suffix != ".jsonl":
@@ -305,15 +307,15 @@ def run_v5_evaluation(
             "B2_answer",
             "B2_exact_state",
         }:
-            if arm in traces:
+            trace_kind = first.get("trace_kind")
+            target = baseline_traces if trace_kind == "pre_training_frozen_eval" else traces
+            if arm in target:
                 raise StudyCError(f"multiple hash-bound traces claim arm {arm}")
-            traces[arm] = path
+            target[arm] = path
     if not {"B3_answer", "B3_exact_state"}.issubset(traces):
         raise StudyCError("v5 evaluation requires both B3 Study C raw traces")
-    for arm, path in traces.items():
-        rows = [
-            json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line
-        ]
+    for arm, path in {**traces, **{f"baseline:{k}": v for k, v in baseline_traces.items()}}.items():
+        rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line]
         per_scene: dict[str, int] = {}
         for row in rows:
             scene_id = row.get("scene_id") if isinstance(row, Mapping) else None
@@ -326,7 +328,7 @@ def run_v5_evaluation(
             )
     if output.exists() or output.is_symlink():
         raise StudyCError(f"v5 evaluation output exists; overwrite forbidden: {output}")
-    summary = build_study_c_summary(traces, group_size=8)
+    summary = build_study_c_summary(traces, group_size=8, baseline_trace_paths=baseline_traces)
     summary["measurement_scope"] = "post_training_evaluation_16_rollouts_per_scene"
     summary["source_trace_sha256"] = dict(sorted(input_hashes.items()))
     summary["evaluation_config_sha256"] = validation.get("config_sha256")

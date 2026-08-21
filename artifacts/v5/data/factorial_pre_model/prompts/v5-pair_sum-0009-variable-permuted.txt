@@ -1,0 +1,7 @@
+Observed values: {observed_world}
+Constraint rows (A | b):
+1,0,0,1 = 11
+1,1,0,0 = 9
+0,1,1,0 = 18
+0,1,0,1 = 8
+Recover the true world. Return exactly four comma-separated integers only.

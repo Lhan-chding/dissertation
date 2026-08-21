@@ -12,6 +12,7 @@ import pytest
 
 from compensability_v4.data.splits import DatasetSplit
 from compensability_v4.qwen.phase5_support import HeldOutNaturalError
+from compensability_v5.qwen import study_a_capture
 from compensability_v5.qwen.study_a_runtime import (
     BASE_SHA256,
     RAW_ARCHIVE_MEMBER,
@@ -21,9 +22,10 @@ from compensability_v5.qwen.study_a_runtime import (
     build_phase2_study_a_scenarios,
     build_study_a_scenarios,
     capture_phase2a_natural_observations,
-    load_phase2a_child,
     load_natural_errors,
+    load_phase2a_child,
     require_study_a_authorization,
+    run_phase2a_study_a,
     run_study_a,
 )
 from compensability_v5.server_runtime import phase3 as phase3_server
@@ -180,6 +182,10 @@ def _phase2a_fixture(tmp_path: Path) -> Path:
     return root
 
 
+def _phase2a_manifest_sha(root: Path) -> str:
+    return hashlib.sha256((root / "parent_manifest.json").read_bytes()).hexdigest()
+
+
 def test_scenarios_cover_registered_orbit_and_error_axes() -> None:
     scenarios = build_study_a_scenarios(_error())
 
@@ -222,13 +228,15 @@ def test_phase2a_capture_freezes_all_parents_and_builds_five_audit_axes(
     tmp_path: Path,
 ) -> None:
     child = tmp_path / "child"
+    phase2a = _phase2a_fixture(tmp_path)
     frozen, child_hash = capture_phase2a_natural_observations(
-        phase2a_root=_phase2a_fixture(tmp_path),
+        phase2a_root=phase2a,
         output_root=child,
         work_root=tmp_path / "capture-work",
         model=_FakeModel(),
         processor=object(),
         expected_parent_count=1,
+        expected_parent_manifest_sha256=_phase2a_manifest_sha(phase2a),
         seed=19,
     )
 
@@ -236,17 +244,195 @@ def test_phase2a_capture_freezes_all_parents_and_builds_five_audit_axes(
     assert frozen[0]["natural_observation"] == [9, 3, 4, 5]
     assert frozen[0]["capture_label"] == "primary_single_in_domain"
     assert frozen[0]["error_count"] == 1
-    assert frozen[0]["prompt"].endswith(
-        "Return exactly four comma-separated integers only.\n"
-    )
+    assert frozen[0]["prompt"].endswith("Return exactly four comma-separated integers only.\n")
     assert len(build_phase2_study_a_scenarios(frozen[0])) == 5
-    loaded, loaded_hash = load_phase2a_child(child)
+    loaded, loaded_hash = load_phase2a_child(
+        child,
+        phase2a_root=phase2a,
+        expected_parent_count=1,
+        expected_parent_manifest_sha256=_phase2a_manifest_sha(phase2a),
+    )
     assert loaded == frozen
     assert loaded_hash == child_hash
     manifest = json.loads((child / "child_manifest.json").read_text())
     assert manifest["parent_manifest_modified"] is False
     assert manifest["semantic_scene_count"] == 1
     assert manifest["capture_label_counts"] == {"primary_single_in_domain": 1}
+
+
+def test_phase2a_child_load_rejects_tampered_trace_closure(tmp_path: Path) -> None:
+    phase2a = _phase2a_fixture(tmp_path)
+    child = tmp_path / "child"
+    capture_phase2a_natural_observations(
+        phase2a_root=phase2a,
+        output_root=child,
+        work_root=tmp_path / "capture-work",
+        model=_FakeModel(),
+        processor=object(),
+        expected_parent_count=1,
+        expected_parent_manifest_sha256=_phase2a_manifest_sha(phase2a),
+        seed=19,
+    )
+    trace = child / "observation_trace.jsonl"
+    trace.write_text(trace.read_text() + "\n", encoding="utf-8")
+
+    with pytest.raises(RuntimeError, match="provenance drifted"):
+        load_phase2a_child(
+            child,
+            phase2a_root=phase2a,
+            expected_parent_count=1,
+            expected_parent_manifest_sha256=_phase2a_manifest_sha(phase2a),
+        )
+
+
+def test_phase2a_child_rebuilds_and_rejects_self_consistent_scene_tamper(
+    tmp_path: Path,
+) -> None:
+    phase2a = _phase2a_fixture(tmp_path)
+    child = tmp_path / "child"
+    capture_phase2a_natural_observations(
+        phase2a_root=phase2a,
+        output_root=child,
+        work_root=tmp_path / "capture-work",
+        model=_FakeModel(),
+        processor=object(),
+        expected_parent_count=1,
+        expected_parent_manifest_sha256=_phase2a_manifest_sha(phase2a),
+        seed=19,
+    )
+    scenes_path = child / "frozen_scenes.jsonl"
+    scene = json.loads(scenes_path.read_text())
+    scene["fiber_size"] = 999
+    scenes_path.write_text(json.dumps(scene, sort_keys=True) + "\n", encoding="utf-8")
+    manifest_path = child / "child_manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest["frozen_scenes_sha256"] = hashlib.sha256(scenes_path.read_bytes()).hexdigest()
+    manifest_path.write_text(json.dumps(manifest, sort_keys=True), encoding="utf-8")
+
+    with pytest.raises(RuntimeError, match="provenance drifted"):
+        load_phase2a_child(
+            child,
+            phase2a_root=phase2a,
+            expected_parent_count=1,
+            expected_parent_manifest_sha256=_phase2a_manifest_sha(phase2a),
+        )
+
+
+def test_phase2a_capture_resume_reparses_raw_output(tmp_path: Path) -> None:
+    phase2a = _phase2a_fixture(tmp_path)
+    work = tmp_path / "capture-work"
+    capture_phase2a_natural_observations(
+        phase2a_root=phase2a,
+        output_root=tmp_path / "first-child",
+        work_root=work,
+        model=_FakeModel(),
+        processor=object(),
+        expected_parent_count=1,
+        expected_parent_manifest_sha256=_phase2a_manifest_sha(phase2a),
+        seed=19,
+    )
+    trace = work / "raw_trace.jsonl"
+    row = json.loads(trace.read_text())
+    row["raw_output"] = "2,3,4,5"
+    trace.write_text(json.dumps(row) + "\n", encoding="utf-8")
+
+    with pytest.raises(RuntimeError, match="provenance drifted"):
+        capture_phase2a_natural_observations(
+            phase2a_root=phase2a,
+            output_root=tmp_path / "second-child",
+            work_root=work,
+            model=_FakeModel(),
+            processor=object(),
+            expected_parent_count=1,
+            expected_parent_manifest_sha256=_phase2a_manifest_sha(phase2a),
+            seed=19,
+        )
+
+
+def test_capture_parser_and_objective_labels_cover_primary_and_stress_cases() -> None:
+    assert study_a_capture._parse_natural_observation("2,3,4,5") == (
+        (2, 3, 4, 5),
+        True,
+    )
+    assert study_a_capture._parse_natural_observation("values: 2, 3, 4, 5") == (
+        (2, 3, 4, 5),
+        False,
+    )
+    assert study_a_capture._parse_natural_observation("not four values") == (None, False)
+    truth = (2, 3, 4, 5)
+    assert study_a_capture._observation_label(truth, (9, 3, 4, 5), strict_parse=True) == (
+        "primary_single_in_domain"
+    )
+    assert study_a_capture._observation_label(truth, truth, strict_parse=True) == (
+        "no_error_control"
+    )
+    assert study_a_capture._observation_label(truth, (9, 8, 4, 5), strict_parse=True) == (
+        "stress_multiple_error"
+    )
+    assert study_a_capture._observation_label(truth, (19, 8, 4, 5), strict_parse=True) == (
+        "stress_multiple_error_out_of_domain"
+    )
+    assert study_a_capture._observation_label(truth, (19, 3, 4, 5), strict_parse=True) == (
+        "stress_out_of_domain"
+    )
+
+
+def test_phase2a_audit_automatically_publishes_support_enrichment(tmp_path: Path) -> None:
+    child = tmp_path / "child"
+    phase2a = _phase2a_fixture(tmp_path)
+    frozen, child_hash = capture_phase2a_natural_observations(
+        phase2a_root=phase2a,
+        output_root=child,
+        work_root=tmp_path / "capture-work",
+        model=_FakeModel(),
+        processor=object(),
+        expected_parent_count=1,
+        expected_parent_manifest_sha256=_phase2a_manifest_sha(phase2a),
+        seed=19,
+    )
+    output = tmp_path / "audit"
+    run_study_a(
+        scenarios=build_phase2_study_a_scenarios(frozen[0]),
+        source_name="phase2a_child_manifest",
+        source_sha256=child_hash,
+        output_root=output,
+        work_root=tmp_path / "audit-work",
+        checkpoint_loader=_loader({"Base": _FakeModel(), "T": _FakeModel()}),
+        k=8,
+        sampling_seed=19,
+    )
+
+    assert len((output / "phase2a_per_scenario.jsonl").read_text().splitlines()) == 10
+    enriched = [
+        json.loads(line)
+        for line in (output / "phase2a_enriched_frozen_scenes.jsonl").read_text().splitlines()
+    ]
+    assert len(enriched) == 1
+    assert enriched[0]["support_bin"] == "low"
+    assert enriched[0]["fiber_bin"] in {"singleton", "multi_2_4", "multi_5_plus"}
+    assert enriched[0]["capture_label"] == "primary_single_in_domain"
+
+
+def test_phase2a_orchestrator_closes_capture_and_audit_without_manual_step(
+    tmp_path: Path,
+) -> None:
+    phase2a = _phase2a_fixture(tmp_path)
+    summary = run_phase2a_study_a(
+        phase2a_root=phase2a,
+        child_root=tmp_path / "child",
+        capture_work_root=tmp_path / "capture-work",
+        output_root=tmp_path / "audit",
+        audit_work_root=tmp_path / "audit-work",
+        checkpoint_loader=_loader({"Base": _FakeModel(), "T": _FakeModel()}),
+        expected_parent_count=1,
+        expected_parent_manifest_sha256=_phase2a_manifest_sha(phase2a),
+        k=8,
+        sampling_seed=19,
+    )
+
+    assert summary["semantic_scene_count"] == 1
+    assert (tmp_path / "child/frozen_scenes.jsonl").is_file()
+    assert (tmp_path / "audit/phase2a_enriched_frozen_scenes.jsonl").is_file()
 
 
 def test_run_study_a_executes_base_and_t_and_atomically_publishes(tmp_path: Path) -> None:
@@ -270,8 +456,7 @@ def test_run_study_a_executes_base_and_t_and_atomically_publishes(tmp_path: Path
     assert summary["rl_invoked"] is False
     assert summary["prompt_search_invoked"] is False
     rows = [
-        json.loads(line)
-        for line in (output_root / "per_scenario.jsonl").read_text().splitlines()
+        json.loads(line) for line in (output_root / "per_scenario.jsonl").read_text().splitlines()
     ]
     assert len(rows) == 10
     assert {row["checkpoint"] for row in rows} == {"Base", "T"}
@@ -288,6 +473,12 @@ def test_run_study_a_executes_base_and_t_and_atomically_publishes(tmp_path: Path
     assert (output_root / "raw_trace.jsonl").read_bytes() == (
         work_root / "raw_trace.jsonl"
     ).read_bytes()
+    legacy_rows = [
+        json.loads(line)
+        for line in (output_root / "legacy_independent_per_scenario.jsonl").read_text().splitlines()
+    ]
+    assert len(legacy_rows) == 10
+    assert {row["split"] for row in legacy_rows} == {"independent_v4_support_dev"}
     assert set(summary["by_graph_axis"]) == {
         "canonical",
         "variable_permuted",
@@ -307,7 +498,7 @@ def test_run_study_a_executes_base_and_t_and_atomically_publishes(tmp_path: Path
 def test_resume_uses_completed_raw_trace_without_duplicate_model_calls(tmp_path: Path) -> None:
     output_root = tmp_path / "published"
     work_root = tmp_path / "resume"
-    interrupted_base = _FakeModel(fail_after_generations=9)
+    interrupted_base = _FakeModel(fail_after_generations=18)
     with pytest.raises(RuntimeError, match="simulated interruption"):
         run_study_a(
             errors=(_error(),),
@@ -320,7 +511,7 @@ def test_resume_uses_completed_raw_trace_without_duplicate_model_calls(tmp_path:
         )
 
     assert not output_root.exists()
-    assert len((work_root / "raw_trace.jsonl").read_text().splitlines()) == 1
+    assert len((work_root / "raw_trace.jsonl").read_text().splitlines()) == 2
 
     resumed_base = _FakeModel()
     run_study_a(
@@ -333,7 +524,7 @@ def test_resume_uses_completed_raw_trace_without_duplicate_model_calls(tmp_path:
         sampling_seed=19,
     )
 
-    assert resumed_base.generate_calls == 4 * 9
+    assert resumed_base.generate_calls == 3 * 9
     assert len((work_root / "raw_trace.jsonl").read_text().splitlines()) == 10
 
 
@@ -356,7 +547,38 @@ def test_resume_rejects_tampered_raw_trace_provenance(tmp_path: Path) -> None:
     row["prompt_sha256"] = "0" * 64
     trace.write_text(json.dumps(row) + "\n")
 
-    with pytest.raises(RuntimeError, match="provenance drifted"):
+    with pytest.raises(RuntimeError, match=r"integrity drifted|provenance drifted"):
+        run_study_a(
+            errors=(_error(),),
+            raw_archive_sha256=SHA,
+            output_root=tmp_path / "second-output",
+            work_root=work_root,
+            checkpoint_loader=_loader({"Base": _FakeModel(), "T": _FakeModel()}),
+            k=8,
+            sampling_seed=19,
+        )
+
+
+def test_resume_rejects_tampered_scientific_metric(tmp_path: Path) -> None:
+    work_root = tmp_path / "resume"
+    with pytest.raises(RuntimeError, match="simulated interruption"):
+        run_study_a(
+            errors=(_error(),),
+            raw_archive_sha256=SHA,
+            output_root=tmp_path / "first-output",
+            work_root=work_root,
+            checkpoint_loader=_loader(
+                {"Base": _FakeModel(fail_after_generations=9), "T": _FakeModel()}
+            ),
+            k=8,
+            sampling_seed=19,
+        )
+    trace = work_root / "raw_trace.jsonl"
+    row = json.loads(trace.read_text())
+    row["exact_recovery_probability"] = 0.125
+    trace.write_text(json.dumps(row) + "\n", encoding="utf-8")
+
+    with pytest.raises(RuntimeError, match="integrity drifted"):
         run_study_a(
             errors=(_error(),),
             raw_archive_sha256=SHA,
@@ -457,22 +679,25 @@ def test_cli_success_path_delegates_to_frozen_runtime_and_prints_hashes(
         return {"status": "V5_STUDY_A_EXECUTED"}
 
     monkeypatch.setattr(cli, "run_phase2a_study_a", fake_run)
-    monkeypatch.setattr("sys.argv", [
-        "12_run_study_a.py",
-        "--execute",
-        "--ack",
-        STUDY_A_ACK,
-        "--phase2a-root",
-        str(tmp_path / "phase2a"),
-        "--child-root",
-        str(tmp_path / "data/child"),
-        "--t-adapter",
-        str(tmp_path / "adapter"),
-        "--output-root",
-        str(output_root),
-        "--work-root",
-        str(work_root),
-    ])
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "12_run_study_a.py",
+            "--execute",
+            "--ack",
+            STUDY_A_ACK,
+            "--phase2a-root",
+            str(tmp_path / "phase2a"),
+            "--child-root",
+            str(tmp_path / "data/child"),
+            "--t-adapter",
+            str(tmp_path / "adapter"),
+            "--output-root",
+            str(output_root),
+            "--work-root",
+            str(work_root),
+        ],
+    )
 
     assert cli.main() == 0
     assert calls["k"] == 8
@@ -498,6 +723,7 @@ def test_generic_orbit_callback_delegates_to_study_a_and_publishes_pointer(
         "output": str(output),
     }
     monkeypatch.setenv("COMPBIAS_V5_T_ADAPTER", str(adapter))
+    monkeypatch.setenv("COMPBIAS_V5_PHASE2A_ROOT", str(tmp_path / "phase2a"))
     monkeypatch.setenv("HF_HUB_OFFLINE", "1")
     monkeypatch.setenv("TRANSFORMERS_OFFLINE", "1")
     monkeypatch.setenv("HF_DATASETS_OFFLINE", "1")
@@ -511,7 +737,7 @@ def test_generic_orbit_callback_delegates_to_study_a_and_publishes_pointer(
         (result_root / "summary.json").write_text("{}\n")
         return {"status": "V5_STUDY_A_EXECUTED", "by_graph_axis": {}}
 
-    monkeypatch.setattr(phase3_server, "run_study_a", fake_run)
+    monkeypatch.setattr(phase3_server, "run_phase2a_study_a", fake_run)
 
     result = phase3_server.run_orbit_audit(validation, {"task": "orbit_audit", "k": 8})
 
@@ -534,36 +760,6 @@ def test_generic_gradient_callback_is_explicitly_deferred_and_writes_nothing(
             {"task": "gradient_alignment"},
         )
     assert not output.exists()
-
-
-def test_orbit_callback_recognizes_a_completed_atomic_study_a_publication(
-    tmp_path: Path,
-) -> None:
-    result_root = tmp_path / "orbit_support_study_a"
-    result_root.mkdir()
-    sources = {
-        "raw_archive": SHA,
-        "Base": BASE_SHA256,
-        "T": T_ADAPTER_SHA256,
-    }
-    expected = {
-        "schema_version": 1,
-        "status": "V5_STUDY_A_EXECUTED",
-        "source_sha256": sources,
-    }
-    (result_root / "summary.json").write_text(json.dumps(expected))
-    (result_root / "manifest.json").write_text(
-        json.dumps(
-            {
-                "schema_version": 1,
-                "status": "V5_STUDY_A_ATOMICALLY_PUBLISHED",
-                "source_sha256": sources,
-            }
-        )
-    )
-
-    assert phase3_server._completed_summary(result_root, SHA) == expected
-    assert phase3_server._completed_summary(tmp_path / "absent", SHA) is None
 
 
 def test_cli_gpu_preflight_reports_missing_packages_and_missing_cuda(

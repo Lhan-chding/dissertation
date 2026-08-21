@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import importlib.util
 import json
 import subprocess
 import sys
@@ -14,18 +16,30 @@ from types import SimpleNamespace
 import pytest
 import yaml
 
+from compensability_v5.data.common_action_freeze import (
+    ACTION_PARSER_ID as FREEZE_PARSER_ID,
+)
+from compensability_v5.data.common_action_freeze import (
+    freeze_common_action_space,
+)
 from compensability_v5.qwen.study_c_runtime import (
     STUDY_C_ACK,
     STUDY_C_SEED,
+    StudyCArm,
     StudyCError,
     StudyCScene,
+    build_grpo_config_kwargs,
     build_study_c_summary,
+    load_study_c_scenes,
     make_reward_function,
     qwen_text_evaluation_sampler,
     registered_study_c_arms,
+    run_pre_training_frozen_eval,
     run_study_c_arm,
+    split_study_c_scenes,
     validate_reward_only_pair,
     validate_study_c_config_payload,
+    validate_study_c_prompt_lengths,
 )
 from compensability_v5.server_runtime.study_c import (
     run_common_space_grpo,
@@ -33,6 +47,15 @@ from compensability_v5.server_runtime.study_c import (
 )
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+def _load_study_c_cli_module():
+    path = ROOT / "scripts/v5/14_run_study_c.py"
+    spec = importlib.util.spec_from_file_location("test_run_study_c_cli", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def _scene(
@@ -77,9 +100,7 @@ def test_primary_arms_are_one_seed_reward_only_pair() -> None:
 
 
 def test_b2_is_secondary_and_requires_explicit_opt_in() -> None:
-    default = registered_study_c_arms(
-        initialization="B3", initialization_hash="a" * 64
-    )
+    default = registered_study_c_arms(initialization="B3", initialization_hash="a" * 64)
     secondary = registered_study_c_arms(
         initialization="B3",
         initialization_hash="a" * 64,
@@ -103,9 +124,7 @@ def test_reward_trace_preserves_raw_completion_and_both_outcomes(tmp_path: Path)
     trace = tmp_path / "reward_trace.jsonl"
     reward = make_reward_function(
         scenes=_run_scenes(),
-        arm=registered_study_c_arms(
-            initialization="B3", initialization_hash="a" * 64
-        )[0],
+        arm=registered_study_c_arms(initialization="B3", initialization_hash="a" * 64)[0],
         trace_path=trace,
     )
 
@@ -132,9 +151,7 @@ def test_reward_trace_preserves_raw_completion_and_both_outcomes(tmp_path: Path)
 def test_reward_function_rejects_metadata_or_group_drift(tmp_path: Path) -> None:
     reward = make_reward_function(
         scenes=(_scene(),),
-        arm=registered_study_c_arms(
-            initialization="B3", initialization_hash="a" * 64
-        )[0],
+        arm=registered_study_c_arms(initialization="B3", initialization_hash="a" * 64)[0],
         trace_path=tmp_path / "trace.jsonl",
     )
 
@@ -171,9 +188,7 @@ class _FakeTrainer:
 def test_fake_trainer_run_writes_hash_bound_outputs_and_refuses_overwrite(
     tmp_path: Path,
 ) -> None:
-    arm = registered_study_c_arms(
-        initialization="B3", initialization_hash="a" * 64
-    )[0]
+    arm = registered_study_c_arms(initialization="B3", initialization_hash="a" * 64)[0]
     captured: list[_FakeTrainer] = []
 
     def factory(**kwargs: object) -> _FakeTrainer:
@@ -210,12 +225,63 @@ def test_fake_trainer_run_writes_hash_bound_outputs_and_refuses_overwrite(
         )
 
 
-def test_fake_trainer_runs_independent_frozen_16_rollout_evaluation(tmp_path: Path) -> None:
-    arm = registered_study_c_arms(
-        initialization="B3", initialization_hash="a" * 64
-    )[1]
+def test_verified_complete_rejects_tampered_final_adapter(tmp_path: Path) -> None:
+    arm = registered_study_c_arms(initialization="B3", initialization_hash="a" * 64)[0]
 
     def factory(**kwargs: object) -> _FakeTrainer:
+        return _FakeTrainer(kwargs["reward_function"], ["9,2,3,4"] * 8)  # type: ignore[arg-type]
+
+    output = tmp_path / arm.name
+    provenance = {"common_action_manifest": "c" * 64}
+    run_study_c_arm(
+        arm=arm,
+        scenes=_run_scenes(),
+        output_dir=output,
+        trainer_factory=factory,
+        provenance_sha256=provenance,
+        evaluation_sampler_factory=lambda trainer: lambda scene, seeds: ["9,2,3,4"] * len(seeds),
+        pre_training_evaluation_sampler_factory=lambda trainer: (
+            lambda scene, seeds: ["9,2,3,4"] * len(seeds)
+        ),
+    )
+    cli = _load_study_c_cli_module()
+    assert cli._verified_complete(arm, output, provenance) is True
+    (output / "final_adapter/adapter_model.safetensors").write_bytes(b"tampered")
+
+    with pytest.raises(StudyCError, match="evidence drifted"):
+        cli._verified_complete(arm, output, provenance)
+
+
+def test_resume_summary_verification_rejects_non_hash_field_tamper(tmp_path: Path) -> None:
+    cli = _load_study_c_cli_module()
+    expected = {
+        "status": "STUDY_C_DIAGNOSTICS_COMPLETE",
+        "source_trace_sha256": {"B3_answer": "a" * 64},
+        "by_arm": {"B3_answer": {"answer_accuracy_from_world": 0.5}},
+    }
+    summary_path = tmp_path / "study_c_summary.json"
+    summary_path.write_text(
+        json.dumps(
+            {
+                **expected,
+                "by_arm": {"B3_answer": {"answer_accuracy_from_world": 1.0}},
+            }
+        )
+    )
+
+    with pytest.raises(StudyCError, match="summary content drifted"):
+        cli._verify_existing_summary(summary_path, expected)
+
+
+def test_fake_trainer_runs_independent_frozen_16_rollout_evaluation(tmp_path: Path) -> None:
+    arm = registered_study_c_arms(initialization="B3", initialization_hash="a" * 64)[1]
+
+    training_scene_ids: list[str] = []
+
+    def factory(**kwargs: object) -> _FakeTrainer:
+        dataset = kwargs["dataset"]
+        assert isinstance(dataset, tuple)
+        training_scene_ids.extend(str(row["scene_id"]) for row in dataset)
         return _FakeTrainer(
             kwargs["reward_function"],  # type: ignore[arg-type]
             ["9,2,3,4", "8,1,3,4", "8,2,3,4", "oops"] * 2,
@@ -240,18 +306,70 @@ def test_fake_trainer_runs_independent_frozen_16_rollout_evaluation(tmp_path: Pa
         output_dir=output,
         trainer_factory=factory,
         provenance_sha256={"common_action_manifest": "c" * 64},
+        pre_training_evaluation_sampler_factory=sampler_factory,
         evaluation_sampler_factory=sampler_factory,
     )
 
-    assert len(observed_seeds) == 1
+    assert len(observed_seeds) == 2
+    assert training_scene_ids == ["scene-1"]
     assert len(observed_seeds[0]) == 16
     assert evidence["post_training_evaluation_invoked"] is True
+    assert evidence["pre_training_evaluation_invoked"] is True
+    assert evidence["train_scene_count"] == 1
+    assert evidence["eval_scene_count"] == 1
+    assert evidence["train_scene_manifest_sha256"] != evidence["eval_scene_manifest_sha256"]
     rows = [json.loads(line) for line in (output / "eval_raw_rows.jsonl").read_text().splitlines()]
     assert len(rows) == 16
     assert {row["trace_kind"] for row in rows} == {"post_training_frozen_eval"}
     summary = json.loads((output / "eval_summary.json").read_text())
     assert summary["measurement_scope"] == "post_training_frozen_eval"
     assert summary["rollouts_per_scene"] == 16
+    baseline_rows = [
+        json.loads(line)
+        for line in (output / "pre_training_eval_raw_rows.jsonl").read_text().splitlines()
+    ]
+    assert len(baseline_rows) == 16
+    assert {row["trace_kind"] for row in baseline_rows} == {"pre_training_frozen_eval"}
+
+
+def test_resume_reuses_hash_verified_pre_training_baseline(tmp_path: Path) -> None:
+    arm = registered_study_c_arms(initialization="B3", initialization_hash="a" * 64)[0]
+    output = tmp_path / arm.name
+    output.mkdir()
+    run_pre_training_frozen_eval(
+        arm=arm,
+        scenes=(_scene("scene-eval", role="rl_eval"),),
+        output_dir=output,
+        sampler=lambda scene, seeds: ["9,2,3,4"] * len(seeds),
+    )
+    checkpoint = output / "checkpoint-16"
+    checkpoint.mkdir()
+    checkpoint_trace = checkpoint / "raw_reward_trace.jsonl"
+    make_reward_function(scenes=(_scene(),), arm=arm, trace_path=checkpoint_trace)(
+        ["9,2,3,4"] * 8, scene_id=["scene-1"]
+    )
+
+    def factory(**kwargs: object) -> _FakeTrainer:
+        return _FakeTrainer(
+            kwargs["reward_function"],  # type: ignore[arg-type]
+            ["9,2,3,4"] * 8,
+        )
+
+    def forbidden_pre_factory(trainer: object):
+        raise AssertionError("resume must reuse the immutable pre-training baseline")
+
+    evidence = run_study_c_arm(
+        arm=arm,
+        scenes=_run_scenes(),
+        output_dir=output,
+        trainer_factory=factory,
+        provenance_sha256={"common_action_manifest": "c" * 64},
+        resume_from_checkpoint=checkpoint,
+        pre_training_evaluation_sampler_factory=forbidden_pre_factory,
+    )
+
+    assert evidence["pre_training_evaluation_invoked"] is True
+    assert evidence["resumed_from_checkpoint"] == str(checkpoint.resolve())
 
 
 def test_qwen_eval_sampler_uses_each_fixed_seed_and_registered_decoding(
@@ -306,12 +424,8 @@ def test_qwen_eval_sampler_uses_each_fixed_seed_and_registered_decoding(
             generation_kwargs.append(kwargs)
             return Generated()
 
-    arm = registered_study_c_arms(
-        initialization="B3", initialization_hash="a" * 64
-    )[0]
-    sampler = qwen_text_evaluation_sampler(
-        arm=arm, model=Model(), processor=Processor()
-    )
+    arm = registered_study_c_arms(initialization="B3", initialization_hash="a" * 64)[0]
+    sampler = qwen_text_evaluation_sampler(arm=arm, model=Model(), processor=Processor())
 
     assert sampler(_scene(), (101, 102)) == ("9,2,3,4", "9,2,3,4")
     assert seeded == [101, 102]
@@ -416,14 +530,104 @@ def test_registered_reward_by_fiber_interaction_uses_scene_bootstrap(tmp_path: P
         path.write_text("".join(json.dumps(row) + "\n" for row in rows))
         traces[arm] = path
 
-    interaction = build_study_c_summary(traces, group_size=8)[
-        "reward_by_fiber_interaction"
-    ]["B3"]
+    summary = build_study_c_summary(traces, group_size=8)
+    interaction = summary["reward_by_fiber_interaction"]["B3"]
 
     assert interaction["status"] == "ESTIMATED"
     assert interaction["estimate"] == 0.5
     assert interaction["scene_bootstrap_95_ci"] == [0.5, 0.5]
     assert interaction["bootstrap_resamples"] == 10_000
+    assert summary["registered_stop_signals"]["reward_by_fiber_interaction"]["triggered"] is True
+
+
+def test_registered_answer_up_world_down_signal_requires_paired_baseline(
+    tmp_path: Path,
+) -> None:
+    final = tmp_path / "final.jsonl"
+    baseline = tmp_path / "baseline.jsonl"
+
+    def rows(answer_count: int, world_count: int, trace_kind: str) -> list[dict[str, object]]:
+        return [
+            {
+                "schema_version": 1,
+                "reward_call_index": index // 8,
+                "scene_id": "large-scene",
+                "arm": "B3_answer",
+                "reward": float(index < answer_count),
+                "answer_correct": index < answer_count,
+                "exact_world_recovery": index < world_count,
+                "parse_success": True,
+                "shortcut_answer_success": world_count <= index < answer_count,
+                "fiber_size": 5,
+                "fiber_bin": "multi_large",
+                "family": "cross_series",
+                "support_bin": "medium",
+                "rollout_seed": 2026082302 + index,
+                "trace_kind": trace_kind,
+            }
+            for index in range(16)
+        ]
+
+    final.write_text(
+        "".join(json.dumps(row) + "\n" for row in rows(12, 4, "post_training_frozen_eval"))
+    )
+    baseline.write_text(
+        "".join(json.dumps(row) + "\n" for row in rows(8, 8, "pre_training_frozen_eval"))
+    )
+
+    signals = build_study_c_summary(
+        {"B3_answer": final},
+        group_size=8,
+        baseline_trace_paths={"B3_answer": baseline},
+    )["registered_stop_signals"]
+
+    assert signals["answer_up_world_down_large_fibers"]["triggered"] is True
+    assert signals["answer_up_world_down_large_fibers"]["evidence"] == {
+        "paired_scene_count": 1,
+        "rollouts_per_scene": 16,
+        "answer_accuracy_delta": 0.25,
+        "world_recovery_delta": -0.25,
+    }
+    assert signals["subjective_threshold_used"] is False
+
+
+def test_paired_baseline_without_large_fibers_is_objectively_insufficient(
+    tmp_path: Path,
+) -> None:
+    final = tmp_path / "final-small.jsonl"
+    baseline = tmp_path / "baseline-small.jsonl"
+    rows = [
+        {
+            "schema_version": 1,
+            "reward_call_index": 0,
+            "scene_id": "singleton-scene",
+            "arm": "B3_answer",
+            "reward": 1.0,
+            "answer_correct": True,
+            "exact_world_recovery": True,
+            "parse_success": True,
+            "shortcut_answer_success": False,
+            "fiber_size": 1,
+            "fiber_bin": "singleton",
+            "family": "cross_series",
+            "support_bin": "medium",
+            "rollout_seed": 2026082302 + index,
+        }
+        for index in range(8)
+    ]
+    payload = "".join(json.dumps(row) + "\n" for row in rows)
+    final.write_text(payload)
+    baseline.write_text(payload)
+
+    signal = build_study_c_summary(
+        {"B3_answer": final},
+        group_size=8,
+        baseline_trace_paths={"B3_answer": baseline},
+    )["registered_stop_signals"]["answer_up_world_down_large_fibers"]
+
+    assert signal["triggered"] is False
+    assert signal["status"] == "INSUFFICIENT_LARGE_FIBER_ROWS"
+    assert signal["evidence"] == {"final_row_count": 0, "baseline_row_count": 0}
 
 
 def test_acknowledgement_literal_is_stable() -> None:
@@ -454,6 +658,93 @@ def test_runtime_strictly_consumes_the_frozen_low_cost_config() -> None:
     drifted["training"]["group_size"] = 7
     with pytest.raises(StudyCError, match="training contract drifted"):
         validate_study_c_config_payload(drifted)
+
+
+@pytest.mark.parametrize(
+    ("field", "replacement", "message"),
+    [
+        ("phase", "wrong", "common action/seed"),
+        ("evaluation", {}, "evaluation contract"),
+        ("data_split", {}, "split contract"),
+        ("authorization", {}, "authorization contract"),
+        ("offline", {}, "offline contract"),
+    ],
+)
+def test_config_rejects_registered_contract_drift(
+    field: str, replacement: object, message: str
+) -> None:
+    payload = yaml.safe_load((ROOT / "configs/v5/common_space_grpo.yaml").read_text())
+    payload[field] = replacement
+
+    with pytest.raises(StudyCError, match=message):
+        validate_study_c_config_payload(payload)
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"initialization": "Base"},
+        {"name": "wrong"},
+        {"reward_function": "wrong", "name": "B3_wrong"},
+        {"initialization_hash": "bad"},
+        {"seed": 1},
+        {"action_space": "text"},
+        {"group_size": 1},
+    ],
+)
+def test_arm_rejects_registered_contract_drift(changes: dict[str, object]) -> None:
+    values: dict[str, object] = {
+        "name": "B3_answer",
+        "initialization": "B3",
+        "initialization_hash": "a" * 64,
+        "reward_function": "answer",
+    }
+    values.update(changes)
+    with pytest.raises(StudyCError):
+        StudyCArm(**values)  # type: ignore[arg-type]
+
+
+def test_scene_split_package_and_prompt_boundaries_reject_drift() -> None:
+    with pytest.raises(StudyCError, match="non-empty"):
+        split_study_c_scenes((_scene(),))
+    with pytest.raises(StudyCError, match="rl_train count"):
+        split_study_c_scenes(_run_scenes(), expected_train_count=72)
+    with pytest.raises(StudyCError, match="rl_eval count"):
+        split_study_c_scenes(_run_scenes(), expected_eval_count=24)
+    with pytest.raises(StudyCError, match="no scenes"):
+        load_study_c_scenes({})
+
+    package = {
+        "scenes": [_scene().to_dataset_row()],
+        "rollout_seeds": [STUDY_C_SEED],
+        "action_parser_id": "wrong",
+    }
+    with pytest.raises(StudyCError):
+        load_study_c_scenes(package)
+
+    with pytest.raises(StudyCError, match="callable tokenizer"):
+        validate_study_c_prompt_lengths((_scene(),), object(), max_prompt_length=512)
+
+    class Processor:
+        @staticmethod
+        def tokenizer(*args: object, **kwargs: object) -> dict[str, object]:
+            return {"input_ids": [[0] * 513]}
+
+    with pytest.raises(StudyCError, match="exceeds 512"):
+        validate_study_c_prompt_lengths((_scene(),), Processor(), max_prompt_length=512)
+
+
+def test_grpo_kwargs_execute_prompt_limit_with_locked_trl_compatibility(tmp_path: Path) -> None:
+    arm = registered_study_c_arms(initialization="B3", initialization_hash="a" * 64)[0]
+    legacy = build_grpo_config_kwargs(arm, tmp_path / "legacy", ("output_dir",))
+    current = build_grpo_config_kwargs(
+        arm, tmp_path / "current", ("output_dir", "max_prompt_length")
+    )
+
+    assert "max_prompt_length" not in legacy
+    assert current["max_prompt_length"] == 512
+    for field in ("learning_rate", "max_steps", "num_generations", "temperature", "beta"):
+        assert legacy[field] == current[field]
 
 
 def test_study_c_cli_has_cpu_only_fixture_preflight() -> None:
@@ -544,3 +835,38 @@ def test_generic_server_runtime_exports_callbacks_and_evaluation_is_immutable(
     assert json.loads(output.read_text())["source_trace_sha256"] == validation["input_sha256"]
     with pytest.raises(StudyCError, match="overwrite"):
         run_v5_evaluation(validation, {"task": "evaluate_v5", "k": 8})
+
+
+def test_phase08_freeze_is_accepted_by_phase09_study_c_loader(tmp_path: Path) -> None:
+    from compensability_v5.server_runtime import study_c as server_study_c
+
+    scenes = [
+        {
+            "scene_id": f"rl-{index}",
+            "prompt": f"Observed world {index}. Return four integers.",
+            "truth": [9, 2, 3, 4],
+            "answer_operation": {"operator": "sum", "indices": [0, 1]},
+            "family": "pair_sum",
+            "fiber_size": 3,
+            "policy_support": index / 4,
+            "candidate_worlds": [[9, 2, 3, 4], [8, 3, 3, 4]],
+        }
+        for index in range(4)
+    ]
+    package = freeze_common_action_space(
+        scenes,
+        initialization_hashes={"B3": "a" * 64, "B2": "b" * 64, "Base": "c" * 64},
+        action_parser_id=FREEZE_PARSER_ID,
+        rollout_seeds=[STUDY_C_SEED],
+    )
+    manifest = tmp_path / "common_space_rl.json"
+    manifest.write_text(json.dumps(package) + "\n")
+    digest = hashlib.sha256(manifest.read_bytes()).hexdigest()
+
+    selected_path, selected_package = server_study_c._common_action_package(
+        {str(manifest.resolve()): digest}
+    )
+
+    assert package["status"] == "V5_COMMON_ACTION_SPACE_FROZEN"
+    assert selected_path == manifest.resolve()
+    assert selected_package == package

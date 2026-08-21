@@ -90,6 +90,13 @@ def _freeze_scene(scene: object, *, index: int) -> dict[str, object]:
     fiber_size = scene.get("fiber_size")
     if fiber_size is not None and (not _is_integer(fiber_size) or fiber_size <= 0):
         raise CommonActionFreezeError("fiber_size must be a positive integer when provided")
+    policy_support = scene.get("policy_support")
+    if policy_support is not None and (
+        isinstance(policy_support, bool)
+        or not isinstance(policy_support, (int, float))
+        or not 0.0 <= float(policy_support) <= 1.0
+    ):
+        raise CommonActionFreezeError("policy_support must be a probability when provided")
     candidate_worlds = scene.get("candidate_worlds")
     if candidate_worlds is not None:
         if (
@@ -126,7 +133,7 @@ def _freeze_scene(scene: object, *, index: int) -> dict[str, object]:
             "exact_state": list(truth.world),
         },
     }
-    for field in ("family", "fiber_size", "fiber_bin", "support_bin"):
+    for field in ("family", "fiber_size", "fiber_bin", "support_bin", "policy_support", "role"):
         if field in scene:
             value = scene[field]
             if field in {"fiber_bin", "support_bin"} and (not isinstance(value, str) or not value):
@@ -135,6 +142,55 @@ def _freeze_scene(scene: object, *, index: int) -> dict[str, object]:
     if candidate_worlds is not None:
         result["candidate_worlds"] = validated_candidates
     return result
+
+
+def _derive_bins_and_roles(scenes: list[dict[str, object]]) -> None:
+    if any(
+        "family" not in scene or "fiber_size" not in scene or "policy_support" not in scene
+        for scene in scenes
+    ):
+        raise CommonActionFreezeError("family, fiber_size, and Study-A policy_support are required")
+    ranked = sorted(
+        scenes, key=lambda scene: (float(scene["policy_support"]), str(scene["scene_id"]))
+    )
+    for rank, scene in enumerate(ranked):
+        size = int(scene["fiber_size"])
+        scene["fiber_bin"] = (
+            "singleton" if size == 1 else ("multi_2_4" if size <= 4 else "multi_5_plus")
+        )
+        scene["support_bin"] = (
+            "medium"
+            if len(ranked) == 1
+            else (
+                "low"
+                if rank * 3 < len(ranked)
+                else "medium"
+                if rank * 3 < 2 * len(ranked)
+                else "high"
+            )
+        )
+    evaluation_count = 24 if len(scenes) == 96 else len(scenes) // 4
+    strata: dict[tuple[str, str, str], list[dict[str, object]]] = {}
+    for scene in scenes:
+        key = str(scene["family"]), str(scene["fiber_bin"]), str(scene["support_bin"])
+        strata.setdefault(key, []).append(scene)
+    quotas = {key: len(group) * evaluation_count // len(scenes) for key, group in strata.items()}
+    remainder = evaluation_count - sum(quotas.values())
+    order = sorted(
+        strata,
+        key=lambda key: (-(len(strata[key]) * evaluation_count % len(scenes)), key),
+    )
+    for key in order[:remainder]:
+        quotas[key] += 1
+    eval_ids: set[str] = set()
+    for key, group in strata.items():
+        ranked_group = sorted(
+            group,
+            key=lambda scene: _sha256_text(f"{PILOT_SEED}:{scene['scene_id']}"),
+        )
+        eval_ids.update(str(scene["scene_id"]) for scene in ranked_group[: quotas[key]])
+    for scene in scenes:
+        scene["role"] = "rl_eval" if str(scene["scene_id"]) in eval_ids else "rl_train"
 
 
 def _scene_metadata_hash(scenes: Sequence[Mapping[str, object]]) -> str:
@@ -151,6 +207,8 @@ def _scene_metadata_hash(scenes: Sequence[Mapping[str, object]]) -> str:
                     "fiber_bin",
                     "support_bin",
                     "candidate_worlds",
+                    "policy_support",
+                    "role",
                 )
                 if key in scene
             }
@@ -185,9 +243,16 @@ def freeze_common_action_space(
             f"rollout_seeds must contain exactly one fixed pilot seed: {PILOT_SEED}"
         )
 
-    frozen_scenes = tuple(
-        _freeze_scene(scene, index=index) for index, scene in enumerate(tuple(scenes))
-    )
+    source_scenes = tuple(scenes)
+    if any(
+        isinstance(scene, Mapping)
+        and ("fiber_bin" in scene or "support_bin" in scene or "role" in scene)
+        for scene in source_scenes
+    ):
+        raise CommonActionFreezeError("fiber/support bins and role are derived, not user inputs")
+    frozen_list = [_freeze_scene(scene, index=index) for index, scene in enumerate(source_scenes)]
+    _derive_bins_and_roles(frozen_list)
+    frozen_scenes = tuple(frozen_list)
     if not frozen_scenes:
         raise CommonActionFreezeError("at least one scene is required for the RL freeze")
     scene_ids = tuple(scene["scene_id"] for scene in frozen_scenes)
@@ -209,6 +274,16 @@ def freeze_common_action_space(
         "rollout_seeds": list(rollout_seeds),
         "rollout_seed_hash": rollout_seed_hash,
         "scene_metadata_hash": scene_metadata_hash,
+        "rl_train_hash": _sha256_json(
+            [scene for scene in frozen_scenes if scene["role"] == "rl_train"]
+        ),
+        "rl_eval_hash": _sha256_json(
+            [scene for scene in frozen_scenes if scene["role"] == "rl_eval"]
+        ),
+        "role_counts": {
+            "rl_train": sum(scene["role"] == "rl_train" for scene in frozen_scenes),
+            "rl_eval": sum(scene["role"] == "rl_eval" for scene in frozen_scenes),
+        },
         "decoding": {"mode": "shared_from_training_config"},
         "optimizer": {"mode": "shared_from_training_config"},
         "steps": "shared_from_training_config",
@@ -244,6 +319,9 @@ def freeze_common_action_space(
         "action_parser_hash": action_parser_hash,
         "rollout_seed_hash": rollout_seed_hash,
         "scene_metadata_hash": scene_metadata_hash,
+        "rl_train_hash": shared_arm_fields["rl_train_hash"],
+        "rl_eval_hash": shared_arm_fields["rl_eval_hash"],
+        "role_counts": shared_arm_fields["role_counts"],
         "initialization_hashes": dict(initialization_hashes),
         "scenes": [dict(scene) for scene in frozen_scenes],
         "arms": arms,
@@ -269,7 +347,14 @@ def assert_common_action_preflight(package: Mapping[str, object]) -> None:
         if not isinstance(arm, Mapping):
             raise CommonActionFreezeError(f"{name} arm must be a mapping")
         normalized_arms[str(name)] = arm
-        for field in (*_PAIR_FIELDS, "initialization", "reward_function"):
+        for field in (
+            *_PAIR_FIELDS,
+            "rl_train_hash",
+            "rl_eval_hash",
+            "role_counts",
+            "initialization",
+            "reward_function",
+        ):
             if field not in arm:
                 raise CommonActionFreezeError(f"{name} is missing {field}")
         for field in _PAIR_FIELDS:
@@ -279,6 +364,17 @@ def assert_common_action_preflight(package: Mapping[str, object]) -> None:
     if not isinstance(scenes, Sequence) or isinstance(scenes, (str, bytes)) or not scenes:
         raise CommonActionFreezeError("common-action package scenes must be a non-empty sequence")
     frozen_scenes = tuple(_freeze_scene(scene, index=index) for index, scene in enumerate(scenes))
+    derived = [dict(scene) for scene in frozen_scenes]
+    for scene in derived:
+        for field in ("fiber_bin", "support_bin", "role"):
+            scene.pop(field, None)
+    _derive_bins_and_roles(derived)
+    if any(
+        original.get(field) != expected[field]
+        for original, expected in zip(frozen_scenes, derived, strict=True)
+        for field in ("fiber_bin", "support_bin", "role")
+    ):
+        raise CommonActionFreezeError("derived fiber/support bins or train/eval role drifted")
     for original, regenerated in zip(scenes, frozen_scenes, strict=True):
         if (
             not isinstance(original, Mapping)
@@ -303,13 +399,34 @@ def assert_common_action_preflight(package: Mapping[str, object]) -> None:
         "action_parser_hash": _sha256_text(str(package.get("action_parser_id", ""))),
         "rollout_seed_hash": _sha256_json(list(package.get("rollout_seeds", []))),
         "scene_metadata_hash": _scene_metadata_hash(frozen_scenes),
+        "rl_train_hash": _sha256_json(
+            [scene for scene in frozen_scenes if scene["role"] == "rl_train"]
+        ),
+        "rl_eval_hash": _sha256_json(
+            [scene for scene in frozen_scenes if scene["role"] == "rl_eval"]
+        ),
     }
     for field, expected in expected_hashes.items():
         if package.get(field) != expected:
             raise CommonActionFreezeError(f"{field} does not match the frozen package content")
+    expected_counts = {
+        "rl_train": sum(scene["role"] == "rl_train" for scene in frozen_scenes),
+        "rl_eval": sum(scene["role"] == "rl_eval" for scene in frozen_scenes),
+    }
+    if package.get("role_counts") != expected_counts:
+        raise CommonActionFreezeError("role_counts do not match the frozen split")
+    if len(frozen_scenes) == 96 and expected_counts != {"rl_train": 72, "rl_eval": 24}:
+        raise CommonActionFreezeError("Study C split must be exactly 72 rl_train / 24 rl_eval")
 
     baseline = normalized_arms["B3_answer"]
-    for field in ("prompt_hash", "action_parser_hash", "rollout_seed_hash"):
+    for field in (
+        "prompt_hash",
+        "action_parser_hash",
+        "rollout_seed_hash",
+        "rl_train_hash",
+        "rl_eval_hash",
+        "role_counts",
+    ):
         if baseline[field] != package[field] or any(
             arm[field] != baseline[field] for arm in normalized_arms.values()
         ):

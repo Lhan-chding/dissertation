@@ -1,193 +1,2244 @@
 {
-  "environment": {
-    "git_commit": "cb316288ebd910c7666ed6767245faa7a44cc502",
-    "python": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python"
-  },
-  "inputs": {
-    "fact_file": {
-      "path": "docs/QWEN_V4_EXPERIMENT_DATA_FACTS.md",
-      "sha256": "8b838f4148e02c02d3f6f55efcb1e0293fd6d247fd2969b197f533e5101ae9d6"
+  "artifact_type": "qwen_v5_phase0_derived_analysis",
+  "derivability_matrix": [
+    {
+      "analysis": "answer_fiber_multiplicity",
+      "evidence_class": "exploratory",
+      "missing_reason": null,
+      "source_members": [
+        {
+          "path": "artifacts/v4/rl/data/answer_only.jsonl",
+          "sha256": "3e72aa47c74f8e02191d949f968612d54bca9a81bfeb18f3cebd5d2394680d8e"
+        }
+      ],
+      "status": "derived_from_supplied_rows"
     },
-    "raw_archive": {
-      "path": "/Users/louis/Downloads/qwen_v4_raw_rows_20260821.tar.gz",
-      "sha256": "f0ccb4d56415eecf90a2c456bfd7c92a33fc96a581f3603115edbcb253ba8c84"
+    {
+      "analysis": "candidate_valid_minus_sham_by_family",
+      "evidence_class": "exploratory",
+      "missing_reason": null,
+      "source_members": [
+        {
+          "path": "artifacts/v4/candidate_scoring/per_scene.jsonl",
+          "sha256": "c303731438760a30fb2f78a489d20465a1c1e292b01941795f29351a0e234a62"
+        }
+      ],
+      "status": "derived_from_supplied_rows"
+    },
+    {
+      "analysis": "capability_chain",
+      "evidence_class": "diagnostic",
+      "missing_reason": null,
+      "source_members": [
+        {
+          "path": "artifacts/v4/capability_chain/per_scene.csv",
+          "sha256": "d01c391e136ed0e5c0ed52e50fe70f6ec128d221d218e7012c9adbcb4293929f"
+        }
+      ],
+      "status": "derived_from_supplied_rows"
+    },
+    {
+      "analysis": "i1_true_value_top4_by_family",
+      "evidence_class": "exploratory",
+      "missing_reason": null,
+      "source_members": [
+        {
+          "path": "artifacts/v4/interface_ladder/per_scene.jsonl",
+          "sha256": "324dbf3289d6754685483feebcf0ebd785210c250c5360859391b6fb66c089e5"
+        }
+      ],
+      "status": "derived_from_supplied_rows"
+    },
+    {
+      "analysis": "i3_valid_minus_no_cue_by_family",
+      "evidence_class": "exploratory",
+      "missing_reason": null,
+      "source_members": [
+        {
+          "path": "artifacts/v4/interface_ladder/per_scene.jsonl",
+          "sha256": "324dbf3289d6754685483feebcf0ebd785210c250c5360859391b6fb66c089e5"
+        }
+      ],
+      "status": "derived_from_supplied_rows"
+    },
+    {
+      "analysis": "phase8_checkpoint_transitions",
+      "evidence_class": "exploratory",
+      "missing_reason": null,
+      "source_members": [
+        {
+          "path": "artifacts/v4/phase8/evaluation/per_scene.jsonl",
+          "sha256": "f897cc66f2c9162b3d034d387ec6a09e84939357eedc1f860af18d12747e8fe8"
+        }
+      ],
+      "status": "derived_from_supplied_rows"
+    },
+    {
+      "analysis": "phase8_error_order_and_domain",
+      "evidence_class": "exploratory",
+      "missing_reason": null,
+      "source_members": [
+        {
+          "path": "artifacts/v4/phase8/confirm_data/confirm_scenes.jsonl",
+          "sha256": "7432bb9f3b0ceda7364efdda1e13594a71595eed62312062b12b5670cb3d9946"
+        },
+        {
+          "path": "artifacts/v4/phase8/confirm_data/confirm_observations.jsonl",
+          "sha256": "7f0a91ca81d9764581b47c3d0ef94632812adee6aae14d5918c63e10cd41c2e2"
+        }
+      ],
+      "status": "derived_from_supplied_rows"
+    },
+    {
+      "analysis": "support_budget",
+      "evidence_class": "exploratory",
+      "missing_reason": null,
+      "source_members": [
+        {
+          "path": "artifacts/v4/training/support.jsonl",
+          "sha256": "0bc003d7fdf4f2f67aecef42a25e8caf2f33433fa969aea1962df5ee397a9c5e"
+        }
+      ],
+      "status": "derived_from_supplied_rows"
     }
+  ],
+  "inputs": {
+    "fact_bundle_sha256": "6fe3d48bc1a88b35bd5804bc397ce8160534bdd7d71fa6769b755cc098a53683",
+    "fact_manifest_sha256": "4290e73b37a3de9799bd03775f5aa4de5124a4840702873e2f027257966a7c08",
+    "raw_archive_sha256": "f0ccb4d56415eecf90a2c456bfd7c92a33fc96a581f3603115edbcb253ba8c84"
   },
+  "schema_version": 1,
   "sections": {
-    "answer_fiber_statistics": {
-      "max_size": 33,
-      "mean_size": 4.502890173410405,
-      "median_size": 2.0,
-      "scene_count": 173,
-      "singleton_count": 3
+    "answer_fiber_multiplicity": {
+      "evidence_class": "exploratory",
+      "source_members": [
+        {
+          "path": "artifacts/v4/rl/data/answer_only.jsonl",
+          "sha256": "3e72aa47c74f8e02191d949f968612d54bca9a81bfeb18f3cebd5d2394680d8e"
+        }
+      ],
+      "statistics": {
+        "by_family": {
+          "cross_series": {
+            "empty_count": 0,
+            "max_size": 33,
+            "mean_size": 4.548387096774194,
+            "median_size": 2.0,
+            "scene_count": 62,
+            "singleton_count": 3,
+            "singleton_rate": 0.04838709677419355
+          },
+          "duplicate_encoding": {
+            "empty_count": 0,
+            "max_size": 30,
+            "mean_size": 4.104166666666667,
+            "median_size": 2.0,
+            "scene_count": 48,
+            "singleton_count": 0,
+            "singleton_rate": 0.0
+          },
+          "trend": {
+            "empty_count": 0,
+            "max_size": 33,
+            "mean_size": 4.761904761904762,
+            "median_size": 2.0,
+            "scene_count": 63,
+            "singleton_count": 0,
+            "singleton_rate": 0.0
+          }
+        },
+        "by_operation": {
+          "difference": {
+            "empty_count": 0,
+            "max_size": 33,
+            "mean_size": 2.4754098360655736,
+            "median_size": 2.0,
+            "scene_count": 61,
+            "singleton_count": 2,
+            "singleton_rate": 0.03278688524590164
+          },
+          "max_minus_min": {
+            "empty_count": 0,
+            "max_size": 30,
+            "mean_size": 10.69767441860465,
+            "median_size": 11.0,
+            "scene_count": 43,
+            "singleton_count": 0,
+            "singleton_rate": 0.0
+          },
+          "sum": {
+            "empty_count": 0,
+            "max_size": 33,
+            "mean_size": 2.4347826086956523,
+            "median_size": 2.0,
+            "scene_count": 69,
+            "singleton_count": 1,
+            "singleton_rate": 0.014492753623188406
+          }
+        },
+        "candidate_definition": {
+          "distance": "hamming_at_most_one",
+          "includes_observed_if_admissible": true,
+          "value_domain": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18
+          ]
+        },
+        "empty_count": 0,
+        "max_size": 33,
+        "mean_size": 4.502890173410405,
+        "median_size": 2.0,
+        "per_scene": [
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-000004"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-000040"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-000118"
+          },
+          {
+            "fiber_size": 1,
+            "scene_id": "phase-c-screen-000183"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-000184"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-000231"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-000250"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-000298"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-000400"
+          },
+          {
+            "fiber_size": 12,
+            "scene_id": "phase-c-screen-000416"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-000427"
+          },
+          {
+            "fiber_size": 4,
+            "scene_id": "phase-c-screen-000464"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-000465"
+          },
+          {
+            "fiber_size": 18,
+            "scene_id": "phase-c-screen-000506"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-000538"
+          },
+          {
+            "fiber_size": 12,
+            "scene_id": "phase-c-screen-000728"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-000730"
+          },
+          {
+            "fiber_size": 12,
+            "scene_id": "phase-c-screen-000797"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-000886"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-000927"
+          },
+          {
+            "fiber_size": 11,
+            "scene_id": "phase-c-screen-001001"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-001060"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-001101"
+          },
+          {
+            "fiber_size": 10,
+            "scene_id": "phase-c-screen-001292"
+          },
+          {
+            "fiber_size": 12,
+            "scene_id": "phase-c-screen-001340"
+          },
+          {
+            "fiber_size": 10,
+            "scene_id": "phase-c-screen-001442"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-001450"
+          },
+          {
+            "fiber_size": 33,
+            "scene_id": "phase-c-screen-001530"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-001569"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-001570"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-001629"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-001636"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-001655"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-001695"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-001719"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-001900"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-001960"
+          },
+          {
+            "fiber_size": 11,
+            "scene_id": "phase-c-screen-001961"
+          },
+          {
+            "fiber_size": 5,
+            "scene_id": "phase-c-screen-001994"
+          },
+          {
+            "fiber_size": 30,
+            "scene_id": "phase-c-screen-002006"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-002014"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-002050"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-002169"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-002187"
+          },
+          {
+            "fiber_size": 3,
+            "scene_id": "phase-c-screen-002225"
+          },
+          {
+            "fiber_size": 16,
+            "scene_id": "phase-c-screen-002228"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-002260"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-002319"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-002332"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-002337"
+          },
+          {
+            "fiber_size": 26,
+            "scene_id": "phase-c-screen-002399"
+          },
+          {
+            "fiber_size": 3,
+            "scene_id": "phase-c-screen-002471"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-002488"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-002619"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-002644"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-002668"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-002716"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-002746"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-002777"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-002781"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-002806"
+          },
+          {
+            "fiber_size": 14,
+            "scene_id": "phase-c-screen-002822"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-002830"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-002848"
+          },
+          {
+            "fiber_size": 11,
+            "scene_id": "phase-c-screen-002849"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-002938"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-002955"
+          },
+          {
+            "fiber_size": 10,
+            "scene_id": "phase-c-screen-003020"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-003045"
+          },
+          {
+            "fiber_size": 13,
+            "scene_id": "phase-c-screen-003062"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-003070"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-003123"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-003202"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-003219"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-003238"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-003256"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-003393"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-003490"
+          },
+          {
+            "fiber_size": 13,
+            "scene_id": "phase-c-screen-003512"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-003513"
+          },
+          {
+            "fiber_size": 5,
+            "scene_id": "phase-c-screen-003524"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-003597"
+          },
+          {
+            "fiber_size": 13,
+            "scene_id": "phase-c-screen-003605"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-003670"
+          },
+          {
+            "fiber_size": 8,
+            "scene_id": "phase-c-screen-003686"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-003717"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-003819"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-003856"
+          },
+          {
+            "fiber_size": 10,
+            "scene_id": "phase-c-screen-003884"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-003910"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-003969"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-004006"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-004035"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-004162"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-004198"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-004221"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-004227"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-004294"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-004379"
+          },
+          {
+            "fiber_size": 8,
+            "scene_id": "phase-c-screen-004403"
+          },
+          {
+            "fiber_size": 9,
+            "scene_id": "phase-c-screen-004463"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-004594"
+          },
+          {
+            "fiber_size": 16,
+            "scene_id": "phase-c-screen-004604"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-004639"
+          },
+          {
+            "fiber_size": 13,
+            "scene_id": "phase-c-screen-004751"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-004803"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-004833"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-004840"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-004858"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-004903"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-004911"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-004978"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-004983"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-005037"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-005098"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-005223"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-005224"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-005236"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-005313"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-005356"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-005382"
+          },
+          {
+            "fiber_size": 1,
+            "scene_id": "phase-c-screen-005421"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-005439"
+          },
+          {
+            "fiber_size": 12,
+            "scene_id": "phase-c-screen-005447"
+          },
+          {
+            "fiber_size": 14,
+            "scene_id": "phase-c-screen-005552"
+          },
+          {
+            "fiber_size": 4,
+            "scene_id": "phase-c-screen-005609"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-005703"
+          },
+          {
+            "fiber_size": 14,
+            "scene_id": "phase-c-screen-005705"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-005769"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-005824"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-005853"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-005878"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-005955"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-005991"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-006016"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-006046"
+          },
+          {
+            "fiber_size": 14,
+            "scene_id": "phase-c-screen-006137"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-006207"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-006213"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-006225"
+          },
+          {
+            "fiber_size": 15,
+            "scene_id": "phase-c-screen-006272"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-006297"
+          },
+          {
+            "fiber_size": 33,
+            "scene_id": "phase-c-screen-006367"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-006375"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-006549"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-006741"
+          },
+          {
+            "fiber_size": 13,
+            "scene_id": "phase-c-screen-006752"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-006759"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-006826"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-006934"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-006982"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-007005"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-007030"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-007102"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-007137"
+          },
+          {
+            "fiber_size": 8,
+            "scene_id": "phase-c-screen-007145"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-007149"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-007216"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-007288"
+          },
+          {
+            "fiber_size": 1,
+            "scene_id": "phase-c-screen-007294"
+          },
+          {
+            "fiber_size": 10,
+            "scene_id": "phase-c-screen-007307"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-007473"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-007491"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-007533"
+          },
+          {
+            "fiber_size": 10,
+            "scene_id": "phase-c-screen-007583"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-007673"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-007690"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-007707"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-007756"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-007762"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-007821"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-007900"
+          },
+          {
+            "fiber_size": 2,
+            "scene_id": "phase-c-screen-007983"
+          }
+        ],
+        "scene_count": 173,
+        "singleton_count": 3,
+        "singleton_rate": 0.017341040462427744
+      }
     },
-    "candidate_validity_effects": {
-      "cross_series": {
-        "scene_count": 208,
-        "valid_minus_sham_target_margin_mean": -0.10516826923076923
-      },
-      "duplicate_encoding": {
-        "scene_count": 182,
-        "valid_minus_sham_target_margin_mean": 0.2541208791208791
-      },
-      "trend": {
-        "scene_count": 189,
-        "valid_minus_sham_target_margin_mean": -0.18783068783068782
+    "candidate_valid_minus_sham_by_family": {
+      "evidence_class": "exploratory",
+      "source_members": [
+        {
+          "path": "artifacts/v4/candidate_scoring/per_scene.jsonl",
+          "sha256": "c303731438760a30fb2f78a489d20465a1c1e292b01941795f29351a0e234a62"
+        }
+      ],
+      "statistics": {
+        "bootstrap": {
+          "method": "paired_percentile",
+          "samples": 10000,
+          "seed": 20260821
+        },
+        "by_family": {
+          "cross_series": {
+            "bootstrap_95_ci": [
+              -0.2283653846153846,
+              0.018629807692307692
+            ],
+            "paired_scene_count": 208,
+            "valid_minus_sham_target_margin_mean": -0.10516826923076923
+          },
+          "duplicate_encoding": {
+            "bootstrap_95_ci": [
+              0.10508241758241758,
+              0.4065934065934066
+            ],
+            "paired_scene_count": 182,
+            "valid_minus_sham_target_margin_mean": 0.2541208791208791
+          },
+          "trend": {
+            "bootstrap_95_ci": [
+              -0.30952380952380953,
+              -0.06746031746031746
+            ],
+            "paired_scene_count": 189,
+            "valid_minus_sham_target_margin_mean": -0.18783068783068782
+          }
+        }
       }
     },
     "capability_chain": {
-      "cross_series": {
-        "T1": {
-          "accuracy": 0.4951923076923077,
-          "parse_rate": 1.0,
-          "scene_count": 208
-        },
-        "T2": {
-          "accuracy": 0.0,
-          "parse_rate": 1.0,
-          "scene_count": 208
-        },
-        "T3": {
-          "accuracy": 0.3269230769230769,
-          "parse_rate": 1.0,
-          "scene_count": 208
-        },
-        "T4": {
-          "accuracy": 0.1778846153846154,
-          "parse_rate": 1.0,
-          "scene_count": 208
-        },
-        "T5": {
-          "accuracy": 0.2548076923076923,
-          "parse_rate": 1.0,
-          "scene_count": 208
-        },
-        "T6": {
-          "accuracy": 0.0,
-          "parse_rate": 0.9807692307692307,
-          "scene_count": 208
+      "evidence_class": "diagnostic",
+      "source_members": [
+        {
+          "path": "artifacts/v4/capability_chain/per_scene.csv",
+          "sha256": "d01c391e136ed0e5c0ed52e50fe70f6ec128d221d218e7012c9adbcb4293929f"
         }
-      },
-      "duplicate_encoding": {
-        "T1": {
-          "accuracy": 0.9120879120879121,
-          "parse_rate": 1.0,
-          "scene_count": 182
+      ],
+      "statistics": {
+        "cross_series": {
+          "T1": {
+            "accuracy": 0.4951923076923077,
+            "parse_rate": 1.0,
+            "scene_count": 208
+          },
+          "T2": {
+            "accuracy": 0.0,
+            "parse_rate": 1.0,
+            "scene_count": 208
+          },
+          "T3": {
+            "accuracy": 0.3269230769230769,
+            "parse_rate": 1.0,
+            "scene_count": 208
+          },
+          "T4": {
+            "accuracy": 0.1778846153846154,
+            "parse_rate": 1.0,
+            "scene_count": 208
+          },
+          "T5": {
+            "accuracy": 0.2548076923076923,
+            "parse_rate": 1.0,
+            "scene_count": 208
+          },
+          "T6": {
+            "accuracy": 0.0,
+            "parse_rate": 0.9807692307692307,
+            "scene_count": 208
+          }
         },
-        "T2": {
-          "accuracy": 0.4065934065934066,
-          "parse_rate": 1.0,
-          "scene_count": 182
+        "duplicate_encoding": {
+          "T1": {
+            "accuracy": 0.9120879120879121,
+            "parse_rate": 1.0,
+            "scene_count": 182
+          },
+          "T2": {
+            "accuracy": 0.4065934065934066,
+            "parse_rate": 1.0,
+            "scene_count": 182
+          },
+          "T3": {
+            "accuracy": 0.7362637362637363,
+            "parse_rate": 1.0,
+            "scene_count": 182
+          },
+          "T4": {
+            "accuracy": 0.1043956043956044,
+            "parse_rate": 1.0,
+            "scene_count": 182
+          },
+          "T5": {
+            "accuracy": 0.8461538461538461,
+            "parse_rate": 1.0,
+            "scene_count": 182
+          },
+          "T6": {
+            "accuracy": 0.10989010989010989,
+            "parse_rate": 1.0,
+            "scene_count": 182
+          }
         },
-        "T3": {
-          "accuracy": 0.7362637362637363,
-          "parse_rate": 1.0,
-          "scene_count": 182
-        },
-        "T4": {
-          "accuracy": 0.1043956043956044,
-          "parse_rate": 1.0,
-          "scene_count": 182
-        },
-        "T5": {
-          "accuracy": 0.8461538461538461,
-          "parse_rate": 1.0,
-          "scene_count": 182
-        },
-        "T6": {
-          "accuracy": 0.10989010989010989,
-          "parse_rate": 1.0,
-          "scene_count": 182
-        }
-      },
-      "trend": {
-        "T1": {
-          "accuracy": 0.5185185185185185,
-          "parse_rate": 1.0,
-          "scene_count": 189
-        },
-        "T2": {
-          "accuracy": 0.13227513227513227,
-          "parse_rate": 1.0,
-          "scene_count": 189
-        },
-        "T3": {
-          "accuracy": 0.5396825396825397,
-          "parse_rate": 1.0,
-          "scene_count": 189
-        },
-        "T4": {
-          "accuracy": 0.07407407407407407,
-          "parse_rate": 1.0,
-          "scene_count": 189
-        },
-        "T5": {
-          "accuracy": 0.2804232804232804,
-          "parse_rate": 1.0,
-          "scene_count": 189
-        },
-        "T6": {
-          "accuracy": 0.0,
-          "parse_rate": 0.49206349206349204,
-          "scene_count": 189
+        "trend": {
+          "T1": {
+            "accuracy": 0.5185185185185185,
+            "parse_rate": 1.0,
+            "scene_count": 189
+          },
+          "T2": {
+            "accuracy": 0.13227513227513227,
+            "parse_rate": 1.0,
+            "scene_count": 189
+          },
+          "T3": {
+            "accuracy": 0.5396825396825397,
+            "parse_rate": 1.0,
+            "scene_count": 189
+          },
+          "T4": {
+            "accuracy": 0.07407407407407407,
+            "parse_rate": 1.0,
+            "scene_count": 189
+          },
+          "T5": {
+            "accuracy": 0.2804232804232804,
+            "parse_rate": 1.0,
+            "scene_count": 189
+          },
+          "T6": {
+            "accuracy": 0.0,
+            "parse_rate": 0.49206349206349204,
+            "scene_count": 189
+          }
         }
       }
     },
-    "confirm_error_cardinality": {
-      "error_count_histogram": {
-        "0": 30,
-        "1": 36,
-        "2": 26,
-        "3": 21,
-        "4": 15
-      },
-      "out_of_domain_scene_count": 17
-    },
-    "natural_state_revision": {
-      "cross_series": {
-        "no_cue_exact_revision_rate": 0.6346153846153846,
-        "valid_exact_revision_rate": 0.6394230769230769,
-        "valid_minus_no_cue": 0.004807692307692291
-      },
-      "duplicate_encoding": {
-        "no_cue_exact_revision_rate": 0.6868131868131868,
-        "valid_exact_revision_rate": 0.989010989010989,
-        "valid_minus_no_cue": 0.30219780219780223
-      },
-      "trend": {
-        "no_cue_exact_revision_rate": 0.6296296296296297,
-        "valid_exact_revision_rate": 0.582010582010582,
-        "valid_minus_no_cue": -0.04761904761904767
+    "i1_true_value_top4_by_family": {
+      "evidence_class": "exploratory",
+      "source_members": [
+        {
+          "path": "artifacts/v4/interface_ladder/per_scene.jsonl",
+          "sha256": "324dbf3289d6754685483feebcf0ebd785210c250c5360859391b6fb66c089e5"
+        }
+      ],
+      "statistics": {
+        "by_family": {
+          "cross_series": {
+            "eligible_scene_count": 208,
+            "excluded_non_single_error_count": 0,
+            "true_value_top4_count": 189,
+            "true_value_top4_rate": 0.9086538461538461
+          },
+          "duplicate_encoding": {
+            "eligible_scene_count": 182,
+            "excluded_non_single_error_count": 0,
+            "true_value_top4_count": 174,
+            "true_value_top4_rate": 0.9560439560439561
+          },
+          "trend": {
+            "eligible_scene_count": 189,
+            "excluded_non_single_error_count": 0,
+            "true_value_top4_count": 182,
+            "true_value_top4_rate": 0.9629629629629629
+          }
+        },
+        "score_basis": "first_token_logit",
+        "top_k": 4
       }
     },
-    "phase8_transitions": {
-      "free_generation_answer_exact": {
-        "Recovery_LoRA_AnswerOnly_RL": {
-          "gained": 0,
-          "lost": 4
-        },
-        "Recovery_LoRA_RecoveryOutcome_RL": {
-          "gained": 1,
-          "lost": 0
+    "i3_valid_minus_no_cue_by_family": {
+      "evidence_class": "exploratory",
+      "source_members": [
+        {
+          "path": "artifacts/v4/interface_ladder/per_scene.jsonl",
+          "sha256": "324dbf3289d6754685483feebcf0ebd785210c250c5360859391b6fb66c089e5"
         }
-      },
-      "post_revision_world_exact": {
-        "Recovery_LoRA_AnswerOnly_RL": {
-          "gained": 0,
-          "lost": 3
-        },
-        "Recovery_LoRA_RecoveryOutcome_RL": {
-          "gained": 2,
-          "lost": 1
+      ],
+      "statistics": {
+        "by_family": {
+          "cross_series": {
+            "no_cue_exact_revision_rate": 0.6346153846153846,
+            "no_cue_scene_count": 208,
+            "valid_exact_revision_rate": 0.6394230769230769,
+            "valid_minus_no_cue": 0.004807692307692291,
+            "valid_scene_count": 208
+          },
+          "duplicate_encoding": {
+            "no_cue_exact_revision_rate": 0.6868131868131868,
+            "no_cue_scene_count": 182,
+            "valid_exact_revision_rate": 0.989010989010989,
+            "valid_minus_no_cue": 0.30219780219780223,
+            "valid_scene_count": 182
+          },
+          "trend": {
+            "no_cue_exact_revision_rate": 0.6296296296296297,
+            "no_cue_scene_count": 189,
+            "valid_exact_revision_rate": 0.582010582010582,
+            "valid_minus_no_cue": -0.04761904761904767,
+            "valid_scene_count": 189
+          }
         }
+      }
+    },
+    "phase8_checkpoint_transitions": {
+      "evidence_class": "exploratory",
+      "source_members": [
+        {
+          "path": "artifacts/v4/phase8/evaluation/per_scene.jsonl",
+          "sha256": "f897cc66f2c9162b3d034d387ec6a09e84939357eedc1f860af18d12747e8fe8"
+        }
+      ],
+      "statistics": {
+        "free_generation_answer_exact": {
+          "Recovery_LoRA_AnswerOnly_RL": {
+            "gained": 0,
+            "lost": 4,
+            "paired_scene_count": 98
+          },
+          "Recovery_LoRA_RecoveryOutcome_RL": {
+            "gained": 1,
+            "lost": 0,
+            "paired_scene_count": 98
+          }
+        },
+        "post_revision_world_exact": {
+          "Recovery_LoRA_AnswerOnly_RL": {
+            "gained": 0,
+            "lost": 3,
+            "paired_scene_count": 98
+          },
+          "Recovery_LoRA_RecoveryOutcome_RL": {
+            "gained": 2,
+            "lost": 1,
+            "paired_scene_count": 98
+          }
+        }
+      }
+    },
+    "phase8_error_order_and_domain": {
+      "evidence_class": "exploratory",
+      "source_members": [
+        {
+          "path": "artifacts/v4/phase8/confirm_data/confirm_scenes.jsonl",
+          "sha256": "7432bb9f3b0ceda7364efdda1e13594a71595eed62312062b12b5670cb3d9946"
+        },
+        {
+          "path": "artifacts/v4/phase8/confirm_data/confirm_observations.jsonl",
+          "sha256": "7f0a91ca81d9764581b47c3d0ef94632812adee6aae14d5918c63e10cd41c2e2"
+        }
+      ],
+      "statistics": {
+        "error_count_histogram": {
+          "1": 36,
+          "2": 26,
+          "3": 21,
+          "4": 15
+        },
+        "input_scene_count": 128,
+        "max_l1_error": 403,
+        "mean_error_count": 2.1530612244897958,
+        "mean_l1_error": 39.61224489795919,
+        "out_of_domain_scene_count": 17,
+        "out_of_domain_scene_rate": 0.17346938775510204,
+        "per_scene": [
+          {
+            "error_count": 3,
+            "error_indices": [
+              1,
+              2,
+              3
+            ],
+            "l1_error": 29,
+            "observation_out_of_domain": true,
+            "scene_id": "phase8-constraint_graph_ood-0000"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              1,
+              2
+            ],
+            "l1_error": 2,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-constraint_graph_ood-0001"
+          },
+          {
+            "error_count": 4,
+            "error_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "l1_error": 4,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-constraint_graph_ood-0002"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              2
+            ],
+            "l1_error": 2,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-constraint_graph_ood-0003"
+          },
+          {
+            "error_count": 4,
+            "error_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "l1_error": 337,
+            "observation_out_of_domain": true,
+            "scene_id": "phase8-constraint_graph_ood-0004"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              1
+            ],
+            "l1_error": 3,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-constraint_graph_ood-0005"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              1
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-constraint_graph_ood-0006"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              1,
+              3
+            ],
+            "l1_error": 2,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-constraint_graph_ood-0007"
+          },
+          {
+            "error_count": 4,
+            "error_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "l1_error": 243,
+            "observation_out_of_domain": true,
+            "scene_id": "phase8-constraint_graph_ood-0008"
+          },
+          {
+            "error_count": 3,
+            "error_indices": [
+              0,
+              2,
+              3
+            ],
+            "l1_error": 3,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-constraint_graph_ood-0009"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              2
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-constraint_graph_ood-0010"
+          },
+          {
+            "error_count": 3,
+            "error_indices": [
+              0,
+              2,
+              3
+            ],
+            "l1_error": 3,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-constraint_graph_ood-0011"
+          },
+          {
+            "error_count": 3,
+            "error_indices": [
+              0,
+              1,
+              3
+            ],
+            "l1_error": 3,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-constraint_graph_ood-0012"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              0,
+              3
+            ],
+            "l1_error": 3,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-constraint_graph_ood-0013"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              2
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-constraint_graph_ood-0014"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              0,
+              3
+            ],
+            "l1_error": 2,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-constraint_graph_ood-0016"
+          },
+          {
+            "error_count": 4,
+            "error_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "l1_error": 308,
+            "observation_out_of_domain": true,
+            "scene_id": "phase8-constraint_graph_ood-0017"
+          },
+          {
+            "error_count": 3,
+            "error_indices": [
+              0,
+              1,
+              2
+            ],
+            "l1_error": 3,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-constraint_graph_ood-0018"
+          },
+          {
+            "error_count": 3,
+            "error_indices": [
+              1,
+              2,
+              3
+            ],
+            "l1_error": 6,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-constraint_graph_ood-0021"
+          },
+          {
+            "error_count": 4,
+            "error_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "l1_error": 6,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-constraint_graph_ood-0022"
+          },
+          {
+            "error_count": 4,
+            "error_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "l1_error": 4,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-constraint_graph_ood-0023"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              1
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-constraint_graph_ood-0024"
+          },
+          {
+            "error_count": 3,
+            "error_indices": [
+              0,
+              1,
+              3
+            ],
+            "l1_error": 3,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-constraint_graph_ood-0025"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              0,
+              2
+            ],
+            "l1_error": 2,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-constraint_graph_ood-0026"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              1
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-constraint_graph_ood-0029"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              2,
+              3
+            ],
+            "l1_error": 3,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-constraint_graph_ood-0030"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              3
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-constraint_graph_ood-0031"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              3
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-error_mechanism_ood-0004"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              3
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-error_mechanism_ood-0007"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              0
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-error_mechanism_ood-0008"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              3
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-error_mechanism_ood-0012"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              3
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-error_mechanism_ood-0014"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              1
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-error_mechanism_ood-0015"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              2
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-error_mechanism_ood-0016"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              0,
+              3
+            ],
+            "l1_error": 2,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-error_mechanism_ood-0019"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              0
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-error_mechanism_ood-0020"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              1
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-error_mechanism_ood-0024"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              1
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-error_mechanism_ood-0027"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              0,
+              1
+            ],
+            "l1_error": 2,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-error_mechanism_ood-0030"
+          },
+          {
+            "error_count": 4,
+            "error_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "l1_error": 357,
+            "observation_out_of_domain": true,
+            "scene_id": "phase8-iid-0000"
+          },
+          {
+            "error_count": 4,
+            "error_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "l1_error": 395,
+            "observation_out_of_domain": true,
+            "scene_id": "phase8-iid-0001"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              1,
+              2
+            ],
+            "l1_error": 20,
+            "observation_out_of_domain": true,
+            "scene_id": "phase8-iid-0002"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              2,
+              3
+            ],
+            "l1_error": 2,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-iid-0003"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              1
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-iid-0004"
+          },
+          {
+            "error_count": 3,
+            "error_indices": [
+              0,
+              2,
+              3
+            ],
+            "l1_error": 3,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-iid-0005"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              0,
+              2
+            ],
+            "l1_error": 2,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-iid-0006"
+          },
+          {
+            "error_count": 4,
+            "error_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "l1_error": 358,
+            "observation_out_of_domain": true,
+            "scene_id": "phase8-iid-0007"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              0,
+              2
+            ],
+            "l1_error": 2,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-iid-0008"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              3
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-iid-0009"
+          },
+          {
+            "error_count": 3,
+            "error_indices": [
+              0,
+              2,
+              3
+            ],
+            "l1_error": 4,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-iid-0010"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              3
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-iid-0011"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              0
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-iid-0013"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              1
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-iid-0014"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              0,
+              2
+            ],
+            "l1_error": 2,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-iid-0015"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              0,
+              2
+            ],
+            "l1_error": 2,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-iid-0016"
+          },
+          {
+            "error_count": 4,
+            "error_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "l1_error": 343,
+            "observation_out_of_domain": true,
+            "scene_id": "phase8-iid-0017"
+          },
+          {
+            "error_count": 4,
+            "error_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "l1_error": 341,
+            "observation_out_of_domain": true,
+            "scene_id": "phase8-iid-0018"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              3
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-iid-0019"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              0
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-iid-0020"
+          },
+          {
+            "error_count": 3,
+            "error_indices": [
+              0,
+              1,
+              3
+            ],
+            "l1_error": 5,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-iid-0021"
+          },
+          {
+            "error_count": 3,
+            "error_indices": [
+              1,
+              2,
+              3
+            ],
+            "l1_error": 3,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-iid-0022"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              1,
+              3
+            ],
+            "l1_error": 2,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-iid-0023"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              0,
+              1
+            ],
+            "l1_error": 2,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-iid-0024"
+          },
+          {
+            "error_count": 4,
+            "error_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "l1_error": 403,
+            "observation_out_of_domain": true,
+            "scene_id": "phase8-iid-0025"
+          },
+          {
+            "error_count": 4,
+            "error_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "l1_error": 376,
+            "observation_out_of_domain": true,
+            "scene_id": "phase8-iid-0026"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              0,
+              3
+            ],
+            "l1_error": 2,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-iid-0027"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              0,
+              2
+            ],
+            "l1_error": 2,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-iid-0028"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              3
+            ],
+            "l1_error": 2,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-iid-0029"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              0,
+              3
+            ],
+            "l1_error": 2,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-iid-0030"
+          },
+          {
+            "error_count": 3,
+            "error_indices": [
+              0,
+              1,
+              3
+            ],
+            "l1_error": 3,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-iid-0031"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              3
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-style_ood-0001"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              3
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-style_ood-0002"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              1,
+              2
+            ],
+            "l1_error": 2,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-style_ood-0004"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              0
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-style_ood-0005"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              0
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-style_ood-0006"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              1
+            ],
+            "l1_error": 19,
+            "observation_out_of_domain": true,
+            "scene_id": "phase8-style_ood-0007"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              3
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-style_ood-0008"
+          },
+          {
+            "error_count": 3,
+            "error_indices": [
+              0,
+              1,
+              2
+            ],
+            "l1_error": 3,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-style_ood-0009"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              1
+            ],
+            "l1_error": 4,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-style_ood-0010"
+          },
+          {
+            "error_count": 3,
+            "error_indices": [
+              0,
+              1,
+              3
+            ],
+            "l1_error": 4,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-style_ood-0011"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              3
+            ],
+            "l1_error": 2,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-style_ood-0012"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              0,
+              2
+            ],
+            "l1_error": 2,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-style_ood-0013"
+          },
+          {
+            "error_count": 3,
+            "error_indices": [
+              0,
+              2,
+              3
+            ],
+            "l1_error": 3,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-style_ood-0014"
+          },
+          {
+            "error_count": 3,
+            "error_indices": [
+              1,
+              2,
+              3
+            ],
+            "l1_error": 3,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-style_ood-0015"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              0,
+              2
+            ],
+            "l1_error": 4,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-style_ood-0017"
+          },
+          {
+            "error_count": 3,
+            "error_indices": [
+              0,
+              2,
+              3
+            ],
+            "l1_error": 5,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-style_ood-0018"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              0,
+              1
+            ],
+            "l1_error": 2,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-style_ood-0019"
+          },
+          {
+            "error_count": 3,
+            "error_indices": [
+              0,
+              1,
+              3
+            ],
+            "l1_error": 3,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-style_ood-0020"
+          },
+          {
+            "error_count": 3,
+            "error_indices": [
+              0,
+              1,
+              3
+            ],
+            "l1_error": 3,
+            "observation_out_of_domain": true,
+            "scene_id": "phase8-style_ood-0021"
+          },
+          {
+            "error_count": 4,
+            "error_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "l1_error": 9,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-style_ood-0022"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              1,
+              2
+            ],
+            "l1_error": 22,
+            "observation_out_of_domain": true,
+            "scene_id": "phase8-style_ood-0024"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              0
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-style_ood-0025"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              0,
+              1
+            ],
+            "l1_error": 2,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-style_ood-0026"
+          },
+          {
+            "error_count": 4,
+            "error_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "l1_error": 124,
+            "observation_out_of_domain": true,
+            "scene_id": "phase8-style_ood-0027"
+          },
+          {
+            "error_count": 1,
+            "error_indices": [
+              3
+            ],
+            "l1_error": 1,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-style_ood-0028"
+          },
+          {
+            "error_count": 2,
+            "error_indices": [
+              1,
+              2
+            ],
+            "l1_error": 3,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-style_ood-0029"
+          },
+          {
+            "error_count": 3,
+            "error_indices": [
+              0,
+              1,
+              2
+            ],
+            "l1_error": 3,
+            "observation_out_of_domain": false,
+            "scene_id": "phase8-style_ood-0030"
+          },
+          {
+            "error_count": 3,
+            "error_indices": [
+              0,
+              1,
+              3
+            ],
+            "l1_error": 22,
+            "observation_out_of_domain": true,
+            "scene_id": "phase8-style_ood-0031"
+          }
+        ],
+        "scene_count": 98,
+        "value_domain": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18
+        ],
+        "zero_error_scene_count_excluded": 30
       }
     },
     "support_budget": {
-      "budget_ratio_T_to_C0": 6.0,
-      "counts_by_variant": {
-        "C0_format_only": 752,
-        "C1_forward_arithmetic": 752,
-        "T_constraint_recovery": 4512
+      "evidence_class": "exploratory",
+      "source_members": [
+        {
+          "path": "artifacts/v4/training/support.jsonl",
+          "sha256": "0bc003d7fdf4f2f67aecef42a25e8caf2f33433fa969aea1962df5ee397a9c5e"
+        }
+      ],
+      "statistics": {
+        "curriculum_stage_counts_by_variant": {
+          "C0_format_only": 1,
+          "C1_forward_arithmetic": 1,
+          "T_constraint_recovery": 6
+        },
+        "row_counts_by_variant": {
+          "C0_format_only": 752,
+          "C1_forward_arithmetic": 752,
+          "T_constraint_recovery": 4512
+        },
+        "row_counts_by_variant_and_stage": {
+          "C0_format_only": {
+            "format_only": 752
+          },
+          "C1_forward_arithmetic": {
+            "forward_fact_verification": 752
+          },
+          "T_constraint_recovery": {
+            "conflict_detection": 752,
+            "error_index": 752,
+            "fact_verification": 752,
+            "final_free_recovery": 752,
+            "global_fact_verification": 752,
+            "replacement_value": 752
+          }
+        },
+        "row_ratio_T_to_C0": 6.0,
+        "unique_source_scene_counts_by_variant": {
+          "C0_format_only": 752,
+          "C1_forward_arithmetic": 752,
+          "T_constraint_recovery": 752
+        }
       }
     }
   }

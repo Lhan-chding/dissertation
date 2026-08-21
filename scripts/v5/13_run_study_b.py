@@ -47,6 +47,12 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--support-package", type=Path)
     parser.add_argument("--support-sha256")
+    parser.add_argument("--parent-manifest", type=Path)
+    parser.add_argument("--parent-manifest-sha256")
+    parser.add_argument("--child-manifest", type=Path)
+    parser.add_argument("--child-manifest-sha256")
+    parser.add_argument("--frozen-scenes", type=Path)
+    parser.add_argument("--frozen-scenes-sha256")
     parser.add_argument("--evaluation", type=Path)
     parser.add_argument("--evaluation-sha256")
     parser.add_argument("--config", type=Path, default=CONFIG)
@@ -111,6 +117,43 @@ def _load_evaluation(path: Path) -> tuple[dict[str, object], ...]:
         return evaluation_rows_from_study_a(values)  # type: ignore[arg-type]
 
 
+def _validate_support_source_provenance(
+    *,
+    support: Mapping[str, object],
+    parent_manifest: Path,
+    child_manifest: Path,
+    frozen_scenes: Path,
+) -> dict[str, str]:
+    """Rehash the Phase2a source chain and verify the child/package links."""
+
+    provenance = support.get("source_provenance")
+    if not isinstance(provenance, Mapping):
+        raise StudyBError("support package lacks source_provenance")
+    observed = {
+        "parent_manifest_sha256": sha256_file(parent_manifest),
+        "child_manifest_sha256": sha256_file(child_manifest),
+        "frozen_scenes_sha256": sha256_file(frozen_scenes),
+    }
+    for field, digest in observed.items():
+        if provenance.get(field) != digest:
+            raise StudyBError(f"support source_provenance {field} mismatch")
+    child = _load_json(child_manifest, "Phase2a child manifest")
+    if not isinstance(child, Mapping):
+        raise StudyBError("Phase2a child manifest must be a mapping")
+    if child.get("status") != "V5_PHASE2A_NATURAL_OBSERVATIONS_FROZEN":
+        raise StudyBError("Phase2a child manifest is not frozen")
+    if child.get("parent_manifest_modified") is not False:
+        raise StudyBError("Phase2a child manifest reports a modified parent")
+    if child.get("semantic_scene_count") != 96:
+        raise StudyBError("Phase2a child manifest must freeze exactly 96 semantic scenes")
+    if child.get("base_sha256") != MODEL_SNAPSHOT_SHA256:
+        raise StudyBError("Phase2a child manifest has the wrong Base SHA-256")
+    for field in ("parent_manifest_sha256", "frozen_scenes_sha256"):
+        if child.get(field) != observed[field]:
+            raise StudyBError(f"Phase2a child manifest {field} mismatch")
+    return observed
+
+
 def _validate_config(path: Path) -> dict[str, object]:
     payload = yaml.safe_load(path.read_text(encoding="utf-8"))
     if not isinstance(payload, dict) or payload.get("schema_version") != 1:
@@ -143,7 +186,11 @@ def _validate_config(path: Path) -> dict[str, object]:
     }:
         raise StudyBError("Study B authorization must allow only offline SFT and inference")
     offline = payload.get("offline")
-    if offline != {"HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1"}:
+    if offline != {
+        "HF_HUB_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "HF_DATASETS_OFFLINE": "1",
+    }:
         raise StudyBError("Study B config offline contract drifted")
     return payload
 
@@ -209,6 +256,12 @@ def main() -> int:
         required = {
             "support-package": arguments.support_package,
             "support-sha256": arguments.support_sha256,
+            "parent-manifest": arguments.parent_manifest,
+            "parent-manifest-sha256": arguments.parent_manifest_sha256,
+            "child-manifest": arguments.child_manifest,
+            "child-manifest-sha256": arguments.child_manifest_sha256,
+            "frozen-scenes": arguments.frozen_scenes,
+            "frozen-scenes-sha256": arguments.frozen_scenes_sha256,
             "evaluation": arguments.evaluation,
             "evaluation-sha256": arguments.evaluation_sha256,
             "config-sha256": arguments.config_sha256,
@@ -221,6 +274,12 @@ def main() -> int:
             raise StudyBError("missing required execution arguments: " + ", ".join(missing))
         assert arguments.support_package is not None
         assert arguments.support_sha256 is not None
+        assert arguments.parent_manifest is not None
+        assert arguments.parent_manifest_sha256 is not None
+        assert arguments.child_manifest is not None
+        assert arguments.child_manifest_sha256 is not None
+        assert arguments.frozen_scenes is not None
+        assert arguments.frozen_scenes_sha256 is not None
         assert arguments.evaluation is not None
         assert arguments.evaluation_sha256 is not None
         assert arguments.config_sha256 is not None
@@ -240,6 +299,21 @@ def main() -> int:
         support_hash = _verify_file(
             arguments.support_package, arguments.support_sha256, "support package"
         )
+        parent_manifest_hash = _verify_file(
+            arguments.parent_manifest,
+            arguments.parent_manifest_sha256,
+            "Phase2a parent manifest",
+        )
+        child_manifest_hash = _verify_file(
+            arguments.child_manifest,
+            arguments.child_manifest_sha256,
+            "Phase2a child manifest",
+        )
+        frozen_scenes_hash = _verify_file(
+            arguments.frozen_scenes,
+            arguments.frozen_scenes_sha256,
+            "Phase2a frozen scenes",
+        )
         evaluation_hash = _verify_file(
             arguments.evaluation, arguments.evaluation_sha256, "evaluation package"
         )
@@ -253,6 +327,12 @@ def main() -> int:
         if not isinstance(support, Mapping):
             raise StudyBError("support package must be a JSON mapping")
         _validate_config_against_support(config, support)
+        source_provenance = _validate_support_source_provenance(
+            support=support,
+            parent_manifest=arguments.parent_manifest,
+            child_manifest=arguments.child_manifest,
+            frozen_scenes=arguments.frozen_scenes,
+        )
         evaluation = _load_evaluation(arguments.evaluation)
         verify_runtime_package_lock(arguments.package_lock)
         backend = QwenStudyBBackend(
@@ -271,6 +351,10 @@ def main() -> int:
                 "config_sha256": config_hash,
                 "package_lock_sha256": lock_hash,
                 "support_file_sha256": support_hash,
+                "parent_manifest_sha256": parent_manifest_hash,
+                "child_manifest_sha256": child_manifest_hash,
+                "frozen_scenes_sha256": frozen_scenes_hash,
+                "support_source_provenance": source_provenance,
                 "evaluation_file_sha256": evaluation_hash,
             },
         )

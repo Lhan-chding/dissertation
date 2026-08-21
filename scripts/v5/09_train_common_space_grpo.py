@@ -90,7 +90,7 @@ def main() -> int:
         ):
             raise ServerExecutionBlocked(
                 "--common-action-manifest must name one of the hash-bound --input files"
-        )
+            )
         arms = load_common_space_arms(arguments.common_action_manifest)
         runner = load_server_runner(arguments.runtime)
     except (OSError, TypeError, ValueError, ServerExecutionBlocked) as error:

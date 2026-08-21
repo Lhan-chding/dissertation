@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import re
 from collections.abc import Callable, Iterable, Mapping
 from copy import deepcopy
-import re
 
 from compensability_v5.audit.budget_audit import assert_budget_matched
 
@@ -216,7 +216,10 @@ def build_budget_matched_support(
     budget_template = _require_training_budget(training_budget)
     if not isinstance(source_provenance, Mapping) or set(source_provenance) != _PROVENANCE_FIELDS:
         raise SupportBuildError("source_provenance must use the closed three-hash schema")
-    if any(not isinstance(value, str) or _SHA256.fullmatch(value) is None for value in source_provenance.values()):
+    if any(
+        not isinstance(value, str) or _SHA256.fullmatch(value) is None
+        for value in source_provenance.values()
+    ):
         raise SupportBuildError("source_provenance values must be lowercase SHA-256 digests")
 
     rows_by_arm: dict[str, list[dict[str, object]]] = {arm: [] for arm in _ARM_ORDER}
@@ -264,6 +267,13 @@ def build_budget_matched_support(
         "budgets": budgets,
         "target_token_relative_tolerance": target_token_relative_tolerance,
         "source_provenance": dict(source_provenance),
+        "pilot_schedule": {
+            "hardware": "single_RTX_4090",
+            "batch_size": 1,
+            "gradient_accumulation": budget_template["gradient_accumulation"],
+            "epochs": 1,
+            "optimizer_steps": budget_template["steps"],
+        },
     }
 
 

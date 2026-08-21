@@ -27,6 +27,9 @@ def _fixture_scene() -> list[dict[str, object]]:
             "prompt": "Observed world: 8,2,3,4. Return four comma-separated integers only.",
             "truth": [9, 2, 3, 4],
             "answer_operation": {"operator": "sum", "indices": [0, 1]},
+            "family": "pair_sum",
+            "fiber_size": 3,
+            "policy_support": 0.25,
         }
     ]
 
@@ -42,11 +45,39 @@ def _write_json(path: Path, payload: object) -> None:
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def _attach_study_a_support(
+    scenes: list[dict[str, object]], study_a_rows: Path
+) -> list[dict[str, object]]:
+    audit = _read_jsonl(study_a_rows)
+    support: dict[str, float] = {}
+    for row in audit:
+        if row.get("checkpoint") == "T" and row.get("graph_axis") == "canonical":
+            scene_id = row.get("source_scene_id")
+            value = row.get("exact_recovery_probability")
+            if (
+                not isinstance(scene_id, str)
+                or isinstance(value, bool)
+                or not isinstance(value, (int, float))
+                or not 0.0 <= float(value) <= 1.0
+                or scene_id in support
+            ):
+                raise ValueError("Study A canonical T policy-support rows are malformed")
+            support[scene_id] = float(value)
+    result = []
+    for scene in scenes:
+        semantic_id = scene.get("semantic_scene_id", scene.get("scene_id"))
+        if semantic_id not in support:
+            raise ValueError(f"Study A policy support is missing for {semantic_id}")
+        result.append({**scene, "policy_support": support[str(semantic_id)]})
+    return result
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--execute", action="store_true")
     parser.add_argument("--fixture-dry-run", action="store_true")
     parser.add_argument("--input-jsonl", type=Path)
+    parser.add_argument("--study-a-rows", type=Path)
     parser.add_argument("--b3-initialization-sha256")
     parser.add_argument("--b2-initialization-sha256")
     parser.add_argument("--base-initialization-sha256")
@@ -76,12 +107,16 @@ def main() -> int:
         arguments.b2_initialization_sha256,
         arguments.base_initialization_sha256,
     )
-    if arguments.input_jsonl is None or any(value is None for value in initialization_values):
+    if (
+        arguments.input_jsonl is None
+        or arguments.study_a_rows is None
+        or any(value is None for value in initialization_values)
+    ):
         print("BLOCKED: --input-jsonl and all three initialization SHA-256 values are required.")
         return 2
     try:
         package = freeze_common_action_space(
-            _read_jsonl(arguments.input_jsonl),
+            _attach_study_a_support(_read_jsonl(arguments.input_jsonl), arguments.study_a_rows),
             initialization_hashes={
                 "B3": arguments.b3_initialization_sha256,
                 "B2": arguments.b2_initialization_sha256,
@@ -90,6 +125,8 @@ def main() -> int:
             action_parser_id=ACTION_PARSER_ID,
             rollout_seeds=[PILOT_SEED],
         )
+        if package["role_counts"] != {"rl_train": 72, "rl_eval": 24}:
+            raise ValueError("Study C requires the registered 72/24 disjoint split")
     except (OSError, TypeError, ValueError) as error:
         print(f"BLOCKED: {error}")
         return 2

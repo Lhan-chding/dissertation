@@ -61,8 +61,7 @@ def _render_chart(path: Path, truth: tuple[int, int, int, int]) -> None:
 
 def _prompt(matrix: Matrix, targets: tuple[int, ...]) -> str:
     equations = "\n".join(
-        f"{','.join(map(str, row))} = {target}"
-        for row, target in zip(matrix, targets, strict=True)
+        f"{','.join(map(str, row))} = {target}" for row, target in zip(matrix, targets, strict=True)
     )
     return (
         "Observed values: {observed_world}\n"
@@ -121,37 +120,41 @@ def freeze_pre_model_factorial(
                         answer = truth[0] - truth[1]
                     else:
                         answer = max(truth) - min(truth)
-                    rows.append({
-                        "schema_version": 1,
-                        "scene_id": scene_id,
-                        "semantic_scene_id": parent_id,
-                        "split": "v5_pre_model_candidate",
-                        "role": "phase2a_parent_orbit",
-                        "truth": list(truth),
-                        "family": family,
-                        "capability_type": "direct" if family == "known_value" else "relational",
-                        "constraint_matrix": [list(row) for row in matrix],
-                        "constraint_targets": list(targets),
-                        "matrix_rank": 4,
-                        "unique_sparse_decoder": True,
-                        "graph_signature": graph_signature(matrix),
-                        "graph_axis": graph_axis,
-                        "relation_depth": {
-                            "known_value": 0,
-                            "pair_sum": 1,
-                            "trend": 2,
-                        }[family],
-                        "answer_operation": {"operator": operation, "indices": [0, 1]},
-                        "correct_answer": answer,
-                        "orbit_parent_id": parent_id,
-                        "transformation": transformation,
-                        "image_path": image_relative.as_posix(),
-                        "image_sha256": _sha256(temporary / image_relative),
-                        "prompt_path": prompt_relative.as_posix(),
-                        "prompt_template_version": PROMPT_VERSION,
-                        "prompt_sha256": _sha256(temporary / prompt_relative),
-                        "observation_status": "pending_server_capture",
-                    })
+                    rows.append(
+                        {
+                            "schema_version": 1,
+                            "scene_id": scene_id,
+                            "semantic_scene_id": parent_id,
+                            "split": "v5_pre_model_candidate",
+                            "role": "phase2a_parent_orbit",
+                            "truth": list(truth),
+                            "family": family,
+                            "capability_type": "direct"
+                            if family == "known_value"
+                            else "relational",
+                            "constraint_matrix": [list(row) for row in matrix],
+                            "constraint_targets": list(targets),
+                            "matrix_rank": 4,
+                            "unique_sparse_decoder": True,
+                            "graph_signature": graph_signature(matrix),
+                            "graph_axis": graph_axis,
+                            "relation_depth": {
+                                "known_value": 0,
+                                "pair_sum": 1,
+                                "trend": 2,
+                            }[family],
+                            "answer_operation": {"operator": operation, "indices": [0, 1]},
+                            "correct_answer": answer,
+                            "orbit_parent_id": parent_id,
+                            "transformation": transformation,
+                            "image_path": image_relative.as_posix(),
+                            "image_sha256": _sha256(temporary / image_relative),
+                            "prompt_path": prompt_relative.as_posix(),
+                            "prompt_template_version": PROMPT_VERSION,
+                            "prompt_sha256": _sha256(temporary / prompt_relative),
+                            "observation_status": "pending_server_capture",
+                        }
+                    )
         rows_text = "".join(_canonical_json(row) + "\n" for row in rows)
         rows_path = temporary / "pre_model_rows.jsonl"
         rows_path.write_text(rows_text, encoding="utf-8")

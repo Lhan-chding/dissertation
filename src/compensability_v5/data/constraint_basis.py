@@ -32,8 +32,7 @@ def matrix_rank(matrix: Matrix) -> int:
             if index != rank and row[column]:
                 factor = row[column]
                 work[index] = [
-                    left - factor * right
-                    for left, right in zip(row, work[rank], strict=True)
+                    left - factor * right for left, right in zip(row, work[rank], strict=True)
                 ]
         rank += 1
     return rank

@@ -64,8 +64,7 @@ def _audit_inputs(
         raise TypeError("decoder must be callable")
     raw_instances = _tuple(instances, name="instances")
     normalized_instances = tuple(
-        _tuple(instance, name=f"instances[{index}]")
-        for index, instance in enumerate(raw_instances)
+        _tuple(instance, name=f"instances[{index}]") for index, instance in enumerate(raw_instances)
     )
     dimension = len(normalized_instances[0])
     if any(len(instance) != dimension for instance in normalized_instances):

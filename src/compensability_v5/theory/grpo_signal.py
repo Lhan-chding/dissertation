@@ -56,9 +56,7 @@ def correction_bearing_answer_signal(p_x: float, p_s: float, group_size: int) ->
 
     exact, shortcut, _failure = _category_probabilities(p_x, p_s)
     size = _group_size(group_size)
-    probability = (
-        1.0 - (1.0 - exact) ** size - (exact + shortcut) ** size + shortcut**size
-    )
+    probability = 1.0 - (1.0 - exact) ** size - (exact + shortcut) ** size + shortcut**size
     return _unit_interval(probability)
 
 

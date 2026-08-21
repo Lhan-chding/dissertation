@@ -92,11 +92,7 @@ def assert_common_space_reward_isolation(
             raise ServerExecutionBlocked(
                 f"{initialization} initialization hash differs across reward arms"
             )
-        differing = {
-            key
-            for key in set(answer) | set(state)
-            if answer.get(key) != state.get(key)
-        }
+        differing = {key for key in set(answer) | set(state) if answer.get(key) != state.get(key)}
         if differing != {"reward_function"}:
             raise ServerExecutionBlocked(
                 f"{initialization} reward pair differs outside reward_function: {sorted(differing)}"

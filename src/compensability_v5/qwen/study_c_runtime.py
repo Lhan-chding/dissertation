@@ -17,19 +17,24 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Protocol
 
-from compensability_v4.qwen.phase5_support import parse_world
 from compensability_v5.data.common_action_schema import WorldAction, apply_answer_operation
+from compensability_v5.qwen.study_c_evaluation import (
+    STUDY_C_EVAL_ROLLOUTS,
+    STUDY_C_EVAL_SEED,
+    EvaluationSampler,
+    make_reward_function,
+    qwen_text_evaluation_sampler,
+    run_post_training_frozen_eval,
+    run_pre_training_frozen_eval,
+)
 from compensability_v5.qwen.study_c_metrics import (
     StudyCError,
     build_study_c_summary,
-    read_study_c_trace,
 )
 from compensability_v5.training.train_support_lora import canonical_json_sha256
 
 STUDY_C_ACK = "I_UNDERSTAND_THIS_STARTS_V5_STUDY_C_GRPO"
 STUDY_C_SEED = 2026082301
-STUDY_C_EVAL_SEED = 2026082302
-STUDY_C_EVAL_ROLLOUTS = 16
 ACTION_PARSER_ID = "compensability_v4.qwen.phase5_support.parse_world:v1"
 PRIMARY_INITIALIZATION = "B3"
 SECONDARY_INITIALIZATION = "B2"
@@ -145,30 +150,6 @@ def _valid_sha256(value: object) -> bool:
     )
 
 
-def _completion_text(value: object) -> str:
-    if isinstance(value, str):
-        return value
-    if isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
-        parts = tuple(value)
-        if parts and all(isinstance(part, Mapping) for part in parts):
-            content = parts[-1].get("content")  # type: ignore[union-attr]
-            if isinstance(content, str):
-                return content
-    raise StudyCError("TRL completion has an unsupported structure")
-
-
-def _expanded(values: object, size: int, label: str) -> tuple[object, ...]:
-    if not isinstance(values, Sequence) or isinstance(values, (str, bytes)) or not values:
-        raise StudyCError(f"reward metadata {label} is malformed")
-    items = tuple(values)
-    if len(items) == size:
-        return items
-    if size % len(items):
-        raise StudyCError(f"reward metadata {label} cannot align to completions")
-    repetitions = size // len(items)
-    return tuple(item for item in items for _ in range(repetitions))
-
-
 @dataclass(frozen=True, slots=True)
 class StudyCArm:
     """A closed GRPO arm; a reward pair may differ only in name and reward."""
@@ -214,6 +195,42 @@ class StudyCArm:
 
     def to_mapping(self) -> dict[str, object]:
         return asdict(self)
+
+
+def build_grpo_config_kwargs(
+    arm: StudyCArm, output_dir: Path, supported_parameters: Sequence[str]
+) -> dict[str, object]:
+    """Build the shared TRL args, passing max_prompt_length only when supported."""
+
+    kwargs: dict[str, object] = {
+        "output_dir": str(output_dir),
+        "learning_rate": arm.learning_rate,
+        "max_steps": arm.steps,
+        "num_generations": arm.group_size,
+        "per_device_train_batch_size": arm.per_device_train_batch_size,
+        "gradient_accumulation_steps": arm.gradient_accumulation_steps,
+        "max_completion_length": arm.max_completion_length,
+        "bf16": True,
+        "fp16": False,
+        "temperature": arm.temperature,
+        "top_p": arm.top_p,
+        "top_k": arm.top_k,
+        "beta": arm.beta,
+        "use_vllm": arm.use_vllm,
+        "gradient_checkpointing": True,
+        "logging_steps": 1,
+        "save_strategy": "steps",
+        "save_steps": arm.checkpoint_steps,
+        "save_total_limit": 2,
+        "report_to": "none",
+        "remove_unused_columns": False,
+        "seed": arm.seed,
+        "data_seed": arm.seed,
+        "optim": arm.optimizer,
+    }
+    if "max_prompt_length" in supported_parameters:
+        kwargs["max_prompt_length"] = arm.max_prompt_length
+    return kwargs
 
 
 def _reward_pair(initialization: str, initialization_hash: str) -> tuple[StudyCArm, ...]:
@@ -358,7 +375,7 @@ class StudyCScene:
         )
 
     def to_dataset_row(self) -> dict[str, object]:
-        return {"prompt": self.prompt, "scene_id": self.scene_id}
+        return {"prompt": self.prompt, "scene_id": self.scene_id, "role": self.role}
 
 
 def load_study_c_scenes(package: Mapping[str, object]) -> tuple[StudyCScene, ...]:
@@ -409,7 +426,7 @@ def split_study_c_scenes(
 
 def validate_study_c_prompt_lengths(
     scenes: Sequence[StudyCScene], processor: object, *, max_prompt_length: int
-) -> None:
+) -> int:
     """Enforce the frozen prompt limit without asking TRL to truncate inputs."""
 
     tokenizer = getattr(processor, "tokenizer", None)
@@ -431,101 +448,7 @@ def validate_study_c_prompt_lengths(
             raise StudyCError(
                 f"Study C prompt exceeds {max_prompt_length} tokens: {scene.scene_id}"
             )
-
-
-def make_reward_function(
-    *, scenes: Sequence[StudyCScene], arm: StudyCArm, trace_path: Path
-) -> Callable[..., list[float]]:
-    """Build one audited reward callback while scoring both registered outcomes."""
-
-    index = {scene.scene_id: scene for scene in scenes}
-    if not index or len(index) != len(scenes):
-        raise StudyCError("Study C reward scenes are empty or duplicated")
-    call_index = 0
-    if trace_path.exists():
-        if trace_path.is_symlink() or not trace_path.is_file():
-            raise StudyCError("existing Study C reward trace is unsafe")
-        existing = tuple(
-            json.loads(line) for line in trace_path.read_text(encoding="utf-8").splitlines() if line
-        )
-        if existing:
-            indices = tuple(row.get("reward_call_index") for row in existing)
-            if any(type(item) is not int or int(item) < 0 for item in indices):
-                raise StudyCError("existing Study C reward trace has invalid call indices")
-            call_index = max(int(item) for item in indices) + 1
-
-    def reward(completions: Sequence[object], **kwargs: object) -> list[float]:
-        nonlocal call_index
-        if (
-            not isinstance(completions, Sequence)
-            or isinstance(completions, (str, bytes))
-            or not completions
-            or len(completions) % arm.group_size
-        ):
-            raise StudyCError(f"Study C reward group size must be a multiple of {arm.group_size}")
-        scene_ids = _expanded(kwargs.get("scene_id"), len(completions), "scene_id")
-        state = kwargs.get("trainer_state")
-        step_value = getattr(state, "global_step", -1)
-        step = step_value if type(step_value) is int else -1
-        rows: list[dict[str, object]] = []
-        rewards: list[float] = []
-        for position, (completion, scene_id) in enumerate(
-            zip(completions, scene_ids, strict=True)
-        ):
-            if not isinstance(scene_id, str) or scene_id not in index:
-                raise StudyCError(f"Study C reward received unknown scene: {scene_id}")
-            scene = index[scene_id]
-            text = _completion_text(completion)
-            parsed = parse_world(text)
-            candidate = None if parsed is None else WorldAction(parsed)
-            truth = WorldAction(scene.truth)
-            exact = candidate == truth
-            answer_correct = (
-                candidate is not None
-                and apply_answer_operation(candidate, scene.operation) == scene.answer_label
-            )
-            score = float(answer_correct if arm.reward_function == "answer" else exact)
-            rewards.append(score)
-            rows.append(
-                {
-                    "schema_version": 1,
-                    "trainer_step": step,
-                    "reward_call_index": call_index,
-                    "position": position,
-                    "arm": arm.name,
-                    "initialization": arm.initialization,
-                    "reward_function": arm.reward_function,
-                    "scene_id": scene.scene_id,
-                    "family": scene.family,
-                    "fiber_size": scene.fiber_size,
-                    "fiber_bin": scene.fiber_bin,
-                    "support_bin": scene.support_bin,
-                    "completion": text,
-                    "parsed_world": None if parsed is None else list(parsed),
-                    "parse_success": parsed is not None,
-                    "reward": score,
-                    "exact_world_recovery": exact,
-                    "answer_correct": answer_correct,
-                    "shortcut_answer_success": answer_correct and not exact,
-                    **(
-                        {"rollout_seed": kwargs["rollout_seed"][position]}
-                        if isinstance(kwargs.get("rollout_seed"), Sequence)
-                        and not isinstance(kwargs.get("rollout_seed"), (str, bytes))
-                        and len(kwargs["rollout_seed"]) == len(completions)  # type: ignore[arg-type]
-                        else {}
-                    ),
-                }
-            )
-        trace_path.parent.mkdir(parents=True, exist_ok=True)
-        with trace_path.open("a", encoding="utf-8") as stream:
-            for row in rows:
-                stream.write(json.dumps(row, sort_keys=True, allow_nan=False) + "\n")
-            stream.flush()
-        call_index += 1
-        return rewards
-
-    reward.__name__ = f"{arm.name}_reward"
-    return reward
+    return max(len(values) for values in token_ids)
 
 
 class StudyCRewardTraceCallback:
@@ -574,139 +497,29 @@ class _Trainer(Protocol):
 
 
 TrainerFactory = Callable[..., _Trainer]
-EvaluationSampler = Callable[[StudyCScene, tuple[int, ...]], Sequence[object]]
 EvaluationSamplerFactory = Callable[[_Trainer], EvaluationSampler]
 
 
-def qwen_text_evaluation_sampler(
-    *, arm: StudyCArm, model: object, processor: object
-) -> EvaluationSampler:
-    """Create the real fixed-seed text-only Qwen sampler after training."""
-
-    def sample(scene: StudyCScene, seeds: tuple[int, ...]) -> Sequence[object]:
-        import torch
-
-        set_eval = getattr(model, "eval", None)
-        if callable(set_eval):
-            set_eval()
-        apply_template = getattr(processor, "apply_chat_template", None)
-        if not callable(apply_template):
-            raise StudyCError("Study C processor exposes no chat template")
-        messages = [
-            {"role": "user", "content": [{"type": "text", "text": scene.prompt}]}
-        ]
-        prompt = apply_template(messages, tokenize=False, add_generation_prompt=True)
-        if not isinstance(prompt, str) or not prompt:
-            raise StudyCError("Study C processor returned an invalid chat prompt")
-        prepare = processor if callable(processor) else None
-        if prepare is None:
-            raise StudyCError("Study C processor is not callable")
-        outputs: list[str] = []
-        model_device = getattr(model, "device", None)
-        generate = getattr(model, "generate", None)
-        if not callable(generate):
-            raise StudyCError("Study C model exposes no generate method")
-        for seed in seeds:
-            torch.manual_seed(seed)
-            if torch.cuda.is_available():
-                torch.cuda.manual_seed_all(seed)
-            batch = prepare(text=[prompt], padding=True, return_tensors="pt")
-            move = getattr(batch, "to", None)
-            if model_device is not None and callable(move):
-                batch = move(model_device)
-            if not isinstance(batch, Mapping):
-                keys = getattr(batch, "keys", None)
-                if not callable(keys):
-                    raise StudyCError("Study C processor batch is not mapping-like")
-                batch = {key: batch[key] for key in keys()}
-            input_ids = batch.get("input_ids")
-            shape = getattr(input_ids, "shape", None)
-            if shape is None or len(shape) != 2:
-                raise StudyCError("Study C processor returned malformed input IDs")
-            prompt_length = int(shape[1])
-            with torch.inference_mode():
-                generated = generate(
-                    **dict(batch),
-                    do_sample=True,
-                    temperature=arm.temperature,
-                    top_p=arm.top_p,
-                    top_k=arm.top_k,
-                    max_new_tokens=arm.max_completion_length,
-                    use_cache=True,
-                )
-            completion_ids = generated[:, prompt_length:]
-            decode = getattr(processor, "batch_decode", None)
-            if not callable(decode):
-                tokenizer = getattr(processor, "tokenizer", None)
-                decode = getattr(tokenizer, "batch_decode", None)
-            if not callable(decode):
-                raise StudyCError("Study C processor exposes no batch decoder")
-            decoded = decode(
-                completion_ids,
-                skip_special_tokens=True,
-                clean_up_tokenization_spaces=False,
-            )
-            if not isinstance(decoded, Sequence) or len(decoded) != 1:
-                raise StudyCError("Study C decoder returned malformed completion text")
-            outputs.append(str(decoded[0]))
-        return tuple(outputs)
-
-    return sample
-
-
-def run_post_training_frozen_eval(
-    *,
-    arm: StudyCArm,
-    scenes: Sequence[StudyCScene],
-    output_dir: Path,
-    sampler: EvaluationSampler,
-) -> dict[str, object]:
-    """Sample 16 fixed-seed completions per frozen scene into independent artifacts."""
-
-    trace_path = output_dir / "eval_raw_rows.jsonl"
-    summary_path = output_dir / "eval_summary.json"
-    if trace_path.exists() or summary_path.exists():
-        raise StudyCError("post-training Study C evaluation overwrite is forbidden")
-    reward = make_reward_function(scenes=scenes, arm=arm, trace_path=trace_path)
-    rollout_seeds = tuple(
-        STUDY_C_EVAL_SEED + index for index in range(STUDY_C_EVAL_ROLLOUTS)
-    )
-    for scene in scenes:
-        completions = tuple(sampler(scene, rollout_seeds))
-        if len(completions) != STUDY_C_EVAL_ROLLOUTS:
-            raise StudyCError(
-                f"post-training sampler must return {STUDY_C_EVAL_ROLLOUTS} rollouts per scene"
-            )
-        for start in range(0, STUDY_C_EVAL_ROLLOUTS, arm.group_size):
-            stop = start + arm.group_size
-            reward(
-                completions[start:stop],
-                scene_id=[scene.scene_id],
-                rollout_seed=rollout_seeds[start:stop],
-            )
-    rows = read_study_c_trace(trace_path)
-    rewritten = tuple(
-        {**row, "trace_kind": "post_training_frozen_eval"} for row in rows
-    )
-    temporary = trace_path.with_suffix(".rewrite.tmp")
-    with temporary.open("x", encoding="utf-8") as stream:
-        for row in rewritten:
-            stream.write(json.dumps(row, sort_keys=True, allow_nan=False) + "\n")
-    temporary.replace(trace_path)
-    summary = build_study_c_summary({arm.name: trace_path}, group_size=arm.group_size)
-    summary.update(
-        {
-            "measurement_scope": "post_training_frozen_eval",
-            "rollouts_per_scene": STUDY_C_EVAL_ROLLOUTS,
-            "evaluation_seed": STUDY_C_EVAL_SEED,
-            "shared_rollout_seeds": list(rollout_seeds),
-            "raw_rows_sha256": _sha256_file(trace_path),
-        }
-    )
-    with summary_path.open("x", encoding="utf-8") as stream:
-        json.dump(summary, stream, sort_keys=True, indent=2, allow_nan=False)
-        stream.write("\n")
-    return summary
+def _resume_pre_training_summary(output_dir: Path) -> dict[str, object]:
+    trace_path = output_dir / "pre_training_eval_raw_rows.jsonl"
+    summary_path = output_dir / "pre_training_eval_summary.json"
+    if not trace_path.is_file() or trace_path.is_symlink():
+        raise StudyCError("resume checkpoint is missing the immutable pre-training trace")
+    if not summary_path.is_file() or summary_path.is_symlink():
+        raise StudyCError("resume checkpoint is missing the pre-training summary")
+    try:
+        payload = json.loads(summary_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise StudyCError("pre-training summary is malformed") from error
+    if (
+        not isinstance(payload, dict)
+        or payload.get("measurement_scope") != "pre_training_frozen_eval"
+        or payload.get("rollouts_per_scene") != STUDY_C_EVAL_ROLLOUTS
+        or payload.get("evaluation_seed") != STUDY_C_EVAL_SEED
+        or payload.get("raw_rows_sha256") != _sha256_file(trace_path)
+    ):
+        raise StudyCError("pre-training summary does not match its frozen trace")
+    return payload
 
 
 def run_study_c_arm(
@@ -717,6 +530,7 @@ def run_study_c_arm(
     trainer_factory: TrainerFactory,
     provenance_sha256: Mapping[str, str],
     resume_from_checkpoint: Path | None = None,
+    pre_training_evaluation_sampler_factory: EvaluationSamplerFactory | None = None,
     evaluation_sampler_factory: EvaluationSamplerFactory | None = None,
 ) -> dict[str, object]:
     """Execute one arm through an injected TRL-compatible trainer factory."""
@@ -741,6 +555,17 @@ def run_study_c_arm(
         output_dir=output_dir,
         callbacks=(callback,),
     )
+    pre_training_summary: dict[str, object] | None = None
+    if pre_training_evaluation_sampler_factory is not None:
+        if resume_from_checkpoint is None:
+            pre_training_summary = run_pre_training_frozen_eval(
+                arm=arm,
+                scenes=evaluation_scenes,
+                output_dir=output_dir,
+                sampler=pre_training_evaluation_sampler_factory(trainer),
+            )
+        else:
+            pre_training_summary = _resume_pre_training_summary(output_dir)
     trainer.train(
         resume_from_checkpoint=None
         if resume_from_checkpoint is None
@@ -797,6 +622,13 @@ def run_study_c_arm(
         "trainer_log_sha256": _sha256_file(metrics_path),
         "diagnostics_sha256": _sha256_file(diagnostics_path),
         "post_training_evaluation_invoked": evaluation_summary is not None,
+        "pre_training_evaluation_invoked": pre_training_summary is not None,
+        "pre_training_eval_raw_rows_sha256": None
+        if pre_training_summary is None
+        else _sha256_file(output_dir / "pre_training_eval_raw_rows.jsonl"),
+        "pre_training_eval_summary_sha256": None
+        if pre_training_summary is None
+        else _sha256_file(output_dir / "pre_training_eval_summary.json"),
         "eval_raw_rows_sha256": None
         if evaluation_summary is None
         else _sha256_file(output_dir / "eval_raw_rows.jsonl"),
@@ -811,6 +643,16 @@ def run_study_c_arm(
         "rl_invoked": True,
         "raw_reward_trace_preserved": True,
         "output_overwrite_allowed": False,
+        "prompt_length_enforcement": getattr(
+            trainer,
+            "_study_c_prompt_length_audit",
+            {
+                "mode": "external_preflight",
+                "limit": arm.max_prompt_length,
+                "max_observed": None,
+                "passed_to_grpo_config": False,
+            },
+        ),
     }
     with evidence_path.open("x", encoding="utf-8") as stream:
         json.dump(evidence, stream, sort_keys=True, indent=2, allow_nan=False)
@@ -830,12 +672,14 @@ __all__ = [
     "StudyCError",
     "StudyCRewardTraceCallback",
     "StudyCScene",
+    "build_grpo_config_kwargs",
     "build_study_c_summary",
     "load_study_c_scenes",
     "make_reward_function",
     "qwen_text_evaluation_sampler",
     "registered_study_c_arms",
     "run_post_training_frozen_eval",
+    "run_pre_training_frozen_eval",
     "run_study_c_arm",
     "split_study_c_scenes",
     "validate_reward_only_pair",

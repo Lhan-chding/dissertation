@@ -1,0 +1,44 @@
+{
+  "artifact_type": "qwen_v5_phase0_execution_manifest",
+  "code": {
+    "combined_sha256": "93b450a8b5edbede7ddd495c4b1222da03e685e1fb27b529d9b7ef568e4f2caa",
+    "files": {
+      "scripts/v5/00_verify_v4_bundle.py": "9ccf0361f41ef67113261efef1cc27cae6f4c56c1d60c275e5db7fe7ab5e4048",
+      "scripts/v5/01_run_posthoc_audit.py": "edf034e6fb6a34f90f01dc4e4c5281f8c7ed3242e5f32b79a12ae514fbe77fbf",
+      "src/compensability_v5/audit/audit_v4_raw.py": "827bdf0e6cdc2997a3abe43c09683370fa766e4fd58856ac62a06e4312fc2a46",
+      "src/compensability_v5/audit/error_order.py": "398d028dfad8fcb7259ca8f9f58eeb35a1a7ea724a003a443351b741a6b0aaa2",
+      "src/compensability_v5/audit/fiber_multiplicity.py": "a472f3c7d876f52a0ac0eb75df871a1890be98cd2e77d59c956e79bca41cceb9"
+    }
+  },
+  "completed_at_utc": "2026-08-21T10:02:53.372862+00:00",
+  "environment": {
+    "executable": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python",
+    "platform": "macOS-26.4-arm64-arm-64bit",
+    "python_implementation": "CPython",
+    "python_version": "3.12.13"
+  },
+  "git_commit": "9d953f32ce8fccdbfb6e69f1e027e5df1afa6597",
+  "inputs": {
+    "fact_bundle": {
+      "path": "/Users/louis/Downloads/qwen_v4_fact_bundle_20260821.tar.gz",
+      "sha256": "6fe3d48bc1a88b35bd5804bc397ce8160534bdd7d71fa6769b755cc098a53683"
+    },
+    "raw_archive": {
+      "path": "/Users/louis/Downloads/qwen_v4_raw_rows_20260821.tar.gz",
+      "sha256": "f0ccb4d56415eecf90a2c456bfd7c92a33fc96a581f3603115edbcb253ba8c84"
+    }
+  },
+  "model_calls_invoked": false,
+  "outputs": {
+    "derived_analysis": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/v5/audit/derived_analysis.json",
+      "sha256": "7b15e84693d8d2bc41e2ae082fcf63345412f20f6c25b0a63c565f36faebf19b"
+    },
+    "input_verification": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/v5/audit/input_verification.json",
+      "sha256": "8ad19a63874c9d27c6257f5093a6856f598fbaf41d286b76c42dd16edaf7ea7e"
+    }
+  },
+  "schema_version": 1,
+  "training_invoked": false
+}

@@ -153,12 +153,8 @@ def _reward_by_fiber_interaction(
             rng = random.Random(BOOTSTRAP_SEED)
             draws: list[float] = []
             for _ in range(BOOTSTRAP_RESAMPLES):
-                singleton = _mean(
-                    [rng.choice(strata["singleton"]) for _ in strata["singleton"]]
-                )
-                multi = _mean(
-                    [rng.choice(strata["multi_state"]) for _ in strata["multi_state"]]
-                )
+                singleton = _mean([rng.choice(strata["singleton"]) for _ in strata["singleton"]])
+                multi = _mean([rng.choice(strata["multi_state"]) for _ in strata["multi_state"]])
                 draws.append(multi - singleton)
             result.update(
                 {
@@ -183,8 +179,111 @@ def _reward_by_fiber_interaction(
     return results
 
 
+def _registered_stop_signals(
+    interaction: Mapping[str, object],
+    by_arm_rows: Mapping[str, Sequence[Mapping[str, object]]],
+    baseline_rows: Mapping[str, Sequence[Mapping[str, object]]],
+) -> dict[str, object]:
+    primary = interaction.get("B3")
+    primary_mapping = primary if isinstance(primary, Mapping) else {}
+    estimate = primary_mapping.get("estimate")
+    interval = primary_mapping.get("scene_bootstrap_95_ci")
+    interaction_triggered = (
+        isinstance(estimate, (int, float))
+        and not isinstance(estimate, bool)
+        and float(estimate) > 0.0
+        and isinstance(interval, list)
+        and len(interval) == 2
+        and float(interval[0]) > 0.0
+    )
+    interaction_rule = {
+        "triggered": interaction_triggered,
+        "rule": "B3 reward-by-fiber interaction > 0 and scene-bootstrap CI excludes 0",
+        "evidence": {"estimate": estimate, "scene_bootstrap_95_ci": interval},
+    }
+
+    final = by_arm_rows.get("B3_answer")
+    baseline = baseline_rows.get("B3_answer")
+    trajectory_rule: dict[str, object]
+    if final is None or baseline is None:
+        trajectory_rule = {
+            "triggered": False,
+            "rule": "large-fiber answer accuracy rises while world recovery falls vs B3 init",
+            "status": "INSUFFICIENT_PRE_RL_BASELINE",
+            "evidence": None,
+        }
+    else:
+
+        def large(rows: Sequence[Mapping[str, object]]) -> tuple[Mapping[str, object], ...]:
+            return tuple(
+                row
+                for row in rows
+                if isinstance(row.get("fiber_bin"), str)
+                and "large" in str(row["fiber_bin"]).lower()
+            )
+
+        final_large, baseline_large = large(final), large(baseline)
+        final_keys = {(row.get("scene_id"), row.get("rollout_seed")) for row in final_large}
+        baseline_keys = {(row.get("scene_id"), row.get("rollout_seed")) for row in baseline_large}
+        if not final_keys and not baseline_keys:
+            trajectory_rule = {
+                "triggered": False,
+                "rule": ("large-fiber answer accuracy rises while world recovery falls vs B3 init"),
+                "status": "INSUFFICIENT_LARGE_FIBER_ROWS",
+                "evidence": {
+                    "final_row_count": len(final_large),
+                    "baseline_row_count": len(baseline_large),
+                },
+            }
+            return {
+                "reward_by_fiber_interaction": interaction_rule,
+                "answer_up_world_down_large_fibers": trajectory_rule,
+                "any_registered_signal_triggered": bool(interaction_rule["triggered"]),
+                "subjective_threshold_used": False,
+            }
+        if final_keys != baseline_keys:
+            raise StudyCError("B3 large-fiber pre/post evaluation rows are not seed-paired")
+
+        def scene_rates(rows: Sequence[Mapping[str, object]], field: str) -> dict[str, float]:
+            result: dict[str, float] = {}
+            for scene_id in sorted({str(row["scene_id"]) for row in rows}):
+                selected = _filter_rows(rows, key="scene_id", value=scene_id)
+                result[scene_id] = sum(row.get(field) is True for row in selected) / len(selected)
+            return result
+
+        final_answer = scene_rates(final_large, "answer_correct")
+        baseline_answer = scene_rates(baseline_large, "answer_correct")
+        final_world = scene_rates(final_large, "exact_world_recovery")
+        baseline_world = scene_rates(baseline_large, "exact_world_recovery")
+        scene_ids = sorted(final_answer)
+        answer_delta = _mean([final_answer[item] - baseline_answer[item] for item in scene_ids])
+        world_delta = _mean([final_world[item] - baseline_world[item] for item in scene_ids])
+        trajectory_rule = {
+            "triggered": answer_delta > 0.0 and world_delta < 0.0,
+            "rule": "large-fiber answer accuracy rises while world recovery falls vs B3 init",
+            "status": "PAIRED_PRE_POST_EVALUATED",
+            "evidence": {
+                "paired_scene_count": len(scene_ids),
+                "rollouts_per_scene": len(final_large) // len(scene_ids),
+                "answer_accuracy_delta": answer_delta,
+                "world_recovery_delta": world_delta,
+            },
+        }
+    return {
+        "reward_by_fiber_interaction": interaction_rule,
+        "answer_up_world_down_large_fibers": trajectory_rule,
+        "any_registered_signal_triggered": bool(
+            interaction_rule["triggered"] or trajectory_rule["triggered"]
+        ),
+        "subjective_threshold_used": False,
+    }
+
+
 def build_study_c_summary(
-    trace_paths: Mapping[str, Path], *, group_size: int
+    trace_paths: Mapping[str, Path],
+    *,
+    group_size: int,
+    baseline_trace_paths: Mapping[str, Path] | None = None,
 ) -> dict[str, object]:
     """Build group, scene, fiber, answer, world, and interaction diagnostics."""
 
@@ -193,8 +292,10 @@ def build_study_c_summary(
     by_arm_rows = {arm: read_study_c_trace(path) for arm, path in trace_paths.items()}
     if not by_arm_rows:
         raise StudyCError("Study C summary has no arm traces")
-    by_arm = {
-        arm: _arm_summary(rows, group_size) for arm, rows in sorted(by_arm_rows.items())
+    by_arm = {arm: _arm_summary(rows, group_size) for arm, rows in sorted(by_arm_rows.items())}
+    baseline_rows = {
+        arm: read_study_c_trace(path)
+        for arm, path in ({} if baseline_trace_paths is None else baseline_trace_paths).items()
     }
     per_scene: list[dict[str, object]] = []
     for arm, rows in sorted(by_arm_rows.items()):
@@ -212,9 +313,7 @@ def build_study_c_summary(
                     **_arm_summary(selected, group_size),
                 }
             )
-    fiber_bins = sorted(
-        {str(row["fiber_bin"]) for rows in by_arm_rows.values() for row in rows}
-    )
+    fiber_bins = sorted({str(row["fiber_bin"]) for rows in by_arm_rows.values() for row in rows})
     by_fiber_bin: dict[str, dict[str, object]] = {}
     for fiber_bin in fiber_bins:
         arm_metrics = {
@@ -227,14 +326,14 @@ def build_study_c_summary(
             answer_name = f"{initialization}_answer"
             state_name = f"{initialization}_exact_state"
             if answer_name in arm_metrics and state_name in arm_metrics:
-                contrast = (
-                    float(arm_metrics[state_name]["world_recovery_rate"])
-                    - float(arm_metrics[answer_name]["world_recovery_rate"])
+                contrast = float(arm_metrics[state_name]["world_recovery_rate"]) - float(
+                    arm_metrics[answer_name]["world_recovery_rate"]
                 )
                 entry[f"{initialization}_state_minus_answer_world_recovery"] = contrast
                 if initialization == PRIMARY_INITIALIZATION:
                     entry["state_minus_answer_world_recovery"] = contrast
         by_fiber_bin[fiber_bin] = entry
+    interaction = _reward_by_fiber_interaction(by_arm_rows)
     return {
         "schema_version": 1,
         "status": "STUDY_C_DIAGNOSTICS_COMPLETE",
@@ -243,9 +342,13 @@ def build_study_c_summary(
         "by_arm": by_arm,
         "per_scene": per_scene,
         "by_fiber_bin": by_fiber_bin,
-        "reward_by_fiber_interaction": _reward_by_fiber_interaction(by_arm_rows),
+        "reward_by_fiber_interaction": interaction,
         "reward_by_fiber_interaction_reported": True,
+        "registered_stop_signals": _registered_stop_signals(
+            interaction, by_arm_rows, baseline_rows
+        ),
         "subjective_success_threshold_applied": False,
     }
+
 
 __all__ = ["StudyCError", "build_study_c_summary", "read_study_c_trace"]
