@@ -273,7 +273,10 @@ def test_resume_summary_verification_rejects_non_hash_field_tamper(tmp_path: Pat
         cli._verify_existing_summary(summary_path, expected)
 
 
-def test_fake_trainer_runs_independent_frozen_16_rollout_evaluation(tmp_path: Path) -> None:
+def test_fake_trainer_runs_independent_frozen_16_rollout_evaluation(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
     arm = registered_study_c_arms(initialization="B3", initialization_hash="a" * 64)[1]
 
     training_scene_ids: list[str] = []
@@ -330,6 +333,13 @@ def test_fake_trainer_runs_independent_frozen_16_rollout_evaluation(tmp_path: Pa
     ]
     assert len(baseline_rows) == 16
     assert {row["trace_kind"] for row in baseline_rows} == {"pre_training_frozen_eval"}
+    progress = capsys.readouterr().out
+    assert f"PROGRESS: Study C {arm.name} pre-training frozen evaluation" in progress
+    assert f"PROGRESS: Study C {arm.name} training {arm.steps} optimizer steps" in progress
+    assert (
+        f"PROGRESS: Study C {arm.name} post_training_frozen_eval scene 1/1 complete"
+        in progress
+    )
 
 
 def test_resume_reuses_hash_verified_pre_training_baseline(tmp_path: Path) -> None:
@@ -374,6 +384,7 @@ def test_resume_reuses_hash_verified_pre_training_baseline(tmp_path: Path) -> No
 
 def test_qwen_eval_sampler_uses_each_fixed_seed_and_registered_decoding(
     monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     seeded: list[int] = []
     cuda_seeded: list[int] = []
@@ -433,6 +444,9 @@ def test_qwen_eval_sampler_uses_each_fixed_seed_and_registered_decoding(
     assert {item["temperature"] for item in generation_kwargs} == {arm.temperature}
     assert {item["top_p"] for item in generation_kwargs} == {arm.top_p}
     assert {item["top_k"] for item in generation_kwargs} == {arm.top_k}
+    progress = capsys.readouterr().out
+    assert f"PROGRESS: Study C {arm.name} scene scene-1 rollout 1/2" in progress
+    assert f"PROGRESS: Study C {arm.name} scene scene-1 rollout 2/2" in progress
 
 
 def test_summary_reports_group_signal_scene_fibers_and_interaction(tmp_path: Path) -> None:
