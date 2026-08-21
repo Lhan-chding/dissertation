@@ -457,6 +457,31 @@ class StudyCRewardTraceCallback:
         self.trace_path = trace_path
         self.output_dir = output_dir
 
+    def _passthrough_event(
+        self, args: object, state: object, control: object, **kwargs: object
+    ) -> object:
+        """Preserve Trainer control for callback events that need no Study-C action."""
+
+        return control
+
+    # Mirror the callback event surface in the locked Transformers runtime without
+    # importing the optional GPU stack into the dependency-light Study-C module.
+    on_init_end = _passthrough_event
+    on_train_begin = _passthrough_event
+    on_train_end = _passthrough_event
+    on_epoch_begin = _passthrough_event
+    on_epoch_end = _passthrough_event
+    on_step_begin = _passthrough_event
+    on_pre_optimizer_step = _passthrough_event
+    on_optimizer_step = _passthrough_event
+    on_substep_end = _passthrough_event
+    on_step_end = _passthrough_event
+    on_evaluate = _passthrough_event
+    on_predict = _passthrough_event
+    on_log = _passthrough_event
+    on_prediction_step = _passthrough_event
+    on_push_begin = _passthrough_event
+
     def on_save(self, args: object, state: object, control: object, **kwargs: object) -> object:
         step = getattr(state, "global_step", None)
         if type(step) is not int or step < 0 or not self.trace_path.is_file():

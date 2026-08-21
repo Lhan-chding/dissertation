@@ -175,9 +175,37 @@ def _latest_checkpoint(output_dir: Path) -> Path | None:
     checkpoints: list[tuple[int, Path]] = []
     for path in output_dir.glob("checkpoint-*"):
         suffix = path.name.removeprefix("checkpoint-")
-        if path.is_dir() and suffix.isdigit():
+        if not path.is_symlink() and path.is_dir() and suffix.isdigit():
             checkpoints.append((int(suffix), path))
     return None if not checkpoints else max(checkpoints)[1]
+
+
+def _prepare_arm_output(output_dir: Path, *, resume: bool) -> Path | None:
+    """Authorize a checkpoint resume or an initialization-only empty restart."""
+
+    if output_dir.is_symlink():
+        raise StudyCError(f"Study C arm output is an unsafe symlink: {output_dir}")
+    if not output_dir.exists():
+        return None
+    if not output_dir.is_dir():
+        raise StudyCError(f"Study C arm output is not a directory: {output_dir}")
+    checkpoint = _latest_checkpoint(output_dir)
+    if checkpoint is not None:
+        if not resume:
+            raise StudyCError(
+                f"{output_dir.name} has partial output without an authorized resumable checkpoint"
+            )
+        return checkpoint
+    if resume and next(output_dir.iterdir(), None) is None:
+        output_dir.rmdir()
+        print(
+            f"RESUMED: removed verified empty initialization-only output {output_dir.name}",
+            flush=True,
+        )
+        return None
+    raise StudyCError(
+        f"{output_dir.name} has partial output without an authorized resumable checkpoint"
+    )
 
 
 def _release(value: object) -> None:
@@ -434,11 +462,7 @@ def main() -> int:
                     )
                 print(f"RESUMED: verified complete {arm.name}", flush=True)
                 continue
-            checkpoint = _latest_checkpoint(arm_output)
-            if arm_output.exists() and (not arguments.resume or checkpoint is None):
-                raise StudyCError(
-                    f"{arm.name} has partial output without an authorized resumable checkpoint"
-                )
+            checkpoint = _prepare_arm_output(arm_output, resume=arguments.resume)
             adapter = arguments.b3_adapter if arm.initialization == "B3" else arguments.b2_adapter
             if adapter is None:
                 raise StudyCError(f"missing adapter for {arm.initialization}")
