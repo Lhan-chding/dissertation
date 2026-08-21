@@ -28,6 +28,7 @@ from compensability_v4.qwen.phase8_execution import (
     build_scene,
     checkpoint_hashes,
     constraint_ood_facts,
+    constraint_to_fact,
     generate_observation_with_cache,
     load_checkpoint_model,
     load_json,
@@ -169,7 +170,8 @@ def main() -> int:
             reserved_truths.update(template.truth for template in templates)
             for index, template in enumerate(templates):
                 base_facts = tuple(
-                    dict(fact) for fact in build_family_constraints(template.family, template.truth)
+                    constraint_to_fact(fact)
+                    for fact in build_family_constraints(template.family, template.truth)
                 )
                 facts = (
                     constraint_ood_facts(template) if axis == "constraint_graph_ood" else base_facts

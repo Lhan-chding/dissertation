@@ -13,10 +13,16 @@ import tempfile
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
+from types import MappingProxyType
 
 import yaml
 
 from compbias.gpu_pilot.chart_data import _draw_chart
+from compbias.recoverability.compatibility import (
+    ArithmeticProgressionConstraint,
+    KnownValueConstraint,
+    PairSumConstraint,
+)
 from compbias.recoverability.phase_c_screen import build_family_constraints
 from compensability_v4.data.splits import DatasetSplit
 from compensability_v4.eval.answer_source import classify_answer_source
@@ -298,6 +304,33 @@ def apply_operation(world: tuple[int, int, int, int], operation: str) -> int:
     raise ValueError("Phase 8 operation is outside the frozen set")
 
 
+def constraint_to_fact(constraint: object) -> Mapping[str, object]:
+    if isinstance(constraint, PairSumConstraint):
+        fact: dict[str, object] = {
+            "type": "pair_sum",
+            "left_index": constraint.left_index,
+            "right_index": constraint.right_index,
+            "total": constraint.total,
+            "fact_id": constraint.constraint_id,
+        }
+    elif isinstance(constraint, KnownValueConstraint):
+        fact = {
+            "type": "known_value",
+            "index": constraint.index,
+            "value": constraint.value,
+            "fact_id": constraint.constraint_id,
+        }
+    elif isinstance(constraint, ArithmeticProgressionConstraint):
+        fact = {
+            "type": "arithmetic_progression",
+            "indices": constraint.indices,
+            "fact_id": constraint.constraint_id,
+        }
+    else:
+        raise TypeError("Phase 8 generated an unregistered visible constraint")
+    return MappingProxyType(fact)
+
+
 def select_confirm_templates(
     *,
     count: int,
@@ -387,7 +420,9 @@ def constraint_ood_facts(template: Phase8Template) -> tuple[Mapping[str, object]
             {"type": "known_value", "index": 3, "value": truth[3]},
             {"type": "pair_sum", "left_index": 0, "right_index": 1, "total": truth[0] + truth[1]},
         )
-    constraints = tuple(dict(fact) for fact in build_family_constraints("trend", truth))
+    constraints = tuple(
+        constraint_to_fact(fact) for fact in build_family_constraints("trend", truth)
+    )
     return (*constraints[:2], {"type": "known_value", "index": 0, "value": truth[0]})
 
 
@@ -719,6 +754,7 @@ __all__ = [
     "chart_type_for_scene_id",
     "checkpoint_hashes",
     "constraint_ood_facts",
+    "constraint_to_fact",
     "deterministic_chain_answer_exact",
     "family_from_scene",
     "final_answer",
