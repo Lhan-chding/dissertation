@@ -27,6 +27,7 @@ EVALUATION_ROOT = ROOT / "evaluation"
 EVALUATION_RAW_ROWS = EVALUATION_ROOT / "raw_rows.jsonl"
 EVALUATION_SUMMARY = EVALUATION_ROOT / "summary.json"
 EVALUATION_MANIFEST = EVALUATION_ROOT / "manifest.json"
+REPORT_ROOT = ROOT / "report"
 
 __all__ = [
     "DATA_ROOT",
@@ -39,6 +40,7 @@ __all__ = [
     "LEGACY_ROOT",
     "PAIR_MANIFEST",
     "PAIR_ROWS",
+    "REPORT_ROOT",
     "ROOT",
     "SHARED_GRADIENT_MANIFEST",
     "SHARED_GRADIENT_ROOT",

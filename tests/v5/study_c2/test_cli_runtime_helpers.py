@@ -348,6 +348,53 @@ def test_run_registered_covers_fixture_blocked_cpu_gpu_and_placeholder_paths(
         cli.run_registered(99)
 
 
+def test_run_registered_routes_stage27_preflight_and_execute(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str], tmp_path: Path
+) -> None:
+    monkeypatch.setattr(cli, "print_json", lambda payload: print(payload["status"]))
+    monkeypatch.setattr(
+        cli,
+        "preflight_report",
+        lambda **kwargs: {"status": "STAGE27_PREFLIGHT_OK"},
+    )
+    monkeypatch.setattr(
+        cli,
+        "_parser",
+        lambda stage: _FixedParser(
+            argparse.Namespace(
+                fixture_dry_run=False,
+                execute=False,
+                preflight_only=True,
+                evidence_root=tmp_path / "evidence",
+                output=tmp_path / "report",
+            )
+        ),
+    )
+    assert cli.run_registered(27) == 0
+    assert "STAGE27_PREFLIGHT_OK" in capsys.readouterr().out
+
+    monkeypatch.setattr(
+        cli,
+        "run_report",
+        lambda **kwargs: {"status": "STAGE27_REPORT_OK"},
+    )
+    monkeypatch.setattr(
+        cli,
+        "_parser",
+        lambda stage: _FixedParser(
+            argparse.Namespace(
+                fixture_dry_run=False,
+                execute=True,
+                preflight_only=False,
+                evidence_root=tmp_path / "evidence",
+                output=tmp_path / "report",
+            )
+        ),
+    )
+    assert cli.run_registered(27) == 0
+    assert "STAGE27_REPORT_OK" in capsys.readouterr().out
+
+
 def test_policy_runtime_helpers_validate_tokenizer_and_partial_rollouts() -> None:
     plain = object()
     assert policy_support_runtime._tokenizer(plain) is plain

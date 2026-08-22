@@ -1,0 +1,41 @@
+{
+  "gpu_invoked": false,
+  "optimizer_step_invoked": false,
+  "outputs": {
+    "STUDY_C2_IDENTIFIABLE_REWARD_GRPO_FACTS.md": "9a6dccee97b820288660a3569b4192d3939058aec66e352c7c6bb684f977d1d0",
+    "study_c2_identifiable_reward_grpo_evidence.tar.gz": "61fd75e3612c2c2e89356140705d70d6515573d755ed70b0976cefc346b7d053"
+  },
+  "rl_invoked": false,
+  "schema_version": 2,
+  "source_file_count": 26,
+  "source_sha256": {
+    "artifacts/v5/study_c2/evaluation/manifest.json": "c98f03a9b23d5f424e756280b434d805cce59ee477cb967672d3c70f930e721b",
+    "artifacts/v5/study_c2/evaluation/raw_rows.jsonl": "2e684df3cbaf20feda9fa876dd7003565c372a183d12fb44a31ac68c4457fa4f",
+    "artifacts/v5/study_c2/evaluation/summary.json": "dc168b37ea855f0afa813a611d5b30088f81a00d8c176b62e3c8cdc5da605508",
+    "artifacts/v5/study_c2/frozen_policy_support/manifest.json": "aff10e9d31b7275fcfee815065de86ac35c70bfd4526f6dc9cce0d3f756eef3a",
+    "artifacts/v5/study_c2/frozen_policy_support/raw_rows.jsonl": "954a6133d013ee6fa324d09a44aa82d769ef30a89d6d700f471e8f7f00810274",
+    "artifacts/v5/study_c2/frozen_policy_support/summary.json": "44c86d517edd2ef5ca1cb558e2730c00f84b2a3e7851c473baddd810aa40cca1",
+    "artifacts/v5/study_c2/shared_gradient_audit/manifest.json": "8856eb4d8e841ba3965b7745b28e6ac0f03bca2ccdd396e91fc99dcf8048dc4a",
+    "artifacts/v5/study_c2/shared_gradient_audit/per_group.jsonl": "1a9fdef6981137f9748156799762b02dac2fe8568473de69c7f257e36d5d69bc",
+    "artifacts/v5/study_c2/shared_gradient_audit/summary.json": "8e652de6f9ecad994e5fb4d41856109c4ddb86fea96cba8020e7cef1540de689",
+    "artifacts/v5/study_c2/stage24_execution_contract.json": "b91834069e821a47fdcad7834db6df367ccf13bb41002a8618aa4e7c34f5efaa",
+    "artifacts/v5/study_c2/stage25_execution_contract.json": "f8c2530d0594e0b6671070f3c44c64fd4bb07c2ba3e97dce0f8fd1f7bde55f7a",
+    "artifacts/v5/study_c2/training/C2_answer_reward/arm_config.json": "ffa9d3497d988bd9c19bf8cd6087d2c8ee76b27c833c6e82158ca585292b2b47",
+    "artifacts/v5/study_c2/training/C2_answer_reward/group_diagnostics.jsonl": "2b08f2d30e43ac6195cead4ab5c61882058a16e7a92d361559b5f926d10972b7",
+    "artifacts/v5/study_c2/training/C2_answer_reward/manifest.json": "d0d1746c5ca7cd33ea1d66fe41204e1321867d7be549de86eefa0527e59dce16",
+    "artifacts/v5/study_c2/training/C2_answer_reward/raw_reward_trace.jsonl": "dc4492915f08c05bc6a84066913806a92a59d01508114c784fe3e713ea64f689",
+    "artifacts/v5/study_c2/training/C2_answer_reward/summary.json": "5840f317d984ef3c92aef8b04a44eb80a76414c069142aa9f1f870e91e570527",
+    "artifacts/v5/study_c2/training/C2_answer_reward/trainer_log_history.json": "a6fa230aa63f50f35b52b053f76eacf48cc21be73d7b73d4dd9ded26b4000436",
+    "artifacts/v5/study_c2/training/C2_exact_state_reward/arm_config.json": "723880ff0a8f97089840e14834b45e725c973cb7bb777d160d8a763f274a92f6",
+    "artifacts/v5/study_c2/training/C2_exact_state_reward/group_diagnostics.jsonl": "a52c098c07b98f7b52b64b8598776a0ca924df767399cb55ce8da30603db96a9",
+    "artifacts/v5/study_c2/training/C2_exact_state_reward/manifest.json": "02467193983717d35f12c4703cde2c3ab14eaa6366cf9e76f9abf6ec6f4786f2",
+    "artifacts/v5/study_c2/training/C2_exact_state_reward/raw_reward_trace.jsonl": "01fb491bf2857ad800e5efb8380f6564efe54275c01b88fbca4be545580ab47e",
+    "artifacts/v5/study_c2/training/C2_exact_state_reward/summary.json": "b1dc3ace55a6a89572aae5bf5a323581204892b24950782a7b21ba2dff089d1d",
+    "artifacts/v5/study_c2/training/C2_exact_state_reward/trainer_log_history.json": "fb7d2fe1bb9dc1f8a62699d8782c6b2c847af69552971d338756d23b93fee66e",
+    "artifacts/v5/study_c2/training/manifest.json": "4fc30748f8c9396745baafa63015354e8eec7c871cb6eafe8e0dc6a9adfd8569",
+    "configs/v5/server_package_lock.yaml": "a8f351db7cadc904f6feecdd9cddb9e0d782c8356226cd866661710623b2e544",
+    "configs/v5/study_c2_identifiable_reward.yaml": "03be95231d3eb8351078a77943bcce66d0d457dca3b0c3f1ab4a94d4d52cf417"
+  },
+  "status": "STUDY_C2_IDENTIFIABLE_REWARD_GRPO_REPORT_COMPLETE",
+  "training_invoked": false
+}

@@ -9,11 +9,13 @@ from pathlib import Path
 from .evaluation_runtime import preflight_evaluation, run_evaluation
 from .paths import (
     FIBER_ROWS,
+    REPORT_ROOT,
     STAGE24_EXECUTION_CONTRACT,
     STAGE25_EXECUTION_CONTRACT,
     SUPPORT_MANIFEST,
 )
 from .policy_support_runtime import preflight_support, run_frozen_policy_support
+from .report_runtime import preflight_report, run_report
 from .shared_gradient_runtime import preflight_shared_gradient, run_shared_gradient_audit
 from .stages import audit_legacy_trace, build_pair_artifacts, enumerate_fiber_artifacts, print_json
 from .training_runtime import preflight_training_arm, run_training_arm
@@ -63,6 +65,8 @@ def _parser(stage: int) -> argparse.ArgumentParser:
     parser.add_argument("--resume-from-checkpoint", type=Path)
     parser.add_argument("--legacy-root", type=Path, default=Path("artifacts/v5/rl/study-c-pilot"))
     parser.add_argument("--trace", type=Path, action="append", default=[])
+    parser.add_argument("--evidence-root", type=Path, default=Path("."))
+    parser.add_argument("--output", type=Path, default=REPORT_ROOT)
     return parser
 
 
@@ -192,6 +196,14 @@ def run_registered(stage: int) -> int:
                 payload = run_evaluation(
                     config_path=arguments.config,
                     acknowledgement=arguments.ack,
+                )
+        elif stage == 27:
+            if arguments.preflight_only:
+                payload = preflight_report(evidence_root=arguments.evidence_root)
+            else:
+                payload = run_report(
+                    evidence_root=arguments.evidence_root,
+                    output_root=arguments.output,
                 )
         else:
             if not FIBER_ROWS.is_file():

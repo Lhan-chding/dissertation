@@ -9,7 +9,6 @@ import pytest
 from compensability_v5.study_c2.io import sha256_file
 from compensability_v5.study_c2.report_runtime import preflight_report, run_report
 
-
 ARMS = ("C2_answer_reward", "C2_exact_state_reward")
 
 
@@ -285,7 +284,7 @@ def test_report_preflight_binds_stage23_through_stage26_without_gpu(tmp_path: Pa
     payload = preflight_report(evidence_root=tmp_path)
 
     assert payload["status"] == "STUDY_C2_IDENTIFIABLE_REWARD_GRPO_REPORT_PREFLIGHT_OK"
-    assert payload["source_file_count"] == 22
+    assert payload["source_file_count"] == 26
     assert payload["gpu_invoked"] is False
     assert payload["optimizer_step_invoked"] is False
     assert payload["training_invoked"] is False
@@ -322,6 +321,8 @@ def test_report_write_is_fact_only_deterministic_and_refuses_overwrite(tmp_path:
         members = set(archive.getnames())
     assert "artifacts/v5/study_c2/evaluation/raw_rows.jsonl" in members
     assert "artifacts/v5/study_c2/training/C2_answer_reward/raw_reward_trace.jsonl" in members
+    assert "artifacts/v5/study_c2/training/C2_answer_reward/group_diagnostics.jsonl" in members
+    assert "artifacts/v5/study_c2/training/C2_answer_reward/trainer_log_history.json" in members
     assert not any("adapter_model" in member or "checkpoint" in member for member in members)
 
     with pytest.raises(FileExistsError, match="overwrite forbidden"):
@@ -345,4 +346,49 @@ def test_report_fails_closed_on_upstream_hash_or_status_drift(tmp_path: Path) ->
     manifest_payload["summary_sha256"] = sha256_file(summary)
     _write_json(manifest, manifest_payload)
     with pytest.raises(ValueError, match="Stage 26 summary drifted"):
+        preflight_report(evidence_root=tmp_path)
+
+
+def test_report_rejects_symlinked_evidence(tmp_path: Path) -> None:
+    _build_evidence(tmp_path)
+    raw_rows = tmp_path / "artifacts/v5/study_c2/evaluation/raw_rows.jsonl"
+    target = tmp_path / "outside.jsonl"
+    target.write_text(raw_rows.read_text(), encoding="utf-8")
+    raw_rows.unlink()
+    raw_rows.symlink_to(target)
+
+    with pytest.raises(ValueError, match="unsafe evidence symlink"):
+        preflight_report(evidence_root=tmp_path)
+
+
+def test_report_rejects_symlinked_roots_and_sensitive_values(tmp_path: Path) -> None:
+    evidence = tmp_path / "evidence"
+    _build_evidence(evidence)
+    linked_evidence = tmp_path / "linked-evidence"
+    linked_evidence.symlink_to(evidence, target_is_directory=True)
+    with pytest.raises(ValueError, match="unsafe symlink component in evidence root"):
+        preflight_report(evidence_root=linked_evidence)
+
+    output_target = tmp_path / "output-target"
+    output_target.mkdir()
+    output_link = tmp_path / "output-link"
+    output_link.symlink_to(output_target, target_is_directory=True)
+    with pytest.raises(ValueError, match="unsafe symlink component in Stage 27 output parent"):
+        run_report(evidence_root=evidence, output_root=output_link / "report")
+
+    raw_rows = evidence / "artifacts/v5/study_c2/evaluation/raw_rows.jsonl"
+    dummy_secret = "sk-" + "abcdefghijklmnopqrstuvwxyz123456"
+    raw_rows.write_text(json.dumps({"api_key": dummy_secret}) + "\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="sensitive-value pattern"):
+        preflight_report(evidence_root=evidence)
+
+
+def test_report_rejects_stage26_final_adapter_drift(tmp_path: Path) -> None:
+    _build_evidence(tmp_path)
+    manifest = tmp_path / "artifacts/v5/study_c2/evaluation/manifest.json"
+    payload = json.loads(manifest.read_text())
+    payload["arm_manifests"]["C2_answer_reward"]["final_adapter_sha256"] = "a" * 64
+    _write_json(manifest, payload)
+
+    with pytest.raises(ValueError, match="final adapter provenance drifted"):
         preflight_report(evidence_root=tmp_path)
