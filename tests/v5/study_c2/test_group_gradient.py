@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import math
 
+import pytest
+
 from compensability_v5.study_c2.contrast_rank import reward_contrast
 from compensability_v5.study_c2.gradient_audit import shared_gradient_diagnostics
 from compensability_v5.study_c2.group_metrics import (
@@ -47,7 +49,7 @@ def test_contrast_rank_zero_implies_identical_centered_advantages_and_gradients(
     assert identical["normalized_contrast_strength"] == 0.0
     assert diagnostics["reward_hamming_distance"] == 0
     assert diagnostics["gradient_difference_norm"] == 0.0
-    assert diagnostics["gradient_cosine"] == 1.0
+    assert diagnostics["gradient_cosine"] == pytest.approx(1.0)
 
 
 def test_shortcut_creates_rank_two_reward_and_gradient_contrast() -> None:

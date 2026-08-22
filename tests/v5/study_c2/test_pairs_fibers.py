@@ -26,7 +26,10 @@ def test_registered_split_counts_and_matched_collision_invariants() -> None:
     pairs: dict[str, list[dict[str, object]]] = {}
     for row in rows:
         pairs.setdefault(str(row["pair_id"]), []).append(row)
-    assert all({str(row["condition"]) for row in pair} == {"collision", "separating"} for pair in pairs.values())
+    assert all(
+        {str(row["condition"]) for row in pair} == {"collision", "separating"}
+        for pair in pairs.values()
+    )
     for pair in pairs.values():
         left, right = pair
         for field in ("truth", "observation", "facts", "family", "error_index", "error_delta"):
@@ -47,7 +50,7 @@ def test_dataset_isolation_fails_closed() -> None:
 def test_full_domain_and_one_edit_fibers_are_exact() -> None:
     operation = {"operator": "sum", "indices": [0, 1]}
     assert full_reward_fiber_size(operation, 5) == 2 * 17 * 17
-    assert one_edit_fiber_size((2, 3, 8, 9), operation) == 1
+    assert one_edit_fiber_size((2, 3, 8, 9), operation) == 32
 
     range_operation = {"operator": "max_minus_min", "indices": [0, 1, 2, 3]}
     brute = sum(

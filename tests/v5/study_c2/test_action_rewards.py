@@ -3,6 +3,7 @@ from __future__ import annotations
 from compensability_v5.study_c2.action_protocol import (
     audit_action_censoring,
     parse_first_world_action,
+    parse_first_world_tuple,
     parse_legacy_exact_world,
 )
 from compensability_v5.study_c2.rewards import RolloutKind, classify_completion
@@ -15,6 +16,7 @@ def test_first_line_is_the_only_action_and_legacy_parser_remains_read_only() -> 
     assert parse_legacy_exact_world(completion) is None
     assert parse_first_world_action("prefix 4,5,6,7") is None
     assert parse_first_world_action("4,5,6,19\n") is None
+    assert parse_first_world_tuple("4,5,6,19\nignored") == (4, 5, 6, 19)
     assert parse_first_world_action("4,5,6,7 extra\n") is None
 
 

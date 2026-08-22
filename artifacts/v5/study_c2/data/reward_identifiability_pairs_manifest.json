@@ -1,0 +1,21 @@
+{
+  "base_scene_count": 232,
+  "condition_prompt_counts": {
+    "collision": 232,
+    "separating": 232
+  },
+  "config_sha256": "03be95231d3eb8351078a77943bcce66d0d457dca3b0c3f1ab4a94d4d52cf417",
+  "gpu_invoked": false,
+  "prompt_count": 464,
+  "rows_sha256": "73d0092c7e99ee3ad25cf0d430e1f104a7b00662ee73b8329c65487fa9df42b8",
+  "schema_version": 2,
+  "seed": 2026082401,
+  "split_prompt_counts": {
+    "dev": 48,
+    "positive_control": 32,
+    "support_audit": 96,
+    "test": 96,
+    "train": 192
+  },
+  "status": "STUDY_C2_MATCHED_PAIRS_FROZEN"
+}

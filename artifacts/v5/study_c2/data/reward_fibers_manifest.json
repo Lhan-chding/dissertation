@@ -1,0 +1,14 @@
+{
+  "all_collision_observations_answer_equivalent": true,
+  "all_separating_observations_answer_distinct": true,
+  "all_truths_in_fiber": true,
+  "config_sha256": "03be95231d3eb8351078a77943bcce66d0d457dca3b0c3f1ab4a94d4d52cf417",
+  "fiber_rows_sha256": "ebfe4dd7b2acc2afeaea7aa633dcf2f0f7af1eaaceda8af808720c087dd36719",
+  "gpu_invoked": false,
+  "maximum_full_fiber_size": 4913,
+  "minimum_full_fiber_size": 289,
+  "pair_rows_sha256": "73d0092c7e99ee3ad25cf0d430e1f104a7b00662ee73b8329c65487fa9df42b8",
+  "prompt_count": 464,
+  "schema_version": 2,
+  "status": "STUDY_C2_REWARD_FIBERS_ENUMERATED"
+}

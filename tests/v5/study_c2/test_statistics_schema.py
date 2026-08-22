@@ -30,7 +30,11 @@ def _config() -> dict[str, object]:
             "optimizer": "adamw_torch",
             "epochs": 1,
         },
-        "evaluation": {"sampled_rollouts": 16, "bootstrap_resamples": 10000, "bootstrap_seed": 2026082403},
+        "evaluation": {
+            "sampled_rollouts": 16,
+            "bootstrap_resamples": 10000,
+            "bootstrap_seed": 2026082403,
+        },
     }
 
 

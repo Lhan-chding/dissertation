@@ -1,0 +1,31 @@
+"""Canonical Study C2 paths, kept separate from the completed Study C run."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+ROOT = Path("artifacts/v5/study_c2")
+DATA_ROOT = ROOT / "data"
+PAIR_ROWS = DATA_ROOT / "reward_identifiability_pairs.jsonl"
+PAIR_MANIFEST = DATA_ROOT / "reward_identifiability_pairs_manifest.json"
+FIBER_ROWS = DATA_ROOT / "reward_fibers.jsonl"
+FIBER_MANIFEST = DATA_ROOT / "reward_fibers_manifest.json"
+LEGACY_ROOT = ROOT / "legacy_parser_audit"
+SUPPORT_ROOT = ROOT / "frozen_policy_support"
+SUPPORT_RAW_ROWS = SUPPORT_ROOT / "raw_rows.jsonl"
+SUPPORT_SUMMARY = SUPPORT_ROOT / "summary.json"
+SUPPORT_MANIFEST = SUPPORT_ROOT / "manifest.json"
+
+__all__ = [
+    "DATA_ROOT",
+    "FIBER_MANIFEST",
+    "FIBER_ROWS",
+    "LEGACY_ROOT",
+    "PAIR_MANIFEST",
+    "PAIR_ROWS",
+    "ROOT",
+    "SUPPORT_MANIFEST",
+    "SUPPORT_RAW_ROWS",
+    "SUPPORT_ROOT",
+    "SUPPORT_SUMMARY",
+]
