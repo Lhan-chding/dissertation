@@ -296,6 +296,54 @@ def test_run_registered_covers_fixture_blocked_cpu_gpu_and_placeholder_paths(
     assert cli.run_registered(25) == 0
     assert "STAGE25_EXECUTE_OK" in capsys.readouterr().out
 
+    monkeypatch.setattr(
+        cli,
+        "preflight_evaluation",
+        lambda **kwargs: {"status": "STAGE26_PREFLIGHT_OK"},
+    )
+    monkeypatch.setattr(
+        cli,
+        "_parser",
+        lambda stage: _FixedParser(
+            argparse.Namespace(
+                fixture_dry_run=False,
+                execute=False,
+                preflight_only=True,
+                config=Path("config.yaml"),
+                b3_adapter=tmp_path / "adapter",
+                b3_sha256="digest",
+                ack=None,
+                arm=None,
+                legacy_root=tmp_path,
+                trace=[],
+            )
+        ),
+    )
+    assert cli.run_registered(26) == 0
+    assert "STAGE26_PREFLIGHT_OK" in capsys.readouterr().out
+
+    monkeypatch.setattr(cli, "run_evaluation", lambda **kwargs: {"status": "STAGE26_EXECUTE_OK"})
+    monkeypatch.setattr(
+        cli,
+        "_parser",
+        lambda stage: _FixedParser(
+            argparse.Namespace(
+                fixture_dry_run=False,
+                execute=True,
+                preflight_only=False,
+                config=Path("config.yaml"),
+                b3_adapter=tmp_path / "adapter",
+                b3_sha256="digest",
+                ack="ack",
+                arm=None,
+                legacy_root=tmp_path,
+                trace=[],
+            )
+        ),
+    )
+    assert cli.run_registered(26) == 0
+    assert "STAGE26_EXECUTE_OK" in capsys.readouterr().out
+
     with pytest.raises(ValueError, match="unregistered Study C2 stage"):
         cli.run_registered(99)
 

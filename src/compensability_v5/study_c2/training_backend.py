@@ -1,4 +1,4 @@
-"""Pinned TRL/Qwen backend for Study C2 Stage 25."""
+"""Pinned TRL/Qwen backend for Study C2 Stage 25/26."""
 
 from __future__ import annotations
 
@@ -196,4 +196,95 @@ def create_training_trainer(
     return trainer
 
 
-__all__ = ["create_training_trainer", "validate_training_backend_api"]
+def create_evaluation_sampler(
+    *,
+    arm_config: Mapping[str, object],
+    adapter_path: Path,
+) -> object:  # pragma: no cover - pinned server GPU path
+    from peft import PeftModel
+
+    base, processor = load_pinned_qwen(device_map="cuda:0")
+    freeze_base_parameters(base)
+    model = PeftModel.from_pretrained(base, str(adapter_path), is_trainable=False)
+    training = arm_config.get("training")
+    if not isinstance(training, Mapping):
+        raise RuntimeError("Study C2 arm lacks its training contract")
+    newline_token_id, eos_token_id = _newline_and_eos(processor)
+    render = getattr(processor, "apply_chat_template", None)
+    if not callable(render):
+        render = getattr(_tokenizer(processor), "apply_chat_template", None)
+    if not callable(render):
+        raise RuntimeError("Study C2 processor lacks a chat template for evaluation")
+    prepare = processor if callable(processor) else None
+    if prepare is None:
+        raise RuntimeError("Study C2 processor is not callable for evaluation")
+    decode = getattr(processor, "batch_decode", None)
+    if not callable(decode):
+        decode = getattr(_tokenizer(processor), "batch_decode", None)
+    if not callable(decode):
+        raise RuntimeError("Study C2 processor exposes no batch decoder")
+    generate = getattr(model, "generate", None)
+    if not callable(generate):
+        raise RuntimeError("Study C2 model exposes no generate method")
+    set_eval = getattr(model, "eval", None)
+    if callable(set_eval):
+        set_eval()
+
+    def sample(row: Mapping[str, object], seeds: Sequence[int]) -> tuple[str, ...]:
+        import torch
+
+        prompt = [{"role": "user", "content": str(row["prompt"])}]
+        rendered = render(prompt, add_generation_prompt=True, tokenize=False)
+        if not isinstance(rendered, str) or not rendered:
+            raise RuntimeError("Study C2 chat template returned an invalid evaluation prompt")
+        outputs: list[str] = []
+        for seed in seeds:
+            torch.manual_seed(int(seed))
+            if torch.cuda.is_available():
+                torch.cuda.manual_seed_all(int(seed))
+            batch = prepare(text=[rendered], padding=True, return_tensors="pt")
+            move = getattr(batch, "to", None)
+            device = getattr(model, "device", None)
+            if device is not None and callable(move):
+                batch = move(device)
+            if not isinstance(batch, Mapping):
+                keys = getattr(batch, "keys", None)
+                if not callable(keys):
+                    raise RuntimeError("Study C2 processor batch is not mapping-like")
+                batch = {key: batch[key] for key in keys()}
+            input_ids = batch.get("input_ids")
+            shape = getattr(input_ids, "shape", None)
+            if shape is None or len(shape) != 2:
+                raise RuntimeError("Study C2 processor returned malformed input IDs")
+            prompt_length = int(shape[1])
+            with torch.inference_mode():
+                generated = generate(
+                    **dict(batch),
+                    do_sample=True,
+                    temperature=float(training["temperature"]),
+                    top_p=float(training["top_p"]),
+                    max_new_tokens=int(training["max_completion_length"]),
+                    use_cache=True,
+                )
+            completion_ids = generated[:, prompt_length:]
+            rows = completion_ids.tolist()
+            truncated_ids, _ = truncate_first_line_token_ids(
+                completion_ids=rows,
+                logprobs=None,
+                newline_token_id=newline_token_id,
+                eos_token_id=eos_token_id,
+            )
+            decoded = decode(
+                truncated_ids,
+                skip_special_tokens=True,
+                clean_up_tokenization_spaces=False,
+            )
+            if not isinstance(decoded, Sequence) or len(decoded) != 1:
+                raise RuntimeError("Study C2 decoder returned malformed completion text")
+            outputs.append(str(decoded[0]))
+        return tuple(outputs)
+
+    return sample
+
+
+__all__ = ["create_evaluation_sampler", "create_training_trainer", "validate_training_backend_api"]

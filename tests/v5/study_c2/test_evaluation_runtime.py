@@ -164,6 +164,9 @@ def test_stage26_preflight_binds_stage25_pair_manifest_and_eval_contract(
     monkeypatch.setattr(runtime, "load_contract", lambda path: config)
     monkeypatch.setattr(runtime, "_require_offline_cuda", lambda: None)
     monkeypatch.setattr(runtime, "require_server_model", lambda: None)
+    monkeypatch.setattr(
+        runtime, "tree_sha256", lambda path: ("a" if "answer" in str(path) else "b") * 64
+    )
 
     result = runtime.preflight_post_training_evaluation(
         config_path=Path("config.yaml"),
@@ -177,9 +180,13 @@ def test_stage26_preflight_binds_stage25_pair_manifest_and_eval_contract(
     assert result["training_pair_manifest_sha256"] == "4" * 64
     assert result["reward_only_pair_verified"] is True
 
-    write_json_new(
-        arm_paths["C2_answer_reward"],
-        dict(read_json(arm_paths["C2_answer_reward"]), status="DRIFTED"),
+    arm_paths["C2_answer_reward"].write_text(
+        json.dumps(
+            dict(read_json(arm_paths["C2_answer_reward"]), status="DRIFTED"),
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
     )
     with pytest.raises(ValueError, match="incomplete arm manifest"):
         runtime.preflight_post_training_evaluation(

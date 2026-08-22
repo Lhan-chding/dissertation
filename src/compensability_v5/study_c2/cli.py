@@ -6,6 +6,7 @@ import argparse
 import json
 from pathlib import Path
 
+from .evaluation_runtime import preflight_evaluation, run_evaluation
 from .paths import (
     FIBER_ROWS,
     STAGE24_EXECUTION_CONTRACT,
@@ -183,6 +184,14 @@ def run_registered(stage: int) -> int:
                     b3_sha256=digest,
                     acknowledgement=arguments.ack,
                     resume_from_checkpoint=arguments.resume_from_checkpoint,
+                )
+        elif stage == 26:
+            if arguments.preflight_only:
+                payload = preflight_evaluation(config_path=arguments.config)
+            else:
+                payload = run_evaluation(
+                    config_path=arguments.config,
+                    acknowledgement=arguments.ack,
                 )
         else:
             if not FIBER_ROWS.is_file():
