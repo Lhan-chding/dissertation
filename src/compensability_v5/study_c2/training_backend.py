@@ -242,7 +242,12 @@ def create_evaluation_sampler(
             torch.manual_seed(int(seed))
             if torch.cuda.is_available():
                 torch.cuda.manual_seed_all(int(seed))
-            batch = prepare(text=[rendered], padding=True, return_tensors="pt")
+            batch = prepare(
+                text=[rendered],
+                padding=True,
+                return_tensors="pt",
+                add_special_tokens=False,
+            )
             move = getattr(batch, "to", None)
             device = getattr(model, "device", None)
             if device is not None and callable(move):
