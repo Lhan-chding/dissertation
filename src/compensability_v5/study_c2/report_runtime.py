@@ -389,6 +389,8 @@ def _load_evidence(
         if size > MAX_SOURCE_FILE_BYTES:
             raise ValueError(f"Stage 27 evidence file exceeds size limit: {relative}")
         data = path.read_bytes()
+        if len(data) > MAX_SOURCE_FILE_BYTES:
+            raise ValueError(f"Stage 27 evidence file exceeds size limit: {relative}")
         data.decode("utf-8")
         if SENSITIVE_PATTERN.search(data):
             raise ValueError(f"Stage 27 evidence contains a sensitive-value pattern: {relative}")
