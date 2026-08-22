@@ -528,7 +528,7 @@ def preflight_training_arm(
     b3_adapter: Path,
     b3_sha256: str,
     backend_validator: Callable[[], Mapping[str, object]] | None = None,
-) -> dict[str, object]:  # pragma: no cover - server dependencies are mocked in tests
+) -> dict[str, object]:
     print("PROGRESS: validating the frozen Stage 25 execution contract", flush=True)
     execution = read_json(execution_contract_path)
     validate_stage25_execution_contract(execution)

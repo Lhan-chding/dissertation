@@ -115,7 +115,7 @@ def run_training_arm(
     resume_from_checkpoint: Path | None = None,
     trainer_factory: TrainerFactory | None = None,
     backend_validator: Callable[[], Mapping[str, object]] | None = None,
-) -> dict[str, object]:  # pragma: no cover - real server path uses injected test seams
+) -> dict[str, object]:
     if acknowledgement != TRAINING_ACK:
         raise PermissionError("exact Study C2 Stage 25 training acknowledgement is required")
     preflight = preflight_training_arm(
