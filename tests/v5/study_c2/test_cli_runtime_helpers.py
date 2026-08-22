@@ -191,10 +191,38 @@ def test_run_registered_covers_fixture_blocked_cpu_gpu_and_placeholder_paths(
     assert cli.run_registered(23) == 0
     assert "SUPPORT_COMPLETE" in capsys.readouterr().out
 
-    fiber_rows = tmp_path / "reward_fibers.jsonl"
-    fiber_rows.write_text("{}\n", encoding="utf-8")
-    monkeypatch.setattr(cli, "FIBER_ROWS", fiber_rows)
-    monkeypatch.setattr(cli, "SUPPORT_MANIFEST", tmp_path / "support_manifest.json")
+    monkeypatch.setattr(
+        cli,
+        "preflight_shared_gradient",
+        lambda **kwargs: {"status": "GRADIENT_PREFLIGHT_OK"},
+    )
+    monkeypatch.setattr(
+        cli,
+        "_parser",
+        lambda stage: _FixedParser(
+            argparse.Namespace(
+                fixture_dry_run=False,
+                execute=False,
+                preflight_only=True,
+                config=Path("config.yaml"),
+                execution_contract=tmp_path / "execution_contract.json",
+                b3_adapter=tmp_path / "adapter",
+                b3_sha256="digest",
+                ack=None,
+                arm=None,
+                legacy_root=tmp_path,
+                trace=[],
+            )
+        ),
+    )
+    assert cli.run_registered(24) == 0
+    assert "GRADIENT_PREFLIGHT_OK" in capsys.readouterr().out
+
+    monkeypatch.setattr(
+        cli,
+        "run_shared_gradient_audit",
+        lambda **kwargs: {"status": "GRADIENT_AUDIT_COMPLETE"},
+    )
     monkeypatch.setattr(
         cli,
         "_parser",
@@ -204,17 +232,18 @@ def test_run_registered_covers_fixture_blocked_cpu_gpu_and_placeholder_paths(
                 execute=True,
                 preflight_only=False,
                 config=Path("config.yaml"),
-                b3_adapter=None,
-                b3_sha256=None,
-                ack=None,
+                execution_contract=tmp_path / "execution_contract.json",
+                b3_adapter=tmp_path / "adapter",
+                b3_sha256="digest",
+                ack="ack",
                 arm=None,
                 legacy_root=tmp_path,
                 trace=[],
             )
         ),
     )
-    assert cli.run_registered(24) == 2
-    assert "run the first Study C2 server boundary" in capsys.readouterr().out
+    assert cli.run_registered(24) == 0
+    assert "GRADIENT_AUDIT_COMPLETE" in capsys.readouterr().out
 
     with pytest.raises(ValueError, match="unregistered Study C2 stage"):
         cli.run_registered(99)

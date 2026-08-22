@@ -1,0 +1,21 @@
+{
+  "b3_adapter_sha256": "863b70b420daa5267a4c1517df0200833594ade285d1bdfa7b02e5952f9cfe9b",
+  "config_sha256": "03be95231d3eb8351078a77943bcce66d0d457dca3b0c3f1ab4a94d4d52cf417",
+  "fiber_rows_sha256": "ebfe4dd7b2acc2afeaea7aa633dcf2f0f7af1eaaceda8af808720c087dd36719",
+  "model_snapshot_sha256": "e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87",
+  "package_lock_sha256": "a8f351db7cadc904f6feecdd9cddb9e0d782c8356226cd866661710623b2e544",
+  "rollout_count": 6144,
+  "schema_version": 2,
+  "selected_k": 8,
+  "status": "STUDY_C2_STAGE24_EXECUTION_CONTRACT_FROZEN",
+  "support_counts": {
+    "F": 655,
+    "S": 635,
+    "U": 4711,
+    "X": 143
+  },
+  "support_manifest_sha256": "aff10e9d31b7275fcfee815065de86ac35c70bfd4526f6dc9cce0d3f756eef3a",
+  "support_raw_rows_sha256": "954a6133d013ee6fa324d09a44aa82d769ef30a89d6d700f471e8f7f00810274",
+  "support_status": "REWARD_CONTRAST_IDENTIFIED",
+  "support_summary_sha256": "44c86d517edd2ef5ca1cb558e2730c00f84b2a3e7851c473baddd810aa40cca1"
+}
