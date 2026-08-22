@@ -136,7 +136,6 @@ def test_grpo_kwargs_freeze_one_epoch_k8_checkpoints_and_newline_stop() -> None:
         "fp16",
         "temperature",
         "top_p",
-        "top_k",
         "beta",
         "use_vllm",
         "gradient_checkpointing",
@@ -170,6 +169,7 @@ def test_grpo_kwargs_freeze_one_epoch_k8_checkpoints_and_newline_stop() -> None:
     assert kwargs["save_steps"] == 48 and kwargs["save_total_limit"] == 4
     assert kwargs["generation_kwargs"] == {"eos_token_id": [99, 13]}
     assert kwargs["max_completion_length"] == 16
+    assert "top_k" not in kwargs
 
     with pytest.raises(RuntimeError, match="generation_kwargs"):
         runtime.build_grpo_config_kwargs(

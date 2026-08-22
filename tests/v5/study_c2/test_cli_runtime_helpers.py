@@ -245,6 +245,57 @@ def test_run_registered_covers_fixture_blocked_cpu_gpu_and_placeholder_paths(
     assert cli.run_registered(24) == 0
     assert "GRADIENT_AUDIT_COMPLETE" in capsys.readouterr().out
 
+    monkeypatch.setattr(
+        cli,
+        "preflight_training_arm",
+        lambda **kwargs: {"status": "STAGE25_PREFLIGHT_OK"},
+    )
+    monkeypatch.setattr(
+        cli,
+        "_parser",
+        lambda stage: _FixedParser(
+            argparse.Namespace(
+                fixture_dry_run=False,
+                execute=False,
+                preflight_only=True,
+                config=Path("config.yaml"),
+                execution_contract=tmp_path / "execution_contract.json",
+                b3_adapter=tmp_path / "adapter",
+                b3_sha256="digest",
+                ack=None,
+                arm="answer",
+                legacy_root=tmp_path,
+                trace=[],
+            )
+        ),
+    )
+    assert cli.run_registered(25) == 0
+    assert "STAGE25_PREFLIGHT_OK" in capsys.readouterr().out
+
+    monkeypatch.setattr(cli, "run_training_arm", lambda **kwargs: {"status": "STAGE25_EXECUTE_OK"})
+    monkeypatch.setattr(
+        cli,
+        "_parser",
+        lambda stage: _FixedParser(
+            argparse.Namespace(
+                fixture_dry_run=False,
+                execute=True,
+                preflight_only=False,
+                config=Path("config.yaml"),
+                execution_contract=tmp_path / "execution_contract.json",
+                b3_adapter=tmp_path / "adapter",
+                b3_sha256="digest",
+                ack="ack",
+                arm="state",
+                resume_from_checkpoint=None,
+                legacy_root=tmp_path,
+                trace=[],
+            )
+        ),
+    )
+    assert cli.run_registered(25) == 0
+    assert "STAGE25_EXECUTE_OK" in capsys.readouterr().out
+
     with pytest.raises(ValueError, match="unregistered Study C2 stage"):
         cli.run_registered(99)
 

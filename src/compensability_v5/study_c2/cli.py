@@ -6,10 +6,16 @@ import argparse
 import json
 from pathlib import Path
 
-from .paths import FIBER_ROWS, STAGE24_EXECUTION_CONTRACT, SUPPORT_MANIFEST
+from .paths import (
+    FIBER_ROWS,
+    STAGE24_EXECUTION_CONTRACT,
+    STAGE25_EXECUTION_CONTRACT,
+    SUPPORT_MANIFEST,
+)
 from .policy_support_runtime import preflight_support, run_frozen_policy_support
 from .shared_gradient_runtime import preflight_shared_gradient, run_shared_gradient_audit
 from .stages import audit_legacy_trace, build_pair_artifacts, enumerate_fiber_artifacts, print_json
+from .training_runtime import preflight_training_arm, run_training_arm
 
 CONFIG = Path("configs/v5/study_c2_identifiable_reward.yaml")
 GPU_STAGES = frozenset({23, 24, 25, 26, 31, 32, 33, 36, 37, 39})
@@ -46,9 +52,14 @@ def _parser(stage: int) -> argparse.ArgumentParser:
     parser.add_argument("--config", type=Path, default=CONFIG)
     parser.add_argument("--b3-adapter", type=Path)
     parser.add_argument("--b3-sha256")
-    parser.add_argument("--execution-contract", type=Path, default=STAGE24_EXECUTION_CONTRACT)
+    parser.add_argument(
+        "--execution-contract",
+        type=Path,
+        default=(STAGE25_EXECUTION_CONTRACT if stage == 25 else STAGE24_EXECUTION_CONTRACT),
+    )
     parser.add_argument("--ack")
     parser.add_argument("--arm", choices=("answer", "state"))
+    parser.add_argument("--resume-from-checkpoint", type=Path)
     parser.add_argument("--legacy-root", type=Path, default=Path("artifacts/v5/rl/study-c-pilot"))
     parser.add_argument("--trace", type=Path, action="append", default=[])
     return parser
@@ -150,6 +161,28 @@ def run_registered(stage: int) -> int:
                     b3_adapter=adapter,
                     b3_sha256=digest,
                     acknowledgement=arguments.ack,
+                )
+        elif stage == 25:
+            adapter, digest = _require_b3(arguments)
+            if arguments.arm is None:
+                raise ValueError("Stage 25 requires --arm answer or --arm state")
+            if arguments.preflight_only:
+                payload = preflight_training_arm(
+                    arm=arguments.arm,
+                    config_path=arguments.config,
+                    execution_contract_path=arguments.execution_contract,
+                    b3_adapter=adapter,
+                    b3_sha256=digest,
+                )
+            else:
+                payload = run_training_arm(
+                    arm=arguments.arm,
+                    config_path=arguments.config,
+                    execution_contract_path=arguments.execution_contract,
+                    b3_adapter=adapter,
+                    b3_sha256=digest,
+                    acknowledgement=arguments.ack,
+                    resume_from_checkpoint=arguments.resume_from_checkpoint,
                 )
         else:
             if not FIBER_ROWS.is_file():

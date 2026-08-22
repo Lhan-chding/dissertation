@@ -1,0 +1,18 @@
+{
+  "b3_adapter_sha256": "863b70b420daa5267a4c1517df0200833594ade285d1bdfa7b02e5952f9cfe9b",
+  "config_sha256": "03be95231d3eb8351078a77943bcce66d0d457dca3b0c3f1ab4a94d4d52cf417",
+  "continue_to_main_rl": true,
+  "fiber_rows_sha256": "ebfe4dd7b2acc2afeaea7aa633dcf2f0f7af1eaaceda8af808720c087dd36719",
+  "model_snapshot_sha256": "e104df572eab7267bc2a63c11d70f7c8b1ebf8f85aa835d17e2c2641447bca87",
+  "package_lock_sha256": "a8f351db7cadc904f6feecdd9cddb9e0d782c8356226cd866661710623b2e544",
+  "reward_hamming_distance": 635,
+  "schema_version": 2,
+  "selected_k": 8,
+  "shared_gradient_group_count": 768,
+  "stage24_execution_contract_sha256": "b91834069e821a47fdcad7834db6df367ccf13bb41002a8618aa4e7c34f5efaa",
+  "stage24_manifest_sha256": "8856eb4d8e841ba3965b7745b28e6ac0f03bca2ccdd396e91fc99dcf8048dc4a",
+  "stage24_per_group_sha256": "1a9fdef6981137f9748156799762b02dac2fe8568473de69c7f257e36d5d69bc",
+  "stage24_summary_sha256": "8e652de6f9ecad994e5fb4d41856109c4ddb86fea96cba8020e7cef1540de689",
+  "status": "STUDY_C2_STAGE25_EXECUTION_CONTRACT_FROZEN",
+  "training_prompt_count": 192
+}
