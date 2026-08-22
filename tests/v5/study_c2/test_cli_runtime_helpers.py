@@ -7,6 +7,7 @@ import pytest
 
 from compensability_v4.qwen.phase5_runtime import phase5_rollout_seed
 from compensability_v5.study_c2 import cli, policy_support_runtime
+from compensability_v5.qwen.study_b_runtime import tree_sha256 as study_b_tree_sha256
 
 
 class _FixedParser:
@@ -292,3 +293,37 @@ def test_policy_runtime_helpers_validate_tokenizer_and_partial_rollouts() -> Non
         policy_support_runtime._validate_partial_rows(
             completed=drifted, prompts=prompts, rollouts_per_prompt=2, seed=17
         )
+
+
+def test_support_preflight_uses_study_b_adapter_hash_contract(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    adapter = tmp_path / "B3"
+    adapter.mkdir()
+    (adapter / "adapter_config.json").write_text("{}\n", encoding="utf-8")
+    (adapter / "adapter_model.safetensors").write_bytes(b"frozen-b3-test")
+    registered = study_b_tree_sha256(adapter)
+
+    monkeypatch.setattr(
+        policy_support_runtime,
+        "load_contract",
+        lambda path: {"support_rollouts_per_prompt": 64},
+    )
+    monkeypatch.setattr(policy_support_runtime, "_require_offline_cuda", lambda: None)
+    monkeypatch.setattr(policy_support_runtime, "require_server_model", lambda: None)
+    monkeypatch.setattr(
+        policy_support_runtime,
+        "read_jsonl",
+        lambda path: tuple(
+            {"split": "support_audit", "scene_id": f"scene-{index}"}
+            for index in range(96)
+        ),
+    )
+    monkeypatch.setattr(policy_support_runtime, "sha256_file", lambda path: "f" * 64)
+
+    result = policy_support_runtime.preflight_support(
+        config_path=tmp_path / "config.yaml",
+        b3_adapter=adapter,
+        b3_sha256=registered,
+    )
+    assert result["b3_adapter_sha256"] == registered
