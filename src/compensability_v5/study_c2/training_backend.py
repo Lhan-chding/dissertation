@@ -257,6 +257,11 @@ def create_evaluation_sampler(
             if shape is None or len(shape) != 2:
                 raise RuntimeError("Study C2 processor returned malformed input IDs")
             prompt_length = int(shape[1])
+            if prompt_length > int(training["max_prompt_length"]):
+                raise RuntimeError(
+                    "Study C2 evaluation prompt exceeds the frozen maximum: "
+                    f"{row.get('scene_id')} has {prompt_length} tokens"
+                )
             with torch.inference_mode():
                 generated = generate(
                     **dict(batch),
@@ -264,6 +269,7 @@ def create_evaluation_sampler(
                     temperature=float(training["temperature"]),
                     top_p=float(training["top_p"]),
                     max_new_tokens=int(training["max_completion_length"]),
+                    eos_token_id=[eos_token_id, newline_token_id],
                     use_cache=True,
                 )
             completion_ids = generated[:, prompt_length:]
