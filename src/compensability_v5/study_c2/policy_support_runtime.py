@@ -8,7 +8,8 @@ from collections.abc import Mapping
 from pathlib import Path
 
 from compensability_v4.qwen.model_loader import load_pinned_qwen, require_server_model
-from compensability_v4.qwen.phase5_runtime import phase5_rollout_seed, tree_sha256
+from compensability_v4.qwen.phase5_runtime import phase5_rollout_seed
+from compensability_v5.qwen.study_b_runtime import tree_sha256
 
 from .io import read_jsonl, sha256_file, write_json_new
 from .paths import FIBER_ROWS, SUPPORT_MANIFEST, SUPPORT_RAW_ROWS, SUPPORT_ROOT, SUPPORT_SUMMARY

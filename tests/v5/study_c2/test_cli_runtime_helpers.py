@@ -6,8 +6,8 @@ from pathlib import Path
 import pytest
 
 from compensability_v4.qwen.phase5_runtime import phase5_rollout_seed
-from compensability_v5.study_c2 import cli, policy_support_runtime
 from compensability_v5.qwen.study_b_runtime import tree_sha256 as study_b_tree_sha256
+from compensability_v5.study_c2 import cli, policy_support_runtime
 
 
 class _FixedParser:
@@ -315,8 +315,7 @@ def test_support_preflight_uses_study_b_adapter_hash_contract(
         policy_support_runtime,
         "read_jsonl",
         lambda path: tuple(
-            {"split": "support_audit", "scene_id": f"scene-{index}"}
-            for index in range(96)
+            {"split": "support_audit", "scene_id": f"scene-{index}"} for index in range(96)
         ),
     )
     monkeypatch.setattr(policy_support_runtime, "sha256_file", lambda path: "f" * 64)
