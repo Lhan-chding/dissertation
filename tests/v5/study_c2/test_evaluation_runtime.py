@@ -85,6 +85,8 @@ def _training_manifests(root: Path) -> dict[str, dict[str, object]]:
         final_adapter = output / "final_adapter"
         final_adapter.mkdir()
         (final_adapter / "adapter_model.safetensors").write_bytes(name.encode("utf-8"))
+        arm_config_path = output / "arm_config.json"
+        write_json_new(arm_config_path, arm_configs[name])
         payload = {
             "schema_version": 2,
             "status": "STUDY_C2_ARM_TRAINING_COMPLETE",
@@ -92,7 +94,7 @@ def _training_manifests(root: Path) -> dict[str, dict[str, object]]:
             "reward_function_id": (
                 "answer_reward_v1" if "answer" in name else "exact_state_reward_v1"
             ),
-            "arm_config_sha256": runtime.canonical_sha256(arm_configs[name]),
+            "arm_config_sha256": sha256_file(arm_config_path),
             "b3_adapter_sha256": "8" * 64,
             "config_sha256": "2" * 64,
             "fiber_rows_sha256": "1" * 64,
@@ -167,6 +169,10 @@ def test_stage26_preflight_binds_stage25_pair_manifest_and_eval_contract(
         name: training_root / name / "manifest.json"
         for name in ("C2_answer_reward", "C2_exact_state_reward")
     }
+    arm_config_paths = {
+        name: training_root / name / "arm_config.json"
+        for name in ("C2_answer_reward", "C2_exact_state_reward")
+    }
     hashes = {
         fiber_rows: "1" * 64,
         Path("config.yaml"): "2" * 64,
@@ -174,6 +180,12 @@ def test_stage26_preflight_binds_stage25_pair_manifest_and_eval_contract(
         training_root / "manifest.json": "4" * 64,
         arm_paths["C2_answer_reward"]: "5" * 64,
         arm_paths["C2_exact_state_reward"]: "6" * 64,
+        arm_config_paths["C2_answer_reward"]: read_json(arm_paths["C2_answer_reward"])[
+            "arm_config_sha256"
+        ],
+        arm_config_paths["C2_exact_state_reward"]: read_json(
+            arm_paths["C2_exact_state_reward"]
+        )["arm_config_sha256"],
     }
     pair_manifest["arms"]["C2_answer_reward"]["manifest_sha256"] = "5" * 64
     pair_manifest["arms"]["C2_exact_state_reward"]["manifest_sha256"] = "6" * 64
@@ -208,6 +220,9 @@ def test_stage26_preflight_binds_stage25_pair_manifest_and_eval_contract(
     assert result["reward_only_pair_verified"] is True
     assert result["arm_manifests"]["C2_answer_reward"]["arm_config"]["training"] == _config()[
         "training"
+    ]
+    assert result["arm_manifests"]["C2_answer_reward"]["arm_config_sha256"] == hashes[
+        arm_config_paths["C2_answer_reward"]
     ]
 
     arm_paths["C2_answer_reward"].write_text(
