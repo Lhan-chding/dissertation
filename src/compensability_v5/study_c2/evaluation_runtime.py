@@ -36,6 +36,7 @@ from .statistics import paired_collision_difference_in_differences
 PACKAGE_LOCK = Path("configs/v5/server_package_lock.yaml")
 EVALUATION_ACK = "I_UNDERSTAND_THIS_RUNS_STUDY_C2_POST_TRAINING_EVALUATION"
 _EVAL_SPLITS = ("dev", "test", "positive_control")
+_EXPECTED_SPLIT_PROMPTS = {"dev": 48, "test": 96, "positive_control": 32}
 _EXPECTED_EVAL_PAIRS = 88
 _EXPECTED_EVAL_PROMPTS = 176
 _GROUP_SIZE = 8
@@ -70,6 +71,7 @@ def select_evaluation_rows(
             f"observed {len(selected)}"
         )
     by_pair: dict[str, list[Mapping[str, object]]] = {}
+    scene_ids: set[str] = set()
     for row in selected:
         pair_id = row.get("pair_id")
         scene_id = row.get("scene_id")
@@ -82,13 +84,28 @@ def select_evaluation_rows(
             or condition not in {"collision", "separating"}
             or not isinstance(row.get("prompt"), str)
             or not isinstance(row.get("truth"), list)
+            or len(row["truth"]) != 4
+            or any(type(value) is not int for value in row["truth"])
             or not isinstance(row.get("observation"), list)
+            or len(row["observation"]) != 4
+            or any(type(value) is not int for value in row["observation"])
             or not isinstance(row.get("operation"), Mapping)
+            or not isinstance(row.get("prompt_sha256"), str)
+            or len(str(row["prompt_sha256"])) != 64
         ):
             raise ValueError("Study C2 evaluation row metadata is malformed")
+        if scene_id in scene_ids:
+            raise ValueError("Study C2 evaluation rows contain duplicate scene IDs")
+        scene_ids.add(scene_id)
         by_pair.setdefault(pair_id, []).append(row)
+    split_counts = Counter(str(row["split"]) for row in selected)
+    if dict(split_counts) != _EXPECTED_SPLIT_PROMPTS:
+        raise ValueError("Study C2 evaluation split counts drifted")
     if len(by_pair) != _EXPECTED_EVAL_PAIRS or any(
-        len(pair) != 2 or {row["condition"] for row in pair} != {"collision", "separating"}
+        len(pair) != 2
+        or {row["condition"] for row in pair} != {"collision", "separating"}
+        or len({row["split"] for row in pair}) != 1
+        or len({row["family"] for row in pair}) != 1
         for pair in by_pair.values()
     ):
         raise ValueError("Study C2 evaluation rows are not 88 complete paired scenes")
@@ -383,6 +400,8 @@ def run_post_training_evaluation(
     arm_details = dict(preflight["arm_manifests"])
     arms = tuple(arm_details)
     partial = EVALUATION_ROOT / "raw_rows.partial.jsonl"
+    if EVALUATION_ROOT.is_symlink():
+        raise RuntimeError("Stage 26 evaluation root must not be a symlink")
     EVALUATION_ROOT.mkdir(parents=True, exist_ok=True)
     if partial.is_symlink():
         raise RuntimeError("partial Stage 26 trace must not be a symlink")
