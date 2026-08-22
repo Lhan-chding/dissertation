@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import gc
-import hashlib
 import json
 import os
 from collections import Counter
@@ -43,17 +42,6 @@ _GROUP_SIZE = 8
 
 EvaluationSampler = Callable[[Mapping[str, object], Sequence[int]], Sequence[str]]
 SamplerFactory = Callable[..., EvaluationSampler]
-
-
-def canonical_sha256(value: object) -> str:
-    encoded = json.dumps(
-        value,
-        sort_keys=True,
-        separators=(",", ":"),
-        ensure_ascii=False,
-        allow_nan=False,
-    ).encode("utf-8")
-    return hashlib.sha256(encoded).hexdigest()
 
 
 def _require_offline_cuda() -> None:  # pragma: no cover - server-only dependency gate
@@ -192,6 +180,7 @@ def preflight_post_training_evaluation(
     arm_manifests: dict[str, dict[str, object]] = {}
     for name in ("C2_answer_reward", "C2_exact_state_reward"):
         manifest_path = TRAINING_ROOT / name / "manifest.json"
+        arm_config_path = TRAINING_ROOT / name / "arm_config.json"
         adapter_path = TRAINING_ROOT / name / "final_adapter"
         manifest = loaded_manifests[name]
         pair_arm = pair_arms[name]
@@ -221,8 +210,12 @@ def preflight_post_training_evaluation(
             or manifest.get("raw_reward_trace_sha256") != pair_arm.get("raw_reward_trace_sha256")
         ):
             raise ValueError(f"Stage 25 final adapter SHA-256 drifted for {name}")
-        if manifest.get("arm_config_sha256") != canonical_sha256(arm_configs[name]):
-            raise ValueError(f"Stage 25 arm config drifted for {name}")
+        observed_arm_config_sha = sha256_file(arm_config_path)
+        if observed_arm_config_sha != manifest.get("arm_config_sha256"):
+            raise ValueError(f"Stage 25 arm config SHA-256 drifted for {name}")
+        observed_arm_config = read_json(arm_config_path)
+        if observed_arm_config != arm_configs[name]:
+            raise ValueError(f"Stage 25 arm config content drifted for {name}")
         for label in ("config_sha256", "fiber_rows_sha256", "package_lock_sha256"):
             if manifest.get(label) != sources[label][1]:
                 raise ValueError(f"Stage 25 {label} drifted for {name}")
@@ -232,10 +225,12 @@ def preflight_post_training_evaluation(
         arm_manifests[name] = {
             "manifest_path": str(manifest_path),
             "manifest_sha256": observed_manifest_sha,
+            "arm_config_path": str(arm_config_path),
+            "arm_config_sha256": observed_arm_config_sha,
             "adapter_path": str(adapter_path),
             "final_adapter_sha256": adapter_sha,
             "reward_function_id": expected_reward_id,
-            "arm_config": arm_configs[name],
+            "arm_config": observed_arm_config,
         }
     if backend_validator is None:
         backend_validator = validate_evaluation_backend_api

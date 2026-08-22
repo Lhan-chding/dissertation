@@ -225,6 +225,30 @@ def test_stage26_preflight_binds_stage25_pair_manifest_and_eval_contract(
         arm_config_paths["C2_answer_reward"]
     ]
 
+    registered_arm_config_sha = hashes[arm_config_paths["C2_answer_reward"]]
+    hashes[arm_config_paths["C2_answer_reward"]] = "0" * 64
+    with pytest.raises(ValueError, match="arm config SHA-256 drifted"):
+        runtime.preflight_post_training_evaluation(
+            config_path=Path("config.yaml"),
+            backend_validator=lambda: {"generation_available": True},
+        )
+    hashes[arm_config_paths["C2_answer_reward"]] = registered_arm_config_sha
+
+    registered_arm_config = read_json(arm_config_paths["C2_answer_reward"])
+    arm_config_paths["C2_answer_reward"].write_text(
+        json.dumps(dict(registered_arm_config, seed=0), sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="arm config content drifted"):
+        runtime.preflight_post_training_evaluation(
+            config_path=Path("config.yaml"),
+            backend_validator=lambda: {"generation_available": True},
+        )
+    arm_config_paths["C2_answer_reward"].write_text(
+        json.dumps(registered_arm_config, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
     arm_paths["C2_answer_reward"].write_text(
         json.dumps(
             dict(read_json(arm_paths["C2_answer_reward"]), status="DRIFTED"),
