@@ -64,7 +64,11 @@ def test_closed_config_and_four_reward_only_arms() -> None:
         "reward_function_id",
         "output_directory",
     }
-    assert all({key: arm[key] for key in common_keys} == {key: arms[0][key] for key in common_keys} for arm in arms)
+    assert all(
+        {key: arm[key] for key in common_keys}
+        == {key: arms[0][key] for key in common_keys}
+        for arm in arms
+    )
 
 
 def test_pairing_fails_closed_on_any_nonreward_drift() -> None:
@@ -91,4 +95,3 @@ def test_pairing_fails_closed_on_any_nonreward_drift() -> None:
     drifted["A_LEX"]["initial_checkpoint_sha256"] = "b" * 64
     with pytest.raises(ValueError, match="initial checkpoint"):
         validate_factorial_pairing(drifted)
-

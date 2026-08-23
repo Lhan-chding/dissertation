@@ -29,7 +29,7 @@ def test_trie_blocks_invalid_actions_and_allows_only_eos_after_completion() -> N
     valid = tokenizer.encode("2,3,4,5", add_special_tokens=False)
 
     assert trie.allowed_next(valid) == frozenset({tokenizer.eos_token_id})
-    assert trie.accepts(valid + [tokenizer.eos_token_id])
+    assert trie.accepts([*valid, tokenizer.eos_token_id])
     assert not trie.accepts(tokenizer.encode("1,3,4,5", add_special_tokens=False))
     assert not trie.accepts(tokenizer.encode("2,3,4,19", add_special_tokens=False))
     assert not trie.accepts(tokenizer.encode("[2,3,4,5]", add_special_tokens=False))
@@ -55,4 +55,3 @@ def test_invalid_prefix_fails_closed() -> None:
     trie = ValidWorldTrie.build(CharacterTokenizer(), minimum=2, maximum=18)
     with pytest.raises(ValueError, match="invalid constrained-decoding prefix"):
         trie.allowed_next([999_999])
-

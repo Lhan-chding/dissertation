@@ -19,7 +19,10 @@ def test_registered_reward_matrix_preserves_all_three_channels() -> None:
     for arm in ARM_IDS:
         rows = [rewards_for_class(kind, arm=arm) for kind in classes]
         assert [row["combined_reward"] for row in rows] == expected[arm]
-        assert all(set(row) == {"semantic_reward", "validity_reward", "combined_reward"} for row in rows)
+        assert all(
+            set(row) == {"semantic_reward", "validity_reward", "combined_reward"}
+            for row in rows
+        )
 
 
 def test_finite_argmax_preservation() -> None:
@@ -27,4 +30,3 @@ def test_finite_argmax_preservation() -> None:
         "A_LEX_equals_A_BIN": True,
         "X_LEX_equals_X_BIN": True,
     }
-

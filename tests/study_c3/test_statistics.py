@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from compensability.study_c3.statistics import holm_adjust, paired_factorial_effects
 
 
@@ -40,15 +42,14 @@ def test_registered_factorial_effects_are_paired_and_bootstrapped_by_pair() -> N
         _rows(), outcome="outcome", resamples=200, seed=7
     )
     assert result["pair_count"] == 4
-    assert result["effects"]["verifier"]["estimate"] == 0.065
-    assert result["effects"]["validity_channel"]["estimate"] == 0.095
-    assert result["effects"]["verifier_x_validity"]["estimate"] == 0.03
-    assert result["effects"]["decoder"]["estimate"] == 0.2
-    assert result["effects"]["verifier_x_decoder"]["estimate"] == 0.0
+    assert result["effects"]["verifier"]["estimate"] == pytest.approx(0.065)
+    assert result["effects"]["validity_channel"]["estimate"] == pytest.approx(0.095)
+    assert result["effects"]["verifier_x_validity"]["estimate"] == pytest.approx(0.03)
+    assert result["effects"]["decoder"]["estimate"] == pytest.approx(0.2)
+    assert result["effects"]["verifier_x_decoder"]["estimate"] == pytest.approx(0.0)
     assert all(len(effect["bootstrap_95_ci"]) == 2 for effect in result["effects"].values())
 
 
 def test_holm_adjust_is_monotone_in_sorted_p_values() -> None:
     adjusted = holm_adjust({"a": 0.01, "b": 0.03, "c": 0.2})
     assert adjusted == {"a": 0.03, "b": 0.06, "c": 0.2}
-

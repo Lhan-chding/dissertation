@@ -7,7 +7,6 @@ from compensability.study_c3.action_taxonomy import (
     classify_failure,
 )
 
-
 OPERATION = {"operator": "sum", "indices": [0, 1]}
 TRUTH = (2, 3, 4, 5)
 
