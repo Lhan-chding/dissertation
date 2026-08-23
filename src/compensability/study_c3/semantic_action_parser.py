@@ -9,9 +9,7 @@ World = tuple[int, int, int, int]
 
 _INTEGER = r"-?\d+"
 _P0 = re.compile(rf"({_INTEGER}),({_INTEGER}),({_INTEGER}),({_INTEGER})")
-_CSV = re.compile(
-    rf"\s*({_INTEGER})\s*,\s*({_INTEGER})\s*,\s*({_INTEGER})\s*,\s*({_INTEGER})\s*"
-)
+_CSV = re.compile(rf"\s*({_INTEGER})\s*,\s*({_INTEGER})\s*,\s*({_INTEGER})\s*,\s*({_INTEGER})\s*")
 _BRACKETED = re.compile(
     rf"\s*[\[(]\s*({_INTEGER})\s*,\s*({_INTEGER})\s*,\s*({_INTEGER})\s*,\s*"
     rf"({_INTEGER})\s*[\])]\s*"
@@ -87,9 +85,7 @@ def parse_p1(completion: str, *, minimum: int = 2, maximum: int = 18) -> World |
 
     world = parse_complete_action_any_domain(completion)
     return (
-        world
-        if world is not None and _in_domain(world, minimum=minimum, maximum=maximum)
-        else None
+        world if world is not None and _in_domain(world, minimum=minimum, maximum=maximum) else None
     )
 
 
@@ -98,17 +94,21 @@ def parse_p2(completion: str, *, minimum: int = 2, maximum: int = 18) -> World |
 
     if not isinstance(completion, str) or not completion:
         return None
-    first_line = completion.splitlines()[0]
-    direct = parse_p1(first_line, minimum=minimum, maximum=maximum)
-    if direct is not None:
-        return direct
-    for pattern in _EXPLICIT_SEGMENTS:
-        match = pattern.search(first_line)
-        if match is None:
-            continue
-        candidate = parse_complete_action_any_domain(match.group(0))
-        if candidate is not None and _in_domain(candidate, minimum=minimum, maximum=maximum):
-            return candidate
+    for line in completion.splitlines():
+        direct = parse_complete_action_any_domain(line.strip())
+        if direct is not None:
+            return direct if _in_domain(direct, minimum=minimum, maximum=maximum) else None
+        matches = tuple(
+            match for pattern in _EXPLICIT_SEGMENTS if (match := pattern.search(line)) is not None
+        )
+        if matches:
+            first = min(matches, key=lambda match: match.start())
+            candidate = parse_complete_action_any_domain(first.group(0))
+            return (
+                candidate
+                if candidate is not None and _in_domain(candidate, minimum=minimum, maximum=maximum)
+                else None
+            )
     return None
 
 

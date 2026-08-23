@@ -1,7 +1,12 @@
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 import pytest
 
+from compensability.study_c3 import qwen_backend
+from compensability.study_c3.io import sha256_file
 from compensability.study_c3.valid_world_trie import ValidWorldTrie
 
 
@@ -55,3 +60,45 @@ def test_invalid_prefix_fails_closed() -> None:
     trie = ValidWorldTrie.build(CharacterTokenizer(), minimum=2, maximum=18)
     with pytest.raises(ValueError, match="invalid constrained-decoding prefix"):
         trie.allowed_next([999_999])
+
+
+def test_frozen_trie_loader_binds_build_and_validation_manifests(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    trie = ValidWorldTrie.build(CharacterTokenizer(), minimum=2, maximum=18)
+    payload = tmp_path / "trie.json"
+    build_manifest = tmp_path / "manifest.json"
+    validation_manifest = tmp_path / "validation_manifest.json"
+    payload.write_text(json.dumps(trie.to_payload()), encoding="utf-8")
+    build_manifest.write_text(
+        json.dumps(
+            {
+                "status": "STUDY_C3_VALID_WORLD_TRIE_COMPLETE",
+                "trie_sha256": sha256_file(payload),
+                "world_count": 83_521,
+            }
+        ),
+        encoding="utf-8",
+    )
+    validation_manifest.write_text(
+        json.dumps(
+            {
+                "status": "STUDY_C3_VALID_WORLD_TRIE_VALIDATION_COMPLETE",
+                "trie_sha256": sha256_file(payload),
+                "legal_action_count": 83_521,
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(qwen_backend, "TRIE_PAYLOAD", payload, raising=False)
+    monkeypatch.setattr(qwen_backend, "TRIE_MANIFEST", build_manifest, raising=False)
+    monkeypatch.setattr(
+        qwen_backend, "TRIE_VALIDATION_MANIFEST", validation_manifest, raising=False
+    )
+
+    loaded = qwen_backend.load_frozen_valid_world_trie()
+    assert loaded.world_count == 83_521
+
+    payload.write_text("{}", encoding="utf-8")
+    with pytest.raises(ValueError, match="drifted"):
+        qwen_backend.load_frozen_valid_world_trie()

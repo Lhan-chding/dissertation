@@ -40,7 +40,8 @@ def test_execution_contract_binds_sources_and_common_random_numbers() -> None:
     assert contract["checkpoint_steps"] == [48, 96, 144, 192]
     assert tuple(contract["arms"]) == ("A_BIN", "X_BIN", "A_LEX", "X_LEX")
     assert all(
-        details["rollout_seeds"] == contract["arms"]["A_BIN"]["rollout_seeds"]
+        details["rollout_seed_contract"] == contract["arms"]["A_BIN"]["rollout_seed_contract"]
         for details in contract["arms"].values()
     )
+    assert contract["rollout_seed_algorithm"] == "trl_global_seed_common_stream_v1"
     assert contract["reward_only_factorial_verified"] is True

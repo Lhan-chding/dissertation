@@ -65,8 +65,7 @@ def test_closed_config_and_four_reward_only_arms() -> None:
         "output_directory",
     }
     assert all(
-        {key: arm[key] for key in common_keys}
-        == {key: arms[0][key] for key in common_keys}
+        {key: arm[key] for key in common_keys} == {key: arms[0][key] for key in common_keys}
         for arm in arms
     )
 
@@ -78,7 +77,10 @@ def test_pairing_fails_closed_on_any_nonreward_drift() -> None:
             "arm_config": arm,
             "scene_ids": ["scene-a", "scene-b"],
             "prompt_sha256s": ["1" * 64, "2" * 64],
-            "rollout_seeds": [[1] * 8, [2] * 8],
+            "rollout_seed_contract": {
+                "algorithm": "trl_global_seed_common_stream_v1",
+                "seed": 2026082501,
+            },
             "initial_checkpoint_sha256": "a" * 64,
         }
         for arm in arms

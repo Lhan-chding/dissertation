@@ -46,7 +46,8 @@ def test_p1_is_anchored_and_does_not_mine_prose_or_label_indices() -> None:
 
 def test_p2_uses_first_explicit_action_segment_without_cross_segment_joining() -> None:
     assert parse_p2("Action: [2,3,4,5]\nExplanation follows") == (2, 3, 4, 5)
+    assert parse_p2("Explanation first\n2,3,4,5\nMore prose") == (2, 3, 4, 5)
+    assert parse_p2("Explanation first\nAction: v1=2,v2=3,v3=4,v4=5") == (2, 3, 4, 5)
     assert parse_p2("2,3\n4,5") is None
     assert parse_p2("Numbers in prose: 2 3 4 5") is None
     assert parse_p2("v1=2,v2=3,v3=4\nv4=5") is None
-

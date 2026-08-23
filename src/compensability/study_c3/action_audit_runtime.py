@@ -104,11 +104,15 @@ def audit_existing_rows(
         token_length = token_counter(completion)
         if type(token_length) is not int or token_length < 0:
             raise ValueError("Study C3 token counter returned an invalid length")
-        complete = parse_complete_action_any_domain(completion) is not None or parse_p2(
-            completion,
-            minimum=-(2**31),
-            maximum=2**31 - 1,
-        ) is not None
+        complete = (
+            parse_complete_action_any_domain(completion) is not None
+            or parse_p2(
+                completion,
+                minimum=-(2**31),
+                maximum=2**31 - 1,
+            )
+            is not None
+        )
         audited.append(
             {
                 "schema_version": 3,

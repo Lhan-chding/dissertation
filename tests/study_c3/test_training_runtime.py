@@ -28,9 +28,7 @@ def _row() -> dict[str, object]:
 
 
 def test_traced_reward_preserves_semantic_validity_and_combined_channels(tmp_path: Path) -> None:
-    arm = build_factorial_arms(
-        validate_study_c3_config(_config()), initialization_hash="b" * 64
-    )[3]
+    arm = build_factorial_arms(validate_study_c3_config(_config()), initialization_hash="b" * 64)[3]
     trace = tmp_path / "raw_reward_trace.jsonl"
     reward = build_traced_reward(
         arm_config=arm,

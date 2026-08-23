@@ -20,8 +20,7 @@ def test_registered_reward_matrix_preserves_all_three_channels() -> None:
         rows = [rewards_for_class(kind, arm=arm) for kind in classes]
         assert [row["combined_reward"] for row in rows] == expected[arm]
         assert all(
-            set(row) == {"semantic_reward", "validity_reward", "combined_reward"}
-            for row in rows
+            set(row) == {"semantic_reward", "validity_reward", "combined_reward"} for row in rows
         )
 
 

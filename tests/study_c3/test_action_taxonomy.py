@@ -34,4 +34,3 @@ def test_failure_taxonomy_has_registered_precedence() -> None:
         is FailureCategory.FREE_PROSE_WITHOUT_COMPLETE_ACTION
     )
     assert classify_failure("???") is FailureCategory.OTHER_INVALID
-

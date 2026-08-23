@@ -35,9 +35,7 @@ class FakeSampler:
                 "completion": completion,
                 "token_ids": [2, 3, 4, 5],
                 "mask_records": (
-                    [{"step": 0, "allowed_token_ids": [2]}]
-                    if decoder == "valid_world_fsa"
-                    else []
+                    [{"step": 0, "allowed_token_ids": [2]}] if decoder == "valid_world_fsa" else []
                 ),
             }
             for _seed in seeds
@@ -88,6 +86,8 @@ def test_grid_uses_common_scene_seeds_and_constrained_actions_are_valid() -> Non
     assert len(per_scene) == 2 * 2 * 2
     assert summary["raw_row_count"] == len(raw)
     assert summary["same_scene_rollout_seeds"] is True
+    assert set(summary["by_condition"]) == {"collision", "separating"}
+    assert set(summary["by_family"]) == {"cross_series"}
 
 
 def test_grid_releases_each_checkpoint_sampler() -> None:

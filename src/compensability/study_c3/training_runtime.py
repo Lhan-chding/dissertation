@@ -114,6 +114,8 @@ def build_traced_reward(
                         "schema_version": 3,
                         "arm": arm,
                         "reward_function_id": arm_config["reward_function_id"],
+                        "training_seed": arm_config["seed"],
+                        "rollout_seed_algorithm": "trl_global_seed_common_stream_v1",
                         "trainer_step": trainer_step,
                         "reward_call_index": reward_call_index,
                         "group_index": group_index,

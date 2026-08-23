@@ -9,9 +9,7 @@ from compensability.study_c3.gradient_audit import (
 
 
 def test_all_reward_gradients_use_one_action_batch() -> None:
-    rows = [
-        {"action_id": f"a{index}", "completion": str(index)} for index in range(4)
-    ]
+    rows = [{"action_id": f"a{index}", "completion": str(index)} for index in range(4)]
     assert validate_shared_action_batch(rows, expected_action_ids=["a0", "a1", "a2", "a3"])
 
     diagnostics = shared_reward_gradient_diagnostics(
@@ -39,4 +37,3 @@ def test_shared_buffer_rejects_different_action_identity() -> None:
             [{"action_id": "a", "completion": "2,3,4,5"}],
             expected_action_ids=["b"],
         )
-

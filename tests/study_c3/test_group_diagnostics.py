@@ -52,3 +52,12 @@ def test_group_diagnostics_rejects_wrong_size_and_nonfinite_values() -> None:
     with pytest.raises(ValueError, match="finite"):
         summarize_training_group(rows, expected_size=8)
 
+
+def test_all_one_is_measured_on_the_binary_semantic_channel_for_lex_rewards() -> None:
+    rows = [_row("X", 3, "canonical_valid_in_domain", 8)] * 8
+
+    result = summarize_training_group(rows, expected_size=8)
+
+    assert result["all_one"] is True
+    assert result["combined_constant"] is True
+    assert result["combined_constant_value"] == 3.0

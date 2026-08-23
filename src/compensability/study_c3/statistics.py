@@ -40,7 +40,8 @@ def _pair_effects(rows: Sequence[Mapping[str, object]], *, outcome: str) -> dict
     }
     effects: dict[str, list[float]] = defaultdict(list)
     for pair_id, cells in sorted(grouped.items()):
-        if set(cells) != required or any(len(values) != 2 for values in cells.values()):
+        replicate_counts = {len(values) for values in cells.values()}
+        if set(cells) != required or len(replicate_counts) != 1 or 0 in replicate_counts:
             raise ValueError(f"pair {pair_id} lacks the full paired condition/factor grid")
         mean = {key: sum(values) / len(values) for key, values in cells.items()}
 

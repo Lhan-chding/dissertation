@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 
-from compensability_v4.qwen.phase5_runtime import phase5_rollout_seed
-
 from .factorial_design import (
     ARM_IDS,
     CHECKPOINT_STEPS,
@@ -77,16 +75,19 @@ def build_execution_contract(
         raise ValueError("Study C3 execution-contract provenance is malformed")
     scenes, prompts = _validate_training_rows(training_rows)
     arms = build_factorial_arms(frozen, initialization_hash=b3_adapter_sha256)
-    rollout_seeds = [
-        [phase5_rollout_seed(TRAINING_SEED, scene_id, index) for index in range(8)]
-        for scene_id in scenes
-    ]
+    rollout_seed_contract = {
+        "algorithm": "trl_global_seed_common_stream_v1",
+        "seed": TRAINING_SEED,
+        "data_seed": TRAINING_SEED,
+        "shuffle_dataset": False,
+        "group_size": 8,
+    }
     records = {
         str(arm["arm"]): {
             "arm_config": arm,
             "scene_ids": scenes,
             "prompt_sha256s": prompts,
-            "rollout_seeds": rollout_seeds,
+            "rollout_seed_contract": rollout_seed_contract,
             "initial_checkpoint_sha256": b3_adapter_sha256,
         }
         for arm in arms
@@ -97,7 +98,7 @@ def build_execution_contract(
             "arm_config": records[arm]["arm_config"],
             "scene_ids": scenes,
             "prompt_sha256s": prompts,
-            "rollout_seeds": rollout_seeds,
+            "rollout_seed_contract": rollout_seed_contract,
             "initial_checkpoint_sha256": b3_adapter_sha256,
         }
         for arm in ARM_IDS
@@ -117,7 +118,7 @@ def build_execution_contract(
         "group_size": 8,
         "optimizer_steps": 192,
         "checkpoint_steps": list(CHECKPOINT_STEPS),
-        "rollout_seed_algorithm": "phase5_rollout_seed_v1",
+        "rollout_seed_algorithm": "trl_global_seed_common_stream_v1",
         "arms": arm_payload,
         "reward_only_factorial_verified": pairing["reward_only_factorial_verified"],
         "argmax_preservation": verify_argmax_preservation(),

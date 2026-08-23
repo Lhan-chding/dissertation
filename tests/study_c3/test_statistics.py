@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pytest
 
+from compensability.study_c3.analysis_execution import _existing_decoder_effects
 from compensability.study_c3.statistics import holm_adjust, paired_factorial_effects
 
 
@@ -18,9 +19,7 @@ def _rows() -> list[dict[str, object]]:
                             + 0.05 * (verifier == "state")
                             + 0.08 * (validity == "lex")
                             + 0.2 * (decoder == "constrained")
-                            + 0.03
-                            * (verifier == "state")
-                            * (validity == "lex")
+                            + 0.03 * (verifier == "state") * (validity == "lex")
                         )
                         rows.append(
                             {
@@ -38,9 +37,7 @@ def _rows() -> list[dict[str, object]]:
 
 
 def test_registered_factorial_effects_are_paired_and_bootstrapped_by_pair() -> None:
-    result = paired_factorial_effects(
-        _rows(), outcome="outcome", resamples=200, seed=7
-    )
+    result = paired_factorial_effects(_rows(), outcome="outcome", resamples=200, seed=7)
     assert result["pair_count"] == 4
     assert result["effects"]["verifier"]["estimate"] == pytest.approx(0.065)
     assert result["effects"]["validity_channel"]["estimate"] == pytest.approx(0.095)
@@ -53,3 +50,36 @@ def test_registered_factorial_effects_are_paired_and_bootstrapped_by_pair() -> N
 def test_holm_adjust_is_monotone_in_sorted_p_values() -> None:
     adjusted = holm_adjust({"a": 0.01, "b": 0.03, "c": 0.2})
     assert adjusted == {"a": 0.03, "b": 0.06, "c": 0.2}
+
+
+def test_existing_checkpoint_decoder_effects_are_pair_clustered() -> None:
+    rows: list[dict[str, object]] = []
+    rates = {
+        ("answer", "free_16"): (0.5, 0.1),
+        ("answer", "free_48"): (0.6, 0.1),
+        ("answer", "valid_world_fsa"): (1.0, 0.2),
+        ("state", "free_16"): (0.4, 0.1),
+        ("state", "free_48"): (0.7, 0.2),
+        ("state", "valid_world_fsa"): (1.0, 0.3),
+    }
+    for pair_index in range(4):
+        for condition in ("collision", "separating"):
+            for (verifier, decoder), (valid, exact) in rates.items():
+                rows.append(
+                    {
+                        "pair_id": f"p{pair_index}",
+                        "condition": condition,
+                        "verifier": verifier,
+                        "eval_decoder": decoder,
+                        "rollout_count": 16,
+                        "action_validity": valid,
+                        "exact_recovery": exact,
+                    }
+                )
+
+    measured = _existing_decoder_effects(rows, outcome="action_validity", resamples=200, seed=11)
+
+    assert measured["pair_count"] == 4
+    assert measured["excluded_pair_count"] == 0
+    assert measured["contrasts"]["answer:free48_minus_free16"]["estimate"] == pytest.approx(0.1)
+    assert measured["contrasts"]["state:free48_minus_free16"]["estimate"] == pytest.approx(0.3)

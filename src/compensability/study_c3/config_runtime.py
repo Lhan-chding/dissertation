@@ -16,7 +16,14 @@ from compensability_v5.qwen.study_b_backend import (
 
 from .factorial_design import validate_study_c3_config
 from .io import read_json, sha256_file
-from .paths import C2_EVALUATION_MANIFEST, C2_EVALUATION_RAW, C2_EVALUATION_SUMMARY, PACKAGE_LOCK
+from .paths import (
+    C2_EVALUATION_MANIFEST,
+    C2_EVALUATION_RAW,
+    C2_EVALUATION_SUMMARY,
+    C2_FIBER_ROWS,
+    C2_TRAINING_MANIFEST,
+    PACKAGE_LOCK,
+)
 
 
 def load_config(path: Path) -> dict[str, object]:
@@ -30,10 +37,12 @@ def load_config(path: Path) -> dict[str, object]:
 
 def require_offline_snapshot() -> dict[str, object]:  # pragma: no cover - server snapshot
     require_offline_environment()
+    package = verify_runtime_package_lock(PACKAGE_LOCK)
     require_server_model()
     return {
         "model_snapshot_sha256": MODEL_SNAPSHOT_SHA256,
         "package_lock_sha256": sha256_file(PACKAGE_LOCK),
+        "package_lock": package,
         "gpu_invoked": False,
     }
 
@@ -62,6 +71,8 @@ def validate_c2_evaluation_sources() -> dict[str, object]:
         or manifest.get("sampled_rollouts") != 16
         or manifest.get("raw_rows_sha256") != sha256_file(C2_EVALUATION_RAW)
         or manifest.get("summary_sha256") != sha256_file(C2_EVALUATION_SUMMARY)
+        or manifest.get("fiber_rows_sha256") != sha256_file(C2_FIBER_ROWS)
+        or manifest.get("training_pair_manifest_sha256") != sha256_file(C2_TRAINING_MANIFEST)
         or manifest.get("model_snapshot_sha256") != MODEL_SNAPSHOT_SHA256
     ):
         raise ValueError("frozen Study C2 evaluation evidence drifted")

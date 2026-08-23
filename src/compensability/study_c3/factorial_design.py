@@ -113,7 +113,7 @@ def validate_factorial_pairing(records: Mapping[str, Mapping[str, object]]) -> d
     first = records[ARM_IDS[0]]
     reference_scenes = first.get("scene_ids")
     reference_prompts = first.get("prompt_sha256s")
-    reference_seeds = first.get("rollout_seeds")
+    reference_seeds = first.get("rollout_seed_contract")
     reference_initial = first.get("initial_checkpoint_sha256")
     allowed = {
         "arm",
@@ -132,7 +132,7 @@ def validate_factorial_pairing(records: Mapping[str, Mapping[str, object]]) -> d
             raise ValueError(f"Study C3 scene IDs/order drifted for {arm}")
         if record.get("prompt_sha256s") != reference_prompts:
             raise ValueError(f"Study C3 prompt order drifted for {arm}")
-        if record.get("rollout_seeds") != reference_seeds:
+        if record.get("rollout_seed_contract") != reference_seeds:
             raise ValueError(f"Study C3 rollout seeds drifted for {arm}")
         if record.get("initial_checkpoint_sha256") != reference_initial:
             raise ValueError(f"Study C3 initial checkpoint drifted for {arm}")
@@ -177,6 +177,7 @@ def summarize_training_group(
         raise ValueError("Study C3 group failure taxonomy drifted")
     counts = Counter(classes)
     failure_counts = Counter(failures)
+    semantic = channels["semantic_reward"]
     combined = channels["combined_reward"]
     return {
         "counts": {kind.value: counts[kind.value] for kind in ActionClass},
@@ -186,8 +187,10 @@ def summarize_training_group(
         "validity_bearing_group": counts["I"] > 0 and sum(counts[kind] for kind in "XSW") > 0,
         "truth_bearing_group": counts["X"] > 0 and counts["S"] + counts["W"] > 0,
         "answer_disagreement_group": counts["X"] > 0 and counts["S"] > 0,
-        "all_zero": all(value == 0.0 for value in combined),
-        "all_one": all(value == 1.0 for value in combined),
+        "all_zero": all(value == 0.0 for value in semantic),
+        "all_one": all(value == 1.0 for value in semantic),
+        "combined_constant": len(set(combined)) == 1,
+        "combined_constant_value": combined[0] if len(set(combined)) == 1 else None,
         "constant_reward_group": len(set(combined)) == 1,
         "mean_completion_token_length": sum(int(value) for value in lengths) / len(lengths),
         "truncated_or_labeled_rate": failure_counts[

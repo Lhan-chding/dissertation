@@ -120,8 +120,7 @@ class ValidWorldTrie:
             raise ValueError("Study C3 allowed token lies outside the logits vocabulary")
         before = max(range(len(values)), key=values.__getitem__)
         masked = [
-            value if index in allowed else float("-inf")
-            for index, value in enumerate(values)
+            value if index in allowed else float("-inf") for index, value in enumerate(values)
         ]
         after = max(range(len(masked)), key=masked.__getitem__)
         record = {

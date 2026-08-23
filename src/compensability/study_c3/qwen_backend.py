@@ -3,19 +3,52 @@
 from __future__ import annotations
 
 import gc
+import hashlib
 import math
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 
-from compensability_v4.qwen.model_loader import MODEL_PATH, load_pinned_qwen, require_server_model
+from compensability_v4.qwen.model_loader import load_pinned_qwen, require_server_model
 from compensability_v4.training.phase4 import freeze_base_parameters
 from compensability_v5.qwen.study_b_backend import (
     require_offline_environment,
     verify_runtime_package_lock,
 )
 
-from .paths import PACKAGE_LOCK
+from .io import read_json, sha256_file
+from .paths import PACKAGE_LOCK, TRIE_MANIFEST, TRIE_PAYLOAD, TRIE_VALIDATION_MANIFEST
 from .valid_world_trie import ValidWorldTrie
+
+
+def adapter_artifact_sha256(path: Path) -> str:
+    """Hash only PEFT adapter config/weights, excluding trainer and optimizer state."""
+
+    if path.is_symlink() or not path.is_dir():
+        raise ValueError(f"Study C3 adapter directory is missing or unsafe: {path}")
+    configs = tuple(
+        candidate for candidate in (path / "adapter_config.json",) if candidate.is_file()
+    )
+    weights = tuple(
+        candidate
+        for candidate in (path / "adapter_model.safetensors", path / "adapter_model.bin")
+        if candidate.is_file()
+    )
+    if len(configs) != 1 or len(weights) != 1:
+        raise ValueError("Study C3 adapter requires exactly one config and one weight file")
+    selected = tuple(
+        sorted((configs[0], weights[0]), key=lambda value: str(value.relative_to(path)))
+    )
+    digest = hashlib.sha256()
+    for source in selected:
+        if source.is_symlink() or not source.is_file():
+            raise ValueError(f"Study C3 adapter file is missing or unsafe: {source}")
+        relative = source.relative_to(path).as_posix().encode()
+        data = source.read_bytes()
+        digest.update(len(relative).to_bytes(8, "big"))
+        digest.update(relative)
+        digest.update(len(data).to_bytes(8, "big"))
+        digest.update(data)
+    return digest.hexdigest()
 
 
 def _tokenizer(processor: object) -> object:
@@ -50,6 +83,25 @@ def load_token_counter() -> object:  # pragma: no cover - pinned server snapshot
 def build_pinned_valid_world_trie() -> ValidWorldTrie:  # pragma: no cover - server snapshot
     processor = load_pinned_processor()
     return ValidWorldTrie.build(_tokenizer(processor), minimum=2, maximum=18)
+
+
+def load_frozen_valid_world_trie() -> ValidWorldTrie:
+    build = read_json(TRIE_MANIFEST)
+    validation = read_json(TRIE_VALIDATION_MANIFEST)
+    observed = sha256_file(TRIE_PAYLOAD)
+    if (
+        build.get("status") != "STUDY_C3_VALID_WORLD_TRIE_COMPLETE"
+        or validation.get("status") != "STUDY_C3_VALID_WORLD_TRIE_VALIDATION_COMPLETE"
+        or build.get("trie_sha256") != observed
+        or validation.get("trie_sha256") != observed
+        or build.get("world_count") != 83_521
+        or validation.get("legal_action_count") != 83_521
+    ):
+        raise ValueError("Study C3 frozen valid-world trie drifted")
+    trie = ValidWorldTrie.from_payload(read_json(TRIE_PAYLOAD))
+    if trie.world_count != 83_521:
+        raise ValueError("Study C3 frozen valid-world trie drifted")
+    return trie
 
 
 class _TrieLogitsProcessor:
@@ -143,7 +195,7 @@ class QwenCheckpointSampler:  # pragma: no cover - pinned CUDA/server path
         self.model.eval()
         self.tokenizer = _tokenizer(self.processor)
         self.newline_token_id, self.eos_token_id = _stop_ids(self.processor)
-        self.trie = ValidWorldTrie.build(self.tokenizer, minimum=2, maximum=18)
+        self.trie = load_frozen_valid_world_trie()
         self.prepare = self.processor if callable(self.processor) else None
         self.decode = getattr(self.processor, "batch_decode", None)
         if not callable(self.decode):
@@ -258,10 +310,29 @@ def checkpoint_sampler_factory(checkpoint: Mapping[str, object]) -> QwenCheckpoi
     return QwenCheckpointSampler(adapter_path=Path(path))
 
 
+def load_trainable_checkpoint(adapter_path: Path) -> tuple[object, object, tuple[object, ...]]:
+    """Load one adapter as the differentiable policy for the shared-buffer audit."""
+
+    verify_runtime_package_lock(PACKAGE_LOCK)
+    from peft import PeftModel
+
+    base, processor = load_pinned_qwen(device_map="cuda:0")
+    freeze_base_parameters(base)
+    model = PeftModel.from_pretrained(base, str(adapter_path), is_trainable=True)
+    model.eval()
+    parameters = tuple(parameter for parameter in model.parameters() if parameter.requires_grad)
+    if not parameters:
+        raise RuntimeError("Study C3 gradient checkpoint has no trainable adapter parameters")
+    return model, processor, parameters
+
+
 __all__ = [
     "QwenCheckpointSampler",
+    "adapter_artifact_sha256",
     "build_pinned_valid_world_trie",
     "checkpoint_sampler_factory",
+    "load_frozen_valid_world_trie",
     "load_pinned_processor",
     "load_token_counter",
+    "load_trainable_checkpoint",
 ]

@@ -58,12 +58,8 @@ def shared_reward_gradient_diagnostics(
         "cosine_X_V": _cosine(gradients["X"], gradients["V"]),
         "cosine_A_V": _cosine(gradients["A"], gradients["V"]),
         "difference_X_A": float(np.linalg.norm(gradients["X"] - gradients["A"])),
-        "difference_X_LEX_X": float(
-            np.linalg.norm(gradients["X_LEX"] - gradients["X"])
-        ),
-        "difference_A_LEX_A": float(
-            np.linalg.norm(gradients["A_LEX"] - gradients["A"])
-        ),
+        "difference_X_LEX_X": float(np.linalg.norm(gradients["X_LEX"] - gradients["X"])),
+        "difference_A_LEX_A": float(np.linalg.norm(gradients["A_LEX"] - gradients["A"])),
         "same_action_batch": True,
         "finite": all(math.isfinite(value) for value in norms.values()),
     }
@@ -120,11 +116,8 @@ def autograd_reward_gradient_diagnostics(
                 else gradient.detach().reshape(-1)
                 for parameter, gradient in zip(parameters, gradients, strict=True)
             ]
-        ).to(dtype=torch.float64)
-    scores = np.column_stack(
-        [flattened[name].cpu().numpy() for name in required]
-    )
-    if not np.isfinite(scores).all():
+        ).to(dtype=torch.float32)
+    if any(not torch.isfinite(flattened[name]).all() for name in required):
         raise ValueError("Study C3 autograd gradients are non-finite")
     gradients = {name: flattened[name] for name in required}
 

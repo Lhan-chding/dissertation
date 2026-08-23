@@ -47,9 +47,9 @@ def evaluate_grid(
     for row in rows:
         _validate_scene(row)
     checkpoint_ids = [checkpoint.get("checkpoint_id") for checkpoint in checkpoints]
-    if any(not isinstance(value, str) for value in checkpoint_ids) or len(set(checkpoint_ids)) != len(
-        checkpoint_ids
-    ):
+    malformed_ids = any(not isinstance(value, str) for value in checkpoint_ids)
+    duplicated_ids = len(set(checkpoint_ids)) != len(checkpoint_ids)
+    if malformed_ids or duplicated_ids:
         raise ValueError("Study C3 checkpoint identities are malformed or duplicated")
     raw_rows: list[dict[str, object]] = []
     mask_rows: list[dict[str, object]] = []
@@ -219,6 +219,20 @@ def summarize_evaluation_rows(
         cell_groups[(str(row["checkpoint_id"]), str(row["eval_decoder"]))].append(row)
     for (checkpoint_id, decoder), group in sorted(cell_groups.items()):
         by_cell[f"{checkpoint_id}:{decoder}"] = _summarize_group(group)
+
+    def stratified(field: str) -> dict[str, object]:
+        result: dict[str, object] = {}
+        for value in sorted({str(row[field]) for row in raw_rows}):
+            cells: dict[str, object] = {}
+            selected = [row for row in raw_rows if str(row[field]) == value]
+            selected_groups: dict[tuple[str, str], list[Mapping[str, object]]] = defaultdict(list)
+            for row in selected:
+                selected_groups[(str(row["checkpoint_id"]), str(row["eval_decoder"]))].append(row)
+            for (checkpoint_id, decoder), group in sorted(selected_groups.items()):
+                cells[f"{checkpoint_id}:{decoder}"] = _summarize_group(group)
+            result[value] = cells
+        return result
+
     same_seeds = all(len(values) == 1 for values in seed_sets.values())
     if not same_seeds:
         raise ValueError("Study C3 evaluation cells do not share scene rollout seeds")
@@ -229,6 +243,8 @@ def summarize_evaluation_rows(
         "scene_cell_count": len(per_scene),
         "same_scene_rollout_seeds": True,
         "by_cell": by_cell,
+        "by_condition": stratified("condition"),
+        "by_family": stratified("family"),
         "training_invoked": False,
         "optimizer_step_invoked": False,
         "rl_invoked": False,
