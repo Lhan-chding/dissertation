@@ -67,7 +67,7 @@ write_result() {
     > "$SSVC_RUN_DIR/result.txt"
 }
 finish() {
-  local rc=$? report_rc archive_rc
+  local rc=$? report_rc archive_rc status_rc
   trap - EXIT
   set +e
   # Reporting is useful on failure too, but must never hide the original error.
@@ -100,6 +100,11 @@ PY
   fi
   if (( rc == 0 && archive_rc != 0 )); then rc=$archive_rc; ssvc_stage=archive; fi
   if (( rc == 0 )); then write_result PASS 0; else write_result FAILED "$rc"; fi
+  status_rc=$?
+  if (( status_rc != 0 )); then
+    echo 'Could not write final status; consult Slurm accounting and the raw evidence.' >&2
+    if (( rc == 0 )); then rc=$status_rc; fi
+  fi
   echo "Batch exit=$rc; final status: $SSVC_RUN_DIR/result.txt"
   exit "$rc"
 }
