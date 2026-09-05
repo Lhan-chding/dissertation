@@ -122,3 +122,152 @@ def test_statistics_use_prompt_weights_and_distinct_ratios():
     assert result["independent_scene_count"] == 2
     assert result["category_counts"]["W"] == 0
     assert result["missing_categories"] == ["W"]
+
+
+def test_statistics_undefined_and_invalid_cases():
+    from src.statistics import summarize
+
+    rows = [{"prompt_id": "p", "base_scene_id": "s", "category": "I"}]
+    result = summarize(rows)
+    assert result["qX"] is None and result["truth_given_answer"] is None
+    assert result["macro_qX_NA_fraction"] == 1
+    for invalid in [[], [{**rows[0], "category": "unknown"}]]:
+        with pytest.raises(ValueError):
+            summarize(invalid)
+    with pytest.raises(ValueError, match="weights"):
+        summarize(rows, {"p": .5})
+    with pytest.raises(ValueError, match="nonnegative"):
+        summarize(rows + [{**rows[0], "prompt_id": "q"}], {"p": -1, "q": 2})
+
+
+def test_cluster_uncertainty_preserves_scenes_and_marks_undefined():
+    from src.statistics import cluster_bootstrap
+
+    rows = [{"prompt_id": "p", "base_scene_id": "s", "category": "X"}]
+    assert cluster_bootstrap(rows)["status"] == "UNKNOWN"
+    many = rows + [{"prompt_id": "q", "base_scene_id": "t", "category": "X"}]
+    result = cluster_bootstrap(many, repeats=100)
+    assert result["low"] == result["high"] == 1
+    result = cluster_bootstrap([{**row, "category": "I"} for row in many], "qX", repeats=100)
+    assert result["status"] == "UNKNOWN"
+    with pytest.raises(ValueError):
+        cluster_bootstrap(many, repeats=1)
+    with pytest.raises(ValueError, match="outer seed"):
+        cluster_bootstrap([{**row, "train_seed": i} for i, row in enumerate(many)])
+
+
+def test_config_validation_invalid_inputs_and_resolved_revision():
+    from src.core import load_config, validate_config
+
+    original = load_config()
+    cases = [
+        {**original, "models": {**original["models"], "qwen35_9b": {"id": "invented"}}},
+        {**original, "generation": {**original["generation"], "temperature": .7}},
+        {**original, "generation": {**original["generation"], "max_new_tokens": 2}},
+        {**original, "training": {**original["training"], "K": 4}},
+        {**original, "training": {**original["training"], "smoke_updates": 10}},
+    ]
+    for config in cases:
+        with pytest.raises(ValueError):
+            validate_config(config)
+    resolved = {**original, "models": {**original["models"], "qwen35_9b": {
+        **original["models"]["qwen35_9b"], "revision": "a" * 40}}}
+    validate_config(resolved, "frozen")
+
+
+def test_store_rejects_missing_manifest_malformed_rows_and_keys(tmp_path):
+    from src.core import RunStore, load_config, load_split
+
+    identity = {"model_hash": "m", "data_hash": "d", "config_hash": "c"}
+    with pytest.raises(ValueError, match="identity"):
+        RunStore(tmp_path, {})
+    with pytest.raises(FileNotFoundError):
+        RunStore(tmp_path, identity, resume=True)
+    run = RunStore(tmp_path, identity)
+    with pytest.raises(ValueError, match="sample_key"):
+        run.append({})
+    for body in ['{}\n', 'not json\n', '{"sample_key":"a"}\n{"sample_key":"a"}\n']:
+        (tmp_path / "samples.jsonl").write_text(body)
+        with pytest.raises(ValueError):
+            RunStore(tmp_path, identity, resume=True)
+    (tmp_path / "bad.json").write_text('[]')
+    with pytest.raises(ValueError):
+        load_config(tmp_path / "bad.json")
+    with pytest.raises(ValueError):
+        load_split(tmp_path, "../train")
+
+
+def test_main_gpu_status_uses_backend_gate(monkeypatch, tmp_path):
+    import types
+    from src import rollout
+
+    panel = [
+        {"base_scene_id": str(i), "constraint_family": f"f{i % 3}",
+         "chart_type": f"c{(i // 3) % 2}", "operation": f"o{i // 6}"}
+        for i in range(18)
+    ]
+    assert len(rollout.calibration_panel(panel + panel)) == 18
+    with pytest.raises(ValueError):
+        rollout.calibration_panel(panel[:2])
+    monkeypatch.setattr(rollout, "load_split", lambda *args, **kwargs: panel)
+    for passed in (False, True):
+        fake = types.SimpleNamespace(run_smoke=lambda *a, **kw: {"passed": passed})
+        monkeypatch.setitem(sys.modules, "src.smoke_runtime", fake)
+        assert rollout.main(["--phase", "smoke", "--out", str(tmp_path / str(passed))]) == (0 if passed else 1)
+    def fail(*args, **kwargs):
+        raise RuntimeError("fixture backend unavailable")
+    monkeypatch.setitem(sys.modules, "src.smoke_runtime", types.SimpleNamespace(run_smoke=fail))
+    assert rollout.main(["--phase", "smoke", "--out", str(tmp_path / "failed")]) == 1
+    assert (tmp_path / "failed/failures.jsonl").exists()
+    assert rollout.main(["--phase", "frozen", "--out", str(tmp_path / "P3")]) == 2
+    assert rollout.main(["--phase", "smoke", "--dry-run", "--out", str(tmp_path / "dry")]) == 0
+
+
+def test_report_cli(tmp_path):
+    from src.report import main
+    main(["--run-root", str(tmp_path / "runs"), "--out", str(tmp_path / "report")])
+    assert (tmp_path / "report/results_report_zh.md").exists()
+
+
+def test_existing_phase_evidence_is_never_replaced_by_rejected_attempt(tmp_path):
+    from src.core import phase_artifacts
+    from src.rollout import main
+
+    phase_artifacts(tmp_path, "P1", "PASS", {"measured": True})
+    before = (tmp_path / "status.json").read_bytes()
+    assert main(["--phase", "smoke", "--dry-run", "--out", str(tmp_path)]) == 2
+    assert main(["--phase", "smoke", "--out", str(tmp_path)]) == 2
+    assert (tmp_path / "status.json").read_bytes() == before
+
+
+def test_orphan_records_cannot_be_assigned_a_new_identity(tmp_path):
+    from src.core import RunStore
+
+    (tmp_path / "samples.jsonl").write_text('{"sample_key":"old"}\n')
+    with pytest.raises(ValueError, match="orphan"):
+        RunStore(tmp_path, {"model_hash": "m", "data_hash": "d", "config_hash": "c"})
+
+
+def test_frozen_budget_includes_greedy_and_respects_split():
+    from src.core import load_config
+    from src.rollout import estimate_budget
+
+    budget = estimate_budget(load_config(), "frozen", split="dev")
+    assert budget["rollout_count"] == 4896
+    assert budget["sampled_rollout_count"] == 4608
+    assert budget["greedy_rollout_count"] == 288
+    assert estimate_budget(load_config(), "frozen", split="confirm")["prompt_count"] == 576
+    with pytest.raises(ValueError):
+        estimate_budget(load_config(), "frozen", split="made_up")
+
+
+def test_report_acknowledges_real_smoke_without_claiming_scientific_results(tmp_path):
+    from src.core import phase_artifacts, write_json
+    from src.report import build_report
+
+    phase_artifacts(tmp_path / "runs/P1", "P1", "PASS", {"passed": True})
+    write_json(tmp_path / "runs/P1/model_audit.json", {"passed": True})
+    build_report(tmp_path / "runs", tmp_path / "report")
+    text = (tmp_path / "report/results_report_zh.md").read_text()
+    assert "P1 兼容性测量已记录" in text
+    assert "P3" in text
