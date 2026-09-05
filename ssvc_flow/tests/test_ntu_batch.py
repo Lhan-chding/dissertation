@@ -1,11 +1,13 @@
 """Local batch orchestration checks; no real GPU, model weights or SSH calls."""
 
+import hashlib
 import json
 import os
 import shlex
 import shutil
 import subprocess
 import sys
+import tarfile
 from pathlib import Path
 
 import pytest
@@ -99,6 +101,7 @@ elif module == "src.generate_worlds":
 elif module == "src.rollout":
     rollout()
 elif module == "src.report":
+    failure("report", 29)
     write(destination("--out") / "phase_status.json", {"fixture": True})
 else:
     raise SystemExit("unexpected module: " + module)
@@ -133,13 +136,8 @@ def batch(tmp_path):
     executable(tools / "nvidia-smi", "#!/bin/sh\nprintf 'fixture NVIDIA A6000\\n'\n")
     executable(tools / "git", "#!/bin/sh\nprintf 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\n'\n")
     env = {
-        key: value
-        for key, value in os.environ.items()
-        if not key.startswith(("SLURM_", "SSVC_"))
-    }
-    env = {
-        **env,
         "PATH": str(tools) + os.pathsep + os.environ["PATH"],
+        "LANG": "C.UTF-8",
         "SSVC_WORK": str(work),
         "SSVC_PYTHON": str(python),
         "SSVC_TEST_REAL_PYTHON": sys.executable,
@@ -151,6 +149,7 @@ def batch(tmp_path):
     return {
         "work": work,
         "repo": repo,
+        "tools": tools,
         "run": work / "runs/slurm-987654-attempt-0",
         "env": env,
     }
@@ -215,9 +214,18 @@ def test_batch_success_isolated_outputs_and_real_p1_gate(batch):
     assert len(module_calls(batch, "src.generate_worlds")) == 1
     assert not (batch["repo"] / "runs").exists()
     assert not (batch["repo"] / "data/generated").exists()
+    archive = run.with_name(run.name + ".tar.gz")
+    checksum = archive.with_name(archive.name + ".sha256").read_text().split()[0]
+    assert checksum == hashlib.sha256(archive.read_bytes()).hexdigest()
+    with tarfile.open(archive) as bundle:
+        names = bundle.getnames()
+    assert run.name + "/runs/P1/model_audit.json" in names
+    assert run.name + "/result.txt" not in names
+    assert not any(name.startswith(run.name + "/tmp/") for name in names)
+    assert all(row["tmp"] == str(run / "tmp") for row in calls(batch))
 
 
-@pytest.mark.parametrize("stage,code", [("preflight", 37), ("pytest", 23)])
+@pytest.mark.parametrize("stage,code", [("pip", 19), ("preflight", 37), ("pytest", 23)])
 def test_batch_preparation_failure_stops_before_model(batch, stage, code):
     result = run_batch(batch, SSVC_TEST_FAIL_STAGE=stage)
     assert_failed(batch, result, code)
@@ -231,6 +239,39 @@ def test_batch_model_failure_preserves_exit_code_and_builds_report(batch):
     assert len(module_calls(batch, "src.rollout")) == 2
     assert module_calls(batch, "src.report")
     assert (batch["run"] / "reports/phase_status.json").exists()
+
+
+@pytest.mark.parametrize("stage,code", [("report", 29), ("archive", 71)])
+def test_batch_finalization_failure_cannot_be_reported_as_success(batch, stage, code):
+    if stage == "archive":
+        executable(batch["tools"] / "tar", "#!/bin/sh\nexit 71\n")
+    result = run_batch(batch, SSVC_TEST_FAIL_STAGE=stage)
+    assert_failed(batch, result, code)
+    assert json.loads((batch["run"] / "runs/P1/status.json").read_text())["status"] == "PASS"
+
+
+def test_batch_archive_failure_keeps_original_model_error(batch):
+    executable(batch["tools"] / "tar", "#!/bin/sh\nexit 71\n")
+    result = run_batch(batch, SSVC_TEST_FAIL_STAGE="rollout")
+    assert_failed(batch, result, 55)
+
+
+def test_batch_missing_interpreter_fails_without_creating_run(batch):
+    result = run_batch(batch, SSVC_PYTHON=str(batch["work"] / "missing-python"))
+    assert result.returncode != 0
+    assert not (batch["work"] / "runs").exists()
+    assert not calls(batch)
+
+
+def test_batch_scheduler_restart_uses_fresh_attempt_without_overwrite(batch):
+    batch["run"].mkdir(parents=True)
+    sentinel = batch["run"] / "partial.jsonl"
+    sentinel.write_text("original interrupted evidence\n")
+    result = run_batch(batch, SLURM_RESTART_COUNT="1")
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert sentinel.read_text() == "original interrupted evidence\n"
+    restarted = batch["run"].with_name("slurm-987654-attempt-1")
+    assert "state=PASS" in (restarted / "result.txt").read_text()
 
 
 @pytest.mark.parametrize("mode", ["fake", "missing-audit", "failed-audit", "missing-lock"])

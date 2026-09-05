@@ -29,6 +29,67 @@ P1 将记录加载、单次/K=8生成及反向传播的峰值、吞吐和更新�
 
 ## 只运行 P1
 
+### Louis 的已建环境：用 sbatch 离线排队
+
+已在 `/projects/varunssd/louis-ssvc/envs/ssvc-py312` 安装依赖时，不必再运行
+`setup_ntu.sh`。更新代码后，从登录节点提交以下批处理脚本：
+
+```bash
+(
+  set -e
+  cd /projects/varunssd/louis-ssvc/dissertation-ssvc
+  git pull --ff-only origin codex/ssvc-flow-ntu
+  mkdir -p /projects/varunssd/louis-ssvc/logs
+  sbatch ssvc_flow/scripts/ntu_p1.sbatch
+)
+```
+
+脚本默认申请 `cluster02` / `rose` 账号 / `override-limits-but-killable` QoS，
+1 张 `a6000`，运行上限 6 小时。CPU/内存由集群按 GPU 型号分配，不覆盖集群配置。
+6 小时是运行上限，不是等待时间或耗时承诺；结束后立即释放资源。
+如明确选择其他型号，可用 `sbatch --gres=gpu:a40:1 ssvc_flow/scripts/ntu_p1.sbatch`
+覆盖型号；不要同时提交多个候选 GPU 作业占位。
+
+看到 `Submitted batch job <编号>` 后，即可断开 SSH、VPN 或关闭电脑。
+原来用 `srun --pty` 排队的交互申请是另一个作业，应在其原终端按 Ctrl+C 结束；
+不要使用按用户批量取消的命令，以免影响同账号的其他实验。
+
+批处理按顺序执行：
+
+1. 检查 Slurm 上下文、独立解释器，记录源码 commit、GPU、实际依赖版本。
+2. `pip check`、模型依赖导入、CUDA/BF16 矩阵乘法与反向传播、FP32 参数更新。
+3. 在 CPU 上运行 SSVC 回归测试（禁止下载），记录 JUnit 结果。
+4. 在本次作业目录生成 seed=17 的 3,632 个场景，记录预算 dry-run。
+5. 运行原有锁定的 Qwen3.5-9B P1：36 个 prompt、K=8、2 次真实更新，
+   包含概率一致性、缓存、图像输入、基座冻结、梯度和恢复重放检查。
+6. 核对真实 CUDA P1 的 PASS 与验证锁，生成报告、证据包和 SHA-256。
+
+任一前置检查失败就停止后续模型工作，返回非零退出码；不会安装软件或执行 P3–P9。
+输出目录为 `/projects/varunssd/louis-ssvc/runs/slurm-<编号>-attempt-0/`，
+其中 `checks/` 保存分步日志，`runs/P1/` 保存全部模型记录与检查点，
+`data/generated/` 保存本次数据，`reports/` 保存报告，`result.txt` 保存最终状态。
+同名目录已存在时拒绝覆盖。证据包与 `.sha256` 文件放在该目录旁边。
+
+当前脚本使用 `--no-requeue`：被抢占、超时或节点失败后保留已有文件，
+不自动从头重跑或冒险恢复部分写入的状态。强制终止时可能来不及生成报告、
+证据包或最终状态，此时以 `sacct`、Slurm 日志和原始目录为准。
+恢复前按下文的 identity/revision/config 检查要求审阅原始 P1 目录。
+
+重新连接后查看（把 `JOBID` 换成提交返回的编号）：
+
+```bash
+squeue -j JOBID -o "%.12i %.2t %.10M %.10l %R"
+sacct -X -j JOBID --format=JobID,JobName%28,State%20,ExitCode,Elapsed,NodeList
+tail -n 80 /projects/varunssd/louis-ssvc/logs/p1-JOBID.out
+cat /projects/varunssd/louis-ssvc/runs/slurm-JOBID-attempt-0/result.txt
+```
+
+排队期间尚无输出目录和日志是正常现象；只有作业取得资源并开始执行后才生成。
+`result.txt` 的 `state=PASS` 需要所有批处理检查成功；`runs/P1/status.json`
+单独记录模型 P1 是否通过。若 P1 通过而打包失败，批处理仍返回失败并保留原始证据。
+
+### 手动交互调试
+
 可以先执行不加载模型的预算查询：
 
 ```bash
