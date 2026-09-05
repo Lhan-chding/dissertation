@@ -56,12 +56,18 @@ def inline():
         print("fixture CUDA preflight; not actual GPU evidence")
         return 0
     # Execute the real shell wrapper's stdlib validation, not a fake PASS gate.
-    return subprocess.run(
+    result = subprocess.run(
         [os.environ["SSVC_TEST_REAL_PYTHON"], *args],
         input=program,
         text=True,
         check=False,
-    ).returncode
+    )
+    if (os.environ.get("SSVC_TEST_FAIL_STAGE") == "status-write"
+            and "hashlib.file_digest" in program):
+        summary = Path(os.environ["SSVC_RUN_DIR"]) / "result.txt"
+        summary.unlink()
+        summary.mkdir()
+    return result.returncode
 
 
 def rollout():
@@ -254,6 +260,12 @@ def test_batch_archive_failure_keeps_original_model_error(batch):
     executable(batch["tools"] / "tar", "#!/bin/sh\nexit 71\n")
     result = run_batch(batch, SSVC_TEST_FAIL_STAGE="rollout")
     assert_failed(batch, result, 55)
+
+
+def test_batch_final_status_write_failure_is_nonzero(batch):
+    result = run_batch(batch, SSVC_TEST_FAIL_STAGE="status-write")
+    assert (batch["run"] / "result.txt").is_dir()
+    assert result.returncode != 0, result.stdout + result.stderr
 
 
 def test_batch_missing_interpreter_fails_without_creating_run(batch):
