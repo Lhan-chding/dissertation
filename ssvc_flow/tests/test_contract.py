@@ -271,3 +271,24 @@ def test_report_acknowledges_real_smoke_without_claiming_scientific_results(tmp_
     text = (tmp_path / "report/results_report_zh.md").read_text()
     assert "P1 兼容性测量已记录" in text
     assert "P3" in text
+
+
+@pytest.mark.parametrize("field,value", [
+    ("lora_rank", 16), ("lora_alpha", 32), ("lora_dropout", .1),
+    ("beta_kl", .01), ("weight_decay", .1), ("epsilon", .01),
+    ("alpha", 1), ("microbatch", 2), ("base_dtype", "float32"),
+])
+def test_locked_config_cannot_claim_ignored_algorithm_settings(field, value):
+    from src.core import load_config, validate_config
+    config = load_config()
+    with pytest.raises(ValueError, match="locked"):
+        validate_config({**config, "training": {**config["training"], field: value}})
+
+
+def test_smoke_budget_counts_policy_reference_and_backward_forwards():
+    from src.core import load_config
+    from src.rollout import estimate_budget
+    budget = estimate_budget(load_config())
+    assert budget["teacher_forcing_forward_count"] == 832
+    assert budget["policy_reference_scoring_forward_count"] == 704
+    assert budget["update_forward_count"] == 128
