@@ -325,7 +325,7 @@ def test_batch_scheduler_contract_is_explicit_and_scoped():
         "--partition=cluster02",
         "--account=rose",
         "--qos=soujanya-poria-startfund-2026-03",
-        "--gres=gpu:pro6000:1",
+        "--gres=gpu:a6000:1",
         "--time=06:00:00",
         "--no-requeue",
     ):

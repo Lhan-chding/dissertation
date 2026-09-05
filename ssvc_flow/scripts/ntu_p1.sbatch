@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #SBATCH --partition=cluster02
 #SBATCH --account=rose
-#SBATCH --qos=override-limits-but-killable
+#SBATCH --qos=soujanya-poria-startfund-2026-03
 #SBATCH --job-name=louis-ssvc-p1
 #SBATCH --gres=gpu:a6000:1
 #SBATCH --nodes=1

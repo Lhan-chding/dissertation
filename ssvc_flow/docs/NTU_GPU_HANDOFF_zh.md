@@ -44,11 +44,27 @@ P1 将记录加载、单次/K=8生成及反向传播的峰值、吞吐和更新�
 )
 ```
 
-脚本默认申请 `cluster02` / `rose` 账号 / `override-limits-but-killable` QoS，
-1 张 `a6000`，运行上限 6 小时。CPU/内存由集群按 GPU 型号分配，不覆盖集群配置。
+脚本默认申请 `cluster02` / `rose` 账号 / `soujanya-poria-startfund-2026-03` QoS，
+1 张 `a6000`，运行上限 6 小时。此 QoS 来自老师在
+`/projects/varunssd/slurm_train.sh` 和 `start_gpu_job.sh` 的提交示例；
+2026-09-05 的 `sacctmgr show assoc` 输出也确认 `varun024` 的 `rose` 账号获准使用该 QoS。
+CPU/内存由集群按 GPU 型号分配，不照搬旧示例的 `--mem=256G`。
+GPU 按用户选择保留 A6000，使用现行明确型号格式 `--gres=gpu:a6000:1`。
+账号具备该 QoS 权限，不等于已验证所有 GPU 型号均被该 QoS 允许；
+实际 A6000 提交仍需通过集群校验。
 6 小时是运行上限，不是等待时间或耗时承诺；结束后立即释放资源。
-如明确选择其他型号，可用 `sbatch --gres=gpu:a40:1 ssvc_flow/scripts/ntu_p1.sbatch`
-覆盖型号；不要同时提交多个候选 GPU 作业占位。
+
+这是老师指定的项目 QoS，不能沿用此前 `override-limits-but-killable` 的
+“不计配额、可抢占”说明或等待时间估计。项目额度、优先级、允许的其他 GPU 型号、
+作业数及抢占规则尚未核实，不承诺立即启动。需要时可只读查询：
+
+```bash
+sacctmgr show qos where name=soujanya-poria-startfund-2026-03 \
+  format=Name%45,Priority,Flags%60,GrpTRES%100,GrpTRESMins%100,MaxTRESPU%100
+```
+
+已经提交的作业不会因 `git pull` 改变 QoS；更新后的脚本仅对新提交生效。
+若本次 P1 已提交，先查看它的 `scontrol show job JOBID`，不要重复提交。
 
 看到 `Submitted batch job <编号>` 后，即可断开 SSH、VPN 或关闭电脑。
 原来用 `srun --pty` 排队的交互申请是另一个作业，应在其原终端按 Ctrl+C 结束；
