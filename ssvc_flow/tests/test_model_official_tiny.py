@@ -1,0 +1,227 @@
+"""Optional actual official 69,936-parameter CPU model, initialized at random.
+
+No from_pretrained model downloads. Run with the optional GPU bootstrap libraries
+installed; these tests are not evidence about 9B/BF16/CUDA compatibility.
+"""
+
+import types
+from unittest.mock import patch
+
+import pytest
+import torch
+from PIL import Image
+
+from src.likelihood import audit_model_cache
+from src.model_adapters import load_adapter
+from src.model_adapters.qwen35 import Qwen35Adapter
+from src.optimizer_fork import parameter_hash
+
+transformers = pytest.importorskip("transformers")
+peft = pytest.importorskip("peft")
+
+
+def tiny_model():
+    config = transformers.Qwen3_5Config(
+        text_config={
+            "vocab_size": 64,
+            "hidden_size": 32,
+            "intermediate_size": 48,
+            "num_hidden_layers": 4,
+            "num_attention_heads": 4,
+            "num_key_value_heads": 2,
+            "head_dim": 8,
+            "linear_conv_kernel_dim": 4,
+            "linear_key_head_dim": 8,
+            "linear_value_head_dim": 8,
+            "linear_num_key_heads": 2,
+            "linear_num_value_heads": 4,
+            "eos_token_id": 2,
+            "pad_token_id": 0,
+            "rope_parameters": {
+                "rope_type": "default",
+                "rope_theta": 10000.0,
+                "partial_rotary_factor": 1.0,
+                "mrope_section": [1, 1, 2],
+            },
+        },
+        vision_config={
+            "depth": 1,
+            "hidden_size": 32,
+            "intermediate_size": 48,
+            "num_heads": 4,
+            "patch_size": 2,
+            "spatial_merge_size": 2,
+            "temporal_patch_size": 1,
+            "out_hidden_size": 32,
+            "num_position_embeddings": 16,
+        },
+        image_token_id=60,
+        video_token_id=61,
+        vision_start_token_id=58,
+        vision_end_token_id=59,
+    )
+    return transformers.Qwen3_5ForConditionalGeneration(config).eval()
+
+
+class TinyTokenizer:
+    eos_token_id = 2
+    pad_token_id = 0
+    bos_token_id = 1
+
+    def get_vocab(self):
+        return {str(i): i for i in range(64)}
+
+    def encode(self, text, **kwargs):
+        return [3] * len(text)
+
+    def decode(self, ids, **kwargs):
+        return ",".join(map(str, ids))
+
+
+class TinyProcessor:
+    tokenizer = TinyTokenizer()
+    image_processor = types.SimpleNamespace(
+        patch_size=2, merge_size=2, max_pixels=4096, size={"longest_edge": 4096}
+    )
+    chat_template = "fixture template with actual switch"
+
+    def to_dict(self):
+        return {"processor": "cpu fixture"}
+
+    def apply_chat_template(self, messages, **kwargs):
+        text = "\n".join(
+            item["text"]
+            for msg in messages
+            for item in msg["content"]
+            if isinstance(msg["content"], list) and item["type"] == "text"
+        )
+        return text + ("<think>\n\n</think>\n\n" if not kwargs["enable_thinking"] else "<think>\n")
+
+    def __call__(self, **kwargs):
+        image = kwargs.get("images")
+        tokens = [3, 58, 60, 59, 4, 5] if image else [3, 4, 5, 6]
+        ids = torch.tensor([tokens])
+        result = {
+            "input_ids": ids,
+            "attention_mask": torch.ones_like(ids),
+            "mm_token_type_ids": (ids == 60).long(),
+        }
+        if image:
+            intensity = sum(image[0].getpixel((0, 0))) / 765.0
+            result = {
+                **result,
+                "pixel_values": torch.full((4, 12), intensity),
+                "image_grid_thw": torch.tensor([[1, 2, 2]]),
+            }
+        return result
+
+
+@pytest.fixture
+def adapter():
+    torch.manual_seed(17)
+    result = Qwen35Adapter(
+        tiny_model(), TinyProcessor(), "cpu-random-fixture", "a" * 40, device="cpu"
+    )
+    result._install_hooks()
+    return result
+
+
+def prepared(adapter, root, image=False):
+    prompt = {"system": "system", "user": "observed [1,2,3,4]", "prompt_hash": "fixture"}
+    if image:
+        Image.new("RGB", (4, 4), "red").save(root / "image.png")
+        prompt["image_path"] = "image.png"
+    return adapter.prepare(prompt, root)
+
+
+@pytest.mark.parametrize("image", [False, True])
+def test_actual_hybrid_cache_and_gradient(adapter, tmp_path, image):
+    item = prepared(adapter, tmp_path, image)
+    assert item["audit"]["image_token_count"] == int(image)
+    assert item["audit"]["processor_width"] == (4 if image else None)
+    before = adapter.vision_forward_calls
+    scores = adapter.logprobs(item, [7, 8, 9, 2], require_grad=True)
+    assert len(scores) == 4
+    scores.sum().backward()
+    adapter.model.eval()
+    audit = audit_model_cache(adapter, item, [7, 8, 9, 2])
+    assert audit["passed"], audit
+    assert audit["I4"]["status"] == "supported"
+    assert audit["token"]["mean_selected_logprob_error"] < 1e-5
+    if image:
+        assert adapter.vision_forward_calls > before
+        assert adapter.last_vision_hash is not None
+    with pytest.raises(ValueError, match="Unknown cache"):
+        adapter.continuation_scores(item, [2], mode="bad")
+
+
+def test_actual_generation_raw_scores_no_hidden_transform(adapter, tmp_path):
+    item = prepared(adapter, tmp_path)
+    sample = adapter.generate(item, seed=101, max_new_tokens=4)
+    likelihood = adapter.logprobs(item, sample["token_ids"])
+    torch.testing.assert_close(
+        likelihood, torch.tensor(sample["behavior_token_logprobs"]), atol=1e-5, rtol=1e-5
+    )
+    assert sample["completion_length"] <= 4
+    assert sample["raw_completion"] == adapter.processor.tokenizer.decode(
+        sample["token_ids"][:-1] if sample["stop_reason"] == "eos" else sample["token_ids"]
+    )
+    assert adapter.generation_calls == 1
+
+
+def test_official_loader_lora_selection_with_mocked_download_and_cuda(tmp_path):
+    import huggingface_hub
+
+    model = tiny_model()
+    processor = TinyProcessor()
+    with (
+        patch.object(
+            huggingface_hub,
+            "HfApi",
+            return_value=types.SimpleNamespace(
+                model_info=lambda *a, **k: types.SimpleNamespace(sha="a" * 40)
+            ),
+        ),
+        patch.object(
+            transformers.Qwen3_5ForConditionalGeneration, "from_pretrained", return_value=model
+        ) as load,
+        patch.object(transformers.AutoProcessor, "from_pretrained", return_value=processor),
+        patch("torch.cuda.is_available", return_value=True),
+        patch("torch.cuda.reset_peak_memory_stats"),
+        patch("torch.cuda.synchronize"),
+        patch("torch.cuda.max_memory_allocated", return_value=0),
+    ):
+        result = load_adapter(
+            "qwen35_9b", {"id": "Qwen/Qwen3.5-9B", "revision": None, "expected_layers": 4}
+        )
+    assert load.call_args.kwargs["revision"] == "a" * 40
+    assert len(result.audit["lora_modules"]) == 12
+    assert result.audit["trainable_dtypes"] == ["torch.float32"]
+    assert all("lora_" in name for name, p in result.model.named_parameters() if p.requires_grad)
+    result.device = "cpu"
+    item = prepared(result, tmp_path)
+    before = parameter_hash(result.model, trainable=False)
+    output = result.logprobs(item, [7, 2], require_grad=True)
+    output.sum().backward()
+    assert all(p.grad is None for p in result.model.parameters() if not p.requires_grad)
+    assert parameter_hash(result.model, trainable=False) == before
+    torch.testing.assert_close(
+        result.reference_logprobs(item, [7, 2]), result.logprobs(item, [7, 2])
+    )
+
+
+def test_processor_rejects_path_escape_and_broken_thinking(adapter, tmp_path):
+    with pytest.raises(ValueError, match="escapes"):
+        adapter.prepare({"system": "s", "user": "u", "image_path": "../escape.png"}, tmp_path)
+    with (
+        patch.object(adapter.processor, "apply_chat_template", return_value="unchanged"),
+        pytest.raises(RuntimeError, match="enable_thinking"),
+    ):
+        prepared(adapter, tmp_path)
+    with pytest.raises(ValueError, match="Unsupported model"):
+        load_adapter("unknown", {})
+    with (
+        patch("torch.cuda.is_available", return_value=False),
+        pytest.raises(RuntimeError, match="no weights"),
+    ):
+        Qwen35Adapter.load({})

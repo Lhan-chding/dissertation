@@ -1,0 +1,7 @@
+# Candidate environment for P1 only. P1 writes the actually resolved pip freeze.
+# Official 9B model weights are downloaded only by the CUDA smoke command.
+-r requirements-cpu.txt
+transformers==5.14.1
+peft==0.19.1
+accelerate==1.14.0
+torchvision==0.28.0

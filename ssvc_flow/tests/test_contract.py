@@ -1,4 +1,5 @@
 """Pre-GPU run integrity and command boundary acceptance tests."""
+
 import json
 import subprocess
 import sys
@@ -82,9 +83,19 @@ def test_confirm_access_is_guarded_and_logged(tmp_path):
 
 def test_cli_dry_run_is_model_free(tmp_path):
     result = subprocess.run(
-        [sys.executable, "-m", "src.rollout", "--phase", "smoke", "--dry-run",
-         "--out", str(tmp_path / "P1")],
-        cwd=Path(__file__).parents[1], capture_output=True, text=True,
+        [
+            sys.executable,
+            "-m",
+            "src.rollout",
+            "--phase",
+            "smoke",
+            "--dry-run",
+            "--out",
+            str(tmp_path / "P1"),
+        ],
+        cwd=Path(__file__).parents[1],
+        capture_output=True,
+        text=True,
     )
     assert result.returncode == 0, result.stderr
     assert json.loads((tmp_path / "P1/status.json").read_text())["status"] == "DRY_RUN"
@@ -115,10 +126,10 @@ def test_statistics_use_prompt_weights_and_distinct_ratios():
         {"prompt_id": "q", "base_scene_id": "t", "category": "S"},
     ]
     result = summarize(rows)
-    assert result["pX"] == .25
-    assert result["v"] == .75
+    assert result["pX"] == 0.25
+    assert result["v"] == 0.75
     assert result["qX"] == pytest.approx(1 / 3)
-    assert result["macro_mean_per_prompt_qX"] == .5
+    assert result["macro_mean_per_prompt_qX"] == 0.5
     assert result["independent_scene_count"] == 2
     assert result["category_counts"]["W"] == 0
     assert result["missing_categories"] == ["W"]
@@ -135,9 +146,9 @@ def test_statistics_undefined_and_invalid_cases():
         with pytest.raises(ValueError):
             summarize(invalid)
     with pytest.raises(ValueError, match="weights"):
-        summarize(rows, {"p": .5})
+        summarize(rows, {"p": 0.5})
     with pytest.raises(ValueError, match="nonnegative"):
-        summarize(rows + [{**rows[0], "prompt_id": "q"}], {"p": -1, "q": 2})
+        summarize([*rows, {**rows[0], "prompt_id": "q"}], {"p": -1, "q": 2})
 
 
 def test_cluster_uncertainty_preserves_scenes_and_marks_undefined():
@@ -145,7 +156,7 @@ def test_cluster_uncertainty_preserves_scenes_and_marks_undefined():
 
     rows = [{"prompt_id": "p", "base_scene_id": "s", "category": "X"}]
     assert cluster_bootstrap(rows)["status"] == "UNKNOWN"
-    many = rows + [{"prompt_id": "q", "base_scene_id": "t", "category": "X"}]
+    many = [*rows, {"prompt_id": "q", "base_scene_id": "t", "category": "X"}]
     result = cluster_bootstrap(many, repeats=100)
     assert result["low"] == result["high"] == 1
     result = cluster_bootstrap([{**row, "category": "I"} for row in many], "qX", repeats=100)
@@ -162,7 +173,7 @@ def test_config_validation_invalid_inputs_and_resolved_revision():
     original = load_config()
     cases = [
         {**original, "models": {**original["models"], "qwen35_9b": {"id": "invented"}}},
-        {**original, "generation": {**original["generation"], "temperature": .7}},
+        {**original, "generation": {**original["generation"], "temperature": 0.7}},
         {**original, "generation": {**original["generation"], "max_new_tokens": 2}},
         {**original, "training": {**original["training"], "K": 4}},
         {**original, "training": {**original["training"], "smoke_updates": 10}},
@@ -170,8 +181,13 @@ def test_config_validation_invalid_inputs_and_resolved_revision():
     for config in cases:
         with pytest.raises(ValueError):
             validate_config(config)
-    resolved = {**original, "models": {**original["models"], "qwen35_9b": {
-        **original["models"]["qwen35_9b"], "revision": "a" * 40}}}
+    resolved = {
+        **original,
+        "models": {
+            **original["models"],
+            "qwen35_9b": {**original["models"]["qwen35_9b"], "revision": "a" * 40},
+        },
+    }
     validate_config(resolved, "frozen")
 
 
@@ -186,11 +202,11 @@ def test_store_rejects_missing_manifest_malformed_rows_and_keys(tmp_path):
     run = RunStore(tmp_path, identity)
     with pytest.raises(ValueError, match="sample_key"):
         run.append({})
-    for body in ['{}\n', 'not json\n', '{"sample_key":"a"}\n{"sample_key":"a"}\n']:
+    for body in ["{}\n", "not json\n", '{"sample_key":"a"}\n{"sample_key":"a"}\n']:
         (tmp_path / "samples.jsonl").write_text(body)
         with pytest.raises(ValueError):
             RunStore(tmp_path, identity, resume=True)
-    (tmp_path / "bad.json").write_text('[]')
+    (tmp_path / "bad.json").write_text("[]")
     with pytest.raises(ValueError):
         load_config(tmp_path / "bad.json")
     with pytest.raises(ValueError):
@@ -199,11 +215,16 @@ def test_store_rejects_missing_manifest_malformed_rows_and_keys(tmp_path):
 
 def test_main_gpu_status_uses_backend_gate(monkeypatch, tmp_path):
     import types
+
     from src import rollout
 
     panel = [
-        {"base_scene_id": str(i), "constraint_family": f"f{i % 3}",
-         "chart_type": f"c{(i // 3) % 2}", "operation": f"o{i // 6}"}
+        {
+            "base_scene_id": str(i),
+            "constraint_family": f"f{i % 3}",
+            "chart_type": f"c{(i // 3) % 2}",
+            "operation": f"o{i // 6}",
+        }
         for i in range(18)
     ]
     assert len(rollout.calibration_panel(panel + panel)) == 18
@@ -211,11 +232,15 @@ def test_main_gpu_status_uses_backend_gate(monkeypatch, tmp_path):
         rollout.calibration_panel(panel[:2])
     monkeypatch.setattr(rollout, "load_split", lambda *args, **kwargs: panel)
     for passed in (False, True):
-        fake = types.SimpleNamespace(run_smoke=lambda *a, **kw: {"passed": passed})
+        fake = types.SimpleNamespace(run_smoke=lambda *a, passed=passed, **kw: {"passed": passed})
         monkeypatch.setitem(sys.modules, "src.smoke_runtime", fake)
-        assert rollout.main(["--phase", "smoke", "--out", str(tmp_path / str(passed))]) == (0 if passed else 1)
+        assert rollout.main(["--phase", "smoke", "--out", str(tmp_path / str(passed))]) == (
+            0 if passed else 1
+        )
+
     def fail(*args, **kwargs):
         raise RuntimeError("fixture backend unavailable")
+
     monkeypatch.setitem(sys.modules, "src.smoke_runtime", types.SimpleNamespace(run_smoke=fail))
     assert rollout.main(["--phase", "smoke", "--out", str(tmp_path / "failed")]) == 1
     assert (tmp_path / "failed/failures.jsonl").exists()
@@ -225,6 +250,7 @@ def test_main_gpu_status_uses_backend_gate(monkeypatch, tmp_path):
 
 def test_report_cli(tmp_path):
     from src.report import main
+
     main(["--run-root", str(tmp_path / "runs"), "--out", str(tmp_path / "report")])
     assert (tmp_path / "report/results_report_zh.md").exists()
 
@@ -273,13 +299,23 @@ def test_report_acknowledges_real_smoke_without_claiming_scientific_results(tmp_
     assert "P3" in text
 
 
-@pytest.mark.parametrize("field,value", [
-    ("lora_rank", 16), ("lora_alpha", 32), ("lora_dropout", .1),
-    ("beta_kl", .01), ("weight_decay", .1), ("epsilon", .01),
-    ("alpha", 1), ("microbatch", 2), ("base_dtype", "float32"),
-])
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("lora_rank", 16),
+        ("lora_alpha", 32),
+        ("lora_dropout", 0.1),
+        ("beta_kl", 0.01),
+        ("weight_decay", 0.1),
+        ("epsilon", 0.01),
+        ("alpha", 1),
+        ("microbatch", 2),
+        ("base_dtype", "float32"),
+    ],
+)
 def test_locked_config_cannot_claim_ignored_algorithm_settings(field, value):
     from src.core import load_config, validate_config
+
     config = load_config()
     with pytest.raises(ValueError, match="locked"):
         validate_config({**config, "training": {**config["training"], field: value}})
@@ -288,7 +324,9 @@ def test_locked_config_cannot_claim_ignored_algorithm_settings(field, value):
 def test_smoke_budget_counts_policy_reference_and_backward_forwards():
     from src.core import load_config
     from src.rollout import estimate_budget
+
     budget = estimate_budget(load_config())
-    assert budget["teacher_forcing_forward_count"] == 832
+    assert budget["teacher_forcing_forward_count"] == 960
     assert budget["policy_reference_scoring_forward_count"] == 704
     assert budget["update_forward_count"] == 128
+    assert budget["postupdate_likelihood_forward_count"] == 128

@@ -1,0 +1,316 @@
+{
+  "agent_review_status": "NOT_REVIEWED",
+  "human_review_status": "PENDING",
+  "image_path_base": "dataset_directory",
+  "selection_rule": "Two lowest opaque base_scene_id values per family/chart/operation cell",
+  "sheets": [
+    {
+      "height": 3408,
+      "path": "calibration_contact_sheet_01.png",
+      "scenes": [
+        {
+          "base_scene_id": "4bde2965812abd37d6ae935bff332910",
+          "chart_type": "grouped_bar",
+          "constraint_family": "duplicate_encoding",
+          "image_hash": "0e695b8810b15f221fc5043097d37d23d3f57deae796ec46fdf095a107974364",
+          "image_path": "images/4bde2965812abd37d6ae935bff332910.png",
+          "operation": "sum4"
+        },
+        {
+          "base_scene_id": "08e4d35e6d7732af5fc91eb8aadc2aad",
+          "chart_type": "grouped_bar",
+          "constraint_family": "duplicate_encoding",
+          "image_hash": "f79e1bbad779cc398606d19a5763e0bd4501f3379c4d64c92d82916463a10e67",
+          "image_path": "images/08e4d35e6d7732af5fc91eb8aadc2aad.png",
+          "operation": "difference_pairs"
+        },
+        {
+          "base_scene_id": "0b1d34d93beadb736decaf05df2f2068",
+          "chart_type": "grouped_bar",
+          "constraint_family": "duplicate_encoding",
+          "image_hash": "facd12ac5f268540bb758c9decab3f45ee17e8921f496baa47f2654ff14b55e9",
+          "image_path": "images/0b1d34d93beadb736decaf05df2f2068.png",
+          "operation": "range4"
+        },
+        {
+          "base_scene_id": "086b749db8a442850ca278513fd8d804",
+          "chart_type": "line",
+          "constraint_family": "duplicate_encoding",
+          "image_hash": "6a4b516b6b624ea00b203a12e888826bd43d14513bd023291f6404888643f43a",
+          "image_path": "images/086b749db8a442850ca278513fd8d804.png",
+          "operation": "sum4"
+        },
+        {
+          "base_scene_id": "14578c7007ace8e6fe5d7c2bf80544bb",
+          "chart_type": "line",
+          "constraint_family": "duplicate_encoding",
+          "image_hash": "e6b5821e3ec3a4ee6533910cfc3704417c89f5c51e896f8ae8160ea8e99ab23c",
+          "image_path": "images/14578c7007ace8e6fe5d7c2bf80544bb.png",
+          "operation": "difference_pairs"
+        },
+        {
+          "base_scene_id": "3318281b148f6b120673d39132f6cc59",
+          "chart_type": "line",
+          "constraint_family": "duplicate_encoding",
+          "image_hash": "6a5f5e00bd15c58e7cc76335f5bdea302af839de08f195a98d8e2a87c3e3427c",
+          "image_path": "images/3318281b148f6b120673d39132f6cc59.png",
+          "operation": "range4"
+        },
+        {
+          "base_scene_id": "0312310dfd2cd026866e77316a74a348",
+          "chart_type": "grouped_bar",
+          "constraint_family": "cross_series",
+          "image_hash": "810fd226fc0d95d3c2df9faf04b3100d24b13f2d580ccc91a49048bfe3329387",
+          "image_path": "images/0312310dfd2cd026866e77316a74a348.png",
+          "operation": "sum4"
+        },
+        {
+          "base_scene_id": "4ae9372ca71cdf6ed1de5423a3b76091",
+          "chart_type": "grouped_bar",
+          "constraint_family": "cross_series",
+          "image_hash": "98ffc16e4e2bde6f5c2eb270d9c9c08d1eeab260c74602da34a2c7334a474e14",
+          "image_path": "images/4ae9372ca71cdf6ed1de5423a3b76091.png",
+          "operation": "difference_pairs"
+        },
+        {
+          "base_scene_id": "207c67372f20efc83d56203347e43487",
+          "chart_type": "grouped_bar",
+          "constraint_family": "cross_series",
+          "image_hash": "673fc3659d7dab24b106101547b23ebe23101ecba8a6acb352129f11181c1788",
+          "image_path": "images/207c67372f20efc83d56203347e43487.png",
+          "operation": "range4"
+        },
+        {
+          "base_scene_id": "0db1e62445e20c2ad8808415280114ba",
+          "chart_type": "line",
+          "constraint_family": "cross_series",
+          "image_hash": "652cbeec858f112f57595e9661750fd5b4cfe8b437c76ff8e0d5bac6f3123cd8",
+          "image_path": "images/0db1e62445e20c2ad8808415280114ba.png",
+          "operation": "sum4"
+        },
+        {
+          "base_scene_id": "03671faef97878c96c0096271aa4a0ad",
+          "chart_type": "line",
+          "constraint_family": "cross_series",
+          "image_hash": "3fc632634e348b23b7a02dd515ba1367dd0926c5e97a56eac72809ebb8868c34",
+          "image_path": "images/03671faef97878c96c0096271aa4a0ad.png",
+          "operation": "difference_pairs"
+        },
+        {
+          "base_scene_id": "14835d8209f1f8b7868914b357847854",
+          "chart_type": "line",
+          "constraint_family": "cross_series",
+          "image_hash": "60bad05f5f3c9c3f76d27f60f065404b73225c1352049b92559b59225748396f",
+          "image_path": "images/14835d8209f1f8b7868914b357847854.png",
+          "operation": "range4"
+        },
+        {
+          "base_scene_id": "05abb119de5c74344d62f2d3916fc2b9",
+          "chart_type": "grouped_bar",
+          "constraint_family": "trend",
+          "image_hash": "2ae9b9e0008337e110ae61c32eab73e9c741f96b52237b378cdcec5b0624d97b",
+          "image_path": "images/05abb119de5c74344d62f2d3916fc2b9.png",
+          "operation": "sum4"
+        },
+        {
+          "base_scene_id": "0ce2e3fbb355188ae2db94736f41a84e",
+          "chart_type": "grouped_bar",
+          "constraint_family": "trend",
+          "image_hash": "1171465015d830339c041e519a1b891840eb72f8e124b99747c6d5dda4969418",
+          "image_path": "images/0ce2e3fbb355188ae2db94736f41a84e.png",
+          "operation": "difference_pairs"
+        },
+        {
+          "base_scene_id": "12d770ea441e9a9bd1330cee8109ee81",
+          "chart_type": "grouped_bar",
+          "constraint_family": "trend",
+          "image_hash": "6b9e05ab30aab398be6829b6889b92a83f340a2449386af4f81754042b8c519a",
+          "image_path": "images/12d770ea441e9a9bd1330cee8109ee81.png",
+          "operation": "range4"
+        },
+        {
+          "base_scene_id": "22a066d6759d1f5650347b909450b9c5",
+          "chart_type": "line",
+          "constraint_family": "trend",
+          "image_hash": "ce5d02d11d074f189dc06e16597eb21a86dc51a2732c70835b46d9a30880b7b2",
+          "image_path": "images/22a066d6759d1f5650347b909450b9c5.png",
+          "operation": "sum4"
+        },
+        {
+          "base_scene_id": "058a09b6614eed0b7320b55188c0418f",
+          "chart_type": "line",
+          "constraint_family": "trend",
+          "image_hash": "2e0cf619ced5e1cc86d5129643db7c63f635a4d6354be43c6a2d6c676f99d717",
+          "image_path": "images/058a09b6614eed0b7320b55188c0418f.png",
+          "operation": "difference_pairs"
+        },
+        {
+          "base_scene_id": "267c9f77de0c8e8337832de78e7f9428",
+          "chart_type": "line",
+          "constraint_family": "trend",
+          "image_hash": "2c9a8a36af33b81a7c2fb14600e1cd7b19b39669058cda0c460653c6c856aa8b",
+          "image_path": "images/267c9f77de0c8e8337832de78e7f9428.png",
+          "operation": "range4"
+        }
+      ],
+      "sha256": "541c2ea87a1b0f1e9cb1776dc21751bc74c04ba8ad21257e9625635a27849a73",
+      "width": 2304
+    },
+    {
+      "height": 3408,
+      "path": "calibration_contact_sheet_02.png",
+      "scenes": [
+        {
+          "base_scene_id": "510ba889430f47164732be3ae5ac0b18",
+          "chart_type": "grouped_bar",
+          "constraint_family": "duplicate_encoding",
+          "image_hash": "82bdf1e990ac94bea0d5fef3aa865815d3be001a84ca219c789cdb1d3670dd11",
+          "image_path": "images/510ba889430f47164732be3ae5ac0b18.png",
+          "operation": "sum4"
+        },
+        {
+          "base_scene_id": "3774cb8e09b39173dd1b96e37918f24b",
+          "chart_type": "grouped_bar",
+          "constraint_family": "duplicate_encoding",
+          "image_hash": "22ff0e8641a3266dc8f5da6c1649bc656504ab0e81e7b562977f9ec4227dd75a",
+          "image_path": "images/3774cb8e09b39173dd1b96e37918f24b.png",
+          "operation": "difference_pairs"
+        },
+        {
+          "base_scene_id": "417ebee0e2dd71e5cccfcc7dddb69ae0",
+          "chart_type": "grouped_bar",
+          "constraint_family": "duplicate_encoding",
+          "image_hash": "6c6c33fedef504ab8b81d4eae3addf9a36f410fc5b7e9c921387747441066d26",
+          "image_path": "images/417ebee0e2dd71e5cccfcc7dddb69ae0.png",
+          "operation": "range4"
+        },
+        {
+          "base_scene_id": "187dd9cbd24b0aeb53dbea70c791fede",
+          "chart_type": "line",
+          "constraint_family": "duplicate_encoding",
+          "image_hash": "704c062f22426f8e1cd4d44b48b09d2e69978edf0df0fa76e86d5b7d5a56cbd0",
+          "image_path": "images/187dd9cbd24b0aeb53dbea70c791fede.png",
+          "operation": "sum4"
+        },
+        {
+          "base_scene_id": "30b051515486474ca567b059878fa502",
+          "chart_type": "line",
+          "constraint_family": "duplicate_encoding",
+          "image_hash": "0cbad08f88d04ed12cf7557529215c5f13d54ef3751aca06af3070511da93327",
+          "image_path": "images/30b051515486474ca567b059878fa502.png",
+          "operation": "difference_pairs"
+        },
+        {
+          "base_scene_id": "4251769fd8e9c0195fe44d95db870f4a",
+          "chart_type": "line",
+          "constraint_family": "duplicate_encoding",
+          "image_hash": "4fe260ef07ee3a26f0f454acbd5d44343b8afc72a37dff235af33b970a4b5d6f",
+          "image_path": "images/4251769fd8e9c0195fe44d95db870f4a.png",
+          "operation": "range4"
+        },
+        {
+          "base_scene_id": "58ab8da48758d135c69ec9035786756e",
+          "chart_type": "grouped_bar",
+          "constraint_family": "cross_series",
+          "image_hash": "8e845b3c9c5f542cf71dbeb9a42f9ad194e6e074863716247c58588be85126ad",
+          "image_path": "images/58ab8da48758d135c69ec9035786756e.png",
+          "operation": "sum4"
+        },
+        {
+          "base_scene_id": "6d7813ec289e783cdd80a60acefc5739",
+          "chart_type": "grouped_bar",
+          "constraint_family": "cross_series",
+          "image_hash": "2aa03e9e45d30776b84a447caf451aa2a1db005da85244c9e947756806876a09",
+          "image_path": "images/6d7813ec289e783cdd80a60acefc5739.png",
+          "operation": "difference_pairs"
+        },
+        {
+          "base_scene_id": "3aab00423e32828ef5224f17bdbbd5d8",
+          "chart_type": "grouped_bar",
+          "constraint_family": "cross_series",
+          "image_hash": "e8410f0f71261e682b9f04758f7efdac26f1d1eff86bd6d2228ca8cb29142117",
+          "image_path": "images/3aab00423e32828ef5224f17bdbbd5d8.png",
+          "operation": "range4"
+        },
+        {
+          "base_scene_id": "4b54e104c04369d63396ebf1d8e95b45",
+          "chart_type": "line",
+          "constraint_family": "cross_series",
+          "image_hash": "bb84beeb0f945cc57065e362091cf12adbfcf51514c92a17fcf3201db11f2b6e",
+          "image_path": "images/4b54e104c04369d63396ebf1d8e95b45.png",
+          "operation": "sum4"
+        },
+        {
+          "base_scene_id": "20985886068fc7a42c05fed5a6212428",
+          "chart_type": "line",
+          "constraint_family": "cross_series",
+          "image_hash": "da4b83a89274958b379237ab70e264c3da36805ab092cff0db8b10eebc6d9144",
+          "image_path": "images/20985886068fc7a42c05fed5a6212428.png",
+          "operation": "difference_pairs"
+        },
+        {
+          "base_scene_id": "2dcac9fda3ac8695557b8e6457396112",
+          "chart_type": "line",
+          "constraint_family": "cross_series",
+          "image_hash": "adfdc289cd9c4f9234ca8010ef3dea82b4c12344040595881e6f3e237dbfd626",
+          "image_path": "images/2dcac9fda3ac8695557b8e6457396112.png",
+          "operation": "range4"
+        },
+        {
+          "base_scene_id": "5dfa2daedc15292969764db5998948a5",
+          "chart_type": "grouped_bar",
+          "constraint_family": "trend",
+          "image_hash": "70acc75727f9f3045ff5eb4c321536cc56eba1398722f666296485af82183c81",
+          "image_path": "images/5dfa2daedc15292969764db5998948a5.png",
+          "operation": "sum4"
+        },
+        {
+          "base_scene_id": "24cd0181509251ad395e13f59aed19ac",
+          "chart_type": "grouped_bar",
+          "constraint_family": "trend",
+          "image_hash": "a278480e70d4f98da58cf11ece18e4caa763a18557861c256f510105de3e6996",
+          "image_path": "images/24cd0181509251ad395e13f59aed19ac.png",
+          "operation": "difference_pairs"
+        },
+        {
+          "base_scene_id": "1c93541bdcc7434bb7fb441c21065a5b",
+          "chart_type": "grouped_bar",
+          "constraint_family": "trend",
+          "image_hash": "5f2a3f1c298a163aa7b3d5a06549f772e8894396330343f3efafb826ed161188",
+          "image_path": "images/1c93541bdcc7434bb7fb441c21065a5b.png",
+          "operation": "range4"
+        },
+        {
+          "base_scene_id": "463e050fd39edf35aa921aafabc06386",
+          "chart_type": "line",
+          "constraint_family": "trend",
+          "image_hash": "7ac1c1396874760dafd69a2d85c5c32b643a6aac6c1b75b40bbb2ee8e39a4348",
+          "image_path": "images/463e050fd39edf35aa921aafabc06386.png",
+          "operation": "sum4"
+        },
+        {
+          "base_scene_id": "1ac0c07c5b109e9283e06e3e70a98b4e",
+          "chart_type": "line",
+          "constraint_family": "trend",
+          "image_hash": "df8a86b8b10d2238687a9c04eb95f06fb1821a6c3f28c66ed51b10e69a20e026",
+          "image_path": "images/1ac0c07c5b109e9283e06e3e70a98b4e.png",
+          "operation": "difference_pairs"
+        },
+        {
+          "base_scene_id": "32435781946bd7c37d04181b987b8e0c",
+          "chart_type": "line",
+          "constraint_family": "trend",
+          "image_hash": "905e09c78e26c4422752cccc3532c05c8f5f8755ef848a4fbb20cf5797f30c30",
+          "image_path": "images/32435781946bd7c37d04181b987b8e0c.png",
+          "operation": "range4"
+        }
+      ],
+      "sha256": "9339b8f1c51e0df4eb4f17aac2b2d87038cc028e702ed77c079f882f7f6caaac",
+      "width": 2304
+    }
+  ],
+  "source_calibration_sha256": "549085d22eceabf6b8aaefcd6549254ef1854ff9a1bc3f9f3b98c44dc9556f63",
+  "source_dataset_hash": "40b3f4b1e633745cf9192e107415290b9413f1dc3681b5edd5c32da1b3fb02c7",
+  "source_split": "calibration",
+  "total_images": 36
+}

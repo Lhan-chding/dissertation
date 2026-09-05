@@ -6,11 +6,13 @@ import math
 
 import numpy as np
 import pytest
+
 from src.decoding_audit import enumerate_decoders, toy_decoder_audit, weighted_pooled_purity
 from src.sensitivity import advantage_derivative, audit_derivative, normalized_advantages
 from src.tabular_flow import (
     count_vectors,
     finite_group_flow,
+    group_updates,
     mean_field_flow,
     multinomial_weights,
     run_benchmark,
@@ -205,3 +207,110 @@ def test_benchmark_writes_traceable_artifacts(tmp_path):
         assert (tmp_path / name).is_file()
     assert result["scope"] == "toy_mathematical_validation"
     assert json.loads((tmp_path / "status.json").read_text())["phase"] == "P2"
+
+
+def test_roundoff_cannot_create_a_signal_in_tied_groups():
+    updates, zero = group_updates(count_vectors(3), [0.1, 0.1, 0.1, 0.1], epsilon=0)
+    assert np.array_equal(updates, np.zeros_like(updates))
+    assert zero.all()
+    varied, _ = group_updates(count_vectors(16), [3.0, 1.0, 1.0, 0.0])
+    assert np.max(np.abs(varied.sum(axis=1))) < 1e-13
+
+
+@pytest.mark.parametrize(
+    "counts",
+    [[], [[-1, 0, 0, 3]], [[0.5, 0.5, 0, 1]], [[1, 0, 0, 1], [1, 0, 0, 2]], [[0, 0, 0, 0]]],
+)
+def test_invalid_multinomial_counts(counts):
+    with pytest.raises(ValueError):
+        multinomial_weights(counts, [0.25] * 4)
+
+
+@pytest.mark.parametrize("values,eps", [([], 0), ([float("nan")], 0), ([1, 2], -1)])
+def test_invalid_sensitivity_arguments(values, eps):
+    with pytest.raises(ValueError):
+        normalized_advantages(values, eps)
+    with pytest.raises(ValueError):
+        advantage_derivative([1, 2], [1], 0.1)
+
+
+def test_gradient_comparison_uses_same_sequence_scores():
+    primary, valid = [2.0, 0.0, 0.0, 0.0], [1.0, 1.0, 1.0, 0.0]
+    scores = np.array([[0.2, 0.3], [0.1, 0.2], [-0.3, 0.1], [0.4, -0.5]])
+    result = audit_derivative(primary, valid, 1.0, score_vectors=scores)
+    assert result["joint_gradient"] == pytest.approx(
+        np.array(result["joint_advantages"]) @ scores / 4
+    )
+    assert result["channelwise_gradient"] == pytest.approx(
+        np.array(result["channelwise_standardized_sum"]) @ scores / 4
+    )
+    assert not np.allclose(result["joint_gradient"], result["channelwise_gradient"])
+    with pytest.raises(ValueError):
+        audit_derivative(primary, valid, 1.0, score_vectors=[[1, 2]])
+
+
+@pytest.mark.parametrize(
+    "transition,language,steps",
+    [
+        ({(): {"a": 0.9}}, {("a",)}, 1),
+        ({(): {"a": float("nan")}}, {("a",)}, 1),
+        ({}, set(), 1),
+        ({}, {("a",)}, 0),
+    ],
+)
+def test_invalid_decoder_inputs(transition, language, steps):
+    with pytest.raises(ValueError):
+        enumerate_decoders(transition, language, steps)
+
+
+def test_unreachable_valid_language_does_not_invent_accepts():
+    result = enumerate_decoders({(): {"a": 1.0}}, {("b",)}, 1)
+    assert result["rejection_distribution"] == {}
+    assert result["rejection_expected_proposals_per_accept"] is None
+    assert result["fsa_completion_probability"] == 0
+    assert weighted_pooled_purity([0.0, 0.0], [0.1, 0.8], [0.5, 0.5]) is None
+    assert validity_purity_derivative([0.0, 0.0, 0.0, 1.0], 2) is None
+
+
+@pytest.mark.parametrize(
+    "rates,purity,weights",
+    [
+        ([], [], []),
+        ([0.5], [0.2, 0.3], [1]),
+        ([1.1], [0.5], [1]),
+        ([0.5], [-0.2], [1]),
+        ([0.5], [0.2], [0.2]),
+    ],
+)
+def test_invalid_pooled_purity_inputs(rates, purity, weights):
+    with pytest.raises(ValueError):
+        weighted_pooled_purity(rates, purity, weights)
+
+
+def test_cli_entrypoints_and_dry_run(tmp_path, capsys):
+    from src.decoding_audit import main as decoder_main
+    from src.sensitivity import main as sensitivity_main
+    from src.tabular_flow import main as flow_main
+
+    config_path = tmp_path / "config.json"
+    config_path.write_text(
+        json.dumps(
+            {
+                "tabular": {
+                    "K": [2],
+                    "eta": [0.01],
+                    "meanfield_group_sizes": [],
+                    "probabilities": [[0.15, 0.2, 0.35, 0.3]],
+                }
+            }
+        )
+    )
+    flow_main(["--config", str(config_path), "--out", str(tmp_path / "dry"), "--dry-run"])
+    assert json.loads(capsys.readouterr().out)["rollout_count"] == 0
+    assert not (tmp_path / "dry").exists()
+    flow_main(["--config", str(config_path), "--out", str(tmp_path / "flow")])
+    sensitivity_main(["--out", str(tmp_path / "sensitivity")])
+    decoder_main(["--out", str(tmp_path / "decoder")])
+    assert json.loads((tmp_path / "flow/status.json").read_text())["status"] == "PARTIAL"
+    assert json.loads((tmp_path / "sensitivity/status.json").read_text())["phase"] == "P6a"
+    assert json.loads((tmp_path / "decoder/status.json").read_text())["phase"] == "P8a"

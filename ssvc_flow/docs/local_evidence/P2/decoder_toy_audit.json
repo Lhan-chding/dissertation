@@ -1,0 +1,45 @@
+{
+  "free_conditional_distribution": {
+    "[\"[0,\",\"0,0,0]\"]": 0.9,
+    "[\"[1,\",\"0,0,0]\"]": 0.1
+  },
+  "free_distribution": {
+    "[\"[0,\",\"0,0,0]\"]": 0.45,
+    "[\"[0,\",\"bad\"]": 0.05,
+    "[\"[1,\",\"0,0,0]\"]": 0.05,
+    "[\"[1,\",\"bad\"]": 0.45
+  },
+  "free_valid_probability": 0.5,
+  "fsa_completion_probability": 1.0,
+  "fsa_distribution": {
+    "[\"[0,\",\"0,0,0]\"]": 0.5,
+    "[\"[1,\",\"0,0,0]\"]": 0.5
+  },
+  "language_agreement_scope": "all_complete_strings_in_enumerated_toy_support",
+  "parser_language_agrees_with_fsa": true,
+  "pooled_weighting_example": {
+    "conditional_purities": [
+      0.1,
+      0.9
+    ],
+    "correct_pooled_q": 0.18,
+    "prompt_weights": [
+      0.5,
+      0.5
+    ],
+    "unweighted_mean_q": 0.5,
+    "valid_rates": [
+      0.9,
+      0.1
+    ]
+  },
+  "real_tokenizer_fsa": "not_implemented_in_this_toy_module",
+  "rejection_distribution": {
+    "[\"[0,\",\"0,0,0]\"]": 0.9,
+    "[\"[1,\",\"0,0,0]\"]": 0.1
+  },
+  "rejection_expected_proposals_per_accept": 2.0,
+  "scope": "toy_mathematical_validation",
+  "total_variation_fsa_vs_rejection": 0.4,
+  "truth_world_or_cue_used": false
+}

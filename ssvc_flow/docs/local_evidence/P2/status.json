@@ -1,0 +1,48 @@
+{
+  "details": {
+    "B_eta_K_definition": "E[softmax(log p+eta U)]-p",
+    "H_K_definition": "E[U], U=(N/K)*group_zscore",
+    "Xi_K_definition": "E[U U^T] (not covariance)",
+    "config_hash": "40c723c1bced1a5c5153416ec30149cb86a52393c8e4306daa49864de19db9e7",
+    "formula_provenance": "self_derived_explicit_definitions_theory_review_source_unavailable",
+    "meanfield_interpretation": "O(1/K) is asymptotic order, no required finite-scan slope",
+    "normalization": "sequence-score group average; training eta must account for fixed Lnorm=64",
+    "ode_comparison": "first-order local ODE Euler prediction; second-order one-step stochastic Taylor",
+    "pending": [
+      "exact THEORY_REVIEW nonclosure construction source",
+      "all real-model GPU experiments"
+    ],
+    "q_aggregation": "expected_q_next=E[q(p_next)]; pooled_q_next=q(E[p_next])",
+    "rows": 420,
+    "scope": "toy_mathematical_validation"
+  },
+  "phase": "P2",
+  "recorded_at": "2026-09-05T04:35:11.558650+00:00",
+  "source_commit": "7b851d709ae79488eb5a34e82dc746f222841b28",
+  "source_files": {
+    "src/__init__.py": "50a703cc52bc34025bddb66d0bfab19235d4a38e3342b2db96806f0a1db45f49",
+    "src/audit_legacy.py": "ecda38e0297687977e4ee03e9f6469db66a363cd830aaa27d00b20782d7a3816",
+    "src/constraint_solver.py": "eab20b128ddf2abeca5f115dbc8c9d51c318d810188423fb44370efdd7443b7b",
+    "src/core.py": "c7ea8c1c6be8d8e89a9ef7108765e6f43b5eba0c9cb937c44d80c877a180db32",
+    "src/decoding_audit.py": "6e19fb0234e89d57601f37647bfd4709a6aaee5fb4b992b8fdef827b54c24a55",
+    "src/generate_worlds.py": "1741bf1443c56d0016e0134e7aa1b5e94f9388a64ad0c5dc7999db721284b4b0",
+    "src/grpo_update.py": "c2e69900300c4f5e155a255b3e5d39d727c71d99d9296fde41cdbb7e2bf98afa",
+    "src/likelihood.py": "87499716e3f32d6b769b320b6b948e6898043d9775ad7d5698beb7ed8085203d",
+    "src/model_adapters/__init__.py": "052ccfef958643975b67e2ba08c131381dd90c7142f46d3de329d453849e02ca",
+    "src/model_adapters/base.py": "18bc52a76f0db2f36f0278a34af91309a344b553da81f7ced13e421638211444",
+    "src/model_adapters/qwen25vl.py": "253d92a71e80b1e44ebd5c21629d6953e89a9dea01c953e7c1990d29db92bcda",
+    "src/model_adapters/qwen35.py": "c427c06aaac15374394839374e3535d2773b49942226c7a3b9d70338b48de7af",
+    "src/model_adapters/qwen3vl.py": "81c1aaa578c5e60c01bafcb4e490ca78d3f50e51314f1d4798f7bf05a629a3f3",
+    "src/optimizer_fork.py": "92adf4dd2176a42e630dc99d2b3c8ad60e2d75a2990d79f0e7d6781dd21cb64f",
+    "src/prompts.py": "40a68267cde748fbb52624a8f91d19e108b469d2ab89d9dbdba60e4bd5bc318a",
+    "src/render_charts.py": "610644abe443279f4908a91cddc1b69396b8402243f49082190cf3fb7ca45b98",
+    "src/report.py": "9859d409fa8fe1f05cf0a7459d8d1aba696eb873c9d1f36102154a7053504105",
+    "src/rollout.py": "470141c23a90a526fde23a1eb2234de3cf7c8094029f98cc743dfbe2c28e721a",
+    "src/sensitivity.py": "9fe51c37083052e53072cc68a8ca446fbda8bba5baa4af5d28bb26a072da3ce6",
+    "src/smoke_runtime.py": "ba6d5568603ef08ed535aeccdc3ff80dcaf606d597556441cc73d90903fea9b8",
+    "src/statistics.py": "b2ee5bbe2eec15fbf93273a7f70229792cbaff766232b1ad76e888fadbc8bb60",
+    "src/tabular_flow.py": "83b9cd0fba92c518b348df545e077fc8947908caaace3551a9803d71698b8a10",
+    "src/verifiers.py": "03e3eb703707262f17b3e2581c450a05ce8200d7d169788bcf4834cbf39b1147"
+  },
+  "status": "PARTIAL"
+}

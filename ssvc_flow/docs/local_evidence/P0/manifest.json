@@ -1,0 +1,45 @@
+{
+  "files": [
+    {
+      "bytes": 276,
+      "path": "agent_visual_review.json",
+      "sha256": "3d5d4bb3407d4ecceee7e29318bbd8b7f232bc8d5ab88b7ba0b26f6e7a042b37"
+    },
+    {
+      "bytes": 57468,
+      "path": "audit.json",
+      "sha256": "5bdb67b08fa739a042470b989c17122ada16fa3cd1191f8280c0f81ce2f5f4bb"
+    },
+    {
+      "bytes": 222144,
+      "path": "calibration_contact_sheet_01.png",
+      "sha256": "541c2ea87a1b0f1e9cb1776dc21751bc74c04ba8ad21257e9625635a27849a73"
+    },
+    {
+      "bytes": 222587,
+      "path": "calibration_contact_sheet_02.png",
+      "sha256": "9339b8f1c51e0df4eb4f17aac2b2d87038cc028e702ed77c079f882f7f6caaac"
+    },
+    {
+      "bytes": 14009,
+      "path": "contact_sheets_manifest.json",
+      "sha256": "090aedf095d871cde197189c84c9c2def3ed31b333bc035499cd6466fb69d241"
+    },
+    {
+      "bytes": 13230,
+      "path": "data_manifest.json",
+      "sha256": "4c9cdef05e63cfc1ab68b23fa080b8857021352cb9f84763a8afef11e0047329"
+    },
+    {
+      "bytes": 36966,
+      "path": "legacy_hash_manifest.json",
+      "sha256": "e1d0eb1a965605d8fce9ed4556e001616bfeab2bad31515490db78f2e9ebf59a"
+    },
+    {
+      "bytes": 3627,
+      "path": "legacy_vs_new_protocol.md",
+      "sha256": "924db975c290423bb5f8b312df27a6f051756965384fe137e70696b1286d09e9"
+    }
+  ],
+  "phase": "P0"
+}

@@ -1,0 +1,9 @@
+{
+  "actual_9b_model_execution": false,
+  "confirm_model_evaluated": false,
+  "gpu_execution": false,
+  "human_visual_review": "PENDING",
+  "legacy_exact_reproduction": false,
+  "missing_source": "THEORY_REVIEW",
+  "source_note": "P0 imports historical evidence read-only; P2 is toy mathematics; official tiny model tests use random small configuration, not9Bweights."
+}

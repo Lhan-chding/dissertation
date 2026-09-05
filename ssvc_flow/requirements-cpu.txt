@@ -1,0 +1,12 @@
+# Exact direct versions used by the local CPU verification environment.
+# This is not an NTU CUDA compatibility certificate or a transitive GPU lock.
+numpy==2.5.2
+scipy==1.18.0
+Pillow==12.3.0
+matplotlib==3.11.1
+PyYAML==6.0.3
+torch==2.13.0
+pytest==9.0.3
+pytest-cov==6.3.0
+coverage==7.15.4
+ruff==0.16.3

@@ -1,0 +1,55 @@
+{
+  "files": [
+    {
+      "bytes": 66822,
+      "path": "meanfield_convergence.json",
+      "sha256": "a163fcf2b4fdf572f0308a69068da8648f717ec439a43317ef139f996f931729"
+    },
+    {
+      "bytes": 25313,
+      "path": "derivative_audit.json",
+      "sha256": "14ce120b3ac62a00b839e76d63ead29d3aafdb0beb8d4a0ea9a9eacc6d9cb208"
+    },
+    {
+      "bytes": 1144,
+      "path": "decoder_toy_audit.json",
+      "sha256": "6460c32925a6c6ae8c8af13d8cea7963e5d2d10446194f669e09c244540f61ef"
+    },
+    {
+      "bytes": 763,
+      "path": "nonclosure_self_derived.json",
+      "sha256": "aee96ac1531b2a148e09187b7ea42f96fd8eba946b228c6d4d8bbf26ee11d410"
+    },
+    {
+      "bytes": 672,
+      "path": "acceptance_checks.json",
+      "sha256": "b99a7878a27058c16c4ab585d8fdfe9a79b0e841766769209048e15e3f107573"
+    },
+    {
+      "bytes": 402633,
+      "path": "finite_group_flow.csv",
+      "sha256": "73c1e5fa625801493aa9f1aa81f089ea9e12efd54ceeb55f637939c5d13ba72d"
+    },
+    {
+      "bytes": 698,
+      "path": "figure_sources.json",
+      "sha256": "be67c0bb4b94324497cb24f17615123ec7324f4adca5673e25e48d5950f439d6"
+    },
+    {
+      "bytes": 38867,
+      "path": "figures/probability_trajectories.png",
+      "sha256": "b8dfb896efc457e2cba944d344f2062b17f80f2a9a09e49a4a4b8daaddb31627"
+    },
+    {
+      "bytes": 107012,
+      "path": "figures/finite_step_error.png",
+      "sha256": "db96bba5e3043fab8060ab310183b21b3ed141a665a4d1885e0b58f727273c50"
+    },
+    {
+      "bytes": 63657,
+      "path": "figures/group_support.png",
+      "sha256": "a1a75ac4f0455a07caff04fb111a9b50c254a71eece4d3ccba10aec534bfe637"
+    }
+  ],
+  "phase": "P2"
+}

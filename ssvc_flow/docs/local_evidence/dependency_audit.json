@@ -1,0 +1,8 @@
+{
+  "audited_distributions": 78,
+  "known_vulnerabilities": 0,
+  "report_sha256": "e6e19e1184aaa6968e55b621eca9ba8f1f50fe6326f34c01e65896d199b4131e",
+  "scope": "CPU test environment plus isolated official-model libraries; NTU CUDA wheel environment must be locked at P1",
+  "status": "PASS",
+  "tool": "pip-audit 2.10.1"
+}

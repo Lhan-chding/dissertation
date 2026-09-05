@@ -1,0 +1,41 @@
+{
+  "dp_minus": [
+    0.14835568270141272,
+    -0.17896876008424392,
+    0.01648396474460141,
+    0.014129112638229782
+  ],
+  "dp_plus": [
+    0.11002968465195487,
+    0.1467062462026065,
+    -0.13824242430630226,
+    -0.11849350654825909
+  ],
+  "interpretation": "same probabilities and rewards do not close shared-parameter dynamics",
+  "logit_policy": "log(p0)+(theta^2-1)*(1,theta,0,0)",
+  "missing_acceptance": "exact THEORY_REVIEW counterexample cannot be checked without source",
+  "p0": [
+    0.15,
+    0.2,
+    0.35,
+    0.3
+  ],
+  "p_minus": [
+    0.15,
+    0.2,
+    0.35,
+    0.3
+  ],
+  "p_plus": [
+    0.15,
+    0.2,
+    0.35,
+    0.3
+  ],
+  "source": "self_derived_fixture",
+  "theory_review_verified": false,
+  "theta_values": [
+    -1,
+    1
+  ]
+}

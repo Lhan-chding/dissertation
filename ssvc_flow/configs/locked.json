@@ -1,0 +1,35 @@
+{
+  "protocol_version": "N-20260905-v1-pre-gpu",
+  "protocol_status": "P1_UNRESOLVED",
+  "track": "N",
+  "data_root": "data/generated",
+  "data_seed": 17,
+  "sample_seed": 104729,
+  "models": {
+    "qwen35_9b": {"id": "Qwen/Qwen3.5-9B", "revision": null, "expected_layers": 32},
+    "qwen25vl_3b": {"id": "Qwen/Qwen2.5-VL-3B-Instruct", "revision": null, "expected_layers": 36},
+    "qwen25vl_7b": {"id": "Qwen/Qwen2.5-VL-7B-Instruct", "revision": null, "expected_layers": 28},
+    "qwen3vl_8b": {"id": "Qwen/Qwen3-VL-8B-Instruct", "revision": null, "expected_layers": 32}
+  },
+  "generation": {
+    "do_sample": true, "temperature": 1.0, "top_p": 1.0,
+    "top_k": 0, "min_p": 0.0, "repetition_penalty": 1.0,
+    "num_beams": 1, "max_new_tokens": 64
+  },
+  "training": {
+    "seed": 17, "smoke_updates": 2, "B": 4, "K": 8,
+    "Lnorm": 64, "epsilon": 0.0001, "lr": 0.00001,
+    "betas": [0.9, 0.999], "adam_eps": 1e-8, "weight_decay": 0.0,
+    "grad_clip": 1.0, "clip_epsilon": 0.2, "beta_kl": 0.0,
+    "alpha": 2.0, "lambda": 1.0, "microbatch": 1,
+    "lora_rank": 8, "lora_alpha": 16, "lora_dropout": 0.0,
+    "base_dtype": "bfloat16", "adapter_dtype": "float32"
+  },
+  "tabular": {
+    "K": [2, 4, 8, 16, 32], "eta": [0.001, 0.01, 0.05],
+    "probabilities": [[0.02,0.18,0.30,0.50], [0.15,0.20,0.35,0.30], [0.60,0.10,0.20,0.10]],
+    "lambdas": [0,0.1,0.25,0.5,1,2,4], "epsilon": 0.0001
+  },
+  "diagnostics": {"max_empirical_sequence_kl": 1.0},
+  "authorization": {"confirm_training": false, "full_ssvc_training": false}
+}

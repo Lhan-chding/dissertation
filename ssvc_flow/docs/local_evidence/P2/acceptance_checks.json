@@ -1,0 +1,16 @@
+{
+  "K2_strict_ordering_invariance": true,
+  "all_valid_constant_shift_invariant": true,
+  "autograd_max_abs_error": 2.220446049250313e-16,
+  "decoder_toy_passed": true,
+  "epsilon_positive_spacing_sensitivity": true,
+  "eta_error_decreases": true,
+  "exact_theory_review_nonclosure": "PENDING_MISSING_SOURCE",
+  "lambda_zero_tie_boundary_changes_flow": true,
+  "maximum_delta_probability_sum_error": 1.705927066275592e-14,
+  "maximum_update_sum_error": 4.052314039881821e-15,
+  "maximum_weight_sum_error": 1.4099832412739488e-14,
+  "smallest_fd_step_all_passed": true,
+  "validity_q_derivative_abs_error": 4.1924067516185826e-09,
+  "validity_q_derivative_passed": true
+}

@@ -1,0 +1,8 @@
+{
+  "finding": "No clipped axes/legends or overlapping value labels observed on the 36 calibration charts.",
+  "images": 36,
+  "independent_human_review": "PENDING",
+  "sheets": 2,
+  "status": "AGENT_REVIEWED",
+  "visible_mapping": "a,b first position; c,d second position"
+}

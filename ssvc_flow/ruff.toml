@@ -1,0 +1,5 @@
+extend = "../pyproject.toml"
+
+[lint]
+# Chinese reports intentionally use native punctuation; formulas use Unicode math.
+allowed-confusables = ["，", "；", "？", "：", "（", "）", "−"]

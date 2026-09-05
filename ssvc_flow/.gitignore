@@ -1,0 +1,8 @@
+/data/generated/
+/reports/
+/runs/
+/.venv/
+/.cache/
+/ssvc_ntu_P1_evidence.tar.gz
+.coverage*
+!.coveragerc

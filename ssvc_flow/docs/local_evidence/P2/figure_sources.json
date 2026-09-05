@@ -1,0 +1,34 @@
+{
+  "finite_step_error": {
+    "arm": "X_VALID",
+    "series": "K",
+    "state_id": 0,
+    "table": "finite_group_flow.csv",
+    "x": "eta",
+    "y": [
+      "first_order_error",
+      "second_order_error"
+    ]
+  },
+  "group_support": {
+    "arm": "X_BASE",
+    "eta": 0.001,
+    "state_id": 0,
+    "table": "finite_group_flow.csv",
+    "x": "K",
+    "y": [
+      "no_X_probability",
+      "zero_variance_probability",
+      "X_binary_informative_probability"
+    ]
+  },
+  "probability_trajectories": {
+    "K": 8,
+    "arm": "X_VALID",
+    "scope": "one_step_cpu_toy_not_training_trajectory",
+    "state_id": 0,
+    "table": "finite_group_flow.csv",
+    "x": "eta",
+    "y": "exact_p_next"
+  }
+}

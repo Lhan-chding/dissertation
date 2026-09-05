@@ -1,0 +1,9 @@
+[run]
+branch = True
+source = src
+parallel = True
+patch = subprocess
+
+[report]
+fail_under = 80
+show_missing = True
