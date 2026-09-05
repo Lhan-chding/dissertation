@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from src.audit_legacy import audit_legacy
+from src.audit_legacy import audit_legacy, main
 
 
 def _put(root, relative, content):
@@ -121,3 +121,68 @@ def test_cli_dry_run_reports_zero_gpu_budget_without_writing(tmp_path):
     budget = json.loads(result.stdout)
     assert budget["forward_calls"] == budget["backward_calls"] == budget["rollout_count"] == 0
     assert not out.exists()
+
+
+def test_archive_manifest_hash_checks_and_historical_metadata(tmp_path):
+    root = tmp_path / "legacy"
+    root.mkdir()
+    body = '{"training_prompt_count": 192, "git_commit_sha": "' + "a" * 40 + '"}'
+    contract = "artifacts/v5/study_c3/factorial_execution_contract.json"
+    members = [
+        (contract, body),
+        ("configs/v5/server_package_lock.yaml", 'packages:\n  trl: "1.9.0"\n'),
+        ("artifacts/v5/study_c3/training/A_BIN/trainer_log_history.json", '{"rows": []}'),
+        ("artifacts/v5/study_c3/training/A_BIN/final_adapter/adapter_config.json", '{"r": 16, "lora_alpha": 32}'),
+        ("artifacts/v5/study_c3/report/sha256_manifest.json", json.dumps({"files": {contract: hashlib.sha256(body.encode()).hexdigest()}})),
+    ]
+    archive = _archive(tmp_path / "evidence.tar.gz", members)
+    result = audit_legacy(root=root, legacy_archive=archive, out=tmp_path / "P0")
+    assert result["archive_hash_checks"][0]["verified"] is True
+    assert result["facts"]["package_versions"]["value"] == {"trl": "1.9.0"}
+    assert result["facts"]["training_prompt_count"]["value"] == 192
+    assert result["facts"]["initial_adapter_config"]["value"]["r"] == 16
+    assert result["facts"]["training_logs"]["evidence"]
+    corrupt = _archive(tmp_path / "corrupt.tar.gz", [(n, "{}" if n == contract else b) for n, b in members])
+    checked = audit_legacy(root=root, legacy_archive=corrupt, out=tmp_path / "bad")
+    assert checked["archive_hash_checks"][0]["mismatches"] == [contract]
+    assert json.loads((tmp_path / "bad/status.json").read_text())["status"] == "AUDIT_EVIDENCE_REQUIRES_REVIEW"
+
+
+def test_conflicting_and_malformed_sources_require_review(tmp_path):
+    root = tmp_path / "legacy"
+    _put(root, "configs/v5/study_c3_resolution_validity.yaml", "training:\n  learning_rate: 0.000001\n")
+    _put(root, "src/compensability/study_c3/broken.py", "def : broken")
+    _put(root, "configs/v5/server_package_lock.yaml", "[wrong, schema]")
+    archive = _archive(tmp_path / "conflict.tar.gz", [("configs/v5/study_c3_resolution_validity.yaml", "training:\n  learning_rate: 0.01\n")])
+    result = audit_legacy(root=root, legacy_archive=archive, out=tmp_path / "P0")
+    assert result["conflicting_evidence"][0]["field"] == "learning_rate"
+    assert {entry["error"] for entry in result["parse_errors"]} == {"ValueError", "SyntaxError"}
+    assert result["legacy_exact_reproduction"] is False
+
+
+def test_direct_cli_and_optional_legacy_root(tmp_path, capsys):
+    workspace = tmp_path / "new"
+    legacy = tmp_path / "old"
+    workspace.mkdir()
+    legacy.mkdir()
+    assert main(["--root", str(workspace), "--legacy-root", str(legacy), "--out", str(tmp_path / "P0")]) == 0
+    assert json.loads(capsys.readouterr().out)["legacy_exact_reproduction"] is False
+    assert main(["--root", str(workspace), "--out", str(tmp_path / "P0dry"), "--dry-run"]) == 0
+    assert json.loads(capsys.readouterr().out)["max_tokens"] == 0
+    with pytest.raises(ValueError, match="read.only"):
+        audit_legacy(root=workspace, legacy_root=legacy, out=legacy / "P0")
+    with pytest.raises(ValueError, match="missing"):
+        audit_legacy(root=tmp_path / "absent", out=tmp_path / "P0")
+
+
+def test_archive_duplicate_and_link_members_rejected(tmp_path):
+    archive = _archive(tmp_path / "duplicate.tar.gz", [("config.json", "{}"), ("config.json", "{}")])
+    with pytest.raises(ValueError, match="duplicated"):
+        audit_legacy(root=tmp_path, legacy_archive=archive, out=tmp_path / "P0")
+    with tarfile.open(tmp_path / "link.tar.gz", "w:gz") as stream:
+        member = tarfile.TarInfo("linked.json")
+        member.type = tarfile.SYMTYPE
+        member.linkname = "../secret.json"
+        stream.addfile(member)
+    with pytest.raises(ValueError, match="unsafe"):
+        audit_legacy(root=tmp_path, legacy_archive=tmp_path / "link.tar.gz", out=tmp_path / "P0")

@@ -91,6 +91,10 @@ def test_render_is_deterministic_and_preserves_mapping(tmp_path, chart_type):
 def test_renderer_rejects_invalid_chart(tmp_path):
     with pytest.raises(ValueError):
         render_chart([1, 2, 3, 4], 'pie', tmp_path / 'bad.png')
+    with pytest.raises(ValueError):
+        render_chart([1, 2, 3, 4], 'line', tmp_path / 'bad.png', 'low_resolution')
+    with pytest.raises(ValueError):
+        cue_text({'family': 'unknown'})
 
 
 def test_rendered_dataset_records_hashes_and_diagnostics(tmp_path):
@@ -103,3 +107,18 @@ def test_rendered_dataset_records_hashes_and_diagnostics(tmp_path):
     assert manifest['human_spot_check']['status'] == 'PENDING'
     diagnostics = read_scenes(tmp_path, 'diagnostic')
     assert {r['identifiability'] for r in diagnostics} == {'no_solution', 'multiple_solutions', 'no_cue'}
+
+
+def test_default_generator_capacity_and_complete_ood_composition(tmp_path):
+    manifest = generate_dataset(tmp_path, render=False)
+    assert manifest['split_sizes'] == DEFAULT_SIZES
+    assert manifest['global_truth_uniqueness'] is True
+    assert manifest['unique_main_solutions'] == 3632
+    natural = read_scenes(tmp_path, 'natural_pool')
+    assert Counter(r['constraint_family'] for r in natural) == {'duplicate_encoding': 880, 'cross_series': 880, 'trend': 288}
+    ood = read_scenes(tmp_path, 'ood')
+    for subtype in ('numeric_shift', 'render_expression'):
+        assert len({(r['constraint_family'], r['chart_type'], r['operation']) for r in ood if r['ood_subtype'] == subtype}) == 18
+    assert Counter(r['graph_topology'] for r in ood if r['ood_subtype'] == 'graph_structure') == {'path': 48, 'cycle': 48}
+    with pytest.raises(FileExistsError):
+        generate_dataset(tmp_path, render=False)

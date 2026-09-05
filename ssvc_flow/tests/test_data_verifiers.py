@@ -66,3 +66,22 @@ def test_no_cue_is_396_candidates_and_diagnostics_not_coerced():
     assert len(multiple) == 297
     with pytest.raises(ValueError):
         solve([1, 2, 3, 4], {'family': 'unknown'})
+
+
+@pytest.mark.parametrize('world,cue,domain', [
+    ([1, 2, 3, 4], None, 1), ([1, 2, 3], None, 100),
+    ([True, 2, 3, 4], None, 100), ([100, 2, 3, 4], None, 100),
+    ([1, 2, 3, 4], {'family': 'duplicate_encoding', 'known_index': 8, 'known_value': 1}, 100),
+    ([1, 2, 3, 4], {'family': 'cross_series', 'edges': []}, 100),
+    ([1, 2, 3, 4], {'family': 'cross_series', 'edges': [[1, 0, 3]]}, 100),
+])
+def test_solver_input_boundary(world, cue, domain):
+    with pytest.raises(ValueError):
+        solve(world, cue, domain)
+
+
+def test_nonstring_parser_input_and_invalid_fiber_domain():
+    assert strict_parse(None) is None
+    assert strict_parse('\u00a0[1,2,3,4]') is None
+    with pytest.raises(ValueError):
+        fiber_size(1, 'sum4', domain_size=0)
