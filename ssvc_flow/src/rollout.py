@@ -43,10 +43,13 @@ def estimate_budget(config, phase="smoke", split="dev"):
         "max_completion_tokens": generation["max_new_tokens"],
         "completion_token_upper_bound": generated * generation["max_new_tokens"],
         "generation_forward_upper_bound": generated * generation["max_new_tokens"],
-        "teacher_forcing_forward_count": scored,
-        "policy_reference_scoring_forward_count": scoring,
-        "update_forward_count": update_forwards,
-        "postupdate_likelihood_forward_count": postupdate_forwards,
+        "teacher_forcing_sequence_count": scored,
+        "policy_reference_scoring_sequence_count": scoring,
+        "update_sequence_count": update_forwards,
+        "postupdate_likelihood_sequence_count": postupdate_forwards,
+        "teacher_forcing_forward_count": None,
+        "teacher_forcing_forward_upper_bound": scored * generation["max_new_tokens"],
+        "probability_execution": "uncached_prefix_recompute",
         "backward_count": (updates + audit_replays) * train["B"] * k,
         "optimizer_updates": updates,
         "audit_replay_updates": audit_replays,
@@ -54,8 +57,9 @@ def estimate_budget(config, phase="smoke", split="dev"):
         "gpu_hours": None,
         "peak_gpu_bytes": None,
         "estimate_only": True,
-        "budget_note": "Generation counts exclude no hidden sampling; cache tests add forwards. "
-        "Measured time and memory required before GPU-hour prediction.",
+        "budget_note": "Each scored token recomputes its uncached prefix, including for "
+        "gradients. The forward bound excludes checkpoint backward recomputations and "
+        "cache/image audits. Measured time and memory required before GPU-hour prediction.",
     }
     return budget
 

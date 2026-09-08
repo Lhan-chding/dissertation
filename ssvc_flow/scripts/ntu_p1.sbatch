@@ -3,7 +3,7 @@
 #SBATCH --account=rose
 #SBATCH --qos=soujanya-poria-startfund-2026-03
 #SBATCH --job-name=louis-ssvc-p1
-#SBATCH --gres=gpu:a6000:1
+#SBATCH --gres=gpu:pro6000:1
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --time=06:00:00

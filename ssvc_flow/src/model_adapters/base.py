@@ -51,7 +51,7 @@ def pure_generation_options(max_new_tokens=64):
         "guidance_scale": None,
         "dola_layers": None,
         "token_healing": False,
-        "use_cache": True,
+        "use_cache": False,
         "return_dict_in_generate": True,
         "output_scores": True,
     }
@@ -182,6 +182,8 @@ class HuggingFaceAdapter:
             "model_class": cls.model_class,
             "transformers_version": transformers.__version__,
             "base_dtype": "bfloat16",
+            "probability_execution": "uncached_prefix_recompute",
+            "eos_token_ids": sorted(adapter.eos_ids),
             "lora_rank": 8,
             "lora_alpha": 16,
             "lora_dropout": 0,
@@ -321,10 +323,16 @@ class HuggingFaceAdapter:
 
     @property
     def eos_ids(self):
-        configured = getattr(self.model.generation_config, "eos_token_id", None)
-        if configured is None:
-            configured = self.processor.tokenizer.eos_token_id
-        return set(configured if isinstance(configured, (tuple, list)) else [configured])
+        # Some official chat tokenizers end turns before the model's corpus EOS.
+        # Both stop sampling; only the final sampled EOS is removed when decoding.
+        terminal = set()
+        for configured in (
+            getattr(getattr(self.model, "generation_config", None), "eos_token_id", None),
+            getattr(self.processor.tokenizer, "eos_token_id", None),
+        ):
+            ids = configured if isinstance(configured, (tuple, list)) else [configured]
+            terminal.update(token for token in ids if token is not None)
+        return terminal
 
     @property
     def pad_id(self):
@@ -400,22 +408,31 @@ class HuggingFaceAdapter:
         return result
 
     def logprobs(self, prepared, completion, *, require_grad=False):
+        """Score the exact prefixes used by uncached generation, with gradients.
+
+        BF16 full-sequence and cached/chunked kernels need not define the same
+        numerical policy. Recompute each prefix with the same last-row LM head
+        as generate(), preserving the original on-policy tolerance. No gradient
+        cache is created; model gradient checkpointing still bounds activations.
+        """
         import torch
 
-        from src.likelihood import selected_token_logprobs
+        from src.likelihood import completion_mask
 
         self.model.train(require_grad)
-        self._reset_positions()
-        inputs = self.full_inputs(prepared, completion)
+        mask = completion_mask(completion, 0, eos_ids=self.eos_ids, pad_id=self.pad_id)
+        scores = []
         with torch.set_grad_enabled(require_grad):
-            output = self.model(**inputs, use_cache=False)
-            return selected_token_logprobs(
-                output.logits,
-                inputs["input_ids"],
-                prompt_length=prepared["audit"]["prompt_token_count"],
-                eos_ids=self.eos_ids,
-                pad_id=self.pad_id,
-            )
+            for index, active in enumerate(mask):
+                if not active:
+                    break
+                self._reset_positions()
+                inputs = self.full_inputs(prepared, completion[:index])
+                output = self.model(**inputs, use_cache=False, logits_to_keep=1)
+                scores.append(output.logits[0, -1].float().log_softmax(-1)[completion[index]])
+            if not scores:
+                raise ValueError("At least one generated token required")
+            return torch.stack(scores)
 
     def reference_logprobs(self, prepared, completion):
         with self.model.disable_adapter():

@@ -138,6 +138,7 @@ def perform_update(adapter, optimizer, groups, *, lnorm=64, clip_epsilon=0.2, gr
         )
     )
     policy_kls, reference_kls = [], []
+    postupdate_start = adapter.forward_calls
     for group in groups:
         for row in group:
             new = adapter.logprobs(row["prepared"], row["token_ids"]).detach().cpu().double()
@@ -163,7 +164,8 @@ def perform_update(adapter, optimizer, groups, *, lnorm=64, clip_epsilon=0.2, gr
             "sequence k3 = exp(log_ratio)-1-log_ratio; same training bank used to adapt candidate; "
             "empirical proxy, not independent population KL"
         ),
-        "post_update_likelihood_forwards": total,
+        "post_update_likelihood_forwards": adapter.forward_calls - postupdate_start,
+        "post_update_likelihood_sequences": total,
     }
 
 

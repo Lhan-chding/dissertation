@@ -169,6 +169,23 @@ def test_actual_generation_raw_scores_no_hidden_transform(adapter, tmp_path):
     assert adapter.generation_calls == 1
 
 
+@pytest.mark.parametrize("image", [False, True])
+def test_bf16_prefix_generation_scoring_and_gradient_agree(adapter, tmp_path, image):
+    adapter.model.to(dtype=torch.bfloat16)
+    item = prepared(adapter, tmp_path, image)
+    sample = adapter.generate(item, seed=101, max_new_tokens=4)
+    expected = torch.tensor(sample["behavior_token_logprobs"])
+    observed = adapter.logprobs(item, sample["token_ids"])
+    torch.testing.assert_close(observed, expected, atol=1e-5, rtol=1e-5)
+    with torch.no_grad():
+        differentiable = adapter.logprobs(item, sample["token_ids"], require_grad=True)
+    torch.testing.assert_close(differentiable.detach(), expected, atol=1e-5, rtol=1e-5)
+    differentiable.sum().backward()
+    gradients = [p.grad for p in adapter.model.parameters() if p.grad is not None]
+    assert gradients and all(torch.isfinite(g).all() for g in gradients)
+    assert any(torch.count_nonzero(g) for g in gradients)
+
+
 def test_official_loader_lora_selection_with_mocked_download_and_cuda(tmp_path):
     import huggingface_hub
 

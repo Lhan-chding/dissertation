@@ -6,7 +6,7 @@
   "data_seed": 17,
   "sample_seed": 104729,
   "models": {
-    "qwen35_9b": {"id": "Qwen/Qwen3.5-9B", "revision": null, "expected_layers": 32},
+    "qwen35_9b": {"id": "Qwen/Qwen3.5-9B", "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a", "expected_layers": 32},
     "qwen25vl_3b": {"id": "Qwen/Qwen2.5-VL-3B-Instruct", "revision": null, "expected_layers": 36},
     "qwen25vl_7b": {"id": "Qwen/Qwen2.5-VL-7B-Instruct", "revision": null, "expected_layers": 28},
     "qwen3vl_8b": {"id": "Qwen/Qwen3-VL-8B-Instruct", "revision": null, "expected_layers": 32}

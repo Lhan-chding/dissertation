@@ -125,6 +125,7 @@ def _runtime_lock(config, adapter, out, identity):
         "allow_tf32": False,
         "cudnn_benchmark": False,
         "runtime_status": "CANDIDATE_UNTIL_P1_PASS",
+        "probability_execution": adapter.audit.get("probability_execution"),
     }
     write_json(out / "runtime_lock.json", lock)
     return lock

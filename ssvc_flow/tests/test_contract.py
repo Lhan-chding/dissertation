@@ -1,5 +1,6 @@
 """Pre-GPU run integrity and command boundary acceptance tests."""
 
+import copy
 import json
 import subprocess
 import sys
@@ -49,8 +50,10 @@ def test_config_boundary_and_budget():
 
     config = load_config(Path(__file__).parents[1] / "configs/locked.json")
     validate_config(config, phase="smoke")
+    unpinned = copy.deepcopy(config)
+    unpinned["models"]["qwen35_9b"]["revision"] = None
     with pytest.raises(ValueError, match="revision"):
-        validate_config(config, phase="frozen")
+        validate_config(unpinned, phase="frozen")
     budget = estimate_budget(config, "smoke")
     assert budget["prompt_count"] == 36
     assert budget["rollout_count"] >= 36 * 8
@@ -326,7 +329,9 @@ def test_smoke_budget_counts_policy_reference_and_backward_forwards():
     from src.rollout import estimate_budget
 
     budget = estimate_budget(load_config())
-    assert budget["teacher_forcing_forward_count"] == 960
-    assert budget["policy_reference_scoring_forward_count"] == 704
-    assert budget["update_forward_count"] == 128
-    assert budget["postupdate_likelihood_forward_count"] == 128
+    assert budget["teacher_forcing_sequence_count"] == 960
+    assert budget["policy_reference_scoring_sequence_count"] == 704
+    assert budget["update_sequence_count"] == 128
+    assert budget["teacher_forcing_forward_count"] is None
+    assert budget["teacher_forcing_forward_upper_bound"] == 960 * 64
+    assert budget["postupdate_likelihood_sequence_count"] == 128

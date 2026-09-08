@@ -20,6 +20,8 @@ bash scripts/setup_ntu.sh
 bootstrap 中 PyTorch2.13.0 与 torchvision0.28.0 按
 [官方安装矩阵](https://pytorch.org/get-started/previous-versions/) 配对。
 Qwen 的 AutoProcessor 即使只处理图片，也需要导入视频 processor 的 torchvision 依赖。
+主模型已固定到首个真实 P1 使用的 revision
+`c202236235762e1c871ad0ccb60c8ee5ba337b9a`；固定 revision 本身不代表 P1 已通过。
 若服务器驱动需要指定 CUDA wheel，可先按该矩阵在新环境中安装对应组合，再装其余依赖；
 不要在未知驱动条件下假定默认 wheel 可用。
 
@@ -45,17 +47,16 @@ P1 将记录加载、单次/K=8生成及反向传播的峰值、吞吐和更新�
 ```
 
 脚本默认申请 `cluster02` / `rose` 账号 / `soujanya-poria-startfund-2026-03` QoS，
-1 张 `a6000`，运行上限 6 小时。此 QoS 来自老师在
+1 张 `pro6000`，运行上限 6 小时。此 QoS 来自老师在
 `/projects/varunssd/slurm_train.sh` 和 `start_gpu_job.sh` 的提交示例；
 2026-09-05 的 `sacctmgr show assoc` 输出也确认 `varun024` 的 `rose` 账号获准使用该 QoS。
 CPU/内存由集群按 GPU 型号分配，不照搬旧示例的 `--mem=256G`。
-GPU 按用户选择保留 A6000，使用现行明确型号格式 `--gres=gpu:a6000:1`。
-账号具备该 QoS 权限，不等于已验证所有 GPU 型号均被该 QoS 允许；
-实际 A6000 提交仍需通过集群校验。
+2026-09-08 已确认该项目 QoS 拒绝 A6000、允许 PRO6000；作业 `144840`
+使用 `--gres=gpu:pro6000:1` 实际启动。脚本默认值与这组已验证的提交参数一致。
 6 小时是运行上限，不是等待时间或耗时承诺；结束后立即释放资源。
 
 这是老师指定的项目 QoS，不能沿用此前 `override-limits-but-killable` 的
-“不计配额、可抢占”说明或等待时间估计。项目额度、优先级、允许的其他 GPU 型号、
+“不计配额、可抢占”说明或等待时间估计。项目额度、
 作业数及抢占规则尚未核实，不承诺立即启动。需要时可只读查询：
 
 ```bash
@@ -79,6 +80,13 @@ sacctmgr show qos where name=soujanya-poria-startfund-2026-03 \
 5. 运行原有锁定的 Qwen3.5-9B P1：36 个 prompt、K=8、2 次真实更新，
    包含概率一致性、缓存、图像输入、基座冻结、梯度和恢复重放检查。
 6. 核对真实 CUDA P1 的 PASS 与验证锁，生成报告、证据包和 SHA-256。
+
+2026-09-08 的概率修复保持 BF16 基座、FP32 LoRA 和原来的 0.02 报警值：
+采样关闭 cache，teacher-forcing 对每个实际生成 token 的相同前缀做无 cache 重算，
+包括有梯度的 likelihood。完整／分段／逐 token cache 仍单独审计。
+模型 EOS 与官方 tokenizer 的聊天 EOS 合并；仅剥离最终 EOS，严格答案 parser 不做修补。
+这比整段一次打分需要更多前向计算，dry-run 现在区分序列数与逐 token 前向上界；
+真实耗时由本次 P1 测量。修复依据见 [P1 失败定位记录](P1_FAILURE_144840_zh.md)。
 
 任一前置检查失败就停止后续模型工作，返回非零退出码；不会安装软件或执行 P3–P9。
 输出目录为 `/projects/varunssd/louis-ssvc/runs/slurm-<编号>-attempt-0/`，

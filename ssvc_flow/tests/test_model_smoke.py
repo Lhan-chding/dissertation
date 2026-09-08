@@ -142,6 +142,32 @@ def test_runtime_stops_before_model_download_without_cuda(tmp_path):
         run_smoke(load_config(), panel()[:1], tmp_path, "qwen35_9b", _adapter_factory=FakeAdapter)
 
 
+def test_update_counts_measured_forwards_separately_from_sequences():
+    from src.grpo_update import perform_update
+
+    class PrefixAdapter(FakeAdapter):
+        def logprobs(self, prepared, completion, require_grad=False):
+            self.forward_calls += len(completion) - 1
+            return super().logprobs(prepared, completion, require_grad=require_grad)
+
+    adapter = PrefixAdapter("test", load_config()["models"]["qwen35_9b"])
+    groups = [
+        [
+            {
+                "prepared": {"image": None},
+                "token_ids": [token, 2],
+                "old_logprobs": [-1.38629436] * 2,
+                "reward_sum": reward,
+            }
+            for token, reward in ((1, 1), (3, 0))
+        ]
+    ]
+    optimizer = torch.optim.AdamW([adapter.model.lora], lr=1e-5)
+    result = perform_update(adapter, optimizer, groups)
+    assert result["post_update_likelihood_forwards"] == 4
+    assert result["post_update_likelihood_sequences"] == 2
+
+
 def test_incompatible_bank_and_no_signal_are_not_success(tmp_path):
     class NoSignal(FakeAdapter):
         def generate(self, prepared, **kwargs):
