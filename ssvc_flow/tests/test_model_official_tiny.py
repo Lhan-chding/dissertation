@@ -186,6 +186,55 @@ def test_bf16_prefix_generation_scoring_and_gradient_agree(adapter, tmp_path, im
     assert any(torch.count_nonzero(g) for g in gradients)
 
 
+@pytest.mark.parametrize("image", [False, True])
+def test_peft_forward_counter_includes_scoring_but_excludes_checkpoint_replays(tmp_path, image):
+    from src.model_adapters.base import select_language_mlp_modules
+
+    torch.manual_seed(17)
+    base = tiny_model()
+    targets = select_language_mlp_modules((name for name, _ in base.named_modules()), 4)
+    model = peft.get_peft_model(
+        base,
+        peft.LoraConfig(
+            r=2, lora_alpha=4, lora_dropout=0, target_modules=targets, task_type="CAUSAL_LM"
+        ),
+    )
+    model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
+    model.enable_input_require_grads()
+    measured = Qwen35Adapter(model, TinyProcessor(), "cpu-peft-fixture", "a" * 40, device="cpu")
+    measured._install_hooks()
+    item = prepared(measured, tmp_path, image)
+
+    sample = measured.generate(item, seed=101, max_new_tokens=4)
+    assert measured.forward_calls == len(sample["token_ids"])
+    completion = [7, 8, 9, 2]
+    for score in (measured.logprobs, measured.reference_logprobs):
+        before = measured.forward_calls
+        assert len(score(item, completion)) == len(completion)
+        assert measured.forward_calls - before == len(completion)
+
+    layer_calls = []
+    handle = base.model.language_model.layers[0].register_forward_pre_hook(
+        lambda *args: layer_calls.append(True)
+    )
+    try:
+        before = measured.forward_calls
+        scores = measured.logprobs(item, completion, require_grad=True)
+        assert measured.forward_calls - before == len(completion)
+        before_backward = measured.forward_calls
+        layer_calls_before_backward = len(layer_calls)
+        scores.sum().backward()
+        # Verify checkpoint recomputation really happened, without counting it
+        # again as a new outer model forward.
+        assert len(layer_calls) > layer_calls_before_backward
+        assert measured.forward_calls == before_backward
+    finally:
+        handle.remove()
+    gradients = [p.grad for p in model.parameters() if p.requires_grad and p.grad is not None]
+    assert gradients and all(torch.isfinite(gradient).all() for gradient in gradients)
+    assert any(torch.count_nonzero(gradient) for gradient in gradients)
+
+
 def test_official_loader_lora_selection_with_mocked_download_and_cuda(tmp_path):
     import huggingface_hub
 

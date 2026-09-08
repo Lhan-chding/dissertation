@@ -212,7 +212,10 @@ class HuggingFaceAdapter:
         forward_model = (
             self.model.get_base_model() if hasattr(self.model, "get_base_model") else self.model
         )
-        forward_model.register_forward_pre_hook(
+        # PEFT can call the conditional-generation wrapper's .forward directly,
+        # bypassing its module hooks. Both entry paths call the shared backbone
+        # once; decoder checkpoint replays remain below this boundary.
+        forward_model.model.register_forward_pre_hook(
             lambda *args: setattr(self, "forward_calls", self.forward_calls + 1)
         )
         matches = [
