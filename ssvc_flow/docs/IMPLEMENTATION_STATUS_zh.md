@@ -37,6 +37,6 @@ P1 的数值监测在 GPU 测试前固定为 `max_empirical_sequence_kl=1.0`。
 
 上述表格保留原交付时点；当前 P1 9B 已通过，P3 L/N 冻结执行器、16 sampled + 1 greedy 固定银行、
 逐 prompt/群体统计、断点恢复与六任务矩阵验收已实现并有本地 fake/tiny 测试。
-3B/7B 已固定 revision，尚缺各自真实 P1。P3 GPU 银行尚未执行；N 独立人工 36 图检查仍待记录。
+3B/7B 已固定 revision，尚缺各自真实 P1。P3 GPU 银行尚未执行；N 独立人工 36 图检查已由用户确认并通过哈希门禁验证，详见交接末尾确认摘要。
 P2 原文缺口、L 非历史精确复现、P4–P9 未运行边界保持不变。
 具体执行顺序、数据数量和门禁见 [P3 交接](P3_FROZEN_HANDOFF_zh.md)。

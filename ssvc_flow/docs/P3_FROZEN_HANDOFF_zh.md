@@ -1,7 +1,7 @@
 # P3 冻结评估执行交接（2026-09-08）
 
 实现对应原计划 §8 P3；本文件是执行说明，**不是已完成 GPU 评估的结果报告**。
-9B 已有真实 P1 证据（job 144911），3B、7B 必须分别通过自己的 P1。独立人工 36 张校准图检查尚待记录；P2 缺少 `THEORY_REVIEW` 原文，仍为 PARTIAL。不得把本地 fake/tiny 测试计入模型结果。
+9B 已有真实 P1 证据（job 144911），3B、7B 必须分别通过自己的 P1。独立人工 36 张校准图检查已由用户确认，并经本地/服务器哈希门禁验证；P2 缺少 `THEORY_REVIEW` 原文，仍为 PARTIAL。不得把本地 fake/tiny 测试计入模型结果。
 
 ## 固定矩阵和门禁
 
@@ -99,3 +99,15 @@ cd "$SSVC_WORK/dissertation-ssvc/ssvc_flow"
 ## 本地交付验证
 
 2026-09-08，Python 3.12 本地 CPU 环境，启用与 P1 相同版本的 Transformers/PEFT 及 pyarrow 后，`python -m pytest tests -q`：**324 passed（38.52 秒）**。包括真实 tiny Qwen3.5/Qwen2.5、冻结与恢复、PEFT 标志恢复、CLI 并发保护、旧 parser/manifest、矩阵身份和辅助比较测试。Ruff、格式检查、Bash 语法及 Git diff 检查通过；CLI dry-run 实测 N 4,896 / L 2,992 条。此证据只验证代码，不代表三模型 P3 GPU 结果。
+
+
+## 人工检查确认（2026-09-08）
+
+用户在前一轮明确请求确认 36 张校准图后回复“我已经确认”。已将该确认绑定到原 contact manifest 及全部 36 个场景，原始 manifest 保持不变。
+
+- Contact manifest SHA256：`090aedf095d871cde197189c84c9c2def3ed31b333bc035499cd6466fb69d241`。
+- 独立确认记录 SHA256：`45a3e305abef5c049ae88bdbdbaac702a8584ffb50b5a85609c5d8d81fca6856`。
+- 服务器记录：`/projects/varunssd/louis-ssvc/reviews/P0_human_review_20260908.json`，用于 `SSVC_HUMAN_REVIEW`。
+- `reviewed_at` 记录接收用户确认的时间；未另行推断实际看图时间。原始确认记录留本地/服务器，仅此摘要入 Git。
+
+此确认解除 N 轨的人工检查门禁，不替代 3B/7B 各自 P1 或 P3 实测结果，也不补齐 P2 的原文缺口。

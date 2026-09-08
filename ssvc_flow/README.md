@@ -35,5 +35,5 @@ each requires its own real P1 compatibility evidence.
 
 P3 L/N frozen execution, interruption recovery, metrics, and verified matrix reporting
 are implemented; see [the P3 handoff](docs/P3_FROZEN_HANDOFF_zh.md). No P3 GPU bank
-has been run as part of this implementation. Human inspection of the 36 calibration
-charts is still required for N. P4-P9 real-model execution remains unimplemented.
+has been run as part of this implementation. The user has confirmed human inspection of all 36 calibration
+charts, and the exact-image review record has passed validation. P4-P9 real-model execution remains unimplemented.
