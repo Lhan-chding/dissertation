@@ -15,7 +15,7 @@ import pytest
 PROJECT = Path(__file__).resolve().parents[1]
 SCRIPT = PROJECT / "scripts/ntu_p1.sbatch"
 
-FAKE_PYTHON = r'''
+FAKE_PYTHON = r"""
 import json
 import os
 import subprocess
@@ -111,7 +111,7 @@ elif module == "src.report":
     write(destination("--out") / "phase_status.json", {"fixture": True})
 else:
     raise SystemExit("unexpected module: " + module)
-'''
+"""
 
 
 def executable(path, body):
@@ -133,11 +133,7 @@ def batch(tmp_path):
     python = work / "envs/ssvc-py312/bin/python"
     executable(
         python,
-        "#!/bin/sh\nexec "
-        + shlex.quote(sys.executable)
-        + " "
-        + shlex.quote(str(fake))
-        + ' "$@"\n',
+        "#!/bin/sh\nexec " + shlex.quote(sys.executable) + " " + shlex.quote(str(fake)) + ' "$@"\n',
     )
     executable(tools / "nvidia-smi", "#!/bin/sh\nprintf 'fixture NVIDIA A6000\\n'\n")
     executable(tools / "git", "#!/bin/sh\nprintf 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\n'\n")
@@ -332,3 +328,44 @@ def test_batch_scheduler_contract_is_explicit_and_scoped():
         assert required in directives
     assert "--mem" not in directives
     assert "--cpus" not in directives
+
+
+@pytest.mark.parametrize("model", ["qwen25vl_3b", "qwen25vl_7b"])
+def test_batch_selected_model_and_config_are_used_everywhere(batch, model):
+    frozen = batch["repo"] / "configs/frozen.json"
+    content = json.loads((batch["repo"] / "configs/locked.json").read_text())
+    content["protocol_version"] = "fixture-frozen"
+    frozen.write_text(json.dumps(content))
+    result = run_batch(batch, SSVC_MODEL=model, SSVC_CONFIG="configs/frozen.json")
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert json.loads((batch["run"] / "locked-config.json").read_text()) == content
+    for call in module_calls(batch, "src.rollout"):
+        args = call["args"]
+        assert args[args.index("--model") + 1] == model
+        assert args[args.index("--config") + 1] == str(frozen)
+
+
+@pytest.mark.parametrize("model", ["qwen3vl_8b", "unknown", "../escape"])
+def test_batch_invalid_model_rejected_before_creating_run(batch, model):
+    result = run_batch(batch, SSVC_MODEL=model)
+    assert result.returncode != 0
+    assert not batch["run"].exists()
+    assert not calls(batch)
+
+
+def test_batch_invalid_config_path_rejected_before_creating_run(batch, tmp_path):
+    outside = tmp_path / "outside.json"
+    outside.write_text("{}")
+    for config in [str(outside), "configs/missing.json", str(tmp_path / "missing.json")]:
+        result = run_batch(batch, SSVC_CONFIG=config)
+        assert result.returncode != 0
+        assert not batch["run"].exists()
+    assert not calls(batch)
+
+
+def test_batch_config_directory_alias_is_allowed(batch):
+    alias = batch["work"] / "config-alias"
+    alias.symlink_to(batch["repo"] / "configs", target_is_directory=True)
+    result = run_batch(batch, SSVC_MODEL="qwen25vl_3b", SSVC_CONFIG=str(alias / "locked.json"))
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert json.loads((batch["run"] / "locked-config.json").read_text())

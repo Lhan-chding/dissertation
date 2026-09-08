@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import contextlib
+import fcntl
 import hashlib
 import json
 import os
@@ -12,6 +14,34 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 IDENTITY_FIELDS = frozenset({"model_hash", "data_hash", "config_hash"})
+
+
+OFFICIAL_FROZEN_MODELS = {
+    "qwen35_9b": ("Qwen/Qwen3.5-9B", 32),
+    "qwen25vl_3b": ("Qwen/Qwen2.5-VL-3B-Instruct", 36),
+    "qwen25vl_7b": ("Qwen/Qwen2.5-VL-7B-Instruct", 28),
+}
+
+
+class RunWriteConflict(FileExistsError, RuntimeError):
+    """A rejected writer must not rewrite another process's evidence."""
+
+
+@contextlib.contextmanager
+def frozen_writer(out):
+    """One process per ledger; OS releases the advisory lock on process death."""
+    out = Path(out)
+    out.mkdir(parents=True, exist_ok=True)
+    # Keep the inode: unlinking it would allow two independent locks on one run.
+    with (out / ".writer.lock").open("a") as stream:
+        try:
+            fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise RunWriteConflict("Another frozen writer already owns this output") from exc
+        try:
+            yield
+        finally:
+            fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
 
 
 def canonical_hash(value):
@@ -97,6 +127,11 @@ def validate_config(config, phase="smoke", model_key="qwen35_9b"):
     model = config["models"][model_key]
     if model_key == "qwen35_9b" and model["id"] != "Qwen/Qwen3.5-9B":
         raise ValueError("primary model must be Qwen/Qwen3.5-9B")
+    if phase == "frozen" and (
+        model_key not in OFFICIAL_FROZEN_MODELS
+        or (model["id"], model.get("expected_layers")) != OFFICIAL_FROZEN_MODELS[model_key]
+    ):
+        raise ValueError("frozen key must match the official model ID and layer count")
     revision = model.get("revision") or ""
     if phase != "smoke" and not re.fullmatch(r"[0-9a-f]{40}", revision):
         raise ValueError("an immutable resolved model revision is required outside smoke")

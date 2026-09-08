@@ -1,8 +1,8 @@
 # SSVC probability-flow diagnostics
 
 This independent experiment implements the supplied 2026-09-05 Chinese plan through
-the first NTU GPU boundary. Run commands **inside this directory**. Historical
-experiment code is only audited as data; it is never imported by the new runtime.
+the P3 frozen-evaluation implementation and its explicit GPU gates. Run commands **inside this directory**. The L track loads only allowlisted pure parser/executor modules from the historical
+experiment; it preserves their original prompt and parsing semantics.
 
 The CPU implementation covers strict world parsing, independent one-error constraint
 solving, exact answer fibers, deterministic charts/splits, finite-group mathematics,
@@ -30,11 +30,10 @@ python -m src.report --run-root runs --out reports
 ```
 
 `configs/locked.json` locks the proposed N protocol and the Qwen3.5-9B revision
-used in the first real P1 run. Other model revisions remain unresolved until their
-own compatibility checks. The actual P1 environment/model/processor/template must
-be recorded and validated before later experiments are implemented and authorized.
+used in the first real P1 run. `configs/frozen.json` also pins 3B and 7B revisions;
+each requires its own real P1 compatibility evidence.
 
-P3-P9 real-model execution is outside this delivery. The frozen/pilot/confirm
-entrypoints reject execution with an explicit phase reason; mathematical tools
-named after later audits remain CPU fixtures. Human inspection of the 36 generated
-calibration charts remains a separately recorded requirement.
+P3 L/N frozen execution, interruption recovery, metrics, and verified matrix reporting
+are implemented; see [the P3 handoff](docs/P3_FROZEN_HANDOFF_zh.md). No P3 GPU bank
+has been run as part of this implementation. Human inspection of the 36 calibration
+charts is still required for N. P4-P9 real-model execution remains unimplemented.

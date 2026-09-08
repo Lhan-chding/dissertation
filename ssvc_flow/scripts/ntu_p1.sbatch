@@ -24,11 +24,30 @@ fi
 export SSVC_WORK="${SSVC_WORK:-/projects/varunssd/louis-ssvc}"
 export SSVC_PYTHON="${SSVC_PYTHON:-$SSVC_WORK/envs/ssvc-py312/bin/python}"
 ssvc_root="$SSVC_WORK/dissertation-ssvc/ssvc_flow"
-if [[ $SSVC_WORK != /* || ! -x $SSVC_PYTHON || ! -f $ssvc_root/configs/locked.json ]]; then
+export SSVC_MODEL="${SSVC_MODEL:-qwen35_9b}"
+export SSVC_CONFIG="${SSVC_CONFIG:-configs/locked.json}"
+case "$SSVC_MODEL" in
+  qwen25vl_3b|qwen35_9b|qwen25vl_7b) ;;
+  *) echo "Unregistered P1 model: $SSVC_MODEL" >&2; exit 2 ;;
+esac
+if [[ $SSVC_WORK != /* || ! -x $SSVC_PYTHON || ! -d $ssvc_root ]]; then
   echo 'Expected an absolute personal work directory, installed Python and SSVC checkout.' >&2
   exit 2
 fi
 cd "$ssvc_root"
+if [[ $SSVC_CONFIG != /* ]]; then SSVC_CONFIG="$ssvc_root/$SSVC_CONFIG"; fi
+if [[ ! -f $SSVC_CONFIG || -L $SSVC_CONFIG ]]; then
+  echo 'SSVC_CONFIG must name an existing regular configuration file.' >&2
+  exit 2
+fi
+# Resolve directory aliases (including NTU /projects aliases) before scope checks.
+ssvc_work_real="$(cd "$SSVC_WORK" && pwd -P)"
+ssvc_config_parent="$(cd "$(dirname "$SSVC_CONFIG")" && pwd -P)"
+SSVC_CONFIG="$ssvc_config_parent/$(basename "$SSVC_CONFIG")"
+case "$SSVC_CONFIG" in
+  "$ssvc_work_real"/*) ;;
+  *) echo 'SSVC_CONFIG must remain inside SSVC_WORK.' >&2; exit 2 ;;
+esac
 ssvc_name="slurm-${SLURM_JOB_ID}-attempt-${SLURM_RESTART_COUNT:-0}"
 export SSVC_RUN_DIR="$SSVC_WORK/runs/$ssvc_name"
 mkdir -p "$SSVC_WORK/runs"
@@ -121,7 +140,7 @@ run_check() {
 }
 echo "P1 evidence directory: $SSVC_RUN_DIR"
 cp "$0" "$SSVC_RUN_DIR/submitted.sbatch"
-cp configs/locked.json "$SSVC_RUN_DIR/locked-config.json"
+cp "$SSVC_CONFIG" "$SSVC_RUN_DIR/locked-config.json"
 git rev-parse HEAD > "$SSVC_RUN_DIR/source-commit.txt"
 hostname > "$SSVC_RUN_DIR/hostname.txt"
 run_check gpu nvidia-smi
@@ -130,11 +149,20 @@ run_check pip-freeze "$SSVC_PYTHON" -m pip freeze --all
 run_check cuda "$SSVC_PYTHON" - <<'PY'
 import importlib.metadata
 import json
+import os
 import sys
 
 import torch
 import torchvision
-from transformers import AutoProcessor, Qwen3_5ForConditionalGeneration
+import transformers
+from transformers import AutoProcessor
+
+model_classes = {
+    "qwen35_9b": "Qwen3_5ForConditionalGeneration",
+    "qwen25vl_3b": "Qwen2_5_VLForConditionalGeneration",
+    "qwen25vl_7b": "Qwen2_5_VLForConditionalGeneration",
+}
+model_class = getattr(transformers, model_classes[os.environ["SSVC_MODEL"]])
 from peft import LoraConfig
 from accelerate import Accelerator
 
@@ -161,6 +189,8 @@ assert torch.isfinite(weight).all().item() and not torch.equal(before, weight)
 device = torch.cuda.get_device_properties(0)
 print(json.dumps({
     "python": sys.executable,
+    "model_key": os.environ["SSVC_MODEL"],
+    "model_class": model_class.__name__,
     "versions": {name: importlib.metadata.version(name) for name in
                  ("torch", "torchvision", "transformers", "peft", "accelerate")},
     "cuda_runtime": torch.version.cuda,
@@ -178,9 +208,11 @@ run_check cpu-tests env CUDA_VISIBLE_DEVICES='' HF_HUB_OFFLINE=1 TRANSFORMERS_OF
   --junitxml="$SSVC_RUN_DIR/checks/cpu-tests.xml"
 run_check data "$SSVC_PYTHON" -m src.generate_worlds \
   --out "$SSVC_RUN_DIR/data/generated" --seed 17
-run_check budget "$SSVC_PYTHON" -m src.rollout --phase smoke --model qwen35_9b \
+run_check budget "$SSVC_PYTHON" -m src.rollout --phase smoke --model "$SSVC_MODEL" \
+  --config "$SSVC_CONFIG" \
   --dry-run --out "$SSVC_RUN_DIR/budget"
-run_check p1 "$SSVC_PYTHON" -m src.rollout --phase smoke --model qwen35_9b \
+run_check p1 "$SSVC_PYTHON" -m src.rollout --phase smoke --model "$SSVC_MODEL" \
+  --config "$SSVC_CONFIG" \
   --data-root "$SSVC_RUN_DIR/data/generated" --out "$SSVC_RUN_DIR/runs/P1"
 run_check acceptance "$SSVC_PYTHON" - "$SSVC_RUN_DIR/runs/P1" <<'PY'
 import json

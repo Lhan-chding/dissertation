@@ -256,6 +256,11 @@ class HuggingFaceAdapter:
             {"role": "system", "content": prompt["system"]},
             {"role": "user", "content": content},
         ]
+        if "messages" in prompt:
+            expected = [{"role": "user", "content": prompt["user"]}]
+            if image is not None or prompt["system"] is not None or prompt["messages"] != expected:
+                raise ValueError("Legacy template requires the original single user message")
+            messages = copy.deepcopy(expected)
         text = self.processor.apply_chat_template(
             messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
         )
@@ -342,7 +347,7 @@ class HuggingFaceAdapter:
         value = self.processor.tokenizer.pad_token_id
         return self.processor.tokenizer.eos_token_id if value is None else value
 
-    def generate(self, prepared, *, seed, max_new_tokens=64):
+    def generate(self, prepared, *, seed, max_new_tokens=64, do_sample=True):
         import torch
         from transformers import GenerationConfig
 
@@ -351,8 +356,10 @@ class HuggingFaceAdapter:
         self.model.eval()
         self._reset_positions()
         inputs = self._device_inputs(prepared)
+        if type(do_sample) is not bool:
+            raise ValueError("do_sample must be a boolean")
         settings = GenerationConfig(
-            **pure_generation_options(max_new_tokens),
+            **{**pure_generation_options(max_new_tokens), "do_sample": do_sample},
             eos_token_id=sorted(self.eos_ids),
             pad_token_id=self.pad_id,
             bos_token_id=self.processor.tokenizer.bos_token_id,
