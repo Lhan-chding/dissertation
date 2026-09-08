@@ -4,5 +4,7 @@
 /.venv/
 /.cache/
 /ssvc_ntu_P1_evidence.tar.gz
+# Raw NTU run evidence stays local unless its publication is explicitly authorized.
+/docs/ntu_evidence/
 .coverage*
 !.coveragerc
