@@ -198,3 +198,12 @@ def test_qwen25_legacy_single_user_prepare_and_48_token_setting(measured_adapter
     assert adapter.processor.messages == [{"role": "user", "content": raw}]
     assert item["audit"]["image_token_count"] == 0
     assert pure_generation_options(48)["max_new_tokens"] == 48
+
+
+def test_qwen25_cache_positions_follow_framework_cache_length(measured_adapter, tmp_path):
+    item = measured_adapter.prepare(
+        {"system": "Return four integers.", "user": "observed [1,2,3,4]"}, tmp_path
+    )
+    state = measured_adapter.make_prefix_state(item)
+    assert state["offset"] == state["cache"].get_seq_length()
+    assert state["offset"] == item["inputs"]["input_ids"].shape[-1]

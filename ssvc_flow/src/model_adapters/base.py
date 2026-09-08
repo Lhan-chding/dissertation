@@ -455,12 +455,16 @@ class HuggingFaceAdapter:
         output = self.model(**inputs, use_cache=True)
         if output.past_key_values is None:
             raise RuntimeError("Official forward returned no complete cache")
+        # Position continuation from the framework cache itself.  Qwen2.5 can
+        # account for multimodal placeholder expansion internally, so the
+        # processor input length is not a safe cache position.
+        cache_length = output.past_key_values.get_seq_length()
         base = self.model.get_base_model() if hasattr(self.model, "get_base_model") else self.model
         return {
             "cache": output.past_key_values,
             "logits": output.logits[:, -1:],
             "attention_mask": inputs["attention_mask"],
-            "offset": inputs["input_ids"].shape[-1],
+            "offset": cache_length,
             "has_mm_token_type_ids": "mm_token_type_ids" in inputs,
             "rope_deltas": copy.deepcopy(getattr(base.model, "rope_deltas", None)),
             "metadata": {
