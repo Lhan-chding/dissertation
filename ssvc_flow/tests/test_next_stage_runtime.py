@@ -273,3 +273,153 @@ def test_environment_rejects_changed_version(gates, monkeypatch, kind):
     audit = {"transformers_version": "different" if kind == "adapter_transformers" else "5.14.1"}
     with pytest.raises(ValueError, match="environment"):
         runtime.validate_runtime_environment(gate, audit)
+
+
+def test_r2_gate_rejects_running_or_fake_status(tmp_path):
+    from src.next_stage_runtime import validate_r2_gate
+
+    for kind in ("REAL_CUDA_INFERENCE", "CPU_FAKE_ADAPTER_FIXTURE"):
+        write_json(
+            tmp_path / "status.json", {"phase": "R2", "status": "RUNNING", "execution_kind": kind}
+        )
+        write_json(tmp_path / "manifest.json", {"files": []})
+        with pytest.raises((ValueError, FileNotFoundError)):
+            validate_r2_gate(tmp_path, {})
+
+
+def seal_r2(root):
+    write_json(
+        root / "manifest.json",
+        {
+            "files": [
+                {"path": p.name, "sha256": file_hash(p), "bytes": p.stat().st_size}
+                for p in sorted(root.iterdir())
+                if p.is_file() and p.name not in {"manifest.json", "status.json"}
+            ]
+        },
+    )
+
+
+@pytest.fixture
+def completed_r2(gates, tmp_path):
+    import json
+
+    from src.next_stage_runtime import validate_prerequisites
+    from src.r2_inputs import CONDITIONS, LONG_CONDITIONS
+
+    gate = validate_prerequisites(*gates)
+    root = tmp_path / "completed_r2"
+    root.mkdir()
+    write_json(
+        root / "status.json",
+        {"phase": "R2", "status": "PASS", "execution_kind": "REAL_CUDA_INFERENCE"},
+    )
+    write_json(
+        root / "runtime_lock.json",
+        {
+            "config": gate["config"],
+            "selected_probability_path": "uncached_prefix_recompute",
+            "initial_adapter_hash": "initial",
+            "base_parameter_hash": "frozen",
+            "environment": {"fixture": True},
+        },
+    )
+    write_json(root / "gate_binding.json", gate["binding"])
+    write_json(
+        root / "data_binding.json",
+        {"calibration_sha256": "calibration", "dataset_manifest_sha256": "dataset"},
+    )
+    write_json(
+        root / "inference_audit.json",
+        {
+            "passed": True,
+            "raw_sample_count": 2232,
+            "optimizer_steps": 0,
+            "backward_calls": 0,
+            **{
+                f"{name}_{side}": value
+                for name, value in (
+                    ("base_hash", "frozen"),
+                    ("adapter_hash", "initial"),
+                    ("all_parameter_hash", "all"),
+                )
+                for side in ("before", "after")
+            },
+        },
+    )
+    requests = []
+    for condition in (*CONDITIONS, *LONG_CONDITIONS):
+        for mode, count in (
+            ("sample", 24 if condition in LONG_CONDITIONS else 288),
+            ("greedy", 12 if condition in LONG_CONDITIONS else 72),
+        ):
+            for index in range(count):
+                requests.append(
+                    {
+                        "sample_key": f"{condition}-{mode}-{index}",
+                        "condition": condition,
+                        "decode_mode": mode,
+                    }
+                )
+    write_json(root / "request_manifest.json", {"count": 2232, "requests": requests})
+    rows = []
+    for request in requests:
+        row = {
+            **request,
+            "execution_kind": "REAL_CUDA_INFERENCE",
+            "split": "calibration",
+            "execution_checks": {"passed": True},
+        }
+        row["record_hash"] = canonical_hash(row)
+        rows.append(row)
+    raw = "".join(json.dumps(row) + "\n" for row in rows)
+    for name in ("samples.jsonl", "diagnostic_rollouts.jsonl"):
+        (root / name).write_text(raw)
+    write_json(root / "condition_metrics.json", {})
+    for name in ("paired_condition_effects.csv", "invalid_taxonomy.csv"):
+        (root / name).write_text("fixture\n")
+    seal_r2(root)
+    return root, gate
+
+
+def test_r2_gate_accepts_full_bound_coverage(completed_r2):
+    from src.next_stage_runtime import validate_r2_gate
+
+    result = validate_r2_gate(*completed_r2)
+    assert result["status"] == "PASS" and result["raw_sample_count"] == 2232
+
+
+@pytest.mark.parametrize(
+    "mutation", ["missing_row", "changed_raw", "changed_model", "wrong_old_gate", "fake"]
+)
+def test_r2_gate_rejects_resealed_but_invalid_result(completed_r2, mutation):
+    import json
+
+    from src.next_stage_runtime import validate_r2_gate
+
+    root, gate = completed_r2
+    if mutation in {"missing_row", "changed_raw"}:
+        p = root / "samples.jsonl"
+        rows = p.read_text().splitlines()
+        if mutation == "missing_row":
+            rows.pop()
+        else:
+            row = json.loads(rows[0])
+            row["decode_mode"] = "greedy"
+            rows[0] = json.dumps(row)
+        p.write_text("\n".join(rows) + "\n")
+    elif mutation == "changed_model":
+        p = root / "inference_audit.json"
+        value = json.loads(p.read_text())
+        value["adapter_hash_after"] = "changed"
+        write_json(p, value)
+    elif mutation == "wrong_old_gate":
+        write_json(root / "gate_binding.json", {})
+    elif mutation == "fake":
+        p = root / "status.json"
+        value = json.loads(p.read_text())
+        value["execution_kind"] = "CPU_FAKE_ADAPTER_FIXTURE"
+        write_json(p, value)
+    seal_r2(root)
+    with pytest.raises(ValueError):
+        validate_r2_gate(root, gate)

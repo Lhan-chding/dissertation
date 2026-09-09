@@ -291,3 +291,97 @@ def validate_runtime_environment(gate, adapter_audit=None):
         "versions_not_recorded_in_original_R1": [n for n in packages if n != "transformers"],
         "original_environment_sha256": canonical_hash(original),
     }
+
+
+def validate_r2_gate(r2_dir, gate):
+    """Bind completed real R2 coverage, frozen state and its original R0/R1 gate."""
+    from collections import Counter
+
+    from .r2_inputs import CONDITIONS, LONG_CONDITIONS
+    from .r2_runtime import validate_existing_rows
+
+    root = Path(r2_dir).resolve()
+    _, files = _stage(
+        root,
+        "R2",
+        "REAL_CUDA_INFERENCE",
+        (
+            "runtime_lock.json",
+            "gate_binding.json",
+            "data_binding.json",
+            "request_manifest.json",
+            "samples.jsonl",
+            "diagnostic_rollouts.jsonl",
+            "inference_audit.json",
+            "condition_metrics.json",
+            "paired_condition_effects.csv",
+            "invalid_taxonomy.csv",
+        ),
+    )
+    runtime, audit = _read(root / "runtime_lock.json"), _read(root / "inference_audit.json")
+    if (
+        _read(root / "gate_binding.json") != gate["binding"]
+        or runtime.get("config") != gate["config"]
+    ):
+        raise ValueError("R2 is bound to a different original evidence/configuration gate")
+    if (
+        runtime.get("selected_probability_path") != PATH
+        or runtime.get("initial_adapter_hash") != gate["certificate"]["initial_adapter_hash"]
+        or runtime.get("base_parameter_hash")
+        != gate["certificate"]["model_audit"]["frozen_parameter_hash"]
+        or audit.get("passed") is not True
+        or audit.get("raw_sample_count") != 2232
+        or audit.get("optimizer_steps") != 0
+        or audit.get("backward_calls") != 0
+        or any(
+            not audit.get(f"{name}_before") or audit[f"{name}_before"] != audit.get(f"{name}_after")
+            for name in ("base_hash", "adapter_hash", "all_parameter_hash")
+        )
+        or audit.get("adapter_hash_before") != runtime.get("initial_adapter_hash")
+        or audit.get("base_hash_before") != runtime.get("base_parameter_hash")
+    ):
+        raise ValueError("R2 original model/adapter or frozen inference audit is incomplete")
+    data = _read(root / "data_binding.json")
+    if (
+        data.get("calibration_sha256") != gate["binding"]["calibration_sha256"]
+        or data.get("dataset_manifest_sha256") != gate["binding"]["data_manifest_sha256"]
+    ):
+        raise ValueError("R2 data no longer binds the passed R0 dataset")
+    request_manifest = _read(root / "request_manifest.json")
+    requests = request_manifest["requests"]
+    if request_manifest.get("count") != 2232 or len(requests) != 2232:
+        raise ValueError("R2 request coverage is incomplete")
+    expected = Counter({(c, "sample"): 288 for c in CONDITIONS})
+    expected.update({(c, "greedy"): 72 for c in CONDITIONS})
+    expected.update({(c, "sample"): 24 for c in LONG_CONDITIONS})
+    expected.update({(c, "greedy"): 12 for c in LONG_CONDITIONS})
+    if Counter((r["condition"], r["decode_mode"]) for r in requests) != expected:
+        raise ValueError("R2 condition/mode request allocation changed")
+    records = {}
+    with (root / "samples.jsonl").open() as stream:
+        for line in stream:
+            if not line.endswith("\n"):
+                raise ValueError("R2 has a truncated ledger tail")
+            row = json.loads(line)
+            key = row["sample_key"]
+            if (
+                key in records
+                or row.get("execution_kind") != "REAL_CUDA_INFERENCE"
+                or row.get("split") != "calibration"
+            ):
+                raise ValueError("R2 has duplicate, fake or wrong-split records")
+            records[key] = row
+    if len(records) != 2232 or set(records) != {r["sample_key"] for r in requests}:
+        raise ValueError("R2 generated output coverage is incomplete")
+    validate_existing_rows(records, requests)
+    if files["samples.jsonl"] != files["diagnostic_rollouts.jsonl"]:
+        raise ValueError("R2 named raw artifact differs from its durable ledger")
+    return {
+        "status": "PASS",
+        "r2_dir": str(root),
+        "r2_files": files,
+        "execution_kind": "REAL_CUDA_INFERENCE",
+        "raw_sample_count": 2232,
+        "environment": runtime["environment"],
+        "runtime_lock_sha256": files["runtime_lock.json"],
+    }
