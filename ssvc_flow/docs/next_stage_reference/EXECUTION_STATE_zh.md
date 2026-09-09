@@ -28,6 +28,8 @@
 
 原始 R1 环境文件只保存 Python 和 Transformers 版本；新门禁比较这两项，并明确原文件缺少其他依赖的历史版本。每次真实运行保存当前九个关键包版本，断点续跑要求精确一致，不回填历史证据。
 
+首次服务器 CPU 门禁发现新代码将 R1 `environment_lock.config_sha256` 误当作 canonical JSON hash。核验原写入代码 `audit_r1_runtime.py` 后确认该字段是原 YAML 字节哈希 `c50fe86c280f89f0166f110908ed73837d80e011eabdabc4e8df6c29ef630753`。仅修正新门禁与测试 fixture，原证据不变；回归先 RED 后 GREEN，相关 40 项测试通过，未因此消耗 GPU 作业。
+
 ## 下一步及依赖
 
 1. 完成 R2 本地测试、源码审查、服务器 CPU processor/证据预检，提交并验证 push。

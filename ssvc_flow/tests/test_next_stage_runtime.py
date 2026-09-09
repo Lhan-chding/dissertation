@@ -85,7 +85,8 @@ def gates(tmp_path):
             "python": "3.12.14",
             "model": {"transformers_version": "5.14.1"},
             "config": config,
-            "config_sha256": canonical_hash(config),
+            # R1 writes the YAML file's byte hash, not canonical JSON.
+            "config_sha256": file_hash(PROJECT_ROOT / "configs/next_stage.yaml"),
         },
     )
     write_json(

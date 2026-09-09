@@ -107,7 +107,8 @@ def validate_prerequisites(r0_dir, r1_run, supplement_dir):
         environment.get("status") != "PASS"
         or environment.get("execution_kind") != "REAL_CUDA_INFERENCE"
         or environment.get("config") != config
-        or environment.get("config_sha256") != canonical_hash(config)
+        # audit_r1_runtime stores file_hash(args.config), not a JSON object hash.
+        or environment.get("config_sha256") != file_hash(PROJECT_ROOT / "configs/next_stage.yaml")
         or not environment.get("python")
         or not environment.get("model", {}).get("transformers_version")
         or environment["model"]["transformers_version"]
