@@ -1,0 +1,263 @@
+protocol_version: next-stage-v1-2026-09-09
+purpose: diagnose frozen results, test actual update response, run two-arm pilot
+model:
+  id: Qwen/Qwen3.5-9B
+  revision: c202236235762e1c871ad0ccb60c8ee5ba337b9a
+  dtype: bfloat16
+  reported_transformers_version: 5.14.1
+  allow_dependency_upgrade: false
+  allow_other_models: false
+  actual_environment_lock: null
+paths:
+  readonly_N: /projects/varunssd/louis-ssvc/runs/P3/qwen35_9b/N/
+  readonly_L: /projects/varunssd/louis-ssvc/runs/P3/qwen35_9b/L/
+  readonly_P1: /projects/varunssd/louis-ssvc/runs/slurm-145423-attempt-0/runs/P1/
+  model_cache: /projects/varunssd/louis-ssvc/cache/huggingface/
+  new_run_root: /projects/varunssd/louis-ssvc/runs/NEXT_20260909/
+  repository_root: null
+locks_to_resolve:
+  P3_N_actual_generation: null
+  P3_L_actual_generation: null
+  P3_N_parser: null
+  P3_L_parser: null
+  dataset_manifests: null
+  train_manifest: null
+  control_manifest: null
+  slurm_template: null
+generation_proposed_N:
+  temperature: 1.0
+  top_p: 1.0
+  top_k: 0
+  min_p: 0.0
+  repetition_penalty: 1.0
+  do_sample: true
+  enable_thinking: false
+  max_new_tokens: 64
+  no_additional_logits_processors: true
+  explicit_eos_from_locked_tokenizer: true
+  requested_max_visual_tokens: 768
+  requested_max_pixels: 786432
+statistics:
+  primary_unit: base_scene
+  prompt_weights: fixed_by_manifest
+  primary_q: ratio_of_prompt_weighted_pX_and_v
+  cluster_bootstrap_replicates: 5000
+  seed: 20260909
+  double_resample_within_cluster: false
+  confidence_level: 0.95
+  six_N_strata:
+  - duplicate/IMAGE_CUE_FRESH
+  - duplicate/SYMBOLIC_FRESH
+  - cross_series/IMAGE_CUE_FRESH
+  - cross_series/SYMBOLIC_FRESH
+  - trend/IMAGE_CUE_FRESH
+  - trend/SYMBOLIC_FRESH
+R0:
+  enabled: true
+  read_only: true
+  expected_sampled:
+    N: 4608
+    L: 2816
+  expected_greedy:
+    N: 288
+    L: 176
+  K_bank_audit:
+  - 2
+  - 4
+  - 8
+  - 16
+  lambda_advantage_grid:
+  - 0.0
+  - 1.0e-06
+  - 1.0e-05
+  - 0.0001
+  - 0.001
+  - 0.01
+  - 0.1
+  - 0.25
+  - 1.0
+  - 2.0
+  independent_solver_required: true
+  raw_artifact_reclassification_required: true
+  graph_image_spot_checks: 36
+R1:
+  enabled: true
+  reference_prompts: 24
+  sampled_per_prompt: 4
+  greedy_per_prompt: 1
+  bridge_only_if_engine_changes: true
+  bridge_base_scenes: 36
+  bridge_interfaces: 2
+  bridge_samples: 8
+  smoke_optimizer_steps: 4
+  reset_after_smoke: true
+  parity_alarm_mean_abs_token_logp: 0.02
+  parity_alarm_p99_abs_token_logp: 0.1
+  parity_alarm_min_top1_agreement: 0.999
+  max_smoke_training_rollouts: 128
+  ordinary_cache_validation_only: true
+  enable_I4: false
+R2:
+  enabled: true
+  split: calibration
+  base_scenes: 72
+  base_scenes_per_family: 24
+  conditions:
+  - SYM_ORIGINAL
+  - SYM_CLEAR
+  - SYM_NO_OPERATION
+  - IMAGE_CUE
+  - IMAGE_ONLY
+  - ORACLE_INDEX
+  sampled_per_condition: 4
+  greedy_per_condition: 1
+  long_diagnostic:
+    enabled: true
+    base_scenes: 12
+    families:
+    - cross_series
+    - trend
+    sampled: 2
+    greedy: 1
+    conditions:
+    - thinking: false
+      max_new_tokens: 256
+    - thinking: true
+      max_new_tokens: 1024
+reward:
+  alpha_X: 2.0
+  alpha_A: 0.0
+  epsilon: 0.0001
+  variance_correction: 0
+  denominator: sqrt(mean_squared_centered_reward + epsilon**2)
+  constant_group_advantage: 0.0
+  do_not_resample_zero_reward_groups: true
+lora:
+  language_mlp_only: true
+  target_leaf_modules:
+  - gate_proj
+  - up_proj
+  - down_proj
+  expected_target_matrices: 96
+  r: 8
+  alpha: 16
+  dropout: 0.0
+  bias: none
+  freeze_base: true
+  freeze_vision: true
+optimizer:
+  name: AdamW
+  learning_rate: 1.0e-05
+  betas:
+  - 0.9
+  - 0.999
+  eps: 1.0e-08
+  weight_decay: 0.0
+  max_grad_norm: 1.0
+  reset_between_arms: true
+loss:
+  name: joint_group_zscore_fixed_token_normalizer
+  Lnorm: 64
+  ppo_clip_lower: 0.8
+  ppo_clip_upper: 1.2
+  beta_KL: 0.0
+  entropy_coef: 0.0
+  optimizer_updates_per_rollout_batch: 1
+  include_real_EOS: true
+  include_padding: false
+R3:
+  enabled_cold: true
+  enabled_warm_after_R4: true
+  train_prompt_count: 48
+  prompts_per_stratum: 8
+  batches: 12
+  B: 4
+  K: 8
+  rollouts_per_checkpoint: 384
+  lambda_candidates:
+  - 0.0
+  - 0.01
+  - 0.25
+  - 1.0
+  - 2.0
+  compare_answer_reward_gradients_only: true
+  candidate_optimizer_updates_per_checkpoint: 60
+  commit_candidates: false
+  control_base_scenes: 24
+  control_interfaces: 2
+  control_rollouts_per_prompt: 16
+  response_scored_bank_indices:
+  - 0
+  - 6
+  score_all_banks: false
+  direct_resample_cold: false
+  direct_resample_warm: true
+  direct_lambda_candidates:
+  - 0.0
+  - 1.0
+  direct_candidate_count: 4
+  direct_rollouts_per_warm_checkpoint: 3072
+  proposal_rollouts_per_checkpoint: 768
+  warm_checkpoint: X_BASE/step64
+  importance_warning_min_ESS_fraction: 0.5
+  importance_warning_max_normalized_weight: 0.05
+  primary_weight_clipping: false
+R4:
+  enabled_with_allow_training: true
+  allow_training: false
+  seed: 17
+  arms:
+    X_BASE:
+      lambda: 0.0
+    X_VALID:
+      lambda: 1.0
+  steps: 64
+  B: 4
+  K: 8
+  microbatch: 1
+  total_training_rollouts: 4096
+  checkpoint_steps:
+  - 0
+  - 16
+  - 32
+  - 64
+  train_legacy: false
+  train_more_models: false
+  add_answer_arms: false
+  eval:
+    panel_prompts: 72
+    sampled: 8
+    panel_steps:
+    - 0
+    - 32
+    final_N_prompts: 288
+    final_L_prompts: 176
+    graph_ood_base_scenes: 36
+    graph_ood_interfaces: 2
+    graph_ood_family: cross_series
+    graph_ood_topologies:
+    - path
+    - cycle
+    final_step: 64
+    reuse_step0_only_if_exact_lock_match: true
+    greedy_enabled: false
+  numeric_alarms:
+    mean_token_KL_old_prefix_to_candidate: 0.1
+    p99_abs_sequence_logratio: 2.0
+R5:
+  enabled: false
+  candidate_commit: false
+  protect:
+  - pX
+  - qX_pool
+  tau_pX: 0.0
+  tau_qX: 0.0
+  unknown_action: fallback_lambda_zero
+  claim_certified_safety: false
+  online_SSVC_enabled: false
+runtime_safety:
+  read_existing_slurm_template: true
+  automatic_sbatch_submission: false
+  overwrite_old_results: false
+  resume_requires_all_hashes: true
+  budget_requires_measured_training_cost: true

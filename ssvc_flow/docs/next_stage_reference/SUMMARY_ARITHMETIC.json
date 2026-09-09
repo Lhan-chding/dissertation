@@ -1,0 +1,166 @@
+{
+  "N": {
+    "solution_count": 1,
+    "solutions": [
+      {
+        "groups": [
+          {
+            "group": "duplicate/IMAGE_CUE_FRESH",
+            "inferred_prompts": 48,
+            "inferred_counts_X_S_W_I": [
+              753,
+              4,
+              4,
+              7
+            ]
+          },
+          {
+            "group": "duplicate/SYMBOLIC_FRESH",
+            "inferred_prompts": 48,
+            "inferred_counts_X_S_W_I": [
+              561,
+              24,
+              172,
+              11
+            ]
+          },
+          {
+            "group": "cross_series/IMAGE_CUE_FRESH",
+            "inferred_prompts": 48,
+            "inferred_counts_X_S_W_I": [
+              607,
+              22,
+              127,
+              12
+            ]
+          },
+          {
+            "group": "cross_series/SYMBOLIC_FRESH",
+            "inferred_prompts": 48,
+            "inferred_counts_X_S_W_I": [
+              63,
+              32,
+              637,
+              36
+            ]
+          },
+          {
+            "group": "trend/IMAGE_CUE_FRESH",
+            "inferred_prompts": 48,
+            "inferred_counts_X_S_W_I": [
+              455,
+              28,
+              250,
+              35
+            ]
+          },
+          {
+            "group": "trend/SYMBOLIC_FRESH",
+            "inferred_prompts": 48,
+            "inferred_counts_X_S_W_I": [
+              54,
+              33,
+              587,
+              94
+            ]
+          }
+        ],
+        "inferred_total_counts_X_S_W_I": [
+          2493,
+          143,
+          1777,
+          195
+        ]
+      }
+    ]
+  },
+  "L": {
+    "solution_count": 1,
+    "solutions": [
+      {
+        "groups": [
+          {
+            "group": "duplicate/collision",
+            "inferred_prompts": 16,
+            "inferred_counts_X_S_W_I": [
+              117,
+              74,
+              32,
+              33
+            ]
+          },
+          {
+            "group": "duplicate/separating",
+            "inferred_prompts": 16,
+            "inferred_counts_X_S_W_I": [
+              105,
+              46,
+              69,
+              36
+            ]
+          },
+          {
+            "group": "cross_series/collision",
+            "inferred_prompts": 36,
+            "inferred_counts_X_S_W_I": [
+              240,
+              177,
+              101,
+              58
+            ]
+          },
+          {
+            "group": "cross_series/separating",
+            "inferred_prompts": 36,
+            "inferred_counts_X_S_W_I": [
+              230,
+              72,
+              180,
+              94
+            ]
+          },
+          {
+            "group": "trend/collision",
+            "inferred_prompts": 36,
+            "inferred_counts_X_S_W_I": [
+              157,
+              164,
+              104,
+              151
+            ]
+          },
+          {
+            "group": "trend/separating",
+            "inferred_prompts": 36,
+            "inferred_counts_X_S_W_I": [
+              144,
+              40,
+              229,
+              163
+            ]
+          }
+        ],
+        "inferred_total_counts_X_S_W_I": [
+          993,
+          573,
+          715,
+          535
+        ]
+      }
+    ]
+  },
+  "evidence_status": "ROUNDED_REPORT_ARITHMETIC_ONLY_NOT_RAW_VALIDATION",
+  "assumptions": [
+    "Each prompt contributes exactly 16 sampled outputs, none excluded.",
+    "All listed groups partition the prompts; no hidden weighting.",
+    "Reported probabilities are ordinary four-decimal rounding of proportions.",
+    "Observed/raw server artifact counts must supersede these reconstructions."
+  ],
+  "cost_arithmetic": {
+    "N_forward_calls_per_generated_token": 2.0,
+    "L_forward_calls_per_generated_token": 2.0,
+    "N_generation_tokens_per_second": 5.729990939293265,
+    "L_generation_tokens_per_second": 7.385342293154137,
+    "note": "Counters may be nested or have different definitions; no duplicate-compute conclusion."
+  }
+}

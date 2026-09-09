@@ -155,3 +155,81 @@ def compare_parameters(left, right, *, atol=1e-6, rtol=1e-5):
         "atol": atol,
         "rtol": rtol,
     }
+
+
+def main(argv=None):
+    """Contract-only cold/warm fork entry point.
+
+    A fork needs a real adapter/checkpoint supplied by the server runner.  The
+    CPU command records the requested state and refuses to manufacture an
+    optimizer update or CUDA execution result.
+    """
+    import argparse
+    import json
+    from pathlib import Path
+
+    from .next_stage_common import dry_run_plan, load_yaml
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--config", type=Path, default=Path("configs/next_stage.yaml"))
+    parser.add_argument("--state", choices=("cold", "warm"), required=True)
+    parser.add_argument("--checkpoint", type=Path)
+    parser.add_argument("--no-commit", action="store_true")
+    parser.add_argument("--out", type=Path)
+    parser.add_argument("--dry-run", action="store_true")
+    args = parser.parse_args(argv)
+    config = load_yaml(args.config)
+    if args.dry_run:
+        print(
+            json.dumps(
+                {
+                    "phase": "R3-" + args.state,
+                    **dry_run_plan(config),
+                    "no_commit": args.no_commit,
+                    "training_started": False,
+                },
+                indent=2,
+            )
+        )
+        return 0
+    if args.state == "warm" and args.checkpoint is None:
+        parser.error("--checkpoint is required for warm state")
+    details = {
+        "status": "BLOCKED",
+        "execution_kind": "CPU_AUDIT",
+        "reason": "real model bank and adapter state are required; no fork was created",
+        "no_commit": args.no_commit,
+        "training_started": False,
+    }
+    if args.out:
+        from .next_stage_common import stage_status
+
+        out = Path(args.out)
+        out.mkdir(parents=True, exist_ok=True)
+        (out / "bank_manifest.json").write_text(
+            json.dumps({"status": "NOT_STARTED"}, indent=2) + "\n"
+        )
+        (out / "joint_advantage_checks.json").write_text(
+            json.dumps(
+                {"status": "CPU_REFERENCE_AVAILABLE", "bank": "requires raw on-policy rows"},
+                indent=2,
+            )
+            + "\n"
+        )
+        (out / "gradients_summary.parquet.status").write_text(
+            "NOT_CREATED: real model gradients required\n"
+        )
+        (out / "candidate_manifest.json").write_text(
+            json.dumps({"status": "NOT_STARTED"}, indent=2) + "\n"
+        )
+        (out / "paired_response.csv").write_text(
+            "status,reason\nNOT_MEASURED,real optimizer fork required\n"
+        )
+        (out / "support_control_report.md").write_text("# R3\n\nNo real model fork was created.\n")
+        stage_status(out, "R3-" + args.state, "BLOCKED", "CPU_AUDIT", details)
+    print(json.dumps({"phase": "R3-" + args.state, **details}, indent=2))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

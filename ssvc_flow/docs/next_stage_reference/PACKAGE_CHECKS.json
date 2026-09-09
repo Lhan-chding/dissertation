@@ -1,0 +1,19 @@
+{
+  "checks": {
+    "training_rollout_budget": true,
+    "diagnostic_main_budget": true,
+    "diagnostic_long_budget": true,
+    "cold_bank_budget": true,
+    "proposal_budget": true,
+    "direct_budget": true,
+    "direct_only_warm": true,
+    "online_ssvc_disabled": true,
+    "no_added_models": true,
+    "no_automatic_training": true,
+    "main_only_two_arms": true,
+    "missing_locks_not_fabricated": true,
+    "all_markdown_code_fences_balanced": true
+  },
+  "status": "PASS",
+  "scope": "LOCAL_PACKAGE_ONLY_NOT_SERVER_RUN"
+}
