@@ -17,7 +17,7 @@
 
 ## 当前实施
 
-- R2 输入、真实推理运行器和共享门禁已完成本地联调；**尚未提交 R2 GPU 作业**。
+- R2 输入、真实推理运行器和共享门禁已完成；**真实 R2 作业 `146853` 已启动**，节点 `gpu-pro6000-4`。运行源码 `518b23f4fb6803706a7ded57a2b5bfbefbf2d6ab`，启动时间 `2026-09-09T17:43:44Z`。输出根为 `/projects/varunssd/louis-ssvc/runs/NEXT_20260909/R2_server_146853_attempt_0`，stage 为其 `R2` 子目录；尚未验收完成。
 - R2 固定 72 calibration 场景，六个主条件共 2,160 输出；12 场景的长度/thinking 分支共 72 输出。每条输出落盘，严格核验身份后续跑；thinking 使用真实 processor 模板/token 校验。
 - R3 直接梯度与类别梯度复用模块已通过 26 项新测试，尚未在 CUDA 上证明复用成立。只允许真实未裁剪梯度及实际 Adam 对照通过后采用；否则回退直接计算。
 - R3 完整运行器、R4 完整训练/评估运行器仍需实现；现有 `optimizer_fork.py` / pilot 的 CPU 入口不能当成实际服务器实验。
@@ -30,11 +30,15 @@
 
 首次服务器 CPU 门禁发现新代码将 R1 `environment_lock.config_sha256` 误当作 canonical JSON hash。核验原写入代码 `audit_r1_runtime.py` 后确认该字段是原 YAML 字节哈希 `c50fe86c280f89f0166f110908ed73837d80e011eabdabc4e8df6c29ef630753`。仅修正新门禁与测试 fixture，原证据不变；回归先 RED 后 GREEN，相关 40 项测试通过，未因此消耗 GPU 作业。
 
+修正后真实服务器 CPU 门禁 **PASS**：72 场景 / 2,232 请求，Python 3.12.14、Transformers 5.14.1。新记录包版本为 torch 2.13.0+cu130、peft 0.19.1、tokenizers 0.22.2、accelerate 1.14.0、huggingface-hub 1.30.0、numpy 2.5.2、Pillow 12.3.0、safetensors 0.8.0。预检与提交记录已取回本地 `runs/NEXT_20260909/verified_146853`；不包含尚未完成的模型结果。
+
+代码已提交并验证 GitHub 同分支 push：`6c40dda` 为 R2/梯度实现，`518b23f` 为哈希兼容修正。后续仅更新本地/GitHub 状态文档；**运行中的服务器 checkout 继续固定 `518b23f`，不要 pull**。
+
 ## 下一步及依赖
 
-1. 完成 R2 本地测试、源码审查、服务器 CPU processor/证据预检，提交并验证 push。
-2. 无 SSVC 作业运行时更新服务器 checkout，提交 `scripts/ntu_r2.sbatch`；记录 job ID、commit、运行路径。运行期间禁止更新该服务器 checkout。
-3. 验证 R2 完整样本覆盖、模型冻结、manifest 和配对统计。低正确率不是执行失败；数据/索引/图像传入缺陷阻塞受影响正式训练。
+1. 已完成 R2 实现、源码审查、服务器 CPU processor/证据预检、提交及 push 验证。
+2. 跟踪 `146853`：查看 Slurm、`R2/progress.json`、`checks/r2.log` 和 `result.txt`。运行期间可本地准备 R3/R4，但禁止更新该服务器 checkout。
+3. R2 结束后验证完整样本覆盖、模型冻结、manifest 和配对统计，取回归档并核验 SHA256。低正确率不是执行失败；数据/索引/图像传入缺陷阻塞受影响正式训练。
 4. 实现并执行 R3-cold：48 train prompts、12 个 B4K8 bank、五个 λ 候选；control 只用于测量。类别梯度复用须两组实际直接梯度/Adam 对照通过。候选完全恢复参数、Adam、RNG，不复用 P3 rollout。
 5. R4 两臂分别从 fresh LoRA/Adam 开始；各自 on-policy 轨迹。实施文档要求的 checkpoint、控制集 KL 门禁和 step 0/32/64 评估。不可从 R1/R3 scratch 起步。
 6. R3-warm 绑定 X_BASE step64 的完整 Adam 状态，在相同 prompt IDs 上重新采样；执行要求的 3,072 条独立直接验证输出。验收并分析后停止后台任务。
