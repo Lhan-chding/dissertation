@@ -247,10 +247,17 @@ def audit_symbolic_prompts(dataset_root):
 
 def processor_audit(rows, processor, data_root, selected_ids):
     """Re-run processor on selected image prompts and compare P3 metadata."""
+    # Preparing inputs only needs the official image_token_id; no model weights
+    # are loaded for this R0 check.
+    from types import SimpleNamespace
+
     from .model_adapters.qwen35 import Qwen35Adapter
 
     adapter = Qwen35Adapter(
-        None, processor, "Qwen/Qwen3.5-9B", "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+        SimpleNamespace(config=SimpleNamespace(image_token_id=248056)),
+        processor,
+        "Qwen/Qwen3.5-9B",
+        "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
     )
     results = []
     for scene in rows:
@@ -312,13 +319,13 @@ def run_audit(dataset_root, contact_manifest, out, tokenizer=None, processor=Non
         rows = (
             [
                 json.loads(x)
-                for x in (root / "../runs/NEXT_20260909/raw_P3/N/samples.jsonl")
+                for x in (root / "../../runs/NEXT_20260909/raw_P3/N/samples.jsonl")
                 .resolve()
                 .read_text()
                 .splitlines()
                 if x.strip()
             ]
-            if (root / "../runs/NEXT_20260909/raw_P3/N/samples.jsonl").exists()
+            if (root / "../../runs/NEXT_20260909/raw_P3/N/samples.jsonl").exists()
             else []
         )
         result["tokenizer"] = audit_token_rows(rows, tokenizer)
@@ -356,6 +363,7 @@ def main(argv=None):
     ap.add_argument("--contact-manifest", required=True, type=Path)
     ap.add_argument("--out", required=True, type=Path)
     ap.add_argument("--samples", type=Path)
+    ap.add_argument("--p3-samples", type=Path)
     ap.add_argument("--tokenizer", type=Path)
     ap.add_argument("--processor", type=Path)
     args = ap.parse_args(argv)
@@ -378,6 +386,31 @@ def main(argv=None):
         result["tokenizer"] = audit_token_rows(rows, tok)
     else:
         result["tokenizer"] = {"status": "PENDING_TOKENIZER_RUNTIME"}
+    if args.processor and (args.p3_samples or args.samples):
+        from transformers import AutoProcessor
+
+        processor = AutoProcessor.from_pretrained(
+            args.processor, local_files_only=True, trust_remote_code=False
+        )
+        calibration = [
+            json.loads(x)
+            for x in (args.dataset / "calibration.jsonl").read_text().splitlines()
+            if x.strip()
+        ]
+        p3_rows = [
+            json.loads(x)
+            for x in (args.p3_samples or args.samples).read_text().splitlines()
+            if x.strip()
+        ]
+        result["processor"] = compare_processor_to_p3(
+            calibration,
+            p3_rows,
+            processor,
+            args.dataset,
+            [x["base_scene_id"] for x in selected],
+        )
+    else:
+        result["processor"] = {"status": "PENDING_PROCESSOR_RUNTIME"}
     result["status"] = (
         "PASS"
         if all(
@@ -393,6 +426,32 @@ def main(argv=None):
         encoding="utf-8",
     )
     return result
+
+
+def compare_processor_to_p3(rows, p3_rows, processor, data_root, selected_ids):
+    """Compare processor measurements against the immutable P3 IMAGE_CUE records."""
+    expected = {}
+    for row in p3_rows:
+        if row.get("base_scene_id") in selected_ids and row.get("interface") == "IMAGE_CUE_FRESH":
+            expected.setdefault(row["base_scene_id"], row)
+    patched = []
+    for scene in rows:
+        if scene.get("base_scene_id") not in selected_ids:
+            continue
+        old = expected.get(scene["base_scene_id"])
+        if old:
+            patched.append(
+                {
+                    **scene,
+                    "image_grid_thw": old.get("image_grid_thw"),
+                    "processor_width": old.get("processor_width"),
+                    "processor_height": old.get("processor_height"),
+                    "image_token_count": old.get("image_token_count"),
+                }
+            )
+        else:
+            patched.append(scene)
+    return processor_audit(patched, processor, data_root, selected_ids)
 
 
 if __name__ == "__main__":
