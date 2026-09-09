@@ -291,6 +291,7 @@ def processor_audit(rows, processor, data_root, selected_ids):
                     if got.get("image_grid_thw") == scene.get("image_grid_thw")
                     and got.get("processor_width") == scene.get("processor_width")
                     and got.get("processor_height") == scene.get("processor_height")
+                    and got.get("image_token_count") == scene.get("image_token_count")
                     else "FAIL"
                 ),
             }
@@ -298,6 +299,8 @@ def processor_audit(rows, processor, data_root, selected_ids):
     return {
         "status": "PASS"
         if results and all(x["status"] in {"PASS", "MEASURED"} for x in results)
+        else "FAIL"
+        if results
         else "PENDING_RUNTIME",
         "measured_only": bool(results) and all(x["status"] == "MEASURED" for x in results),
         "results": results,
@@ -402,12 +405,21 @@ def main(argv=None):
             for x in (args.p3_samples or args.samples).read_text().splitlines()
             if x.strip()
         ]
-        result["processor"] = compare_processor_to_p3(
+        result["processor"] = processor_audit(
             calibration,
-            p3_rows,
             processor,
             args.dataset,
             [x["base_scene_id"] for x in selected],
+        )
+        # P3 contains dev scenes, whereas the human-reviewed panel is calibration.
+        # Each audit must use its actual population, not an impossible cross-split join.
+        dev = [
+            json.loads(x)
+            for x in (args.dataset / "dev.jsonl").read_text().splitlines()
+            if x.strip()
+        ]
+        result["historical_processor"] = compare_processor_to_p3(
+            dev, p3_rows, processor, args.dataset, [x["base_scene_id"] for x in dev]
         )
     else:
         result["processor"] = {"status": "PENDING_PROCESSOR_RUNTIME"}
@@ -453,15 +465,14 @@ def compare_processor_to_p3(rows, p3_rows, processor, data_root, selected_ids):
             patched.append(scene)
     measured = processor_audit(patched, processor, data_root, selected_ids)
     matched_count = sum(1 for row in patched if row.get("image_grid_thw") is not None)
+    measured["matched_scene_count"] = matched_count
     measured["comparison_status"] = (
-        "PASS" if matched_count else "NO_P3_CALIBRATION_ROWS"
+        "PASS" if matched_count == len(selected_ids) else "MISSING_P3_SCENES"
     )
     measured["comparison_target"] = (
-        "P3 IMAGE_CUE_FRESH rows for the selected calibration scenes"
+        "P3 IMAGE_CUE_FRESH rows for the explicitly selected source scenes"
     )
-    # A processor-only measurement is useful evidence, but cannot close the
-    # historical parity gate when no matching P3 calibration metadata exists.
-    if not matched_count:
+    if measured["status"] != "FAIL" and (not selected_ids or matched_count != len(selected_ids)):
         measured["status"] = "INCONCLUSIVE"
     return measured
 
