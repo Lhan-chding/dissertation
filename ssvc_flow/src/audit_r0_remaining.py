@@ -451,7 +451,19 @@ def compare_processor_to_p3(rows, p3_rows, processor, data_root, selected_ids):
             )
         else:
             patched.append(scene)
-    return processor_audit(patched, processor, data_root, selected_ids)
+    measured = processor_audit(patched, processor, data_root, selected_ids)
+    matched_count = sum(1 for row in patched if row.get("image_grid_thw") is not None)
+    measured["comparison_status"] = (
+        "PASS" if matched_count else "NO_P3_CALIBRATION_ROWS"
+    )
+    measured["comparison_target"] = (
+        "P3 IMAGE_CUE_FRESH rows for the selected calibration scenes"
+    )
+    # A processor-only measurement is useful evidence, but cannot close the
+    # historical parity gate when no matching P3 calibration metadata exists.
+    if not matched_count:
+        measured["status"] = "INCONCLUSIVE"
+    return measured
 
 
 if __name__ == "__main__":
