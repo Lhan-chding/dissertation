@@ -1,6 +1,6 @@
 # R2 真实实验结果与验收
 
-记录日期：2026-09-10（Asia/Singapore）。原始运行与归档检查 PASS；完整 CPU postflight 待记录。
+记录日期：2026-09-10（Asia/Singapore）。原始运行、归档和完整独立 CPU postflight 均 PASS；R3-cold 已提交（作业146949，初始PENDING）。
 
 ## 执行事实
 
@@ -34,10 +34,18 @@
 
 ## 按文档继续的依据
 
-SYM_CLEAR sampled差值区间包含0，greedy正确数与原版同为37/72；原 N 协议保持。IMAGE_ONLY sampled为285/288、greedy为72/72，按文档继续保留独立接口结果。ORACLE_INDEX sampled较原版高48/288，但不据此把错误定位认定为唯一机制。R3仍使用预注册训练/control IDs及原奖励与生成协议。正式进入R3须完成完整CPU输入/语义/统计验收。
+SYM_CLEAR sampled差值区间包含0，greedy正确数与原版同为37/72；原 N 协议保持。IMAGE_ONLY sampled为285/288、greedy为72/72，按文档继续保留独立接口结果。ORACLE_INDEX sampled较原版高48/288，但不据此把错误定位认定为唯一机制。R3仍使用预注册训练/control IDs及原奖励与生成协议。完整CPU输入/语义/统计验收已通过；R3-cold预检也通过，随后按既定计划提交作业146949。
 
 ## 证据位置
 
 - 服务器原始stage：`/projects/varunssd/louis-ssvc/runs/NEXT_20260909/R2_server_146853_attempt_0/R2`。
 - 本地取回：`ssvc_flow/runs/NEXT_20260909/verified_146853/extracted/R2_server_146853_attempt_0/R2`。
 - 原始 `samples.jsonl`、`diagnosis_report.md`、`condition_metrics.csv`、`paired_condition_effects.csv` 和 `invalid_taxonomy.csv` 均保留；此摘要不替换原始表格。
+
+## 独立验收与后续提交
+
+服务器CPU postflight 使用已测试代码 `f4c7ea02f61c6b98a6e4f21a26ba5cc56381fadf`：重建全部456个输入，核验2,232条原始输出（图像720条、thinking36条），重新解码/分类并复算六份派生文件，全部 SHA256 与原结果相同；未加载9B权重，0新增模型生成。
+
+证据：`runs/NEXT_20260909/CPU_postflight_146853_f4c7ea0/R2_postflight/audit.json`。R3-cold预检同目录 `R3_cold_preflight.json`，固定计划hash `e84efd66534321fc8bb2c4546f4a9f7d10e70714beaa3999a48b97a9cb218974`：48 train prompts、12 banks、384 train＋768 control新输出、60候选、12重放、8实际验证更新、7,680 control评分；cold不直接重采样。环境与R2测量一致。
+
+R3-cold于 `2026-09-09T20:39:42Z` 提交作业 `146949`，初始PENDING（Priority），命名GPU pro6000；服务器源码固定同一 `f4c7ea0`。71小时为Slurm上限，不是ETA。R4与R3-warm仍未运行。
