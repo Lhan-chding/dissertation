@@ -27,7 +27,8 @@ if [[ $SSVC_WORK != /* || ! -x $SSVC_PYTHON || ! -d $ssvc_root ]]; then
   exit 2
 fi
 cd "$ssvc_root"
-export XDG_CACHE_HOME="$SSVC_WORK/cache" HF_HOME="$XDG_CACHE_HOME/huggingface"
+export XDG_CACHE_HOME="$SSVC_WORK/cache"
+export HF_HOME="$XDG_CACHE_HOME/huggingface"
 export HF_HUB_CACHE="$HF_HOME/hub" HF_XET_CACHE="$HF_HOME/xet"
 export CUDA_CACHE_PATH="$XDG_CACHE_HOME/cuda" TRITON_CACHE_DIR="$XDG_CACHE_HOME/triton"
 export TORCH_HOME="$XDG_CACHE_HOME/torch" TORCHINDUCTOR_CACHE_DIR="$XDG_CACHE_HOME/torchinductor"
