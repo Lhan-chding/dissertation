@@ -35,6 +35,8 @@ def _model_spec(config):
 
 
 def _run_parity(adapter, scenes, config, out):
+    import torch
+
     from .prompts import build_prompt
 
     interfaces = ("SYMBOLIC_FRESH", "IMAGE_CUE_FRESH")
@@ -66,15 +68,16 @@ def _run_parity(adapter, scenes, config, out):
                     # prefix-recompute path. No generated text is injected into training.
                     with meter.scope("audit"):
                         ref_top, ref_logp = prefix_scores(adapter, item, completion)
-                    with meter.scope("teacher_forcing"):
-                        paths = {
-                            "teacher_forcing": adapter.continuation_scores(
-                                item, completion, mode="full"
-                            )
-                        }
-                    for mode in ("chunk", "token"):
-                        with meter.scope("audit"):
-                            paths[mode] = adapter.continuation_scores(item, completion, mode=mode)
+                    with torch.no_grad():
+                        with meter.scope("teacher_forcing"):
+                            paths = {
+                                "teacher_forcing": adapter.continuation_scores(
+                                    item, completion, mode="full"
+                                )
+                            }
+                        for mode in ("chunk", "token"):
+                            with meter.scope("audit"):
+                                paths[mode] = adapter.continuation_scores(item, completion, mode=mode)
                     for path, candidate in paths.items():
                         comparison = parity_comparison((ref_top, ref_logp), candidate, config)
                         records.append(
