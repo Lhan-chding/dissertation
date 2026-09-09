@@ -392,3 +392,10 @@ def validate_r3_cold_gate(r3_cold_dir, gate, r2_binding):
     from .r3_gate import validate_r3_cold_gate as validate
 
     return validate(r3_cold_dir, gate, r2_binding)
+
+
+def validate_r4_gate(r4_dir, gate, r2_binding, r3_binding):
+    """Require complete two-arm evidence and the preserved step64 Adam state."""
+    from .r4_gate import validate_r4_gate as validate
+
+    return validate(r4_dir, gate, r2_binding, r3_binding)

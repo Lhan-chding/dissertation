@@ -13,17 +13,22 @@ from .next_stage_runtime import (
     validate_prerequisites,
     validate_r2_gate,
     validate_r3_cold_gate,
+    validate_r4_gate,
     validate_runtime_environment,
 )
 from .r2_runtime import _source
 from .r3_runtime import _load_plan as _cold_plan
 
 
-def preflight(config, data_root, r0_dir, r1_run, supplement_dir, r2_dir, *, phase, r3_dir=None):
-    if phase not in ("R3-cold", "R4"):
-        raise ValueError("Only R3-cold or R4 phase preflight is implemented")
-    if phase == "R4" and r3_dir is None:
-        raise ValueError("R4 preflight requires completed R3-cold evidence")
+def preflight(
+    config, data_root, r0_dir, r1_run, supplement_dir, r2_dir, *, phase, r3_dir=None, r4_dir=None
+):
+    if phase not in ("R3-cold", "R4", "R3-warm"):
+        raise ValueError("Only R3-cold, R4 or R3-warm phase preflight is implemented")
+    if phase in ("R4", "R3-warm") and r3_dir is None:
+        raise ValueError("Downstream preflight requires completed R3-cold evidence")
+    if phase == "R3-warm" and r4_dir is None:
+        raise ValueError("R3-warm preflight requires completed R4 evidence")
     gate = validate_prerequisites(r0_dir, r1_run, supplement_dir)
     config = validate_config_against_gate(config, gate)
     if Path(data_root).resolve() != Path(config["data_root"]).resolve():
@@ -33,7 +38,11 @@ def preflight(config, data_root, r0_dir, r1_run, supplement_dir, r2_dir, *, phas
     if environment != r2["environment"]:
         raise ValueError("Preflight environment differs from measured R2")
     binding = {"r0_r1": gate["binding"], "r2": r2}
-    if phase == "R3-cold":
+    if phase in ("R4", "R3-warm"):
+        binding["r3_cold"] = validate_r3_cold_gate(r3_dir, gate, r2)
+        if binding["r3_cold"]["environment"] != environment:
+            raise ValueError("Preflight environment differs from measured R3-cold")
+    if phase in ("R3-cold", "R3-warm"):
         plan, data = _cold_plan(data_root, gate)
         budgets = {
             "new_outputs": 1152,
@@ -45,12 +54,16 @@ def preflight(config, data_root, r0_dir, r1_run, supplement_dir, r2_dir, *, phas
             "control_sequence_scores": 7680,
             "direct_resample_outputs": 0,
         }
+        if phase == "R3-warm":
+            if plan["plan_hash"] != binding["r3_cold"]["plan_hash"]:
+                raise ValueError("Warm train/control plan differs from the measured cold plan")
+            binding["r4"] = validate_r4_gate(r4_dir, gate, r2, binding["r3_cold"])
+            if binding["r4"]["environment"] != environment:
+                raise ValueError("Preflight environment differs from measured R4")
+            budgets.update({"new_outputs": 4224, "direct_resample_outputs": 3072})
     else:
         from .r4_runtime import _load_plan
 
-        binding["r3_cold"] = validate_r3_cold_gate(r3_dir, gate, r2)
-        if binding["r3_cold"]["environment"] != environment:
-            raise ValueError("Preflight environment differs from measured R3-cold")
         plan, data, _ = _load_plan(data_root, gate, r0_dir)
         budgets = {
             "new_outputs": 14400,
@@ -87,11 +100,12 @@ def preflight(config, data_root, r0_dir, r1_run, supplement_dir, r2_dir, *, phas
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--phase", choices=("R3-cold", "R4"), required=True)
+    parser.add_argument("--phase", choices=("R3-cold", "R4", "R3-warm"), required=True)
     parser.add_argument("--config", type=Path, default=Path("configs/next_stage.yaml"))
     for name in ("data-root", "r0-dir", "r1-run", "supplement-dir", "r2-dir", "out"):
         parser.add_argument("--" + name, type=Path, required=True)
     parser.add_argument("--r3-dir", type=Path)
+    parser.add_argument("--r4-dir", type=Path)
     args = parser.parse_args(argv)
     if args.out.exists():
         raise FileExistsError(
@@ -106,6 +120,7 @@ def main(argv=None):
         args.r2_dir,
         phase=args.phase,
         r3_dir=args.r3_dir,
+        r4_dir=args.r4_dir,
     )
     write_json(args.out, result)
     print(

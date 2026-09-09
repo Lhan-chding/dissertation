@@ -277,8 +277,10 @@ def _summaries(arrays, layout, draws, weights):
         for j, interface in enumerate(layout["interfaces"]):
             group = f"{family}/{interface}"
             points[group], bootstrap[group] = means[j], boot[:, j]
-    points["overall"] = sum(points[g] * w for g, w in weights.items())
-    bootstrap["overall"] = sum(bootstrap[g] * w for g, w in weights.items())
+    # Caller dictionaries can originate in a set. Floating-point addition must
+    # follow the locked layout so regenerated reports match across processes.
+    points["overall"] = sum(points[g] * weights[g] for g in layout["groups"])
+    bootstrap["overall"] = sum(bootstrap[g] * weights[g] for g in layout["groups"])
     return (
         {g: _metrics(p) for g, p in points.items()},
         {g: _metrics(p) for g, p in bootstrap.items()},

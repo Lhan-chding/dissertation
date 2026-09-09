@@ -1,4 +1,4 @@
-"""Resumable real cold R3 rollout, isolated optimizer fork, and control scoring."""
+"""Resumable R3 rollout, isolated optimizer fork, and control scoring."""
 
 from __future__ import annotations
 
@@ -6,6 +6,7 @@ import argparse
 import csv
 import json
 import math
+import time
 from pathlib import Path
 
 from .constraint_solver import solve
@@ -294,12 +295,56 @@ def _prepared(adapter, prompt_record, data_root):
     return prepared
 
 
+def _optimizer_step(state):
+    entries = state["optimizer"]["state"].values()
+    steps = {float(entry["step"]) for entry in entries}
+    if not steps:
+        return 0
+    if len(steps) != 1 or any(not math.isfinite(v) or v < 0 or v != int(v) for v in steps):
+        raise ValueError("R3 requires one finite integral Adam step across trainable parameters")
+    return int(next(iter(steps)))
+
+
+def _frozen_versions(adapter):
+    return {
+        name: parameter._version
+        for name, parameter in adapter.model.named_parameters()
+        if not parameter.requires_grad
+    }
+
+
+def _assert_readonly(adapter, optimizer, state, versions, out, phase):
+    expected = state_hash({name: state_hash(value) for name, value in state["parameters"].items()})
+    checks = {
+        "adapter": parameter_hash(adapter.model, trainable=True) == expected,
+        "optimizer": state_hash(optimizer.state_dict()) == state_hash(state["optimizer"]),
+        "frozen_parameter_versions": _frozen_versions(adapter) == versions,
+    }
+    if not all(checks.values()):
+        write_json(out / "policy_contamination.json", {"phase": phase, "checks": checks})
+        raise RuntimeError("R3 read-only measurement changed policy/Adam/frozen parameters")
+
+
 def _collect_samples(adapter, optimizer, origin, plan, requests, store, data_root, meter, profile):
+    versions = _frozen_versions(adapter)
+    try:
+        return _collect_samples_impl(
+            adapter, optimizer, origin, plan, requests, store, data_root, meter, profile
+        )
+    finally:
+        # Check even when generation raised before returning, before caller restoration.
+        _assert_readonly(adapter, optimizer, origin, versions, profile.out, "sampling")
+
+
+def _collect_samples_impl(
+    adapter, optimizer, origin, plan, requests, store, data_root, meter, profile
+):
     import torch
 
     prompt_map = {r["prompt_id"]: r for r in [*plan["train_prompts"], *plan["control_prompts"]]}
     current, prepared, prepared_hash = None, None, None
     generated = 0
+    optimizer_step = _optimizer_step(origin)
     for request in requests:
         if request["sample_key"] in store.keys:
             continue
@@ -312,11 +357,13 @@ def _collect_samples(adapter, optimizer, origin, plan, requests, store, data_roo
         generation, returned = None, False
         try:
             before = adapter.forward_calls
+            started = time.perf_counter()
             with meter.scope("sampling/" + request["bank_role"]), torch.no_grad():
                 generation = adapter.generate(
                     prepared, seed=request["sample_seed"], max_new_tokens=64, do_sample=True
                 )
                 returned = True
+            elapsed = time.perf_counter() - started
             generated += 1
             faults = generation_checks(generation, adapter.processor.tokenizer, adapter.eos_ids, 64)
             if (
@@ -336,7 +383,9 @@ def _collect_samples(adapter, optimizer, origin, plan, requests, store, data_roo
                     "model_id": adapter.model_id,
                     "model_revision": adapter.revision,
                     "adapter_hash": profile.adapter_hash,
-                    "checkpoint_step": 0,
+                    "checkpoint_step": profile.checkpoint_step,
+                    "origin_checkpoint_step": profile.checkpoint_step,
+                    "optimizer_step": optimizer_step,
                     "train_seed": 17,
                     "optimizer_state_hash": state_hash(origin["optimizer"]),
                     "protocol_version": profile.protocol_version,
@@ -365,6 +414,12 @@ def _collect_samples(adapter, optimizer, origin, plan, requests, store, data_roo
                     "n_generated_tokens": len(generation["token_ids"]),
                     "runtime_forward_by_reason": {"generation": adapter.forward_calls - before},
                     "peak_memory": meter.memory.get("sampling/" + request["bank_role"]),
+                    "memory_measurement_status": "CPU_FIXTURE_CUDA_NOT_MEASURED"
+                    if profile.fixture
+                    else "CUDA_MEASURED",
+                    "elapsed": elapsed,
+                    "elapsed_unit": "seconds",
+                    "elapsed_scope": "generation_meter_scope_including_synchronization",
                     "execution_checks": {"passed": not faults, "faults": faults},
                 }
             )
@@ -447,6 +502,7 @@ class _Profile:
         self.execution_kind = "CPU_FAKE_ADAPTER_FIXTURE" if fixture else "REAL_CUDA_FORK"
         self.run_id = canonical_hash(identity)
         self.adapter_hash = identity["initial_adapter_hash"]
+        self.checkpoint_step = identity.get("checkpoint_step", 0)
 
     def write(self, state, **progress):
         write_json(self.invocation / "runtime_profile.json", self.meter.report())
@@ -516,21 +572,41 @@ def _score_candidate(
             "sample_key": canonical_hash([score_identity, row["sample_key"]]),
             "proposal_sample_key": row["sample_key"],
             "candidate_id": candidate["candidate_id"],
+            "candidate_parameter_hash": candidate["parameter_hash"],
+            "candidate_optimizer_hash": candidate["optimizer_state_hash"],
+            "proposal_record_hash": row["record_hash"],
+            "token_ids": row["token_ids"],
+            "execution_kind": profile.execution_kind,
         }
         for row in proposal
     ]
     validate_sample_ledger(scores.records, requests)
+    for row in scores.records.values():
+        values = row.get("candidate_token_logprobs")
+        if (
+            not isinstance(values, list)
+            or len(values) != len(row["token_ids"])
+            or any(
+                not isinstance(v, (int, float)) or not math.isfinite(v) or v > 1e-5 for v in values
+            )
+        ):
+            raise ValueError("R3 saved candidate token probabilities are malformed")
     prompt_map = {r["prompt_id"]: r for r in plan["control_prompts"]}
-    current, prepared = None, None
+    current, prepared, prepared_hash = None, None, None
+    _restore(adapter, optimizer, state)
+    versions = _frozen_versions(adapter)
     try:
-        _restore(adapter, optimizer, state)
         for proposal_row, request in zip(proposal, requests, strict=True):
             if request["sample_key"] in scores.keys:
                 continue
             if current != proposal_row["prompt_id"]:
                 prepared = _prepared(adapter, prompt_map[proposal_row["prompt_id"]], data_root)
+                prepared_hash = state_hash(prepared)
                 current = proposal_row["prompt_id"]
-            if proposal_row.get("input_tensor_hash") != prepared["audit"].get("input_tensor_hash"):
+            if (
+                proposal_row.get("input_tensor_hash") != prepared["audit"].get("input_tensor_hash")
+                or proposal_row.get("prepared_hash") != prepared_hash
+            ):
                 raise ValueError("R3 control likelihood prepared-input binding changed")
             returned, value = False, None
             try:
@@ -599,7 +675,75 @@ def _score_candidate(
             r["proposal_sample_key"]: r["candidate_token_logprobs"] for r in scores.records.values()
         }
     finally:
-        _restore(adapter, optimizer, origin)
+        try:
+            _assert_readonly(adapter, optimizer, state, versions, out, "control_likelihood")
+        finally:
+            _restore(adapter, optimizer, origin)
+
+
+class _MeasuredEngineAdapter:
+    """Preserve returned bad measurements before engine finally resets scratch state."""
+
+    def __init__(self, adapter, out, identity, attempt):
+        self.adapter, self.out, self.identity, self.attempt = adapter, out, identity, attempt
+
+    def __getattr__(self, name):
+        return getattr(self.adapter, name)
+
+    def logprobs(self, prepared, token_ids, require_grad=False):
+        value = self.adapter.logprobs(prepared, token_ids, require_grad=require_grad)
+        values = value.detach().cpu().tolist() if hasattr(value, "detach") else value
+        if (
+            not isinstance(values, list)
+            or len(values) != len(token_ids)
+            or any(
+                not isinstance(v, (int, float)) or not math.isfinite(v) or v > 1e-5 for v in values
+            )
+        ):
+            write_json(
+                self.out / "measurement_fault.json",
+                _json_safe(
+                    {
+                        "identity": self.identity,
+                        "attempt": str(self.attempt),
+                        "require_grad": require_grad,
+                        "token_ids": token_ids,
+                        "prepared_hash": state_hash(prepared),
+                        "returned_token_logprobs": values,
+                        "reason": (
+                            "Malformed/nonfinite/positive returned engine token log probabilities"
+                        ),
+                    }
+                ),
+            )
+            raise FloatingPointError("R3 returned engine token probability measurement fault")
+        return value  # Keep the exact tensor and gradient graph supplied by the certified adapter.
+
+
+def _record_engine_fault(out, identity, attempt, exc):
+    known_assertions = (
+        "Parameters changed",
+        "Frozen parameter received",
+        "No trainable gradient graph",
+        "failed to restore",
+        "differs after restoration",
+        "violate invariance",
+    )
+    if isinstance(exc, (FloatingPointError, ValueError)) or any(
+        text in str(exc) for text in known_assertions
+    ):
+        path = out / "measurement_fault.json"
+        if not path.exists():
+            write_json(
+                path,
+                {
+                    "identity": identity,
+                    "attempt": str(attempt),
+                    "type": type(exc).__name__,
+                    "reason": str(exc),
+                    "status": "FAILED_MEASUREMENT_REQUIRES_NEW_STAGE",
+                },
+            )
 
 
 def _write_csv(path, rows):
@@ -614,6 +758,8 @@ def _write_reports(out, summaries, response_results, validation, details):
     import pyarrow as pa
     import pyarrow.parquet as pq
 
+    state = details.get("state", "cold")
+    phase = "R3-" + state
     candidates, responses = [], []
     for index, summary in summaries.items():
         for candidate in summary["candidates"]:
@@ -647,11 +793,11 @@ def _write_reports(out, summaries, response_results, validation, details):
         {
             "reuse_validation": validation,
             "bank_advantage_and_gradient_audits": summaries,
-            "scope": "cold fixed-state single update; no multi-epoch or changed-policy reuse",
+            "scope": f"{state} fixed-state single update; no multi-epoch or changed-policy reuse",
         },
     )
     support = [
-        "# R3-cold control 支持与响应",
+        f"# {phase} control 支持与响应",
         "",
         "主值为未裁剪普通 importance estimator。"
         "全部差值保留同一 proposal 的配对结构；没有安全认证。",
@@ -689,7 +835,7 @@ def _write_reports(out, summaries, response_results, validation, details):
     )
     (out / "support_control_report.md").write_text("\n".join(support) + "\n", encoding="utf-8")
     text = [
-        "# R3-cold 实际执行报告",
+        f"# {phase} 实际执行报告",
         "",
         f"执行类型：{details['execution_kind']}。状态：{details['status']}。",
         "",
@@ -710,15 +856,28 @@ def _write_reports(out, summaries, response_results, validation, details):
         "000 次，两个接口配对；每题先平均输出，再按六群体固定权重聚合，每次重算 "
         "q 比值。CI 仅针对该固定 checkpoint 的评估场景不确定性。",
         "",
-        "cold 仅为初始状态实现与机制诊断；未执行 warm、cold 直接重采样"
-        "、R4 长期训练或在线 SSVC。SGD/固定预条件参考只描述参数空间，不冒"
-        "充已测概率响应。",
+        (
+            "warm 从已通过 R4 X_BASE step64 完整 Adam/RNG/sampler 起点执行。"
+            "bank0/6 的 λ0/1 四候选另有3072条直接采样，预测/观测/残差分列；"
+            "direct 行 checkpoint_step/origin_checkpoint_step=64 表示 warm 锚点；"
+            "候选实际 optimizer_step/candidate_optimizer_step 从 Adam 读取为65。"
+            "相同 seed 仅为尝试共同随机数，不代表自然输出身份或类别运输。"
+            if state == "warm"
+            else (
+                "cold 仅为初始状态实现与机制诊断；未执行 warm、cold 直接重采样、"
+                "R4 长期训练或在线 SSVC。"
+            )
+        )
+        + "SGD/固定预条件参考只描述参数空间，不冒充已测概率响应。",
         "",
         "## 配置与证据",
         "",
-        "使用 R1 认证的原始模型、初始化 LoRA、空 Adam 与非 think"
-        "ing 64-token uncached 路径。没有加载 smoke 更新"
-        " checkpoint，没有修改 LR/clip/reward 配置。",
+        (
+            "fresh 加载并验证 R1 certificate 后，精确恢复 R4 已验 step64 的 LoRA/Adam/RNG；"
+            if state == "warm"
+            else "使用 R1 认证的原始模型、初始化 LoRA、空 Adam；"
+        )
+        + "非 thinking 64-token uncached 路径，未修改 LR/clip/reward 配置。",
         "原始 samples.jsonl、bank_manifest.json、candidate_manifest.json、"
         f"control_scores/、validation/、forks/ 均位于 {out}。",
         "",
@@ -733,7 +892,7 @@ def _write_reports(out, summaries, response_results, validation, details):
         "```",
         "",
     ]
-    for name in ("report_zh.md", "cold_report.md"):
+    for name in ("report_zh.md", f"{state}_report.md"):
         (out / name).write_text("\n".join(text), encoding="utf-8")
 
 
@@ -743,7 +902,7 @@ def _final_status(out, status, execution, details):
         out / item["path"]
         for item in _manifest(out, exclude=("status.json", "manifest.json", "report.md"))["files"]
     ]
-    result = phase_artifacts(out, "R3-cold", status, details, artifacts)
+    result = phase_artifacts(out, "R3-" + details.get("state", "cold"), status, details, artifacts)
     result["execution_kind"] = execution
     write_json(out / "status.json", result)
     return result
@@ -761,29 +920,71 @@ def run_r3(
     state="cold",
     resume=False,
     _adapter_factory=None,
+    r3_cold_dir=None,
+    r4_dir=None,
+    checkpoint=None,
 ):
-    if state != "cold":
-        out = Path(out)
-        if out.exists() and any(out.iterdir()):
-            raise ValueError(
-                "Refusing to overwrite an existing run with an unimplemented warm stage"
-            )
-        result = phase_artifacts(
-            out,
-            "R3-warm",
-            "BLOCKED",
-            {
-                "warm_implemented": False,
-                "reason": (
-                    "Cold runner does not implement the complete warm "
-                    "checkpoint/direct-resampling protocol"
-                ),
-            },
-        )
-        result["execution_kind"] = "CPU_AUDIT"
-        write_json(out / "status.json", result)
-        return result
+    if state == "warm":
+        if r3_cold_dir is None or r4_dir is None:
+            out = Path(out)
+            if out.exists() and any(out.iterdir()):
+                raise ValueError("Missing warm prerequisites; existing evidence preserved")
+            details = {
+                "warm_implemented": True,
+                "reason": "R3-warm requires passed R3-cold and complete R4 evidence",
+            }
+            (out).mkdir(parents=True, exist_ok=True)
+            (out / "report_zh.md").write_text("# R3-warm BLOCKED\n\n" + details["reason"] + "\n")
+            result = phase_artifacts(out, "R3-warm", "BLOCKED", details, [out / "report_zh.md"])
+            result["execution_kind"] = "CPU_AUDIT"
+            write_json(out / "status.json", result)
+            return result
+        from .r3_warm_runtime import run_r3_warm
 
+        return run_r3_warm(
+            config,
+            data_root,
+            out,
+            r0_dir,
+            r1_run,
+            supplement_dir,
+            r2_dir,
+            r3_cold_dir,
+            r4_dir,
+            checkpoint=checkpoint,
+            resume=resume,
+            _adapter_factory=_adapter_factory,
+        )
+    if state != "cold":
+        raise ValueError("Unknown R3 checkpoint state")
+    return _run_r3(
+        config,
+        data_root,
+        out,
+        r0_dir,
+        r1_run,
+        supplement_dir,
+        r2_dir,
+        resume=resume,
+        _adapter_factory=_adapter_factory,
+    )
+
+
+def _run_r3(
+    config,
+    data_root,
+    out,
+    r0_dir,
+    r1_run,
+    supplement_dir,
+    r2_dir,
+    *,
+    resume=False,
+    _adapter_factory=None,
+    _warm_context=None,
+):
+    state = "warm" if _warm_context is not None else "cold"
+    phase = "R3-" + state
     import torch
 
     from .model_adapters import load_adapter
@@ -796,9 +997,13 @@ def run_r3(
     from .r3_response import analyze_control_responses
     from .r3_updates import run_bank_forks, validate_reuse_bank
 
-    gate = validate_prerequisites(r0_dir, r1_run, supplement_dir)
+    gate = (
+        _warm_context["gate"]
+        if _warm_context
+        else validate_prerequisites(r0_dir, r1_run, supplement_dir)
+    )
     config = validate_config_against_gate(config, gate)
-    r2_binding = validate_r2_gate(r2_dir, gate)
+    r2_binding = _warm_context["r2_binding"] if _warm_context else validate_r2_gate(r2_dir, gate)
     if Path(data_root).resolve() != Path(config["data_root"]).resolve():
         raise ValueError("R3 data root differs from the certified dataset")
     _helper_config(config)
@@ -808,38 +1013,64 @@ def run_r3(
     ):
         raise ValueError("R3 cold fixed candidate or direct-sampling protocol changed")
     plan, data_binding = _load_plan(data_root, gate)
+    if _warm_context and plan["plan_hash"] != _warm_context["r3_binding"]["plan_hash"]:
+        raise ValueError("Warm and cold R3 must use exactly the same 48 train/control prompt plan")
     fixture = _adapter_factory is not None
     if not fixture and not torch.cuda.is_available():
-        raise RuntimeError("R3-cold requires an allocated CUDA device; no model requested")
+        raise RuntimeError(f"{phase} requires an allocated CUDA device; no model requested")
     environment = (
         {"status": "CPU_FIXTURE_NOT_REAL_ENVIRONMENT"}
         if fixture
         else validate_runtime_environment(gate)
     )
-    if not fixture and environment != r2_binding["environment"]:
-        raise ValueError("R3 runtime environment differs from measured R2")
+    if not fixture and (
+        environment != r2_binding["environment"]
+        or (_warm_context and environment != _warm_context["r4_binding"]["environment"])
+    ):
+        raise ValueError("R3 runtime environment differs from measured prerequisites")
     source = _source()
     execution = "CPU_FAKE_ADAPTER_FIXTURE" if fixture else "REAL_CUDA_FORK"
     identity = {
-        "phase": "R3-cold",
+        "phase": phase,
         "protocol_version": config["protocol_version"],
-        "checkpoint_step": 0,
+        "checkpoint_step": 64 if _warm_context else 0,
         "model_hash": canonical_hash(config["model"]),
         "config_hash": canonical_hash(config),
         "data_hash": canonical_hash(data_binding),
-        "initial_adapter_hash": gate["certificate"]["initial_adapter_hash"],
+        "initial_adapter_hash": _warm_context["checkpoint"]["parameter_hash"]
+        if _warm_context
+        else gate["certificate"]["initial_adapter_hash"],
         "gate_hash": canonical_hash(gate["binding"]),
         "r2_gate_hash": canonical_hash(r2_binding),
         "source_hash": canonical_hash(source),
         "plan_hash": plan["plan_hash"],
         "execution_kind": execution,
     }
+    if _warm_context:
+        identity.update(
+            r3_cold_gate_hash=canonical_hash(_warm_context["r3_binding"]),
+            r4_gate_hash=canonical_hash(_warm_context["r4_binding"]),
+            warm_checkpoint_sha256=_warm_context["checkpoint"]["file_sha256"],
+        )
     out = Path(out)
     with frozen_writer(out):
+        if (out / "measurement_fault.json").exists():
+            raise ValueError("R3 preserved measurement fault requires a fresh run")
         if (out / "policy_contamination.json").exists():
             raise ValueError("R3 policy-contaminated evidence requires a fresh run")
         store = RunStore(out, identity, resume=resume)
-        write_json(out / "gate_binding.json", {"r0_r1": gate["binding"], "r2": r2_binding})
+        write_json(
+            out / "gate_binding.json",
+            {
+                "r0_r1": gate["binding"],
+                "r2": r2_binding,
+                **(
+                    {"r3_cold": _warm_context["r3_binding"], "r4": _warm_context["r4_binding"]}
+                    if _warm_context
+                    else {}
+                ),
+            },
+        )
         invocations = out / "invocations"
         invocations.mkdir(exist_ok=True)
         invocation = invocations / f"attempt_{len(list(invocations.iterdir())):04d}"
@@ -848,7 +1079,7 @@ def run_r3(
         write_json(
             out / "status.json",
             {
-                "phase": "R3-cold",
+                "phase": phase,
                 "status": "RUNNING",
                 "execution_kind": execution,
                 "details": {"completed_samples": len(store.records), "total_samples": 1152},
@@ -866,7 +1097,7 @@ def run_r3(
         adapter = optimizer = origin = meter = profile = None
         before_base = None
         summaries, responses, validation = {}, {}, {}
-        details = {"execution_kind": execution, "status": "FAIL", "state": "cold"}
+        details = {"execution_kind": execution, "status": "FAIL", "state": state}
         status = "FAIL"
         try:
             _seed_everything(17)
@@ -887,8 +1118,12 @@ def run_r3(
             before_base = _certificate_check(gate["certificate"], adapter, config)
             if not fixture:
                 environment = validate_runtime_environment(gate, adapter.audit)
-                if environment != r2_binding["environment"]:
-                    raise ValueError("R3 loaded runtime environment differs from measured R2")
+                if environment != r2_binding["environment"] or (
+                    _warm_context and environment != _warm_context["r4_binding"]["environment"]
+                ):
+                    raise ValueError(
+                        "R3 loaded runtime environment differs from measured prerequisites"
+                    )
             options = config["optimizer"]
             optimizer = torch.optim.AdamW(
                 [p for p in adapter.model.parameters() if p.requires_grad],
@@ -906,7 +1141,11 @@ def run_r3(
             }
             origin = capture_state(adapter.model, optimizer, origin_metadata)
             if origin["optimizer"]["state"] or origin["scheduler"] is not None:
-                raise ValueError("Cold R3 must begin with empty Adam and no scheduler")
+                raise ValueError("Fresh R3 loading must begin with empty Adam and no scheduler")
+            if _warm_context:
+                from .r3_warm_runtime import load_warm_origin
+
+                origin = load_warm_origin(adapter, optimizer, _warm_context)
             origin_identity = {**identity, "unit": "initial_origin"}
             origin_path = out / "origin.pt"
             if origin_path.exists():
@@ -993,7 +1232,7 @@ def run_r3(
                 def validate(attempt, groups=groups, unit_identity=unit_identity, index=index):
                     try:
                         result = validate_reuse_bank(
-                            adapter,
+                            _MeasuredEngineAdapter(adapter, out, unit_identity, attempt),
                             optimizer,
                             origin,
                             groups,
@@ -1008,6 +1247,9 @@ def run_r3(
                             **{k: v for k, v in result.items() if k != "score_bank"},
                             "score_bank_binding": tensor_binding,
                         }
+                    except Exception as exc:
+                        _record_engine_fault(out, unit_identity, attempt, exc)
+                        raise
                     finally:
                         _restore(adapter, optimizer, origin)
                         profile.write("VALIDATING_REUSE", bank_index=index)
@@ -1050,7 +1292,7 @@ def run_r3(
                 def fork(attempt, groups=groups, index=index, unit_identity=unit_identity):
                     try:
                         result = run_bank_forks(
-                            adapter,
+                            _MeasuredEngineAdapter(adapter, out, unit_identity, attempt),
                             optimizer,
                             origin,
                             groups,
@@ -1073,6 +1315,9 @@ def run_r3(
                         ):
                             raise ValueError("R3 candidate lambda coverage differs from fixed grid")
                         return result
+                    except Exception as exc:
+                        _record_engine_fault(out, unit_identity, attempt, exc)
+                        raise
                     finally:
                         _restore(adapter, optimizer, origin)
                         profile.write("FORKING", bank_index=index)
@@ -1098,6 +1343,7 @@ def run_r3(
                 for r in requests
                 if r["bank_role"] == "control_proposal"
             ]
+            scores_by_bank = {}
             for index in plan["response_banks"]:
                 candidate_scores = {}
                 for candidate in summaries[index]["candidates"]:
@@ -1118,6 +1364,7 @@ def run_r3(
                 baseline = next(
                     c["candidate_id"] for c in summaries[index]["candidates"] if c["lambda"] == 0
                 )
+                scores_by_bank[index] = candidate_scores
                 responses[index] = analyze_control_responses(
                     proposal,
                     candidate_scores,
@@ -1127,6 +1374,28 @@ def run_r3(
                     seed=20260909,
                 )
                 write_json(out / f"response_bank_{index:02d}.json", responses[index])
+            if _warm_context:
+                from .r3_warm_runtime import run_direct_validation
+
+                details.update(
+                    run_direct_validation(
+                        adapter,
+                        optimizer,
+                        origin,
+                        plan,
+                        proposal,
+                        summaries,
+                        candidate_attempts,
+                        scores_by_bank,
+                        out,
+                        identity,
+                        config,
+                        data_root,
+                        meter,
+                        profile,
+                        _warm_context,
+                    )
+                )
             if _source() != source:
                 raise ValueError("R3 source changed during execution")
             for name, digest in data_binding["files"].items():
@@ -1137,7 +1406,7 @@ def run_r3(
             )
             details.update(
                 {
-                    "raw_sample_count": len(store.records),
+                    "raw_sample_count": len(store.records) + details.get("direct_rollouts", 0),
                     "train_rollouts": 384,
                     "control_proposal_rollouts": 768,
                     "distinct_candidate_optimizer_updates": 60,
@@ -1147,7 +1416,7 @@ def run_r3(
                     "response_candidates": 10,
                     "control_candidate_sequences_scored": 7680,
                     "direct_resample_cold": False,
-                    "warm_implemented": False,
+                    "warm_implemented": True,
                     "candidate_commit": False,
                     "reuse_authorized": authorized,
                 }
@@ -1164,7 +1433,12 @@ def run_r3(
                         "full_origin_state_and_rng": True,
                         "initial_adapter": parameter_hash(adapter.model, trainable=True)
                         == identity["initial_adapter_hash"],
-                        "empty_adam": not optimizer.state_dict()["state"],
+                        ("warm_adam_and_sampler" if _warm_context else "empty_adam"): state_hash(
+                            optimizer.state_dict()
+                        )
+                        == state_hash(origin["optimizer"])
+                        if _warm_context
+                        else not optimizer.state_dict()["state"],
                         "frozen_base": parameter_hash(adapter.model, trainable=False)
                         == before_base,
                     }
@@ -1219,7 +1493,7 @@ def run_r3(
             _write_reports(out, summaries, responses, validation, details)
         else:
             (out / "report_zh.md").write_text(
-                "# R3-cold 执行未通过\n\n"
+                f"# {phase} 执行未通过\n\n"
                 + json.dumps(details, ensure_ascii=False, indent=2)
                 + "\n",
                 encoding="utf-8",
@@ -1237,6 +1511,9 @@ def main(argv=None):
     parser.add_argument("--supplement-dir", type=Path, required=True)
     parser.add_argument("--r2-dir", type=Path, required=True)
     parser.add_argument("--state", choices=("cold", "warm"), default="cold")
+    parser.add_argument("--r3-dir", type=Path)
+    parser.add_argument("--r4-dir", type=Path)
+    parser.add_argument("--checkpoint", type=Path)
     parser.add_argument("--resume", action="store_true")
     args = parser.parse_args(argv)
     from .next_stage_runtime import validate_config_against_gate, validate_prerequisites
@@ -1256,6 +1533,9 @@ def main(argv=None):
         args.supplement_dir,
         args.r2_dir,
         state=args.state,
+        r3_cold_dir=args.r3_dir,
+        r4_dir=args.r4_dir,
+        checkpoint=args.checkpoint,
         resume=args.resume,
     )
     print(

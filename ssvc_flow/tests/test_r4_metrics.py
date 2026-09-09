@@ -4,6 +4,10 @@ import copy
 import importlib
 import importlib.util
 import json
+import os
+import subprocess
+import sys
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -393,3 +397,58 @@ def test_endpoint_pool_ratio_is_recomputed_inside_every_cluster_draw(api):
         - values["X_BASE"][:, 0] / values["X_BASE"][:, 1]
     )
     assert metric["estimate"] != pytest.approx(wrong_macro)
+
+
+def _sensitivity_inputs():
+    rows, initial = endpoints(scenes=10, track="L")
+    for row in rows:
+        scene = int(row["base_scene_id"].rsplit("-", 1)[1])
+        sample = int(row["sample_key"].rsplit("-", 1)[1])
+        offset = 2 * FAMILIES.index(row["family"]) + int(row["interface"] == "separating")
+        score = (scene + sample + offset + int(row["arm"] == "X_VALID")) % 11
+        row["category"] = "X" if score < 2 else "S" if score < 5 else "W" if score < 8 else "I"
+    return rows, initial
+
+
+def test_l_sensitivity_weights_reordering_is_bitwise_stable(api):
+    from src.core import canonical_hash
+
+    rows, initial = _sensitivity_inputs()
+    groups = sorted({r["family"] + "/" + r["interface"] for r in rows})
+    weights = {g: 1 / 6 for g in groups}
+    reversed_weights = {g: weights[g] for g in reversed(groups)}
+    first = analyze(api, rows, initial, track="L", group_weights=weights)
+    second = analyze(api, rows, initial, track="L", group_weights=reversed_weights)
+    assert canonical_hash(first) == canonical_hash(second)
+
+
+def test_l_sensitivity_report_is_bitwise_stable_across_python_hash_seeds():
+    script = f"""
+import importlib.util
+import json
+from src.core import canonical_hash
+from src.r4_metrics import analyze_sampled_endpoints
+spec = importlib.util.spec_from_file_location("r4_fixture", {str(Path(__file__).resolve())!r})
+fixture = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(fixture)
+rows, initial = fixture._sensitivity_inputs()
+groups = {{r["family"] + "/" + r["interface"] for r in rows}}
+weights = {{g: 1 / len(groups) for g in groups}}
+result = analyze_sampled_endpoints(rows, initial, track="L", group_weights=weights)
+print(json.dumps({{"order": list(weights), "hash": canonical_hash(result)}}))
+"""
+    reports = [
+        json.loads(
+            subprocess.run(
+                [sys.executable, "-c", script],
+                cwd=Path(__file__).resolve().parents[1],
+                env={**os.environ, "PYTHONHASHSEED": seed},
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout
+        )
+        for seed in ("0", "1", "2")
+    ]
+    assert len({tuple(r["order"]) for r in reports}) > 1
+    assert len({r["hash"] for r in reports}) == 1

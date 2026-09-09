@@ -91,10 +91,11 @@ def test_atomic_units_reuse_success_preserve_failed_attempts_and_reject_tamper(t
     assert len(calls) == 2
 
 
-def test_warm_unimplemented_is_blocked_without_loading_or_certifying(tmp_path):
+def test_warm_missing_evidence_is_blocked_without_loading_or_certifying(tmp_path):
     result = run_r3({}, tmp_path, tmp_path / "warm", "r0", "r1", "supp", "r2", state="warm")
     assert result["status"] == "BLOCKED"
-    assert not result["details"]["warm_implemented"]
+    assert result["details"]["warm_implemented"]
+    assert "requires passed R3-cold" in result["details"]["reason"]
     assert result["execution_kind"] == "CPU_AUDIT"
 
 
