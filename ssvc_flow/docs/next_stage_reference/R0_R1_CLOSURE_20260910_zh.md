@@ -62,3 +62,25 @@ R1 补充在模型加载前因 `HF_HUB_OFFLINE=1` 阻断现有加载器的锁定
 核验而停止，错误为 `OfflineModeIsEnabled`，未执行 backward 或参数更新。
 启动脚本已恢复与成功作业 146571 相同的环境处理：清除离线变量，保留
 明确模型 revision 及既有缓存路径。该修改不改变采样或训练计算路径。
+
+## 修复后服务器结果
+
+作业 146806 使用提交 `8ef47994eb7652aae8f2bc522da2943238f9b2a7`，
+在 `gpu-pro6000-4` 完成，Slurm `COMPLETED / 0:0`，用时 00:05:56。
+
+- R0：15 项检查全部 PASS。N 重放 288 个输入、4,896 条原始记录；L
+  重放 176 个输入、2,992 条原始记录。两组 token 解码全部完全一致。
+- R1 补充：零梯度 Adam、独立 λ=0 对照、候选正反顺序均 PASS；反序
+  使用同题 X/W/I 样本，λ0/λ1 的优势不同。新增采样为 0。
+- 实测 backward 18 次、optimizer.step 9 次、顶层 forward 567 次；
+  backward 期间的语言层 forward 为 8,384 次，独立列出。
+- 初始 adapter、空 Adam、RNG 恢复通过；基座参数及原始证据均未改变。
+- 本地完整测试 397 passed，Ruff/格式与脚本语法检查通过。
+
+新目录：`/projects/varunssd/louis-ssvc/runs/NEXT_20260909/R0_R1_close_146806_attempt_0`。
+压缩包 SHA-256：`f79afe2116d41f6ad59d8701351accb1d68ab19028267f24e4d527017a72486e`。
+本地已核验压缩包及 R0 的 4 项、R1 补充的 6 项 manifest 条目，证据位于
+`ssvc_flow/runs/NEXT_20260909/verified_146806/`（运行数据不提交 git）。
+
+当前已完成这些前置检查，R2 与 R3-cold 的真实 runner 仍待实施。
+R4/R3-warm 尚未运行；R5 未启用。
