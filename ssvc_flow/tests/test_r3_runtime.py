@@ -203,7 +203,7 @@ def test_full_cold_fixture_actual_toy_adam_and_resume(tmp_path, monkeypatch):
     rows = [json.loads(line) for line in (out / "samples.jsonl").read_text().splitlines()]
     assert len(rows) == 1152
     assert Counter(r["bank_role"] for r in rows) == {"train": 384, "control_proposal": 768}
-    assert all(r["run_id"] and r["origin_state_hash"] for r in rows)
+    assert all(r["run_id"] and r["origin_state_hash"] and r["prepared_hash"] for r in rows)
     assert len({r["origin_state_hash"] for r in rows}) == 1
     before_generation = sum(a.generation_calls for a in instances)
     again = run_r3(*args, resume=True, _adapter_factory=Adapter)
@@ -237,3 +237,30 @@ def test_full_cold_fixture_actual_toy_adam_and_resume(tmp_path, monkeypatch):
     retry = run_r3(*bad_args, resume=True, _adapter_factory=Adapter)
     assert retry["status"] == "FAIL"
     assert "failed execution" in retry["details"]["error"]["message"]
+
+
+def test_bank_rejects_changed_full_prepared_state(monkeypatch):
+    from src import r3_runtime
+    from src.optimizer_fork import state_hash
+
+    selected = plan()
+    prepared = {"audit": {"final_prompt_hash": "f", "input_tensor_hash": "i"}, "inputs": {"x": 1}}
+    monkeypatch.setattr(r3_runtime, "_prepared", lambda *args: prepared)
+    rows = {}
+    for prompt in selected["banks"][0]:
+        for index in range(8):
+            key = f"{prompt}-{index}"
+            rows[key] = {
+                "sample_key": key,
+                "prompt_id": prompt,
+                "sample_index": index,
+                "bank_role": "train",
+                "split": "train",
+                "bank_index": 0,
+                "final_prompt_hash": "f",
+                "input_tensor_hash": "i",
+                "prepared_hash": state_hash(prepared),
+            }
+    rows[next(iter(rows))]["prepared_hash"] = "changed_full_input"
+    with pytest.raises(ValueError, match="prepared-input"):
+        r3_runtime._bank_groups(selected, rows, 0, None, None)

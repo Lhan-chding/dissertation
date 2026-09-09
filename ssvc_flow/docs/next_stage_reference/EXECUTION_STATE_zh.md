@@ -23,11 +23,22 @@
 - R3-cold 固定 48 train prompts、12 个 B4K8 bank、五个 λ；复用验证 bank 索引预注册为 `[1, 11]`，两组均通过真实未裁剪梯度及实际 Adam 对照后才允许复用，否则直接计算。每 bank 五个候选使用独立 ID；另做 λ=0 完整状态重放。A_BASE/A_VALID 只测梯度，不产生额外 Adam 候选。
 - Control 固定 24 base scenes × 两接口 × 16 输出，共 768 条 proposal；响应 bank `[0, 6]` 的十个候选共 7,680 条评分。使用未裁剪、非自归一化 IS 和 5,000 次按 family 分层的 base-scene 配对 bootstrap；记录 ESS、最大归一化权重和类别支持，缺失支持不补成有效估计。SGD 仅报告未裁剪参数空间参考，不声称测得其概率响应。
 - R3-cold 支持逐输出 ledger、不可变验证/bank attempt 和逐序列 control 评分续跑；失败原始输出和未提交 attempt 均保留，完成单元复验后复用。所有候选恢复参数、Adam、RNG，实际计数另记录验证、重放和中断重算成本。
-- R4 完整训练/评估运行器和 R3-warm 仍需实现。当前 R3 CLI 对 warm 明确返回 BLOCKED，不能将 R3-cold 或 CPU fixture 当成 warm/GPU 完成证据。
+- R3-cold 原始 rollout 现在保存完整 `prepared_hash`，梯度组重建时再次检查；R4 前置门禁重建 12 个 bank 与 60 个候选的样本/状态绑定，核验 tokenizer、原文、EOS、old-logprob、实际 Adam 和两个复用验证 bank。统计门禁独立重算响应 bank `[0, 6]` 的 5,000 次 bootstrap，核验 280 条 CSV 与 60 条 Parquet 候选；缺失、篡改或不可复算的产物均阻塞 R4。
+- R4 已在本地实现固定输入、两臂训练/评估运行器、统计和 `scripts/ntu_r4.sbatch`，尚未在服务器部署或提交。`--allow-training` 显式授权实际两臂执行；锁定 YAML 保持原值。R3-warm 仍需实现；当前 warm CLI 明确返回 BLOCKED，不能将 R3-cold 或 CPU fixture 当成 warm/GPU 完成证据。
+- R4 训练池保持原有 576 prompts，每臂使用相同 seed17 的固定 64×B4 顺序；每六步各群体四个 prompt slots。两臂均从证书绑定的初始 LoRA 和空 Adam 恢复，再分别生成当前策略 K8 轨迹。保存全部 128 次更新的不可变 attempt、逐组奖励/优势统计和完整 checkpoint；step64 每臂包含累计 2,048 个已完成训练 sample keys。
+- R4 共计划 14,400 条新输出：训练 4,096、共享 step0 576、step32 1,152、step64 N/L/OOD 8,576。L 保持原有 48-token lock 与解析器；N 和 OOD 使用 64-token lock。graph-OOD 从原已审计的 graph_structure 池按 path/cycle × bar/line × 三 operation × 三实例固定选出 36 base scenes，全部通过唯一解、ID 范围和真值/图像隔离检查；不读取 confirm 样本。
+- R4 的固定 step0 KL probe 在查看 R4 结果前选择每个 R3-cold control prompt 的 `sample_index=0`，共 48 条；只在基座、初始 LoRA、空 Adam、prompt、图像、generation lock 完全一致时复用，否则阻塞。每步 48 条、共 6,144 次 control 评分，不新增 control 生成；另外如实记录 4,096 次更新前 parity 和 4,096 次更新后训练评分。单条 proposal/题的噪声限制在报告中注明。
+- R4 任一实际 KL 工程阈值超线保存出错步骤和全局停止标记，不能通过 resume 跳过；返回的非有限 likelihood、数值参数或策略污染保存原始证据并阻断新 attempt。正常中断保留已生成轨迹，从前一完整状态重算未提交更新并计入成本。初始 N/L 比较只使用来源和协议均验证的 P3 样本；无法对齐时明确标记未测量，来源哈希损坏则失败。
+- R4 rollout 逐条保存文档 10.1 的来源、scene、输入、token、logprob、计时和内存字段，完整 `prepared_hash` 每个 prompt 计算一次。L 使用原始 truth/observation/error_index 和 semantic parser；N cue、唯一修复 solver、图像与 constraint_results 对 L 不适用时显式记录，不伪造 N 语义。FAIL/BLOCKED 也生成当前 `report_zh.md`，不能遗留旧 PASS 报告。
+- R4 主分析使用配对 base-scene bootstrap；六群体共同区间限定为单指标的预声明群体范围。L 主整体权重固定为原 176 prompts 的组成，等 family 权重仅单列敏感性分析。退化或小样本区间标为不稳定，不据此宣称排除了下降或证明安全。
 
-最新全套本地验证：`OMP_NUM_THREADS=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 ../.venv/bin/python -m pytest tests -q`（cwd `ssvc_flow`），**514 passed，70.64 秒**。Ruff check、十个修改/新增 Python 文件的 format check、`bash -n scripts/ntu_r3_cold.sbatch` 和 diff 检查均通过。R3 CPU tiny-torch 集成覆盖 1,152 条生成、60 个独立候选、7,680 条 control 评分；注入采样及 bank 提交中断后续跑，实测 86 次 Adam 更新（60 候选 + 12 重放 + 8 复用验证 + 6 重算），再次续跑新增计算为零。这些是实现验证，不能算作 Qwen/CUDA 实验。
+最新全套本地验证：`OMP_NUM_THREADS=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 ../.venv/bin/python -m pytest tests -q`（cwd `ssvc_flow`），**637 passed，149.77 秒**。Ruff 全 src/tests 检查、16 个修改/新增 Python 文件的 format check、两个 R3/R4 Slurm 脚本的 `bash -n` 和限定 diff 检查均通过。
+
+R3 CPU tiny-torch 集成覆盖 1,152 条生成、60 个独立候选、7,680 条 control 评分；注入采样及 bank 提交中断后续跑，实测 86 次 Adam 更新（60 候选 + 12 重放 + 8 复用验证 + 6 重算），再次续跑新增计算为零。R4 CPU tiny-torch 集成覆盖 14,400 条生成、128 次有效更新，注入一次实际 Adam 后中断并重算，实测 129 Adam / 4,128 backward；L 2,816 条均保留 48-token 配置，130 个 checkpoint 引用含八个里程碑，step64 各保留 2,048 个训练 keys。完整完成后的再次续跑新增 generation/forward/backward/Adam 均为零。这些是实现验证，不能算作 Qwen/CUDA 实验。
 
 本地审查修复了 origin optimizer param-group 未核验、跨 bank 候选 ID 重复和 raw row 缺少 run ID 的问题；相关回归和全套测试已通过。输入选择只依据固定数据元信息，实际 plan hash 为 `e84efd66534321fc8bb2c4546f4a9f7d10e70714beaa3999a48b97a9cb218974`。
+
+R4 代码审查另修复了加载耗时进入 resume 身份、来源损坏被降为未测量、评分污染在恢复后漏检，以及 KL 超线诊断与原子步骤提交之间的中断窗口。停止记录先于局部结果和完成标记写入；即使随后中断，恢复仍在模型加载前阻断。
 
 服务器 CPU processor 预检：真实 `AutoProcessor.from_pretrained(snapshot, local_files_only=True)` 返回模板文本 SHA256 `a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715`，`<think>` / `</think>` token 为 248068 / 248069。thinking 的 generation prefix 以 `<think>\n` 结尾，非 thinking 以 `<think>\n\n</think>\n\n` 结尾；未加载模型权重。
 
@@ -37,7 +48,7 @@
 
 修正后真实服务器 CPU 门禁 **PASS**：72 场景 / 2,232 请求，Python 3.12.14、Transformers 5.14.1。新记录包版本为 torch 2.13.0+cu130、peft 0.19.1、tokenizers 0.22.2、accelerate 1.14.0、huggingface-hub 1.30.0、numpy 2.5.2、Pillow 12.3.0、safetensors 0.8.0。预检与提交记录已取回本地 `runs/NEXT_20260909/verified_146853`；不包含尚未完成的模型结果。
 
-已提交并验证 GitHub 同分支 push 的 R2 版本：`6c40dda` 为 R2/梯度实现，`518b23f` 为哈希兼容修正。后续 R3/R4 实现仅更新本地/GitHub；**运行中的服务器 checkout 继续固定 `518b23f`，不要 pull**。最近一次现场检查，R2 作业 `146853` 为 RUNNING，elapsed 46:52，已完成 712/2,232；这只是进度快照，后续以现场文件为准。
+已提交并验证 GitHub 同分支 push 的 R2 版本：`6c40dda` 为 R2/梯度实现，`518b23f` 为哈希兼容修正；R3-cold 初版为 `ef91770`。后续 R3/R4 实现仅更新本地/GitHub；**运行中的服务器 checkout 继续固定 `518b23f`，不要 pull**。最近现场检查，R2 作业 `146853` 为 RUNNING，Slurm elapsed 1:53:15；progress 已完成 1,641/2,232（六个主条件各 265、SYM_LONG 27、SYM_THINKING 24），`result.txt` 仍为 RUNNING，服务器 HEAD 实测仍为完整 `518b23f4fb6803706a7ded57a2b5bfbefbf2d6ab`。这只是进度快照，后续以现场文件为准。
 
 ## 下一步及依赖
 
@@ -45,7 +56,7 @@
 2. 跟踪 `146853`：查看 Slurm、`R2/progress.json`、`checks/r2.log` 和 `result.txt`。运行期间可本地准备 R3/R4，但禁止更新该服务器 checkout。
 3. R2 结束后验证完整样本覆盖、模型冻结、manifest 和配对统计，取回归档并核验 SHA256。低正确率不是执行失败；数据/索引/图像传入缺陷阻塞受影响正式训练。
 4. R2 完成并验收后，确认没有 SSVC 作业运行，再部署已测试的 R3-cold 代码，先做服务器 CPU 门禁和输入预检，再执行真实 R3-cold。Control 只用于测量；类别梯度复用须两组实际直接梯度/Adam 对照通过。候选完全恢复参数、Adam、RNG，不复用 P3 rollout。
-5. R4 两臂分别从 fresh LoRA/Adam 开始；各自 on-policy 轨迹。实施文档要求的 checkpoint、控制集 KL 门禁和 step 0/32/64 评估。不可从 R1/R3 scratch 起步。
+5. R3-cold 完整验收后，运行 `python -m src.next_stage_preflight --phase R4` 的只读 CPU 门禁（包括 R3 原始样本、实际 checkpoint、统计产物重算和 R4 固定输入）。通过后设置 `SSVC_R3_COLD_STAGE` 为已验收 stage，再提交 R4 脚本。两臂分别从 fresh LoRA/Adam 开始；不可从 R1/R3 scratch 起步。
 6. R3-warm 绑定 X_BASE step64 的完整 Adam 状态，在相同 prompt IDs 上重新采样；执行要求的 3,072 条独立直接验证输出。验收并分析后停止后台任务。
 
 ## 固定服务器位置与运行约束
@@ -62,3 +73,5 @@
 R2 新作业使用独立目录 `runs/NEXT_20260909/R2_server_JOBID_attempt_0/R2`，24 小时时限。若需要同版本续跑，将环境变量 `SSVC_R2_RESUME_STAGE` 指向原 R2 stage，再提交相同脚本；新 wrapper 保存旧 stage 引用，并将完整 stage 一并归档。不得修改原 ledger 的失败记录或将已失败的执行样本视作完成；正常中断的未完成请求才可补齐。
 
 R3-cold 脚本使用 `runs/NEXT_20260909/R3_cold_server_JOBID_attempt_RESTART/R3_cold`，71 小时时限（低于 partition 的 72 小时上限；这是预算上限，不是完成时间预测）。同版本续跑使用 `SSVC_R3_RESUME_STAGE`，新 wrapper 保留旧 stage 引用并一并归档；未通过 R2 验收前不能提交该作业。
+
+R4 脚本使用 `runs/NEXT_20260909/R4_server_JOBID_attempt_RESTART/R4`，同为 71 小时时限；同版本正常中断续跑使用 `SSVC_R4_RESUME_STAGE`。提交必须显式提供项目目录内已验收的 `SSVC_R3_COLD_STAGE`。新 CPU preflight CLI 支持 `--phase R3-cold|R4`，输出独立 JSON，拒绝覆盖旧记录；它不加载模型权重或请求 GPU，不能代替随后真实运行的已加载模型检查。

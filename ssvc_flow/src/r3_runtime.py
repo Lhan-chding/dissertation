@@ -298,7 +298,7 @@ def _collect_samples(adapter, optimizer, origin, plan, requests, store, data_roo
     import torch
 
     prompt_map = {r["prompt_id"]: r for r in [*plan["train_prompts"], *plan["control_prompts"]]}
-    current, prepared = None, None
+    current, prepared, prepared_hash = None, None, None
     generated = 0
     for request in requests:
         if request["sample_key"] in store.keys:
@@ -306,6 +306,7 @@ def _collect_samples(adapter, optimizer, origin, plan, requests, store, data_roo
         prompt_record = prompt_map[request["prompt_id"]]
         if current != request["prompt_id"]:
             prepared = _prepared(adapter, prompt_record, data_root)
+            prepared_hash = state_hash(prepared)
             current = request["prompt_id"]
         scene = prompt_record["scene"]
         generation, returned = None, False
@@ -359,6 +360,7 @@ def _collect_samples(adapter, optimizer, origin, plan, requests, store, data_roo
                     "logprob_sequence": math.fsum(scores),
                     "generation_config_hash": profile.generation_hash,
                     "input_ids_hash": prepared["audit"].get("tokenized_prompt_hash"),
+                    "prepared_hash": prepared_hash,
                     "actual_image_tokens": prepared["audit"].get("image_token_count"),
                     "n_generated_tokens": len(generation["token_ids"]),
                     "runtime_forward_by_reason": {"generation": adapter.forward_calls - before},
@@ -424,9 +426,11 @@ def _bank_groups(plan, records, index, adapter, data_root):
         ):
             raise ValueError("R3 training bank completeness or control-separation error")
         prepared = _prepared(adapter, prompt, data_root)
+        prepared_hash = state_hash(prepared)
         if any(
             r["final_prompt_hash"] != prepared["audit"]["final_prompt_hash"]
             or r.get("input_tensor_hash") != prepared["audit"].get("input_tensor_hash")
+            or r.get("prepared_hash") != prepared_hash
             for r in group
         ):
             raise ValueError("R3 original rollout prepared-input binding changed")

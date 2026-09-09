@@ -385,3 +385,10 @@ def validate_r2_gate(r2_dir, gate):
         "environment": runtime["environment"],
         "runtime_lock_sha256": files["runtime_lock.json"],
     }
+
+
+def validate_r3_cold_gate(r3_cold_dir, gate, r2_binding):
+    """Require fully bound real cold-fork evidence before formal training."""
+    from .r3_gate import validate_r3_cold_gate as validate
+
+    return validate(r3_cold_dir, gate, r2_binding)

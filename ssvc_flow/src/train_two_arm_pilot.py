@@ -1,4 +1,4 @@
-"""R4 two-arm training entry point with an explicit server authorization gate."""
+"""Compatibility entry point for the complete R4 two-arm training protocol."""
 
 from __future__ import annotations
 
@@ -6,16 +6,23 @@ import argparse
 import json
 from pathlib import Path
 
-from .next_stage_common import dry_run_plan, load_yaml, stage_status
+from .next_stage_common import dry_run_plan, load_yaml
 
 
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--config", type=Path, default=Path("configs/next_stage.yaml"))
-    p.add_argument("--arm", choices=["X_BASE", "X_VALID"], required=True)
+    p.add_argument(
+        "--arm",
+        choices=["X_BASE", "X_VALID"],
+        help="Legacy dry-run selection; actual R4 runs both arms",
+    )
     p.add_argument("--allow-training", action="store_true")
-    p.add_argument("--out", type=Path)
+    p.add_argument("--out", type=Path, default=Path("runs/NEXT_20260909/R4"))
     p.add_argument("--dry-run", action="store_true")
+    p.add_argument("--resume", action="store_true")
+    for name in ("data-root", "r0-dir", "r1-run", "supplement-dir", "r2-dir", "r3-dir"):
+        p.add_argument("--" + name, type=Path)
     a = p.parse_args(argv)
     c = load_yaml(a.config)
     if a.dry_run:
@@ -33,32 +40,46 @@ def main(argv=None):
             )
         )
         return 0
-    out = a.out or Path("runs/NEXT_20260909/R4") / a.arm
-    out.mkdir(parents=True, exist_ok=True)
-    config_allow = bool(c.get("R4", {}).get("allow_training", False))
-    details = {
-        "arm": a.arm,
-        "allow_training_flag": a.allow_training,
-        "config_allow_training": config_allow,
-        "training_started": False,
-    }
-    if not (a.allow_training and config_allow):
-        details["reason"] = "requires explicit --allow-training and config R4.allow_training=true"
-    for name, payload in {
-        "two_arm_training_config.json": details,
-        "checkpoint_manifest.json": {"status": "NOT_STARTED"},
-        "learning_curves.csv": {"status": "NOT_STARTED"},
-        "endpoint_metrics.json": {"status": "NOT_STARTED"},
-        "N_L_OOD_effects.csv": {"status": "NOT_STARTED"},
-        "pilot_report.md": "# R4\n\nTraining is disabled by default.\n",
-    }.items():
-        path = out / name
-        path.write_text(
-            payload if isinstance(payload, str) else json.dumps(payload, indent=2) + "\n",
-            encoding="utf-8",
+    from .r4_runtime import _finish, run_r4
+
+    if a.arm:
+        if a.out.exists() and any(a.out.iterdir()):
+            p.error("Single-arm actual execution is unsupported; existing evidence preserved")
+        result = _finish(
+            a.out,
+            "BLOCKED",
+            "CPU_AUDIT",
+            {
+                "training_started": False,
+                "reason": (
+                    "The complete R4 protocol requires both arms; omit --arm. "
+                    "The --arm option remains available for dry-run."
+                ),
+            },
         )
-    stage_status(out, "R4", "BLOCKED", "CPU_AUDIT", details)
-    return 0
+    elif not a.allow_training:
+        result = run_r4(
+            c, a.data_root, a.out, a.r0_dir, a.r1_run, a.supplement_dir, a.r2_dir, a.r3_dir
+        )
+    else:
+        required = ("data_root", "r0_dir", "r1_run", "supplement_dir", "r2_dir", "r3_dir")
+        missing = ["--" + name.replace("_", "-") for name in required if getattr(a, name) is None]
+        if missing:
+            p.error("Real R4 requires " + ", ".join(missing))
+        result = run_r4(
+            c,
+            a.data_root,
+            a.out,
+            a.r0_dir,
+            a.r1_run,
+            a.supplement_dir,
+            a.r2_dir,
+            a.r3_dir,
+            allow_training=True,
+            resume=a.resume,
+        )
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0 if result["status"] == "PASS" else 1
 
 
 if __name__ == "__main__":
