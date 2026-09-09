@@ -9,6 +9,7 @@ from unittest.mock import patch
 import pytest
 
 from src.audit_r1_runtime import finalize_evidence, main
+from src.core import file_hash
 
 
 def test_failure_keeps_required_evidence_distinct_from_measurements(tmp_path):
@@ -23,6 +24,17 @@ def test_failure_keeps_required_evidence_distinct_from_measurements(tmp_path):
         is False
     )
     assert (tmp_path / "manifest.json").exists()
+
+
+def test_final_manifest_hashes_the_terminal_progress(tmp_path):
+    (tmp_path / "progress.json").write_text('{"status":"RUNNING"}')
+    finalize_evidence(tmp_path, "FAIL", {"error": "fixture failure"}, "CPU_AUDIT")
+    manifest = json.loads((tmp_path / "manifest.json").read_text())
+    assert any(row["path"] == "progress.json" for row in manifest["files"])
+    for row in manifest["files"]:
+        artifact = tmp_path / row["path"]
+        assert row["sha256"] == file_hash(artifact)
+        assert row["bytes"] == artifact.stat().st_size
 
 
 def test_no_cuda_failure_is_reported_without_loading_weights(tmp_path):

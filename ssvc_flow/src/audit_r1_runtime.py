@@ -287,6 +287,7 @@ def finalize_evidence(out, status, details, execution_kind):
     for name in required:
         if not (out / name).exists():
             write_json(out / name, {"status": "NOT_MEASURED", "reason": details.get("error")})
+    write_json(out / "progress.json", {"status": status, **details})
     document = phase_artifacts(
         out,
         "R1",
@@ -296,7 +297,6 @@ def finalize_evidence(out, status, details, execution_kind):
     )
     document["execution_kind"] = execution_kind
     write_json(out / "status.json", document)
-    write_json(out / "progress.json", {"status": status, **details})
     (out / "report_zh.md").write_text((out / "report.md").read_text(), encoding="utf-8")
 
 
