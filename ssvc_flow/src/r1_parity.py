@@ -34,23 +34,24 @@ def parity_comparison(reference, candidate, config):
 
     rt, rp = reference
     ct, cp = candidate
-    if not rp or len({len(rt), len(rp), len(ct), len(cp)}) != 1:
+    if not rp or len({len(rt), len(rp), len(cp), len(ct) if ct is not None else len(rp)}) != 1:
         raise ValueError("Equal nonempty fixed-sequence scores required")
     delta = np.asarray(cp, dtype=float) - np.asarray(rp, dtype=float)
     if not np.isfinite(delta).all():
         raise ValueError("Nonfinite parity scores")
     mean, p99 = float(np.abs(delta).mean()), float(np.quantile(np.abs(delta), 0.99))
-    agreement = sum(a == b for a, b in zip(rt, ct, strict=True)) / len(rt)
+    agreement = None if ct is None else sum(a == b for a, b in zip(rt, ct, strict=True)) / len(rt)
     return {
         "tokens": len(rp),
         "mean_abs_token_logp": mean,
         "p99_abs_token_logp": p99,
         "max_abs_token_logp": float(np.abs(delta).max()),
         "top1_agreement": agreement,
+        "top1_measured": ct is not None,
         "sequence_log_ratio_candidate_minus_reference": float(delta.sum()),
         "passed": mean <= config["parity_alarm_mean_abs_token_logp"]
         and p99 <= config["parity_alarm_p99_abs_token_logp"]
-        and agreement >= config["parity_alarm_min_top1_agreement"],
+        and (agreement is None or agreement >= config["parity_alarm_min_top1_agreement"]),
     }
 
 
@@ -75,6 +76,72 @@ def prefix_scores(adapter, prepared, completion):
             top.append(int(logits.argmax()))
             scores.append(float(logits.log_softmax(-1)[token]))
     return top, scores
+
+
+def fixed_sequence_audit(adapter, prepared, completion, config):
+    """Replay only: this never represents a synthetic action as generated evidence."""
+    reference = prefix_scores(adapter, prepared, completion)
+    candidates = {
+        "reference_repeat": prefix_scores(adapter, prepared, completion),
+    }
+    for name, require_grad in (("evaluation_likelihood", False), ("training_likelihood", True)):
+        scores = adapter.logprobs(prepared, completion, require_grad=require_grad)
+        candidates[name] = (None, scores.detach().cpu().tolist())
+        del scores
+    return {
+        name: {
+            "path": name,
+            "reference_top1": reference[0],
+            "reference_logp": reference[1],
+            "candidate_top1": candidate[0],
+            "candidate_logp": candidate[1],
+            "comparison": parity_comparison(reference, candidate, config),
+        }
+        for name, candidate in candidates.items()
+    }
+
+
+def reference_execution_audit(adapter, prepared, generated, config):
+    """Measure the actual production path, independently of rejected accelerations."""
+    checks = fixed_sequence_audit(adapter, prepared, generated["token_ids"], config)
+    reference = checks["reference_repeat"]
+    candidate = (generated["behavior_top1_token_ids"], generated["behavior_token_logprobs"])
+    checks["behavior"] = {
+        "path": "behavior",
+        "reference_top1": reference["reference_top1"],
+        "reference_logp": reference["reference_logp"],
+        "candidate_top1": candidate[0],
+        "candidate_logp": candidate[1],
+        "comparison": parity_comparison(
+            (reference["reference_top1"], reference["reference_logp"]), candidate, config
+        ),
+    }
+    return checks
+
+
+def production_gate(checks, optimizations, expected_sequences=120):
+    required = ("reference_repeat", "behavior", "evaluation_likelihood", "training_likelihood")
+    passed = all(
+        checks.get(name, {}).get("passed") is True
+        and checks[name].get("sequences") == expected_sequences
+        and checks[name].get("failed_sequence_checks", 0) == 0
+        and (
+            name not in ("reference_repeat", "behavior")
+            or checks[name].get("top1_measured") is True
+        )
+        for name in required
+    )
+    return {
+        "status": "PASS" if passed else "FAIL",
+        "selected_path": "uncached_prefix_recompute",
+        "checks": checks,
+        "adopted_optimization_paths": [],
+        "rejected_optimization_paths": sorted(
+            k for k, v in optimizations.items() if not v["passed"]
+        ),
+        "ordinary_cache_adopted": False,
+        "I4": "NOT_RUN",
+    }
 
 
 def collate_full_sequences(adapter, items, completions, side):
@@ -158,7 +225,7 @@ class ForwardMeter:
     def _before(self, module, args, kwargs):
         reason = self.reason
         if reason == "generation":
-            reason = "prefill" if self.generation_first else "decode"
+            reason = "generation_prefix_recompute"
             self.generation_first = False
         self.calls[reason] += 1
         ids = kwargs.get("input_ids")
@@ -214,10 +281,11 @@ def aggregate_parity(records, config):
         for row in rows:
             ref_top1.extend(row["reference_top1"])
             ref_logp.extend(row["reference_logp"])
-            cand_top1.extend(row["candidate_top1"])
+            if row["candidate_top1"] is not None:
+                cand_top1.extend(row["candidate_top1"])
             cand_logp.extend(row["candidate_logp"])
         ref = (ref_top1, ref_logp)
-        cand = (cand_top1, cand_logp)
+        cand = (cand_top1 or None, cand_logp)
         result[path] = {
             **parity_comparison(ref, cand, config),
             "sequences": len(rows),

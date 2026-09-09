@@ -177,6 +177,7 @@ class HuggingFaceAdapter:
         adapter._install_hooks()
         torch.cuda.synchronize()
         adapter.audit = {
+            "execution_kind": "REAL_CUDA_INFERENCE",
             "model_id": model_id,
             "model_revision": revision,
             "model_class": cls.model_class,
@@ -396,6 +397,9 @@ class HuggingFaceAdapter:
             "completion_length": len(ids),
             "stop_reason": "eos" if ids and ids[-1] in self.eos_ids else "length",
             "behavior_token_logprobs": scores,
+            "behavior_top1_token_ids": [
+                int(logits[0].argmax()) for logits in result.scores[: len(ids)]
+            ],
             "elapsed_seconds": elapsed,
             "vision_forward_calls": self.vision_forward_calls - before_vision,
             "vision_representation_hash": self.last_vision_hash,

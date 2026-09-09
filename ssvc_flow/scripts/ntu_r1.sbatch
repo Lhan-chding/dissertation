@@ -46,35 +46,53 @@ if ! mkdir "$run_root"; then
   echo "Refusing to reuse existing attempt: $run_root" >&2
   exit 2
 fi
-export TMPDIR="$run_root/tmp" TMP="$TMPDIR" TEMP="$TMPDIR"
+export TMPDIR="$run_root/tmp"
+export TMP="$TMPDIR" TEMP="$TMPDIR"
 mkdir -p "$TMPDIR" "$run_root/checks"
 printf 'state=RUNNING\njob_id=%s\nstarted_utc=%s\n' "$SLURM_JOB_ID" "$(date -u +%FT%TZ)" > "$run_root/result.txt"
 cp "$0" "$run_root/submitted.sbatch"
 git rev-parse HEAD > "$run_root/source-commit.txt"
 hostname > "$run_root/hostname.txt"
 
-rc=0
+finish() {
+  local rc=$? archive_rc=0
+  trap - EXIT
+  set +e
+  tar --exclude="$(basename "$run_root")/tmp" \
+    --exclude="$(basename "$run_root")/result.txt" \
+    -czf "$run_root.tar.gz.partial" -C "$(dirname "$run_root")" "$(basename "$run_root")" \
+    > "$run_root.packaging.log" 2>&1
+  archive_rc=$?
+  if (( archive_rc == 0 )); then
+    mv "$run_root.tar.gz.partial" "$run_root.tar.gz"
+    archive_rc=$?
+  fi
+  if (( archive_rc == 0 )); then
+    "$SSVC_PYTHON" - "$run_root.tar.gz" <<'PY'
+import hashlib
+import sys
+from pathlib import Path
+p = Path(sys.argv[1])
+with p.open('rb') as stream:
+    digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+p.with_name(p.name + '.sha256').write_text(f"{digest}  {p.name}\n")
+PY
+    archive_rc=$?
+  fi
+  if (( rc == 0 && archive_rc != 0 )); then rc=$archive_rc; fi
+  local state=FAILED
+  if (( rc == 0 )); then state=PASS; fi
+  printf 'state=%s\nexit_code=%s\narchive_exit_code=%s\njob_id=%s\nfinished_utc=%s\n' \
+    "$state" "$rc" "$archive_rc" "$SLURM_JOB_ID" "$(date -u +%FT%TZ)" > "$run_root/result.txt"
+  exit "$rc"
+}
+trap finish EXIT
+trap 'exit 143' TERM
+trap 'exit 130' INT
+
 "$SSVC_PYTHON" -m src.audit_r1_runtime \
   --config configs/next_stage.yaml \
   --data-root "$SSVC_WORK/reviewed-data-20260908/generated" \
   --out "$run_root" \
   --smoke-out "$run_root/smoke" \
-  > "$run_root/checks/r1-runtime.log" 2>&1 || rc=$?
-
-tar -czf "$run_root.tar.gz.partial" -C "$(dirname "$run_root")" "$(basename "$run_root")" \
-  > "$run_root/packaging.log" 2>&1 || rc=$?
-if [[ -f "$run_root.tar.gz.partial" ]]; then
-  mv "$run_root.tar.gz.partial" "$run_root.tar.gz"
-  "$SSVC_PYTHON" - "$run_root.tar.gz" <<'PY' || rc=$?
-import hashlib, sys
-from pathlib import Path
-p = Path(sys.argv[1])
-p.with_name(p.name + '.sha256').write_text(f"{hashlib.file_digest(p.open('rb'), 'sha256').hexdigest()}  {p.name}\n")
-PY
-fi
-if (( rc == 0 )); then
-  printf 'state=PASS\nexit_code=0\njob_id=%s\nfinished_utc=%s\n' "$SLURM_JOB_ID" "$(date -u +%FT%TZ)" > "$run_root/result.txt"
-else
-  printf 'state=FAILED\nexit_code=%s\njob_id=%s\nfinished_utc=%s\n' "$rc" "$SLURM_JOB_ID" "$(date -u +%FT%TZ)" > "$run_root/result.txt"
-fi
-exit "$rc"
+  > "$run_root/checks/r1-runtime.log" 2>&1

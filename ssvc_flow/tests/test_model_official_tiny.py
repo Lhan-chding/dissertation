@@ -163,10 +163,117 @@ def test_actual_generation_raw_scores_no_hidden_transform(adapter, tmp_path):
         likelihood, torch.tensor(sample["behavior_token_logprobs"]), atol=1e-5, rtol=1e-5
     )
     assert sample["completion_length"] <= 4
+    assert len(sample["behavior_top1_token_ids"]) == len(sample["token_ids"])
     assert sample["raw_completion"] == adapter.processor.tokenizer.decode(
         sample["token_ids"][:-1] if sample["stop_reason"] == "eos" else sample["token_ids"]
     )
     assert adapter.generation_calls == 1
+
+
+@pytest.mark.parametrize("image", [False, True])
+def test_reference_certificate_measures_actual_generation_and_grad_path(adapter, tmp_path, image):
+    from src.r1_parity import reference_execution_audit
+
+    item = prepared(adapter, tmp_path, image)
+    sample = adapter.generate(item, seed=101, max_new_tokens=4)
+    checks = reference_execution_audit(
+        adapter,
+        item,
+        sample,
+        {
+            "parity_alarm_mean_abs_token_logp": 0.02,
+            "parity_alarm_p99_abs_token_logp": 0.1,
+            "parity_alarm_min_top1_agreement": 0.999,
+        },
+    )
+    assert all(x["comparison"]["passed"] for x in checks.values()), checks
+    assert checks["behavior"]["candidate_top1"] == sample["behavior_top1_token_ids"]
+    assert checks["training_likelihood"]["comparison"]["top1_agreement"] is None
+
+
+def test_r1_reference_runner_writes_full_token_records_with_cpu_tiny_model(adapter, tmp_path):
+    import json
+
+    from src.audit_r1_runtime import _run_parity
+
+    # Random weights otherwise sample image placeholders as text, which Qwen
+    # correctly rejects on the next multimodal forward. Limit this CPU fixture's
+    # output vocabulary consistently for generation and every scoring path.
+    def fixture_text_vocabulary(_module, _inputs, logits):
+        placeholder_mask = torch.isin(
+            torch.arange(logits.shape[-1], device=logits.device),
+            torch.tensor([60, 61], device=logits.device),
+        )
+        return logits.masked_fill(placeholder_mask, -1e9)
+
+    adapter.model.lm_head.register_forward_hook(fixture_text_vocabulary)
+    scenes = []
+    for index in range(12):
+        Image.new("RGB", (4, 4), (index * 20, 0, 255 - index * 20)).save(tmp_path / f"{index}.png")
+        scenes.append(
+            {
+                "base_scene_id": f"scene{index}",
+                "split": "calibration",
+                "observed_world": [9, 2, 3, 4],
+                "operation": "sum4",
+                "cue": {"family": "duplicate_encoding", "known_index": 0, "known_value": 1},
+                "image_path": f"{index}.png",
+                "image_hash": f"fixture{index}",
+            }
+        )
+    certificate = _run_parity(
+        adapter,
+        scenes,
+        {
+            "data_root": str(tmp_path),
+            "max_new_tokens": 2,
+            "parity_alarm_mean_abs_token_logp": 0.02,
+            "parity_alarm_p99_abs_token_logp": 0.1,
+            "parity_alarm_min_top1_agreement": 0.999,
+        },
+        tmp_path,
+    )
+    assert certificate["status"] == "PASS"
+    assert certificate["fixed_sequence_boundaries"]["checks_completed"] == 27
+    assert len(json.loads((tmp_path / "fixed_reference_rollouts.json").read_text())) == 120
+    rows = [
+        json.loads(line) for line in (tmp_path / "parity_records.jsonl").read_text().splitlines()
+    ]
+    assert {"batch2_reversed_images", "batch2_repeated_image", "training_likelihood"} <= {
+        r["path"] for r in rows
+    }
+    assert all(len(r["reference_logp"]) == len(r["candidate_logp"]) for r in rows)
+
+
+@pytest.mark.parametrize("side", ["left", "right"])
+def test_multimodal_batch_padding_retains_image_order(adapter, tmp_path, side):
+    from src.r1_parity import batch_teacher_scores
+
+    red = prepared(adapter, tmp_path, True)
+    Image.new("RGB", (4, 4), "blue").save(tmp_path / "blue.png")
+    blue = adapter.prepare(
+        {
+            "system": "system",
+            "user": "observed [1,2,3,4]",
+            "prompt_hash": "fixture",
+            "image_path": "blue.png",
+        },
+        tmp_path,
+    )
+    completions = [[7, 2], [8, 9, 2]]
+    with torch.no_grad():
+        reference = [
+            adapter.continuation_scores(item, tokens, mode="full")
+            for item, tokens in zip([red, blue], completions, strict=True)
+        ]
+    for items, tokens, expected in (
+        ([red, blue], completions, reference),
+        ([blue, red], completions[::-1], reference[::-1]),
+    ):
+        observed = batch_teacher_scores(adapter, items, tokens, side)
+        for a, b in zip(observed, expected, strict=True):
+            assert a[0] == b[0]
+            torch.testing.assert_close(torch.tensor(a[1]), torch.tensor(b[1]), atol=1e-5, rtol=1e-5)
 
 
 @pytest.mark.parametrize("image", [False, True])
