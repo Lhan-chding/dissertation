@@ -205,8 +205,15 @@ def main(argv=None):
     )
     panel = reference_panel(scenes)
     adapter = load_adapter("qwen35_9b", _model_spec(config), image_token_limit=768)
+    model_audit = adapter.audit
     started = time.perf_counter()
     meter, parity = _run_parity(adapter, panel, config, args.out)
+    # R1 explicitly isolates the training smoke adapter and Adam state from
+    # the parity model. Release all parity references before loading smoke.
+    del adapter
+    if torch.cuda.is_available():
+        torch.cuda.synchronize()
+        torch.cuda.empty_cache()
     smoke = _run_smoke(config, scenes, args.smoke_out)
     write_json(
         args.out / "environment_lock.json",
@@ -214,7 +221,7 @@ def main(argv=None):
             "status": "PASS",
             "execution_kind": "REAL_CUDA_INFERENCE",
             "python": platform.python_version(),
-            "model": adapter.audit,
+            "model": model_audit,
             "source_commit": __import__("src.core", fromlist=["source_commit"]).source_commit(),
             "elapsed_seconds": time.perf_counter() - started,
         },
