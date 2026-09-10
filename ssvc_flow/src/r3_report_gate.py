@@ -10,6 +10,7 @@ from __future__ import annotations
 import csv
 import json
 import math
+import sys
 from pathlib import Path
 
 from .core import canonical_hash, file_hash
@@ -18,6 +19,12 @@ from .r3_response import analyze_control_responses
 LAMBDAS = (0, 0.01, 0.25, 1, 2)
 RESPONSE_BANKS = (0, 6)
 BOOTSTRAP = {"replicates": 5000, "seed": 20260909}
+REPORT_FLOAT_COMPARISON = {
+    "epsilon_multiplier": 64,
+    "float64_epsilon": sys.float_info.epsilon,
+    "bound": "64 * float64_epsilon * max(1, abs(stored), abs(recomputed))",
+    "scope": "Derived response floats only; metadata, raw evidence and CSV/JSON agreement exact",
+}
 
 
 def _pairs(pairs):
@@ -56,6 +63,104 @@ def _json(root, relative):
 def _same_json(actual, expected, context):
     if canonical_hash(actual) != canonical_hash(expected):
         raise ValueError(f"{context} differs from recomputed evidence")
+
+
+def _derived_float(path):
+    if len(path) < 4 or path[0] != "candidates":
+        return False
+    if path[2] == "responses":
+        return (
+            len(path) == 6
+            and path[-1]
+            in {
+                "estimate",
+                "theta_estimate",
+                "baseline_estimate",
+                "absolute_delta",
+                "auxiliary_delta",
+                "predicted_delta",
+            }
+        ) or (
+            len(path) == 8
+            and path[5] == "ci"
+            and path[-1]
+            in {
+                "low",
+                "high",
+                "half_width",
+            }
+        )
+    if path[2] == "sequence_records":
+        return len(path) == 5 and path[-1] in {
+            "sequence_log_ratio",
+            "weight",
+            "paired_weight_difference_from_lambda0",
+        }
+    if path[2] == "diagnostics":
+        tail = path[4:] if path[3] == "overall" else path[5:]
+        return (
+            (
+                len(tail) == 1
+                and tail[0]
+                in {
+                    "ESS",
+                    "ESS_fraction",
+                    "max_normalized_weight",
+                    "mean_weight",
+                }
+            )
+            or (len(tail) == 2 and tail[0] == "weight_quantiles")
+            or (len(tail) == 3 and tail[0] == "categories" and tail[2] in {"ESS", "ESS_fraction"})
+        )
+    return False
+
+
+def _compare_response(stored, recomputed, context):
+    """Allow float64 math-kernel roundoff, preserving exact evidence/contract checks.
+
+    exp and reductions can differ across CPU SIMD implementations even with an
+    identical NumPy version. The absolute floor handles cancellation in deltas;
+    this is unrelated to the registered GPU gradient-reuse tolerances.
+    """
+    differences = []
+
+    def compare(a, b, path=()):
+        if type(a) is not type(b):
+            raise ValueError(f"{context} response type differs at {path}")
+        if isinstance(a, dict):
+            if set(a) != set(b):
+                raise ValueError(f"{context} response fields differ at {path}")
+            for key in sorted(a):
+                compare(a[key], b[key], (*path, key))
+        elif isinstance(a, list):
+            if len(a) != len(b):
+                raise ValueError(f"{context} response length differs at {path}")
+            for index, (left, right) in enumerate(zip(a, b, strict=True)):
+                compare(left, right, (*path, index))
+        elif a != b:
+            bound = 0.0
+            if type(a) is float and math.isfinite(a) and math.isfinite(b) and _derived_float(path):
+                bound = 64 * sys.float_info.epsilon * max(1.0, abs(a), abs(b))
+            if not bound or abs(a - b) > bound:
+                raise ValueError(f"{context} response differs from recomputed evidence at {path}")
+            differences.append(
+                {
+                    "path": list(path),
+                    "stored": a,
+                    "recomputed": b,
+                    "absolute_difference": abs(a - b),
+                    "allowed_bound": bound,
+                }
+            )
+
+    compare(stored, recomputed)
+    return {
+        "different_float_count": len(differences),
+        "maximum_absolute_difference": max(
+            (d["absolute_difference"] for d in differences), default=0.0
+        ),
+        "differences": differences,
+    }
 
 
 def _summaries(value):
@@ -304,7 +409,7 @@ def _check_parquet(root, banks):
     return len(seen)
 
 
-def validate_response_artifacts(root, *, proposal_records, bank_summaries):
+def validate_response_artifacts(root, *, proposal_records, bank_summaries, roundoff_observer=None):
     """Return a PASS audit only after every measured report value is reconstructed.
 
     Raises ValueError/FloatingPointError on missing, altered, malformed, or
@@ -317,7 +422,7 @@ def validate_response_artifacts(root, *, proposal_records, bank_summaries):
     banks = _summaries(bank_summaries)
     proposal = _proposals(proposal_records)
     proposal_hash = canonical_hash([r["record_hash"] for r in proposal_records])
-    results, audits, hashes = {}, {}, {}
+    results, audits, hashes, roundoff_audits = {}, {}, {}, []
     for index in RESPONSE_BANKS:
         candidates = banks[index]["candidates"]
         scores = {
@@ -334,7 +439,8 @@ def validate_response_artifacts(root, *, proposal_records, bank_summaries):
         )
         relative = f"response_bank_{index:02d}.json"
         stored = _json(root, relative)
-        _same_json(stored, recomputed, f"R3 response bank {index}")
+        roundoff = _compare_response(stored, recomputed, f"R3 response bank {index}")
+        roundoff_audits.append({"bank_index": index, **roundoff})
         hashes[relative] = file_hash(_file(root, relative))
         audits[str(index)] = {
             "status": "PASS",
@@ -342,13 +448,19 @@ def validate_response_artifacts(root, *, proposal_records, bank_summaries):
             "candidate_count": len(candidates),
             "proposal_sequences": len(proposal),
             "response_sha256": hashes[relative],
-            "recomputed_sha256": canonical_hash(recomputed),
+            # This return value is a downstream identity binding. Measured CPU
+            # roundoff belongs in the observer audit, never in that stable identity.
+            "verified_report_canonical_sha256": canonical_hash(stored),
         }
-        results[index] = recomputed
+        # Internal report consistency remains exact, including every CSV float.
+        results[index] = stored
     csv_count = _check_csv(root, _response_rows(results))
     parquet_count = _check_parquet(root, banks)
     for relative in ("paired_response.csv", "gradients_summary.parquet"):
         hashes[relative] = file_hash(_file(root, relative))
+    if roundoff_observer is not None:
+        for audit in roundoff_audits:
+            roundoff_observer(audit)
     return {
         "status": "PASS",
         "execution_kind": "CPU_MATH",
@@ -361,6 +473,7 @@ def validate_response_artifacts(root, *, proposal_records, bank_summaries):
         "gradient_candidate_rows": parquet_count,
         "artifact_sha256": hashes,
         "bootstrap": dict(BOOTSTRAP),
+        "report_float_comparison": dict(REPORT_FLOAT_COMPARISON),
         "safety_status": "NOT_CERTIFIED",
         "unmeasured_response_banks": [i for i in banks if i not in RESPONSE_BANKS],
     }

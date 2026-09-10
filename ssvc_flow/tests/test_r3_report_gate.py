@@ -146,11 +146,11 @@ def report_case(complete_reports, tmp_path):
     return root, copy.deepcopy(proposal), copy.deepcopy(summaries)
 
 
-def _validate(case):
+def _validate(case, **kwargs):
     api = importlib.import_module("src.r3_report_gate")
     root, proposal, summaries = case
     return api.validate_response_artifacts(
-        root, proposal_records=proposal, bank_summaries=summaries
+        root, proposal_records=proposal, bank_summaries=summaries, **kwargs
     )
 
 
@@ -176,6 +176,64 @@ def test_real_report_recomputation_is_read_only_and_bound(report_case):
     interval = response["candidates"]["bank_00_lambda_1"]["responses"]["overall"]["pX"]["ci"]
     assert interval["estimate"]["half_width"] > 0
     assert result["safety_status"] == "NOT_CERTIFIED"
+
+
+def test_accepts_audited_math_kernel_roundoff_without_rewriting_reports(report_case, monkeypatch):
+    api = importlib.import_module("src.r3_report_gate")
+    original = api.analyze_control_responses
+
+    def alternate_kernel(*args, **kwargs):
+        result = original(*args, **kwargs)
+        candidate = result["candidates"][result["baseline_key"]]
+        value = candidate["responses"]["overall"]["pX"]
+        value["estimate"] = math.nextafter(value["estimate"], math.inf)
+        # Cancellation can create many ULPs of a near-zero delta from one ULP of exp.
+        value["absolute_delta"] += 2e-16
+        diagnostic = candidate["diagnostics"]["overall"]
+        diagnostic["ESS"] = math.nextafter(diagnostic["ESS"], math.inf)
+        return result
+
+    reference = _validate(report_case)
+    monkeypatch.setattr(api, "analyze_control_responses", alternate_kernel)
+    root = report_case[0]
+    before = {str(p): file_hash(p) for p in root.rglob("*") if p.is_file()}
+    roundoff = []
+    result = _validate(report_case, roundoff_observer=roundoff.append)
+    assert result["status"] == "PASS"
+    assert [audit["different_float_count"] for audit in roundoff] == [3, 3]
+    assert result == reference  # Downstream identity must not depend on the audit CPU.
+    assert result["report_float_comparison"]["epsilon_multiplier"] == 64
+    assert before == {str(p): file_hash(p) for p in root.rglob("*") if p.is_file()}
+
+
+@pytest.mark.parametrize("mutation", ["threshold", "type", "nan", "csv_ulp", "parquet_ulp"])
+def test_roundoff_allowance_does_not_relax_contracts_or_internal_consistency(report_case, mutation):
+    root = report_case[0]
+    if mutation == "csv_ulp":
+        path = root / "paired_response.csv"
+        fields, rows = _csv_rows(path)
+        rows[0]["estimate"] = str(math.nextafter(float(rows[0]["estimate"]), math.inf))
+        _csv_write(path, fields, rows)
+    elif mutation == "parquet_ulp":
+        path = root / "gradients_summary.parquet"
+        rows = pq.ParquetFile(path).read().to_pylist()
+        rows[-1]["gradient_delta_l2"] = math.nextafter(rows[-1]["gradient_delta_l2"], math.inf)
+        pq.write_table(pa.Table.from_pylist(rows), path)
+    else:
+        path = root / "response_bank_00.json"
+        result = json.loads(path.read_text())
+        candidate = result["candidates"][result["baseline_key"]]
+        if mutation == "threshold":
+            candidate["diagnostics"]["overall"]["registered_thresholds"]["min_ESS_fraction"] = (
+                math.nextafter(0.5, math.inf)
+            )
+        elif mutation == "type":
+            candidate["responses"]["overall"]["pX"]["auxiliary_delta"] = 0
+        else:
+            candidate["responses"]["overall"]["pX"]["estimate"] = float("nan")
+        path.write_text(json.dumps(result))
+    with pytest.raises(ValueError):
+        _validate(report_case)
 
 
 @pytest.mark.parametrize("mutation", ["placeholder", "estimate", "ci", "warning", "bootstrap"])
