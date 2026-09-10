@@ -67,7 +67,7 @@ R4 门禁独立核验14,400条输出、两臂各64步的完整 checkpoint/Adam/R
 ## 下一步及依赖
 
 1. R0/R1/R2 已验收。R2 完整 CPU postflight 和 R3-cold CPU preflight 均 PASS，证据位于服务器 `runs/NEXT_20260909/CPU_postflight_146853_f4c7ea0`，已取回本地 `runs/NEXT_20260909/verified_146853/CPU_postflight_146853_f4c7ea0`。
-2. 跟踪 R3-cold `146949`：Slurm、stage `progress.json`、wrapper `checks/r3-cold.log` 和 `result.txt`；最近实测 RUNNING，节点 `gpu-pro6000-10`，启动 `2026-09-09T20:39:43Z`，已进入SAMPLING（42/1,152；进度快照）。服务器固定 `f4c7ea02f61c6b98a6e4f21a26ba5cc56381fadf`，排队或运行时不得更新 checkout。后续本地文档提交与实际运行源码分别记录。
+2. 跟踪 R3-cold `146949`：Slurm、stage `progress.json`、wrapper `checks/r3-cold.log` 和 `result.txt`；`2026-09-10T05:31:31Z` 实测 RUNNING，elapsed 08:51:48，节点 `gpu-pro6000-10`，启动 `2026-09-09T20:39:43Z`。`05:32:04Z` 进度为 FORKING，已完成 9/12 banks，invocation 为 `attempt_0000`；两组 validation 均已有 `completed.json`，全阶段独立验收尚未开始。用户告知网络恢复后 SSH 已成功；此前连接故障不作为作业失败证据，未重提作业。stage 未发现 `measurement_fault.json` 或 `policy_contamination.json`。服务器源码实测仍为 `f4c7ea02f61c6b98a6e4f21a26ba5cc56381fadf` 且工作树干净；排队或运行时不得更新 checkout。后续本地文档提交与实际运行源码分别记录。
 3. R3-cold 结束后取回归档并核验 SHA256，完整门禁核验48固定训练prompt、768 control proposal、60候选/完整Adam、两组复用验证及所有统计产物。低正确率、零效应或 INCONCLUSIVE 不能作为删除样本或追加试验的理由。
 4. R3-cold 完整验收后，运行 `python -m src.next_stage_preflight --phase R4` 只读CPU预检。通过后设置 `SSVC_R3_COLD_STAGE` 为已验收stage，提交R4；两臂各从相同fresh LoRA/空Adam开始，禁止沿用scratch候选。
 5. R4 全部完成后运行 `--phase R3-warm --r3-dir <已验收cold> --r4-dir <已验收R4>` CPU预检。通过后设置 `SSVC_R3_COLD_STAGE` 和 `SSVC_R4_STAGE`，提交warm；绑定X_BASE step64完整Adam，在相同prompt IDs上重新采样并执行3,072条直接验证。
