@@ -210,27 +210,38 @@ def test_report_steps_preserve_reviewed_warnings_but_reject_unreviewed_mean_alar
 
 @pytest.fixture
 def continued_evidence(stopped_evidence, complete_evidence, tmp_path):  # noqa: F811
+    return _build_continued_evidence(stopped_evidence, complete_evidence[0], tmp_path / "continued")
+
+
+def _build_continued_evidence(parent_evidence, complete, root, *, schema_version=1):
+    """Build full synthetic evidence without bypassing any provenance/state audit."""
     import copy
 
     from src import r4_gate
     from src.optimizer_fork import load_checkpoint, save_checkpoint
-    from src.r4_continuation import REVIEWED_POLICY, prepare_continuation
+    from src.r4_continuation import (
+        REVIEWED_CUMULATIVE_POLICY,
+        REVIEWED_POLICY,
+        prepare_continuation,
+        resolve_evidence,
+    )
     from src.r4_metrics import control_kl_diagnostic
 
-    parent, gate, r2, r3 = stopped_evidence
-    complete = complete_evidence[0]
+    parent, gate, r2, r3 = parent_evidence
     audit = r4_gate.audit_stopped_r4(parent, gate, r2, r3)
-    source = {**audit["source"], "source_commit": "2" * 40}
-    root = tmp_path / "continued"
+    source = {**audit["source"], "source_commit": str(schema_version + 1) * 40}
+    resume_step = audit["stop"]["step"] + 1
     decision = {
-        "schema_version": 1,
+        "schema_version": schema_version,
         "authorization": {
             "user_request": "Resume after diagnosis",
             "reason": "Sequence alarm reviewed",
         },
         "parent_audit_hash": audit["audit_hash"],
         "execution_source_hash": canonical_hash(source),
-        "policy": copy.deepcopy(REVIEWED_POLICY),
+        "policy": copy.deepcopy(
+            REVIEWED_POLICY if schema_version == 1 else REVIEWED_CUMULATIVE_POLICY
+        ),
     }
     ctx = prepare_continuation(parent, root, decision, audit, source, allow_training=True)
     contract = ctx["runtime_binding"]
@@ -262,7 +273,7 @@ def continued_evidence(stopped_evidence, complete_evidence, tmp_path):  # noqa: 
         "report_zh.md",
     ):
         shutil.copy2(complete / name, root / name)
-    for arm, start in (("X_BASE", 36), ("X_VALID", 1)):
+    for arm, start in (("X_BASE", resume_step), ("X_VALID", 1)):
         for step in range(start, 65):
             relative = Path(arm) / f"step_{step:02d}"
             shutil.copytree(complete / relative, root / relative)
@@ -285,23 +296,27 @@ def continued_evidence(stopped_evidence, complete_evidence, tmp_path):  # noqa: 
     entries = []
     source_manifest = _read(complete / "checkpoint_manifest.json")
     parent_mapping = {(e["arm"], e["step"]): e for e in audit["checkpoint_manifest"]["checkpoints"]}
-    origin = load_checkpoint(root / "inherited_parent/origin.pt", runtime["origin_identity"])
+    origin_path = resolve_evidence(root, "origin.pt")["path"]
+    origin = load_checkpoint(origin_path, runtime["origin_identity"])
     probe = r4_gate._probe(_read(root / "two_arm_training_config.json"), r3, origin)
-    new_warning = None
+    new_warnings = []
     for original_entry in source_manifest["checkpoints"]:
         arm, step = original_entry["arm"], original_entry["step"]
         if step == 0:
             entries.append(
                 {
                     **original_entry,
-                    "checkpoint_path": "inherited_parent/origin.pt",
+                    "checkpoint_path": str(origin_path.relative_to(root)),
                     "source_segment": "parent",
                 }
             )
             continue
         if (arm, step) in parent_mapping:
             entry = parent_mapping[(arm, step)]
-            relative = Path(entry["checkpoint_path"]).relative_to(parent)
+            original_path = Path(entry["checkpoint_path"])
+            relative = (
+                original_path.relative_to(parent) if original_path.is_absolute() else original_path
+            )
             entries.append(
                 {
                     **entry,
@@ -346,8 +361,11 @@ def continued_evidence(stopped_evidence, complete_evidence, tmp_path):  # noqa: 
                     sample_key=canonical_hash([store, source_row["sample_key"]]),
                     proposal_record_hash=source_row["record_hash"],
                 )
-            if arm == "X_BASE" and step == 36 and directory == "control_scores":
-                for record in measured[:2]:
+            if directory == "control_scores" and (
+                (arm == "X_BASE" and step == resume_step)
+                or (schema_version == 2 and arm == "X_VALID" and step == 1)
+            ):
+                for record in measured[:2] if schema_version == 1 else measured:
                     record["new_token_logprobs"] = [v - 0.6 for v in record["new_token_logprobs"]]
                 diagnostic = control_kl_diagnostic(
                     probe,
@@ -367,14 +385,16 @@ def continued_evidence(stopped_evidence, complete_evidence, tmp_path):  # noqa: 
                         "control_diagnostic": diagnostic,
                     },
                 )
-                new_warning = {
-                    "arm": arm,
-                    "step": step,
-                    "status": result["status"],
-                    "control_diagnostic": diagnostic,
-                    "source_segment": "current",
-                    "continuation_hash": ctx["continuation_hash"],
-                }
+                new_warnings.append(
+                    {
+                        "arm": arm,
+                        "step": step,
+                        "status": result["status"],
+                        "control_diagnostic": diagnostic,
+                        "source_segment": "current",
+                        "continuation_hash": ctx["continuation_hash"],
+                    }
+                )
             _write_rows(attempt / directory / "samples.jsonl", measured)
         write_json(attempt / "result.json", result)
         (attempt / "completed.json").unlink()
@@ -406,22 +426,24 @@ def continued_evidence(stopped_evidence, complete_evidence, tmp_path):  # noqa: 
             ),
         },
     )
-    warnings = [
-        {
-            "arm": "X_BASE",
-            "step": 35,
-            "status": "DIAGNOSTIC_STOP",
-            "control_diagnostic": audit["stop"]["diagnostic"],
-            "source_segment": "parent",
-            "continuation_hash": ctx["continuation_hash"],
-        },
-        new_warning,
-    ]
+    warnings = []
+    for entry in audit["checkpoint_manifest"]["checkpoints"]:
+        if entry["step"] == 0:
+            continue
+        evidence = resolve_evidence(
+            parent, f"{entry['arm']}/step_{entry['step']:02d}/updates/attempt_0000/result.json"
+        )
+        result = _read(evidence["path"])
+        if result["status"] != "PASS":
+            warnings.append({k: result[k] for k in ("arm", "step", "status", "control_diagnostic")})
+            warnings[-1].update(source_segment="parent", continuation_hash=ctx["continuation_hash"])
+    warnings.extend(new_warnings)
     write_json(root / "diagnostic_warnings.json", warnings)
     shutil.copytree(complete / "invocations", root / "invocations")
     cost = _read(complete / "runtime_profile.json")
     cost["invocations"][0]["observed"].update(
-        optimizer_step_calls_observed=93, backward_calls_observed=2976
+        optimizer_step_calls_observed=128 - audit["inherited_counts"]["optimizer_updates"],
+        backward_calls_observed=(128 - audit["inherited_counts"]["optimizer_updates"]) * 32,
     )
     inherited = _read(parent / "runtime_profile.json")
     cost["inherited_runtime_counts"] = {k: v for k, v in inherited.items() if k != "invocations"}

@@ -117,36 +117,27 @@ def _reviewed_sequence_warning(diagnostic, continuation):
     """Keep the measured alarm; only the explicitly reviewed class may continue."""
     if continuation is None:
         return False
-    from .r4_continuation import REVIEWED_POLICY
+    from .r4_continuation import allows_reviewed_warning
 
-    if continuation["decision"]["policy"] != REVIEWED_POLICY:
-        return False
-    mean = diagnostic.get("mean_token_kl")
-    sequence = diagnostic.get("sequence_log_ratio_p99_abs")
-    return (
-        type(mean) in (int, float)
-        and type(sequence) in (int, float)
-        and math.isfinite(mean)
-        and math.isfinite(sequence)
-        and 0 <= mean <= 0.1
-        and sequence > 2.0
-        and diagnostic.get("should_stop") is True
-        and diagnostic.get("status") == "STOP_DIAGNOSE"
-        and diagnostic.get("alarms") == {"mean_token_kl": False, "sequence_log_ratio_p99_abs": True}
-        and diagnostic.get("thresholds")
-        == {
-            "mean_token_kl": 0.1,
-            "sequence_log_ratio_p99_abs": 2.0,
-            "comparison": "strict_greater_than",
-        }
-    )
+    return allows_reviewed_warning(diagnostic, continuation["decision"]["policy"])
 
 
 def _parent_rows(continuation, relative, prompts, state, arm, step, role):
     """Read an already CPU-audited parent ledger without opening a writer."""
-    root = continuation["parent_root"] / relative
-    identity = continuation["parent_runtime"]["identity"]
-    requests = build_requests(prompts, identity, arm, step, role, state_hash(state))
+    from .r4_continuation import resolve_evidence
+
+    owner = resolve_evidence(continuation["parent_root"], relative + "/samples.jsonl")
+    root = owner["path"].parent
+    identity = owner["runtime"]["identity"]
+    requests = build_requests(
+        prompts,
+        identity,
+        arm,
+        step,
+        role,
+        state_hash(state),
+        sampling_identity=continuation["sampling_identity"],
+    )
     expected = {
         **identity,
         "arm": arm,
@@ -162,6 +153,10 @@ def _parent_rows(continuation, relative, prompts, state, arm, step, role):
         row = json.loads(line)
         if row["sample_key"] in records:
             raise ValueError("Inherited R4 duplicate sample")
+        if "continuation" in owner["runtime"] and row.get(
+            "execution_identity_hash"
+        ) != canonical_hash(identity):
+            raise ValueError("Inherited R4 sample execution identity changed")
         records[row["sample_key"]] = row
     validate_sample_ledger(records, requests)
     if len(records) != len(requests):
@@ -170,12 +165,16 @@ def _parent_rows(continuation, relative, prompts, state, arm, step, role):
 
 
 def _parent_step(continuation, entry, prestate):
+    from .r4_continuation import resolve_evidence
+
     parent = continuation["parent_root"]
-    updates = parent / entry["arm"] / f"step_{entry['step']:02d}" / "updates"
-    completed = list(updates.glob("attempt_*/completed.json"))
-    if len(completed) != 1:
-        raise ValueError("Inherited R4 step lacks one complete attempt")
-    attempt = completed[0].parent
+    path = Path(entry["checkpoint_path"])
+    if path.is_absolute():
+        path = path.relative_to(continuation["parent_binding"]["root"])
+    owner = resolve_evidence(parent, path.as_posix())
+    attempt = owner["path"].parent
+    if not (attempt / "completed.json").is_file():
+        raise ValueError("Inherited R4 step lacks a complete attempt")
     result = _json(attempt / "result.json")
     if result["checkpoint_identity"]["prestate_hash"] != state_hash(prestate):
         raise ValueError("Inherited R4 checkpoint chain changed")
@@ -977,7 +976,9 @@ def _step(
                     attempt / "reviewed_warning.json",
                     {
                         "continuation_hash": continuation["continuation_hash"],
-                        "reviewed_warning_policy": "sequence_p99_only_two_arms_to_step64",
+                        "reviewed_warning_policy": continuation["decision"]["policy"][
+                            "reviewed_warning_policy"
+                        ],
                         "arm": arm,
                         "step": step,
                         "checkpoint_sha256": file_hash(attempt / "checkpoint.pt"),
@@ -1256,7 +1257,11 @@ def _reports(out, endpoint_rows, initial_rows, details):
                 "线步骤及诊断原值完整保留。"
             ),
             (
-                "本次按记录的两臂一致恢复决策继续累计 sequence p99 告警；"
+                "本次按记录的两臂一致恢复决策继续有限累计平均 KL 或 sequence p99 告警；"
+                "非有限数及测量、污染、哈希、parity 故障仍停止。"
+                if details.get("reviewed_warning_policy")
+                == "finite_cumulative_kl_or_sequence_p99_two_arms_to_step64"
+                else "本次按记录的两臂一致恢复决策继续累计 sequence p99 告警；"
                 "平均 KL 超线、非有限数及测量、污染、哈希、parity 故障仍停止。"
                 if details.get("continuation_hash")
                 else "未采用诊断恢复决策；任何固定 control 超线仍停止。"
@@ -1545,11 +1550,14 @@ def run_r4(
             origin_identity = {**identity, "unit": "initial_origin"}
             origin_path = out / "origin.pt"
             if continuation is not None:
+                from .r4_continuation import resolve_evidence
+
+                owner = resolve_evidence(continuation["parent_root"], "origin.pt")
                 origin_identity = {
-                    **continuation["parent_runtime"]["identity"],
+                    **owner["runtime"]["identity"],
                     "unit": "initial_origin",
                 }
-                origin_path = continuation["parent_root"] / "origin.pt"
+                origin_path = owner["path"]
                 inherited_origin = load_checkpoint(origin_path, origin_identity)
                 if any(
                     state_hash(origin[key]) != state_hash(inherited_origin[key])
@@ -1943,6 +1951,21 @@ def run_r4(
                     "reviewed_warning_policy"
                 ]
                 details["diagnostic_warning_count"] = sum(s["status"] != "PASS" for s in summaries)
+                if continuation["decision"]["schema_version"] == 2:
+                    details["diagnostic_stop_history"] = [
+                        {
+                            key: s[key]
+                            for key in (
+                                "arm",
+                                "step",
+                                "status",
+                                "source_segment",
+                                "control_diagnostic",
+                            )
+                        }
+                        for s in summaries
+                        if s["status"] == "DIAGNOSTIC_STOP"
+                    ]
                 status = "COMPLETED_WITH_DIAGNOSTIC_WARNINGS"
             else:
                 status = "PASS"

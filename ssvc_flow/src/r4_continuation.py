@@ -40,6 +40,82 @@ REVIEWED_POLICY = {
     ],
 }
 
+# Version 1 remains byte-for-byte compatible with the first reviewed decision.
+# This distinct, source-bound amendment never changes the measured thresholds.
+REVIEWED_CUMULATIVE_POLICY = {
+    "reviewed_warning_policy": "finite_cumulative_kl_or_sequence_p99_two_arms_to_step64",
+    "arms": ["X_BASE", "X_VALID"],
+    "steps": 64,
+    "thresholds": copy.deepcopy(REVIEWED_POLICY["thresholds"]),
+    "sequence_p99": "preserve_warning_and_continue",
+    "cumulative_mean_kl": "preserve_warning_and_continue",
+    "hard_stops": [
+        "nonfinite_diagnostic",
+        "measurement_fault",
+        "policy_contamination",
+        "hash_mismatch",
+        "parity_failure",
+    ],
+}
+
+
+def policy_for_name(name):
+    """Return a detached supported policy; names cannot select arbitrary overrides."""
+    if isinstance(name, str):
+        for policy in (REVIEWED_POLICY, REVIEWED_CUMULATIVE_POLICY):
+            if name == policy["reviewed_warning_policy"]:
+                return copy.deepcopy(policy)
+    raise ValueError("Unsupported reviewed warning policy")
+
+
+def _consistent_alarm(diagnostic, *, legacy_missing_status=False):
+    if not isinstance(diagnostic, dict):
+        return False
+    try:
+        # Reject nonfinite values even in detailed group/prompt measurements.
+        canonical_hash(diagnostic)
+        if not _same(diagnostic.get("thresholds"), REVIEWED_POLICY["thresholds"]):
+            return False
+        mean = diagnostic.get("mean_token_kl")
+        sequence = diagnostic.get("sequence_log_ratio_p99_abs")
+        if any(
+            type(x) not in (int, float) or not math.isfinite(x) or x < 0 for x in (mean, sequence)
+        ):
+            return False
+        alarms = {"mean_token_kl": mean > 0.1, "sequence_log_ratio_p99_abs": sequence > 2.0}
+        return (
+            any(alarms.values())
+            and diagnostic.get("should_stop") is True
+            and _same(diagnostic.get("alarms"), alarms)
+            and (
+                diagnostic.get("status") == "STOP_DIAGNOSE"
+                or (legacy_missing_status and "status" not in diagnostic)
+            )
+        )
+    except (ValueError, TypeError, OverflowError):
+        return False
+
+
+def allows_reviewed_warning(diagnostic, policy):
+    """Whether this exact supported decision permits the original measured alarm.
+
+    This only classifies a diagnostic; callers still enforce arm/step scope and
+    reject preserved integrity, measurement and parity faults independently.
+    """
+    if not isinstance(policy, dict):
+        return False
+    try:
+        supported = policy_for_name(policy.get("reviewed_warning_policy"))
+        if not _same(policy, supported) or not _consistent_alarm(diagnostic):
+            return False
+        return (
+            supported["reviewed_warning_policy"]
+            == REVIEWED_CUMULATIVE_POLICY["reviewed_warning_policy"]
+            or diagnostic["mean_token_kl"] <= 0.1
+        )
+    except (ValueError, TypeError):
+        return False
+
 
 def _json(value):
     if isinstance(value, (str, os.PathLike)):
@@ -98,16 +174,8 @@ def _validate_binding(binding):
     diagnostic = stop.get("diagnostic", {})
     if not _same(diagnostic.get("thresholds"), REVIEWED_POLICY["thresholds"]):
         raise ValueError("Stopped-R4 diagnostic thresholds changed")
-    if diagnostic.get("should_stop") is not True or not _same(
-        diagnostic.get("alarms"),
-        {"mean_token_kl": False, "sequence_log_ratio_p99_abs": True},
-    ):
-        raise ValueError("Only an audited sequence-p99 warning can continue")
-    mean, p99 = diagnostic.get("mean_token_kl"), diagnostic.get("sequence_log_ratio_p99_abs")
-    if any(type(x) not in (int, float) or not math.isfinite(x) for x in (mean, p99)):
-        raise ValueError("Nonfinite stopped-R4 diagnostic cannot continue")
-    if not 0 <= mean <= 0.1 or p99 <= 2.0:
-        raise ValueError("Stopped-R4 warning values contradict the reviewed policy")
+    if not _consistent_alarm(diagnostic, legacy_missing_status=True):
+        raise ValueError("Stopped-R4 diagnostic must retain a consistent finite measured alarm")
 
 
 def validate_continuation_decision(decision, parent_binding, execution_source):
@@ -127,7 +195,7 @@ def validate_continuation_decision(decision, parent_binding, execution_source):
         "policy",
     }:
         raise ValueError("Continuation decision schema changed")
-    if type(decision["schema_version"]) is not int or decision["schema_version"] != 1:
+    if type(decision["schema_version"]) is not int or decision["schema_version"] not in (1, 2):
         raise ValueError("Unsupported continuation decision schema")
     authorization = decision["authorization"]
     if not isinstance(authorization, dict) or set(authorization) != {"user_request", "reason"}:
@@ -138,8 +206,18 @@ def validate_continuation_decision(decision, parent_binding, execution_source):
         raise ValueError("Continuation parent audit binding changed")
     if decision["execution_source_hash"] != canonical_hash(source):
         raise ValueError("Continuation execution source changed")
-    if not _same(decision["policy"], REVIEWED_POLICY):
+    policy = REVIEWED_POLICY if decision["schema_version"] == 1 else REVIEWED_CUMULATIVE_POLICY
+    if not _same(decision["policy"], policy):
         raise ValueError("Continuation policy, two arms, steps or thresholds changed")
+    diagnostic = copy.deepcopy(binding["stop"]["diagnostic"])
+    if decision["schema_version"] == 1:
+        # The original contract accepted audit fixtures without a status field.
+        # Real stored diagnoses still carry their exact STOP_DIAGNOSE status.
+        diagnostic.setdefault("status", "STOP_DIAGNOSE")
+        if "continuation" in binding:
+            raise ValueError("Version 1 requires an original stopped R4 parent")
+    if not allows_reviewed_warning(diagnostic, policy):
+        raise ValueError("Stopped-R4 alarm is outside the bound reviewed policy")
     return decision
 
 
@@ -225,6 +303,27 @@ def _check_audited_files(parent, binding, inventory):
         raise ValueError("Stopped-R4 runtime identity changed")
     if not _same(_json(parent / "identity.json"), binding["identity"]):
         raise ValueError("Stopped-R4 logical sampling identity changed")
+    inherited_contract = runtime.get("continuation")
+    if inherited_contract is not None:
+        logical = binding.get("logical_sampling_identity")
+        if (
+            not isinstance(logical, dict)
+            or not _same(binding.get("continuation"), inherited_contract)
+            or not _same(_json(parent / "logical_sampling_identity.json"), logical)
+            or inherited_contract.get("logical_sampling_identity_sha256") != canonical_hash(logical)
+        ):
+            raise ValueError("Stopped-R4 inherited logical sampling identity changed")
+        excluded = {"source_hash", "continuation_hash"}
+        if not _same(
+            {key: value for key, value in logical.items() if key not in excluded},
+            {key: value for key, value in binding["identity"].items() if key not in excluded},
+        ):
+            raise ValueError("Stopped-R4 logical identity changed the experiment")
+    elif "continuation" in binding or (
+        "logical_sampling_identity" in binding
+        and not _same(binding["logical_sampling_identity"], binding["identity"])
+    ):
+        raise ValueError("Stopped-R4 logical sampling identity lacks its inherited contract")
     if not _same(_json(parent / "checkpoint_manifest.json"), binding["checkpoint_manifest"]):
         raise ValueError("Stopped-R4 checkpoint manifest changed")
     checkpoint = binding["stop"]["checkpoint"]
@@ -258,20 +357,26 @@ def _exclusive_json(path, value):
 
 
 def _records(decision, binding, inventory):
-    logical = copy.deepcopy(binding["identity"])
+    version = decision["schema_version"]
+    logical = copy.deepcopy(
+        binding.get("logical_sampling_identity", binding["identity"])
+        if version == 2
+        else binding["identity"]
+    )
     stable = {
-        "schema_version": 1,
+        "schema_version": version,
         "parent_audit_hash": binding["audit_hash"],
         "decision_sha256": canonical_hash(decision),
         "parent_snapshot_sha256": canonical_hash(inventory),
         "logical_sampling_identity_sha256": canonical_hash(logical),
-        "reviewed_warning_policy": REVIEWED_POLICY["reviewed_warning_policy"],
+        "reviewed_warning_policy": decision["policy"]["reviewed_warning_policy"],
     }
     contract = {
         **stable,
         "continuation_hash": canonical_hash(stable),
         "parent_dir": "inherited_parent",
         "parent_binding": binding,
+        **({"logical_sampling_identity": logical} if version == 2 else {}),
     }
     return logical, contract, {"runtime_binding": contract, "snapshot_files": inventory}
 
@@ -314,6 +419,69 @@ def verify_continuation(out, parent_binding, execution_source):
     if not _same(_json(destination / "continuation_binding.json"), record):
         raise ValueError("Saved continuation binding or snapshot inventory changed")
     return _context(snapshot, binding, runtime, logical, decision, contract)
+
+
+def _evidence_path(root, relative):
+    """Inspect an existing path beneath a verified root without following links."""
+    current = root
+    for index, part in enumerate(relative.parts):
+        current /= part
+        try:
+            mode = current.lstat().st_mode
+        except FileNotFoundError:
+            return None
+        if stat.S_ISLNK(mode) or not (stat.S_ISREG(mode) or stat.S_ISDIR(mode)):
+            raise ValueError("Inherited evidence contains a symlink or nonregular entry")
+        if index + 1 < len(relative.parts) and not stat.S_ISDIR(mode):
+            raise ValueError("Inherited evidence path crosses a non-directory")
+    return current
+
+
+def resolve_evidence(root, relative):
+    """Locate an artifact in an already audited, explicitly declared parent chain.
+
+    Logical paths fall back only through runtime.continuation.parent_dir.
+    Explicit inherited_parent prefixes are consumed as ownership transitions,
+    never returned as part of another execution's path. This does not replace
+    recursive manifest/source auditing. The returned relative path is relative
+    to the actual owning execution and can identify either a ledger or a file.
+    """
+    relative = _relative(str(relative) if isinstance(relative, PurePosixPath) else relative)
+    current = Path(root)
+    if current.is_symlink() or not current.is_dir():
+        raise ValueError("Inherited evidence root must be a real directory")
+    current = current.resolve()
+    seen = set()
+    for depth in range(33):
+        info = current.lstat()
+        if not stat.S_ISDIR(info.st_mode) or stat.S_ISLNK(info.st_mode):
+            raise ValueError("Inherited evidence root must be a real directory")
+        marker = (info.st_dev, info.st_ino)
+        if marker in seen:
+            raise ValueError("Inherited evidence ownership cycle")
+        seen.add(marker)
+        with _open_regular(current, "runtime_lock.json") as stream:
+            runtime = json.load(stream)
+        if not isinstance(runtime, dict) or not isinstance(runtime.get("identity"), dict):
+            raise ValueError("Inherited evidence lacks its execution runtime identity")
+        explicit = relative.parts[0] == "inherited_parent"
+        candidate = None if explicit else _evidence_path(current, relative)
+        if candidate is not None:
+            return {"root": current, "runtime": runtime, "path": candidate, "relative": relative}
+        contract = runtime.get("continuation")
+        if not isinstance(contract, dict) or contract.get("parent_dir") != "inherited_parent":
+            raise FileNotFoundError("Artifact is absent from the declared inherited evidence chain")
+        if depth == 32:
+            raise ValueError("Inherited evidence exceeds the supported depth of 32")
+        if explicit:
+            if len(relative.parts) == 1:
+                raise ValueError("Inherited evidence path must identify an artifact")
+            relative = PurePosixPath(*relative.parts[1:])
+        parent = _evidence_path(current, PurePosixPath("inherited_parent"))
+        if parent is None or not parent.is_dir():
+            raise ValueError("Declared inherited evidence directory is missing")
+        current = parent
+    raise ValueError("Inherited evidence exceeds the supported depth of 32")
 
 
 def _partial_inventory(copying, inventory):

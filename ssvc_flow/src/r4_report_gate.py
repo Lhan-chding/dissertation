@@ -87,6 +87,18 @@ def _rows_hash(rows):
 def _steps(summaries, *, continuation=None):
     if not isinstance(summaries, (list, tuple)) or len(summaries) != 128:
         raise ValueError("Exactly 128 successful step summaries are required")
+    cumulative_policy = None
+    if continuation is not None:
+        from .r4_continuation import REVIEWED_CUMULATIVE_POLICY, policy_for_name
+
+        policy = policy_for_name(continuation.get("reviewed_warning_policy"))
+        if policy == REVIEWED_CUMULATIVE_POLICY:
+            if (
+                type(continuation.get("schema_version")) is not int
+                or continuation["schema_version"] != 2
+            ):
+                raise ValueError("Cumulative diagnostic review requires its schema2 contract")
+            cumulative_policy = policy
     result = {}
     for summary in summaries:
         if not isinstance(summary, dict):
@@ -102,7 +114,13 @@ def _steps(summaries, *, continuation=None):
         counts = summary.get("training_category_counts")
         zero = summary.get("zero_advantage_groups")
         allowed = {"PASS"}
-        if (
+        if cumulative_policy is not None:
+            if summary.get("source_segment") not in ("parent", "current"):
+                raise ValueError("R4 recursive report source segment is missing or unknown")
+            allowed.add("DIAGNOSTIC_WARNING")
+            if summary["source_segment"] == "parent":
+                allowed.add("DIAGNOSTIC_STOP")
+        elif (
             continuation is not None
             and continuation.get("reviewed_warning_policy")
             == "sequence_p99_only_two_arms_to_step64"
@@ -133,7 +151,31 @@ def _steps(summaries, *, continuation=None):
                 value = values.get(field)
                 if type(value) not in (int, float) or not math.isfinite(value):
                     raise ValueError(f"Missing or nonfinite step scalar: {field}")
-        if continuation is not None:
+        if cumulative_policy is not None:
+            from .r4_continuation import allows_reviewed_warning
+
+            if summary["status"] != "PASS":
+                if not allows_reviewed_warning(diagnostic, cumulative_policy):
+                    raise ValueError("R4 recursive report contains an unreviewed diagnostic")
+            else:
+                if (
+                    diagnostic.get("should_stop") is not False
+                    or diagnostic.get("status") != "WITHIN_ENGINEERING_LIMITS"
+                    or not 0 <= diagnostic["mean_token_kl"] <= 0.1
+                    or not 0 <= diagnostic["sequence_log_ratio_p99_abs"] <= 2.0
+                ):
+                    raise ValueError("R4 recursive report cannot label an alarmed step PASS")
+                _same_json(
+                    diagnostic.get("alarms"),
+                    {"mean_token_kl": False, "sequence_log_ratio_p99_abs": False},
+                    "R4 recursive report diagnostic alarm flags",
+                )
+                _same_json(
+                    diagnostic.get("thresholds"),
+                    cumulative_policy["thresholds"],
+                    "R4 recursive report diagnostic thresholds",
+                )
+        elif continuation is not None:
             alarmed = diagnostic.get("should_stop") is True
             if (
                 diagnostic["mean_token_kl"] > 0.1
@@ -318,7 +360,18 @@ def _check_csv(root, name, expected, key_fields):
     return len(seen)
 
 
-def _pilot(root, *, continuation=None):
+def _stop_history(summaries):
+    return [
+        {
+            key: summary[key]
+            for key in ("arm", "step", "status", "source_segment", "control_diagnostic")
+        }
+        for summary in summaries
+        if summary["status"] == "DIAGNOSTIC_STOP"
+    ]
+
+
+def _pilot(root, *, continuation=None, step_summaries=None):
     text = _file(root, "pilot_report.md").read_text(encoding="utf-8")
     blocks = re.findall(r"```json\s*\n(.*?)\n```", text, flags=re.DOTALL)
     if len(blocks) != 1:
@@ -342,6 +395,18 @@ def _pilot(root, *, continuation=None):
         "new_control_outputs": 0,
         "arms": {"X_BASE": 64, "X_VALID": 64},
     }
+    cumulative = continuation is not None and continuation.get("schema_version") == 2
+    if cumulative:
+        summaries = _steps(step_summaries, continuation=continuation)
+        digest = continuation.get("continuation_hash")
+        if not isinstance(digest, str) or not re.fullmatch("[0-9a-f]{64}", digest):
+            raise ValueError("R4 recursive report continuation hash is missing or malformed")
+        expected.update(
+            continuation_hash=digest,
+            reviewed_warning_policy=continuation["reviewed_warning_policy"],
+            diagnostic_warning_count=sum(s["status"] != "PASS" for s in summaries),
+            diagnostic_stop_history=_stop_history(summaries),
+        )
     if not isinstance(details, dict):
         raise ValueError("Malformed pilot completion record")
     _same_json({key: details.get(key) for key in expected}, expected, "Pilot completion facts")
@@ -368,6 +433,13 @@ def _pilot(root, *, continuation=None):
     )
     if any(fact not in prose for fact in facts):
         raise ValueError("Pilot report omits or changes required execution/statistical scope facts")
+    if cumulative:
+        policy_fact = (
+            "本次按记录的两臂一致恢复决策继续有限累计平均KL或sequencep99告警；"
+            "非有限数及测量、污染、哈希、parity故障仍停止。"
+        )
+        if policy_fact not in prose or "平均KL超线、非有限数" in prose:
+            raise ValueError("Pilot report omits or contradicts the cumulative review policy")
     return canonical_hash(details)
 
 
@@ -421,7 +493,7 @@ def validate_r4_response_artifacts(
         root, "N_L_OOD_effects.csv", _effects(results), ("track", "comparison", "scope", "metric")
     )
     curves_count = _check_csv(root, "learning_curves.csv", _curves(summaries), ("arm", "step"))
-    pilot_hash = _pilot(root, continuation=continuation)
+    pilot_hash = _pilot(root, continuation=continuation, step_summaries=summaries)
     names = (*recomputed, "N_L_OOD_effects.csv", "learning_curves.csv", "pilot_report.md")
     return {
         "status": "PASS",
@@ -453,6 +525,17 @@ def validate_r4_response_artifacts(
         "artifact_sha256": {name: file_hash(_file(root, name)) for name in names},
         "recomputed_sha256": {name: canonical_hash(value) for name, value in recomputed.items()},
         "pilot_details_sha256": pilot_hash,
+        **(
+            {
+                "completion_status": "COMPLETED_WITH_DIAGNOSTIC_WARNINGS",
+                "continuation_hash": continuation["continuation_hash"],
+                "reviewed_warning_policy": continuation["reviewed_warning_policy"],
+                "diagnostic_warning_count": sum(s["status"] != "PASS" for s in summaries),
+                "diagnostic_stop_history_sha256": canonical_hash(_stop_history(summaries)),
+            }
+            if continuation is not None and continuation.get("schema_version") == 2
+            else {}
+        ),
         "bootstrap": dict(BOOTSTRAP),
         "safety_status": "NOT_CERTIFIED",
     }

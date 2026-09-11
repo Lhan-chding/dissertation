@@ -400,3 +400,208 @@ def test_replacing_l_primary_with_equal_family_sensitivity_is_rejected(report_ca
     write_json(path, metrics)
     with pytest.raises(ValueError):
         _validate(report_case)
+
+
+CUMULATIVE_POLICY_NAME = "finite_cumulative_kl_or_sequence_p99_two_arms_to_step64"
+
+
+def _recursive_summaries():
+    summaries = []
+    for arm in ARMS:
+        for step in range(1, 65):
+            inherited = arm == "X_BASE" and step <= 51
+            mean, p99, status = 0.01, 0.1, "PASS"
+            if arm == "X_BASE" and step >= 35:
+                mean = 0.101 if step >= 51 else 0.02
+                p99 = 2.1
+                status = "DIAGNOSTIC_STOP" if step in (35, 51) else "DIAGNOSTIC_WARNING"
+            elif arm == "X_VALID" and step > 50:
+                mean, status = 0.11, "DIAGNOSTIC_WARNING"
+            alarms = {"mean_token_kl": mean > 0.1, "sequence_log_ratio_p99_abs": p99 > 2.0}
+            summaries.append(
+                {
+                    "arm": arm,
+                    "step": step,
+                    "status": status,
+                    "source_segment": "parent" if inherited else "current",
+                    "training_category_counts": {"X": 32, "S": 0, "W": 0, "I": 0},
+                    "zero_advantage_groups": 4,
+                    "control_diagnostic": {
+                        "mean_token_kl": mean,
+                        "sequence_log_ratio_p99_abs": p99,
+                        "status": "STOP_DIAGNOSE"
+                        if any(alarms.values())
+                        else "WITHIN_ENGINEERING_LIMITS",
+                        "should_stop": any(alarms.values()),
+                        "alarms": alarms,
+                        "thresholds": {
+                            "mean_token_kl": 0.1,
+                            "sequence_log_ratio_p99_abs": 2.0,
+                            "comparison": "strict_greater_than",
+                        },
+                    },
+                    "update": {"loss": 0.0, "grad_norm_preclip": 0.0, "actual_step_norm": 0.0},
+                }
+            )
+    return summaries
+
+
+def test_recursive_report_steps_preserve_original_stop_warning_stop_history():
+    from src.r4_report_gate import _steps
+
+    summaries = _recursive_summaries()
+    original = copy.deepcopy(summaries)
+    actual = _steps(
+        summaries,
+        continuation={"schema_version": 2, "reviewed_warning_policy": CUMULATIVE_POLICY_NAME},
+    )
+    assert actual == original == summaries
+    assert [s["step"] for s in actual if s["status"] == "DIAGNOSTIC_STOP"] == [35, 51]
+    assert actual[35]["source_segment"] == "parent"
+    assert actual[35]["status"] == "DIAGNOSTIC_WARNING"
+    assert actual[51]["source_segment"] == "current"
+    assert actual[51]["status"] == "DIAGNOSTIC_WARNING"
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        "hidden_alarm",
+        "current_stop",
+        "false_warning",
+        "flag",
+        "threshold",
+        "nan",
+        "negative",
+        "unknown_source",
+        "unknown_policy",
+        "wrong_schema",
+        "nonfinite_update",
+        "nonfinite_group",
+    ],
+)
+def test_recursive_report_steps_reject_hidden_or_unreviewed_diagnostics(mutation):
+    from src.r4_report_gate import _steps
+
+    summaries = _recursive_summaries()
+    policy = {"schema_version": 2, "reviewed_warning_policy": CUMULATIVE_POLICY_NAME}
+    sample = summaries[51]
+    diagnostic = sample["control_diagnostic"]
+    if mutation == "hidden_alarm":
+        sample["status"] = "PASS"
+    elif mutation == "current_stop":
+        sample["status"] = "DIAGNOSTIC_STOP"
+    elif mutation == "false_warning":
+        summaries[0]["status"] = "DIAGNOSTIC_WARNING"
+    elif mutation == "flag":
+        diagnostic["alarms"]["mean_token_kl"] = False
+    elif mutation == "threshold":
+        diagnostic["thresholds"]["mean_token_kl"] = 0.2
+    elif mutation == "nan":
+        diagnostic["mean_token_kl"] = float("nan")
+    elif mutation == "negative":
+        diagnostic["mean_token_kl"] = -0.1
+    elif mutation == "unknown_source":
+        sample["source_segment"] = "parent/parent"
+    elif mutation == "unknown_policy":
+        policy["reviewed_warning_policy"] = "waive_anything"
+    elif mutation == "wrong_schema":
+        policy["schema_version"] = 1
+    elif mutation == "nonfinite_update":
+        sample["update"]["grad_norm_preclip"] = float("inf")
+    elif mutation == "nonfinite_group":
+        diagnostic["group_mean_token_kl"] = {"cross_series/SYMBOLIC_FRESH": float("nan")}
+    with pytest.raises(ValueError):
+        _steps(summaries, continuation=policy)
+
+
+CUMULATIVE_POLICY_PROSE = (
+    "本次按记录的两臂一致恢复决策继续有限累计平均 KL 或 sequence p99 告警；"
+    "非有限数及测量、污染、哈希、parity 故障仍停止。"
+)
+
+
+def _recursive_pilot(report_case):
+    root, inputs = report_case
+    summaries = _recursive_summaries()
+    inputs["step_summaries"] = summaries
+    continuation = {
+        "schema_version": 2,
+        "reviewed_warning_policy": CUMULATIVE_POLICY_NAME,
+        "continuation_hash": "a" * 64,
+    }
+    inputs["continuation"] = continuation
+    path = root / "pilot_report.md"
+    text = path.read_text()
+    prose = text.split("```json", 1)[0].replace(
+        "状态：PASS", "状态：COMPLETED_WITH_DIAGNOSTIC_WARNINGS"
+    )
+    prose = prose.replace(
+        "未采用诊断恢复决策；任何固定 control 超线仍停止。", CUMULATIVE_POLICY_PROSE
+    )
+    details = json.loads(text.split("```json\n")[1].split("```", 1)[0])
+    details.update(
+        status="COMPLETED_WITH_DIAGNOSTIC_WARNINGS",
+        continuation_hash=continuation["continuation_hash"],
+        reviewed_warning_policy=CUMULATIVE_POLICY_NAME,
+        diagnostic_warning_count=sum(s["status"] != "PASS" for s in summaries),
+        diagnostic_stop_history=[
+            {
+                key: s[key]
+                for key in ("arm", "step", "status", "source_segment", "control_diagnostic")
+            }
+            for s in summaries
+            if s["status"] == "DIAGNOSTIC_STOP"
+        ],
+    )
+    _write_csv(root / "learning_curves.csv", [_curve(s) for s in summaries])
+    path.write_text(prose + "```json\n" + json.dumps(details, ensure_ascii=False) + "\n```\n")
+    return details
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    ["missing_stop", "changed_stop", "count", "hash", "policy", "prose", "stale_policy_prose"],
+)
+def test_recursive_report_pilot_requires_bound_diagnostic_history(report_case, mutation):
+    from src.r4_report_gate import _pilot
+
+    details = _recursive_pilot(report_case)
+    if mutation == "missing_stop":
+        details["diagnostic_stop_history"].pop(0)
+    elif mutation == "changed_stop":
+        details["diagnostic_stop_history"][0]["status"] = "DIAGNOSTIC_WARNING"
+    elif mutation == "count":
+        details["diagnostic_warning_count"] -= 1
+    elif mutation == "hash":
+        details["continuation_hash"] = "b" * 64
+    elif mutation == "policy":
+        details["reviewed_warning_policy"] = "sequence_p99_only_two_arms_to_step64"
+    path = report_case[0] / "pilot_report.md"
+    prose = path.read_text().split("```json", 1)[0]
+    if mutation == "prose":
+        prose = prose.replace(CUMULATIVE_POLICY_PROSE, "")
+    elif mutation == "stale_policy_prose":
+        prose += "平均 KL 超线、非有限数及测量、污染、哈希、parity 故障仍停止。\n"
+    path.write_text(prose + "```json\n" + json.dumps(details, ensure_ascii=False) + "\n```\n")
+    with pytest.raises(ValueError):
+        _pilot(
+            report_case[0],
+            continuation=report_case[1]["continuation"],
+            step_summaries=report_case[1]["step_summaries"],
+        )
+
+
+def test_recursive_complete_report_binds_stop_history_and_warning_status(report_case):
+    from src.core import canonical_hash
+
+    details = _recursive_pilot(report_case)
+    result = _validate(report_case)
+    assert result["status"] == "PASS"
+    assert result["completion_status"] == "COMPLETED_WITH_DIAGNOSTIC_WARNINGS"
+    assert result["continuation_hash"] == details["continuation_hash"]
+    assert result["reviewed_warning_policy"] == CUMULATIVE_POLICY_NAME
+    assert result["diagnostic_warning_count"] == details["diagnostic_warning_count"]
+    assert result["diagnostic_stop_history_sha256"] == canonical_hash(
+        details["diagnostic_stop_history"]
+    )

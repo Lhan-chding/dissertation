@@ -196,6 +196,147 @@ def _raw_rows(root):
     ]
 
 
+def test_second_reviewed_recovery_preserves_ancestor_state_and_budget(tmp_path, monkeypatch):
+    from src import r4_gate, r4_metrics
+    from src.optimizer_fork import state_hash
+    from src.r4_continuation import REVIEWED_CUMULATIVE_POLICY
+
+    args, adapter, instances, ancestor, binding, decision, original = _stopped_fixture(
+        tmp_path, monkeypatch, stop_step=35
+    )
+    diagnostic_calls = 0
+
+    def mean_stop(*a, **k):
+        nonlocal diagnostic_calls
+        diagnostic_calls += 1
+        mean = 0.02 if diagnostic_calls < 16 else 0.11
+        return {
+            **original(*a, **k),
+            "status": "STOP_DIAGNOSE",
+            "should_stop": True,
+            "mean_token_kl": mean,
+            "sequence_log_ratio_p99_abs": 3.0,
+            "alarms": {"mean_token_kl": mean > 0.1, "sequence_log_ratio_p99_abs": True},
+        }
+
+    monkeypatch.setattr(r4_metrics, "control_kl_diagnostic", mean_stop)
+    stopped = r4_runtime.run_r4(
+        *args,
+        allow_training=True,
+        continuation_parent=ancestor,
+        continuation_decision=decision,
+        _adapter_factory=adapter,
+    )
+    assert stopped["status"] == "BLOCKED", stopped["details"]
+    parent = args[2]
+    runtime = json.loads((parent / "runtime_lock.json").read_text())
+    manifest = json.loads((parent / "checkpoint_manifest.json").read_text())
+    alarm = json.loads((parent / "alarm_stop.json").read_text())
+    stop_checkpoint = next(c for c in manifest["checkpoints"] if c["step"] == 51)
+    raw = _raw_rows(parent)
+    assert len(raw) == 2784
+    parent_binding = {
+        **binding,
+        "root": str(parent.resolve()),
+        "files": {
+            p.relative_to(parent).as_posix(): file_hash(p) for p in parent.rglob("*") if p.is_file()
+        },
+        "manifest_sha256": file_hash(parent / "manifest.json"),
+        "runtime_lock_sha256": file_hash(parent / "runtime_lock.json"),
+        "alarm_stop_sha256": file_hash(parent / "alarm_stop.json"),
+        "source": runtime["source"],
+        "identity": runtime["identity"],
+        "logical_sampling_identity": binding["identity"],
+        "continuation": runtime["continuation"],
+        "stop": {
+            "arm": "X_BASE",
+            "step": 51,
+            "checkpoint": stop_checkpoint,
+            "diagnostic": alarm["control_diagnostic"],
+        },
+        "checkpoint_manifest": manifest,
+        "inherited_counts": {
+            **binding["inherited_counts"],
+            "optimizer_updates": 51,
+            "training_rollouts": 1632,
+            "new_outputs": len(raw),
+        },
+    }
+    parent_binding["audit_hash"] = canonical_hash(
+        {k: v for k, v in parent_binding.items() if k not in ("root", "audit_hash")}
+    )
+
+    def audit(root, *unused, _recorded_root=None):
+        root = Path(root)
+        actual = (
+            parent_binding
+            if file_hash(root / "runtime_lock.json") == parent_binding["runtime_lock_sha256"]
+            else binding
+        )
+        for name, digest in actual["files"].items():
+            assert file_hash(root / name) == digest
+        return copy.deepcopy(actual)
+
+    monkeypatch.setattr(r4_gate, "audit_stopped_r4", audit)
+    source = {"source_commit": "CPU-FIXTURE-SECOND-CONTINUATION"}
+    monkeypatch.setattr(r4_runtime, "_source", lambda: copy.deepcopy(source))
+    decision2 = {
+        **decision,
+        "schema_version": 2,
+        "parent_audit_hash": parent_binding["audit_hash"],
+        "execution_source_hash": canonical_hash(source),
+        "policy": copy.deepcopy(REVIEWED_CUMULATIVE_POLICY),
+    }
+    calls = []
+    original_step = r4_runtime._step
+
+    def observe(*a, **k):
+        calls.append((a[9], a[10], state_hash(a[2])))
+        return original_step(*a, **k)
+
+    monkeypatch.setattr(r4_runtime, "_step", observe)
+    out = tmp_path / "second_continuation"
+    final_args = (*args[:2], out, *args[3:])
+    completed = r4_runtime.run_r4(
+        *final_args,
+        allow_training=True,
+        continuation_parent=parent,
+        continuation_decision=decision2,
+        _adapter_factory=adapter,
+    )
+    assert completed["status"] == "COMPLETED_WITH_DIAGNOSTIC_WARNINGS", completed["details"]
+    assert calls[0] == ("X_BASE", 52, stop_checkpoint["state_hash"])
+    assert len(calls) == 77
+    assert sum(a.generation_calls for a in instances) == 14400
+    assert instances[-1].generation_calls == 14400 - len(raw)
+    assert completed["details"]["runtime_counts"]["optimizer_steps_observed_at_least"] == 128
+    assert completed["details"]["runtime_counts"]["backward_calls_observed_at_least"] == 4096
+    history = completed["details"]["diagnostic_stop_history"]
+    assert [(s["step"], s["status"]) for s in history] == [
+        (35, "DIAGNOSTIC_STOP"),
+        (51, "DIAGNOSTIC_STOP"),
+    ]
+    all_rows = _raw_rows(out)
+    assert len(all_rows) == len({r["sample_key"] for r in all_rows}) == 14400
+    assert all(r["run_id"] == canonical_hash(binding["identity"]) for r in all_rows)
+    assert json.loads((out / "logical_sampling_identity.json").read_text()) == binding["identity"]
+    for name, digest in parent_binding["files"].items():
+        assert file_hash(parent / name) == digest
+    before = sum(a.generation_calls for a in instances)
+    resumed = r4_runtime.run_r4(
+        *final_args,
+        allow_training=True,
+        resume=True,
+        _adapter_factory=adapter,
+    )
+    assert resumed["status"] == completed["status"], resumed["details"]
+    assert sum(a.generation_calls for a in instances) == before
+    cost = json.loads((out / "runtime_profile.json").read_text())
+    assert cost["optimizer_steps_observed_at_least"] == 128
+    assert cost["invocations"][-1]["observed"]["optimizer_step_calls_observed"] == 0
+    assert cost["invocations"][-1]["observed"]["backward_calls_observed"] == 0
+
+
 def test_real_torch_stop_continuation_and_completed_resume_preserve_all_state(
     tmp_path, monkeypatch
 ):

@@ -185,6 +185,21 @@ def _check_finished_source(status, runtime):
 
 
 def _check_runtime_profile(root, files, cost, runtime, *, completion_status="PASS"):
+    # A continued stage's total includes its entire immediate parent. Subtract
+    # that aggregate once; the parent audit verifies its own older ancestry.
+    if runtime.get("continuation") is not None:
+        parent_cost = _read(root / "inherited_parent/runtime_profile.json")
+        inherited = {k: v for k, v in parent_cost.items() if k != "invocations"}
+        _equal(
+            cost.get("inherited_runtime_counts"), inherited, "R4 inherited execution costs changed"
+        )
+        cost = copy.deepcopy(cost)
+        for key in (
+            "optimizer_steps_observed_at_least",
+            "backward_calls_observed_at_least",
+            "incomplete_invocations_with_unknown_extra_cost",
+        ):
+            cost[key] -= inherited[key]
     histories = cost.get("invocations")
     if not isinstance(histories, list) or not histories:
         raise ValueError("R4 requires original instrumented invocation profiles")
@@ -740,7 +755,7 @@ def _step_evidence(
     keys,
     eos,
     *,
-    allow_sequence_warning=False,
+    allow_saved_stop=False,
     recorded_root=None,
     continuation=None,
     roundoff_observer=None,
@@ -814,8 +829,10 @@ def _step_evidence(
             raise ValueError("R4 nested measured attempt manifest changed")
     result = _read(attempt / "result.json")
     allowed_statuses = {"PASS"}
-    if allow_sequence_warning:
-        allowed_statuses.add("DIAGNOSTIC_WARNING" if continuation else "DIAGNOSTIC_STOP")
+    if allow_saved_stop:
+        allowed_statuses.add("DIAGNOSTIC_STOP")
+    elif continuation is not None:
+        allowed_statuses.add("DIAGNOSTIC_WARNING")
     if (
         result.get("status") not in allowed_statuses
         or result.get("arm") != arm
@@ -889,16 +906,19 @@ def _step_evidence(
         "R4 measured KL artifact differs from its original result",
     )
     if diagnostic["should_stop"]:
-        if (
-            not allow_sequence_warning
-            or diagnostic["alarms"] != {"mean_token_kl": False, "sequence_log_ratio_p99_abs": True}
-            or diagnostic["status"] != "STOP_DIAGNOSE"
-        ):
+        from .r4_continuation import allows_reviewed_warning, policy_for_name
+
+        # Auditing a measured finite STOP is independent of authorizing future
+        # training. An owner WARNING must satisfy its own saved decision.
+        reviewed = continuation is not None and allows_reviewed_warning(
+            diagnostic, policy_for_name(continuation["reviewed_warning_policy"])
+        )
+        if diagnostic["status"] != "STOP_DIAGNOSE" or not (allow_saved_stop or reviewed):
             raise ValueError("R4 fixed control KL alarm must block warm acceptance")
-        expected_status = "DIAGNOSTIC_WARNING" if continuation else "DIAGNOSTIC_STOP"
+        expected_status = "DIAGNOSTIC_STOP" if allow_saved_stop else "DIAGNOSTIC_WARNING"
         if result["status"] != expected_status:
             raise ValueError("R4 measured diagnostic warning cannot be relabelled PASS")
-        if continuation is not None:
+        if not allow_saved_stop:
             _equal(
                 _read(_path(root, files, attempt / "reviewed_warning.json")),
                 {
@@ -972,32 +992,38 @@ def _audit_r4(
     stopped=False,
     recorded_root=None,
     roundoff_observer=None,
+    _depth=0,
 ):
     from .next_stage_runtime import _stage
     from .r4_runtime import _load_plan
 
     root = Path(r4_dir).resolve()
+    if _depth > 32:
+        raise ValueError("R4 continuation ancestry exceeds the supported audit depth")
     roundoff_observations = []
     preliminary = (
         _read(root / "runtime_lock.json") if (root / "runtime_lock.json").is_file() else {}
     )
     continuation = preliminary.get("continuation")
-    if stopped and continuation is not None:
-        raise ValueError("Only an original R4 stopped prefix can seed this continuation contract")
-    parent = parent_runtime = parent_root = parent_files = None
+    parent = parent_root = None
     if continuation is not None:
         from .r4_continuation import verify_continuation
 
         parent_root = root / "inherited_parent"
+        if parent_root.is_symlink() or not parent_root.is_dir():
+            raise ValueError("R4 continuation parent must be a real immutable snapshot directory")
         declared = continuation["parent_binding"]
         parent = audit_stopped_r4(
-            parent_root, gate, r2_binding, r3_binding, _recorded_root=declared["root"]
+            parent_root,
+            gate,
+            r2_binding,
+            r3_binding,
+            _recorded_root=declared["root"],
+            _depth=_depth + 1,
         )
         _equal(parent, declared, "R4 continuation parent differs from complete stopped audit")
         context = verify_continuation(root, parent, preliminary["source"])
         _equal(context["runtime_binding"], continuation, "R4 continuation runtime contract changed")
-        parent_runtime = context["parent_runtime"]
-        parent_files = parent["files"]
     required = (
         "runtime_lock.json",
         "gate_binding.json",
@@ -1025,6 +1051,14 @@ def _audit_r4(
             "runtime_profile.json",
             "learning_curves.csv",
         )
+        if continuation is not None:
+            required = (
+                *(n for n in required if n != "origin.pt"),
+                "continuation_binding.json",
+                "continuation_decision.json",
+                "logical_sampling_identity.json",
+                "diagnostic_warnings.json",
+            )
         files = verify_manifest(root, required)
         status = _read(root / "status.json")
         if (
@@ -1042,7 +1076,6 @@ def _audit_r4(
             "continuation_decision.json",
             "logical_sampling_identity.json",
             "diagnostic_warnings.json",
-            "inherited_parent/origin.pt",
             "identity.json",
         )
         files = verify_manifest(root, required)
@@ -1137,10 +1170,32 @@ def _audit_r4(
     for key in ("processor_hash", "tokenizer_hash", "chat_template_hash", "frozen_parameter_hash"):
         if runtime["model_audit"].get(key) != gate["certificate"]["model_audit"].get(key):
             raise ValueError("R4 loaded processor/model differs from R1 certificate")
-    origin_root = parent_root if continuation is not None else root
-    origin_files = parent_files if continuation is not None else files
+    from .r4_continuation import resolve_evidence
+
+    # Each immutable owner uses its own actual source identity and manifest.
+    owners = {
+        root: {
+            "runtime": runtime,
+            "files": files,
+            "recorded_root": recorded_root,
+            "checkpoint_manifest": checkpoint_manifest,
+        }
+    }
+    ancestor_root, ancestor = parent_root, parent
+    while ancestor is not None:
+        owners[ancestor_root] = {
+            "runtime": _read(ancestor_root / "runtime_lock.json"),
+            "files": ancestor["files"],
+            "recorded_root": ancestor["root"],
+            "checkpoint_manifest": ancestor["checkpoint_manifest"],
+        }
+        ancestor = ancestor.get("continuation", {}).get("parent_binding")
+        ancestor_root = ancestor_root / "inherited_parent"
+    origin_evidence = resolve_evidence(root, "origin.pt")
+    origin_root = origin_evidence["root"]
+    origin_files = owners[origin_root]["files"]
     origin_identity = {
-        **(parent_runtime["identity"] if continuation is not None else identity),
+        **origin_evidence["runtime"]["identity"],
         "unit": "initial_origin",
     }
     if continuation is not None:
@@ -1226,11 +1281,13 @@ def _audit_r4(
 
     def sample(path, prompts, state, arm, step, role):
         inherited = inherited_sample(arm, step, role)
-        sample_root = parent_root if inherited else root
-        sample_files = parent_files if inherited else files
-        sample_identity = parent_runtime["identity"] if inherited else identity
-        if inherited:
-            path = parent_root / path.relative_to(root)
+        evidence = resolve_evidence(root, str(path.relative_to(root)))
+        sample_root, path = evidence["root"], evidence["path"]
+        if (sample_root != root) != inherited:
+            raise ValueError("R4 sampled evidence source differs from the audited prefix")
+        sample_files = owners[sample_root]["files"]
+        sample_runtime = evidence["runtime"]
+        sample_identity = sample_runtime["identity"]
         used_stores.add(str((path / "samples.jsonl").relative_to(root)))
         return _raw_store(
             sample_root,
@@ -1247,8 +1304,8 @@ def _audit_r4(
             tokenizer,
             eos,
             inputs,
-            sampling_identity=parent_runtime["identity"]
-            if continuation is not None and not inherited
+            sampling_identity=_read(sample_root / "logical_sampling_identity.json")
+            if sample_runtime.get("continuation") is not None
             else None,
         )
 
@@ -1309,21 +1366,34 @@ def _audit_r4(
                         },
                         "R4 inherited checkpoint was rewritten or omitted",
                     )
+            checkpoint_path = _path(
+                root, files, entry["checkpoint_path"], recorded_root=recorded_root
+            )
+            owner = resolve_evidence(root, str(checkpoint_path.relative_to(root)))
+            owner_root, owner_runtime = owner["root"], owner["runtime"]
+            owner_info = owners[owner_root]
+            owner_entry = next(
+                e
+                for e in owner_info["checkpoint_manifest"]["checkpoints"]
+                if (e["arm"], e["step"]) == (arm, step)
+            )
+            owner_stop_path = owner_root / "alarm_stop.json"
+            owner_stop = _read(owner_stop_path) if owner_stop_path.is_file() else {}
+            saved_stop = (owner_stop.get("arm"), owner_stop.get("step")) == (arm, step)
             state, summary = _step_evidence(
-                parent_root if inherited else root,
-                parent_files if inherited else files,
-                parent_mapping[(arm, step)] if inherited else entry,
-                parent_runtime["identity"] if inherited else identity,
+                owner_root,
+                owner_info["files"],
+                owner_entry,
+                owner_runtime["identity"],
                 state,
                 rows,
                 probe,
                 plan["plan_hash"],
                 keys,
                 eos,
-                allow_sequence_warning=(stopped and (arm, step) == (stop_arm, stop_step))
-                or continuation is not None,
-                recorded_root=parent["root"] if inherited else recorded_root,
-                continuation=continuation if continuation is not None and not inherited else None,
+                allow_saved_stop=saved_stop,
+                recorded_root=owner_info["recorded_root"],
+                continuation=owner_runtime.get("continuation"),
                 roundoff_observer=roundoff_observations.append,
             )
             if continuation is not None:
@@ -1377,6 +1447,24 @@ def _audit_r4(
             )
         ):
             raise ValueError("R4 contains unaccounted generated raw outputs")
+    if continuation is not None:
+        expected_warnings = [
+            {
+                "arm": s["arm"],
+                "step": s["step"],
+                "status": s["status"],
+                "control_diagnostic": s["control_diagnostic"],
+                "source_segment": s["source_segment"],
+                "continuation_hash": continuation["continuation_hash"],
+            }
+            for s in summaries
+            if s["status"] != "PASS"
+        ]
+        _equal(
+            _read(root / "diagnostic_warnings.json"),
+            expected_warnings,
+            "R4 complete warning history changed or an alarm was hidden",
+        )
     if stopped:
         final = summaries[-1]
         if final["status"] != "DIAGNOSTIC_STOP":
@@ -1445,6 +1533,11 @@ def _audit_r4(
             "artifact_paths": sorted(files),
             "r3_cold_gate_hash": canonical_hash(r3_binding),
         }
+        if continuation is not None:
+            binding.update(
+                logical_sampling_identity=_read(root / "logical_sampling_identity.json"),
+                continuation=continuation,
+            )
         binding["audit_hash"] = canonical_hash({k: v for k, v in binding.items() if k != "root"})
         if roundoff_observer is not None:
             for observation in roundoff_observations:
@@ -1465,30 +1558,15 @@ def _audit_r4(
         "final_scratch_origin_restored": True,
     }
     details, cost = status["details"], _read(root / "runtime_profile.json")
-    if continuation is not None:
-        parent_cost = _read(parent_root / "runtime_profile.json")
-        inherited_cost = {k: v for k, v in parent_cost.items() if k != "invocations"}
-        _equal(
-            cost.get("inherited_runtime_counts"),
-            inherited_cost,
-            "R4 inherited execution costs changed",
-        )
-        current_cost = copy.deepcopy(cost)
-        for key in (
-            "optimizer_steps_observed_at_least",
-            "backward_calls_observed_at_least",
-            "incomplete_invocations_with_unknown_extra_cost",
-        ):
-            current_cost[key] -= inherited_cost[key]
-        _check_runtime_profile(
-            root,
-            files,
-            current_cost,
-            runtime,
-            completion_status="COMPLETED_WITH_DIAGNOSTIC_WARNINGS",
-        )
-    else:
-        _check_runtime_profile(root, files, cost, runtime)
+    _check_runtime_profile(
+        root,
+        files,
+        cost,
+        runtime,
+        completion_status="COMPLETED_WITH_DIAGNOSTIC_WARNINGS"
+        if continuation is not None
+        else "PASS",
+    )
     if (
         any(details.get(k) != v for k, v in required_counts.items())
         or cost.get("optimizer_steps_observed_at_least", 0) < 128
@@ -1503,24 +1581,6 @@ def _audit_r4(
     historical = _initial_rows(root, gate, runtime, plan, origin, processor_adapter, shared)
     from .r4_report_gate import validate_r4_response_artifacts
 
-    if continuation is not None:
-        expected_warnings = [
-            {
-                "arm": s["arm"],
-                "step": s["step"],
-                "status": s["status"],
-                "control_diagnostic": s["control_diagnostic"],
-                "source_segment": s["source_segment"],
-                "continuation_hash": continuation["continuation_hash"],
-            }
-            for s in summaries
-            if s["status"] != "PASS"
-        ]
-        _equal(
-            _read(root / "diagnostic_warnings.json"),
-            expected_warnings,
-            "R4 complete warning history changed or an alarm was hidden",
-        )
     report_options = {"continuation": continuation} if continuation is not None else {}
     report_audit = validate_r4_response_artifacts(
         root,
@@ -1583,6 +1643,7 @@ def audit_stopped_r4(
     *,
     _recorded_root=None,
     roundoff_observer=None,
+    _depth=0,
 ):
     """Verify the entire stopped prefix; this is never a warm-training PASS."""
     return _audit_r4(
@@ -1593,6 +1654,7 @@ def audit_stopped_r4(
         stopped=True,
         recorded_root=_recorded_root,
         roundoff_observer=roundoff_observer,
+        _depth=_depth,
     )
 
 
