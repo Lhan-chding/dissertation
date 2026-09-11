@@ -30,6 +30,7 @@ from .r3_runtime import (
 from .smoke_runtime import _seed_everything, _verify_scene_images
 
 ARMS = ("X_BASE", "X_VALID")
+COMPLETED = ("PASS", "COMPLETED_WITH_DIAGNOSTIC_WARNINGS")
 
 
 class NoComparableInitial(ValueError):
@@ -40,7 +41,17 @@ class PilotBlocked(ValueError):
     """A prerequisite or a preserved diagnostic stop prohibits training."""
 
 
-def build_requests(prompts, identity, arm, step, role, policy_state_hash):
+def build_requests(
+    prompts, identity, arm, step, role, policy_state_hash, *, sampling_identity=None
+):
+    if sampling_identity is not None:
+        excluded = {"source_hash", "continuation_hash"}
+        if any(
+            identity.get(key) != sampling_identity.get(key)
+            for key in (set(identity) | set(sampling_identity)) - excluded
+        ):
+            raise ValueError("R4 logical sampling identity changed the experiment")
+        identity = sampling_identity
     requests = []
     for prompt in prompts:
         for index in range(8):
@@ -100,6 +111,85 @@ def build_requests(prompts, identity, arm, step, role, policy_state_hash):
     if len({r["sample_key"] for r in requests}) != len(requests):
         raise ValueError("R4 duplicate sample identity")
     return requests
+
+
+def _reviewed_sequence_warning(diagnostic, continuation):
+    """Keep the measured alarm; only the explicitly reviewed class may continue."""
+    if continuation is None:
+        return False
+    from .r4_continuation import REVIEWED_POLICY
+
+    if continuation["decision"]["policy"] != REVIEWED_POLICY:
+        return False
+    mean = diagnostic.get("mean_token_kl")
+    sequence = diagnostic.get("sequence_log_ratio_p99_abs")
+    return (
+        type(mean) in (int, float)
+        and type(sequence) in (int, float)
+        and math.isfinite(mean)
+        and math.isfinite(sequence)
+        and 0 <= mean <= 0.1
+        and sequence > 2.0
+        and diagnostic.get("should_stop") is True
+        and diagnostic.get("status") == "STOP_DIAGNOSE"
+        and diagnostic.get("alarms") == {"mean_token_kl": False, "sequence_log_ratio_p99_abs": True}
+        and diagnostic.get("thresholds")
+        == {
+            "mean_token_kl": 0.1,
+            "sequence_log_ratio_p99_abs": 2.0,
+            "comparison": "strict_greater_than",
+        }
+    )
+
+
+def _parent_rows(continuation, relative, prompts, state, arm, step, role):
+    """Read an already CPU-audited parent ledger without opening a writer."""
+    root = continuation["parent_root"] / relative
+    identity = continuation["parent_runtime"]["identity"]
+    requests = build_requests(prompts, identity, arm, step, role, state_hash(state))
+    expected = {
+        **identity,
+        "arm": arm,
+        "step": step,
+        "role": role,
+        "policy_state_hash": state_hash(state),
+        "request_hash": canonical_hash(requests),
+    }
+    if _json(root / "identity.json") != expected:
+        raise ValueError("Inherited R4 sample store identity changed")
+    records = {}
+    for line in (root / "samples.jsonl").read_text().splitlines():
+        row = json.loads(line)
+        if row["sample_key"] in records:
+            raise ValueError("Inherited R4 duplicate sample")
+        records[row["sample_key"]] = row
+    validate_sample_ledger(records, requests)
+    if len(records) != len(requests):
+        raise ValueError("Inherited R4 sample coverage changed")
+    return [records[r["sample_key"]] for r in requests]
+
+
+def _parent_step(continuation, entry, prestate):
+    parent = continuation["parent_root"]
+    updates = parent / entry["arm"] / f"step_{entry['step']:02d}" / "updates"
+    completed = list(updates.glob("attempt_*/completed.json"))
+    if len(completed) != 1:
+        raise ValueError("Inherited R4 step lacks one complete attempt")
+    attempt = completed[0].parent
+    result = _json(attempt / "result.json")
+    if result["checkpoint_identity"]["prestate_hash"] != state_hash(prestate):
+        raise ValueError("Inherited R4 checkpoint chain changed")
+    if file_hash(attempt / "checkpoint.pt") != entry["checkpoint_sha256"]:
+        raise ValueError("Inherited R4 checkpoint bytes changed")
+    state = load_checkpoint(attempt / "checkpoint.pt", entry["checkpoint_identity"])
+    if state_hash(state) != entry["state_hash"]:
+        raise ValueError("Inherited R4 complete state changed")
+    return state, {
+        **result,
+        "attempt": str(attempt),
+        "reused_completed_unit": True,
+        "source_segment": "parent",
+    }
 
 
 def _load_plan(data_root, gate, r0_dir):
@@ -309,12 +399,16 @@ def _samples(
     legacy_lock,
     meter,
     progress,
+    *,
+    sampling_identity=None,
 ):
     import torch
 
     policy_hash = state_hash(policy)
     policy_optimizer_hash = state_hash(policy["optimizer"])
-    requests = build_requests(prompts, identity, arm, step, role, policy_hash)
+    requests = build_requests(
+        prompts, identity, arm, step, role, policy_hash, sampling_identity=sampling_identity
+    )
     store_identity = {
         **identity,
         "arm": arm,
@@ -407,6 +501,8 @@ def _samples(
                         "execution_checks": {"passed": not faults, "faults": faults},
                     }
                 )
+                if sampling_identity is not None:
+                    row["execution_identity_hash"] = canonical_hash(identity)
                 row["record_hash"] = canonical_hash(row)
                 store.append(row)
                 returned = False
@@ -440,6 +536,8 @@ def _samples(
                             },
                         }
                     )
+                    if sampling_identity is not None:
+                        row["execution_identity_hash"] = canonical_hash(identity)
                     row["record_hash"] = canonical_hash(row)
                     store.append(row)
                 raise
@@ -697,6 +795,8 @@ def _step(
     data_root,
     meter,
     progress,
+    *,
+    continuation=None,
 ):
     import numpy as np
 
@@ -871,7 +971,20 @@ def _step(
                     {"phase": prefix, "reason": str(exc), "diagnostic": "fixed_control_KL"},
                 )
                 raise
-            if diagnostic["should_stop"]:
+            reviewed_warning = _reviewed_sequence_warning(diagnostic, continuation)
+            if reviewed_warning:
+                write_json(
+                    attempt / "reviewed_warning.json",
+                    {
+                        "continuation_hash": continuation["continuation_hash"],
+                        "reviewed_warning_policy": "sequence_p99_only_two_arms_to_step64",
+                        "arm": arm,
+                        "step": step,
+                        "checkpoint_sha256": file_hash(attempt / "checkpoint.pt"),
+                        "control_diagnostic": diagnostic,
+                    },
+                )
+            elif diagnostic["should_stop"]:
                 # Persist the measured stop before any local artifact, checkpoint
                 # publication, or atomic completion can be interrupted.
                 write_json(
@@ -890,7 +1003,9 @@ def _step(
             write_json(attempt / "control_diagnostic.json", diagnostic)
             _restore(adapter, optimizer, post)
             return {
-                "status": "DIAGNOSTIC_STOP" if diagnostic["should_stop"] else "PASS",
+                "status": "DIAGNOSTIC_WARNING"
+                if reviewed_warning
+                else ("DIAGNOSTIC_STOP" if diagnostic["should_stop"] else "PASS"),
                 "arm": arm,
                 "step": step,
                 "checkpoint_identity": checkpoint_identity,
@@ -1138,7 +1253,13 @@ def _reports(out, endpoint_rows, initial_rows, details):
             ),
             (
                 "KL 是固定旧前缀条件方向，六群体等权，不是当前策略 occupancy 的轨迹 KL。超"
-                "线步骤保留并停止。"
+                "线步骤及诊断原值完整保留。"
+            ),
+            (
+                "本次按记录的两臂一致恢复决策继续累计 sequence p99 告警；"
+                "平均 KL 超线、非有限数及测量、污染、哈希、parity 故障仍停止。"
+                if details.get("continuation_hash")
+                else "未采用诊断恢复决策；任何固定 control 超线仍停止。"
             ),
             (
                 "所有成功 step attempt 不可变；中断 attempt 保留，重算计入实际调用。"
@@ -1171,7 +1292,7 @@ def _reports(out, endpoint_rows, initial_rows, details):
 
 
 def _finish(out, status, execution, details):
-    if status != "PASS" or not (out / "report_zh.md").exists():
+    if status not in COMPLETED or not (out / "report_zh.md").exists():
         report = (
             f"# R4 {status}\n\n执行类型：{execution}。\n\n"
             + json.dumps(details, ensure_ascii=False, indent=2, allow_nan=False)
@@ -1203,6 +1324,8 @@ def run_r4(
     *,
     allow_training=False,
     resume=False,
+    continuation_parent=None,
+    continuation_decision=None,
     _adapter_factory=None,
 ):
     out = Path(out)
@@ -1281,14 +1404,72 @@ def run_r4(
         "initial_adapter_hash": gate["certificate"]["initial_adapter_hash"],
         "execution_kind": execution,
     }
+    continuation = None
+    sampling_identity = None
+    parent_entries = {}
     with frozen_writer(out):
+        if (continuation_parent is None) != (continuation_decision is None):
+            raise ValueError("Continuation parent and decision must be provided together")
+        existing_continuation = out / "continuation_binding.json"
+        if continuation_parent is not None or existing_continuation.exists():
+            from .r4_continuation import prepare_continuation
+            from .r4_gate import audit_stopped_r4
+
+            recorded_root = None
+            if existing_continuation.exists():
+                if not resume:
+                    raise FileExistsError("Existing continuation requires strict --resume")
+                saved_binding = _json(existing_continuation)["runtime_binding"]
+                recorded_root = saved_binding["parent_binding"]["root"]
+                parent_root = out / "inherited_parent"
+                if not parent_root.exists():
+                    # A preparation interrupted before atomic snapshot publication
+                    # can resume from its original audited parent, before GPU work.
+                    parent_root = Path(continuation_parent or recorded_root)
+                decision = continuation_decision or out / "continuation_decision.json"
+            else:
+                parent_root = Path(continuation_parent)
+                decision = continuation_decision
+            kwargs = {"_recorded_root": recorded_root} if recorded_root is not None else {}
+            parent_binding = audit_stopped_r4(parent_root, gate, r2_binding, r3_binding, **kwargs)
+            continuation = prepare_continuation(
+                parent_root,
+                out,
+                decision,
+                parent_binding,
+                source,
+                allow_training=allow_training,
+                resume=resume,
+            )
+            identity["continuation_hash"] = continuation["continuation_hash"]
+            sampling_identity = continuation["sampling_identity"]
+            parent_entries = {
+                (entry["arm"], entry["step"]): entry
+                for entry in _json(continuation["parent_root"] / "checkpoint_manifest.json")[
+                    "checkpoints"
+                ]
+            }
         if (out / "measurement_fault.json").exists():
             raise PilotBlocked(
                 "R4 preserved failed measurement cannot be bypassed by a new attempt"
             )
         if (out / "policy_contamination.json").exists():
             raise PilotBlocked("R4 contaminated evidence cannot resume")
-        RunStore(out, identity, resume=resume)
+        ledger_resume = resume
+        if continuation is not None and resume and not (out / "identity.json").exists():
+            preparation_only = {
+                ".writer.lock",
+                "continuation_binding.json",
+                "continuation_decision.json",
+                "logical_sampling_identity.json",
+                "inherited_parent",
+            }
+            if {p.name for p in out.iterdir()} - preparation_only:
+                raise ValueError("Missing continuation identity after runtime evidence was created")
+            # The verified initial snapshot may have finished after an interrupted
+            # preparation, before the new execution ledger was initialized.
+            ledger_resume = False
+        RunStore(out, identity, resume=ledger_resume)
         if (out / "alarm_stop.json").exists():
             return _finish(
                 out,
@@ -1362,13 +1543,26 @@ def run_r4(
             if origin["optimizer"]["state"]:
                 raise ValueError("R4 requires fresh empty Adam")
             origin_identity = {**identity, "unit": "initial_origin"}
-            if (out / "origin.pt").exists():
-                if state_hash(load_checkpoint(out / "origin.pt", origin_identity)) != state_hash(
-                    origin
+            origin_path = out / "origin.pt"
+            if continuation is not None:
+                origin_identity = {
+                    **continuation["parent_runtime"]["identity"],
+                    "unit": "initial_origin",
+                }
+                origin_path = continuation["parent_root"] / "origin.pt"
+                inherited_origin = load_checkpoint(origin_path, origin_identity)
+                if any(
+                    state_hash(origin[key]) != state_hash(inherited_origin[key])
+                    for key in ("parameters", "optimizer")
                 ):
+                    raise ValueError("Continuation loaded model differs from the fresh parent")
+                origin = inherited_origin
+                _restore(adapter, optimizer, origin)
+            elif origin_path.exists():
+                if state_hash(load_checkpoint(origin_path, origin_identity)) != state_hash(origin):
                     raise ValueError("R4 fresh seed17 initial state differs on resume")
             else:
-                save_checkpoint(out / "origin.pt", origin, origin_identity)
+                save_checkpoint(origin_path, origin, origin_identity)
             runtime = {
                 "identity": identity,
                 "config": config,
@@ -1380,7 +1574,7 @@ def run_r4(
                     if k not in ("load_seconds", "load_peak_cuda_bytes")
                 },
                 "origin_hash": state_hash(origin),
-                "origin_file_sha256": file_hash(out / "origin.pt"),
+                "origin_file_sha256": file_hash(origin_path),
                 "frozen_base_hash": frozen_hash,
                 "initial_adapter_hash": parameter_hash(adapter.model, trainable=True),
                 "optimizer_initial_hash": state_hash(origin["optimizer"]),
@@ -1392,6 +1586,9 @@ def run_r4(
                     "canonical_config_allow_training": config["R4"]["allow_training"],
                 },
             }
+            if continuation is not None:
+                runtime["continuation"] = continuation["runtime_binding"]
+                runtime["origin_identity"] = origin_identity
             if (out / "runtime_lock.json").exists() and _json(out / "runtime_lock.json") != runtime:
                 raise ValueError("R4 strict runtime resume binding changed")
             write_json(invocation / "model_load_audit.json", adapter.audit)
@@ -1439,21 +1636,33 @@ def run_r4(
             )
             write_json(out / "initial_alignment.json", alignment)
             _restore(adapter, optimizer, origin)
-            shared = _samples(
-                adapter,
-                optimizer,
-                origin,
-                plan["dev_panel_prompts"],
-                out / "evaluation/INITIAL/step_00/N",
-                identity,
-                "INITIAL",
-                0,
-                "evaluation",
-                data_root,
-                config,
-                legacy_lock,
-                meter,
-                progress,
+            shared = (
+                _parent_rows(
+                    continuation,
+                    "evaluation/INITIAL/step_00/N",
+                    plan["dev_panel_prompts"],
+                    origin,
+                    "INITIAL",
+                    0,
+                    "evaluation",
+                )
+                if continuation is not None
+                else _samples(
+                    adapter,
+                    optimizer,
+                    origin,
+                    plan["dev_panel_prompts"],
+                    out / "evaluation/INITIAL/step_00/N",
+                    identity,
+                    "INITIAL",
+                    0,
+                    "evaluation",
+                    data_root,
+                    config,
+                    legacy_lock,
+                    meter,
+                    progress,
+                )
             )
             initial_rows = {**historical}
             initial_rows.setdefault("N", shared)
@@ -1465,47 +1674,73 @@ def run_r4(
                     {
                         "arm": arm,
                         "step": 0,
-                        "checkpoint_path": str((out / "origin.pt").resolve()),
+                        "checkpoint_path": str(origin_path.resolve().relative_to(out.resolve()))
+                        if continuation is not None
+                        else str(origin_path.resolve()),
                         "checkpoint_identity": origin_identity,
                         "state_hash": state_hash(origin),
                         "milestone": True,
+                        **({"source_segment": "parent"} if continuation is not None else {}),
                     }
                 )
                 for step, prompt_ids in enumerate(plan["train_steps"], 1):
                     prompts = [train_prompts[p] for p in prompt_ids]
-                    rows = _samples(
-                        adapter,
-                        optimizer,
-                        state,
-                        prompts,
-                        out / arm / f"step_{step:02d}" / "rollouts",
-                        identity,
-                        arm,
-                        step - 1,
-                        "train",
-                        data_root,
-                        config,
-                        legacy_lock,
-                        meter,
-                        progress,
+                    inherited = (arm, step) in parent_entries
+                    rows = (
+                        _parent_rows(
+                            continuation,
+                            f"{arm}/step_{step:02d}/rollouts",
+                            prompts,
+                            state,
+                            arm,
+                            step - 1,
+                            "train",
+                        )
+                        if inherited
+                        else _samples(
+                            adapter,
+                            optimizer,
+                            state,
+                            prompts,
+                            out / arm / f"step_{step:02d}" / "rollouts",
+                            identity,
+                            arm,
+                            step - 1,
+                            "train",
+                            data_root,
+                            config,
+                            legacy_lock,
+                            meter,
+                            progress,
+                            sampling_identity=sampling_identity,
+                        )
                     )
                     details["training_started"] = True
-                    state, summary = _step(
-                        adapter,
-                        optimizer,
-                        state,
-                        rows,
-                        train_prompts,
-                        probe,
-                        control_prompts,
-                        out / arm / f"step_{step:02d}" / "updates",
-                        identity,
-                        arm,
-                        step,
-                        data_root,
-                        meter,
-                        progress,
+                    state, summary = (
+                        _parent_step(continuation, parent_entries[arm, step], state)
+                        if inherited
+                        else _step(
+                            adapter,
+                            optimizer,
+                            state,
+                            rows,
+                            train_prompts,
+                            probe,
+                            control_prompts,
+                            out / arm / f"step_{step:02d}" / "updates",
+                            identity,
+                            arm,
+                            step,
+                            data_root,
+                            meter,
+                            progress,
+                            continuation=continuation,
+                        )
                     )
+                    if inherited:
+                        _restore(adapter, optimizer, state)
+                    elif continuation is not None:
+                        summary["source_segment"] = "current"
                     summaries.append(summary)
                     checkpoint = {
                         k: summary[k]
@@ -1527,6 +1762,11 @@ def run_r4(
                             "milestone": step in (16, 32, 64),
                         }
                     )
+                    if continuation is not None:
+                        checkpoint["source_segment"] = summary["source_segment"]
+                        checkpoint["checkpoint_path"] = str(
+                            Path(checkpoint["checkpoint_path"]).relative_to(out.resolve())
+                        )
                     checkpoints.append(checkpoint)
                     write_json(
                         out / "checkpoint_manifest.json",
@@ -1564,7 +1804,23 @@ def run_r4(
                             for s in summaries
                         ],
                     )
-                    if summary["status"] != "PASS":
+                    if continuation is not None:
+                        warnings = [
+                            {
+                                "arm": s["arm"],
+                                "step": s["step"],
+                                "status": s["status"],
+                                "control_diagnostic": s["control_diagnostic"],
+                                "source_segment": s["source_segment"],
+                                "continuation_hash": continuation["continuation_hash"],
+                            }
+                            for s in summaries
+                            if s["status"] != "PASS"
+                        ]
+                        write_json(out / "diagnostic_warnings.json", warnings)
+                    if summary["status"] != "PASS" and not _reviewed_sequence_warning(
+                        summary["control_diagnostic"], continuation
+                    ):
                         write_json(out / "alarm_stop.json", summary)
                         raise PilotBlocked(
                             "Fixed step0 control KL/log-ratio threshold cr"
@@ -1580,8 +1836,22 @@ def run_r4(
                         )
                         raise RuntimeError("R4 frozen full hash changed")
                     if step == 32:
+                        inherited_evaluation = inherited and (arm, step) != (
+                            continuation["parent_binding"]["stop"]["arm"],
+                            continuation["parent_binding"]["stop"]["step"],
+                        )
                         panel32.extend(
-                            _samples(
+                            _parent_rows(
+                                continuation,
+                                f"evaluation/{arm}/step_32/N",
+                                plan["dev_panel_prompts"],
+                                state,
+                                arm,
+                                step,
+                                "evaluation",
+                            )
+                            if inherited_evaluation
+                            else _samples(
                                 adapter,
                                 optimizer,
                                 state,
@@ -1596,6 +1866,7 @@ def run_r4(
                                 legacy_lock,
                                 meter,
                                 progress,
+                                sampling_identity=sampling_identity,
                             )
                         )
                     if step == 64:
@@ -1605,7 +1876,17 @@ def run_r4(
                             ("OOD", "ood_prompts"),
                         ):
                             endpoint.extend(
-                                _samples(
+                                _parent_rows(
+                                    continuation,
+                                    f"evaluation/{arm}/step_64/{track}",
+                                    plan[key],
+                                    state,
+                                    arm,
+                                    step,
+                                    "evaluation",
+                                )
+                                if inherited
+                                else _samples(
                                     adapter,
                                     optimizer,
                                     state,
@@ -1620,6 +1901,7 @@ def run_r4(
                                     legacy_lock,
                                     meter,
                                     progress,
+                                    sampling_identity=sampling_identity,
                                 )
                             )
             if (
@@ -1652,7 +1934,18 @@ def run_r4(
             write_json(
                 out / "step32_metrics.json", analyze_sampled_endpoints(panel32, shared, track="N")
             )
-            status = "PASS"
+            if continuation is not None:
+                from .r4_continuation import verify_continuation
+
+                verify_continuation(out, continuation["parent_binding"], source)
+                details["continuation_hash"] = continuation["continuation_hash"]
+                details["reviewed_warning_policy"] = continuation["runtime_binding"][
+                    "reviewed_warning_policy"
+                ]
+                details["diagnostic_warning_count"] = sum(s["status"] != "PASS" for s in summaries)
+                status = "COMPLETED_WITH_DIAGNOSTIC_WARNINGS"
+            else:
+                status = "PASS"
             details["status"] = status
         except PilotBlocked as exc:
             status = "BLOCKED"
@@ -1707,15 +2000,26 @@ def run_r4(
                 "ntervals are unknown extra cost"
             ),
         }
+        if continuation is not None:
+            parent_cost = _json(continuation["parent_root"] / "runtime_profile.json")
+            cost["inherited_runtime_counts"] = {
+                key: value for key, value in parent_cost.items() if key != "invocations"
+            }
+            for key in (
+                "optimizer_steps_observed_at_least",
+                "backward_calls_observed_at_least",
+                "incomplete_invocations_with_unknown_extra_cost",
+            ):
+                cost[key] += parent_cost[key]
         write_json(out / "runtime_profile.json", cost)
         details["runtime_counts"] = {k: v for k, v in cost.items() if k != "invocations"}
-        if status == "PASS":
+        if status in COMPLETED:
             try:
                 _reports(out, endpoint, initial_rows, details)
             except Exception as exc:
                 status = "FAIL"
                 details.update({"status": status, "report_error": str(exc)})
-        if status != "PASS":
+        if status not in COMPLETED:
             (out / "pilot_report.md").write_text(
                 "# R4 尚未完成\n\n" + json.dumps(details, ensure_ascii=False, indent=2) + "\n",
                 encoding="utf-8",
@@ -1732,6 +2036,8 @@ def main(argv=None):
         p.add_argument("--" + name, type=Path, required=True)
     p.add_argument("--allow-training", action="store_true")
     p.add_argument("--resume", action="store_true")
+    p.add_argument("--continuation-parent", type=Path)
+    p.add_argument("--continuation-decision", type=Path)
     a = p.parse_args(argv)
     result = run_r4(
         load_yaml(a.config),
@@ -1744,9 +2050,11 @@ def main(argv=None):
         a.r3_dir,
         allow_training=a.allow_training,
         resume=a.resume,
+        continuation_parent=a.continuation_parent,
+        continuation_decision=a.continuation_decision,
     )
     print(json.dumps(result, ensure_ascii=False, indent=2))
-    return 0 if result["status"] == "PASS" else 1
+    return 0 if result["status"] in COMPLETED else 1
 
 
 if __name__ == "__main__":

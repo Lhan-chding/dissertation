@@ -12,6 +12,7 @@ import json
 import math
 import re
 import subprocess
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -21,6 +22,81 @@ from .r3_gate import _check_optimizer_state, _valid_hash
 
 ARMS = ("X_BASE", "X_VALID")
 KIND = "REAL_CUDA_TRAINING"
+
+
+KL_FLOAT_COMPARISON = {
+    "contract": "R4_DERIVED_KL_FLOAT64_ROUNDOFF_V1",
+    "epsilon_multiplier": 64,
+    "float64_epsilon": sys.float_info.epsilon,
+    "bound": "64 * float64_epsilon * max(1, abs(stored), abs(recomputed))",
+    "scope": (
+        "Expm1-derived KL quantities only; decisions, thresholds, sequence ratios "
+        "and all other evidence exact"
+    ),
+}
+
+
+def _derived_kl_float(path):
+    return (
+        path == ("mean_token_kl",)
+        or (len(path) == 3 and path[0] in ("by_prompt", "by_group") and path[2] == "mean_token_kl")
+        or (
+            len(path) == 3
+            and path[0] == "sequence_records"
+            and type(path[1]) is int
+            and path[2] in ("token_k3_sum", "mean_token_kl")
+        )
+    )
+
+
+def _compare_kl_diagnostic(stored, recomputed):
+    """Tolerate measured CPU expm1 rounding, never an altered alarm decision.
+
+    Raw scores remain exact. The returned audit is optional local information;
+    it must not enter a run, gate or continuation identity. Callers retain the
+    original stored diagnostic in every artifact-to-artifact comparison.
+    """
+    differences = []
+
+    def compare(a, b, path=()):
+        if type(a) is not type(b):
+            raise ValueError(f"R4 KL diagnostic type changed at {path}")
+        if isinstance(a, dict):
+            if set(a) != set(b):
+                raise ValueError(f"R4 KL diagnostic fields changed at {path}")
+            for key in sorted(a):
+                compare(a[key], b[key], (*path, key))
+        elif isinstance(a, list):
+            if len(a) != len(b):
+                raise ValueError(f"R4 KL diagnostic coverage changed at {path}")
+            for index, (left, right) in enumerate(zip(a, b, strict=True)):
+                compare(left, right, (*path, index))
+        elif isinstance(a, float):
+            if not math.isfinite(a) or not math.isfinite(b):
+                raise ValueError(f"R4 KL diagnostic is nonfinite at {path}")
+            if canonical_hash(a) == canonical_hash(b):
+                return
+            if path == ("mean_token_kl",) and (a > 0.1) != (b > 0.1):
+                raise ValueError("R4 mean KL threshold crossing cannot be treated as rounding")
+            bound = 64 * sys.float_info.epsilon * max(1.0, abs(a), abs(b))
+            if not _derived_kl_float(path) or abs(a - b) > bound:
+                raise ValueError(
+                    f"R4 KL diagnostic differs beyond derived-float rounding at {path}"
+                )
+            differences.append(
+                {
+                    "path": list(path),
+                    "stored": a,
+                    "recomputed": b,
+                    "absolute_difference": abs(a - b),
+                    "allowed_absolute_difference": bound,
+                }
+            )
+        elif canonical_hash(a) != canonical_hash(b):
+            raise ValueError(f"R4 KL diagnostic exact value changed at {path}")
+
+    compare(stored, recomputed)
+    return differences
 
 
 def _read(path):
@@ -108,7 +184,7 @@ def _check_finished_source(status, runtime):
     )
 
 
-def _check_runtime_profile(root, files, cost, runtime):
+def _check_runtime_profile(root, files, cost, runtime, *, completion_status="PASS"):
     histories = cost.get("invocations")
     if not isinstance(histories, list) or not histories:
         raise ValueError("R4 requires original instrumented invocation profiles")
@@ -178,14 +254,19 @@ def _check_runtime_profile(root, files, cost, runtime):
         raise ValueError("R4 aggregate counts differ from measured invocation history")
     completion = _read(root / "invocations" / names[-1] / "completion.json")
     if (
-        completion.get("status") != "PASS"
+        completion.get("status") != completion_status
         or completion.get("details", {}).get("final_scratch_origin_restored") is not True
     ):
         raise ValueError("R4 final invocation did not restore its scratch origin")
 
 
-def _path(root, files, path):
-    path = Path(path).resolve()
+def _path(root, files, path, *, recorded_root=None):
+    path = Path(path)
+    if not path.is_absolute():
+        path = root / path
+    elif recorded_root is not None and path.is_relative_to(Path(recorded_root)):
+        path = root / path.relative_to(recorded_root)
+    path = path.resolve()
     if not path.is_relative_to(root) or str(path.relative_to(root)) not in files:
         raise ValueError("R4 required artifact is outside the verified manifest")
     return path
@@ -426,12 +507,15 @@ def _raw_store(
     tokenizer,
     eos,
     inputs,
+    *,
+    sampling_identity=None,
 ):
     from .r3_runtime import validate_sample_ledger
     from .r4_runtime import build_requests
 
     policy = _policy(state)
-    requests = build_requests(prompts, identity, arm, step, role, policy["state_hash"])
+    logical = identity if sampling_identity is None else sampling_identity
+    requests = build_requests(prompts, logical, arm, step, role, policy["state_hash"])
     expected_identity = {
         **identity,
         "arm": arm,
@@ -452,10 +536,14 @@ def _raw_store(
     by_prompt = {p["prompt_id"]: p for p in prompts}
     ordered = [rows[r["sample_key"]] for r in requests]
     for row in ordered:
+        if sampling_identity is not None and row.get("execution_identity_hash") != canonical_hash(
+            identity
+        ):
+            raise ValueError("R4 continuation raw output lacks its actual execution identity")
         _validate_raw_row(
             row,
             by_prompt[row["prompt_id"]],
-            identity,
+            logical,
             policy,
             config,
             legacy_lock,
@@ -640,13 +728,29 @@ def _check_update(result, rows, arm, pre, post):
         raise ValueError("R4 zero-advantage groups were dropped or miscounted")
 
 
-def _step_evidence(root, files, entry, identity, pre, rows, probe, plan_hash, keys, eos):
+def _step_evidence(
+    root,
+    files,
+    entry,
+    identity,
+    pre,
+    rows,
+    probe,
+    plan_hash,
+    keys,
+    eos,
+    *,
+    allow_sequence_warning=False,
+    recorded_root=None,
+    continuation=None,
+    roundoff_observer=None,
+):
     import numpy as np
 
     from .r4_metrics import control_kl_diagnostic
 
     arm, step = entry["arm"], entry["step"]
-    path = _path(root, files, entry["checkpoint_path"])
+    path = _path(root, files, entry["checkpoint_path"], recorded_root=recorded_root)
     attempt = path.parent
     expected_parent = root / arm / f"step_{step:02d}" / "updates"
     if attempt.parent != expected_parent or path.name != "checkpoint.pt":
@@ -709,7 +813,14 @@ def _step_evidence(root, files, entry, identity, pre, rows, probe, plan_hash, ke
         ):
             raise ValueError("R4 nested measured attempt manifest changed")
     result = _read(attempt / "result.json")
-    if result.get("status") != "PASS" or result.get("arm") != arm or result.get("step") != step:
+    allowed_statuses = {"PASS"}
+    if allow_sequence_warning:
+        allowed_statuses.add("DIAGNOSTIC_WARNING" if continuation else "DIAGNOSTIC_STOP")
+    if (
+        result.get("status") not in allowed_statuses
+        or result.get("arm") != arm
+        or result.get("step") != step
+    ):
         raise ValueError("R4 actual step result is incomplete or alarmed")
     if (
         entry.get("checkpoint_sha256") != files[str(path.relative_to(root))]
@@ -770,16 +881,47 @@ def _step_evidence(root, files, entry, identity, pre, rows, probe, plan_hash, ke
         policy,
     )
     diagnostic = control_kl_diagnostic(probe, scores, eos_token_ids=eos)
-    if diagnostic["should_stop"] or diagnostic["status"] != "WITHIN_ENGINEERING_LIMITS":
-        raise ValueError("R4 fixed control KL alarm must block warm acceptance")
+    stored_diagnostic = result["control_diagnostic"]
+    roundoff = _compare_kl_diagnostic(stored_diagnostic, diagnostic)
     _equal(
-        result["control_diagnostic"],
-        diagnostic,
-        "R4 KL summary differs from measured fixed-control scores",
+        _read(attempt / "control_diagnostic.json"),
+        stored_diagnostic,
+        "R4 measured KL artifact differs from its original result",
     )
-    _equal(
-        _read(attempt / "control_diagnostic.json"), diagnostic, "R4 measured KL artifact changed"
-    )
+    if diagnostic["should_stop"]:
+        if (
+            not allow_sequence_warning
+            or diagnostic["alarms"] != {"mean_token_kl": False, "sequence_log_ratio_p99_abs": True}
+            or diagnostic["status"] != "STOP_DIAGNOSE"
+        ):
+            raise ValueError("R4 fixed control KL alarm must block warm acceptance")
+        expected_status = "DIAGNOSTIC_WARNING" if continuation else "DIAGNOSTIC_STOP"
+        if result["status"] != expected_status:
+            raise ValueError("R4 measured diagnostic warning cannot be relabelled PASS")
+        if continuation is not None:
+            _equal(
+                _read(_path(root, files, attempt / "reviewed_warning.json")),
+                {
+                    "continuation_hash": continuation["continuation_hash"],
+                    "reviewed_warning_policy": continuation["reviewed_warning_policy"],
+                    "arm": arm,
+                    "step": step,
+                    "checkpoint_sha256": result["checkpoint_sha256"],
+                    "control_diagnostic": stored_diagnostic,
+                },
+                "R4 warning lacks its bound post-diagnostic continuation decision",
+            )
+    elif diagnostic["status"] != "WITHIN_ENGINEERING_LIMITS" or result["status"] != "PASS":
+        raise ValueError("R4 step status does not reflect the measured diagnostic")
+    if roundoff and roundoff_observer is not None:
+        roundoff_observer(
+            {
+                "arm": arm,
+                "step": step,
+                "comparison_contract": KL_FLOAT_COMPARISON,
+                "differences": roundoff,
+            }
+        )
     return post, {**result, "attempt": str(attempt), "reused_completed_unit": False}
 
 
@@ -821,11 +963,41 @@ def _initial_rows(root, gate, runtime, plan, origin, adapter, shared):
     return historical
 
 
-def validate_r4_gate(r4_dir, gate, r2_binding, r3_binding):
+def _audit_r4(
+    r4_dir,
+    gate,
+    r2_binding,
+    r3_binding,
+    *,
+    stopped=False,
+    recorded_root=None,
+    roundoff_observer=None,
+):
     from .next_stage_runtime import _stage
     from .r4_runtime import _load_plan
 
     root = Path(r4_dir).resolve()
+    roundoff_observations = []
+    preliminary = (
+        _read(root / "runtime_lock.json") if (root / "runtime_lock.json").is_file() else {}
+    )
+    continuation = preliminary.get("continuation")
+    if stopped and continuation is not None:
+        raise ValueError("Only an original R4 stopped prefix can seed this continuation contract")
+    parent = parent_runtime = parent_root = parent_files = None
+    if continuation is not None:
+        from .r4_continuation import verify_continuation
+
+        parent_root = root / "inherited_parent"
+        declared = continuation["parent_binding"]
+        parent = audit_stopped_r4(
+            parent_root, gate, r2_binding, r3_binding, _recorded_root=declared["root"]
+        )
+        _equal(parent, declared, "R4 continuation parent differs from complete stopped audit")
+        context = verify_continuation(root, parent, preliminary["source"])
+        _equal(context["runtime_binding"], continuation, "R4 continuation runtime contract changed")
+        parent_runtime = context["parent_runtime"]
+        parent_files = parent["files"]
     required = (
         "runtime_lock.json",
         "gate_binding.json",
@@ -842,8 +1014,51 @@ def validate_r4_gate(r4_dir, gate, r2_binding, r3_binding):
         "pilot_report.md",
         "report_zh.md",
     )
-    status, files = _stage(root, "R4", KIND, required)
-    for name in ("measurement_fault.json", "policy_contamination.json", "alarm_stop.json"):
+    recorded_root = Path(recorded_root).resolve() if recorded_root is not None else root
+    if stopped:
+        from .finalize_r0 import verify_manifest
+
+        required = (
+            *required[:7],
+            "identity.json",
+            "alarm_stop.json",
+            "runtime_profile.json",
+            "learning_curves.csv",
+        )
+        files = verify_manifest(root, required)
+        status = _read(root / "status.json")
+        if (
+            status.get("status") != "BLOCKED"
+            or status.get("phase") != "R4"
+            or status.get("execution_kind") != KIND
+        ):
+            raise ValueError("R4 stopped audit requires preserved BLOCKED real CUDA evidence")
+    elif continuation is not None:
+        from .finalize_r0 import verify_manifest
+
+        required = (
+            *(n for n in required if n != "origin.pt"),
+            "continuation_binding.json",
+            "continuation_decision.json",
+            "logical_sampling_identity.json",
+            "diagnostic_warnings.json",
+            "inherited_parent/origin.pt",
+            "identity.json",
+        )
+        files = verify_manifest(root, required)
+        status = _read(root / "status.json")
+        if (
+            status.get("status") != "COMPLETED_WITH_DIAGNOSTIC_WARNINGS"
+            or status.get("phase") != "R4"
+            or status.get("execution_kind") != KIND
+        ):
+            raise ValueError(
+                "R4 continuation requires complete real CUDA evidence with preserved warnings"
+            )
+    else:
+        status, files = _stage(root, "R4", KIND, required)
+    forbidden = ("measurement_fault.json", "policy_contamination.json")
+    for name in forbidden + (() if stopped else ("alarm_stop.json",)):
         if (root / name).exists():
             raise ValueError(
                 "R4 preserved measurement fault, contamination or alarm blocks acceptance"
@@ -855,6 +1070,10 @@ def validate_r4_gate(r4_dir, gate, r2_binding, r3_binding):
     _check_source(runtime, gate)
     _check_finished_source(status, runtime)
     identity, config = runtime["identity"], gate["config"]
+    if stopped or continuation is not None:
+        _equal(
+            _read(root / "identity.json"), identity, "R4 root ledger identity differs from runtime"
+        )
     from .r1_reference_smoke import _helper_config
 
     _helper_config(config)
@@ -899,6 +1118,8 @@ def validate_r4_gate(r4_dir, gate, r2_binding, r3_binding):
         "initial_adapter_hash": gate["certificate"]["initial_adapter_hash"],
         "execution_kind": KIND,
     }
+    if continuation is not None:
+        expected_identity["continuation_hash"] = continuation["continuation_hash"]
     _equal(identity, expected_identity, "R4 source/model/initialization identity changed")
     _equal(checkpoint_manifest["identity"], identity, "R4 checkpoint manifest identity changed")
     authorization = {
@@ -916,7 +1137,19 @@ def validate_r4_gate(r4_dir, gate, r2_binding, r3_binding):
     for key in ("processor_hash", "tokenizer_hash", "chat_template_hash", "frozen_parameter_hash"):
         if runtime["model_audit"].get(key) != gate["certificate"]["model_audit"].get(key):
             raise ValueError("R4 loaded processor/model differs from R1 certificate")
-    origin = load_checkpoint(root / "origin.pt", {**identity, "unit": "initial_origin"})
+    origin_root = parent_root if continuation is not None else root
+    origin_files = parent_files if continuation is not None else files
+    origin_identity = {
+        **(parent_runtime["identity"] if continuation is not None else identity),
+        "unit": "initial_origin",
+    }
+    if continuation is not None:
+        _equal(
+            runtime.get("origin_identity"),
+            origin_identity,
+            "R4 continuation must retain the original checkpoint identity",
+        )
+    origin = load_checkpoint(origin_root / "origin.pt", origin_identity)
     _check_state(origin, origin, "INITIAL", 0, plan["plan_hash"], [], [])
     if (
         runtime["model_audit"].get("execution_kind") != "REAL_CUDA_INFERENCE"
@@ -937,7 +1170,7 @@ def validate_r4_gate(r4_dir, gate, r2_binding, r3_binding):
             runtime.get(k) != v
             for k, v in {
                 "origin_hash": state_hash(origin),
-                "origin_file_sha256": files["origin.pt"],
+                "origin_file_sha256": origin_files["origin.pt"],
                 "initial_adapter_hash": identity["initial_adapter_hash"],
                 "optimizer_initial_hash": state_hash(origin["optimizer"]),
                 "frozen_base_hash": gate["certificate"]["model_audit"]["frozen_parameter_hash"],
@@ -948,8 +1181,20 @@ def validate_r4_gate(r4_dir, gate, r2_binding, r3_binding):
         raise ValueError("R4 origin is not the certified fresh adapter and empty Adam")
     entries = checkpoint_manifest["checkpoints"]
     mapping = {(e["arm"], e["step"]): e for e in entries}
-    if len(entries) != 130 or set(mapping) != {(a, s) for a in ARMS for s in range(65)}:
-        raise ValueError("R4 requires both complete 0..64 checkpoint chains")
+    stop_record = _read(root / "alarm_stop.json") if stopped else None
+    if stopped:
+        stop_arm, stop_step = stop_record.get("arm"), stop_record.get("step")
+        if stop_arm not in ARMS or type(stop_step) is not int or stop_step not in range(1, 65):
+            raise ValueError("R4 preserved stop has invalid arm/step")
+        limits = {
+            a: (64 if ARMS.index(a) < ARMS.index(stop_arm) else stop_step)
+            for a in ARMS[: ARMS.index(stop_arm) + 1]
+        }
+    else:
+        limits = {a: 64 for a in ARMS}
+    expected_steps = {(a, s) for a, limit in limits.items() for s in range(limit + 1)}
+    if len(entries) != len(expected_steps) or set(mapping) != expected_steps:
+        raise ValueError("R4 checkpoint chain is incomplete, duplicated or extends past the stop")
     if any(e.get("milestone") is not (e["step"] in (0, 16, 32, 64)) for e in entries):
         raise ValueError("R4 checkpoint milestones changed")
     probe = _probe(training, r3_binding, origin)
@@ -962,14 +1207,37 @@ def validate_r4_gate(r4_dir, gate, r2_binding, r3_binding):
     inputs = _PreparedInputs(processor_adapter, config["data_root"])
     used_stores = set()
 
+    parent_mapping = (
+        {(e["arm"], e["step"]): e for e in parent["checkpoint_manifest"]["checkpoints"]}
+        if continuation is not None
+        else {}
+    )
+
+    def inherited_sample(arm, step, role):
+        if continuation is None:
+            return False
+        if arm == "INITIAL":
+            return True
+        target = step + 1 if role == "train" else step
+        return (arm, target) in parent_mapping and not (
+            role == "evaluation"
+            and (arm, target) == (parent["stop"]["arm"], parent["stop"]["step"])
+        )
+
     def sample(path, prompts, state, arm, step, role):
+        inherited = inherited_sample(arm, step, role)
+        sample_root = parent_root if inherited else root
+        sample_files = parent_files if inherited else files
+        sample_identity = parent_runtime["identity"] if inherited else identity
+        if inherited:
+            path = parent_root / path.relative_to(root)
         used_stores.add(str((path / "samples.jsonl").relative_to(root)))
         return _raw_store(
-            root,
-            files,
+            sample_root,
+            sample_files,
             path,
             prompts,
-            identity,
+            sample_identity,
             state,
             arm,
             step,
@@ -979,6 +1247,9 @@ def validate_r4_gate(r4_dir, gate, r2_binding, r3_binding):
             tokenizer,
             eos,
             inputs,
+            sampling_identity=parent_runtime["identity"]
+            if continuation is not None and not inherited
+            else None,
         )
 
     shared = sample(
@@ -991,19 +1262,21 @@ def validate_r4_gate(r4_dir, gate, r2_binding, r3_binding):
     )
     train_prompts = {p["prompt_id"]: p for p in plan["train_prompts"]}
     summaries, endpoint, panel32, training_rows = [], [], [], []
-    for arm in ARMS:
+    for arm, limit in limits.items():
         zero = mapping[(arm, 0)]
         _equal(
             zero["checkpoint_identity"],
-            {**identity, "unit": "initial_origin"},
+            origin_identity,
             "R4 arms must share the exact fresh origin",
         )
-        if _path(root, files, zero["checkpoint_path"]) != root / "origin.pt" or zero[
-            "state_hash"
-        ] != state_hash(origin):
+        if _path(
+            root, files, zero["checkpoint_path"], recorded_root=recorded_root
+        ) != origin_root / "origin.pt" or zero["state_hash"] != state_hash(origin):
             raise ValueError("R4 arms do not share the same initialization")
+        if continuation is not None and zero.get("source_segment") != "parent":
+            raise ValueError("R4 continuation step0 must bind the inherited source segment")
         state, keys = origin, []
-        for step, prompt_ids in enumerate(plan["train_steps"], 1):
+        for step, prompt_ids in enumerate(plan["train_steps"][:limit], 1):
             rows = sample(
                 root / arm / f"step_{step:02d}/rollouts",
                 [train_prompts[p] for p in prompt_ids],
@@ -1013,21 +1286,51 @@ def validate_r4_gate(r4_dir, gate, r2_binding, r3_binding):
                 "train",
             )
             keys.extend(r["sample_key"] for r in rows)
+            entry = mapping[(arm, step)]
+            inherited = continuation is not None and (arm, step) in parent_mapping
+            if continuation is not None:
+                expected_segment = "parent" if inherited else "current"
+                if entry.get("source_segment") != expected_segment:
+                    raise ValueError("R4 checkpoint source segment differs from the audited prefix")
+                if inherited:
+                    original_entry = parent_mapping[(arm, step)]
+                    original_path = Path(original_entry["checkpoint_path"])
+                    relative = (
+                        original_path.relative_to(parent["root"])
+                        if original_path.is_absolute()
+                        else original_path
+                    )
+                    _equal(
+                        entry,
+                        {
+                            **original_entry,
+                            "source_segment": "parent",
+                            "checkpoint_path": str(Path("inherited_parent") / relative),
+                        },
+                        "R4 inherited checkpoint was rewritten or omitted",
+                    )
             state, summary = _step_evidence(
-                root,
-                files,
-                mapping[(arm, step)],
-                identity,
+                parent_root if inherited else root,
+                parent_files if inherited else files,
+                parent_mapping[(arm, step)] if inherited else entry,
+                parent_runtime["identity"] if inherited else identity,
                 state,
                 rows,
                 probe,
                 plan["plan_hash"],
                 keys,
                 eos,
+                allow_sequence_warning=(stopped and (arm, step) == (stop_arm, stop_step))
+                or continuation is not None,
+                recorded_root=parent["root"] if inherited else recorded_root,
+                continuation=continuation if continuation is not None and not inherited else None,
+                roundoff_observer=roundoff_observations.append,
             )
+            if continuation is not None:
+                summary["source_segment"] = "parent" if inherited else "current"
             training_rows.extend(rows)
             summaries.append(summary)
-            if step == 32:
+            if step == 32 and not (stopped and (arm, step) == (stop_arm, stop_step)):
                 panel32.extend(
                     sample(
                         root / "evaluation" / arm / "step_32/N",
@@ -1038,7 +1341,7 @@ def validate_r4_gate(r4_dir, gate, r2_binding, r3_binding):
                         "evaluation",
                     )
                 )
-            if step == 64:
+            if step == 64 and not (stopped and (arm, step) == (stop_arm, stop_step)):
                 for track, key in (
                     ("N", "dev_prompts"),
                     ("L", "legacy_prompts"),
@@ -1056,7 +1359,7 @@ def validate_r4_gate(r4_dir, gate, r2_binding, r3_binding):
                     )
         del state
     raw = [*shared, *training_rows, *panel32, *endpoint]
-    if (
+    if not stopped and (
         len(raw) != 14400
         or len({r["sample_key"] for r in raw}) != 14400
         or len(training_rows) != 4096
@@ -1074,6 +1377,79 @@ def validate_r4_gate(r4_dir, gate, r2_binding, r3_binding):
             )
         ):
             raise ValueError("R4 contains unaccounted generated raw outputs")
+    if stopped:
+        final = summaries[-1]
+        if final["status"] != "DIAGNOSTIC_STOP":
+            raise ValueError("R4 stopped audit requires the retained completed alarming update")
+        for key in (
+            "arm",
+            "step",
+            "status",
+            "checkpoint_identity",
+            "checkpoint_sha256",
+            "state_hash",
+            "control_diagnostic",
+        ):
+            _equal(
+                stop_record.get(key),
+                final.get(key),
+                "R4 stop marker disagrees with completed measured update",
+            )
+        if len({r["sample_key"] for r in raw}) != len(raw):
+            raise ValueError("R4 stopped prefix repeats sampled identities")
+        cost = _read(root / "runtime_profile.json")
+        _check_runtime_profile(root, files, cost, runtime, completion_status="BLOCKED")
+        updates = len(summaries)
+        if (
+            cost.get("optimizer_steps_observed_at_least", 0) < updates
+            or cost.get("backward_calls_observed_at_least", 0) < updates * 32
+        ):
+            raise ValueError("R4 stopped prefix lacks measured optimizer/backward counters")
+        if status.get("details", {}).get("final_scratch_origin_restored") is not True:
+            raise ValueError("R4 stopped prefix did not restore its scratch origin")
+        _equal(
+            status["details"].get("runtime_counts"),
+            {k: v for k, v in cost.items() if k != "invocations"},
+            "R4 stopped aggregate counters changed",
+        )
+        _initial_rows(root, gate, runtime, plan, origin, processor_adapter, shared)
+        from .r4_report_gate import _check_csv, _curves
+
+        _check_csv(root, "learning_curves.csv", _curves(summaries), ("arm", "step"))
+        binding = {
+            "status": "PASS_STOPPED_AUDIT",
+            "root": str(recorded_root),
+            "files": files,
+            "manifest_sha256": file_hash(root / "manifest.json"),
+            "runtime_lock_sha256": files["runtime_lock.json"],
+            "alarm_stop_sha256": files["alarm_stop.json"],
+            "source": runtime["source"],
+            "identity": identity,
+            "environment": runtime["environment"],
+            "plan_hash": plan["plan_hash"],
+            "stop": {
+                "arm": stop_arm,
+                "step": stop_step,
+                "checkpoint": mapping[(stop_arm, stop_step)],
+                "diagnostic": final["control_diagnostic"],
+            },
+            "checkpoint_manifest": checkpoint_manifest,
+            "inherited_counts": {
+                "optimizer_updates": updates,
+                "training_rollouts": len(training_rows),
+                "shared_step0_outputs": len(shared),
+                "step32_outputs": len(panel32),
+                "step64_outputs": len(endpoint),
+                "new_outputs": len(raw),
+            },
+            "artifact_paths": sorted(files),
+            "r3_cold_gate_hash": canonical_hash(r3_binding),
+        }
+        binding["audit_hash"] = canonical_hash({k: v for k, v in binding.items() if k != "root"})
+        if roundoff_observer is not None:
+            for observation in roundoff_observations:
+                roundoff_observer(observation)
+        return binding
     required_counts = {
         "distinct_optimizer_updates": 128,
         "training_rollouts": 4096,
@@ -1089,7 +1465,30 @@ def validate_r4_gate(r4_dir, gate, r2_binding, r3_binding):
         "final_scratch_origin_restored": True,
     }
     details, cost = status["details"], _read(root / "runtime_profile.json")
-    _check_runtime_profile(root, files, cost, runtime)
+    if continuation is not None:
+        parent_cost = _read(parent_root / "runtime_profile.json")
+        inherited_cost = {k: v for k, v in parent_cost.items() if k != "invocations"}
+        _equal(
+            cost.get("inherited_runtime_counts"),
+            inherited_cost,
+            "R4 inherited execution costs changed",
+        )
+        current_cost = copy.deepcopy(cost)
+        for key in (
+            "optimizer_steps_observed_at_least",
+            "backward_calls_observed_at_least",
+            "incomplete_invocations_with_unknown_extra_cost",
+        ):
+            current_cost[key] -= inherited_cost[key]
+        _check_runtime_profile(
+            root,
+            files,
+            current_cost,
+            runtime,
+            completion_status="COMPLETED_WITH_DIAGNOSTIC_WARNINGS",
+        )
+    else:
+        _check_runtime_profile(root, files, cost, runtime)
     if (
         any(details.get(k) != v for k, v in required_counts.items())
         or cost.get("optimizer_steps_observed_at_least", 0) < 128
@@ -1104,6 +1503,25 @@ def validate_r4_gate(r4_dir, gate, r2_binding, r3_binding):
     historical = _initial_rows(root, gate, runtime, plan, origin, processor_adapter, shared)
     from .r4_report_gate import validate_r4_response_artifacts
 
+    if continuation is not None:
+        expected_warnings = [
+            {
+                "arm": s["arm"],
+                "step": s["step"],
+                "status": s["status"],
+                "control_diagnostic": s["control_diagnostic"],
+                "source_segment": s["source_segment"],
+                "continuation_hash": continuation["continuation_hash"],
+            }
+            for s in summaries
+            if s["status"] != "PASS"
+        ]
+        _equal(
+            _read(root / "diagnostic_warnings.json"),
+            expected_warnings,
+            "R4 complete warning history changed or an alarm was hidden",
+        )
+    report_options = {"continuation": continuation} if continuation is not None else {}
     report_audit = validate_r4_response_artifacts(
         root,
         endpoint_rows=endpoint,
@@ -1111,6 +1529,7 @@ def validate_r4_gate(r4_dir, gate, r2_binding, r3_binding):
         shared_initial_rows=shared,
         initial_rows_by_track=historical,
         step_summaries=summaries,
+        **report_options,
     )
     warm = mapping[("X_BASE", 64)]
     _equal(
@@ -1119,7 +1538,7 @@ def validate_r4_gate(r4_dir, gate, r2_binding, r3_binding):
         "R4 warm pointer must be the complete X_BASE step64 manifest entry",
     )
     path = _path(root, files, warm["checkpoint_path"])
-    return {
+    binding = {
         "status": "PASS",
         "root": str(root),
         "r4_dir": str(root),
@@ -1133,6 +1552,15 @@ def validate_r4_gate(r4_dir, gate, r2_binding, r3_binding):
         "r3_cold_plan_hash": r3_binding["plan_hash"],
         "r3_cold_gate_hash": canonical_hash(r3_binding),
         "report_audit": report_audit,
+        **(
+            {
+                "completion_status": "COMPLETED_WITH_DIAGNOSTIC_WARNINGS",
+                "continuation": continuation,
+                "diagnostic_warnings_sha256": files["diagnostic_warnings.json"],
+            }
+            if continuation is not None
+            else {}
+        ),
         "warm_checkpoint": {
             **copy.deepcopy(warm),
             "path": str(path),
@@ -1140,3 +1568,33 @@ def validate_r4_gate(r4_dir, gate, r2_binding, r3_binding):
             "file_sha256": files[str(path.relative_to(root))],
         },
     }
+
+    if roundoff_observer is not None:
+        for observation in roundoff_observations:
+            roundoff_observer(observation)
+    return binding
+
+
+def audit_stopped_r4(
+    r4_dir,
+    gate,
+    r2_binding,
+    r3_binding,
+    *,
+    _recorded_root=None,
+    roundoff_observer=None,
+):
+    """Verify the entire stopped prefix; this is never a warm-training PASS."""
+    return _audit_r4(
+        r4_dir,
+        gate,
+        r2_binding,
+        r3_binding,
+        stopped=True,
+        recorded_root=_recorded_root,
+        roundoff_observer=roundoff_observer,
+    )
+
+
+def validate_r4_gate(r4_dir, gate, r2_binding, r3_binding, *, roundoff_observer=None):
+    return _audit_r4(r4_dir, gate, r2_binding, r3_binding, roundoff_observer=roundoff_observer)

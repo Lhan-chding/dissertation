@@ -84,7 +84,7 @@ def _rows_hash(rows):
     return canonical_hash(sorted(rows, key=lambda row: row["sample_key"]))
 
 
-def _steps(summaries):
+def _steps(summaries, *, continuation=None):
     if not isinstance(summaries, (list, tuple)) or len(summaries) != 128:
         raise ValueError("Exactly 128 successful step summaries are required")
     result = {}
@@ -101,8 +101,19 @@ def _steps(summaries):
             raise ValueError("Duplicate or unknown training arm/step")
         counts = summary.get("training_category_counts")
         zero = summary.get("zero_advantage_groups")
+        allowed = {"PASS"}
         if (
-            summary.get("status") != "PASS"
+            continuation is not None
+            and continuation.get("reviewed_warning_policy")
+            == "sequence_p99_only_two_arms_to_step64"
+        ):
+            allowed.add(
+                "DIAGNOSTIC_STOP"
+                if summary.get("source_segment") == "parent"
+                else "DIAGNOSTIC_WARNING"
+            )
+        if (
+            summary.get("status") not in allowed
             or not isinstance(counts, dict)
             or set(counts) != set("XSWI")
             or any(type(v) is not int or v < 0 for v in counts.values())
@@ -122,13 +133,38 @@ def _steps(summaries):
                 value = values.get(field)
                 if type(value) not in (int, float) or not math.isfinite(value):
                     raise ValueError(f"Missing or nonfinite step scalar: {field}")
+        if continuation is not None:
+            alarmed = diagnostic.get("should_stop") is True
+            if (
+                diagnostic["mean_token_kl"] > 0.1
+                or (
+                    alarmed
+                    and (
+                        diagnostic.get("alarms")
+                        != {"mean_token_kl": False, "sequence_log_ratio_p99_abs": True}
+                        or diagnostic.get("status") != "STOP_DIAGNOSE"
+                        or diagnostic["sequence_log_ratio_p99_abs"] <= 2.0
+                        or summary["status"] == "PASS"
+                    )
+                )
+                or (not alarmed and summary["status"] != "PASS")
+            ):
+                raise ValueError("R4 continuation cannot hide or waive an unreviewed diagnostic")
         result[arm, step] = summary
     if set(result) != {(arm, step) for arm in ARMS for step in range(1, 65)}:
         raise ValueError("Incomplete 64-step coverage for both arms")
     return [result[key] for key in sorted(result)]
 
 
-def _inputs(endpoint_rows, step32_rows, shared_initial_rows, initial_rows_by_track, step_summaries):
+def _inputs(
+    endpoint_rows,
+    step32_rows,
+    shared_initial_rows,
+    initial_rows_by_track,
+    step_summaries,
+    *,
+    continuation=None,
+):
     if not isinstance(endpoint_rows, (list, tuple)) or len(endpoint_rows) != 8576:
         raise ValueError("Exactly 8576 independent-track endpoint rows are required")
     endpoint = {track: [] for track in TRACK_COUNTS}
@@ -203,7 +239,7 @@ def _inputs(endpoint_rows, step32_rows, shared_initial_rows, initial_rows_by_tra
             )
             if historical != identities[track]:
                 raise ValueError("Historical K16 initial must cover its own full endpoint track")
-    return endpoint, _steps(step_summaries)
+    return endpoint, _steps(step_summaries, continuation=continuation)
 
 
 def _effects(results):
@@ -282,14 +318,15 @@ def _check_csv(root, name, expected, key_fields):
     return len(seen)
 
 
-def _pilot(root):
+def _pilot(root, *, continuation=None):
     text = _file(root, "pilot_report.md").read_text(encoding="utf-8")
     blocks = re.findall(r"```json\s*\n(.*?)\n```", text, flags=re.DOTALL)
     if len(blocks) != 1:
         raise ValueError("Pilot report must contain its one structured completion record")
     details = _parse(blocks[0], "pilot completion record")
+    completion_status = "COMPLETED_WITH_DIAGNOSTIC_WARNINGS" if continuation is not None else "PASS"
     expected = {
-        "status": "PASS",
+        "status": completion_status,
         "execution_kind": "REAL_CUDA_TRAINING",
         "training_started": True,
         "final_scratch_origin_restored": True,
@@ -312,7 +349,7 @@ def _pilot(root):
     # These facts already occur in the production writer. No manual narrative or
     # reworded interpretation is requested from the experiment operator.
     facts = (
-        "状态：PASS；执行类型：REAL_CUDA_TRAINING",
+        f"状态：{completion_status}；执行类型：REAL_CUDA_TRAINING",
         "相同seed17LoRA/空Adam起点",
         "当前策略新生成B4K8轨迹",
         "每步一次实际Adam更新",
@@ -335,7 +372,14 @@ def _pilot(root):
 
 
 def validate_r4_response_artifacts(
-    root, *, endpoint_rows, step32_rows, shared_initial_rows, initial_rows_by_track, step_summaries
+    root,
+    *,
+    endpoint_rows,
+    step32_rows,
+    shared_initial_rows,
+    initial_rows_by_track,
+    step_summaries,
+    continuation=None,
 ):
     """Bind all R4 report values to caller-verified complete raw rows and steps.
 
@@ -347,7 +391,12 @@ def validate_r4_response_artifacts(
     if not root.is_dir():
         raise ValueError("R4 report root is missing")
     endpoint, summaries = _inputs(
-        endpoint_rows, step32_rows, shared_initial_rows, initial_rows_by_track, step_summaries
+        endpoint_rows,
+        step32_rows,
+        shared_initial_rows,
+        initial_rows_by_track,
+        step_summaries,
+        continuation=continuation,
     )
     results = {
         track: analyze_sampled_endpoints(rows, initial_rows_by_track.get(track), track=track)
@@ -372,7 +421,7 @@ def validate_r4_response_artifacts(
         root, "N_L_OOD_effects.csv", _effects(results), ("track", "comparison", "scope", "metric")
     )
     curves_count = _check_csv(root, "learning_curves.csv", _curves(summaries), ("arm", "step"))
-    pilot_hash = _pilot(root)
+    pilot_hash = _pilot(root, continuation=continuation)
     names = (*recomputed, "N_L_OOD_effects.csv", "learning_curves.csv", "pilot_report.md")
     return {
         "status": "PASS",

@@ -51,6 +51,7 @@ export TMP="$TMPDIR" TEMP="$TMPDIR"
 mkdir -p "$TMPDIR" "$run_root/checks"
 stage_root="$run_root/R4"
 resume_args=()
+execution_args=(--allow-training)
 if [[ -n ${SSVC_R4_RESUME_STAGE:-} ]]; then
   stage_root=$(realpath -e "$SSVC_R4_RESUME_STAGE")
   allowed_root=$(realpath -e "$SSVC_WORK/runs/NEXT_20260909")
@@ -59,7 +60,38 @@ if [[ -n ${SSVC_R4_RESUME_STAGE:-} ]]; then
     exit 2
   fi
   resume_args=(--resume)
+  execution_args+=(--resume)
   printf '%s\n' "$stage_root" > "$run_root/resumed_stage_path.txt"
+fi
+if [[ -n ${SSVC_R4_CONTINUATION_PARENT:-} || -n ${SSVC_R4_CONTINUATION_DECISION:-} ]]; then
+  if [[ -z ${SSVC_R4_CONTINUATION_PARENT:-} || -z ${SSVC_R4_CONTINUATION_DECISION:-} ]]; then
+    echo 'SSVC_R4_CONTINUATION_PARENT and SSVC_R4_CONTINUATION_DECISION must be supplied together.' >&2
+    exit 2
+  fi
+  if [[ -L $SSVC_R4_CONTINUATION_DECISION ]]; then
+    echo 'Continuation decision must not be a symbolic link.' >&2
+    exit 2
+  fi
+  continuation_parent=$(realpath -e "$SSVC_R4_CONTINUATION_PARENT")
+  continuation_decision=$(realpath -e "$SSVC_R4_CONTINUATION_DECISION")
+  allowed_root=$(realpath -e "$SSVC_WORK/runs/NEXT_20260909")
+  allowed_project_root=$(realpath -e "$SSVC_WORK")
+  if [[ $continuation_parent != "$allowed_root"/R4_server_*/R4 || ! -f $continuation_parent/identity.json ]]; then
+    echo 'Continuation parent must name an existing R4 stage within this project.' >&2
+    exit 2
+  fi
+  if [[ $continuation_decision != "$allowed_project_root"/* || ! -f $continuation_decision ]]; then
+    echo 'Continuation decision must name an existing file within this project.' >&2
+    exit 2
+  fi
+  if [[ $stage_root == "$continuation_parent" || $stage_root == "$continuation_parent"/* ]]; then
+    echo 'Continuation output must be separate from the preserved parent stage.' >&2
+    exit 2
+  fi
+  execution_args+=(--continuation-parent "$continuation_parent" --continuation-decision "$continuation_decision")
+  printf '%s\n' "$continuation_parent" > "$run_root/continuation_parent_path.txt"
+  printf '%s\n' "$continuation_decision" > "$run_root/continuation_decision_path.txt"
+  cp "$continuation_decision" "$run_root/continuation_decision.json"
 fi
 printf 'state=RUNNING\njob_id=%s\nstarted_utc=%s\n' "$SLURM_JOB_ID" "$(date -u +%FT%TZ)" > "$run_root/result.txt"
 cp "$0" "$run_root/submitted.sbatch"
@@ -96,10 +128,28 @@ PY
     archive_rc=$?
   fi
   if (( rc == 0 && archive_rc != 0 )); then rc=$archive_rc; fi
-  local state=FAILED
-  if (( rc == 0 )); then state=PASS; fi
-  printf 'state=%s\nexit_code=%s\narchive_exit_code=%s\njob_id=%s\nfinished_utc=%s\n' \
-    "$state" "$rc" "$archive_rc" "$SLURM_JOB_ID" "$(date -u +%FT%TZ)" > "$run_root/result.txt"
+  local state=FAILED stage_status=UNAVAILABLE
+  stage_status=$("$SSVC_PYTHON" - "$stage_root/status.json" <<'PY'
+import json
+import sys
+from pathlib import Path
+try:
+    value = json.loads(Path(sys.argv[1]).read_text()).get('status')
+    allowed = {'PASS', 'COMPLETED_WITH_DIAGNOSTIC_WARNINGS', 'DIAGNOSTIC_STOP', 'FAIL', 'BLOCKED'}
+    print(value if isinstance(value, str) and value in allowed else 'UNAVAILABLE')
+except (OSError, ValueError, AttributeError):
+    print('UNAVAILABLE')
+PY
+  )
+  if (( rc == 0 )); then
+    if [[ $stage_status == PASS || $stage_status == COMPLETED_WITH_DIAGNOSTIC_WARNINGS ]]; then
+      state=$stage_status
+    else
+      rc=1
+    fi
+  fi
+  printf 'state=%s\nstage_status=%s\nexit_code=%s\narchive_exit_code=%s\njob_id=%s\nfinished_utc=%s\n' \
+    "$state" "$stage_status" "$rc" "$archive_rc" "$SLURM_JOB_ID" "$(date -u +%FT%TZ)" > "$run_root/result.txt"
   exit "$rc"
 }
 trap finish EXIT
@@ -119,7 +169,7 @@ fi
 printf '%s\n' "$r3_cold_stage" > "$run_root/r3_cold_stage_path.txt"
 
 "$SSVC_PYTHON" -m src.train_two_arm_pilot \
-  --allow-training \
+  "${execution_args[@]}" \
   --config configs/next_stage.yaml \
   --data-root "$SSVC_WORK/reviewed-data-20260908/generated" \
   --r0-dir "$SSVC_WORK/runs/NEXT_20260909/R0_R1_close_146806_attempt_0/R0" \
@@ -127,5 +177,5 @@ printf '%s\n' "$r3_cold_stage" > "$run_root/r3_cold_stage_path.txt"
   --supplement-dir "$SSVC_WORK/runs/NEXT_20260909/R0_R1_close_146806_attempt_0/R1_supplement" \
   --r2-dir "$SSVC_WORK/runs/NEXT_20260909/R2_server_146853_attempt_0/R2" \
   --r3-dir "$r3_cold_stage" \
-  --out "$stage_root" "${resume_args[@]}" \
+  --out "$stage_root" \
   > "$run_root/checks/r4.log" 2>&1

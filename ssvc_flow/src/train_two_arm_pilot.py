@@ -21,9 +21,21 @@ def main(argv=None):
     p.add_argument("--out", type=Path, default=Path("runs/NEXT_20260909/R4"))
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--resume", action="store_true")
+    p.add_argument("--continuation-parent", type=Path)
+    p.add_argument("--continuation-decision", type=Path)
     for name in ("data-root", "r0-dir", "r1-run", "supplement-dir", "r2-dir", "r3-dir"):
         p.add_argument("--" + name, type=Path)
     a = p.parse_args(argv)
+    if (a.continuation_parent is None) != (a.continuation_decision is None):
+        p.error("--continuation-parent and --continuation-decision must be supplied together")
+    continuation = {}
+    if a.continuation_parent is not None:
+        if not a.allow_training and not a.dry_run:
+            p.error("R4 continuation requires explicit --allow-training")
+        continuation = {
+            "continuation_parent": a.continuation_parent,
+            "continuation_decision": a.continuation_decision,
+        }
     c = load_yaml(a.config)
     if a.dry_run:
         print(
@@ -77,9 +89,10 @@ def main(argv=None):
             a.r3_dir,
             allow_training=True,
             resume=a.resume,
+            **continuation,
         )
     print(json.dumps(result, ensure_ascii=False, indent=2))
-    return 0 if result["status"] == "PASS" else 1
+    return 0 if result["status"] in ("PASS", "COMPLETED_WITH_DIAGNOSTIC_WARNINGS") else 1
 
 
 if __name__ == "__main__":
