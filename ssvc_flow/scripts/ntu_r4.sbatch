@@ -55,9 +55,19 @@ execution_args=(--allow-training)
 if [[ -n ${SSVC_R4_RESUME_STAGE:-} ]]; then
   stage_root=$(realpath -e "$SSVC_R4_RESUME_STAGE")
   allowed_root=$(realpath -e "$SSVC_WORK/runs/NEXT_20260909")
-  if [[ $stage_root != "$allowed_root"/R4_server_*/R4 || ! -f $stage_root/identity.json ]]; then
+  if [[ $stage_root != "$allowed_root"/R4_server_*/R4 ]]; then
     echo 'Resume must name an existing R4 stage within this project.' >&2
     exit 2
+  fi
+  if [[ ! -f $stage_root/identity.json ]]; then
+    if [[ ! -f $stage_root/continuation_binding.json || ! -f $stage_root/continuation_decision.json ||
+          ! -f $stage_root/logical_sampling_identity.json || -e $stage_root/runtime_lock.json ||
+          -e $stage_root/invocations ]]; then
+      echo 'Resume without an identity is limited to an interrupted continuation preparation.' >&2
+      exit 2
+    fi
+    # The runner fully audits the saved decision and parent before initializing
+    # its execution identity; a submitted runtime with a lost identity is rejected.
   fi
   resume_args=(--resume)
   execution_args+=(--resume)

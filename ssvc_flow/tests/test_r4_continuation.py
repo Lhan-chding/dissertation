@@ -1,6 +1,7 @@
 """An authorized continuation preserves the stopped run and its sampling identity."""
 
 import copy
+import errno
 import json
 from contextlib import contextmanager
 from pathlib import Path
@@ -543,3 +544,135 @@ def test_completed_copy_can_resume_atomic_publication_without_recopying(
     )
     assert {p.name: p.stat().st_mtime_ns for p in (out / "inherited_parent").iterdir()} == before
     assert not copying.exists()
+
+
+@pytest.mark.parametrize("operation", ["lstat", "open"])
+def test_inventory_retries_one_transient_missing_entry_with_complete_revalidation(
+    stopped_parent, monkeypatch, operation
+):
+    from src import r4_continuation as module
+
+    parent, _, _ = stopped_parent
+    expected = module._inventory(parent)
+    calls, repeated_checks = [], []
+    if operation == "lstat":
+        original = Path.lstat
+
+        def transient(path, *args, **kwargs):
+            if path == parent / "identity.json":
+                repeated_checks.append(path)
+            if path == parent / "checkpoint.pt":
+                calls.append(path)
+                if len(calls) == 1:
+                    raise FileNotFoundError(errno.ENOENT, "transient missing entry", str(path))
+            return original(path, *args, **kwargs)
+
+        monkeypatch.setattr(Path, "lstat", transient)
+    else:
+        original = module.os.open
+
+        def transient(path, *args, **kwargs):
+            if str(path) == "alarm_stop.json" and "dir_fd" in kwargs:
+                repeated_checks.append(path)
+            if str(path) == "checkpoint.pt" and "dir_fd" in kwargs:
+                calls.append(path)
+                if len(calls) == 1:
+                    raise FileNotFoundError(errno.ENOENT, "transient missing entry", str(path))
+            return original(path, *args, **kwargs)
+
+        monkeypatch.setattr(module.os, "open", transient)
+    assert module._inventory(parent) == expected
+    assert len(calls) == 2
+    assert len(repeated_checks) == 2
+
+
+@pytest.mark.parametrize("operation", ["lstat", "open"])
+def test_inventory_exhausts_bounded_retries_on_persistent_enoent(
+    stopped_parent, monkeypatch, operation
+):
+    from src import r4_continuation as module
+
+    parent, _, _ = stopped_parent
+    calls, delays = [], []
+    monkeypatch.setattr(module.time, "sleep", delays.append)
+    if operation == "lstat":
+        original = Path.lstat
+
+        def unavailable(path, *args, **kwargs):
+            if path == parent / "checkpoint.pt":
+                calls.append(path)
+                raise FileNotFoundError(errno.ENOENT, "persistent missing entry", str(path))
+            return original(path, *args, **kwargs)
+
+        monkeypatch.setattr(Path, "lstat", unavailable)
+    else:
+        original = module.os.open
+
+        def unavailable(path, *args, **kwargs):
+            if str(path) == "checkpoint.pt" and "dir_fd" in kwargs:
+                calls.append(path)
+                raise FileNotFoundError(errno.ENOENT, "persistent missing entry", str(path))
+            return original(path, *args, **kwargs)
+
+        monkeypatch.setattr(module.os, "open", unavailable)
+    with pytest.raises((FileNotFoundError, ValueError)):
+        module._inventory(parent)
+    assert len(calls) == 5
+    assert delays == [0.1, 0.5, 1.0, 2.0]
+
+
+@pytest.mark.parametrize("error_code", [errno.EACCES, errno.EIO])
+def test_inventory_never_retries_permission_or_other_io_failures(
+    stopped_parent, monkeypatch, error_code
+):
+    from src import r4_continuation as module
+
+    parent, _, _ = stopped_parent
+    original = module.os.open
+    calls, delays = [], []
+    monkeypatch.setattr(module.time, "sleep", delays.append)
+
+    def unavailable(path, *args, **kwargs):
+        if str(path) == "checkpoint.pt" and "dir_fd" in kwargs:
+            calls.append(path)
+            raise OSError(error_code, "non-ENOENT failure", str(path))
+        return original(path, *args, **kwargs)
+
+    monkeypatch.setattr(module.os, "open", unavailable)
+    with pytest.raises(ValueError) as error:
+        module._inventory(parent)
+    assert error.value.__cause__.errno == error_code
+    assert len(calls) == 1
+    assert delays == []
+
+
+@pytest.mark.parametrize("kind", ["missing-root", "symlink-root", "changed-hash"])
+def test_inventory_retry_does_not_relax_root_or_hash_checks(
+    stopped_parent, tmp_path, monkeypatch, kind
+):
+    from src import r4_continuation as module
+
+    parent, binding, source = stopped_parent
+    delays = []
+    monkeypatch.setattr(module.time, "sleep", delays.append)
+    if kind == "missing-root":
+        with pytest.raises(ValueError):
+            module._inventory(tmp_path / "missing")
+    elif kind == "symlink-root":
+        linked = tmp_path / "linked"
+        linked.symlink_to(parent, target_is_directory=True)
+        with pytest.raises(ValueError):
+            module._inventory(linked)
+    else:
+        (parent / "checkpoint.pt").write_bytes(b"changed bytes")
+        with pytest.raises(ValueError, match="changed"):
+            module.prepare_continuation(
+                parent,
+                tmp_path / "child",
+                _decision(binding, source),
+                binding,
+                source,
+                allow_training=True,
+            )
+        assert not (tmp_path / "child").exists()
+    assert delays == []

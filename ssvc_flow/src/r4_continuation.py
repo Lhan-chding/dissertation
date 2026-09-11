@@ -10,11 +10,13 @@ returned logical identity keeps the original sample keys and random seeds.
 from __future__ import annotations
 
 import copy
+import errno
 import hashlib
 import json
 import math
 import os
 import stat
+import time
 from pathlib import Path, PurePosixPath
 
 from .core import canonical_hash
@@ -161,7 +163,7 @@ def _open_regular(root, relative):
         os.close(directory)
 
 
-def _inventory(root):
+def _inventory_once(root):
     if root.is_symlink() or not root.is_dir():
         raise ValueError("Continuation evidence root must be a real directory")
     files = {}
@@ -180,6 +182,26 @@ def _inventory(root):
                     size += len(block)
             files[relative] = {"sha256": digest.hexdigest(), "bytes": size}
     return dict(sorted(files.items()))
+
+
+def _inventory(root):
+    """Retry only transient ENOENT inside a complete, read-only inventory pass.
+
+    A failed pass contributes no hashes. Every successful result still undergoes
+    the caller's exact inventory/hash checks; absent roots and other errors fail.
+    """
+    delays = (0.1, 0.5, 1.0, 2.0)
+    for attempt in range(len(delays) + 1):
+        try:
+            return _inventory_once(root)
+        except (FileNotFoundError, ValueError) as exc:
+            underlying = exc if isinstance(exc, OSError) else exc.__cause__
+            missing_entry = isinstance(underlying, OSError) and underlying.errno == errno.ENOENT
+            if not missing_entry or attempt == len(delays):
+                raise
+            if root.is_symlink() or not root.is_dir():
+                raise ValueError("Continuation evidence root must be a real directory") from exc
+            time.sleep(delays[attempt])
 
 
 def _check_audited_files(parent, binding, inventory):

@@ -338,6 +338,36 @@ def test_slurm_resume_continuation_keeps_parent_read_only(tmp_path):
     assert set(p.name for p in parent.iterdir()) == {"identity.json"}
 
 
+@pytest.mark.parametrize("started", [False, True])
+def test_slurm_resumes_verified_preparation_before_identity_only(tmp_path, started):
+    project, _, _, env = _slurm_fixture(tmp_path)
+    child = project / "runs/NEXT_20260909/R4_server_455_attempt_0/R4"
+    child.mkdir(parents=True)
+    for name in (
+        "continuation_binding.json",
+        "continuation_decision.json",
+        "logical_sampling_identity.json",
+    ):
+        (child / name).write_text("{}\n")
+    if started:
+        (child / "runtime_lock.json").write_text("{}\n")
+    env["SSVC_R4_RESUME_STAGE"] = str(child)
+    result = subprocess.run(
+        ["bash", str(Path("scripts/ntu_r4.sbatch").resolve())],
+        env=env,
+        capture_output=True,
+        text=True,
+    )
+    if started:
+        assert result.returncode == 2
+        assert not (child / "received_args.json").exists()
+    else:
+        assert result.returncode == 0, result.stdout + result.stderr
+        args = json.loads((child / "received_args.json").read_text())
+        assert "--resume" in args
+        assert args[args.index("--out") + 1] == str(child.resolve())
+
+
 @pytest.mark.parametrize("bad_case", ["resume-parent", "unpaired"])
 def test_slurm_rejects_parent_as_output_or_unpaired_decision(tmp_path, bad_case):
     _, parent, _, env = _slurm_fixture(tmp_path)
