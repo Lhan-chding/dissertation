@@ -334,23 +334,105 @@ def test_rejects_pilot_report_missing_or_false_facts(report_case, mutation):
         _validate(report_case)
 
 
-def test_historical_k16_initials_keep_track_specific_denominators(report_case):
+@pytest.mark.parametrize("historical_p3_schema", [False, True])
+def test_historical_k16_initials_keep_track_specific_denominators(
+    report_case, historical_p3_schema
+):
     root, inputs = report_case
     inputs["initial_rows_by_track"] = {
         "N": _rows("N", dict.fromkeys(FAMILIES, 48), step=0, initial=True, k=16),
         "L": _rows("L", {"legacy_a": 24, "legacy_b": 64}, step=0, initial=True, k=16),
     }
+    if historical_p3_schema:
+        for rows in inputs["initial_rows_by_track"].values():
+            for row in rows:
+                row["rollout_index"] = row.pop("sample_index")
+                row["initial_source"] = "R0_verified_P3"
+                row["source_record_hash"] = "a" * 64
+    original = copy.deepcopy(inputs)
     details = json.loads(
         (root / "pilot_report.md").read_text().split("```json\n")[1].split("```")[0]
     )
     _reports(root, inputs["endpoint_rows"], inputs["initial_rows_by_track"], details)
     result = _validate(report_case)
+    assert inputs == original
     assert result["counts"]["initial_outputs_by_track"] == {"N": 4608, "L": 2816}
     results = json.loads((root / "endpoint_metrics.json").read_text())
     for track in ("N", "L"):
         panel = results[track]["comparisons"]["X_VALID_minus_initial"]["panel"]
         assert {p["n"] for p in panel["reference_counts_by_prompt"].values()} == {16}
         assert {p["n"] for p in panel["target_counts_by_prompt"].values()} == {8}
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        "missing",
+        "duplicate",
+        "negative",
+        "out_of_range",
+        "bool",
+        "float",
+        "missing_marker",
+        "unverified_bank",
+        "missing_source_hash",
+        "invalid_source_hash",
+        "ambiguous_alias",
+        "endpoint_alias",
+        "shared_alias",
+        "step32_alias",
+    ],
+)
+def test_historical_p3_schema_keeps_coverage_and_native_banks_strict(
+    report_case, mutation, monkeypatch
+):
+    api = importlib.import_module("src.r4_report_gate")
+    inputs = report_case[1]
+    rows = _rows("N", dict.fromkeys(FAMILIES, 48), step=0, initial=True, k=16)
+    for row in rows:
+        row["rollout_index"] = row.pop("sample_index")
+        row["initial_source"] = "R0_verified_P3"
+        row["source_record_hash"] = "a" * 64
+    inputs["initial_rows_by_track"] = {"N": rows}
+    first = rows[0]
+    if mutation == "missing":
+        first.pop("rollout_index")
+    elif mutation in ("duplicate", "negative", "out_of_range", "bool", "float"):
+        first["rollout_index"] = {
+            "duplicate": 1,
+            "negative": -1,
+            "out_of_range": 16,
+            "bool": False,
+            "float": 0.0,
+        }[mutation]
+    elif mutation == "missing_marker":
+        first.pop("initial_source")
+    elif mutation == "unverified_bank":
+        for row in rows:
+            row.pop("initial_source")
+    elif mutation == "missing_source_hash":
+        first.pop("source_record_hash")
+    elif mutation == "invalid_source_hash":
+        first["source_record_hash"] = "not-a-sha256"
+    elif mutation == "ambiguous_alias":
+        first["sample_index"] = first["rollout_index"]
+    else:
+        key = {
+            "endpoint_alias": "endpoint_rows",
+            "shared_alias": "shared_initial_rows",
+            "step32_alias": "step32_rows",
+        }[mutation]
+        row = inputs[key][0]
+        row["rollout_index"] = row.pop("sample_index")
+        row["initial_source"] = "R0_verified_P3"
+        row["source_record_hash"] = "a" * 64
+
+    def unexpected(*args, **kwargs):
+        pytest.fail("Schema/coverage failure must precede bootstrap recomputation")
+
+    monkeypatch.setattr(api, "analyze_sampled_endpoints", unexpected)
+    with pytest.raises(ValueError):
+        _validate(report_case)
 
 
 @pytest.mark.parametrize(

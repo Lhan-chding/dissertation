@@ -24,7 +24,7 @@ FAMILIES = {"cross_series", "duplicate_encoding", "trend"}
 BOOTSTRAP = {"replicates": 5000, "seed": 20260909}
 
 
-def _bank(rows, *, track, step, arms, prompts, k, family_scenes=None):
+def _bank(rows, *, track, step, arms, prompts, k, family_scenes=None, historical_p3=False):
     if not isinstance(rows, (list, tuple)) or len(rows) != len(arms) * prompts * k:
         raise ValueError(f"Incomplete {track} step {step} sampled bank")
     keys, groups, identities = set(), defaultdict(dict), {}
@@ -52,7 +52,18 @@ def _bank(rows, *, track, step, arms, prompts, k, family_scenes=None):
             or row.get("category") not in ("X", "S", "W", "I")
         ):
             raise ValueError("Duplicate, malformed, or wrong-track/checkpoint sampled input")
-        index = row.get("sample_index")
+        if historical_p3 and (
+            step != 0
+            or arms != ("INITIAL",)
+            or k != 16
+            or row.get("initial_source") != "R0_verified_P3"
+            or not isinstance(row.get("source_record_hash"), str)
+            or re.fullmatch(r"[0-9a-f]{64}", row["source_record_hash"]) is None
+            or "sample_index" in row
+        ):
+            raise ValueError("Historical P3 index schema requires unambiguous verified provenance")
+        # P3's immutable ledger uses rollout_index; native R4 banks use sample_index.
+        index = row.get("rollout_index" if historical_p3 else "sample_index")
         if type(index) is not int or index not in range(k) or index in groups[arm, prompt]:
             raise ValueError("Prompt sample indices must be the complete fixed K bank")
         if prompt in identities and identities[prompt] != identity:
@@ -278,6 +289,11 @@ def _inputs(
                 arms=("INITIAL",),
                 prompts=TRACK_COUNTS[track] // 16,
                 k=16,
+                historical_p3=isinstance(rows, (list, tuple))
+                and any(
+                    isinstance(row, dict) and row.get("initial_source") == "R0_verified_P3"
+                    for row in rows
+                ),
             )
             if historical != identities[track]:
                 raise ValueError("Historical K16 initial must cover its own full endpoint track")
