@@ -2,7 +2,7 @@
 
 初始本地实现 commit 为 `d261d67daba5cac54a6736e366d951ede8d19932`，文档标记提交 `e1ce594591453f3970e96fa1dfcd6997fdc0ee05` 不改变该版源码。该版 CPU 完整套件 1228 项通过；交付前最终修复后全部新增 205 项和参考数学 15 项通过，均无失败或跳过。这些计数对应初始本地验收。
 
-本交接对应分支 `codex/ssvc-mechanism-followup-20260914`，工作目录为该仓库的 `ssvc_flow/`。初始源码版本与 CPU 结果见 [IMPLEMENTATION_REPORT_zh.md](IMPLEMENTATION_REPORT_zh.md) 和 [machine_readable_readiness.json](machine_readable_readiness.json)。用户随后授权服务器验证；首次 5090 smoke 在模型分配前因计划指纹不一致退出。修复提交 `154599ced9a0826997bdc69b2ed6ac4943e863bd` 的 CPU 原件核验作业 153965 和 PRO 6000 单卡 smoke 作业 154001 已通过。用户进一步授权进入 S1 并使用两个独立单卡作业并行；bank00 作业 154220 和 bank03 作业 154221 已启动，尚无 S1 完成结果，S2 未启动。验证事实见 [SERVER_VALIDATION_20260914_zh.md](SERVER_VALIDATION_20260914_zh.md)，实际 S1 启动记录见 [S1_EXECUTION_20260914_zh.md](S1_EXECUTION_20260914_zh.md)。不能把初始 CPU 通过记录视为 GPU 通过证据。
+本交接对应分支 `codex/ssvc-mechanism-followup-20260914`，工作目录为该仓库的 `ssvc_flow/`。初始源码版本与 CPU 结果见 [IMPLEMENTATION_REPORT_zh.md](IMPLEMENTATION_REPORT_zh.md) 和 [machine_readable_readiness.json](machine_readable_readiness.json)。用户随后授权服务器验证；首次 5090 smoke 在模型分配前因计划指纹不一致退出。修复提交 `154599ced9a0826997bdc69b2ed6ac4943e863bd` 的 CPU 原件核验作业 153965 和 PRO 6000 单卡 smoke 作业 154001 已通过。用户进一步授权进入 S1 并使用两个独立单卡作业并行。截至 2026-09-14 15:47:49 UTC，bank00 作业 154220 已完成并通过原始证据复核；bank03 作业 154221 和补交的 bank04 作业 154346 分别在两张 PRO 6000 上运行。六个 bank 的 S1 尚未全部完成，S2 未启动。验证事实见 [SERVER_VALIDATION_20260914_zh.md](SERVER_VALIDATION_20260914_zh.md)，S1 实测和调度记录见 [S1_EXECUTION_20260914_zh.md](S1_EXECUTION_20260914_zh.md)。不能把初始 CPU 通过记录视为 GPU 通过证据。
 
 ## 当前停止点和原件
 
