@@ -1,8 +1,8 @@
 # SSVC mechanism-followup-v2 服务器交接
 
-实际实现 commit 为 `d261d67daba5cac54a6736e366d951ede8d19932`，后续文档标记提交不改变该源码。CPU完整套件1228项通过；最终修复后全部新增205项和参考数学15项通过，均无失败或跳过。
+初始本地实现 commit 为 `d261d67daba5cac54a6736e366d951ede8d19932`，文档标记提交 `e1ce594591453f3970e96fa1dfcd6997fdc0ee05` 不改变该版源码。该版 CPU 完整套件 1228 项通过；交付前最终修复后全部新增 205 项和参考数学 15 项通过，均无失败或跳过。这些计数对应初始本地验收。
 
-本交接对应分支 `codex/ssvc-mechanism-followup-20260914`，工作目录为该仓库的 `ssvc_flow/`。源码版本与实际 CPU 结果见 [IMPLEMENTATION_REPORT_zh.md](IMPLEMENTATION_REPORT_zh.md) 和 [machine_readable_readiness.json](machine_readable_readiness.json)。本次没有连接服务器、加载 9B、运行 GPU、提交 Slurm 或启动真实训练。
+本交接对应分支 `codex/ssvc-mechanism-followup-20260914`，工作目录为该仓库的 `ssvc_flow/`。初始源码版本与 CPU 结果见 [IMPLEMENTATION_REPORT_zh.md](IMPLEMENTATION_REPORT_zh.md) 和 [machine_readable_readiness.json](machine_readable_readiness.json)。用户随后授权服务器验证；CPU 原件核验已通过，首次 5090 smoke 在模型分配前因计划指纹不一致退出。后续修复、验证事实及容量结论边界见 [SERVER_VALIDATION_20260914_zh.md](SERVER_VALIDATION_20260914_zh.md)，不能把初始 CPU 通过记录视为 GPU 通过证据。
 
 ## 当前停止点和原件
 

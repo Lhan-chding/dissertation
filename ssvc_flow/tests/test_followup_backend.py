@@ -63,8 +63,13 @@ def test_snapshot_requires_complete_pinned_local_weights(tmp_path):
     assert backend._snapshot_binding(snapshot, revision) != result
 
 
-def test_revalidate_plan_rejects_source_or_parent_drift(monkeypatch):
-    validated = {"design": {}, "paths": {}, "source_files": {"x": "old"}, "gate": {}}
+def test_revalidate_plan_rejects_source_or_parent_drift(monkeypatch, tmp_path):
+    validated = {
+        "design": {},
+        "paths": {"new_run_root": str(tmp_path / "new_run")},
+        "source_files": {"x": "old"},
+        "gate": {},
+    }
     monkeypatch.setattr(
         backend,
         "prepare_server_plan",
@@ -656,3 +661,217 @@ def test_historical_fixture_rejects_non_cpu_tensors_before_any_output(tmp_path):
             context, validated, arm="X_BASE", output_root=tmp_path, fixture=True
         )
     assert not list(tmp_path.iterdir())
+
+
+def _roundoff_revalidation_fixture(tmp_path):
+    import math
+
+    from src.r3_report_gate import _compare_response
+    from src.r3_warm_gate import _compare_direct
+
+    saved = {"candidates": {"candidate": {"responses": {"overall": {"pX": {"estimate": 0.3}}}}}}
+    changed = copy.deepcopy(saved)
+    changed["candidates"]["candidate"]["responses"]["overall"]["pX"]["estimate"] = math.nextafter(
+        0.3, math.inf
+    )
+    direct_saved = {
+        "control_IS": saved,
+        "comparisons": {
+            "pair": {
+                "responses": {
+                    "overall": {
+                        "pX": {
+                            "predicted_delta": 1.0,
+                            "observed_delta": 1.0,
+                            "residual": 0.0,
+                            "ci": {},
+                        }
+                    }
+                }
+            }
+        },
+    }
+    direct_changed = copy.deepcopy(direct_saved)
+    direct_changed["control_IS"] = changed
+    direct_changed["comparisons"]["pair"]["responses"]["overall"]["pX"]["observed_delta"] = (
+        math.nextafter(1.0, math.inf)
+    )
+    paths = {"new_run_root": str(tmp_path / "new_run")}
+    for name in backend.DIRECTORY_KEYS:
+        folder = tmp_path / name
+        folder.mkdir()
+        paths[name] = str(folder)
+    original = {
+        "design": {"model": {"id": "verified-model"}},
+        "paths": paths,
+        "source_files": {"src/frozen.py": "original-source"},
+        "snapshot": {"files": {"model": "weight-hash"}},
+        "gate": {"certificate": {"threshold": 1e-4}, "binding": {"sha256": "raw-hash"}},
+        "r4_binding": {"unexpected": {"roundoff": "exact-other-field"}},
+        "warm_binding": {
+            "files": {"response.json": "response-file-hash"},
+            "response_artifact_audit": {"report_float_comparison": {"epsilon_multiplier": 64}},
+            "response_roundoff": [
+                {"bank_index": i, **_compare_response(saved, saved, "fixture")} for i in (0, 6)
+            ],
+            "direct_validation": {
+                "direct_outputs": 3072,
+                "statistical_status": {"0": "PASS"},
+                "roundoff": {str(i): _compare_direct(direct_saved, direct_saved) for i in (0, 6)},
+            },
+        },
+    }
+    rebuilt = copy.deepcopy(original)
+    rebuilt["warm_binding"]["response_roundoff"] = [
+        {"bank_index": i, **_compare_response(saved, changed, "fixture")} for i in (0, 6)
+    ]
+    rebuilt["warm_binding"]["direct_validation"]["roundoff"] = {
+        str(i): _compare_direct(direct_saved, direct_changed) for i in (0, 6)
+    }
+    return original, rebuilt
+
+
+def test_revalidation_accepts_legal_roundoff_retains_original_identity_and_full_audit(
+    tmp_path, monkeypatch
+):
+    original, rebuilt = _roundoff_revalidation_fixture(tmp_path)
+    before = copy.deepcopy(original)
+    actual_before = copy.deepcopy(rebuilt)
+    calls = []
+
+    def prepare(design, paths):
+        calls.append(True)
+        return rebuilt
+
+    monkeypatch.setattr(backend, "prepare_server_plan", prepare)
+    returned = backend._revalidate_plan(original)
+    assert calls == [True]
+    assert returned == original == before and rebuilt == actual_before
+    assert returned is not original
+    assert backend.canonical_hash(returned) == backend.canonical_hash(original)
+    assert backend.canonical_hash(returned) != backend.canonical_hash(rebuilt)
+    audits = Path(original["paths"]["new_run_root"]) / "revalidation_audits"
+    record = json.loads(next((audits / "comparisons").glob("*.json")).read_text())
+    assert record["status"] == "PASS"
+    for name, value in (("original", original), ("recomputed", rebuilt)):
+        snapshot = audits / record[name]["path"]
+        assert json.loads(snapshot.read_text()) == value
+        assert backend.file_hash(snapshot) == record[name]["file_sha256"]
+    hashes = {str(p): backend.file_hash(p) for p in audits.rglob("*.json")}
+    assert backend._revalidate_plan(original) == original
+    assert hashes == {str(p): backend.file_hash(p) for p in audits.rglob("*.json")}
+
+
+@pytest.mark.parametrize(
+    "path,value",
+    [
+        (("design", "model", "id"), "other-model"),
+        (("source_files", "src/frozen.py"), "other-source"),
+        (("snapshot", "files", "model"), "other-weight-hash"),
+        (("gate", "certificate", "threshold"), 1.0),
+        (("gate", "binding", "sha256"), "other-raw-hash"),
+        (("warm_binding", "files", "response.json"), "other-response-hash"),
+        (
+            (
+                "warm_binding",
+                "response_artifact_audit",
+                "report_float_comparison",
+                "epsilon_multiplier",
+            ),
+            128,
+        ),
+        (("warm_binding", "direct_validation", "direct_outputs"), 3073),
+        (("warm_binding", "direct_validation", "statistical_status", "0"), "FAILED"),
+        (("r4_binding", "unexpected", "roundoff"), "must-not-be-recursively-stripped"),
+    ],
+)
+def test_revalidation_rejects_every_nonobserver_drift_and_keeps_failed_audit(
+    tmp_path, monkeypatch, path, value
+):
+    original, rebuilt = _roundoff_revalidation_fixture(tmp_path)
+    node = rebuilt
+    for part in path[:-1]:
+        node = node[part]
+    node[path[-1]] = value
+    monkeypatch.setattr(backend, "prepare_server_plan", lambda *args: rebuilt)
+    with pytest.raises(ValueError, match="changed"):
+        backend._revalidate_plan(original)
+    audit_root = Path(original["paths"]["new_run_root"]) / "revalidation_audits/comparisons"
+    records = [json.loads(p.read_text()) for p in audit_root.glob("*.json")]
+    assert len(records) == 1 and records[0]["status"] == "FAIL_IDENTITY_CHANGED"
+
+
+def test_revalidation_does_not_swallow_real_numerical_gate_failure(tmp_path, monkeypatch):
+    original, _ = _roundoff_revalidation_fixture(tmp_path)
+
+    def failure(*args):
+        raise ValueError("original response differs beyond permitted roundoff")
+
+    monkeypatch.setattr(backend, "prepare_server_plan", failure)
+    with pytest.raises(ValueError, match="beyond permitted"):
+        backend._revalidate_plan(original)
+
+
+@pytest.mark.parametrize(
+    "fault", ["nonfinite", "out_of_bound", "changed_bound", "unknown_field", "unknown_path"]
+)
+def test_revalidation_rejects_invalid_observer_payload_before_exclusion(
+    tmp_path, monkeypatch, fault
+):
+    original, rebuilt = _roundoff_revalidation_fixture(tmp_path)
+    difference = rebuilt["warm_binding"]["response_roundoff"][0]["differences"][0]
+    if fault == "nonfinite":
+        difference["recomputed"] = float("nan")
+    elif fault == "out_of_bound":
+        difference["recomputed"] = 0.8
+        difference["absolute_difference"] = 0.5
+    elif fault == "changed_bound":
+        difference["allowed_bound"] = 1.0
+    elif fault == "unknown_field":
+        difference["unexpected"] = "not-an-observer-contract"
+    else:
+        difference["path"] = ["model", "revision"]
+    monkeypatch.setattr(backend, "prepare_server_plan", lambda *args: rebuilt)
+    with pytest.raises(ValueError, match=r"[Rr]oundoff|finite|NaN"):
+        backend._revalidate_plan(original)
+
+
+def test_revalidation_audits_concurrent_identical_publish_and_tampering(tmp_path, monkeypatch):
+    from concurrent.futures import ThreadPoolExecutor
+
+    original, rebuilt = _roundoff_revalidation_fixture(tmp_path)
+    monkeypatch.setattr(backend, "prepare_server_plan", lambda *args: copy.deepcopy(rebuilt))
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        results = list(pool.map(lambda _: backend._revalidate_plan(original), range(8)))
+    assert all(result == original for result in results)
+    root = Path(original["paths"]["new_run_root"]) / "revalidation_audits"
+    assert len(list((root / "plans").glob("*.json"))) == 2
+    assert len(list((root / "comparisons").glob("*.json"))) == 1
+    target = root / "plans" / f"{backend.canonical_hash(rebuilt)}.json"
+    target.write_text('{"tampered": true}\n')
+    with pytest.raises(ValueError, match="different bytes"):
+        backend._revalidate_plan(original)
+    assert target.read_text() == '{"tampered": true}\n'
+
+
+def test_revalidation_audits_refuse_symlink_and_write_failure(tmp_path, monkeypatch):
+    from src import followup_protocol
+
+    original, rebuilt = _roundoff_revalidation_fixture(tmp_path)
+    monkeypatch.setattr(backend, "prepare_server_plan", lambda *args: rebuilt)
+    new_root = Path(original["paths"]["new_run_root"])
+    new_root.mkdir()
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (new_root / "revalidation_audits").symlink_to(outside, target_is_directory=True)
+    with pytest.raises(ValueError, match=r"symlink|symbolic"):
+        backend._revalidate_plan(original)
+    assert not list(outside.iterdir())
+    (new_root / "revalidation_audits").unlink()
+
+    def deny(*args):
+        raise OSError("injected audit disk error")
+
+    monkeypatch.setattr(followup_protocol, "write_new_json", deny)
+    with pytest.raises(OSError, match="audit disk error"):
+        backend._revalidate_plan(original)

@@ -315,11 +315,189 @@ def prepare_server_plan(design, paths, *, out=None):
     return result
 
 
+ROUNDOFF_OBSERVER_PATHS = (
+    ("warm_binding", "response_roundoff"),
+    ("warm_binding", "direct_validation", "roundoff"),
+)
+
+
+def _validate_roundoff_difference(value, *, direct=False):
+    """Check the existing observer format/bound before removing it from identity."""
+    import sys
+
+    from .r3_report_gate import _derived_float
+
+    fields = {"path", "stored", "recomputed", "absolute_difference", "allowed_bound"}
+    if not isinstance(value, dict) or set(value) != fields or not isinstance(value["path"], list):
+        raise ValueError("Malformed roundoff observer difference")
+    path = tuple(value["path"])
+    if direct:
+        permitted = path[:1] == ("comparisons",) and (
+            (len(path) == 6 and path[-1] in {"predicted_delta", "observed_delta", "residual"})
+            or (
+                len(path) == 8
+                and path[5] == "ci"
+                and path[-1]
+                in {
+                    "low",
+                    "high",
+                    "half_width",
+                    "half_width_to_abs_point_estimate",
+                    "half_width_to_abs_predicted_delta",
+                }
+            )
+        )
+    else:
+        permitted = _derived_float(path)
+    if not permitted or any(
+        type(value[key]) is not float or not math.isfinite(value[key]) for key in fields - {"path"}
+    ):
+        raise ValueError("Nonfinite or unsupported roundoff observer")
+    stored, recomputed = value["stored"], value["recomputed"]
+    bound = 64 * sys.float_info.epsilon * max(1.0, abs(stored), abs(recomputed))
+    difference = abs(stored - recomputed)
+    if (
+        value["allowed_bound"] != bound
+        or value["absolute_difference"] != difference
+        or difference > bound
+    ):
+        raise ValueError("Roundoff observer differs from the existing numerical bound")
+
+
+def _validate_response_roundoff(summary, *, bank_index=False):
+    fields = {"different_float_count", "maximum_absolute_difference", "differences"}
+    if bank_index:
+        fields.add("bank_index")
+    if not isinstance(summary, dict) or set(summary) != fields:
+        raise ValueError("Malformed response roundoff observer")
+    differences = summary["differences"]
+    if not isinstance(differences, list):
+        raise ValueError("Roundoff observer differences must be a list")
+    for value in differences:
+        _validate_roundoff_difference(value)
+    if (
+        type(summary["different_float_count"]) is not int
+        or summary["different_float_count"] != len(differences)
+        or type(summary["maximum_absolute_difference"]) is not float
+        or summary["maximum_absolute_difference"]
+        != max((value["absolute_difference"] for value in differences), default=0.0)
+    ):
+        raise ValueError("Roundoff observer summary does not describe its differences")
+
+
+def _revalidation_identity(plan):
+    """Exclude two exact observation subtrees, retaining all actual evidence gates.
+
+    r3_report_gate explicitly keeps accepted CPU-kernel roundoff observations
+    outside its stable identity. The warm audit additionally exposes the same
+    observations for direct validation. Neither records new scientific results.
+    """
+    projected = copy.deepcopy(plan)
+    warm = projected.get("warm_binding", {})
+    if "response_roundoff" in warm:
+        responses = warm["response_roundoff"]
+        if (
+            not isinstance(responses, list)
+            or len(responses) != 2
+            or any(
+                not isinstance(row, dict) or type(row.get("bank_index")) is not int
+                for row in responses
+            )
+            or {row["bank_index"] for row in responses} != {0, 6}
+        ):
+            raise ValueError("Warm response roundoff requires banks 0 and 6")
+        for row in responses:
+            _validate_response_roundoff(row, bank_index=True)
+        warm["response_roundoff"] = {"identity_scope": "CHECKED_CPU_ROUNDOFF_OBSERVER_ONLY"}
+    direct = warm.get("direct_validation", {})
+    if "roundoff" in direct:
+        observations = direct["roundoff"]
+        if not isinstance(observations, dict) or set(observations) != {"0", "6"}:
+            raise ValueError("Direct roundoff observer requires banks 0 and 6")
+        for row in observations.values():
+            if not isinstance(row, dict) or set(row) != {"control_IS", "differences"}:
+                raise ValueError("Malformed direct roundoff observer")
+            _validate_response_roundoff(row["control_IS"])
+            if not isinstance(row["differences"], list):
+                raise ValueError("Direct roundoff differences must be a list")
+            for value in row["differences"]:
+                _validate_roundoff_difference(value, direct=True)
+        direct["roundoff"] = {"identity_scope": "CHECKED_CPU_ROUNDOFF_OBSERVER_ONLY"}
+    return projected
+
+
+def _publish_revalidation_json(path, value):
+    """Concurrent identical publication is idempotent; different bytes fail closed."""
+    import hashlib
+    import os
+    import stat
+
+    from .followup_protocol import write_new_json
+
+    encoded = (
+        json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True, allow_nan=False) + "\n"
+    ).encode()
+    try:
+        write_new_json(path, value)
+    except FileExistsError:
+        # The publisher checks every ancestor. O_NOFOLLOW also closes the final
+        # component race when another process won the immutable publication.
+        if any(p.is_symlink() for p in (path, *path.parents)):
+            raise ValueError("Revalidation audit may not traverse symbolic links") from None
+        descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+        with os.fdopen(descriptor, "rb") as stream:
+            if not stat.S_ISREG(os.fstat(stream.fileno()).st_mode) or stream.read() != encoded:
+                raise ValueError("Existing revalidation audit has different bytes") from None
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def _record_revalidation(original, recomputed, original_identity, recomputed_identity):
+    """Save both full plans and a non-identity, immutable comparison receipt."""
+    import os
+    import socket
+
+    from .followup_train import _safe_output
+
+    paths = original["paths"]
+    root = _safe_output(Path(paths["new_run_root"]) / "revalidation_audits")
+    _separate_output(root, [paths[name] for name in DIRECTORY_KEYS if name in paths])
+    records = {}
+    for name, plan in (("original", original), ("recomputed", recomputed)):
+        digest = canonical_hash(plan)
+        relative = f"plans/{digest}.json"
+        file_digest = _publish_revalidation_json(root / relative, plan)
+        records[name] = {"path": relative, "canonical_sha256": digest, "file_sha256": file_digest}
+    same = original_identity == recomputed_identity
+    receipt = {
+        "schema_version": 1,
+        "status": "PASS" if same else "FAIL_IDENTITY_CHANGED",
+        "original": records["original"],
+        "recomputed": records["recomputed"],
+        "original_identity_hash": original_identity,
+        "recomputed_identity_hash": recomputed_identity,
+        "observer_only_paths": [list(path) for path in ROUNDOFF_OBSERVER_PATHS],
+        "original_numerical_gates_reexecuted": True,
+        "numerical_thresholds_relaxed": False,
+        "runtime_observation": {
+            "hostname": socket.gethostname(),
+            "slurm_job_id": os.environ.get("SLURM_JOB_ID"),
+        },
+    }
+    _publish_revalidation_json(root / "comparisons" / f"{canonical_hash(receipt)}.json", receipt)
+
+
 def _revalidate_plan(validated_plan):
+    # This reruns every original numerical, source, data and checkpoint gate.
+    # A tolerance failure propagates; it never becomes an ignored observation.
     rebuilt = prepare_server_plan(validated_plan["design"], validated_plan["paths"])
-    if canonical_hash(rebuilt) != canonical_hash(validated_plan):
+    original_identity = canonical_hash(_revalidation_identity(validated_plan))
+    recomputed_identity = canonical_hash(_revalidation_identity(rebuilt))
+    _record_revalidation(validated_plan, rebuilt, original_identity, recomputed_identity)
+    if original_identity != recomputed_identity:
         raise ValueError("Validated plan/source/parent/data/snapshot changed; prepare again")
-    return rebuilt
+    # Downstream/CLI whole-plan hashes must continue to identify the exact frozen
+    # original file. Current recomputation remains complete in the audit receipt.
+    return copy.deepcopy(validated_plan)
 
 
 def _load_local_adapter(snapshot, model_spec, *, image_token_limit=768):
