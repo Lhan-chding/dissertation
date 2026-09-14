@@ -2,7 +2,7 @@
 
 初始本地实现 commit 为 `d261d67daba5cac54a6736e366d951ede8d19932`，文档标记提交 `e1ce594591453f3970e96fa1dfcd6997fdc0ee05` 不改变该版源码。该版 CPU 完整套件 1228 项通过；交付前最终修复后全部新增 205 项和参考数学 15 项通过，均无失败或跳过。这些计数对应初始本地验收。
 
-本交接对应分支 `codex/ssvc-mechanism-followup-20260914`，工作目录为该仓库的 `ssvc_flow/`。初始源码版本与 CPU 结果见 [IMPLEMENTATION_REPORT_zh.md](IMPLEMENTATION_REPORT_zh.md) 和 [machine_readable_readiness.json](machine_readable_readiness.json)。用户随后授权服务器验证；CPU 原件核验已通过，首次 5090 smoke 在模型分配前因计划指纹不一致退出。后续修复、验证事实及容量结论边界见 [SERVER_VALIDATION_20260914_zh.md](SERVER_VALIDATION_20260914_zh.md)，不能把初始 CPU 通过记录视为 GPU 通过证据。
+本交接对应分支 `codex/ssvc-mechanism-followup-20260914`，工作目录为该仓库的 `ssvc_flow/`。初始源码版本与 CPU 结果见 [IMPLEMENTATION_REPORT_zh.md](IMPLEMENTATION_REPORT_zh.md) 和 [machine_readable_readiness.json](machine_readable_readiness.json)。用户随后授权服务器验证；首次 5090 smoke 在模型分配前因计划指纹不一致退出。修复提交 `154599ced9a0826997bdc69b2ed6ac4943e863bd` 的 CPU 原件核验作业 153965 和 PRO 6000 单卡 smoke 作业 154001 已通过；尚未启动 S1、S2 或双卡实验。完整验证事实、资源选择及容量结论边界见 [SERVER_VALIDATION_20260914_zh.md](SERVER_VALIDATION_20260914_zh.md)，不能把初始 CPU 通过记录视为 GPU 通过证据。
 
 ## 当前停止点和原件
 
@@ -71,7 +71,7 @@ export CUBLAS_WORKSPACE_CONFIG=:4096:8 TOKENIZERS_PARALLELISM=false
 
 ## 首次需要 GPU 的边界：smoke
 
-**以下命令本次未执行。** 获得实际授权和有效 Slurm GPU allocation 后，再运行：
+下列命令为通用模板。当前修复提交已在 PRO 6000 上完成该阶段，实际结果目录名为 `smoke_pro6000`；后续 `--smoke-evidence` 应引用该已核验原件。源码和输入未改变时，不重复运行昂贵验证。新的冻结版本取得授权和有效 Slurm GPU allocation 后可使用：
 
 ```bash
 "$PY" -m src.followup_cli smoke \
