@@ -1,5 +1,7 @@
 # SSVC mechanism-followup-v2 服务器交接
 
+实际实现 commit 为 `d261d67daba5cac54a6736e366d951ede8d19932`，后续文档标记提交不改变该源码。CPU完整套件1228项通过；最终修复后全部新增205项和参考数学15项通过，均无失败或跳过。
+
 本交接对应分支 `codex/ssvc-mechanism-followup-20260914`，工作目录为该仓库的 `ssvc_flow/`。源码版本与实际 CPU 结果见 [IMPLEMENTATION_REPORT_zh.md](IMPLEMENTATION_REPORT_zh.md) 和 [machine_readable_readiness.json](machine_readable_readiness.json)。本次没有连接服务器、加载 9B、运行 GPU、提交 Slurm 或启动真实训练。
 
 ## 当前停止点和原件

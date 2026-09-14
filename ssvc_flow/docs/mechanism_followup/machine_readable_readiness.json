@@ -2,7 +2,7 @@
   "schema_version": 1,
   "protocol_version": "mechanism-followup-v2-20260914",
   "status": "READY_FOR_SERVER_REVIEW",
-  "implementation_commit": null,
+  "implementation_commit": "d261d67daba5cac54a6736e366d951ede8d19932",
   "working_branch": "codex/ssvc-mechanism-followup-20260914",
   "test_base_commit": "7e405faa241e0085f701cdc858ba423ea76ba5a8",
   "code_implemented": true,

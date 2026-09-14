@@ -6,7 +6,7 @@
 
 - 分支：`codex/ssvc-mechanism-followup-20260914`；工作目录：仓库 `ssvc_flow/`。
 - 起点与测试时 HEAD：`7e405faa241e0085f701cdc858ba423ea76ba5a8`。测试记录同时保存当时 dirty state 与源码/测试 SHA256，不能把该 HEAD 单独当作新代码版本。
-- 实现 commit：待提交后补入。最终实际源码文件见 [IMPLEMENTATION_SOURCE_MANIFEST.json](IMPLEMENTATION_SOURCE_MANIFEST.json)。相对起点的完整交付 diff 保存在本地 `runs/mechanism_followup_cpu/delivery.diff`，也可用 `git diff 7e405faa241e0085f701cdc858ba423ea76ba5a8 <实现commit> -- ssvc_flow` 复核。
+- 实现 commit：`d261d67daba5cac54a6736e366d951ede8d19932`；后续交付标记提交仅补充文档版本，不改变已验收源码。最终实际源码文件见 [IMPLEMENTATION_SOURCE_MANIFEST.json](IMPLEMENTATION_SOURCE_MANIFEST.json)。相对起点的完整交付 diff 保存在本地 `runs/mechanism_followup_cpu/delivery.diff`，也可用 `git diff 7e405faa241e0085f701cdc858ba423ea76ba5a8 d261d67daba5cac54a6736e366d951ede8d19932 -- ssvc_flow` 复核。
 - 原附件的12个清单负载文件已核对大小和 SHA256；[design/](design/) 保留其原始字节、配置和参考数学。设计输入中的旧 `status` 是原始文档状态，当前实现状态在独立 readiness 文件。
 - 新增9个 `src/followup_*.py` 模块、9个测试模块、1个 CPU adapter、冻结配置、3个 Slurm 模板及1个测试记录脚本。没有修改已有生产模块、旧测试或 main；原有未提交文档和未跟踪文件保留并排除于提交。
 - 原 warm runtime 记录的 commit 是 `9cb60cd8e4e26f881e83f80f20b55999f8b8ecde`；其63个源码文件逐一与本地比对，全部 SHA256 一致。Git blob ID、文件 SHA256、canonical JSON hash 和 tensor state hash 分开记录。
