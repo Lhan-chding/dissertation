@@ -4,7 +4,7 @@
 
 ## 已核验的实际运行状态
 
-截至 2026-09-14 19:10:10 UTC（新加坡时间 2026-09-15 03:10:10），bank00、bank03、bank04 已完成并复核，bank05 和 bank11 分别在两张 PRO 6000 上运行。以下保留各次历史快照，最新结果及补位回执见本文末尾。
+最新检查确认 bank05 也已完成，服务器完整性与本地统计复核通过；完整服务器复核回执的本地下载因随后网络中断而待完成。bank11 最后于 2026-09-14 21:57:41 UTC（新加坡时间 2026-09-15 05:57:41）实查仍在运行，之后状态无法刷新；最后一个 composite bank 尚未提交。以下保留各次历史快照，最新结果和阻断状态见本文末尾。
 
 以下是 2026-09-14 14:02:30 UTC（新加坡时间 22:02:30）的快照，不是最终结果。
 
@@ -142,3 +142,44 @@ bank03 的 pX 场景区间排除 0；两 bank 的 qX 场景区间均跨 0，表�
 | bank05 提交回执 | `394249e81b0cee890a19bd6768a5db95a9edfeb5c87c920c33441c7858ec8ac7` |
 | bank11 提交回执 | `f01bd9c035ba9de4a841c2a3ffa47086933a72961fb4e50825086d4617a8db9f` |
 | bank05/11 运行快照 | `7cc6bed711b65e59446e513ff5c9f24b56a8ffa58ebb4ddc38df0c377c8b3da9` |
+
+## bank05 完成及连接中断记录
+
+bank05 作业 154573 于 2026-09-14 21:47:49 UTC（新加坡时间 2026-09-15 05:47:49）正常结束，Slurm `COMPLETED`、退出码 `0:0`，墙钟 9,493 秒（2 小时 38 分 13 秒）。最终状态 `MEASURED / REAL_CUDA_FOLLOWUP`，`training_started=false`、`permanent_training_commit=false`。
+
+服务器独立核验已完成并写入耐久回执：133 个 manifest 路径（20 个 checkpoint 路径），10 个实际 CPU checkpoint 均有限，Adam step64→65；10 reserved=10 confirmed、0 uncertain、320 backward。原始 bank 组装、输入绑定、请求与 seed、1,536 条 raw 语义重解析、逐题计数及完整策略指纹均通过。replay 完整状态仅候选名称元数据不同，其余状态一致；`state_bitwise_equal=false` 保留。模型身份沿用冻结绑定，本轮未重读模型权重或重新生成 prepared tensors。
+
+本地紧凑包的 119 个普通文件及包含的 113 个非 checkpoint manifest 文件已经校验；20 个 checkpoint 路径仅在服务器保留并完成核验。随后下载完整服务器复核回执时发生 `Network is unreachable`，有界只读重试得到 `Operation timed out`，因此该回执的完整本地副本仍为 `PENDING_NETWORK`。本地空下载占位不是核验回执，不算成功传输。服务器已完成的核验与传输阻断分别记录。
+
+| 策略 | 独立样本 | X | S | W | I | pX % | v % | qX % |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| joint_0 | 768 | 532 | 12 | 193 | 31 | 69.270833 | 95.963542 | 72.184532 |
+| joint_1 | 768 | 529 | 12 | 196 | 31 | 68.880208 | 95.963542 | 71.777476 |
+
+训练 bank 总计 X16/S0/W15/I1，与评估输出分开。每个独立候选仍为 48 prompts × 16；no_x_off_1 完整指纹匹配 joint0，复用样本且新增独立样本为 0。joint1 相比 joint0 的 X 减少 3，I 和 v 不变。
+
+独立统计实现复算全部群体、5,000 次共享场景 bootstrap 和联合固定 panel 边界，结果 `RECOMPUTED_MATCH`、无不一致，最大差 2.22e−16。全候选和 pair 均为 M70。以下差值为 joint1−joint0，单位百分点。
+
+| 指标 | 差值 pp | 场景 95% 区间 pp | 全候选固定 panel 95% 界 pp |
+| --- | ---: | --- | --- |
+| pX | -0.390625 | [-0.781250, 0.000000] | [-14.767776, 13.986526] |
+| v | 0.000000 | UNINFORMATIVE / None | [-11.225034, 11.225034] |
+| qX | -0.407056 | [-0.829876, 0.000000] | [-24.435585, 23.604943] |
+
+pX、qX 的场景区间均包含 0，固定 panel 界跨 0；零差 v 保留退化 `UNINFORMATIVE/None`。结果为 `NOT_CERTIFIED`，不据此认定训练收益或跨 seed 泛化。
+
+runtime profile：峰值 CUDA 已分配内存 24,173,737,472 bytes，完成调用耗时 8765.054710 秒，28,509 次 forward；范围与 Slurm 全墙钟不同。
+
+最后一次可连接快照为 21:57:41 UTC：bank11 作业 154574 仍在 gpu-pro6000-13 运行，已有 10 个候选标记、joint0 ledger 768 行，尚无 bank 完成或退出回执。随后当前状态因网络不可达而未知，未认定作业失败，也未停止或修改该作业。
+
+composite_no_x_plus_three_level 的本地单卡脚本已生成并通过 bash -n，但远端准备 SSH 在连接阶段失败，未取得远端 dry-run 通过证据，也没有执行 sbatch。该 bank 仍为 NOT_SUBMITTED，不能记作第二张卡已申请。网络恢复后先取回并校验 bank05 已有完整回执，再完成最终推进决策、source/smoke/script/dry-run 和队列/intent 检查，单独申请一张 PRO 6000。无需重跑已完成 bank05 或重复昂贵验证，除非发现新的证据不一致。
+
+当前累计四个 bank 已完成服务器实测：33 次 Adam、1,056 backward、6,144 条独立样本。监控仍为每小时一次；S1 尚未全部完成，S2 未启动。
+
+| 证据 | SHA-256 |
+| --- | --- |
+| bank05 最终 manifest | `2211bef459c685afc727d5f0c561cd90b9367a34ec592357cbe2b20659ec8822` |
+| bank05 紧凑包（已下载核验） | `291f34320ccd6413724d5ee66452fcf6a291cb1b8b62f15702b3de795f3273c3` |
+| bank05 服务器核验回执（待下载完整副本） | `15a042b7987f33ae388ea1d1adaca3dd99308db8f74c5a189b722561a7c3f668` |
+| bank05 独立统计复核（本地） | `7d64e7cff2cf3ae408997f20fe904a3cdcdd979b6b8c38a019e4f7ffbc9c2b14` |
+| composite 本地单卡脚本 | `7b4e7a6908e12c3321e352536b78cd4912e2024a4687148c219b645203942970` |
