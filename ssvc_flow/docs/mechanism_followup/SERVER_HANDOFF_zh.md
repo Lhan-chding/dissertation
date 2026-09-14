@@ -2,7 +2,7 @@
 
 初始本地实现 commit 为 `d261d67daba5cac54a6736e366d951ede8d19932`，文档标记提交 `e1ce594591453f3970e96fa1dfcd6997fdc0ee05` 不改变该版源码。该版 CPU 完整套件 1228 项通过；交付前最终修复后全部新增 205 项和参考数学 15 项通过，均无失败或跳过。这些计数对应初始本地验收。
 
-本交接对应分支 `codex/ssvc-mechanism-followup-20260914`，工作目录为该仓库的 `ssvc_flow/`。初始源码版本与 CPU 结果见 [IMPLEMENTATION_REPORT_zh.md](IMPLEMENTATION_REPORT_zh.md) 和 [machine_readable_readiness.json](machine_readable_readiness.json)。用户随后授权服务器验证；首次 5090 smoke 在模型分配前因计划指纹不一致退出。修复提交 `154599ced9a0826997bdc69b2ed6ac4943e863bd` 的 CPU 原件核验作业 153965 和 PRO 6000 单卡 smoke 作业 154001 已通过；尚未启动 S1、S2 或双卡实验。完整验证事实、资源选择及容量结论边界见 [SERVER_VALIDATION_20260914_zh.md](SERVER_VALIDATION_20260914_zh.md)，不能把初始 CPU 通过记录视为 GPU 通过证据。
+本交接对应分支 `codex/ssvc-mechanism-followup-20260914`，工作目录为该仓库的 `ssvc_flow/`。初始源码版本与 CPU 结果见 [IMPLEMENTATION_REPORT_zh.md](IMPLEMENTATION_REPORT_zh.md) 和 [machine_readable_readiness.json](machine_readable_readiness.json)。用户随后授权服务器验证；首次 5090 smoke 在模型分配前因计划指纹不一致退出。修复提交 `154599ced9a0826997bdc69b2ed6ac4943e863bd` 的 CPU 原件核验作业 153965 和 PRO 6000 单卡 smoke 作业 154001 已通过。用户进一步授权进入 S1 并使用两个独立单卡作业并行；bank00 作业 154220 和 bank03 作业 154221 已启动，尚无 S1 完成结果，S2 未启动。验证事实见 [SERVER_VALIDATION_20260914_zh.md](SERVER_VALIDATION_20260914_zh.md)，实际 S1 启动记录见 [S1_EXECUTION_20260914_zh.md](S1_EXECUTION_20260914_zh.md)。不能把初始 CPU 通过记录视为 GPU 通过证据。
 
 ## 当前停止点和原件
 
@@ -83,7 +83,7 @@ smoke 加载固定9B，核验原模型/processor/LoRA/环境证书，在实际 w
 
 ## S1：六个预设 bank
 
-每个命令对应一个独立执行单元，按下表顺序运行并检查结果；不要并行保留多套候选 GPU 状态。共享参数如下：
+每个命令对应一个独立执行单元。按用户 2026-09-14 最新授权，按下表顺序分别提交，最多两个 S1 作业并行；每个进程只可见自己获配的一张 GPU，使用独立 bank 输出目录、状态和预算。单个 bank 内仍逐个构造、恢复候选，不并行保留多套候选 GPU 状态。每个已完成 bank 必须先检查原始结果与门禁，才用下一个独立 bank 补充该空位；无需等待另一个仍运行的独立 bank。共享参数如下：
 
 ```bash
 run_s1() {
