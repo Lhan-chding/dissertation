@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-09-14T10:34:29.631078+00:00",
+  "scope": "CPU verification only; private complete invocations and artifacts remain in ignored runs/",
+  "runs": [
+    {
+      "name": "full_suite_before_final_review_fixes",
+      "record": "runs/mechanism_followup_cpu/final/result.json",
+      "record_sha256": "7567b30bd7dea6bb861ca0437036618385718f31fc0667cb7aeeb7e411e2a009",
+      "junit": "runs/mechanism_followup_cpu/final/junit.xml",
+      "junit_sha256": "90853662397ef7f9deb48a0ad54dbdc80fb56f62f5023768f753eefd60070904",
+      "log": "runs/mechanism_followup_cpu/final/pytest.log",
+      "log_sha256": "1420b44959ce3e55def4b6863bd5e6cc7e7e09eb1e2469cf96adf3691ac8efe5",
+      "counts": {
+        "passed": 1228,
+        "failed": 0,
+        "skipped": 0,
+        "errors": 0
+      },
+      "exit_code": 0,
+      "duration_seconds": 993.4365601539612,
+      "test_head": "7e405faa241e0085f701cdc858ba423ea76ba5a8",
+      "source_hashes_unchanged_during_run": true,
+      "source_files_changed_after_this_run": [
+        "src/followup_backend.py",
+        "src/followup_train.py",
+        "tests/test_followup_backend.py",
+        "tests/test_followup_train.py"
+      ],
+      "python_version": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+      "library_versions": {
+        "torch": "2.13.0",
+        "numpy": "2.5.2",
+        "pytest": "9.0.3",
+        "scipy": "1.18.0",
+        "PyYAML": "6.0.3",
+        "Pillow": "12.3.0",
+        "transformers": "5.14.1",
+        "peft": "0.19.1"
+      },
+      "environment_overrides": {
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "HF_HUB_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "CUDA_VISIBLE_DEVICES": "",
+        "TOKENIZERS_PARALLELISM": "false"
+      },
+      "exact_command_and_dirty_state_location": "runs/mechanism_followup_cpu/final/result.json"
+    },
+    {
+      "name": "final_followup_suite",
+      "record": "runs/mechanism_followup_cpu/final_followup/result.json",
+      "record_sha256": "0632c09537f90e816f8d0bbbc673bce11babe479257545d561b31b3c5d146c32",
+      "junit": "runs/mechanism_followup_cpu/final_followup/junit.xml",
+      "junit_sha256": "ec1aa2db19e2b1ebe05745aa07740275cef56d76feb97c03b02ea24cdc40ca5f",
+      "log": "runs/mechanism_followup_cpu/final_followup/pytest.log",
+      "log_sha256": "28beeb5ee737575e44458ca7aeb123da744e80e76a645aac334061918a65feae",
+      "counts": {
+        "passed": 205,
+        "failed": 0,
+        "skipped": 0,
+        "errors": 0
+      },
+      "exit_code": 0,
+      "duration_seconds": 16.3457190990448,
+      "test_head": "7e405faa241e0085f701cdc858ba423ea76ba5a8",
+      "source_hashes_unchanged_during_run": true,
+      "source_files_changed_after_this_run": [],
+      "python_version": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+      "library_versions": {
+        "torch": "2.13.0",
+        "numpy": "2.5.2",
+        "pytest": "9.0.3",
+        "scipy": "1.18.0",
+        "PyYAML": "6.0.3",
+        "Pillow": "12.3.0",
+        "transformers": "5.14.1",
+        "peft": "0.19.1"
+      },
+      "environment_overrides": {
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "HF_HUB_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "CUDA_VISIBLE_DEVICES": "",
+        "TOKENIZERS_PARALLELISM": "false"
+      },
+      "exact_command_and_dirty_state_location": "runs/mechanism_followup_cpu/final_followup/result.json"
+    },
+    {
+      "name": "reference_math",
+      "record": "runs/mechanism_followup_cpu/reference_verified/result.json",
+      "record_sha256": "2f6de75e607111b1c448670907199f9440dfd3b9765034cd68dc2c5946d133a7",
+      "junit": "runs/mechanism_followup_cpu/reference_verified/junit.xml",
+      "junit_sha256": "9cb9e82da988715ac1e915449f8910bef1f9bd98176c492395fb387ddac47129",
+      "log": "runs/mechanism_followup_cpu/reference_verified/pytest.log",
+      "log_sha256": "f6b63ab48fd291f4dd9170b2691fcc402cf5b4a7400c78b64b7e38af65a4a50b",
+      "counts": {
+        "passed": 15,
+        "failed": 0,
+        "skipped": 0,
+        "errors": 0
+      },
+      "exit_code": 0,
+      "duration_seconds": 0.45627379417419434,
+      "test_head": "7e405faa241e0085f701cdc858ba423ea76ba5a8",
+      "source_hashes_unchanged_during_run": true,
+      "source_files_changed_after_this_run": [
+        "src/followup_backend.py",
+        "src/followup_train.py",
+        "tests/test_followup_backend.py",
+        "tests/test_followup_train.py"
+      ],
+      "python_version": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+      "library_versions": {
+        "torch": "2.13.0",
+        "numpy": "2.5.2",
+        "pytest": "9.0.3",
+        "scipy": "1.18.0",
+        "PyYAML": "6.0.3",
+        "Pillow": "12.3.0",
+        "transformers": "5.14.1",
+        "peft": "0.19.1"
+      },
+      "environment_overrides": {
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "HF_HUB_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "CUDA_VISIBLE_DEVICES": "",
+        "TOKENIZERS_PARALLELISM": "false"
+      },
+      "exact_command_and_dirty_state_location": "runs/mechanism_followup_cpu/reference_verified/result.json"
+    }
+  ],
+  "non_pytest_checks": {
+    "record": "runs/mechanism_followup_cpu/non_pytest_checks/results.json",
+    "sha256": "86135ddd4b36293e8c120cfc2930544d480644a35237c9560243f412d824e9d7"
+  },
+  "final_static_checks": {
+    "record": "runs/mechanism_followup_cpu/final_static_checks/results.json",
+    "sha256": "2d1ff25e098596d25f63433d88e6ca4674a2f5f25d14de0346a86d73ed5f5a12"
+  },
+  "baseline_log": {
+    "path": "runs/mechanism_followup_cpu/baseline/legacy.log",
+    "sha256": "d31e6c635bbd9a8a0c51825adcb5fdac6785646592265569d51b390b45c3e223",
+    "counts": {
+      "passed": 1028,
+      "failed": 0,
+      "skipped": 0
+    },
+    "note": "Supplemental pre-implementation baseline; full final invocation evidence is in the full-suite record."
+  }
+}

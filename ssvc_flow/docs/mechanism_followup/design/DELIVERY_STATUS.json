@@ -1,0 +1,26 @@
+{
+  "delivery_date": "2026-09-14",
+  "deliverable": "Codex experiment and implementation specification",
+  "repository": "Lhan-chding/dissertation",
+  "working_branch": "codex/ssvc-mechanism-followup-20260914",
+  "audited_head": "7e405faa241e0085f701cdc858ba423ea76ba5a8",
+  "new_repository_implementation_committed": false,
+  "local_reference_tests": {
+    "command": "python -m unittest discover -s reference -p 'test_reference_math.py' -v",
+    "passed": 15,
+    "failed": 0,
+    "exit_code": 0,
+    "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+    "scope": "standard-library reward math, bank equivalence, update-vector counterexample, bound and budget calculations"
+  },
+  "repository_regression_tests_run_this_delivery": false,
+  "GPU_model_loaded_this_delivery": false,
+  "training_run_this_delivery": false,
+  "core_files": [
+    "START_HERE_FOR_CODEX.md",
+    "CODEX_CONTINUE_EXPERIMENTS_zh.md",
+    "CPU_ACCEPTANCE_CHECKLIST_zh.md",
+    "configs/followup_design.json"
+  ],
+  "codex_next_action": "implement + CPU regression + fixture e2e + private parent binding; stop before server execution"
+}

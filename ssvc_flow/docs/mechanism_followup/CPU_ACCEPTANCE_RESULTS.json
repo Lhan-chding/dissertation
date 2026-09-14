@@ -1,0 +1,1457 @@
+{
+  "schema_version": 1,
+  "status": "PASS_CPU_SCOPE",
+  "checklist_items": 77,
+  "checklist_sha256": "57b4dceb6dada228fed1bbb2354e90aee7b2ba990c6e7ea1704e2a41ff9663a8",
+  "items": [
+    {
+      "id": "P01",
+      "title": "工作区与分支",
+      "requirement": "记录 HEAD、dirty state；保留旧修改；未改 main",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [],
+      "verified_test_nodes": 0,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/parent_inputs/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/s0/repository_audit.json"
+      ],
+      "scope": "Read-only local repository and compact metadata checks. Does not establish server raw, checkpoints, prepared input, image or GPU readiness.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "P02",
+      "title": "旧源代码",
+      "requirement": "关键模块与旧 runtime source hashes 对照；差异逐项说明",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [],
+      "verified_test_nodes": 0,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/parent_inputs/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/s0/parent_evidence_audit.json",
+        "runs/mechanism_followup_cpu/s0/source_diff_review.md"
+      ],
+      "scope": "Read-only local repository and compact metadata checks. Does not establish server raw, checkpoints, prepared input, image or GPU readiness.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "P03",
+      "title": "元数据身份",
+      "requirement": "warm phase、step64、模型 revision、B4/K8 与三份旧 JSON 绑定一致",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_parent.py::test_metadata_schema_and_cross_file_binding_rejects_tampering",
+        "tests/test_followup_parent.py::test_origin_cannot_be_overridden_by_caller",
+        "tests/test_followup_parent.py::test_parent_integer_contract_rejects_float_aliases"
+      ],
+      "verified_test_nodes": 12,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/parent_inputs/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/parent_inputs/green.log"
+      ],
+      "scope": "Read-only local repository and compact metadata checks. Does not establish server raw, checkpoints, prepared input, image or GPU readiness.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "P04",
+      "title": "parent 路径",
+      "requirement": "目录与受限 ZIP 两种只读读取；越界、重复、缺失、hash错均拒绝",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_parent.py::test_archive_duplicate_symlink_and_file_directory_collision",
+        "tests/test_followup_parent.py::test_bounded_json_rejects_hash_type_duplicate_keys_nan_and_symlink",
+        "tests/test_followup_parent.py::test_directory_and_zip_metadata_audit_never_promote_raw",
+        "tests/test_followup_parent.py::test_missing_parent_metadata_is_explicit",
+        "tests/test_followup_parent.py::test_restricted_archive_rejects_unsafe_names",
+        "tests/test_followup_parent.py::test_zip_declared_sizes_and_compression_are_bounded"
+      ],
+      "verified_test_nodes": 11,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/parent_inputs/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/parent_inputs/green.log"
+      ],
+      "scope": "Read-only local repository and compact metadata checks. Does not establish server raw, checkpoints, prepared input, image or GPU readiness.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "P05",
+      "title": "状态分级",
+      "requirement": "compact metadata 通过不把 raw/checkpoint/GPU gate 置真",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_inputs.py::test_missing_raw_rejected",
+        "tests/test_followup_parent.py::test_directory_and_zip_metadata_audit_never_promote_raw"
+      ],
+      "verified_test_nodes": 2,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/parent_inputs/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/parent_inputs/green.log"
+      ],
+      "scope": "Read-only local repository and compact metadata checks. Does not establish server raw, checkpoints, prepared input, image or GPU readiness.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "P06",
+      "title": "无 GPU 默认路径",
+      "requirement": "plan/audit/import/tests 不加载权重、不下载模型、不调用 sbatch",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_inputs.py::test_metadata_import_and_schedule_do_not_import_model_libraries"
+      ],
+      "verified_test_nodes": 1,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/parent_inputs/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/parent_inputs/green.log"
+      ],
+      "scope": "Read-only local repository and compact metadata checks. Does not establish server raw, checkpoints, prepared input, image or GPU readiness.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "A01",
+      "title": "X/S/W/I 奖励",
+      "requirement": "joint0=(2,0,0,0)；joint1=(3,1,1,0)",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_reward_channels_reference_and_constants"
+      ],
+      "verified_test_nodes": 1,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Python/CPU reward and advantage fixtures; no claim about Qwen sampling or training outcomes.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "A02",
+      "title": "all-valid：混合 X/S/W、多个 lambda",
+      "requirement": "加常数后优势不变；含数值容差说明",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_reward_channels_reference_and_constants"
+      ],
+      "verified_test_nodes": 1,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Python/CPU reward and advantage fixtures; no claim about Qwen sampling or training outcomes.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "A03",
+      "title": "all-X、all-W、all-I",
+      "requirement": "优势全部0；mean/variance/epsilon有限",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_reward_channels_reference_and_constants"
+      ],
+      "verified_test_nodes": 1,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Python/CPU reward and advantage fixtures; no claim about Qwen sampling or training outcomes.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "A04",
+      "title": "4W+4I",
+      "requirement": "lambda>0 时 W正I负；无 X 的 joint0 为0",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_no_x_gate_small_lambda_and_present_x[W]"
+      ],
+      "verified_test_nodes": 1,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Python/CPU reward and advantage fixtures; no claim about Qwen sampling or training outcomes.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "A05",
+      "title": "4S+4I",
+      "requirement": "no_x_off 同样关闭；不能误把 S 当 X",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_no_x_gate_small_lambda_and_present_x[S]"
+      ],
+      "verified_test_nodes": 1,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Python/CPU reward and advantage fixtures; no claim about Qwen sampling or training outcomes.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "A06",
+      "title": "4W+4I、epsilon=1e-4、微小lambda",
+      "requirement": "符合 lambda/sqrt(lambda²sigmaV²+epsilon²)；非真正不连续开关",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_no_x_gate_small_lambda_and_present_x[S]",
+        "tests/test_followup_updates.py::test_no_x_gate_small_lambda_and_present_x[W]"
+      ],
+      "verified_test_nodes": 2,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Python/CPU reward and advantage fixtures; no claim about Qwen sampling or training outcomes.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "A07",
+      "title": "no_x_off 无 X 组",
+      "requirement": "先把辅助系数设0再联合归一化；不是删样本",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_microbatch_full_batch_clipping_and_no_x_denominator",
+        "tests/test_followup_updates.py::test_no_x_gate_small_lambda_and_present_x[S]",
+        "tests/test_followup_updates.py::test_no_x_gate_small_lambda_and_present_x[W]"
+      ],
+      "verified_test_nodes": 3,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Python/CPU reward and advantage fixtures; no claim about Qwen sampling or training outcomes.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "A08",
+      "title": "no_x_off 有 X 组",
+      "requirement": "等于相同 lambda 的 joint",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_no_x_gate_small_lambda_and_present_x[S]",
+        "tests/test_followup_updates.py::test_no_x_gate_small_lambda_and_present_x[W]"
+      ],
+      "verified_test_nodes": 2,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Python/CPU reward and advantage fixtures; no claim about Qwen sampling or training outcomes.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "A09",
+      "title": "composite",
+      "requirement": "gate 按每个 group，不按整个 bank 是否存在 X",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_runtime.py::test_all_six_banks_actual_adam_checkpoint_raw_counts_response_and_resume",
+        "tests/test_followup_updates.py::test_microbatch_full_batch_clipping_and_no_x_denominator"
+      ],
+      "verified_test_nodes": 2,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/runtime/final/fixtures/test_all_six_banks_actual_adam0/composite_no_x_plus_three_level/candidates/no_x_off_1/candidate.json",
+        "runs/mechanism_followup_cpu/runtime/final/pytest.log",
+        "runs/mechanism_followup_cpu/runtime/final_verified/pytest.log",
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Python/CPU reward and advantage fixtures; no claim about Qwen sampling or training outcomes.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "A10",
+      "title": "同组排列、同bank组顺序",
+      "requirement": "对应重排后的优势一致；顺序不影响统计",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_fp64_streaming_vector_reference_and_group_reordering",
+        "tests/test_followup_updates.py::test_permutation_and_derivative"
+      ],
+      "verified_test_nodes": 2,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Python/CPU reward and advantage fixtures; no claim about Qwen sampling or training outcomes.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "A11",
+      "title": "非有限值、未知类别、bool参数、空组",
+      "requirement": "清楚失败，不产生 NaN 的伪结果",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_bad_rewards_fail[categories0-1-joint-0.0001]",
+        "tests/test_followup_updates.py::test_bad_rewards_fail[categories1-1-joint-0.0001]",
+        "tests/test_followup_updates.py::test_bad_rewards_fail[categories2-True-joint-0.0001]",
+        "tests/test_followup_updates.py::test_bad_rewards_fail[categories3-nan-joint-0.0001]",
+        "tests/test_followup_updates.py::test_bad_rewards_fail[categories4-inf-joint-0.0001]",
+        "tests/test_followup_updates.py::test_bad_rewards_fail[categories5--1-joint-0.0001]",
+        "tests/test_followup_updates.py::test_bad_rewards_fail[categories6-1-unknown-0.0001]",
+        "tests/test_followup_updates.py::test_bad_rewards_fail[categories7-1-joint-True]",
+        "tests/test_followup_updates.py::test_bad_rewards_fail[categories8-1-joint-0]"
+      ],
+      "verified_test_nodes": 9,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Python/CPU reward and advantage fixtures; no claim about Qwen sampling or training outcomes.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "A12",
+      "title": "reference 与仓库纯函数",
+      "requirement": "原 joint 的奖励/均值/总体方差/优势一致",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_reward_channels_reference_and_constants"
+      ],
+      "verified_test_nodes": 1,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Python/CPU reward and advantage fixtures; no claim about Qwen sampling or training outcomes.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "A13",
+      "title": "有限差分",
+      "requirement": "joint 优势的 lambda 导数与解析公式在非边界点一致",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_permutation_and_derivative"
+      ],
+      "verified_test_nodes": 1,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Python/CPU reward and advantage fixtures; no claim about Qwen sampling or training outcomes.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "G01",
+      "title": "新 joint 对旧 direct_loss_gradients",
+      "requirement": "同组、同old分数、同模型时梯度一致",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_new_joint_matches_exact_legacy_fp32_and_restores_modes"
+      ],
+      "verified_test_nodes": 1,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Real PyTorch CPU autograd/Adam on small fixture models; no CUDA or 9B compatibility/performance measurement.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "G02",
+      "title": "损失分母",
+      "requirement": "microbatch=1累积等于完整batch；分母固定B*K*64",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_microbatch_full_batch_clipping_and_no_x_denominator",
+        "tests/test_model_torch.py::TorchBoundaryTests::test_fixed_denominator_gradient_is_sequence_score_over_64"
+      ],
+      "verified_test_nodes": 2,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Real PyTorch CPU autograd/Adam on small fixture models; no CUDA or 9B compatibility/performance measurement.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "G03",
+      "title": "EOS/padding/截断",
+      "requirement": "真EOS参与，padding不参与；不生成假EOS，不删I样本",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_microbatch_full_batch_clipping_and_no_x_denominator",
+        "tests/test_followup_updates.py::test_new_joint_matches_exact_legacy_fp32_and_restores_modes",
+        "tests/test_followup_updates.py::test_truncated_no_eos_tokens_reach_real_gradient_path_unchanged",
+        "tests/test_model_torch.py::TorchBoundaryTests::test_selected_logprob_shift_and_generated_mask"
+      ],
+      "verified_test_nodes": 4,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Real PyTorch CPU autograd/Adam on small fixture models; no CUDA or 9B compatibility/performance measurement.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "G04",
+      "title": "PPO clipping",
+      "requirement": "正负优势各测试 clip 边界及 boundary 外分支",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_ppo_boundary_branches_fp32[-1.0-0.7]",
+        "tests/test_followup_updates.py::test_ppo_boundary_branches_fp32[-1.0-0.8]",
+        "tests/test_followup_updates.py::test_ppo_boundary_branches_fp32[-1.0-1.0]",
+        "tests/test_followup_updates.py::test_ppo_boundary_branches_fp32[-1.0-1.2]",
+        "tests/test_followup_updates.py::test_ppo_boundary_branches_fp32[-1.0-1.3]",
+        "tests/test_followup_updates.py::test_ppo_boundary_branches_fp32[1.0-0.7]",
+        "tests/test_followup_updates.py::test_ppo_boundary_branches_fp32[1.0-0.8]",
+        "tests/test_followup_updates.py::test_ppo_boundary_branches_fp32[1.0-1.0]",
+        "tests/test_followup_updates.py::test_ppo_boundary_branches_fp32[1.0-1.2]",
+        "tests/test_followup_updates.py::test_ppo_boundary_branches_fp32[1.0-1.3]"
+      ],
+      "verified_test_nodes": 10,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Real PyTorch CPU autograd/Adam on small fixture models; no CUDA or 9B compatibility/performance measurement.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "G05",
+      "title": "no_x_off",
+      "requirement": "被抑制组梯度0；其他组与joint一致；不改总分母",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_microbatch_full_batch_clipping_and_no_x_denominator",
+        "tests/test_followup_updates.py::test_no_x_gate_small_lambda_and_present_x[S]",
+        "tests/test_followup_updates.py::test_no_x_gate_small_lambda_and_present_x[W]"
+      ],
+      "verified_test_nodes": 3,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Real PyTorch CPU autograd/Adam on small fixture models; no CUDA or 9B compatibility/performance measurement.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "G06",
+      "title": "全零当前梯度+warm Adam",
+      "requirement": "仍执行一次step；可观察历史动量导致的更新",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_warm_explicit_zero_adam_and_global_clip",
+        "tests/test_fork_gradients.py::test_mature_adam_zero_tensor_step_matches_manual_and_differs_from_none"
+      ],
+      "verified_test_nodes": 2,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Real PyTorch CPU autograd/Adam on small fixture models; no CUDA or 9B compatibility/performance measurement.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "G07",
+      "title": "None vs 0 对照",
+      "requirement": "验证两种语义不同；生产使用显式0覆盖全trainable集合",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_warm_explicit_zero_adam_and_global_clip",
+        "tests/test_fork_gradients.py::test_mature_adam_zero_tensor_step_matches_manual_and_differs_from_none"
+      ],
+      "verified_test_nodes": 2,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Real PyTorch CPU autograd/Adam on small fixture models; no CUDA or 9B compatibility/performance measurement.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "G08",
+      "title": "global clip",
+      "requirement": "clip前后norm正确；固定阈值；未对每组单独clip",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_warm_explicit_zero_adam_and_global_clip"
+      ],
+      "verified_test_nodes": 1,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Real PyTorch CPU autograd/Adam on small fixture models; no CUDA or 9B compatibility/performance measurement.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "G09",
+      "title": "optimizer ownership",
+      "requirement": "重复参数、遗漏trainable、包含frozen时拒绝",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_reject_invalid_update_before_mutation[duplicate]",
+        "tests/test_followup_updates.py::test_reject_invalid_update_before_mutation[frozen]",
+        "tests/test_followup_updates.py::test_reject_invalid_update_before_mutation[missing]"
+      ],
+      "verified_test_nodes": 3,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Real PyTorch CPU autograd/Adam on small fixture models; no CUDA or 9B compatibility/performance measurement.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "G10",
+      "title": "非有限梯度/参数/state",
+      "requirement": "停止并保存错误，不写成功标记",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_exception_restore_and_poison_on_restore_failure",
+        "tests/test_followup_updates.py::test_nonfinite_autograd_inside_fork_persists_failure_without_completion",
+        "tests/test_followup_updates.py::test_reject_invalid_update_before_mutation[nan_gradient]",
+        "tests/test_followup_updates.py::test_reject_invalid_update_before_mutation[nan_parameter]",
+        "tests/test_followup_updates.py::test_reject_invalid_update_before_mutation[nan_state]",
+        "tests/test_fork_gradients.py::test_nonfinite_adam_moments_never_return_success[after]",
+        "tests/test_fork_gradients.py::test_nonfinite_adam_moments_never_return_success[before]"
+      ],
+      "verified_test_nodes": 7,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Real PyTorch CPU autograd/Adam on small fixture models; no CUDA or 9B compatibility/performance measurement.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "G11",
+      "title": "同范数不同方向",
+      "requirement": "例如(1,0)和(0,1)：范数同，向量差非零，cosine=0",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_vector_geometry_and_exact_forward_alias"
+      ],
+      "verified_test_nodes": 1,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Real PyTorch CPU autograd/Adam on small fixture models; no CUDA or 9B compatibility/performance measurement.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "G12",
+      "title": "CPU FP64距离累计",
+      "requirement": "向量范数、差、夹角与独立参考计算一致",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_fp64_streaming_vector_reference_and_group_reordering"
+      ],
+      "verified_test_nodes": 1,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "Real PyTorch CPU autograd/Adam on small fixture models; no CUDA or 9B compatibility/performance measurement.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "F01",
+      "title": "origin A→candidate1→restore→candidate2",
+      "requirement": "每次起点参数/Adam/RNG/模式均一致",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_runtime.py::test_all_six_banks_actual_adam_checkpoint_raw_counts_response_and_resume",
+        "tests/test_followup_updates.py::test_full_restore_checkpoint_and_candidate_order"
+      ],
+      "verified_test_nodes": 2,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/runtime/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/runtime/final_verified/pytest.log",
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "CPU state/checkpoint/fault-injection fixtures; no verification of unavailable historical origin/candidate checkpoint tensors.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "F02",
+      "title": "候选执行顺序反转",
+      "requirement": "每个候选结果保持一致",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_updates.py::test_full_restore_checkpoint_and_candidate_order"
+      ],
+      "verified_test_nodes": 1,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "CPU state/checkpoint/fault-injection fixtures; no verification of unavailable historical origin/candidate checkpoint tensors.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "F03",
+      "title": "lambda0重复",
+      "requirement": "参数、Adam结构与统计一致；bitwise与allclose分开报告",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_runtime.py::test_all_six_banks_actual_adam_checkpoint_raw_counts_response_and_resume",
+        "tests/test_followup_updates.py::test_full_restore_checkpoint_and_candidate_order"
+      ],
+      "verified_test_nodes": 2,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/runtime/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/runtime/final/fixtures/test_all_six_banks_actual_adam0/bank00/baseline_replay.json",
+        "runs/mechanism_followup_cpu/runtime/final/pytest.log",
+        "runs/mechanism_followup_cpu/runtime/final_verified/pytest.log",
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "CPU state/checkpoint/fault-injection fixtures; no verification of unavailable historical origin/candidate checkpoint tensors.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "F04",
+      "title": "注入中途异常",
+      "requirement": "保存failure；finally恢复origin；不掩盖原异常",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_runtime.py::test_generation_interruption_reuses_prefix_and_identity_changes_fail",
+        "tests/test_followup_runtime.py::test_semantic_invalid_is_observation_bad_probability_is_fault",
+        "tests/test_followup_train.py::test_evaluation_preserves_primary_error_if_restore_also_fails",
+        "tests/test_followup_updates.py::test_exception_restore_and_poison_on_restore_failure",
+        "tests/test_followup_updates.py::test_gradient_cleanup_does_not_mask_primary_failure"
+      ],
+      "verified_test_nodes": 5,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/runtime/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/runtime/final_verified/pytest.log",
+        "runs/mechanism_followup_cpu/train/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/train/green.log",
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "CPU state/checkpoint/fault-injection fixtures; no verification of unavailable historical origin/candidate checkpoint tensors.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "F05",
+      "title": "buffer/position state",
+      "requirement": "显式恢复forward相关状态；缓存清理可验证",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_train.py::test_evaluation_restores_complete_state_even_after_exception",
+        "tests/test_followup_updates.py::test_all_recorded_buffers_positions_and_sampler_state_dict_restore",
+        "tests/test_followup_updates.py::test_full_restore_checkpoint_and_candidate_order"
+      ],
+      "verified_test_nodes": 3,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/train/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/train/green.log",
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "CPU state/checkpoint/fault-injection fixtures; no verification of unavailable historical origin/candidate checkpoint tensors.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "F06",
+      "title": "子模块模式混合",
+      "requirement": "恢复每个子模块的training flag，不只恢复顶层bool",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_train.py::test_evaluation_restores_complete_state_even_after_exception",
+        "tests/test_followup_updates.py::test_full_restore_checkpoint_and_candidate_order",
+        "tests/test_followup_updates.py::test_new_joint_matches_exact_legacy_fp32_and_restores_modes"
+      ],
+      "verified_test_nodes": 3,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/train/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/train/green.log",
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "CPU state/checkpoint/fault-injection fixtures; no verification of unavailable historical origin/candidate checkpoint tensors.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "F07",
+      "title": "checkpoint往返",
+      "requirement": "weights_only加载；identity/hash/type/shape均校验",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_train.py::test_interrupted_training_resume_is_bitwise_uninterrupted_and_no_clobber",
+        "tests/test_followup_updates.py::test_checkpoint_file_hash_checked_before_deserialization",
+        "tests/test_followup_updates.py::test_full_restore_checkpoint_and_candidate_order",
+        "tests/test_followup_updates.py::test_restricted_checkpoint_type_shape_hash_validation[hash]",
+        "tests/test_followup_updates.py::test_restricted_checkpoint_type_shape_hash_validation[moment_dtype]",
+        "tests/test_followup_updates.py::test_restricted_checkpoint_type_shape_hash_validation[rng_type]",
+        "tests/test_followup_updates.py::test_restricted_checkpoint_type_shape_hash_validation[step_shape]",
+        "tests/test_followup_updates.py::test_restricted_checkpoint_type_shape_hash_validation[tensor_shape]",
+        "tests/test_followup_updates.py::test_restricted_checkpoint_type_shape_hash_validation[tensor_type]"
+      ],
+      "verified_test_nodes": 9,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/train/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/train/green.log",
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "CPU state/checkpoint/fault-injection fixtures; no verification of unavailable historical origin/candidate checkpoint tensors.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "F08",
+      "title": "optimizer步数",
+      "requirement": "原64、候选65、未提交训练三项分开",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_runtime.py::test_all_six_banks_actual_adam_checkpoint_raw_counts_response_and_resume",
+        "tests/test_followup_updates.py::test_full_restore_checkpoint_and_candidate_order"
+      ],
+      "verified_test_nodes": 2,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/runtime/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/runtime/final_verified/pytest.log",
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "CPU state/checkpoint/fault-injection fixtures; no verification of unavailable historical origin/candidate checkpoint tensors.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "F09",
+      "title": "参数相同但Adam不同",
+      "requirement": "推理可标alias；训练checkpoint仍独立保存",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_runtime.py::test_all_six_banks_actual_adam_checkpoint_raw_counts_response_and_resume",
+        "tests/test_followup_runtime.py::test_forward_alias_requires_exact_all_forward_fields_not_optimizer",
+        "tests/test_followup_updates.py::test_equal_parameters_distinct_real_adam_checkpoints_roundtrip_independently",
+        "tests/test_followup_updates.py::test_vector_geometry_and_exact_forward_alias"
+      ],
+      "verified_test_nodes": 4,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/runtime/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/runtime/final/pytest.log",
+        "runs/mechanism_followup_cpu/runtime/final_verified/pytest.log",
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "CPU state/checkpoint/fault-injection fixtures; no verification of unavailable historical origin/candidate checkpoint tensors.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "F10",
+      "title": "恢复失败",
+      "requirement": "状态变为不可继续；不得用下一候选覆盖故障",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_train.py::test_evaluation_preserves_primary_error_if_restore_also_fails",
+        "tests/test_followup_updates.py::test_exception_restore_and_poison_on_restore_failure",
+        "tests/test_followup_updates.py::test_gradient_cleanup_does_not_mask_primary_failure"
+      ],
+      "verified_test_nodes": 3,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/train/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/train/green.log",
+        "runs/mechanism_followup_cpu/updates/acceptance-full.log",
+        "runs/mechanism_followup_cpu/updates/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/updates/green-final.log"
+      ],
+      "scope": "CPU state/checkpoint/fault-injection fixtures; no verification of unavailable historical origin/candidate checkpoint tensors.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "B01",
+      "title": "原bank0/3/4/5/11",
+      "requirement": "按parent manifest装配；所有group K8，精确组构成匹配",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_inputs.py::test_fixed_banks_composite_preserve_original_rows"
+      ],
+      "verified_test_nodes": 6,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/parent_inputs/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/parent_inputs/green.log"
+      ],
+      "scope": "Pinned metadata and synthetic exact-binding fixtures; actual parent samples, prepared tensors and images remain unavailable/unverified.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "B02",
+      "title": "composite",
+      "requirement": "来源为3/2、11/2、0/0、0/1（零基）；原token与old分数不变",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_inputs.py::test_fixed_banks_composite_preserve_original_rows[composite]"
+      ],
+      "verified_test_nodes": 1,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/parent_inputs/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/parent_inputs/green.log"
+      ],
+      "scope": "Pinned metadata and synthetic exact-binding fixtures; actual parent samples, prepared tensors and images remain unavailable/unverified.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "B03",
+      "title": "来源策略混合",
+      "requirement": "origin/model/parser/数据绑定不同立即拒绝",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_inputs.py::test_bank_rejects_integrity_binding_and_leakage_faults[data]",
+        "tests/test_followup_inputs.py::test_bank_rejects_integrity_binding_and_leakage_faults[model]",
+        "tests/test_followup_inputs.py::test_bank_rejects_integrity_binding_and_leakage_faults[origin]",
+        "tests/test_followup_inputs.py::test_bank_rejects_integrity_binding_and_leakage_faults[parser]"
+      ],
+      "verified_test_nodes": 4,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/parent_inputs/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/parent_inputs/green.log"
+      ],
+      "scope": "Pinned metadata and synthetic exact-binding fixtures; actual parent samples, prepared tensors and images remain unavailable/unverified.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "B04",
+      "title": "control泄漏",
+      "requirement": "train与control场景重叠、重复prompt拒绝",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_inputs.py::test_bank_rejects_integrity_binding_and_leakage_faults[control]",
+        "tests/test_followup_parent.py::test_metadata_schema_and_cross_file_binding_rejects_tampering[plan]"
+      ],
+      "verified_test_nodes": 2,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/parent_inputs/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/parent_inputs/green.log"
+      ],
+      "scope": "Pinned metadata and synthetic exact-binding fixtures; actual parent samples, prepared tensors and images remain unavailable/unverified.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "B05",
+      "title": "样本完整性",
+      "requirement": "重复sample key、缺样本、sample index冲突拒绝",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_inputs.py::test_bank_rejects_integrity_binding_and_leakage_faults[duplicate]",
+        "tests/test_followup_inputs.py::test_bank_rejects_integrity_binding_and_leakage_faults[missing]",
+        "tests/test_followup_inputs.py::test_bank_rejects_integrity_binding_and_leakage_faults[sample_index]"
+      ],
+      "verified_test_nodes": 3,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/parent_inputs/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/parent_inputs/green.log"
+      ],
+      "scope": "Pinned metadata and synthetic exact-binding fixtures; actual parent samples, prepared tensors and images remain unavailable/unverified.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "B06",
+      "title": "prepared input",
+      "requirement": "prompt/tokenized/image/prepared hash可比且绑定正确",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_inputs.py::test_bank_rejects_integrity_binding_and_leakage_faults[image]",
+        "tests/test_followup_inputs.py::test_bank_rejects_integrity_binding_and_leakage_faults[prepared]",
+        "tests/test_followup_inputs.py::test_bank_rejects_integrity_binding_and_leakage_faults[tokenized]",
+        "tests/test_followup_inputs.py::test_prepared_attachment_checks_actual_tensor_bytes"
+      ],
+      "verified_test_nodes": 4,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/parent_inputs/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/parent_inputs/green.log"
+      ],
+      "scope": "Pinned metadata and synthetic exact-binding fixtures; actual parent samples, prepared tensors and images remain unavailable/unverified.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "B07",
+      "title": "结果导向选bank",
+      "requirement": "选取函数不读取新的control/dev结果",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_inputs.py::test_bank_selection_does_not_use_new_outcomes"
+      ],
+      "verified_test_nodes": 1,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/parent_inputs/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/parent_inputs/green.log"
+      ],
+      "scope": "Pinned metadata and synthetic exact-binding fixtures; actual parent samples, prepared tensors and images remain unavailable/unverified.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "B08",
+      "title": "旧结果只读",
+      "requirement": "parent目录内容运行前后hash不变",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_inputs.py::test_fixed_banks_composite_preserve_original_rows",
+        "tests/test_followup_parent.py::test_directory_and_zip_metadata_audit_never_promote_raw"
+      ],
+      "verified_test_nodes": 7,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/parent_inputs/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/parent_inputs/green.log",
+        "runs/mechanism_followup_cpu/s0/parent_evidence_audit.json"
+      ],
+      "scope": "Pinned metadata and synthetic exact-binding fixtures; actual parent samples, prepared tensors and images remain unavailable/unverified.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "S01",
+      "title": "四类计数",
+      "requirement": "总数与n一致；每prompt权重固定；未知/负计数拒绝",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_statistics.py::test_s01_reject_invalid_counts[<lambda>0]",
+        "tests/test_followup_statistics.py::test_s01_reject_invalid_counts[<lambda>1]",
+        "tests/test_followup_statistics.py::test_s01_reject_invalid_counts[<lambda>2]",
+        "tests/test_followup_statistics.py::test_s01_reject_invalid_counts[<lambda>3]",
+        "tests/test_followup_statistics.py::test_s01_reject_invalid_counts[<lambda>4]",
+        "tests/test_followup_statistics.py::test_s01_reject_invalid_fixed_weights[fixed0]",
+        "tests/test_followup_statistics.py::test_s01_reject_invalid_fixed_weights[fixed1]",
+        "tests/test_followup_statistics.py::test_s01_reject_invalid_fixed_weights[fixed2]",
+        "tests/test_followup_statistics.py::test_s01_reject_invalid_fixed_weights[fixed3]",
+        "tests/test_followup_statistics.py::test_s01_s02_fixed_weight_counts_and_ratio_of_means"
+      ],
+      "verified_test_nodes": 10,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/statistics/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/statistics/green.log"
+      ],
+      "scope": "CPU statistical fixtures and standard-library references; no new real-model outcomes, probability response or safety certificate.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "S02",
+      "title": "ratio-of-weighted-means",
+      "requirement": "qX=加权pX/加权v，不等于平均逐题qX",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_statistics.py::test_s01_s02_fixed_weight_counts_and_ratio_of_means",
+        "tests/test_followup_statistics.py::test_s02_s03_s07_qs_ratio_and_intervals_use_same_union_events"
+      ],
+      "verified_test_nodes": 2,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/statistics/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/statistics/green.log"
+      ],
+      "scope": "CPU statistical fixtures and standard-library references; no new real-model outcomes, probability response or safety certificate.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "S03",
+      "title": "baseline方向",
+      "requirement": "right-left或candidate-base明确；单位probability/pp正确",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_statistics.py::test_s02_s03_s07_qs_ratio_and_intervals_use_same_union_events",
+        "tests/test_followup_statistics.py::test_s03_right_minus_left_probability_and_percentage_points"
+      ],
+      "verified_test_nodes": 2,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/statistics/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/statistics/green.log"
+      ],
+      "scope": "CPU statistical fixtures and standard-library references; no new real-model outcomes, probability response or safety certificate.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "S04",
+      "title": "paired coverage",
+      "requirement": "候选prompt/scene/interface/seed block不匹配时拒绝",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_statistics.py::test_s04_reject_missing_or_duplicate_samples_and_cross_bank_baseline",
+        "tests/test_followup_statistics.py::test_s04_reject_unpaired_coverage[bank_id-other-bank]",
+        "tests/test_followup_statistics.py::test_s04_reject_unpaired_coverage[base_scene_id-changed]",
+        "tests/test_followup_statistics.py::test_s04_reject_unpaired_coverage[family-changed]",
+        "tests/test_followup_statistics.py::test_s04_reject_unpaired_coverage[interface-changed]",
+        "tests/test_followup_statistics.py::test_s04_reject_unpaired_coverage[prompt_id-changed]",
+        "tests/test_followup_statistics.py::test_s04_reject_unpaired_coverage[sample_seed-100]",
+        "tests/test_followup_statistics.py::test_s04_reject_unpaired_coverage[train_seed-41]"
+      ],
+      "verified_test_nodes": 8,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/statistics/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/statistics/green.log"
+      ],
+      "scope": "CPU statistical fixtures and standard-library references; no new real-model outcomes, probability response or safety certificate.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "S05",
+      "title": "场景bootstrap",
+      "requirement": "同景两个接口共同抽样；家族分层；所有候选共同索引",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_statistics.py::test_s05_shared_family_scene_draws_recompute_ratios_without_inner_resampling",
+        "tests/test_followup_statistics.py::test_s05_unequal_weights_keep_family_mass_and_resample_whole_scenes"
+      ],
+      "verified_test_nodes": 2,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/statistics/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/statistics/green.log"
+      ],
+      "scope": "CPU statistical fixtures and standard-library references; no new real-model outcomes, probability response or safety certificate.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "S06",
+      "title": "全零/分母0",
+      "requirement": "点估计与支持状态分开；q undefined；不输出假安全",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_statistics.py::test_s06_zero_event_support_and_undefined_ratio_remain_distinct"
+      ],
+      "verified_test_nodes": 1,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/statistics/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/statistics/green.log"
+      ],
+      "scope": "CPU statistical fixtures and standard-library references; no new real-model outcomes, probability response or safety certificate.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "S07",
+      "title": "固定面板边界",
+      "requirement": "独立std参考验证Hoeffding半宽、union M与ratio传播",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_statistics.py::test_s02_s03_s07_qs_ratio_and_intervals_use_same_union_events",
+        "tests/test_followup_statistics.py::test_s07_group_bounds_normalize_weights_and_union_covers_all_groups",
+        "tests/test_followup_statistics.py::test_s07_hoeffding_union_and_ratio_difference_against_standard_library"
+      ],
+      "verified_test_nodes": 3,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/statistics/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/statistics/green.log"
+      ],
+      "scope": "CPU statistical fixtures and standard-library references; no new real-model outcomes, probability response or safety certificate.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "S08",
+      "title": "均匀16权重",
+      "requirement": "ESS=16、ESS/n=1、maxw=1/16、nmaxw=1；不因0.05误拒绝",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_statistics.py::test_s08_s09_uniform_16_overlap_does_not_imply_event_support"
+      ],
+      "verified_test_nodes": 1,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/statistics/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/statistics/green.log"
+      ],
+      "scope": "CPU statistical fixtures and standard-library references; no new real-model outcomes, probability response or safety certificate.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "S09",
+      "title": "稀有X未出现",
+      "requirement": "event support标UNOBSERVED，ESS高不能自动安全",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_statistics.py::test_s08_s09_uniform_16_overlap_does_not_imply_event_support"
+      ],
+      "verified_test_nodes": 1,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/statistics/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/statistics/green.log"
+      ],
+      "scope": "CPU statistical fixtures and standard-library references; no new real-model outcomes, probability response or safety certificate.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "S10",
+      "title": "极端logweights",
+      "requirement": "log-space稳定；非有限输入拒绝",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_statistics.py::test_s10_extreme_logweights_stay_stable_and_json_finite",
+        "tests/test_followup_statistics.py::test_s10_nonfinite_or_invalid_logweights_rejected[bad0]",
+        "tests/test_followup_statistics.py::test_s10_nonfinite_or_invalid_logweights_rejected[bad1]",
+        "tests/test_followup_statistics.py::test_s10_nonfinite_or_invalid_logweights_rejected[bad2]",
+        "tests/test_followup_statistics.py::test_s10_nonfinite_or_invalid_logweights_rejected[bad3]",
+        "tests/test_followup_statistics.py::test_s10_nonfinite_or_invalid_logweights_rejected[bad4]",
+        "tests/test_followup_statistics.py::test_s10_s11_valid_ratio_stays_defined_for_tiny_valid_importance_mass"
+      ],
+      "verified_test_nodes": 7,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/statistics/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/statistics/green.log"
+      ],
+      "scope": "CPU statistical fixtures and standard-library references; no new real-model outcomes, probability response or safety certificate.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "S11",
+      "title": "OIS/SNIS/直接采样",
+      "requirement": "名称与公式区分；不静默裁剪OIS",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_statistics.py::test_s10_s11_valid_ratio_stays_defined_for_tiny_valid_importance_mass",
+        "tests/test_followup_statistics.py::test_s11_ois_snis_direct_are_explicit_and_no_clipping"
+      ],
+      "verified_test_nodes": 2,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/statistics/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/statistics/green.log"
+      ],
+      "scope": "CPU statistical fixtures and standard-library references; no new real-model outcomes, probability response or safety certificate.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "S12",
+      "title": "alias样本",
+      "requirement": "不重复增加n、不计为独立策略/训练seed",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_statistics.py::test_s12_aliases_reuse_raw_samples_and_not_independent_candidates_or_seeds"
+      ],
+      "verified_test_nodes": 1,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/statistics/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/statistics/green.log"
+      ],
+      "scope": "CPU statistical fixtures and standard-library references; no new real-model outcomes, probability response or safety certificate.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "S13",
+      "title": "多seed汇总",
+      "requirement": "per-seed paired delta可复算；17标探索，29/41标前瞻",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_statistics.py::test_s13_per_seed_paired_deltas_and_exploratory_prospective_labels",
+        "tests/test_followup_statistics.py::test_s13_seed_coverage_and_alias_records_cannot_inflate_seed_counts"
+      ],
+      "verified_test_nodes": 2,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/statistics/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/statistics/green.log"
+      ],
+      "scope": "CPU statistical fixtures and standard-library references; no new real-model outcomes, probability response or safety certificate.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "S14",
+      "title": "少场景区间",
+      "requirement": "报告不可估计/不稳定情况，不通过删除异常bootstrap补出区间",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_statistics.py::test_s14_few_scenes_and_undefined_replicates_never_filtered"
+      ],
+      "verified_test_nodes": 1,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/statistics/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/statistics/green.log"
+      ],
+      "scope": "CPU statistical fixtures and standard-library references; no new real-model outcomes, probability response or safety certificate.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "E01",
+      "title": "fake adapter完整S1",
+      "requirement": "六bank候选→checkpoint→rawledger→counts→response齐全",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_runtime.py::test_all_six_banks_actual_adam_checkpoint_raw_counts_response_and_resume"
+      ],
+      "verified_test_nodes": 1,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/runtime/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/runtime/final_verified/pytest.log"
+      ],
+      "scope": "CPU fake-adapter end-to-end flows and command/dry-run/shell syntax only; no model download, GPU sampling, Slurm submission or real training.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "E02",
+      "title": "真实语义I",
+      "requirement": "保存为正常样本；generation/parser执行故障另行失败",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_runtime.py::test_all_six_banks_actual_adam_checkpoint_raw_counts_response_and_resume",
+        "tests/test_followup_runtime.py::test_semantic_invalid_is_observation_bad_probability_is_fault"
+      ],
+      "verified_test_nodes": 2,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/runtime/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/runtime/final_verified/pytest.log"
+      ],
+      "scope": "CPU fake-adapter end-to-end flows and command/dry-run/shell syntax only; no model download, GPU sampling, Slurm submission or real training.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "E03",
+      "title": "输出中断恢复",
+      "requirement": "已有sample精确复用，不重复、不删除，不换seed",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_runtime.py::test_all_six_banks_actual_adam_checkpoint_raw_counts_response_and_resume",
+        "tests/test_followup_runtime.py::test_generation_interruption_reuses_prefix_and_identity_changes_fail",
+        "tests/test_followup_runtime.py::test_interruption_at_final_completion_marker_reuses_sealed_measurements"
+      ],
+      "verified_test_nodes": 3,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/runtime/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/runtime/final_verified/pytest.log"
+      ],
+      "scope": "CPU fake-adapter end-to-end flows and command/dry-run/shell syntax only; no model download, GPU sampling, Slurm submission or real training.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "E04",
+      "title": "恢复身份变化",
+      "requirement": "变model/parser/config/origin/arm/seed等拒绝",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_runtime.py::test_generation_interruption_reuses_prefix_and_identity_changes_fail",
+        "tests/test_followup_train.py::test_cold_initial_and_source_resume_identity_are_enforced",
+        "tests/test_followup_train.py::test_resume_rejects_changed_initial_adapter_and_completed_counts"
+      ],
+      "verified_test_nodes": 3,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/runtime/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/runtime/final_verified/pytest.log",
+        "runs/mechanism_followup_cpu/train/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/train/green.log"
+      ],
+      "scope": "CPU fake-adapter end-to-end flows and command/dry-run/shell syntax only; no model download, GPU sampling, Slurm submission or real training.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "E05",
+      "title": "文件no-clobber",
+      "requirement": "不覆盖已有completed或失败证据；目录逃逸拒绝",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_runtime.py::test_all_six_banks_actual_adam_checkpoint_raw_counts_response_and_resume",
+        "tests/test_followup_runtime.py::test_candidate_rng_excludes_candidate_and_path_escape_rejected",
+        "tests/test_followup_runtime.py::test_forward_alias_requires_exact_all_forward_fields_not_optimizer",
+        "tests/test_followup_runtime.py::test_single_bank_cli_layout_and_completed_tamper",
+        "tests/test_followup_train.py::test_interrupted_training_resume_is_bitwise_uninterrupted_and_no_clobber",
+        "tests/test_followup_train.py::test_unbound_output_and_missing_resume_identity_are_rejected"
+      ],
+      "verified_test_nodes": 7,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/runtime/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/runtime/final_verified/pytest.log",
+        "runs/mechanism_followup_cpu/train/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/train/green.log"
+      ],
+      "scope": "CPU fake-adapter end-to-end flows and command/dry-run/shell syntax only; no model download, GPU sampling, Slurm submission or real training.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "E06",
+      "title": "计划预算",
+      "requirement": "41候选+6重放=47更新；直接逻辑18×48×16=13824",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_runtime.py::test_all_six_banks_actual_adam_checkpoint_raw_counts_response_and_resume",
+        "tests/test_followup_runtime.py::test_candidate_rng_excludes_candidate_and_path_escape_rejected",
+        "tests/test_followup_runtime.py::test_interrupted_adam_attempt_cannot_silently_expand_physical_budget"
+      ],
+      "verified_test_nodes": 3,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/runtime/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/runtime/final_verified/pytest.log"
+      ],
+      "scope": "CPU fake-adapter end-to-end flows and command/dry-run/shell syntax only; no model download, GPU sampling, Slurm submission or real training.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "E07",
+      "title": "精确alias",
+      "requirement": "验证完整推理指纹，禁止norm/allclose去重",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_runtime.py::test_all_six_banks_actual_adam_checkpoint_raw_counts_response_and_resume",
+        "tests/test_followup_runtime.py::test_forward_alias_requires_exact_all_forward_fields_not_optimizer",
+        "tests/test_followup_runtime.py::test_loader_timing_does_not_change_exact_forward_fingerprint"
+      ],
+      "verified_test_nodes": 3,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/runtime/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/runtime/final_verified/pytest.log"
+      ],
+      "scope": "CPU fake-adapter end-to-end flows and command/dry-run/shell syntax only; no model download, GPU sampling, Slurm submission or real training.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "E08",
+      "title": "S2 seed17排序",
+      "requirement": "与旧R4 train schedule逐prompt/hash一致",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_inputs.py::test_seed17_exact_and_new_seed_schedules_deterministic"
+      ],
+      "verified_test_nodes": 1,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/parent_inputs/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/parent_inputs/green.log",
+        "runs/mechanism_followup_cpu/train/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/train/green.log"
+      ],
+      "scope": "CPU fake-adapter end-to-end flows and command/dry-run/shell syntax only; no model download, GPU sampling, Slurm submission or real training.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "E09",
+      "title": "S2新seed排序",
+      "requirement": "seed29/41确定性，组间同seed顺序同、各自on-policy",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_inputs.py::test_seed17_exact_and_new_seed_schedules_deterministic",
+        "tests/test_followup_train.py::test_request_stream_is_semantic_directory_independent_and_arm_owned",
+        "tests/test_followup_train.py::test_two_seeds_three_arms_real_adam_and_ledger_chain"
+      ],
+      "verified_test_nodes": 3,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/parent_inputs/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/parent_inputs/green.log",
+        "runs/mechanism_followup_cpu/train/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/train/green.log"
+      ],
+      "scope": "CPU fake-adapter end-to-end flows and command/dry-run/shell syntax only; no model download, GPU sampling, Slurm submission or real training.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "E10",
+      "title": "S2 resume与评估隔离",
+      "requirement": "评估不改变训练RNG/Adam/采样器；中断续跑一致",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_train.py::test_evaluation_restores_complete_state_even_after_exception",
+        "tests/test_followup_train.py::test_interrupted_training_resume_is_bitwise_uninterrupted_and_no_clobber"
+      ],
+      "verified_test_nodes": 2,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/train/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/train/green.log"
+      ],
+      "scope": "CPU fake-adapter end-to-end flows and command/dry-run/shell syntax only; no model download, GPU sampling, Slurm submission or real training.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "E11",
+      "title": "CLI帮助/dry-run",
+      "requirement": "所有文档命令已实现；无GPU标志不能加载模型",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_protocol.py::test_cli_plan_and_import_do_not_import_torch_or_adapter",
+        "tests/test_followup_protocol.py::test_real_commands_reject_without_permission_before_reading_plan",
+        "tests/test_followup_protocol.py::test_s2_requires_separate_training_flag",
+        "tests/test_followup_train.py::test_fixture_label_cannot_bypass_real_adapter_training_gates"
+      ],
+      "verified_test_nodes": 7,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/protocol_verified/pytest.log",
+        "runs/mechanism_followup_cpu/train/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/train/green.log"
+      ],
+      "scope": "CPU fake-adapter end-to-end flows and command/dry-run/shell syntax only; no model download, GPU sampling, Slurm submission or real training.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "E12",
+      "title": "Slurm语法",
+      "requirement": "生成脚本能bash -n；不执行sbatch",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_protocol.py::test_slurm_script_has_no_resource_guesses_and_valid_syntax"
+      ],
+      "verified_test_nodes": 1,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/protocol_verified/pytest.log",
+        "runs/mechanism_followup_cpu/train/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/train/green.log"
+      ],
+      "scope": "CPU fake-adapter end-to-end flows and command/dry-run/shell syntax only; no model download, GPU sampling, Slurm submission or real training.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "E13",
+      "title": "小型多seed/多arm训练",
+      "requirement": "至少2seeds×3arms的短CPU fake流程真实更新与读写链通过",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests/test_followup_train.py::test_two_seeds_three_arms_real_adam_and_ledger_chain"
+      ],
+      "verified_test_nodes": 1,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/train/acceptance_mapping.json",
+        "runs/mechanism_followup_cpu/train/green.log"
+      ],
+      "scope": "CPU fake-adapter end-to-end flows and command/dry-run/shell syntax only; no model download, GPU sampling, Slurm submission or real training.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    },
+    {
+      "id": "E14",
+      "title": "旧相关测试",
+      "requirement": "原GRPO/fork/optimizer/R3/R4输入与恢复测试回归，失败逐项处理",
+      "status": "PASS_CPU_SCOPE",
+      "test_selectors": [
+        "tests (55 unchanged legacy test modules at base commit; 1028 nodes)"
+      ],
+      "verified_test_nodes": 1028,
+      "evidence_refs": [
+        "runs/mechanism_followup_cpu/baseline/legacy.log",
+        "runs/mechanism_followup_cpu/final/invocation.json"
+      ],
+      "scope": "CPU fake-adapter end-to-end flows and command/dry-run/shell syntax only; no model download, GPU sampling, Slurm submission or real training.",
+      "final_verification": "final_followup/junit.xml for new tests; final/junit.xml for unchanged legacy tests; S0 read-only commands for source metadata"
+    }
+  ],
+  "real_evidence_boundary": {
+    "parent_metadata_verified": true,
+    "parent_raw_verified": false,
+    "raw_tensors_verified": false,
+    "gpu_smoke_passed": false,
+    "gpu_started": false,
+    "training_started": false
+  },
+  "final_review_additional_regressions": {
+    "passed": 5,
+    "junit_nodes": [
+      "tests.test_followup_backend::test_historical_completion_publication_recovers_without_extra_samples[completed.json]",
+      "tests.test_followup_backend::test_historical_completion_publication_recovers_without_extra_samples[completion_binding.json]",
+      "tests.test_followup_backend::test_historical_fixture_rejects_non_cpu_tensors_before_any_output",
+      "tests.test_followup_train::test_r2_condition_counts_are_published_without_extra_generation",
+      "tests.test_followup_train::test_r2_counts_keep_three_conditions_when_image_interfaces_are_shared"
+    ]
+  }
+}

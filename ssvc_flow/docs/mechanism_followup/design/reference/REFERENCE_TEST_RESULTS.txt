@@ -1,0 +1,20 @@
+test_all_valid_invariance (test_reference_math.ReferenceMathTests.test_all_valid_invariance) ... ok
+test_balanced_no_x_formula (test_reference_math.ReferenceMathTests.test_balanced_no_x_formula) ... ok
+test_budget (test_reference_math.ReferenceMathTests.test_budget) ... ok
+test_composite_has_distinct_advantage_treatments (test_reference_math.ReferenceMathTests.test_composite_has_distinct_advantage_treatments) ... ok
+test_constant_groups_zero (test_reference_math.ReferenceMathTests.test_constant_groups_zero) ... ok
+test_derivative (test_reference_math.ReferenceMathTests.test_derivative) ... ok
+test_equal_norm_not_equal_vector (test_reference_math.ReferenceMathTests.test_equal_norm_not_equal_vector) ... ok
+test_exact_reward_vectors (test_reference_math.ReferenceMathTests.test_exact_reward_vectors) ... ok
+test_fixed_panel_bound (test_reference_math.ReferenceMathTests.test_fixed_panel_bound) ... ok
+test_invalid_inputs (test_reference_math.ReferenceMathTests.test_invalid_inputs) ... ok
+test_no_x_off_zero (test_reference_math.ReferenceMathTests.test_no_x_off_zero) ... ok
+test_no_x_on_with_x_same_as_joint (test_reference_math.ReferenceMathTests.test_no_x_on_with_x_same_as_joint) ... ok
+test_original_bank_equivalence (test_reference_math.ReferenceMathTests.test_original_bank_equivalence) ... ok
+test_tiny_weight_not_fully_saturated (test_reference_math.ReferenceMathTests.test_tiny_weight_not_fully_saturated) ... ok
+test_zero_vector_cosine_undefined (test_reference_math.ReferenceMathTests.test_zero_vector_cosine_undefined) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.001s
+
+OK

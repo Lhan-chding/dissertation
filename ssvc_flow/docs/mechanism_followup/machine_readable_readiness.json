@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "protocol_version": "mechanism-followup-v2-20260914",
+  "status": "READY_FOR_SERVER_REVIEW",
+  "implementation_commit": null,
+  "working_branch": "codex/ssvc-mechanism-followup-20260914",
+  "test_base_commit": "7e405faa241e0085f701cdc858ba423ea76ba5a8",
+  "code_implemented": true,
+  "cpu_math_tests_passed": true,
+  "cpu_torch_tests_passed": true,
+  "cpu_end_to_end_tests_passed": true,
+  "cpu_tests_passed": true,
+  "legacy_regression_passed": true,
+  "parent_metadata_verified": true,
+  "parent_raw_verified": false,
+  "raw_tensors_verified": false,
+  "gpu_smoke_passed": false,
+  "gpu_started": false,
+  "training_started": false,
+  "server_contacted": false,
+  "model_loaded": false,
+  "model_downloaded": false,
+  "slurm_submitted": false,
+  "ready_for_server_review": true,
+  "parent_evidence_status": "BLOCKED_MISSING_PARENT_RAW",
+  "safety_status": "NOT_CERTIFIED",
+  "acceptance_items": {
+    "passed_in_cpu_scope": 77,
+    "total": 77,
+    "open_local_items": []
+  },
+  "test_runs": [
+    {
+      "name": "full_suite_before_final_review_fixes",
+      "record": "runs/mechanism_followup_cpu/final/result.json",
+      "record_sha256": "7567b30bd7dea6bb861ca0437036618385718f31fc0667cb7aeeb7e411e2a009",
+      "counts": {
+        "passed": 1228,
+        "failed": 0,
+        "skipped": 0,
+        "errors": 0
+      },
+      "exit_code": 0,
+      "source_hashes_unchanged_during_run": true,
+      "source_files_changed_after_this_run": [
+        "src/followup_backend.py",
+        "src/followup_train.py",
+        "tests/test_followup_backend.py",
+        "tests/test_followup_train.py"
+      ]
+    },
+    {
+      "name": "final_followup_suite",
+      "record": "runs/mechanism_followup_cpu/final_followup/result.json",
+      "record_sha256": "0632c09537f90e816f8d0bbbc673bce11babe479257545d561b31b3c5d146c32",
+      "counts": {
+        "passed": 205,
+        "failed": 0,
+        "skipped": 0,
+        "errors": 0
+      },
+      "exit_code": 0,
+      "source_hashes_unchanged_during_run": true,
+      "source_files_changed_after_this_run": []
+    },
+    {
+      "name": "reference_math",
+      "record": "runs/mechanism_followup_cpu/reference_verified/result.json",
+      "record_sha256": "2f6de75e607111b1c448670907199f9440dfd3b9765034cd68dc2c5946d133a7",
+      "counts": {
+        "passed": 15,
+        "failed": 0,
+        "skipped": 0,
+        "errors": 0
+      },
+      "exit_code": 0,
+      "source_hashes_unchanged_during_run": true,
+      "source_files_changed_after_this_run": [
+        "src/followup_backend.py",
+        "src/followup_train.py",
+        "tests/test_followup_backend.py",
+        "tests/test_followup_train.py"
+      ]
+    }
+  ],
+  "legacy_unique_tests": 1028,
+  "final_followup_unique_tests": 205,
+  "cpu_fixture_observations": {
+    "execution_kind": "CPU_FAKE_TORCH",
+    "S1_banks": 6,
+    "S1_actual_adam_updates": 47,
+    "S1_direct_logical_candidates": 18,
+    "S1_unique_inference_ledgers": 13,
+    "S1_raw_fake_outputs": 104,
+    "S1_prompts_per_policy": 4,
+    "S1_samples_per_prompt": 2,
+    "S2_seeds": 2,
+    "S2_arms_per_seed": 3,
+    "S2_steps_per_run": 2,
+    "historical_endpoint_outputs": 864,
+    "historical_endpoint_adam_updates": 0
+  },
+  "parent_metadata_files": [
+    {
+      "path": "runtime_lock.json",
+      "sha256": "14ad5ec1bd7596b93720404e77f6ed220fa0123963c7a026438fcfdab81a545c",
+      "status": "CHECKED"
+    },
+    {
+      "path": "bank_manifest.json",
+      "sha256": "dd4e543c6c8ae5076ce20ad46df7e51afd4cad7750f33b028e46fbf61536a416",
+      "status": "CHECKED"
+    },
+    {
+      "path": "candidate_manifest.json",
+      "sha256": "01735c725d06f99a74c3c18d45f380153c73f9944a9658679a8828e2e47d0d12",
+      "status": "CHECKED"
+    }
+  ],
+  "old_source_files_matching": 63,
+  "source_manifest": {
+    "path": "docs/mechanism_followup/IMPLEMENTATION_SOURCE_MANIFEST.json",
+    "sha256": "8ddb9f03dfe9fe33951cde331d9dc32bfce309e4341cebeb6fe69f41247cb2d6"
+  },
+  "frozen_server_budget": {
+    "S1_adam_updates": 47,
+    "S1_backward_sequences": 1504,
+    "S1_direct_logical_outputs": 13824,
+    "S2_new_runs": 7,
+    "S2_steps_per_run": 64,
+    "S2_training_outputs": 14336,
+    "S2_evaluation_outputs": 62272,
+    "historical_R2_extra_outputs": 1728
+  },
+  "blocking_items": [
+    {
+      "id": "REAL_PARENT_RAW_REQUIRED",
+      "scope": "server preparation",
+      "details": "Compact parent lacks origin.pt and samples.jsonl; full candidate checkpoints and recursive R0/R1/supplement/R2/R3/R4 evidence must be located and verified."
+    },
+    {
+      "id": "REAL_DATA_MODEL_ENV_REQUIRED",
+      "scope": "server preparation",
+      "details": "Verify original raw data/images/prepared inputs, pinned complete local Qwen3.5-9B snapshot, processor cache and inherited environment certificates; current certified data path must match."
+    },
+    {
+      "id": "ACTUAL_GPU_SMOKE_NOT_RUN",
+      "scope": "before S1/S2",
+      "details": "Verify current approved Slurm resources and run old/new direct-gradient and scratch-Adam smoke before real S1; S2 additionally requires the verified S1 measurement chain."
+    }
+  ],
+  "optional_extensions_enabled": false,
+  "online_controller_enabled": false
+}

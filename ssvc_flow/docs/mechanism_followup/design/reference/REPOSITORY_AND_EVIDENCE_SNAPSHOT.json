@@ -1,0 +1,281 @@
+{
+  "checked_date": "2026-09-14",
+  "repository": "Lhan-chding/dissertation",
+  "default_branch": "main",
+  "default_branch_head": "653e3b96a9847f92e32ee9b262e11f2c16cb2033",
+  "experiment_branch": "codex/ssvc-flow-ntu",
+  "experiment_head": "7e405faa241e0085f701cdc858ba423ea76ba5a8",
+  "followup_branch": "codex/ssvc-mechanism-followup-20260914",
+  "followup_head": "7e405faa241e0085f701cdc858ba423ea76ba5a8",
+  "followup_committed_implementation": false,
+  "checked_absent_path": "ssvc_flow/src/followup_protocol.py",
+  "checked_absent_path_http_status": 404,
+  "last_turn_orphan_tree": "547591e5488cb32d4795d5534a646638c5774ec4",
+  "orphan_tree_status": "draft tree object only; not a commit or executable branch implementation; do not adopt without review",
+  "scope": "live GitHub branch listing and file query; selected local JSON metadata; no new model or training tests",
+  "parent_evidence_files_sha256": {
+    "SSVC_GPT_PRO_DELIVERY_20260914/02_data/R3_warm/candidate_manifest.json": "01735c725d06f99a74c3c18d45f380153c73f9944a9658679a8828e2e47d0d12",
+    "SSVC_GPT_PRO_DELIVERY_20260914/02_data/R3_warm/runtime_lock.json": "14ad5ec1bd7596b93720404e77f6ed220fa0123963c7a026438fcfdab81a545c",
+    "SSVC_GPT_PRO_DELIVERY_20260914/02_data/R3_warm/bank_manifest.json": "dd4e543c6c8ae5076ce20ad46df7e51afd4cad7750f33b028e46fbf61536a416"
+  },
+  "runtime_recorded_source_commit": "9cb60cd8e4e26f881e83f80f20b55999f8b8ecde",
+  "runtime_versions_reported": {
+    "Pillow": "12.3.0",
+    "accelerate": "1.14.0",
+    "huggingface-hub": "1.30.0",
+    "numpy": "2.5.2",
+    "peft": "0.19.1",
+    "safetensors": "0.8.0",
+    "tokenizers": "0.22.2",
+    "torch": "2.13.0+cu130",
+    "transformers": "5.14.1"
+  },
+  "python_reported": "3.12.14",
+  "trainable_dtypes_reported": [
+    "torch.float32"
+  ],
+  "origin_hash": "5f809aa3e46cf19feb0444b5ab932df765db9ef2bdb80fe8a4ced300174730e9",
+  "origin_file_sha256": "a1666c9455475e41aee34bfc6060be46260398069b6de522a576ccc148c0188d",
+  "selected_banks": [
+    {
+      "bank_index": 0,
+      "base_parameter_hash": "7419e56621daa395711e38388328a64503f5739e71867da6692c7a8c5b7a319d",
+      "valid_parameter_hash": "7419e56621daa395711e38388328a64503f5739e71867da6692c7a8c5b7a319d",
+      "actual_parameter_changed": false,
+      "groups": [
+        {
+          "group_position_zero_based": 0,
+          "prompt_id": "b941ae909011d546f8866451fadbd20124c0c9bb9b92c7448e0601dc7c8cd9e2",
+          "counts": {
+            "I": 0,
+            "S": 0,
+            "W": 0,
+            "X": 8
+          }
+        },
+        {
+          "group_position_zero_based": 1,
+          "prompt_id": "95cbbecb8fa12e1234f4b1f07fd2e2a46d19f59815532dbcf45db5a3f453450d",
+          "counts": {
+            "I": 0,
+            "S": 0,
+            "W": 0,
+            "X": 8
+          }
+        },
+        {
+          "group_position_zero_based": 2,
+          "prompt_id": "8820405f19b921cf0bba2bfa232a64faf797557fd15d6d957440328262564c2c",
+          "counts": {
+            "I": 0,
+            "S": 0,
+            "W": 4,
+            "X": 4
+          }
+        },
+        {
+          "group_position_zero_based": 3,
+          "prompt_id": "659d46834e9da1f3651d77995527980354faabccdfe723467447ef473f654e56",
+          "counts": {
+            "I": 0,
+            "S": 0,
+            "W": 1,
+            "X": 7
+          }
+        }
+      ]
+    },
+    {
+      "bank_index": 3,
+      "base_parameter_hash": "67ca56e04e0e06cbeed039f6e7fb6ba6db2cb642169d9bd46a5914463f0593a0",
+      "valid_parameter_hash": "630d168155383a1a16ce719af854c81e078c080e37ccc5dc9abb63cfd3222ca9",
+      "actual_parameter_changed": true,
+      "groups": [
+        {
+          "group_position_zero_based": 0,
+          "prompt_id": "3e410596a218a38a9bc2b4dcd176fbb090a04c3796d64463270b3f9a21f3b1ea",
+          "counts": {
+            "I": 0,
+            "S": 0,
+            "W": 0,
+            "X": 8
+          }
+        },
+        {
+          "group_position_zero_based": 1,
+          "prompt_id": "0b5739ed86c3c95c868ece8768fadbab0242e724331df1d5e24b3892de7d26a9",
+          "counts": {
+            "I": 0,
+            "S": 0,
+            "W": 0,
+            "X": 8
+          }
+        },
+        {
+          "group_position_zero_based": 2,
+          "prompt_id": "f14faac49bc660b8c81cf46762be582ea664603af0e9b4c7144c0f59caf83295",
+          "counts": {
+            "I": 4,
+            "S": 0,
+            "W": 4,
+            "X": 0
+          }
+        },
+        {
+          "group_position_zero_based": 3,
+          "prompt_id": "f04eda0db4a985fce33c9475e3783d867b1b2c64ecc5b741878586162cb93d9a",
+          "counts": {
+            "I": 0,
+            "S": 0,
+            "W": 0,
+            "X": 8
+          }
+        }
+      ]
+    },
+    {
+      "bank_index": 4,
+      "base_parameter_hash": "67ca56e04e0e06cbeed039f6e7fb6ba6db2cb642169d9bd46a5914463f0593a0",
+      "valid_parameter_hash": "60885d6f43964f4202bed7e5f1b71e989495d4120ac168642c6e450206da1e58",
+      "actual_parameter_changed": true,
+      "groups": [
+        {
+          "group_position_zero_based": 0,
+          "prompt_id": "11ef24983f69011589a558111870ddb7125806e0f32abb1a0be58428d9d862e6",
+          "counts": {
+            "I": 1,
+            "S": 0,
+            "W": 7,
+            "X": 0
+          }
+        },
+        {
+          "group_position_zero_based": 1,
+          "prompt_id": "bc89a316b93e7ff8f0be9c1e52b2f56e2911d0e8532244d2c0c7770857f0efa9",
+          "counts": {
+            "I": 0,
+            "S": 0,
+            "W": 0,
+            "X": 8
+          }
+        },
+        {
+          "group_position_zero_based": 2,
+          "prompt_id": "263c7d0484dc90272612cb3dfcf0a90b3000ffefb317121232e3e5235654774e",
+          "counts": {
+            "I": 0,
+            "S": 0,
+            "W": 0,
+            "X": 8
+          }
+        },
+        {
+          "group_position_zero_based": 3,
+          "prompt_id": "11d96ecd69bdeaa652c5bdbdddf328a8546df17342163cb1184a7f0c6815ffab",
+          "counts": {
+            "I": 0,
+            "S": 0,
+            "W": 0,
+            "X": 8
+          }
+        }
+      ]
+    },
+    {
+      "bank_index": 5,
+      "base_parameter_hash": "67ca56e04e0e06cbeed039f6e7fb6ba6db2cb642169d9bd46a5914463f0593a0",
+      "valid_parameter_hash": "80c3194245be884fd5d2fd917ae6914906f1e92effd895cf76d4aacceee2357b",
+      "actual_parameter_changed": true,
+      "groups": [
+        {
+          "group_position_zero_based": 0,
+          "prompt_id": "d4e7d0b7b3a59fcf7d97d5fae8eb3fb29cedd4122caec58d684e343c7d3dc003",
+          "counts": {
+            "I": 0,
+            "S": 0,
+            "W": 8,
+            "X": 0
+          }
+        },
+        {
+          "group_position_zero_based": 1,
+          "prompt_id": "fd45dc5c8afbd8461de65de83e483b819439fbb2aea10f4e1328702c42cfda2f",
+          "counts": {
+            "I": 0,
+            "S": 0,
+            "W": 0,
+            "X": 8
+          }
+        },
+        {
+          "group_position_zero_based": 2,
+          "prompt_id": "25449360e9bc128049ef5337bda5d59d791814b2d7bf0b3c7848198024340567",
+          "counts": {
+            "I": 1,
+            "S": 0,
+            "W": 7,
+            "X": 0
+          }
+        },
+        {
+          "group_position_zero_based": 3,
+          "prompt_id": "9d2080db62109e0b984506ffa4ebf689808a4a936c00f87f0e47385c67c6f5a8",
+          "counts": {
+            "I": 0,
+            "S": 0,
+            "W": 0,
+            "X": 8
+          }
+        }
+      ]
+    },
+    {
+      "bank_index": 11,
+      "base_parameter_hash": "eb7e0327bbba0d0336a4d324495252d0a9ff511b3b634430fc14e35655a5675b",
+      "valid_parameter_hash": "bb1e6b1f611e747a29eff3b8b89cab690435513b8f3fd21580750f14b3840d09",
+      "actual_parameter_changed": true,
+      "groups": [
+        {
+          "group_position_zero_based": 0,
+          "prompt_id": "e9fcb64b6fcd74a86c355de1178939fdfdc2f7845d250cfe022d50a4528943c0",
+          "counts": {
+            "I": 0,
+            "S": 0,
+            "W": 8,
+            "X": 0
+          }
+        },
+        {
+          "group_position_zero_based": 1,
+          "prompt_id": "355eb394d57c92408ab8f9adf90e897f2125233832817bd20990bf18cdb17d0b",
+          "counts": {
+            "I": 0,
+            "S": 0,
+            "W": 0,
+            "X": 8
+          }
+        },
+        {
+          "group_position_zero_based": 2,
+          "prompt_id": "50b3118cea94049ee962bd379fee8b2cbc161388cc7fe03905150138fe28462e",
+          "counts": {
+            "I": 3,
+            "S": 0,
+            "W": 1,
+            "X": 4
+          }
+        },
+        {
+          "group_position_zero_based": 3,
+          "prompt_id": "afb15e6f57e858ade5643314f4e0d530b7baec9df84d1cb5ade8f4f5187aa6b0",
+          "counts": {
+            "I": 0,
+            "S": 0,
+            "W": 0,
+            "X": 8
+          }
+        }
+      ]
+    }
+  ]
+}

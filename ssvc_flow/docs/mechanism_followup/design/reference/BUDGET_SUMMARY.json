@@ -1,0 +1,19 @@
+{
+  "new_candidates": 41,
+  "baseline_replays": 6,
+  "candidate_and_replay_adam_calls": 47,
+  "backward_sequence_calls": 1504,
+  "logical_direct_candidates": 18,
+  "S1_direct_outputs_upper": 13824,
+  "S1_optional_fresh64_outputs_upper": 55296,
+  "S2_new_runs": 7,
+  "S2_training_outputs": 14336,
+  "S2_evaluation_outputs_per_new_run_upper": 8896,
+  "S2_evaluation_outputs_new_runs_upper": 62272,
+  "historical_two_endpoint_interface_outputs_upper": 1728,
+  "units": "output sequences / individual update or backward calls, not wall-clock time",
+  "S1_memory_or_environment_smoke_not_included": true,
+  "S1_fresh64_enabled": false,
+  "maximum_default_S1_and_S2_generated_sequences_before_dedup": 92160,
+  "actual_runtime_estimate": "requires measured server throughput and peak memory"
+}

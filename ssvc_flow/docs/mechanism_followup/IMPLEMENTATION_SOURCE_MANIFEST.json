@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "scope": "mechanism followup implementation and tests",
+  "files": {
+    "src/followup_backend.py": "ecc39f99e7c85d732a58a325e90b070e7778e754fe0e246385ab03e2160feb69",
+    "src/followup_cli.py": "3cf6fa2752b4e5c181897b507c9b687aae65dca532e2394671393db8a439100e",
+    "src/followup_inputs.py": "0bdf7eb503522afe05e1ee8befbf678aeebf460c1512910061381d6b173c3ce5",
+    "src/followup_parent.py": "0b45cdd80b56def0c6a91fcc61c3246b6984431a30a04aff813bd5c509d9d79e",
+    "src/followup_protocol.py": "cd385ef3a01dc330a37ea94160459e50bf65456dcaecdde66c77a669ae435034",
+    "src/followup_runtime.py": "37b22d311cc18bef07bb3bd2d7a5f09b0e0b32eabb8d425cc4f18ba3ecfe0b17",
+    "src/followup_statistics.py": "d42cefb3cc5d32aa4b30df8a2c9217ba01e8877114b8d06728eee88d2bc581be",
+    "src/followup_train.py": "d6c16b99850950a6795cf535fe4b3afb4dd762f40fa7a58de34e7bacaa939a4b",
+    "src/followup_updates.py": "020b2eec7f336395817976d2e51791fd42de7c12aafcd75af2a7e0a57c238fa8",
+    "tests/test_followup_backend.py": "bb67190d9779021baeac2c4a4cd0452c61bbd251b6e9cdc7be8282720d8afa9f",
+    "tests/test_followup_cli.py": "0ae4240c074906db544b0071e36edab3ba9d213ad5e83570af4692682ec41ef1",
+    "tests/test_followup_inputs.py": "4b2e6389d1869721ce06196416d88a37d4432e54648771b87c6fab0bdf21b1c4",
+    "tests/test_followup_parent.py": "b12f82efc28f09b39993195a78c8bbc0b3e551c6daa783aabb0461b1b68a8c63",
+    "tests/test_followup_protocol.py": "3db9b94ce34eba1e25a4387d1a5f7bd3a2dce9b658c17abeb1dedbfff7867999",
+    "tests/test_followup_runtime.py": "bef5b14e174151b74963f819c7a9dd761af28f50d0ad7b0f880413d188d47d64",
+    "tests/test_followup_statistics.py": "a7aac46542b05dac58afcbeab53671b471e6a95efb3cb82d75956cc27afe57bf",
+    "tests/test_followup_train.py": "a1daf985ece4402f5258c0311c24c33af0449f1b23b0f3d92e536ba67498149b",
+    "tests/test_followup_updates.py": "d33586c9b2433803ea821f292d4f139c221853edac2aebf443cacbc3dfe7f686",
+    "tests/followup_test_adapter.py": "7d99e8c8d1c1c77bd3510fea3ecbfe0996a9f5a6643ddb1d6e10d7035d7b252d",
+    "configs/mechanism_followup.yaml": "12862ee70bc536874d6cd5f18a1b5232d432a657ac85397bb45a01a087f01c1d",
+    "scripts/followup_s1.sbatch": "7aeed71d65c47991352803ae0c5901036506c16b9e8abc10a7228cffe58ad91f",
+    "scripts/followup_s2.sbatch": "d4050e1b2d47123205c19a6e3e5eb469de65456e0b9862db639de89d9175def0",
+    "scripts/followup_smoke.sbatch": "a306048fb7ff2450fbb9d373baf8e20b165fc2f5c0c19fcb7bee6a680e5fc8a3",
+    "scripts/verify_followup_cpu.py": "ecde2b7a1e6e7fdf30c96d55fcd7b9affe967882f886c2ec520cd5551bd59a5e"
+  }
+}
