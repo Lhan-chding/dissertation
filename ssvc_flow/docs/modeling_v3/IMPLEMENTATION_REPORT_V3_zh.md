@@ -163,3 +163,17 @@ CPU collection 保存逐步参数、真实 d/g/Adam 状态、训练与 bank 动�
 同一节点两张 PRO6000 的 Q4 pair 启动器保留原 Slurm GPU token，每个 worker 使用其单独设备的 cuda:0；启动前验证已记录授权、完整阶段绑定和技术原件。启动器不提交作业、不创建授权。真实 UUID 的不同性仍由桥接最终验收核对。
 
 最终 candidate05 候选在两项集成修复和恢复 UUID 检查后统一复测：388 passed / 31.65s，源代码与测试在运行期间未改变；`verification/local_20260916_candidate05_final/` 保留完整小型工程日志与哈希。所有 V3 源码/测试和新增 Python 运行脚本 Ruff 检查与格式检查通过。真实服务器全仓复验将使用该冻结代码。
+
+## 8. 独立 CPU 验收及冻结前统计补齐（candidate06 待服务器复验）
+
+candidate05 的实际服务器作业 155895 已完成：2,012 passed、0 failed、0 errors、0 skipped，1 项封存 confirm 读取测试显式 deselected；pytest 2,138.63 秒，Slurm 35:42，源码/测试运行期间不变。完整回执见 `verification/server_CPU_155895/`。
+
+Q1 作业 155812 和 Q2 作业 155844 的全矩阵已完成；原件分析 155899/155896 已完成。实测观测代价、策略别名、校准覆盖、强直接基线及真实 r<k 结果分别记录于 `OBSERVATION_GEOMETRY_zh.md` 与 `CALIBRATION_COVERAGE_zh.md`。这些仍是 development，未开放 Q3 新测试集。
+
+冻结审查发现旧统计入口只支持模型对直接测量，无法执行方案的自然 RQ1–3 配对。candidate06 新增 `frozen_comparisons.py`，对同预算观测方法、匹配 FULL 选择器、同原点真实 r<k 与 FULL 执行预登记联合群体 pX/v MSE 比较。按完整 training seed 聚类，保留每侧 SSE/分母、单通道效应、5,000 次 bootstrap；正式 sign-flip 检验明确依赖零假设下 seed 差值符号对称性。无合格原点的 seed 和未解析测量不删除，返回 UNKNOWN。
+
+CPU 锁预登记完整四 RQ 家族，RQ4 固定真实 VLM 的 PRESERVE_XI、QR、m8、n1024、alpha1e-5、RESPONSE_SVD cap2 对匹配 FULL；VLM development 仅绑定指定设计 ID，缺设计不换赢家。新增 `finalize-primary-family` 从实际 CPU/VLM 分析原件重算四项，再执行统一 Holm；缺项或 UNKNOWN 不产生完整家族结论。旧 `primary_hypothesis_tests` 四 CPU 接口被新冻结/验证入口拒绝，避免代替跨阶段四 RQ。
+
+此补丁改变 CPU 依赖哈希。原 candidate05 及 Q1/Q2 结果完整保留；下一不可变 candidate06 必须独立完成服务器全仓验收及完整 development 复跑，不能挪用旧 PASS 或放松源代码绑定。当前尚无首次 GPU 授权或新增 GPU 提交。
+
+最终 candidate06 小型工程回归：418 passed，pytest 37.29 秒，运行前后源码/测试哈希一致；完整小型回执保存在 `verification/local_20260916_candidate06_final/`。这是本机小 fixture 检查，完整仓库验收仍在服务器执行。

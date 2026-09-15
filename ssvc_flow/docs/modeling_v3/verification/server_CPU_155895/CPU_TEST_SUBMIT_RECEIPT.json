@@ -1,0 +1,18 @@
+{
+  "command": [
+    "sbatch",
+    "--parsable",
+    "--account=rose",
+    "--time=1-00:00:00",
+    "--job-name=ssvc-v3-cpu_test",
+    "--output=/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate05/CPU_TEST-%j.out",
+    "--error=/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate05/CPU_TEST-%j.err",
+    "--export=ALL,SSVC_V3_CHECKOUT=/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate05/checkout,SSVC_V3_PYTHON=/projects/varunssd/louis-ssvc/envs/ssvc-py312/bin/python,SSVC_V3_OUTPUT=/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate05/CPU_acceptance_01,SSVC_V3_STAGE=test,SSVC_TEST_PARENT_ROOT=/projects/varunssd/louis-ssvc/modeling_contrast_v2_20260915/parent_M2",
+    "--qos=soujanya-poria-startfund-2026-03",
+    "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate05/checkout/ssvc_flow/scripts/modeling_v3_cpu.sbatch"
+  ],
+  "returncode": 0,
+  "stdout": "155895\n",
+  "stderr": "",
+  "job_id": "155895"
+}

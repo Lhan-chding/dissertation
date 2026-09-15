@@ -1,0 +1,23 @@
+	Command being timed: "/projects/varunssd/louis-ssvc/envs/ssvc-py312/bin/python scripts/verify_modeling_v3_cpu.py --out /projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate05/CPU_acceptance_01 -- tests docs/modeling_v3/design/reference/test_math_contracts.py --deselect=tests/test_audit_r0_remaining.py::test_cross_split_passes_generated_dataset"
+	User time (seconds): 947.86
+	System time (seconds): 73.46
+	Percent of CPU this job got: 47%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 35:41.48
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 1780676
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 11
+	Minor (reclaiming a frame) page faults: 2331566
+	Voluntary context switches: 2153278
+	Involuntary context switches: 37992
+	Swaps: 0
+	File system inputs: 24
+	File system outputs: 44729184
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

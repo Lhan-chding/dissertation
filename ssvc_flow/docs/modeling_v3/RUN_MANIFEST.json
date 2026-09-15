@@ -7,9 +7,9 @@
   "first_gpu_authorization": "PENDING",
   "new_gpu_jobs_submitted": 0,
   "server_root": "/projects/varunssd/louis-ssvc/modeling_v3_20260915",
-  "pushed_implementation_commit": "63db1a2c0c4e9239e619c6d3485c3a0e23ef8e76",
-  "current_server_checkout": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/checkout",
-  "code_snapshot_manifest_sha256": "19307f860d96f23d29e708387f1fbdcf5bc88772543f862424f744f1a4bdcb4f",
+  "pushed_implementation_commit": "00c095d4140e790b3a902d4975492b77643be761",
+  "current_server_checkout": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate05/checkout",
+  "code_snapshot_manifest_sha256": "3716af3aedb715022574fac1c6e562b2c69e0fba5fe5773df952f96ca734805a",
   "jobs": [
     {
       "id": "155686",
@@ -63,7 +63,7 @@
     {
       "id": "155812",
       "stage": "Q1 complete observation grid",
-      "status": "RUNNING",
+      "status": "COMPLETED",
       "grid": [
         64,
         256,
@@ -71,7 +71,11 @@
         4096
       ],
       "repeats_per_unit": 200,
-      "last_observed_complete_units": 107
+      "last_observed_complete_units": 192,
+      "slurm_wall_seconds": 5961,
+      "core_wall_seconds": 5747.509761155001,
+      "exit_code": "0:0",
+      "analysis_status": "COMPLETED_155899"
     },
     {
       "id": "155837",
@@ -104,7 +108,7 @@
       "exit_code": "0:0",
       "maximum_rss_kib": 6769008,
       "raw_reported_r_less_k_fit_count": 584,
-      "original_analysis_pending": true
+      "original_analysis_pending": false
     },
     {
       "id": "155873",
@@ -119,12 +123,45 @@
       },
       "wall_seconds": 11.52764105796814,
       "sources_unchanged_during_run": true
+    },
+    {
+      "id": "155895",
+      "stage": "candidate05 full server CPU acceptance",
+      "status": "COMPLETED",
+      "gpu": false,
+      "counts": {
+        "passed": 2012,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "slurm_wall_seconds": 2142,
+      "source_and_tests_unchanged": true,
+      "receipt": "verification/server_CPU_155895/result.json"
+    },
+    {
+      "id": "155896",
+      "stage": "Q2 complete original analysis",
+      "status": "COMPLETED",
+      "gpu": false,
+      "slurm_wall_seconds": 198,
+      "process_wall_seconds": 198.49,
+      "maximum_rss_kib": 689536,
+      "receipt": "verification/server_Q2_analysis_155896/VERIFIED_RETRIEVAL.json"
+    },
+    {
+      "id": "155899",
+      "stage": "Q1 complete original analysis",
+      "status": "COMPLETED",
+      "depends_on_afterok": "155812",
+      "gpu": false,
+      "slurm_wall_seconds": 776,
+      "analysis_units": 192,
+      "receipt": "verification/server_Q1_analysis_155899/VERIFIED_RETRIEVAL.json"
     }
   ],
   "remaining": [
-    "Resolve full server CPU acceptance failures",
-    "Analyze completed Q1 outputs",
-    "Analyze completed full Q2 originals",
+    "Verify new statistical-comparison snapshot on full server CPU acceptance",
     "Freeze method and thresholds from development evidence",
     "Q3 interval calibration then independent test and orthogonal initializations",
     "Prepare and review exact Q4 GPU launch command and timing estimates",
@@ -151,5 +188,9 @@
       "max_submit_per_user": 5
     },
     "override_qos_used": false
-  }
+  },
+  "server_snapshot_git_commit": "b0057f02e6d7aca4a9c0cf34a65eb182358b757a",
+  "server_git_commit_scope": "NEW_LOCAL_SNAPSHOT_NOT_UPSTREAM_HISTORY",
+  "current_work": "Candidate06 statistical-comparison patch passed 418 small fixtures; server deployment, full acceptance and development reruns pending.",
+  "local_frozen_source_sha256": "765d0450ed37a0b3fefd55cc0226c7787f85469254121e9da2f00164a4bcdfa2"
 }

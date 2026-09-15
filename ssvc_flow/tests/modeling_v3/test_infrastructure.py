@@ -92,6 +92,42 @@ def test_selection_cannot_freeze_without_completed_development(tmp_path):
         freeze_selection({}, [], {}, tmp_path / "lock")
 
 
+@pytest.mark.parametrize("fault", ["incomplete_family", "legacy_four_cpu_tests"])
+def test_selection_rejects_incomplete_primary_family_before_publication(tmp_path, fault):
+    from src.modeling_v3.cpu_campaign import _binding, _finish
+    from src.modeling_v3.schema import freeze_selection
+
+    config = json.loads(
+        (Path(__file__).resolve().parents[2] / "configs/modeling_v3/protocol.json").read_text()
+    )
+    selected = {
+        "observation_methods": ["PRESERVE_XI"],
+        "selection_rules": ["BLOCK_PIVOT_QR"],
+        "models": ["FULL_RIDGE"],
+        "rank_caps": [2, "FULL"],
+        "alpha": 1e-5,
+        "rho_threshold": 0.05,
+        "leverage_threshold": 10.0,
+        "primary_comparison_family": {"family_size": 4, "hypotheses": []},
+    }
+    if fault == "legacy_four_cpu_tests":
+        selected.pop("primary_comparison_family")
+        selected["primary_hypothesis_tests"] = [{"id": f"RQ{i}"} for i in range(1, 5)]
+    roots = []
+    for stage in ("Q1", "Q2"):
+        root = tmp_path / stage
+        root.mkdir()
+        _finish(
+            root,
+            _binding(config, stage=stage),
+            {"stage": stage, "scientific_status": "DEVELOPMENT_ONLY"},
+        )
+        roots.append(root)
+    with pytest.raises(ValueError):
+        freeze_selection(config, roots, selected, tmp_path / "lock")
+    assert not (tmp_path / "lock" / "SELECTION_LOCK.json").exists()
+
+
 @pytest.mark.parametrize("fault", ["different_config", "unregistered_file", "crossfit_gls"])
 def test_selection_verifies_protocol_inventory_and_supported_combination(tmp_path, fault):
     from src.modeling_v3.cpu_campaign import _binding, _finish

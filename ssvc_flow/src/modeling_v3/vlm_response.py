@@ -371,6 +371,66 @@ def _selection_evaluation(config, value, *, fixture):
     return spec["origin_id"], settings, spec_binding, original
 
 
+def bind_vlm_primary_comparison(config, family, designs):
+    """Resolve the CPU-preregistered RQ4 relation without changing its design."""
+    if family is None:
+        return {
+            "status": "UNAVAILABLE",
+            "reason": "PARENT_PRIMARY_FAMILY_MISSING",
+            "family_hash": None,
+            "spec_hash": None,
+            "resolved_design_ids": None,
+            "resolved_spec_hash": None,
+        }
+    from .frozen_comparisons import validate_primary_family
+
+    family = validate_primary_family(family)
+    spec = family["hypotheses"][3]
+    result = {
+        "status": "UNAVAILABLE",
+        "reason": "PREDECLARED_VLM_DESIGN_MISSING_OR_AMBIGUOUS",
+        "family_hash": canonical_hash(family),
+        "spec_hash": canonical_hash(spec),
+        "resolved_design_ids": None,
+        "resolved_spec_hash": None,
+    }
+    if config["qwen"]["observation_n_primary"] != spec["left"]["n"]:
+        result["reason"] = "PREDECLARED_VLM_OBSERVATION_BUDGET_DIFFERS"
+        return result
+    names = {}
+    for side in ("left", "right"):
+        rule = spec[side]
+        settings = {
+            **{
+                key: rule[key]
+                for key in (
+                    "method",
+                    "rank_cap",
+                    "alpha",
+                    "regression",
+                    "output_policy",
+                    "selector",
+                )
+            },
+            "observation_method": rule["estimator"],
+            "n_banks": rule["m"],
+            "selection_seed": rule["design_seed"],
+        }
+        matches = [d for d in designs if all(d.get(k) == value for k, value in settings.items())]
+        if len(matches) != 1:
+            return result
+        names[side] = matches[0]["design_id"]
+    result.update(
+        status="BOUND",
+        reason=None,
+        resolved_design_ids=names,
+        resolved_spec_hash=canonical_hash(
+            {"spec_hash": result["spec_hash"], "resolved_design_ids": names}
+        ),
+    )
+    return result
+
+
 def freeze_vlm_selection(
     config,
     parent_cpu_selection,
@@ -447,6 +507,10 @@ def freeze_vlm_selection(
         "status": "VLM_SELECTION_FROZEN",
         "selection_scope": "Development-only method choice; no calibration or test qualification",
         "criteria_scope": VLM_CRITERIA_SCOPE,
+        "primary_comparison_family": parent["selected"].get("primary_comparison_family"),
+        "primary_comparison_binding": bind_vlm_primary_comparison(
+            config, parent["selected"].get("primary_comparison_family"), selected["designs"]
+        ),
     }
     atomic_json(root / "VLM_SELECTION_LOCK.json", lock)
     finalize_run(root, _identity(config), metadata={"role": "development", "fixture": fixture})
@@ -474,6 +538,13 @@ def verify_vlm_selection_lock(config, lock, *, fixture=False):
     parent = _read(document["parent_cpu_selection"])
     verify_selection_lock(config, parent)
     _validate_vlm_selected(config, document["selected"], parent)
+    family = parent["selected"].get("primary_comparison_family")
+    if document.get("primary_comparison_family") != family or document.get(
+        "primary_comparison_binding"
+    ) != bind_vlm_primary_comparison(config, family, document["selected"]["designs"]):
+        raise ValueError(
+            "VLM primary comparison changed the parent family or frozen design binding"
+        )
     _development_completion(config, document["development_completion"], fixture=fixture)
     for original in document["original_bindings"]:
         _read_binding(original)

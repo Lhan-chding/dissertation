@@ -45,6 +45,7 @@ def parser():
         "freeze-vlm",
         "calibrate-vlm",
         "analyze-vlm",
+        "finalize-primary-family",
         "prepare-q6",
         "prepare-q6-forks",
         "measure-q6-absolute",
@@ -108,6 +109,9 @@ def parser():
             p.add_argument("--inputs", nargs="+", required=True)
         if name == "analyze-vlm":
             p.add_argument("--calibration-receipt", required=True)
+        if name == "finalize-primary-family":
+            for field in ("cpu-lock", "cpu-analysis", "vlm-lock", "vlm-analysis"):
+                p.add_argument("--" + field, required=True)
         if name == "prepare-q6":
             for field in ("bindings", "qualification", "fit-spec", "model", "source-result"):
                 p.add_argument("--" + field, required=True)
@@ -449,6 +453,12 @@ def dispatch(args):
             args.inputs,
             args.out,
             calibration_receipt=args.calibration_receipt,
+        )
+    if args.command == "finalize-primary-family":
+        from .primary_family import finalize_primary_family
+
+        return finalize_primary_family(
+            config, args.cpu_lock, args.cpu_analysis, args.vlm_lock, args.vlm_analysis, args.out
         )
     if args.command == "freeze-vlm":
         from .vlm_response import freeze_vlm_selection

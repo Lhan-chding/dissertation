@@ -1,5 +1,6 @@
 """Small, immutable originals; no model execution and no server authorization."""
 
+import copy
 import json
 from pathlib import Path
 from statistics import NormalDist
@@ -10,6 +11,217 @@ import pytest
 from src.modeling_v3 import vlm_results as v
 from src.modeling_v3.io import atomic_json, atomic_npz, canonical_hash, finalize_run, sha256_file
 from src.modeling_v3.vlm_response import _identity
+
+
+def rq4_pair(tmp_path):
+    from src.modeling_v3.vlm_response import _probe_group_metadata
+
+    probes = tmp_path / "rq4-probes.json"
+    atomic_json(
+        probes,
+        [{"prompt_id": p, "family": "same", "interface": "SYMBOLIC_FRESH"} for p in ("p0", "p1")],
+    )
+    groups, _, grouping = _probe_group_metadata(
+        {"tasks": [{"prompt_file": bound(probes)}]}, ["p0", "p1"]
+    )
+    shared = {
+        "fit": {"probe_groups": groups, "probe_grouping": grouping},
+        "spec": {
+            "probe_ids": ["p0", "p1"],
+            "query_units": [{"bank_id": "H0", "contrast_id": v.TARGETS[0]}],
+        },
+        "reference_half_width": np.full((1, 2, 4), 1e-5),
+    }
+    left = np.zeros((1, 2, 4))
+    left[0, :, 0], left[0, :, 3] = [0.1, -0.1], [-0.1, 0.1]
+    right = np.zeros((1, 2, 4))
+    right[..., 0], right[..., 3] = 0.01, -0.01
+
+    def row(prediction):
+        return {
+            **shared,
+            "arrays": {
+                "predictions": prediction,
+                "reference_estimate_unmasked": np.zeros_like(prediction),
+                "reference_variance": np.full_like(prediction, 1e-12),
+            },
+        }
+
+    return row(left), row(right)
+
+
+def test_rq4_uses_original_group_means_and_primary_v_minus_i(tmp_path):
+    left, right = rq4_pair(tmp_path)
+    result = v._rq4_group_errors(left, right)
+    for channel in ("group_pX", "group_v"):
+        assert result["channels"][channel] == {
+            "left_loss_sum": 0.0,
+            "right_loss_sum": 0.0001,
+            "count": 1,
+        }
+    assert result["raw4"]["left_loss_sum"] > result["raw4"]["right_loss_sum"]
+    assert result["groups"] == 1 and result["banks"] == 1
+
+
+def test_rq4_preserves_unresolved_reference_instead_of_dropping_cells(tmp_path):
+    left, right = rq4_pair(tmp_path)
+    left["reference_half_width"][0, 0, 0] = np.nan
+    assert v._rq4_group_errors(left, right) is None
+
+
+def test_rq4_rejects_changed_shared_reference_or_group_original(tmp_path):
+    left, right = rq4_pair(tmp_path)
+    right["arrays"]["reference_estimate_unmasked"][0, 0, 0] = 0.01
+    with pytest.raises(ValueError, match="reference"):
+        v._rq4_group_errors(left, right)
+
+
+def rq4_records(tmp_path):
+    from test_frozen_comparisons import frozen_fixture
+
+    from src.modeling_v3.vlm_response import bind_vlm_primary_comparison
+
+    config, parent = frozen_fixture()
+    family = parent["primary_comparison_family"]
+    shared = {
+        "alpha": 1e-5,
+        "output_policy": "RAW4",
+        "regression": "RIDGE",
+        "observation_method": "PRESERVE_XI",
+        "selector": "BLOCK_PIVOT_QR",
+        "n_banks": 8,
+        "selection_seed": 2026091500,
+    }
+    designs = [
+        {**shared, "design_id": "response-r2", "method": "RESPONSE_SVD", "rank_cap": 2},
+        {**shared, "design_id": "full", "method": "FULL_RIDGE", "rank_cap": "FULL"},
+    ]
+    lock = {
+        "selected": {"designs": designs},
+        "primary_comparison_family": family,
+        "primary_comparison_binding": bind_vlm_primary_comparison(config, family, designs),
+    }
+    pair = rq4_pair(tmp_path)
+    original = pair[0]["fit"]["probe_grouping"]["prompt_file"]
+    records = []
+    for seed in config["qwen"]["seed_roles"]["locked_test"]:
+        for step in (32, 96):
+            for index, row in enumerate(pair):
+                row = copy.deepcopy(row)
+                row.update(seed=seed, arm="X_BASE", step=step, k=3, r=2 if index == 0 else 3)
+                row["design"] = designs[index]
+                row["spec"].update(origin_id=f"{seed}_X_BASE_{step}", role="locked_test")
+                row["fit"].update(
+                    calibration_units=[{"bank_id": "C0", "contrast_id": v.TARGETS[0]}],
+                    vector_identity={"vector_bindings": [original]},
+                )
+                for key in ("input_binding", "receipt_binding", "fit_binding", "model_binding"):
+                    row[key] = original
+                records.append(row)
+    return config, lock, records
+
+
+def test_rq4_clusters_all_six_seeds_and_family_waits_for_three_cpu_questions(tmp_path):
+    config, lock, records = rq4_records(tmp_path)
+    result = v._vlm_primary_family(config, lock, records)
+    test = result["results"][0]
+    assert test["status"] == "AVAILABLE" and test["raw_pvalue"] is not None
+    assert test["independent_seeds"] == 6 and test["reps"] == 5000
+    assert len(test["paired_seed_totals"]) == 6
+    assert all(row["eligible_origin_count"] == 2 for row in test["paired_seed_totals"])
+    assert test["estimate"] == pytest.approx(-0.0001)
+    assert result["summary"]["missing_hypotheses"] == ["RQ1", "RQ2", "RQ3"]
+    assert result["summary"]["holm_applied"] is False
+
+
+@pytest.mark.parametrize("failure", ["empty_seed", "reference", "all_full"])
+def test_rq4_unresolved_or_no_true_reduction_never_drops_a_seed(tmp_path, failure):
+    config, lock, records = rq4_records(tmp_path)
+    if failure == "reference":
+        records[0]["reference_half_width"][0, 0, 0] = np.nan
+    else:
+        for row in records:
+            if (
+                failure == "all_full"
+                or row["seed"] == config["qwen"]["seed_roles"]["locked_test"][0]
+            ):
+                row["k"] = row["r"] = 2
+    result = v._vlm_primary_family(config, lock, records)["results"][0]
+    assert result["status"] == "UNKNOWN" and result["raw_pvalue"] is None
+    assert len(result["paired_seed_totals"]) == 6
+
+
+def test_rq4_geometry_subset_is_declared_and_missing_design_not_replaced(tmp_path):
+    config, lock, records = rq4_records(tmp_path)
+    records[0]["k"] = records[0]["r"] = 2
+    records[1]["k"] = records[1]["r"] = 2
+    result = v._vlm_primary_family(config, lock, records)["results"][0]
+    assert result["status"] == "AVAILABLE"
+    assert len(result["excluded_origins"]) == 1
+    lock["selected"]["designs"][0]["method"] = "PCA"
+    from src.modeling_v3.vlm_response import bind_vlm_primary_comparison
+
+    lock["primary_comparison_binding"] = bind_vlm_primary_comparison(
+        config, lock["primary_comparison_family"], lock["selected"]["designs"]
+    )
+    unavailable = v._vlm_primary_family(config, lock, records)["results"][0]
+    assert unavailable["status"] == "UNAVAILABLE" and unavailable["raw_pvalue"] is None
+
+
+def test_rq4_analysis_and_public_verifier_recompute_actual_originals(tmp_path):
+    config, lock, _ = protocol(tmp_path, primary=True)
+    designs = json.loads(Path(lock["path"]).read_text())["selected"]["designs"]
+    inputs = [
+        origin(tmp_path, config, lock, design, seed, "X_BASE", step, k=3)
+        for seed in config["qwen"]["seed_roles"]["interval_calibration"]
+        for step in (32, 96)
+        for design in designs
+    ]
+    cal = v.analyze_vlm_calibration(
+        config,
+        lock,
+        stage_completion=stage(tmp_path, config, inputs, "interval_calibration"),
+        evaluation_inputs=inputs,
+        out=tmp_path / "cal",
+        fixture=True,
+    )
+    inputs = [
+        origin(
+            tmp_path,
+            config,
+            lock,
+            design,
+            seed,
+            arm,
+            step,
+            k=3,
+            error=1e-5 if design["method"] == "RESPONSE_SVD" else 2e-5,
+            calibration=cal["receipt"],
+        )
+        for seed in config["qwen"]["seed_roles"]["locked_test"]
+        for arm, step in (("X_BASE", 32), ("X_BASE", 96), ("X_VALID", 96))
+        for design in designs
+    ]
+    report = v.analyze_vlm_test(
+        config,
+        lock,
+        calibration_receipt=cal["receipt"],
+        stage_completion=stage(tmp_path, config, inputs, "locked_test"),
+        evaluation_inputs=inputs,
+        out=tmp_path / "test",
+        fixture=True,
+    )
+    family = report["primary_comparison_family"]
+    assert family["results"][0]["status"] == "AVAILABLE"
+    assert family["results"][0]["source_role"] == "locked_test"
+    assert family["summary"]["holm_applied"] is False
+    verified = v.verify_vlm_primary_comparison(config, lock, report["receipt"], fixture=True)
+    assert verified == family
+    altered = json.loads(Path(report["receipt"]["path"]).read_text())
+    altered["primary_comparison_family"]["results"][0]["raw_pvalue"] = 0.00001
+    changed = publish(tmp_path / "changed", config, "TEST_ANALYSIS.json", altered)
+    with pytest.raises(ValueError, match=r"RQ4|comparison"):
+        v.verify_vlm_primary_comparison(config, lock, changed, fixture=True)
 
 
 @pytest.fixture(autouse=True)
@@ -36,7 +248,7 @@ def publish(root, config, name, doc, arrays=None):
     return bound(root / name)
 
 
-def protocol(tmp_path, *, two_designs=False):
+def protocol(tmp_path, *, two_designs=False, primary=False):
     config = json.loads(Path("configs/modeling_v3/protocol.json").read_text())
     config["qwen"]["probe_panel"]["prompts"] = 1
     config["qwen"]["training_bank_partition"]["heldout_banks"] = 1
@@ -66,12 +278,45 @@ def protocol(tmp_path, *, two_designs=False):
     }
     if two_designs:
         selected["designs"].append({**design, "design_id": "pca", "method": "PCA", "rank_cap": 1})
+    extra = {}
+    if primary:
+        from test_frozen_comparisons import frozen_fixture
+
+        from src.modeling_v3.vlm_response import _probe_group_metadata, bind_vlm_primary_comparison
+
+        _, parent = frozen_fixture()
+        design.update(
+            alpha=1e-5,
+            observation_method="PRESERVE_XI",
+            selector="BLOCK_PIVOT_QR",
+            n_banks=8,
+            selection_seed=2026091500,
+        )
+        selected["designs"] = [
+            design,
+            {**design, "design_id": "response-r2", "method": "RESPONSE_SVD", "rank_cap": 2},
+        ]
+        path = tmp_path / "GROUP_PROBES.json"
+        atomic_json(path, [{"prompt_id": "p0", "family": "one", "interface": "SYMBOLIC_FRESH"}])
+        groups, _, grouping = _probe_group_metadata(
+            {"tasks": [{"prompt_file": bound(path)}]}, ["p0"]
+        )
+        family = parent["primary_comparison_family"]
+        extra = {
+            "primary_comparison_family": family,
+            "primary_comparison_binding": bind_vlm_primary_comparison(
+                config, family, selected["designs"]
+            ),
+            "fixture_probe_groups": groups,
+            "fixture_probe_grouping": grouping,
+        }
     lock = {
         "kind": "V3_VLM_SELECTION_LOCK",
         **_identity(config),
         "selected": selected,
         "selection_hash": canonical_hash(selected),
         "fixture": True,
+        **extra,
     }
     lock_binding = publish(tmp_path / "selection", config, "SELECTION_LOCK.json", lock)
     return config, lock_binding, design
@@ -93,6 +338,7 @@ def origin(
     role_override=None,
     omit_variance=False,
     false_variance=False,
+    k=2,
 ):
     role = (
         "interval_calibration"
@@ -108,6 +354,15 @@ def origin(
     units = [{"bank_id": "H0", "contrast_id": name} for name in v.TARGETS]
     truth = np.broadcast_to(np.array([0.01, 0.02, -0.01, -0.02]), (3, 1, 4)).copy()
     predictions = truth + error
+    lock_doc = json.loads(Path(lock["path"]).read_text())
+    extra = {}
+    if "fixture_probe_grouping" in lock_doc:
+        extra = {
+            "probe_groups": lock_doc["fixture_probe_groups"],
+            "probe_grouping": lock_doc["fixture_probe_grouping"],
+            "calibration_units": [{"bank_id": "C0", "contrast_id": target} for target in v.TARGETS],
+            "vector_identity": {"origin_id": origin_id, "dimension": k},
+        }
     geometry = publish(
         root / "geometry",
         config,
@@ -134,15 +389,21 @@ def origin(
             "query_units": units,
             "reference_labels_read": False,
             "heldout_labels_read": False,
+            **extra,
         },
-        {"updates": np.eye(2), "query_updates": np.array([[1.0, 0.0], [0.0, 1.0], [1.0, 1.0]])},
+        {
+            "updates": np.eye(k),
+            "query_updates": np.pad(
+                np.array([[1.0, 0.0], [0.0, 1.0], [1.0, 1.0]]), ((0, 0), (0, k - 2))
+            ),
+        },
     )
     model_root = root / "model"
     model_root.mkdir()
-    atomic_npz(model_root / "MODEL_ARRAYS.npz", {"predictions": predictions, "Q": np.eye(2)})
+    atomic_npz(model_root / "MODEL_ARRAYS.npz", {"predictions": predictions, "Q": np.eye(k)})
     atomic_json(
         model_root / "MODEL.json",
-        {"k": 2, "r": 2 if design["rank_cap"] == "FULL" else design["rank_cap"]},
+        {"k": k, "r": k if design["rank_cap"] == "FULL" else design["rank_cap"]},
     )
     atomic_json(
         model_root / "RECEIPT.json",

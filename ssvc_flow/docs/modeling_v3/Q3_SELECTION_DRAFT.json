@@ -1,0 +1,173 @@
+{
+  "observation_methods": [
+    "PRESERVE_XI",
+    "PILOT_SHRINK_ZERO_SUM"
+  ],
+  "selection_rules": [
+    "STRATIFIED_RANDOM",
+    "BLOCK_PIVOT_QR"
+  ],
+  "models": [
+    "ZERO",
+    "FULL_RIDGE",
+    "FULL_GLS",
+    "PCA",
+    "RANDOM_Q",
+    "RESPONSE_SVD",
+    "GROUP_WEIGHTED_RESPONSE",
+    "RBF_RIDGE",
+    "DIRECT_MEASURE",
+    "KNOWN_EVENT_SCORE"
+  ],
+  "rank_caps": [
+    2,
+    "FULL"
+  ],
+  "alpha": 1e-05,
+  "rho_threshold": 0.05,
+  "leverage_threshold": 10,
+  "primary_comparison_family": {
+    "schema": "ssvc-v3-primary-comparison-family-1",
+    "family_id": "SSVC_V3_RQ1_RQ4",
+    "family_size": 4,
+    "alpha": 0.05,
+    "correction": "HOLM",
+    "hypotheses": [
+      {
+        "target_index": 0,
+        "channels": [
+          "group_pX",
+          "group_v"
+        ],
+        "metric": "mse",
+        "channel_aggregation": "EQUAL_CHANNEL_MEAN",
+        "test": "PAIRED_SEED_SIGN_FLIP_MEAN",
+        "alternative": "two-sided",
+        "null_sign_symmetry_assumed": true,
+        "randomization_seed": 2026091503,
+        "randomization_reps": 5000,
+        "minimum_seeds": 6,
+        "id": "RQ1",
+        "stage": "CPU",
+        "scope": "ALL_CASES",
+        "left": {
+          "kind": "DIRECT_MEASURE",
+          "estimator": "PILOT_SHRINK_ZERO_SUM",
+          "n": 1024
+        },
+        "right": {
+          "kind": "DIRECT_MEASURE",
+          "estimator": "PRESERVE_XI",
+          "n": 1024
+        }
+      },
+      {
+        "target_index": 0,
+        "channels": [
+          "group_pX",
+          "group_v"
+        ],
+        "metric": "mse",
+        "channel_aggregation": "EQUAL_CHANNEL_MEAN",
+        "test": "PAIRED_SEED_SIGN_FLIP_MEAN",
+        "alternative": "two-sided",
+        "null_sign_symmetry_assumed": true,
+        "randomization_seed": 2026091503,
+        "randomization_reps": 5000,
+        "minimum_seeds": 6,
+        "id": "RQ2",
+        "stage": "CPU",
+        "scope": "ALL_CASES",
+        "left": {
+          "kind": "MODEL",
+          "design_id": "5d66e67d64e2d12dfd5d"
+        },
+        "right": {
+          "kind": "MODEL",
+          "design_id": "c5159939d18a06046ecb"
+        }
+      },
+      {
+        "target_index": 0,
+        "channels": [
+          "group_pX",
+          "group_v"
+        ],
+        "metric": "mse",
+        "channel_aggregation": "EQUAL_CHANNEL_MEAN",
+        "test": "PAIRED_SEED_SIGN_FLIP_MEAN",
+        "alternative": "two-sided",
+        "null_sign_symmetry_assumed": true,
+        "randomization_seed": 2026091503,
+        "randomization_reps": 5000,
+        "minimum_seeds": 6,
+        "id": "RQ3",
+        "stage": "CPU",
+        "scope": "COMMON_R_LESS_K_ORIGINS",
+        "left": {
+          "kind": "MODEL",
+          "design_id": "a85a640a88d42ef92820"
+        },
+        "right": {
+          "kind": "MODEL",
+          "design_id": "5d66e67d64e2d12dfd5d"
+        }
+      },
+      {
+        "target_index": 0,
+        "channels": [
+          "group_pX",
+          "group_v"
+        ],
+        "metric": "mse",
+        "channel_aggregation": "EQUAL_CHANNEL_MEAN",
+        "test": "PAIRED_SEED_SIGN_FLIP_MEAN",
+        "alternative": "two-sided",
+        "null_sign_symmetry_assumed": true,
+        "randomization_seed": 2026091503,
+        "randomization_reps": 5000,
+        "minimum_seeds": 6,
+        "id": "RQ4",
+        "stage": "VLM",
+        "scope": "COMMON_R_LESS_K_ORIGINS",
+        "left": {
+          "kind": "MODEL_RULE",
+          "estimator": "PRESERVE_XI",
+          "selector": "BLOCK_PIVOT_QR",
+          "n": 1024,
+          "m": 8,
+          "alpha": 1e-05,
+          "design_seed": 2026091500,
+          "regression": "RIDGE",
+          "output_policy": "RAW4",
+          "method": "RESPONSE_SVD",
+          "rank_cap": 2
+        },
+        "right": {
+          "kind": "MODEL_RULE",
+          "estimator": "PRESERVE_XI",
+          "selector": "BLOCK_PIVOT_QR",
+          "n": 1024,
+          "m": 8,
+          "alpha": 1e-05,
+          "design_seed": 2026091500,
+          "regression": "RIDGE",
+          "output_policy": "RAW4",
+          "method": "FULL_RIDGE",
+          "rank_cap": "FULL"
+        },
+        "primary_arm": "X_BASE",
+        "primary_anchors": [
+          32,
+          96
+        ],
+        "shift_arm": "X_VALID",
+        "shift_anchors": [
+          96
+        ],
+        "reference": "SHARED_INDEPENDENT_PRECISION_RESOLVED",
+        "binding_policy": "VLM_DEVELOPMENT_ONLY_NO_RELATION_CHANGE"
+      }
+    ]
+  }
+}

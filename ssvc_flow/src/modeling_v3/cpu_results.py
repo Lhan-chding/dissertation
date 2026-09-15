@@ -634,6 +634,231 @@ def _formal_tests(lock, paired, config):
     return {"status": "FOUR_FROZEN_TESTS_EXECUTED", "holm_applied": True, "tests": results}
 
 
+def _frozen_primary_comparisons(config, lock, data, *, fixture=False):
+    """Re-read only declared endpoint originals; select rank scope before losses."""
+    from .frozen_comparisons import (
+        paired_seed_inference,
+        summarize_primary_family,
+        validate_primary_comparison_family,
+    )
+
+    family = validate_primary_comparison_family(config, lock["selected"])
+    if family is None:
+        return None
+    indexed = {
+        did: {_unit_key(r["row"]): r for r in records} for did, records in data["records"].items()
+    }
+    unit_keys = sorted(data["units"])
+    results = []
+    groups = np.asarray(data["groups"])
+    group_ids = sorted(set(groups.tolist()))
+
+    def endpoint(spec, key):
+        if spec["kind"] == "MODEL":
+            record = indexed[spec["design_id"]][key]
+            with np.load(record["prediction_path"], allow_pickle=False) as a:
+                arrays = {
+                    name: a[name].copy()
+                    for name in a.files
+                    if name in {"prediction", "Q", "directions", "query_e", "selected_bank_indices"}
+                }
+            return arrays["prediction"], arrays, record
+        record = data["units"][key]
+        with np.load(
+            record["unit"] / f"direct_n{spec['n']}" / "estimates.npz", allow_pickle=False
+        ) as a:
+            base = a[spec["estimator"]].copy()
+        pred = np.stack((base[:, 0], base[:, 1], base[:, 0] - base[:, 1]), axis=1).reshape(
+            -1, len(groups), 4
+        )
+        return pred, None, record
+
+    for spec in family["hypotheses"][:3]:
+        per_seed = {
+            seed: {
+                "seed": seed,
+                "left_loss_sum": 0.0,
+                "right_loss_sum": 0.0,
+                "count": 0,
+                "eligible_origin_count": 0,
+                "total_origin_count": 0,
+                "eligible_measurement_units": 0,
+                "total_measurement_units": 0,
+                "status": "OBSERVED",
+                "channel_totals": {
+                    c: {"left_loss_sum": 0.0, "right_loss_sum": 0.0, "count": 0}
+                    for c in spec["channels"]
+                },
+            }
+            for seed in data["seeds"]
+        }
+        all_origins, eligible_origins = defaultdict(set), defaultdict(set)
+        rank_audit = []
+        for key in unit_keys:
+            row = per_seed[key[0]]
+            row["total_measurement_units"] += 1
+            all_origins[key[0]].add((key[1], key[2], key[4]))
+            lp, la, lr = endpoint(spec["left"], key)
+            rp, ra, rr = endpoint(spec["right"], key)
+            eligible = True
+            if spec["scope"] == "COMMON_R_LESS_K_ORIGINS":
+                for arrays, record in [(la, lr), (ra, rr)]:
+                    meta = record["row"]
+                    k, r = meta["k"], meta["r"]
+                    if (
+                        set(arrays)
+                        != {"prediction", "Q", "directions", "query_e", "selected_bank_indices"}
+                        or arrays["Q"].ndim != 2
+                        or arrays["Q"].shape[1] != k
+                        or arrays["directions"].shape != (arrays["Q"].shape[0], r)
+                        or not np.isfinite(arrays["Q"]).all()
+                        or not np.isfinite(arrays["directions"]).all()
+                    ):
+                        raise ValueError("Original dimension/geometry arrays are incomplete")
+                    cap = meta["design"]["rank_cap"]
+                    eligible &= 0 < r < k if cap != "FULL" else r == k and k > 0
+                if lr["row"]["k"] != rr["row"]["k"] or any(
+                    not np.array_equal(la[name], ra[name])
+                    for name in ["Q", "query_e", "selected_bank_indices"]
+                ):
+                    raise ValueError(
+                        "RQ3 requires identical calibration geometry, query and bank originals"
+                    )
+                rank_audit.append(
+                    {
+                        "unit_key": list(key),
+                        "left_r": lr["row"]["r"],
+                        "right_r": rr["row"]["r"],
+                        "k": lr["row"]["k"],
+                        "included": bool(eligible),
+                    }
+                )
+            if not eligible:
+                continue
+            row["eligible_measurement_units"] += 1
+            eligible_origins[key[0]].add((key[1], key[2], key[4]))
+            # The rank inclusion decision above uses no reference or residual.
+            if lr["truth_path"] != rr["truth_path"]:
+                raise ValueError("Paired comparison must use the same original reference")
+            with np.load(lr["truth_path"], allow_pickle=False) as a:
+                truth = a["truth"].copy()
+            if (
+                lp.shape != truth.shape
+                or rp.shape != truth.shape
+                or truth.shape[1:] != (len(groups), 4)
+            ):
+                raise ValueError("Paired prediction/reference axes do not align")
+            target = spec["target_index"]
+            left = lp[target::3]
+            right = rp[target::3]
+            reference = truth[target::3]
+            finite = (
+                np.isfinite(left).all()
+                and np.isfinite(right).all()
+                and np.isfinite(reference).all()
+            )
+            if not finite:
+                row["status"] = "UNKNOWN_REQUIRED_PREDICTION_OR_REFERENCE"
+            for channel, index, sign in [("group_pX", 0, 1), ("group_v", 3, -1)]:
+                left_group_error = np.stack(
+                    [
+                        sign
+                        * (left[:, groups == g, index] - reference[:, groups == g, index]).mean(
+                            axis=1
+                        )
+                        for g in group_ids
+                    ],
+                    axis=1,
+                )
+                right_group_error = np.stack(
+                    [
+                        sign
+                        * (right[:, groups == g, index] - reference[:, groups == g, index]).mean(
+                            axis=1
+                        )
+                        for g in group_ids
+                    ],
+                    axis=1,
+                )
+                values = row["channel_totals"][channel]
+                values["count"] += left_group_error.size
+                if finite:
+                    values["left_loss_sum"] += float(np.sum(left_group_error**2))
+                    values["right_loss_sum"] += float(np.sum(right_group_error**2))
+        for seed, row in per_seed.items():
+            row["total_origin_count"] = len(all_origins[seed])
+            row["eligible_origin_count"] = len(eligible_origins[seed])
+            row["left_loss_sum"] = sum(v["left_loss_sum"] for v in row["channel_totals"].values())
+            row["right_loss_sum"] = sum(v["right_loss_sum"] for v in row["channel_totals"].values())
+            row["count"] = sum(v["count"] for v in row["channel_totals"].values())
+        result = paired_seed_inference(
+            spec,
+            [per_seed[s] for s in sorted(per_seed)],
+            bootstrap_seed=config["statistics"]["bootstrap_seed"],
+        )
+        result.update(
+            source_role="locked_test",
+            original_bindings=data["originals"],
+            selection_hash=lock["selection_hash"],
+            accepted_mask_used=False,
+            eligibility_selected_before_reference=True,
+            origin_definition=(
+                "seed/arm/anchor/initialization; observation repeats retained within each origin"
+            ),
+            rank_audit=rank_audit,
+        )
+        results.append(result)
+    return {
+        "family": family,
+        "results": results,
+        "summary": summarize_primary_family(family, results),
+    }
+
+
+def verify_cpu_primary_comparisons(config, selection_lock, analysis_report, *, fixture=False):
+    """Verify complete analysis originals and recompute only frozen CPU RQ pairs."""
+    _server(fixture)
+    lock = verify_selection_lock(config, selection_lock)
+    if isinstance(analysis_report, dict):
+        if set(analysis_report) != {"path", "sha256"}:
+            raise ValueError(
+                "Actual analysis path/hash binding required, not hand-written p-values"
+            )
+        path = Path(analysis_report["path"])
+        if sha256_file(path) != analysis_report["sha256"]:
+            raise ValueError("CPU primary analysis binding hash mismatch")
+    else:
+        path = Path(analysis_report)
+    verify_manifest(path.parent)
+    report = json.loads(path.read_text())
+    expected_status = (
+        "TEST_FIXTURE_NOT_AUTHORIZATION" if fixture else "LOCKED_TEST_ANALYZED_NOT_ONLINE_CERTIFIED"
+    )
+    if (
+        report.get("schema") != "ssvc-v3-cpu-test-analysis-1"
+        or report.get("stage") != "Q3_LOCKED_TEST_ANALYSIS"
+        or report.get("fixture") is not bool(fixture)
+        or report.get("status") != expected_status
+        or report.get("config_sha256") != canonical_hash(config)
+        or report.get("selection_hash") != lock["selection_hash"]
+        or report.get("source_sha256") != source_identity()["sha256"]
+    ):
+        raise ValueError("CPU primary analysis role/source/config/selection identity mismatch")
+    originals = report.get("source_manifest_hashes", {})
+    if not originals:
+        raise ValueError("Complete CPU response original bindings required")
+    for name, digest in originals.items():
+        if Path(name).name != "COMPLETE.json" or sha256_file(name) != digest:
+            raise ValueError("CPU primary response original manifest hash mismatch")
+    data = _collect(config, lock, [Path(name).parent for name in originals], "locked_test", fixture)
+    if report.get("test_seeds") != data["seeds"] or report.get("unit_matrix") != data["matrix"]:
+        raise ValueError("CPU primary test seed/matrix identity mismatch")
+    expected = _frozen_primary_comparisons(config, lock, data, fixture=fixture)
+    if expected is None or expected != report.get("primary_comparison_family"):
+        raise ValueError("CPU primary statistics differ from original frozen comparisons")
+    return expected
+
+
 def analyze_test(
     config, selection_lock, response_roots, out, *, calibration_receipt, fixture=False
 ):
@@ -777,7 +1002,8 @@ def analyze_test(
     metrics.extend(rows)
     seed_metrics.extend(seed_rows)
     paired = _paired_comparisons(data, seed_metrics, config)
-    formal = _formal_tests(lock, paired, config)
+    primary_family = _frozen_primary_comparisons(config, lock, data, fixture=fixture)
+    formal = primary_family["summary"] if primary_family else _formal_tests(lock, paired, config)
     report = {
         "schema": "ssvc-v3-cpu-test-analysis-1",
         "stage": "Q3_LOCKED_TEST_ANALYSIS",
@@ -796,6 +1022,7 @@ def analyze_test(
         "metrics": metrics,
         "paired_comparisons": paired,
         "formal_tests": formal,
+        "primary_comparison_family": primary_family,
         "interval_coverage": interval_coverage,
         "risk_coverage_curves": risk_curves,
         "rank_cells": {

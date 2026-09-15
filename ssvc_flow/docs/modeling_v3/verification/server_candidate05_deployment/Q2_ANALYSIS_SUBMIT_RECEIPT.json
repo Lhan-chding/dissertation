@@ -1,0 +1,18 @@
+{
+  "command": [
+    "sbatch",
+    "--parsable",
+    "--account=rose",
+    "--time=1-00:00:00",
+    "--job-name=ssvc-v3-q2_analysis",
+    "--output=/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate05/Q2_ANALYSIS-%j.out",
+    "--error=/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate05/Q2_ANALYSIS-%j.err",
+    "--export=ALL,SSVC_V3_CHECKOUT=/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate05/checkout,SSVC_V3_PYTHON=/projects/varunssd/louis-ssvc/envs/ssvc-py312/bin/python,SSVC_V3_OUTPUT=/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate05/Q2_analysis_full,SSVC_V3_STAGE=request,SSVC_TEST_PARENT_ROOT=/projects/varunssd/louis-ssvc/modeling_contrast_v2_20260915/parent_M2,SSVC_V3_REQUEST=/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate05/Q2_ANALYSIS_REQUEST.json,SSVC_V3_REQUEST_SHA256=5b53fcd8d58ea13234133ffb60bd2880a8e4ec18ef70a00917fc84e5023a2f93",
+    "--qos=soujanya-poria-startfund-2026-03",
+    "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate05/checkout/ssvc_flow/scripts/modeling_v3_cpu.sbatch"
+  ],
+  "returncode": 0,
+  "stdout": "155896\n",
+  "stderr": "",
+  "job_id": "155896"
+}

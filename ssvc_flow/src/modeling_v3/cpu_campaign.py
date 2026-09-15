@@ -101,6 +101,7 @@ def _sources():
                 "historical_observation.py",
                 "statistics.py",
                 "cpu_results.py",
+                "frozen_comparisons.py",
             )
         ),
         root / "src/__init__.py",

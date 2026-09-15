@@ -1,0 +1,176 @@
+{
+  "source_retrieval": {
+    "scope": "EXPLICIT_RECEIPTS_NOT_FULL_REPLAY_BUNDLE",
+    "archive_sha256": "44cd1aed151abad671793f126ad5622b54d1920befca73a7128165bc3d995bb8",
+    "archive_bytes": 5336604,
+    "files": {
+      "candidate04/Q1_observation_full/BINDING.json": "a7c15bf571df96f20e5422d4776751e4d3eb30ac9bfc14684b4f60a025ffab69",
+      "candidate04/Q1_observation_full/OBSERVATION_SUMMARY.json": "81ba6694968f07f15270d1f74aa9245a8305d56300cc46395376775f06b39fff",
+      "candidate04/Q1_observation_full/COMPLETE.json": "b55609698216b9c4d0ec9b6babb28d1f10e17f1fde1d8e86c8e1fb42f3f16f69",
+      "candidate04/Q1-full-155812.err": "e611f21e3533eb9c35bc01d8ec4f511bd978962e6616da075d7e60500e12c540",
+      "candidate04/Q1_FULL_SUBMIT_RECEIPT.json": "64ed16d7f084d752ae157992be16c849e12503b5f00bebbfc1ce27320dadf296",
+      "candidate05/DEPLOYMENT_RECEIPT.json": "0b2698f608ce4c109e04e75c4d58be384e12af4580bdada6efc49f165c84fbb8",
+      "candidate05/TEST_DATA_VIEW.json": "54265450c589bc024ac588099081a9d1608006894637d6dc11ca2c10ad54b26a",
+      "candidate05/SNAPSHOT_GIT_RECEIPT.json": "f7d0ed778080d7d07aaf9b207830bfbba3dc1fa7441e01cab0cd7ed398726d8b",
+      "candidate05/CPU_TEST_SUBMIT_RECEIPT.json": "54b28b6f1e6c0a121f0d81257719fb2bebe08b4f49200f807448d3657092e777",
+      "candidate05/Q2_ANALYSIS_SUBMIT_RECEIPT.json": "9aa90e4acb4aa45a8392efa9dec933b5b1aee139f185d0b60c14a4913e384803",
+      "candidate05/Q1_ANALYSIS_SUBMIT_RECEIPT.json": "186c7d2ccc6cd41bffadbb5a2491b6f73c82522919cd21ca2c3e0775a13bbe26",
+      "candidate05/ANALYSIS_RESERVATION_UPDATE.json": "020e4268149648e75c0742beec00247cc96b3122624a601f08cd5d80fda8c535"
+    },
+    "verified": true
+  },
+  "summary": {
+    "analytic_witnesses": {
+      "cases": [
+        {
+          "calibration_excitation_case": false,
+          "case": "IDENTICAL_POLICY",
+          "provenance": "ANALYTIC_WITNESS_NOT_SOURCE_TRAJECTORY",
+          "records": [
+            {
+              "draws": 64,
+              "exact_expectation_residual": 0.0,
+              "proposal": "origin"
+            },
+            {
+              "draws": 64,
+              "exact_expectation_residual": 0.0,
+              "proposal": "equal_pair_mixture"
+            }
+          ],
+          "source_training_steps": 0
+        },
+        {
+          "calibration_excitation_case": false,
+          "case": "TINY_CONTRAST",
+          "provenance": "ANALYTIC_WITNESS_NOT_SOURCE_TRAJECTORY",
+          "records": [
+            {
+              "draws": 64,
+              "exact_expectation_residual": 0.0,
+              "proposal": "origin"
+            },
+            {
+              "draws": 64,
+              "exact_expectation_residual": 0.0,
+              "proposal": "equal_pair_mixture"
+            }
+          ],
+          "source_training_steps": 0
+        },
+        {
+          "calibration_excitation_case": false,
+          "case": "RARE_X",
+          "provenance": "ANALYTIC_WITNESS_NOT_SOURCE_TRAJECTORY",
+          "records": [
+            {
+              "draws": 64,
+              "exact_expectation_residual": 0.0,
+              "proposal": "origin"
+            },
+            {
+              "draws": 64,
+              "exact_expectation_residual": 0.0,
+              "proposal": "equal_pair_mixture"
+            }
+          ],
+          "source_training_steps": 0
+        },
+        {
+          "calibration_excitation_case": false,
+          "case": "STRUCTURALLY_EMPTY_S",
+          "provenance": "ANALYTIC_WITNESS_NOT_SOURCE_TRAJECTORY",
+          "records": [
+            {
+              "draws": 64,
+              "exact_expectation_residual": 0.0,
+              "proposal": "origin"
+            },
+            {
+              "draws": 64,
+              "exact_expectation_residual": 0.0,
+              "proposal": "equal_pair_mixture"
+            }
+          ],
+          "source_training_steps": 0
+        },
+        {
+          "calibration_excitation_case": false,
+          "case": "ALL_VALID",
+          "provenance": "ANALYTIC_WITNESS_NOT_SOURCE_TRAJECTORY",
+          "records": [
+            {
+              "draws": 64,
+              "exact_expectation_residual": 0.0,
+              "proposal": "origin"
+            },
+            {
+              "draws": 64,
+              "exact_expectation_residual": 0.0,
+              "proposal": "equal_pair_mixture"
+            }
+          ],
+          "source_training_steps": 0
+        },
+        {
+          "calibration_excitation_case": true,
+          "case": "NO_CALIBRATION_EXCITATION",
+          "provenance": "ANALYTIC_WITNESS_NOT_SOURCE_TRAJECTORY",
+          "records": [
+            {
+              "draws": 64,
+              "exact_expectation_residual": 0.0,
+              "proposal": "origin"
+            },
+            {
+              "draws": 64,
+              "exact_expectation_residual": 0.0,
+              "proposal": "equal_pair_mixture"
+            }
+          ],
+          "source_training_steps": 0
+        },
+        {
+          "calibration_excitation_case": false,
+          "case": "THREE_REWARD_LEVELS",
+          "provenance": "ANALYTIC_WITNESS_NOT_SOURCE_TRAJECTORY",
+          "records": [
+            {
+              "draws": 64,
+              "exact_expectation_residual": 0.0,
+              "proposal": "origin"
+            },
+            {
+              "draws": 64,
+              "exact_expectation_residual": 0.0,
+              "proposal": "equal_pair_mixture"
+            }
+          ],
+          "source_training_steps": 0
+        }
+      ],
+      "one_sampled_packet_per_case_proposal": true,
+      "scientific_confirmation": false,
+      "status": "ANALYTIC_BOUNDARY_CHECKS_EXECUTED"
+    },
+    "case_coverage_limit": "analytic witness results are separate from actual source-trajectory policy pairs",
+    "covariance_shrinkage_grid": [
+      0.0,
+      0.1,
+      0.5,
+      1.0
+    ],
+    "grid_comparison": "same independent pilot/main packet; no extra generation or scoring",
+    "named_primary_shrinkage": 0.1,
+    "pilot": false,
+    "policy_pair_selection": "identity hash only; explicit identical-policy controls",
+    "repeat_count_per_unit": 200,
+    "scientific_status": "DEVELOPMENT_ONLY",
+    "stage": "Q1",
+    "status": "OBSERVED",
+    "unit_count": 192,
+    "wall_seconds": 5747.509761155001
+  },
+  "original_root": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q1_observation_full",
+  "not_full_replay_bundle": true
+}

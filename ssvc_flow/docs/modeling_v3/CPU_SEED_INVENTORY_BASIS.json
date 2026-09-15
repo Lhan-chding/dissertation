@@ -1,0 +1,95 @@
+{
+  "schema": "ssvc-v3-cpu-seed-inventory-basis-1",
+  "mode": "READ_ONLY_SERVER_MANIFEST_IDENTITY_AND_PATHS",
+  "roots": [
+    {
+      "root": "/projects/varunssd/louis-ssvc/modeling_contrast_v2_20260915/parent_M2",
+      "identity_file": "manifest.json",
+      "sha256": "7a226ea43f8bbe2e5cef6f10a9ea4fc11f7ac788121a542044bb9414ad56f8cf",
+      "trajectory_count": 60,
+      "seeds": [
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        201,
+        202,
+        203,
+        204,
+        251,
+        252,
+        253,
+        254,
+        255,
+        256,
+        257,
+        258,
+        259,
+        260,
+        301,
+        302,
+        303,
+        304,
+        305,
+        306,
+        307,
+        308,
+        309,
+        310
+      ]
+    },
+    {
+      "root": "/projects/varunssd/louis-ssvc/modeling_contrast_v2_20260915/checkout/ssvc_flow/runs/modeling_contrast_v2/N4/raw",
+      "identity_file": "manifest.json",
+      "sha256": "cc48ae9238cd00d732772bd4755a5c59e1f0b77a815f7c9c40e91bf81a4dccc1",
+      "trajectory_count": 32,
+      "seeds": [
+        501,
+        502,
+        503,
+        504,
+        505,
+        506,
+        601,
+        602,
+        603,
+        604,
+        605,
+        606,
+        607,
+        608,
+        609,
+        610
+      ]
+    },
+    {
+      "root": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_development_collection",
+      "identity_file": "COLLECTION_SUMMARY.json",
+      "sha256": "d3c678b49cdde1a05013b7e4ee95e0ccb858c048186df06648d452bc0b80b90e",
+      "trajectory_count": 4,
+      "seeds": [
+        101,
+        201
+      ]
+    },
+    {
+      "root": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/pilot01/collection",
+      "identity_file": "COLLECTION_SUMMARY.json",
+      "sha256": "df8f17c71ac563d277fb9f3242d5109dff2c06d1ce52f8ff9016838e3ea2a58c",
+      "trajectory_count": 1,
+      "seeds": [
+        1999001
+      ]
+    }
+  ],
+  "actual_collection_identities": 97,
+  "distinct_seeds": 47,
+  "response_arrays_opened": false,
+  "sealed_confirm_opened": false,
+  "q3_must_rescan_before_each_new_collection": true,
+  "exclude": "CPU acceptance fixtures are engineering data; do not scan entire deployment or qualification roots",
+  "append_future_real_q3_root": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate05/Q3_campaign",
+  "historical_Q1": "12 views / 11 original trajectories; source_updates=0; all training seeds already covered by N4"
+}

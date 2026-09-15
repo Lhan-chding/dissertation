@@ -1,0 +1,59 @@
+{
+  "schema": "ssvc-v3-cpu-acceptance-index-1",
+  "status": "CANDIDATE05_PASS_NEW_STATISTICAL_PATCH_REQUIRES_CANDIDATE06_ACCEPTANCE",
+  "latest_server_job": "155895",
+  "latest_server_result": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate05/CPU_acceptance_01/result.json",
+  "implementation_commit": "00c095d4140e790b3a902d4975492b77643be761",
+  "latest_local_small_engineering": {
+    "passed": 418,
+    "pytest_seconds": 37.29,
+    "wall_seconds": 38.77656602859497,
+    "source_and_tests_unchanged": true,
+    "receipt": "verification/local_20260916_candidate06_final/receipt.json",
+    "scientific_status": "NOT_EVALUATED"
+  },
+  "historical_server_attempts": [
+    {
+      "job_id": "155776",
+      "outcome": "COLLECTION_FAILED",
+      "reason": "Duplicate test module basenames",
+      "preserved": true
+    },
+    {
+      "job_id": "155797",
+      "passed": 1837,
+      "failed": 4,
+      "errors": 0,
+      "skipped": 2,
+      "deselected": 1,
+      "reason": "Deployment snapshot lacked real Git objects",
+      "receipt": "verification/server_CPU_155797/CPU_acceptance_01/result.json"
+    },
+    {
+      "job_id": "155873",
+      "passed": 12,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "scope": "Only previously failing legacy module; same code with actual snapshot Git commit",
+      "receipt": "verification/server_gitcontrol_155873/result.json"
+    }
+  ],
+  "explicit_deselection": {
+    "test": "tests/test_audit_r0_remaining.py::test_cross_split_passes_generated_dataset",
+    "reason": "Reads sealed confirm dataset; preserved access boundary",
+    "status": "NOT_RUN"
+  },
+  "raw_failure_logs_preserved_byte_exact": true,
+  "archived_raw_logs_may_contain_original_trailing_whitespace": true,
+  "code_diff_whitespace_check": "PASS_EXCLUDING_BYTE_EXACT_ARCHIVED_LOGS",
+  "online_ssvc": "NOT_CERTIFIED",
+  "latest_server_counts": {
+    "passed": 2012,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "latest_server_slurm_wall_seconds": 2142,
+  "latest_server_receipt": "verification/server_CPU_155895/result.json"
+}

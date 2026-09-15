@@ -216,6 +216,47 @@ def test_probe_group_metadata_rejects_different_or_changed_original(tmp_path):
         r._probe_group_metadata({"tasks": [{"prompt_file": bound}]}, ["p"])
 
 
+def test_vlm_rq4_binding_keeps_cpu_family_and_fixed_natural_designs():
+    from test_frozen_comparisons import frozen_fixture
+
+    config, parent = frozen_fixture()
+    family = parent["primary_comparison_family"]
+    shared = {
+        "alpha": 1e-5,
+        "output_policy": "RAW4",
+        "regression": "RIDGE",
+        "observation_method": "PRESERVE_XI",
+        "selector": "BLOCK_PIVOT_QR",
+        "n_banks": 8,
+        "selection_seed": 2026091500,
+    }
+    designs = [
+        {**shared, "design_id": "response-r2", "method": "RESPONSE_SVD", "rank_cap": 2},
+        {**shared, "design_id": "full", "method": "FULL_RIDGE", "rank_cap": "FULL"},
+    ]
+    before = copy.deepcopy(family)
+    result = r.bind_vlm_primary_comparison(config, family, designs)
+    assert family == before
+    assert result["status"] == "BOUND"
+    assert result["family_hash"] == canonical_hash(family)
+    assert result["resolved_design_ids"] == {"left": "response-r2", "right": "full"}
+    assert result["spec_hash"] == canonical_hash(family["hypotheses"][3])
+    designs[0]["observation_method"] = "PILOT_SHRINK_ZERO_SUM"
+    unavailable = r.bind_vlm_primary_comparison(config, family, designs)
+    assert unavailable["status"] == "UNAVAILABLE"
+    assert unavailable["resolved_design_ids"] is None
+
+
+def test_vlm_rq4_binding_cannot_rewrite_parent_template():
+    from test_frozen_comparisons import frozen_fixture
+
+    config, parent = frozen_fixture()
+    family = parent["primary_comparison_family"]
+    family["hypotheses"][3]["left"]["rank_cap"] = 1
+    with pytest.raises(ValueError, match="RQ4"):
+        r.bind_vlm_primary_comparison(config, family, [])
+
+
 def selection_fixture(tmp_path):
     config = json.loads(Path("configs/modeling_v3/protocol.json").read_text())
     identity = r._identity(config)

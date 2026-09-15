@@ -1,0 +1,18 @@
+{
+  "scope": "EXPLICIT_RECEIPTS_NOT_FULL_REPLAY_BUNDLE",
+  "archive_sha256": "1adf387c4c6f76d9bc82f96f78646a991576eb15464f45bd3db85e25e25922b7",
+  "archive_bytes": 179278,
+  "files": {
+    "candidate05/Q1_analysis_full/Q1_POOLED_ERRORS.csv": "e296bb860a91aaf7587ce6d20a52896a3597dd3f32b05f52ac9b35c7c50bca22",
+    "candidate05/Q1_analysis_full/RUN_MANIFEST.json": "66be092e43f94f8aff625236b1fca585bade268ab63feaaecb349896a4b34ee0",
+    "candidate05/Q1_analysis_full/BINDING.json": "6b803d8f7eb5058e03b673bc98650a3103a6744ee6a9b7be91e8fb2a4538dbda",
+    "candidate05/Q1_analysis_full/Q1_ANALYSIS_zh.md": "d61b34e044ca1b2a399671b9bf22eeba595e5cb7451ce888f4a03db47828989a",
+    "candidate05/Q1_analysis_full/MISSING_INPUTS.json": "bbc1699e2aaca87df162531060124e32bcd8ef240fd96d867c2a01e20b6ce7cb",
+    "candidate05/Q1_analysis_full/COMPLETE.json": "7784b1e994688f36819ef90940cd6d76cba4fa6dee0c8a1eed677d3deb1033b2",
+    "candidate05/Q1_analysis_full/Q1_ANALYSIS.json": "2eab88c72f3d3de593828a2802c67e8198ddee53bf0234cb8e10ce332fdd3b4a",
+    "candidate05/Q1_ANALYSIS-155899.err": "d53b72687d193e070cb113c434d7017668b7ad4137135988f4968e7fc1ca2389",
+    "candidate05/Q1_ANALYSIS-155899.out": "83198511241f7da00f82ba2fbb3e93635be00e18fcf5fd74d6413e56efae8592",
+    "candidate05/Q1_ANALYSIS_SUBMIT_RECEIPT.json": "186c7d2ccc6cd41bffadbb5a2491b6f73c82522919cd21ca2c3e0775a13bbe26"
+  },
+  "verified": true
+}

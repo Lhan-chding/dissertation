@@ -1,0 +1,15 @@
+{
+  "scope": "EXPLICIT_RECEIPTS_NOT_FULL_REPLAY_BUNDLE",
+  "archive_sha256": "0ca9a3204430c4cf014802d365033e3d6249a58c984bec50f0cbda4fe105fbab",
+  "archive_bytes": 71283,
+  "files": {
+    "candidate05/CPU_acceptance_01/result.json": "c0afa1d57035d0e141994f81aeab214ff1352b8b249e80c03c7826489037293b",
+    "candidate05/CPU_acceptance_01/invocation.json": "73d86c35780961201dba2062243e959a0435da73888bfcc4dbd72a46d1a9bfc2",
+    "candidate05/CPU_acceptance_01/junit.xml": "8133cc923f7d82b917760da0c15fd317fcc8829d99a9d5dd703ebf829d312960",
+    "candidate05/CPU_acceptance_01/pytest.log": "c668c58002b89278e9ccc0fe72dce546b4bf97741f11859c67bf4c7b11b87cc3",
+    "candidate05/CPU_TEST-155895.err": "18084440d700a5bb8ab8995b5b6c8e483d8498758281842edf8a5be8ee4c7dc6",
+    "candidate05/CPU_TEST-155895.out": "7fbdb92da60a13e6a2f149cb9e095b0c23f50c814d2b9eea2c9d2dd705a54d02",
+    "candidate05/CPU_TEST_SUBMIT_RECEIPT.json": "54b28b6f1e6c0a121f0d81257719fb2bebe08b4f49200f807448d3657092e777"
+  },
+  "verified": true
+}

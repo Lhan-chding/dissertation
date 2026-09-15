@@ -1031,6 +1031,190 @@ def _empirical_interval_coverage(designs, calibration):
         }
 
 
+def _rq4_group_errors(left, right):
+    """Paired group-pX/v loss, retaining unresolved cells and original groups."""
+    from .vlm_response import _probe_group_metadata
+
+    for key in ("query_units", "probe_ids"):
+        if left["spec"][key] != right["spec"][key]:
+            raise ValueError("RQ4 pair changed its common query or probe identity")
+    for key in ("reference_estimate_unmasked", "reference_variance"):
+        if not np.array_equal(left["arrays"][key], right["arrays"][key], equal_nan=True):
+            raise ValueError("RQ4 requires the identical shared independent reference")
+    grouping = left["fit"].get("probe_grouping")
+    if not grouping or grouping != right["fit"].get("probe_grouping"):
+        raise ValueError("RQ4 requires the same original frozen probe group metadata")
+    groups, mapping, original = _probe_group_metadata(
+        {"tasks": [{"prompt_file": grouping["prompt_file"]}]}, left["spec"]["probe_ids"]
+    )
+    if original != grouping or any(
+        row["fit"].get("probe_groups") != groups for row in (left, right)
+    ):
+        raise ValueError("RQ4 probe group metadata differs from its frozen original")
+    take = np.array([u["contrast_id"] == TARGETS[0] for u in left["spec"]["query_units"]])
+    if not take.any():
+        raise ValueError("RQ4 needs its predeclared joint_1_minus_joint_0 target")
+    reference = left["arrays"]["reference_estimate_unmasked"][take]
+    predictions = [row["arrays"]["predictions"][take] for row in (left, right)]
+    if not all(np.isfinite(value).all() for value in [reference, *predictions]) or any(
+        not np.isfinite(row["reference_half_width"][take]).all() for row in (left, right)
+    ):
+        return None
+    grouped_reference = reference.reshape(len(reference), -1) @ mapping.T
+    grouped_predictions = [p.reshape(len(p), -1) @ mapping.T for p in predictions]
+    channels = {}
+    for index, channel in enumerate(("group_pX", "group_v")):
+        losses = [
+            (p[:, index::2] - grouped_reference[:, index::2]) ** 2 for p in grouped_predictions
+        ]
+        channels[channel] = {
+            "left_loss_sum": float(losses[0].sum()),
+            "right_loss_sum": float(losses[1].sum()),
+            "count": int(losses[0].size),
+        }
+    return {
+        "channels": channels,
+        "raw4": {
+            "left_loss_sum": float(np.sum((predictions[0] - reference) ** 2)),
+            "right_loss_sum": float(np.sum((predictions[1] - reference) ** 2)),
+            "count": int(reference.size),
+        },
+        "groups": len(mapping) // 2,
+        "banks": int(take.sum()),
+        "reference_is_exact_truth": False,
+    }
+
+
+def _vlm_primary_family(config, lock, records):
+    from .frozen_comparisons import paired_seed_inference, summarize_primary_family
+    from .vlm_response import bind_vlm_primary_comparison
+
+    family = lock.get("primary_comparison_family")
+    if family is None:
+        return {
+            "family": None,
+            "results": [],
+            "summary": {"status": "UNAVAILABLE_NO_FROZEN_PARENT_FAMILY", "holm_applied": False},
+        }
+    binding = bind_vlm_primary_comparison(config, family, lock["selected"]["designs"])
+    if binding != lock.get("primary_comparison_binding"):
+        raise ValueError("RQ4 comparison differs from its development-frozen design binding")
+    spec = family["hypotheses"][3]
+    seeds = sorted(config["qwen"]["seed_roles"]["locked_test"])
+    if len(seeds) != 6 or len(set(seeds)) != 6:
+        raise ValueError("RQ4 requires all six prescribed independent training seeds")
+    totals = [
+        {
+            "seed": seed,
+            "status": "OBSERVED",
+            "eligible_origin_count": 0,
+            "total_origin_count": len(spec["primary_anchors"]),
+            "channel_totals": {
+                channel: {"left_loss_sum": 0.0, "right_loss_sum": 0.0, "count": 0}
+                for channel in spec["channels"]
+            },
+        }
+        for seed in seeds
+    ]
+    by_seed = {row["seed"]: row for row in totals}
+    originals, excluded, raw4 = [], [], {}
+    if binding["status"] == "BOUND":
+        names = binding["resolved_design_ids"]
+        paired = {}
+        for row in records:
+            if (
+                row["design"]["design_id"] not in names.values()
+                or row["arm"] != spec["primary_arm"]
+            ):
+                continue
+            key = (row["design"]["design_id"], row["seed"], row["step"])
+            if key in paired:
+                raise ValueError("Duplicate origin/design in the RQ4 paired comparison")
+            paired[key] = row
+        for seed in seeds:
+            total = by_seed[seed]
+            raw4[str(seed)] = {"left_loss_sum": 0.0, "right_loss_sum": 0.0, "count": 0}
+            for step in spec["primary_anchors"]:
+                rows = [paired.get((names[side], seed, step)) for side in ("left", "right")]
+                origin_id = f"{seed}_{spec['primary_arm']}_{step}"
+                if any(row is None for row in rows):
+                    total["status"] = "UNKNOWN_MISSING_ORIGIN_PAIR"
+                    excluded.append({"origin_id": origin_id, "reason": total["status"]})
+                    continue
+                left, right = rows
+                if any(row["spec"].get("role") != "locked_test" for row in rows):
+                    raise ValueError("RQ4 may only consume the independent locked-test role")
+                if (
+                    any(
+                        left["fit"].get(key) != right["fit"].get(key)
+                        for key in ("calibration_units", "vector_identity")
+                    )
+                    or left["k"] != right["k"]
+                ):
+                    raise ValueError(
+                        "RQ4 requires the same actual calibration bank/vector geometry"
+                    )
+                if left["r"] != min(spec["left"]["rank_cap"], left["k"]):
+                    raise ValueError("RQ4 actual response rank differs from the frozen rank cap")
+                for row in rows:
+                    originals.extend(
+                        row[key]
+                        for key in (
+                            "input_binding",
+                            "receipt_binding",
+                            "fit_binding",
+                            "model_binding",
+                        )
+                    )
+                losses = _rq4_group_errors(left, right)
+                if losses is None:
+                    # Even a reference-unresolved origin outside the geometric
+                    # subset remains visible; no uncertainty-driven filtering.
+                    total["status"] = "UNKNOWN_REFERENCE_OR_PREDICTION_UNRESOLVED"
+                eligible = 0 < left["r"] < left["k"] and right["r"] == right["k"]
+                if not eligible:
+                    excluded.append({"origin_id": origin_id, "reason": "NOT_ACTUAL_R_LESS_K"})
+                    continue
+                total["eligible_origin_count"] += 1
+                if losses is None:
+                    continue
+                for channel in spec["channels"]:
+                    for key in ("left_loss_sum", "right_loss_sum", "count"):
+                        total["channel_totals"][channel][key] += losses["channels"][channel][key]
+                for key in ("left_loss_sum", "right_loss_sum", "count"):
+                    raw4[str(seed)][key] += losses["raw4"][key]
+    else:
+        for row in totals:
+            row["status"] = "UNAVAILABLE_PREDECLARED_DESIGN"
+    result = paired_seed_inference(
+        spec, totals, bootstrap_seed=config["statistics"]["bootstrap_seed"]
+    )
+    if binding["status"] != "BOUND":
+        result.update(status="UNAVAILABLE", unavailable_reason=binding["reason"])
+    result.update(
+        source_role="locked_test",
+        resolved_design_ids=binding["resolved_design_ids"],
+        resolved_spec_hash=binding["resolved_spec_hash"],
+        original_bindings=list({canonical_hash(b): b for b in originals}.values()),
+        excluded_origins=excluded,
+        raw4_seed_totals_diagnostic=raw4,
+        primary_arm=spec["primary_arm"],
+        primary_anchors=spec["primary_anchors"],
+        shift_arm_scope="X_VALID_96_SEPARATE_DIAGNOSTIC_NOT_IN_PRIMARY_TEST",
+        accepted_mask_used=False,
+        reference_is_exact_truth=False,
+        reference_noise_cancels_in_paired_loss_difference=True,
+        shared_reference_linear_uncertainty_remains=True,
+        subset_rule="ACTUAL_GEOMETRY_ONLY_NO_RESPONSE_OR_REFERENCE_FILTERING",
+        cross_seed_95=NOT_CERTIFIED,
+    )
+    return {
+        "family": family,
+        "results": [result],
+        "summary": summarize_primary_family(family, [result]),
+    }
+
+
 def _dimension_comparisons(records, config):
     by_design = defaultdict(list)
     for row in records:
@@ -1274,6 +1458,7 @@ def analyze_vlm_test(
     )
     designs = _summarize(records, config, lock, calibration=False)
     _empirical_interval_coverage(designs, calibration)
+    primary = _vlm_primary_family(config, lock, records)
     report = {
         "kind": "V3_VLM_TEST_ANALYSIS",
         "status": "TEST_ANALYZED",
@@ -1285,14 +1470,8 @@ def analyze_vlm_test(
             "training seed; keep arms, anchors, banks, prompts and all targets together"
         ),
         "bootstrap_reps": 5000,
-        "formal_hypotheses": {
-            "status": "NOT_PERFORMED",
-            "holm": None,
-            "reason": (
-                "No complete predeclared four-hypothesis VLM test family is manufactured "
-                "from exploratory error comparisons"
-            ),
-        },
+        "primary_comparison_family": primary,
+        "formal_hypotheses": primary["summary"],
         "dimension_comparisons": _dimension_comparisons(records, config),
     }
     root = Path(out).resolve()
@@ -1309,6 +1488,38 @@ def analyze_vlm_test(
         "receipt": _binding(root / "TEST_ANALYSIS.json"),
         "qualification_receipt": _binding(root / "POINTWISE_QUALIFICATION.json"),
     }
+
+
+def verify_vlm_primary_comparison(config, selection_lock, analysis_report, *, fixture=False):
+    """Recompute RQ4 from completed original test records, never supplied p-values."""
+    _cpu_scope(fixture=fixture)
+    lock, selection_binding = _selection(config, selection_lock, fixture)
+    report, _ = _document(analysis_report, config, kind="V3_VLM_TEST_ANALYSIS", fixture=fixture)
+    if (
+        report.get("status") != "TEST_ANALYZED"
+        or report.get("selection_lock") != selection_binding
+        or report.get("test_seeds") != sorted(config["qwen"]["seed_roles"]["locked_test"])
+    ):
+        raise ValueError("RQ4 verification requires its completed frozen six-seed test analysis")
+    calibration = verify_vlm_calibration(
+        config, selection_binding, report["calibration_receipt"], fixture=fixture
+    )
+    records, _, _ = _test_records(
+        config,
+        lock,
+        selection_binding,
+        calibration,
+        report["stage_completion"],
+        report["input_bindings"],
+        fixture,
+    )
+    expected = _vlm_primary_family(config, lock, records)
+    if (
+        report.get("primary_comparison_family") != expected
+        or report.get("formal_hypotheses") != expected["summary"]
+    ):
+        raise ValueError("RQ4 primary comparison differs from actual original paired-seed evidence")
+    return expected
 
 
 def _qualification_body(config, lock, report, test_binding, fixture):
@@ -1387,6 +1598,12 @@ def verify_vlm_qualification(config, binding, *, fit_binding=None, fixture=False
         records, config
     ) != report.get("dimension_comparisons"):
         raise ValueError("Test qualification differs from actual original independent-test errors")
+    primary = _vlm_primary_family(config, lock, records)
+    if (
+        report.get("primary_comparison_family") != primary
+        or report.get("formal_hypotheses") != primary["summary"]
+    ):
+        raise ValueError("Test qualification changed its frozen RQ4 comparison evidence")
     expected = _qualification_body(config, lock, report, test_binding, fixture)
     if qualification != expected:
         raise ValueError(

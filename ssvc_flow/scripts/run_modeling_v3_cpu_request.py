@@ -29,6 +29,7 @@ CPU_COMMANDS = {
     "freeze-vlm",
     "calibrate-vlm",
     "analyze-vlm",
+    "finalize-primary-family",
     "prepare-q6",
     "prepare-q6-forks",
     "measure-q6-absolute",

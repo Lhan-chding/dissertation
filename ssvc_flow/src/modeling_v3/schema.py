@@ -81,6 +81,8 @@ def role_for_seed(config, seed, *, domain="qwen"):
 
 def freeze_selection(config, inputs, selected, out):
     """Publish a method choice bound to completed development evidence only."""
+    if "primary_hypothesis_tests" in selected:
+        raise ValueError("legacy four-CPU tests cannot replace the cross-stage primary family")
     if len(inputs) < 2:
         raise ValueError("completed Q1 and Q2 development evidence required")
     source = source_identity()
@@ -175,6 +177,10 @@ def freeze_selection(config, inputs, selected, out):
         value = selected[field]
         if type(value) not in (float, int) or not math.isfinite(value) or value < 0:
             raise ValueError("finite nonnegative geometry rejection thresholds required")
+    if "primary_comparison_family" in selected:
+        from .frozen_comparisons import validate_primary_comparison_family
+
+        validate_primary_comparison_family(config, selected)
     lock = {
         "schema": "ssvc-v3-selection-lock-1",
         "config_sha256": canonical_hash(config),
@@ -197,10 +203,16 @@ def verify_selection_lock(config, lock, *, verify_source=True, verify_evidence=T
         if path.is_dir():
             path /= "SELECTION_LOCK.json"
         lock = json.loads(path.read_text())
+    if "primary_hypothesis_tests" in lock["selected"]:
+        raise ValueError("legacy four-CPU tests cannot replace the cross-stage primary family")
     if lock["config_sha256"] != canonical_hash(config) or lock["selection_hash"] != canonical_hash(
         lock["selected"]
     ):
         raise ValueError("selection/config hash mismatch")
+    if "primary_comparison_family" in lock["selected"]:
+        from .frozen_comparisons import validate_primary_comparison_family
+
+        validate_primary_comparison_family(config, lock["selected"])
     if verify_source and lock["source_sha256"] != source_identity()["sha256"]:
         raise ValueError("source changed after selection freeze; new confirmation lock required")
     if verify_evidence:

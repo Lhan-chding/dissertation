@@ -1,0 +1,18 @@
+{
+  "scope": "EXPLICIT_RECEIPTS_NOT_FULL_REPLAY_BUNDLE",
+  "archive_sha256": "b9676cda9ff86617c58a0c8d0f690d3aae676f0b9f7cc1f29cb977541f9fd24b",
+  "archive_bytes": 9560348,
+  "files": {
+    "candidate05/Q2_analysis_full/Q2_ANALYSIS.json": "ee91c623277a52bcac25e2ccf70b9de2a350662ef504908c8871b55cbedc1031",
+    "candidate05/Q2_analysis_full/DESIGN_ORIGIN_SUMMARY.csv": "2095ab65dc3a4ab19508a38a6f67579c7b3007a3981ebc3bfead3e85b4e2bc58",
+    "candidate05/Q2_analysis_full/DESIGN_SUMMARY.csv": "f7f6403da15bbe1d21c9db8d9de38a300a0cf22645684ac120309d1e22ea8173",
+    "candidate05/Q2_analysis_full/SUMMARY_METRICS.csv": "eead0552d41729eb8c02bf2a5dba5c90517f7cd7750256057eca8e0ad71bfc0f",
+    "candidate05/Q2_analysis_full/SEED_METRICS.csv": "d994a6b85dda7313743c84eabaa6e7d3034fc5763ee3b515d2c61cb75430fe54",
+    "candidate05/Q2_analysis_full/RANK_COMPARISONS.csv": "9c552b5e33371f15bdb7024046267bc6791e7f81b01ad00bd58bdaa3fd6124a8",
+    "candidate05/Q2_analysis_full/RUN_MANIFEST.json": "170f906f2dcff16bb36f49f51a571c0b94185999ac96e20eb514e96ed8d40f73",
+    "candidate05/Q2_analysis_full/COMPLETE.json": "57ca62b96023ed61f192a51009d3ad8ef37cdc68a5cbad2ded1ba57a7d4a58a1",
+    "candidate05/Q2_ANALYSIS-155896.err": "8e454d08160785e293f56be524638a9ebc9950f4daceb47075c4bba15bd2e273",
+    "candidate05/Q2_ANALYSIS_SUBMIT_RECEIPT.json": "9aa90e4acb4aa45a8392efa9dec933b5b1aee139f185d0b60c14a4913e384803"
+  },
+  "verified": true
+}

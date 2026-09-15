@@ -1,0 +1,34 @@
+{
+  "reason": "Use a two-hour scheduler reservation for read-only derived analyses, instead of an unnecessary day-long reservation; study matrix and originals remain complete. If interrupted retain attempt and use a new analysis output.",
+  "gpu": false,
+  "source_sampling_jobs_changed": false,
+  "full_acceptance_job_changed": false,
+  "updates": [
+    {
+      "job_id": "155896",
+      "previous_state": "PENDING",
+      "command": [
+        "scontrol",
+        "update",
+        "JobId=155896",
+        "TimeLimit=02:00:00"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "scontrol: error: slurm_job_submit: Updating TimeLimit is not allowed\nJob violates accounting/QOS policy (job submit limit, user's size and/or time limits) for job 155896\n"
+    },
+    {
+      "job_id": "155899",
+      "previous_state": "PENDING",
+      "command": [
+        "scontrol",
+        "update",
+        "JobId=155899",
+        "TimeLimit=02:00:00"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "scontrol: error: slurm_job_submit: Updating TimeLimit is not allowed\nJob violates accounting/QOS policy (job submit limit, user's size and/or time limits) for job 155899\n"
+    }
+  ]
+}

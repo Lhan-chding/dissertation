@@ -1,0 +1,11 @@
+{
+  "kind": "Q1_ORIGINALS_DERIVED_SUMMARY",
+  "fixture": false,
+  "config_sha256": "b10feeb6ae4ce51bf0e13887c97135e6e64b8232850d89345e60bed6ab5ce00f",
+  "analysis_source_sha256": "b2d6d8947249322eb031afee11ab0ee63f2bb76911c67d025da5c902848f7891",
+  "inputs": {
+    "/projects/_ssd/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q1_observation_full": "b55609698216b9c4d0ec9b6babb28d1f10e17f1fde1d8e86c8e1fb42f3f16f69"
+  },
+  "prompt_metadata": null,
+  "prompt_metadata_sha256": null
+}

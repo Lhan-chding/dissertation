@@ -1,0 +1,16 @@
+{
+  "exit_code": 0,
+  "stdout": "155812\n",
+  "stderr": "",
+  "command": [
+    "sbatch",
+    "--parsable",
+    "--account=rose",
+    "--time=3-00:00:00",
+    "--job-name=ssvc-v3-q1-full",
+    "--output=/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q1-full-%j.out",
+    "--error=/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q1-full-%j.err",
+    "--export=ALL",
+    "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/checkout/ssvc_flow/scripts/modeling_v3_cpu.sbatch"
+  ]
+}

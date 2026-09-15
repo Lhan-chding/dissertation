@@ -11,6 +11,47 @@ from src.modeling_v3 import cli
 CONFIG = Path(__file__).resolve().parents[2] / "configs/modeling_v3/protocol.json"
 
 
+def test_primary_family_dispatch_keeps_both_original_analysis_paths(tmp_path, monkeypatch):
+    seen = {}
+
+    def finalize(config, cpu_lock, cpu_analysis, vlm_lock, vlm_analysis, out):
+        seen.update(
+            cpu_lock=cpu_lock,
+            cpu_analysis=cpu_analysis,
+            vlm_lock=vlm_lock,
+            vlm_analysis=vlm_analysis,
+            out=out,
+        )
+        return {"status": "MOCK_DISPATCH_ONLY"}
+
+    monkeypatch.setitem(
+        sys.modules,
+        "src.modeling_v3.primary_family",
+        types.SimpleNamespace(finalize_primary_family=finalize),
+    )
+    assert (
+        cli.main(
+            [
+                "finalize-primary-family",
+                "--config",
+                str(CONFIG),
+                "--out",
+                str(tmp_path / "out"),
+                "--cpu-lock",
+                "cpu-lock",
+                "--cpu-analysis",
+                "cpu-analysis",
+                "--vlm-lock",
+                "vlm-lock",
+                "--vlm-analysis",
+                "vlm-analysis",
+            ]
+        )
+        == 0
+    )
+    assert seen["cpu_analysis"] == "cpu-analysis" and seen["vlm_analysis"] == "vlm-analysis"
+
+
 def test_plan_imports_no_model_and_submits_no_jobs(tmp_path):
     script = (
         "from src.modeling_v3.cli import main; import sys; "
