@@ -4,7 +4,7 @@
 
 ## 已核验的实际运行状态
 
-最新检查确认 bank05 也已完成，服务器完整性与本地统计复核通过；完整服务器复核回执的本地下载因随后网络中断而待完成。bank11 最后于 2026-09-14 21:57:41 UTC（新加坡时间 2026-09-15 05:57:41）实查仍在运行，之后状态无法刷新；最后一个 composite bank 尚未提交。以下保留各次历史快照，最新结果和阻断状态见本文末尾。
+2026-09-15 03:38 UTC 网络恢复后已重新连接。bank05 的完整服务器回执已取回并匹配原 SHA-256；bank11（154574）已正常完成并通过完整原件和独立统计复核。目前五个 bank 均已完成复核；最后一个 composite bank（154797）于 03:41:41 UTC 启动，03:49:53 UTC 实查 RUNNING，在 gpu-pro6000-5 的物理索引5使用一张 PRO 6000。监控仍为每小时一次，S2 未启动。以下保留历史快照，最新记录见本文末尾。
 
 以下是 2026-09-14 14:02:30 UTC（新加坡时间 22:02:30）的快照，不是最终结果。
 
@@ -149,7 +149,7 @@ bank05 作业 154573 于 2026-09-14 21:47:49 UTC（新加坡时间 2026-09-15 05
 
 服务器独立核验已完成并写入耐久回执：133 个 manifest 路径（20 个 checkpoint 路径），10 个实际 CPU checkpoint 均有限，Adam step64→65；10 reserved=10 confirmed、0 uncertain、320 backward。原始 bank 组装、输入绑定、请求与 seed、1,536 条 raw 语义重解析、逐题计数及完整策略指纹均通过。replay 完整状态仅候选名称元数据不同，其余状态一致；`state_bitwise_equal=false` 保留。模型身份沿用冻结绑定，本轮未重读模型权重或重新生成 prepared tensors。
 
-本地紧凑包的 119 个普通文件及包含的 113 个非 checkpoint manifest 文件已经校验；20 个 checkpoint 路径仅在服务器保留并完成核验。随后下载完整服务器复核回执时发生 `Network is unreachable`，有界只读重试得到 `Operation timed out`，因此该回执的完整本地副本仍为 `PENDING_NETWORK`。本地空下载占位不是核验回执，不算成功传输。服务器已完成的核验与传输阻断分别记录。
+本地紧凑包的 119 个普通文件及包含的 113 个非 checkpoint manifest 文件已经校验；20 个 checkpoint 路径仅在服务器保留并完成核验。随后下载完整服务器复核回执时发生 `Network is unreachable`，有界只读重试得到 `Operation timed out`，因此当时该回执的完整本地副本为 `PENDING_NETWORK`；2026-09-15 的恢复及核验记录见下节。本地空下载占位不是核验回执，不算成功传输。服务器已完成的核验与传输阻断分别记录。
 
 | 策略 | 独立样本 | X | S | W | I | pX % | v % | qX % |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -170,16 +170,67 @@ pX、qX 的场景区间均包含 0，固定 panel 界跨 0；零差 v 保留退�
 
 runtime profile：峰值 CUDA 已分配内存 24,173,737,472 bytes，完成调用耗时 8765.054710 秒，28,509 次 forward；范围与 Slurm 全墙钟不同。
 
-最后一次可连接快照为 21:57:41 UTC：bank11 作业 154574 仍在 gpu-pro6000-13 运行，已有 10 个候选标记、joint0 ledger 768 行，尚无 bank 完成或退出回执。随后当前状态因网络不可达而未知，未认定作业失败，也未停止或修改该作业。
+该次连接中断前的最后快照为 21:57:41 UTC：bank11 作业 154574 仍在 gpu-pro6000-13 运行，已有 10 个候选标记、joint0 ledger 768 行，尚无 bank 完成或退出回执。随后当前状态因网络不可达而未知，未认定作业失败，也未停止或修改该作业。
 
-composite_no_x_plus_three_level 的本地单卡脚本已生成并通过 bash -n，但远端准备 SSH 在连接阶段失败，未取得远端 dry-run 通过证据，也没有执行 sbatch。该 bank 仍为 NOT_SUBMITTED，不能记作第二张卡已申请。网络恢复后先取回并校验 bank05 已有完整回执，再完成最终推进决策、source/smoke/script/dry-run 和队列/intent 检查，单独申请一张 PRO 6000。无需重跑已完成 bank05 或重复昂贵验证，除非发现新的证据不一致。
+composite_no_x_plus_three_level 的本地单卡脚本已生成并通过 bash -n，但远端准备 SSH 在连接阶段失败，未取得远端 dry-run 通过证据，也没有执行 sbatch。该 bank 当时为 NOT_SUBMITTED，不能记作第二张卡已申请。网络恢复后先取回并校验 bank05 已有完整回执，再完成最终推进决策、source/smoke/script/dry-run 和队列/intent 检查，单独申请一张 PRO 6000。无需重跑已完成 bank05 或重复昂贵验证，除非发现新的证据不一致。
 
-当前累计四个 bank 已完成服务器实测：33 次 Adam、1,056 backward、6,144 条独立样本。监控仍为每小时一次；S1 尚未全部完成，S2 未启动。
+截至该次连接中断时，累计四个 bank 已完成服务器实测：33 次 Adam、1,056 backward、6,144 条独立样本。监控仍为每小时一次；S1 尚未全部完成，S2 未启动。
 
 | 证据 | SHA-256 |
 | --- | --- |
 | bank05 最终 manifest | `2211bef459c685afc727d5f0c561cd90b9367a34ec592357cbe2b20659ec8822` |
 | bank05 紧凑包（已下载核验） | `291f34320ccd6413724d5ee66452fcf6a291cb1b8b62f15702b3de795f3273c3` |
-| bank05 服务器核验回执（待下载完整副本） | `15a042b7987f33ae388ea1d1adaca3dd99308db8f74c5a189b722561a7c3f668` |
+| bank05 服务器核验回执（当时待下载；现已补齐） | `15a042b7987f33ae388ea1d1adaca3dd99308db8f74c5a189b722561a7c3f668` |
 | bank05 独立统计复核（本地） | `7d64e7cff2cf3ae408997f20fe904a3cdcdd979b6b8c38a019e4f7ffbc9c2b14` |
 | composite 本地单卡脚本 | `7b4e7a6908e12c3321e352536b78cd4912e2024a4687148c219b645203942970` |
+
+
+## 2026-09-15 网络恢复、bank11 复核及最后一组启动
+
+03:38:27 UTC（新加坡时间11:38:27）重新连接成功。bank11 作业154574已于2026-09-14 22:39:32 UTC（新加坡时间2026-09-15 06:39:32）结束，Slurm `COMPLETED`、退出码 `0:0`，墙钟12,594秒（3小时29分54秒）。恢复连接时无其他S1作业排队或运行。
+
+bank05 原服务器完整复核回执成功下载，SHA-256与网络中断前记录一致。重新核对其本地统计来源和113个已下载manifest文件后，完成最终推进决策。没有重跑bank05，也没有重复昂贵checkpoint核验。
+
+bank11完成原件及统计两项独立复核：133个manifest路径含20个checkpoint路径全部在服务器核验；10个实际CPU checkpoint均有限、Adam step64→65；10 reserved=10 confirmed、0 uncertain、320 backward。紧凑包119个普通文件通过安全及哈希检查，其中113个非checkpoint manifest文件本地匹配。1,536条原始样本的请求、seed、原始输入绑定、语义重解析、逐题计数及实际checkpoint完整策略指纹一致。joint0及其重放的完整状态仅 `metadata.candidate_spec.id` 不同，保留 `state_bitwise_equal=false`；参数、Adam和RNG分别一致。模型权重未重读、prepared tensors未重新生成，身份仍由原件/冻结计划/smoke和原控制输入绑定验证。
+
+| 策略 | 独立样本 | X | S | W | I | pX % | v % | qX % |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| joint_0 | 768 | 529 | 12 | 186 | 41 | 68.880208 | 94.661458 | 72.764787 |
+| joint_1 | 768 | 530 | 11 | 188 | 39 | 69.010417 | 94.921875 | 72.702332 |
+
+训练bank为X20/S0/W9/I3，共32条，与评估样本分开。bank11 的 `no_x_off_1` 实际完整策略指纹匹配 **joint_1**，复用joint1的768条样本，新增独立样本为0；不能套用此前bank指向joint0的别名记录。
+
+独立统计复算全部群体、5,000次共享场景bootstrap与联合固定panel界：`RECOMPUTED_MATCH`、无不一致；全候选与pair均M70。概率/界最大比较误差1.11e−16，百分点差值最大误差1.11e−14。下表为joint1−joint0，单位百分点。
+
+| 指标 | 差值 pp | 场景95%区间 pp | 全候选固定panel 95%界 pp |
+| --- | ---: | --- | --- |
+| pX | +0.130208 | [0.000000, 0.390625] | [-14.246942, 14.507359] |
+| v | +0.260417 | [≈0, 0.781250] | [-12.266700, 12.527117] |
+| qX | -0.062455 | [-0.605889, 0.401070] | [-25.140862, 25.161355] |
+
+v场景区间下界原值为−1.11e−16（概率单位），表中记为≈0；保留原始浮点值。pX和v上升、qX略降；场景区间达或跨0，联合固定界均跨0。no_x_off_1与joint1复用同一组输出，三项差值全0，其退化bootstrap保留 `UNINFORMATIVE/None`。结果仍为 `NOT_CERTIFIED`，不据此宣称训练收益或跨seed泛化。
+
+几何记录显示joint_1em6、joint_1em5相对joint0的参数差为0；joint_1em2与joint1更新向量cosine=0.19299857882930452、relative_vector_difference=13.794437498897304，不能将前几bank的近似相同更新描述套用到此处。这里报告产物中的几何值，不将它等同于模型输出变化或因果结论。
+
+runtime profile峰值CUDA已分配内存24,173,737,472 bytes，完成调用耗时11121.330464秒、28,596次forward；Slurm墙钟为12,594秒。日志保留generation min-length警告，stdout为 `MEASURED`，未发现Traceback、CUDA OOM、RuntimeError或AssertionError。
+
+### 最后一个composite bank
+
+bank05最终复核完成后，重新核对73个冻结源码、计划和真实smoke；远端脚本 `bash -n` 与不加载模型的dry-run均通过。确认目标输出、submission intent和提交回执不存在后，先独占写入intent，再单次提交。作业 **154797** 于2026-09-15 03:41:41 UTC（新加坡时间11:41:41）开始，03:42:19 UTC实查 `RUNNING`，节点gpu-pro6000-5、物理GPU索引5。使用老师QOS `soujanya-poria-startfund-2026-03`、partition cluster02、account rose；一张PRO6000、no-requeue、24小时上限。CPU/内存由调度器自动分配，未手填资源值。初次启动快照尚未出现bank输出目录或退出回执，该快照仅证明Slurm运行与启动回执，不能作为测量完成证据。 后续03:49:53 UTC检查仍为RUNNING，已运行8分12秒，stdout/stderr均0 bytes，仍无bank输出目录和退出回执；未据此认定失败或测量完成。
+
+本bank固定3个候选+1次replay，最多4次Adam、128 backward、2,304条新输出。目前仅剩这一独立bank，未额外申请闲置GPU。五个已完成bank累计43次Adam、1,376 backward、7,680条独立样本；全S1原上限47/1,504/13,824不变。
+
+下一步按每小时检查作业154797；完成后复核其真实结果，再运行冻结 `followup_cli analyze` 核验六bank整体技术测量链。S1整体尚未完成，S2正式训练未启动。
+
+| 证据 | SHA-256 |
+| --- | --- |
+| bank05最终推进决策 | `54f826d37f154a82666f7500fa53c4becff47251c28287881b8e87ac296022d9` |
+| bank11最终manifest | `ac6382e4c3bfacce61de2e38e7c53f1bedbd80a15d7cda8a60c0e632ede9e06b` |
+| bank11紧凑包 | `c78ca0818df6eda0febbdf173291bf4456ca858969bf37238a44117b31663f7e` |
+| bank11完整原件及账本复核 | `61d69392da026ca664114fd9b429e6eab669b354a9bf1d7e5d34c2e8c7cf5e45` |
+| bank11独立统计复核 | `c80e3c7ea17c20f3666030bbd4f1224031928db9b10a52b7998b0c4340f57904` |
+| bank11最终复核决策 | `20efea1a78b73cfa46a53572869e3e4aadef65387e1f718270e0f69f1ccbb698` |
+| composite远端准备回执 | `7ba8fd65b95242025b2de13f93342d097b85b1f45c0218e0dd78f6b16ea94506` |
+| composite提交回执 | `9326414331150bafdf9933858cc4c6f8e8b7af552499d3f6693ae342313eb038` |
+| composite初次RUNNING快照 | `febf3800407100bf9e10134d4cc60fa4553c0d70a4c5d1a706cf8e40a165f8b1` |
+| composite后续启动检查03:49:53 UTC | `519fe6d9ebc17c48379075ea9e1f29217102670ab352ab75d758fdfd12cc428f` |
