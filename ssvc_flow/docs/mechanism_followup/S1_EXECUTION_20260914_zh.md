@@ -4,7 +4,7 @@
 
 ## 已核验的实际运行状态
 
-2026-09-15 03:38 UTC 网络恢复后已重新连接。bank05 的完整服务器回执已取回并匹配原 SHA-256；bank11（154574）已正常完成并通过完整原件和独立统计复核。目前五个 bank 均已完成复核；最后一个 composite bank（154797）于 03:41:41 UTC 启动，03:49:53 UTC 实查 RUNNING，在 gpu-pro6000-5 的物理索引5使用一张 PRO 6000。监控仍为每小时一次，S2 未启动。以下保留历史快照，最新记录见本文末尾。
+2026-09-15 03:38 UTC 网络恢复后已重新连接。bank05 的完整服务器回执已取回并匹配原 SHA-256；bank11（154574）已正常完成并通过完整原件和独立统计复核。目前五个 bank 均已完成复核；最后一个 composite bank（154797）于 03:41:41 UTC 启动，03:49:53 UTC 实查 RUNNING，在 gpu-pro6000-5 的物理索引5使用一张 PRO 6000。03:58 UTC另核实历史R2补测154821已在第二张PRO6000并行运行；监控仍为每小时一次，S2正式训练未启动。以下保留历史快照，最新记录见本文末尾。
 
 以下是 2026-09-14 14:02:30 UTC（新加坡时间 22:02:30）的快照，不是最终结果。
 
@@ -234,3 +234,36 @@ bank05最终复核完成后，重新核对73个冻结源码、计划和真实smo
 | composite提交回执 | `9326414331150bafdf9933858cc4c6f8e8b7af552499d3f6693ae342313eb038` |
 | composite初次RUNNING快照 | `febf3800407100bf9e10134d4cc60fa4553c0d70a4c5d1a706cf8e40a165f8b1` |
 | composite后续启动检查03:49:53 UTC | `519fe6d9ebc17c48379075ea9e1f29217102670ab352ab75d758fdfd12cc428f` |
+
+
+## 2026-09-15 独立历史 R2 并行补测
+
+用户进一步要求有可同步进行的工作就现在并行安排。逐项核对冻结154599c的CLI、训练器、backend和设计：七个新S2 run全部要求完整六bank S1 measurement chain；当前composite尚未完成，没有可提前启动的S2训练例外。代码会重建各bank的manifest与共同身份，不能用部分S1报告或手写PASS替代。
+
+计划内旧seed17、step64端点的 `eval-historical-r2` 经同一exact smoke gate后直接进入backend，不读取新S1 chain。它只读原R4 X_BASE/X_VALID检查点并做R2诊断；每臂72 scenes×3条件×4=864条输出，两个端点合计最多1,728条，0次Adam、0条训练输出。该预算原已列入设计，未增加seed、模型或样本量。两个历史端点彼此独立，输出也不依赖新composite；各自使用独立进程、单GPU和新目录。
+
+03:54 UTC只读确认当前ROOT尚无 `historical_R2/`、对应submission intent/回执或新S2目录。提交前核验73源码/exact plan/smoke、原R4 checkpoint manifest及两臂step64 checkpoint字节哈希；两份独立脚本本地和远端 `bash -n`、无模型dry-run均通过。dry-run不代表模型测量；实际CLI仍执行完整source/data/model/env/parent重验证、成熟Adam和参数/状态/采样器绑定检查。
+
+先写独占intent，再单次提交X_BASE。作业 **154821** 于2026-09-15 03:57:33 UTC（新加坡时间11:57:33）开始，03:58:01 UTC实查与原S1作业同时为RUNNING：
+
+| 工作 | 作业号 | 状态 | GPU节点 / 物理索引 | GPU数 |
+| --- | --- | --- | --- | ---: |
+| S1 composite_no_x_plus_three_level | 154797 | RUNNING | gpu-pro6000-5 / 5 | 1 |
+| 历史R2 seed17 X_BASE step64 | 154821 | RUNNING | gpu-pro6000-2 / 0 | 1 |
+
+两者均使用老师QOS `soujanya-poria-startfund-2026-03`、partition cluster02、account rose，24小时墙钟上限、no-requeue；未手填CPU/内存。新作业启动回执03:57:34 UTC；初次并行快照两项目标输出目录尚未出现，尚不能声称已产出测量或完成训练。
+
+历史输出为私有ROOT下 `historical_R2/X_BASE`；旧R4 checkpoint和当前S1源码/脚本未修改。X_VALID的独立单卡wrapper已生成并核验，尚未提交。保持整个本项目最多两个GPU作业排队或运行；任一当前作业完成并复核后，可用空位提交X_VALID，不要求等待另一个独立作业。每次填补空位前仍检查队列、已完成结果、来源/预算、目标目录与intent，避免重复提交；不使用afterok绕过结果分析。
+
+历史R2完成验收要求 `PASS / REAL_CUDA_HISTORICAL_R2`、864个唯一输出、0 optimizer_updates/0 training_outputs、training_started=false、full_endpoint_state_unchanged=true；同时核对completion manifest/binding、identity/request manifest、raw ledger、原端点哈希、三条件及family×condition计数、完整状态恢复和日志。结果继续保留NOT_CERTIFIED，与N/OOD主指标分开，不能把补测称为新增S2训练。
+
+每小时监控同时覆盖154797和154821。S1全部完成时先完成其整体分析；如果历史R2仍在运行或X_VALID尚待执行，继续监控及完成两臂复核，全部结束后再暂停。正式S2训练仍受完整S1结果及门禁约束，当前未启动。
+
+| 证据 | SHA-256 |
+| --- | --- |
+| 并行依赖审查 | `f8f0c1cf312dc95f9e364383fd729610eceabdc980e00248e1036bbd2233395f` |
+| 历史R2准备回执 | `e06a62e267ed202a2699c20cffced0144eec9c6a7fa5060feb241330a4978bf8` |
+| X_BASE单卡脚本 | `8cfae42480a9a3c5bc46533c0efb76fa48782e53e3a22938fdcf542a2027e482` |
+| X_VALID单卡脚本（未提交） | `11b755abad76e70ffccdf4ae874a884b9702c3bb254c5581abf2c06c1dae4925` |
+| X_BASE提交回执 | `e5ef3865af7acec1f47c87561587e0cd14967136ac5b0b0336ca59ae30a59815` |
+| 两作业并行快照 | `87d25ec3bee9053702383d6e31bcb9c66a7397bf9d2068ef0b9a3f33d3a5c3cf` |
