@@ -221,9 +221,12 @@ def audit_seed_collisions(roots):
             continue
         for name in ("manifest.json", "collection_manifest.json"):
             for path in root.rglob(name):
-                if "fixtures" in path.parts:
+                # Only nested fixture directories belong to the exclusion;
+                # the explicitly requested root and its ancestors do not.
+                relative_parts = path.relative_to(root).parts
+                if "fixtures" in relative_parts:
                     excluded_fixture_manifests.add(str(path.resolve()))
-                elif ".git" not in path.parts:
+                elif ".git" not in relative_parts:
                     paths.add(path.resolve())
     collisions = []
     used = set()

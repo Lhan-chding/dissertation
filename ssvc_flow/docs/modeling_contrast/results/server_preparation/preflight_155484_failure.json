@@ -1,0 +1,14 @@
+{
+  "job_id": 155484,
+  "status": "FAILED_TESTS_BEFORE_N4",
+  "source_commit": "4549eb05d1b8c8a53e194418cf9635d1ea44f989",
+  "wall_seconds": 13.04,
+  "passed_tests": 249,
+  "failed_tests": 10,
+  "skipped_tests": 2,
+  "cause": "Seed scanner filtered absolute ancestor fixtures; C1 regression used local legacy path",
+  "new_optimizer_updates": 0,
+  "N4_started": false,
+  "log_sha256": "e2ca581f808bedd037f510d6c65dde72ecc74763c025570680cc60b30269dbff",
+  "fix": "Scope fixture filtering to inventory root descendants; pass explicit server parent root to regression tests"
+}

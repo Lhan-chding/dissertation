@@ -1,0 +1,208 @@
+.ss.................................................................F.FF [ 27%]
+FFFF.........FF......................................................... [ 55%]
+.........F.............................................................. [ 82%]
+.............................................                            [100%]
+=================================== FAILURES ===================================
+___________ test_existing_training_seeds_are_not_silently_renumbered ___________
+
+tmp_path = PosixPath('/projects/_ssd/varunssd/louis-ssvc/modeling_contrast_v2_20260915/tmp/fixtures/preflight_155484/test_existing_training_seeds_a0')
+
+    def test_existing_training_seeds_are_not_silently_renumbered(tmp_path):
+        root = tmp_path / "runs/legacy"
+        root.mkdir(parents=True)
+        (root / "manifest.json").write_text(
+            json.dumps({"trajectories": [{"seed": 601, "id": "seed601_X_BASE"}]})
+        )
+        collisions = scan_seed_collisions([tmp_path / "runs"], set(range(601, 611)))
+>       assert collisions[0]["seed"] == 601
+               ^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+tests/modeling_contrast/test_fresh.py:141: IndexError
+_________ test_seed_inventory_skips_only_verified_appledouble_sidecars _________
+
+tmp_path = PosixPath('/projects/_ssd/varunssd/louis-ssvc/modeling_contrast_v2_20260915/tmp/fixtures/preflight_155484/test_seed_inventory_skips_only0')
+
+    def test_seed_inventory_skips_only_verified_appledouble_sidecars(tmp_path):
+        # AppleDouble metadata is not a raw collection or a JSON inventory.
+        sidecar = b"\x00\x05\x16\x07\x00\x02\x00\x00" + b"\xff" * 24
+        for name in ("._manifest.json", "._seed601_X_BASE.npz"):
+            (tmp_path / name).write_bytes(sidecar)
+        manifest = tmp_path / "manifest.json"
+        manifest.write_text(json.dumps({"trajectories": [{"seed": 601}]}))
+>       assert scan_seed_collisions([tmp_path], {601}) == [
+            {"seed": 601, "evidence": str(manifest)}
+        ]
+E       AssertionError: assert [] == [{'evidence':... 'seed': 601}]
+E         
+E         Right contains one more item: {'evidence': '/projects/_ssd/varunssd/louis-ssvc/modeling_contrast_v2_20260915/tmp/fixtures/preflight_155484/test_seed_inventory_skips_only0/manifest.json', 'seed': 601}
+E         Use -v to get more diff
+
+tests/modeling_contrast/test_fresh.py:157: AssertionError
+_ test_seed_inventory_refuses_unverified_or_real_corrupt_manifests[manifest.json-\x00\x05\x16\x07\xff] _
+
+tmp_path = PosixPath('/projects/_ssd/varunssd/louis-ssvc/modeling_contrast_v2_20260915/tmp/fixtures/preflight_155484/test_seed_inventory_refuses_un0')
+name = 'manifest.json', content = b'\x00\x05\x16\x07\xff'
+
+    @pytest.mark.parametrize(
+        ("name", "content"),
+        [
+            ("manifest.json", b"\x00\x05\x16\x07\xff"),
+            ("._manifest.json", b"\xffnot AppleDouble"),
+            ("._manifest.json", b"\x00\x05\x16"),
+            ("._manifest.json", b"\x00\x05\x16\x00\xff"),  # AppleSingle is not exempt.
+        ],
+    )
+    def test_seed_inventory_refuses_unverified_or_real_corrupt_manifests(tmp_path, name, content):
+        (tmp_path / name).write_bytes(content)
+>       with pytest.raises(ValueError, match="manifest unreadable"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/modeling_contrast/test_fresh.py:174: Failed
+_ test_seed_inventory_refuses_unverified_or_real_corrupt_manifests[._manifest.json-\xffnot AppleDouble] _
+
+tmp_path = PosixPath('/projects/_ssd/varunssd/louis-ssvc/modeling_contrast_v2_20260915/tmp/fixtures/preflight_155484/test_seed_inventory_refuses_un1')
+name = '._manifest.json', content = b'\xffnot AppleDouble'
+
+    @pytest.mark.parametrize(
+        ("name", "content"),
+        [
+            ("manifest.json", b"\x00\x05\x16\x07\xff"),
+            ("._manifest.json", b"\xffnot AppleDouble"),
+            ("._manifest.json", b"\x00\x05\x16"),
+            ("._manifest.json", b"\x00\x05\x16\x00\xff"),  # AppleSingle is not exempt.
+        ],
+    )
+    def test_seed_inventory_refuses_unverified_or_real_corrupt_manifests(tmp_path, name, content):
+        (tmp_path / name).write_bytes(content)
+>       with pytest.raises(ValueError, match="manifest unreadable"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/modeling_contrast/test_fresh.py:174: Failed
+_ test_seed_inventory_refuses_unverified_or_real_corrupt_manifests[._manifest.json-\x00\x05\x16] _
+
+tmp_path = PosixPath('/projects/_ssd/varunssd/louis-ssvc/modeling_contrast_v2_20260915/tmp/fixtures/preflight_155484/test_seed_inventory_refuses_un2')
+name = '._manifest.json', content = b'\x00\x05\x16'
+
+    @pytest.mark.parametrize(
+        ("name", "content"),
+        [
+            ("manifest.json", b"\x00\x05\x16\x07\xff"),
+            ("._manifest.json", b"\xffnot AppleDouble"),
+            ("._manifest.json", b"\x00\x05\x16"),
+            ("._manifest.json", b"\x00\x05\x16\x00\xff"),  # AppleSingle is not exempt.
+        ],
+    )
+    def test_seed_inventory_refuses_unverified_or_real_corrupt_manifests(tmp_path, name, content):
+        (tmp_path / name).write_bytes(content)
+>       with pytest.raises(ValueError, match="manifest unreadable"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/modeling_contrast/test_fresh.py:174: Failed
+_ test_seed_inventory_refuses_unverified_or_real_corrupt_manifests[._manifest.json-\x00\x05\x16\x00\xff] _
+
+tmp_path = PosixPath('/projects/_ssd/varunssd/louis-ssvc/modeling_contrast_v2_20260915/tmp/fixtures/preflight_155484/test_seed_inventory_refuses_un3')
+name = '._manifest.json', content = b'\x00\x05\x16\x00\xff'
+
+    @pytest.mark.parametrize(
+        ("name", "content"),
+        [
+            ("manifest.json", b"\x00\x05\x16\x07\xff"),
+            ("._manifest.json", b"\xffnot AppleDouble"),
+            ("._manifest.json", b"\x00\x05\x16"),
+            ("._manifest.json", b"\x00\x05\x16\x00\xff"),  # AppleSingle is not exempt.
+        ],
+    )
+    def test_seed_inventory_refuses_unverified_or_real_corrupt_manifests(tmp_path, name, content):
+        (tmp_path / name).write_bytes(content)
+>       with pytest.raises(ValueError, match="manifest unreadable"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/modeling_contrast/test_fresh.py:174: Failed
+_________ test_seed_inventory_checks_json_even_with_sidecar_style_name _________
+
+tmp_path = PosixPath('/projects/_ssd/varunssd/louis-ssvc/modeling_contrast_v2_20260915/tmp/fixtures/preflight_155484/test_seed_inventory_checks_jso0')
+
+    def test_seed_inventory_checks_json_even_with_sidecar_style_name(tmp_path):
+        manifest = tmp_path / "._manifest.json"
+        manifest.write_text(json.dumps({"trajectories": [{"seed": 601}]}))
+>       assert scan_seed_collisions([tmp_path], {601}) == [
+            {"seed": 601, "evidence": str(manifest)}
+        ]
+E       AssertionError: assert [] == [{'evidence':... 'seed': 601}]
+E         
+E         Right contains one more item: {'evidence': '/projects/_ssd/varunssd/louis-ssvc/modeling_contrast_v2_20260915/tmp/fixtures/preflight_155484/test_seed_inventory_checks_jso0/._manifest.json', 'seed': 601}
+E         Use -v to get more diff
+
+tests/modeling_contrast/test_fresh.py:181: AssertionError
+_____ test_seed_scan_ignores_explicit_test_fixtures_but_checks_actual_runs _____
+
+tmp_path = PosixPath('/projects/_ssd/varunssd/louis-ssvc/modeling_contrast_v2_20260915/tmp/fixtures/preflight_155484/test_seed_scan_ignores_explici0')
+
+    def test_seed_scan_ignores_explicit_test_fixtures_but_checks_actual_runs(tmp_path):
+        fixture = tmp_path / "fixtures/example"
+        fixture.mkdir(parents=True)
+        (fixture / "manifest.json").write_text("{broken fixture JSON")
+        (fixture / "seed601_fake.npz").write_bytes(b"fixture")
+        actual = tmp_path / "actual"
+        actual.mkdir()
+        (actual / "manifest.json").write_text(json.dumps({"trajectories": [{"seed": 602}]}))
+        hits = scan_seed_collisions([tmp_path], {601, 602})
+>       assert len(hits) == 1 and hits[0]["seed"] == 602
+E       assert (0 == 1)
+E        +  where 0 = len([])
+
+tests/modeling_contrast/test_fresh.py:243: AssertionError
+_______ test_post_collection_gate_exempts_only_complete_bound_raw_files ________
+
+tmp_path = PosixPath('/projects/_ssd/varunssd/louis-ssvc/modeling_contrast_v2_20260915/tmp/fixtures/preflight_155484/test_post_collection_gate_exem0')
+
+    def test_post_collection_gate_exempts_only_complete_bound_raw_files(tmp_path):
+        config, path, lock, kwargs = frozen_fixture(tmp_path)
+        collection = tmp_path / "runs/modeling_contrast_v2/N4"
+        with RunWriter(collection, lock["binding"], project_root=tmp_path) as writer:
+            writer.write_json("raw/manifest.json", {"trajectories": [{"seed": 601}]})
+            writer.write_bytes("raw/observations/seed601_X_BASE.npz", b"hash-only raw fixture")
+        # The original pre-collection gate must continue refusing existing seeds.
+>       with pytest.raises(ValueError, match="seed collision"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/modeling_contrast/test_fresh.py:253: Failed
+________ test_seed_audit_checks_used_trajectory_seeds_not_planned_lists ________
+
+tmp_path = PosixPath('/projects/_ssd/varunssd/louis-ssvc/modeling_contrast_v2_20260915/tmp/fixtures/preflight_155484/test_seed_audit_checks_used_tr0')
+
+    def test_seed_audit_checks_used_trajectory_seeds_not_planned_lists(tmp_path):
+        root = tmp_path / "runs"
+        root.mkdir()
+        (root / "manifest.json").write_text(
+            json.dumps({"trajectories": [{"seed": 501, "id": "seed501_X_BASE"}]})
+        )
+        (root / "protocol.json").write_text(json.dumps({"fresh_locked_test_seeds": [601]}))
+        receipt = audit_seed_collisions([tmp_path])
+>       assert receipt["status"] == "STOP_FOR_REVIEW"
+E       AssertionError: assert 'PASS' == 'STOP_FOR_REVIEW'
+E         
+E         - STOP_FOR_REVIEW
+E         + PASS
+
+tests/modeling_contrast/test_parent.py:71: AssertionError
+=========================== short test summary info ============================
+SKIPPED [1] tests/modeling_contrast/test_c1_packets.py:29: local immutable legacy and N1 regression evidence unavailable
+SKIPPED [1] tests/modeling_contrast/test_c1_packets.py:73: local immutable legacy regression evidence unavailable
+FAILED tests/modeling_contrast/test_fresh.py::test_existing_training_seeds_are_not_silently_renumbered
+FAILED tests/modeling_contrast/test_fresh.py::test_seed_inventory_skips_only_verified_appledouble_sidecars
+FAILED tests/modeling_contrast/test_fresh.py::test_seed_inventory_refuses_unverified_or_real_corrupt_manifests[manifest.json-\x00\x05\x16\x07\xff]
+FAILED tests/modeling_contrast/test_fresh.py::test_seed_inventory_refuses_unverified_or_real_corrupt_manifests[._manifest.json-\xffnot AppleDouble]
+FAILED tests/modeling_contrast/test_fresh.py::test_seed_inventory_refuses_unverified_or_real_corrupt_manifests[._manifest.json-\x00\x05\x16]
+FAILED tests/modeling_contrast/test_fresh.py::test_seed_inventory_refuses_unverified_or_real_corrupt_manifests[._manifest.json-\x00\x05\x16\x00\xff]
+FAILED tests/modeling_contrast/test_fresh.py::test_seed_inventory_checks_json_even_with_sidecar_style_name
+FAILED tests/modeling_contrast/test_fresh.py::test_seed_scan_ignores_explicit_test_fixtures_but_checks_actual_runs
+FAILED tests/modeling_contrast/test_fresh.py::test_post_collection_gate_exempts_only_complete_bound_raw_files
+FAILED tests/modeling_contrast/test_parent.py::test_seed_audit_checks_used_trajectory_seeds_not_planned_lists
+10 failed, 249 passed, 2 skipped in 9.52s

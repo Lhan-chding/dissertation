@@ -82,7 +82,10 @@ def scan_seed_collisions(existing_run_roots, requested_seeds: set[int]) -> list[
         if not root.is_dir():
             raise ValueError(f"seed inventory root missing: {root}")
         for path in sorted(root.rglob("*")):
-            if not path.is_file() or "fixtures" in path.parts or ".git" in path.parts:
+            # Exclude descendants of this inventory root, not a pytest or
+            # deployment ancestor which happens to be named "fixtures".
+            relative_parts = path.relative_to(root).parts
+            if not path.is_file() or "fixtures" in relative_parts or ".git" in relative_parts:
                 continue
             if _is_appledouble_sidecar(path):
                 continue

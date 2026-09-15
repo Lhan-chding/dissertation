@@ -1,9 +1,21 @@
+import os
 from pathlib import Path
 
 import numpy as np
 import pytest
 
 from src.modeling_contrast.c1_packets import repair_c1_auxiliary, same_bank_counts
+
+
+def regression_parent_root():
+    from src.modeling_contrast.study import legacy_root
+
+    explicit = os.environ.get("SSVC_TEST_PARENT_ROOT")
+    if explicit is not None:
+        root = Path(explicit)
+        assert (root / "manifest.json").is_file(), "explicit regression evidence unavailable"
+        return root
+    return legacy_root()
 
 
 def test_same_bank_counts_does_not_resolve_through_another_bank():
@@ -21,9 +33,9 @@ def test_real_seed101_anchor24_c1_overlay_preserves_bank_and_source(tmp_path):
 
     from src.modeling_contrast.observation_study import load_packet
     from src.modeling_contrast.packet_codec import decode_arrays
-    from src.modeling_contrast.study import digest, legacy_root
+    from src.modeling_contrast.study import digest
 
-    root = legacy_root()
+    root = regression_parent_root()
     path = Path("runs/modeling_contrast_v2/N1/packets/seed101_X_VALID/a1/O_IND_n64")
     if not (root / "manifest.json").is_file() or not (path / "packets.json").is_file():
         pytest.skip("local immutable legacy and N1 regression evidence unavailable")
@@ -66,9 +78,8 @@ def test_future_c1_packets_use_same_bank_counts_and_explicit_data_role(tmp_path)
 
     from src.modeling_contrast.observation_study import measure_unit
     from src.modeling_contrast.packet_codec import decode_arrays
-    from src.modeling_contrast.study import legacy_root
 
-    root = legacy_root()
+    root = regression_parent_root()
     if not (root / "manifest.json").is_file():
         pytest.skip("local immutable legacy regression evidence unavailable")
     entry = next(

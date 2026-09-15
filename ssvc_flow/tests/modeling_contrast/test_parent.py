@@ -82,6 +82,23 @@ def test_seed_audit_excludes_intentionally_corrupt_test_fixtures(tmp_path):
     assert report["excluded_test_fixture_manifest_count"] == 1
 
 
+@pytest.mark.parametrize("relative_root", ["fixtures", "fixtures/preflight_155484"])
+def test_seed_audit_does_not_exclude_fixture_named_root_or_ancestor(tmp_path, relative_root):
+    root = tmp_path / relative_root
+    nested = root / "fixtures/tampering"
+    nested.mkdir(parents=True)
+    (nested / "manifest.json").write_text("intentional nested fixture corruption")
+    (root / "manifest.json").write_text(
+        json.dumps({"trajectories": [{"seed": 601, "id": "seed601_X_BASE"}]})
+    )
+    report = audit_seed_collisions([root])
+    assert report["status"] == "STOP_FOR_REVIEW"
+    assert report["colliding_seeds"] == [601]
+    assert report["manifests_scanned"] == 1
+    assert report["excluded_test_fixture_manifest_count"] == 1
+    assert report["scan_errors"] == []
+
+
 def test_old_prediction_audit_reports_missing_and_corrupt_arrays(tmp_path):
     raw, delta = np.ones((2, 4)), np.zeros((2, 4))
     np.savez(tmp_path / "present.npz", raw=raw, delta=delta)

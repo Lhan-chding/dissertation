@@ -243,6 +243,22 @@ def test_seed_scan_ignores_explicit_test_fixtures_but_checks_actual_runs(tmp_pat
     assert len(hits) == 1 and hits[0]["seed"] == 602
 
 
+@pytest.mark.parametrize("relative_root", ["fixtures", "fixtures/preflight_155484"])
+def test_seed_scan_does_not_exclude_fixture_named_root_or_ancestor(tmp_path, relative_root):
+    root = tmp_path / relative_root
+    nested = root / "fixtures/example"
+    nested.mkdir(parents=True)
+    (nested / "manifest.json").write_text("{intentionally corrupt nested fixture")
+    manifest = root / "manifest.json"
+    manifest.write_text(json.dumps({"trajectories": [{"seed": 601}]}))
+    raw = root / "seed602_X_BASE.npz"
+    raw.write_bytes(b"raw-file inventory evidence; no model execution")
+    assert scan_seed_collisions([root], {601, 602}) == [
+        {"seed": 601, "evidence": str(manifest)},
+        {"seed": 602, "evidence": str(raw)},
+    ]
+
+
 def test_post_collection_gate_exempts_only_complete_bound_raw_files(tmp_path):
     config, path, lock, kwargs = frozen_fixture(tmp_path)
     collection = tmp_path / "runs/modeling_contrast_v2/N4"

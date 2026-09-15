@@ -121,8 +121,16 @@ def preflight(config, config_path, settings, run_root, control):
         "--basetemp",
         str(fixture_root / f"preflight_{os.environ['SLURM_JOB_ID']}"),
     ]
+    test_environment = {**os.environ, "SSVC_TEST_PARENT_ROOT": str(parent.resolve())}
     with (control / "tests.log").open("w") as stream:
-        subprocess.run(command, cwd=ROOT, stdout=stream, stderr=subprocess.STDOUT, check=True)
+        subprocess.run(
+            command,
+            cwd=ROOT,
+            env=test_environment,
+            stdout=stream,
+            stderr=subprocess.STDOUT,
+            check=True,
+        )
     identity = verify_parent_runtime_identity(parent, temporary_root=settings["temporary_root"])
     if identity["status"] != "PASS":
         raise ValueError("server dataset or initialization identity mismatch")
@@ -140,6 +148,7 @@ def preflight(config, config_path, settings, run_root, control):
         "python": sys.version,
         "library_versions": _library_versions(),
         "test_command": command,
+        "test_parent_root": str(parent.resolve()),
         "test_log_sha256": sha256_file(control / "tests.log"),
         "identity": identity,
         "budget": budget,
