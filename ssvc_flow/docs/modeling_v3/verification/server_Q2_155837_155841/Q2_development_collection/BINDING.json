@@ -1,0 +1,59 @@
+{
+  "config_sha256": "b10feeb6ae4ce51bf0e13887c97135e6e64b8232850d89345e60bed6ab5ce00f",
+  "pilot": false,
+  "role": "development",
+  "source_hashes": {
+    "configs/modeling_qualification/protocol.json": "3cdcc7e82061db85aae55c1ea51b655caec2744db53b31a3613fafa3c297799e",
+    "src/__init__.py": "50a703cc52bc34025bddb66d0bfab19235d4a38e3342b2db96806f0a1db45f49",
+    "src/constraint_solver.py": "eab20b128ddf2abeca5f115dbc8c9d51c318d810188423fb44370efdd7443b7b",
+    "src/generate_worlds.py": "1741bf1443c56d0016e0134e7aa1b5e94f9388a64ad0c5dc7999db721284b4b0",
+    "src/modeling_contrast/__init__.py": "21db6f9e321911bba1958572b0b960ee20794fd5c800d1af162064535641239f",
+    "src/modeling_contrast/collect_fresh.py": "34f484b141ea975aa3f55ccfe868b0a4473f586477685a180bc89347c04b0919",
+    "src/modeling_contrast/io.py": "e616f0120a9dbd435fd1c096794417e831724c7a1264be4fdaaaf65b8309d54b",
+    "src/modeling_contrast/protocol.py": "de335b15e4968659081a2ff6f750a43dfd3179d859e5eb0d740b758517a5ac37",
+    "src/modeling_qualification/__init__.py": "3583c4b8553dcaa3fa5e6b0e3554a36bc38643eb7aecfbd65e79763c688436d1",
+    "src/modeling_qualification/toy.py": "9ab1df1d5f3267277f957d523d6dac99f741a1e3e151076f9d6066245644454c",
+    "src/modeling_v3/__init__.py": "e3ad615c14fb9e8a683a7728862578c8dafa013a473cc05b8ef2aa7a0676472d",
+    "src/modeling_v3/bank_selection.py": "b80c94c8b073a4caa15bd6c312222f8efea5e209e3b03dd86fb12214b61cc895",
+    "src/modeling_v3/covariance_pilot.py": "cea62b25ebc406011befd05195a7cb75ac1c516efcd27fbf06dfaa5393afef02",
+    "src/modeling_v3/coverage.py": "7c09d0ddf048cb49f7bf5c28796f149e8487377684c2f3bebfecfd9189cbfefd",
+    "src/modeling_v3/cpu_campaign.py": "4d88efb6762505b31c9c1a3079492f6bf0d50ad3af94c2b13c59bc965565885a",
+    "src/modeling_v3/cpu_results.py": "35a7c170aee8ee20ac055c44246dc00fbed587fdbf226e5321aa34901a41a650",
+    "src/modeling_v3/historical_observation.py": "8ce85ea33dd3eea3875092428671b9446fa8e73f3559b6651e01e44e7630f160",
+    "src/modeling_v3/io.py": "b4d97da77344b87ecc6881c43d2868118b834af0d5b73cb14440c838ed794f85",
+    "src/modeling_v3/observation_geometry.py": "64bca98509eb712b6f7b33b3bae6a4154da4dcca3a38571559658a1aad4601c4",
+    "src/modeling_v3/response_models.py": "9a03eb2e9e3e0456f32ae4ad2f9dce902c68569123055271b1484044ad5fb989",
+    "src/modeling_v3/schema.py": "f941eed9c79833b3e1d00614a37b768443ab9896f6821234fb2217be91e76837",
+    "src/modeling_v3/statistics.py": "cd1c0c12866a632ce951ace7045569bb3d5e45a59f5ec5e4a883ce4e6d6257c0",
+    "src/prompts.py": "40a68267cde748fbb52624a8f91d19e108b469d2ab89d9dbdba60e4bd5bc318a",
+    "src/render_charts.py": "610644abe443279f4908a91cddc1b69396b8402243f49082190cf3fb7ca45b98",
+    "src/verifiers.py": "03e3eb703707262f17b3e2581c450a05ce8200d7d169788bcf4834cbf39b1147"
+  },
+  "specs": [
+    {
+      "arm": "X_BASE",
+      "initialization_seed": 7001,
+      "role": "development",
+      "seed": 101
+    },
+    {
+      "arm": "X_VALID",
+      "initialization_seed": 7001,
+      "role": "development",
+      "seed": 101
+    },
+    {
+      "arm": "X_BASE",
+      "initialization_seed": 7001,
+      "role": "development",
+      "seed": 201
+    },
+    {
+      "arm": "X_VALID",
+      "initialization_seed": 7001,
+      "role": "development",
+      "seed": 201
+    }
+  ],
+  "stage": "toy_collection"
+}

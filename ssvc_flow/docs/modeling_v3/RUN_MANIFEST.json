@@ -1,0 +1,155 @@
+{
+  "schema": "ssvc-modeling-v3-execution-progress-1",
+  "updated_date": "2026-09-16",
+  "complete": false,
+  "scientific_status": "NOT_CERTIFIED",
+  "online_ssvc_effectiveness_claimed": false,
+  "first_gpu_authorization": "PENDING",
+  "new_gpu_jobs_submitted": 0,
+  "server_root": "/projects/varunssd/louis-ssvc/modeling_v3_20260915",
+  "pushed_implementation_commit": "63db1a2c0c4e9239e619c6d3485c3a0e23ef8e76",
+  "current_server_checkout": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/checkout",
+  "code_snapshot_manifest_sha256": "19307f860d96f23d29e708387f1fbdcf5bc88772543f862424f744f1a4bdcb4f",
+  "jobs": [
+    {
+      "id": "155686",
+      "stage": "earlier CPU timing pilot",
+      "status": "COMPLETED",
+      "scope": "PILOT_NOT_CONFIRMATION"
+    },
+    {
+      "id": "155775",
+      "stage": "Q0",
+      "status": "COMPLETED",
+      "scientific_evidence_status": "MISSING_INPUTS",
+      "integrity_errors": 0
+    },
+    {
+      "id": "155776",
+      "stage": "server CPU acceptance candidate03",
+      "status": "FAILED",
+      "reason": "two duplicate module names during pytest collection",
+      "superseded_by": "155797"
+    },
+    {
+      "id": "155783",
+      "stage": "Q1 historical fixed policy preparation",
+      "status": "COMPLETED",
+      "origin_views": 12,
+      "distinct_original_trajectories": 11
+    },
+    {
+      "id": "155792",
+      "stage": "Q1 timing pilot",
+      "status": "COMPLETED",
+      "scope": "PILOT_NOT_CONFIRMATION",
+      "observation_wall_seconds": 8.253987598931417
+    },
+    {
+      "id": "155797",
+      "stage": "server CPU acceptance candidate04",
+      "status": "FAILED",
+      "failures_observed_in_progress": true,
+      "final_result_not_yet_read": false,
+      "counts": {
+        "passed": 1837,
+        "failed": 4,
+        "errors": 0,
+        "skipped": 2
+      },
+      "deselected": 1,
+      "reason": "Legacy R1 supplement needs real Git commit objects; hashed code snapshot had no .git"
+    },
+    {
+      "id": "155812",
+      "stage": "Q1 complete observation grid",
+      "status": "RUNNING",
+      "grid": [
+        64,
+        256,
+        1024,
+        4096
+      ],
+      "repeats_per_unit": 200,
+      "last_observed_complete_units": 107
+    },
+    {
+      "id": "155837",
+      "stage": "Q2 full development collection",
+      "status": "COMPLETED",
+      "trajectory_count": 4,
+      "source_updates": 256,
+      "fork_updates": 1296,
+      "collection_wall_seconds": 11.834826042992063,
+      "output_bytes": 113990151
+    },
+    {
+      "id": "155841",
+      "stage": "Q2 coverage timing pilot",
+      "status": "COMPLETED",
+      "scope": "PILOT_NOT_CONFIRMATION",
+      "fit_count": 24,
+      "wall_seconds": 15.197812215075828,
+      "maximum_rss_kib": 528424
+    },
+    {
+      "id": "155844",
+      "stage": "Q2 complete coverage matrix",
+      "status": "COMPLETED",
+      "fits_planned": 13296,
+      "requested_mem_gib": 32,
+      "scheduler_enforced_mem_mib": 11264,
+      "last_observed_complete_origins": 12,
+      "slurm_wall_seconds": 1653,
+      "exit_code": "0:0",
+      "maximum_rss_kib": 6769008,
+      "raw_reported_r_less_k_fit_count": 584,
+      "original_analysis_pending": true
+    },
+    {
+      "id": "155873",
+      "stage": "Same candidate04 source with real Git snapshot objects: legacy failed module control",
+      "status": "COMPLETED",
+      "new_snapshot_git_commit": "ebfd4e322025825f55dfda50dc6308be72ae23f4",
+      "counts": {
+        "passed": 12,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "wall_seconds": 11.52764105796814,
+      "sources_unchanged_during_run": true
+    }
+  ],
+  "remaining": [
+    "Resolve full server CPU acceptance failures",
+    "Analyze completed Q1 outputs",
+    "Analyze completed full Q2 originals",
+    "Freeze method and thresholds from development evidence",
+    "Q3 interval calibration then independent test and orthogonal initializations",
+    "Prepare and review exact Q4 GPU launch command and timing estimates",
+    "Obtain explicit first GPU authorization",
+    "Q4 real two-GPU bridge",
+    "Q5 staged real source/forks/measurements/references",
+    "Q6 only after pointwise qualification",
+    "Final MODELING_DECISION_V3_zh.md"
+  ],
+  "latest_local_engineering": {
+    "passed": 388,
+    "seconds": 31.65,
+    "sources_unchanged": true,
+    "scope": "SMALL_FIXTURES_NOT_SCIENTIFIC_ACCEPTANCE",
+    "receipt": "verification/local_20260916_candidate05_final/receipt.json"
+  },
+  "scheduler_verified_limits": {
+    "rose": {
+      "max_jobs_per_user": 2,
+      "max_submit_per_user": 5
+    },
+    "soujanya-poria-startfund-2026-03": {
+      "max_jobs_per_user": null,
+      "max_submit_per_user": 5
+    },
+    "override_qos_used": false
+  }
+}

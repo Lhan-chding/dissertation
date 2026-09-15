@@ -171,16 +171,335 @@ def _vectors(forks, bank_ids):
     )
 
 
-def _method_lock(config, role, settings, selection_lock):
+DESIGN_FIELDS = (
+    "method",
+    "rank_cap",
+    "alpha",
+    "output_policy",
+    "regression",
+    "observation_method",
+    "selector",
+    "n_banks",
+    "selection_seed",
+)
+VLM_CRITERIA_SCOPE = {
+    "qualification_channels": ["delta_pX", "delta_pS", "delta_pW", "delta_pI"],
+    "primary_reporting_channels": ["delta_pX", "delta_v=-delta_pI"],
+    "maximum_q95_absolute_residual": (
+        "q95(abs(prediction-reference)+reference_empirical_half_width)"
+    ),
+    "maximum_nrmse": (
+        "sqrt(sum((abs(prediction-reference)+half_width)^2)"
+        "/sum(max(abs(reference)-half_width,0)^2))"
+    ),
+    "reference_precision": "Each reference empirical half-width <= reference_half_width_max",
+    "empty_accepted_set": "FAIL_NO_ACCEPTED_QUERIES",
+    "zero_reference_energy": "UNKNOWN_NOT_ZERO_ERROR",
+    "cross_seed_95": "NOT_CERTIFIED",
+}
+
+
+def _validate_vlm_selected(config, selected, parent):
+    if set(selected) != {"designs", "rho_threshold", "leverage_threshold", "pointwise_criteria"}:
+        raise ValueError("VLM selection requires explicit designs and pointwise/geometry criteria")
+    designs = selected["designs"]
+    if not isinstance(designs, list) or not designs:
+        raise ValueError("At least one actually evaluated VLM design is required")
+    ids, bodies = set(), set()
+    for design in designs:
+        if (
+            set(design) != {"design_id", *DESIGN_FIELDS}
+            or not isinstance(design["design_id"], str)
+            or not design["design_id"]
+        ):
+            raise ValueError(
+                "Every frozen design must declare all model/observation/selection fields"
+            )
+        body = canonical_hash({key: design[key] for key in DESIGN_FIELDS})
+        if design["design_id"] in ids or body in bodies:
+            raise ValueError("Duplicate VLM design identity or settings")
+        ids.add(design["design_id"])
+        bodies.add(body)
+        choices = (
+            ("method", "models"),
+            ("observation_method", "observation_methods"),
+            ("selector", "selection_rules"),
+        )
+        # CPU confirmation always generates these baselines at FULL, independently
+        # of the rank caps frozen for models that select response directions.
+        ranks = (
+            ["FULL"]
+            if design["method"] in {"ZERO", "FULL_RIDGE", "FULL_GLS", "RBF_RIDGE"}
+            else parent["selected"]["rank_caps"]
+        )
+        if design["rank_cap"] not in ranks or any(
+            design[key] not in parent["selected"][choices_key] for key, choices_key in choices
+        ):
+            raise ValueError("VLM design must remain inside the parent CPU selected matrix")
+        if (
+            design["method"] not in config["models"]["baselines"]
+            or design["method"] in {"DIRECT_MEASURE", "KNOWN_EVENT_SCORE"}
+            or design["observation_method"] in {"KNOWN_COV_ORACLE", "CROSSFIT_COV_ZERO_SUM"}
+            or design["rank_cap"] not in config["coverage"]["rank_caps"]
+            or (design["rank_cap"] != "FULL" and type(design["rank_cap"]) is not int)
+            or type(design["alpha"]) not in (int, float)
+            or design["alpha"] != parent["selected"]["alpha"]
+            or design["alpha"] not in config["models"]["ridge_alpha_grid"]
+            or design["output_policy"] != "RAW4"
+            or design["regression"] not in {"RIDGE", "GLS"}
+            or type(design["n_banks"]) is not int
+            or design["n_banks"] not in config["coverage"]["fit_bank_grid"]
+            or type(design["selection_seed"]) is not int
+            or design["selection_seed"] < 0
+        ):
+            raise ValueError("VLM design differs from the supported frozen protocol matrix")
+    for key in ("rho_threshold", "leverage_threshold"):
+        if (
+            type(selected[key]) not in (int, float)
+            or not math.isfinite(selected[key])
+            or selected[key] < 0
+        ):
+            raise ValueError("Explicit finite nonnegative geometry thresholds required")
+    criteria = selected["pointwise_criteria"]
+    expected = {
+        "primary_tolerance",
+        "reference_half_width_max",
+        "minimum_geometry_coverage",
+        "maximum_q95_absolute_residual",
+        "maximum_nrmse",
+    }
+    if (
+        set(criteria) != expected
+        or criteria["primary_tolerance"] != 0.001
+        or criteria["reference_half_width_max"] != 0.00025
+    ):
+        raise ValueError("All VLM pointwise criteria must be explicit at the preregistered scales")
+    if (
+        type(criteria["minimum_geometry_coverage"]) not in (int, float)
+        or not 0 <= criteria["minimum_geometry_coverage"] <= 1
+    ):
+        raise ValueError("minimum_geometry_coverage must lie in [0,1]")
+    residual = [criteria[k] for k in ("maximum_q95_absolute_residual", "maximum_nrmse")]
+    if all(value is None for value in residual) or any(
+        value is not None
+        and (type(value) not in (int, float) or not math.isfinite(value) or value < 0)
+        for value in residual
+    ):
+        raise ValueError("At least one finite nonnegative empirical residual criterion is required")
+
+
+def _complete_artifact(binding):
+    path = _read_binding(binding)
+    root = path.parent
+    if not (root / "COMPLETE.json").is_file() or verify_manifest(root).get("status") != "COMPLETE":
+        raise ValueError("Complete immutable original artifact required")
+    return _binding(root / "RUN_MANIFEST.json")
+
+
+def _development_completion(config, binding, *, fixture):
+    completion = _read(binding)
+    _check_identity(completion, config)
+    _complete_artifact(binding)
+    if (
+        completion.get("kind") != "V3_Q5_STAGE_COMPLETION"
+        or completion.get("role") != "development"
+        or completion.get("status") != "COMPLETE"
+        or completion.get("technical_failures")
+        or completion.get("expected_task_ids") != completion.get("completed_task_ids")
+    ):
+        raise ValueError("Complete development stage evidence required before VLM selection")
+    if fixture:
+        if completion.get("fixture") is not True:
+            raise ValueError("fixture selection cannot consume production completion")
+    else:
+        from .vlm_campaign import _verify_q5_completion
+
+        _verify_q5_completion(config, binding, "development")
+    return completion
+
+
+def _selection_evaluation(config, value, *, fixture):
+    document, binding = _bound_spec(value)
+    root = Path(binding["path"]).parent
+    original = [binding, _complete_artifact(binding)]
+    receipt, receipt_binding = _bound_spec(root / "RESPONSE_EVALUATION_RECEIPT.json")
+    spec, spec_binding = _bound_spec(receipt["evaluation_input"])
+    if document.get("kind") not in {"V3_RESPONSE_EVALUATION", "V3_Q5_REFERENCE_EVALUATION_INPUT"}:
+        raise ValueError("Development selection requires completed response evaluation inputs")
+    if binding not in (receipt_binding, spec_binding):
+        raise ValueError("Evaluation input is not the completed original response artifact")
+    prediction, prediction_binding = _bound_spec(receipt["prediction_binding"])
+    fit, fit_binding = _bound_spec(receipt["fit_spec"])
+    geometry, geometry_binding = _bound_spec(fit["geometry"])
+    for record in (receipt, spec, prediction, fit, geometry):
+        _check_identity(record, config)
+        if record.get("role") != "development" or record.get("fixture") is not fixture:
+            raise ValueError(
+                "VLM selection consumes development evidence only, in one fixture scope"
+            )
+        if record.get("origin_id") != spec["origin_id"]:
+            raise ValueError("Development fit, predictions and references have different origins")
+    if (
+        prediction.get("heldout_labels_read") is not False
+        or prediction.get("reference_labels_read") is not False
+        or prediction["fit_spec"] != fit_binding
+        or spec["prediction_lock"] != prediction_binding
+    ):
+        raise ValueError("Development predictions were not frozen before references")
+    for item in (receipt_binding, spec_binding, prediction_binding, fit_binding, geometry_binding):
+        original.extend((item, _complete_artifact(item)))
+    for record in (prediction, spec):
+        _read_binding(record["arrays"])
+        original.append(record["arrays"])
+    if not fixture:
+        # Cross-check the actual fork result and the measured runtime before using its labels.
+        from .vlm_campaign import _verified_execution
+
+        fork_result = _verified_execution(
+            Path(fit["forks"]["path"]).parent, config, unit="V3_FORKS"
+        )
+        _read_binding(fit["forks"])
+        if fork_result["identity"].get("Q4_bridge") is not False:
+            raise ValueError("Q4 bridge outputs cannot select Q5 confirmation methods")
+        original.append(fit["forks"])
+    settings = {key: fit[key] for key in DESIGN_FIELDS if key in fit}
+    settings.update(
+        selector=geometry["method"], n_banks=geometry["n_banks"], selection_seed=geometry["seed"]
+    )
+    if set(settings) != set(DESIGN_FIELDS):
+        raise ValueError("Development evaluation lacks complete model-selection settings")
+    return spec["origin_id"], settings, spec_binding, original
+
+
+def freeze_vlm_selection(
+    config,
+    parent_cpu_selection,
+    *,
+    development_completion,
+    evaluation_inputs,
+    selected,
+    out,
+    fixture=False,
+):
+    """Freeze explicit methods after all registered VLM development origins complete."""
+    _cpu_scope(fixture=fixture)
+    from .schema import verify_selection_lock
+
+    parent, parent_binding = _bound_spec(parent_cpu_selection)
+    verify_selection_lock(config, parent)
+    if parent.get("locked_test_opened") is not False:
+        raise ValueError("Parent CPU method selection must precede locked test access")
+    selected = _read(selected)
+    _validate_vlm_selected(config, selected, parent)
+    _, completion_binding = _bound_spec(development_completion)
+    completion = _development_completion(config, completion_binding, fixture=fixture)
+    seeds = config["qwen"]["seed_roles"]["development"]
+    if len(seeds) != 3:
+        raise ValueError("Exactly three frozen VLM development seeds are required")
+    origins = {f"{seed}_X_BASE_{step}" for seed in seeds for step in (32, 96)}
+    complete_origins = {
+        key.removeprefix("evaluation_")
+        for key in completion["verified_tasks"]
+        if key.startswith("evaluation_")
+    }
+    if complete_origins != origins:
+        raise ValueError("Development completion omits a registered response origin")
+    coverage = defaultdict(set)
+    bindings, originals = (
+        [],
+        [parent_binding, completion_binding, _complete_artifact(completion_binding)],
+    )
+    for value in evaluation_inputs:
+        origin, settings, binding, original = _selection_evaluation(config, value, fixture=fixture)
+        if origin not in origins:
+            raise ValueError("Only the registered development response origins may select methods")
+        if binding in bindings:
+            raise ValueError("Duplicate development evaluation input")
+        key = canonical_hash(settings)
+        if origin in coverage[key]:
+            raise ValueError("One development origin/design must not be counted twice")
+        coverage[key].add(origin)
+        bindings.append(binding)
+        originals.extend(original)
+    for design in selected["designs"]:
+        key = canonical_hash({field: design[field] for field in DESIGN_FIELDS})
+        if coverage[key] != origins:
+            raise ValueError(
+                "Every selected design needs actual evaluation on every development origin"
+            )
+    root = Path(out).resolve()
+    root.mkdir(parents=True, exist_ok=False)
+    lock = {
+        "kind": "V3_VLM_SELECTION_LOCK",
+        **_identity(config),
+        "selected": selected,
+        "selection_hash": canonical_hash(selected),
+        "parent_cpu_selection": parent_binding,
+        "development_completion": completion_binding,
+        "development_evaluation_inputs": bindings,
+        "original_bindings": list({canonical_hash(b): b for b in originals}.values()),
+        "development_seeds": sorted(seeds),
+        "development_origins": sorted(origins),
+        "locked_test_opened": False,
+        "calibration_opened": False,
+        "fixture": fixture,
+        "cross_seed_95": "NOT_CERTIFIED",
+        "status": "VLM_SELECTION_FROZEN",
+        "selection_scope": "Development-only method choice; no calibration or test qualification",
+        "criteria_scope": VLM_CRITERIA_SCOPE,
+    }
+    atomic_json(root / "VLM_SELECTION_LOCK.json", lock)
+    finalize_run(root, _identity(config), metadata={"role": "development", "fixture": fixture})
+    return {"status": lock["status"], "selection_lock": _binding(root / "VLM_SELECTION_LOCK.json")}
+
+
+def verify_vlm_selection_lock(config, lock, *, fixture=False):
+    """Verify a VLM lock and its frozen original evidence without opening test data."""
+    from .schema import verify_selection_lock
+
+    bound = not (isinstance(lock, dict) and "kind" in lock)
+    document, binding = _bound_spec(lock) if bound else (lock, None)
+    _check_identity(document, config)
+    if (
+        document.get("kind") != "V3_VLM_SELECTION_LOCK"
+        or document.get("fixture") is not fixture
+        or document.get("status") != "VLM_SELECTION_FROZEN"
+        or document.get("locked_test_opened") is not False
+        or document.get("selection_hash") != canonical_hash(document["selected"])
+        or document.get("criteria_scope") != VLM_CRITERIA_SCOPE
+    ):
+        raise ValueError("VLM selection identity/fixture/status mismatch")
+    if binding:
+        _complete_artifact(binding)
+    parent = _read(document["parent_cpu_selection"])
+    verify_selection_lock(config, parent)
+    _validate_vlm_selected(config, document["selected"], parent)
+    _development_completion(config, document["development_completion"], fixture=fixture)
+    for original in document["original_bindings"]:
+        _read_binding(original)
+    return document
+
+
+def _method_lock(config, role, settings, selection_lock, *, fixture=False):
     if selection_lock is None:
         if role != "development":
             raise PermissionError(
-                "Q5 calibration/test requires the frozen CPU method-selection lock"
+                "Q5 calibration/test requires the frozen VLM method-selection lock"
             )
         return None
     from .schema import verify_selection_lock
 
     lock, binding = _bound_spec(selection_lock)
+    if lock.get("kind") == "V3_VLM_SELECTION_LOCK":
+        lock = verify_vlm_selection_lock(config, binding, fixture=fixture)
+        if not any(
+            all(design.get(key) == value for key, value in settings.items())
+            for design in lock["selected"]["designs"]
+        ):
+            raise PermissionError("Requested settings do not match one complete frozen VLM design")
+        return binding
+    if role != "development":
+        raise PermissionError("Nondevelopment execution requires the VLM selection lock")
     verify_selection_lock(config, lock)
     chosen = lock["selected"]
     pairs = (
@@ -197,6 +516,92 @@ def _method_lock(config, role, settings, selection_lock):
     return binding
 
 
+def _prompt_groups(rows, prompt_ids, *, required=True):
+    """Use the frozen family/interface fields, never infer them from prompt text."""
+    if not isinstance(rows, list) or any(
+        not isinstance(row, dict) or not isinstance(row.get("prompt_id"), str) for row in rows
+    ):
+        raise ValueError("Frozen prompt group metadata must contain prompt records")
+    indexed = {row["prompt_id"]: row for row in rows}
+    if len(indexed) != len(rows) or not set(prompt_ids) <= set(indexed):
+        raise ValueError("Frozen group metadata has missing or duplicate prompt identities")
+    selected = [indexed[prompt_id] for prompt_id in prompt_ids]
+    if any(
+        not isinstance(row.get(key), str) or not row[key].strip()
+        for row in selected
+        for key in ("family", "interface")
+    ):
+        if not required:
+            return None
+        raise ValueError("Frozen prompt group metadata requires explicit family and interface")
+    return [[row["family"], row["interface"]] for row in selected]
+
+
+def _bank_stratification(forks, bank_ids, *, required=True):
+    plan = forks["plan"]
+    if "train_prompts" not in plan:
+        if not required:
+            return None, None
+        raise ValueError("Bank stratification requires original training prompt group metadata")
+    banks = {bank["bank_id"]: bank for bank in plan["banks"]}
+    groups = []
+    for bank_id in bank_ids:
+        prompt_ids = banks[bank_id].get("prompt_ids")
+        if (
+            not isinstance(prompt_ids, list)
+            or not prompt_ids
+            or len(prompt_ids) != len(set(prompt_ids))
+        ):
+            raise ValueError("Bank group metadata requires its distinct original prompt IDs")
+        group = _prompt_groups(plan["train_prompts"], prompt_ids)
+        groups.append(sorted(group))
+    # The multiset is the stratum: bank position, prompt order, labels and norms
+    # cannot change membership. JSON preserves unambiguous family/interface pairs.
+    strata = [json.dumps(group, ensure_ascii=False, separators=(",", ":")) for group in groups]
+    return strata, {
+        "kind": "FROZEN_BANK_PROMPT_GROUP_COMPOSITION",
+        "bank_plan": _binding(forks["root"] / "bank_plan.json"),
+        "group_fields": ["family", "interface"],
+        "bank_ids": list(bank_ids),
+        "bank_groups": groups,
+        "semantic_labels_used": False,
+    }
+
+
+def _probe_group_metadata(manifest, prompt_ids, *, required=True):
+    from .response_models import group_xv_map
+
+    tasks = manifest.get("tasks", [])
+    if not tasks:
+        raise ValueError("Probe grouping requires a frozen prompt file")
+    binding = tasks[0]["prompt_file"]
+    if any(task["prompt_file"] != binding for task in tasks):
+        raise ValueError("Probe grouping requires one identical frozen prompt file")
+    document = _read(binding)
+    rows = document.get("prompts") if isinstance(document, dict) else document
+    groups = _prompt_groups(rows, prompt_ids, required=required)
+    if groups is None:
+        # Legacy tiny fixtures for other methods do not exercise grouping.
+        # Production and GROUP_WEIGHTED_RESPONSE always require the metadata.
+        return None, None, None
+    keys = list(map(tuple, groups))
+    order = list(dict.fromkeys(keys))
+    return (
+        groups,
+        group_xv_map(keys),
+        {
+            "kind": "FROZEN_PROBE_GROUP_XV_AVERAGES",
+            "prompt_file": binding,
+            "probe_ids": list(prompt_ids),
+            "group_fields": ["family", "interface"],
+            "group_order": [list(group) for group in order],
+            "prompt_weighting": "EQUAL_PROMPT_WITHIN_GROUP",
+            "primary_channels": ["delta_pX", "delta_v=-delta_pI"],
+            "semantic_labels_used": False,
+        },
+    )
+
+
 def prepare_q5_geometry(
     config,
     *,
@@ -209,10 +614,19 @@ def prepare_q5_geometry(
     fixture=False,
 ):
     forks = _forks(forks_root, config, fixture=fixture)
-    lock = _method_lock(config, forks["role"], {"selector": selector}, selection_lock)
+    lock = _method_lock(
+        config,
+        forks["role"],
+        {"selector": selector, "n_banks": n_banks, "selection_seed": seed},
+        selection_lock,
+        fixture=fixture,
+    )
     bank_ids = [
         row["bank_id"] for row in forks["plan"]["banks"] if row["role"] == "calibration_pool"
     ]
+    strata, stratification = _bank_stratification(
+        forks, bank_ids, required=not fixture or selector == "STRATIFIED_RANDOM"
+    )
     updates, d0, vectors = _vectors(forks, bank_ids)
     if type(n_banks) is not int or not 1 <= n_banks <= len(bank_ids):
         raise ValueError("Select one or more complete calibration banks")
@@ -227,6 +641,8 @@ def prepare_q5_geometry(
         "role": forks["role"],
         "arrays": _binding(arrays),
         "bank_ids": bank_ids,
+        "strata": strata,
+        "bank_stratification": stratification,
         "contrast_ids": [r[0] for r in Q4_CONTRASTS],
         "n_banks": n_banks,
         "method": selector,
@@ -442,6 +858,13 @@ def prepare_q5_fit(
     _check_identity(geometry, config)
     if geometry["origin_id"] != forks["origin_id"] or geometry["forks"] != forks["binding"]:
         raise ValueError("Selected geometry comes from another frozen fork origin")
+    strata, stratification = _bank_stratification(
+        forks,
+        geometry["bank_ids"],
+        required=not fixture or geometry["method"] == "STRATIFIED_RANDOM",
+    )
+    if geometry.get("strata") != strata or geometry.get("bank_stratification") != stratification:
+        raise ValueError("Selected geometry changed its original bank group metadata")
     verify_manifest(selection_root)
     selection_receipt = _read(Path(selection_root) / "RECEIPT.json")
     if selection_receipt.get("input_binding", {}).get("spec_sha256") != geometry_binding["sha256"]:
@@ -456,6 +879,7 @@ def prepare_q5_fit(
         raise PermissionError("Only selected calibration-pool bank labels may enter fit")
     supplied = _read(model_spec)
     if set(supplied) - {
+        "design_id",
         "method",
         "rank_cap",
         "alpha",
@@ -475,9 +899,22 @@ def prepare_q5_fit(
     }
     if settings["output_policy"] != "RAW4":
         raise ValueError("Real response adapter preserves raw four-event output coordinates")
-    lock = _method_lock(
-        config, forks["role"], {**settings, "selector": geometry["method"]}, selection_lock
-    )
+    design_settings = {
+        **settings,
+        "selector": geometry["method"],
+        "n_banks": geometry["n_banks"],
+        "selection_seed": geometry["seed"],
+    }
+    lock = _method_lock(config, forks["role"], design_settings, selection_lock, fixture=fixture)
+    if geometry.get("selection_lock") != lock:
+        raise ValueError("Geometry and response fitting must share one frozen selection lock")
+    if lock and _read(lock).get("kind") == "V3_VLM_SELECTION_LOCK":
+        match = next(
+            design
+            for design in _read(lock)["selected"]["designs"]
+            if all(design.get(key) == value for key, value in design_settings.items())
+        )
+        design_settings["design_id"] = match["design_id"]
     query = [row["bank_id"] for row in forks["plan"]["banks"] if row["role"] == "heldout"]
     updates, d0, vectors = _vectors(forks, selected)
     query_updates, query_d0, query_vectors = _vectors(forks, query)
@@ -485,6 +922,12 @@ def prepare_q5_fit(
     query_units = [{"bank_id": b, "contrast_id": c[0]} for b in query for c in Q4_CONTRASTS]
     bundle, gen, score = _bundle(measurement_bundle, config, origin_id=forks["origin_id"])
     _verify_fork_policies(forks, gen["policies"])
+    prompts = gen["tasks"][0]["prompt_ids"]
+    probe_groups, group_map, probe_grouping = _probe_group_metadata(
+        {"tasks": gen["tasks"] + score["tasks"]},
+        prompts,
+        required=not fixture or settings["method"] == "GROUP_WEIGHTED_RESPONSE",
+    )
     candidates = {
         b + "/" + suffix for b in selected for suffix in ("joint_0", "joint_1", "no_x_off_1")
     }
@@ -492,7 +935,6 @@ def prepare_q5_fit(
     grouped, scored = _scoped_rows(
         bundle, gen, score, candidates=candidates, purpose="measurement", logs=logs
     )
-    prompts = gen["tasks"][0]["prompt_ids"]
     responses, covariances, pilot_raw, main_raw, diagnostics = [], [], [], [], []
     for prompt_id in prompts:
         estimate, batches, tails = _observation_estimate(
@@ -530,18 +972,21 @@ def prepare_q5_fit(
             "query_d0": query_d0,
             "raw_pilot_contributions": np.asarray(pilot_raw),
             "raw_main_contributions": np.asarray(main_raw),
+            **({"group_map": group_map} if group_map is not None else {}),
         },
     )
     spec = {
         "kind": "V3_Q5_RESPONSE_FIT",
         **_identity(config),
-        **settings,
+        **design_settings,
         "origin_id": forks["origin_id"],
         "role": forks["role"],
         "arrays": _binding(arrays),
         "calibration_units": units,
         "query_units": query_units,
         "probe_ids": prompts,
+        "probe_groups": probe_groups,
+        "probe_grouping": probe_grouping,
         "geometry": geometry_binding,
         "bank_selection": _binding(Path(selection_root) / "SELECTION.json"),
         "selection_lock": lock,
@@ -576,7 +1021,9 @@ def prepare_q5_fit(
     }
 
 
-def freeze_q5_predictions(config, *, fit_spec, fit_root, out, fixture=False):
+def freeze_q5_predictions(
+    config, *, fit_spec, fit_root, out, calibration_receipt=None, fixture=False
+):
     _cpu_scope(fixture=fixture)
     spec, spec_binding = _bound_spec(fit_spec)
     _check_identity(spec, config)
@@ -596,12 +1043,67 @@ def freeze_q5_predictions(config, *, fit_spec, fit_root, out, fixture=False):
     expected_shape = (len(spec["query_units"]), len(spec["probe_ids"]), 4)
     if predictions.shape != expected_shape:
         raise ValueError("Frozen predictions do not align with query units and fixed probes")
+    accepted = np.zeros(expected_shape[:-1], dtype=bool)
+    acceptance = None
+    if spec["role"] == "locked_test":
+        if calibration_receipt is None:
+            raise PermissionError(
+                "Locked-test predictions require the independent VLM calibration receipt"
+            )
+        from .vlm_results import derive_vlm_acceptance
+
+        acceptance = derive_vlm_acceptance(
+            config,
+            spec["selection_lock"],
+            calibration_receipt,
+            spec_binding,
+            _binding(model_arrays),
+            fixture=fixture,
+        )
+        accepted = np.asarray(acceptance["accepted"])
+        if accepted.dtype.kind != "b" or accepted.shape != expected_shape[:-1]:
+            raise ValueError(
+                "Calibration-derived acceptance does not align with frozen query predictions"
+            )
+    elif calibration_receipt is not None:
+        raise PermissionError(
+            "Development/calibration predictions must not consume calibration acceptance"
+        )
     root = Path(out).resolve()
     root.mkdir(parents=True, exist_ok=False)
     arrays = root / "PREDICTIONS.npz"
-    atomic_npz(
-        arrays, {"predictions": predictions, "accepted": np.zeros(expected_shape[:-1], dtype=bool)}
-    )
+    atomic_npz(arrays, {"predictions": predictions, "accepted": accepted})
+    acceptance_binding = None
+    if acceptance is not None:
+        from .workflow import array_identity
+
+        acceptance_arrays = root / "ACCEPTANCE_ARRAYS.npz"
+        atomic_npz(
+            acceptance_arrays,
+            {key: acceptance[key] for key in ("accepted", "rho", "leverage", "e_norm")},
+        )
+        acceptance_document = {
+            "kind": "V3_VLM_EMPIRICAL_GEOMETRY_ACCEPTANCE",
+            **_identity(config),
+            "origin_id": spec["origin_id"],
+            "role": spec["role"],
+            "fixture": fixture,
+            "fit_spec": spec_binding,
+            "model_arrays": _binding(model_arrays),
+            "prediction_arrays": _binding(arrays),
+            "arrays": _binding(acceptance_arrays),
+            "predictions_sha256": array_identity(predictions),
+            "accepted_sha256": array_identity(accepted),
+            "selection_binding": acceptance["selection_binding"],
+            "calibration_binding": acceptance["calibration_binding"],
+            "design_id": acceptance["design_id"],
+            "acceptance_kind": acceptance["acceptance_kind"],
+            "cross_seed_95": "NOT_CERTIFIED",
+            "reference_labels_used_for_mask": False,
+            "accepted_count": int(accepted.sum()),
+        }
+        atomic_json(root / "VLM_ACCEPTANCE_RECEIPT.json", acceptance_document)
+        acceptance_binding = _binding(root / "VLM_ACCEPTANCE_RECEIPT.json")
     lock = {
         "kind": "V3_FROZEN_PREDICTIONS",
         **_identity(config),
@@ -625,8 +1127,15 @@ def freeze_q5_predictions(config, *, fit_spec, fit_root, out, fixture=False):
         },
         "reference_labels_read": False,
         "heldout_labels_read": False,
-        "accepted_count": 0,
-        "acceptance_status": "UNKNOWN_PENDING_REAL_CALIBRATION_CRITERIA",
+        "accepted_count": int(accepted.sum()),
+        "acceptance_status": "V3_VLM_EMPIRICAL_GEOMETRY_ACCEPTANCE"
+        if acceptance
+        else "UNKNOWN_PENDING_REAL_CALIBRATION_CRITERIA",
+        "acceptance_receipt": acceptance_binding,
+        "calibration_receipt": acceptance["calibration_binding"] if acceptance else None,
+        "selection_lock": spec.get("selection_lock"),
+        "design_id": spec.get("design_id"),
+        "cross_seed_95": "NOT_CERTIFIED",
         "fixture": fixture,
         "requires_server_cpu": not fixture,
     }
@@ -637,6 +1146,60 @@ def freeze_q5_predictions(config, *, fit_spec, fit_root, out, fixture=False):
     return {
         "status": "PREDICTIONS_FROZEN_REFERENCE_NOT_OPENED",
         "prediction_lock": _binding(root / "PREDICTION_LOCK.json"),
+    }
+
+
+def verify_vlm_acceptance_receipt(config, binding, *, prediction, accepted, fixture=False):
+    """Recompute only frozen geometry/calibration gates; never read test reference labels."""
+    from .vlm_results import derive_vlm_acceptance
+    from .workflow import array_identity
+
+    receipt, receipt_binding = _bound_spec(binding)
+    _check_identity(receipt, config)
+    _complete_artifact(receipt_binding)
+    if (
+        receipt.get("kind") != "V3_VLM_EMPIRICAL_GEOMETRY_ACCEPTANCE"
+        or receipt.get("fixture") is not fixture
+        or receipt.get("role") != "locked_test"
+        or receipt.get("reference_labels_used_for_mask") is not False
+        or receipt.get("predictions_sha256") != array_identity(prediction)
+        or receipt.get("accepted_sha256") != array_identity(accepted)
+    ):
+        raise ValueError("VLM acceptance source/prediction/mask/fixture identity mismatch")
+    derived = derive_vlm_acceptance(
+        config,
+        receipt["selection_binding"],
+        receipt["calibration_binding"],
+        receipt["fit_spec"],
+        receipt["model_arrays"],
+        fixture=fixture,
+    )
+    if (
+        not np.array_equal(derived["accepted"], accepted)
+        or derived["design_id"] != receipt["design_id"]
+    ):
+        raise ValueError("Acceptance differs from the frozen geometry and independent calibration")
+    with np.load(_read_binding(receipt["model_arrays"]), allow_pickle=False) as data:
+        if not np.array_equal(data["predictions"], prediction, equal_nan=True):
+            raise ValueError("Accepted predictions differ from the original fitted model")
+    with np.load(_read_binding(receipt["prediction_arrays"]), allow_pickle=False) as data:
+        if not np.array_equal(data["accepted"], accepted) or not np.array_equal(
+            data["predictions"], prediction, equal_nan=True
+        ):
+            raise ValueError(
+                "Acceptance receipt does not bind the original frozen prediction array"
+            )
+    with np.load(_read_binding(receipt["arrays"]), allow_pickle=False) as data:
+        for key in ("accepted", "rho", "leverage", "e_norm"):
+            if not np.array_equal(data[key], derived[key], equal_nan=True):
+                raise ValueError("Saved acceptance geometry differs from the recomputed geometry")
+    return {
+        "kind": receipt["kind"],
+        "receipt": receipt_binding,
+        "design_id": receipt["design_id"],
+        "accepted_count": int(np.asarray(accepted).sum()),
+        "cross_seed_95": "NOT_CERTIFIED",
+        "reference_labels_used_for_mask": False,
     }
 
 
@@ -669,11 +1232,23 @@ def _reference_report(packet, scored, a, b, *, predictors, protocol, fixture, pr
         packet, scores_a, scores_b, proposal=proposal, origin_support_certified=True
     )
     if fixture and len(packet) not in protocol["looks"]:
+        from statistics import NormalDist
+
+        alpha = protocol["alpha"] / protocol["family_cells"] / 4 / len(protocol["looks"])
         report = _q4_reference_diagnostic(
             raw,
             tails,
             proposal=proposal,
-            alpha=protocol["alpha"] / protocol["family_cells"] / 4 / 5,
+            alpha=alpha,
+        )
+        report.update(
+            alpha_per_interval=alpha,
+            empirical_precision_met=False,
+            empirical_normal_half_width=(
+                NormalDist().inv_cdf(1 - alpha / 2) * np.asarray(report["standard_error"])
+            ).tolist()
+            if report["standard_error"] is not None
+            else None,
         )
     else:
         report = reference_packet_report(
@@ -742,6 +1317,54 @@ def _reference_batches(value, config, *, origin_id, policies, runtime_identity, 
     return bindings, grouped, scored
 
 
+def _reference_prediction_set(config, value, lock, lock_binding, *, fixture):
+    """Check the pre-generation design set before any nondevelopment reference labels."""
+    if lock["role"] == "development":
+        return None
+    from .vlm_observation import _worker_assignment
+
+    selection = verify_vlm_selection_lock(config, lock["selection_lock"], fixture=fixture)
+    expected = {design["design_id"] for design in selection["selected"]["designs"]}
+    document = _read(value)
+    batches = document["batches"] if set(document) == {"batches"} else [document]
+    set_binding = None
+    for batch in batches:
+        bundle = _read(batch)
+        for operation in ("generation", "scoring"):
+            manifest = _read(bundle[operation + "_manifest"])
+            validate_task_manifest(manifest, workers=manifest["workers"], verify_files=False)
+            for task in manifest["tasks"]:
+                worker = _worker_assignment(task, manifest["policies"], manifest["workers"])
+                root = Path(bundle[operation + "_root"]) / f"worker_{worker}" / task["output_path"]
+                identity = _read(root / "identity.json")
+                stage = _read(identity["run_identity"]["execution_stage_binding"])
+                candidate = stage["prediction_binding"]
+                prediction_set = _read(candidate)
+                _check_identity(prediction_set, config)
+                _complete_artifact(candidate)
+                if (
+                    prediction_set.get("kind") != "V3_FROZEN_PREDICTION_SET"
+                    or prediction_set.get("origin_id") != lock["origin_id"]
+                    or prediction_set.get("role") != lock["role"]
+                    or prediction_set.get("selection_lock") != lock["selection_lock"]
+                    or set(prediction_set.get("predictions", {})) != expected
+                    or prediction_set["predictions"].get(lock["design_id"]) != lock_binding
+                ):
+                    raise PermissionError(
+                        "Reference labels were not preceded by this entire frozen design set"
+                    )
+                for member in prediction_set["predictions"].values():
+                    _read_binding(member)
+                if set_binding is not None and candidate != set_binding:
+                    raise ValueError(
+                        "Reference extension batches changed the frozen prediction set"
+                    )
+                set_binding = candidate
+    if set_binding is None:
+        raise PermissionError("Nondevelopment reference requires a pre-generation prediction set")
+    return set_binding
+
+
 def prepare_q5_evaluation(
     config, *, prediction_lock, measurement_bundle, reference_bundle, out, fixture=False
 ):
@@ -758,7 +1381,6 @@ def prepare_q5_evaluation(
         or lock.get("fixture") is not fixture
         or lock.get("reference_labels_read") is not False
         or lock.get("heldout_labels_read") is not False
-        or lock.get("accepted_count") != 0
     ):
         raise PermissionError("Valid pre-reference prediction lock required")
     verify_manifest(Path(lock_binding["path"]).parent)
@@ -766,8 +1388,33 @@ def prepare_q5_evaluation(
         predictions, accepted = data["predictions"].copy(), data["accepted"].copy()
     units, prompts = lock["query_units"], lock["probe_ids"]
     shape = (len(units), len(prompts), 4)
-    if predictions.shape != shape or accepted.shape != shape[:-1] or accepted.any():
-        raise ValueError("Prediction axes/UNKNOWN acceptance mask changed")
+    if (
+        predictions.shape != shape
+        or accepted.shape != shape[:-1]
+        or accepted.dtype.kind != "b"
+        or lock.get("accepted_count") != int(accepted.sum())
+    ):
+        raise ValueError("Prediction axes/frozen acceptance mask changed")
+    if lock.get("acceptance_receipt") is not None:
+        verify_vlm_acceptance_receipt(
+            config,
+            lock["acceptance_receipt"],
+            prediction=predictions,
+            accepted=accepted,
+            fixture=fixture,
+        )
+        receipt_data = _read(lock["acceptance_receipt"])
+        if (
+            receipt_data["origin_id"] != lock["origin_id"]
+            or lock.get("role") != "locked_test"
+            or receipt_data["calibration_binding"] != lock.get("calibration_receipt")
+            or receipt_data["selection_binding"] != lock.get("selection_lock")
+        ):
+            raise ValueError("Prediction acceptance refers to another origin/calibration/selection")
+    elif accepted.any() or lock.get("role") == "locked_test":
+        raise PermissionError(
+            "Locked-test acceptance requires its independent calibration provenance"
+        )
     fit, fit_binding = _bound_spec(lock["fit_spec"])
     _check_identity(fit, config)
     if (
@@ -776,6 +1423,9 @@ def prepare_q5_evaluation(
         or fit["origin_id"] != lock["origin_id"]
     ):
         raise ValueError("Frozen query identity differs from selected calibration fit")
+    prediction_set = _reference_prediction_set(
+        config, reference_bundle, lock, lock_binding, fixture=fixture
+    )
     # This is the first boundary that opens heldout/reference semantic rows.
     measured, gen, score = _bundle(measurement_bundle, config, origin_id=lock["origin_id"])
     if measured != fit["measurement_bundle"]:
@@ -987,9 +1637,14 @@ def prepare_q5_evaluation(
         "role": lock["role"],
         "arrays": _binding(arrays_path),
         "prediction_lock": lock_binding,
+        "prediction_set": prediction_set,
         "query_units": units,
         "probe_ids": prompts,
         "reference_kind": "INDEPENDENT_NOISY_PRECISION_MASKED",
+        "acceptance_receipt": lock.get("acceptance_receipt"),
+        "calibration_receipt": lock.get("calibration_receipt"),
+        "selection_lock": lock.get("selection_lock"),
+        "design_id": lock.get("design_id"),
         "primary_delta_v": "-delta_pI",
         "fixture": fixture,
         "requires_server_cpu": not fixture,
@@ -1050,6 +1705,7 @@ def prepare_q5_evaluation(
         "origin_id": lock["origin_id"],
         "role": lock["role"],
         "prediction_binding": lock_binding,
+        "prediction_set": prediction_set,
         "reference_batches": reference,
         "current_draws": current_draws,
         "next_draws": max(next_options) if next_options else None,
@@ -1067,8 +1723,10 @@ def prepare_q5_evaluation(
         "origin_id": lock["origin_id"],
         "role": lock["role"],
         "status": "REFERENCE_EVALUATION_PREPARED",
+        "design_id": lock.get("design_id"),
         "prediction_lock": lock_binding,
         "prediction_binding": lock_binding,
+        "prediction_set": prediction_set,
         "fit_spec": fit_binding,
         "evaluation_input": _binding(root / "EVALUATION_INPUT.json"),
         "measurement_bundle": measured,
@@ -1077,7 +1735,15 @@ def prepare_q5_evaluation(
         "reference_status_counts": dict(statuses),
         "resolved_reference_cells": int(np.isfinite(primary_reference).all(-1).sum()),
         "all_case_count": len(units) * len(prompts),
-        "accepted_count": 0,
+        "accepted_count": int(accepted.sum()),
+        "accepted_unresolved_reference_count": int(
+            (accepted & ~np.isfinite(primary_reference).all(-1)).sum()
+        ),
+        "acceptance_receipt": lock.get("acceptance_receipt"),
+        "calibration_receipt": lock.get("calibration_receipt"),
+        "selection_lock": lock.get("selection_lock"),
+        "acceptance_mask_reselected_on_test": False,
+        "cross_seed_95": "NOT_CERTIFIED",
         "ranking_allowed": False,
         "online_ssvc": "NOT_CERTIFIED",
         "fixture": fixture,

@@ -1,0 +1,39 @@
+{
+  "schema": "ssvc-v3-compact-server-evidence-extract-1",
+  "source_retrieval": {
+    "files": {
+      "candidate04/Q2_coverage_full/BINDING.json": "5dd91b65851bba826af954c06249f8fc4052514c527e8220341cc8bf1860ecc5",
+      "candidate04/Q2_coverage_full/COVERAGE_SUMMARY.json": "c554ece87537a9952339accccd6db855c1c069de92e0e51a6ed4ac49994da3e1",
+      "candidate04/Q2_coverage_full/COMPLETE.json": "a8824d66b59d452cea26637ce9cd8c9edfeb36096deca4ddd3a0fc5c0e64a342",
+      "candidate04/Q2_coverage_full/DESIGNS.json": "c90819667e6f689d86c439978e1c82783f9af1d403fa8c33b96a05187145271f",
+      "candidate04/Q2-full-155844.out": "4a0a7943f374f2ba1291c52b32ba8b7f73a4c0b3efb221448adf4588516f8a2d",
+      "candidate04/Q2-full-155844.err": "2ac2f9edbb1a967cc37ef7fed65f9ff9201498029e3cc47df24f82715ff68559",
+      "candidate04/Q2_FULL_SUBMIT_RECEIPT.json": "90336f8148dafde6a673985609542e11abc8ed772edec4ac834a1c00a3208fae",
+      "candidate04_gitcontrol/legacy_git_tests/result.json": "72689131f7929e22b0b1af4d68c475d5e8dab8cf4f63880f5e370cafdc5dbc8d",
+      "candidate04_gitcontrol/legacy_git_tests/invocation.json": "c492473107c94917e6c62c97f0387f34663d1a4749da2638a33f94aeb396e927",
+      "candidate04_gitcontrol/legacy_git_tests/pytest.log": "90dc4b5b40bb35b62f2ca438d7defb9742c2e923bbf6679994502645e9c4ed67",
+      "candidate04_gitcontrol/legacy_git_tests/junit.xml": "acaa6587fa412fc602958ba9eb0218de35d6587d35b50ea3b18103397f5fefcf",
+      "candidate04_gitcontrol/SNAPSHOT_GIT_RECEIPT.json": "fefeb605674dda6297452285bb7fb0d01428d21e4341c9bdf7b7e2db35b97540"
+    },
+    "archive_sha256": "b1f57ab050e0afcea50cb3901ce60667140398bb15b8835d20fc2ad37c807157",
+    "archive_bytes": 25931637,
+    "verified": true,
+    "scope": "COMPACT_RECEIPTS_NOT_FULL_REPLAY_BUNDLE"
+  },
+  "summary_top_level": {
+    "fit_count": 13296,
+    "fixed_cost_definition": "equal m*n contrast draws (rounded); generated/scored actions and actual time reported separately",
+    "pilot": false,
+    "r_less_k_fit_count": 584,
+    "refusal_scope": "geometry-only rejection; accepted empirical-error envelopes require interval calibration",
+    "role": "development",
+    "scientific_status": "DEVELOPMENT_ONLY",
+    "stage": "Q2",
+    "status": "MEASURED_NOT_SCIENTIFIC_PASS",
+    "wall_seconds": 1572.817636705935
+  },
+  "original_complete_path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_full/COMPLETE.json",
+  "maximum_rss_kib": 6769008,
+  "slurm_wall_seconds": 1653,
+  "not_full_replay_bundle": true
+}

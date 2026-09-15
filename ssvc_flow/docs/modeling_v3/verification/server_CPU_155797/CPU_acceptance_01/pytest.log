@@ -1,0 +1,111 @@
+.ss..................................................................... [  3%]
+........................................................................ [  7%]
+........................................................................ [ 11%]
+........................................................................ [ 15%]
+........................................................................ [ 19%]
+........................................................................ [ 23%]
+........................................................................ [ 27%]
+........................................................................ [ 31%]
+........................................................................ [ 35%]
+........................................................................ [ 39%]
+........................................................................ [ 42%]
+........................................................................ [ 46%]
+........................................................................ [ 50%]
+........................................................................ [ 54%]
+........................................................................ [ 58%]
+........................................................................ [ 62%]
+.....................................................................F.. [ 66%]
+....FFF................................................................. [ 70%]
+........................................................................ [ 74%]
+........................................................................ [ 78%]
+........................................................................ [ 82%]
+........................................................................ [ 85%]
+........................................................................ [ 89%]
+........................................................................ [ 93%]
+........................................................................ [ 97%]
+...........................................                              [100%]
+=================================== FAILURES ===================================
+_________ test_warm_zero_lambda_and_order_controls_use_no_new_samples __________
+
+evidence = (PosixPath('/projects/_ssd/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/CPU_acceptance_01/fixtures/test_warm_zero_lambda_and_orde0/source'), <test_r1_reference_smoke.ValidMixAdapter object at 0x79769ab61e50>)
+tmp_path = PosixPath('/projects/_ssd/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/CPU_acceptance_01/fixtures/test_warm_zero_lambda_and_orde0')
+
+    def test_warm_zero_lambda_and_order_controls_use_no_new_samples(evidence, tmp_path):
+        root, adapter = evidence
+        before_files = snapshot(root)
+        before_model = parameter_hash(adapter.model, trainable=True)
+        generated_before = adapter.generation_calls
+        result = run_fixture(evidence, tmp_path)
+>       assert result["status"] == "PASS", result
+E       AssertionError: {'batched_model_forward': 'NOT_ADOPTED_UNVERIFIED', 'error': 'ValueError: Original source commit is not an immutable Git revision', 'execution_kind': 'CPU_FAKE_ADAPTER_FIXTURE', 'measurement': {}, ...}
+E       assert 'FAIL' == 'PASS'
+E         
+E         - PASS
+E         + FAIL
+
+tests/test_r1_supplement.py:83: AssertionError
+_________________________ test_empty_adam_is_rejected __________________________
+
+evidence = (PosixPath('/projects/_ssd/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/CPU_acceptance_01/fixtures/test_empty_adam_is_rejected0/source'), <test_r1_reference_smoke.ValidMixAdapter object at 0x79769b187320>)
+tmp_path = PosixPath('/projects/_ssd/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/CPU_acceptance_01/fixtures/test_empty_adam_is_rejected0')
+
+    def test_empty_adam_is_rejected(evidence, tmp_path):
+        root, _ = evidence
+        lock = json.loads((root / "smoke/runtime_lock.json").read_text())
+        path = root / "smoke/resume_probe.pt"
+        state = load_checkpoint(path, lock["identity"])
+        state["optimizer"]["state"] = {}
+        save_checkpoint(path, state, lock["identity"])
+        result = run_fixture(evidence, tmp_path)
+        assert result["status"] == "FAIL"
+>       assert "checkpoint" in result["error"]
+E       AssertionError: assert 'checkpoint' in 'ValueError: Original source commit is not an immutable Git revision'
+
+tests/test_r1_supplement.py:165: AssertionError
+___________ test_stored_old_likelihood_mismatch_stops_before_updates ___________
+
+evidence = (PosixPath('/projects/_ssd/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/CPU_acceptance_01/fixtures/test_stored_old_likelihood_mis0/source'), <test_r1_reference_smoke.ValidMixAdapter object at 0x79769b187800>)
+tmp_path = PosixPath('/projects/_ssd/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/CPU_acceptance_01/fixtures/test_stored_old_likelihood_mis0')
+
+    def test_stored_old_likelihood_mismatch_stops_before_updates(evidence, tmp_path):
+        root, _ = evidence
+        path = root / "smoke/samples.jsonl"
+        rows = [json.loads(line) for line in path.read_text().splitlines()]
+        for row in rows:
+            if row["optimizer_step"] == 1:
+                row["old_logprobs"] = [value + 0.2 for value in row["old_logprobs"]]
+        path.write_text("".join(json.dumps(row) + "\n" for row in rows))
+        result = run_fixture(evidence, tmp_path)
+        assert result["status"] == "FAIL"
+>       assert "old likelihood differs" in result["error"]
+E       AssertionError: assert 'old likelihood differs' in 'ValueError: Original source commit is not an immutable Git revision'
+
+tests/test_r1_supplement.py:178: AssertionError
+____________ test_generic_lambda_zero_bug_is_detected_independently ____________
+
+evidence = (PosixPath('/projects/_ssd/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/CPU_acceptance_01/fixtures/test_generic_lambda_zero_bug_i0/source'), <test_r1_reference_smoke.ValidMixAdapter object at 0x79769b1974d0>)
+tmp_path = PosixPath('/projects/_ssd/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/CPU_acceptance_01/fixtures/test_generic_lambda_zero_bug_i0')
+
+    def test_generic_lambda_zero_bug_is_detected_independently(evidence, tmp_path):
+        from src.grpo_update import reward_channels
+    
+        def incorrect(category, arm="X_BASE", auxiliary_weight=None):
+            value = reward_channels(category, arm, auxiliary_weight)
+            return {**value, "sum": value["sum"] + 1} if auxiliary_weight == 0 else value
+    
+        with patch("src.r1_supplement.reward_channels", side_effect=incorrect):
+            result = run_fixture(evidence, tmp_path)
+        assert result["status"] == "FAIL"
+>       assert result["lambda_zero_control"]["rewards_equal"] is False
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'lambda_zero_control'
+
+tests/test_r1_supplement.py:193: KeyError
+=========================== short test summary info ============================
+SKIPPED [1] tests/modeling_contrast/test_c1_packets.py:41: local immutable legacy and N1 regression evidence unavailable
+SKIPPED [1] tests/modeling_contrast/test_c1_packets.py:84: local immutable legacy regression evidence unavailable
+FAILED tests/test_r1_supplement.py::test_warm_zero_lambda_and_order_controls_use_no_new_samples
+FAILED tests/test_r1_supplement.py::test_empty_adam_is_rejected - AssertionEr...
+FAILED tests/test_r1_supplement.py::test_stored_old_likelihood_mismatch_stops_before_updates
+FAILED tests/test_r1_supplement.py::test_generic_lambda_zero_bug_is_detected_independently
+4 failed, 1837 passed, 2 skipped, 1 deselected in 2020.88s (0:33:40)

@@ -186,6 +186,45 @@ def test_authorization_is_checked_before_model_import_or_bound_files(tmp_path):
         )
 
 
+def test_pair_allocation_uuid_mismatch_stops_before_loading_model(monkeypatch):
+    import torch
+
+    from src import followup_backend, next_stage_runtime
+
+    monkeypatch.setattr(campaign, "audit_v3_compatibility", lambda *a: {})
+    monkeypatch.setattr(campaign, "_bound_json", lambda *a: {"gate": {}})
+    monkeypatch.setattr(torch.cuda, "is_available", lambda: True)
+    monkeypatch.setattr(torch.cuda, "device_count", lambda: 1)
+    monkeypatch.setattr(
+        campaign, "_allocated_gpu_info", lambda: {"uuid": "GPU-actual", "name": "RTX PRO 6000"}
+    )
+    monkeypatch.setenv("SSVC_V3_EXPECTED_GPU_UUID", "GPU-other")
+    monkeypatch.setattr(
+        next_stage_runtime,
+        "validate_runtime_environment",
+        lambda *a: pytest.fail("must check actual allocation UUID before environment/model load"),
+    )
+    monkeypatch.setattr(
+        followup_backend,
+        "_load_local_adapter",
+        lambda *a: pytest.fail("must not load model on an unexpected GPU"),
+    )
+    with pytest.raises(ValueError, match="GPU UUID differs"):
+        campaign.load_runtime(
+            config(),
+            {
+                "parent_validated_plan": {},
+                "v3_probability_tolerances": {
+                    "mean_abs_token_logp": 1e-5,
+                    "max_abs_token_logp": 1e-5,
+                    "max_abs_sequence_logp": 1e-4,
+                },
+            },
+            allow_gpu=True,
+            acknowledge_new_experiment=True,
+        )
+
+
 def test_actual_cpu_adam_source_restores_resume_and_tamper_detection(tmp_path):
     from src.followup_updates import load_checkpoint
     from src.optimizer_fork import state_hash

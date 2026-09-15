@@ -81,6 +81,16 @@ def _verify_acceptance_receipt(config, spec, prediction, accepted, spec_path):
     if sha256_file(path) != binding["sha256"]:
         raise ValueError("acceptance receipt hash mismatch")
     receipt = json.loads(path.read_text())
+    if receipt.get("kind") == "V3_VLM_EMPIRICAL_GEOMETRY_ACCEPTANCE":
+        from .vlm_response import verify_vlm_acceptance_receipt
+
+        return verify_vlm_acceptance_receipt(
+            config,
+            {"path": str(path.resolve()), "sha256": binding["sha256"]},
+            prediction=prediction,
+            accepted=accepted,
+            fixture=spec.get("fixture") is True,
+        )
     expected = {
         "schema": "ssvc-v3-acceptance-receipt-1",
         "status": "ACCEPTANCE_FROZEN",
@@ -270,20 +280,32 @@ def run_artifact_command(command, config, inputs, out):
         if (
             accepted.dtype.kind != "b"
             or accepted.shape != resolved.shape
-            or np.any(accepted & ~resolved)
+            or np.any(accepted & ~np.isfinite(prediction).all(axis=-1))
         ):
-            raise ValueError("explicit acceptance mask must be boolean, aligned, and resolved")
+            raise ValueError(
+                "explicit acceptance mask must be boolean, aligned, and predictions finite"
+            )
         if accepted.any():
             result["acceptance_provenance"] = _verify_acceptance_receipt(
                 config, spec, prediction, accepted, inputs[0]
             )
         loss = np.mean((prediction - truth) ** 2, axis=-1)
+        accepted_resolved = accepted & resolved
+        accepted_unresolved = accepted & ~resolved
         result["risk_coverage"] = {
             "all_cases": int(resolved.size),
             "accepted_cases": int(accepted.sum()),
             "unknown_cases": int((~accepted).sum()),
             "coverage": float(accepted.mean()),
-            "accepted_risk": float(loss[accepted].mean()) if accepted.any() else None,
+            "accepted_resolved_cases": int(accepted_resolved.sum()),
+            "accepted_unresolved_cases": int(accepted_unresolved.sum()),
+            "accepted_risk": float(loss[accepted].mean())
+            if accepted.any() and not accepted_unresolved.any()
+            else None,
+            "accepted_resolved_risk": float(loss[accepted_resolved].mean())
+            if accepted_resolved.any()
+            else None,
+            "mask_unchanged_by_test_reference": True,
             "all_case_model_loss": float(loss.mean()) if resolved.all() else None,
         }
         if "all_case_baseline_loss" in arrays:

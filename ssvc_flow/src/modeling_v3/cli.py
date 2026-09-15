@@ -34,11 +34,20 @@ def parser():
         "prepare-geometry",
         "prepare-fit",
         "freeze-predictions",
+        "freeze-prediction-set",
         "prepare-evaluation",
         "analyze-observation",
+        "analyze-coverage",
         "finalize-stage",
         "calibrate-cpu",
         "analyze-cpu",
+        "analyze-cpu-generalization",
+        "freeze-vlm",
+        "calibrate-vlm",
+        "analyze-vlm",
+        "prepare-q6",
+        "prepare-q6-forks",
+        "measure-q6-absolute",
         "vlm-smoke",
         "train-source",
         "make-forks",
@@ -82,11 +91,35 @@ def parser():
         if name == "prepare-gpu":
             p.add_argument("--bindings", required=True)
             p.add_argument("--cpu-tests", required=True)
-        if name in {"calibrate-cpu", "analyze-cpu"}:
+            p.add_argument("--development-roots", nargs=2, required=True)
+        if name in {"calibrate-cpu", "analyze-cpu", "analyze-cpu-generalization"}:
             p.add_argument("--lock", required=True)
             p.add_argument("--inputs", nargs="+", required=True)
-        if name == "analyze-cpu":
+        if name in {"analyze-cpu", "analyze-cpu-generalization"}:
             p.add_argument("--calibration-receipt", required=True)
+        if name == "freeze-vlm":
+            p.add_argument("--parent-cpu-lock", required=True)
+            p.add_argument("--development-completion", required=True)
+            p.add_argument("--selection", required=True)
+            p.add_argument("--inputs", nargs="+", required=True)
+        if name in {"calibrate-vlm", "analyze-vlm"}:
+            p.add_argument("--lock", required=True)
+            p.add_argument("--stage-completion", required=True)
+            p.add_argument("--inputs", nargs="+", required=True)
+        if name == "analyze-vlm":
+            p.add_argument("--calibration-receipt", required=True)
+        if name == "prepare-q6":
+            for field in ("bindings", "qualification", "fit-spec", "model", "source-result"):
+                p.add_argument("--" + field, required=True)
+            p.add_argument("--phase", choices=["anchor", "reference"], default="anchor")
+            p.add_argument("--previous-measurement")
+            p.add_argument("--prediction-lock")
+        if name == "prepare-q6-forks":
+            for field in ("bindings", "qualification", "design-id", "source-root"):
+                p.add_argument("--" + field, required=True)
+        if name == "measure-q6-absolute":
+            p.add_argument("--plan", required=True)
+            p.add_argument("--worker-root", required=True)
         if name == "merge-q4":
             p.add_argument("--worker-receipts", required=True)
         if name in {
@@ -105,6 +138,7 @@ def parser():
             )
             p.add_argument("--lock")
             p.add_argument("--previous-completion")
+            p.add_argument("--calibration-receipt")
         if name == "prepare-forks":
             p.add_argument("--source-root", required=True)
         if name == "prepare-observation":
@@ -139,10 +173,13 @@ def parser():
         if name == "freeze-predictions":
             p.add_argument("--fit-spec", required=True)
             p.add_argument("--fit-root", required=True)
+            p.add_argument("--calibration-receipt")
+        if name == "freeze-prediction-set":
+            p.add_argument("--inputs", nargs="+", required=True)
         if name == "prepare-evaluation":
             for field in ("prediction-lock", "measurement-bundle", "reference-bundle"):
                 p.add_argument("--" + field, required=True)
-        if name == "analyze-observation":
+        if name in {"analyze-observation", "analyze-coverage"}:
             p.add_argument("--inputs", nargs="+", required=True)
         if name == "finalize-stage":
             p.add_argument("--bindings", required=True)
@@ -252,9 +289,7 @@ def dispatch(args):
             existing_run_roots=args.existing_run_roots,
             seed_subset=args.seeds,
             arm_subset=args.arms,
-            calibration_receipt=_read(args.calibration_receipt)
-            if args.calibration_receipt
-            else None,
+            calibration_receipt=args.calibration_receipt,
         )
     if args.command == "plan-gpu":
         from .vlm_campaign import plan_gpu
@@ -263,7 +298,13 @@ def dispatch(args):
     if args.command == "prepare-gpu":
         from .server_preparation import prepare_gpu
 
-        return prepare_gpu(config, _read(args.bindings), args.cpu_tests, args.out)
+        return prepare_gpu(
+            config,
+            _read(args.bindings),
+            args.cpu_tests,
+            args.out,
+            development_roots=args.development_roots,
+        )
     if args.command == "merge-q4":
         from .vlm_campaign import finalize_q4_bridge
 
@@ -280,6 +321,9 @@ def dispatch(args):
             selection_lock=_file_binding(args.lock) if args.lock else None,
             previous_completion=_file_binding(args.previous_completion)
             if args.previous_completion
+            else None,
+            calibration_receipt=_file_binding(args.calibration_receipt)
+            if args.calibration_receipt
             else None,
         )
     if args.command == "prepare-forks":
@@ -354,6 +398,7 @@ def dispatch(args):
             config,
             fit_spec=args.fit_spec,
             fit_root=args.fit_root,
+            calibration_receipt=args.calibration_receipt,
             out=args.out,
         )
     if args.command == "prepare-evaluation":
@@ -366,10 +411,20 @@ def dispatch(args):
             reference_bundle=args.reference_bundle,
             out=args.out,
         )
+    if args.command == "freeze-prediction-set":
+        from .vlm_campaign import freeze_q5_prediction_set
+
+        return freeze_q5_prediction_set(
+            config, [_file_binding(path) for path in args.inputs], out=args.out
+        )
     if args.command == "analyze-observation":
         from .q1_results import analyze_observation
 
         return analyze_observation(config, args.inputs, args.out, resume=args.resume)
+    if args.command == "analyze-coverage":
+        from .q2_results import analyze_coverage
+
+        return analyze_coverage(config, args.inputs, args.out)
     if args.command == "finalize-stage":
         from .vlm_campaign import finalize_q5_stage
 
@@ -383,7 +438,78 @@ def dispatch(args):
         if args.command == "calibrate-cpu":
             return analyze_calibration(config, lock, args.inputs, args.out)
         return analyze_test(
-            config, lock, args.inputs, args.out, calibration_receipt=_read(args.calibration_receipt)
+            config, lock, args.inputs, args.out, calibration_receipt=args.calibration_receipt
+        )
+    if args.command == "analyze-cpu-generalization":
+        from .cpu_generalization import analyze_generalization
+
+        return analyze_generalization(
+            config,
+            verify_selection_lock(config, args.lock),
+            args.inputs,
+            args.out,
+            calibration_receipt=args.calibration_receipt,
+        )
+    if args.command == "freeze-vlm":
+        from .vlm_response import freeze_vlm_selection
+
+        return freeze_vlm_selection(
+            config,
+            args.parent_cpu_lock,
+            development_completion=args.development_completion,
+            evaluation_inputs=args.inputs,
+            selected=_read(args.selection),
+            out=args.out,
+        )
+    if args.command in {"calibrate-vlm", "analyze-vlm"}:
+        from .vlm_results import analyze_vlm_calibration, analyze_vlm_test
+
+        kwargs = {
+            "stage_completion": args.stage_completion,
+            "evaluation_inputs": args.inputs,
+            "out": args.out,
+        }
+        if args.command == "calibrate-vlm":
+            return analyze_vlm_calibration(config, args.lock, **kwargs)
+        return analyze_vlm_test(
+            config, args.lock, calibration_receipt=args.calibration_receipt, **kwargs
+        )
+    if args.command == "prepare-q6":
+        from .q6_observation import prepare_q6_observation
+
+        return prepare_q6_observation(
+            config,
+            _read(args.bindings),
+            qualification_binding=_file_binding(args.qualification),
+            fit_binding=_file_binding(args.fit_spec),
+            model_binding=_file_binding(args.model),
+            source_binding=_file_binding(args.source_result),
+            out=args.out,
+            phase=args.phase,
+            previous_measurement=_file_binding(args.previous_measurement)
+            if args.previous_measurement
+            else None,
+            prediction_lock=_file_binding(args.prediction_lock) if args.prediction_lock else None,
+        )
+    if args.command == "prepare-q6-forks":
+        from .vlm_campaign import prepare_q6_forks
+
+        return prepare_q6_forks(
+            config,
+            _read(args.bindings),
+            qualification_binding=_file_binding(args.qualification),
+            design_id=args.design_id,
+            source_root=args.source_root,
+            out=args.out,
+        )
+    if args.command == "measure-q6-absolute":
+        from .q6_observation import measure_q6_absolute
+
+        return measure_q6_absolute(
+            config,
+            plan_binding=_file_binding(args.plan),
+            worker_root=args.worker_root,
+            out=args.out,
         )
     if args.command in {"vlm-smoke", "train-source", "make-forks", "observe-vlm"}:
         if not args.allow_gpu or not args.acknowledge_new_experiment:
@@ -451,7 +577,7 @@ def dispatch(args):
     if args.command == "track-offline":
         from .tracking_offline import track_offline
 
-        return track_offline(_read(args.inputs[0]), args.out)
+        return track_offline(_read(args.inputs[0]), args.out, config=config)
     if args.command in {"select", "fit", "evaluate", "summarize"}:
         from .workflow import run_artifact_command
 

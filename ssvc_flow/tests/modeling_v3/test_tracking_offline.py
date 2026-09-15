@@ -51,7 +51,10 @@ def test_no_pointwise_qualification_no_references_read(tmp_path):
     value = inputs()
     value["qualification"]["pointwise_qualified"] = False
     value["reference_binding"] = {"path": str(tmp_path / "not-readable.json"), "sha256": "bad"}
-    assert track_offline(value, tmp_path / "out")["status"] == "NOT_QUALIFIED_FOR_TRACKING"
+    assert (
+        track_offline(value, tmp_path / "out", fixture=True)["status"]
+        == "NOT_QUALIFIED_FOR_TRACKING"
+    )
 
 
 def test_intermediate_error_survives_zero_endpoint_and_reference_uncertainty(tmp_path):
@@ -68,7 +71,7 @@ def test_intermediate_error_survives_zero_endpoint_and_reference_uncertainty(tmp
         tracking_config={"horizons": [1, 2, 3]},
         interval_half_width=0.005,
     )
-    result = track_offline(value, tmp_path / "out")
+    result = track_offline(value, tmp_path / "out", fixture=True)
     final = result["assessment"]["windows"][-1]
     assert final["window_maximum_prediction_error"] == pytest.approx(0.04)
     assert final["intermediate"][-1]["maximum_event_error"] == 0
@@ -89,4 +92,4 @@ def test_basis_change_nonorthogonal_and_missing_vlm_uncertainty_rejected(tmp_pat
     path.write_text(json.dumps({"kind": "REAL_VLM_ESTIMATE", "probabilities": [[0.25] * 4] * 3}))
     value["reference_binding"] = {"path": str(path), "sha256": file_hash(path)}
     with pytest.raises(ValueError, match="uncertainty"):
-        track_offline(value, tmp_path / "out")
+        track_offline(value, tmp_path / "out", fixture=True)

@@ -1,0 +1,9 @@
+{
+  "schema": "ssvc-v3-server-snapshot-git-1",
+  "checkout": "/projects/_ssd/varunssd/louis-ssvc/modeling_v3_20260915/candidate04_gitcontrol/checkout",
+  "snapshot_manifest_sha256": "19307f860d96f23d29e708387f1fbdcf5bc88772543f862424f744f1a4bdcb4f",
+  "snapshot_git_commit": "ebfd4e322025825f55dfda50dc6308be72ae23f4",
+  "commit_scope": "NEW_LOCAL_SNAPSHOT_COMMIT; NOT_UPSTREAM_HISTORY",
+  "verified_file_count": 998,
+  "data_views_staged": false
+}

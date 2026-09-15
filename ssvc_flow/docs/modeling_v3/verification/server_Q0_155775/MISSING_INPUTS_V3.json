@@ -1,0 +1,20 @@
+{
+  "status": "MISSING_INPUTS",
+  "missing_inputs": [
+    {
+      "scope": "legacy_count_only_draws",
+      "detail": "original reused count packets retain counts without individual actions; no action sequence reconstructed",
+      "status": "MISSING_INPUTS"
+    },
+    {
+      "scope": "legacy_packet_roles",
+      "detail": "V2 has no explicit V3 pilot/main/reference roles; do not relabel as independent pilot",
+      "status": "MISSING_INPUTS"
+    },
+    {
+      "scope": "original_Q_U_C",
+      "detail": "96 original prediction units did not retain Q/U/C arrays; no reconstructed matrices claimed as originals",
+      "status": "MISSING_INPUTS"
+    }
+  ]
+}

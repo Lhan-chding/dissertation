@@ -52,11 +52,29 @@ def main():
         "TRANSFORMERS_OFFLINE": "1",
         "TOKENIZERS_PARALLELISM": "false",
         "PYTHONDONTWRITEBYTECODE": "1",
+        # Legacy tests import shared fixtures by their file basename. Keep
+        # these explicit helper roots while pytest gives collected tests
+        # distinct module names (several stages have test_evaluation.py).
+        "PYTHONPATH": os.pathsep.join(
+            str(root / relative)
+            for relative in (
+                ".",
+                "tests",
+                "tests/modeling_v3",
+                "docs/modeling_v3/design/reference",
+            )
+        ),
     }
+    if os.environ.get("SSVC_TEST_PARENT_ROOT"):
+        parent = Path(os.environ["SSVC_TEST_PARENT_ROOT"]).resolve()
+        if not (parent / "manifest.json").is_file():
+            raise SystemExit("Explicit legacy regression source is unavailable")
+        overrides["SSVC_TEST_PARENT_ROOT"] = str(parent)
     command = [
         sys.executable,
         "-m",
         "pytest",
+        "--import-mode=importlib",
         *args.targets,
         "-q",
         "-ra",
@@ -77,10 +95,25 @@ def main():
         "versions": versions,
         "slurm_job_id": os.environ.get("SLURM_JOB_ID"),
         "command": command,
+        "requested_targets": args.targets,
+        "acceptance_scope": "FULL_REPOSITORY_EXCEPT_SEALED_DATA_TEST"
+        if args.targets
+        == [
+            "tests",
+            "docs/modeling_v3/design/reference/test_math_contracts.py",
+            "--deselect=tests/test_audit_r0_remaining.py::test_cross_split_passes_generated_dataset",
+        ]
+        else "SELECTED_ENGINEERING_TESTS",
         "environment_overrides": overrides,
         "source_and_test_hashes_before": sources(),
         "git_head": git.stdout.strip() if git.returncode == 0 else None,
         "snapshot_manifest_sha256": digest(snapshot) if snapshot.exists() else None,
+        "legacy_regression_manifest": {
+            "path": str(parent / "manifest.json"),
+            "sha256": digest(parent / "manifest.json"),
+        }
+        if "SSVC_TEST_PARENT_ROOT" in overrides
+        else None,
         "started_unix": time.time(),
         "scientific_status": "NOT_EVALUATED",
     }

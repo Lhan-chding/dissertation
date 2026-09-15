@@ -1,0 +1,10 @@
+{
+  "source_server_root": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04",
+  "files": {
+    "CPU_acceptance_01/result.json": "717ca8077670a5c542a44a8fbefce5d4b6ce43ed5bc58c633df34bf7cb263600",
+    "CPU_acceptance_01/invocation.json": "6761d626fea5e2a14945206c30cc4587285124012c4e5c855ef41b79cf9af925",
+    "CPU_acceptance_01/pytest.log": "7590d3aa17f5b5d14f15a694c9d020dab2eeba8ba6aed3eb65a2dbcc4041623d",
+    "CPU_acceptance_01/junit.xml": "f9bd331342d36d0cfbc910be962919afbe9041780628c2ac4211b79847e4015b"
+  },
+  "scope": "COMPACT_ORIGINAL_RECEIPTS; full arrays retained on server"
+}

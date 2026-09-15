@@ -1,0 +1,253 @@
+FFFFFFFFFFFFF                                                            [100%]
+=================================== FAILURES ===================================
+________ test_null_resume_appends_each_actual_gpu_and_preserves_anchor _________
+
+tmp_path = PosixPath('/private/var/folders/93/qfn6dtvs5bnf2dqq42_56y780000gn/T/pytest-of-louis/pytest-538/test_null_resume_appends_each_0')
+
+    def test_null_resume_appends_each_actual_gpu_and_preserves_anchor(tmp_path):
+>       first = invocation(tmp_path, null_receipt())
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modeling_v3/test_q4_resume.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/private/var/folders/93/qfn6dtvs5bnf2dqq42_56y780000gn/T/pytest-of-louis/pytest-538/test_null_resume_appends_each_0')
+receipt = {'gpu_identity': 'GPU-A', 'runtime_identity': {'model': 'fixture', 'source': 'unchanged'}, 'scores': [{'eos_token_ids'...: 64, ...}], 'tolerances': {'max_abs_sequence_logp': 2e-06, 'max_abs_token_logp': 1e-06, 'mean_abs_token_logp': 1e-06}}
+
+    def invocation(root, receipt):
+>       return c._record_q4_null_invocation(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            root, receipt, hardware={"allocated_gpu": {"uuid": receipt["gpu_identity"]}}
+        )
+E       AttributeError: module 'src.modeling_v3.vlm_campaign' has no attribute '_record_q4_null_invocation'
+
+tests/modeling_v3/test_q4_resume.py:43: AttributeError
+_ test_null_resume_rejects_changed_identity_or_excess_error_and_retains_attempt[threshold] _
+
+tmp_path = PosixPath('/private/var/folders/93/qfn6dtvs5bnf2dqq42_56y780000gn/T/pytest-of-louis/pytest-538/test_null_resume_rejects_chang0')
+change = 'threshold'
+
+    @pytest.mark.parametrize("change", ["threshold", "policy", "action", "runtime", "tolerance"])
+    def test_null_resume_rejects_changed_identity_or_excess_error_and_retains_attempt(tmp_path, change):
+>       invocation(tmp_path, null_receipt())
+
+tests/modeling_v3/test_q4_resume.py:67: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/private/var/folders/93/qfn6dtvs5bnf2dqq42_56y780000gn/T/pytest-of-louis/pytest-538/test_null_resume_rejects_chang0')
+receipt = {'gpu_identity': 'GPU-A', 'runtime_identity': {'model': 'fixture', 'source': 'unchanged'}, 'scores': [{'eos_token_ids'...: 64, ...}], 'tolerances': {'max_abs_sequence_logp': 2e-06, 'max_abs_token_logp': 1e-06, 'mean_abs_token_logp': 1e-06}}
+
+    def invocation(root, receipt):
+>       return c._record_q4_null_invocation(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            root, receipt, hardware={"allocated_gpu": {"uuid": receipt["gpu_identity"]}}
+        )
+E       AttributeError: module 'src.modeling_v3.vlm_campaign' has no attribute '_record_q4_null_invocation'
+
+tests/modeling_v3/test_q4_resume.py:43: AttributeError
+_ test_null_resume_rejects_changed_identity_or_excess_error_and_retains_attempt[policy] _
+
+tmp_path = PosixPath('/private/var/folders/93/qfn6dtvs5bnf2dqq42_56y780000gn/T/pytest-of-louis/pytest-538/test_null_resume_rejects_chang1')
+change = 'policy'
+
+    @pytest.mark.parametrize("change", ["threshold", "policy", "action", "runtime", "tolerance"])
+    def test_null_resume_rejects_changed_identity_or_excess_error_and_retains_attempt(tmp_path, change):
+>       invocation(tmp_path, null_receipt())
+
+tests/modeling_v3/test_q4_resume.py:67: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/private/var/folders/93/qfn6dtvs5bnf2dqq42_56y780000gn/T/pytest-of-louis/pytest-538/test_null_resume_rejects_chang1')
+receipt = {'gpu_identity': 'GPU-A', 'runtime_identity': {'model': 'fixture', 'source': 'unchanged'}, 'scores': [{'eos_token_ids'...: 64, ...}], 'tolerances': {'max_abs_sequence_logp': 2e-06, 'max_abs_token_logp': 1e-06, 'mean_abs_token_logp': 1e-06}}
+
+    def invocation(root, receipt):
+>       return c._record_q4_null_invocation(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            root, receipt, hardware={"allocated_gpu": {"uuid": receipt["gpu_identity"]}}
+        )
+E       AttributeError: module 'src.modeling_v3.vlm_campaign' has no attribute '_record_q4_null_invocation'
+
+tests/modeling_v3/test_q4_resume.py:43: AttributeError
+_ test_null_resume_rejects_changed_identity_or_excess_error_and_retains_attempt[action] _
+
+tmp_path = PosixPath('/private/var/folders/93/qfn6dtvs5bnf2dqq42_56y780000gn/T/pytest-of-louis/pytest-538/test_null_resume_rejects_chang2')
+change = 'action'
+
+    @pytest.mark.parametrize("change", ["threshold", "policy", "action", "runtime", "tolerance"])
+    def test_null_resume_rejects_changed_identity_or_excess_error_and_retains_attempt(tmp_path, change):
+>       invocation(tmp_path, null_receipt())
+
+tests/modeling_v3/test_q4_resume.py:67: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/private/var/folders/93/qfn6dtvs5bnf2dqq42_56y780000gn/T/pytest-of-louis/pytest-538/test_null_resume_rejects_chang2')
+receipt = {'gpu_identity': 'GPU-A', 'runtime_identity': {'model': 'fixture', 'source': 'unchanged'}, 'scores': [{'eos_token_ids'...: 64, ...}], 'tolerances': {'max_abs_sequence_logp': 2e-06, 'max_abs_token_logp': 1e-06, 'mean_abs_token_logp': 1e-06}}
+
+    def invocation(root, receipt):
+>       return c._record_q4_null_invocation(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            root, receipt, hardware={"allocated_gpu": {"uuid": receipt["gpu_identity"]}}
+        )
+E       AttributeError: module 'src.modeling_v3.vlm_campaign' has no attribute '_record_q4_null_invocation'
+
+tests/modeling_v3/test_q4_resume.py:43: AttributeError
+_ test_null_resume_rejects_changed_identity_or_excess_error_and_retains_attempt[runtime] _
+
+tmp_path = PosixPath('/private/var/folders/93/qfn6dtvs5bnf2dqq42_56y780000gn/T/pytest-of-louis/pytest-538/test_null_resume_rejects_chang3')
+change = 'runtime'
+
+    @pytest.mark.parametrize("change", ["threshold", "policy", "action", "runtime", "tolerance"])
+    def test_null_resume_rejects_changed_identity_or_excess_error_and_retains_attempt(tmp_path, change):
+>       invocation(tmp_path, null_receipt())
+
+tests/modeling_v3/test_q4_resume.py:67: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/private/var/folders/93/qfn6dtvs5bnf2dqq42_56y780000gn/T/pytest-of-louis/pytest-538/test_null_resume_rejects_chang3')
+receipt = {'gpu_identity': 'GPU-A', 'runtime_identity': {'model': 'fixture', 'source': 'unchanged'}, 'scores': [{'eos_token_ids'...: 64, ...}], 'tolerances': {'max_abs_sequence_logp': 2e-06, 'max_abs_token_logp': 1e-06, 'mean_abs_token_logp': 1e-06}}
+
+    def invocation(root, receipt):
+>       return c._record_q4_null_invocation(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            root, receipt, hardware={"allocated_gpu": {"uuid": receipt["gpu_identity"]}}
+        )
+E       AttributeError: module 'src.modeling_v3.vlm_campaign' has no attribute '_record_q4_null_invocation'
+
+tests/modeling_v3/test_q4_resume.py:43: AttributeError
+_ test_null_resume_rejects_changed_identity_or_excess_error_and_retains_attempt[tolerance] _
+
+tmp_path = PosixPath('/private/var/folders/93/qfn6dtvs5bnf2dqq42_56y780000gn/T/pytest-of-louis/pytest-538/test_null_resume_rejects_chang4')
+change = 'tolerance'
+
+    @pytest.mark.parametrize("change", ["threshold", "policy", "action", "runtime", "tolerance"])
+    def test_null_resume_rejects_changed_identity_or_excess_error_and_retains_attempt(tmp_path, change):
+>       invocation(tmp_path, null_receipt())
+
+tests/modeling_v3/test_q4_resume.py:67: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/private/var/folders/93/qfn6dtvs5bnf2dqq42_56y780000gn/T/pytest-of-louis/pytest-538/test_null_resume_rejects_chang4')
+receipt = {'gpu_identity': 'GPU-A', 'runtime_identity': {'model': 'fixture', 'source': 'unchanged'}, 'scores': [{'eos_token_ids'...: 64, ...}], 'tolerances': {'max_abs_sequence_logp': 2e-06, 'max_abs_token_logp': 1e-06, 'mean_abs_token_logp': 1e-06}}
+
+    def invocation(root, receipt):
+>       return c._record_q4_null_invocation(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            root, receipt, hardware={"allocated_gpu": {"uuid": receipt["gpu_identity"]}}
+        )
+E       AttributeError: module 'src.modeling_v3.vlm_campaign' has no attribute '_record_q4_null_invocation'
+
+tests/modeling_v3/test_q4_resume.py:43: AttributeError
+____________________ test_null_anchor_tampering_is_rejected ____________________
+
+tmp_path = PosixPath('/private/var/folders/93/qfn6dtvs5bnf2dqq42_56y780000gn/T/pytest-of-louis/pytest-538/test_null_anchor_tampering_is_0')
+
+    def test_null_anchor_tampering_is_rejected(tmp_path):
+>       invocation(tmp_path, null_receipt())
+
+tests/modeling_v3/test_q4_resume.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/private/var/folders/93/qfn6dtvs5bnf2dqq42_56y780000gn/T/pytest-of-louis/pytest-538/test_null_anchor_tampering_is_0')
+receipt = {'gpu_identity': 'GPU-A', 'runtime_identity': {'model': 'fixture', 'source': 'unchanged'}, 'scores': [{'eos_token_ids'...: 64, ...}], 'tolerances': {'max_abs_sequence_logp': 2e-06, 'max_abs_token_logp': 1e-06, 'mean_abs_token_logp': 1e-06}}
+
+    def invocation(root, receipt):
+>       return c._record_q4_null_invocation(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            root, receipt, hardware={"allocated_gpu": {"uuid": receipt["gpu_identity"]}}
+        )
+E       AttributeError: module 'src.modeling_v3.vlm_campaign' has no attribute '_record_q4_null_invocation'
+
+tests/modeling_v3/test_q4_resume.py:43: AttributeError
+_ test_same_gpu_comparison_keeps_full_checks_but_cannot_satisfy_cross_gpu_gate _
+
+    def test_same_gpu_comparison_keeps_full_checks_but_cannot_satisfy_cross_gpu_gate():
+        left = null_receipt()
+        right = null_receipt(difference=0.5e-6)
+>       assert v.compare_probability_receipts(left, right, tolerances=TOLERANCES)["status"] == "PASS"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'src.modeling_v3.vlm_observation' has no attribute 'compare_probability_receipts'. Did you mean: 'compare_cross_gpu_receipts'?
+
+tests/modeling_v3/test_q4_resume.py:98: AttributeError
+___ test_completed_known_scores_resume_without_new_scoring_and_bind_requests ___
+
+tmp_path = PosixPath('/private/var/folders/93/qfn6dtvs5bnf2dqq42_56y780000gn/T/pytest-of-louis/pytest-538/test_completed_known_scores_re0')
+
+    def test_completed_known_scores_resume_without_new_scoring_and_bind_requests(tmp_path):
+        backend = KnownBackend()
+        policies, probes = known_inputs()
+>       first = c._q4_known_event_scores(tmp_path, backend, policies, probes)
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'src.modeling_v3.vlm_campaign' has no attribute '_q4_known_event_scores'
+
+tests/modeling_v3/test_q4_resume.py:150: AttributeError
+_ test_known_score_reuse_rejects_missing_binding_tamper_and_changed_identity[bytes] _
+
+tmp_path = PosixPath('/private/var/folders/93/qfn6dtvs5bnf2dqq42_56y780000gn/T/pytest-of-louis/pytest-538/test_known_score_reuse_rejects0')
+mutation = 'bytes'
+
+    @pytest.mark.parametrize("mutation", ["bytes", "missing_receipt", "prompt", "policy"])
+    def test_known_score_reuse_rejects_missing_binding_tamper_and_changed_identity(tmp_path, mutation):
+        backend = KnownBackend()
+        policies, probes = known_inputs()
+>       c._q4_known_event_scores(tmp_path, backend, policies, probes)
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'src.modeling_v3.vlm_campaign' has no attribute '_q4_known_event_scores'
+
+tests/modeling_v3/test_q4_resume.py:166: AttributeError
+_ test_known_score_reuse_rejects_missing_binding_tamper_and_changed_identity[missing_receipt] _
+
+tmp_path = PosixPath('/private/var/folders/93/qfn6dtvs5bnf2dqq42_56y780000gn/T/pytest-of-louis/pytest-538/test_known_score_reuse_rejects1')
+mutation = 'missing_receipt'
+
+    @pytest.mark.parametrize("mutation", ["bytes", "missing_receipt", "prompt", "policy"])
+    def test_known_score_reuse_rejects_missing_binding_tamper_and_changed_identity(tmp_path, mutation):
+        backend = KnownBackend()
+        policies, probes = known_inputs()
+>       c._q4_known_event_scores(tmp_path, backend, policies, probes)
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'src.modeling_v3.vlm_campaign' has no attribute '_q4_known_event_scores'
+
+tests/modeling_v3/test_q4_resume.py:166: AttributeError
+_ test_known_score_reuse_rejects_missing_binding_tamper_and_changed_identity[prompt] _
+
+tmp_path = PosixPath('/private/var/folders/93/qfn6dtvs5bnf2dqq42_56y780000gn/T/pytest-of-louis/pytest-538/test_known_score_reuse_rejects2')
+mutation = 'prompt'
+
+    @pytest.mark.parametrize("mutation", ["bytes", "missing_receipt", "prompt", "policy"])
+    def test_known_score_reuse_rejects_missing_binding_tamper_and_changed_identity(tmp_path, mutation):
+        backend = KnownBackend()
+        policies, probes = known_inputs()
+>       c._q4_known_event_scores(tmp_path, backend, policies, probes)
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'src.modeling_v3.vlm_campaign' has no attribute '_q4_known_event_scores'
+
+tests/modeling_v3/test_q4_resume.py:166: AttributeError
+_ test_known_score_reuse_rejects_missing_binding_tamper_and_changed_identity[policy] _
+
+tmp_path = PosixPath('/private/var/folders/93/qfn6dtvs5bnf2dqq42_56y780000gn/T/pytest-of-louis/pytest-538/test_known_score_reuse_rejects3')
+mutation = 'policy'
+
+    @pytest.mark.parametrize("mutation", ["bytes", "missing_receipt", "prompt", "policy"])
+    def test_known_score_reuse_rejects_missing_binding_tamper_and_changed_identity(tmp_path, mutation):
+        backend = KnownBackend()
+        policies, probes = known_inputs()
+>       c._q4_known_event_scores(tmp_path, backend, policies, probes)
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'src.modeling_v3.vlm_campaign' has no attribute '_q4_known_event_scores'
+
+tests/modeling_v3/test_q4_resume.py:166: AttributeError
+=========================== short test summary info ============================
+FAILED tests/modeling_v3/test_q4_resume.py::test_null_resume_appends_each_actual_gpu_and_preserves_anchor
+FAILED tests/modeling_v3/test_q4_resume.py::test_null_resume_rejects_changed_identity_or_excess_error_and_retains_attempt[threshold]
+FAILED tests/modeling_v3/test_q4_resume.py::test_null_resume_rejects_changed_identity_or_excess_error_and_retains_attempt[policy]
+FAILED tests/modeling_v3/test_q4_resume.py::test_null_resume_rejects_changed_identity_or_excess_error_and_retains_attempt[action]
+FAILED tests/modeling_v3/test_q4_resume.py::test_null_resume_rejects_changed_identity_or_excess_error_and_retains_attempt[runtime]
+FAILED tests/modeling_v3/test_q4_resume.py::test_null_resume_rejects_changed_identity_or_excess_error_and_retains_attempt[tolerance]
+FAILED tests/modeling_v3/test_q4_resume.py::test_null_anchor_tampering_is_rejected
+FAILED tests/modeling_v3/test_q4_resume.py::test_same_gpu_comparison_keeps_full_checks_but_cannot_satisfy_cross_gpu_gate
+FAILED tests/modeling_v3/test_q4_resume.py::test_completed_known_scores_resume_without_new_scoring_and_bind_requests
+FAILED tests/modeling_v3/test_q4_resume.py::test_known_score_reuse_rejects_missing_binding_tamper_and_changed_identity[bytes]
+FAILED tests/modeling_v3/test_q4_resume.py::test_known_score_reuse_rejects_missing_binding_tamper_and_changed_identity[missing_receipt]
+FAILED tests/modeling_v3/test_q4_resume.py::test_known_score_reuse_rejects_missing_binding_tamper_and_changed_identity[prompt]
+FAILED tests/modeling_v3/test_q4_resume.py::test_known_score_reuse_rejects_missing_binding_tamper_and_changed_identity[policy]
+13 failed in 0.14s

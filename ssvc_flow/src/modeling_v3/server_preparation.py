@@ -52,7 +52,50 @@ def record_q4_authorization(config, bindings, *, confirmation_text, reviewed_han
     return resolved
 
 
-def prepare_gpu(config, bindings, cpu_results, out):
+def _verify_development_runs(config, roots):
+    """Bind actual Q1/Q2 development originals without imposing a winning model."""
+    from .cpu_campaign import _sources, _verify_complete
+
+    if not roots or len(roots) != 2:
+        raise ValueError("completed actual Q1 and Q2 development roots are required")
+    current, result = _sources(), {}
+    for root in map(Path, roots):
+        manifest = _verify_complete(root)
+        summary, binding = manifest["summary"], manifest["binding"]
+        phase = summary.get("stage")
+        if (
+            phase not in {"Q1", "Q2"}
+            or phase in result
+            or summary.get("pilot") is not False
+            or summary.get("scientific_status") != "DEVELOPMENT_ONLY"
+            or binding.get("config_sha256") != canonical_hash(config)
+            or binding.get("source_hashes") != current
+        ):
+            raise ValueError("actual development stage, full scope, or CPU source identity differs")
+        if phase == "Q1":
+            units = summary.get("units", [])
+            if (
+                not units
+                or summary.get("unit_count") != len(units)
+                or summary.get("repeat_count_per_unit") != config["cpu"]["repeat_measurements_dev"]
+                or {row["n"] for row in units} != set(config["observation"]["total_draws_grid"])
+                or {row["proposal"] for row in units} != set(config["observation"]["proposals"])
+            ):
+                raise ValueError("full Q1 observation grid and repetitions required")
+        elif not summary.get("results") or summary.get("fit_count") != len(summary["results"]):
+            raise ValueError("actual full Q2 fitted response results required")
+        result[phase] = {
+            "path": str((root / "COMPLETE.json").resolve()),
+            "sha256": sha256_file(root / "COMPLETE.json"),
+            "scientific_status": summary["scientific_status"],
+            "comparison_success_required": False,
+        }
+    if set(result) != {"Q1", "Q2"}:
+        raise ValueError("both actual Q1 and Q2 development stages required")
+    return result
+
+
+def prepare_gpu(config, bindings, cpu_results, out, *, development_roots=None):
     """Verify actual CPU test receipts and inherited originals; never load a model."""
     from .vlm_campaign import audit_v3_compatibility, build_q4_bridge_plan
 
@@ -68,6 +111,18 @@ def prepare_gpu(config, bindings, cpu_results, out):
         raise ValueError("executed CPU acceptance did not pass unchanged sources")
     if result["counts"]["failed"] or result["counts"]["errors"]:
         raise ValueError("CPU acceptance still has failures or errors")
+    required_targets = [
+        "tests",
+        "docs/modeling_v3/design/reference/test_math_contracts.py",
+        "--deselect=tests/test_audit_r0_remaining.py::test_cross_split_passes_generated_dataset",
+    ]
+    if (
+        result.get("acceptance_scope") != "FULL_REPOSITORY_EXCEPT_SEALED_DATA_TEST"
+        or result.get("requested_targets") != required_targets
+    ):
+        raise ValueError(
+            "full server repository acceptance required; selected test cases are insufficient"
+        )
     if sha256_file(root / "pytest.log") != result["log_sha256"]:
         raise ValueError("CPU verification log was changed")
     if sha256_file(root / "junit.xml") != result.get("junit_sha256"):
@@ -76,6 +131,13 @@ def prepare_gpu(config, bindings, cpu_results, out):
     for path, digest in source["files"].items():
         if result["source_and_test_hashes_before"].get(path) != digest:
             raise ValueError("CPU acceptance used a different V3 source snapshot")
+    project = Path(__file__).resolve().parents[2]
+    for directory in ("tests", "scripts"):
+        for path in (project / directory).rglob("*.py"):
+            relative = str(path.relative_to(project))
+            if result["source_and_test_hashes_before"].get(relative) != sha256_file(path):
+                raise ValueError("CPU acceptance test or script changed: " + relative)
+    development = _verify_development_runs(config, development_roots)
     tests = list(ET.parse(root / "junit.xml").iter("testcase"))
     out.mkdir(parents=True, exist_ok=False)
     receipt_bindings = {}
@@ -102,6 +164,7 @@ def prepare_gpu(config, bindings, cpu_results, out):
             },
             "junit_sha256": sha256_file(root / "junit.xml"),
             "scientific_effectiveness": "NOT_EVALUATED",
+            "development_original": development[phase],
         }
         path = out / (phase + "_TECHNICAL_RECEIPT.json")
         atomic_json(path, receipt)
@@ -115,6 +178,7 @@ def prepare_gpu(config, bindings, cpu_results, out):
         "config_hash": canonical_hash(config),
         "source_hash": source["sha256"],
         "technical_receipts": receipt_bindings,
+        "development_originals": development,
         "operations": ["vlm-smoke"],
         "seeds": [],
         "workers": [0, 1],

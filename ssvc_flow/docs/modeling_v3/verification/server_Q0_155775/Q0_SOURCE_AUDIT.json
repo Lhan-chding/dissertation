@@ -1,0 +1,49 @@
+{
+  "schema_version": "modeling-v3-q0-v1",
+  "status": "MISSING_INPUTS",
+  "parent_root": "/projects/_ssd/varunssd/louis-ssvc/modeling_contrast_v2_20260915/checkout/ssvc_flow/runs/modeling_contrast_v2/N4/raw",
+  "run_root": "/projects/_ssd/varunssd/louis-ssvc/modeling_contrast_v2_20260915/checkout/ssvc_flow/runs/modeling_contrast_v2",
+  "output_root": "/projects/_ssd/varunssd/louis-ssvc/modeling_v3_20260915/candidate03/Q0_audit",
+  "source_files": 4675,
+  "origin_count": 96,
+  "packet_units_replayed": 1296,
+  "primitive_arrays_replayed": 604998,
+  "raw_helmert_rows": 72576,
+  "model_metric_rows_recomputed": 86016,
+  "stored_metric_rows_matched": 110208,
+  "rank_equivalence_rows": 4608,
+  "missing_inputs": [
+    {
+      "scope": "legacy_count_only_draws",
+      "detail": "original reused count packets retain counts without individual actions; no action sequence reconstructed",
+      "status": "MISSING_INPUTS"
+    },
+    {
+      "scope": "legacy_packet_roles",
+      "detail": "V2 has no explicit V3 pilot/main/reference roles; do not relabel as independent pilot",
+      "status": "MISSING_INPUTS"
+    },
+    {
+      "scope": "original_Q_U_C",
+      "detail": "96 original prediction units did not retain Q/U/C arrays; no reconstructed matrices claimed as originals",
+      "status": "MISSING_INPUTS"
+    }
+  ],
+  "errors": [],
+  "wall_seconds": 427.6392210200429,
+  "new_samples": 0,
+  "policy_scoring_calls": 0,
+  "optimizer_updates": 0,
+  "summary_reconstruction_used": false,
+  "historical_data_role": "PUBLIC_DEVELOPMENT_ONLY",
+  "q1_self_contained_math_may_continue": true,
+  "online_ssvc_certified": false,
+  "output_hashes": {
+    "MISSING_INPUTS_V3.json": "a0e7de4275b7b3223272b02a983a02cd786514397ed13383631f75706f2cc6d2",
+    "PARENT_RECORD_INDEX.jsonl": "da76f45469d18de9f0e2d2a5eb9ebdff1fd9375870ddf72788338f179d2340b7",
+    "Q0_REPRODUCTION_zh.md": "09f39463c2942722b6ffbd927790b0abbba761612428a5b87c429caf1a45a601",
+    "Q0_RAW_HELMERT.csv": "43ab5641b3e028e73a4aeddfb798b5b195c126b9c1bfab55b81ea7fc94a36412",
+    "Q0_ALL_ACTIVE_SQUARED_SUMS.csv": "b4f9a95740cfc0f41e54dd23caf5b5a7ace5077124a3d271feab1f3d0994b44e",
+    "Q0_R_EQUALS_K.csv": "a9971fb300888ccc79d6e47160e4eaff0bbd109d94a2547ab7a16ddad15abc85"
+  }
+}

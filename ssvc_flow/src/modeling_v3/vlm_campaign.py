@@ -310,6 +310,117 @@ def audit_v3_compatibility(config, bindings):
     }
 
 
+def _verify_q5_role_dependencies(config, stage):
+    """Keep real development selection and empirical calibration ahead of test execution."""
+    role = stage["role"]
+    if role == "development":
+        return None
+    from .vlm_response import verify_vlm_selection_lock
+
+    selection_binding = stage.get("selection_lock")
+    if (
+        selection_binding is None
+        or _bound_json(selection_binding).get("kind") != "V3_VLM_SELECTION_LOCK"
+    ):
+        raise ValueError("Non-development Q5 requires a real VLM development selection lock")
+    # The VLM verifier also rechecks its original parent CPU selection chain.
+    selection = verify_vlm_selection_lock(config, selection_binding)
+    if selection.get("locked_test_opened") is not False:
+        raise ValueError("VLM methods and thresholds must freeze before locked test")
+    previous_role = "development" if role == "interval_calibration" else "interval_calibration"
+    previous_binding = stage.get(previous_role + "_completion")
+    if previous_binding is None:
+        raise ValueError("Q5 requires completed preceding " + previous_role + " stage")
+    previous = _verify_q5_completion(config, previous_binding, previous_role)
+    if role == "interval_calibration":
+        if selection.get("development_completion") != previous_binding:
+            raise ValueError("VLM selection and stage bind different development completion")
+        development_stage = _bound_json(previous["stage_binding"])
+        cpu_selection = development_stage.get("selection_lock")
+        if cpu_selection is not None and cpu_selection != selection.get("parent_cpu_selection"):
+            raise ValueError("VLM selection parent CPU lock differs from development stage")
+    else:
+        from .vlm_results import verify_vlm_calibration
+
+        previous_stage = _bound_json(previous["stage_binding"])
+        if previous_stage.get("selection_lock") != selection_binding:
+            raise ValueError("Locked test selection differs from completed calibration stage")
+        calibration_binding = stage.get("calibration_receipt")
+        if calibration_binding is None:
+            raise ValueError("Locked test requires analyzed VLM calibration before execution")
+        calibration = verify_vlm_calibration(config, selection_binding, calibration_binding)
+        if (
+            calibration.get("stage_completion") != previous_binding
+            or calibration.get("selection_lock") != selection_binding
+        ):
+            raise ValueError("Locked test calibration report differs from its stage or selection")
+        # Three calibration seeds support an empirical report, not a 95% claim.
+        # No conformal radius, positive result, or 95% certification gates execution.
+    return selection
+
+
+def _verify_q6_dependencies(config, stage):
+    """Q6 reuses a completed independent-test source; it cannot train a new source."""
+    from .vlm_results import verify_vlm_qualification
+
+    if stage.get("role") != "locked_test" or set(stage.get("operations", [])) - {
+        "make-forks",
+        "observe-vlm",
+    }:
+        raise PermissionError("Q6 permits only frozen test-source forks and offline observations")
+    qualification = verify_vlm_qualification(
+        config, stage["qualification_binding"], fit_binding=stage.get("fit_binding")
+    )
+    if (
+        qualification.get("pointwise_qualified") is not True
+        or stage.get("design_id") not in qualification.get("qualified_design_ids", [])
+        or stage.get("design_id") not in qualification.get("tracking_eligible_design_ids", [])
+        or qualification.get("selection_lock") != stage.get("selection_lock")
+    ):
+        raise PermissionError(
+            "Q6 requires this frozen VLM design's actual independent-test qualification"
+        )
+    source = _bound_json(stage["source_binding"])
+    identity = source["identity"]
+    seed = identity["seed"]
+    if (
+        identity.get("execution_kind") != "REAL_CUDA_MODEL"
+        or identity.get("fixture") is not False
+        or identity.get("config_hash") != canonical_hash(config)
+        or identity.get("source_hash") != canonical_hash(source_hashes())
+        or identity.get("arm") != "X_BASE"
+        or seed_role(config, seed) != "locked_test"
+        or stage.get("seeds") != [seed]
+        or source.get("steps") != 128
+        or source.get("source_optimizer_steps") != 128
+        or [r["step"] for r in source.get("checkpoints", [])] != list(range(1, 129))
+    ):
+        raise ValueError("Q6 requires the complete frozen locked-test X_BASE source")
+    test = _bound_json(qualification["test_analysis"])
+    completion = _verify_q5_completion(config, test["stage_completion"], "locked_test")
+    source_task = completion["verified_tasks"].get(f"source_{seed}_X_BASE", {})
+    if source_task.get("binding") != stage["source_binding"]:
+        raise ValueError("Q6 source was not the one completed in qualified independent test")
+    anchor = resolve_checkpoint_binding(stage["q6_anchor_checkpoint"])
+    entry = source["checkpoints"][63]
+    if (
+        anchor["sha256"] != entry["checkpoint_sha256"]
+        or anchor["path"] != entry["path"]
+        or anchor["identity"] != entry.get("checkpoint_identity")
+        or any(
+            anchor["identity"].get(k) != v
+            for k, v in (("seed", seed), ("arm", "X_BASE"), ("step", 64))
+        )
+        or stage.get("origin_id") != f"{seed}_X_BASE_64"
+    ):
+        raise ValueError("Q6 must bind the actual retained step-64 source checkpoint")
+    if stage.get("fit_binding") is not None:
+        fit = _bound_json(stage["fit_binding"])
+        if fit.get("origin_id") != stage["origin_id"] or fit.get("design_id") != stage["design_id"]:
+            raise ValueError("Q6 fitted model differs from the qualified step-64 design")
+    return qualification
+
+
 def _stage_gate(config, bindings, seed, *, operation):
     role = seed_role(config, seed)
     stage = _bound_json(bindings["v3_stage_lock"])
@@ -320,8 +431,10 @@ def _stage_gate(config, bindings, seed, *, operation):
     _technical_gate(config, stage)
     if operation not in stage.get("operations", []) or seed not in stage.get("seeds", []):
         raise PermissionError("Seed/operation is outside the frozen authorized stage task list")
-    if stage.get("phase") != "Q5" or stage.get("role") != role:
-        raise PermissionError("Q5 execution stage must match the source seed role")
+    if stage.get("phase") not in {"Q5", "Q6"} or stage.get("role") != role:
+        raise PermissionError("Q5/Q6 execution stage must match the source seed role")
+    if stage["phase"] == "Q6":
+        _verify_q6_dependencies(config, stage)
     current, seen = stage, set()
     while current.get("authorization_parent") is not None:
         binding = current["authorization_parent"]
@@ -336,6 +449,35 @@ def _stage_gate(config, bindings, seed, *, operation):
             or parent_stage.get("config_hash") != stage["config_hash"]
         ):
             raise ValueError("Derived observation stage differs from its authorized parent")
+        for field in (
+            "selection_lock",
+            "development_completion",
+            "interval_calibration_completion",
+            "calibration_receipt",
+        ):
+            if current.get(field) != parent_stage.get(field):
+                raise ValueError("Derived stage changed frozen parent dependency: " + field)
+        if parent_stage.get("phase") == "Q6":
+            for field in (
+                "qualification_binding",
+                "source_binding",
+                "design_id",
+                "q6_anchor_checkpoint",
+                "q6_bank_plan_hash",
+                "q6_include_direct_count",
+                "q6_calibration_workload",
+                "origin_id",
+            ):
+                if current.get(field) != parent_stage.get(field):
+                    raise ValueError(
+                        "Derived Q6 stage changed its qualified source/design: " + field
+                    )
+            for field in ("fit_binding", "model_binding"):
+                if (
+                    parent_stage.get(field) is not None
+                    and current.get(field) != parent_stage[field]
+                ):
+                    raise ValueError("Derived Q6 stage changed frozen fit/model: " + field)
         current = parent_stage
     smoke = _bound_json(stage["v3_gpu_smoke"])
     if (
@@ -346,15 +488,21 @@ def _stage_gate(config, bindings, seed, *, operation):
         or smoke.get("two_gpu_null_parity_passed") is not True
     ):
         raise ValueError("V3 real smoke and two-GPU numerical parity must pass first")
-    if role != "development":
-        from .schema import verify_selection_lock
-
-        selection = _bound_json(stage["selection_lock"])
-        verify_selection_lock(config, selection)
-        if selection.get("locked_test_opened") is not False:
-            raise ValueError("Methods/thresholds/at most two estimators and selectors must freeze")
-        previous = "development" if role == "interval_calibration" else "interval_calibration"
-        _verify_q5_completion(config, stage[previous + "_completion"], previous)
+    _verify_q5_role_dependencies(config, stage)
+    if (
+        stage["phase"] == "Q5"
+        and stage.get("observation_purpose") == "reference"
+        and role != "development"
+    ):
+        prediction_set = verify_q5_prediction_set(
+            config,
+            stage["prediction_binding"],
+            selection_lock=stage["selection_lock"],
+            origin_id=stage["origin_id"],
+            role=role,
+        )
+        if prediction_set["forks_result"] != stage.get("forks_result"):
+            raise ValueError("Reference stage candidate forks differ from frozen prediction set")
     return role
 
 
@@ -471,6 +619,9 @@ def load_runtime(
     gpu = _allocated_gpu_info()
     if "PRO6000" not in gpu["name"].upper().replace(" ", ""):
         raise ValueError("The allocated GPU is not the requested PRO 6000")
+    expected_uuid = os.environ.get("SSVC_V3_EXPECTED_GPU_UUID")
+    if expected_uuid is not None and gpu["uuid"].lower() != expected_uuid.lower():
+        raise ValueError("Actual GPU UUID differs from the verified pair allocation")
     environment = validate_runtime_environment(parent["gate"])
     if environment != parent["r4_binding"]["environment"]:
         raise ValueError("Actual production dependencies changed since the inherited lock")
@@ -1312,7 +1463,13 @@ def make_forks(
     allowed = {("X_BASE", 32), ("X_BASE", 96)}
     if seed_role(config, seed) == "locked_test":
         allowed.add(("X_VALID", 96))
-    if (arm, step) not in allowed:
+    stage = _bound_json(bindings["v3_stage_lock"])
+    if stage.get("phase") == "Q6":
+        if (arm, step) != ("X_BASE", 64) or spec != stage.get("q6_anchor_checkpoint"):
+            raise ValueError("Q6 forks require the qualified original X_BASE step-64 checkpoint")
+        if canonical_hash(plan) != stage.get("q6_bank_plan_hash"):
+            raise ValueError("Q6 fork plan differs from its frozen step-64 calibration banks")
+    elif (arm, step) not in allowed:
         raise ValueError("Candidate origin is outside the frozen Q5 response anchor matrix")
     if spec["identity"].get("source_hash") != canonical_hash(source_hashes()) or spec[
         "identity"
@@ -1634,7 +1791,19 @@ def _verified_execution(root, config, *, unit):
     return result
 
 
-def _q5_expected_tasks(config, role):
+def _q5_expected_tasks(config, role, *, selection_lock=None):
+    designs = [None]
+    if role != "development":
+        selection = _bound_json(selection_lock)
+        if selection.get("kind") != "V3_VLM_SELECTION_LOCK":
+            raise ValueError("Non-development task matrix requires frozen VLM designs")
+        designs = [d["design_id"] for d in selection["selected"]["designs"]]
+        if (
+            not designs
+            or any(not isinstance(d, str) or not d for d in designs)
+            or len(set(designs)) != len(designs)
+        ):
+            raise ValueError("Frozen VLM design IDs must be nonempty and unique")
     tasks = {}
     for seed in config["qwen"]["seed_roles"][role]:
         for arm in SOURCE_ARMS:
@@ -1644,8 +1813,17 @@ def _q5_expected_tasks(config, role):
             for step in anchors:
                 origin_id = f"{seed}_{arm}_{step}"
                 origin = {**base, "origin_id": origin_id, "step": step}
-                for kind in ("forks", "prediction", "evaluation"):
-                    tasks[f"{kind}_{origin_id}"] = {**origin, "kind": kind}
+                tasks[f"forks_{origin_id}"] = {**origin, "kind": "forks"}
+                for design_id in designs:
+                    for kind in ("prediction", "evaluation"):
+                        suffix = (
+                            "" if design_id is None else "__design_" + canonical_hash(design_id)
+                        )
+                        tasks[f"{kind}_{origin_id}{suffix}"] = {
+                            **origin,
+                            "kind": kind,
+                            **({"design_id": design_id} if design_id is not None else {}),
+                        }
                 for purpose in ("measurement", "reference"):
                     for operation in ("generate", "score"):
                         for worker in (0, 1):
@@ -1779,6 +1957,41 @@ def _verify_q5_task(config, stage_binding, expected, binding):
             prediction = _bound_json(receipt["prediction_binding"])
             if prediction.get("origin_id") != expected["origin_id"]:
                 raise ValueError("Evaluation references predictions from another origin")
+        if expected["role"] != "development":
+            prediction = receipt if kind == "prediction" else prediction
+            selection = _bound_json(stage_binding).get("selection_lock")
+            if prediction.get("fit_spec") is None:
+                raise ValueError("Non-development prediction lacks its selected fit binding")
+            fitted = _bound_json(prediction["fit_spec"])
+            if (
+                fitted.get("selection_lock") != selection
+                or prediction.get("selection_lock") != selection
+            ):
+                raise ValueError("Prediction fit selection differs from its frozen Q5 stage")
+            if any(
+                item.get("design_id") != expected["design_id"]
+                for item in (receipt, prediction, fitted)
+            ):
+                raise ValueError("Prediction/evaluation design differs from its frozen Q5 task")
+            completion_markers.append(prediction["fit_spec"])
+            if kind == "evaluation":
+                if receipt.get("fit_spec") != prediction["fit_spec"]:
+                    raise ValueError("Evaluation fit differs from its frozen predictions")
+                frozen_set = verify_q5_prediction_set(
+                    config,
+                    receipt["prediction_set"],
+                    selection_lock=selection,
+                    origin_id=expected["origin_id"],
+                    role=expected["role"],
+                )
+                if (
+                    frozen_set["predictions"][expected["design_id"]]
+                    != receipt["prediction_binding"]
+                ):
+                    raise ValueError(
+                        "Evaluation prediction differs from pre-reference frozen design set"
+                    )
+                completion_markers.append(receipt["prediction_set"])
     return {
         "kind": kind,
         "binding": copy.deepcopy(binding),
@@ -1801,7 +2014,7 @@ def finalize_q5_stage(config, bindings, *, task_receipts, out):
     supplied = _read(task_receipts) if isinstance(task_receipts, (str, Path)) else task_receipts
     stage = _bound_json(bindings["v3_stage_lock"])
     role = stage["role"]
-    expected = _q5_expected_tasks(config, role)
+    expected = _q5_expected_tasks(config, role, selection_lock=stage.get("selection_lock"))
     if stage.get("required_tasks") != expected or stage.get("expected_task_ids") != sorted(
         expected
     ):
@@ -1818,6 +2031,17 @@ def finalize_q5_stage(config, bindings, *, task_receipts, out):
             )
         except (ValueError, KeyError, OSError, PermissionError) as exc:
             failures[task_id] = {"error_type": type(exc).__name__, "reason": str(exc)}
+    for task_id, task in expected.items():
+        if task["kind"] != "evaluation" or task_id not in verified:
+            continue
+        prediction_id = "prediction_" + task_id.removeprefix("evaluation_")
+        if prediction_id in verified:
+            evaluation = _bound_json(verified[task_id]["binding"])
+            if evaluation.get("prediction_binding") != verified[prediction_id]["binding"]:
+                failures[task_id] = {
+                    "error_type": "ValueError",
+                    "reason": "Evaluation uses different predictions than its frozen design task",
+                }
     missing = sorted(set(expected) - set(supplied))
     status = "TECHNICAL_FAILURE" if failures else "INCOMPLETE" if missing else "COMPLETE"
     result = {
@@ -1827,6 +2051,8 @@ def finalize_q5_stage(config, bindings, *, task_receipts, out):
         "config_hash": canonical_hash(config),
         "source_hash": canonical_hash(source_hashes()),
         "stage_binding": copy.deepcopy(bindings["v3_stage_lock"]),
+        "selection_lock": copy.deepcopy(stage.get("selection_lock")),
+        "calibration_receipt": copy.deepcopy(stage.get("calibration_receipt")),
         "expected_task_ids": sorted(expected),
         "completed_task_ids": sorted(verified),
         "missing_task_ids": missing,
@@ -1864,7 +2090,10 @@ def _verify_q5_completion(config, binding, role):
     if not (root / "COMPLETE.json").is_file():
         raise ValueError("Preceding frozen stage task list is incomplete")
     manifest = verify_manifest(root)
-    expected = sorted(_q5_expected_tasks(config, role))
+    stage_binding = receipt["stage_binding"]
+    stage = _bound_json(stage_binding)
+    matrix = _q5_expected_tasks(config, role, selection_lock=stage.get("selection_lock"))
+    expected = sorted(matrix)
     if (
         manifest.get("status") != "COMPLETE"
         or receipt.get("status") != "COMPLETE"
@@ -1881,10 +2110,11 @@ def _verify_q5_completion(config, binding, role):
     # that immutable audit and every input completion marker without repeatedly
     # reading the full previous matrix before each GPU task. Consumers still
     # hash each raw file when it is used again.
-    stage_binding = receipt["stage_binding"]
-    stage = _bound_json(stage_binding)
-    if stage.get("required_tasks") != _q5_expected_tasks(config, role):
+    if stage.get("required_tasks") != matrix:
         raise ValueError("Preceding role task matrix changed")
+    for field in ("selection_lock", "calibration_receipt"):
+        if receipt.get(field) != stage.get(field):
+            raise ValueError("Completed role dependency differs from frozen stage: " + field)
     for task_id in stage["required_tasks"]:
         verified = receipt["verified_tasks"][task_id]
         _bound_json(verified["binding"])
@@ -1897,7 +2127,15 @@ def _verify_q5_completion(config, binding, role):
 
 
 def prepare_q5_stage(
-    config, bindings, *, q4_receipt, role, out, selection_lock=None, previous_completion=None
+    config,
+    bindings,
+    *,
+    q4_receipt,
+    role,
+    out,
+    selection_lock=None,
+    previous_completion=None,
+    calibration_receipt=None,
 ):
     """Freeze fresh probes, role gates, and source tasks without loading a model.
 
@@ -1906,6 +2144,10 @@ def prepare_q5_stage(
     """
     if role not in config["qwen"]["seed_roles"]:
         raise ValueError("Unknown Q5 seed role")
+    if role != "development" and (selection_lock is None or previous_completion is None):
+        raise ValueError("Later Q5 roles require frozen VLM selection and preceding completion")
+    if role == "locked_test" and calibration_receipt is None:
+        raise ValueError("Locked test requires an analyzed VLM calibration receipt")
     audit_v3_compatibility(config, bindings)
     parent = _bound_json(bindings["parent_validated_plan"])
     prior_stage = _bound_json(bindings["v3_stage_lock"])
@@ -1927,11 +2169,17 @@ def prepare_q5_stage(
         "online_ssvc": False,
     }
     if role != "development":
-        if selection_lock is None or previous_completion is None:
-            raise ValueError("Later Q5 roles require frozen selection and preceding completion")
         stage["selection_lock"] = copy.deepcopy(selection_lock)
         previous = "development" if role == "interval_calibration" else "interval_calibration"
         stage[previous + "_completion"] = copy.deepcopy(previous_completion)
+        if role == "locked_test":
+            stage["calibration_receipt"] = copy.deepcopy(calibration_receipt)
+        _verify_q5_role_dependencies(config, stage)
+    elif selection_lock is not None:
+        from .schema import verify_selection_lock
+
+        verify_selection_lock(config, _bound_json(selection_lock))
+        stage["selection_lock"] = copy.deepcopy(selection_lock)
 
     # Read only audited control data and the historical, already opened S1 panel.
     warm = Path(parent["paths"]["parent_warm"]) / "bank_manifest.json"
@@ -1978,7 +2226,9 @@ def prepare_q5_stage(
                     }
                 )
         stage["source_tasks"] = tasks
-        stage["required_tasks"] = _q5_expected_tasks(config, role)
+        stage["required_tasks"] = _q5_expected_tasks(
+            config, role, selection_lock=stage.get("selection_lock")
+        )
         stage["expected_task_ids"] = sorted(stage["required_tasks"])
         _publish(root / "Q5_STAGE_LOCK.json", stage)
         resolved = {**bindings, "v3_stage_lock": _file_binding(root / "Q5_STAGE_LOCK.json")}
@@ -2020,6 +2270,148 @@ def prepare_q5_stage(
             "stage_lock": resolved["v3_stage_lock"],
             "probe_panel": stage["probe_panel"],
             "source_commands": commands,
+            "model_loaded": False,
+            "submitted": False,
+        }
+        _publish(root / "PREPARATION.json", result)
+    return result
+
+
+def prepare_q6_forks(config, bindings, *, qualification_binding, design_id, source_root, out):
+    """Prepare step-64 scratch calibration only after measured Q5 qualification."""
+    from .vlm_results import verify_vlm_qualification
+
+    qualification = verify_vlm_qualification(config, qualification_binding)
+    if (
+        qualification.get("pointwise_qualified") is not True
+        or design_id not in qualification.get("qualified_design_ids", [])
+        or design_id not in qualification.get("tracking_eligible_design_ids", [])
+    ):
+        raise PermissionError("Q6 needs an actually qualified frozen VLM design")
+    source = _verified_execution(source_root, config, unit="V3_SOURCE")
+    seed = source["identity"]["seed"]
+    _stage_gate(config, bindings, seed, operation="make-forks")
+    parent_stage = _bound_json(bindings["v3_stage_lock"])
+    if parent_stage.get("phase") != "Q5" or parent_stage.get("role") != "locked_test":
+        raise PermissionError("Prepare Q6 only from the frozen locked-test Q5 stage")
+    if source["identity"].get("arm") != "X_BASE" or source.get("steps") != 128:
+        raise ValueError("Q6 requires the original complete X_BASE source")
+    entry = source["checkpoints"][63]
+    spec = resolve_checkpoint_binding(entry["path"])
+    # Reuse the already audited source bank partition's original prompt records.
+    template = next(row for row in source["response_plans"] if row["step"] == 32)
+    plan_source = {"path": template["bank_plan"], "sha256": template["bank_plan_sha256"]}
+    original_plan = _bound_json(plan_source)
+    bank_plan = build_bank_plan(
+        original_plan["train_prompts"],
+        origin_identity={
+            "seed": seed,
+            "arm": "X_BASE",
+            "step": 64,
+            "state_hash": entry["state_hash"],
+            "source_hash": canonical_hash(source_hashes()),
+        },
+    )
+    probes = _bound_json(parent_stage["probe_panel"])
+    if len(probes) != 36:
+        raise ValueError("Q6 reuses the frozen 36-probe panel")
+    n, prompts = config["qwen"]["observation_n_primary"], len(probes)
+    measurement_generations = n * prompts * (1 + 12 * len(CANDIDATES))
+    workload = {
+        "scope": (
+            "New step-64 calibration per source origin, shared across frozen designs; "
+            "not Q5 prior cost"
+        ),
+        "source_optimizer_steps": 0,
+        "new_banks": 36,
+        "calibration_banks": 24,
+        "heldout_banks": 12,
+        "bank_generation_sequences": 36 * 4 * 8,
+        "bank_parity_scored_sequences": 36 * 4 * 8,
+        "candidate_adam_calls": 36 * len(CANDIDATES),
+        "candidate_gradient_sequences_forward": 36 * len(CANDIDATES) * 4 * 8,
+        "candidate_gradient_sequences_backward": 36 * len(CANDIDATES) * 4 * 8,
+        "candidate_checkpoints": 36 * len(CANDIDATES),
+        "measurement_draws_per_probe": n,
+        "measurement_probes": prompts,
+        "measurement_origin_generation_sequences": n * prompts,
+        "measurement_heldout_direct_generation_sequences": n * prompts * 12 * len(CANDIDATES),
+        "measurement_generation_sequences_total": measurement_generations,
+        "measurement_certified_rescore_sequences": measurement_generations,
+        "measurement_explicit_score_sequences_before_alias": n
+        * prompts
+        * (1 + 36 * len(CANDIDATES)),
+        "measurement_candidate_score_sequences_before_alias": n * prompts * 36 * len(CANDIDATES),
+        "heldout_measurement_scope": (
+            "Retained and charged; excluded from calibration selection and design search"
+        ),
+        "dense_64_to_80_absolute_direct_cost_included": False,
+        "aliases_add_independent_samples": False,
+        "runtime_seconds_measured": None,
+    }
+    root = Path(out).resolve()
+    stage = {
+        **parent_stage,
+        "phase": "Q6",
+        "authorization_parent": copy.deepcopy(bindings["v3_stage_lock"]),
+        "operations": ["make-forks", "observe-vlm"],
+        "seeds": [seed],
+        "runtime_seed": seed,
+        "qualification_binding": qualification_binding,
+        "design_id": design_id,
+        "source_binding": _file_binding(Path(source_root) / "result.json"),
+        "q6_anchor_checkpoint": spec,
+        "q6_bank_plan_hash": canonical_hash(bank_plan),
+        "origin_id": f"{seed}_X_BASE_64",
+        "observation_manifest_hashes": [],
+        "q6_scope": "Existing test source only; step-64 calibration before frozen offline replay",
+        "q6_calibration_workload": workload,
+        "q6_include_direct_count": True,
+    }
+    for inherited_task_field in ("source_tasks", "required_tasks", "expected_task_ids"):
+        stage.pop(inherited_task_field, None)
+    # This verifies full completed-test source membership before publishing commands.
+    _verify_q6_dependencies(config, stage)
+    with frozen_writer(root):
+        _publish(root / "CONFIG.json", config)
+        _publish(root / "BANK_PLAN.json", bank_plan)
+        stage["q6_bank_plan"] = _file_binding(root / "BANK_PLAN.json")
+        stage["bank_prompt_originals"] = plan_source
+        _publish(root / "Q6_STAGE_LOCK.json", stage)
+        resolved = {**bindings, "v3_stage_lock": _file_binding(root / "Q6_STAGE_LOCK.json")}
+        _publish(root / "SOURCE_BINDINGS.json", resolved)
+        command = [
+            "python",
+            "-m",
+            "src.modeling_v3.cli",
+            "make-forks",
+            "--config",
+            str(root / "CONFIG.json"),
+            "--bindings",
+            str(root / "SOURCE_BINDINGS.json"),
+            "--checkpoint",
+            spec["path"],
+            "--bank-plan",
+            str(root / "BANK_PLAN.json"),
+            "--device",
+            "cuda:0",
+            "--out",
+            str(root / "forks"),
+            "--allow-gpu",
+            "--allow-training",
+            "--acknowledge-new-experiment",
+        ]
+        result = {
+            "status": "PREPARED_GPU_NOT_SUBMITTED",
+            "phase": "Q6",
+            "design_id": design_id,
+            "stage_lock": resolved["v3_stage_lock"],
+            "source_bindings": _file_binding(root / "SOURCE_BINDINGS.json"),
+            "origin_checkpoint": spec,
+            "bank_plan": stage["q6_bank_plan"],
+            "argv": command,
+            "workload": workload,
+            "source_training_requested": False,
             "model_loaded": False,
             "submitted": False,
         }
@@ -2154,6 +2546,171 @@ def _q5_generation_tasks(
     return tasks
 
 
+def _q5_prediction_members(config, predictions, *, fixture):
+    """Verify every independently fitted design before any common reference opens."""
+    from .io import verify_manifest
+    from .vlm_response import _method_lock, verify_vlm_selection_lock
+
+    if not isinstance(predictions, dict) or not predictions:
+        raise ValueError("A complete design-to-prediction binding map is required")
+    common, selection_binding = None, None
+    for design_id, binding in predictions.items():
+        prediction = _bound_json(binding)
+        root = Path(binding["path"]).parent
+        if (
+            not (root / "COMPLETE.json").is_file()
+            or verify_manifest(root).get("status") != "COMPLETE"
+        ):
+            raise ValueError("Every design requires a complete prediction artifact")
+        if (
+            prediction.get("kind") != "V3_FROZEN_PREDICTIONS"
+            or prediction.get("design_id") != design_id
+            or prediction.get("fixture") is not fixture
+            or prediction.get("role") not in {"interval_calibration", "locked_test"}
+            or prediction.get("config_hash") != canonical_hash(config)
+            or prediction.get("source_hash") != canonical_hash(source_hashes())
+            or prediction.get("reference_labels_read") is not False
+            or prediction.get("heldout_labels_read") is not False
+        ):
+            raise ValueError(
+                "Prediction set requires unopened reference and fixed design identities"
+            )
+        if file_hash(prediction["arrays"]["path"]) != prediction["arrays"]["sha256"]:
+            raise ValueError("Frozen prediction arrays changed")
+        fit = _bound_json(prediction["fit_spec"])
+        current_selection = prediction.get("selection_lock")
+        if (
+            fit.get("selection_lock") != current_selection
+            or fit.get("design_id") != design_id
+            or any(
+                fit.get(key) != prediction.get(key)
+                for key in ("origin_id", "role", "config_hash", "source_hash", "fixture")
+            )
+        ):
+            raise ValueError("Prediction fit differs from its frozen design/selection")
+        geometry = _bound_json(fit["geometry"])
+        if any(
+            geometry.get(key) != fit.get(key)
+            for key in ("origin_id", "role", "config_hash", "source_hash", "fixture")
+        ):
+            raise ValueError("Prediction geometry differs from its original fitted scope")
+        _method_lock(
+            config,
+            prediction["role"],
+            {
+                **{
+                    key: fit[key]
+                    for key in (
+                        "design_id",
+                        "method",
+                        "rank_cap",
+                        "alpha",
+                        "output_policy",
+                        "regression",
+                        "observation_method",
+                    )
+                },
+                "selector": geometry["method"],
+                "n_banks": geometry["n_banks"],
+                "selection_seed": geometry["seed"],
+            },
+            current_selection,
+            fixture=fixture,
+        )
+        model_arrays = prediction["model_arrays"]
+        if file_hash(model_arrays["path"]) != model_arrays["sha256"]:
+            raise ValueError("Prediction model arrays changed before shared reference")
+        scope = {key: prediction[key] for key in ("origin_id", "role", "query_units", "probe_ids")}
+        scope.update(forks_result=fit["forks"], measurement_bundle=fit["measurement_bundle"])
+        # Fitting different designs may not change the source, candidate queries,
+        # fixed probes, or the pre-reference measurement originals.
+        if common is not None and (scope != common or current_selection != selection_binding):
+            raise ValueError(
+                "Frozen designs differ in shared origin, queries, measurements, or selection"
+            )
+        common, selection_binding = scope, current_selection
+    selection = verify_vlm_selection_lock(config, selection_binding, fixture=fixture)
+    expected = {design["design_id"] for design in selection["selected"]["designs"]}
+    if set(predictions) != expected:
+        raise ValueError("Freeze all selected designs before opening shared reference")
+    return {**common, "selection_lock": selection_binding}
+
+
+def freeze_q5_prediction_set(config, prediction_bindings, *, out, fixture=False):
+    """Publish an immutable all-design barrier; this performs no new measurement."""
+    from .io import finalize_run
+    from .vlm_response import _cpu_scope
+
+    _cpu_scope(fixture=fixture)
+    if isinstance(prediction_bindings, (str, Path)):
+        prediction_bindings = _read(prediction_bindings)
+    if isinstance(prediction_bindings, list):
+        predictions = {}
+        for binding in prediction_bindings:
+            design_id = _bound_json(binding)["design_id"]
+            if design_id in predictions:
+                raise ValueError("Duplicate frozen prediction design")
+            predictions[design_id] = binding
+    else:
+        predictions = copy.deepcopy(prediction_bindings)
+    common = _q5_prediction_members(config, predictions, fixture=fixture)
+    result = {
+        "kind": "V3_FROZEN_PREDICTION_SET",
+        "status": "ALL_DESIGN_PREDICTIONS_FROZEN",
+        "config_hash": canonical_hash(config),
+        "source_hash": canonical_hash(source_hashes()),
+        "fixture": fixture,
+        **common,
+        "predictions": predictions,
+        "reference_labels_read": False,
+        "heldout_labels_read": False,
+    }
+    root = Path(out).resolve()
+    with frozen_writer(root):
+        _publish(root / "PREDICTION_SET.json", result)
+        finalize_run(
+            root,
+            {
+                "config": result["config_hash"],
+                "source": result["source_hash"],
+                "predictions": canonical_hash(predictions),
+            },
+        )
+    return {**result, "prediction_set": _file_binding(root / "PREDICTION_SET.json")}
+
+
+def verify_q5_prediction_set(
+    config, binding, *, selection_lock=None, origin_id=None, role=None, fixture=False
+):
+    from .io import verify_manifest
+
+    result = _bound_json(binding)
+    root = Path(binding["path"]).parent
+    if not (root / "COMPLETE.json").is_file() or verify_manifest(root).get("status") != "COMPLETE":
+        raise ValueError("Shared reference requires a complete all-design prediction set")
+    if (
+        result.get("kind") != "V3_FROZEN_PREDICTION_SET"
+        or result.get("status") != "ALL_DESIGN_PREDICTIONS_FROZEN"
+        or result.get("config_hash") != canonical_hash(config)
+        or result.get("source_hash") != canonical_hash(source_hashes())
+        or result.get("fixture") is not fixture
+        or result.get("reference_labels_read") is not False
+        or result.get("heldout_labels_read") is not False
+    ):
+        raise ValueError("Shared reference requires the source-bound frozen prediction set")
+    common = _q5_prediction_members(config, result["predictions"], fixture=fixture)
+    if any(result.get(key) != value for key, value in common.items()):
+        raise ValueError("Prediction set differs from its original member scope")
+    for key, expected in (
+        ("selection_lock", selection_lock),
+        ("origin_id", origin_id),
+        ("role", role),
+    ):
+        if expected is not None and result.get(key) != expected:
+            raise ValueError("Prediction set differs from the frozen stage " + key)
+    return result
+
+
 def prepare_q5_observation(
     config,
     bindings,
@@ -2192,6 +2749,15 @@ def prepare_q5_observation(
     seed = origin["seed"]
     _stage_gate(config, bindings, seed, operation="observe-vlm")
     stage = _bound_json(bindings["v3_stage_lock"])
+    if stage.get("phase") == "Q6" and (
+        purpose != "measurement"
+        or (origin["arm"], origin["step"]) != ("X_BASE", 64)
+        or canonical_hash(bank_plan) != stage.get("q6_bank_plan_hash")
+        or include_direct_count is not stage.get("q6_include_direct_count")
+    ):
+        raise ValueError(
+            "Q6 response adapter permits only its frozen step-64 calibration measurement"
+        )
     probes = _bound_json(stage["probe_panel"])
     if len(probes) != 36 or len({p["prompt_id"] for p in probes}) != 36:
         raise ValueError("Q5 requires the frozen 36-probe panel")
@@ -2226,24 +2792,34 @@ def prepare_q5_observation(
             raise PermissionError(
                 "Freeze prediction bytes and source before opening heldout reference"
             )
-        prediction = _bound_json(prediction_binding)
-        prediction_root = Path(prediction_binding["path"]).parent
-        if not (prediction_root / "COMPLETE.json").is_file():
-            raise ValueError("Reference requires a completed prediction artifact")
-        if verify_manifest(prediction_root).get("status") != "COMPLETE":
-            raise ValueError("Reference cannot open on a partial prediction artifact")
-        if (
-            prediction.get("kind") != "V3_FROZEN_PREDICTIONS"
-            or prediction.get("config_hash") != canonical_hash(config)
-            or prediction.get("source_hash") != canonical_hash(source_hashes())
-            or prediction.get("origin_id") != origin_id
-        ):
-            raise ValueError(
-                "Reference requires the frozen predictions for this exact origin/config/source"
+        if stage["role"] != "development":
+            prediction = verify_q5_prediction_set(
+                config,
+                prediction_binding,
+                selection_lock=stage["selection_lock"],
+                origin_id=origin_id,
+                role=stage["role"],
             )
-        if file_hash(prediction["arrays"]["path"]) != prediction["arrays"]["sha256"]:
-            raise ValueError("Frozen prediction arrays changed")
-
+            if prediction["forks_result"] != _file_binding(Path(forks_root) / "result.json"):
+                raise ValueError("Reference prediction set uses different candidate forks")
+        else:
+            prediction = _bound_json(prediction_binding)
+            prediction_root = Path(prediction_binding["path"]).parent
+            if not (prediction_root / "COMPLETE.json").is_file():
+                raise ValueError("Reference requires a completed prediction artifact")
+            if verify_manifest(prediction_root).get("status") != "COMPLETE":
+                raise ValueError("Reference cannot open on a partial prediction artifact")
+            if (
+                prediction.get("kind") != "V3_FROZEN_PREDICTIONS"
+                or prediction.get("config_hash") != canonical_hash(config)
+                or prediction.get("source_hash") != canonical_hash(source_hashes())
+                or prediction.get("origin_id") != origin_id
+            ):
+                raise ValueError(
+                    "Reference requires the frozen predictions for this exact origin/config/source"
+                )
+            if file_hash(prediction["arrays"]["path"]) != prediction["arrays"]["sha256"]:
+                raise ValueError("Frozen prediction arrays changed")
     runtime_identity = planned_runtime_identity(config, bindings)
     expected_generation = _q5_generation_tasks(
         config,
@@ -2616,6 +3192,18 @@ def prepare_q5_reference_extension(
     stage = _bound_json(bindings["v3_stage_lock"])
     seed = int(receipt["origin_id"].split("_", 1)[0])
     _stage_gate(config, bindings, seed, operation="observe-vlm")
+    reference_prediction_binding = prediction_binding
+    if stage["role"] != "development":
+        reference_prediction_binding = receipt.get("prediction_set")
+        frozen_set = verify_q5_prediction_set(
+            config,
+            reference_prediction_binding,
+            selection_lock=stage["selection_lock"],
+            origin_id=receipt["origin_id"],
+            role=stage["role"],
+        )
+        if frozen_set["predictions"].get(prediction.get("design_id")) != prediction_binding:
+            raise ValueError("Precision receipt changed the pre-reference prediction set member")
     policies, runtime_identity, history, probe_binding = None, None, [], None
     if not receipt.get("reference_batches"):
         raise ValueError("Reference continuation needs completed original batches")
@@ -2725,7 +3313,7 @@ def prepare_q5_reference_extension(
         seed=seed,
         purpose="reference",
         operation=operation,
-        prediction_binding=prediction_binding,
+        prediction_binding=reference_prediction_binding,
         forks_binding=forks_binding,
         out=out,
         extra_stage={
@@ -2878,6 +3466,159 @@ def _bridge_legacy_checkpoint(runtime, spec):
     return state
 
 
+def _record_q4_null_invocation(root, receipt, *, hardware, costs=None):
+    """Retain every actual null measurement and compare it to immutable first bytes."""
+    from .vlm_observation import compare_probability_receipts
+
+    root = Path(root)
+    invocations = root / "null_invocations"
+    invocations.mkdir(parents=True, exist_ok=True)
+    # The caller holds frozen_writer(root); a fresh directory also preserves a
+    # failed or interrupted invocation without replacing any earlier attempt.
+    index = max((int(p.name) for p in invocations.iterdir() if p.name.isdigit()), default=-1) + 1
+    attempt = invocations / f"{index:06d}"
+    attempt.mkdir()
+    _publish(attempt / "null_receipt.json", receipt)
+    current = _file_binding(attempt / "null_receipt.json")
+    _publish(attempt / "hardware.json", hardware)
+    _publish(
+        attempt / "invocation.json",
+        {
+            "null_receipt": current,
+            "hardware": _file_binding(attempt / "hardware.json"),
+            "costs": costs,
+        },
+    )
+    anchor_path = root / "null_receipt.json"
+    anchor_binding_path = root / "null_receipt_binding.json"
+    if anchor_path.exists():
+        if not anchor_binding_path.is_file():
+            raise ValueError("Existing null receipt has no retained original hash binding")
+        anchor = _read(anchor_binding_path)
+        if Path(anchor["path"]).resolve() != anchor_path.resolve():
+            raise ValueError("Null anchor binding refers to another original")
+        original = _bound_json(anchor)
+    else:
+        _publish(anchor_path, receipt)
+        anchor = _file_binding(anchor_path)
+        _publish(anchor_binding_path, anchor)
+        original = receipt
+    try:
+        parity = compare_probability_receipts(original, receipt, tolerances=original["tolerances"])
+    except (KeyError, ValueError) as error:
+        _publish(
+            attempt / "comparison.json",
+            {
+                "status": "FAIL_NULL_IDENTITY",
+                "anchor": anchor,
+                "current": current,
+                "reason": str(error),
+            },
+        )
+        raise
+    comparison = {**parity, "anchor": anchor, "current": current}
+    _publish(attempt / "comparison.json", comparison)
+    if parity["status"] != "PASS":
+        raise ValueError("Q4 resumed GPU exceeds frozen null probability tolerances")
+    return {
+        "null_receipt": current,
+        "null_anchor": anchor,
+        "null_comparison": _file_binding(attempt / "comparison.json"),
+        "null_invocation": _file_binding(attempt / "invocation.json"),
+    }
+
+
+def _q4_known_event_scores(root, backend, policies, probes):
+    """Reuse a completed known-action measurement only with its original request binding."""
+    from .vlm_observation import known_action_probability
+
+    root = Path(root)
+    eos_ids = sorted(backend.adapter.eos_ids)
+    requests = []
+    for candidate, policy in policies.items():
+        for prompt in probes:
+            text = json.dumps(prompt["scene"]["truth_world"], separators=(",", ":"))
+            tokens = backend.adapter.processor.tokenizer.encode(text, add_special_tokens=False)
+            actions = [
+                [*tokens, eos]
+                for eos in eos_ids
+                if len(tokens) + 1 <= 64 and not set(tokens) & set(eos_ids)
+            ]
+            requests.append(
+                {
+                    "candidate": candidate,
+                    "policy": policy,
+                    "prompt": prompt,
+                    "token_actions": actions,
+                }
+            )
+    request = {
+        "runtime_identity": backend.runtime_identity,
+        "max_new_tokens": 64,
+        "eos_token_ids": eos_ids,
+        "requests": requests,
+    }
+    scores_path = root / "known_event_scores.json"
+    receipt_path = root / "known_event_scores_receipt.json"
+    if scores_path.exists() or receipt_path.exists():
+        if not receipt_path.is_file():
+            raise ValueError("Known-event original is missing its completed hash/request receipt")
+        saved = _read(receipt_path)
+        if saved.get("status") != "COMPLETE" or saved.get("request_hash") != canonical_hash(
+            request
+        ):
+            raise ValueError("Known-event frozen request/policy/runtime identity changed")
+        if (
+            saved.get("request") != request
+            or Path(saved["scores"]["path"]).resolve() != scores_path.resolve()
+        ):
+            raise ValueError("Known-event original request or output binding differs")
+        return _bound_json(saved["scores"])
+    scores = []
+    for item in requests:
+        candidate, prompt, actions = item["candidate"], item["prompt"], item["token_actions"]
+        if not actions:
+            scores.append(
+                {
+                    "candidate": candidate,
+                    "prompt_id": prompt["prompt_id"],
+                    "status": "NO_VALID_KNOWN_ACTION_WITHIN_HORIZON",
+                }
+            )
+            continue
+        backend.activate(item["policy"])
+        measured = backend.score_known_actions(prompt, actions, max_new_tokens=64)
+        if [row["token_ids"] for row in measured] != actions or any(
+            row["inference_fingerprint"] != item["policy"]["inference_fingerprint"]
+            or row["runtime_identity"] != backend.runtime_identity
+            or row["prompt_record_hash"] != canonical_hash(prompt)
+            or row["max_new_tokens"] != 64
+            or row["eos_token_ids"] != eos_ids
+            for row in measured
+        ):
+            raise ValueError("Known-event measured action/policy/request identity differs")
+        scores.append(
+            {
+                "candidate": candidate,
+                "prompt_id": prompt["prompt_id"],
+                "action_scores": measured,
+                "known_event_subset": known_action_probability(measured),
+                "exhaustive_event_enumeration_proved": False,
+            }
+        )
+    _publish(scores_path, scores)
+    _publish(
+        receipt_path,
+        {
+            "status": "COMPLETE",
+            "request_hash": canonical_hash(request),
+            "request": request,
+            "scores": _file_binding(scores_path),
+        },
+    )
+    return scores
+
+
 def vlm_smoke(
     config,
     bindings,
@@ -2963,6 +3704,8 @@ def vlm_smoke(
         null_state = _bridge_legacy_checkpoint(runtime, plan["null_origin"])
         null_fingerprint = _normalized_inference_fingerprint(runtime, null_state)
         _restore_runtime(runtime, null_state)
+        null_started = time.perf_counter()
+        null_forwards = runtime["adapter"].forward_calls
         null_scores = []
         by_prompt = {p["prompt_id"]: p for p in plan["probes"]}
         for action in plan["null_actions"]:
@@ -2997,7 +3740,17 @@ def vlm_smoke(
             "tolerances": runtime["parity_tolerances"],
             "scores": null_scores,
         }
-        _publish(root / "null_receipt.json", receipt)
+        null_binding = _record_q4_null_invocation(
+            root,
+            receipt,
+            hardware=preflight,
+            costs={
+                "elapsed_seconds": time.perf_counter() - null_started,
+                "forward_calls": runtime["adapter"].forward_calls - null_forwards,
+                "scored_sequences": len(null_scores),
+                "scored_tokens": sum(len(row["token_ids"]) for row in null_scores),
+            },
+        )
         spec = plan["origins"][worker_index]
         origin = _bridge_legacy_checkpoint(runtime, spec)
         checkpoint_identity = {
@@ -3131,41 +3884,7 @@ def vlm_smoke(
             workers=1,
             resume=resume,
         )
-        from .vlm_observation import known_action_probability
-
-        known_scores = []
-        for candidate, policy in policies.items():
-            backend.activate(policy)
-            for prompt in plan["probes"]:
-                text = json.dumps(prompt["scene"]["truth_world"], separators=(",", ":"))
-                tokens = runtime["adapter"].processor.tokenizer.encode(
-                    text, add_special_tokens=False
-                )
-                actions = [
-                    [*tokens, eos]
-                    for eos in sorted(runtime["adapter"].eos_ids)
-                    if len(tokens) + 1 <= 64 and not set(tokens) & runtime["adapter"].eos_ids
-                ]
-                if not actions:
-                    known_scores.append(
-                        {
-                            "candidate": candidate,
-                            "prompt_id": prompt["prompt_id"],
-                            "status": "NO_VALID_KNOWN_ACTION_WITHIN_HORIZON",
-                        }
-                    )
-                    continue
-                measured = backend.score_known_actions(prompt, actions, max_new_tokens=64)
-                known_scores.append(
-                    {
-                        "candidate": candidate,
-                        "prompt_id": prompt["prompt_id"],
-                        "action_scores": measured,
-                        "known_event_subset": known_action_probability(measured),
-                        "exhaustive_event_enumeration_proved": False,
-                    }
-                )
-        _publish(root / "known_event_scores.json", known_scores)
+        _q4_known_event_scores(root, backend, policies, plan["probes"])
         from .vlm_observation import analyze_q4_worker
 
         observation = analyze_q4_worker(root, config)
@@ -3184,10 +3903,7 @@ def vlm_smoke(
             "generation": generated,
             "scoring": scored,
             "observations": observation,
-            "null_receipt": {
-                "path": str(root / "null_receipt.json"),
-                "sha256": file_hash(root / "null_receipt.json"),
-            },
+            **null_binding,
             "independent_reference_draws_diagnostic_only": 64,
             "formal_reference_status": "REFERENCE_UNRESOLVED",
             "direct_count_baseline_endpoints": endpoints,

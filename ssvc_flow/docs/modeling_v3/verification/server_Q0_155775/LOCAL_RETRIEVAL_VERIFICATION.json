@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "scope": "ALL_SIX_Q0_OUTPUT_HASHES_FROM_ORIGINAL_Q0_RECEIPT",
+  "checks": [
+    {
+      "path": "runs/modeling_v3_dev/server_candidate03/Q0_audit/MISSING_INPUTS_V3.json",
+      "sha256": "a0e7de4275b7b3223272b02a983a02cd786514397ed13383631f75706f2cc6d2",
+      "verified": true
+    },
+    {
+      "path": "runs/modeling_v3_dev/server_candidate03/Q0_audit/PARENT_RECORD_INDEX.jsonl",
+      "sha256": "da76f45469d18de9f0e2d2a5eb9ebdff1fd9375870ddf72788338f179d2340b7",
+      "verified": true
+    },
+    {
+      "path": "runs/modeling_v3_dev/server_candidate03/Q0_audit/Q0_REPRODUCTION_zh.md",
+      "sha256": "09f39463c2942722b6ffbd927790b0abbba761612428a5b87c429caf1a45a601",
+      "verified": true
+    },
+    {
+      "path": "runs/modeling_v3_dev/server_candidate03/Q0_audit/Q0_RAW_HELMERT.csv",
+      "sha256": "43ab5641b3e028e73a4aeddfb798b5b195c126b9c1bfab55b81ea7fc94a36412",
+      "verified": true
+    },
+    {
+      "path": "runs/modeling_v3_dev/server_candidate03/Q0_audit/Q0_ALL_ACTIVE_SQUARED_SUMS.csv",
+      "sha256": "b4f9a95740cfc0f41e54dd23caf5b5a7ace5077124a3d271feab1f3d0994b44e",
+      "verified": true
+    },
+    {
+      "path": "runs/modeling_v3_dev/server_candidate03/Q0_audit/Q0_R_EQUALS_K.csv",
+      "sha256": "a9971fb300888ccc79d6e47160e4eaff0bbd109d94a2547ab7a16ddad15abc85",
+      "verified": true
+    }
+  ],
+  "full_output_directory": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-v3-observation-coverage/ssvc_flow/runs/modeling_v3_dev/server_candidate03/Q0_audit",
+  "public_report_omits_large_csv_but_preserves_private_original_paths": true
+}

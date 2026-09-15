@@ -1,0 +1,298 @@
+{
+  "schema": "V3_Q4_SOURCE_WORKLOAD_ACCOUNTING_V1",
+  "date": "2026-09-16",
+  "status": "SOURCE_DERIVED_COUNTS_NOT_EXECUTED_TIMING",
+  "source_sha256": {
+    "src/modeling_v3/vlm_campaign.py": "a53e4497c8c5b6bddd4749c5274194cb646026b4643def33c20e025ab8092349",
+    "src/modeling_v3/vlm_observation.py": "0f778debcdbc09639b8ab1e43bf0c781af4e18f7eccef79fda3c8f9fc88f9620",
+    "src/model_adapters/base.py": "ce229251b732e0e961271da51e8442599d198a691070ac773e6a36e6c9056c47",
+    "src/followup_runtime.py": "37b22d311cc18bef07bb3bd2d7a5f09b0e0b32eabb8d425cc4f18ba3ecfe0b17",
+    "src/followup_updates.py": "020b2eec7f336395817976d2e51791fd42de7c12aafcd75af2a7e0a57c238fa8",
+    "configs/modeling_v3/protocol.json": "83df862332400a56a554af2821cc0e08944891c584abdad8455b1633fdb03797",
+    "docs/modeling_v3/verification/historical_timing/HISTORICAL_GPU_TIMING.json": "2b3c4e588f4be97069801f99d8ec7ea45909586f1250e61db0e5bd39e068be9a"
+  },
+  "workers": {
+    "0": {
+      "origin": "historical_initial",
+      "banks": 6,
+      "bank_prompts_per_bank": 4,
+      "bank_draws_per_prompt": 8,
+      "bank_generated_sequences": 192,
+      "bank_parity_rescore_sequences": 192,
+      "scratch_adam_updates": 18,
+      "source_adam_updates": 0,
+      "gradient_scored_sequences": 576,
+      "sequence_backward_calls": 576,
+      "policy_ids_including_origin_before_alias": 19,
+      "candidate_policy_ids_before_alias": 18,
+      "observation_generation": {
+        "ORIGIN_pilot": 192,
+        "ORIGIN_main": 576,
+        "ORIGIN_reference": 768,
+        "ORIGIN_total": 1536,
+        "MIX_reference": 768,
+        "DIRECT_reference_two_endpoints": 1536,
+        "total": 3840
+      },
+      "observation_generation_certified_rescore_sequences": 3840,
+      "score_task_requests_before_alias": {
+        "ORIGIN_pilot": 3648,
+        "ORIGIN_main": 10944,
+        "ORIGIN_reference": 14592,
+        "ORIGIN_all_roles": 29184,
+        "MIX_two_endpoints": 1536,
+        "DIRECT_additional_score_tasks": 0,
+        "all_policy_total": 30720,
+        "candidate_endpoint_total_excluding_origin_self_scores": 29184,
+        "origin_self_scores": 1536
+      },
+      "known_action_scoring": {
+        "policy_prompt_cells": 228,
+        "maximum_sequence_formula": "228 * E",
+        "E_definition": "number of distinct EOS ids in the actual locked adapter; unavailable in the read inputs",
+        "actual_sequences": "NOT_MEASURED",
+        "invalid_or_too_long_known_paths": "0 scored actions for that prompt"
+      },
+      "null_scored_sequences_per_fresh_or_resumed_invocation": 12,
+      "all_generated_sequences": 4032,
+      "all_scored_sequence_requests_including_gradient_before_alias_excluding_known": 35340,
+      "all_generation_and_score_sequence_passes_before_alias_excluding_known": 39372,
+      "guaranteed_reuse_of_generation_certified_scores_in_score_tasks": 2304,
+      "score_task_physical_calls_if_no_additional_alias_or_duplicate_token_actions": 28416,
+      "counts_scope": "successful fresh nominal schedule; no failed/retried attempts, loading, certification or I/O; score tasks are logical requests before aliases"
+    },
+    "1": {
+      "origin": "historical_X_BASE_64",
+      "banks": 6,
+      "bank_prompts_per_bank": 4,
+      "bank_draws_per_prompt": 8,
+      "bank_generated_sequences": 192,
+      "bank_parity_rescore_sequences": 192,
+      "scratch_adam_updates": 18,
+      "source_adam_updates": 0,
+      "gradient_scored_sequences": 576,
+      "sequence_backward_calls": 576,
+      "policy_ids_including_origin_before_alias": 19,
+      "candidate_policy_ids_before_alias": 18,
+      "observation_generation": {
+        "ORIGIN_pilot": 192,
+        "ORIGIN_main": 576,
+        "ORIGIN_reference": 768,
+        "ORIGIN_total": 1536,
+        "MIX_reference": 768,
+        "DIRECT_reference_two_endpoints": 1536,
+        "total": 3840
+      },
+      "observation_generation_certified_rescore_sequences": 3840,
+      "score_task_requests_before_alias": {
+        "ORIGIN_pilot": 3648,
+        "ORIGIN_main": 10944,
+        "ORIGIN_reference": 14592,
+        "ORIGIN_all_roles": 29184,
+        "MIX_two_endpoints": 1536,
+        "DIRECT_additional_score_tasks": 0,
+        "all_policy_total": 30720,
+        "candidate_endpoint_total_excluding_origin_self_scores": 29184,
+        "origin_self_scores": 1536
+      },
+      "known_action_scoring": {
+        "policy_prompt_cells": 228,
+        "maximum_sequence_formula": "228 * E",
+        "E_definition": "number of distinct EOS ids in the actual locked adapter; unavailable in the read inputs",
+        "actual_sequences": "NOT_MEASURED",
+        "invalid_or_too_long_known_paths": "0 scored actions for that prompt"
+      },
+      "null_scored_sequences_per_fresh_or_resumed_invocation": 12,
+      "all_generated_sequences": 4032,
+      "all_scored_sequence_requests_including_gradient_before_alias_excluding_known": 35340,
+      "all_generation_and_score_sequence_passes_before_alias_excluding_known": 39372,
+      "guaranteed_reuse_of_generation_certified_scores_in_score_tasks": 2304,
+      "score_task_physical_calls_if_no_additional_alias_or_duplicate_token_actions": 28416,
+      "counts_scope": "successful fresh nominal schedule; no failed/retried attempts, loading, certification or I/O; score tasks are logical requests before aliases"
+    }
+  },
+  "two_worker_totals": {
+    "banks": 12,
+    "bank_generated_sequences": 384,
+    "scratch_adam_updates": 36,
+    "sequence_backward_calls": 1152,
+    "observation_generated_sequences": 7680,
+    "all_generated_sequences": 8064,
+    "observation_certified_rescore_sequences": 7680,
+    "score_task_requests_before_alias": 61440,
+    "candidate_endpoint_score_task_requests_before_alias_excluding_origin_self": 58368,
+    "null_scored_sequences_first_invocation": 24,
+    "known_action_maximum_sequence_formula": "456 * E",
+    "all_generation_and_score_sequence_passes_before_alias_excluding_known": 78744
+  },
+  "historical_timing": {
+    "source": "docs/modeling_v3/verification/historical_timing/HISTORICAL_GPU_TIMING.json",
+    "smoke_wall_seconds": 4588.105148792267,
+    "old_S1_elapsed_seconds": 14074.84960915614,
+    "old_S1_completion_forward_calls": 40124,
+    "old_S1_mixed_elapsed_per_forward_ratio": 0.350783810416612,
+    "ratio_scope": "mixed completion elapsed/forward counter; includes unseparated work; neither V3 throughput nor a lower/upper bound"
+  },
+  "q4_historical_ratio_sensitivity_scenarios": [
+    {
+      "assumed_common_active_tokens_per_sequence": 8,
+      "nominal_prefix_passes_per_worker_excluding_known": 314976,
+      "historical_mixed_ratio_sensitivity_hours_per_worker": 30.69124485271744,
+      "ideal_two_worker_wall_hours_if_simultaneous_identical_rates": 30.69124485271744,
+      "two_worker_gpu_hours": 61.38248970543488
+    },
+    {
+      "assumed_common_active_tokens_per_sequence": 16,
+      "nominal_prefix_passes_per_worker_excluding_known": 629952,
+      "historical_mixed_ratio_sensitivity_hours_per_worker": 61.38248970543488,
+      "ideal_two_worker_wall_hours_if_simultaneous_identical_rates": 61.38248970543488,
+      "two_worker_gpu_hours": 122.76497941086976
+    },
+    {
+      "assumed_common_active_tokens_per_sequence": 32,
+      "nominal_prefix_passes_per_worker_excluding_known": 1259904,
+      "historical_mixed_ratio_sensitivity_hours_per_worker": 122.76497941086976,
+      "ideal_two_worker_wall_hours_if_simultaneous_identical_rates": 122.76497941086976,
+      "two_worker_gpu_hours": 245.5299588217395
+    },
+    {
+      "assumed_common_active_tokens_per_sequence": 64,
+      "nominal_prefix_passes_per_worker_excluding_known": 2519808,
+      "historical_mixed_ratio_sensitivity_hours_per_worker": 245.5299588217395,
+      "ideal_two_worker_wall_hours_if_simultaneous_identical_rates": 245.5299588217395,
+      "two_worker_gpu_hours": 491.059917643479
+    }
+  ],
+  "q4_scenario_assumptions": [
+    "all nominal sequences including gradient/null share the stated token length",
+    "logical score requests are evaluated before alias savings",
+    "known-action scoring omitted because actual EOS/token paths are unavailable",
+    "historical mixed ratio reused only as an explicitly hypothetical sensitivity coefficient",
+    "no new throughput measurements; no bounds; no queue/loading/I-O/resume estimates"
+  ],
+  "q5_default": {
+    "scope": "current default Q5 source and 30 response origins, primary total n1024, initial reference n4096, two fixed MIX banks, default DIRECT enabled; no Q4/Q6/extensions/retries",
+    "source_trajectories": 24,
+    "source_adam_updates": 3072,
+    "source_generated_sequences": 98304,
+    "response_origins": 30,
+    "banks_per_origin": 36,
+    "candidate_policies_per_origin": 108,
+    "policy_ids_including_origin": 109,
+    "scratch_adam_updates": 3240,
+    "bank_generated_sequences": 34560,
+    "per_origin": {
+      "measurement_ORIGIN_generation": 36864,
+      "measurement_DIRECT_generation": 1327104,
+      "measurement_total_generation": 1363968,
+      "reference_ORIGIN_generation_initial": 147456,
+      "reference_MIX_generation_initial": 294912,
+      "reference_total_generation_initial": 442368,
+      "all_observation_generation": 1806336,
+      "automatic_observation_certified_rescore": 1806336,
+      "measurement_candidate_only_score_tasks": 3981312,
+      "measurement_origin_self_score_tasks": 36864,
+      "measurement_all_score_tasks": 4018176,
+      "reference_ORIGIN_candidate_score_tasks": 5308416,
+      "reference_MIX_endpoint_score_tasks": 589824,
+      "all_score_task_requests_before_alias": 9916416
+    },
+    "all_observation_generated_sequences": 54190080,
+    "all_generated_sequences_including_source_and_bank": 54322944,
+    "observation_certified_rescore_sequences": 54190080,
+    "all_score_task_requests_before_alias": 297492480,
+    "training_and_bank_parity_rescore_sequences": 132864,
+    "gradient_scored_sequences_and_backward_calls": 201984,
+    "all_scored_sequence_requests_including_gradient_before_alias": 352017408,
+    "all_generation_and_score_sequence_passes_before_alias": 406340352,
+    "planner_count_differences": [
+      "estimate_workload explicitly excludes independent DIRECT count studies, while prepare_q5_observation defaults include_direct_count=True",
+      "main_candidate_score_sequences_before_alias counts 108 candidates; actual measurement score manifest also contains one origin self-score policy",
+      "observation generate includes an additional certified rescore; a generation timing that excludes this needs the rescore cost added once"
+    ]
+  },
+  "q5_hypothetical_generation_component_scenarios": [
+    {
+      "hypothetical_seconds_per_backend_observation_generate_including_certified_rescore": 0.1,
+      "observation_generation_component_gpu_days": 62.72,
+      "ideal_two_gpu_component_days": 31.36
+    },
+    {
+      "hypothetical_seconds_per_backend_observation_generate_including_certified_rescore": 1.0,
+      "observation_generation_component_gpu_days": 627.2,
+      "ideal_two_gpu_component_days": 313.6
+    },
+    {
+      "hypothetical_seconds_per_backend_observation_generate_including_certified_rescore": 10.0,
+      "observation_generation_component_gpu_days": 6272.0,
+      "ideal_two_gpu_component_days": 3136.0
+    }
+  ],
+  "new_v3_gpu_throughput": "NOT_MEASURED",
+  "launch_bindings": "PENDING_SERVER_ENGINEERING_ACCEPTANCE",
+  "executable_launch_paths_provided": false,
+  "historical_length_readonly_update": {
+    "observed_at_utc": "2026-09-15T17:40:54.966580+00:00",
+    "evidence": {
+      "path": "docs/modeling_v3/HISTORICAL_Q4_TIMING_LENGTHS.json",
+      "sha256": "1fa473537db61cc824a24dd01277243bc5627380da1a3aae608440422560fef7"
+    },
+    "source_bank_manifest_sha256": "3acaaa771cd7d4315c3e7cbbede135010abaf02ae1f164538203a13875cd79c6",
+    "source_scope": "S1 bank03 only, three distinct post-step64 candidate-policy generation ledgers, 48 old control prompts",
+    "raw_sequences": 2304,
+    "token_count": 35274,
+    "mean_token_length": 15.309895833333334,
+    "p50_token_length": 16,
+    "p95_token_length": 17,
+    "p99_token_length": 17,
+    "observed_min_token_length": 12,
+    "observed_max_token_length": 19,
+    "all_stop_reasons_eos": true,
+    "new_v3_sequence_throughput_measured": false,
+    "new_gpu_submissions": 0,
+    "hypothetical_common_length_scenarios": [
+      {
+        "historical_length_statistic": "old_panel_observed_mean",
+        "assumed_common_v3_length": 15.309895833333334,
+        "nominal_prefix_passes_per_worker_excluding_known": 602781.21875,
+        "hypothetical_mixed_ratio_hours_per_worker": 58.734970211303974,
+        "ideal_two_simultaneous_equal_worker_wall_hours": 58.734970211303974,
+        "two_worker_gpu_hours": 117.46994042260795,
+        "historical_statistic_is_not_a_v3_bound": true
+      },
+      {
+        "historical_length_statistic": "old_panel_observed_median",
+        "assumed_common_v3_length": 16,
+        "nominal_prefix_passes_per_worker_excluding_known": 629952,
+        "hypothetical_mixed_ratio_hours_per_worker": 61.38248970543488,
+        "ideal_two_simultaneous_equal_worker_wall_hours": 61.38248970543488,
+        "two_worker_gpu_hours": 122.76497941086976,
+        "historical_statistic_is_not_a_v3_bound": true
+      },
+      {
+        "historical_length_statistic": "old_panel_observed_p95",
+        "assumed_common_v3_length": 17,
+        "nominal_prefix_passes_per_worker_excluding_known": 669324,
+        "hypothetical_mixed_ratio_hours_per_worker": 65.21889531202456,
+        "ideal_two_simultaneous_equal_worker_wall_hours": 65.21889531202456,
+        "two_worker_gpu_hours": 130.43779062404911,
+        "historical_statistic_is_not_a_v3_bound": true
+      },
+      {
+        "historical_length_statistic": "old_panel_observed_maximum",
+        "assumed_common_v3_length": 19,
+        "nominal_prefix_passes_per_worker_excluding_known": 748068,
+        "hypothetical_mixed_ratio_hours_per_worker": 72.89170652520392,
+        "ideal_two_simultaneous_equal_worker_wall_hours": 72.89170652520392,
+        "two_worker_gpu_hours": 145.78341305040783,
+        "historical_statistic_is_not_a_v3_bound": true
+      }
+    ],
+    "limitations": [
+      "Observed historical length distribution does not establish the new Q4 initial-policy or source-policy length distribution.",
+      "Old per-row generation elapsed excludes V3 observation wrapper certified rescore; do not use it as the complete V3 generate latency.",
+      "Old completion elapsed/forward mixed ratio still contains backward and state/I-O work; no V3 throughput or interval is inferred.",
+      "Original source_sha256 entries above remain the original workload derivation snapshot; this update adds historical evidence only."
+    ]
+  }
+}

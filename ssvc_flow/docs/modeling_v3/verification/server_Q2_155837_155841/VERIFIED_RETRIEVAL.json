@@ -1,0 +1,17 @@
+{
+  "source_server_root": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04",
+  "files": {
+    "Q2_development_collection/COLLECTION_SUMMARY.json": "d3c678b49cdde1a05013b7e4ee95e0ccb858c048186df06648d452bc0b80b90e",
+    "Q2_development_collection/COMPLETE.json": "5cb7941ffe6bf2fa6557ed1d5c1ae8f3a2a93ffd50ca381dd8f7eadf3fa94a56",
+    "Q2_development_collection/BINDING.json": "fa29cb252bc389754770fb1a20d2ea607b93634289a5ae79e75abbe6709194d7",
+    "Q2_coverage_timing_pilot/COVERAGE_SUMMARY.json": "b99524d7c27c5ca7c1bb3fe18b615d77b3105e2dad111278df567002bc73c0a3",
+    "Q2_coverage_timing_pilot/COMPLETE.json": "a3d0c80eaa4741f643404bfe8586d47b45bf24a4ad392495269b2611a7471c6e",
+    "Q2_coverage_timing_pilot/BINDING.json": "5341e591a8fb288a111d82fbf6769e5756041997dcd5b3b3ae7afed6c0e59326",
+    "Q2_COLLECT_SUBMIT_RECEIPT.json": "3fc2f4d052917957e609eb7c2cb2b3f7026da77b83f4ce999b0f270ae055b359",
+    "Q2_TIMING_SUBMIT_RECEIPT.json": "5ffdfcac6e33bba94ba62f52b68f62d59740cfc3ecfb836a439edc5e6c04e59c",
+    "Q2_FULL_SUBMIT_RECEIPT.json": "90336f8148dafde6a673985609542e11abc8ed772edec4ac834a1c00a3208fae",
+    "Q2-collect-155837.err": "c4ba2beae181bd68d30b78f9ddc1b9e985bf6772cdfcb4e3ae396a4c9c1769c7",
+    "Q2-timing-155841.err": "cb99f57af0658c3f7124af6a6a828d4cc49a22afda5e64cfe835f1cb609af843"
+  },
+  "scope": "COMPACT_ORIGINAL_RECEIPTS; full arrays retained on server"
+}

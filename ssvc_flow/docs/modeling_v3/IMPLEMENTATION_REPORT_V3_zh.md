@@ -6,9 +6,9 @@
 
 当前工作区新增独立 `src/modeling_v3/`，保留旧 `modeling_contrast/` 的定义与历史输出。观测几何、校准选择、响应模型、原件审计、CPU 采集和统计分析已有代码入口。真实 9B 的运行时、源训练、候选分支和序列观测提供了接入代码与小型替身测试；真实 Q4–Q6 尚不能登记为完成。
 
-本稿核读了本地留存的 CPU pilot 回执 `runs/modeling_v3_dev/server_inventory/CPU_PILOT_155686.json`。该回执明确标记 `pilot: true`、`scientific_status: PILOT_NOT_CONFIRMATION`。**155686 只提供该次小型源轨迹采集的时序与工程记录，不能替代 Q1 观测比较、Q2 非退化维数实验或 Q3 独立确认。** 本稿未重新查询 Slurm 的实时终态。
+本稿核读了本地留存的 CPU pilot 回执 `runs/modeling_v3_dev/server_inventory/CPU_PILOT_155686.json`。该回执明确标记 `pilot: true`、`scientific_status: PILOT_NOT_CONFIRMATION`。**155686 只提供该次小型源轨迹采集的时序与工程记录，不能替代 Q1 观测比较、Q2 非退化维数实验或 Q3 独立确认。** 服务器状态与本轮回收的原件见 `RUN_MANIFEST.json` 和 `verification/server_CPU_155797/`。
 
-此前两次上传被自动审批拒绝；用户对已明确列出的上传目录与服务器 CPU 验收范围答复“继续”后，candidate03 增量上传与部署已成功。服务器端核验 37 个增量文件、997 个快照文件，归档 SHA256 为 `de96a3e5e95538c6cd2e80eeb7e844a794d18d91cd6eb629aeb20fe6ab4f2cfe`。Q0 作业 155775 与 CPU 工程验收作业 155776 已提交，结果待回收核验。未新增 GPU 提交；首次 GPU 确认单独记录在新的不可变 Q4 执行绑定内，不能复用原 pending 阶段文件。
+此前两次上传被自动审批拒绝；用户对已明确列出的上传目录与服务器 CPU 验收范围答复“继续”后，candidate03 增量上传与部署已成功。服务器端核验 37 个增量文件、997 个快照文件，归档 SHA256 为 `de96a3e5e95538c6cd2e80eeb7e844a794d18d91cd6eb629aeb20fe6ab4f2cfe`。Q0 作业 155775 已完成并回收核验。首次 CPU 工程验收 155776 在收集时发现同名测试模块冲突；修正启动器后，candidate04 的重跑作业 155797 完成：1,837 passed、4 failed、2 skipped、1 deselected。4 个失败均来自旧 R1 supplement 需要真实 Git 提交原件；哈希快照没有 `.git`。独立 Git 对照作业 155873 在同源代码上以真实新快照提交 `ebfd4e322025825f55dfda50dc6308be72ae23f4` 重跑该模块，12 passed；这是服务器本地快照提交，不是伪称上游历史提交。最新修改尚需下一版完整验收。未新增 GPU 提交；首次 GPU 确认单独记录在新的不可变 Q4 执行绑定内，不能复用原 pending 阶段文件。
 
 本稿不将计划计数、代码存在、替身测试通过或 `--dry-run` 的成功解释为真实实验完成，也不生成最终 `MODELING_DECISION_V3_zh.md`。
 
@@ -18,7 +18,7 @@
 
 | 阶段 | 真实代码/API 与 CLI | 已有工程覆盖 | 完成阶段仍需的实际证据 |
 |---|---|---|---|
-| Q0 原件审计 | `source_audit.audit_parent(config, parent, out)`；CLI `audit-parent --parent ... --legacy-parent ...` | 强制从原始样本重建 packet；原件哈希、路径、别名；raw/Helmert；all/active 平方和；匹配 C3/C5/C6 的 `r=k`；缺样本不能回退到摘要 | 在服务器完整 N4 原件及原 M2 parent 上运行，交付实际 Q0 回执与缺失清单。未保留的 Q/U/C、逐动作或 pilot 角色不能补写为旧原件 |
+| Q0 原件审计 | `source_audit.audit_parent(config, parent, out)`；CLI `audit-parent --parent ... --legacy-parent ...` | 强制从原始样本重建 packet；原件哈希、路径、别名；raw/Helmert；all/active 平方和；匹配 C3/C5/C6 的 `r=k`；缺样本不能回退到摘要 | 作业 155775 已完成，完整性错误 0；实际缺失清单见 verification/server_Q0_155775。未保留的 Q/U/C、逐动作或 pilot 角色不能补写为旧原件 |
 | Q1 旧固定策略接入 | `historical_observation.prepare_historical_observation_collection(parent_raw_root, out, config)`；CLI `prepare-historical` | 身份哈希选择与 arm×anchor 分层；旧参数重新评分；原文件与 Adam 引用；与 `observe_toy` 的小型集成；缺原件时不发 COMPLETE | 在旧开发原件上生成可核验的固定策略集合，并单列新增评分成本。新采集的 V3 development 不能替代这项旧策略实验 |
 | Q1 观测几何 | `observation_geometry`、`covariance_pilot`；`cpu_campaign.observe_toy`；CLI `observe-toy` | RAW4 无静默投影；质量残差可逆；ORIGIN 与 IID MIX；独立 pilot；L1/fallback；共享/别名协方差；交叉拟合方差边界；边界 witness | 旧固定策略的全部冻结 n 网格及 200 次重复；主 n1024 原始贡献；实际策略边界覆盖、系数方差/fallback、分事件和群体误差、分项耗时。解析 witness 单列 |
 | Q2 校准方向 | `bank_selection.select_banks`、`coverage.coverage_diagnostics/classify_coverage`；`cpu_campaign.coverage_study` | FIRST、分层随机、范数、整 bank QR/logdet；实际增量；48/24 训练 prompt 来源分区；整 bank 选择；隐藏 query 响应隔离 | 24 个候选校准 bank、12 个 query bank 的完整采集与同支出/每 bank 固定 n 曲线；设计 seed 单列；真实 query 覆盖、拒判和直接测量比较 |
@@ -43,7 +43,7 @@ Q4 的进入条件是 Q1/Q2 技术链正确，不能额外要求复杂估计器�
 
 ## 4. 已核对的小型工程执行证据
 
-当前最终代码快照的小型工程回归（本机，不替代服务器验收）：
+candidate03 代码快照的小型工程回归（本机，不替代服务器验收）：
 
 ```text
 python -m pytest tests/modeling_v3 docs/modeling_v3/design/reference/test_math_contracts.py -q
@@ -67,7 +67,7 @@ python -m pytest tests/modeling_v3 docs/modeling_v3/design/reference/test_math_c
 
 统一服务器工程验收入口是 `scripts/verify_modeling_v3_cpu.py`，它记录实际命令、Python/依赖、Slurm job、源文件与测试哈希、运行前后源码一致性、`pytest.log`、`junit.xml` 和 `result.json`。`prepare_gpu` 必须验证真实日志及测试条目，而不是读取一个手写 PASS。
 
-本稿未取得最新完整服务器验收回执，因此全套通过数、失败/跳过数、最终源码 hash 与 `CPU_TEST_RESULTS.json` 均待主执行任务补入。当前 `scripts/modeling_v3_cpu.sbatch` 的 test 分支还显式 deselect 一项旧测试：`tests/test_audit_r0_remaining.py::test_cross_split_passes_generated_dataset`；最终报告须保留该排除及其独立验证状态，不能称未限定的全仓全部测试通过。
+candidate04 完整服务器验收已取得并保留失败记录；后续新增接口尚待 candidate05 完整服务器复验，因此不能把旧回执算作最新源码通过。当前 `scripts/modeling_v3_cpu.sbatch` 的 test 分支还显式 deselect 一项旧测试：`tests/test_audit_r0_remaining.py::test_cross_split_passes_generated_dataset`；最终报告须保留该排除及其独立验证状态，不能称未限定的全仓全部测试通过。
 
 ## 5. 真实服务器 pilot 155686 的事实范围
 
@@ -122,9 +122,9 @@ CPU collection 保存逐步参数、真实 d/g/Adam 状态、训练与 bank 动�
 
 | 交付/阶段证据 | 本稿状态 |
 |---|---|
-| 最新源码在服务器发布并完成实际工程验收 | `BLOCKED_BY_UPLOAD_APPROVAL`；主执行任务报告自动审批拒绝 |
-| 服务器完整旧原件 Q0 审计与旧策略 Q1 比较 | 待实际执行或补入完整绑定回执 |
-| Q2 完整发展矩阵及非退化 rank 结果 | `NOT_COMPLETED` |
+| 最新源码在服务器发布并完成实际工程验收 | candidate04 完整验收 1,837 passed / 4 failed；独立 Git 对照模块 12 passed，待新版完整重跑 |
+| 服务器完整旧原件 Q0 审计与旧策略 Q1 比较 | Q0 完整性错误 0，历史缺失保留 `MISSING_INPUTS`；Q1 历史接入 155783、计时 pilot 155792 已完成，完整网格 155812 已提交 |
+| Q2 完整发展矩阵及非退化 rank 结果 | 完整 source collection 155837 已完成；24-fit timing pilot 155841 已完成；完整矩阵 155844 已以 exit 0 完成，Slurm wall 27:33，原件分析待完成 |
 | 方法选择锁、Q3 实际区间校准/锁定测试与外部初始化结果 | `NOT_COMPLETED` |
 | 首次 GPU 精确启动命令与实测时长估计 | 待最新技术验收、完整来源绑定、实测 GPU 吞吐及主执行任务交付 |
 | 两张 PRO 6000 的真实 Q4 桥接 | `NOT_RUN` |
@@ -133,3 +133,33 @@ CPU collection 保存逐步参数、真实 d/g/Adam 状态、训练与 bank 动�
 | 最终观测/校准/维数/误差范围/失效条件决定 | 待逐阶段实际证据审阅；本稿不代写最终决定 |
 
 上线 SSVC、自动改变源训练奖励和在线检测控制均未取得有效性证据。论文方法或经典基线的来源核读边界见 `RELATED_WORK_IMPLEMENTATION_MAP.md`；实现通过不能替代全文级复现或新颖性判断。
+
+## 8. 服务器续跑修正与阶段记录
+
+- candidate04 以 4 文件增量修正 pytest 同名模块收集、Q4 换卡 null 评分和 known-event 原件复用；服务器代码快照 998 个文件已核验。归档 SHA256：`ec1d0777cd1fc437272723291ea71512fc691b00544196d50614089091344b88`。
+- Q4 换卡修正保留首次原件；每次真实 UUID、硬件、评分、成本和容差比较分别存档。完成 worker 引用本次评分回执；最终跨卡门禁仍要求两个真实不同 UUID。没有完整 hash/request 回执的残缺 known-event 文件拒绝复用。小型 RED 13 failed → GREEN 13 passed；受影响回归 61 passed / 3.12s。真实跨卡续跑尚未运行。证据见 `verification/q4_resume_20260916/`。
+- Q1 历史接入选择 12 个原点 view／12 个 bank，来自 11 条既有轨迹。新增 35 次批量 forward、2,520 个 prompt forward、40,320 个动作概率评分；无新采样、无 Adam，准备过程实测 1.1084s。
+- Q1 计时 pilot 为 48 单元 × 2 次重复、n64，观测链实测 8.2540s，整个进程 9.00s、最大 RSS 49,484 KiB；它不代表完整网格的耗时或科学结论。完整运行保留 n64/256/1024/4096 和每单元 200 次重复。
+- 分区查询显示内存上限字段为 UNLIMITED，但实际 Slurm 作业由调度规则分配 1 CPU / 11 GiB；资源判断以实际分配为准。没有沿用旧研究输出上限。
+
+
+## 9. 本轮实际 CPU 结果与新增接口
+
+- 完整 development 采集 155837：4 条轨迹、256 次 source Adam、1,296 次 fork Adam；核心 wall 11.834826s；输出 113,990,151 bytes；53 个原件清单项已核验。不是 pilot。
+- 覆盖计时 155841：完整 12 原点上的 24 次小设计拟合，核心 wall 15.197812s，进程 15.98s，最大 RSS 528,424 KiB；标记 `PILOT_NOT_CONFIRMATION`，未覆盖最大 n、GLS 和全部方向模型。原件见 `verification/server_Q2_155837_155841/`。
+- 完整 Q2 155844：12 原点 × 1,108 设计＝13,296 fits。申请 32 GiB 后 Slurm job-submit 明确强制为 11 GiB；这属于实测调度规则，不能报告已获得 32 GiB。作业已完成，Slurm wall 27:33、exit 0；实际峰值内存以原始 time 日志为准。
+- CPU `validate-cpu` / `analyze-cpu` 保留校准回执原路径，由下层重新核对 receipt 所属完整清单，避免 JSON 字典传递跳过回执自身原件验证。
+- 首次 GPU 准备现在同时要求：最新源码/测试/脚本的完整服务器工程验收（保留封存数据的显式排除项）、实际非 pilot 的完整 Q1/Q2 development 原件。部分测试 nodeid 不能授权进入 Q4。方法不必优于强直接测量基线。
+- `freeze-vlm` 在真实 VLM development 原件上冻结完整设计和显式误差/覆盖规则；`calibrate-vlm`、`analyze-vlm` 校验 3/6 条独立训练 seed 的实际测量矩阵。经验点预测资格与 95% 跨 seed 认证分开；后者始终 `NOT_CERTIFIED`。
+- `freeze-prediction-set` 在共享参考开放前冻结全部设计的预测；测试接收 mask 仅来自冻结校准与几何。参考未分辨的已接受单元保留分母，不能用测试误差改 mask 或以已分辨子集风险冒充全接受风险。
+- VLM STRATIFIED_RANDOM 使用 bank 的原始 family/interface composition；GROUP_WEIGHTED_RESPONSE 使用原 probe 分组的 X 与 v=-I 映射，不能退化成单一 strata 或每 probe 一组。
+- 正交初始化分析 `analyze-cpu-generalization` 按 7101/7201 分层，核验完整 40 条轨迹和 2,400 个 origin/repeat 单元；初始化迁移不继承固定初始化的覆盖保证。
+- Q6 已接通真实 step64 起点校准及 64–80 状态 DIRECT 绝对事件观测的生产入口和小型替身测试。它只允许已具有固定线性回放资格的独立测试设计；新增 step64 校准成本与 dense 参考成本分别登记，无新 source training、无在线反馈。真实 Q6 未运行。
+
+## 10. Candidate05 冻结前统一检查
+
+372 项 V3/原交接数学小型工程测试通过（31.87s），运行前后 src/tests/scripts Python 哈希一致；原始日志、JUnit 和收据见 `verification/local_20260916_candidate05/`。Ruff 全 V3 源码、测试及新增运行脚本检查通过。此结果不替代服务器全仓验收或科学确认。
+
+同一节点两张 PRO6000 的 Q4 pair 启动器保留原 Slurm GPU token，每个 worker 使用其单独设备的 cuda:0；启动前验证已记录授权、完整阶段绑定和技术原件。启动器不提交作业、不创建授权。真实 UUID 的不同性仍由桥接最终验收核对。
+
+最终 candidate05 候选在两项集成修复和恢复 UUID 检查后统一复测：388 passed / 31.65s，源代码与测试在运行期间未改变；`verification/local_20260916_candidate05_final/` 保留完整小型工程日志与哈希。所有 V3 源码/测试和新增 Python 运行脚本 Ruff 检查与格式检查通过。真实服务器全仓复验将使用该冻结代码。

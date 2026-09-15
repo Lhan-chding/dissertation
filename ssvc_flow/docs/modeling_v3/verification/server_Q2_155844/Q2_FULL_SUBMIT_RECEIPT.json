@@ -1,0 +1,18 @@
+{
+  "exit_code": 0,
+  "stdout": "155844\n",
+  "stderr": "sbatch: slurm_job_submit: enforced 1 CPUs for 1 task and 11264 MiB mem/node for 0 GPU(s) (model=none)\nsbatch: slurm_job_submit: you requested 1 CPUs/node and 32768 MiB mem/node\n",
+  "command": [
+    "sbatch",
+    "--parsable",
+    "--account=rose",
+    "--qos=soujanya-poria-startfund-2026-03",
+    "--time=3-00:00:00",
+    "--mem=32G",
+    "--job-name=ssvc-v3-q2-full",
+    "--output=/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2-full-%j.out",
+    "--error=/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2-full-%j.err",
+    "--export=ALL",
+    "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/checkout/ssvc_flow/scripts/modeling_v3_cpu.sbatch"
+  ]
+}

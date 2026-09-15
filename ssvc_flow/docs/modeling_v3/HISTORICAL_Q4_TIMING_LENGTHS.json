@@ -1,0 +1,746 @@
+{
+  "aliases": {
+    "no_x_off_1": {
+      "additional_samples": 0,
+      "alias_of": "joint_0",
+      "candidate_id": "no_x_off_1",
+      "candidate_policy_fingerprint": "fd3051c71c60c4cea846e8a974edef47bb3e8faf3f3f1a58e6d0df468014d1b0",
+      "independent_training_state": true,
+      "matching_rule": "EXACT_COMPLETE_FORWARD_FINGERPRINT",
+      "source_ledger": "candidates/joint_0/direct/samples.jsonl"
+    }
+  },
+  "all_unique_generation": {
+    "by_interface": {
+      "IMAGE_CUE_FRESH": {
+        "completion_length": {
+          "max": 17,
+          "mean": 14.559027777777779,
+          "min": 12,
+          "n": 1152,
+          "p50": 14.0,
+          "p90": 17.0,
+          "p95": 17.0,
+          "p99": 17.0,
+          "sum": 16772.0
+        },
+        "elapsed_seconds": {
+          "max": 4.877716846298426,
+          "mean": 2.871643451805236,
+          "min": 2.3026825529523194,
+          "n": 1152,
+          "p50": 2.7573364230338484,
+          "p90": 3.341931857028976,
+          "p95": 3.359587756474502,
+          "p99": 3.7743028091080495,
+          "sum": 3308.133256479632
+        },
+        "image_token_count": {
+          "max": 384,
+          "mean": 384.0,
+          "min": 384,
+          "n": 1152,
+          "p50": 384.0,
+          "p90": 384.0,
+          "p95": 384.0,
+          "p99": 384.0,
+          "sum": 442368.0
+        },
+        "prompt_token_count": {
+          "max": 585,
+          "mean": 570.1666666666666,
+          "min": 559,
+          "n": 1152,
+          "p50": 567.0,
+          "p90": 580.0,
+          "p95": 584.0,
+          "p99": 585.0,
+          "sum": 656832.0
+        },
+        "rows": 1152
+      },
+      "SYMBOLIC_FRESH": {
+        "completion_length": {
+          "max": 19,
+          "mean": 16.06076388888889,
+          "min": 13,
+          "n": 1152,
+          "p50": 16.0,
+          "p90": 17.0,
+          "p95": 17.0,
+          "p99": 17.0,
+          "sum": 18502.0
+        },
+        "elapsed_seconds": {
+          "max": 3.8452268498949707,
+          "mean": 2.104793954083208,
+          "min": 1.6727767628617585,
+          "n": 1152,
+          "p50": 2.1181275034323335,
+          "p90": 2.2392395907081664,
+          "p95": 2.255351121420972,
+          "p99": 2.3931654472183443,
+          "sum": 2424.7226351038553
+        },
+        "image_token_count": {
+          "max": 0,
+          "mean": 0.0,
+          "min": 0,
+          "n": 1152,
+          "p50": 0.0,
+          "p90": 0.0,
+          "p95": 0.0,
+          "p99": 0.0,
+          "sum": 0.0
+        },
+        "prompt_token_count": {
+          "max": 189,
+          "mean": 174.16666666666666,
+          "min": 163,
+          "n": 1152,
+          "p50": 171.0,
+          "p90": 184.0,
+          "p95": 188.0,
+          "p99": 189.0,
+          "sum": 200640.0
+        },
+        "rows": 1152
+      }
+    },
+    "completion_length": {
+      "max": 19,
+      "mean": 15.309895833333334,
+      "min": 12,
+      "n": 2304,
+      "p50": 16.0,
+      "p90": 17.0,
+      "p95": 17.0,
+      "p99": 17.0,
+      "sum": 35274.0
+    },
+    "elapsed_seconds": {
+      "max": 4.877716846298426,
+      "mean": 2.4882187029442218,
+      "min": 1.6727767628617585,
+      "n": 2304,
+      "p50": 2.3184722899459302,
+      "p90": 3.290142571926117,
+      "p95": 3.343698754813522,
+      "p99": 3.4109631326980865,
+      "sum": 5732.855891583487
+    },
+    "profile_forward_minus_retained_generation_forward": 4850,
+    "rows": 2304,
+    "runtime_forward_calls": {
+      "max": 19,
+      "mean": 15.309895833333334,
+      "min": 12,
+      "n": 2304,
+      "p50": 16.0,
+      "p90": 17.0,
+      "p95": 17.0,
+      "p99": 17.0,
+      "sum": 35274.0
+    },
+    "summary_unique_rollout_count": 2304,
+    "token_length_histogram": {
+      "12": 50,
+      "13": 278,
+      "14": 589,
+      "15": 151,
+      "16": 466,
+      "17": 768,
+      "18": 1,
+      "19": 1
+    },
+    "unique_sample_keys": 2304
+  },
+  "candidate_update_metadata": [
+    {
+      "audit": {
+        "B": 4,
+        "K": 8,
+        "Lnorm": 64.0,
+        "backward_calls": 32,
+        "candidate_optimizer_steps": [
+          65
+        ],
+        "gradient_stage": "PRE_CLIP",
+        "microbatch": 1,
+        "optimizer_updates": 1,
+        "origin_optimizer_steps": [
+          64
+        ],
+        "reuse_status": "REQUIRES_DIRECT_GRADIENT_VALIDATION",
+        "sequences": 32,
+        "total_tokens": 485
+      },
+      "candidate_id": "joint_0",
+      "elapsed_seconds": 686.4026850969531,
+      "file": "candidates/joint_0/candidate.json"
+    },
+    {
+      "audit": {
+        "B": 4,
+        "K": 8,
+        "Lnorm": 64.0,
+        "backward_calls": 32,
+        "candidate_optimizer_steps": [
+          65
+        ],
+        "gradient_stage": "PRE_CLIP",
+        "microbatch": 1,
+        "optimizer_updates": 1,
+        "origin_optimizer_steps": [
+          64
+        ],
+        "reuse_status": "REQUIRES_DIRECT_GRADIENT_VALIDATION",
+        "sequences": 32,
+        "total_tokens": 485
+      },
+      "candidate_id": "joint_0_replay",
+      "elapsed_seconds": 689.3557326220907,
+      "file": "candidates/joint_0_replay/candidate.json"
+    },
+    {
+      "audit": {
+        "B": 4,
+        "K": 8,
+        "Lnorm": 64.0,
+        "backward_calls": 32,
+        "candidate_optimizer_steps": [
+          65
+        ],
+        "gradient_stage": "PRE_CLIP",
+        "microbatch": 1,
+        "optimizer_updates": 1,
+        "origin_optimizer_steps": [
+          64
+        ],
+        "reuse_status": "REQUIRES_DIRECT_GRADIENT_VALIDATION",
+        "sequences": 32,
+        "total_tokens": 485
+      },
+      "candidate_id": "joint_1",
+      "elapsed_seconds": 681.3268305817619,
+      "file": "candidates/joint_1/candidate.json"
+    },
+    {
+      "audit": {
+        "B": 4,
+        "K": 8,
+        "Lnorm": 64.0,
+        "backward_calls": 32,
+        "candidate_optimizer_steps": [
+          65
+        ],
+        "gradient_stage": "PRE_CLIP",
+        "microbatch": 1,
+        "optimizer_updates": 1,
+        "origin_optimizer_steps": [
+          64
+        ],
+        "reuse_status": "REQUIRES_DIRECT_GRADIENT_VALIDATION",
+        "sequences": 32,
+        "total_tokens": 485
+      },
+      "candidate_id": "joint_1em2",
+      "elapsed_seconds": 680.4300496620126,
+      "file": "candidates/joint_1em2/candidate.json"
+    },
+    {
+      "audit": {
+        "B": 4,
+        "K": 8,
+        "Lnorm": 64.0,
+        "backward_calls": 32,
+        "candidate_optimizer_steps": [
+          65
+        ],
+        "gradient_stage": "PRE_CLIP",
+        "microbatch": 1,
+        "optimizer_updates": 1,
+        "origin_optimizer_steps": [
+          64
+        ],
+        "reuse_status": "REQUIRES_DIRECT_GRADIENT_VALIDATION",
+        "sequences": 32,
+        "total_tokens": 485
+      },
+      "candidate_id": "joint_1em3",
+      "elapsed_seconds": 685.4784646867774,
+      "file": "candidates/joint_1em3/candidate.json"
+    },
+    {
+      "audit": {
+        "B": 4,
+        "K": 8,
+        "Lnorm": 64.0,
+        "backward_calls": 32,
+        "candidate_optimizer_steps": [
+          65
+        ],
+        "gradient_stage": "PRE_CLIP",
+        "microbatch": 1,
+        "optimizer_updates": 1,
+        "origin_optimizer_steps": [
+          64
+        ],
+        "reuse_status": "REQUIRES_DIRECT_GRADIENT_VALIDATION",
+        "sequences": 32,
+        "total_tokens": 485
+      },
+      "candidate_id": "joint_1em4",
+      "elapsed_seconds": 684.7838783678599,
+      "file": "candidates/joint_1em4/candidate.json"
+    },
+    {
+      "audit": {
+        "B": 4,
+        "K": 8,
+        "Lnorm": 64.0,
+        "backward_calls": 32,
+        "candidate_optimizer_steps": [
+          65
+        ],
+        "gradient_stage": "PRE_CLIP",
+        "microbatch": 1,
+        "optimizer_updates": 1,
+        "origin_optimizer_steps": [
+          64
+        ],
+        "reuse_status": "REQUIRES_DIRECT_GRADIENT_VALIDATION",
+        "sequences": 32,
+        "total_tokens": 485
+      },
+      "candidate_id": "joint_1em5",
+      "elapsed_seconds": 681.5490858769044,
+      "file": "candidates/joint_1em5/candidate.json"
+    },
+    {
+      "audit": {
+        "B": 4,
+        "K": 8,
+        "Lnorm": 64.0,
+        "backward_calls": 32,
+        "candidate_optimizer_steps": [
+          65
+        ],
+        "gradient_stage": "PRE_CLIP",
+        "microbatch": 1,
+        "optimizer_updates": 1,
+        "origin_optimizer_steps": [
+          64
+        ],
+        "reuse_status": "REQUIRES_DIRECT_GRADIENT_VALIDATION",
+        "sequences": 32,
+        "total_tokens": 485
+      },
+      "candidate_id": "joint_1em6",
+      "elapsed_seconds": 685.4406811790541,
+      "file": "candidates/joint_1em6/candidate.json"
+    },
+    {
+      "audit": {
+        "B": 4,
+        "K": 8,
+        "Lnorm": 64.0,
+        "backward_calls": 32,
+        "candidate_optimizer_steps": [
+          65
+        ],
+        "gradient_stage": "PRE_CLIP",
+        "microbatch": 1,
+        "optimizer_updates": 1,
+        "origin_optimizer_steps": [
+          64
+        ],
+        "reuse_status": "REQUIRES_DIRECT_GRADIENT_VALIDATION",
+        "sequences": 32,
+        "total_tokens": 485
+      },
+      "candidate_id": "joint_2em4",
+      "elapsed_seconds": 691.7313554547727,
+      "file": "candidates/joint_2em4/candidate.json"
+    },
+    {
+      "audit": {
+        "B": 4,
+        "K": 8,
+        "Lnorm": 64.0,
+        "backward_calls": 32,
+        "candidate_optimizer_steps": [
+          65
+        ],
+        "gradient_stage": "PRE_CLIP",
+        "microbatch": 1,
+        "optimizer_updates": 1,
+        "origin_optimizer_steps": [
+          64
+        ],
+        "reuse_status": "REQUIRES_DIRECT_GRADIENT_VALIDATION",
+        "sequences": 32,
+        "total_tokens": 485
+      },
+      "candidate_id": "no_x_off_1",
+      "elapsed_seconds": 682.465438676998,
+      "file": "candidates/no_x_off_1/candidate.json"
+    }
+  ],
+  "completion_receipt": {
+    "identity_hash": "274c038ab2b0407cc0bdc18e9fff7a9075f9146a2d848477b5d5991cfbb3bdc0",
+    "manifest_sha256": "3acaaa771cd7d4315c3e7cbbede135010abaf02ae1f164538203a13875cd79c6",
+    "status": "MEASURED"
+  },
+  "identity_scope": {
+    "config_hash": "c769cfc81d26573050d5d4e9c1ba529bc3ad69a48ed396d271d1283851da9492",
+    "execution_kind": "REAL_CUDA_FOLLOWUP",
+    "model_hash": "ed96fb3adb65012324a2dcbb6b64a5d8ecef691454eaae25870c192627a2b6d0",
+    "origin_state_hash": "1c39a2aeb7b8626117b60b28ebae36e22444456264afb01a7a6d1e2bc02a34d9",
+    "protocol_version": "mechanism-followup-v2-20260914",
+    "run_id": "c6b5bc39e8489862267b334f267c8baa598675eaf761c6ff53014974b71af78f",
+    "source_hash": "2dd3d910220a04ce635f925cd20028635fefaff43a17dce16fc970e99482ea2d"
+  },
+  "ledgers": [
+    {
+      "behavior_logprob_length_matches_tokens": true,
+      "binding": {
+        "bytes": 6644898,
+        "matches_bank_manifest": true,
+        "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03/candidates/joint_0/direct/samples.jsonl",
+        "sha256": "37369f30eb7b8fcaf66fd1be2f5472eb32c43e75d5e8fc2a23b6a53e1b5959be"
+      },
+      "candidate": "joint_0",
+      "completion_length": {
+        "max": 17,
+        "mean": 15.31640625,
+        "min": 12,
+        "n": 768,
+        "p50": 16.0,
+        "p90": 17.0,
+        "p95": 17.0,
+        "p99": 17.0,
+        "sum": 11763.0
+      },
+      "elapsed_seconds": {
+        "max": 4.780944777652621,
+        "mean": 2.488517594161749,
+        "min": 1.6736738830804825,
+        "n": 768,
+        "p50": 2.3184722899459302,
+        "p90": 3.2915323964320127,
+        "p95": 3.3444049012847246,
+        "p99": 3.38827861157246,
+        "sum": 1911.1815123162232
+      },
+      "execution_kinds": [
+        "REAL_CUDA_FOLLOWUP"
+      ],
+      "max_new_tokens_values": [
+        64
+      ],
+      "prompts": 48,
+      "rows": 768,
+      "runtime_forward_calls": {
+        "max": 17,
+        "mean": 15.31640625,
+        "min": 12,
+        "n": 768,
+        "p50": 16.0,
+        "p90": 17.0,
+        "p95": 17.0,
+        "p99": 17.0,
+        "sum": 11763.0
+      },
+      "runtime_forward_calls_equals_token_length": true,
+      "split_values": [
+        "control"
+      ],
+      "stop_reasons": {
+        "eos": 768
+      },
+      "token_id_length_matches_completion_length": true,
+      "unique_sample_keys": 768
+    },
+    {
+      "behavior_logprob_length_matches_tokens": true,
+      "binding": {
+        "bytes": 6645674,
+        "matches_bank_manifest": true,
+        "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03/candidates/joint_1/direct/samples.jsonl",
+        "sha256": "3ad691a712f437807d0012f3f43b9fac3ce24c4f1fe94bab518d84db35d34e55"
+      },
+      "candidate": "joint_1",
+      "completion_length": {
+        "max": 19,
+        "mean": 15.325520833333334,
+        "min": 12,
+        "n": 768,
+        "p50": 16.0,
+        "p90": 17.0,
+        "p95": 17.0,
+        "p99": 17.0,
+        "sum": 11770.0
+      },
+      "elapsed_seconds": {
+        "max": 4.877716846298426,
+        "mean": 2.4788398148302804,
+        "min": 1.6727767628617585,
+        "n": 768,
+        "p50": 2.3164547856431454,
+        "p90": 3.2798222109209747,
+        "p95": 3.3392407649895177,
+        "p99": 3.365689262952656,
+        "sum": 1903.7489777896553
+      },
+      "execution_kinds": [
+        "REAL_CUDA_FOLLOWUP"
+      ],
+      "max_new_tokens_values": [
+        64
+      ],
+      "prompts": 48,
+      "rows": 768,
+      "runtime_forward_calls": {
+        "max": 19,
+        "mean": 15.325520833333334,
+        "min": 12,
+        "n": 768,
+        "p50": 16.0,
+        "p90": 17.0,
+        "p95": 17.0,
+        "p99": 17.0,
+        "sum": 11770.0
+      },
+      "runtime_forward_calls_equals_token_length": true,
+      "split_values": [
+        "control"
+      ],
+      "stop_reasons": {
+        "eos": 768
+      },
+      "token_id_length_matches_completion_length": true,
+      "unique_sample_keys": 768
+    },
+    {
+      "behavior_logprob_length_matches_tokens": true,
+      "binding": {
+        "bytes": 6645605,
+        "matches_bank_manifest": true,
+        "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03/candidates/joint_1em2/direct/samples.jsonl",
+        "sha256": "803e8113af0004e9a5b3e51bfb0126b9f5c21cab597433d5787ba7b9cc597412"
+      },
+      "candidate": "joint_1em2",
+      "completion_length": {
+        "max": 17,
+        "mean": 15.287760416666666,
+        "min": 12,
+        "n": 768,
+        "p50": 16.0,
+        "p90": 17.0,
+        "p95": 17.0,
+        "p99": 17.0,
+        "sum": 11741.0
+      },
+      "elapsed_seconds": {
+        "max": 4.48979196511209,
+        "mean": 2.4972986998406363,
+        "min": 1.67290256684646,
+        "n": 768,
+        "p50": 2.3233195685315877,
+        "p90": 3.291923305718228,
+        "p95": 3.348701980500482,
+        "p99": 3.822401168192738,
+        "sum": 1917.9254014776088
+      },
+      "execution_kinds": [
+        "REAL_CUDA_FOLLOWUP"
+      ],
+      "max_new_tokens_values": [
+        64
+      ],
+      "prompts": 48,
+      "rows": 768,
+      "runtime_forward_calls": {
+        "max": 17,
+        "mean": 15.287760416666666,
+        "min": 12,
+        "n": 768,
+        "p50": 16.0,
+        "p90": 17.0,
+        "p95": 17.0,
+        "p99": 17.0,
+        "sum": 11741.0
+      },
+      "runtime_forward_calls_equals_token_length": true,
+      "split_values": [
+        "control"
+      ],
+      "stop_reasons": {
+        "eos": 768
+      },
+      "token_id_length_matches_completion_length": true,
+      "unique_sample_keys": 768
+    }
+  ],
+  "limitations": [
+    "Historical per-sequence elapsed fields and mixed completion profile are not new V3 throughput.",
+    "Generation length is observed only on this old 48-prompt post-step64 control panel and three policies, not V3 initial/source origins.",
+    "Candidate update elapsed includes operations beyond gradient compute; sum is not asserted to share completion invocation boundaries.",
+    "No checkpoint tensor file was opened or hashed in this timing-only inspection.",
+    "Paired/candidate summary files were inspected for provenance/counts only; retained raw sequence ledgers determine lengths.",
+    "Top-level duplicate samples.jsonl copies are not counted again; exact policy alias adds zero independent samples."
+  ],
+  "observed_at_utc": "2026-09-15T17:40:54.966580+00:00",
+  "profile": {
+    "cuda_peak_allocated_bytes": 24173737472,
+    "elapsed_seconds": 14074.84960915614,
+    "forward_calls_this_completion_attempt": 40124,
+    "measurement_scope": "completion invocation; preserved failed attempts are separate"
+  },
+  "schema": "HISTORICAL_S1_BANK03_TIMING_LENGTHS_V1",
+  "scope": "Read-only one historical development S1 bank; no model loads, no GPU calls, no submissions, no confirm data read",
+  "source_manifest_sha256": "3acaaa771cd7d4315c3e7cbbede135010abaf02ae1f164538203a13875cd79c6",
+  "source_root": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03",
+  "verification": {
+    "algorithm": "stdlib JSON/JSONL read; SHA-256 against original single-bank manifest; linear interpolated quantiles over raw row values; no labels used for selection",
+    "all_raw_sequence_lengths_and_forward_fields_match": true,
+    "all_selected_payload_sha256_match_bank_manifest": true,
+    "candidate_elapsed_seconds_sum": 6848.964202205185,
+    "completion_manifest_hash_matches": true,
+    "completion_minus_row_generation_minus_candidate_elapsed_seconds": 1493.029515367467,
+    "forward_counter_arithmetic": {
+      "candidate_audit_total_tokens_sum": 4850,
+      "interpretation": "Exact numeric reconciliation; candidate audit token counts are not independently timed forward counters.",
+      "profile_forward_calls": 40124,
+      "retained_generation_forward_calls": 35274,
+      "sum": 40124
+    },
+    "metadata_manifest_and_completion_count": 2,
+    "raw_unique_rollout_count_matches_summary": true,
+    "timing_boundary_reconciliation_claimed": false,
+    "verified_payload_count": 18
+  },
+  "verified_files": {
+    "all_candidate_response.json": {
+      "bytes": 2150182,
+      "matches_bank_manifest": true,
+      "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03/all_candidate_response.json",
+      "sha256": "4a5fbc46bbf0b644b804de8b6f2d922b222644951171ed23866af326acd97467"
+    },
+    "candidates/joint_0/candidate.json": {
+      "bytes": 25904,
+      "matches_bank_manifest": true,
+      "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03/candidates/joint_0/candidate.json",
+      "sha256": "f772becc30362d346e9d6e93fc51246e294f422db4a6634af17b9dd706d0e796"
+    },
+    "candidates/joint_0/direct/samples.jsonl": {
+      "bytes": 6644898,
+      "matches_bank_manifest": true,
+      "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03/candidates/joint_0/direct/samples.jsonl",
+      "sha256": "37369f30eb7b8fcaf66fd1be2f5472eb32c43e75d5e8fc2a23b6a53e1b5959be"
+    },
+    "candidates/joint_0_replay/candidate.json": {
+      "bytes": 25925,
+      "matches_bank_manifest": true,
+      "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03/candidates/joint_0_replay/candidate.json",
+      "sha256": "f81e2b406f90e89be8b51e2579c390c2d0658307024f2b1cea2a835c009921da"
+    },
+    "candidates/joint_1/candidate.json": {
+      "bytes": 26078,
+      "matches_bank_manifest": true,
+      "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03/candidates/joint_1/candidate.json",
+      "sha256": "15c08d1e69f181d9aeee944352342751891adfdc5e1afd6100833197cac3c92c"
+    },
+    "candidates/joint_1/direct/samples.jsonl": {
+      "bytes": 6645674,
+      "matches_bank_manifest": true,
+      "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03/candidates/joint_1/direct/samples.jsonl",
+      "sha256": "3ad691a712f437807d0012f3f43b9fac3ce24c4f1fe94bab518d84db35d34e55"
+    },
+    "candidates/joint_1em2/candidate.json": {
+      "bytes": 26127,
+      "matches_bank_manifest": true,
+      "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03/candidates/joint_1em2/candidate.json",
+      "sha256": "15e228493cfb97b618c9feac7ad963f122c64c3255902534cf810291cb4f2ac5"
+    },
+    "candidates/joint_1em2/direct/samples.jsonl": {
+      "bytes": 6645605,
+      "matches_bank_manifest": true,
+      "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03/candidates/joint_1em2/direct/samples.jsonl",
+      "sha256": "803e8113af0004e9a5b3e51bfb0126b9f5c21cab597433d5787ba7b9cc597412"
+    },
+    "candidates/joint_1em3/candidate.json": {
+      "bytes": 26180,
+      "matches_bank_manifest": true,
+      "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03/candidates/joint_1em3/candidate.json",
+      "sha256": "44fa4b914135cf909cc7324947073e34b5435d394185ab33c0c9b2d104d44bf8"
+    },
+    "candidates/joint_1em4/candidate.json": {
+      "bytes": 26219,
+      "matches_bank_manifest": true,
+      "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03/candidates/joint_1em4/candidate.json",
+      "sha256": "90fe3649b18b076560d5e4931252ec7c31ec6c4794a14b409f64be1f32dfe175"
+    },
+    "candidates/joint_1em5/candidate.json": {
+      "bytes": 26258,
+      "matches_bank_manifest": true,
+      "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03/candidates/joint_1em5/candidate.json",
+      "sha256": "0d0225254b0fc190622fa729236c5692fcd921fb542aca376ea909c426dc45eb"
+    },
+    "candidates/joint_1em6/candidate.json": {
+      "bytes": 26273,
+      "matches_bank_manifest": true,
+      "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03/candidates/joint_1em6/candidate.json",
+      "sha256": "e2e3f2cc7b6470f7ca120386d156ecf4672c24f2651f83c676b0d28e4823b0b0"
+    },
+    "candidates/joint_2em4/candidate.json": {
+      "bytes": 26220,
+      "matches_bank_manifest": true,
+      "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03/candidates/joint_2em4/candidate.json",
+      "sha256": "7c572ea0db90a22db569b2a0d6b2c7cd041eb904446fbec0bdaa4239e3d1e982"
+    },
+    "candidates/no_x_off_1/candidate.json": {
+      "bytes": 25933,
+      "matches_bank_manifest": true,
+      "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03/candidates/no_x_off_1/candidate.json",
+      "sha256": "f646e635854f55554d95aebf640504c20e15e18b85b5319d94e89b5fa2dcdc35"
+    },
+    "completed.json": {
+      "bytes": 203,
+      "matches_bank_manifest": false,
+      "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03/completed.json",
+      "sha256": "eed08dfe4a3c6f3661fde9a5172aca939664c252b0c381fa2b87469d1ceb12e1"
+    },
+    "identity.json": {
+      "bytes": 1339,
+      "matches_bank_manifest": true,
+      "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03/identity.json",
+      "sha256": "54c68c87ea9b99c7965178ba3c237cfaa6bb40f088044ca62610d3c2e07eb23c"
+    },
+    "manifest.json": {
+      "bytes": 25167,
+      "matches_bank_manifest": false,
+      "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03/manifest.json",
+      "sha256": "3acaaa771cd7d4315c3e7cbbede135010abaf02ae1f164538203a13875cd79c6"
+    },
+    "paired_response.json": {
+      "bytes": 9480335,
+      "matches_bank_manifest": true,
+      "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03/paired_response.json",
+      "sha256": "dcba2173f61cdd3ecb9e58c7210716dd7e41808f15a7d028344f350f7d837aab"
+    },
+    "policy_aliases.json": {
+      "bytes": 382,
+      "matches_bank_manifest": true,
+      "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03/policy_aliases.json",
+      "sha256": "e3a3c3f941d9d4d7db53d7f5b5a37ffb3d59a371f31e65817ef823a4c0c950e0"
+    },
+    "runtime_profile.json": {
+      "bytes": 225,
+      "matches_bank_manifest": true,
+      "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03/runtime_profile.json",
+      "sha256": "e5943ecf59a6a43a98316b43c932298e20bb1f1bdb4ee09a8774239ef1d870b4"
+    }
+  }
+}

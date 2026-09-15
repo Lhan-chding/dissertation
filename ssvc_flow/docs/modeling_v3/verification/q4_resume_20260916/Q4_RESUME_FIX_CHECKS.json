@@ -1,0 +1,38 @@
+{
+  "scope": "LOCAL_SMALL_ENGINEERING_FIXTURES_ONLY",
+  "gpu_calls": 0,
+  "server_connections": 0,
+  "committed": false,
+  "red": {
+    "command": "python -m pytest -q tests/modeling_v3/test_q4_resume.py",
+    "failed": 13,
+    "seconds": 0.14
+  },
+  "green": {
+    "command": "python -m pytest -q tests/modeling_v3/test_q4_resume.py",
+    "passed": 13,
+    "seconds": 0.15
+  },
+  "regression": {
+    "command": "python -m pytest -q tests/modeling_v3/test_q4_resume.py tests/modeling_v3/test_vlm_campaign.py tests/modeling_v3/test_vlm_observation.py tests/modeling_v3/test_vlm_response.py",
+    "passed": 61,
+    "seconds": 3.12
+  },
+  "ruff": "PASS",
+  "file_hashes": {
+    "src/modeling_v3/vlm_campaign.py": "a53e4497c8c5b6bddd4749c5274194cb646026b4643def33c20e025ab8092349",
+    "src/modeling_v3/vlm_observation.py": "0f778debcdbc09639b8ab1e43bf0c781af4e18f7eccef79fda3c8f9fc88f9620",
+    "tests/modeling_v3/test_q4_resume.py": "364e7296c3e6e85134371a4cd606c5420955c13440879b80b251da3065b5551a"
+  },
+  "evidence_hashes": {
+    "runs/modeling_v3_dev/q4_resume_red.log": "774428c9d1322a55aff8b4f2205f0a1c3f78f3a5cec7fbf1f1b3e6c5d5c69a7f",
+    "runs/modeling_v3_dev/q4_resume_red.xml": "0d3e9ab88535b31b1e2732d89c57f8eb0f32e80f4f1edca8c4c935655b1cab00",
+    "runs/modeling_v3_dev/q4_resume_green.log": "9ced990d8fab992bbeefe1ee84883e6d85413bb4afebf59610594a1aa1e15689",
+    "runs/modeling_v3_dev/q4_resume_green.xml": "d7bf5ee034f1ee4a7ea16e25af15c6ba91e09743e9f0595dc7a2909acc943f70",
+    "runs/modeling_v3_dev/q4_resume_regression.log": "51a1e81e05b004992f54ef36d9f6d6f6f16f859b90abda5c45f8781996cef21a",
+    "runs/modeling_v3_dev/q4_resume_regression.xml": "1922d5c127daad30a4ac999cdd497ae6e09e7520be457b9a81fa1d3fc5fe6267",
+    "runs/modeling_v3_dev/q4_resume_ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+  },
+  "real_cross_gpu_resume": "NOT_RUN",
+  "unbound_legacy_or_incomplete_known_event_file": "REFUSED_WITHOUT_COMPLETED_HASH_AND_REQUEST_RECEIPT"
+}

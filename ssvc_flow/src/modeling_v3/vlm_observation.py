@@ -455,14 +455,10 @@ def _parity_values(differences, tolerances, *, sequence_errors):
     }
 
 
-def compare_cross_gpu_receipts(left, right, *, tolerances):
-    """Require the same actions, inputs and policy, but independently identified GPUs."""
-    if (
-        left["gpu_identity"] == right["gpu_identity"]
-        or not left["gpu_identity"]
-        or not right["gpu_identity"]
-    ):
-        raise ValueError("Cross-GPU parity needs two distinct measured GPU identities")
+def compare_probability_receipts(left, right, *, tolerances):
+    """Check complete null identity and frozen tolerances across any two invocations."""
+    if not left["gpu_identity"] or not right["gpu_identity"]:
+        raise ValueError("Probability parity needs actual measured GPU identities")
     if left["runtime_identity"] != right["runtime_identity"]:
         raise ValueError("Cross-GPU source/model/runtime locks differ")
     if left["tolerances"] != tolerances or right["tolerances"] != tolerances:
@@ -496,6 +492,13 @@ def compare_cross_gpu_receipts(left, right, *, tolerances):
         "zero_treatment": "IDENTICAL_POLICY",
         "candidate_effect_not_established": True,
     }
+
+
+def compare_cross_gpu_receipts(left, right, *, tolerances):
+    """Require the same actions, inputs and policy on two distinct actual GPUs."""
+    if left["gpu_identity"] == right["gpu_identity"]:
+        raise ValueError("Cross-GPU parity needs two distinct measured GPU identities")
+    return compare_probability_receipts(left, right, tolerances=tolerances)
 
 
 def audit_semantic_aliases(samples):
@@ -1480,9 +1483,9 @@ def _validate_observation_stage(config, bindings, manifest):
             or not all(item.get("passed") is True for item in receipt["checks"])
         ):
             raise ValueError("Q1/Q2 engineering receipt missing measured passing checks")
-    if stage.get("phase") not in {"Q4", "Q5"}:
-        raise ValueError("Observation stage must explicitly declare Q4 or Q5")
-    if stage["phase"] == "Q5":
+    if stage.get("phase") not in {"Q4", "Q5", "Q6"}:
+        raise ValueError("Observation stage must explicitly declare Q4, Q5 or Q6")
+    if stage["phase"] in {"Q5", "Q6"}:
         from .vlm_campaign import _stage_gate
 
         _stage_gate(config, bindings, stage["runtime_seed"], operation="observe-vlm")
@@ -1494,7 +1497,24 @@ def _validate_observation_stage(config, bindings, manifest):
             or smoke.get("source_hash") != code_hash
             or smoke.get("config_hash") != canonical_hash(config)
         ):
-            raise ValueError("Q5 requires the completed V3 real bridge and two-GPU parity")
+            raise ValueError("Q5/Q6 requires the completed V3 real bridge and two-GPU parity")
+        if stage["phase"] == "Q6":
+            phase = stage.get("q6_phase")
+            if phase is None:
+                if stage.get("observation_purpose") != "measurement" or not stage.get(
+                    "origin_id", ""
+                ).endswith("_X_BASE_64"):
+                    raise ValueError(
+                        "Q6 calibration observation requires the explicit step-64 measurement stage"
+                    )
+                if any(task.get("role") == "reference" for task in manifest["tasks"]):
+                    raise ValueError("Q6 calibration cannot open dense reference observations")
+            elif phase not in {"anchor", "reference"}:
+                raise ValueError("Q6 absolute observation phase must be anchor or reference")
+            else:
+                from .q6_observation import verify_q6_observation_stage
+
+                verify_q6_observation_stage(config, bindings, stage, manifest)
     return stage
 
 
@@ -1578,14 +1598,13 @@ Q4_CONTRASTS = (
 )
 
 
-def _completed_task_rows(root, manifest, *, allowed_task_ids=None):
+def iter_completed_task_rows(root, manifest, *, allowed_task_ids=None):
     """Read only complete, immutable tasks; audit every original shard first."""
     validate_task_manifest(manifest, workers=manifest["workers"])
     if allowed_task_ids is not None and not set(allowed_task_ids) <= {
         t["task_id"] for t in manifest["tasks"]
     }:
         raise ValueError("Requested label task is absent from the frozen manifest")
-    rows = []
     for task in manifest["tasks"]:
         if allowed_task_ids is not None and task["task_id"] not in allowed_task_ids:
             continue
@@ -1640,8 +1659,12 @@ def _completed_task_rows(root, manifest, *, allowed_task_ids=None):
             for key, value in expected[row["request_key"]].items():
                 if row.get(key) != value:
                     raise ValueError("Q4 original request identity differs: " + key)
-        rows.extend(task_rows)
-    return rows
+        yield from task_rows
+
+
+def _completed_task_rows(root, manifest, *, allowed_task_ids=None):
+    """Compatibility list API over the once-validated streaming original reader."""
+    return list(iter_completed_task_rows(root, manifest, allowed_task_ids=allowed_task_ids))
 
 
 def _q4_reference_diagnostic(raw, diagnostics, *, proposal, alpha):
