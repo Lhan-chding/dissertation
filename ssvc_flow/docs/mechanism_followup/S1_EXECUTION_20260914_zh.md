@@ -1,5 +1,7 @@
 # 2026-09-14 S1 双 PRO 6000 执行记录
 
+> 最终状态（2026-09-15）：六个S1 bank和历史X_BASE R2均已完成并独立复核。最后作业154797于06:45:32 UTC结束，07:27:14 UTC实查本轮无剩余GPU作业。冻结CPU整体分析MEASURED、s1_measurement_chain_passed=true，全部保留NOT_CERTIFIED。按用户要求停止新增实验；详细结果文档见本文最后一节。下列较早状态为历史记录。
+
 用户在 CPU 和单卡 smoke 复核通过后授权进入下一步，并明确要求两个卡一起跑、可以逐个申请。本次采用两个独立单卡 Slurm 作业并行，覆盖旧文档按 bank 串行的执行安排；冻结设计、算法、原件、样本和预算没有改变。
 
 ## 已核验的实际运行状态
@@ -308,3 +310,31 @@ bank05最终复核完成后，重新核对73个冻结源码、计划和真实smo
 | final_review_decision.json | `af0b16dddc18bd77589df2847daf4ad073fd8c24cedf32989c1a5440f5f85442` |
 
 最终复核状态为COMPLETED_REVIEWED_NO_SUCCESSOR_BY_USER。仍仅等待现有composite154797，完成已有结果CPU分析和最终文档；不提交任何新实验。
+
+## 2026-09-15 全部现有作业完成、复核与最终文档
+
+composite_no_x_plus_three_level（154797）于03:41:41至06:45:32 UTC运行，Slurm11,031秒；shell从03:41:43至06:45:32为11,029秒，runtime completion invocation为9,952.430462312885秒。节点gpu-pro6000-5、单PRO6000、原特殊QOS。最后07:27:14 UTC快照确认COMPLETED、exit0，无本轮排队或运行作业；未触碰无关153383。
+
+该bank实际3候选+1replay=4次Adam、128条反向序列；joint0、joint1、no_x_off1均为不同完整策略，各768条、共2,304条，无alias。三策略X均为540，S/W/I依次9/184/35、10/187/31、10/185/33；总体pX均70.3125%，v依次95.442708333/95.963541667/95.703125%，qX依次73.669849932/73.270013569/73.469387755%。
+
+预设joint1减no_x_off1的ΔpX=0、Δv=+0.260416667pp、ΔqX=-0.199374187pp；场景95%区间分别[-0.390625,0.390625]、[-0.260416667,0.911458333]、约[-0.813297,0.357033]pp。全候选联合M105固定边界均跨0；三策略总体X相同不等于策略指纹相同。保留所有分组、反方向、UNINFORMATIVE/null及NOT_CERTIFIED。
+
+69个manifest路径全部在服务器核验，含8个PT路径、4个实际checkpoint；本地紧凑包67个普通文件，61个非PT manifest文件全部匹配，gzip CRC/安全路径/大小通过。CPU实际checkpoint全部有限，Adam64到65，预算4confirmed/4reserved/0uncertain。2304条原始request/seed/input/recordhash/semantic/counts通过。真实参数步长、replay全部保存字段和3组参数几何重算完全一致，完整replay仅metadata.candidate_spec.id不同；参数、Adam和RNG相同。梯度tensor未重算，只核已保存audit有限性/clip界。
+
+独立统计重算全部分组、5,000共享场景bootstrap和预定M固定界。bootstrap最大数值差约2.2031e-16，成对百分点最大差约1.1102e-14，均在既定容差内。未重跑模型或生成任何新样本。
+
+六bank最终实际47次Adam、1,504条audit反向序列、13个canonical面板/9,984条直接输出；18个逻辑面板中的5个alias追加样本均为0。真实smoke的4次scratch更新、CPU fixture和历史R2的864条输出分别记录。原冻结CLI的CPU整体分析逐一重建六bank manifest及共同身份，生成S1/s1_measurement_chain.json与S1_ANALYSIS/analysis.json，二者字节一致，MEASURED/REAL_CUDA_FOLLOWUP、s1_measurement_chain_passed=true、NOT_CERTIFIED。未据此启动S2或X_VALID。
+
+| 证据 | SHA-256 |
+| --- | --- |
+| composite manifest | `27bc6ff08594591daffe088d81e4e65d37fb6710bbb9cfb0db31e0d18174491c` |
+| composite紧凑包 | `d856314b7c9b0827dbbd6e3ea5541d43ab24ccebee9dcb4c9cd3b5ad06844f73` |
+| composite完整CPU核验 | `144bb81316415dab490f0eb39ff63b0cc0d38cfaddacb86c0226ad6864cee8e8` |
+| composite独立统计 | `30f73790a6315c2666ee7fc7ad749ab3ba201f54a15cb2298d27828fdf2e1492` |
+| composite最终复核决定 | `b5825202fcfd6f355524f5a425ab7942bfb28955a60efb935fde64aba1363780` |
+| 六bank CPU整体分析/measurement chain | `fe19830fdf188991bf5ab73b67559eb86e6feafdfa8a5bf42e86e74f26ac52eb` |
+| 07:27:14 UTC完成快照 | `c15508fa4835d70500d7e08046da9303c515ed7feb5cd280aedcca6279544287` |
+
+最终单份报告为仓库私有reports目录的SSVC_MECHANISM_ALL_COMPLETED_EXPERIMENT_RESULTS_20260915_zh.md；详细列出所有已产出候选/分组/区间/几何/状态/异常/运行时间/来源，未执行阶段明确NOT_RUN。大raw和checkpoint留在各自原件目录，不把未下载二进制称为本地包内容。完成报告交付后暂停ssvc-5090，不再安排新实验。
+
+文档最终字节身份：585,152 bytes，SHA-256 `8da9846d8baeb115e3ead95fd39768465493e29d1d1c29aed276fc5d628f65d0`。根任务和独立审查核验了443份来源大小/hash、515个绝对链接及74张表结构；13行S1总体点值、11行速查差值、12行历史R2条件表逐项匹配来源，三个详细片段逐字完整。独立审查回执SHA-256 `933fe0b5344fd85f89aaac710e755c646ee3c60cb80339ca2ce16540ac7e7955`。文件面板已请求展示，最终回复提供文档链接；自动任务ssvc-5090已设为PAUSED，无后续实验或监控。
