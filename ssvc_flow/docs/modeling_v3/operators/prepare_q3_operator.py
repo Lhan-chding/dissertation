@@ -86,7 +86,8 @@ def verify_snapshot(checkout, expected):
     path = checkout / "CODE_SNAPSHOT_MANIFEST.json"
     check_hash(path, expected)
     manifest = read_json(path)
-    files = manifest.get("files")
+    # Deployed CODE_SNAPSHOT_MANIFEST uses a flat map; build receipts wrap it.
+    files = manifest.get("files", manifest)
     if not isinstance(files, dict) or not files:
         raise ValueError("snapshot requires a complete nonempty files mapping")
     for relative, digest in files.items():
