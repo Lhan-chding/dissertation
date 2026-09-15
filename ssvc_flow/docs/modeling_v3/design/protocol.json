@@ -1,0 +1,516 @@
+{
+  "protocol_version": "modeling-v3-observation-coverage-20260915",
+  "document_status": "DESIGN_NOT_EXECUTED",
+  "repository": {
+    "name": "Lhan-chding/dissertation",
+    "parent_branch": "codex/ssvc-modeling-contrast-v2-20260915",
+    "observed_parent_commit": "474601e020184776265fbfc0ffea343bb56eb21e",
+    "mechanism_readonly_commit": "7b0da74cca8f20bf1a816b50ba13750c111044f9",
+    "new_branch": "codex/ssvc-modeling-v3-observation-coverage",
+    "workdir": "ssvc_flow",
+    "separate_worktree": true,
+    "recheck_head": true
+  },
+  "scope": {
+    "new_cpu_experiments_planned": true,
+    "new_qwen_experiments_planned": true,
+    "new_qwen_train_planned": true,
+    "max_concurrent_project_gpus": 2,
+    "automatic_remote_submission_from_this_document": false,
+    "cost_success_gate": false,
+    "report_method_cost": true,
+    "online_ssvc": false,
+    "automatic_training_feedback": false,
+    "modify_existing_jobs": false,
+    "first_gpu_run_requires_operator_approval": true
+  },
+  "events": [
+    "X",
+    "S",
+    "W",
+    "I"
+  ],
+  "targets": {
+    "primary": "joint_1_minus_joint_0",
+    "secondary": [
+      "no_x_off_1_minus_joint_0",
+      "joint_1_minus_no_x_off_1"
+    ],
+    "input": "realized_parameter_contrast_at_same_full_origin",
+    "point_prediction_channels": [
+      "delta_pX",
+      "delta_pS",
+      "delta_pW",
+      "delta_pI"
+    ],
+    "primary_group_metrics": [
+      "delta_pX",
+      "delta_v"
+    ],
+    "conditional_metrics": [
+      "qX",
+      "qS"
+    ],
+    "conditional_boundary": "UNKNOWN",
+    "interval_units": "probability",
+    "pp_multiplier": 100
+  },
+  "observation": {
+    "proposals": [
+      "origin",
+      "equal_pair_mixture"
+    ],
+    "shared_three_policy_mixture": "secondary joint-covariance study only; absolute contrast weight bound 3",
+    "methods": [
+      "RAW4",
+      "EQUAL_ZERO_SUM",
+      "DROP_W",
+      "PRESERVE_XI",
+      "PILOT_COV_ZERO_SUM",
+      "PILOT_SHRINK_ZERO_SUM",
+      "CROSSFIT_COV_ZERO_SUM",
+      "KNOWN_COV_ORACLE"
+    ],
+    "primary_nonoracle": "PILOT_SHRINK_ZERO_SUM",
+    "primary_simple_baseline": "PRESERVE_XI",
+    "total_draws_grid": [
+      64,
+      256,
+      1024,
+      4096
+    ],
+    "pilot_fraction": 0.25,
+    "reference_draws_initial": 4096,
+    "pilot_and_main_rng_independent": true,
+    "raw_all_draws_cost_matched": true,
+    "pilot_b_l1_cap": 8.0,
+    "cov_shrink_grid": [
+      0.0,
+      0.1,
+      0.5,
+      1.0
+    ],
+    "sampling_constant": false,
+    "same_sample_pilot_for_main_forbidden": true,
+    "weight_clipping_primary": false,
+    "renormalize_primary": false,
+    "clip_estimates_for_primary_metrics": false,
+    "keep_raw_contributions": true,
+    "exact_policy_alias_dedup": true,
+    "known_event_scoring_required_in_finite_toy": true
+  },
+  "coverage": {
+    "selection_rules": [
+      "FIRST",
+      "STRATIFIED_RANDOM",
+      "LARGEST_NORM",
+      "BLOCK_PIVOT_QR",
+      "BLOCK_LOGDET"
+    ],
+    "primary_baseline": "STRATIFIED_RANDOM",
+    "pool_banks": 24,
+    "heldout_banks": 12,
+    "fit_bank_grid": [
+      2,
+      4,
+      8,
+      16,
+      24
+    ],
+    "primary_fit_banks": 8,
+    "rank_caps": [
+      1,
+      2,
+      4,
+      8,
+      16,
+      "FULL"
+    ],
+    "rank_atol": 1e-14,
+    "rank_rtol": 1e-10,
+    "center_updates": false,
+    "coverage_bins": [
+      0.01,
+      0.05,
+      0.2,
+      0.5
+    ],
+    "leverage": true,
+    "block_selection_uses_all_contrasts_in_one_bank": true,
+    "heldout_semantics_used_for_selection": false,
+    "unknown_is_not_zero": true,
+    "same_norm_does_not_imply_same_policy": true
+  },
+  "models": {
+    "baselines": [
+      "ZERO",
+      "DIRECT_MEASURE",
+      "KNOWN_EVENT_SCORE",
+      "FULL_RIDGE",
+      "FULL_GLS",
+      "PCA",
+      "RANDOM_Q",
+      "RESPONSE_SVD",
+      "GROUP_WEIGHTED_RESPONSE",
+      "RBF_RIDGE"
+    ],
+    "primary_comparisons_require_r_less_k": true,
+    "ridge_alpha_grid": [
+      0.0,
+      1e-08,
+      1e-05,
+      0.01
+    ],
+    "kernel_ridge_secondary_only": true,
+    "identification_error_limit": "calibrated on heldout origins; not norm ratio alone"
+  },
+  "cpu": {
+    "toy": "parent_737_parameter_16_action",
+    "fixed_parent_data_seed": 20260915,
+    "fixed_parent_initialization": 7001,
+    "steps": 64,
+    "anchors": [
+      8,
+      24,
+      40
+    ],
+    "B": 4,
+    "K": 8,
+    "arms": [
+      "X_BASE",
+      "X_VALID"
+    ],
+    "local_candidate_arms": [
+      "joint_0",
+      "joint_1",
+      "no_x_off_1"
+    ],
+    "training_prompt_partition": {
+      "calibration_prompt_count": 48,
+      "heldout_prompt_count": 24,
+      "banks_may_repeat_prompt_across_banks_with_distinct_rollout_rng": true
+    },
+    "development": "all previously opened datasets are development only",
+    "interval_calibration_seeds": [
+      21001,
+      21002,
+      21003,
+      21004,
+      21005,
+      21006,
+      21007,
+      21008,
+      21009,
+      21010,
+      21011,
+      21012,
+      21013,
+      21014,
+      21015,
+      21016,
+      21017,
+      21018,
+      21019,
+      21020
+    ],
+    "locked_test_seeds": [
+      22001,
+      22002,
+      22003,
+      22004,
+      22005,
+      22006,
+      22007,
+      22008,
+      22009,
+      22010,
+      22011,
+      22012,
+      22013,
+      22014,
+      22015,
+      22016,
+      22017,
+      22018,
+      22019,
+      22020,
+      22021,
+      22022,
+      22023,
+      22024,
+      22025,
+      22026,
+      22027,
+      22028,
+      22029,
+      22030
+    ],
+    "repeat_measurements_dev": 200,
+    "repeat_measurements_test": 20,
+    "orthogonal_generalization": {
+      "init_seeds": [
+        7101,
+        7201
+      ],
+      "data_seed": 20260915,
+      "train_rng_seeds": [
+        23001,
+        23002,
+        23003,
+        23004,
+        23005,
+        23006,
+        23007,
+        23008,
+        23009,
+        23010
+      ],
+      "arms": [
+        "X_BASE",
+        "X_VALID"
+      ],
+      "secondary_only": true
+    }
+  },
+  "qwen": {
+    "model_id": "Qwen/Qwen3.5-9B",
+    "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+    "dtype": "bfloat16",
+    "path": "inherit validated local snapshot; no new model-family change",
+    "runtime": "inherit measured production lock; no automatic upgrade",
+    "max_new_tokens": 64,
+    "temperature": 1.0,
+    "top_p": 1.0,
+    "top_k": 0,
+    "thinking": false,
+    "generation_path": "certified prefix recompute unless separately qualified",
+    "LoRA": {
+      "r": 8,
+      "alpha": 16,
+      "dropout": 0,
+      "target_leaf_modules": [
+        "gate_proj",
+        "up_proj",
+        "down_proj"
+      ],
+      "expected_matrices": 96,
+      "freeze_base": true,
+      "freeze_vision": true
+    },
+    "optimizer": {
+      "type": "AdamW",
+      "lr": 1e-05,
+      "betas": [
+        0.9,
+        0.999
+      ],
+      "eps": 1e-08,
+      "weight_decay": 0,
+      "grad_clip": 1.0,
+      "step_explicit_zero_gradients": true
+    },
+    "reward_epsilon": 0.0001,
+    "Lnorm": 64,
+    "ppo_clip": [
+      0.8,
+      1.2
+    ],
+    "KL_coef": 0.0,
+    "steps": 128,
+    "B": 4,
+    "K": 8,
+    "source_arms": [
+      "X_BASE",
+      "X_VALID"
+    ],
+    "seed_roles": {
+      "development": [
+        41001,
+        41002,
+        41003
+      ],
+      "interval_calibration": [
+        42001,
+        42002,
+        42003
+      ],
+      "locked_test": [
+        43001,
+        43002,
+        43003,
+        43004,
+        43005,
+        43006
+      ]
+    },
+    "paired_initialization": true,
+    "lora_init_rule": "hash(v3 namespace, seed); shared within paired arms, varies across seeds",
+    "source_checkpoints": [
+      0,
+      16,
+      32,
+      48,
+      64,
+      80,
+      96,
+      112,
+      128
+    ],
+    "source_sampler": "first 512 of original 576 training prompts in balanced deterministic seed order; no validation prompts",
+    "primary_response_origins": {
+      "arm": "X_BASE",
+      "steps": [
+        32,
+        96
+      ]
+    },
+    "shift_origins": {
+      "arm": "X_VALID",
+      "step": 96,
+      "seeds": "locked_test only"
+    },
+    "probe_panel": {
+      "base_scenes": 18,
+      "interfaces": 2,
+      "prompts": 36,
+      "base_scenes_per_family": 6,
+      "metadata_cells_per_family": "chart_type x operation = 2 x 3; one base each",
+      "role": "known fixed panel, novel model states; no unseen-prompt generalization claim"
+    },
+    "training_bank_partition": {
+      "calibration_prompts": 384,
+      "heldout_prompts": 192,
+      "calibration_pool_banks": 24,
+      "heldout_banks": 12,
+      "unique_prompts_within_anchor_pool": true
+    },
+    "observation_n_primary": 1024,
+    "observation_n_curve": [
+      64,
+      256,
+      1024,
+      4096
+    ],
+    "two_gpu_bridge": {
+      "origins": 2,
+      "dev_banks": 6,
+      "probes": 12,
+      "initial_draws": 64,
+      "pilot_separate": true,
+      "parameter_updates_scratch_only": true
+    },
+    "reference": {
+      "initial_draws": 4096,
+      "next_draws": [
+        8192,
+        16384,
+        32768,
+        65536
+      ],
+      "enlarge_based_on_reference_precision_only": true,
+      "automatic_extension_beyond_list": false,
+      "primary_half_width_goal": 0.00025,
+      "half_width_fallback_reporting": 0.001,
+      "noisy_reference_not_exact_truth": true,
+      "independent_from_predictor_data": true,
+      "formal_range_bound_reported_separately": true,
+      "primary_proposal": "independent_origin_shared_across_candidates",
+      "pair_mixture_spotcheck_banks_per_origin": 2,
+      "pair_mixture_mandatory_when_overlap_or_crosscheck_fails": true,
+      "spotcheck_selection": "prespecified heldout-bank hash, not response outcome"
+    },
+    "calibration_collection": {
+      "default_proposal": "origin reuse across candidate scores",
+      "mixture_for_reference": false,
+      "pool_semantic_labels_auditor_only_until_queried": true,
+      "only_train_side_geometry_may_choose_calibration": true,
+      "no_full_cartesian_vlm_grid": true,
+      "freeze_cpu_selected_two_estimators_and_two_selectors_before_locked_test": true
+    }
+  },
+  "tracking_offline": {
+    "enabled_after_pointwise_qualification": true,
+    "primary_arm": "X_BASE",
+    "window_anchor": 64,
+    "horizons": [
+      1,
+      2,
+      4,
+      8,
+      16
+    ],
+    "states_to_save": [
+      64,
+      65,
+      66,
+      68,
+      72,
+      80
+    ],
+    "feedback_into_source_training": false,
+    "dense_reference_for_assessment_only": true,
+    "basis_frozen_within_window": true
+  },
+  "statistics": {
+    "unit": "training RNG seed, keeping arms/anchors/prompts/banks together",
+    "bootstrap_reps": 5000,
+    "bootstrap_seed": 2026091503,
+    "primary_probability_MAE": true,
+    "tail_quantiles": [
+      0.5,
+      0.9,
+      0.95,
+      0.99
+    ],
+    "nrmse_energy_zero": "undefined with signal report",
+    "old_toy_q95_threshold": 0.000125,
+    "qwen_primary_meaningful_change": 0.001,
+    "qwen_fine_resolution_secondary": 0.00025,
+    "coverage_nominal": 0.95,
+    "qwen_3_calibration_seeds_do_not_certify_95": true,
+    "abstention_scored_with_coverage_risk_curves": true,
+    "all_cases_and_identified_cases_reported": true,
+    "noisy_reference_mse_correction": "report raw and bias-corrected aggregate; do not clip each cell",
+    "primary_hypotheses": 4,
+    "holm_for_primary_hypothesis_tests": true,
+    "online_optional_stopping": "prohibited without alpha spending or confidence sequence"
+  },
+  "execution": {
+    "nvidia_smi_required": true,
+    "gpu_memory_not_assumed": true,
+    "default": "two independent one-GPU workers",
+    "ddp_default": false,
+    "same_pair_both_gpus_requires_null_parity": true,
+    "main_and_legacy_results_immutable": true,
+    "manual_launch_plan_review": true,
+    "atomic_result_manifests": true,
+    "resume_source_hash_must_match": true,
+    "cpu_walltime_cap_removed": true,
+    "disk_cap_legacy_removed": true,
+    "actual_ram_disk_must_fit_preflight": true,
+    "no_log_as_scientific_PASS": true
+  },
+  "derived_workload": {
+    "qwen_training_seeds": 12,
+    "qwen_source_trajectories": 24,
+    "qwen_source_optimizer_steps": 3072,
+    "qwen_source_training_outputs": 98304,
+    "qwen_primary_origins": 24,
+    "qwen_shift_origins": 6,
+    "qwen_total_response_origins": 30,
+    "qwen_forks_per_origin": 108,
+    "qwen_base_fork_updates": 3240,
+    "qwen_train_bank_outputs": 34560,
+    "qwen_origin_proposal_draws_per_origin_at_primary_total1024": 36864,
+    "qwen_candidate_score_sequences_per_origin_before_alias_at_primary1024": 3981312,
+    "qwen_reference_draws_per_origin_if_all24_heldout_contrasts_at_n4096": 3538944,
+    "counts_exclude_smoke_null_replay_pilot_upgrades_and_reference_extensions": true,
+    "cpu_primary_trajectories": 100,
+    "cpu_primary_source_updates": 6400,
+    "cpu_primary_anchors": 300,
+    "cpu_primary_forks": 32400,
+    "cpu_secondary_init_trajectories": 40,
+    "qwen_reference_draws_per_origin_shared_at4096": 147456,
+    "qwen_pair_mixture_reference_spotcheck_draws_per_origin_at4096": 294912
+  }
+}

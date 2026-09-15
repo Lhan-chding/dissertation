@@ -1,0 +1,26 @@
+{
+  "scope": "HISTORICAL_WORKLOAD_ONLY_NOT_NEW_V3_THROUGHPUT",
+  "source_date": "2026-09-14",
+  "smoke": {
+    "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/receipts/smoke_pro6000_memory_154001.json",
+    "sha256": "562cfec24ffa017f57b4e98d16c5a9ebdce60d412b4ac19bf088a6ee562c4b3e",
+    "job_id": "154001",
+    "exit_code": 0,
+    "wall_seconds": 4588.105148792267,
+    "measurement_scope": "warm bank03 old/new joint bridge, not full S2 training",
+    "device_name": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+    "device_total_bytes": 101971460096,
+    "peak_allocated_bytes": 24173737984,
+    "peak_reserved_bytes": 25421676544
+  },
+  "S1_bank03": {
+    "path": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/S1/bank03/runtime_profile.json",
+    "sha256": "e5943ecf59a6a43a98316b43c932298e20bb1f1bdb4ee09a8774239ef1d870b4",
+    "elapsed_seconds": 14074.84960915614,
+    "forward_calls_this_completion_attempt": 40124,
+    "cuda_peak_allocated_bytes": 24173737472,
+    "measurement_scope": "completion invocation; preserved failed attempts are separate"
+  },
+  "new_v3_sequence_scoring_throughput": "NOT_MEASURED",
+  "new_v3_gpu_jobs_submitted": 0
+}

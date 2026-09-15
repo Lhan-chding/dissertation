@@ -1,0 +1,43 @@
+{
+  "fork_updates": 12,
+  "new_gpu_calls": 0,
+  "online_ssvc": false,
+  "output_bytes": 2003460,
+  "pilot": true,
+  "role": "development",
+  "scientific_status": "PILOT_NOT_CONFIRMATION",
+  "source_updates": 8,
+  "stage": "toy_collection",
+  "status": "COLLECTED",
+  "trajectories": [
+    {
+      "alias_count": 2,
+      "anchors": 1,
+      "arm": "X_BASE",
+      "costs": {
+        "bank_generation_seconds": 0.0005951629718765616,
+        "exact_scoring_seconds": 0.004383338848128915,
+        "fork_update_seconds": 0.008846090058796108,
+        "output_io_seconds": 0.05959623004309833,
+        "state_copy_restore_seconds": 0.012568257981911302,
+        "training_seconds": 3.828530096914619
+      },
+      "fork_updates": 12,
+      "full_origin_restoration_checks": 12,
+      "id": "seed1999001_X_BASE_init7001",
+      "initialization_seed": 7001,
+      "path": "trajectories/seed1999001_X_BASE_init7001",
+      "role": "timing_pilot",
+      "sampled_bank_actions": 128,
+      "sampled_training_actions": 256,
+      "scientific_status": "PILOT_NOT_CONFIRMATION",
+      "seed": 1999001,
+      "source_updates": 8,
+      "steps": 8,
+      "unique_candidate_policies": 10,
+      "wall_seconds": 5.936060121981427
+    }
+  ],
+  "trajectory_count": 1,
+  "wall_seconds": 6.117956385016441
+}

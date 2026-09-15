@@ -1,0 +1,25 @@
+{
+  "executed_at_utc": "2026-09-15T14:17:50.441254+00:00",
+  "command": "python -m unittest -v test_math_contracts",
+  "cwd_relative": "reference",
+  "execution_kind": "INDEPENDENT_NUMPY_MATH_AND_CONFIG_TESTS",
+  "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+  "numpy": "2.3.5",
+  "passed": 44,
+  "failed": 0,
+  "errors": 0,
+  "skipped": 0,
+  "research_experiments_run": false,
+  "repository_modified": false,
+  "gpu_called": false,
+  "slurm_submitted": false,
+  "scope": "Algebra and plan-workload contracts only. Not production integration, training or empirical method validation.",
+  "source_hashes": {
+    "protocol.json": "83df862332400a56a554af2821cc0e08944891c584abdad8455b1633fdb03797",
+    "reference/math_contracts.py": "7a3f43b79437eb4d5742d3033d3acb67638c28cca4a75b2dfe5e96ace1e6a2db",
+    "reference/test_math_contracts.py": "8cc0d57662f3eb7951f555c32b8c52a71c3990e82203160fb2294cb0c381f8c6"
+  },
+  "log_sha256": "71ca53bf8ce0e7820989e7190ed40bee33ec8eaab829af168bf35abfc393384b",
+  "document_and_json_static_checks": "PASS"
+}

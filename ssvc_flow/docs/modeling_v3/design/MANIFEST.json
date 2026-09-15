@@ -1,0 +1,95 @@
+{
+  "package": "SSVC_Modeling_V3_2xPRO6000_20260915",
+  "files": [
+    {
+      "path": "CODEX_EXPERIMENT_PLAN_zh.md",
+      "bytes": 27650,
+      "sha256": "243e87149b7c48feb0dd5a3390b785b77232c8fac5b6843a7c3ad8b80f95a8bd"
+    },
+    {
+      "path": "CPU_ACCEPTANCE_CHECKLIST_zh.md",
+      "bytes": 5795,
+      "sha256": "0dac92a850b01a0fd4b363d196f84079538a0ce1d00d9e975bea8bd00b706087"
+    },
+    {
+      "path": "GPU_RUNBOOK_zh.md",
+      "bytes": 8607,
+      "sha256": "c0d0a8a4a0833e9441725b3c1785abefdd778f22662c59d6120e83d4b98064c0"
+    },
+    {
+      "path": "README.md",
+      "bytes": 925,
+      "sha256": "541f36ab9ef8bc4aec49b9cd125749da13c06ef9e3a7ee49a0a0f8b7a7f1c0a4"
+    },
+    {
+      "path": "SOURCES_AND_NOVELTY_zh.md",
+      "bytes": 5768,
+      "sha256": "2195816cd048cf9b7f3b5570b132c8509f0fd9967e110d0d9b1e46600ee57b48"
+    },
+    {
+      "path": "START_HERE_FOR_CODEX.md",
+      "bytes": 3927,
+      "sha256": "4864f1fc176b320179543eda99c343df627e71384d7b0cbed8923db7ade55943"
+    },
+    {
+      "path": "THEORY_AND_ESTIMATORS_zh.md",
+      "bytes": 11011,
+      "sha256": "d4e80eea988730d75a261520bda9e4fad498dd7d33c83f2ccb774159044366ea"
+    },
+    {
+      "path": "evidence/C3_full_equivalence.csv",
+      "bytes": 1510,
+      "sha256": "7c7e26a44240904ee75f7e304110bf10348ad6819bb62cc478f1d7a20706fd50"
+    },
+    {
+      "path": "evidence/N1_raw_vs_helmert.csv",
+      "bytes": 2262,
+      "sha256": "36cfc3743646f91bdc0b0375b7c1ce0ce1f46cbd42dcae9a8a8ab62edeeaba24"
+    },
+    {
+      "path": "evidence/N4_primary_methods.csv",
+      "bytes": 23190,
+      "sha256": "240e28bdc1862b81b4c0a3ba8ffc428ca951524247c30127f45b26d7f2fe357f"
+    },
+    {
+      "path": "evidence/SUMMARY_zh.md",
+      "bytes": 2306,
+      "sha256": "afa7137d9d2a0cb681939d6294920ae9078a637f7d60aebe8d8881733ca4af6e"
+    },
+    {
+      "path": "evidence/inactive_case_energy_pooled.csv",
+      "bytes": 60550,
+      "sha256": "ef3810d14cc0babd7be858d789675570e1f00f16192002eb9806b5d1b8566d9c"
+    },
+    {
+      "path": "evidence/sample_scaling.csv",
+      "bytes": 851,
+      "sha256": "8990fdd23b337189a126967c62d8217a4310de59adb9356f1f9a8c2184fbfb42"
+    },
+    {
+      "path": "protocol.json",
+      "bytes": 12984,
+      "sha256": "83df862332400a56a554af2821cc0e08944891c584abdad8455b1633fdb03797"
+    },
+    {
+      "path": "reference/math_contracts.py",
+      "bytes": 6492,
+      "sha256": "7a3f43b79437eb4d5742d3033d3acb67638c28cca4a75b2dfe5e96ace1e6a2db"
+    },
+    {
+      "path": "reference/test_math_contracts.py",
+      "bytes": 8338,
+      "sha256": "8cc0d57662f3eb7951f555c32b8c52a71c3990e82203160fb2294cb0c381f8c6"
+    },
+    {
+      "path": "verification/reference_test_result.json",
+      "bytes": 1111,
+      "sha256": "dc03f853e74f8512fe3d822b0f25826778a37e82f5911cbc994964248ac4551f"
+    },
+    {
+      "path": "verification/reference_tests.log",
+      "bytes": 4401,
+      "sha256": "71ca53bf8ce0e7820989e7190ed40bee33ec8eaab829af168bf35abfc393384b"
+    }
+  ]
+}

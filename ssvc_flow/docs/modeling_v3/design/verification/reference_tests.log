@@ -1,0 +1,49 @@
+test_empty_excitation (test_math_contracts.CoverageTests.test_empty_excitation) ... ok
+test_equal_norm_unequal_vectors (test_math_contracts.CoverageTests.test_equal_norm_unequal_vectors) ... ok
+test_full_valid_constant_cancels (test_math_contracts.CoverageTests.test_full_valid_constant_cancels) ... ok
+test_in_span (test_math_contracts.CoverageTests.test_in_span) ... ok
+test_no_x_gate_before_normalization (test_math_contracts.CoverageTests.test_no_x_gate_before_normalization) ... ok
+test_reference_noise_mse_identity (test_math_contracts.CoverageTests.test_reference_noise_mse_identity) ... ok
+test_small_lambda_is_not_small_advantage (test_math_contracts.CoverageTests.test_small_lambda_is_not_small_advantage) ... ok
+test_span_reconstruction (test_math_contracts.CoverageTests.test_span_reconstruction) ... ok
+test_unidentifiable_pair (test_math_contracts.CoverageTests.test_unidentifiable_pair) ... ok
+test_zero_query (test_math_contracts.CoverageTests.test_zero_query) ... ok
+test_coefficient_error_penalty (test_math_contracts.ObservationTests.test_coefficient_error_penalty) ... ok
+test_drop_w_preserves_other_events (test_math_contracts.ObservationTests.test_drop_w_preserves_other_events) ... ok
+test_equal_projection_can_hurt_x (test_math_contracts.ObservationTests.test_equal_projection_can_hurt_x) ... ok
+test_equal_projection_total_error (test_math_contracts.ObservationTests.test_equal_projection_total_error) ... ok
+test_exact_signed_measure (test_math_contracts.ObservationTests.test_exact_signed_measure) ... ok
+test_extreme_log_ratio (test_math_contracts.ObservationTests.test_extreme_log_ratio) ... ok
+test_fixed_b_unbiased (test_math_contracts.ObservationTests.test_fixed_b_unbiased) ... ok
+test_helmert_null_mass (test_math_contracts.ObservationTests.test_helmert_null_mass) ... ok
+test_helmert_orthonormal (test_math_contracts.ObservationTests.test_helmert_orthonormal) ... ok
+test_identical_policy_exact_zero (test_math_contracts.ObservationTests.test_identical_policy_exact_zero) ... ok
+test_mean_covariance_n (test_math_contracts.ObservationTests.test_mean_covariance_n) ... ok
+test_mixture_formula (test_math_contracts.ObservationTests.test_mixture_formula) ... ok
+test_noisy_lossless_four_numbers (test_math_contracts.ObservationTests.test_noisy_lossless_four_numbers) ... ok
+test_oracle_coefficient_sum (test_math_contracts.ObservationTests.test_oracle_coefficient_sum) ... ok
+test_oracle_covariance_formula (test_math_contracts.ObservationTests.test_oracle_covariance_formula) ... ok
+test_oracle_variance_never_increases (test_math_contracts.ObservationTests.test_oracle_variance_never_increases) ... ok
+test_pilot_bound_and_sum (test_math_contracts.ObservationTests.test_pilot_bound_and_sum) ... ok
+test_pilot_uninformative (test_math_contracts.ObservationTests.test_pilot_uninformative) ... ok
+test_preserve_xi (test_math_contracts.ObservationTests.test_preserve_xi) ... ok
+test_preserve_xi_is_zero_sum (test_math_contracts.ObservationTests.test_preserve_xi_is_zero_sum) ... ok
+test_probability_reject (test_math_contracts.ObservationTests.test_probability_reject) ... ok
+test_qx_unknown (test_math_contracts.ObservationTests.test_qx_unknown) ... ok
+test_random_independent_b_covariance (test_math_contracts.ObservationTests.test_random_independent_b_covariance) ... ok
+test_small_log_ratio (test_math_contracts.ObservationTests.test_small_log_ratio) ... ok
+test_support_failure (test_math_contracts.ObservationTests.test_support_failure) ... ok
+test_unknown_label (test_math_contracts.ObservationTests.test_unknown_label) ... ok
+test_fork_counts (test_math_contracts.ProtocolTests.test_fork_counts) ... ok
+test_independent_pilot (test_math_contracts.ProtocolTests.test_independent_pilot) ... ok
+test_no_predicted_reference_as_truth (test_math_contracts.ProtocolTests.test_no_predicted_reference_as_truth) ... ok
+test_raw_baseline_kept (test_math_contracts.ProtocolTests.test_raw_baseline_kept) ... ok
+test_seeds_disjoint (test_math_contracts.ProtocolTests.test_seeds_disjoint) ... ok
+test_source_counts (test_math_contracts.ProtocolTests.test_source_counts) ... ok
+test_true_reduction_required (test_math_contracts.ProtocolTests.test_true_reduction_required) ... ok
+test_two_gpu_and_no_feedback (test_math_contracts.ProtocolTests.test_two_gpu_and_no_feedback) ... ok
+
+----------------------------------------------------------------------
+Ran 44 tests in 0.012s
+
+OK
