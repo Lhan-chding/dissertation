@@ -1,0 +1,17 @@
+method,n,fit_banks,calibration_panels,abstract_break_even_H,maximum_tested_tracking_H,qualified_tracking_H,break_even_within_verified_accurate_range,accuracy_at_break_even_status,low_budget_available_evidence,abstract_model_units_at_H16,abstract_dense_units_at_H16
+B5_EXACT_SELECTED_DIAGNOSTIC,exact,1,3,4,,[],False,UNVERIFIED_ACCURACY_AT_BREAK_EVEN,No matching M4 windows; M3 bank ablations use n64 main rule,4.0,16.0
+B5_EXACT_SELECTED_DIAGNOSTIC,16,1,3,4,,[],False,UNVERIFIED_ACCURACY_AT_BREAK_EVEN,No matching M4 windows; M3 bank ablations use n64 main rule,4.0,16.0
+B5_EXACT_SELECTED_DIAGNOSTIC,64,1,3,4,,[],False,UNVERIFIED_ACCURACY_AT_BREAK_EVEN,No matching M4 windows; M3 bank ablations use n64 main rule,4.0,16.0
+B5_EXACT_SELECTED_DIAGNOSTIC,256,1,3,4,,[],False,UNVERIFIED_ACCURACY_AT_BREAK_EVEN,No matching M4 windows; M3 bank ablations use n64 main rule,4.0,16.0
+B5_EXACT_SELECTED_DIAGNOSTIC,exact,2,6,7,,[],False,UNVERIFIED_ACCURACY_AT_BREAK_EVEN,No matching M4 windows; M3 bank ablations use n64 main rule,7.0,16.0
+B5_EXACT_SELECTED_DIAGNOSTIC,16,2,6,7,,[],False,UNVERIFIED_ACCURACY_AT_BREAK_EVEN,No matching M4 windows; M3 bank ablations use n64 main rule,7.0,16.0
+B5_EXACT_SELECTED_DIAGNOSTIC,64,2,6,7,,[],False,UNVERIFIED_ACCURACY_AT_BREAK_EVEN,No matching M4 windows; M3 bank ablations use n64 main rule,7.0,16.0
+B5_EXACT_SELECTED_DIAGNOSTIC,256,2,6,7,,[],False,UNVERIFIED_ACCURACY_AT_BREAK_EVEN,No matching M4 windows; M3 bank ablations use n64 main rule,7.0,16.0
+B5_EXACT_SELECTED_DIAGNOSTIC,exact,4,12,13,,[],False,UNVERIFIED_ACCURACY_AT_BREAK_EVEN,No matching M4 windows; M3 bank ablations use n64 main rule,13.0,16.0
+B5_EXACT_SELECTED_DIAGNOSTIC,16,4,12,13,,[],False,UNVERIFIED_ACCURACY_AT_BREAK_EVEN,No matching M4 windows; M3 bank ablations use n64 main rule,13.0,16.0
+B5_EXACT_SELECTED_DIAGNOSTIC,64,4,12,13,,[],False,UNVERIFIED_ACCURACY_AT_BREAK_EVEN,No matching M4 windows; M3 bank ablations use n64 main rule,13.0,16.0
+B5_EXACT_SELECTED_DIAGNOSTIC,256,4,12,13,,[],False,UNVERIFIED_ACCURACY_AT_BREAK_EVEN,No matching M4 windows; M3 bank ablations use n64 main rule,13.0,16.0
+B5_EXACT_SELECTED_DIAGNOSTIC,exact,8,24,25,16,"[1, 2, 4]",False,NOT_COST_FEASIBLE_AT_TESTED_HORIZON,M4 frozen windows,25.0,16.0
+B5_EXACT_SELECTED_DIAGNOSTIC,16,8,24,25,16,[],False,NOT_COST_FEASIBLE_AT_TESTED_HORIZON,M4 frozen windows,25.0,16.0
+B5_EXACT_SELECTED_DIAGNOSTIC,64,8,24,25,16,[],False,NOT_COST_FEASIBLE_AT_TESTED_HORIZON,M4 frozen windows,25.0,16.0
+B5_EXACT_SELECTED_DIAGNOSTIC,256,8,24,25,16,[],False,NOT_COST_FEASIBLE_AT_TESTED_HORIZON,M4 frozen windows,25.0,16.0

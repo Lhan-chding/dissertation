@@ -1,0 +1,41 @@
+{
+  "status": "PASS",
+  "operation": "READ_ONLY_FROZEN_PREDICTION_RESCORING",
+  "new_predictions": 0,
+  "new_measurements": 0,
+  "training_runs": 0,
+  "hyperparameters_changed": false,
+  "original_artifacts_modified": false,
+  "source_paths": {
+    "selection": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M3_verified/selection.json",
+    "prediction_freeze": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M3_verified/prediction_freeze.json",
+    "original_block_metrics": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M3_verified/prediction_by_anchor.csv",
+    "original_aggregate_metrics": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M3_verified/aggregate_metrics.csv",
+    "collection_manifest": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/manifest.json"
+  },
+  "source_hashes_before": {
+    "selection": "d4c6e50f806a8d626d0d9ab8bdc7e48cf97901fa2b608573c3c94523203cf466",
+    "prediction_freeze": "a05994f07f3e7660623adfa50853f98670a574348a61cea01a9ee2e6b5120fa2",
+    "original_block_metrics": "78b283f11dc4f8dc3895c2041baa4aebcda0b7cff84853640a76ea99611462cd",
+    "original_aggregate_metrics": "9a89bb52d7ed0d4655e936e86e49ab2ee0eff68680a373a9082ee8b38021e7aa",
+    "collection_manifest": "7a226ea43f8bbe2e5cef6f10a9ea4fc11f7ac788121a542044bb9414ad56f8cf"
+  },
+  "source_hashes_after": {
+    "selection": "d4c6e50f806a8d626d0d9ab8bdc7e48cf97901fa2b608573c3c94523203cf466",
+    "prediction_freeze": "a05994f07f3e7660623adfa50853f98670a574348a61cea01a9ee2e6b5120fa2",
+    "original_block_metrics": "78b283f11dc4f8dc3895c2041baa4aebcda0b7cff84853640a76ea99611462cd",
+    "original_aggregate_metrics": "9a89bb52d7ed0d4655e936e86e49ab2ee0eff68680a373a9082ee8b38021e7aa",
+    "collection_manifest": "7a226ea43f8bbe2e5cef6f10a9ea4fc11f7ac788121a542044bb9414ad56f8cf"
+  },
+  "postprocessor_source_sha256": "61006097e597ba5c3289ea100052b058bc7d79cceb87a7078e5acae64c1a964d",
+  "source_revision_distinction": "Postprocessor and original M3 have separate source hashes",
+  "rescored_frozen_blocks": 12960,
+  "largest_original_metric_recheck_difference": 0.0,
+  "primary_rows": 84,
+  "robust_rows": 16,
+  "primary_panel": "all main baseline configurations; exact noise0; n64 noise0,1,2",
+  "robust_panel": "Selected/B0/B6: exact noise0 and five replicas per finite n",
+  "quantiles": "Pooled branch errors from frozen predictions and existing oracle labels",
+  "bootstrap": "5000 paired seed clusters; arms, anchors and noise stay inside each seed",
+  "walltime_seconds": 13.95409200002905
+}

@@ -1,0 +1,11 @@
+{
+  "peak_rss_bytes": 617283584,
+  "cpu_user_seconds": 9.68128,
+  "cpu_system_seconds": 0.7560359999999999,
+  "single_thread_environment": [
+    "OMP_NUM_THREADS=1",
+    "OPENBLAS_NUM_THREADS=1",
+    "MKL_NUM_THREADS=1",
+    "VECLIB_MAXIMUM_THREADS=1"
+  ]
+}

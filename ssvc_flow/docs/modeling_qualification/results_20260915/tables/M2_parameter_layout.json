@@ -1,0 +1,40 @@
+[
+  {
+    "dtype": "float64",
+    "name": "0.weight",
+    "numel": 704,
+    "offset": 0,
+    "shape": [
+      16,
+      44
+    ]
+  },
+  {
+    "dtype": "float64",
+    "name": "0.bias",
+    "numel": 16,
+    "offset": 704,
+    "shape": [
+      16
+    ]
+  },
+  {
+    "dtype": "float64",
+    "name": "2.weight",
+    "numel": 16,
+    "offset": 720,
+    "shape": [
+      1,
+      16
+    ]
+  },
+  {
+    "dtype": "float64",
+    "name": "2.bias",
+    "numel": 1,
+    "offset": 736,
+    "shape": [
+      1
+    ]
+  }
+]

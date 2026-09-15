@@ -1,0 +1,66 @@
+{
+  "status": "PASS",
+  "execution_kind": "ANALYTIC_FIXTURE",
+  "dtype": "float64",
+  "phase": "M0",
+  "checks": {
+    "helmert_vertex_reconstruction_max": 2.220446049250313e-16,
+    "fisher_identity_error_max": 3.552713678800501e-15,
+    "finite_difference_error_max": 8.22666379463044e-11,
+    "raw_probability_helmert_regression_error_max": 4.163336342344337e-16,
+    "cp_exact_binomial_coverage_min_on_fixed_grid": 0.9507460924917581
+  },
+  "test_source": "tests/modeling_qualification/test_math_contracts.py",
+  "test_names": {
+    "helmert_vertex_reconstruction_max": "test_helmert_orthogonality_roundtrip_and_distance",
+    "fisher_identity_error_max": "test_fisher_and_finite_difference_fp64",
+    "finite_difference_error_max": "test_fisher_and_finite_difference_fp64",
+    "raw_probability_helmert_regression_error_max": "test_linear_regression_probability_helmert_equivalence",
+    "cp_exact_binomial_coverage_min_on_fixed_grid": "test_clopper_pearson_actual_denominators_and_zero"
+  },
+  "rng_seed": 202609150,
+  "sampling_fixture_replicates": 512,
+  "sampling_fixtures": {
+    "interior": [
+      0.21,
+      0.13,
+      0.26,
+      0.4
+    ],
+    "rare_X": [
+      0.001,
+      0.099,
+      0.8,
+      0.1
+    ],
+    "rare_valid": [
+      0.003,
+      0.003,
+      0.004,
+      0.99
+    ],
+    "rare_valid_error": [
+      0.899,
+      0.0005,
+      0.0005,
+      0.1
+    ],
+    "all_invalid": [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ],
+    "structural_S_empty": [
+      0.1,
+      0.0,
+      0.7,
+      0.2
+    ]
+  },
+  "coordinate_counts_sha256": "640d5f64b09bc288120717a51158efe7996bb851e9140d55e727cca155b78cf1",
+  "protocol_version": "modeling-qualification-v1-20260915",
+  "interval_scope": "POINTWISE_FIXED_SAMPLE; Bonferroni explicitly available within one count vector",
+  "walltime_seconds": 0.13178279192652553,
+  "interpretation": "Numerical contracts and finite-count fixtures; no real-model or training claim"
+}

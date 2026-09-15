@@ -1,0 +1,27 @@
+test_01_helmert_orthonormal (test_modeling_reference.ModelingReferenceTests.test_01_helmert_orthonormal) ... ok
+test_02_helmert_roundtrip_and_distance (test_modeling_reference.ModelingReferenceTests.test_02_helmert_roundtrip_and_distance) ... ok
+test_03_nested_interior_roundtrip (test_modeling_reference.ModelingReferenceTests.test_03_nested_interior_roundtrip) ... ok
+test_04_boundaries_are_not_fake_zero_information (test_modeling_reference.ModelingReferenceTests.test_04_boundaries_are_not_fake_zero_information) ... ok
+test_05_fisher_identity (test_modeling_reference.ModelingReferenceTests.test_05_fisher_identity) ... ok
+test_06_jacobian_finite_difference (test_modeling_reference.ModelingReferenceTests.test_06_jacobian_finite_difference) ... ok
+test_07_mle_equivalence (test_modeling_reference.ModelingReferenceTests.test_07_mle_equivalence) ... ok
+test_08_invalid_inputs (test_modeling_reference.ModelingReferenceTests.test_08_invalid_inputs) ... ok
+test_09_all_valid_shift_invariant (test_modeling_reference.ModelingReferenceTests.test_09_all_valid_shift_invariant) ... ok
+test_10_small_positive_weight_saturation (test_modeling_reference.ModelingReferenceTests.test_10_small_positive_weight_saturation) ... ok
+test_11_no_x_rule_unchanged_when_x_present (test_modeling_reference.ModelingReferenceTests.test_11_no_x_rule_unchanged_when_x_present) ... ok
+test_12_duplicate_directions_do_not_increase_rank (test_modeling_reference.ModelingReferenceTests.test_12_duplicate_directions_do_not_increase_rank) ... ok
+test_13_truncated_svd_error (test_modeling_reference.ModelingReferenceTests.test_13_truncated_svd_error) ... ok
+test_14_equal_norm_opposite_directions (test_modeling_reference.ModelingReferenceTests.test_14_equal_norm_opposite_directions) ... ok
+test_15_projection_residual_summary_is_not_identifying (test_modeling_reference.ModelingReferenceTests.test_15_projection_residual_summary_is_not_identifying) ... ok
+test_16_net_and_path_conditional_bounds (test_modeling_reference.ModelingReferenceTests.test_16_net_and_path_conditional_bounds) ... ok
+test_17_intermediate_excursion_and_endpoint_return (test_modeling_reference.ModelingReferenceTests.test_17_intermediate_excursion_and_endpoint_return) ... ok
+test_18_bad_basis_rejected (test_modeling_reference.ModelingReferenceTests.test_18_bad_basis_rejected) ... ok
+test_19_core_budget_and_model_size (test_modeling_reference.ModelingReferenceTests.test_19_core_budget_and_model_size) ... ok
+test_20_split_overlap_rejected (test_modeling_reference.ModelingReferenceTests.test_20_split_overlap_rejected) ... ok
+test_21_calibration_not_automatically_cost_saving (test_modeling_reference.ModelingReferenceTests.test_21_calibration_not_automatically_cost_saving) ... ok
+test_22_conditional_fisher_has_valid_domain (test_modeling_reference.ModelingReferenceTests.test_22_conditional_fisher_has_valid_domain) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 0.046s
+
+OK

@@ -1,0 +1,75 @@
+{
+  "status": "ALL_RECEIVED_FILES_SHA256_MATCH",
+  "captured_utc": "2026-09-15T06:42:53.746382+00:00",
+  "source_unchanged": true,
+  "files": [
+    {
+      "path": "real_update_geometry.json",
+      "sha256": "fa2bf9252518acc2c349e657908bcec2dad5e24b1dae471b4fee76aa54e279b2",
+      "bytes": 639373,
+      "local_sha256_verified": true
+    },
+    {
+      "path": "receipts/preparation_receipt.json",
+      "sha256": "b4ab076233ad03546d364932382c1689336352c925cd6e75b6ad9414b1e1a2a3",
+      "bytes": 1277,
+      "local_sha256_verified": true
+    },
+    {
+      "path": "receipts/script_review_receipt.json",
+      "sha256": "d161a1a81a2f55601e6cf783746a30451cefb441c6c9072d5552b35dbcc0a34d",
+      "bytes": 380,
+      "local_sha256_verified": true
+    },
+    {
+      "path": "receipts/submission_intent.json",
+      "sha256": "d20256929c52bd08d12027adb9260e56b633e2e0bbe222884a397f83d4e2c583",
+      "bytes": 312,
+      "local_sha256_verified": true
+    },
+    {
+      "path": "receipts/submission_receipt.json",
+      "sha256": "a2d56e6ac221bb249f4e9945a8278fe8e5bdea56342d9f8350fa7d9d1fc4f792",
+      "bytes": 447,
+      "local_sha256_verified": true
+    },
+    {
+      "path": "receipts/execution_receipt.json",
+      "sha256": "80b7981d63d61351874ae6e574bfad01525cb9ede23530dc1ee501070fe332b6",
+      "bytes": 163,
+      "local_sha256_verified": true
+    },
+    {
+      "path": "receipts/status_check_155077.json",
+      "sha256": "8b4e6a3e7218b9a008522b59fafd6bc2d916488b5e2b79492a7f06e624286586",
+      "bytes": 1633,
+      "local_sha256_verified": true
+    },
+    {
+      "path": "receipts/slurm-155077.out",
+      "sha256": "a9e53b1707b28b9ce91c9818fa2928ef32ba64a2b458291c1a685d99c2f7231e",
+      "bytes": 117,
+      "local_sha256_verified": true
+    },
+    {
+      "path": "receipts/slurm-155077.err",
+      "sha256": "6dcfd17acda5b7b56e905e43ba0c704f18d86a470e709ed99c1a548d1bf4a8fd",
+      "bytes": 1003,
+      "local_sha256_verified": true
+    },
+    {
+      "path": "receipts/vector_preflight.json",
+      "sha256": "4218afbbf31a074ca6bd56310561b9849eb479e990a1a0eeb3b3af7819166d1f",
+      "bytes": 14211,
+      "local_sha256_verified": true
+    },
+    {
+      "path": "receipts/final_sacct_155077.txt",
+      "sha256": "2936741217d97f1d49e42a368d81a6ca8c87c0b80394d413a99cffb4f63214bd",
+      "bytes": 192,
+      "local_sha256_verified": true
+    }
+  ],
+  "checkpoint_files_downloaded": 0,
+  "private_stdin_sha256": "b598b06bdd74b957a1e6266c35cf0ae81558f7d2e5fc78b8e8a807f9e434011c"
+}

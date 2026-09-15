@@ -1,0 +1,22 @@
+{
+  "scope": "INDEPENDENT_ALGEBRA_AND_SPECIFICATION_TESTS_ONLY",
+  "python": "3.13.5",
+  "numpy": "2.3.5",
+  "tests_run": 22,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "passed": 22,
+  "successful": true,
+  "full_cpu_toy_experiment_run": false,
+  "repository_tests_run": false,
+  "new_qwen_calls": false,
+  "new_gpu_started": false,
+  "online_ssvc_started": false,
+  "source_hashes": {
+    "test_modeling_reference.py": "b40acfd2d0f8fc2f936aae425593e0e756849b07f2f043554df46b49d00d8ccb",
+    "modeling_reference.py": "dd001dadf8493fbe682363d124e5e803abc44059403d24ed24ba58decbb06540",
+    "run_reference_tests.py": "a82035dc87457dfe02b381d60a8b9a8c410aefbc6f5fb5d933ab8a044a76c9a0"
+  },
+  "log_sha256": "f2df3dd8918d2f070ecf472a306915d017116996a640ffb2b99f9904eb24f56f"
+}

@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-09-15T06:53:24.672517+00:00",
+  "receipt_kind": "Command outcomes observed by the audit agent; condensed output, not an original complete stdout log",
+  "python": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python",
+  "working_directory": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow",
+  "server_original": {
+    "job_id": "155068",
+    "total": 1341,
+    "passed": 1123,
+    "failed": 55,
+    "errors": 163,
+    "missing_fixture_cases": 215,
+    "missing_fixture_groups": {
+      "generated_train": 92,
+      "generated_manifest": 71,
+      "generated_calibration": 10,
+      "parent_metadata": 42
+    },
+    "non_fixture_cases": {
+      "new_W3_same_theta_and_runner": 2,
+      "existing_r4_inventory_lstat_test_order": 1
+    }
+  },
+  "scope": "Test-only filesystem ordering correction; no production R4 source changes",
+  "test_file": "tests/test_r4_continuation.py",
+  "production_file": "src/r4_continuation.py",
+  "test_before_sha256": "95b456c42260a1848ca91dcc5c1cc350f0969ff5d34c162654a8d89e62cb4f08",
+  "test_after_sha256": "e00f0968ac5d5039277acc7e48c3581d348ab09869b1fb17a01535fb443b553d",
+  "production_before_sha256": "9f57ff16f0ccfea4bb2f8cf0817e0f37a0dbd08f60383f14c37a0b317c44ccba",
+  "production_after_sha256": "9f57ff16f0ccfea4bb2f8cf0817e0f37a0dbd08f60383f14c37a0b317c44ccba",
+  "adversarial_harness_template": "import os\nfrom unittest.mock import patch\nimport pytest\noriginal_walk = os.walk\n\ndef checkpoint_first(*args, **kwargs):\n    for directory, dirs, names in original_walk(*args, **kwargs):\n        if 'identity.json' in names and 'checkpoint.pt' in names:\n            names = sorted(names, key=lambda name: (name != 'checkpoint.pt', name))\n        yield directory, dirs, names\n\nwith patch('os.walk', checkpoint_first):\n    raise SystemExit(pytest.main(TEST_ARGUMENTS))\n",
+  "red": {
+    "test_arguments": [
+      "tests/test_r4_continuation.py::test_inventory_retries_one_transient_missing_entry_with_complete_revalidation[lstat]",
+      "-q",
+      "-p",
+      "no:cacheprovider"
+    ],
+    "exit_code": 1,
+    "summary": "1 failed in 0.20s",
+    "failed_assertion": "assert len(repeated_checks) == 2",
+    "actual_repeated_checks": 1,
+    "inventory_equal_assertion": "PASSED before failure",
+    "checkpoint_retry_count_assertion": "PASSED before failure"
+  },
+  "green": {
+    "test_arguments": [
+      "tests/test_r4_continuation.py",
+      "-q",
+      "-p",
+      "no:cacheprovider"
+    ],
+    "exit_code": 0,
+    "summary": "61 passed in 0.47s",
+    "same_adversarial_checkpoint_first_harness": true
+  },
+  "ruff": {
+    "command": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/ruff check tests/test_r4_continuation.py",
+    "exit_code": 0,
+    "output": "All checks passed!"
+  },
+  "assertions_preserved": [
+    "complete inventory equals the baseline inventory",
+    "faulting checkpoint is retried exactly twice",
+    "identity sentinel is revalidated exactly twice"
+  ],
+  "server_full_suite_retry": "Not run by this audit agent; parent owns the isolated CPU retry"
+}

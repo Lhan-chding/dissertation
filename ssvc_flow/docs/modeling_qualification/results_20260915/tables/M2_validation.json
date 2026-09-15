@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "manifest_sha256": "7a226ea43f8bbe2e5cef6f10a9ea4fc11f7ac788121a542044bb9414ad56f8cf",
+  "trajectory_count": 60,
+  "main_optimizer_steps": 3840,
+  "fork_optimizer_steps": 7560,
+  "total_optimizer_steps": 11400,
+  "main_sampled_actions": 122880,
+  "fork_base_sampled_actions": 80640,
+  "total_sampled_finite_actions": 203520,
+  "branch_alias_count": 2840,
+  "all_referenced_hashes_verified": true,
+  "split_and_identity_checks": "PASS",
+  "shapes_and_counts": "PASS",
+  "initialization_and_optimizer_steps": "PASS",
+  "alias_reuse": "PASS",
+  "validation_wall_seconds": 1.3852128750877455
+}

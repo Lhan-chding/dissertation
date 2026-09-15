@@ -1,0 +1,9 @@
+{
+  "original_status_counts": {
+    "EXCEEDS_MODEL_TOLERANCE": 151146,
+    "WITHIN_MODEL_TOLERANCE": 10134
+  },
+  "absolute_failure_hidden_by_unknown_rows": 0,
+  "any_possible_priority_affected_rows": 0,
+  "status": "NO_ORIGINAL_RESULT_ROWS_AFFECTED"
+}

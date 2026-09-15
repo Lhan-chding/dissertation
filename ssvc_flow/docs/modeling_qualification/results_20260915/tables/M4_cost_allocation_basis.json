@@ -1,0 +1,28 @@
+{
+  "status": "ALLOCATED_ESTIMATE",
+  "exact_panels_measured": 8620,
+  "finite_count_panels_allocated": 129300,
+  "fork_operations_allocated": 7560,
+  "measured_totals_seconds": {
+    "exact_seconds": 1.1651162371272221,
+    "branch_seconds": 2.2498502593953162,
+    "measurement_seconds": 10.009154254454188,
+    "output_io_seconds": 8.159182618954219
+  },
+  "timed_output_bytes_by_category": {
+    "observations_file": 202394376,
+    "oracle_file": 18756855,
+    "counts_file": 25839608,
+    "rng_file": 4054624
+  },
+  "exact_panel_compute_seconds": 0.0001351642966504898,
+  "branch_operation_seconds": 0.00029759924066075614,
+  "finite_count_panel_seconds": 7.741031905997052e-05,
+  "exact_panel_output_io_seconds": 0.0008491153423850465,
+  "finite_count_panel_output_io_seconds": 6.495037645747232e-06,
+  "allocation_rule": "Counts time divided equally across n x noise x unique exact panels; no measured n-specific generation timings exist. M2 output IO is allocated by physical bytes to counts vs observations/oracle/RNG, then divided across corresponding panels. Shared optimizer snapshot/RNG output is charged in the non-count allocation.",
+  "count_alias_policy": "M2 count generation reuses duplicate branch outputs; denominator uses measured unique exact panel calls",
+  "not_a_per_configuration_measurement": true,
+  "measurement_total_reconstructed_seconds": 10.009154254454188,
+  "output_io_total_reconstructed_seconds": 8.159182618954219
+}

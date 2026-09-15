@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "config_hash": "5a4fa3cb9cf2b35c0c582abaab6518004a3f13e5a11f9e656aa82e4cd0a73eca",
+  "estimated_total_wall_seconds": 1800,
+  "estimated_peak_ram_gib": 2.0,
+  "estimated_total_output_bytes": 1932735283,
+  "measurement_sources": {
+    "smoke/summary.json": "89110db8e47ae687e7672aee1eeeb64637d3d2ace33f778a453cc7d1ab1be668",
+    "modeling_benchmark.json": "9261b9bd363054704e2abced12f4aacad04a2d600976b8b1ef16f1b054e81b3f"
+  },
+  "assumptions": [
+    "M2 optimizer-count scaling measured locally: about 72 seconds, 331MB upper estimate",
+    "M3 full-anchor grid measured; conservative scaling plus CSV/I/O allowance",
+    "M4 fixed finite grid shares M2/M3; allowance 350MB and 10 minutes",
+    "20MB maximum extra real checkpoint metadata audit; no vector binaries exported",
+    "Remote regression uses explicit user CPU authorization; no GPU or Qwen calls"
+  ],
+  "core_execution_host": "local",
+  "reason": "Measured local smoke training is subsecond; server is used independently for full regression tests"
+}

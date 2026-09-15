@@ -1,0 +1,54 @@
+{
+  "status": "PASS",
+  "selection_source": "EXACT_MODEL_SELECTION_FROZEN_BEFORE_LOCKED_TEST",
+  "rule": {
+    "method": "B5_WORST_GROUP_RANK",
+    "rank_cap": 1,
+    "alpha": 0.01,
+    "n": "exact",
+    "level_mae": 0.0006103652547838853,
+    "projected_level_mae": 0.0006103652547838853,
+    "delta_mae": 0.0006103652547838852,
+    "projected_delta_mae": 0.0006103652547838853,
+    "raw_invalid_fraction": 0.0,
+    "near_zero_prompt_fraction": 0.878954475308642,
+    "delta_error_ss": 0.09866416628199087,
+    "delta_truth_ss": 1.6924620366648147,
+    "response_nrmse": 0.24144613474475665,
+    "sample_count": 288,
+    "level_rmse": 0.0010906546051399802,
+    "projected_level_rmse": 0.0010906546051399804,
+    "delta_rmse": 0.0010906546051399802,
+    "projected_delta_rmse": 0.0010906546051399804,
+    "mean_block_prompt_abs_error_q95": 0.0018865597150878371,
+    "group_delta_pX_q95_max": 0.0007570658426002908,
+    "group_delta_v_q95_max": 0.0028230073012319354,
+    "status": "ACCEPTABLE_ON_SELECTION_ONLY"
+  },
+  "vector_blocks": 240,
+  "scatter_rows": 4320,
+  "noise_replica": 0,
+  "samples": [
+    "exact",
+    16,
+    64,
+    256
+  ],
+  "fitted_prediction_source": "previously hashed M3 prediction arrays",
+  "basis_source": "fixed-rule reconstruction from unchanged paid local-fit data",
+  "new_test_prediction_records": 0,
+  "new_measurements": 0,
+  "max_model_reproduction_difference": 0.0,
+  "source_hashes_before": {
+    "selection": "d4c6e50f806a8d626d0d9ab8bdc7e48cf97901fa2b608573c3c94523203cf466",
+    "prediction_freeze": "a05994f07f3e7660623adfa50853f98670a574348a61cea01a9ee2e6b5120fa2",
+    "collection_manifest": "7a226ea43f8bbe2e5cef6f10a9ea4fc11f7ac788121a542044bb9414ad56f8cf"
+  },
+  "source_hashes_after": {
+    "selection": "d4c6e50f806a8d626d0d9ab8bdc7e48cf97901fa2b608573c3c94523203cf466",
+    "prediction_freeze": "a05994f07f3e7660623adfa50853f98670a574348a61cea01a9ee2e6b5120fa2",
+    "collection_manifest": "7a226ea43f8bbe2e5cef6f10a9ea4fc11f7ac788121a542044bb9414ad56f8cf"
+  },
+  "postprocessor_source_sha256": "ce25502f93fa58b8f700f6fd318237b9c13ce46d3f06d8a14a840ab6ad73b596",
+  "walltime_seconds": 5.53393233299721
+}

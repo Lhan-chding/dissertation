@@ -1,0 +1,10 @@
+component,seconds,overlap
+development_log_fit,1.6467372499173507,none
+selection_fits_and_scoring,13.697835332946852,includes selection Jacobians; subtotal
+selection_and_test_exact_J,0.1398578699445352,selection subset above
+test_basis_and_local_response_fit,6.211022945819423,none
+test_linear_inference,0.2978299470851198,none
+frozen_prediction_IO,8.078398781828582,none
+locked_scoring_and_read_IO,19.05673720804043,none
+post_freeze_oracle_diagnostics,5.279722167062573,none
+table_output_IO,1.4050048330100253,none

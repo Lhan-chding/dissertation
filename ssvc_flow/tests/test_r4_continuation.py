@@ -557,6 +557,17 @@ def test_inventory_retries_one_transient_missing_entry_with_complete_revalidatio
     calls, repeated_checks = [], []
     if operation == "lstat":
         original = Path.lstat
+        original_walk = module.os.walk
+
+        def identity_before_checkpoint(*args, **kwargs):
+            for directory, dirs, names in original_walk(*args, **kwargs):
+                if Path(directory) == parent:
+                    # os.walk order varies by filesystem. Visit the sentinel
+                    # before injecting ENOENT so a full retry must revisit it.
+                    names = sorted(names, key=lambda name: (name != "identity.json", name))
+                yield directory, dirs, names
+
+        monkeypatch.setattr(module.os, "walk", identity_before_checkpoint)
 
         def transient(path, *args, **kwargs):
             if path == parent / "identity.json":

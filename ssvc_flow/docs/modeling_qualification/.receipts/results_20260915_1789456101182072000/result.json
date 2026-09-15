@@ -1,0 +1,549 @@
+{
+  "execution_source_files": [
+    "__init__.py",
+    "cli.py",
+    "collection.py",
+    "cost_supplement.py",
+    "evaluation.py",
+    "io.py",
+    "math_contracts.py",
+    "models.py",
+    "plots.py",
+    "protocol.py",
+    "real_audit.py",
+    "real_vectors.py",
+    "report.py",
+    "toy.py",
+    "tracking.py",
+    "witnesses.py"
+  ],
+  "command": [
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python",
+    "-m",
+    "src.modeling_qualification.cli",
+    "report",
+    "--input",
+    "runs/modeling_qualification/qualification_20260915",
+    "--out",
+    "docs/modeling_qualification/results_20260915"
+  ],
+  "started_unix": 1789456101.213299,
+  "git_head": "97b7fd646046cfd58c45e0083f0e8fe6f37d6f1e",
+  "git_branch": "codex/ssvc-modeling-qualification-20260915",
+  "source_hashes_before": {
+    "__init__.py": "3583c4b8553dcaa3fa5e6b0e3554a36bc38643eb7aecfbd65e79763c688436d1",
+    "cli.py": "81bcb4337ce500f996907b89031bdd4ce2cc5bfe094bf4538a67d8f2845f998c",
+    "collection.py": "e6a850469baac9c3cc95214e38ca60b1e83a6d258a0d116df6488e7ddea543ad",
+    "cost_supplement.py": "9c76c773116c8bd0b741ca7f97722b07475398ea2a21563d8ca547f0ededf30f",
+    "evaluation.py": "0d8a0df148c671e35d7a4deb5d83f933e237fba63e27771798796ea4b4aea689",
+    "io.py": "7155e31db1db58dadd41d25f131b8ed258969f8b1b46822335e2241cd8415803",
+    "math_contracts.py": "194554b5bd29be71624bf2fc5f5036abdfd396d3e4fc0ea5f94776a3a15d8574",
+    "models.py": "cac0c43ada7513eb6f8ca94c5d2c51b125b6f695eaef486033c22ed453d8f797",
+    "plots.py": "eeea09b072ae8721fa75320062fb1ec554ac844437f6a1bac3c494b6b39a2678",
+    "protocol.py": "b201220536d66f2957af21431b515cb7da3359eeb2b1468bcedd7c68e0121ef4",
+    "real_audit.py": "d53afc546966f227cddc522980dc457a6ee2017201ef64d05b02fdb20a19f5d2",
+    "real_vectors.py": "790ef42dc123773ba54080a3e3edbb9c4d21c94961db7310d04c47a7656ed8e9",
+    "report.py": "5a8dd19b6e3f6b89b837db256277fee1a97bce55df9e881f598e9e0b4049fc2a",
+    "toy.py": "9ab1df1d5f3267277f957d523d6dac99f741a1e3e151076f9d6066245644454c",
+    "tracking.py": "5079bbf53d9bf701a0d8cf32b32991c0519361533dec9c5b3551499b11bd6c5f",
+    "witnesses.py": "6477f8652a627e531857b4c1546dee0a9593d70a9f3e4ef98a89c911e34a4045"
+  },
+  "source_snapshot_sha256": "e891b9dbfbfad7da44d4371ab6292e4f81a9a50c77ad99e3e64f06b9ef83ce3b",
+  "config_hash": "5a4fa3cb9cf2b35c0c582abaab6518004a3f13e5a11f9e656aa82e4cd0a73eca",
+  "config_file_sha256": "3cdcc7e82061db85aae55c1ea51b655caec2744db53b31a3613fafa3c297799e",
+  "python": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "VECLIB_MAXIMUM_THREADS": "1",
+    "TOKENIZERS_PARALLELISM": "false"
+  },
+  "versions": {
+    "numpy": "2.5.2",
+    "scipy": "1.18.0",
+    "torch": "2.13.0",
+    "pytest": "9.0.3",
+    "matplotlib": "3.11.1"
+  },
+  "new_qwen_calls": false,
+  "new_gpu_started": false,
+  "online_ssvc_started": false,
+  "exit_code": 0,
+  "result": {
+    "engineering_status": "BLOCKED",
+    "modeling_status": "NO_ACCEPTABLE_R",
+    "primary_n64_selection_status": "NO_ACCEPTABLE_R",
+    "exact_diagnostic_test_pass": true,
+    "observation_scope": "KNOWN_REALIZED_UPDATES",
+    "real_vlm_validation": "READONLY_PARTIAL",
+    "real_evidence_audit_status": "PARTIAL_REAL_EVIDENCE_READY",
+    "real_parameter_geometry": {
+      "actual_parameter_count": 12582912,
+      "all_download_sha256_match": true,
+      "banks": [
+        {
+          "all_recorded_norms_match_rtol1e6_atol1e10": true,
+          "auxiliary_update_rank_relative_to_joint_0": 0,
+          "bank_id": "bank00",
+          "candidate_delta_hashes": {
+            "joint_0": "36a84a47e28c96895daadc546d4a2b024586499e7fef206ad01d87a3108ca0e8",
+            "joint_1": "36a84a47e28c96895daadc546d4a2b024586499e7fef206ad01d87a3108ca0e8"
+          },
+          "candidate_norms": {
+            "joint_0": 0.014631227791542249,
+            "joint_1": 0.014631227791542249
+          },
+          "checkpoint_byte_hashes": {
+            "joint_0": "dbd919c29cc67a3af41f8e9db5f7a10bc4bd69c26ea8bb9e225283e57c9aa9e7",
+            "joint_1": "da25c9f3b8850f07c747b06e6b620a8fb7fbc2d0a199ac4da5a23be6000a80a3"
+          },
+          "existing_joint_1_minus_joint_0": {
+            "pX": 0.0,
+            "qX": 0.0,
+            "v": 0.0
+          },
+          "independent_existing_sample_count": 768,
+          "joint_0_joint_1_angle_degrees": 0.0,
+          "joint_0_joint_1_cosine": 1.0,
+          "policy_aliases": {
+            "joint_1": "joint_0"
+          },
+          "rank_atol": 1e-14,
+          "rank_rtol": 1e-10,
+          "rank_threshold": 2.06916807769692e-12,
+          "selected_candidate_ids": [
+            "joint_0",
+            "joint_1"
+          ],
+          "selected_update_rank": 1,
+          "singular_values": [
+            0.0206916807769692,
+            6.989439458212741e-18
+          ]
+        },
+        {
+          "all_recorded_norms_match_rtol1e6_atol1e10": true,
+          "auxiliary_update_rank_relative_to_joint_0": 1,
+          "bank_id": "bank03",
+          "candidate_delta_hashes": {
+            "joint_0": "2338a023f5a9330910c98cdeac79938fd3fd831dc6fce78c4fc6b100fcad8603",
+            "joint_1": "038af303d09ff5c697d91ab2ec6be855e4201ca880dc273310994fd038ca88b9",
+            "no_x_off_1": "2338a023f5a9330910c98cdeac79938fd3fd831dc6fce78c4fc6b100fcad8603"
+          },
+          "candidate_norms": {
+            "joint_0": 0.010791410687005495,
+            "joint_1": 0.012062873045371595,
+            "no_x_off_1": 0.010791410687005495
+          },
+          "checkpoint_byte_hashes": {
+            "joint_0": "748b54a304c080885153dc267dab8326b96a011d4d584da234417d64a7db85f8",
+            "joint_1": "d718435c49eada723ce2a9c5635f9f968bec1ae8871058b9929bbdae24b80f3f",
+            "no_x_off_1": "aeb9600092625882f134daf34a40a48b758b0f22cafc6533b72a80737046f856"
+          },
+          "existing_joint_1_minus_joint_0": {
+            "pX": -0.00651041666666663,
+            "qX": -0.0038250645361873614,
+            "v": -0.00390625
+          },
+          "independent_existing_sample_count": 2304,
+          "joint_0_joint_1_angle_degrees": 26.720122774687468,
+          "joint_0_joint_1_cosine": 0.8932135285042767,
+          "policy_aliases": {
+            "no_x_off_1": "joint_0"
+          },
+          "rank_atol": 1e-14,
+          "rank_rtol": 1e-10,
+          "rank_threshold": 1.895666374620271e-12,
+          "selected_candidate_ids": [
+            "joint_0",
+            "joint_1",
+            "no_x_off_1"
+          ],
+          "selected_update_rank": 2,
+          "singular_values": [
+            0.018956663746202706,
+            0.004366565578734663,
+            5.693531327064085e-18
+          ]
+        },
+        {
+          "all_recorded_norms_match_rtol1e6_atol1e10": true,
+          "auxiliary_update_rank_relative_to_joint_0": 1,
+          "bank_id": "bank04",
+          "candidate_delta_hashes": {
+            "joint_0": "2338a023f5a9330910c98cdeac79938fd3fd831dc6fce78c4fc6b100fcad8603",
+            "joint_1": "ddb68b49e307dc64d9eb77b490db8ed526e02ff9363dcb0ed7961cdfba45a34a",
+            "no_x_off_1": "2338a023f5a9330910c98cdeac79938fd3fd831dc6fce78c4fc6b100fcad8603"
+          },
+          "candidate_norms": {
+            "joint_0": 0.010791410687005495,
+            "joint_1": 0.013451983350066093,
+            "no_x_off_1": 0.010791410687005495
+          },
+          "checkpoint_byte_hashes": {
+            "joint_0": "cf0d087b84b771f3372fbf381611123a5e74e8de711609c58ed20558c980d4e2",
+            "joint_1": "db9edac79d3fc3f8fc9dda5cd3fe993ef36a6b2cba806ba156e6444147f1ba72",
+            "no_x_off_1": "183abf33bca5cbda5cec3e5bcb333e262fc2125893677722e5ddd4f3fa2ed224"
+          },
+          "existing_joint_1_minus_joint_0": {
+            "pX": -0.0026041666666666297,
+            "qX": 0.00023901276695881268,
+            "v": -0.00390625
+          },
+          "independent_existing_sample_count": 1536,
+          "joint_0_joint_1_angle_degrees": 29.51050277583288,
+          "joint_0_joint_1_cosine": 0.8702654161303796,
+          "policy_aliases": {
+            "no_x_off_1": "joint_0"
+          },
+          "rank_atol": 1e-14,
+          "rank_rtol": 1e-10,
+          "rank_threshold": 1.968432519546243e-12,
+          "selected_candidate_ids": [
+            "joint_0",
+            "joint_1",
+            "no_x_off_1"
+          ],
+          "selected_update_rank": 2,
+          "singular_values": [
+            0.019684325195462427,
+            0.005137342394757491,
+            5.710915465918434e-18
+          ]
+        },
+        {
+          "all_recorded_norms_match_rtol1e6_atol1e10": true,
+          "auxiliary_update_rank_relative_to_joint_0": 1,
+          "bank_id": "bank05",
+          "candidate_delta_hashes": {
+            "joint_0": "2338a023f5a9330910c98cdeac79938fd3fd831dc6fce78c4fc6b100fcad8603",
+            "joint_1": "408d69f132b50b0158a8cb82daabc31a5ea7511a890bfd82b9351807d9777ef9",
+            "no_x_off_1": "2338a023f5a9330910c98cdeac79938fd3fd831dc6fce78c4fc6b100fcad8603"
+          },
+          "candidate_norms": {
+            "joint_0": 0.010791410687005495,
+            "joint_1": 0.012616502038478049,
+            "no_x_off_1": 0.010791410687005495
+          },
+          "checkpoint_byte_hashes": {
+            "joint_0": "59bf50ff8c017f21ed28f28f355e63032db68d85c28665176160efdf8408e782",
+            "joint_1": "26e37ae203e9f2c1e7eec07f9601cd825ec8a09a470a74231b04aeb1004380d5",
+            "no_x_off_1": "740d624d0086b03bb213e991bc749b6f7275df9752db2091900ec77845380769"
+          },
+          "existing_joint_1_minus_joint_0": {
+            "pX": -0.00390625,
+            "qX": -0.004070556309362372,
+            "v": 0.0
+          },
+          "independent_existing_sample_count": 1536,
+          "joint_0_joint_1_angle_degrees": 17.708772673276634,
+          "joint_0_joint_1_cosine": 0.9526149189669856,
+          "policy_aliases": {
+            "no_x_off_1": "joint_0"
+          },
+          "rank_atol": 1e-14,
+          "rank_rtol": 1e-10,
+          "rank_threshold": 1.957376050232354e-12,
+          "selected_candidate_ids": [
+            "joint_0",
+            "joint_1",
+            "no_x_off_1"
+          ],
+          "selected_update_rank": 2,
+          "singular_values": [
+            0.019573760502323543,
+            0.0029921752481820584,
+            5.7209920393619265e-18
+          ]
+        },
+        {
+          "all_recorded_norms_match_rtol1e6_atol1e10": true,
+          "auxiliary_update_rank_relative_to_joint_0": 1,
+          "bank_id": "bank11",
+          "candidate_delta_hashes": {
+            "joint_0": "d76fa10aba228dcda0934db346b61dc456858a7e0db6591d1d82ceb67cd496ec",
+            "joint_1": "ecf59d285bb68ca9d870b3b2f31efbbb8ad7d7eba1e27ab9b6df77fb19f64a0a",
+            "no_x_off_1": "ecf59d285bb68ca9d870b3b2f31efbbb8ad7d7eba1e27ab9b6df77fb19f64a0a"
+          },
+          "candidate_norms": {
+            "joint_0": 0.012277583654751704,
+            "joint_1": 0.01225835889194064,
+            "no_x_off_1": 0.01225835889194064
+          },
+          "checkpoint_byte_hashes": {
+            "joint_0": "58a0647553aca3362ba9374792fcc2a6c01bff92b0ab7c119abc9d5d0a255f48",
+            "joint_1": "9b7a31ef4bd0afcc778c59aeacf088cf853c5ad2b15fc6d2ac556b498d2aa672",
+            "no_x_off_1": "8d2f86a6586c8b9253f39783d93e6477fd9c904bf693d09ce7e737135920d347"
+          },
+          "existing_joint_1_minus_joint_0": {
+            "pX": 0.0013020833333332593,
+            "qX": -0.0006245483345692637,
+            "v": 0.0026041666666666297
+          },
+          "independent_existing_sample_count": 1536,
+          "joint_0_joint_1_angle_degrees": 3.650548513390535,
+          "joint_0_joint_1_cosine": 0.9979709438497072,
+          "policy_aliases": {
+            "no_x_off_1": "joint_1"
+          },
+          "rank_atol": 1e-14,
+          "rank_rtol": 1e-10,
+          "rank_threshold": 2.1233615967276138e-12,
+          "selected_candidate_ids": [
+            "joint_0",
+            "joint_1",
+            "no_x_off_1"
+          ],
+          "selected_update_rank": 2,
+          "singular_values": [
+            0.02123361596727614,
+            0.0006382309933730746,
+            5.776549365309732e-19
+          ]
+        }
+      ],
+      "checkpoint_file_count": 15,
+      "checkpoint_file_size_sum_bytes": 2273190231,
+      "checkpoint_files_downloaded": 0,
+      "code_sha256": {
+        "src/modeling_qualification/__init__.py": "3583c4b8553dcaa3fa5e6b0e3554a36bc38643eb7aecfbd65e79763c688436d1",
+        "src/modeling_qualification/real_audit.py": "d53afc546966f227cddc522980dc457a6ee2017201ef64d05b02fdb20a19f5d2",
+        "src/modeling_qualification/real_vectors.py": "790ef42dc123773ba54080a3e3edbb9c4d21c94961db7310d04c47a7656ed8e9"
+      },
+      "cuda_visible_devices": "",
+      "downloaded_small_file_bytes": 659108,
+      "downloaded_small_file_count": 11,
+      "geometry_source": {
+        "bytes": 639373,
+        "evidence_id": "M5_vectors/real_update_geometry.json",
+        "sha256": "fa2bf9252518acc2c349e657908bcec2dad5e24b1dae471b4fee76aa54e279b2",
+        "source_root": "CURRENT_MODELING_RUN"
+      },
+      "gpu_allocation_verified_absent": true,
+      "gpu_operations": 0,
+      "job_id": "155077",
+      "measured_wall_seconds": 17.67585182498442,
+      "new_optimizer_updates": 0,
+      "new_qwen_calls": 0,
+      "online_ssvc": false,
+      "origin_binding_explanation": "S1 recapture adds fields; verified original R4 parameter and Adam hashes match candidate audit before-hashes. Its distinct S1 full-state hash remains recorded metadata.",
+      "origin_followup_full_state_hash_recomputed": false,
+      "origin_verification": {
+        "arm": "X_BASE",
+        "byte_sha256": "03c215ce7c55b93eba48a21d94bf86a7b6654dd53c8f4ff36b001e2a9d8ff6e0",
+        "checkpoint_step": 64,
+        "legacy_state_hash_recomputed": "5f809aa3e46cf19feb0444b5ab932df765db9ef2bdb80fe8a4ced300174730e9",
+        "model_parameter_hash_recomputed": "d6809e2e348d46184441312021c1026ee91f9b5c302399c9d0399ac5f1a930b1",
+        "optimizer_hash_recomputed": "a07ebc6fd8ce5f99a521228b54394497e3e3e4d2a1bfa7fe6bde0bc97e748645",
+        "parameter_hash_recomputed": "5c4ae7744b9860ffc3ed587ebee93e550447dda56607bf6b129fe838f00cb52b"
+      },
+      "parameter_dtypes": [
+        "torch.float32"
+      ],
+      "parameter_layout_hash": "02fc946aa4fcca575abbad4c0f3f9265f01349276aa12d4b08f8beb8db9c76f2",
+      "parameter_order": "CHECKPOINT_PARAMETER_MAPPING_INSERTION_ORDER",
+      "parameter_tensor_count": 192,
+      "peak_rss_bytes": 752287744,
+      "peak_rss_gib": 0.70062255859375,
+      "real_semantic_response_rank": null,
+      "real_semantic_response_rank_reason": "Selected update-space rank at one warm origin and train seed17 is not semantic Jacobian rank or validated response dimension",
+      "reconstruction_recipe_preserved": true,
+      "remaining_gaps": [
+        "Matched origin probability distribution on same probe panel",
+        "Completed composite evidence imported and audited",
+        "Independent anchors/seeds for fit/validation",
+        "Full Jacobian or externally validated semantic response dimension"
+      ],
+      "rows_augmented_with_actual_vector_hash_and_layout": 672,
+      "schema_version": "modeling-m5-public-vectors-v1",
+      "sealed_confirm_read": false,
+      "slurm_accounting": [
+        {
+          "alloc_tres": "cpu=1,mem=11G,node=1",
+          "elapsed": "00:00:18",
+          "exit_code": "0:0",
+          "job_id": "155077",
+          "max_rss": "",
+          "req_tres": "cpu=1,mem=11G,node=1",
+          "state": "COMPLETED"
+        },
+        {
+          "alloc_tres": "cpu=1,mem=11G,node=1",
+          "elapsed": "00:00:18",
+          "exit_code": "0:0",
+          "job_id": "155077.batch",
+          "max_rss": "",
+          "req_tres": "",
+          "state": "COMPLETED"
+        },
+        {
+          "alloc_tres": "cpu=1,mem=11G,node=1",
+          "elapsed": "00:00:18",
+          "exit_code": "0:0",
+          "job_id": "155077.extern",
+          "max_rss": "",
+          "req_tres": "",
+          "state": "COMPLETED"
+        }
+      ],
+      "source_unchanged_during_execution": true,
+      "standalone_update_vector_files_written": 0,
+      "status": "ACTUAL_CHECKPOINT_UPDATE_GEOMETRY_CPU_VERIFIED",
+      "unified_row_count": 748,
+      "unified_table_source": {
+        "evidence_id": "M5_vectors/real_evidence_table_with_vectors.jsonl",
+        "sha256": "26fbafe60331c6ff16556d11512d52fdf6632850f0ad1e34d3fd8de3964d44eb"
+      },
+      "valid_scope": "Existing completed S1 candidates only; one R4 X_BASE step64 origin; optimizer step65 after each candidate; no cross-anchor or cross-seed validation"
+    },
+    "verification_blockers": [
+      "RESOURCE_REVIEW_REQUIRED: optional full CPU regression stopped at temporary fixture output cap; 86 initial missing-fixture legacy R4 cases remain without a successful retry.",
+      "One legacy cross-split audit was deliberately deselected to preserve sealed confirm."
+    ],
+    "new_gpu_started": false,
+    "new_qwen_calls": false,
+    "online_ssvc_started": false,
+    "safety_certified": false,
+    "recommended_storage": "per_prompt_four_counts_with_identity",
+    "recommended_regression": "per_prompt_helmert",
+    "oracle_diagnostic_rank_cap": 1,
+    "tested_finite_sample_budgets_passing_frozen_rule": [],
+    "raw_run_stage_paths": {
+      "M0": "M0",
+      "M1": "M1_portable",
+      "M2": "M2",
+      "M3": "M3_verified",
+      "M4": "M4",
+      "M5": "M5_alias_corrected"
+    },
+    "test_seed_count": 10,
+    "reports": [
+      "MATH_AUDIT_zh.md",
+      "RESULTS_zh.md",
+      "MODELING_DECISION_zh.md",
+      "REAL_EVIDENCE_READINESS_zh.md",
+      "machine_readable_readiness.json"
+    ],
+    "raw_data_retained_locally": true
+  },
+  "wall_seconds": 6.692488916916773,
+  "peak_rss_gib": 0.1571197509765625,
+  "source_hashes_after": {
+    "__init__.py": "3583c4b8553dcaa3fa5e6b0e3554a36bc38643eb7aecfbd65e79763c688436d1",
+    "cli.py": "81bcb4337ce500f996907b89031bdd4ce2cc5bfe094bf4538a67d8f2845f998c",
+    "collection.py": "e6a850469baac9c3cc95214e38ca60b1e83a6d258a0d116df6488e7ddea543ad",
+    "cost_supplement.py": "9c76c773116c8bd0b741ca7f97722b07475398ea2a21563d8ca547f0ededf30f",
+    "evaluation.py": "0d8a0df148c671e35d7a4deb5d83f933e237fba63e27771798796ea4b4aea689",
+    "io.py": "7155e31db1db58dadd41d25f131b8ed258969f8b1b46822335e2241cd8415803",
+    "math_contracts.py": "194554b5bd29be71624bf2fc5f5036abdfd396d3e4fc0ea5f94776a3a15d8574",
+    "models.py": "cac0c43ada7513eb6f8ca94c5d2c51b125b6f695eaef486033c22ed453d8f797",
+    "plots.py": "eeea09b072ae8721fa75320062fb1ec554ac844437f6a1bac3c494b6b39a2678",
+    "protocol.py": "b201220536d66f2957af21431b515cb7da3359eeb2b1468bcedd7c68e0121ef4",
+    "real_audit.py": "d53afc546966f227cddc522980dc457a6ee2017201ef64d05b02fdb20a19f5d2",
+    "real_vectors.py": "790ef42dc123773ba54080a3e3edbb9c4d21c94961db7310d04c47a7656ed8e9",
+    "report.py": "5a8dd19b6e3f6b89b837db256277fee1a97bce55df9e881f598e9e0b4049fc2a",
+    "toy.py": "9ab1df1d5f3267277f957d523d6dac99f741a1e3e151076f9d6066245644454c",
+    "tracking.py": "5079bbf53d9bf701a0d8cf32b32991c0519361533dec9c5b3551499b11bd6c5f",
+    "witnesses.py": "6477f8652a627e531857b4c1546dee0a9593d70a9f3e4ef98a89c911e34a4045"
+  },
+  "sources_unchanged_during_run": true,
+  "execution_sources_unchanged_during_run": true,
+  "output_hashes": {
+    "MATH_AUDIT_zh.md": "bbe49efadbd515988fc09f1501bd2844b67e397a61d20ee868d703fa5f162359",
+    "MODELING_DECISION_zh.md": "14cbeb0f7d38531da7feb01a17d8d6d267800eda0c92782f541b69cbd7af5535",
+    "REAL_EVIDENCE_READINESS_zh.md": "94e09f3517b2a8fec0d736a8b8b60f103b031a6494a50cf0e0a05916e7a1e03f",
+    "RESULTS_zh.md": "226e512a8ac69e0c19cac9f7626f6d2b9e0921202c8f5d9c3bd3a885298ca1c8",
+    "artifact_manifest.json": "1d23adad8fc81ae5cbf2977facfdeb84053668adabe73f32a19c1ac37f1d3b5d",
+    "figure_sources.json": "ccdfc23e6ac83c623e59340f6c887c8b674eabd90e40bdc87a0c9a79200a288f",
+    "figures/01_error_dimension.pdf": "542938c5073ffed14522740b89bb7a4530a19c2d704262c5416e7b4263999f0b",
+    "figures/01_error_dimension.png": "2f0b3bbfd4a36d96fcc6e3fd34c5e4c8c609630accd929d2ebbf2d13b4dac1c0",
+    "figures/02_response_scatter.pdf": "2f1ef7301b13c421968492f1318f3b75e195b28e61d7c13cc1240c41ebe1c8ff",
+    "figures/02_response_scatter.png": "e63ee1e502066b4c1729c33a97ae3b035ec9fc0b5069b85ad7526efdfda2ebc6",
+    "figures/03_fixed_window.pdf": "9f7f77946b51d3ff5c0e88ae0586c4270260a539879632b536b0c5f5614fb0d3",
+    "figures/03_fixed_window.png": "71d94441f530a2398311cb182473b021dbeb992b737b71738ac1dcafef5c9f2f",
+    "figures/04_dimension_window.pdf": "2c3ae5a855c5ed42de624d8bf413c232115207046f8073826bdafe97af7274fc",
+    "figures/04_dimension_window.png": "8956cf24f649341b66ddc83bc923ef9cf1912151b54a9b2fd74233a885d21dcb",
+    "figures/05_equal_budget.pdf": "34bf7976c85c343f22211cbed0bac8aae56021c9fae92dd9a974d30dba62a07a",
+    "figures/05_equal_budget.png": "acc494e62fb8b3f29326718a9c79059c25813474dd271655fe2ed59f8092c2fd",
+    "machine_readable_readiness.json": "03d5133f636e8fc5e543fe5961a6ab7e617bacc2b07198b3b1946c2507c8b03d",
+    "table_sources.json": "148ebf98f2b190d81cd89f7889b05ff52858023e5698bba6621c55abaa3ba0a7",
+    "tables/M0_coordinate_reconstruction.csv": "0de765928b089fe3a8faabfe74016446696220134a1f1f1990377fab39d24e24",
+    "tables/M0_math_results.json": "31fda32c3722c29e28e79bf57158a33ed5e365640df3bb038abe78ff3036a850",
+    "tables/M1_identifiability_witnesses.json": "12d7feffbdc1f41aeb6ae713da3ec0830ad1dd48ee5a0cb73c4e89980b304d4a",
+    "tables/M2_parameter_layout.json": "c93481b1f20b8509d2eca8057bf59c50c2bb2e59a5d26c6558addf0bb4a0203b",
+    "tables/M2_probe_metadata.json": "fbe3c2ac0515c60e1b5fe890b4f2c73da56c5cf22fad3b6617518ac29a4c8811",
+    "tables/M2_resolved_config.json": "5ce4feb127cbae38fe36b245adebd7de87eb70b1f2caf394c472b479cdd6410d",
+    "tables/M2_source_linkage.json": "deaa57f1f71634165f8dd059ff6df6b193b6839479e75bbd047885507410c54b",
+    "tables/M2_summary.json": "e8dd397adaa76bdfcb5428900ed77f7caadb23b27ee28e69d8146ce8d3e24d44",
+    "tables/M2_train_metadata.json": "77309e18a022608223ddca7100f5d52247c56ce5b51ec7dcd914fb54fd9d4797",
+    "tables/M2_validation.json": "0c75f12a80f38b4905d53dffb883265d745d3630707a972f963716d10945ba6f",
+    "tables/M3_aggregate_metrics.csv": "9a89bb52d7ed0d4655e936e86e49ab2ee0eff68680a373a9082ee8b38021e7aa",
+    "tables/M3_auxiliary_minus_baseline.csv.gz": "9f69a05dfa7b3f2fddc091bcde22e64cbc1b4d193b948e3b07e74745c02a6d5b",
+    "tables/M3_conditional_coordinate_diagnostic.csv": "50cb79aee43dbfc6f5a5527684685f479a59dadea8dadfb06bac1f8206777fb3",
+    "tables/M3_coordinate_regression_equivalence.csv": "9e627083fb36bf5d5ec28fc46d19598f710d25599bff97b991049e0777b19d88",
+    "tables/M3_cost_ledger.csv": "91c6e93adedc63b6ee2f0939283f31fcf88299bab6411aa33850c4a5bd649b37",
+    "tables/M3_direction_accuracy.csv": "1121ec17c23ff15ce5386f5083110c142009c1afd471251594e113f3e4f814b8",
+    "tables/M3_error_decomposition.csv": "119e3ce4b743a8adacec8c5f1c023f7abcf3640d6c1e173522eeba3e50664c8d",
+    "tables/M3_exact_rule_diagnostics_summary.json": "7375cb69c7c4e1b600b8fa063757435df1a95d516cb1f4d2510be5e00b109c40",
+    "tables/M3_exact_rule_four_level_decomposition.csv": "f11a778100443e4655ef7e3d5405053cdf0cfe142637056ac8385e003c85a617",
+    "tables/M3_exact_rule_measurement_noise.csv": "f180a405c2a6c7a91bfad8cbba219bb55b95dc36dd6a95de90ea2dadc717e3d9",
+    "tables/M3_four_level_error_decomposition.csv": "96a21624cbf001d223fb861633e7e71ec1da75881fbff0900fea681b003fcdc8",
+    "tables/M3_measurement_noise_decomposition.csv": "9a0d33c40280a9b8139670e1521691172a05086c4d40be544f846c62df00246b",
+    "tables/M3_paired_block_coverage.csv": "5a9fa51ef210d787ef1e8bfdd1130d90da31ad7bd704f0ac9743466918b51354",
+    "tables/M3_paired_cluster_bootstrap.json": "e69905b910d8f5548bb29efec56f86a75ea5fc78b4bf25b3911b423944eb7fb2",
+    "tables/M3_postprocess_response_scatter.csv": "a0acf13fbfb34ba98e431e451cc51cc44eb3257885ec9128458bb6d125e52789",
+    "tables/M3_postprocess_summary.json": "ca96a567adf91fc3f0d4a6a4645156da92fbcd0c32c26e82f3189ed2d3a1a894",
+    "tables/M3_prediction_by_anchor.csv.gz": "24fdd8cb779791449066e83b48cd18afd4f7fb6fb3a6c2ccc5d7245435c7a657",
+    "tables/M3_prediction_by_anchor_group.csv.gz": "7113716e3ecfe8bdf52d2aa93c0d5e4368cf20b1d47f3135467fda84e679a99d",
+    "tables/M3_prediction_by_seed.csv": "1acd2f1ed0050f0032c027ffd317be6c7856ab60f96c35843f4b78becfcd6622",
+    "tables/M3_prediction_by_seed_group.csv": "cf78b17f9e4409a874576eac919526f9d012caf579fd17710b3e0ef9ee98983c",
+    "tables/M3_primary_aggregate_metrics.csv": "11634e5d10c0ffc4a661f822c7fcc3796d6d9bc5f5001c8e1c82cd4d8c9f6e70",
+    "tables/M3_primary_by_group.csv": "dc4fe482cb2c4309146060f1cef3a4658e45b9257036a669e34e42497583ae43",
+    "tables/M3_primary_by_seed.csv": "634a4dc63afbb8a84edf370958631b2d888647e5a52812cba44ba63124b950b7",
+    "tables/M3_primary_paired_cluster_bootstrap.json": "37b7743c65fd354d287e946a7df04d20d16c12a65b80d9ed31dd0d635b2b1a5d",
+    "tables/M3_resource_usage.json": "33ddcedbcb65a8958083e2d8a6c2bbab4d6a08cf91d6c89067e5981301c64b39",
+    "tables/M3_response_dimensions.csv.gz": "85323b22401943af1f43e44f0dfd056d4f3d32e54930876e207c2aafba64b4a1",
+    "tables/M3_response_scatter.csv": "baaa31eedd96662fb87f604dbae4df76d37c9fc74e74c968a64976d0787fcbb4",
+    "tables/M3_robust_aggregate_metrics.csv": "83b67c48ca96669b2e70fcaac921799662e6ae871d6f6b91c23940393dc859c6",
+    "tables/M3_robust_by_group.csv": "b831c6886a2b02ceede3be4adb67ca315397c30fba2adc1ae6e5732a456bb9b4",
+    "tables/M3_robust_by_seed.csv": "ca95468322caa4aaaefc837f83400828c93ecebf63e41d2530e9abf859212f5f",
+    "tables/M3_robust_paired_cluster_bootstrap.json": "787964572b72f6ced6aa1ba16d5a6999ce4fd723945e4221712c5d77d5c17ffd",
+    "tables/M3_selection.json": "d4c6e50f806a8d626d0d9ab8bdc7e48cf97901fa2b608573c3c94523203cf466",
+    "tables/M3_selection_grid.csv": "a3863a4f9ccde266e88c97f7c8d96022c9a5bb90cef6166158844c41d414d068",
+    "tables/M3_summary.json": "44f7464bb2eef00f974639b542dc783b4a5711e20e08137db6a8846da255ae3b",
+    "tables/M4_cost_allocation_basis.json": "b74b2c4a74a8fc2df96caedc9219514f880949da04c7421d17c05bbf885f1c9f",
+    "tables/M4_cost_audit.json": "67ed0121b0cab68430a7072bc346958586dc66990871ad055abe60afc27663d2",
+    "tables/M4_cost_bank_budget_break_even_qualification.csv": "5d35304fa799728524906f0980e750f8abd12d2d4aa7c7653c85edea367c3eaf",
+    "tables/M4_cost_fixed_anchor_replay_benchmark.csv": "5e29483f2d566d7389561ea2bcfc6057eb9f2508bfeeec8116404ea6d96d9c6d",
+    "tables/M4_cost_full_cpu_cost_allocated.csv": "5cd8245da35458389621228a876a7e27df10fe495db441ec73a0d0c673e43334",
+    "tables/M4_cost_replay_benchmark_means.csv": "8f9cc32d807c22c30aac5b63f82bbbdef22564f9997c7d6529609d601c657c1c",
+    "tables/M4_cost_step_status_source_fix_impact.json": "fd8ae83289a2eaaf85cae02c5477fb73d0d517887e64125b220cd2a892613450",
+    "tables/M4_cost_summary.json": "4a0b4d701b723dcbf3f754c4d6571b0fdb6d8efc21b5540bd8da4a8f7a57f875",
+    "tables/M4_envelope_freeze.json": "96fcbc5a21b0ea3a90ece564be5d57380cc09f2a751531ffb0f920533f626553",
+    "tables/M4_example_exact_selected_timeseries.csv": "f1a500550f76d7bf7b82531b8c1555cf5a294c9456557683036be5ba043de2bc",
+    "tables/M4_example_timeseries.csv": "97c18ffb5360c599df2198d0f685fe9ed01326bd2e0df8eb3dae667a64778ed3",
+    "tables/M4_paired_cluster_bootstrap.json": "ee4c3583a5ff9762f625abef2ba133c3e1d43401a47bfafc3696c52298ebef68",
+    "tables/M4_summary.json": "82707f1f45c2d6ca56d608471e4d2806372830b5ab9c5ea9ded8f6b276526bd7",
+    "tables/M4_tracking_by_seed.csv": "686d79315759a1632483a0fe7ad683ba4afacc72804fa586b331f34ca8d45e83",
+    "tables/M4_tracking_cpu_cost.csv": "5315ceb0ff22de1cd1191d702be2a2df799b6c9d21379868dcd7341a6b72aa76",
+    "tables/M4_tracking_error_decomposition.csv": "c0156a2131081b8ffed11ab893c2cb6545604d7037d2edbfb6bf6bbb88fb8eaa",
+    "tables/M4_tracking_rank_horizon_grid.csv": "a75add40d9a2818f7e7ba467a5faa5c2d6c241f51910c0d5d27679b64e014a54",
+    "tables/M4_tracking_summary.csv": "a00c8e389d10af6dcf6987aa769eb049421186ec797652c7b04a9de3cdf13169",
+    "tables/M4_tracking_windows.csv.gz": "ddb2c22c78dbba14bad9f85a44cf25f2bf69a589cd888f55562934f48f6f0de2",
+    "tables/M5_bank_vector_summary.csv": "7b79428c10cfdc8b366bc54322d5f98da2e139d1ecd073be9b113c4a44869e22",
+    "tables/M5_local_before_server_zh.md": "9a6412967e1678a45096e4244c7d911cd3f4658bcab26fedf6aa59faac0cefcf",
+    "tables/M5_public_vector_summary.json": "002a1f40bbffec7660f6444cae53897cee428911d8073901816752062a6179db",
+    "tables/M5_real_evidence_table_with_vectors.jsonl": "26fbafe60331c6ff16556d11512d52fdf6632850f0ad1e34d3fd8de3964d44eb",
+    "tables/M5_real_update_geometry.json": "fa2bf9252518acc2c349e657908bcec2dad5e24b1dae471b4fee76aa54e279b2",
+    "tables/M5_retrieval_verification.json": "eac991cbc674ce24d660068d265f30f0493ad6e9951599e0ead2ddcb19f0baba",
+    "tables/analysis_retry_decision.json": "3dd37b5a578b5df9937030ee1000eb664c8172b2b6d2438524d44efac9dee098",
+    "tables/preflight.json": "5c4bb267ba1643ac7b7a22cf6faeb4543e5fffced7ba5f4870b4aaa7bc304f75",
+    "tables/verification_summary.json": "47edd292a37cc61ffb927ce2fd39005d838f631fbf01270f39c5721f2b93dc88"
+  },
+  "output_bytes": 45192874
+}

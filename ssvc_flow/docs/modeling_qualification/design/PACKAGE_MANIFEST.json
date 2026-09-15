@@ -1,0 +1,74 @@
+{
+  "package": "SSVC_Modeling_Codex_20260915",
+  "protocol": "modeling-qualification-v1-20260915",
+  "files": [
+    {
+      "path": "CODEX_MODELING_EXPERIMENT_PLAN_zh.md",
+      "bytes": 48401,
+      "sha256": "d0f14845cf71a4a3847c776d4222961fdafe1225af8b53c2778fae4ff8184568"
+    },
+    {
+      "path": "CPU_ACCEPTANCE_CHECKLIST_zh.md",
+      "bytes": 3686,
+      "sha256": "d8ebcfdff178d3437c6b309ded2ba14649ee876938ca740116ae68e9aa5b53e6"
+    },
+    {
+      "path": "README.md",
+      "bytes": 989,
+      "sha256": "05cfead68313fc3365932dd286d4500e98b8198e79a20b32796376fdf5deac71"
+    },
+    {
+      "path": "SOURCES_AND_REPO_SNAPSHOT_zh.md",
+      "bytes": 5458,
+      "sha256": "c19679ed8eaad7825204a9851d4e48982b16c38ce2fbd8c9b4942ce30db02892"
+    },
+    {
+      "path": "START_HERE_FOR_CODEX.md",
+      "bytes": 5072,
+      "sha256": "3441e43e29cfa310d189d72a1e0f9f020aaf08fa809140dc9755627abf5daa19"
+    },
+    {
+      "path": "protocol.json",
+      "bytes": 8902,
+      "sha256": "3cdcc7e82061db85aae55c1ea51b655caec2744db53b31a3613fafa3c297799e"
+    },
+    {
+      "path": "reference/modeling_reference.py",
+      "bytes": 7512,
+      "sha256": "dd001dadf8493fbe682363d124e5e803abc44059403d24ed24ba58decbb06540"
+    },
+    {
+      "path": "reference/reference_test_log.txt",
+      "bytes": 2979,
+      "sha256": "f2df3dd8918d2f070ecf472a306915d017116996a640ffb2b99f9904eb24f56f"
+    },
+    {
+      "path": "reference/reference_test_result.json",
+      "bytes": 779,
+      "sha256": "8111e41e81322029d46919d7af1678d51bf1d9e9872ea4f5fb98b33edc89696f"
+    },
+    {
+      "path": "reference/run_reference_tests.py",
+      "bytes": 1358,
+      "sha256": "a82035dc87457dfe02b381d60a8b9a8c410aefbc6f5fb5d933ab8a044a76c9a0"
+    },
+    {
+      "path": "reference/test_modeling_reference.py",
+      "bytes": 8254,
+      "sha256": "b40acfd2d0f8fc2f936aae425593e0e756849b07f2f043554df46b49d00d8ccb"
+    },
+    {
+      "path": "source_file_hashes.json",
+      "bytes": 632,
+      "sha256": "96ffad0112f435992632c6db98aea3f97bc5313cda30dfac86d595114e18afb0"
+    }
+  ],
+  "scope": "design_and_independent_reference_tests_not_full_experiment",
+  "reference_tests": {
+    "run": 22,
+    "passed": 22,
+    "failed": 0
+  },
+  "repo_modified_this_turn": false,
+  "new_gpu_started": false
+}

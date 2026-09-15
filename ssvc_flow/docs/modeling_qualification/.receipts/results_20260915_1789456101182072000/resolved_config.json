@@ -1,0 +1,385 @@
+{
+  "protocol_version": "modeling-qualification-v1-20260915",
+  "purpose": "CPU-only qualification of semantic probability representation and local response dimension",
+  "repository": {
+    "name": "Lhan-chding/dissertation",
+    "observed_parent_branch": "codex/ssvc-mechanism-followup-20260914",
+    "observed_parent_commit": "97b7fd646046cfd58c45e0083f0e8fe6f37d6f1e",
+    "proposed_new_branch": "codex/ssvc-modeling-qualification-20260915",
+    "workdir": "ssvc_flow",
+    "separate_worktree": true,
+    "recheck_current_head": true
+  },
+  "scope": {
+    "new_qwen_calls": false,
+    "new_gpu_training": false,
+    "automatic_sbatch": false,
+    "online_detector": false,
+    "online_ssvc": false,
+    "existing_jobs_mutable": false,
+    "cpu_toy_training": true,
+    "real_artifacts_readonly": true
+  },
+  "events": [
+    "X",
+    "S",
+    "W",
+    "I"
+  ],
+  "representations": {
+    "storage": "four_counts_with_prompt_identity",
+    "interpretation": [
+      "v",
+      "q",
+      "s"
+    ],
+    "primary_regression": "orthonormal_helmert",
+    "conditional_boundary": "null_with_reason",
+    "conditional_diagnostic_oracle_min_mass": 0.05,
+    "primary_group_q": "ratio_of_weighted_probabilities",
+    "projection": "store_raw_and_projected_separately"
+  },
+  "dataset": {
+    "seed": 20260915,
+    "reuse_scene_definitions": true,
+    "sizes": {
+      "train": 72,
+      "control": 36
+    },
+    "render": false,
+    "families": [
+      "duplicate_encoding",
+      "cross_series",
+      "trend"
+    ],
+    "operations": [
+      "sum4",
+      "difference_pairs",
+      "range4"
+    ],
+    "interfaces": [
+      "SYMBOLIC_PROXY",
+      "EVIDENCE_PROXY"
+    ],
+    "probe_interfaces_per_scene": 2,
+    "probe_prompt_count": 72,
+    "train_probe_truth_disjoint": true,
+    "candidate_actions": 16,
+    "valid_candidates": 14,
+    "invalid_candidates": 2,
+    "same_answer_alternatives_target": 2,
+    "structurally_empty_S_allowed": true,
+    "randomize_candidate_order": true,
+    "forbid_candidate_index_feature": true
+  },
+  "toy_model": {
+    "name": "shared_candidate_score_mlp",
+    "input_dim": 44,
+    "hidden_dim": 16,
+    "output_dim": 1,
+    "parameter_count": 737,
+    "activation": "tanh",
+    "dtype": "float64",
+    "model_initialization_seed": 7001,
+    "same_initialization_across_trajectories": true,
+    "threads": 1,
+    "no_dropout": true,
+    "no_batchnorm": true
+  },
+  "reward": {
+    "alpha_X": 2.0,
+    "alpha_A": 0.0,
+    "epsilon": 0.0001,
+    "denominator": "sqrt(population_variance+epsilon**2)",
+    "zero_variance_advantage": 0.0,
+    "resample_zero_groups": false
+  },
+  "optimizer": {
+    "name": "AdamW",
+    "lr": 0.01,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "eps": 1e-08,
+    "weight_decay": 0.0,
+    "global_grad_clip": 1.0,
+    "explicit_zero_gradients": true,
+    "step_on_zero_advantage": true,
+    "scheduler": null
+  },
+  "loss": {
+    "type": "single_atomic_action_group_relative",
+    "Lnorm": 1,
+    "denominator": "B*K",
+    "updates_per_rollout": 1,
+    "clip_epsilon": 0.2,
+    "beta_KL": 0.0,
+    "entropy_coef": 0.0
+  },
+  "profiles": {
+    "smoke": {
+      "seeds": [
+        101,
+        301
+      ],
+      "arms": [
+        "X_BASE",
+        "X_VALID"
+      ],
+      "steps": 8,
+      "B": 4,
+      "K": 8,
+      "anchors": [
+        4
+      ],
+      "fit_banks": 4,
+      "diagnostic_banks": 1,
+      "evaluation_banks": 1
+    },
+    "core": {
+      "seeds_by_role": {
+        "development_fit": [
+          101,
+          102,
+          103,
+          104,
+          105,
+          106
+        ],
+        "model_selection": [
+          201,
+          202,
+          203,
+          204
+        ],
+        "interval_calibration": [
+          251,
+          252,
+          253,
+          254,
+          255,
+          256,
+          257,
+          258,
+          259,
+          260
+        ],
+        "locked_test": [
+          301,
+          302,
+          303,
+          304,
+          305,
+          306,
+          307,
+          308,
+          309,
+          310
+        ]
+      },
+      "arms": [
+        "X_BASE",
+        "X_VALID"
+      ],
+      "steps": 64,
+      "B": 4,
+      "K": 8,
+      "anchors": [
+        8,
+        24,
+        40
+      ],
+      "fit_bank_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "diagnostic_bank_indices": [
+        8,
+        9
+      ],
+      "evaluation_bank_indices": [
+        10,
+        11,
+        12,
+        13
+      ]
+    }
+  },
+  "fork_interventions": [
+    {
+      "name": "joint_0",
+      "lambda": 0.0,
+      "policy": "joint"
+    },
+    {
+      "name": "joint_1",
+      "lambda": 1.0,
+      "policy": "joint"
+    },
+    {
+      "name": "no_x_off_1",
+      "lambda": 1.0,
+      "policy": "no_x_off_before_joint_normalization"
+    }
+  ],
+  "measurement": {
+    "samples_per_prompt_grid": [
+      16,
+      64,
+      256
+    ],
+    "noise_replicas": 5,
+    "primary_samples_per_prompt": 64,
+    "noise_seed_root": 88001,
+    "share_anchor_counts_within_difference_block": true,
+    "oracle_is_separate_view": true,
+    "pseudocount_primary": 0.0,
+    "pointwise_interval": "clopper_pearson",
+    "interval_level": 0.95,
+    "simultaneous_panel_interval": "bonferroni_if_reported",
+    "primary_noise_replicas": 3
+  },
+  "response": {
+    "input_space": "actual_realized_parameter_updates",
+    "output_space": "concatenated_per_prompt_helmert",
+    "Q_from": "local_fit_banks_only",
+    "center_update_matrix": false,
+    "svd_rank_rtol": 1e-10,
+    "svd_rank_atol": 1e-14,
+    "rank_caps": [
+      0,
+      1,
+      2,
+      4,
+      8,
+      16,
+      "FULL"
+    ],
+    "effective_r": "min(cap,k) or k for FULL",
+    "ridge_alpha_grid": [
+      0.0,
+      1e-08,
+      1e-05,
+      0.01
+    ],
+    "ridge_scale": "alpha*largest_singular_value(A)**2",
+    "intercept": false,
+    "out_of_span_ratio_bins": [
+      0.05,
+      0.2
+    ],
+    "primary_fit_banks": 8,
+    "fit_budget_ablation": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "models": [
+      "B0_PERSISTENCE",
+      "B1_LOG_RIDGE",
+      "B2_RANDOM_Q",
+      "B3_UPDATE_PCA",
+      "B4_RESPONSE_SVD",
+      "B5_WORST_GROUP_RANK",
+      "B6_FULL_Q_RIDGE",
+      "O0_FULL_J_ORACLE",
+      "O1_JQ_SVD_ORACLE"
+    ],
+    "grid_policy": "Primary exact/n64 three-noise grid, then frozen-selected methods robust check; no full Cartesian search"
+  },
+  "model_selection": {
+    "split": "model_selection",
+    "test_tuning": false,
+    "targets_are_design_goals_not_assertions": true,
+    "group_delta_pX_abs_error_q95_max": 0.01,
+    "group_delta_v_abs_error_q95_max": 0.01,
+    "per_prompt_event_mae_max": 0.02,
+    "response_nrmse_max": 0.75,
+    "raw_invalid_simplex_fraction_max": 0.05,
+    "no_passing_rank": "NO_ACCEPTABLE_R",
+    "nrmse_energy_floor": 1e-20,
+    "baseline_energy_fraction": 0.95
+  },
+  "tracking": {
+    "enabled": "offline_only",
+    "horizons": [
+      1,
+      2,
+      4,
+      8,
+      16
+    ],
+    "basis_fixed_in_window": true,
+    "reestimate_J_every_step": false,
+    "telemetry": [
+      "NORM_ONLY",
+      "PROJECTION_AND_PATH",
+      "PROJECTION_AND_NET_DISPLACEMENT"
+    ],
+    "bounds": [
+      "NET_DISPLACEMENT",
+      "PATH_LENGTH"
+    ],
+    "analytic_L": "3*spectral_norm(A)**2 for the specified affine-softmax witnesses",
+    "nonlinear_bound_label": "EMPIRICAL_CALIBRATED_ENVELOPE",
+    "empirical_quantile": 0.9,
+    "claim_distribution_free_95_percent": false,
+    "no_online_trigger": true,
+    "require_calibration_amortization_audit": true,
+    "cost_not_feasible_status": "NOT_COST_FEASIBLE_AT_TESTED_HORIZON"
+  },
+  "statistics": {
+    "top_cluster": "training_rng_seed",
+    "keep_arms_and_anchor_branches_together": true,
+    "bootstrap_replicates": 5000,
+    "bootstrap_seed": 99001,
+    "direction_threshold_grid": [
+      0.002,
+      0.005,
+      0.01
+    ],
+    "probability_units": true,
+    "percentage_point_multiplier": 100,
+    "fixed_model_init_and_dataset_scope": true
+  },
+  "resources": {
+    "cpu_threads": 1,
+    "estimated_core_walltime_limit_hours": 4,
+    "peak_ram_limit_gib": 8,
+    "output_limit_gib": 2,
+    "on_exceed": "RESOURCE_REVIEW_REQUIRED",
+    "automatic_dependency_upgrade": false
+  },
+  "runtime_default": {
+    "execution_permitted": "CPU_ONLY_WITH_PREFLIGHT",
+    "new_gpu_started": false,
+    "online_ssvc_started": false,
+    "safety_certified": false
+  },
+  "final_reports": [
+    "MATH_AUDIT_zh.md",
+    "RESULTS_zh.md",
+    "MODELING_DECISION_zh.md",
+    "REAL_EVIDENCE_READINESS_zh.md",
+    "machine_readable_readiness.json"
+  ],
+  "budget_derived": {
+    "seed_count": 30,
+    "trajectory_count": 60,
+    "main_optimizer_steps": 3840,
+    "main_sampled_actions": 122880,
+    "anchor_count": 180,
+    "fork_optimizer_steps": 7560,
+    "fork_base_sampled_actions": 80640,
+    "total_optimizer_steps": 11400,
+    "total_sampled_finite_actions": 203520
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "status": "PASS",
+  "core_validation": {
+    "status": "PASS",
+    "manifest_sha256": "7a226ea43f8bbe2e5cef6f10a9ea4fc11f7ac788121a542044bb9414ad56f8cf",
+    "trajectory_count": 60,
+    "main_optimizer_steps": 3840,
+    "fork_optimizer_steps": 7560,
+    "total_optimizer_steps": 11400,
+    "main_sampled_actions": 122880,
+    "fork_base_sampled_actions": 80640,
+    "total_sampled_finite_actions": 203520,
+    "branch_alias_count": 2840,
+    "all_referenced_hashes_verified": true,
+    "split_and_identity_checks": "PASS",
+    "shapes_and_counts": "PASS",
+    "initialization_and_optimizer_steps": "PASS",
+    "alias_reuse": "PASS",
+    "validation_wall_seconds": 1.3852128750877455
+  },
+  "smoke_source_reconstruction_sha256": "46a0f5f39008510887ff3c329279d660e33e565dc7f4c9fe06fd44e8d3c36df3",
+  "core_recorded_collection_sha256": "daa38d86595645d93c5f2929ccd4903635c763392d81a2ca70fbb4c2c0c7c04d",
+  "current_collection_sha256": "e6a850469baac9c3cc95214e38ca60b1e83a6d258a0d116df6488e7ddea543ad",
+  "training_sampling_functions_identical_to_hash_matched_smoke_source": {
+    "_seed": true,
+    "_bank_roles": true,
+    "_trajectory_specs": true,
+    "_collect_trajectory": true,
+    "_sample_counts": true,
+    "_exact_p": true
+  },
+  "toy_current_matches_core_and_smoke": true,
+  "changes_since_smoke": [
+    "manifest train_identity_sha256 metadata",
+    "checkpoint reader layout hash validation",
+    "new read-only validate_collection helper",
+    "validator list-order correction",
+    "formatting"
+  ],
+  "core_output_modified": false,
+  "whole_collection_source_unchanged_during_core": false,
+  "core_run_source_text_archived": false
+}

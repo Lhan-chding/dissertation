@@ -1,0 +1,15 @@
+{
+  "reason": [
+    "Explicit VECLIB_MAXIMUM_THREADS=1 for macOS Accelerate (first M3 lacked this export)",
+    "Apply independently audited coverage correction: exact-selection frozen rank must also be evaluated on existing n16/64/256 counts"
+  ],
+  "old_stage": "M3",
+  "new_stage": "M3_verified",
+  "old_selection_sha256": "d4c6e50f806a8d626d0d9ab8bdc7e48cf97901fa2b608573c3c94523203cf466",
+  "no_new_training": true,
+  "no_new_measurement_counts": true,
+  "test_tuning": false,
+  "estimated_total_bytes_including_preserved_attempt": 1900000000,
+  "budget_bytes": 2147483648,
+  "status": "WITHIN_CPU_BUDGET"
+}

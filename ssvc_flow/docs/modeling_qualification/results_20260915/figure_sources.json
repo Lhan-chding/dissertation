@@ -1,0 +1,22 @@
+[
+  {
+    "figure": "01_error_dimension",
+    "source": "M3_primary_tables/primary_aggregate_metrics.csv + robust_aggregate_metrics.csv"
+  },
+  {
+    "figure": "02_response_scatter",
+    "source": "M3_primary_tables/response_scatter.csv"
+  },
+  {
+    "figure": "03_fixed_window",
+    "source": "M4/example_exact_selected_timeseries.csv"
+  },
+  {
+    "figure": "04_dimension_window",
+    "source": "M4/tracking_rank_horizon_grid.csv"
+  },
+  {
+    "figure": "05_equal_budget",
+    "source": "M3_primary_tables/primary_aggregate_metrics.csv + robust_aggregate_metrics.csv"
+  }
+]

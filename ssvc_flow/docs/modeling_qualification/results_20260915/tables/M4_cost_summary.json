@@ -1,0 +1,39 @@
+{
+  "status": "COMPLETED",
+  "source_hashes": {
+    "M2/manifest.json": "7a226ea43f8bbe2e5cef6f10a9ea4fc11f7ac788121a542044bb9414ad56f8cf",
+    "M2/summary.json": "e8dd397adaa76bdfcb5428900ed77f7caadb23b27ee28e69d8146ce8d3e24d44",
+    "M3_verified/selection.json": "d4c6e50f806a8d626d0d9ab8bdc7e48cf97901fa2b608573c3c94523203cf466",
+    "M4/summary.json": "82707f1f45c2d6ca56d608471e4d2806372830b5ab9c5ea9ded8f6b276526bd7",
+    "M4/cost_audit.json": "67ed0121b0cab68430a7072bc346958586dc66990871ad055abe60afc27663d2",
+    "M4/tracking_cpu_cost.csv": "5315ceb0ff22de1cd1191d702be2a2df799b6c9d21379868dcd7341a6b72aa76",
+    "M4/prediction_freeze.json": "199a109e2f177bd93cd2b5da5c6391f54ff86142cd5cd36f6e65593894eccc94",
+    "M4/tracking_windows.csv": "c13930704dba4b42fad4f8cea35d4d92f15fc123410efe3219d005b9bbfe44e4"
+  },
+  "original_evidence_unchanged": true,
+  "wall_seconds": 1.3334152079187334,
+  "new_observations": 0,
+  "new_training_steps": 0,
+  "replay_benchmark_rows": 60,
+  "allocated_cpu_cost_rows": 80,
+  "bank_budget_rows": 16,
+  "step_status_fix_impact": {
+    "original_status_counts": {
+      "EXCEEDS_MODEL_TOLERANCE": 151146,
+      "WITHIN_MODEL_TOLERANCE": 10134
+    },
+    "absolute_failure_hidden_by_unknown_rows": 0,
+    "any_possible_priority_affected_rows": 0,
+    "status": "NO_ORIGINAL_RESULT_ROWS_AFFECTED"
+  },
+  "measured_scope": "Fixed existing seed301 X_BASE anchor8 H16, frozen rules, n exact/16/64/256 noise0, three repeat reads/fits/predictions/writes",
+  "unmeasured_terms_are_not_zero": "M2 n-specific count generation and per-file write timings unavailable; measured aggregate totals are explicitly allocated",
+  "all_replay_hashes_repeat": true,
+  "frozen_model_selection_unchanged": true,
+  "no_cost_savings_claim_for_low_budget": true,
+  "main_abstract_result": "24 calibration panels + 1 refresh = 25 units > H16 dense 16; break-even H25 exceeds tested H16",
+  "output_limit_bytes": 5242880,
+  "output_bytes": 62753,
+  "low_budget_evidence_scope": "No matching M4 windows; M3 bank ablations use n64 main rule",
+  "source_script_sha256": "9c76c773116c8bd0b741ca7f97722b07475398ea2a21563d8ca547f0ededf30f"
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "name": "MODELING_AND_OBSERVATION_zh.md",
+    "bytes": 19503,
+    "sha256": "c2f20c5d961531dfe6be3aa1f31903575fc17a1ed9441759d2c6c409088e21bb",
+    "role": "prior_design_source_not_execution_state"
+  },
+  {
+    "name": "CODEX_CONTINUE_EXPERIMENTS_zh.md",
+    "bytes": 41319,
+    "sha256": "57d8b4916b2820ac25285154fc4bb77f6f9d061206ba125a6c70005bfc1a2521",
+    "role": "prior_design_source_not_execution_state"
+  },
+  {
+    "name": "RELATED_WORK_AUDIT_zh.md",
+    "bytes": 16899,
+    "sha256": "f118464e7892328d543a9dc44bb017ac1ab31e189f9163668e923856c1499734",
+    "role": "prior_design_source_not_execution_state"
+  }
+]
