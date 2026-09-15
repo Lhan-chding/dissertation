@@ -1,0 +1,29 @@
+{
+  "status": "REPORT_GENERATED",
+  "overall_decision": "RESOURCE_REVIEW_REQUIRED",
+  "fresh_cpu_status": "NOT_RUN",
+  "engineering_status": "BLOCKED",
+  "output_root": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/docs/modeling_contrast/results",
+  "outputs": {
+    "MODELING_DECISION_V2_zh.md": "f9c7b1d1f83e901fe76df221f247f5de0684bb765e05f583f864105d75f167f9",
+    "REVISED_IDEA_zh.md": "835040258fabad458f20397d8d9f1bf2277bcdafaa1655648085ca34b2411aeb",
+    "REAL_DATA_REQUIREMENTS_zh.md": "75de24692084b15862ac9b660bd6a29c5cf96347dfeaf2c4239ee6b77dcc25c2",
+    "IMPLEMENTATION_REPORT_zh.md": "a0bbfa9b44ade0d89f988a2338b5ddaf88ba0e0220c9dc077634539fcd4a0331",
+    "machine_readable_readiness.json": "1436578f07fb0974a3e8439e88fb73f33c36f0335ccb165471bd2bf18650c2aa",
+    "CPU_ACCEPTANCE_RESULTS_zh.md": "4603602a58a231c48cae5d7e0af722b970a658b0b3850f1b996eba0029dea907",
+    "REPORT_SOURCE_BINDING.json": "cf759cf34e2214aa4dee9d0392530d9413432b74624f705199b4ec0f8588ed61",
+    "DIAGNOSTIC_ISOLATION_SUMMARY.csv": "88c1726cfe84138da7c16a1742786315b177ea9a06296e873d4b995187a08dda",
+    "MEASUREMENT_COVARIANCE_AUDIT.json": "1d7c19da5f0f7ec37112971733744c21030f3722f18da6098fed307de3cca55b",
+    "OBSERVATION_COMPARISON.csv": "adb33a74beecbab63083803ba33b45da33fccc87d7961cf82471a564f99dd248",
+    "CONTRAST_PREDICTION_BY_SEED.csv": "2d301a5956484db876483895a1d9e2c97b4a4865a1a32848a1d8f9d193cb32a8",
+    "NONDEGENERATE_ABLATIONS.csv": "fcc115f66e7be217bf3479b34061594df8ce2dae11a1c72ef83e9f9d8a78f0e8",
+    "MODEL_SELECTION_LOCK.json": "559a1b513d49c1683e19155c4183cfc0c34daf92d0892c7fbfa46f6709c88645",
+    "COST_FRONTIER.csv": "460c797e69f47c7c1cfbf0df0de312f2b660ed057820f60e3c2aca6c75366918",
+    "N0_AUDIT_zh.md": "adcd5db68f3ba20b262f38f7dd08f414c2e0e4a424a96b8be511af4cc7ab85ff",
+    "MISSING_INPUTS.json": "249a73f5f44496efc834ea41484d4f72f2e98068922961c40ff55fb4b7a921c9",
+    "REPORT_FINALIZATION.json": "a4ab241d7566fd1e23cf9dd17ef6bbeba56a9e8348d7e3e8524a9ec39a30e9de",
+    "evidence/implementation/delivery_coverage.json": "f1e027ce1e56e4ab248aa3359c4d5ea3bf3f88c867b00f122f912eeb53bf7ebf"
+  },
+  "missing_input_count": 0,
+  "report_only_finalization": true
+}

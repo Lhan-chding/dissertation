@@ -1,0 +1,847 @@
+{
+  "status": "PASS",
+  "checked_at_utc": "2026-09-15T10:16:55.475051+00:00",
+  "scope": "pre-commit content verification; excludes this receipt itself",
+  "staged_file_count": 138,
+  "staged_payload_bytes": 114018187,
+  "report_manifest_verified_outputs": 18,
+  "frozen_source_hashes_verified": 47,
+  "frozen_lock_sha256": "559a1b513d49c1683e19155c4183cfc0c34daf92d0892c7fbfa46f6709c88645",
+  "allow_fresh_cpu": false,
+  "N4_actual_status": "NOT_RUN",
+  "old_module_diff_exit_code": 0,
+  "source_diff_check_exit_code": 0,
+  "whitespace_policy": "Original design Markdown hard line breaks and CRLF CSV evidence retained byte-for-byte; code/tests/config diff check passed.",
+  "secret_pattern_scan": "No private-key header or common GitHub/OpenAI credential token pattern found in staged scope; heuristic scan only.",
+  "errors": [],
+  "files": [
+    {
+      "path": "ssvc_flow/configs/modeling_contrast/protocol.json",
+      "size_bytes": 7432,
+      "sha256": "c15f7e6e955fa4de09ce2688cc24f41b032d4177eaa42379ef79d17c53df900c",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/.gitignore",
+      "size_bytes": 56,
+      "sha256": "2418e48e984f669b832edd30e19f261ce33f653dc85fd62cb4497ab4fd156912",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/README_zh.md",
+      "size_bytes": 3232,
+      "sha256": "337b4eb0e420fa2ee4cfee98b0d5dc8218524113062fafe85015430934e3724e",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/design/CODEX_MODELING_CONTRAST_V2_zh.md",
+      "size_bytes": 36576,
+      "sha256": "26ab102e1f970fe5ff2c15b9d3343878c158668143655c1d854fcd75d191ad03",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/design/CPU_ACCEPTANCE_CHECKLIST_zh.md",
+      "size_bytes": 5114,
+      "sha256": "d0743fe49591290126441291e026cfd1366c5229f6b86d1a21598caefefee1bb",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/design/MANIFEST.json",
+      "size_bytes": 2912,
+      "sha256": "15901116e3d2c94f2fa7562bf5cf7b81cefacf3a5b60955bfc2b939f915caa4b",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/design/README.md",
+      "size_bytes": 882,
+      "sha256": "73e17cb40f0a95f1475955bff2c04eb78734d280edea07d44620f2afb65c70b0",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/design/REVISED_IDEA_AND_THEORY_zh.md",
+      "size_bytes": 5288,
+      "sha256": "ba6ffbb6870ed7e51410551e1a74aaaf73e73cf34e4f4ddf20d2499e554dfa75",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/design/SOURCES_AND_NOVELTY_zh.md",
+      "size_bytes": 4871,
+      "sha256": "8886c0f561bded683a877f62e1b636cf39c74a1339b6116ca63497e3a2c51f55",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/design/START_HERE_FOR_CODEX.md",
+      "size_bytes": 3278,
+      "sha256": "8fa4c592db0cc7663d46159439198b0ab21a781c8becfc4d8d5ee9da11ea0095",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/design/evidence/SUMMARY_zh.md",
+      "size_bytes": 2564,
+      "sha256": "80fa08d023ea7fd134dc31e61e9b521e13bd2e128c99c8383b28fcbed4208696",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/design/evidence/auxiliary_response_independent.csv",
+      "size_bytes": 10948,
+      "sha256": "ce51e90590adc2647db10c672ed1f73be9501ae887db657c0c78c6f878590de6",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/design/evidence/basis_noise_angles.csv",
+      "size_bytes": 9993,
+      "sha256": "26097eba603e08e5620e5fa4e524c188ab59afc908da000f34f42cf452b35e92",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/design/evidence/degenerate_ablations.csv",
+      "size_bytes": 2626,
+      "sha256": "7cf71240e444bfe917d41de7f0f0351283b73e97da91baea446e365958db9bb0",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/design/evidence/error_sources_by_n.csv",
+      "size_bytes": 1010,
+      "sha256": "309283e8c0ecdc045df4094f2a88dda5cdff4f210aa92ce8bfb75df658f5fa19",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/design/evidence/parent_module_inventory.json",
+      "size_bytes": 2779,
+      "sha256": "5ab94c0e168e768af14489d78c546bc980e7f6b389a0c1cb6cd9ceb8bd1ee491",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/design/protocol.json",
+      "size_bytes": 7432,
+      "sha256": "c15f7e6e955fa4de09ce2688cc24f41b032d4177eaa42379ef79d17c53df900c",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/design/reference/reference_math.py",
+      "size_bytes": 6391,
+      "sha256": "a7483401e782c957befbdf2ed930a20b7754b513ec16eb525a933be76071661c",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/design/reference/test_reference_math.py",
+      "size_bytes": 8783,
+      "sha256": "5b662c64fa39704aeec6296fc7c8382ffd0a7eb9f04587d5e314513f6a70adfa",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/design/verification/reference_test_result.json",
+      "size_bytes": 837,
+      "sha256": "671cf8966a07e0c0693d12635c9e75c95af180a6e3d7646679dbfca80b4cadb2",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/design/verification/reference_tests.log",
+      "size_bytes": 3715,
+      "sha256": "63a6b07258f8554f193c08df59dba861aed84ca50b34d9b4d4ac815cb3aef5ca",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/CONTRAST_PREDICTION_BY_SEED.csv",
+      "size_bytes": 8897282,
+      "sha256": "2d301a5956484db876483895a1d9e2c97b4a4865a1a32848a1d8f9d193cb32a8",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/COST_FRONTIER.csv",
+      "size_bytes": 153387,
+      "sha256": "460c797e69f47c7c1cfbf0df0de312f2b660ed057820f60e3c2aca6c75366918",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/CPU_ACCEPTANCE_RESULTS_zh.md",
+      "size_bytes": 39723,
+      "sha256": "4603602a58a231c48cae5d7e0af722b970a658b0b3850f1b996eba0029dea907",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/DIAGNOSTIC_ISOLATION_SUMMARY.csv",
+      "size_bytes": 13278,
+      "sha256": "88c1726cfe84138da7c16a1742786315b177ea9a06296e873d4b995187a08dda",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/IMPLEMENTATION_REPORT_zh.md",
+      "size_bytes": 5751,
+      "sha256": "a0bbfa9b44ade0d89f988a2338b5ddaf88ba0e0220c9dc077634539fcd4a0331",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/MEASUREMENT_COVARIANCE_AUDIT.json",
+      "size_bytes": 152994,
+      "sha256": "1d7c19da5f0f7ec37112971733744c21030f3722f18da6098fed307de3cca55b",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/MISSING_INPUTS.json",
+      "size_bytes": 40,
+      "sha256": "249a73f5f44496efc834ea41484d4f72f2e98068922961c40ff55fb4b7a921c9",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/MODELING_DECISION_V2_zh.md",
+      "size_bytes": 29912,
+      "sha256": "f9c7b1d1f83e901fe76df221f247f5de0684bb765e05f583f864105d75f167f9",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/MODEL_SELECTION_LOCK.json",
+      "size_bytes": 1981137,
+      "sha256": "559a1b513d49c1683e19155c4183cfc0c34daf92d0892c7fbfa46f6709c88645",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/N0_AUDIT_zh.md",
+      "size_bytes": 116,
+      "sha256": "adcd5db68f3ba20b262f38f7dd08f414c2e0e4a424a96b8be511af4cc7ab85ff",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/NONDEGENERATE_ABLATIONS.csv",
+      "size_bytes": 9188267,
+      "sha256": "fcc115f66e7be217bf3479b34061594df8ce2dae11a1c72ef83e9f9d8a78f0e8",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/OBSERVATION_COMPARISON.csv",
+      "size_bytes": 13944734,
+      "sha256": "adb33a74beecbab63083803ba33b45da33fccc87d7961cf82471a564f99dd248",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/REAL_DATA_REQUIREMENTS_zh.md",
+      "size_bytes": 1497,
+      "sha256": "75de24692084b15862ac9b660bd6a29c5cf96347dfeaf2c4239ee6b77dcc25c2",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/REPORT_FINALIZATION.json",
+      "size_bytes": 3417,
+      "sha256": "a4ab241d7566fd1e23cf9dd17ef6bbeba56a9e8348d7e3e8524a9ec39a30e9de",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/REPORT_MANIFEST.json",
+      "size_bytes": 2237,
+      "sha256": "67f9f5e6f05bcd6228f6c3de377e913367bedd4a46c59466c6364546aded291b",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/REPORT_SOURCE_BINDING.json",
+      "size_bytes": 5637992,
+      "sha256": "cf759cf34e2214aa4dee9d0392530d9413432b74624f705199b4ec0f8588ed61",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/REVISED_IDEA_zh.md",
+      "size_bytes": 1001,
+      "sha256": "835040258fabad458f20397d8d9f1bf2277bcdafaa1655648085ca34b2411aeb",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/N0/MISSING_INPUTS.json",
+      "size_bytes": 40,
+      "sha256": "249a73f5f44496efc834ea41484d4f72f2e98068922961c40ff55fb4b7a921c9",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/N0/parent_integrity_audit.json",
+      "size_bytes": 146214,
+      "sha256": "dd978b55c0816e62f91f8ac09fb7af1b1820114cce079cf9882588f9ce648cae",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/N1/stage_result.json",
+      "size_bytes": 274,
+      "sha256": "6c08b84f93e901f1466e3dd46ac7695ae24e5d6560fbe5ad6829bb8ce89d2261",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/N2/stage_result.json",
+      "size_bytes": 1493,
+      "sha256": "50ec408b27f0edbc744efeccda0e8bb51170e45a97b6f32764b56ad1069b7355",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/N3/FRESH_RESOURCE_PROJECTION.json",
+      "size_bytes": 364875,
+      "sha256": "0e5acd7c2b998e1dd5dbf63c4f4122b7c40c3c4d8bc2aea45b31b838c1bce927",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/N3/MODEL_SELECTION_LOCK.json",
+      "size_bytes": 1981137,
+      "sha256": "559a1b513d49c1683e19155c4183cfc0c34daf92d0892c7fbfa46f6709c88645",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/N3/PAIRED_BOOTSTRAP.json",
+      "size_bytes": 575921,
+      "sha256": "47d1efbf78b0601344f960b432be8060d0f4b7e20b910c1f64fd9da21cbbba43",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/cpu_cost_audit/CPU_COST_BY_UNIT.csv",
+      "size_bytes": 23228536,
+      "sha256": "e99470b1edfb280b3e1bf07ef31c0127c005596011775ad6d8225aa11253d9e6",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/cpu_cost_audit/CPU_COST_SUMMARY.json",
+      "size_bytes": 46026,
+      "sha256": "0ac8b97009c69dd73a4132c780b11952cf51cf216c8b0ae6715275a096336809",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/implementation/NPZ_SAFETY_AUDIT.json",
+      "size_bytes": 603677,
+      "sha256": "e343dc1ec911eef7c6bb86f91f7ecfdfb0786383ce00791ea2c155a3a88a6a79",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/implementation/TOTAL_COST_AUDIT.json",
+      "size_bytes": 4539,
+      "sha256": "9546e9d5f84d8e7d6a4d706f711c682b62c6adab2b6bab3765c5f468ab6b7c89",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/implementation/delivery_coverage.json",
+      "size_bytes": 9000106,
+      "sha256": "f1e027ce1e56e4ab248aa3359c4d5ea3bf3f88c867b00f122f912eeb53bf7ebf",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/implementation/final_ruff.log",
+      "size_bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/implementation/final_tests.json",
+      "size_bytes": 928,
+      "sha256": "53ed594752514bdb66c853b1b8e8b2c99753e4ad60aac2b820e04addc870773a",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/implementation/final_tests.log",
+      "size_bytes": 260,
+      "sha256": "18b063772895ca078acba77dfcd02501049339a1a28566f250366bc7b92f9ad9",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/implementation/final_tests.xml",
+      "size_bytes": 31125,
+      "sha256": "7e349a82bf32c4b5ed583dde3fd5bf2dc103998df43c936554ce4c51f229c940",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/implementation/git_scope_review.json",
+      "size_bytes": 2464,
+      "sha256": "1027c6b82783c8644271cd2a5749ac917728c7998247d9fc72e6f4e87fca120d",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/implementation/regression/statistics_regression_receipt.json",
+      "size_bytes": 40167,
+      "sha256": "ac578a8f3b8f3f75fa792816dc6158977e73b39128ce8c624530df7a87b4b23b",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/implementation/regression_remaining/FAILURE_INVENTORY.json",
+      "size_bytes": 106100,
+      "sha256": "f1ef45ff09d571b8a37153f1810c58e747d4c5b84bfb05fa0eac65f47b190a32",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/implementation/regression_remaining/RESOURCE_RECONCILIATION.json",
+      "size_bytes": 11974,
+      "sha256": "26ad5bb5dfba013748a4fba8fd2449c393a1d2180b43dbc3601ac1ba606dd7e6",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/implementation/regression_remaining/SUMMARY.json",
+      "size_bytes": 3354,
+      "sha256": "41e69be3493ee57e00b30c2961fe9cd4123f6ba2f08d77c13ae3c540cd869ff1",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/recompute/FORWARD_REPLAY_RECEIPTS.json",
+      "size_bytes": 419766,
+      "sha256": "99714e8cfa4d075429e7c9d5174eee52c574a778a8478900e014123e1be49ee1",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/recompute/PROJECTION_AUDIT_SUMMARY.json",
+      "size_bytes": 412,
+      "sha256": "a83ae4d76edbaf63d2737b0c56882ec5e6541f3c6c22d9e49b88fbee56aeef66",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/recompute/RECOMPUTATION_SUMMARY.json",
+      "size_bytes": 2550,
+      "sha256": "eb0246097b1c7a3f81d36409a27ef6f0ca0f42ad24db83912985bbfe80277d47",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/selection_recompute/RECOMPUTATION_SUMMARY.json",
+      "size_bytes": 4015,
+      "sha256": "c417c58f7c390e5671795d02513a7ec91ef159b00cb80984e578721741356f3f",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/evidence/selection_recompute/RECOMPUTED_BOOTSTRAP.json",
+      "size_bytes": 397025,
+      "sha256": "6c511f4f85a30eda7a6af97db247474ba8147dcb643531fe98c1310cb79d6c7e",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/machine_readable_readiness.json",
+      "size_bytes": 9853180,
+      "sha256": "1436578f07fb0974a3e8439e88fb73f33c36f0335ccb165471bd2bf18650c2aa",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/n0_parent/legacy_diagnostics/independent_recompute_receipt.json",
+      "size_bytes": 362,
+      "sha256": "97b826f5b26e0626d407a298bd7c331b75bd8d9e3bb619effdf2624dc74231ea",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/n0_parent/legacy_diagnostics/nondegenerate_ablation.csv",
+      "size_bytes": 3517547,
+      "sha256": "bac3394c4c8f3f89dd27408ce76653264483a74d0c32682cd1a8ddc515f292f5",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/n0_parent/legacy_diagnostics/nondegenerate_ablation_by_target.csv",
+      "size_bytes": 9188267,
+      "sha256": "fcc115f66e7be217bf3479b34061594df8ce2dae11a1c72ef83e9f9d8a78f0e8",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/n0_parent/legacy_diagnostics/paired_contrast.csv",
+      "size_bytes": 8459816,
+      "sha256": "0fb03eb4d94f655252c42019623e1a14b6f71ee06378ea9873e79bde9913ddc1",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/n0_parent/legacy_diagnostics/state_fingerprint_audit.json",
+      "size_bytes": 4967735,
+      "sha256": "ab4dfd814d1b038921d66a94a5257c7e80b64be3653dae9728fd1e4c71ea53da",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/n0_parent/legacy_diagnostics/summary.json",
+      "size_bytes": 37334,
+      "sha256": "779a2fbe89ba028472686d152a24ba6a878329e19356e622827467da8b7c2643",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/n0_parent/legacy_diagnostics/target_recompute_receipt.json",
+      "size_bytes": 330,
+      "sha256": "c9967b60aa20bb5240c7227e7a8f07e2ef750abf012f8b2fd9157578b3cad523",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/n0_parent/legacy_predictions_audit.json",
+      "size_bytes": 530,
+      "sha256": "fb490d4c8d46400ba141e960674168a94b77b886ef88bdbcb33656f51325347a",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/n0_parent/parent_integrity_audit.json",
+      "size_bytes": 149326,
+      "sha256": "f513f1d2d98e4c394cdf5c67baae2162375d7e775d6f6c2959f29732ae17cc0a",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/n0_parent/parent_test_receipt.json",
+      "size_bytes": 1218,
+      "sha256": "db1ef2c5fd19d944d9b76f1dbdce7bb411a01a0fe54835072fb31c3aec77c032",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/n0_parent/tests_green.log",
+      "size_bytes": 99,
+      "sha256": "40bfd4344a3eb1c606998014b2da30a6e67c7e7643e444298223a1d22650e0c7",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/tests/EXECUTION_GUARDS_RECEIPT.json",
+      "size_bytes": 1907,
+      "sha256": "46e1c275a012a1ffb1f61161446db1a89b230859dfaa6484970e84f70e0984bc",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/tests/fresh_green.log",
+      "size_bytes": 99,
+      "sha256": "7610c788b785f7d340233d740fc00b53dd1c4bade1054bdae1b98a39ef43bb01",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/tests/fresh_red.log",
+      "size_bytes": 1099,
+      "sha256": "fd80a6265ac458b44ed89428fb02f696d276e658a3816880fe0f8371a6cbdd52",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/tests/guards_final_green.log",
+      "size_bytes": 99,
+      "sha256": "ac32a86ac518bd40c0a367b0c3d0b243ad6f87d4cc82f6881290cd771d564dfa",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/tests/guards_ruff_final.log",
+      "size_bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/tests/protocol_io_green.log",
+      "size_bytes": 98,
+      "sha256": "caf56757b18b52a7c892a24609a6f4ec6e8900c554da434531b573fc2a87250b",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/docs/modeling_contrast/results/tests/protocol_io_red.log",
+      "size_bytes": 1095,
+      "sha256": "4ddb81f12b665d5ada5826f3a96f4f27be82d7309b149db6398f3993d5140f58",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/__init__.py",
+      "size_bytes": 129,
+      "sha256": "21db6f9e321911bba1958572b0b960ee20794fd5c800d1af162064535641239f",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/c1_packets.py",
+      "size_bytes": 7518,
+      "sha256": "b2f05da2ce74cf474ee9b0a4d88688386deca92b19a151d42ceb2fbcd008339c",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/cli.py",
+      "size_bytes": 11544,
+      "sha256": "af522f3704f8cca03a76cec84dd490113220c19ea2f2b64b65cd5a36de62f7fb",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/collect_fresh.py",
+      "size_bytes": 13303,
+      "sha256": "274de8b2eda15013dc56800696365020f9cf625089b78225dd20c013581696d4",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/cost.py",
+      "size_bytes": 2144,
+      "sha256": "30a7cb03fc386e10aeaad2c59631adaf007b811a2997a6413a34b3ec402dddf2",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/cost_study.py",
+      "size_bytes": 14656,
+      "sha256": "f2809aff53f103c073e2bfd6a9f173854c4f37c0a11b9547e5661fc926a9280d",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/covariance.py",
+      "size_bytes": 6559,
+      "sha256": "89dadd13158237f339fdae574d85c19a1647c2d2d1a3df9628f48e3905635ff2",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/cpu_cost_audit.py",
+      "size_bytes": 22652,
+      "sha256": "ed16e6830b699d5902b09fde2ba1458168d21646de9ff6dd48df7e6b191448c9",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/estimators.py",
+      "size_bytes": 19142,
+      "sha256": "50b1b6bba3c9b80da678dd9330e65b08595019e524b5f4c6a9049d090dcf7c2f",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/evaluation.py",
+      "size_bytes": 14766,
+      "sha256": "77dce0415456ce7a864e04768f4b7c957b1f2dcec07c461203ca149a1197f84c",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/frozen_validation.py",
+      "size_bytes": 31014,
+      "sha256": "76b6d5b6accab500016170d91d0200e71b203d85f1e08059d972c2184a7e78fa",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/io.py",
+      "size_bytes": 9780,
+      "sha256": "e616f0120a9dbd435fd1c096794417e831724c7a1264be4fdaaaf65b8309d54b",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/joint_packets.py",
+      "size_bytes": 7532,
+      "sha256": "4ed32205dd3a8b933abf0dea2068b9811e3b10cc78f4671d08ff9b6f9dd86a10",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/ledger_audit.py",
+      "size_bytes": 6028,
+      "sha256": "d7dfe0f3b961373c5ac71d8d2c7a8c388aeac72d6ddba9825878959df41abc07",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/model_study.py",
+      "size_bytes": 11643,
+      "sha256": "e249edb633823301dff9206d78b5d6edcad0bd19fdd19d600c43f2aa5ef90fce",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/observation_study.py",
+      "size_bytes": 18163,
+      "sha256": "6e925c1678790e023061165f932431b7f98289b18c622bd6d630d58dae107967",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/observations.py",
+      "size_bytes": 32548,
+      "sha256": "63c2bd972c3029049c8ce6826f486522cefd90d2aeb4f0587f4334a746d3dc46",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/oracle_diagnostics.py",
+      "size_bytes": 17122,
+      "sha256": "887b10623edbdceb9168dd256ebec6172dbe8bc3f8d2c1dc50409ce041558f7b",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/packet_codec.py",
+      "size_bytes": 9097,
+      "sha256": "81e337d4a1737120a774f99564ed68a2e58d183bb3312ced19de2dd1d4e32aab",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/packet_reconstruction.py",
+      "size_bytes": 8988,
+      "sha256": "4d5f6b1b27b710d9a7c54577d0593919d9dac3fd3c3e469d194ea014321c3217",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/parent.py",
+      "size_bytes": 36857,
+      "sha256": "3b256246e14943bed53b03c42f6453b572a875c183c592d205cd7c36ee98d911",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/pipeline.py",
+      "size_bytes": 16050,
+      "sha256": "451f13f641626c2f07777f09b74c60f21562c0437ba0c6519b235befa41ce274",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/protocol.py",
+      "size_bytes": 4738,
+      "sha256": "a28a47318acd9d9e035d19ebe6b96ea3f007d100116dcdca33367573e03ffd98",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/recompute.py",
+      "size_bytes": 54957,
+      "sha256": "a1c14842ee4d7c11b57ab8726e3b83697f6c240a799ed50693891ba83019cdf4",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/report.py",
+      "size_bytes": 76322,
+      "sha256": "1f1490d112580a5c5ff08caa71161a2bfa98268291f5b41475c0fd323f6ba9d8",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/resources.py",
+      "size_bytes": 2627,
+      "sha256": "a128b45f28846af72341977bacd5af0ec96beaf32a0cbdd820504f39dca7b968",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/selection.py",
+      "size_bytes": 12558,
+      "sha256": "c4d7273a131eb3a9bae21769de8702c72185d79d9ee615817e55e2d6fdead15f",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/selection_driver.py",
+      "size_bytes": 30614,
+      "sha256": "5390f9b451b727bfac0e8abaec6319200b86ac9689c33b1ce94c9ece02bea282",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/selection_recompute.py",
+      "size_bytes": 24539,
+      "sha256": "cb825d56392999b062d4da1cb5f9bb19f5297acfc9a14f48256877e83b4d5d34",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/study.py",
+      "size_bytes": 9856,
+      "sha256": "0dd38ed65afcd3616bffa07443e2d3ebe3da9a3081489e2dc8cc1dc014d4bd9c",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/src/modeling_contrast/targets.py",
+      "size_bytes": 3726,
+      "sha256": "af7fa6160dc85619964312ab71effdad3f970ceb868694765a82bcace9c08539",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/tests/modeling_contrast/test_c1_packets.py",
+      "size_bytes": 4685,
+      "sha256": "b30ba8993f79970ee9958e3b304a1cc959b06f3e4773249aaa06b761e5f7cde6",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/tests/modeling_contrast/test_cost_study.py",
+      "size_bytes": 5801,
+      "sha256": "aa690aff9dbcbe5f70cc0bb249ea8bb5c5ce7ae43ede740514811c6431b3ef72",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/tests/modeling_contrast/test_covariance.py",
+      "size_bytes": 2857,
+      "sha256": "506f8223aecacd190f8ca05fe80602a5b81eb09e7f42523844d059c204ce34f8",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/tests/modeling_contrast/test_cpu_cost_audit.py",
+      "size_bytes": 5325,
+      "sha256": "a77e74916278e13e9c6a68d8ca2f59436ea2de7d4363423cc0642b858f782431",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/tests/modeling_contrast/test_estimators.py",
+      "size_bytes": 9914,
+      "sha256": "987f4a8a57595d437c553bd5f1e79ad878bbba3b478e12bebf6ca210a24dae98",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/tests/modeling_contrast/test_evaluation.py",
+      "size_bytes": 4837,
+      "sha256": "2857b0190f85dc3cadb3e29d807beaddf4ac09391df63e54ae0cfc4ba74b530d",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/tests/modeling_contrast/test_fresh.py",
+      "size_bytes": 7684,
+      "sha256": "c0bf80f30bcd3c2b3fb6ba7b86001670bb19ea3b9a0a437160a261d67083e6e3",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/tests/modeling_contrast/test_frozen_validation.py",
+      "size_bytes": 9298,
+      "sha256": "f7bcecb3f1bf7a781abd76b78703bcbfacc5c3649c091552ca1283b90fd86e39",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/tests/modeling_contrast/test_joint_packets.py",
+      "size_bytes": 3605,
+      "sha256": "46955226832d3040476f62e41914e6c6c569aeadb67c61a9e443cffe75d6e112",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/tests/modeling_contrast/test_ledger_audit.py",
+      "size_bytes": 1882,
+      "sha256": "377449f4a8d621da81e75373f89c64fb5c705d52321899978f0dacd500858b99",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/tests/modeling_contrast/test_model_study.py",
+      "size_bytes": 3216,
+      "sha256": "f9093e4507de88347561b093347808a00046ff4d1055f7a1d3f8f2445268d6a1",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/tests/modeling_contrast/test_observations.py",
+      "size_bytes": 9576,
+      "sha256": "7b3f50c63172d93cdd6a78266bf257244690d54caf4f02b9ab3794b2d1470fd6",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/tests/modeling_contrast/test_oracle_diagnostics.py",
+      "size_bytes": 3422,
+      "sha256": "58c257c9fb69b0ed1b5b7031eec7f2ea4c037b21c006268017cb91ff1327bcb0",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/tests/modeling_contrast/test_packet_codec.py",
+      "size_bytes": 2745,
+      "sha256": "78e4294c630b52e91b890ce1e1de18371a6ed5777b4e41d4dd1893de8c633d79",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/tests/modeling_contrast/test_packet_reconstruction.py",
+      "size_bytes": 3963,
+      "sha256": "770a3f65cfea432ed543e5b499d4442ef9d1a3c67e483774367165ce8e77c617",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/tests/modeling_contrast/test_parent.py",
+      "size_bytes": 7257,
+      "sha256": "a1422888a953f15c974facca060757d2a3d8395a7625b2387a5b3e205fbe8035",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/tests/modeling_contrast/test_protocol_io.py",
+      "size_bytes": 5257,
+      "sha256": "c608d497d90f4ef75521649986066aac4c2ee730b1004c401aa5bcc768f3d2bc",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/tests/modeling_contrast/test_recompute.py",
+      "size_bytes": 17453,
+      "sha256": "c97f703665b3de925784e4c1f375b1bf5c0ce8d9f2b26ec91bd231932cdf3fd5",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/tests/modeling_contrast/test_report.py",
+      "size_bytes": 16750,
+      "sha256": "3c17d22ef73c41c6e82ecc772d23f700d3c56474aa76a892125f63eaaab527d7",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/tests/modeling_contrast/test_selection.py",
+      "size_bytes": 6229,
+      "sha256": "4f95e10bef3a16412e4cb3a3fae3f95996ca62ebb75294908743595e80aaca2f",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/tests/modeling_contrast/test_selection_driver.py",
+      "size_bytes": 9860,
+      "sha256": "f60b51ddbf17fb46c4593aa761064d4fe5e9a86cdffabbb2c9c96c2373a38072",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/tests/modeling_contrast/test_selection_recompute.py",
+      "size_bytes": 2818,
+      "sha256": "bc3406aae48e8573e5b7da74f583ef9c9cbded860adf083bc7a1d3d278c9a6e7",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/tests/modeling_contrast/test_study.py",
+      "size_bytes": 1831,
+      "sha256": "114c79a4052ff37bc98b5781281b0e7568ca39903d477bfb6bd6927347913965",
+      "staged_bytes_identical": true
+    },
+    {
+      "path": "ssvc_flow/tests/modeling_contrast/test_targets.py",
+      "size_bytes": 2109,
+      "sha256": "5a155b93886877db059194c5a16d44c26bfdf93efd4f332029fa71e267cbf6ce",
+      "staged_bytes_identical": true
+    }
+  ]
+}

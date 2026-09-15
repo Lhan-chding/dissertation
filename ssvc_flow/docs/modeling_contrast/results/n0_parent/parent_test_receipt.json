@@ -1,0 +1,23 @@
+{
+  "red": {
+    "command": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python -m pytest tests/modeling_contrast/test_parent.py -q",
+    "actual_exit_code": 2,
+    "actual_result": "collection error: ModuleNotFoundError: No module named src.modeling_contrast.parent",
+    "original_cases": 8,
+    "evidence": "actual exec output recorded in this agent turn before parent.py was created"
+  },
+  "green": {
+    "command": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python -m pytest tests/modeling_contrast/test_parent.py -q",
+    "actual_exit_code": 0,
+    "log": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/docs/modeling_contrast/results/n0_parent/tests_green.log",
+    "cases": 10
+  },
+  "lint": {
+    "command": "python -m ruff check src/modeling_contrast/parent.py tests/modeling_contrast/test_parent.py --output-format concise",
+    "actual_result": "All checks passed!"
+  },
+  "source_sha256": {
+    "src/modeling_contrast/parent.py": "3b256246e14943bed53b03c42f6453b572a875c183c592d205cd7c36ee98d911",
+    "tests/modeling_contrast/test_parent.py": "a1422888a953f15c974facca060757d2a3d8395a7625b2387a5b3e205fbe8035"
+  }
+}

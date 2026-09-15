@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "prediction_rows_verified_from_raw_npz": 8640,
+  "original_oracle_hashes_verified": 60,
+  "max_group_error_ss_recompute_difference": 1.3877787807814457e-17,
+  "zero_prediction_rows": 720,
+  "zero_prediction_rows_with_nonzero_exact_contrast": 0,
+  "source_code_sha256": "6a0ec6dbc5e20f685bde594137ed7c70275b0cbcfe252389dff95bb506421c04"
+}

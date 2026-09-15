@@ -1,0 +1,35 @@
+{
+  "implementation_files": {
+    "src/modeling_contrast/protocol.py": "a28a47318acd9d9e035d19ebe6b96ea3f007d100116dcdca33367573e03ffd98",
+    "src/modeling_contrast/io.py": "72b9b594b0c7d5a8804129997cccc93c5135195c6b3f50f0aaea721c1d5ac6b6",
+    "src/modeling_contrast/collect_fresh.py": "9bc029127fa8ff17dc7d963f81b8bf8c5e8ab46d48941a35eccf56e052bdb2e8",
+    "src/modeling_contrast/__init__.py": "21db6f9e321911bba1958572b0b960ee20794fd5c800d1af162064535641239f",
+    "tests/modeling_contrast/test_protocol_io.py": "7d1f0a4c1cf1a7f75b16c64cf317137c047b5ac126d140f2b14ab681ecdfef42",
+    "tests/modeling_contrast/test_fresh.py": "fba1f8bbd6f40f07f62fc33ae0598b5d8cf3da0333d150cf0518ae00ca17e25a"
+  },
+  "test_logs": {
+    "docs/modeling_contrast/results/tests/fresh_green.log": "7610c788b785f7d340233d740fc00b53dd1c4bade1054bdae1b98a39ef43bb01",
+    "docs/modeling_contrast/results/tests/fresh_red.log": "fd80a6265ac458b44ed89428fb02f696d276e658a3816880fe0f8371a6cbdd52",
+    "docs/modeling_contrast/results/tests/guards_final_green.log": "ac32a86ac518bd40c0a367b0c3d0b243ad6f87d4cc82f6881290cd771d564dfa",
+    "docs/modeling_contrast/results/tests/guards_ruff_final.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "docs/modeling_contrast/results/tests/protocol_io_green.log": "caf56757b18b52a7c892a24609a6f4ec6e8900c554da434531b573fc2a87250b",
+    "docs/modeling_contrast/results/tests/protocol_io_red.log": "4ddb81f12b665d5ada5826f3a96f4f27be82d7309b149db6398f3993d5140f58"
+  },
+  "tests": {
+    "passed": 21,
+    "failed": 0,
+    "log": "guards_final_green.log"
+  },
+  "ruff": {
+    "status": "PASS",
+    "log": "guards_ruff_final.log"
+  },
+  "RED": [
+    "protocol_io_red.log",
+    "fresh_red.log"
+  ],
+  "new_cpu_training_trajectories": 0,
+  "new_qwen_calls": 0,
+  "new_gpu_calls": 0,
+  "fresh_gate_runtime": "Only gate and rejection tests; no new collector invocation"
+}

@@ -1,0 +1,236 @@
+{
+  "per_file_last_observation": {
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_chat_eos.resources.json": {
+      "self_peak_rss_bytes": 253181952,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_data_contact_sheets.resources.json": {
+      "self_peak_rss_bytes": 93323264,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_final_fact_record.resources.json": {
+      "self_peak_rss_bytes": 113541120,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_backend.resources.json": {
+      "self_peak_rss_bytes": 335675392,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_cli.resources.json": {
+      "self_peak_rss_bytes": 317833216,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.resources.json": {
+      "self_peak_rss_bytes": 69468160,
+      "finished_children_peak_rss_bytes": 21921792
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_parent.resources.json": {
+      "self_peak_rss_bytes": 54018048,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_protocol.resources.json": {
+      "self_peak_rss_bytes": 53280768,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_runtime.resources.json": {
+      "self_peak_rss_bytes": 313278464,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_statistics.resources.json": {
+      "self_peak_rss_bytes": 65634304,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_train.resources.json": {
+      "self_peak_rss_bytes": 312688640,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_updates.resources.json": {
+      "self_peak_rss_bytes": 311083008,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_fork_gradients.resources.json": {
+      "self_peak_rss_bytes": 310034432,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_frozen_adapter.resources.json": {
+      "self_peak_rss_bytes": 416301056,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_frozen_comparison.resources.json": {
+      "self_peak_rss_bytes": 56868864,
+      "finished_children_peak_rss_bytes": 4308992
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_frozen_metrics.resources.json": {
+      "self_peak_rss_bytes": 125976576,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_frozen_report.resources.json": {
+      "self_peak_rss_bytes": 191528960,
+      "finished_children_peak_rss_bytes": 4374528
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_frozen_runtime.resources.json": {
+      "self_peak_rss_bytes": 488783872,
+      "finished_children_peak_rss_bytes": 4358144
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_legacy_audit.resources.json": {
+      "self_peak_rss_bytes": 58818560,
+      "finished_children_peak_rss_bytes": 29245440
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_legacy_frozen.resources.json": {
+      "self_peak_rss_bytes": 55869440,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_model_contract.resources.json": {
+      "self_peak_rss_bytes": 224706560,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_model_smoke.resources.json": {
+      "self_peak_rss_bytes": 310329344,
+      "finished_children_peak_rss_bytes": 42074112
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_model_torch.resources.json": {
+      "self_peak_rss_bytes": 310099968,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_next_stage_cpu.resources.json": {
+      "self_peak_rss_bytes": 66158592,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_next_stage_preflight.resources.json": {
+      "self_peak_rss_bytes": 65945600,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_next_stage_reference.resources.json": {
+      "self_peak_rss_bytes": 59457536,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_next_stage_runtime.resources.json": {
+      "self_peak_rss_bytes": 67796992,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_ntu_batch.resources.json": {
+      "self_peak_rss_bytes": 61014016,
+      "finished_children_peak_rss_bytes": 19873792
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_ntu_frozen_batch.resources.json": {
+      "self_peak_rss_bytes": 53362688,
+      "finished_children_peak_rss_bytes": 19300352
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_prefix_likelihood.resources.json": {
+      "self_peak_rss_bytes": 272941056,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r1_parity.resources.json": {
+      "self_peak_rss_bytes": 225755136,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r1_reference_smoke.resources.json": {
+      "self_peak_rss_bytes": 312197120,
+      "finished_children_peak_rss_bytes": 4341760
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r1_runtime.resources.json": {
+      "self_peak_rss_bytes": 221085696,
+      "finished_children_peak_rss_bytes": 19742720
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r1_supplement.resources.json": {
+      "self_peak_rss_bytes": 314687488,
+      "finished_children_peak_rss_bytes": 5373952
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r2_inputs.resources.json": {
+      "self_peak_rss_bytes": 220807168,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r2_result_audit.resources.json": {
+      "self_peak_rss_bytes": 73973760,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r2_runtime.resources.json": {
+      "self_peak_rss_bytes": 231538688,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_gate.resources.json": {
+      "self_peak_rss_bytes": 391299072,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_inputs.resources.json": {
+      "self_peak_rss_bytes": 55246848,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_report_gate.resources.json": {
+      "self_peak_rss_bytes": 159268864,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_response.resources.json": {
+      "self_peak_rss_bytes": 65044480,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_runtime.resources.json": {
+      "self_peak_rss_bytes": 225787904,
+      "finished_children_peak_rss_bytes": 4341760
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_updates.resources.json": {
+      "self_peak_rss_bytes": 310034432,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_gate.resources.json": {
+      "self_peak_rss_bytes": 229163008,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_response.resources.json": {
+      "self_peak_rss_bytes": 81084416,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_runtime.resources.json": {
+      "self_peak_rss_bytes": 227573760,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation.resources.json": {
+      "self_peak_rss_bytes": 60375040,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_cli.resources.json": {
+      "self_peak_rss_bytes": 62783488,
+      "finished_children_peak_rss_bytes": 20021248
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_gate.resources.json": {
+      "self_peak_rss_bytes": 229163008,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_runtime.resources.json": {
+      "self_peak_rss_bytes": 228917248,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_cumulative_continuation.resources.json": {
+      "self_peak_rss_bytes": 53559296,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.resources.json": {
+      "self_peak_rss_bytes": 311312384,
+      "finished_children_peak_rss_bytes": 5734400
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.resources.json": {
+      "self_peak_rss_bytes": 58146816,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_metrics.resources.json": {
+      "self_peak_rss_bytes": 66600960,
+      "finished_children_peak_rss_bytes": 60751872
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_recursive_gate.resources.json": {
+      "self_peak_rss_bytes": 229441536,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_report_gate.resources.json": {
+      "self_peak_rss_bytes": 149684224,
+      "finished_children_peak_rss_bytes": 0
+    },
+    "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_runtime.resources.json": {
+      "self_peak_rss_bytes": 304693248,
+      "finished_children_peak_rss_bytes": 4308992
+    }
+  },
+  "max_observed_self_rss_bytes": 488783872,
+  "max_observed_self_plus_finished_child_high_water_bytes": 493142016,
+  "measurement_limit": "First file unmeasured. Current/final child thread snapshot measures cumulative self and completed children high-water; live process-tree enumeration denied by macOS sandbox. No claim of exact simultaneous process-tree peak. All monitored runs below thresholds.",
+  "first_driver_interruption": "PermissionError: [Errno 1] Operation not permitted (originated from sysctl() malloc 1/3), psutil.children(recursive=True); pytest child completed; preserved log and JUnit, no repeat."
+}

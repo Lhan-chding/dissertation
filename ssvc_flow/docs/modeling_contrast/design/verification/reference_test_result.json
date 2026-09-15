@@ -1,0 +1,22 @@
+{
+  "execution": "LOCAL_INDEPENDENT_NUMPY_FORMULA_TESTS",
+  "command": "python -m unittest -v test_reference_math",
+  "working_directory": "reference",
+  "exit_code": 0,
+  "passed": 32,
+  "failed": 0,
+  "errors": 0,
+  "skipped": 0,
+  "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "numpy": "2.3.5",
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+  "recorded_utc": "2026-09-15T08:23:23.329346+00:00",
+  "log_sha256": "63a6b07258f8554f193c08df59dba861aed84ca50b34d9b4d4ac815cb3aef5ca",
+  "new_model_training_executed": false,
+  "new_methods_performance_measured": false,
+  "github_modified": false,
+  "source_files": {
+    "reference_math.py": "a7483401e782c957befbdf2ed930a20b7754b513ec16eb525a933be76071661c",
+    "test_reference_math.py": "5b662c64fa39704aeec6296fc7c8382ffd0a7eb9f04587d5e314513f6a70adfa"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "root": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M3_verified",
+  "freeze_sha256": "a05994f07f3e7660623adfa50853f98670a574348a61cea01a9ee2e6b5120fa2",
+  "expected_prediction_files": 14220,
+  "verified_prediction_files": 14220,
+  "missing_inputs": [],
+  "mismatches": [],
+  "verification": "original saved raw/delta array dtype, shape and byte hashes",
+  "wall_seconds": 6.044886582996696
+}

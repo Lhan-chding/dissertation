@@ -1,0 +1,16 @@
+
+==================================== ERRORS ====================================
+____________ ERROR collecting tests/modeling_contrast/test_fresh.py ____________
+ImportError while importing test module '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/tests/modeling_contrast/test_fresh.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/Users/louis/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/modeling_contrast/test_fresh.py:8: in <module>
+    from src.modeling_contrast.collect_fresh import (
+E   ModuleNotFoundError: No module named 'src.modeling_contrast.collect_fresh'
+=========================== short test summary info ============================
+ERROR tests/modeling_contrast/test_fresh.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.10s

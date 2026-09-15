@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "target_rows": 17280,
+  "path": "docs/modeling_contrast/results/n0_parent/legacy_diagnostics/nondegenerate_ablation_by_target.csv",
+  "sha256": "fcc115f66e7be217bf3479b34061594df8ce2dae11a1c72ef83e9f9d8a78f0e8",
+  "source_table_sha256": "bac3394c4c8f3f89dd27408ce76653264483a74d0c32682cd1a8ddc515f292f5"
+}

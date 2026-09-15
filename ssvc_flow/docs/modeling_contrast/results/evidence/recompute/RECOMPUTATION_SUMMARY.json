@@ -1,0 +1,91 @@
+{
+  "status": "PASS",
+  "checks": {
+    "N1": {
+      "status": "PASS",
+      "matched_rows": 24192
+    },
+    "N1_final": {
+      "status": "PASS",
+      "matched_rows": 24192
+    },
+    "N2A": {
+      "status": "PASS",
+      "matched_rows": 71217
+    },
+    "N2B": {
+      "status": "PASS",
+      "matched_rows": 19096
+    },
+    "N2C": {
+      "status": "PASS",
+      "matched_rows": 294624
+    },
+    "N2E": {
+      "status": "PASS",
+      "matched_rows": 41888
+    },
+    "N2_final_metrics": {
+      "status": "PASS",
+      "matched_rows": 454105
+    },
+    "N2_aggregate": {
+      "status": "PASS",
+      "matched_rows": 1284
+    },
+    "N2_by_seed": {
+      "status": "PASS",
+      "matched_rows": 21840
+    },
+    "N2D": {
+      "status": "PASS",
+      "matched_rows": 20736
+    }
+  },
+  "not_run": [],
+  "errors": [],
+  "maximum_reported_errors": 200,
+  "absolute_tolerance": 1e-12,
+  "scalar_or_array_comparisons": 13352984,
+  "max_absolute_difference": 6.661338147750939e-16,
+  "model_forward_calls": 988,
+  "jacobian_calls": 0,
+  "sampling_calls": 0,
+  "optimizer_updates": 0,
+  "additional_frozen_cpu_verification_cost": {
+    "batched_model_forward_calls": 988,
+    "physical_policy_forwards": 71136,
+    "complete_action_score_values": 1138176,
+    "forward_seconds": 0.10494342306628823,
+    "optimizer_updates": 0
+  },
+  "elapsed_seconds": 409.4718645410612,
+  "coverage_manifest_sha256": "ec94c7a3850df873690cc59a0103bcabb7060067f13033dcb694fb55c8830578",
+  "projection_audit": {
+    "units": 360,
+    "raw_prediction_arrays": 76380,
+    "prompt_contrast_rows": 43994880,
+    "invalid_level_rows": 19278,
+    "negative_components": 20913,
+    "sparse_artifact_bytes": 54173654
+  },
+  "N1_covariance_recovery": {
+    "status": "PASS",
+    "unique_unscaled_joint_raw_covariances": 2016,
+    "matched_raw_and_helmert_variance_rows": 24192,
+    "new_full_action_tables": 988,
+    "independent_contribution_moment_formulas": true,
+    "action_distribution_inferred_from_four_events": false,
+    "forward_replay_receipts_sha256": "99714e8cfa4d075429e7c9d5174eee52c574a778a8478900e014123e1be49ee1"
+  },
+  "independence": {
+    "production_score_helpers_called": false,
+    "paid_packet_reconstruction_reused": true,
+    "prediction_files_modified": false,
+    "parent_files_modified": false
+  },
+  "coverage_limits": [
+    "N1 interval/cost/label-status metadata is outside this point-estimate and covariance-trace table verification.",
+    "N2D is independently scored as an oracle diagnostic and remains outside the main ranking."
+  ]
+}

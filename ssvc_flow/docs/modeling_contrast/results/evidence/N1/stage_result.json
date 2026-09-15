@@ -1,0 +1,19 @@
+{
+  "status": "COMPLETE",
+  "trajectories": 12,
+  "anchors": 36,
+  "methods": [
+    "O_IND",
+    "O_CRN",
+    "O_LR_ORIGIN",
+    "O_LR_MIX"
+  ],
+  "n": [
+    16,
+    64,
+    256
+  ],
+  "noise_replicas": 8,
+  "wall_seconds": 629.2153565000044,
+  "new_optimizer_updates": 0
+}

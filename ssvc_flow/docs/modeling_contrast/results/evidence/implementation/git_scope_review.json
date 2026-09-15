@@ -1,0 +1,27 @@
+{
+  "schema_version": "contrast-git-scope-v1",
+  "status": "PASS",
+  "worktree": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915",
+  "branch": "codex/ssvc-modeling-contrast-v2-20260915",
+  "parent_commit": "c71c60b4dad2d4432869eb195bb82069ebde374f",
+  "independent_worktree": true,
+  "unrelated_changes_preserved": true,
+  "historical_sources_unchanged": true,
+  "reviewed_paths": [
+    "ssvc_flow/src/modeling_contrast",
+    "ssvc_flow/tests/modeling_contrast",
+    "ssvc_flow/configs/modeling_contrast",
+    "ssvc_flow/docs/modeling_contrast"
+  ],
+  "evidence_files": {
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/implementation/worktree_status.txt": "e183e2fd3326e4c8042ccceb9f49ee27bde96f5ad1b49a51d1aaa0ced08eb838",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/implementation/worktree_branch.txt": "334f9bf418098a82d2ad81e5f97bdd5f825cceed5fd1aa2a1be7910cefe99fab",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/implementation/worktree_head.txt": "5b462e73420ce1a11db1b368160dbfcf467f509bf7a9fe2c88bf2c62557c2ccd",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/implementation/original_status.txt": "694e1be503b9421309b9e3995c53bc332fd7f140bcd205e61b52504191b6c96e",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/implementation/original_branch.txt": "0e3d337956cd6236a9a8fde4506ef1a2d24c9a6277bff4fec7f49f97bc1e6b0b",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/implementation/original_head.txt": "4f0fd7d0c5581370fd6a4a1b865f6d3d5ac8440e714476e6a188baf52bcfac6c",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/implementation/historical_sources_diff.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "original_dirty_work_remains_present": true,
+  "review_scope": "independent new worktree and old sources; final staged diff also reviewed before commit"
+}

@@ -1,0 +1,1726 @@
+{
+  "failures": [
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_audit_r0_remaining.xml",
+      "test": "tests.test_audit_r0_remaining::test_hash_selection_and_reuse_manifest",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/calibration.jsonl'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_audit_r0_remaining.xml",
+      "test": "tests.test_audit_r0_remaining::test_symbolic_prompt_no_undeclared_labels",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/calibration.jsonl'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_backend.xml",
+      "test": "tests.test_followup_backend::test_diagnostic_panel_uses_actual_r2_three_conditions",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_backend.xml",
+      "test": "tests.test_followup_backend::test_s2_load_wires_real_seed17_schedule_and_extended_initial_state",
+      "kind": "failure",
+      "message": "FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_backend.xml",
+      "test": "tests.test_followup_backend::test_s1_load_wires_actual_selected_bank_api",
+      "kind": "failure",
+      "message": "FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_backend.xml",
+      "test": "tests.test_followup_backend::test_prepare_server_plan_positive_wiring_rechecks_parent_and_no_weights",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_fixed_banks_composite_preserve_original_rows[0]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_fixed_banks_composite_preserve_original_rows[3]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_fixed_banks_composite_preserve_original_rows[4]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_fixed_banks_composite_preserve_original_rows[5]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_fixed_banks_composite_preserve_original_rows[11]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_fixed_banks_composite_preserve_original_rows[composite]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_bank_rejects_integrity_binding_and_leakage_faults[duplicate]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_bank_rejects_integrity_binding_and_leakage_faults[missing]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_bank_rejects_integrity_binding_and_leakage_faults[sample_index]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_bank_rejects_integrity_binding_and_leakage_faults[origin]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_bank_rejects_integrity_binding_and_leakage_faults[model]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_bank_rejects_integrity_binding_and_leakage_faults[parser]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_bank_rejects_integrity_binding_and_leakage_faults[prepared]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_bank_rejects_integrity_binding_and_leakage_faults[image]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_bank_rejects_integrity_binding_and_leakage_faults[tokens]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_bank_rejects_integrity_binding_and_leakage_faults[old]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_bank_rejects_integrity_binding_and_leakage_faults[nan]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_bank_rejects_integrity_binding_and_leakage_faults[hash]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_bank_rejects_integrity_binding_and_leakage_faults[control]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_bank_rejects_integrity_binding_and_leakage_faults[data]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_bank_rejects_integrity_binding_and_leakage_faults[category]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_bank_rejects_integrity_binding_and_leakage_faults[bool_index]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_bank_rejects_integrity_binding_and_leakage_faults[tokenized]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_bank_selection_does_not_use_new_outcomes",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_missing_raw_rejected",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_seed17_exact_and_new_seed_schedules_deterministic",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/train.jsonl'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_inputs.xml",
+      "test": "tests.test_followup_inputs::test_prepared_attachment_checks_actual_tensor_bytes",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_parent.xml",
+      "test": "tests.test_followup_parent::test_directory_and_zip_metadata_audit_never_promote_raw",
+      "kind": "failure",
+      "message": "FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_parent.xml",
+      "test": "tests.test_followup_parent::test_origin_cannot_be_overridden_by_caller",
+      "kind": "failure",
+      "message": "FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914/02_data/R3_warm",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_parent.xml",
+      "test": "tests.test_followup_parent::test_metadata_schema_and_cross_file_binding_rejects_tampering[phase]",
+      "kind": "failure",
+      "message": "FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914/02_data/R3_warm",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_parent.xml",
+      "test": "tests.test_followup_parent::test_metadata_schema_and_cross_file_binding_rejects_tampering[step]",
+      "kind": "failure",
+      "message": "FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914/02_data/R3_warm",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_parent.xml",
+      "test": "tests.test_followup_parent::test_metadata_schema_and_cross_file_binding_rejects_tampering[model]",
+      "kind": "failure",
+      "message": "FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914/02_data/R3_warm",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_parent.xml",
+      "test": "tests.test_followup_parent::test_metadata_schema_and_cross_file_binding_rejects_tampering[B]",
+      "kind": "failure",
+      "message": "FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914/02_data/R3_warm",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_parent.xml",
+      "test": "tests.test_followup_parent::test_metadata_schema_and_cross_file_binding_rejects_tampering[K]",
+      "kind": "failure",
+      "message": "FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914/02_data/R3_warm",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_parent.xml",
+      "test": "tests.test_followup_parent::test_metadata_schema_and_cross_file_binding_rejects_tampering[plan]",
+      "kind": "failure",
+      "message": "FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914/02_data/R3_warm",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_parent.xml",
+      "test": "tests.test_followup_parent::test_metadata_schema_and_cross_file_binding_rejects_tampering[identity]",
+      "kind": "failure",
+      "message": "FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914/02_data/R3_warm",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_parent.xml",
+      "test": "tests.test_followup_parent::test_metadata_schema_and_cross_file_binding_rejects_tampering[composition]",
+      "kind": "failure",
+      "message": "FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914/02_data/R3_warm",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_parent.xml",
+      "test": "tests.test_followup_parent::test_parent_integer_contract_rejects_float_aliases[R3-B-4.0]",
+      "kind": "failure",
+      "message": "FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914/02_data/R3_warm",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_parent.xml",
+      "test": "tests.test_followup_parent::test_parent_integer_contract_rejects_float_aliases[R3-K-8.0]",
+      "kind": "failure",
+      "message": "FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914/02_data/R3_warm",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_followup_parent.xml",
+      "test": "tests.test_followup_parent::test_parent_integer_contract_rejects_float_aliases[R4-seed-17.0]",
+      "kind": "failure",
+      "message": "FileNotFoundError: Parent metadata path does not exist: /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/reports/SSVC_GPT_PRO_DELIVERY_20260914/02_data/R3_warm",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r2_inputs.xml",
+      "test": "tests.test_r2_inputs::test_operation_intervention_removes_exactly_one_line",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/calibration.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r2_inputs.xml",
+      "test": "tests.test_r2_inputs::test_original_conditions_and_truth_leakage",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/calibration.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r2_inputs.xml",
+      "test": "tests.test_r2_inputs::test_clear_image_only_oracle_and_unknown",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/calibration.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r2_inputs.xml",
+      "test": "tests.test_r2_inputs::test_image_only_omits_observation_and_cue_from_prompt_identity",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/calibration.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r2_inputs.xml",
+      "test": "tests.test_r2_inputs::test_panel_is_hash_selected_balanced_and_order_independent",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/calibration.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r2_inputs.xml",
+      "test": "tests.test_r2_inputs::test_request_counts_identity_and_long_reuse",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/calibration.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r2_inputs.xml",
+      "test": "tests.test_r2_inputs::test_panel_artifacts_record_real_diffs_and_hashes",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/calibration.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r2_runtime.xml",
+      "test": "tests.test_r2_runtime::test_full_fixture_interrupt_resume_and_manifest_are_honest",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/calibration.jsonl'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_gate.xml",
+      "test": "tests.test_r3_gate::test_completed_bound_cold_evidence_accepts_without_reuse",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_gate.xml",
+      "test": "tests.test_r3_gate::test_resealed_stage_cannot_hide_broken_cold_gate[origin]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_gate.xml",
+      "test": "tests.test_r3_gate::test_resealed_stage_cannot_hide_broken_cold_gate[duplicate]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_gate.xml",
+      "test": "tests.test_r3_gate::test_resealed_stage_cannot_hide_broken_cold_gate[replay]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_gate.xml",
+      "test": "tests.test_r3_gate::test_resealed_stage_cannot_hide_broken_cold_gate[counts]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_gate.xml",
+      "test": "tests.test_r3_gate::test_resealed_stage_cannot_hide_broken_cold_gate[gate]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_gate.xml",
+      "test": "tests.test_r3_gate::test_resealed_stage_cannot_hide_broken_cold_gate[missing_sample]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_gate.xml",
+      "test": "tests.test_r3_gate::test_resealed_incomplete_or_inconsistent_raw_rollout_is_rejected[missing_raw]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_gate.xml",
+      "test": "tests.test_r3_gate::test_resealed_incomplete_or_inconsistent_raw_rollout_is_rejected[raw_decode]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_gate.xml",
+      "test": "tests.test_r3_gate::test_resealed_incomplete_or_inconsistent_raw_rollout_is_rejected[old_logp]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_gate.xml",
+      "test": "tests.test_r3_gate::test_resealed_incomplete_or_inconsistent_raw_rollout_is_rejected[behavior_logp]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_gate.xml",
+      "test": "tests.test_r3_gate::test_resealed_incomplete_or_inconsistent_raw_rollout_is_rejected[category]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_gate.xml",
+      "test": "tests.test_r3_gate::test_resealed_incomplete_or_inconsistent_raw_rollout_is_rejected[input_hash]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_gate.xml",
+      "test": "tests.test_r3_gate::test_resealed_incomplete_or_inconsistent_raw_rollout_is_rejected[prompt_ids]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_gate.xml",
+      "test": "tests.test_r3_gate::test_resealed_incomplete_or_inconsistent_raw_rollout_is_rejected[prepared_hash]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_gate.xml",
+      "test": "tests.test_r3_gate::test_resealed_incomplete_or_inconsistent_raw_rollout_is_rejected[missing_vision]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_gate.xml",
+      "test": "tests.test_r3_gate::test_resealed_candidate_must_bind_the_same_32_frozen_rollouts[candidate_sample_hash]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_gate.xml",
+      "test": "tests.test_r3_gate::test_resealed_candidate_must_bind_the_same_32_frozen_rollouts[candidate_bank_hash]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_gate.xml",
+      "test": "tests.test_r3_gate::test_resealed_candidate_must_bind_the_same_32_frozen_rollouts[summary_sample_hash]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_gate.xml",
+      "test": "tests.test_r3_gate::test_resealed_reuse_probe_must_bind_its_preregistered_bank",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_gate.xml",
+      "test": "tests.test_r3_gate::test_response_artifact_failure_blocks_the_complete_cold_gate",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_inputs.xml",
+      "test": "tests.test_r3_inputs::test_train_panel_preserves_assigned_interface_and_balanced_rotation",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_inputs.xml",
+      "test": "tests.test_r3_inputs::test_rejects_duplicates_wrong_split_and_insufficient_groups[train-select_train_panel]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_inputs.xml",
+      "test": "tests.test_r3_inputs::test_rejects_duplicates_wrong_split_and_insufficient_groups[control-select_control_panel]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_inputs.xml",
+      "test": "tests.test_r3_inputs::test_control_panel_pairs_interfaces_and_balances_metadata",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_inputs.xml",
+      "test": "tests.test_r3_inputs::test_control_balancing_handles_available_metadata_without_outcome_filtering",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_inputs.xml",
+      "test": "tests.test_r3_inputs::test_complete_plan_counts_disjointness_and_checkpoint_independence",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_inputs.xml",
+      "test": "tests.test_r3_inputs::test_input_and_prompt_hashes_bind_metadata_but_not_model_results",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_runtime.xml",
+      "test": "tests.test_r3_runtime::test_fixed_request_counts_and_checkpoint_bound_rng",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_runtime.xml",
+      "test": "tests.test_r3_runtime::test_samples_reject_control_as_training_and_bad_return_on_resume",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_runtime.xml",
+      "test": "tests.test_r3_runtime::test_full_cold_fixture_actual_toy_adam_and_resume",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_runtime.xml",
+      "test": "tests.test_r3_runtime::test_bank_rejects_changed_full_prepared_state",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_gate.xml",
+      "test": "tests.test_r3_warm_gate::test_completed_tiny_warm_full_state_reports_and_read_only",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_gate.xml",
+      "test": "tests.test_r3_warm_gate::test_candidate_must_be_actual_adam65[0]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_gate.xml",
+      "test": "tests.test_r3_warm_gate::test_candidate_must_be_actual_adam65[1]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_gate.xml",
+      "test": "tests.test_r3_warm_gate::test_candidate_must_be_actual_adam65[63]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_gate.xml",
+      "test": "tests.test_r3_warm_gate::test_candidate_must_be_actual_adam65[64]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_gate.xml",
+      "test": "tests.test_r3_warm_gate::test_candidate_must_be_actual_adam65[66]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_gate.xml",
+      "test": "tests.test_r3_warm_gate::test_direct_statistical_coverage_and_semantic_tampering[missing_bank]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_gate.xml",
+      "test": "tests.test_r3_warm_gate::test_direct_statistical_coverage_and_semantic_tampering[missing_comparison]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_gate.xml",
+      "test": "tests.test_r3_warm_gate::test_direct_statistical_coverage_and_semantic_tampering[estimate]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_gate.xml",
+      "test": "tests.test_r3_warm_gate::test_direct_statistical_coverage_and_semantic_tampering[ratio]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_gate.xml",
+      "test": "tests.test_r3_warm_gate::test_direct_statistical_coverage_and_semantic_tampering[warning]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_gate.xml",
+      "test": "tests.test_r3_warm_gate::test_direct_statistical_coverage_and_semantic_tampering[nan]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_gate.xml",
+      "test": "tests.test_r3_warm_gate::test_direct_csv_requires_exact_stored_json_consistency",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_gate.xml",
+      "test": "tests.test_r3_warm_gate::test_candidate_cannot_drop_or_change_origin_state_schema[rng]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_gate.xml",
+      "test": "tests.test_r3_warm_gate::test_candidate_cannot_drop_or_change_origin_state_schema[metadata]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_gate.xml",
+      "test": "tests.test_r3_warm_gate::test_candidate_cannot_drop_or_change_origin_state_schema[parameters]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_gate.xml",
+      "test": "tests.test_r3_warm_gate::test_candidate_cannot_drop_or_change_origin_state_schema[topology]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_gate.xml",
+      "test": "tests.test_r3_warm_gate::test_direct_negative_width_cannot_hide_within_roundoff",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_gate.xml",
+      "test": "tests.test_r3_warm_gate::test_prose_reports_cannot_be_missing_verified_facts[report_zh.md]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_gate.xml",
+      "test": "tests.test_r3_warm_gate::test_prose_reports_cannot_be_missing_verified_facts[warm_report.md]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_gate.xml",
+      "test": "tests.test_r3_warm_gate::test_prose_reports_cannot_be_missing_verified_facts[support_control_report.md]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_runtime.xml",
+      "test": "tests.test_r3_warm_runtime::test_direct_requests_lock_four_candidates_and_document_seed_coupling",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_runtime.xml",
+      "test": "tests.test_r3_warm_runtime::test_full_warm_actual_adam_origin_direct_interrupt_and_resume",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_runtime.xml",
+      "test": "tests.test_r3_warm_runtime::test_explicit_checkpoint_mismatch_is_rejected_before_model_load",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_runtime.xml",
+      "test": "tests.test_r3_warm_runtime::test_resealed_checkpoint_with_wrong_adam_step_is_rejected",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_runtime.xml",
+      "test": "tests.test_r3_warm_runtime::test_direct_returned_malformed_raw_is_preserved_and_cannot_resume",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_runtime.xml",
+      "test": "tests.test_r3_warm_runtime::test_sampling_exception_cannot_hide_parameter_contamination",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_runtime.xml",
+      "test": "tests.test_r3_warm_runtime::test_candidate_bad_returned_scores_stay_failed_across_resume",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_runtime.xml",
+      "test": "tests.test_r3_warm_runtime::test_scoring_exception_cannot_hide_frozen_parameter_mutation",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_runtime.xml",
+      "test": "tests.test_r3_warm_runtime::test_returned_nonfinite_training_score_blocks_new_fork_attempt_before_load",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r3_warm_runtime.xml",
+      "test": "tests.test_r3_warm_runtime::test_saved_score_cannot_be_resealed_without_candidate_probabilities",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_gate.xml",
+      "test": "tests.test_r4_continuation_gate::test_stopped_audit_preserves_warning_and_cannot_be_used_as_warm_pass",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_gate.xml",
+      "test": "tests.test_r4_continuation_gate::test_stopped_audit_relocates_snapshot_without_rewriting_original_paths",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_gate.xml",
+      "test": "tests.test_r4_continuation_gate::test_stopped_audit_rejects_resealed_faults[fault_marker]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_gate.xml",
+      "test": "tests.test_r4_continuation_gate::test_stopped_audit_rejects_resealed_faults[missing_stop]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_gate.xml",
+      "test": "tests.test_r4_continuation_gate::test_stopped_audit_rejects_resealed_faults[source]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_gate.xml",
+      "test": "tests.test_r4_continuation_gate::test_stopped_audit_rejects_resealed_faults[checkpoint]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_gate.xml",
+      "test": "tests.test_r4_continuation_gate::test_stopped_audit_rejects_resealed_faults[old_logp]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_gate.xml",
+      "test": "tests.test_r4_continuation_gate::test_complete_continuation_binds_both_sources_all_outputs_and_original_warning",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_gate.xml",
+      "test": "tests.test_r4_continuation_gate::test_complete_continuation_rejects_resealed_provenance_and_alarm_tampering[hidden_warning]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_gate.xml",
+      "test": "tests.test_r4_continuation_gate::test_complete_continuation_rejects_resealed_provenance_and_alarm_tampering[raw_execution_source]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_gate.xml",
+      "test": "tests.test_r4_continuation_gate::test_complete_continuation_rejects_resealed_provenance_and_alarm_tampering[segment]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_gate.xml",
+      "test": "tests.test_r4_continuation_gate::test_complete_continuation_rejects_resealed_provenance_and_alarm_tampering[parent_source]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_gate.xml",
+      "test": "tests.test_r4_continuation_gate::test_complete_continuation_rejects_resealed_provenance_and_alarm_tampering[inherited_cost]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_gate.xml",
+      "test": "tests.test_r4_continuation_gate::test_parent_audit_identity_uses_saved_values_when_cpu_kl_rounding_differs",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_gate.xml",
+      "test": "tests.test_r4_continuation_gate::test_continuation_gate_identity_and_original_warning_are_cpu_roundoff_independent",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_runtime.xml",
+      "test": "tests.test_r4_continuation_runtime::test_second_reviewed_recovery_preserves_ancestor_state_and_budget",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_runtime.xml",
+      "test": "tests.test_r4_continuation_runtime::test_real_torch_stop_continuation_and_completed_resume_preserve_all_state",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_runtime.xml",
+      "test": "tests.test_r4_continuation_runtime::test_real_torch_reviewed_continuation_still_hard_stops[mean]",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_runtime.xml",
+      "test": "tests.test_r4_continuation_runtime::test_real_torch_reviewed_continuation_still_hard_stops[nonfinite]",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_runtime.xml",
+      "test": "tests.test_r4_continuation_runtime::test_stop_at_step32_generates_missing_panel_before_next_update[absolute]",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_runtime.xml",
+      "test": "tests.test_r4_continuation_runtime::test_stop_at_step32_generates_missing_panel_before_next_update[alias]",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_runtime.xml",
+      "test": "tests.test_r4_continuation_runtime::test_stop_at_step32_generates_missing_panel_before_next_update[relative]",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_runtime.xml",
+      "test": "tests.test_r4_continuation_runtime::test_parent_stopped_in_valid_arm_inherits_completed_base_endpoints",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_runtime.xml",
+      "test": "tests.test_r4_continuation_runtime::test_interrupted_preparation_resumes_before_first_execution_identity[explicit]",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_continuation_runtime.xml",
+      "test": "tests.test_r4_continuation_runtime::test_interrupted_preparation_resumes_before_first_execution_identity[recorded]",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_raw_validator_accepts_complete_controlled_record_without_mutation",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_raw_validator_rejects_missing_or_changed_real_evidence[raw]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_raw_validator_rejects_missing_or_changed_real_evidence[tokens]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_raw_validator_rejects_missing_or_changed_real_evidence[eos]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_raw_validator_rejects_missing_or_changed_real_evidence[old]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_raw_validator_rejects_missing_or_changed_real_evidence[annotation]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_raw_validator_rejects_missing_or_changed_real_evidence[prepared]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_raw_validator_rejects_missing_or_changed_real_evidence[input_ids]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_raw_validator_rejects_missing_or_changed_real_evidence[policy]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_raw_validator_rejects_missing_or_changed_real_evidence[image]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_raw_validator_rejects_missing_or_changed_real_evidence[elapsed]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_processor_reconstruction_binds_full_prepared_pixels_and_reuses_only_audits",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_complete_14400_record_gate_binds_both_64_step_chains_and_full_warm_state",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_raw_validator_rejects_fabricated_cuda_peak",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_complete_gate_rejects_resealed_evidence_tampering[raw_missing]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_complete_gate_rejects_resealed_evidence_tampering[prepared_resealed]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_complete_gate_rejects_resealed_evidence_tampering[prompt_resealed]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_complete_gate_rejects_resealed_evidence_tampering[wrong_arm]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_complete_gate_rejects_resealed_evidence_tampering[checkpoint_coverage]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_complete_gate_rejects_resealed_evidence_tampering[state_chain]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_complete_gate_rejects_resealed_evidence_tampering[atomic_marker]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_complete_gate_rejects_resealed_evidence_tampering[persistent_fault]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_complete_gate_rejects_resealed_evidence_tampering[model_cuda]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_complete_gate_rejects_resealed_evidence_tampering[eos_drift]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_complete_gate_rejects_resealed_evidence_tampering[aggregate_cost]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_complete_gate_rejects_resealed_evidence_tampering[source_tree]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_checkpoint_step_rejects_second_completed_attempt",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_warm_pointer_and_report_failure_cannot_bypass_full_gate",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_gate.xml",
+      "test": "tests.test_r4_gate::test_measured_update_loss_aggregation_cannot_be_relabelled",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.xml",
+      "test": "tests.test_r4_inputs::test_train_pool_fixed_interfaces_and_seed17_schedule",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.xml",
+      "test": "tests.test_r4_inputs::test_train_rejects_wrong_pool_and_changed_original_prompt[duplicate]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.xml",
+      "test": "tests.test_r4_inputs::test_train_rejects_wrong_pool_and_changed_original_prompt[split]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.xml",
+      "test": "tests.test_r4_inputs::test_train_rejects_wrong_pool_and_changed_original_prompt[count]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.xml",
+      "test": "tests.test_r4_inputs::test_train_rejects_wrong_pool_and_changed_original_prompt[interface]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.xml",
+      "test": "tests.test_r4_inputs::test_train_rejects_wrong_pool_and_changed_original_prompt[cell]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.xml",
+      "test": "tests.test_r4_inputs::test_train_rejects_wrong_pool_and_changed_original_prompt[hash]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.xml",
+      "test": "tests.test_r4_inputs::test_dev_panel_is_balanced_stable_subset_of_full_eval",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.xml",
+      "test": "tests.test_r4_inputs::test_existing_graph_ood_is_unique_balanced_and_uses_original_images",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.xml",
+      "test": "tests.test_r4_inputs::test_ood_rejects_id_overlap_before_selection[base_scene_id]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.xml",
+      "test": "tests.test_r4_inputs::test_ood_rejects_id_overlap_before_selection[truth_structure_hash]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.xml",
+      "test": "tests.test_r4_inputs::test_ood_rejects_id_overlap_before_selection[image_hash]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.xml",
+      "test": "tests.test_r4_inputs::test_ood_rejects_invalid_candidate_instead_of_filtering_it[numeric]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.xml",
+      "test": "tests.test_r4_inputs::test_ood_rejects_invalid_candidate_instead_of_filtering_it[render]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.xml",
+      "test": "tests.test_r4_inputs::test_ood_rejects_invalid_candidate_instead_of_filtering_it[topology]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.xml",
+      "test": "tests.test_r4_inputs::test_ood_rejects_invalid_candidate_instead_of_filtering_it[solution]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.xml",
+      "test": "tests.test_r4_inputs::test_ood_rejects_invalid_candidate_instead_of_filtering_it[truth_hash]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.xml",
+      "test": "tests.test_r4_inputs::test_ood_rejects_invalid_candidate_instead_of_filtering_it[changed_index]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.xml",
+      "test": "tests.test_r4_inputs::test_ood_rejects_invalid_candidate_instead_of_filtering_it[duplicate_edge]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.xml",
+      "test": "tests.test_r4_inputs::test_ood_rejects_incomplete_grid_and_duplicate_candidates",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.xml",
+      "test": "tests.test_r4_inputs::test_ood_rejects_unknown_subtype_in_source_pool",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.xml",
+      "test": "tests.test_r4_inputs::test_legacy_keeps_all_original_bytes_and_48_token_lock",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.xml",
+      "test": "tests.test_r4_inputs::test_plan_is_serializable_counts_are_separate_and_identity_has_no_arm_or_step",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_inputs.xml",
+      "test": "tests.test_r4_inputs::test_plan_requires_complete_train_dev_exclusions_and_disjoint_splits",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_recursive_gate.xml",
+      "test": "tests.test_r4_recursive_gate::test_stopped_continuation_preserves_owner_status_identity_and_combined_cost",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_recursive_gate.xml",
+      "test": "tests.test_r4_recursive_gate::test_stopped_continuation_rejects_resealed_recursive_faults[hidden_warning]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_recursive_gate.xml",
+      "test": "tests.test_r4_recursive_gate::test_stopped_continuation_rejects_resealed_recursive_faults[missing_terminal_stop]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_recursive_gate.xml",
+      "test": "tests.test_r4_recursive_gate::test_stopped_continuation_rejects_resealed_recursive_faults[relabeled_terminal_stop]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_recursive_gate.xml",
+      "test": "tests.test_r4_recursive_gate::test_stopped_continuation_rejects_resealed_recursive_faults[duplicated_cost]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_recursive_gate.xml",
+      "test": "tests.test_r4_recursive_gate::test_stopped_continuation_rejects_resealed_recursive_faults[ancestor_status]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_recursive_gate.xml",
+      "test": "tests.test_r4_recursive_gate::test_stopped_continuation_rejects_resealed_recursive_faults[logical_identity]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_recursive_gate.xml",
+      "test": "tests.test_r4_recursive_gate::test_recursive_completion_checks_all_three_sources_and_retains_two_real_stops",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_recursive_gate.xml",
+      "test": "tests.test_r4_recursive_gate::test_recursive_completion_rejects_resealed_identity_and_warning_forgery[actual_identity]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_recursive_gate.xml",
+      "test": "tests.test_r4_recursive_gate::test_recursive_completion_rejects_resealed_identity_and_warning_forgery[relabeled_parent_stop]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_recursive_gate.xml",
+      "test": "tests.test_r4_recursive_gate::test_recursive_completion_rejects_resealed_identity_and_warning_forgery[wrong_owner]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_recursive_gate.xml",
+      "test": "tests.test_r4_recursive_gate::test_recursive_completion_rejects_resealed_identity_and_warning_forgery[hidden_current_warning]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: 'data/generated/train.jsonl'\"",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_runtime.xml",
+      "test": "tests.test_r4_runtime::test_full_toy_two_arms_interruption_resume_and_original_L_tokens",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_runtime.xml",
+      "test": "tests.test_r4_runtime::test_returned_malformed_raw_is_preserved_and_cannot_resume",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_runtime.xml",
+      "test": "tests.test_r4_runtime::test_control_alarm_retains_step_and_resume_cannot_skip",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_runtime.xml",
+      "test": "tests.test_r4_runtime::test_returned_bad_likelihood_blocks_new_attempt_resume",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_runtime.xml",
+      "test": "tests.test_r4_runtime::test_fixed_control_reuses_only_index_zero_with_exact_state_and_input",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_runtime.xml",
+      "test": "tests.test_r4_runtime::test_nonfinite_control_diagnostic_is_a_persistent_failed_measurement",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_runtime.xml",
+      "test": "tests.test_r4_runtime::test_measured_alarm_survives_interruption_before_atomic_step_completion",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    },
+    {
+      "junit": "runs/modeling_contrast_v2/implementation/regression_remaining/test_r4_runtime.xml",
+      "test": "tests.test_r4_runtime::test_raw_rollout_schema_preserves_N_L_OOD_and_train_scene_values",
+      "kind": "failure",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data/generated/manifest.json'",
+      "error_type": "",
+      "contains_FileNotFoundError": true
+    }
+  ],
+  "total": 215,
+  "FileNotFoundError_count": 215
+}

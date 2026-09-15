@@ -1,0 +1,48 @@
+{
+  "status": "PASS",
+  "scope": "report-only factual clarification and named-table delivery; no source, prediction, lock or gate changes",
+  "original_report_sha256": "283dcbec97484b037883d4b92d395cac9abac09f7de0d6726d4b7a1387f22195",
+  "final_report_sha256": "f9c7b1d1f83e901fe76df221f247f5de0684bb765e05f583f864105d75f167f9",
+  "input_hashes": {
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/N3/MODEL_SELECTION_LOCK.json": "559a1b513d49c1683e19155c4183cfc0c34daf92d0892c7fbfa46f6709c88645",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/N3/FRESH_RESOURCE_PROJECTION.json": "0e5acd7c2b998e1dd5dbf63c4f4122b7c40c3c4d8bc2aea45b31b838c1bce927",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/N2/COST_FRONTIER.csv": "460c797e69f47c7c1cfbf0df0de312f2b660ed057820f60e3c2aca6c75366918"
+  },
+  "copied_tables": {
+    "OBSERVATION_COMPARISON.csv": {
+      "source": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/N1/OBSERVATION_COMPARISON.csv",
+      "sha256": "adb33a74beecbab63083803ba33b45da33fccc87d7961cf82471a564f99dd248",
+      "byte_identical": true
+    },
+    "CONTRAST_PREDICTION_BY_SEED.csv": {
+      "source": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/N2/CONTRAST_PREDICTION_BY_SEED.csv",
+      "sha256": "2d301a5956484db876483895a1d9e2c97b4a4865a1a32848a1d8f9d193cb32a8",
+      "byte_identical": true
+    },
+    "NONDEGENERATE_ABLATIONS.csv": {
+      "source": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/docs/modeling_contrast/results/n0_parent/legacy_diagnostics/nondegenerate_ablation_by_target.csv",
+      "sha256": "fcc115f66e7be217bf3479b34061594df8ce2dae11a1c72ef83e9f9d8a78f0e8",
+      "byte_identical": true
+    },
+    "MODEL_SELECTION_LOCK.json": {
+      "source": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/N3/MODEL_SELECTION_LOCK.json",
+      "sha256": "559a1b513d49c1683e19155c4183cfc0c34daf92d0892c7fbfa46f6709c88645",
+      "byte_identical": true
+    },
+    "COST_FRONTIER.csv": {
+      "source": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/N2/COST_FRONTIER.csv",
+      "sha256": "460c797e69f47c7c1cfbf0df0de312f2b660ed057820f60e3c2aca6c75366918",
+      "byte_identical": true
+    },
+    "N0_AUDIT_zh.md": {
+      "source": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/N0/N0_AUDIT_zh.md",
+      "sha256": "adcd5db68f3ba20b262f38f7dd08f414c2e0e4a424a96b8be511af4cc7ab85ff",
+      "byte_identical": true
+    },
+    "MISSING_INPUTS.json": {
+      "source": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/N0/MISSING_INPUTS.json",
+      "sha256": "249a73f5f44496efc834ea41484d4f72f2e98068922961c40ff55fb4b7a921c9",
+      "byte_identical": true
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "status": "COMPLETE",
+  "exact_legacy_trajectories": 60,
+  "finite_development_trajectories": 20,
+  "selected_observation_methods": [
+    "O_LR_ORIGIN",
+    "O_LR_MIX"
+  ],
+  "new_optimizer_updates": 0,
+  "noise_replicas": 8,
+  "rows": 454105,
+  "wall_seconds": 778.930353624979,
+  "stages_completed": [
+    "N2A",
+    "N2B",
+    "N2C",
+    "N2D",
+    "N2E"
+  ],
+  "resources": {
+    "label": "N2_complete",
+    "measured": {
+      "wall_seconds": 1458.0009234159952,
+      "peak_ram_gib": 2.290557861328125,
+      "added_output_bytes": 1920946529,
+      "temporary_bytes": 0
+    },
+    "gate": {
+      "passed": true,
+      "status": "PASS",
+      "forecast": {
+        "wall_seconds": 1458.0009234159952,
+        "peak_ram_gib": 2.290557861328125,
+        "added_output_bytes": 1920946529,
+        "temporary_bytes": 0
+      },
+      "limits": {
+        "wall_seconds": 14400,
+        "peak_ram_gib": 8,
+        "added_output_bytes": 3221225472,
+        "temporary_bytes": 1073741824
+      },
+      "reasons": []
+    },
+    "process_user_cpu_seconds": 760.443955,
+    "process_system_cpu_seconds": 14.538404,
+    "disk_peak_bytes": 1920946529,
+    "wall_scope": "completed formal stages and recorded smoke attempts plus current stage; excludes manual implementation idle time",
+    "temporary_scope": "no separate scratch arrays created by N2; compressed publication uses output directory",
+    "ram_scope": "current process peak; sequential experiments; one numerical CPU thread"
+  }
+}

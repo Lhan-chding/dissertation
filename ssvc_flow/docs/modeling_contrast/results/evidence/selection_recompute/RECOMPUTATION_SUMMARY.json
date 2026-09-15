@@ -1,0 +1,65 @@
+{
+  "status": "PASS",
+  "comparisons": 96834,
+  "checks": {
+    "N3_BOOTSTRAP": {
+      "status": "PASS",
+      "joint_verification_receipt": true
+    },
+    "N3_POOLED": {
+      "status": "PASS",
+      "joint_verification_receipt": true
+    },
+    "N3_BINDINGS": {
+      "status": "PASS",
+      "joint_verification_receipt": true
+    },
+    "N3_GATES": {
+      "status": "PASS",
+      "joint_verification_receipt": true
+    }
+  },
+  "errors": [],
+  "error_count": 0,
+  "max_absolute_numeric_difference": 0.0,
+  "candidate_count": 118,
+  "bootstrap_rows": 472,
+  "summary_rows": {
+    "CONTRAST_SELECTION_POOLED.csv": 1284,
+    "CONTRAST_SELECTION_BY_SEED.csv": 5136
+  },
+  "evidence_files": {
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/N3/MODEL_SELECTION_LOCK.json": "559a1b513d49c1683e19155c4183cfc0c34daf92d0892c7fbfa46f6709c88645",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/N2/METRICS.jsonl.gz": "8777ad0917773d31a07b3323c75db83380bfebcb35fab2e5bc04b07876a3be1a",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/N3/PAIRED_BOOTSTRAP.json": "47d1efbf78b0601344f960b432be8060d0f4b7e20b910c1f64fd9da21cbbba43",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/N3/CONTRAST_SELECTION_POOLED.csv": "faf2ea795792c6406569bbb4f1e60686410686eaa2e35a1260afb83f2d469686",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/N3/CONTRAST_SELECTION_BY_SEED.csv": "1ccaa65b6eb3769c31bce8c3d4647f74b895adcdc3c5c426a60a1f0b1c24aa4a",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/N2/COST_FRONTIER.csv": "460c797e69f47c7c1cfbf0df0de312f2b660ed057820f60e3c2aca6c75366918",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/configs/modeling_contrast/protocol.json": "c15f7e6e955fa4de09ce2688cc24f41b032d4177eaa42379ef79d17c53df900c",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/smoke/smoke_result.json": "63ec4d17309890d07e870b5fa6664ec55e5e8e9056f347b03f5992362a23128a",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/N3/FRESH_RESOURCE_PROJECTION.json": "0e5acd7c2b998e1dd5dbf63c4f4122b7c40c3c4d8bc2aea45b31b838c1bce927"
+  },
+  "bootstrap_replicates": 5000,
+  "lock_sha256": "559a1b513d49c1683e19155c4183cfc0c34daf92d0892c7fbfa46f6709c88645",
+  "metrics_sha256": "8777ad0917773d31a07b3323c75db83380bfebcb35fab2e5bc04b07876a3be1a",
+  "bound_files_verified": 2840,
+  "independent_selection_helpers_called": false,
+  "production_evaluation_helpers_called": false,
+  "training_calls": 0,
+  "sampling_calls": 0,
+  "scope": [
+    "N2 sufficient-statistic energy pooling",
+    "paired whole-training-seed bootstrap",
+    "nonalias parameter coverage",
+    "N3 scientific/nonzero and cost eligibility",
+    "selected ranking",
+    "resource threshold arithmetic",
+    "canonical and live byte bindings"
+  ],
+  "limitations": [
+    "Raw predictions and oracle arrays are verified separately by recompute.py; this receipt does not repeat that verification.",
+    "Cost-frontier source identity and eligibility are checked; physical cost measurement and extrapolation assumptions are not independently rerun.",
+    "Resource thresholds and bound inputs are checked; future runtime and peak-memory forecasts are estimates, not measurements of an unrun experiment.",
+    "Data-gate collection completeness and seed-collision audit are inherited from bound N0 artifacts."
+  ]
+}

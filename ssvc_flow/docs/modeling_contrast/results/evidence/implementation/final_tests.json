@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "passed": 213,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "junit_path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/implementation/final_tests.xml",
+  "junit_sha256": "7e349a82bf32c4b5ed583dde3fd5bf2dc103998df43c936554ce4c51f229c940",
+  "log": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs/modeling_contrast_v2/implementation/final_tests.log",
+  "log_sha256": "18b063772895ca078acba77dfcd02501049339a1a28566f250366bc7b92f9ad9",
+  "ruff_status": "PASS",
+  "ruff_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+  "scope": "new modeling_contrast module; parent regression separately recorded",
+  "post_test_edits": "Only test import formatting and unused variable names changed; source unchanged after this full run."
+}

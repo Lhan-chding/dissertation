@@ -1,0 +1,14 @@
+{
+  "units": 360,
+  "raw_prediction_arrays": 76380,
+  "prompt_contrast_rows": 43994880,
+  "invalid_level_rows": 19278,
+  "negative_components": 20913,
+  "sparse_artifact_bytes": 54173654,
+  "status": "PASS",
+  "main_ranking_eligible": false,
+  "posthoc_oracle_baseline_diagnostic": true,
+  "raw_files_modified": false,
+  "materialized_N2A_B_C_E_units": 360,
+  "complete_for_materialized_N2A_B_C_E_units": true
+}

@@ -1,0 +1,2936 @@
+{
+  "schema_version": "modeling-contrast-parent-audit-v1",
+  "status": "PASS",
+  "root": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2",
+  "manifest_sha256": "7a226ea43f8bbe2e5cef6f10a9ea4fc11f7ac788121a542044bb9414ad56f8cf",
+  "expected_trajectories": 60,
+  "manifest_trajectories": 60,
+  "complete_trajectories": 60,
+  "trajectories": [
+    {
+      "id": "seed101_X_BASE",
+      "seed": 101,
+      "arm": "X_BASE",
+      "original_role": "development_fit",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed101_X_VALID",
+      "seed": 101,
+      "arm": "X_VALID",
+      "original_role": "development_fit",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed102_X_BASE",
+      "seed": 102,
+      "arm": "X_BASE",
+      "original_role": "development_fit",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed102_X_VALID",
+      "seed": 102,
+      "arm": "X_VALID",
+      "original_role": "development_fit",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed103_X_BASE",
+      "seed": 103,
+      "arm": "X_BASE",
+      "original_role": "development_fit",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed103_X_VALID",
+      "seed": 103,
+      "arm": "X_VALID",
+      "original_role": "development_fit",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed104_X_BASE",
+      "seed": 104,
+      "arm": "X_BASE",
+      "original_role": "development_fit",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed104_X_VALID",
+      "seed": 104,
+      "arm": "X_VALID",
+      "original_role": "development_fit",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed105_X_BASE",
+      "seed": 105,
+      "arm": "X_BASE",
+      "original_role": "development_fit",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed105_X_VALID",
+      "seed": 105,
+      "arm": "X_VALID",
+      "original_role": "development_fit",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed106_X_BASE",
+      "seed": 106,
+      "arm": "X_BASE",
+      "original_role": "development_fit",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed106_X_VALID",
+      "seed": 106,
+      "arm": "X_VALID",
+      "original_role": "development_fit",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed201_X_BASE",
+      "seed": 201,
+      "arm": "X_BASE",
+      "original_role": "model_selection",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed201_X_VALID",
+      "seed": 201,
+      "arm": "X_VALID",
+      "original_role": "model_selection",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed202_X_BASE",
+      "seed": 202,
+      "arm": "X_BASE",
+      "original_role": "model_selection",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed202_X_VALID",
+      "seed": 202,
+      "arm": "X_VALID",
+      "original_role": "model_selection",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed203_X_BASE",
+      "seed": 203,
+      "arm": "X_BASE",
+      "original_role": "model_selection",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed203_X_VALID",
+      "seed": 203,
+      "arm": "X_VALID",
+      "original_role": "model_selection",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed204_X_BASE",
+      "seed": 204,
+      "arm": "X_BASE",
+      "original_role": "model_selection",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed204_X_VALID",
+      "seed": 204,
+      "arm": "X_VALID",
+      "original_role": "model_selection",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed251_X_BASE",
+      "seed": 251,
+      "arm": "X_BASE",
+      "original_role": "interval_calibration",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed251_X_VALID",
+      "seed": 251,
+      "arm": "X_VALID",
+      "original_role": "interval_calibration",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed252_X_BASE",
+      "seed": 252,
+      "arm": "X_BASE",
+      "original_role": "interval_calibration",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed252_X_VALID",
+      "seed": 252,
+      "arm": "X_VALID",
+      "original_role": "interval_calibration",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed253_X_BASE",
+      "seed": 253,
+      "arm": "X_BASE",
+      "original_role": "interval_calibration",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed253_X_VALID",
+      "seed": 253,
+      "arm": "X_VALID",
+      "original_role": "interval_calibration",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed254_X_BASE",
+      "seed": 254,
+      "arm": "X_BASE",
+      "original_role": "interval_calibration",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed254_X_VALID",
+      "seed": 254,
+      "arm": "X_VALID",
+      "original_role": "interval_calibration",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed255_X_BASE",
+      "seed": 255,
+      "arm": "X_BASE",
+      "original_role": "interval_calibration",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed255_X_VALID",
+      "seed": 255,
+      "arm": "X_VALID",
+      "original_role": "interval_calibration",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed256_X_BASE",
+      "seed": 256,
+      "arm": "X_BASE",
+      "original_role": "interval_calibration",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed256_X_VALID",
+      "seed": 256,
+      "arm": "X_VALID",
+      "original_role": "interval_calibration",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed257_X_BASE",
+      "seed": 257,
+      "arm": "X_BASE",
+      "original_role": "interval_calibration",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed257_X_VALID",
+      "seed": 257,
+      "arm": "X_VALID",
+      "original_role": "interval_calibration",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed258_X_BASE",
+      "seed": 258,
+      "arm": "X_BASE",
+      "original_role": "interval_calibration",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed258_X_VALID",
+      "seed": 258,
+      "arm": "X_VALID",
+      "original_role": "interval_calibration",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed259_X_BASE",
+      "seed": 259,
+      "arm": "X_BASE",
+      "original_role": "interval_calibration",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed259_X_VALID",
+      "seed": 259,
+      "arm": "X_VALID",
+      "original_role": "interval_calibration",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed260_X_BASE",
+      "seed": 260,
+      "arm": "X_BASE",
+      "original_role": "interval_calibration",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed260_X_VALID",
+      "seed": 260,
+      "arm": "X_VALID",
+      "original_role": "interval_calibration",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed301_X_BASE",
+      "seed": 301,
+      "arm": "X_BASE",
+      "original_role": "locked_test",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed301_X_VALID",
+      "seed": 301,
+      "arm": "X_VALID",
+      "original_role": "locked_test",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed302_X_BASE",
+      "seed": 302,
+      "arm": "X_BASE",
+      "original_role": "locked_test",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed302_X_VALID",
+      "seed": 302,
+      "arm": "X_VALID",
+      "original_role": "locked_test",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed303_X_BASE",
+      "seed": 303,
+      "arm": "X_BASE",
+      "original_role": "locked_test",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed303_X_VALID",
+      "seed": 303,
+      "arm": "X_VALID",
+      "original_role": "locked_test",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed304_X_BASE",
+      "seed": 304,
+      "arm": "X_BASE",
+      "original_role": "locked_test",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed304_X_VALID",
+      "seed": 304,
+      "arm": "X_VALID",
+      "original_role": "locked_test",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed305_X_BASE",
+      "seed": 305,
+      "arm": "X_BASE",
+      "original_role": "locked_test",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed305_X_VALID",
+      "seed": 305,
+      "arm": "X_VALID",
+      "original_role": "locked_test",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed306_X_BASE",
+      "seed": 306,
+      "arm": "X_BASE",
+      "original_role": "locked_test",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed306_X_VALID",
+      "seed": 306,
+      "arm": "X_VALID",
+      "original_role": "locked_test",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed307_X_BASE",
+      "seed": 307,
+      "arm": "X_BASE",
+      "original_role": "locked_test",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed307_X_VALID",
+      "seed": 307,
+      "arm": "X_VALID",
+      "original_role": "locked_test",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed308_X_BASE",
+      "seed": 308,
+      "arm": "X_BASE",
+      "original_role": "locked_test",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed308_X_VALID",
+      "seed": 308,
+      "arm": "X_VALID",
+      "original_role": "locked_test",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed309_X_BASE",
+      "seed": 309,
+      "arm": "X_BASE",
+      "original_role": "locked_test",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed309_X_VALID",
+      "seed": 309,
+      "arm": "X_VALID",
+      "original_role": "locked_test",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed310_X_BASE",
+      "seed": 310,
+      "arm": "X_BASE",
+      "original_role": "locked_test",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    },
+    {
+      "id": "seed310_X_VALID",
+      "seed": 310,
+      "arm": "X_VALID",
+      "original_role": "locked_test",
+      "v2_role": "legacy_diagnostic",
+      "complete": true
+    }
+  ],
+  "files": [
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/dataset.npz",
+      "bytes": 28467,
+      "sha256": "cd60bf9e9ed133fb16d3536d2967e67606b830307e020892471476804eb47f5a",
+      "expected_sha256": "cd60bf9e9ed133fb16d3536d2967e67606b830307e020892471476804eb47f5a",
+      "status": "PASS",
+      "field": "dataset_sha256"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/probe_metadata.json",
+      "bytes": 115723,
+      "sha256": "fbe3c2ac0515c60e1b5fe890b4f2c73da56c5cf22fad3b6617518ac29a4c8811",
+      "expected_sha256": "fbe3c2ac0515c60e1b5fe890b4f2c73da56c5cf22fad3b6617518ac29a4c8811",
+      "status": "PASS",
+      "field": "probe_identity_sha256"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/train_metadata.json",
+      "bytes": 115689,
+      "sha256": "77309e18a022608223ddca7100f5d52247c56ce5b51ec7dcd914fb54fd9d4797",
+      "expected_sha256": "77309e18a022608223ddca7100f5d52247c56ce5b51ec7dcd914fb54fd9d4797",
+      "status": "PASS",
+      "field": "train_identity_sha256"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/parameter_layout.json",
+      "bytes": 507,
+      "sha256": "c93481b1f20b8509d2eca8057bf59c50c2bb2e59a5d26c6558addf0bb4a0203b",
+      "expected_sha256": "c93481b1f20b8509d2eca8057bf59c50c2bb2e59a5d26c6558addf0bb4a0203b",
+      "status": "PASS",
+      "field": "parameter_layout_sha256"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/resolved_config.json",
+      "bytes": 8902,
+      "sha256": "5ce4feb127cbae38fe36b245adebd7de87eb70b1f2caf394c472b479cdd6410d",
+      "expected_sha256": null,
+      "status": "PASS"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed101_X_BASE.npz",
+      "bytes": 3607823,
+      "sha256": "4fa4ca3d48a396e4d34eee3fa4088d4448a05ee481b8f0f7891a8fd9cc5860df",
+      "expected_sha256": "4fa4ca3d48a396e4d34eee3fa4088d4448a05ee481b8f0f7891a8fd9cc5860df",
+      "status": "PASS",
+      "trajectory_id": "seed101_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed101_X_BASE.npz",
+      "bytes": 341844,
+      "sha256": "1737a807778ba68f2307167b66e46d5374c97ce240d77ecdf7525bcf4a4122b4",
+      "expected_sha256": "1737a807778ba68f2307167b66e46d5374c97ce240d77ecdf7525bcf4a4122b4",
+      "status": "PASS",
+      "trajectory_id": "seed101_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed101_X_BASE.npz",
+      "bytes": 512863,
+      "sha256": "a70ae430d949a21ceed096207ced4d1ced6a162c3b65e9ec77c5ea4b4ef8be29",
+      "expected_sha256": "a70ae430d949a21ceed096207ced4d1ced6a162c3b65e9ec77c5ea4b4ef8be29",
+      "status": "PASS",
+      "trajectory_id": "seed101_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed101_X_BASE.json",
+      "bytes": 67593,
+      "sha256": "0a6918cabc6d1df6338d4f3a875375bc3777da7076c837512975c7e2af7bb262",
+      "expected_sha256": "0a6918cabc6d1df6338d4f3a875375bc3777da7076c837512975c7e2af7bb262",
+      "status": "PASS",
+      "trajectory_id": "seed101_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed101_X_VALID.npz",
+      "bytes": 2965306,
+      "sha256": "4e8e8fa447361295b74f53362d77c3bb2765293a1a1c723f170da730eb39eeb5",
+      "expected_sha256": "4e8e8fa447361295b74f53362d77c3bb2765293a1a1c723f170da730eb39eeb5",
+      "status": "PASS",
+      "trajectory_id": "seed101_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed101_X_VALID.npz",
+      "bytes": 274067,
+      "sha256": "b924a8f27b789867d712441e7fabd7e406aa79abb11f0c3f37b2a2b73e4d3f78",
+      "expected_sha256": "b924a8f27b789867d712441e7fabd7e406aa79abb11f0c3f37b2a2b73e4d3f78",
+      "status": "PASS",
+      "trajectory_id": "seed101_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed101_X_VALID.npz",
+      "bytes": 322887,
+      "sha256": "8078d7748d445e035e300a2ff9131f33e79b7aaf6dc0c288fca6e4b1011f52d2",
+      "expected_sha256": "8078d7748d445e035e300a2ff9131f33e79b7aaf6dc0c288fca6e4b1011f52d2",
+      "status": "PASS",
+      "trajectory_id": "seed101_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed101_X_VALID.json",
+      "bytes": 67592,
+      "sha256": "2478976f56dd87c657567c0505d52847071c410257b9b7b39bffd95877134696",
+      "expected_sha256": "2478976f56dd87c657567c0505d52847071c410257b9b7b39bffd95877134696",
+      "status": "PASS",
+      "trajectory_id": "seed101_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed102_X_BASE.npz",
+      "bytes": 3670006,
+      "sha256": "91c7ecef5e56c691f72c9b2aa0d2a5a0f627676a0664a923c22fee94cf6e39d9",
+      "expected_sha256": "91c7ecef5e56c691f72c9b2aa0d2a5a0f627676a0664a923c22fee94cf6e39d9",
+      "status": "PASS",
+      "trajectory_id": "seed102_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed102_X_BASE.npz",
+      "bytes": 338472,
+      "sha256": "5813d60b52cd5648dda7b982fb8023a32f1af9f24a6dd682966f97ef603002b8",
+      "expected_sha256": "5813d60b52cd5648dda7b982fb8023a32f1af9f24a6dd682966f97ef603002b8",
+      "status": "PASS",
+      "trajectory_id": "seed102_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed102_X_BASE.npz",
+      "bytes": 520097,
+      "sha256": "e338d51deb55878388f26f51e20ba090ff670cfb41676206e3b0aa394ee56b3d",
+      "expected_sha256": "e338d51deb55878388f26f51e20ba090ff670cfb41676206e3b0aa394ee56b3d",
+      "status": "PASS",
+      "trajectory_id": "seed102_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed102_X_BASE.json",
+      "bytes": 67579,
+      "sha256": "4de7fcad6985ff0670cbf83f5d6bfa1c356c589317ca01b40edb39b322baa38f",
+      "expected_sha256": "4de7fcad6985ff0670cbf83f5d6bfa1c356c589317ca01b40edb39b322baa38f",
+      "status": "PASS",
+      "trajectory_id": "seed102_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed102_X_VALID.npz",
+      "bytes": 3181553,
+      "sha256": "e302490ce20bbbadacd0c827a3d6f2a2aabc08c5c41c64e17c75050e1c92b0f2",
+      "expected_sha256": "e302490ce20bbbadacd0c827a3d6f2a2aabc08c5c41c64e17c75050e1c92b0f2",
+      "status": "PASS",
+      "trajectory_id": "seed102_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed102_X_VALID.npz",
+      "bytes": 294928,
+      "sha256": "70e3dff9ce70154c4830f710db7b4c0555badbb99ee9bfb922c7b560f91e727f",
+      "expected_sha256": "70e3dff9ce70154c4830f710db7b4c0555badbb99ee9bfb922c7b560f91e727f",
+      "status": "PASS",
+      "trajectory_id": "seed102_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed102_X_VALID.npz",
+      "bytes": 358449,
+      "sha256": "c9cbd1071b448824e61441b3ae97dc20463488ef13d88780fe87deeaf9567141",
+      "expected_sha256": "c9cbd1071b448824e61441b3ae97dc20463488ef13d88780fe87deeaf9567141",
+      "status": "PASS",
+      "trajectory_id": "seed102_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed102_X_VALID.json",
+      "bytes": 67589,
+      "sha256": "84593a44594b217b4b4985db9ff62cd42cdef7b8e63d80192fda920aea6f1843",
+      "expected_sha256": "84593a44594b217b4b4985db9ff62cd42cdef7b8e63d80192fda920aea6f1843",
+      "status": "PASS",
+      "trajectory_id": "seed102_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed103_X_BASE.npz",
+      "bytes": 3733379,
+      "sha256": "8acc1086e24343a17be5ca20d53cfbf31ccc20c19fd10b0075262dd3602d8387",
+      "expected_sha256": "8acc1086e24343a17be5ca20d53cfbf31ccc20c19fd10b0075262dd3602d8387",
+      "status": "PASS",
+      "trajectory_id": "seed103_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed103_X_BASE.npz",
+      "bytes": 351602,
+      "sha256": "3f7450f0b5832be614f78d652ee241cb78185f3e502a588f8b44e4c8856608a4",
+      "expected_sha256": "3f7450f0b5832be614f78d652ee241cb78185f3e502a588f8b44e4c8856608a4",
+      "status": "PASS",
+      "trajectory_id": "seed103_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed103_X_BASE.npz",
+      "bytes": 531600,
+      "sha256": "f1613b3b05076a2974eb8631e65e78ef7c3466b9a0db4e660e204af84477762d",
+      "expected_sha256": "f1613b3b05076a2974eb8631e65e78ef7c3466b9a0db4e660e204af84477762d",
+      "status": "PASS",
+      "trajectory_id": "seed103_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed103_X_BASE.json",
+      "bytes": 67593,
+      "sha256": "80c2949fb61dbcf8c7be2e67ac6c0578d9cff18fa728cb659c830166c6ffa88b",
+      "expected_sha256": "80c2949fb61dbcf8c7be2e67ac6c0578d9cff18fa728cb659c830166c6ffa88b",
+      "status": "PASS",
+      "trajectory_id": "seed103_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed103_X_VALID.npz",
+      "bytes": 3145251,
+      "sha256": "2f0d472591df1a8be797298c89f91b7768cc20e9b0644e5f8b19206a050133ed",
+      "expected_sha256": "2f0d472591df1a8be797298c89f91b7768cc20e9b0644e5f8b19206a050133ed",
+      "status": "PASS",
+      "trajectory_id": "seed103_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed103_X_VALID.npz",
+      "bytes": 295050,
+      "sha256": "a90558b0555774460277a2d177854d3b50e52d35e3bb5f141344f37d8f4479aa",
+      "expected_sha256": "a90558b0555774460277a2d177854d3b50e52d35e3bb5f141344f37d8f4479aa",
+      "status": "PASS",
+      "trajectory_id": "seed103_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed103_X_VALID.npz",
+      "bytes": 344963,
+      "sha256": "266d462873e8fb43d666afe8bae7278fd4cdf6629db86255548968f924ded09b",
+      "expected_sha256": "266d462873e8fb43d666afe8bae7278fd4cdf6629db86255548968f924ded09b",
+      "status": "PASS",
+      "trajectory_id": "seed103_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed103_X_VALID.json",
+      "bytes": 67594,
+      "sha256": "27427ada8878d951fed4b7c151849c227945c4acd018b2fe4fe8305d1f4e2615",
+      "expected_sha256": "27427ada8878d951fed4b7c151849c227945c4acd018b2fe4fe8305d1f4e2615",
+      "status": "PASS",
+      "trajectory_id": "seed103_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed104_X_BASE.npz",
+      "bytes": 3748760,
+      "sha256": "79df62bc818feecd2317d08f76faf43898ecd60e1602fa95eaf4c27d56dc68eb",
+      "expected_sha256": "79df62bc818feecd2317d08f76faf43898ecd60e1602fa95eaf4c27d56dc68eb",
+      "status": "PASS",
+      "trajectory_id": "seed104_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed104_X_BASE.npz",
+      "bytes": 348747,
+      "sha256": "0800cbef643e837c02a01b4d526fd2514bea3d2e9d3693d4493661261e5e442b",
+      "expected_sha256": "0800cbef643e837c02a01b4d526fd2514bea3d2e9d3693d4493661261e5e442b",
+      "status": "PASS",
+      "trajectory_id": "seed104_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed104_X_BASE.npz",
+      "bytes": 538577,
+      "sha256": "f929322ee292ed86bb0f4ffb0ba9d00be1f914bff0a8bfabaf9d283bbbffe28d",
+      "expected_sha256": "f929322ee292ed86bb0f4ffb0ba9d00be1f914bff0a8bfabaf9d283bbbffe28d",
+      "status": "PASS",
+      "trajectory_id": "seed104_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed104_X_BASE.json",
+      "bytes": 67584,
+      "sha256": "1170f4d6bb6ca725ea250407e2e8c15a904b17527a33c3c3476b1d47a81b63ff",
+      "expected_sha256": "1170f4d6bb6ca725ea250407e2e8c15a904b17527a33c3c3476b1d47a81b63ff",
+      "status": "PASS",
+      "trajectory_id": "seed104_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed104_X_VALID.npz",
+      "bytes": 3017995,
+      "sha256": "6a642fa279b17274a57e8c949fbeac3e102229d7ab6681ad6605507616add3ee",
+      "expected_sha256": "6a642fa279b17274a57e8c949fbeac3e102229d7ab6681ad6605507616add3ee",
+      "status": "PASS",
+      "trajectory_id": "seed104_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed104_X_VALID.npz",
+      "bytes": 267106,
+      "sha256": "c9de1b128c7659f30739cab68f240078975ff6ab2f704cbf66b3cca76493708a",
+      "expected_sha256": "c9de1b128c7659f30739cab68f240078975ff6ab2f704cbf66b3cca76493708a",
+      "status": "PASS",
+      "trajectory_id": "seed104_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed104_X_VALID.npz",
+      "bytes": 318781,
+      "sha256": "a7c21b1bcdfe3b9db570975e7701117e60dcf8ee0103000360f77900c11ed029",
+      "expected_sha256": "a7c21b1bcdfe3b9db570975e7701117e60dcf8ee0103000360f77900c11ed029",
+      "status": "PASS",
+      "trajectory_id": "seed104_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed104_X_VALID.json",
+      "bytes": 67590,
+      "sha256": "7449fb14db112cfa3bafc3e0c59029fa0a30aa6656a47ab053ff830cd5087cfb",
+      "expected_sha256": "7449fb14db112cfa3bafc3e0c59029fa0a30aa6656a47ab053ff830cd5087cfb",
+      "status": "PASS",
+      "trajectory_id": "seed104_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed105_X_BASE.npz",
+      "bytes": 3747567,
+      "sha256": "99be2845db1e777fdad543db4a22564b6dce97fc4c649fb1fa3e9e179e158193",
+      "expected_sha256": "99be2845db1e777fdad543db4a22564b6dce97fc4c649fb1fa3e9e179e158193",
+      "status": "PASS",
+      "trajectory_id": "seed105_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed105_X_BASE.npz",
+      "bytes": 338270,
+      "sha256": "addf011984f695db86b66769cfaba151e789cc9e9cfe5788474744d71d03e0ad",
+      "expected_sha256": "addf011984f695db86b66769cfaba151e789cc9e9cfe5788474744d71d03e0ad",
+      "status": "PASS",
+      "trajectory_id": "seed105_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed105_X_BASE.npz",
+      "bytes": 515880,
+      "sha256": "e7b0594372578fa0337135c1a8a7c3c0c3b88065cd4b5bfba4697a4d0f9dc178",
+      "expected_sha256": "e7b0594372578fa0337135c1a8a7c3c0c3b88065cd4b5bfba4697a4d0f9dc178",
+      "status": "PASS",
+      "trajectory_id": "seed105_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed105_X_BASE.json",
+      "bytes": 67536,
+      "sha256": "76c9c3a10526b37784680661effda6abc50683ff580f70f45ce198964d11ff10",
+      "expected_sha256": "76c9c3a10526b37784680661effda6abc50683ff580f70f45ce198964d11ff10",
+      "status": "PASS",
+      "trajectory_id": "seed105_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed105_X_VALID.npz",
+      "bytes": 3063084,
+      "sha256": "290abbf373cd06cffe0e021f87cfff5269c8026946652890b7acc112ce599058",
+      "expected_sha256": "290abbf373cd06cffe0e021f87cfff5269c8026946652890b7acc112ce599058",
+      "status": "PASS",
+      "trajectory_id": "seed105_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed105_X_VALID.npz",
+      "bytes": 277943,
+      "sha256": "3a65db3c6fed8102700e48eae4fe4a83340cea3275f2f23d17c64fed7bb3c3bf",
+      "expected_sha256": "3a65db3c6fed8102700e48eae4fe4a83340cea3275f2f23d17c64fed7bb3c3bf",
+      "status": "PASS",
+      "trajectory_id": "seed105_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed105_X_VALID.npz",
+      "bytes": 350600,
+      "sha256": "a0274cd4a47409bffb7194f6a82334f7d9f0f5f0a213e57a1e926ad1624e18bd",
+      "expected_sha256": "a0274cd4a47409bffb7194f6a82334f7d9f0f5f0a213e57a1e926ad1624e18bd",
+      "status": "PASS",
+      "trajectory_id": "seed105_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed105_X_VALID.json",
+      "bytes": 67527,
+      "sha256": "306913cfbee971583349ea86b5ce3f71ab4553736fe94676d142d1420ade3ab1",
+      "expected_sha256": "306913cfbee971583349ea86b5ce3f71ab4553736fe94676d142d1420ade3ab1",
+      "status": "PASS",
+      "trajectory_id": "seed105_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed106_X_BASE.npz",
+      "bytes": 3679313,
+      "sha256": "e7a0ae9ad0982f1d2dd424f9034f44cf873b97cea4e87a6c4b07fcafb1dc0667",
+      "expected_sha256": "e7a0ae9ad0982f1d2dd424f9034f44cf873b97cea4e87a6c4b07fcafb1dc0667",
+      "status": "PASS",
+      "trajectory_id": "seed106_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed106_X_BASE.npz",
+      "bytes": 345069,
+      "sha256": "3d5f9b5ad3b4ab96eeb9045165a72ca907a8a73e650004e2e6f05c1d475f8055",
+      "expected_sha256": "3d5f9b5ad3b4ab96eeb9045165a72ca907a8a73e650004e2e6f05c1d475f8055",
+      "status": "PASS",
+      "trajectory_id": "seed106_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed106_X_BASE.npz",
+      "bytes": 530071,
+      "sha256": "af01eb4ed741f99606094b058c6a7b7903afde2d4e83d535b9fdf015d7751cb6",
+      "expected_sha256": "af01eb4ed741f99606094b058c6a7b7903afde2d4e83d535b9fdf015d7751cb6",
+      "status": "PASS",
+      "trajectory_id": "seed106_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed106_X_BASE.json",
+      "bytes": 67585,
+      "sha256": "60d027d0edb225311ad3df90286033fb275dbc600fbecb2dfe3d28bb73d676c5",
+      "expected_sha256": "60d027d0edb225311ad3df90286033fb275dbc600fbecb2dfe3d28bb73d676c5",
+      "status": "PASS",
+      "trajectory_id": "seed106_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed106_X_VALID.npz",
+      "bytes": 3159838,
+      "sha256": "d17f03d0194458ecb72e2e0df56f59690b9f286a54acbefc3b405756df8c9e13",
+      "expected_sha256": "d17f03d0194458ecb72e2e0df56f59690b9f286a54acbefc3b405756df8c9e13",
+      "status": "PASS",
+      "trajectory_id": "seed106_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed106_X_VALID.npz",
+      "bytes": 297361,
+      "sha256": "68b6e558b4a234874f1b2c7738b41b85d2dc666003a4e0c372d1b7e0b9a3eb8e",
+      "expected_sha256": "68b6e558b4a234874f1b2c7738b41b85d2dc666003a4e0c372d1b7e0b9a3eb8e",
+      "status": "PASS",
+      "trajectory_id": "seed106_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed106_X_VALID.npz",
+      "bytes": 351355,
+      "sha256": "782f0696c87cf182d4ebf3418ccb038c1ead793a3e396354b137608fa10b3641",
+      "expected_sha256": "782f0696c87cf182d4ebf3418ccb038c1ead793a3e396354b137608fa10b3641",
+      "status": "PASS",
+      "trajectory_id": "seed106_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed106_X_VALID.json",
+      "bytes": 67588,
+      "sha256": "7462dca65b76847f7ca5c35174b4bf6e11db853aee7a6b66170be8ac79e02edb",
+      "expected_sha256": "7462dca65b76847f7ca5c35174b4bf6e11db853aee7a6b66170be8ac79e02edb",
+      "status": "PASS",
+      "trajectory_id": "seed106_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed201_X_BASE.npz",
+      "bytes": 3635871,
+      "sha256": "7263113f0262dc647885b7d3ab44974404721bfa1d2646c54a2088df2579a32e",
+      "expected_sha256": "7263113f0262dc647885b7d3ab44974404721bfa1d2646c54a2088df2579a32e",
+      "status": "PASS",
+      "trajectory_id": "seed201_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed201_X_BASE.npz",
+      "bytes": 334314,
+      "sha256": "b0f6679fa36ec9509fafefff450396f97ed97e596774e3252bf4b1b4e3bd2d86",
+      "expected_sha256": "b0f6679fa36ec9509fafefff450396f97ed97e596774e3252bf4b1b4e3bd2d86",
+      "status": "PASS",
+      "trajectory_id": "seed201_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed201_X_BASE.npz",
+      "bytes": 513116,
+      "sha256": "69214e3a4a9285eeb9469ec7f6cec379e81949184f40827b5ed783a737d262cc",
+      "expected_sha256": "69214e3a4a9285eeb9469ec7f6cec379e81949184f40827b5ed783a737d262cc",
+      "status": "PASS",
+      "trajectory_id": "seed201_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed201_X_BASE.json",
+      "bytes": 67587,
+      "sha256": "9bbd3a4fa3ec72a1135608acf3b238c5be1ef50db39b25fbea540a0bb58153ce",
+      "expected_sha256": "9bbd3a4fa3ec72a1135608acf3b238c5be1ef50db39b25fbea540a0bb58153ce",
+      "status": "PASS",
+      "trajectory_id": "seed201_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed201_X_VALID.npz",
+      "bytes": 3011825,
+      "sha256": "460cb69add41b50fd4a7655b4c46e05a61db59cd36c829004252fc88894bb3d9",
+      "expected_sha256": "460cb69add41b50fd4a7655b4c46e05a61db59cd36c829004252fc88894bb3d9",
+      "status": "PASS",
+      "trajectory_id": "seed201_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed201_X_VALID.npz",
+      "bytes": 267288,
+      "sha256": "bc65a2bd707d89287eeddce4dfb06c0d02f4c67af72ae885b852544b34a603de",
+      "expected_sha256": "bc65a2bd707d89287eeddce4dfb06c0d02f4c67af72ae885b852544b34a603de",
+      "status": "PASS",
+      "trajectory_id": "seed201_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed201_X_VALID.npz",
+      "bytes": 334491,
+      "sha256": "4d563806b2f8ed84de28b93c262ccd0a46fffe69f8356405fee8f2748ef4021f",
+      "expected_sha256": "4d563806b2f8ed84de28b93c262ccd0a46fffe69f8356405fee8f2748ef4021f",
+      "status": "PASS",
+      "trajectory_id": "seed201_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed201_X_VALID.json",
+      "bytes": 67586,
+      "sha256": "d107ab1671d43093ba754e2ffcf63dbb6c5574a83b353fa35996e4020fce79d7",
+      "expected_sha256": "d107ab1671d43093ba754e2ffcf63dbb6c5574a83b353fa35996e4020fce79d7",
+      "status": "PASS",
+      "trajectory_id": "seed201_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed202_X_BASE.npz",
+      "bytes": 3646207,
+      "sha256": "149072d71470ec6912b9153354f9a48407467b9c4913c67e368b1f1d5917668d",
+      "expected_sha256": "149072d71470ec6912b9153354f9a48407467b9c4913c67e368b1f1d5917668d",
+      "status": "PASS",
+      "trajectory_id": "seed202_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed202_X_BASE.npz",
+      "bytes": 344377,
+      "sha256": "361d39a213904d900de0f3c97c286604ccb1ecda9143166d7c82f560fe3f2dc0",
+      "expected_sha256": "361d39a213904d900de0f3c97c286604ccb1ecda9143166d7c82f560fe3f2dc0",
+      "status": "PASS",
+      "trajectory_id": "seed202_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed202_X_BASE.npz",
+      "bytes": 513658,
+      "sha256": "53ec6e7bf3b99544dd9cbbff22c3667dcc20fd9f6d4fdaf2bf26061150f05465",
+      "expected_sha256": "53ec6e7bf3b99544dd9cbbff22c3667dcc20fd9f6d4fdaf2bf26061150f05465",
+      "status": "PASS",
+      "trajectory_id": "seed202_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed202_X_BASE.json",
+      "bytes": 67598,
+      "sha256": "8e465123335a73ff2c1c3703ee946301037cd6ad867ab9e2c48acb6ebb55726a",
+      "expected_sha256": "8e465123335a73ff2c1c3703ee946301037cd6ad867ab9e2c48acb6ebb55726a",
+      "status": "PASS",
+      "trajectory_id": "seed202_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed202_X_VALID.npz",
+      "bytes": 2932814,
+      "sha256": "b602b158b8d7daae6dec3ac16dbe2d7d6735680eeab2d1b95e079090f9585b52",
+      "expected_sha256": "b602b158b8d7daae6dec3ac16dbe2d7d6735680eeab2d1b95e079090f9585b52",
+      "status": "PASS",
+      "trajectory_id": "seed202_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed202_X_VALID.npz",
+      "bytes": 269706,
+      "sha256": "68a76f0c4e3b83bfce4350853cad2103f64c641e28d74b65e5d8de70104614da",
+      "expected_sha256": "68a76f0c4e3b83bfce4350853cad2103f64c641e28d74b65e5d8de70104614da",
+      "status": "PASS",
+      "trajectory_id": "seed202_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed202_X_VALID.npz",
+      "bytes": 318658,
+      "sha256": "819bf92dd7e8af354897ea245c3d6fb5b87ecb67dbe9337cca306898b088d46b",
+      "expected_sha256": "819bf92dd7e8af354897ea245c3d6fb5b87ecb67dbe9337cca306898b088d46b",
+      "status": "PASS",
+      "trajectory_id": "seed202_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed202_X_VALID.json",
+      "bytes": 67581,
+      "sha256": "c09ce325d21db369c3bd5c09dd8b8c14292b92a9c179c591c92593e0b67aad62",
+      "expected_sha256": "c09ce325d21db369c3bd5c09dd8b8c14292b92a9c179c591c92593e0b67aad62",
+      "status": "PASS",
+      "trajectory_id": "seed202_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed203_X_BASE.npz",
+      "bytes": 3879502,
+      "sha256": "2b70355491079a2b53d8cb9566f16bfbb0139ce827f4928b4b64b527aae2feeb",
+      "expected_sha256": "2b70355491079a2b53d8cb9566f16bfbb0139ce827f4928b4b64b527aae2feeb",
+      "status": "PASS",
+      "trajectory_id": "seed203_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed203_X_BASE.npz",
+      "bytes": 359836,
+      "sha256": "e22c9d16026be771974c189caf59dc31a43a95ef3352182261bf06ff76db0927",
+      "expected_sha256": "e22c9d16026be771974c189caf59dc31a43a95ef3352182261bf06ff76db0927",
+      "status": "PASS",
+      "trajectory_id": "seed203_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed203_X_BASE.npz",
+      "bytes": 537867,
+      "sha256": "f6a2cf5d300853e6482e716db6eb3a98e9cd987a5df8fc4de21fee37c200452d",
+      "expected_sha256": "f6a2cf5d300853e6482e716db6eb3a98e9cd987a5df8fc4de21fee37c200452d",
+      "status": "PASS",
+      "trajectory_id": "seed203_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed203_X_BASE.json",
+      "bytes": 67597,
+      "sha256": "bdaa1a80b1ab8586d11cf794517bf276487b37bacb705d55a5ade78a125a1ebd",
+      "expected_sha256": "bdaa1a80b1ab8586d11cf794517bf276487b37bacb705d55a5ade78a125a1ebd",
+      "status": "PASS",
+      "trajectory_id": "seed203_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed203_X_VALID.npz",
+      "bytes": 3223833,
+      "sha256": "eb81d20d158201699dff7bbee9030f4e1a5af5f4ba499d37c812ba2621898624",
+      "expected_sha256": "eb81d20d158201699dff7bbee9030f4e1a5af5f4ba499d37c812ba2621898624",
+      "status": "PASS",
+      "trajectory_id": "seed203_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed203_X_VALID.npz",
+      "bytes": 298902,
+      "sha256": "0a75921e8206d0b425254df05591a74b7bfa8ac2f1baa10ff946baf84fa5c2f3",
+      "expected_sha256": "0a75921e8206d0b425254df05591a74b7bfa8ac2f1baa10ff946baf84fa5c2f3",
+      "status": "PASS",
+      "trajectory_id": "seed203_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed203_X_VALID.npz",
+      "bytes": 365280,
+      "sha256": "62b8236e9095f630e6c9c451c63f9e90b30acebec7cbbe791ea964459a71958b",
+      "expected_sha256": "62b8236e9095f630e6c9c451c63f9e90b30acebec7cbbe791ea964459a71958b",
+      "status": "PASS",
+      "trajectory_id": "seed203_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed203_X_VALID.json",
+      "bytes": 67596,
+      "sha256": "11d9c09f5aef6d5fcbf5e7998ca9a38414daccde2827438db7d57f8533636df5",
+      "expected_sha256": "11d9c09f5aef6d5fcbf5e7998ca9a38414daccde2827438db7d57f8533636df5",
+      "status": "PASS",
+      "trajectory_id": "seed203_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed204_X_BASE.npz",
+      "bytes": 3663510,
+      "sha256": "9eeb5f7963a6bfa27661d13bd01490ddaf1899f1696e6e1248e649e43c2a95fe",
+      "expected_sha256": "9eeb5f7963a6bfa27661d13bd01490ddaf1899f1696e6e1248e649e43c2a95fe",
+      "status": "PASS",
+      "trajectory_id": "seed204_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed204_X_BASE.npz",
+      "bytes": 344575,
+      "sha256": "9e09a00e86888a1a83eb205757b46acb344cebae01c7a1fdb78b460deb34fc06",
+      "expected_sha256": "9e09a00e86888a1a83eb205757b46acb344cebae01c7a1fdb78b460deb34fc06",
+      "status": "PASS",
+      "trajectory_id": "seed204_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed204_X_BASE.npz",
+      "bytes": 512695,
+      "sha256": "456f5db0c84e8942d3bbc4fe37a5993f5817a9b664e2e91e81c684673341cc72",
+      "expected_sha256": "456f5db0c84e8942d3bbc4fe37a5993f5817a9b664e2e91e81c684673341cc72",
+      "status": "PASS",
+      "trajectory_id": "seed204_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed204_X_BASE.json",
+      "bytes": 67592,
+      "sha256": "d321f615f7f76298e4643af6fec3e3e791d5b1ca30d1e5d7c58f3740a29eaa6c",
+      "expected_sha256": "d321f615f7f76298e4643af6fec3e3e791d5b1ca30d1e5d7c58f3740a29eaa6c",
+      "status": "PASS",
+      "trajectory_id": "seed204_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed204_X_VALID.npz",
+      "bytes": 2940850,
+      "sha256": "22b66cfef9afe7f169b5e9d78f6b94c3ffaac857111892681ab49637f3df89e6",
+      "expected_sha256": "22b66cfef9afe7f169b5e9d78f6b94c3ffaac857111892681ab49637f3df89e6",
+      "status": "PASS",
+      "trajectory_id": "seed204_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed204_X_VALID.npz",
+      "bytes": 276459,
+      "sha256": "8807621a7295e66fa8b83bdd86a85ea2c14d894e4b4899a90645457f41e25308",
+      "expected_sha256": "8807621a7295e66fa8b83bdd86a85ea2c14d894e4b4899a90645457f41e25308",
+      "status": "PASS",
+      "trajectory_id": "seed204_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed204_X_VALID.npz",
+      "bytes": 327146,
+      "sha256": "53629de250b722a49ef1b8a1cf4e36690dab75e95e294c75c1c38c3160fb4779",
+      "expected_sha256": "53629de250b722a49ef1b8a1cf4e36690dab75e95e294c75c1c38c3160fb4779",
+      "status": "PASS",
+      "trajectory_id": "seed204_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed204_X_VALID.json",
+      "bytes": 67598,
+      "sha256": "dd3a16ffca48fff035e2589616240aacdc23d805c6f97f254170f1ca2d6f6980",
+      "expected_sha256": "dd3a16ffca48fff035e2589616240aacdc23d805c6f97f254170f1ca2d6f6980",
+      "status": "PASS",
+      "trajectory_id": "seed204_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed251_X_BASE.npz",
+      "bytes": 3731678,
+      "sha256": "4d994bbbc5d4c31cfb0085d6363cc1f8a90437218519b2f0c4fd3c3c402b568f",
+      "expected_sha256": "4d994bbbc5d4c31cfb0085d6363cc1f8a90437218519b2f0c4fd3c3c402b568f",
+      "status": "PASS",
+      "trajectory_id": "seed251_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed251_X_BASE.npz",
+      "bytes": 347340,
+      "sha256": "53000b4d96103cfc46d3a62eca021a7f9a0068a20be3af8e60ad8ab1ab377490",
+      "expected_sha256": "53000b4d96103cfc46d3a62eca021a7f9a0068a20be3af8e60ad8ab1ab377490",
+      "status": "PASS",
+      "trajectory_id": "seed251_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed251_X_BASE.npz",
+      "bytes": 527733,
+      "sha256": "7971de09223f0d721138efe84805aa7bb54093c5bb249c55b856fd8324811290",
+      "expected_sha256": "7971de09223f0d721138efe84805aa7bb54093c5bb249c55b856fd8324811290",
+      "status": "PASS",
+      "trajectory_id": "seed251_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed251_X_BASE.json",
+      "bytes": 67595,
+      "sha256": "643eed78a71aa7490e08c221d54e91fa709aba1907cb97edb57828e975045ccd",
+      "expected_sha256": "643eed78a71aa7490e08c221d54e91fa709aba1907cb97edb57828e975045ccd",
+      "status": "PASS",
+      "trajectory_id": "seed251_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed251_X_VALID.npz",
+      "bytes": 2999922,
+      "sha256": "b3d4141efde1a26afda56ccf270e174b74b7e58056c364ca89e85375beef2304",
+      "expected_sha256": "b3d4141efde1a26afda56ccf270e174b74b7e58056c364ca89e85375beef2304",
+      "status": "PASS",
+      "trajectory_id": "seed251_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed251_X_VALID.npz",
+      "bytes": 281652,
+      "sha256": "f0efc9047fd045a3b1f70ea2613a49244e12624d1a435aa853d259d8b10553d3",
+      "expected_sha256": "f0efc9047fd045a3b1f70ea2613a49244e12624d1a435aa853d259d8b10553d3",
+      "status": "PASS",
+      "trajectory_id": "seed251_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed251_X_VALID.npz",
+      "bytes": 338180,
+      "sha256": "e2db5f350f030a90ded4d0b28c0daa7541dc6ac3983ee7611526113c82dab3cb",
+      "expected_sha256": "e2db5f350f030a90ded4d0b28c0daa7541dc6ac3983ee7611526113c82dab3cb",
+      "status": "PASS",
+      "trajectory_id": "seed251_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed251_X_VALID.json",
+      "bytes": 67591,
+      "sha256": "36b752971e35d0a2df3b088f918dbd781d3c2e9e5c16649cc78b34fd1bbfa16d",
+      "expected_sha256": "36b752971e35d0a2df3b088f918dbd781d3c2e9e5c16649cc78b34fd1bbfa16d",
+      "status": "PASS",
+      "trajectory_id": "seed251_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed252_X_BASE.npz",
+      "bytes": 3761594,
+      "sha256": "51c6da706ff78571a2a36ef950f76e5aa92f8679bdd6dbcf77f7c0dc3af3a691",
+      "expected_sha256": "51c6da706ff78571a2a36ef950f76e5aa92f8679bdd6dbcf77f7c0dc3af3a691",
+      "status": "PASS",
+      "trajectory_id": "seed252_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed252_X_BASE.npz",
+      "bytes": 357092,
+      "sha256": "52e6f2e51aa2dd2c3cc612d689fb84f0a5143f7d610644e4c00e719addb33a3c",
+      "expected_sha256": "52e6f2e51aa2dd2c3cc612d689fb84f0a5143f7d610644e4c00e719addb33a3c",
+      "status": "PASS",
+      "trajectory_id": "seed252_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed252_X_BASE.npz",
+      "bytes": 542761,
+      "sha256": "fe3f34f5de696791ee3c26b7e5885716125d1f5eb3739e05b1f03cca2b0415ba",
+      "expected_sha256": "fe3f34f5de696791ee3c26b7e5885716125d1f5eb3739e05b1f03cca2b0415ba",
+      "status": "PASS",
+      "trajectory_id": "seed252_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed252_X_BASE.json",
+      "bytes": 67596,
+      "sha256": "8e308589a4edb863c9c5b8c9e054f11d7e56de76d4399509e55c40d4c1bd11ab",
+      "expected_sha256": "8e308589a4edb863c9c5b8c9e054f11d7e56de76d4399509e55c40d4c1bd11ab",
+      "status": "PASS",
+      "trajectory_id": "seed252_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed252_X_VALID.npz",
+      "bytes": 3116241,
+      "sha256": "e5d90292fbf404daf1e96d8594b1bb61aaa618f47ef9c8bb63590563a213f86d",
+      "expected_sha256": "e5d90292fbf404daf1e96d8594b1bb61aaa618f47ef9c8bb63590563a213f86d",
+      "status": "PASS",
+      "trajectory_id": "seed252_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed252_X_VALID.npz",
+      "bytes": 286335,
+      "sha256": "d1d48b6a465b85ced1fb063791b6e7775210fa2001c71a95cb6272eb027234a0",
+      "expected_sha256": "d1d48b6a465b85ced1fb063791b6e7775210fa2001c71a95cb6272eb027234a0",
+      "status": "PASS",
+      "trajectory_id": "seed252_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed252_X_VALID.npz",
+      "bytes": 344598,
+      "sha256": "ec4056b4ec904e1fc63b053235d2cb559873c73e42a3344fc389906f99fe894a",
+      "expected_sha256": "ec4056b4ec904e1fc63b053235d2cb559873c73e42a3344fc389906f99fe894a",
+      "status": "PASS",
+      "trajectory_id": "seed252_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed252_X_VALID.json",
+      "bytes": 67599,
+      "sha256": "bf53d91cb535fce7bba25308ba5e6f656823406e5814a22cb195472e3688f673",
+      "expected_sha256": "bf53d91cb535fce7bba25308ba5e6f656823406e5814a22cb195472e3688f673",
+      "status": "PASS",
+      "trajectory_id": "seed252_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed253_X_BASE.npz",
+      "bytes": 3612281,
+      "sha256": "6b7eb878b6de0347f637387a09b47bb4a239b9f466e510af342a803ccd61d9b2",
+      "expected_sha256": "6b7eb878b6de0347f637387a09b47bb4a239b9f466e510af342a803ccd61d9b2",
+      "status": "PASS",
+      "trajectory_id": "seed253_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed253_X_BASE.npz",
+      "bytes": 328282,
+      "sha256": "061489535669d4d3bf7e7cb8db98d92b6805eabf0db495743315ba798cae33d6",
+      "expected_sha256": "061489535669d4d3bf7e7cb8db98d92b6805eabf0db495743315ba798cae33d6",
+      "status": "PASS",
+      "trajectory_id": "seed253_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed253_X_BASE.npz",
+      "bytes": 503073,
+      "sha256": "4a2796ca695e42226b964730371eee783e44457bd0d50e5264f23af833454e90",
+      "expected_sha256": "4a2796ca695e42226b964730371eee783e44457bd0d50e5264f23af833454e90",
+      "status": "PASS",
+      "trajectory_id": "seed253_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed253_X_BASE.json",
+      "bytes": 67586,
+      "sha256": "b17c7723da4b73b7b267e815ef09fd21c38141e6a79d85c46529a93097bd1c2e",
+      "expected_sha256": "b17c7723da4b73b7b267e815ef09fd21c38141e6a79d85c46529a93097bd1c2e",
+      "status": "PASS",
+      "trajectory_id": "seed253_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed253_X_VALID.npz",
+      "bytes": 3164041,
+      "sha256": "4e35db5985fa5d0662aea5322435b4d851c0b193025dbc00e08de10d456691f4",
+      "expected_sha256": "4e35db5985fa5d0662aea5322435b4d851c0b193025dbc00e08de10d456691f4",
+      "status": "PASS",
+      "trajectory_id": "seed253_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed253_X_VALID.npz",
+      "bytes": 288186,
+      "sha256": "b379bd53e8370282fac584b0d4bea8a4827b9bd52a40bdfd9af07331127c04d6",
+      "expected_sha256": "b379bd53e8370282fac584b0d4bea8a4827b9bd52a40bdfd9af07331127c04d6",
+      "status": "PASS",
+      "trajectory_id": "seed253_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed253_X_VALID.npz",
+      "bytes": 357090,
+      "sha256": "8fe091f816d3c034cec34b9ebd288c81b926607d076bff6d61c9556a5a0462e9",
+      "expected_sha256": "8fe091f816d3c034cec34b9ebd288c81b926607d076bff6d61c9556a5a0462e9",
+      "status": "PASS",
+      "trajectory_id": "seed253_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed253_X_VALID.json",
+      "bytes": 67585,
+      "sha256": "78a7bfe79279e958fe7ade6a3532b073621d53db55a40483a6736f4ebc59b21a",
+      "expected_sha256": "78a7bfe79279e958fe7ade6a3532b073621d53db55a40483a6736f4ebc59b21a",
+      "status": "PASS",
+      "trajectory_id": "seed253_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed254_X_BASE.npz",
+      "bytes": 3680403,
+      "sha256": "19afa48b2fe70c13f4b04322dd9eaafc22520884d3d0e98c5e2278a61b7a33d5",
+      "expected_sha256": "19afa48b2fe70c13f4b04322dd9eaafc22520884d3d0e98c5e2278a61b7a33d5",
+      "status": "PASS",
+      "trajectory_id": "seed254_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed254_X_BASE.npz",
+      "bytes": 353008,
+      "sha256": "5765d0e31134e52bbb7b70febba1e316752a104cd0f5a22b0f3fad3955e0835e",
+      "expected_sha256": "5765d0e31134e52bbb7b70febba1e316752a104cd0f5a22b0f3fad3955e0835e",
+      "status": "PASS",
+      "trajectory_id": "seed254_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed254_X_BASE.npz",
+      "bytes": 528381,
+      "sha256": "0e820f4e371efd3255a131be8c11643ac4569dc2583e529b16e7ba02e663f32f",
+      "expected_sha256": "0e820f4e371efd3255a131be8c11643ac4569dc2583e529b16e7ba02e663f32f",
+      "status": "PASS",
+      "trajectory_id": "seed254_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed254_X_BASE.json",
+      "bytes": 67596,
+      "sha256": "2050a9167e14a102643c1fd83321da5ff0fcf9fc0132ae5ede0da491ebf52c13",
+      "expected_sha256": "2050a9167e14a102643c1fd83321da5ff0fcf9fc0132ae5ede0da491ebf52c13",
+      "status": "PASS",
+      "trajectory_id": "seed254_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed254_X_VALID.npz",
+      "bytes": 3125303,
+      "sha256": "ffa51f47de3c14bbd9e67cf03ab8df630ec9f2326f699044494c1b639723def6",
+      "expected_sha256": "ffa51f47de3c14bbd9e67cf03ab8df630ec9f2326f699044494c1b639723def6",
+      "status": "PASS",
+      "trajectory_id": "seed254_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed254_X_VALID.npz",
+      "bytes": 290527,
+      "sha256": "8cf02afca7d54bbbac5141397d2be1678b0cafa64fe90c7c816ebf79e5812cdc",
+      "expected_sha256": "8cf02afca7d54bbbac5141397d2be1678b0cafa64fe90c7c816ebf79e5812cdc",
+      "status": "PASS",
+      "trajectory_id": "seed254_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed254_X_VALID.npz",
+      "bytes": 355449,
+      "sha256": "2c44c58cd2f28fb19cda69977ccc1bc34220fab5b7e82110827c3449d1f6ead0",
+      "expected_sha256": "2c44c58cd2f28fb19cda69977ccc1bc34220fab5b7e82110827c3449d1f6ead0",
+      "status": "PASS",
+      "trajectory_id": "seed254_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed254_X_VALID.json",
+      "bytes": 67591,
+      "sha256": "7dd8dd1837215e7ca050389d3780a3664c5cac9b7ab03252edcd211dc3f72e74",
+      "expected_sha256": "7dd8dd1837215e7ca050389d3780a3664c5cac9b7ab03252edcd211dc3f72e74",
+      "status": "PASS",
+      "trajectory_id": "seed254_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed255_X_BASE.npz",
+      "bytes": 3803572,
+      "sha256": "a9311e66bd261b76d601d1dabdd09984c64bb5978527c7627deda2f5c133b226",
+      "expected_sha256": "a9311e66bd261b76d601d1dabdd09984c64bb5978527c7627deda2f5c133b226",
+      "status": "PASS",
+      "trajectory_id": "seed255_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed255_X_BASE.npz",
+      "bytes": 353460,
+      "sha256": "da4ec96366d5b926635aeec48e656ebd08faa27a2b823644d67423f6c3272482",
+      "expected_sha256": "da4ec96366d5b926635aeec48e656ebd08faa27a2b823644d67423f6c3272482",
+      "status": "PASS",
+      "trajectory_id": "seed255_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed255_X_BASE.npz",
+      "bytes": 536987,
+      "sha256": "d6bbfe8eed6ffe9fa527c3eba1bc750abc1c2b53ddd0e66d8b98a0b5786e4196",
+      "expected_sha256": "d6bbfe8eed6ffe9fa527c3eba1bc750abc1c2b53ddd0e66d8b98a0b5786e4196",
+      "status": "PASS",
+      "trajectory_id": "seed255_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed255_X_BASE.json",
+      "bytes": 67599,
+      "sha256": "0338dce9b9fc9e6cca3f21b4e0a952671586d2e9db96a733407ce79ad37f7777",
+      "expected_sha256": "0338dce9b9fc9e6cca3f21b4e0a952671586d2e9db96a733407ce79ad37f7777",
+      "status": "PASS",
+      "trajectory_id": "seed255_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed255_X_VALID.npz",
+      "bytes": 2995214,
+      "sha256": "f5dfd11852a3cafebf8a0540fa5b35acc3ea09374ab6563b82e2ae0ef7d96573",
+      "expected_sha256": "f5dfd11852a3cafebf8a0540fa5b35acc3ea09374ab6563b82e2ae0ef7d96573",
+      "status": "PASS",
+      "trajectory_id": "seed255_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed255_X_VALID.npz",
+      "bytes": 276110,
+      "sha256": "355212f63c4dd1c0828a57969ba8c6dc1cd180ddb907b04eea66d795ec56b485",
+      "expected_sha256": "355212f63c4dd1c0828a57969ba8c6dc1cd180ddb907b04eea66d795ec56b485",
+      "status": "PASS",
+      "trajectory_id": "seed255_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed255_X_VALID.npz",
+      "bytes": 324969,
+      "sha256": "b56ffa22e2d169f77732cbb0bbbcd9b821c1981efb983d62c4062d72ff8ee672",
+      "expected_sha256": "b56ffa22e2d169f77732cbb0bbbcd9b821c1981efb983d62c4062d72ff8ee672",
+      "status": "PASS",
+      "trajectory_id": "seed255_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed255_X_VALID.json",
+      "bytes": 67606,
+      "sha256": "410196da015bf39584988d867e10980c98dc61ea7d15b91fe3ba129ac695f03f",
+      "expected_sha256": "410196da015bf39584988d867e10980c98dc61ea7d15b91fe3ba129ac695f03f",
+      "status": "PASS",
+      "trajectory_id": "seed255_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed256_X_BASE.npz",
+      "bytes": 3712492,
+      "sha256": "ff1b7a57752a88061390f0f763000caa076fad302dea77d5758b403ca637bb78",
+      "expected_sha256": "ff1b7a57752a88061390f0f763000caa076fad302dea77d5758b403ca637bb78",
+      "status": "PASS",
+      "trajectory_id": "seed256_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed256_X_BASE.npz",
+      "bytes": 344577,
+      "sha256": "36d969e92779ffe3bc6305a665ff38886a5e52e5036af837586a21d1a5c3479b",
+      "expected_sha256": "36d969e92779ffe3bc6305a665ff38886a5e52e5036af837586a21d1a5c3479b",
+      "status": "PASS",
+      "trajectory_id": "seed256_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed256_X_BASE.npz",
+      "bytes": 527787,
+      "sha256": "3b29dcc900c7af5e8513e913d7b2754cf9dc6bcfab5e104a2b31505aa9174dac",
+      "expected_sha256": "3b29dcc900c7af5e8513e913d7b2754cf9dc6bcfab5e104a2b31505aa9174dac",
+      "status": "PASS",
+      "trajectory_id": "seed256_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed256_X_BASE.json",
+      "bytes": 67518,
+      "sha256": "6c20de51eb42b354573c6dc3db8f7271ea7da814ef2ffadd56d17c7dafd33476",
+      "expected_sha256": "6c20de51eb42b354573c6dc3db8f7271ea7da814ef2ffadd56d17c7dafd33476",
+      "status": "PASS",
+      "trajectory_id": "seed256_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed256_X_VALID.npz",
+      "bytes": 3023610,
+      "sha256": "de0e341ad0ac733023fee5bb6152cd5bd689af9460d84d96b4dbb755bb00426b",
+      "expected_sha256": "de0e341ad0ac733023fee5bb6152cd5bd689af9460d84d96b4dbb755bb00426b",
+      "status": "PASS",
+      "trajectory_id": "seed256_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed256_X_VALID.npz",
+      "bytes": 271768,
+      "sha256": "7744430598738cedab3e3df5175d2558e4ed9beb3ff64c59fb6e2607809589d4",
+      "expected_sha256": "7744430598738cedab3e3df5175d2558e4ed9beb3ff64c59fb6e2607809589d4",
+      "status": "PASS",
+      "trajectory_id": "seed256_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed256_X_VALID.npz",
+      "bytes": 335721,
+      "sha256": "6cc64e5085a07e972b03ad8d506a81679b638299d2c7a7576bd23f47ab00a60e",
+      "expected_sha256": "6cc64e5085a07e972b03ad8d506a81679b638299d2c7a7576bd23f47ab00a60e",
+      "status": "PASS",
+      "trajectory_id": "seed256_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed256_X_VALID.json",
+      "bytes": 67528,
+      "sha256": "6df2ba9bc7b83aabeba141a2bed498c386d382a66e43316513224208a5b6d098",
+      "expected_sha256": "6df2ba9bc7b83aabeba141a2bed498c386d382a66e43316513224208a5b6d098",
+      "status": "PASS",
+      "trajectory_id": "seed256_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed257_X_BASE.npz",
+      "bytes": 3696138,
+      "sha256": "fd823225d0b01320edd1fa69b4dbed6951e03eed8c04bc8d4573d3c9104371a8",
+      "expected_sha256": "fd823225d0b01320edd1fa69b4dbed6951e03eed8c04bc8d4573d3c9104371a8",
+      "status": "PASS",
+      "trajectory_id": "seed257_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed257_X_BASE.npz",
+      "bytes": 351559,
+      "sha256": "5b231fc021cec3b21241d73910649ba172bd222ec09234c45e54ed27827da588",
+      "expected_sha256": "5b231fc021cec3b21241d73910649ba172bd222ec09234c45e54ed27827da588",
+      "status": "PASS",
+      "trajectory_id": "seed257_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed257_X_BASE.npz",
+      "bytes": 535203,
+      "sha256": "2371cae492c98f736f0c8cc533358f698aa847cd9c386aee38882f3a12a13672",
+      "expected_sha256": "2371cae492c98f736f0c8cc533358f698aa847cd9c386aee38882f3a12a13672",
+      "status": "PASS",
+      "trajectory_id": "seed257_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed257_X_BASE.json",
+      "bytes": 67596,
+      "sha256": "43fd8558a207986faa0f3ce9db9377aa884ca41ccdaee0c6e2bd09af30b8fb12",
+      "expected_sha256": "43fd8558a207986faa0f3ce9db9377aa884ca41ccdaee0c6e2bd09af30b8fb12",
+      "status": "PASS",
+      "trajectory_id": "seed257_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed257_X_VALID.npz",
+      "bytes": 3112588,
+      "sha256": "f4eb9cdb14dbdc8920c60f559c3453b3876015fa1197c91f176b41cfea438041",
+      "expected_sha256": "f4eb9cdb14dbdc8920c60f559c3453b3876015fa1197c91f176b41cfea438041",
+      "status": "PASS",
+      "trajectory_id": "seed257_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed257_X_VALID.npz",
+      "bytes": 290910,
+      "sha256": "53108d253c9602bd2dd7e2191e50f30bd583785d35d02a982792476d9e1ca281",
+      "expected_sha256": "53108d253c9602bd2dd7e2191e50f30bd583785d35d02a982792476d9e1ca281",
+      "status": "PASS",
+      "trajectory_id": "seed257_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed257_X_VALID.npz",
+      "bytes": 343407,
+      "sha256": "480f7da4fd1988bea18f1987fba9b454c4a96461fa03be882147f0cac19a214c",
+      "expected_sha256": "480f7da4fd1988bea18f1987fba9b454c4a96461fa03be882147f0cac19a214c",
+      "status": "PASS",
+      "trajectory_id": "seed257_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed257_X_VALID.json",
+      "bytes": 67592,
+      "sha256": "db2bc8cf59cc79f00a08a6d90e2ccf0cf7e59c99443e7633d00a66a81528ac6b",
+      "expected_sha256": "db2bc8cf59cc79f00a08a6d90e2ccf0cf7e59c99443e7633d00a66a81528ac6b",
+      "status": "PASS",
+      "trajectory_id": "seed257_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed258_X_BASE.npz",
+      "bytes": 3772437,
+      "sha256": "3d8e52d5fd7389282509be10480c6362767d7bce689a09d76f86c581dc4283d0",
+      "expected_sha256": "3d8e52d5fd7389282509be10480c6362767d7bce689a09d76f86c581dc4283d0",
+      "status": "PASS",
+      "trajectory_id": "seed258_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed258_X_BASE.npz",
+      "bytes": 340925,
+      "sha256": "e3b4c90e175c8ecb99f8f9f273c568e2ca34d11668b5f2d17e6f28e604f3ec42",
+      "expected_sha256": "e3b4c90e175c8ecb99f8f9f273c568e2ca34d11668b5f2d17e6f28e604f3ec42",
+      "status": "PASS",
+      "trajectory_id": "seed258_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed258_X_BASE.npz",
+      "bytes": 514066,
+      "sha256": "69d6efd435f2e2e873603de5d2cb80177e20cad7102578af88a06106316abc5c",
+      "expected_sha256": "69d6efd435f2e2e873603de5d2cb80177e20cad7102578af88a06106316abc5c",
+      "status": "PASS",
+      "trajectory_id": "seed258_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed258_X_BASE.json",
+      "bytes": 67596,
+      "sha256": "34dbed00f19820d07be1c62879b069461628d11ff4ad3b17076fda22468a1a8c",
+      "expected_sha256": "34dbed00f19820d07be1c62879b069461628d11ff4ad3b17076fda22468a1a8c",
+      "status": "PASS",
+      "trajectory_id": "seed258_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed258_X_VALID.npz",
+      "bytes": 3112472,
+      "sha256": "1508930f7e12124fcb25c1622dcff2dd57af6782a4f3c2f2c9d2418382817db4",
+      "expected_sha256": "1508930f7e12124fcb25c1622dcff2dd57af6782a4f3c2f2c9d2418382817db4",
+      "status": "PASS",
+      "trajectory_id": "seed258_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed258_X_VALID.npz",
+      "bytes": 284294,
+      "sha256": "7c5584316300e1123960c004dff61438cc9f2855085b1134b6d0aab3ef8b2ee7",
+      "expected_sha256": "7c5584316300e1123960c004dff61438cc9f2855085b1134b6d0aab3ef8b2ee7",
+      "status": "PASS",
+      "trajectory_id": "seed258_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed258_X_VALID.npz",
+      "bytes": 341921,
+      "sha256": "1d734286efa144f396afc4286de46aef947205ca061008901bb2110c09942d49",
+      "expected_sha256": "1d734286efa144f396afc4286de46aef947205ca061008901bb2110c09942d49",
+      "status": "PASS",
+      "trajectory_id": "seed258_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed258_X_VALID.json",
+      "bytes": 67596,
+      "sha256": "68f2bebbacb160543e74ddaf9b4b0d68b2abcc441b61c84c076c139e4cc0ef5c",
+      "expected_sha256": "68f2bebbacb160543e74ddaf9b4b0d68b2abcc441b61c84c076c139e4cc0ef5c",
+      "status": "PASS",
+      "trajectory_id": "seed258_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed259_X_BASE.npz",
+      "bytes": 3704409,
+      "sha256": "d2b6531f38a34f5367861121bcc1cc2c07730e90889ab01ebafefaaed38e8ce2",
+      "expected_sha256": "d2b6531f38a34f5367861121bcc1cc2c07730e90889ab01ebafefaaed38e8ce2",
+      "status": "PASS",
+      "trajectory_id": "seed259_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed259_X_BASE.npz",
+      "bytes": 334561,
+      "sha256": "bbd6cfc39689fa5a2381ab0017855eb27401dac350742378d9be644d7b91eaa7",
+      "expected_sha256": "bbd6cfc39689fa5a2381ab0017855eb27401dac350742378d9be644d7b91eaa7",
+      "status": "PASS",
+      "trajectory_id": "seed259_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed259_X_BASE.npz",
+      "bytes": 514168,
+      "sha256": "1616620f297295834a81fa18ace62f3d6a7373ad04e0b7a4ab0ada29c4b79cda",
+      "expected_sha256": "1616620f297295834a81fa18ace62f3d6a7373ad04e0b7a4ab0ada29c4b79cda",
+      "status": "PASS",
+      "trajectory_id": "seed259_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed259_X_BASE.json",
+      "bytes": 67461,
+      "sha256": "86490075c1df56bb2230749dd88967e8d27837843aa4377efa438a24ac278989",
+      "expected_sha256": "86490075c1df56bb2230749dd88967e8d27837843aa4377efa438a24ac278989",
+      "status": "PASS",
+      "trajectory_id": "seed259_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed259_X_VALID.npz",
+      "bytes": 3059327,
+      "sha256": "4df9145dff9891d6f533f98ca0651d8eeb8540ae8d69cfa85ada78abdfef3203",
+      "expected_sha256": "4df9145dff9891d6f533f98ca0651d8eeb8540ae8d69cfa85ada78abdfef3203",
+      "status": "PASS",
+      "trajectory_id": "seed259_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed259_X_VALID.npz",
+      "bytes": 277621,
+      "sha256": "1f7bac318d79d14c461b47f521b7b67e519c1b3ebe724aca65f1ad9b017619a2",
+      "expected_sha256": "1f7bac318d79d14c461b47f521b7b67e519c1b3ebe724aca65f1ad9b017619a2",
+      "status": "PASS",
+      "trajectory_id": "seed259_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed259_X_VALID.npz",
+      "bytes": 329236,
+      "sha256": "fb8631b9ed7a48db01d9560cf9b6aee2eb9a658c246ce811cfa16168d88a5a10",
+      "expected_sha256": "fb8631b9ed7a48db01d9560cf9b6aee2eb9a658c246ce811cfa16168d88a5a10",
+      "status": "PASS",
+      "trajectory_id": "seed259_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed259_X_VALID.json",
+      "bytes": 67450,
+      "sha256": "61dc53b2347b62aea7c7736035dbbcfb81dae67c75a18482abc9190f47629720",
+      "expected_sha256": "61dc53b2347b62aea7c7736035dbbcfb81dae67c75a18482abc9190f47629720",
+      "status": "PASS",
+      "trajectory_id": "seed259_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed260_X_BASE.npz",
+      "bytes": 3667874,
+      "sha256": "073e2f71e00107c46ef7da0159b678bebac24ab5645eea17e7486164a65c7985",
+      "expected_sha256": "073e2f71e00107c46ef7da0159b678bebac24ab5645eea17e7486164a65c7985",
+      "status": "PASS",
+      "trajectory_id": "seed260_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed260_X_BASE.npz",
+      "bytes": 347248,
+      "sha256": "06522752d43098a128fe38f0a540f2b901752b2862039e697f2e3d7b758a13fa",
+      "expected_sha256": "06522752d43098a128fe38f0a540f2b901752b2862039e697f2e3d7b758a13fa",
+      "status": "PASS",
+      "trajectory_id": "seed260_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed260_X_BASE.npz",
+      "bytes": 528964,
+      "sha256": "0e2ccb3f9ddb08fd8abeafe30b28bae9bc918533ca6a8801e7e6e3349d2c46ce",
+      "expected_sha256": "0e2ccb3f9ddb08fd8abeafe30b28bae9bc918533ca6a8801e7e6e3349d2c46ce",
+      "status": "PASS",
+      "trajectory_id": "seed260_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed260_X_BASE.json",
+      "bytes": 67594,
+      "sha256": "660ad215513d29e758dcbae7b4e73533eafd94f2aa8b08319d25f4d78a103319",
+      "expected_sha256": "660ad215513d29e758dcbae7b4e73533eafd94f2aa8b08319d25f4d78a103319",
+      "status": "PASS",
+      "trajectory_id": "seed260_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed260_X_VALID.npz",
+      "bytes": 3108490,
+      "sha256": "bf9b8b7c94c0640ba559bbc8376f688734ae267105a66c88fe14ad8452c53750",
+      "expected_sha256": "bf9b8b7c94c0640ba559bbc8376f688734ae267105a66c88fe14ad8452c53750",
+      "status": "PASS",
+      "trajectory_id": "seed260_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed260_X_VALID.npz",
+      "bytes": 288058,
+      "sha256": "f0c7052c29697dd9696886ccd204c180f8523b0d5a326e55303ae55aee5b674c",
+      "expected_sha256": "f0c7052c29697dd9696886ccd204c180f8523b0d5a326e55303ae55aee5b674c",
+      "status": "PASS",
+      "trajectory_id": "seed260_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed260_X_VALID.npz",
+      "bytes": 353075,
+      "sha256": "6d666f2ec8be7671e5392d0c036101ea683614870bebf13508a61b03e9501555",
+      "expected_sha256": "6d666f2ec8be7671e5392d0c036101ea683614870bebf13508a61b03e9501555",
+      "status": "PASS",
+      "trajectory_id": "seed260_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed260_X_VALID.json",
+      "bytes": 67599,
+      "sha256": "ab82b6be662f75d28f073025e0a02560b6dcfb600976b8f538e042e72c472f97",
+      "expected_sha256": "ab82b6be662f75d28f073025e0a02560b6dcfb600976b8f538e042e72c472f97",
+      "status": "PASS",
+      "trajectory_id": "seed260_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed301_X_BASE.npz",
+      "bytes": 3722042,
+      "sha256": "c927e6aa8ac8909757e8cff9f38421ae84bb3533497f537bcaaa69c5560fb3fc",
+      "expected_sha256": "c927e6aa8ac8909757e8cff9f38421ae84bb3533497f537bcaaa69c5560fb3fc",
+      "status": "PASS",
+      "trajectory_id": "seed301_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed301_X_BASE.npz",
+      "bytes": 344904,
+      "sha256": "e4dc0d4f2b049dfb5adf83ad69be84c01f01005afe919f32dce522d0024d1b4f",
+      "expected_sha256": "e4dc0d4f2b049dfb5adf83ad69be84c01f01005afe919f32dce522d0024d1b4f",
+      "status": "PASS",
+      "trajectory_id": "seed301_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed301_X_BASE.npz",
+      "bytes": 533985,
+      "sha256": "06d5d7225beb4b1f281b9351d2c8048e3cba894ec445014d7753db10fb0951db",
+      "expected_sha256": "06d5d7225beb4b1f281b9351d2c8048e3cba894ec445014d7753db10fb0951db",
+      "status": "PASS",
+      "trajectory_id": "seed301_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed301_X_BASE.json",
+      "bytes": 67582,
+      "sha256": "5efc4e4e117d9ca9bd740ab3941bc073744d80076245871ba95827df82b03e03",
+      "expected_sha256": "5efc4e4e117d9ca9bd740ab3941bc073744d80076245871ba95827df82b03e03",
+      "status": "PASS",
+      "trajectory_id": "seed301_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed301_X_VALID.npz",
+      "bytes": 2851628,
+      "sha256": "f09c07ef70089f4658f393871f15a263e8f15bf0738888f2464596aed1a3f3ea",
+      "expected_sha256": "f09c07ef70089f4658f393871f15a263e8f15bf0738888f2464596aed1a3f3ea",
+      "status": "PASS",
+      "trajectory_id": "seed301_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed301_X_VALID.npz",
+      "bytes": 258755,
+      "sha256": "b18f5e23c6af13d863db2a5055aac4b20e7708f6a939f544e25c8ee0c84a726d",
+      "expected_sha256": "b18f5e23c6af13d863db2a5055aac4b20e7708f6a939f544e25c8ee0c84a726d",
+      "status": "PASS",
+      "trajectory_id": "seed301_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed301_X_VALID.npz",
+      "bytes": 312131,
+      "sha256": "c13067c895093c61bb2623ce25ca363dc56fda25a17078ec5a49112a3f0acada",
+      "expected_sha256": "c13067c895093c61bb2623ce25ca363dc56fda25a17078ec5a49112a3f0acada",
+      "status": "PASS",
+      "trajectory_id": "seed301_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed301_X_VALID.json",
+      "bytes": 67592,
+      "sha256": "6870ec7692e0cb0af074fe7044d63911650d5b5548087638667eaaaee87e4e76",
+      "expected_sha256": "6870ec7692e0cb0af074fe7044d63911650d5b5548087638667eaaaee87e4e76",
+      "status": "PASS",
+      "trajectory_id": "seed301_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed302_X_BASE.npz",
+      "bytes": 3769892,
+      "sha256": "67b1fab9e4f1151c0b3e8d8f391175e6dd0dd7a965c0b9d59650761e0af9b2f4",
+      "expected_sha256": "67b1fab9e4f1151c0b3e8d8f391175e6dd0dd7a965c0b9d59650761e0af9b2f4",
+      "status": "PASS",
+      "trajectory_id": "seed302_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed302_X_BASE.npz",
+      "bytes": 353157,
+      "sha256": "358ba60544f541888b1533b8e5c70d48514a8ba16f9a6e619e1beecb0925c5ca",
+      "expected_sha256": "358ba60544f541888b1533b8e5c70d48514a8ba16f9a6e619e1beecb0925c5ca",
+      "status": "PASS",
+      "trajectory_id": "seed302_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed302_X_BASE.npz",
+      "bytes": 538120,
+      "sha256": "96e65419340f8d52d81a0086d41cf8c4c332b3627d9b750a0c9ca0333f1d0117",
+      "expected_sha256": "96e65419340f8d52d81a0086d41cf8c4c332b3627d9b750a0c9ca0333f1d0117",
+      "status": "PASS",
+      "trajectory_id": "seed302_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed302_X_BASE.json",
+      "bytes": 67597,
+      "sha256": "1641d8f8abf780bede84d8cabb2f168150d85d88c62cfda3ee1ddfc7054d5f92",
+      "expected_sha256": "1641d8f8abf780bede84d8cabb2f168150d85d88c62cfda3ee1ddfc7054d5f92",
+      "status": "PASS",
+      "trajectory_id": "seed302_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed302_X_VALID.npz",
+      "bytes": 3149721,
+      "sha256": "65bcd5a216a4f71229e0d2295425483b542872cb83e5ec970c8eb93e07182d7b",
+      "expected_sha256": "65bcd5a216a4f71229e0d2295425483b542872cb83e5ec970c8eb93e07182d7b",
+      "status": "PASS",
+      "trajectory_id": "seed302_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed302_X_VALID.npz",
+      "bytes": 286113,
+      "sha256": "0d0a82cb113f30ebe4d908f2da8425b87811cd24f86ef3846ca1be74233111eb",
+      "expected_sha256": "0d0a82cb113f30ebe4d908f2da8425b87811cd24f86ef3846ca1be74233111eb",
+      "status": "PASS",
+      "trajectory_id": "seed302_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed302_X_VALID.npz",
+      "bytes": 357097,
+      "sha256": "1681fb2351c56393ea52847701e6118d2a630f300ecc4dfa60d9d90ca11effb0",
+      "expected_sha256": "1681fb2351c56393ea52847701e6118d2a630f300ecc4dfa60d9d90ca11effb0",
+      "status": "PASS",
+      "trajectory_id": "seed302_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed302_X_VALID.json",
+      "bytes": 67589,
+      "sha256": "71aeebb6cef351807d1b6b80786b7165d478e53ac5315125d87a87e85bfe789c",
+      "expected_sha256": "71aeebb6cef351807d1b6b80786b7165d478e53ac5315125d87a87e85bfe789c",
+      "status": "PASS",
+      "trajectory_id": "seed302_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed303_X_BASE.npz",
+      "bytes": 3547200,
+      "sha256": "03755e162fff0d69f2e78e1c4cb0b475169ecad45f9a14ed35613e2576cf20bd",
+      "expected_sha256": "03755e162fff0d69f2e78e1c4cb0b475169ecad45f9a14ed35613e2576cf20bd",
+      "status": "PASS",
+      "trajectory_id": "seed303_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed303_X_BASE.npz",
+      "bytes": 329482,
+      "sha256": "ba70453d49addf905b099ae84ae05eddf5410f5858c71eecabf08f9e549b9648",
+      "expected_sha256": "ba70453d49addf905b099ae84ae05eddf5410f5858c71eecabf08f9e549b9648",
+      "status": "PASS",
+      "trajectory_id": "seed303_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed303_X_BASE.npz",
+      "bytes": 499394,
+      "sha256": "8d2d1262a14c1f6138725bd20e98409bcf108906aa16fd3c78d1896e5a745670",
+      "expected_sha256": "8d2d1262a14c1f6138725bd20e98409bcf108906aa16fd3c78d1896e5a745670",
+      "status": "PASS",
+      "trajectory_id": "seed303_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed303_X_BASE.json",
+      "bytes": 67581,
+      "sha256": "3b38170ac10aefcc04452f6de93223f7172c4dc583a27c41eecfacff8955167e",
+      "expected_sha256": "3b38170ac10aefcc04452f6de93223f7172c4dc583a27c41eecfacff8955167e",
+      "status": "PASS",
+      "trajectory_id": "seed303_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed303_X_VALID.npz",
+      "bytes": 3067629,
+      "sha256": "5fbd4c92c9ce86e99f7fa697c7114bd4c3a696570d1ce3bea874a726e445743f",
+      "expected_sha256": "5fbd4c92c9ce86e99f7fa697c7114bd4c3a696570d1ce3bea874a726e445743f",
+      "status": "PASS",
+      "trajectory_id": "seed303_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed303_X_VALID.npz",
+      "bytes": 284563,
+      "sha256": "d4f5ff8b69a997d7ef30d462541274615b3bad203945e508642bc9ef2d87bd4d",
+      "expected_sha256": "d4f5ff8b69a997d7ef30d462541274615b3bad203945e508642bc9ef2d87bd4d",
+      "status": "PASS",
+      "trajectory_id": "seed303_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed303_X_VALID.npz",
+      "bytes": 337127,
+      "sha256": "03d5adea6a8d6ede1366e1724297c08807a03eb957af9016c350f68a61d01b45",
+      "expected_sha256": "03d5adea6a8d6ede1366e1724297c08807a03eb957af9016c350f68a61d01b45",
+      "status": "PASS",
+      "trajectory_id": "seed303_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed303_X_VALID.json",
+      "bytes": 67596,
+      "sha256": "7a011ecd0052da9c596a16495e144bb2b4079191ae3d52f6bfc82272c6837b70",
+      "expected_sha256": "7a011ecd0052da9c596a16495e144bb2b4079191ae3d52f6bfc82272c6837b70",
+      "status": "PASS",
+      "trajectory_id": "seed303_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed304_X_BASE.npz",
+      "bytes": 3618231,
+      "sha256": "e6e9bfb2cd9b038ebd6fb9955b133b42ca90731920e45eba957b0a1013b6236f",
+      "expected_sha256": "e6e9bfb2cd9b038ebd6fb9955b133b42ca90731920e45eba957b0a1013b6236f",
+      "status": "PASS",
+      "trajectory_id": "seed304_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed304_X_BASE.npz",
+      "bytes": 323906,
+      "sha256": "3b971f458f0c124ce11c191d74b2d08a50a060a3a4ba4b4465c31d6e8806004c",
+      "expected_sha256": "3b971f458f0c124ce11c191d74b2d08a50a060a3a4ba4b4465c31d6e8806004c",
+      "status": "PASS",
+      "trajectory_id": "seed304_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed304_X_BASE.npz",
+      "bytes": 493294,
+      "sha256": "b666c2b88b5518ecfccbd00b7f8122f35ac0eca6b4fe14e252cc4cdec5514656",
+      "expected_sha256": "b666c2b88b5518ecfccbd00b7f8122f35ac0eca6b4fe14e252cc4cdec5514656",
+      "status": "PASS",
+      "trajectory_id": "seed304_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed304_X_BASE.json",
+      "bytes": 67582,
+      "sha256": "f102d632eff8c7748206508af73b0aaba4d7ff393a93019bcd5969875610826b",
+      "expected_sha256": "f102d632eff8c7748206508af73b0aaba4d7ff393a93019bcd5969875610826b",
+      "status": "PASS",
+      "trajectory_id": "seed304_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed304_X_VALID.npz",
+      "bytes": 2920325,
+      "sha256": "bcefa798879b284fa6e1d535b4b2ebb5e092a00becf91b02eb7e5e4745e347b1",
+      "expected_sha256": "bcefa798879b284fa6e1d535b4b2ebb5e092a00becf91b02eb7e5e4745e347b1",
+      "status": "PASS",
+      "trajectory_id": "seed304_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed304_X_VALID.npz",
+      "bytes": 276366,
+      "sha256": "4ddd12cf52b46e9afd35cfed9574aba1139d054cca5e9276d90a9b3d31b213d2",
+      "expected_sha256": "4ddd12cf52b46e9afd35cfed9574aba1139d054cca5e9276d90a9b3d31b213d2",
+      "status": "PASS",
+      "trajectory_id": "seed304_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed304_X_VALID.npz",
+      "bytes": 324932,
+      "sha256": "5eccb79613f7d9f1a28ea087964d146b7f0bc6e0d4abbba0b2033239e0060e65",
+      "expected_sha256": "5eccb79613f7d9f1a28ea087964d146b7f0bc6e0d4abbba0b2033239e0060e65",
+      "status": "PASS",
+      "trajectory_id": "seed304_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed304_X_VALID.json",
+      "bytes": 67596,
+      "sha256": "8994b30322d4b240685794e22d155dc892370b38772cbf325f0620b9afd99514",
+      "expected_sha256": "8994b30322d4b240685794e22d155dc892370b38772cbf325f0620b9afd99514",
+      "status": "PASS",
+      "trajectory_id": "seed304_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed305_X_BASE.npz",
+      "bytes": 3620478,
+      "sha256": "60bde94b07bb7c1ac1867f562658e4ac941c06ba82051391b38b03568cf12321",
+      "expected_sha256": "60bde94b07bb7c1ac1867f562658e4ac941c06ba82051391b38b03568cf12321",
+      "status": "PASS",
+      "trajectory_id": "seed305_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed305_X_BASE.npz",
+      "bytes": 346341,
+      "sha256": "45d1713541e822e6b7a8c9e2b6696fc0c8d34bc572d614956201c01330b6f2f7",
+      "expected_sha256": "45d1713541e822e6b7a8c9e2b6696fc0c8d34bc572d614956201c01330b6f2f7",
+      "status": "PASS",
+      "trajectory_id": "seed305_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed305_X_BASE.npz",
+      "bytes": 520880,
+      "sha256": "1d383cc7e8035e6e2f7caa375223f77cd5647fd2b0614134f51a055513861f89",
+      "expected_sha256": "1d383cc7e8035e6e2f7caa375223f77cd5647fd2b0614134f51a055513861f89",
+      "status": "PASS",
+      "trajectory_id": "seed305_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed305_X_BASE.json",
+      "bytes": 67527,
+      "sha256": "93aedeb901c15180fc735d2368d52af907585e4c4e093b1b84e0f9ddacb0f3ae",
+      "expected_sha256": "93aedeb901c15180fc735d2368d52af907585e4c4e093b1b84e0f9ddacb0f3ae",
+      "status": "PASS",
+      "trajectory_id": "seed305_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed305_X_VALID.npz",
+      "bytes": 2941691,
+      "sha256": "0ae2d688a56c726c749199be0f3c855c74c1a1462e6d4f87082edcbf03355bb5",
+      "expected_sha256": "0ae2d688a56c726c749199be0f3c855c74c1a1462e6d4f87082edcbf03355bb5",
+      "status": "PASS",
+      "trajectory_id": "seed305_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed305_X_VALID.npz",
+      "bytes": 269847,
+      "sha256": "f328cda1b5167fc61eeba7bcae72e1b240560c28314400fa40f114bc71d3eb3b",
+      "expected_sha256": "f328cda1b5167fc61eeba7bcae72e1b240560c28314400fa40f114bc71d3eb3b",
+      "status": "PASS",
+      "trajectory_id": "seed305_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed305_X_VALID.npz",
+      "bytes": 320616,
+      "sha256": "7bb31e56d2518c1fd6b5a425eec7cac2aeafa4b8a108f13da6a31df99fde2929",
+      "expected_sha256": "7bb31e56d2518c1fd6b5a425eec7cac2aeafa4b8a108f13da6a31df99fde2929",
+      "status": "PASS",
+      "trajectory_id": "seed305_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed305_X_VALID.json",
+      "bytes": 67522,
+      "sha256": "aa6057de4ae7cf09f2957e6bd8fd507be7c95a491fcbebd15a55f8ed814c9f87",
+      "expected_sha256": "aa6057de4ae7cf09f2957e6bd8fd507be7c95a491fcbebd15a55f8ed814c9f87",
+      "status": "PASS",
+      "trajectory_id": "seed305_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed306_X_BASE.npz",
+      "bytes": 3618483,
+      "sha256": "b1dc2b37da3c254c8da84e191bc3496b8dfd7710bdd990ea2a8c3f3bdc1298fd",
+      "expected_sha256": "b1dc2b37da3c254c8da84e191bc3496b8dfd7710bdd990ea2a8c3f3bdc1298fd",
+      "status": "PASS",
+      "trajectory_id": "seed306_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed306_X_BASE.npz",
+      "bytes": 338623,
+      "sha256": "f95143ed79c0023390eb0e2206d11891b153bdce8d3647fbb843088b2deca1d5",
+      "expected_sha256": "f95143ed79c0023390eb0e2206d11891b153bdce8d3647fbb843088b2deca1d5",
+      "status": "PASS",
+      "trajectory_id": "seed306_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed306_X_BASE.npz",
+      "bytes": 521515,
+      "sha256": "e5a8c8c709396d82af2b7bda2236ce8053796973d7e0bcbc7781e960452a779a",
+      "expected_sha256": "e5a8c8c709396d82af2b7bda2236ce8053796973d7e0bcbc7781e960452a779a",
+      "status": "PASS",
+      "trajectory_id": "seed306_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed306_X_BASE.json",
+      "bytes": 67599,
+      "sha256": "50ddbdf37e0429c40e6d229a050c0f534cfb68ccf64e43f7e5842a9c4b844e1c",
+      "expected_sha256": "50ddbdf37e0429c40e6d229a050c0f534cfb68ccf64e43f7e5842a9c4b844e1c",
+      "status": "PASS",
+      "trajectory_id": "seed306_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed306_X_VALID.npz",
+      "bytes": 3017178,
+      "sha256": "52620d963a4bdf3c6ca9e38dace2ed6f515f63174894275075b54f04f3ad3d39",
+      "expected_sha256": "52620d963a4bdf3c6ca9e38dace2ed6f515f63174894275075b54f04f3ad3d39",
+      "status": "PASS",
+      "trajectory_id": "seed306_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed306_X_VALID.npz",
+      "bytes": 281992,
+      "sha256": "3f178c2eeadc910e20fc55e8331f62eb4f5d8617d7b7d059696f6c5b959ef15c",
+      "expected_sha256": "3f178c2eeadc910e20fc55e8331f62eb4f5d8617d7b7d059696f6c5b959ef15c",
+      "status": "PASS",
+      "trajectory_id": "seed306_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed306_X_VALID.npz",
+      "bytes": 331323,
+      "sha256": "427f3635f2e3c09bb0de021622b05f31e11a03a0c732a055b0891264aff2e99e",
+      "expected_sha256": "427f3635f2e3c09bb0de021622b05f31e11a03a0c732a055b0891264aff2e99e",
+      "status": "PASS",
+      "trajectory_id": "seed306_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed306_X_VALID.json",
+      "bytes": 67594,
+      "sha256": "1ac5344679fce34b887fe6eff869283a0f0ce2c968e057c7bf5711198b7a4f62",
+      "expected_sha256": "1ac5344679fce34b887fe6eff869283a0f0ce2c968e057c7bf5711198b7a4f62",
+      "status": "PASS",
+      "trajectory_id": "seed306_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed307_X_BASE.npz",
+      "bytes": 3749402,
+      "sha256": "715ebd726b95baaeedd3a8435673b15fce2c4e880582641168bc18ce4d735b6c",
+      "expected_sha256": "715ebd726b95baaeedd3a8435673b15fce2c4e880582641168bc18ce4d735b6c",
+      "status": "PASS",
+      "trajectory_id": "seed307_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed307_X_BASE.npz",
+      "bytes": 347080,
+      "sha256": "e2ef3ed0827ae001deb7553895686c16171812d62db345fec7ff056c51599a4f",
+      "expected_sha256": "e2ef3ed0827ae001deb7553895686c16171812d62db345fec7ff056c51599a4f",
+      "status": "PASS",
+      "trajectory_id": "seed307_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed307_X_BASE.npz",
+      "bytes": 525261,
+      "sha256": "9293162f041d5853811a23853e5f3b7b94b7cc474dffbc71663b59d43b7a799c",
+      "expected_sha256": "9293162f041d5853811a23853e5f3b7b94b7cc474dffbc71663b59d43b7a799c",
+      "status": "PASS",
+      "trajectory_id": "seed307_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed307_X_BASE.json",
+      "bytes": 67528,
+      "sha256": "b10d3f27207e1feb232beed4fbaa47d0fa756f9c91c0b725fc0ca54c47e3e2af",
+      "expected_sha256": "b10d3f27207e1feb232beed4fbaa47d0fa756f9c91c0b725fc0ca54c47e3e2af",
+      "status": "PASS",
+      "trajectory_id": "seed307_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed307_X_VALID.npz",
+      "bytes": 3039720,
+      "sha256": "c32e966844a2b049d92141e64ef2e192fdce380476c14b6158b723c4dd3bd6af",
+      "expected_sha256": "c32e966844a2b049d92141e64ef2e192fdce380476c14b6158b723c4dd3bd6af",
+      "status": "PASS",
+      "trajectory_id": "seed307_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed307_X_VALID.npz",
+      "bytes": 277768,
+      "sha256": "2ce11b42078674cc8123deebf473eb5f56b2956e0e45e8ed4e89943e4a210239",
+      "expected_sha256": "2ce11b42078674cc8123deebf473eb5f56b2956e0e45e8ed4e89943e4a210239",
+      "status": "PASS",
+      "trajectory_id": "seed307_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed307_X_VALID.npz",
+      "bytes": 339663,
+      "sha256": "527d0f5321f9d7798afafdca84449867b2100ecb633288ffde7b307b51899ef0",
+      "expected_sha256": "527d0f5321f9d7798afafdca84449867b2100ecb633288ffde7b307b51899ef0",
+      "status": "PASS",
+      "trajectory_id": "seed307_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed307_X_VALID.json",
+      "bytes": 67535,
+      "sha256": "3ccef2176a7156c272f5e5b2cd94a4e8e6cb427522fd2dc1bce6fd23f81b3928",
+      "expected_sha256": "3ccef2176a7156c272f5e5b2cd94a4e8e6cb427522fd2dc1bce6fd23f81b3928",
+      "status": "PASS",
+      "trajectory_id": "seed307_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed308_X_BASE.npz",
+      "bytes": 3691646,
+      "sha256": "b07e98e74202be2ce3ec347620f154868e09fcd0a8a73c94bf476384b3f62e18",
+      "expected_sha256": "b07e98e74202be2ce3ec347620f154868e09fcd0a8a73c94bf476384b3f62e18",
+      "status": "PASS",
+      "trajectory_id": "seed308_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed308_X_BASE.npz",
+      "bytes": 342783,
+      "sha256": "680d22cac7c37bb798cda6a93ee90d4e93b789168bea919dcdee211880752d8e",
+      "expected_sha256": "680d22cac7c37bb798cda6a93ee90d4e93b789168bea919dcdee211880752d8e",
+      "status": "PASS",
+      "trajectory_id": "seed308_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed308_X_BASE.npz",
+      "bytes": 523406,
+      "sha256": "37835b88a834d3b59fb9177a27586668b5300f77307a74207d42c1d6e33e96d4",
+      "expected_sha256": "37835b88a834d3b59fb9177a27586668b5300f77307a74207d42c1d6e33e96d4",
+      "status": "PASS",
+      "trajectory_id": "seed308_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed308_X_BASE.json",
+      "bytes": 67600,
+      "sha256": "5a65b3ea3ad9c969073b25a685a4a5b4c7ead1304d9c3415523c8c19acfa01b1",
+      "expected_sha256": "5a65b3ea3ad9c969073b25a685a4a5b4c7ead1304d9c3415523c8c19acfa01b1",
+      "status": "PASS",
+      "trajectory_id": "seed308_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed308_X_VALID.npz",
+      "bytes": 3072570,
+      "sha256": "dceb82a16b9b831bb7754760a023eb2801c411535ed2062c87c3a8ad590206d8",
+      "expected_sha256": "dceb82a16b9b831bb7754760a023eb2801c411535ed2062c87c3a8ad590206d8",
+      "status": "PASS",
+      "trajectory_id": "seed308_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed308_X_VALID.npz",
+      "bytes": 288230,
+      "sha256": "16db796c2b75ce1d17b71f25fbbfb21e577dc65d23c7df2265851abee2215537",
+      "expected_sha256": "16db796c2b75ce1d17b71f25fbbfb21e577dc65d23c7df2265851abee2215537",
+      "status": "PASS",
+      "trajectory_id": "seed308_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed308_X_VALID.npz",
+      "bytes": 343483,
+      "sha256": "e69681ce7dee8f38b9323adc73e2b60ff85cdcf09c741da55689ddc0378de13d",
+      "expected_sha256": "e69681ce7dee8f38b9323adc73e2b60ff85cdcf09c741da55689ddc0378de13d",
+      "status": "PASS",
+      "trajectory_id": "seed308_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed308_X_VALID.json",
+      "bytes": 67600,
+      "sha256": "1cc4f139b9b6c951b009ae10cb06a409b702e649604ae4953c17661a597a0953",
+      "expected_sha256": "1cc4f139b9b6c951b009ae10cb06a409b702e649604ae4953c17661a597a0953",
+      "status": "PASS",
+      "trajectory_id": "seed308_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed309_X_BASE.npz",
+      "bytes": 3670452,
+      "sha256": "1736f8cffa0e407e196878902115cc05b3f0e04fe2c68cf3ed4b8281bd1e1e35",
+      "expected_sha256": "1736f8cffa0e407e196878902115cc05b3f0e04fe2c68cf3ed4b8281bd1e1e35",
+      "status": "PASS",
+      "trajectory_id": "seed309_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed309_X_BASE.npz",
+      "bytes": 332210,
+      "sha256": "4bf034a3011933275bf590f13e8d62431986c39ccf2053b3aa46f0fc986e2188",
+      "expected_sha256": "4bf034a3011933275bf590f13e8d62431986c39ccf2053b3aa46f0fc986e2188",
+      "status": "PASS",
+      "trajectory_id": "seed309_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed309_X_BASE.npz",
+      "bytes": 514598,
+      "sha256": "30c7e1b237429ad64b7259224d1ef293b4f7394bc24310a6caba18b0cc1f51da",
+      "expected_sha256": "30c7e1b237429ad64b7259224d1ef293b4f7394bc24310a6caba18b0cc1f51da",
+      "status": "PASS",
+      "trajectory_id": "seed309_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed309_X_BASE.json",
+      "bytes": 67526,
+      "sha256": "62e859ae174fb38b375f1059e9fc954deb8b1dfff13ff19d3e6400c3831c6469",
+      "expected_sha256": "62e859ae174fb38b375f1059e9fc954deb8b1dfff13ff19d3e6400c3831c6469",
+      "status": "PASS",
+      "trajectory_id": "seed309_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed309_X_VALID.npz",
+      "bytes": 3166576,
+      "sha256": "a6e32ed9485c5f61d80f232560988607c6fceeb71944d601e71f2f5db0a9ee7d",
+      "expected_sha256": "a6e32ed9485c5f61d80f232560988607c6fceeb71944d601e71f2f5db0a9ee7d",
+      "status": "PASS",
+      "trajectory_id": "seed309_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed309_X_VALID.npz",
+      "bytes": 301352,
+      "sha256": "1acd2fca7d1269282c294161f68b57096564c6d09c434fb540b66f25de683a83",
+      "expected_sha256": "1acd2fca7d1269282c294161f68b57096564c6d09c434fb540b66f25de683a83",
+      "status": "PASS",
+      "trajectory_id": "seed309_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed309_X_VALID.npz",
+      "bytes": 357730,
+      "sha256": "5a1a427868842a215ea416524b8ef43a330a1f64673a97cc9c146c3ae19c80d1",
+      "expected_sha256": "5a1a427868842a215ea416524b8ef43a330a1f64673a97cc9c146c3ae19c80d1",
+      "status": "PASS",
+      "trajectory_id": "seed309_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed309_X_VALID.json",
+      "bytes": 67525,
+      "sha256": "1f39be29f67c1223b9506c47c6ba64056e1bc0f0128523298b2da7df1e7372d7",
+      "expected_sha256": "1f39be29f67c1223b9506c47c6ba64056e1bc0f0128523298b2da7df1e7372d7",
+      "status": "PASS",
+      "trajectory_id": "seed309_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed310_X_BASE.npz",
+      "bytes": 3646054,
+      "sha256": "680e90a07c7515fa9e6046750c84b4ab47ec6f6f735a580bb717dc5d6f5d657e",
+      "expected_sha256": "680e90a07c7515fa9e6046750c84b4ab47ec6f6f735a580bb717dc5d6f5d657e",
+      "status": "PASS",
+      "trajectory_id": "seed310_X_BASE",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed310_X_BASE.npz",
+      "bytes": 346733,
+      "sha256": "6b6835fc78cfb2a293eeadf30991d71d5759505d6673807450bca09d18ce5367",
+      "expected_sha256": "6b6835fc78cfb2a293eeadf30991d71d5759505d6673807450bca09d18ce5367",
+      "status": "PASS",
+      "trajectory_id": "seed310_X_BASE",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed310_X_BASE.npz",
+      "bytes": 522559,
+      "sha256": "f63a92b46729acc10fa52532c2c2d4e2c3f7b5872d69bfd711487e82c8659d6a",
+      "expected_sha256": "f63a92b46729acc10fa52532c2c2d4e2c3f7b5872d69bfd711487e82c8659d6a",
+      "status": "PASS",
+      "trajectory_id": "seed310_X_BASE",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed310_X_BASE.json",
+      "bytes": 67600,
+      "sha256": "d9355bbecf1e9e3074726a98fb3c37e908d14318f8776733b7cad5f873925581",
+      "expected_sha256": "d9355bbecf1e9e3074726a98fb3c37e908d14318f8776733b7cad5f873925581",
+      "status": "PASS",
+      "trajectory_id": "seed310_X_BASE",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/observations/seed310_X_VALID.npz",
+      "bytes": 2899085,
+      "sha256": "6fd585c117d7ebe64aa8ca2ec728f911e9d113c0d2881b5c53638f4bb0b11ee5",
+      "expected_sha256": "6fd585c117d7ebe64aa8ca2ec728f911e9d113c0d2881b5c53638f4bb0b11ee5",
+      "status": "PASS",
+      "trajectory_id": "seed310_X_VALID",
+      "field": "observations_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/oracle/seed310_X_VALID.npz",
+      "bytes": 267221,
+      "sha256": "6353094e20ce144eda1eded7344d80429ada12bbb47b9791b9f098f359921049",
+      "expected_sha256": "6353094e20ce144eda1eded7344d80429ada12bbb47b9791b9f098f359921049",
+      "status": "PASS",
+      "trajectory_id": "seed310_X_VALID",
+      "field": "oracle_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/counts/seed310_X_VALID.npz",
+      "bytes": 320691,
+      "sha256": "879be0ffa853cd9c63331475275c838f000f0ee963d5ef7d9860f94907dc47dd",
+      "expected_sha256": "879be0ffa853cd9c63331475275c838f000f0ee963d5ef7d9860f94907dc47dd",
+      "status": "PASS",
+      "trajectory_id": "seed310_X_VALID",
+      "field": "counts_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/rng/seed310_X_VALID.json",
+      "bytes": 67594,
+      "sha256": "78a4769f88aebde3e2f1fcf2d6b94d5cf94086db8273e2e1b556b19ec8536416",
+      "expected_sha256": "78a4769f88aebde3e2f1fcf2d6b94d5cf94086db8273e2e1b556b19ec8536416",
+      "status": "PASS",
+      "trajectory_id": "seed310_X_VALID",
+      "field": "rng_file"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/generated_dataset/manifest.json",
+      "bytes": 5265,
+      "sha256": "2266ffaae8d91eca81f686a8adb721a572057401c7cd6148204b031a5367590a",
+      "expected_sha256": null,
+      "status": "PASS"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/generated_dataset/control.jsonl",
+      "bytes": 41569,
+      "sha256": "dc600fbd021b46b27b8ee08b287443f6f41b4707cc8e880589592126efed95b2",
+      "expected_sha256": "dc600fbd021b46b27b8ee08b287443f6f41b4707cc8e880589592126efed95b2",
+      "status": "PASS",
+      "field": "generated_dataset"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/generated_dataset/diagnostic.jsonl",
+      "bytes": 842,
+      "sha256": "23541c43df8e5fb8c938c403afe4e4c24edbcea6a61c38cfddb9174c1bc0b25d",
+      "expected_sha256": "23541c43df8e5fb8c938c403afe4e4c24edbcea6a61c38cfddb9174c1bc0b25d",
+      "status": "PASS",
+      "field": "generated_dataset"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/generated_dataset/schema.json",
+      "bytes": 797,
+      "sha256": "c54958b13e879e343a56508e34fa283ed9f7b402a2f939a25fd15cd31e0e2162",
+      "expected_sha256": "c54958b13e879e343a56508e34fa283ed9f7b402a2f939a25fd15cd31e0e2162",
+      "status": "PASS",
+      "field": "generated_dataset"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2/generated_dataset/train.jsonl",
+      "bytes": 77642,
+      "sha256": "f212063814e6701ff2187ba28348fa7ad4321e5b3e5181364df714227e4fbc5a",
+      "expected_sha256": "f212063814e6701ff2187ba28348fa7ad4321e5b3e5181364df714227e4fbc5a",
+      "status": "PASS",
+      "field": "generated_dataset"
+    }
+  ],
+  "missing_inputs": [],
+  "mismatches": [],
+  "source_inventory": [
+    {
+      "path": "ssvc_flow/src/modeling_qualification/__init__.py",
+      "bytes": 83,
+      "sha256": "3583c4b8553dcaa3fa5e6b0e3554a36bc38643eb7aecfbd65e79763c688436d1",
+      "actual_sha256": "3583c4b8553dcaa3fa5e6b0e3554a36bc38643eb7aecfbd65e79763c688436d1",
+      "actual_bytes": 83,
+      "status": "PASS"
+    },
+    {
+      "path": "ssvc_flow/src/modeling_qualification/cli.py",
+      "bytes": 8657,
+      "sha256": "81bcb4337ce500f996907b89031bdd4ce2cc5bfe094bf4538a67d8f2845f998c",
+      "actual_sha256": "81bcb4337ce500f996907b89031bdd4ce2cc5bfe094bf4538a67d8f2845f998c",
+      "actual_bytes": 8657,
+      "status": "PASS"
+    },
+    {
+      "path": "ssvc_flow/src/modeling_qualification/collection.py",
+      "bytes": 37762,
+      "sha256": "e6a850469baac9c3cc95214e38ca60b1e83a6d258a0d116df6488e7ddea543ad",
+      "actual_sha256": "e6a850469baac9c3cc95214e38ca60b1e83a6d258a0d116df6488e7ddea543ad",
+      "actual_bytes": 37762,
+      "status": "PASS"
+    },
+    {
+      "path": "ssvc_flow/src/modeling_qualification/cost_supplement.py",
+      "bytes": 20395,
+      "sha256": "9c76c773116c8bd0b741ca7f97722b07475398ea2a21563d8ca547f0ededf30f",
+      "actual_sha256": "9c76c773116c8bd0b741ca7f97722b07475398ea2a21563d8ca547f0ededf30f",
+      "actual_bytes": 20395,
+      "status": "PASS"
+    },
+    {
+      "path": "ssvc_flow/src/modeling_qualification/evaluation.py",
+      "bytes": 74698,
+      "sha256": "0d8a0df148c671e35d7a4deb5d83f933e237fba63e27771798796ea4b4aea689",
+      "actual_sha256": "0d8a0df148c671e35d7a4deb5d83f933e237fba63e27771798796ea4b4aea689",
+      "actual_bytes": 74698,
+      "status": "PASS"
+    },
+    {
+      "path": "ssvc_flow/src/modeling_qualification/io.py",
+      "bytes": 1552,
+      "sha256": "7155e31db1db58dadd41d25f131b8ed258969f8b1b46822335e2241cd8415803",
+      "actual_sha256": "7155e31db1db58dadd41d25f131b8ed258969f8b1b46822335e2241cd8415803",
+      "actual_bytes": 1552,
+      "status": "PASS"
+    },
+    {
+      "path": "ssvc_flow/src/modeling_qualification/math_contracts.py",
+      "bytes": 22170,
+      "sha256": "194554b5bd29be71624bf2fc5f5036abdfd396d3e4fc0ea5f94776a3a15d8574",
+      "actual_sha256": "194554b5bd29be71624bf2fc5f5036abdfd396d3e4fc0ea5f94776a3a15d8574",
+      "actual_bytes": 22170,
+      "status": "PASS"
+    },
+    {
+      "path": "ssvc_flow/src/modeling_qualification/models.py",
+      "bytes": 7365,
+      "sha256": "cac0c43ada7513eb6f8ca94c5d2c51b125b6f695eaef486033c22ed453d8f797",
+      "actual_sha256": "cac0c43ada7513eb6f8ca94c5d2c51b125b6f695eaef486033c22ed453d8f797",
+      "actual_bytes": 7365,
+      "status": "PASS"
+    },
+    {
+      "path": "ssvc_flow/src/modeling_qualification/plots.py",
+      "bytes": 9210,
+      "sha256": "eeea09b072ae8721fa75320062fb1ec554ac844437f6a1bac3c494b6b39a2678",
+      "actual_sha256": "eeea09b072ae8721fa75320062fb1ec554ac844437f6a1bac3c494b6b39a2678",
+      "actual_bytes": 9210,
+      "status": "PASS"
+    },
+    {
+      "path": "ssvc_flow/src/modeling_qualification/protocol.py",
+      "bytes": 2710,
+      "sha256": "b201220536d66f2957af21431b515cb7da3359eeb2b1468bcedd7c68e0121ef4",
+      "actual_sha256": "b201220536d66f2957af21431b515cb7da3359eeb2b1468bcedd7c68e0121ef4",
+      "actual_bytes": 2710,
+      "status": "PASS"
+    },
+    {
+      "path": "ssvc_flow/src/modeling_qualification/real_audit.py",
+      "bytes": 32149,
+      "sha256": "d53afc546966f227cddc522980dc457a6ee2017201ef64d05b02fdb20a19f5d2",
+      "actual_sha256": "d53afc546966f227cddc522980dc457a6ee2017201ef64d05b02fdb20a19f5d2",
+      "actual_bytes": 32149,
+      "status": "PASS"
+    },
+    {
+      "path": "ssvc_flow/src/modeling_qualification/real_vectors.py",
+      "bytes": 25726,
+      "sha256": "790ef42dc123773ba54080a3e3edbb9c4d21c94961db7310d04c47a7656ed8e9",
+      "actual_sha256": "790ef42dc123773ba54080a3e3edbb9c4d21c94961db7310d04c47a7656ed8e9",
+      "actual_bytes": 25726,
+      "status": "PASS"
+    },
+    {
+      "path": "ssvc_flow/src/modeling_qualification/report.py",
+      "bytes": 23476,
+      "sha256": "5a8dd19b6e3f6b89b837db256277fee1a97bce55df9e881f598e9e0b4049fc2a",
+      "actual_sha256": "5a8dd19b6e3f6b89b837db256277fee1a97bce55df9e881f598e9e0b4049fc2a",
+      "actual_bytes": 23476,
+      "status": "PASS"
+    },
+    {
+      "path": "ssvc_flow/src/modeling_qualification/toy.py",
+      "bytes": 16207,
+      "sha256": "9ab1df1d5f3267277f957d523d6dac99f741a1e3e151076f9d6066245644454c",
+      "actual_sha256": "9ab1df1d5f3267277f957d523d6dac99f741a1e3e151076f9d6066245644454c",
+      "actual_bytes": 16207,
+      "status": "PASS"
+    },
+    {
+      "path": "ssvc_flow/src/modeling_qualification/tracking.py",
+      "bytes": 45883,
+      "sha256": "5079bbf53d9bf701a0d8cf32b32991c0519361533dec9c5b3551499b11bd6c5f",
+      "actual_sha256": "5079bbf53d9bf701a0d8cf32b32991c0519361533dec9c5b3551499b11bd6c5f",
+      "actual_bytes": 45883,
+      "status": "PASS"
+    },
+    {
+      "path": "ssvc_flow/src/modeling_qualification/witnesses.py",
+      "bytes": 16511,
+      "sha256": "6477f8652a627e531857b4c1546dee0a9593d70a9f3e4ef98a89c911e34a4045",
+      "actual_sha256": "6477f8652a627e531857b4c1546dee0a9593d70a9f3e4ef98a89c911e34a4045",
+      "actual_bytes": 16511,
+      "status": "PASS"
+    }
+  ],
+  "archives": [
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/reports/SSVC_MODELING_PRO_ANALYSIS_20260915.zip",
+      "sha256": "c42bf359950de62ab01a22f83fb3ce7b0dfb1fc18ef34719fefcb199551f1ef3",
+      "bytes": 80480813,
+      "matches_parent_attachment": true
+    }
+  ],
+  "parent_archive_verified": true,
+  "seed_collision_audit": {
+    "status": "PASS",
+    "checked_candidate_seeds": [
+      501,
+      502,
+      503,
+      504,
+      505,
+      506,
+      601,
+      602,
+      603,
+      604,
+      605,
+      606,
+      607,
+      608,
+      609,
+      610
+    ],
+    "colliding_seeds": [],
+    "collisions": [],
+    "observed_trajectory_seeds": [
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      201,
+      202,
+      203,
+      204,
+      251,
+      252,
+      253,
+      254,
+      255,
+      256,
+      257,
+      258,
+      259,
+      260,
+      301,
+      302,
+      303,
+      304,
+      305,
+      306,
+      307,
+      308,
+      309,
+      310
+    ],
+    "manifests_scanned": 4,
+    "roots": [
+      "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915"
+    ],
+    "scope": "local actual trajectory manifests; declared future protocol seeds excluded",
+    "excluded_test_fixture_manifest_count": 0,
+    "scan_errors": []
+  },
+  "originals_modified": false,
+  "historical_trajectories_regenerated": 0
+}
