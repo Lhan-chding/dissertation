@@ -4,7 +4,7 @@
 
 ## 已核验的实际运行状态
 
-2026-09-15 03:38 UTC 网络恢复后已重新连接。bank05 的完整服务器回执已取回并匹配原 SHA-256；bank11（154574）已正常完成并通过完整原件和独立统计复核。目前五个 bank 均已完成复核；最后一个 composite bank（154797）于 03:41:41 UTC 启动，03:49:53 UTC 实查 RUNNING，在 gpu-pro6000-5 的物理索引5使用一张 PRO 6000。03:58 UTC另核实历史R2补测154821已在第二张PRO6000并行运行；监控仍为每小时一次，S2正式训练未启动。以下保留历史快照，最新记录见本文末尾。
+用户于2026-09-15要求：当前两项任务完成后不再开展新实验，只整理本轮全部已完成实验的详细结果文档。该要求覆盖本文较早的补位安排。最后实查时间为05:59:06 UTC：composite bank（154797）仍为RUNNING；历史R2 X_BASE（154821）已于05:09:03 UTC正常完成、exit0，完整原件和独立统计复核已完成。此前五个S1 bank均已完成复核。X_VALID尚未提交，现标记NOT_RUN_CANCELLED_BEFORE_SUBMISSION_BY_USER；S2及其他新增实验不执行。每小时仅监控当前任务，完成已有证据复核和六bank CPU整体分析，生成、核验并交付一份详细中文文档后暂停自动任务。以下较早记录均为历史快照，最新边界见本文末尾。
 
 以下是 2026-09-14 14:02:30 UTC（新加坡时间 22:02:30）的快照，不是最终结果。
 
@@ -253,11 +253,11 @@ bank05最终复核完成后，重新核对73个冻结源码、计划和真实smo
 
 两者均使用老师QOS `soujanya-poria-startfund-2026-03`、partition cluster02、account rose，24小时墙钟上限、no-requeue；未手填CPU/内存。新作业启动回执03:57:34 UTC；初次并行快照两项目标输出目录尚未出现，尚不能声称已产出测量或完成训练。
 
-历史输出为私有ROOT下 `historical_R2/X_BASE`；旧R4 checkpoint和当前S1源码/脚本未修改。X_VALID的独立单卡wrapper已生成并核验，尚未提交。保持整个本项目最多两个GPU作业排队或运行；任一当前作业完成并复核后，可用空位提交X_VALID，不要求等待另一个独立作业。每次填补空位前仍检查队列、已完成结果、来源/预算、目标目录与intent，避免重复提交；不使用afterok绕过结果分析。
+历史输出为私有ROOT下 `historical_R2/X_BASE`；旧R4 checkpoint和当前S1源码/脚本未修改。X_VALID的独立单卡wrapper曾生成并核验，但尚未提交。此前计划在空位出现后提交X_VALID；该计划已被用户随后要求停止新实验的指令覆盖，现不再有效。准备脚本不属于已执行实验。
 
 历史R2完成验收要求 `PASS / REAL_CUDA_HISTORICAL_R2`、864个唯一输出、0 optimizer_updates/0 training_outputs、training_started=false、full_endpoint_state_unchanged=true；同时核对completion manifest/binding、identity/request manifest、raw ledger、原端点哈希、三条件及family×condition计数、完整状态恢复和日志。结果继续保留NOT_CERTIFIED，与N/OOD主指标分开，不能把补测称为新增S2训练。
 
-每小时监控同时覆盖154797和154821。S1全部完成时先完成其整体分析；如果历史R2仍在运行或X_VALID尚待执行，继续监控及完成两臂复核，全部结束后再暂停。正式S2训练仍受完整S1结果及门禁约束，当前未启动。
+最新收尾安排：每小时检查154797和154821的状态，仅完成现有作业和已有结果复核；S1完成后运行CPU整体分析。X_VALID不提交，正式S2训练不启动。详细结果文档核验交付后暂停监控。
 
 | 证据 | SHA-256 |
 | --- | --- |
@@ -267,3 +267,44 @@ bank05最终复核完成后，重新核对73个冻结源码、计划和真实smo
 | X_VALID单卡脚本（未提交） | `11b755abad76e70ffccdf4ae874a884b9702c3bb254c5581abf2c06c1dae4925` |
 | X_BASE提交回执 | `e5ef3865af7acec1f47c87561587e0cd14967136ac5b0b0336ca59ae30a59815` |
 | 两作业并行快照 | `87d25ec3bee9053702383d6e31bcb9c66a7397bf9d2068ef0b9a3f33d3a5c3cf` |
+
+## 2026-09-15 用户收尾边界与历史 X_BASE 完成状态
+
+用户明确要求“这两个文件任务完成之后就不再做新的实验了，而是将这次完成的所有实验的结果详细信息整理成一个文档给我即可”。当前两项对应154797、154821，不取消它们已提交的工作；不再新增GPU实验、历史X_VALID补测、S2、seed或模型。空闲卡不再补位。该指令优先于旧设计中的后续执行模板和本文较早安排。
+
+05:59:06 UTC实查154797仍RUNNING、尚无completed；154821已COMPLETED、exit0，03:57:33至05:09:03 UTC的Slurm时长4,290秒，脚本开始回执03:57:34 UTC至退出的时长4,289秒。其保存结果为PASS / REAL_CUDA_HISTORICAL_R2、864条评估输出、0次更新、0条训练输出，training_started=false、full_endpoint_state_unchanged=true，保留NOT_CERTIFIED；后者是GPU运行保存的检查结果，尚须区分CPU独立复核可以确认的事实。
+
+已取回紧凑包并独立复算：SYM_ORIGINAL的X/S/W/I为170/1/103/14；IMAGE_CUE为278/2/7/1；IMAGE_ONLY为288/0/0/0。每条件288条。原计数全部一致；未新增区间或M。历史R2与S1及N/OOD统计分开。原始输入、parser、checkpoint和完整绑定由另一路只读CPU复核。
+
+本地与服务器同名控制回执 `execution_scope_stop_after_current_20260915.json` 已核对相同SHA-256：`a13f753b9a0ccab3590d397903bb2c3d65ce3575bdcbee510836f408ede678e1`。既有每小时自动任务ssvc-5090已改为“SSVC现有任务收尾与完整报告”，明确禁止新实验。它在所有现有结果核验、单份详细中文文档生成并交付后暂停；当前仍有154797未完成，不能宣称最终文档已交付。
+
+最终文档范围是本轮六个S1 bank的实际状态与结果、已执行的历史X_BASE R2、CPU/真实smoke及失败尝试记录；旧R3/R4仅作输入背景。文档保留所有分组、策略别名、样本/更新预算、区间与不确定性、几何及恢复检查、运行时间和来源哈希，不补写未执行数据或因果结论。
+
+### 历史 X_BASE 独立复核完成
+
+只读CPU复核已完成：73个冻结源码、5个completion manifest文件及3项完成binding一致；原R4实际step64 checkpoint的文件/state/参数/Adam哈希、成熟step64与2,048个训练sample keys吻合，状态全部有限。基于原R4 core state和已有S1 forward metadata在CPU重建本次origin与policy hash，与保存请求身份吻合；未重新捕获GPU模型状态。
+
+从原calibration和72张图像核对216 prompts及864条固定seed/sample key。每prompt全部5条旧R2输入支持记录（合计1,080条）的final prompt、token、tensor/pixel哈希一致。864条原始记录全部经CPU tokenizer decode、EOS/有限logprob和semantic reparse复核；停止原因均为EOS，共13,499个behavior tokens。prepared tensors未重新生成，模型权重分片未重新加载或逐片重算哈希。
+
+| 条件 | n | X / S / W / I | pX % | v % | qX % |
+| --- | ---: | --- | ---: | ---: | ---: |
+| SYM_ORIGINAL | 288 | 170 / 1 / 103 / 14 | 59.027778 | 95.138889 | 62.043796 |
+| IMAGE_CUE | 288 | 278 / 2 / 7 / 1 | 96.527778 | 99.652778 | 96.864111 |
+| IMAGE_ONLY | 288 | 288 / 0 / 0 / 0 | 100 | 100 | 100 |
+
+上表概率为已有计数的独立派生点值，pX=X/n、v=(X+S+W)/n、qX=X/(X+S+W)；原程序只保存family×condition计数，不包含这些新派生点值的置信区间。本次未产生新CI、M或跨臂效果。IMAGE_ONLY的全X仅为本次观察，保留NOT_CERTIFIED。三种条件分开，不并入N/OOD或S1。样本elapsed字段合计1,922.3449183967896秒，与Slurm4,290秒和shell4,289秒分别报告。
+
+原raw的864条phase均为S2，这是共用request builder的标签；identity.phase为S2_HISTORICAL_R2、role为historical_endpoint/R2、执行类型为REAL_CUDA_HISTORICAL_R2。保存结果为0更新/0训练输出，不能据phase标签称为新增S2训练。full_endpoint_state_unchanged=true由保存的完整结果及冻结代码检查支持；没有单独的post-state artifact，CPU复核未独立重测评估后的GPU状态。
+
+归档含12个普通文件、488,037 bytes，全部5个completion manifest文件安全下载并核验；原端点PT不在本地归档，已在服务器CPU核验。下列回执将其字节身份与结论绑定：
+
+| 文件 | SHA-256 |
+| --- | --- |
+| historical_r2_X_BASE_review_bundle_154821.tar.gz | `1000107dc54f310804f0c10845fc6ce99cd293b9cc0ef87b132e491a1de60936` |
+| completion_manifest.json | `b1082fdecd35b51806af65b6c866cc05db109ec0444a9155749b7ba8fc0a7982` |
+| archive_verification.json | `710f1cedc9f07355ef4e48de42510515a0b0055330390f9e385a96c716b90b37` |
+| historical_r2_X_BASE_integrity_154821.json | `ca5b9bc5c28d0bcff3b8cb1bf43ee85691003377efb169c593fda7c43dd819bc` |
+| statistics_review.json | `86b61afbb06ed4c580ae4bef85beee79fe218b40c12e43deb4f08422ebc95de8` |
+| final_review_decision.json | `af0b16dddc18bd77589df2847daf4ad073fd8c24cedf32989c1a5440f5f85442` |
+
+最终复核状态为COMPLETED_REVIEWED_NO_SUCCESSOR_BY_USER。仍仅等待现有composite154797，完成已有结果CPU分析和最终文档；不提交任何新实验。

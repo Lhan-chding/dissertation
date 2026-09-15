@@ -2,9 +2,15 @@
 
 初始本地实现 commit 为 `d261d67daba5cac54a6736e366d951ede8d19932`，文档标记提交 `e1ce594591453f3970e96fa1dfcd6997fdc0ee05` 不改变该版源码。该版 CPU 完整套件 1228 项通过；交付前最终修复后全部新增 205 项和参考数学 15 项通过，均无失败或跳过。这些计数对应初始本地验收。
 
-本交接对应分支 `codex/ssvc-mechanism-followup-20260914`，工作目录为该仓库的 `ssvc_flow/`。初始源码版本与 CPU 结果见 [IMPLEMENTATION_REPORT_zh.md](IMPLEMENTATION_REPORT_zh.md) 和 [machine_readable_readiness.json](machine_readable_readiness.json)。用户随后授权服务器验证；首次 5090 smoke 在模型分配前因计划指纹不一致退出。修复提交 `154599ced9a0826997bdc69b2ed6ac4943e863bd` 的 CPU 原件核验作业 153965 和 PRO 6000 单卡 smoke 作业 154001 已通过。用户进一步授权进入 S1 并使用两个独立单卡作业并行。bank00（154220）、bank03（154221）、bank04（154346）已完成并完整复核。bank05（154573）已完成，网络恢复后完整服务器回执已取回并核对SHA-256，最终复核已补齐。bank11（154574）于2026-09-14 22:39:32 UTC正常完成，原件/checkpoint/raw ledger和独立统计均复核通过。最后一个composite_no_x_plus_three_level作业154797于2026-09-15 03:41:41 UTC启动，03:49:53 UTC实查RUNNING，在gpu-pro6000-5物理索引5使用一张PRO6000、老师特殊QOS。五个已完成bank合计43次Adam/1,376 backward/7,680独立样本；所有结果仍为NOT_CERTIFIED。用户于2026-09-15进一步要求独立工作同步执行，已用第二张PRO6000启动历史R2 X_BASE补测154821，03:58:01 UTC实查RUNNING，gpu-pro6000-2物理索引0；每臂864评估输出、0次Adam，属于旧端点诊断补测。X_VALID脚本已准备，待任一当前作业完成并复核后填补空位。每小时监控两项任务，S1完成后生成整体分析，并继续完成两臂历史R2复核。S1整体尚未完成，S2正式训练未启动。验证事实见 [SERVER_VALIDATION_20260914_zh.md](SERVER_VALIDATION_20260914_zh.md)，S1 实测和调度记录见 [S1_EXECUTION_20260914_zh.md](S1_EXECUTION_20260914_zh.md)。不能把初始 CPU 通过记录视为 GPU 通过证据。
+本交接对应分支 `codex/ssvc-mechanism-followup-20260914`，工作目录为该仓库的 `ssvc_flow/`。初始源码版本与 CPU 结果见 [IMPLEMENTATION_REPORT_zh.md](IMPLEMENTATION_REPORT_zh.md) 和 [machine_readable_readiness.json](machine_readable_readiness.json)。用户随后授权服务器验证；首次 5090 smoke 在模型分配前因计划指纹不一致退出。修复提交 `154599ced9a0826997bdc69b2ed6ac4943e863bd` 的 CPU 原件核验作业 153965 和 PRO 6000 单卡 smoke 作业 154001 已通过。用户进一步授权进入 S1 并使用两个独立单卡作业并行。bank00（154220）、bank03（154221）、bank04（154346）已完成并完整复核。bank05（154573）已完成，网络恢复后完整服务器回执已取回并核对SHA-256，最终复核已补齐。bank11（154574）于2026-09-14 22:39:32 UTC正常完成，原件/checkpoint/raw ledger和独立统计均复核通过。最后一个composite_no_x_plus_three_level作业154797于2026-09-15 03:41:41 UTC启动，05:59:06 UTC实查仍RUNNING，在gpu-pro6000-5物理索引5使用一张PRO6000、老师特殊QOS。五个已完成bank合计43次Adam/1,376 backward/7,680独立样本；所有结果仍为NOT_CERTIFIED。历史R2 X_BASE补测154821使用第二张PRO6000（gpu-pro6000-2物理索引0），已于05:09:03 UTC正常完成；864评估输出、0次Adam，属于旧端点诊断，原件、请求/输入/parser和独立计数复核已通过。用户随后明确要求当前两项任务完成后不再做新实验，只交付本轮全部已完成实验的详细文档。因此X_VALID虽曾准备脚本但未提交，现取消后续启动；S2及其他新实验均不执行。每小时只监控现有任务；六bank完成后进行CPU整体分析，全部证据核验并交付单份详细中文结果文档后暂停自动任务。S1整体尚未完成，最终文档尚未交付。验证事实见 [SERVER_VALIDATION_20260914_zh.md](SERVER_VALIDATION_20260914_zh.md)，S1 实测和调度记录见 [S1_EXECUTION_20260914_zh.md](S1_EXECUTION_20260914_zh.md)。不能把初始 CPU 通过记录视为 GPU 通过证据。
 
-## 当前停止点和原件
+## 当前收尾范围
+
+2026-09-15最新用户指令优先：仅允许现有154797、154821完成及只读/CPU结果复核；禁止新增实验、X_VALID、S2、额外seed/模型/采样。控制回执 `execution_scope_stop_after_current_20260915.json` 的本地/服务器SHA-256均为 `a13f753b9a0ccab3590d397903bb2c3d65ce3575bdcbee510836f408ede678e1`。自动任务ssvc-5090保持每小时检查，在详细中文文档生成、核验和交付后暂停。
+
+以下服务器准备、smoke、S1、S2和历史双臂命令保留为实现与设计参考。已完成步骤不重跑；当前允许剩余的现有结果CPU分析不意味着允许提交其余实验。S2/X_VALID等模板不构成执行授权。
+
+## 原件与原始准备要求
 
 本地紧凑包只能完成元数据审计。开始服务器步骤前，必须定位完整 R3-warm、R4 及其递归上游原件。不要把紧凑包解压后当作完整 run。`prepare-server` 会实际复核文件、checkpoint、样本、数据、环境证书与源码；缺项或身份不一致时拒绝生成有效计划。
 
