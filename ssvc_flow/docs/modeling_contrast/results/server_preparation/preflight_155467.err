@@ -1,0 +1,36 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/projects/_ssd/varunssd/louis-ssvc/modeling_contrast_v2_20260915/checkout/ssvc_flow/src/modeling_contrast/server_cli.py", line 296, in <module>
+    main()
+  File "/projects/_ssd/varunssd/louis-ssvc/modeling_contrast_v2_20260915/checkout/ssvc_flow/src/modeling_contrast/server_cli.py", line 280, in main
+    preflight(config, config_path, settings, run_root, control)
+  File "/projects/_ssd/varunssd/louis-ssvc/modeling_contrast_v2_20260915/checkout/ssvc_flow/src/modeling_contrast/server_cli.py", line 123, in preflight
+    subprocess.run(command, cwd=ROOT, stdout=stream, stderr=subprocess.STDOUT, check=True)
+  File "/projects/varunssd/louis-ssvc/envs/ssvc-py312/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/projects/varunssd/louis-ssvc/envs/ssvc-py312/bin/python', '-m', 'pytest', 'tests/modeling_contrast', '-q', '-ra', '--junitxml', '/projects/varunssd/louis-ssvc/modeling_contrast_v2_20260915/control/preflight_155467/tests.xml', '--basetemp', '/projects/varunssd/louis-ssvc/modeling_contrast_v2_20260915/tmp/fixtures/preflight']' returned non-zero exit status 1.
+Command exited with non-zero status 1
+	Command being timed: "/projects/varunssd/louis-ssvc/envs/ssvc-py312/bin/python -m src.modeling_contrast.server_cli preflight --settings /projects/varunssd/louis-ssvc/modeling_contrast_v2_20260915/server_settings.json"
+	User time (seconds): 5.54
+	System time (seconds): 1.54
+	Percent of CPU this job got: 35%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:20.04
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 559872
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 314
+	Minor (reclaiming a frame) page faults: 234027
+	Voluntary context switches: 10580
+	Involuntary context switches: 4023
+	Swaps: 0
+	File system inputs: 256
+	File system outputs: 584
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 1

@@ -1,0 +1,13 @@
+{
+  "job_id": 155467,
+  "status": "FAILED_TEST_SETUP_BEFORE_N4",
+  "source_commit": "deac6203410885cedf0985a87afff06ffe8b11d3",
+  "wall_seconds": 20.04,
+  "passed_tests": 156,
+  "test_setup_errors": 105,
+  "cause": "pytest basetemp parent directory absent",
+  "new_optimizer_updates": 0,
+  "N4_started": false,
+  "log_sha256": "f1c2307edf6daf0597edae7af7f4f3725eba4c4e9dc7ac45ffaf3384e08134c9",
+  "fix": "Create monitored fixture parent and use a distinct per-job basetemp."
+}

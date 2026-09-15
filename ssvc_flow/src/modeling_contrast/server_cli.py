@@ -107,6 +107,8 @@ def preflight(config, config_path, settings, run_root, control):
     collisions = scan_seed_collisions(roots, seeds)
     if collisions:
         raise ValueError("STOP_FOR_REVIEW seed collisions: " + json.dumps(collisions))
+    fixture_root = Path(settings["temporary_root"]) / "fixtures"
+    fixture_root.mkdir(parents=True, exist_ok=True)
     command = [
         sys.executable,
         "-m",
@@ -117,7 +119,7 @@ def preflight(config, config_path, settings, run_root, control):
         "--junitxml",
         str(control / "tests.xml"),
         "--basetemp",
-        str(Path(settings["temporary_root"]) / "fixtures/preflight"),
+        str(fixture_root / f"preflight_{os.environ['SLURM_JOB_ID']}"),
     ]
     with (control / "tests.log").open("w") as stream:
         subprocess.run(command, cwd=ROOT, stdout=stream, stderr=subprocess.STDOUT, check=True)
