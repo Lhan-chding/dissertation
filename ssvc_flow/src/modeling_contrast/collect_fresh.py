@@ -64,6 +64,14 @@ def build_fresh_parent_config(config: dict) -> dict:
     return adapted
 
 
+def _is_appledouble_sidecar(path: Path) -> bool:
+    """Recognize macOS metadata by both its sidecar name and AppleDouble magic."""
+    if not path.name.startswith("._"):
+        return False
+    with path.open("rb") as stream:
+        return stream.read(4) == b"\x00\x05\x16\x07"
+
+
 def scan_seed_collisions(existing_run_roots, requested_seeds: set[int]) -> list[dict]:
     """Read local run inventories and actual seed-named raw files; no renumbering."""
     if not existing_run_roots:
@@ -75,6 +83,8 @@ def scan_seed_collisions(existing_run_roots, requested_seeds: set[int]) -> list[
             raise ValueError(f"seed inventory root missing: {root}")
         for path in sorted(root.rglob("*")):
             if not path.is_file() or "fixtures" in path.parts or ".git" in path.parts:
+                continue
+            if _is_appledouble_sidecar(path):
                 continue
             # Locks and planned configs are not evidence of already generated seeds.
             if path.suffix in (".npz", ".jsonl"):

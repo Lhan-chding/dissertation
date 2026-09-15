@@ -1,0 +1,13 @@
+{
+  "status": "FAILED_BEFORE_MODEL_EXECUTION",
+  "job_id": 155450,
+  "source_commit": "4296d5a4c70884463a352196f7362a62c3ca31ae",
+  "cause": "AppleDouble ._manifest.json interpreted as experiment JSON",
+  "sidecar_magic_hex": "0005160700020000",
+  "elapsed_wall_seconds": 9.18,
+  "new_optimizer_updates": 0,
+  "N4_started": false,
+  "tests_started": false,
+  "log_sha256": "edb44d7a50e314929d76a4d765d72eb6117c01a5de26f04e4d1c4ad12c28a9e5",
+  "corrective_scope": "Recognize only AppleDouble sidecar magic plus ._ name; retain real and corrupt manifest rejection; include failed attempt time in next budget."
+}

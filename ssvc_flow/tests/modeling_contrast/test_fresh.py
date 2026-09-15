@@ -147,6 +147,42 @@ def test_seed_inventory_rejects_missing_scan_roots(tmp_path):
         scan_seed_collisions([tmp_path / "missing"], {601})
 
 
+def test_seed_inventory_skips_only_verified_appledouble_sidecars(tmp_path):
+    # AppleDouble metadata is not a raw collection or a JSON inventory.
+    sidecar = b"\x00\x05\x16\x07\x00\x02\x00\x00" + b"\xff" * 24
+    for name in ("._manifest.json", "._seed601_X_BASE.npz"):
+        (tmp_path / name).write_bytes(sidecar)
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(json.dumps({"trajectories": [{"seed": 601}]}))
+    assert scan_seed_collisions([tmp_path], {601}) == [
+        {"seed": 601, "evidence": str(manifest)}
+    ]
+    assert (tmp_path / "._manifest.json").read_bytes() == sidecar
+
+
+@pytest.mark.parametrize(
+    ("name", "content"),
+    [
+        ("manifest.json", b"\x00\x05\x16\x07\xff"),
+        ("._manifest.json", b"\xffnot AppleDouble"),
+        ("._manifest.json", b"\x00\x05\x16"),
+        ("._manifest.json", b"\x00\x05\x16\x00\xff"),  # AppleSingle is not exempt.
+    ],
+)
+def test_seed_inventory_refuses_unverified_or_real_corrupt_manifests(tmp_path, name, content):
+    (tmp_path / name).write_bytes(content)
+    with pytest.raises(ValueError, match="manifest unreadable"):
+        scan_seed_collisions([tmp_path], {601})
+
+
+def test_seed_inventory_checks_json_even_with_sidecar_style_name(tmp_path):
+    manifest = tmp_path / "._manifest.json"
+    manifest.write_text(json.dumps({"trajectories": [{"seed": 601}]}))
+    assert scan_seed_collisions([tmp_path], {601}) == [
+        {"seed": 601, "evidence": str(manifest)}
+    ]
+
+
 def test_valid_frozen_gate_can_be_checked_without_training(tmp_path):
     config, path, lock, kwargs = frozen_fixture(tmp_path)
     receipt = validate_fresh_gate(config, path, **kwargs)

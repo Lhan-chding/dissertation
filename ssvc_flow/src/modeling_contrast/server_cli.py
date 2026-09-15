@@ -63,6 +63,15 @@ def _library_versions():
     }
 
 
+def _prior_attempt_wall(settings):
+    value = settings.get("prior_server_attempt_wall_seconds", 0)
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+        raise ValueError("invalid prior server attempt time")
+    if value < 0:
+        raise ValueError("invalid prior server attempt time")
+    return value
+
+
 def _preflight_completion(settings, run_root):
     from .io import sha256_file
 
@@ -120,6 +129,7 @@ def preflight(config, config_path, settings, run_root, control):
     smoke = run_smoke(config, parent, smoke_out)
     budget = project_frozen_validation_budget(config, original, run_root, parent_root=parent)
     forecast = server_forecast(budget, _json(run_root / "smoke/smoke_result.json"), smoke)
+    forecast["wall_seconds"] += _prior_attempt_wall(settings)
     gate = resource_gate(forecast, config)
     receipt = {
         "status": "PASS" if gate["passed"] else "RESOURCE_REVIEW_REQUIRED",
@@ -260,7 +270,7 @@ def main(argv=None):
     from .frozen_validation import _current_resources
     from .server_checks import RuntimeResourceWatchdog
 
-    prior_wall = _current_resources(run_root)["wall_seconds"]
+    prior_wall = _current_resources(run_root)["wall_seconds"] + _prior_attempt_wall(settings)
     if args.mode == "execute":
         prior_wall += _preflight_completion(settings, run_root)["wall_seconds"]
     with RuntimeResourceWatchdog(
