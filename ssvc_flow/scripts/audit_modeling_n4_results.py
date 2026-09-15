@@ -210,7 +210,7 @@ def contrast_stats(prediction, truth, groups):
     labels = sorted(set(groups))
     if len(labels) != 6 or any(np.count_nonzero(groups == label) != 12 for label in labels):
         raise ValueError("expected six groups with twelve prompts each")
-    result = {}
+    result = {"group_statistics": [{"group": str(label)} for label in labels]}
     for quantity, category, sign in (("pX", 0, 1), ("v", 3, -1)):
         errors = np.column_stack(
             [sign * (prediction - truth)[:, groups == label, category].mean(1) for label in labels]
@@ -221,7 +221,46 @@ def contrast_stats(prediction, truth, groups):
         result[quantity + "_error_ss"] = float(np.square(errors).sum())
         result[quantity + "_truth_ss"] = float(np.square(signal).sum())
         result[quantity + "_abs_errors"] = np.abs(errors).ravel().tolist()
+        for index, group in enumerate(result["group_statistics"]):
+            group[quantity + "_error_ss"] = float(np.square(errors[:, index]).sum())
+            group[quantity + "_truth_ss"] = float(np.square(signal[:, index]).sum())
+            group[quantity + "_abs_errors"] = np.abs(errors[:, index]).tolist()
     return result
+
+
+def group_table(folds):
+    """Pool each actual named group without replacing its true signal energy."""
+    table = []
+    for role, rows in folds.items():
+        for identity in sorted({row["configuration_id"] for row in rows}):
+            selected = [row for row in rows if row["configuration_id"] == identity]
+            names = {group["group"] for group in selected[0]["group_statistics"]}
+            if len(names) != 6 or any(
+                len(row["group_statistics"]) != 6
+                or {group["group"] for group in row["group_statistics"]} != names
+                for row in selected
+            ):
+                raise ValueError("raw group statistic coverage differs across model rows")
+            for name in sorted(names):
+                group_rows = [
+                    {"seed": row["seed"], **group}
+                    for row in selected
+                    for group in row["group_statistics"]
+                    if group["group"] == name
+                ]
+                result = aggregate(group_rows)
+                result.update(
+                    role=role,
+                    configuration_id=identity,
+                    method=selected[0]["method"],
+                    n=64,
+                    target=TARGET,
+                    population="all",
+                    group=name,
+                    case_count=sum(len(row["pX_abs_errors"]) for row in group_rows),
+                )
+                table.append(result)
+    return table
 
 
 def read_prediction_unit(directory, entry, ai, oracle, groups, selected_ids, integrity):
@@ -612,6 +651,7 @@ def audit_results(run_root):
         "selected_pooled": pooled,
         "science_status": science_status,
         "selected_by_seed": seed_results,
+        "group_pooled": group_table(folds),
         "bootstrap": comparisons,
         "empirical_envelopes": envelopes,
         "trajectory_count": 32,

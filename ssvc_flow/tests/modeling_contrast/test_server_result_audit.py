@@ -281,3 +281,38 @@ def test_extra_by_seed_rows_are_not_silently_ignored(tmp_path):
         writer.writerows(recorded_seed)
     with pytest.raises(ValueError, match=r"BY_SEED.*coverage"):
         audit.verify_scores(tmp_path, "fresh_calibration", rows, {"C6|O_LR_MIX|64|4|1e-05|0.01|2"})
+
+
+def test_group_energy_sums_to_pooled_and_group_precision_retains_seed_support():
+    groups = np.repeat([f"group_{index}" for index in range(6)], 12)
+    truth = np.zeros((4, 72, 4))
+    for index in range(6):
+        truth[:, groups == f"group_{index}"] = np.array([0.01, -0.01, -0.02, 0.02]) * index
+    rows = [
+        {
+            "configuration_id": "selected",
+            "method": "C6",
+            "seed": seed,
+            **audit.contrast_stats(truth * scale * 0.5, truth * scale, groups),
+        }
+        for seed, scale in ((501, 1), (502, 2))
+    ]
+    table = audit.group_table({"fresh_calibration": rows})
+    pooled = audit.aggregate(rows)
+    assert len(table) == 6
+    assert {row["group"] for row in table} == set(groups)
+    assert all(
+        row["seed_count"] == 2 and row["row_count"] == 2 and row["case_count"] == 8 for row in table
+    )
+    for quantity in audit.QUANTITIES:
+        for suffix in ("error_ss", "truth_ss"):
+            field = quantity + "_" + suffix
+            assert sum(row[field] for row in table) == pytest.approx(pooled[field])
+    zero = next(row for row in table if row["group"] == "group_0")
+    assert zero["pX_nrmse"] is None and zero["v_nrmse"] is None
+    worst = max(table, key=lambda row: row["pX_error_q95"])
+    assert worst["group"] == "group_5"
+    assert worst["pX_nrmse"] == pytest.approx(0.5)
+    assert worst["pX_mae"] == pytest.approx(0.0375)
+    assert worst["pX_error_q95"] == pytest.approx(0.05)
+    assert len(json.dumps(table).encode()) < 3 * 2**20
