@@ -1,0 +1,1169 @@
+{
+  "schema": "server-semantic-identity-v1",
+  "kind": "server_runtime_identity",
+  "parent_root": "/projects/_ssd/varunssd/louis-ssvc/modeling_contrast_v2_20260915/parent_M2",
+  "checks": [
+    {
+      "name": "parent.dataset.seed",
+      "passed": true,
+      "expected": 20260915,
+      "observed": 20260915
+    },
+    {
+      "name": "parent.toy_model.model_initialization_seed",
+      "passed": true,
+      "expected": 7001,
+      "observed": 7001
+    },
+    {
+      "name": "parent.manifest.events",
+      "passed": true,
+      "comparison": "ordered semantic JSON; exact strings/integers",
+      "mismatched_paths": [],
+      "mismatch_count": 0,
+      "max_abs_float_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12
+    },
+    {
+      "name": "parent.manifest.parameter_count",
+      "passed": true,
+      "comparison": "ordered semantic JSON; exact strings/integers",
+      "mismatched_paths": [],
+      "mismatch_count": 0,
+      "max_abs_float_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12
+    },
+    {
+      "name": "parent.manifest.probe_count",
+      "passed": true,
+      "comparison": "ordered semantic JSON; exact strings/integers",
+      "mismatched_paths": [],
+      "mismatch_count": 0,
+      "max_abs_float_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12
+    },
+    {
+      "name": "parent.initialization.seed101_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed101_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed102_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed102_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed103_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed103_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed104_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed104_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed105_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed105_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed106_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed106_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed201_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed201_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed202_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed202_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed203_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed203_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed204_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed204_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed251_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed251_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed252_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed252_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed253_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed253_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed254_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed254_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed255_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed255_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed256_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed256_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed257_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed257_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed258_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed258_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed259_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed259_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed260_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed260_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed301_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed301_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed302_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed302_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed303_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed303_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed304_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed304_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed305_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed305_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed306_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed306_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed307_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed307_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed308_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed308_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed309_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed309_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed310_X_BASE",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "parent.initialization.seed310_X_VALID",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "dataset.train_features",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        72,
+        16,
+        44
+      ],
+      "observed_shape": [
+        72,
+        16,
+        44
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "dataset.train_categories",
+      "passed": true,
+      "comparison": "exact integer values",
+      "reference_shape": [
+        72,
+        16
+      ],
+      "observed_shape": [
+        72,
+        16
+      ],
+      "reference_dtype": "int8",
+      "observed_dtype": "int8"
+    },
+    {
+      "name": "dataset.probe_features",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        72,
+        16,
+        44
+      ],
+      "observed_shape": [
+        72,
+        16,
+        44
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    },
+    {
+      "name": "dataset.probe_categories",
+      "passed": true,
+      "comparison": "exact integer values",
+      "reference_shape": [
+        72,
+        16
+      ],
+      "observed_shape": [
+        72,
+        16
+      ],
+      "reference_dtype": "int8",
+      "observed_dtype": "int8"
+    },
+    {
+      "name": "train_metadata",
+      "passed": true,
+      "comparison": "ordered semantic JSON; exact strings/integers",
+      "mismatched_paths": [],
+      "mismatch_count": 0,
+      "max_abs_float_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12
+    },
+    {
+      "name": "probe_metadata",
+      "passed": true,
+      "comparison": "ordered semantic JSON; exact strings/integers",
+      "mismatched_paths": [],
+      "mismatch_count": 0,
+      "max_abs_float_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12
+    },
+    {
+      "name": "parameter_layout",
+      "passed": true,
+      "comparison": "ordered semantic JSON; exact strings/integers",
+      "mismatched_paths": [],
+      "mismatch_count": 0,
+      "max_abs_float_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12
+    },
+    {
+      "name": "generated_dataset.train",
+      "passed": true,
+      "comparison": "ordered semantic JSON; exact strings/integers",
+      "mismatched_paths": [],
+      "mismatch_count": 0,
+      "max_abs_float_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12
+    },
+    {
+      "name": "generated_dataset.control",
+      "passed": true,
+      "comparison": "ordered semantic JSON; exact strings/integers",
+      "mismatched_paths": [],
+      "mismatch_count": 0,
+      "max_abs_float_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12
+    },
+    {
+      "name": "runtime.initialization",
+      "passed": true,
+      "comparison": "finite float64 allclose",
+      "max_abs_error": 0.0,
+      "atol": 1e-14,
+      "rtol": 1e-12,
+      "reference_shape": [
+        737
+      ],
+      "observed_shape": [
+        737
+      ],
+      "reference_dtype": "float64",
+      "observed_dtype": "float64"
+    }
+  ],
+  "reasons": [],
+  "float_atol": 1e-14,
+  "float_rtol": 1e-12,
+  "comparison": "semantic values; archive bytes are not an equality criterion",
+  "new_training_steps": 0,
+  "oracle_panels_read": false,
+  "parent_source_sha256": {
+    "resolved_config.json": "5ce4feb127cbae38fe36b245adebd7de87eb70b1f2caf394c472b479cdd6410d",
+    "manifest.json": "7a226ea43f8bbe2e5cef6f10a9ea4fc11f7ac788121a542044bb9414ad56f8cf",
+    "dataset.npz": "cd60bf9e9ed133fb16d3536d2967e67606b830307e020892471476804eb47f5a",
+    "parameter_layout.json": "c93481b1f20b8509d2eca8057bf59c50c2bb2e59a5d26c6558addf0bb4a0203b",
+    "train_metadata.json": "77309e18a022608223ddca7100f5d52247c56ce5b51ec7dcd914fb54fd9d4797",
+    "probe_metadata.json": "fbe3c2ac0515c60e1b5fe890b4f2c73da56c5cf22fad3b6617518ac29a4c8811",
+    "generated_dataset/train.jsonl": "f212063814e6701ff2187ba28348fa7ad4321e5b3e5181364df714227e4fbc5a",
+    "generated_dataset/control.jsonl": "dc600fbd021b46b27b8ee08b287443f6f41b4707cc8e880589592126efed95b2"
+  },
+  "parent_reference_trajectory": "seed101_X_BASE",
+  "reference_initialization_sha256": "d5c34e124c2ddb3ccfdfd6fb3e35c5fa9529fd969f19e104c301b7869b6fe239",
+  "parent_initializations_checked": 60,
+  "temporary_generated_data_removed": true,
+  "runtime_dataset_seed": 20260915,
+  "runtime_initialization_seed": 7001,
+  "passed": true,
+  "status": "PASS"
+}

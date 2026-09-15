@@ -1,0 +1,22 @@
+{
+  "schema_version": "contrast-run-v1",
+  "binding": {
+    "source": "8a798fecbe604ec863b2734df9fb03cd6224d9720af7b00a7506cf461f9147ca",
+    "config": "c15f7e6e955fa4de09ce2688cc24f41b032d4177eaa42379ef79d17c53df900c",
+    "data": "10fee01b25bbecd9bb0bc54ca15c063bcc93f635395796c6f54f7439ce9dab52",
+    "packet": "f0ca2d83c52607b06127398bbca61f541ddcebdd9057f88113598feb47dd4c4e",
+    "selector": "cffa793f751bbd4471ada69de94ae6e977d11ba065565ad2a42d999d6b8bab9a"
+  },
+  "created_ns": 1789466472563479000,
+  "outputs": {
+    "MODEL_SELECTION_LOCK.json": "559a1b513d49c1683e19155c4183cfc0c34daf92d0892c7fbfa46f6709c88645",
+    "CONTRAST_SELECTION_BY_SEED.csv": "1ccaa65b6eb3769c31bce8c3d4647f74b895adcdc3c5c426a60a1f0b1c24aa4a",
+    "CONTRAST_SELECTION_POOLED.csv": "faf2ea795792c6406569bbb4f1e60686410686eaa2e35a1260afb83f2d469686",
+    "PAIRED_BOOTSTRAP.json": "47d1efbf78b0601344f960b432be8060d0f4b7e20b910c1f64fd9da21cbbba43",
+    "RESOLUTION.csv": "3e3b7372dfe0827af4c8c7339f25c980cb257e5f2f35f87c91e444432975dc03",
+    "DIRECTION_CURVES.csv": "0ce44a59dc1a232039f205861032cf4af7bb0769d0c841267184104fb77f22e5",
+    "DECISION_INDICATORS.json": "bc05ed28bd4fb9e5706b3bf085aa5fbd20e176336c3717f907cbee66f2fc169c",
+    "FRESH_RESOURCE_PROJECTION.json": "0e5acd7c2b998e1dd5dbf63c4f4122b7c40c3c4d8bc2aea45b31b838c1bce927"
+  },
+  "status": "COMPLETE"
+}

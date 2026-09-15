@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "archive_sha256": {
+    "parent_M2.tar.gz": "442bdc777470febfb6cc804c2f58d1bf857ad859d7b9f58ef45a1911f1ae4afd",
+    "SSVC_MODELING_PRO_ANALYSIS_20260915.zip": "c42bf359950de62ab01a22f83fb3ce7b0dfb1fc18ef34719fefcb199551f1ef3"
+  },
+  "parent_files": 252,
+  "parent_bytes": 251488795
+}

@@ -1,0 +1,51 @@
+{
+  "source_commit": "c6727f1349ba2c24e31b590d381556edcc9263f5",
+  "parent_root": "/projects/varunssd/louis-ssvc/modeling_contrast_v2_20260915/parent_M2",
+  "original_project_root": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow",
+  "control_root": "/projects/varunssd/louis-ssvc/modeling_contrast_v2_20260915/control",
+  "temporary_root": "/projects/varunssd/louis-ssvc/modeling_contrast_v2_20260915/tmp",
+  "server_seed_inventory_roots": [
+    "/projects/varunssd/louis-ssvc"
+  ],
+  "prefix_mappings": [
+    [
+      "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow",
+      "/projects/varunssd/louis-ssvc/modeling_contrast_v2_20260915/checkout/ssvc_flow"
+    ],
+    [
+      "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs/modeling_qualification/qualification_20260915/M2",
+      "/projects/varunssd/louis-ssvc/modeling_contrast_v2_20260915/parent_M2"
+    ],
+    [
+      "/Users/louis/Documents/ChatGPT/dissertation-ntu/reports/SSVC_MODELING_PRO_ANALYSIS_20260915.zip",
+      "/projects/varunssd/louis-ssvc/modeling_contrast_v2_20260915/archives/SSVC_MODELING_PRO_ANALYSIS_20260915.zip"
+    ]
+  ],
+  "original_source_prefix_mappings": [
+    [
+      "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow",
+      "/projects/varunssd/louis-ssvc/modeling_contrast_v2_20260915/original_source/ssvc_flow"
+    ]
+  ],
+  "prior_server_attempt_wall_seconds": 42.26,
+  "prior_server_attempts": [
+    {
+      "job_id": 155450,
+      "wall_seconds": 9.18,
+      "log_sha256": "edb44d7a50e314929d76a4d765d72eb6117c01a5de26f04e4d1c4ad12c28a9e5",
+      "new_optimizer_updates": 0
+    },
+    {
+      "job_id": 155467,
+      "wall_seconds": 20.04,
+      "log_sha256": "f1c2307edf6daf0597edae7af7f4f3725eba4c4e9dc7ac45ffaf3384e08134c9",
+      "new_optimizer_updates": 0
+    },
+    {
+      "job_id": 155484,
+      "wall_seconds": 13.04,
+      "log_sha256": "e2ca581f808bedd037f510d6c65dde72ecc74763c025570680cc60b30269dbff",
+      "new_optimizer_updates": 0
+    }
+  ]
+}

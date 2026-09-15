@@ -1,0 +1,8570 @@
+[
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        12,
+        29,
+        49,
+        21
+      ],
+      [
+        34,
+        74,
+        11,
+        84
+      ],
+      [
+        88,
+        2,
+        79,
+        82
+      ],
+      [
+        48,
+        44,
+        26,
+        26
+      ],
+      [
+        15,
+        88,
+        38,
+        87
+      ],
+      [
+        26,
+        46,
+        18,
+        7
+      ],
+      [
+        28,
+        0,
+        52,
+        60
+      ],
+      "INVALID_B",
+      [
+        0,
+        0,
+        1,
+        96
+      ],
+      [
+        83,
+        30,
+        33,
+        53
+      ],
+      [
+        26,
+        46,
+        64,
+        7
+      ],
+      [
+        51,
+        4,
+        84,
+        95
+      ],
+      [
+        0,
+        0,
+        0,
+        97
+      ],
+      [
+        81,
+        88,
+        86,
+        92
+      ],
+      [
+        98,
+        88,
+        36,
+        55
+      ],
+      "INVALID_A"
+    ],
+    "base_scene_id": "89047956e41e7364f9bbabfc75bacdff",
+    "chart_type": "grouped_bar",
+    "constraint_family": "duplicate_encoding",
+    "event_categories": [
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "I",
+      "S",
+      "W",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "I"
+    ],
+    "group": 0,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "sum4",
+    "prompt_id": "6e9513afe485a9f3d3a48861c50008ba",
+    "solution_count": 1,
+    "truth_structure_hash": "8745799c0535aa9933eb682177de9904e7a0b5eeab3f9296a1e0d5a1972bd3cf",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        12,
+        29,
+        49,
+        21
+      ],
+      [
+        34,
+        74,
+        11,
+        84
+      ],
+      [
+        88,
+        2,
+        79,
+        82
+      ],
+      [
+        48,
+        44,
+        26,
+        26
+      ],
+      [
+        15,
+        88,
+        38,
+        87
+      ],
+      [
+        26,
+        46,
+        18,
+        7
+      ],
+      [
+        28,
+        0,
+        52,
+        60
+      ],
+      "INVALID_B",
+      [
+        0,
+        0,
+        1,
+        96
+      ],
+      [
+        83,
+        30,
+        33,
+        53
+      ],
+      [
+        26,
+        46,
+        64,
+        7
+      ],
+      [
+        51,
+        4,
+        84,
+        95
+      ],
+      [
+        0,
+        0,
+        0,
+        97
+      ],
+      [
+        81,
+        88,
+        86,
+        92
+      ],
+      [
+        98,
+        88,
+        36,
+        55
+      ],
+      "INVALID_A"
+    ],
+    "base_scene_id": "89047956e41e7364f9bbabfc75bacdff",
+    "chart_type": "grouped_bar",
+    "constraint_family": "duplicate_encoding",
+    "event_categories": [
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "I",
+      "S",
+      "W",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "I"
+    ],
+    "group": 1,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "sum4",
+    "prompt_id": "5836647ff4209d02d9cd39c929bb50e5",
+    "solution_count": 1,
+    "truth_structure_hash": "8745799c0535aa9933eb682177de9904e7a0b5eeab3f9296a1e0d5a1972bd3cf",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      "INVALID_A",
+      [
+        7,
+        14,
+        22,
+        89
+      ],
+      [
+        32,
+        46,
+        94,
+        89
+      ],
+      [
+        18,
+        39,
+        10,
+        10
+      ],
+      [
+        21,
+        21,
+        12,
+        38
+      ],
+      [
+        44,
+        39,
+        71,
+        87
+      ],
+      [
+        55,
+        39,
+        10,
+        10
+      ],
+      [
+        56,
+        23,
+        79,
+        54
+      ],
+      [
+        43,
+        2,
+        26,
+        16
+      ],
+      [
+        12,
+        77,
+        49,
+        66
+      ],
+      "INVALID_B",
+      [
+        68,
+        86,
+        69,
+        44
+      ],
+      [
+        0,
+        37,
+        0,
+        0
+      ],
+      [
+        85,
+        98,
+        56,
+        50
+      ],
+      [
+        62,
+        95,
+        39,
+        68
+      ],
+      [
+        0,
+        38,
+        0,
+        1
+      ]
+    ],
+    "base_scene_id": "1521e818c1b46e42ab867ec013c9a893",
+    "chart_type": "grouped_bar",
+    "constraint_family": "duplicate_encoding",
+    "event_categories": [
+      "I",
+      "W",
+      "W",
+      "X",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "I",
+      "W",
+      "S",
+      "W",
+      "W",
+      "S"
+    ],
+    "group": 0,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "difference_pairs",
+    "prompt_id": "02188e960baf7f23072ad67ddb7a8ead",
+    "solution_count": 1,
+    "truth_structure_hash": "17652c44dc7863366ff5c95b3a12a93dcee268a2e2aaec918ef5a723c3196702",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      "INVALID_A",
+      [
+        7,
+        14,
+        22,
+        89
+      ],
+      [
+        32,
+        46,
+        94,
+        89
+      ],
+      [
+        18,
+        39,
+        10,
+        10
+      ],
+      [
+        21,
+        21,
+        12,
+        38
+      ],
+      [
+        44,
+        39,
+        71,
+        87
+      ],
+      [
+        55,
+        39,
+        10,
+        10
+      ],
+      [
+        56,
+        23,
+        79,
+        54
+      ],
+      [
+        43,
+        2,
+        26,
+        16
+      ],
+      [
+        12,
+        77,
+        49,
+        66
+      ],
+      "INVALID_B",
+      [
+        68,
+        86,
+        69,
+        44
+      ],
+      [
+        0,
+        37,
+        0,
+        0
+      ],
+      [
+        85,
+        98,
+        56,
+        50
+      ],
+      [
+        62,
+        95,
+        39,
+        68
+      ],
+      [
+        0,
+        38,
+        0,
+        1
+      ]
+    ],
+    "base_scene_id": "1521e818c1b46e42ab867ec013c9a893",
+    "chart_type": "grouped_bar",
+    "constraint_family": "duplicate_encoding",
+    "event_categories": [
+      "I",
+      "W",
+      "W",
+      "X",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "I",
+      "W",
+      "S",
+      "W",
+      "W",
+      "S"
+    ],
+    "group": 1,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "difference_pairs",
+    "prompt_id": "2b4da0a5727358f6b6ebd5b720ebb0c5",
+    "solution_count": 1,
+    "truth_structure_hash": "17652c44dc7863366ff5c95b3a12a93dcee268a2e2aaec918ef5a723c3196702",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        74,
+        7,
+        33,
+        98
+      ],
+      "INVALID_B",
+      [
+        0,
+        0,
+        0,
+        38
+      ],
+      [
+        0,
+        0,
+        38,
+        0
+      ],
+      [
+        69,
+        50,
+        17,
+        94
+      ],
+      [
+        59,
+        40,
+        88,
+        58
+      ],
+      "INVALID_A",
+      [
+        47,
+        9,
+        45,
+        35
+      ],
+      [
+        41,
+        94,
+        7,
+        61
+      ],
+      [
+        82,
+        9,
+        45,
+        35
+      ],
+      [
+        54,
+        83,
+        53,
+        78
+      ],
+      [
+        23,
+        26,
+        39,
+        88
+      ],
+      [
+        62,
+        39,
+        54,
+        33
+      ],
+      [
+        81,
+        33,
+        29,
+        3
+      ],
+      [
+        88,
+        85,
+        12,
+        25
+      ],
+      [
+        64,
+        19,
+        73,
+        77
+      ]
+    ],
+    "base_scene_id": "c5ed91091dd38b22530d179367ef8224",
+    "chart_type": "grouped_bar",
+    "constraint_family": "duplicate_encoding",
+    "event_categories": [
+      "W",
+      "I",
+      "S",
+      "S",
+      "W",
+      "W",
+      "I",
+      "X",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W"
+    ],
+    "group": 0,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "range4",
+    "prompt_id": "8683eba4a7830b708e09b8cf33cd1115",
+    "solution_count": 1,
+    "truth_structure_hash": "4fce199669460fd057bfc337fccb547fb81bf0b5efc19c1a50e5649fc75c9ec2",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        74,
+        7,
+        33,
+        98
+      ],
+      "INVALID_B",
+      [
+        0,
+        0,
+        0,
+        38
+      ],
+      [
+        0,
+        0,
+        38,
+        0
+      ],
+      [
+        69,
+        50,
+        17,
+        94
+      ],
+      [
+        59,
+        40,
+        88,
+        58
+      ],
+      "INVALID_A",
+      [
+        47,
+        9,
+        45,
+        35
+      ],
+      [
+        41,
+        94,
+        7,
+        61
+      ],
+      [
+        82,
+        9,
+        45,
+        35
+      ],
+      [
+        54,
+        83,
+        53,
+        78
+      ],
+      [
+        23,
+        26,
+        39,
+        88
+      ],
+      [
+        62,
+        39,
+        54,
+        33
+      ],
+      [
+        81,
+        33,
+        29,
+        3
+      ],
+      [
+        88,
+        85,
+        12,
+        25
+      ],
+      [
+        64,
+        19,
+        73,
+        77
+      ]
+    ],
+    "base_scene_id": "c5ed91091dd38b22530d179367ef8224",
+    "chart_type": "grouped_bar",
+    "constraint_family": "duplicate_encoding",
+    "event_categories": [
+      "W",
+      "I",
+      "S",
+      "S",
+      "W",
+      "W",
+      "I",
+      "X",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W"
+    ],
+    "group": 1,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "range4",
+    "prompt_id": "33f8fbccd8edb8e740de42a49e012c3a",
+    "solution_count": 1,
+    "truth_structure_hash": "4fce199669460fd057bfc337fccb547fb81bf0b5efc19c1a50e5649fc75c9ec2",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      "INVALID_B",
+      [
+        92,
+        0,
+        26,
+        54
+      ],
+      [
+        58,
+        16,
+        51,
+        58
+      ],
+      [
+        29,
+        71,
+        93,
+        39
+      ],
+      "INVALID_A",
+      [
+        0,
+        0,
+        40,
+        99
+      ],
+      [
+        81,
+        45,
+        54,
+        18
+      ],
+      [
+        48,
+        11,
+        55,
+        48
+      ],
+      [
+        47,
+        79,
+        29,
+        94
+      ],
+      [
+        23,
+        58,
+        19,
+        10
+      ],
+      [
+        47,
+        32,
+        28,
+        32
+      ],
+      [
+        96,
+        49,
+        81,
+        76
+      ],
+      [
+        0,
+        0,
+        41,
+        98
+      ],
+      [
+        47,
+        32,
+        5,
+        32
+      ],
+      [
+        69,
+        83,
+        76,
+        93
+      ],
+      [
+        94,
+        11,
+        21,
+        93
+      ]
+    ],
+    "base_scene_id": "6d013a4fe0271b4765c0903eeeba3b0e",
+    "chart_type": "line",
+    "constraint_family": "duplicate_encoding",
+    "event_categories": [
+      "I",
+      "W",
+      "W",
+      "W",
+      "I",
+      "S",
+      "W",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "S",
+      "W",
+      "W",
+      "W"
+    ],
+    "group": 0,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "sum4",
+    "prompt_id": "afa5bd61dcad7cce5d7d843b4d37a98b",
+    "solution_count": 1,
+    "truth_structure_hash": "9d8d813527b7c07f189da252f0ccad321b0564b644f453e43a24d35442f504e8",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      "INVALID_B",
+      [
+        92,
+        0,
+        26,
+        54
+      ],
+      [
+        58,
+        16,
+        51,
+        58
+      ],
+      [
+        29,
+        71,
+        93,
+        39
+      ],
+      "INVALID_A",
+      [
+        0,
+        0,
+        40,
+        99
+      ],
+      [
+        81,
+        45,
+        54,
+        18
+      ],
+      [
+        48,
+        11,
+        55,
+        48
+      ],
+      [
+        47,
+        79,
+        29,
+        94
+      ],
+      [
+        23,
+        58,
+        19,
+        10
+      ],
+      [
+        47,
+        32,
+        28,
+        32
+      ],
+      [
+        96,
+        49,
+        81,
+        76
+      ],
+      [
+        0,
+        0,
+        41,
+        98
+      ],
+      [
+        47,
+        32,
+        5,
+        32
+      ],
+      [
+        69,
+        83,
+        76,
+        93
+      ],
+      [
+        94,
+        11,
+        21,
+        93
+      ]
+    ],
+    "base_scene_id": "6d013a4fe0271b4765c0903eeeba3b0e",
+    "chart_type": "line",
+    "constraint_family": "duplicate_encoding",
+    "event_categories": [
+      "I",
+      "W",
+      "W",
+      "W",
+      "I",
+      "S",
+      "W",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "S",
+      "W",
+      "W",
+      "W"
+    ],
+    "group": 1,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "sum4",
+    "prompt_id": "0d4c86bdbf5dc45daf913b34bc70db67",
+    "solution_count": 1,
+    "truth_structure_hash": "9d8d813527b7c07f189da252f0ccad321b0564b644f453e43a24d35442f504e8",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        93,
+        21,
+        2,
+        52
+      ],
+      [
+        33,
+        55,
+        72,
+        85
+      ],
+      [
+        97,
+        58,
+        70,
+        14
+      ],
+      [
+        84,
+        78,
+        94,
+        63
+      ],
+      [
+        53,
+        7,
+        72,
+        41
+      ],
+      "INVALID_B",
+      [
+        0,
+        43,
+        0,
+        0
+      ],
+      [
+        54,
+        75,
+        47,
+        4
+      ],
+      "INVALID_A",
+      [
+        81,
+        69,
+        90,
+        9
+      ],
+      [
+        46,
+        45,
+        4,
+        27
+      ],
+      [
+        89,
+        28,
+        14,
+        36
+      ],
+      [
+        3,
+        33,
+        29,
+        73
+      ],
+      [
+        29,
+        45,
+        4,
+        27
+      ],
+      [
+        90,
+        30,
+        34,
+        23
+      ],
+      [
+        0,
+        44,
+        0,
+        1
+      ]
+    ],
+    "base_scene_id": "f127a0b61633e275af9f7d8454a96e0f",
+    "chart_type": "line",
+    "constraint_family": "duplicate_encoding",
+    "event_categories": [
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "I",
+      "S",
+      "W",
+      "I",
+      "W",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "S"
+    ],
+    "group": 0,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "difference_pairs",
+    "prompt_id": "f5ad77a0a2e4f5007bbfe59a0fb1592e",
+    "solution_count": 1,
+    "truth_structure_hash": "3e9ccdccf3d7d8cc30c0d6cb88d1e20bd9c127e50a1cb0c9010c9d614a6222ed",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        93,
+        21,
+        2,
+        52
+      ],
+      [
+        33,
+        55,
+        72,
+        85
+      ],
+      [
+        97,
+        58,
+        70,
+        14
+      ],
+      [
+        84,
+        78,
+        94,
+        63
+      ],
+      [
+        53,
+        7,
+        72,
+        41
+      ],
+      "INVALID_B",
+      [
+        0,
+        43,
+        0,
+        0
+      ],
+      [
+        54,
+        75,
+        47,
+        4
+      ],
+      "INVALID_A",
+      [
+        81,
+        69,
+        90,
+        9
+      ],
+      [
+        46,
+        45,
+        4,
+        27
+      ],
+      [
+        89,
+        28,
+        14,
+        36
+      ],
+      [
+        3,
+        33,
+        29,
+        73
+      ],
+      [
+        29,
+        45,
+        4,
+        27
+      ],
+      [
+        90,
+        30,
+        34,
+        23
+      ],
+      [
+        0,
+        44,
+        0,
+        1
+      ]
+    ],
+    "base_scene_id": "f127a0b61633e275af9f7d8454a96e0f",
+    "chart_type": "line",
+    "constraint_family": "duplicate_encoding",
+    "event_categories": [
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "I",
+      "S",
+      "W",
+      "I",
+      "W",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "S"
+    ],
+    "group": 1,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "difference_pairs",
+    "prompt_id": "9795ac037a51d7aa29b0b333456b911f",
+    "solution_count": 1,
+    "truth_structure_hash": "3e9ccdccf3d7d8cc30c0d6cb88d1e20bd9c127e50a1cb0c9010c9d614a6222ed",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      "INVALID_B",
+      [
+        66,
+        56,
+        21,
+        90
+      ],
+      [
+        0,
+        95,
+        98,
+        96
+      ],
+      [
+        64,
+        26,
+        91,
+        17
+      ],
+      [
+        18,
+        75,
+        26,
+        40
+      ],
+      [
+        63,
+        9,
+        5,
+        46
+      ],
+      [
+        12,
+        9,
+        5,
+        46
+      ],
+      [
+        68,
+        45,
+        13,
+        7
+      ],
+      [
+        60,
+        87,
+        42,
+        3
+      ],
+      [
+        0,
+        0,
+        41,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        41
+      ],
+      [
+        86,
+        2,
+        96,
+        4
+      ],
+      [
+        70,
+        62,
+        90,
+        99
+      ],
+      [
+        47,
+        10,
+        28,
+        66
+      ],
+      [
+        71,
+        90,
+        3,
+        78
+      ],
+      "INVALID_A"
+    ],
+    "base_scene_id": "721cf14ad4e15f44a2c2832c0cef1395",
+    "chart_type": "line",
+    "constraint_family": "duplicate_encoding",
+    "event_categories": [
+      "I",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "W",
+      "S",
+      "S",
+      "W",
+      "W",
+      "W",
+      "W",
+      "I"
+    ],
+    "group": 0,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "range4",
+    "prompt_id": "27e20fa67d4e306ebc799dd46028010d",
+    "solution_count": 1,
+    "truth_structure_hash": "af9d83ca08bd9f4c8ed2f6bc37f74e1c0125439c73448f73c767bbb0b09889db",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      "INVALID_B",
+      [
+        66,
+        56,
+        21,
+        90
+      ],
+      [
+        0,
+        95,
+        98,
+        96
+      ],
+      [
+        64,
+        26,
+        91,
+        17
+      ],
+      [
+        18,
+        75,
+        26,
+        40
+      ],
+      [
+        63,
+        9,
+        5,
+        46
+      ],
+      [
+        12,
+        9,
+        5,
+        46
+      ],
+      [
+        68,
+        45,
+        13,
+        7
+      ],
+      [
+        60,
+        87,
+        42,
+        3
+      ],
+      [
+        0,
+        0,
+        41,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        41
+      ],
+      [
+        86,
+        2,
+        96,
+        4
+      ],
+      [
+        70,
+        62,
+        90,
+        99
+      ],
+      [
+        47,
+        10,
+        28,
+        66
+      ],
+      [
+        71,
+        90,
+        3,
+        78
+      ],
+      "INVALID_A"
+    ],
+    "base_scene_id": "721cf14ad4e15f44a2c2832c0cef1395",
+    "chart_type": "line",
+    "constraint_family": "duplicate_encoding",
+    "event_categories": [
+      "I",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "W",
+      "S",
+      "S",
+      "W",
+      "W",
+      "W",
+      "W",
+      "I"
+    ],
+    "group": 1,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "range4",
+    "prompt_id": "f00114144e6ad79cd67c8de47f39206d",
+    "solution_count": 1,
+    "truth_structure_hash": "af9d83ca08bd9f4c8ed2f6bc37f74e1c0125439c73448f73c767bbb0b09889db",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        55,
+        14,
+        57,
+        84
+      ],
+      [
+        31,
+        70,
+        15,
+        97
+      ],
+      [
+        48,
+        81,
+        35,
+        71
+      ],
+      [
+        0,
+        0,
+        1,
+        86
+      ],
+      "INVALID_B",
+      [
+        86,
+        84,
+        32,
+        34
+      ],
+      [
+        77,
+        44,
+        97,
+        19
+      ],
+      [
+        93,
+        10,
+        54,
+        2
+      ],
+      [
+        10,
+        34,
+        18,
+        25
+      ],
+      [
+        10,
+        34,
+        99,
+        25
+      ],
+      [
+        99,
+        85,
+        27,
+        74
+      ],
+      [
+        0,
+        0,
+        0,
+        87
+      ],
+      [
+        52,
+        30,
+        94,
+        9
+      ],
+      "INVALID_A",
+      [
+        52,
+        29,
+        41,
+        67
+      ],
+      [
+        66,
+        23,
+        18,
+        10
+      ]
+    ],
+    "base_scene_id": "f8fde283f800f48b3e9edd38d10103da",
+    "chart_type": "grouped_bar",
+    "constraint_family": "cross_series",
+    "event_categories": [
+      "W",
+      "W",
+      "W",
+      "S",
+      "I",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "W",
+      "S",
+      "W",
+      "I",
+      "W",
+      "W"
+    ],
+    "group": 2,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "sum4",
+    "prompt_id": "5ea21b5187b861ec51299c8a208443a0",
+    "solution_count": 1,
+    "truth_structure_hash": "00397370239712b119a446d2e7bfb6622a85e04ba7e1109f0ea5ac085a62977a",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        55,
+        14,
+        57,
+        84
+      ],
+      [
+        31,
+        70,
+        15,
+        97
+      ],
+      [
+        48,
+        81,
+        35,
+        71
+      ],
+      [
+        0,
+        0,
+        1,
+        86
+      ],
+      "INVALID_B",
+      [
+        86,
+        84,
+        32,
+        34
+      ],
+      [
+        77,
+        44,
+        97,
+        19
+      ],
+      [
+        93,
+        10,
+        54,
+        2
+      ],
+      [
+        10,
+        34,
+        18,
+        25
+      ],
+      [
+        10,
+        34,
+        99,
+        25
+      ],
+      [
+        99,
+        85,
+        27,
+        74
+      ],
+      [
+        0,
+        0,
+        0,
+        87
+      ],
+      [
+        52,
+        30,
+        94,
+        9
+      ],
+      "INVALID_A",
+      [
+        52,
+        29,
+        41,
+        67
+      ],
+      [
+        66,
+        23,
+        18,
+        10
+      ]
+    ],
+    "base_scene_id": "f8fde283f800f48b3e9edd38d10103da",
+    "chart_type": "grouped_bar",
+    "constraint_family": "cross_series",
+    "event_categories": [
+      "W",
+      "W",
+      "W",
+      "S",
+      "I",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "W",
+      "S",
+      "W",
+      "I",
+      "W",
+      "W"
+    ],
+    "group": 3,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "sum4",
+    "prompt_id": "b53ff81be536f3831e51999173c448dc",
+    "solution_count": 1,
+    "truth_structure_hash": "00397370239712b119a446d2e7bfb6622a85e04ba7e1109f0ea5ac085a62977a",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        87,
+        41,
+        31,
+        26
+      ],
+      "INVALID_B",
+      [
+        0,
+        37,
+        0,
+        1
+      ],
+      [
+        95,
+        63,
+        5,
+        90
+      ],
+      [
+        81,
+        88,
+        66,
+        81
+      ],
+      [
+        59,
+        20,
+        95,
+        22
+      ],
+      [
+        0,
+        36,
+        0,
+        0
+      ],
+      "INVALID_A",
+      [
+        54,
+        52,
+        66,
+        14
+      ],
+      [
+        20,
+        32,
+        31,
+        63
+      ],
+      [
+        24,
+        54,
+        76,
+        72
+      ],
+      [
+        11,
+        1,
+        93,
+        21
+      ],
+      [
+        47,
+        61,
+        5,
+        39
+      ],
+      [
+        41,
+        33,
+        43,
+        27
+      ],
+      [
+        47,
+        33,
+        5,
+        39
+      ],
+      [
+        31,
+        99,
+        30,
+        35
+      ]
+    ],
+    "base_scene_id": "e832c3c63a60579866ec98219a180c3d",
+    "chart_type": "grouped_bar",
+    "constraint_family": "cross_series",
+    "event_categories": [
+      "W",
+      "I",
+      "S",
+      "W",
+      "W",
+      "W",
+      "S",
+      "I",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W"
+    ],
+    "group": 2,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "difference_pairs",
+    "prompt_id": "e32255e8aba489602ef211b22daa356b",
+    "solution_count": 1,
+    "truth_structure_hash": "e70a2bc993f5a232d1875a059f47feff4c4a1041b29f3f7a022cad082d5dae50",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        87,
+        41,
+        31,
+        26
+      ],
+      "INVALID_B",
+      [
+        0,
+        37,
+        0,
+        1
+      ],
+      [
+        95,
+        63,
+        5,
+        90
+      ],
+      [
+        81,
+        88,
+        66,
+        81
+      ],
+      [
+        59,
+        20,
+        95,
+        22
+      ],
+      [
+        0,
+        36,
+        0,
+        0
+      ],
+      "INVALID_A",
+      [
+        54,
+        52,
+        66,
+        14
+      ],
+      [
+        20,
+        32,
+        31,
+        63
+      ],
+      [
+        24,
+        54,
+        76,
+        72
+      ],
+      [
+        11,
+        1,
+        93,
+        21
+      ],
+      [
+        47,
+        61,
+        5,
+        39
+      ],
+      [
+        41,
+        33,
+        43,
+        27
+      ],
+      [
+        47,
+        33,
+        5,
+        39
+      ],
+      [
+        31,
+        99,
+        30,
+        35
+      ]
+    ],
+    "base_scene_id": "e832c3c63a60579866ec98219a180c3d",
+    "chart_type": "grouped_bar",
+    "constraint_family": "cross_series",
+    "event_categories": [
+      "W",
+      "I",
+      "S",
+      "W",
+      "W",
+      "W",
+      "S",
+      "I",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W"
+    ],
+    "group": 3,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "difference_pairs",
+    "prompt_id": "5d7d5bba5b0d23f625709a5046822fa6",
+    "solution_count": 1,
+    "truth_structure_hash": "e70a2bc993f5a232d1875a059f47feff4c4a1041b29f3f7a022cad082d5dae50",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        84,
+        37,
+        85,
+        45
+      ],
+      [
+        84,
+        43,
+        1,
+        40
+      ],
+      [
+        1,
+        18,
+        46,
+        48
+      ],
+      [
+        43,
+        7,
+        26,
+        76
+      ],
+      "INVALID_B",
+      [
+        74,
+        44,
+        87,
+        97
+      ],
+      "INVALID_A",
+      [
+        0,
+        0,
+        0,
+        47
+      ],
+      [
+        8,
+        61,
+        26,
+        52
+      ],
+      [
+        88,
+        43,
+        21,
+        35
+      ],
+      [
+        0,
+        0,
+        47,
+        0
+      ],
+      [
+        1,
+        18,
+        81,
+        48
+      ],
+      [
+        39,
+        53,
+        11,
+        98
+      ],
+      [
+        66,
+        49,
+        90,
+        8
+      ],
+      [
+        28,
+        52,
+        22,
+        68
+      ],
+      [
+        77,
+        53,
+        84,
+        16
+      ]
+    ],
+    "base_scene_id": "79370a551c42659ef8e7c2c6fcd6586c",
+    "chart_type": "grouped_bar",
+    "constraint_family": "cross_series",
+    "event_categories": [
+      "W",
+      "W",
+      "X",
+      "W",
+      "I",
+      "W",
+      "I",
+      "S",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W"
+    ],
+    "group": 2,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "range4",
+    "prompt_id": "62a48a5e974b2687c60803fb2c5a4825",
+    "solution_count": 1,
+    "truth_structure_hash": "885bf8d4d3df8ba12f0bdd87b1fc172e4cdcd0f0217d2f0a6c386baf62672c1f",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        84,
+        37,
+        85,
+        45
+      ],
+      [
+        84,
+        43,
+        1,
+        40
+      ],
+      [
+        1,
+        18,
+        46,
+        48
+      ],
+      [
+        43,
+        7,
+        26,
+        76
+      ],
+      "INVALID_B",
+      [
+        74,
+        44,
+        87,
+        97
+      ],
+      "INVALID_A",
+      [
+        0,
+        0,
+        0,
+        47
+      ],
+      [
+        8,
+        61,
+        26,
+        52
+      ],
+      [
+        88,
+        43,
+        21,
+        35
+      ],
+      [
+        0,
+        0,
+        47,
+        0
+      ],
+      [
+        1,
+        18,
+        81,
+        48
+      ],
+      [
+        39,
+        53,
+        11,
+        98
+      ],
+      [
+        66,
+        49,
+        90,
+        8
+      ],
+      [
+        28,
+        52,
+        22,
+        68
+      ],
+      [
+        77,
+        53,
+        84,
+        16
+      ]
+    ],
+    "base_scene_id": "79370a551c42659ef8e7c2c6fcd6586c",
+    "chart_type": "grouped_bar",
+    "constraint_family": "cross_series",
+    "event_categories": [
+      "W",
+      "W",
+      "X",
+      "W",
+      "I",
+      "W",
+      "I",
+      "S",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W"
+    ],
+    "group": 3,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "range4",
+    "prompt_id": "707b3a8b91fea8a926b0b0eaa33711ff",
+    "solution_count": 1,
+    "truth_structure_hash": "885bf8d4d3df8ba12f0bdd87b1fc172e4cdcd0f0217d2f0a6c386baf62672c1f",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        36,
+        38,
+        21,
+        86
+      ],
+      [
+        27,
+        93,
+        8,
+        62
+      ],
+      [
+        39,
+        42,
+        74,
+        21
+      ],
+      [
+        25,
+        86,
+        17,
+        74
+      ],
+      [
+        5,
+        0,
+        17,
+        13
+      ],
+      [
+        0,
+        0,
+        0,
+        35
+      ],
+      "INVALID_B",
+      [
+        40,
+        89,
+        90,
+        85
+      ],
+      [
+        22,
+        50,
+        48,
+        51
+      ],
+      "INVALID_A",
+      [
+        0,
+        0,
+        1,
+        34
+      ],
+      [
+        25,
+        10,
+        22,
+        97
+      ],
+      [
+        96,
+        25,
+        51,
+        56
+      ],
+      [
+        5,
+        0,
+        17,
+        6
+      ],
+      [
+        59,
+        2,
+        84,
+        36
+      ],
+      [
+        27,
+        73,
+        3,
+        58
+      ]
+    ],
+    "base_scene_id": "00c9612ae40aef68b92eef6a9f1207dd",
+    "chart_type": "line",
+    "constraint_family": "cross_series",
+    "event_categories": [
+      "W",
+      "W",
+      "W",
+      "W",
+      "X",
+      "S",
+      "I",
+      "W",
+      "W",
+      "I",
+      "S",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W"
+    ],
+    "group": 2,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "sum4",
+    "prompt_id": "4de713e8593c1b0177ba30db0d6df386",
+    "solution_count": 1,
+    "truth_structure_hash": "58459b8366f441842921258832a7deb23544438ff9d26ce368446632d6d576b2",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        36,
+        38,
+        21,
+        86
+      ],
+      [
+        27,
+        93,
+        8,
+        62
+      ],
+      [
+        39,
+        42,
+        74,
+        21
+      ],
+      [
+        25,
+        86,
+        17,
+        74
+      ],
+      [
+        5,
+        0,
+        17,
+        13
+      ],
+      [
+        0,
+        0,
+        0,
+        35
+      ],
+      "INVALID_B",
+      [
+        40,
+        89,
+        90,
+        85
+      ],
+      [
+        22,
+        50,
+        48,
+        51
+      ],
+      "INVALID_A",
+      [
+        0,
+        0,
+        1,
+        34
+      ],
+      [
+        25,
+        10,
+        22,
+        97
+      ],
+      [
+        96,
+        25,
+        51,
+        56
+      ],
+      [
+        5,
+        0,
+        17,
+        6
+      ],
+      [
+        59,
+        2,
+        84,
+        36
+      ],
+      [
+        27,
+        73,
+        3,
+        58
+      ]
+    ],
+    "base_scene_id": "00c9612ae40aef68b92eef6a9f1207dd",
+    "chart_type": "line",
+    "constraint_family": "cross_series",
+    "event_categories": [
+      "W",
+      "W",
+      "W",
+      "W",
+      "X",
+      "S",
+      "I",
+      "W",
+      "W",
+      "I",
+      "S",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W"
+    ],
+    "group": 3,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "sum4",
+    "prompt_id": "57f147131532a062bbe89ff309361147",
+    "solution_count": 1,
+    "truth_structure_hash": "58459b8366f441842921258832a7deb23544438ff9d26ce368446632d6d576b2",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        12,
+        80,
+        96,
+        43
+      ],
+      "INVALID_B",
+      [
+        60,
+        19,
+        69,
+        97
+      ],
+      [
+        33,
+        13,
+        33,
+        20
+      ],
+      [
+        0,
+        0,
+        1,
+        34
+      ],
+      [
+        12,
+        6,
+        25,
+        41
+      ],
+      [
+        12,
+        6,
+        12,
+        41
+      ],
+      [
+        72,
+        52,
+        65,
+        76
+      ],
+      "INVALID_A",
+      [
+        30,
+        61,
+        78,
+        18
+      ],
+      [
+        28,
+        76,
+        11,
+        19
+      ],
+      [
+        21,
+        69,
+        26,
+        62
+      ],
+      [
+        47,
+        85,
+        80,
+        71
+      ],
+      [
+        7,
+        33,
+        47,
+        71
+      ],
+      [
+        0,
+        0,
+        0,
+        35
+      ],
+      [
+        83,
+        98,
+        18,
+        74
+      ]
+    ],
+    "base_scene_id": "f3880c7ad7edca1a874bcf959717c01f",
+    "chart_type": "line",
+    "constraint_family": "cross_series",
+    "event_categories": [
+      "W",
+      "I",
+      "W",
+      "W",
+      "S",
+      "W",
+      "X",
+      "W",
+      "I",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "S",
+      "W"
+    ],
+    "group": 2,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "difference_pairs",
+    "prompt_id": "5160a959291b9b056deff3f5f39116ae",
+    "solution_count": 1,
+    "truth_structure_hash": "3068d3cad93be4ac5936550b8216d58aac7016d732554fe34144850c7fe8c43d",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        12,
+        80,
+        96,
+        43
+      ],
+      "INVALID_B",
+      [
+        60,
+        19,
+        69,
+        97
+      ],
+      [
+        33,
+        13,
+        33,
+        20
+      ],
+      [
+        0,
+        0,
+        1,
+        34
+      ],
+      [
+        12,
+        6,
+        25,
+        41
+      ],
+      [
+        12,
+        6,
+        12,
+        41
+      ],
+      [
+        72,
+        52,
+        65,
+        76
+      ],
+      "INVALID_A",
+      [
+        30,
+        61,
+        78,
+        18
+      ],
+      [
+        28,
+        76,
+        11,
+        19
+      ],
+      [
+        21,
+        69,
+        26,
+        62
+      ],
+      [
+        47,
+        85,
+        80,
+        71
+      ],
+      [
+        7,
+        33,
+        47,
+        71
+      ],
+      [
+        0,
+        0,
+        0,
+        35
+      ],
+      [
+        83,
+        98,
+        18,
+        74
+      ]
+    ],
+    "base_scene_id": "f3880c7ad7edca1a874bcf959717c01f",
+    "chart_type": "line",
+    "constraint_family": "cross_series",
+    "event_categories": [
+      "W",
+      "I",
+      "W",
+      "W",
+      "S",
+      "W",
+      "X",
+      "W",
+      "I",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "S",
+      "W"
+    ],
+    "group": 3,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "difference_pairs",
+    "prompt_id": "8e9db9ada0df8b6c626464325a132a6b",
+    "solution_count": 1,
+    "truth_structure_hash": "3068d3cad93be4ac5936550b8216d58aac7016d732554fe34144850c7fe8c43d",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        0,
+        0,
+        30,
+        0
+      ],
+      [
+        59,
+        20,
+        17,
+        87
+      ],
+      "INVALID_B",
+      "INVALID_A",
+      [
+        23,
+        1,
+        93,
+        79
+      ],
+      [
+        75,
+        85,
+        63,
+        81
+      ],
+      [
+        44,
+        90,
+        9,
+        2
+      ],
+      [
+        35,
+        10,
+        34,
+        40
+      ],
+      [
+        24,
+        19,
+        21,
+        63
+      ],
+      [
+        20,
+        89,
+        86,
+        37
+      ],
+      [
+        0,
+        0,
+        0,
+        30
+      ],
+      [
+        56,
+        46,
+        42,
+        66
+      ],
+      [
+        82,
+        61,
+        53,
+        78
+      ],
+      [
+        35,
+        22,
+        34,
+        40
+      ],
+      [
+        96,
+        13,
+        89,
+        90
+      ],
+      [
+        73,
+        33,
+        47,
+        79
+      ]
+    ],
+    "base_scene_id": "693bc38cff6603e42a2a4d421bd19da6",
+    "chart_type": "line",
+    "constraint_family": "cross_series",
+    "event_categories": [
+      "S",
+      "W",
+      "I",
+      "I",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W"
+    ],
+    "group": 2,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "range4",
+    "prompt_id": "b94f5dc651702a590f19bc7deb3ddd51",
+    "solution_count": 1,
+    "truth_structure_hash": "0019ab300a010ca3c0c632772b34e29642d75b984e165892d497fbd3e5525b7c",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        0,
+        0,
+        30,
+        0
+      ],
+      [
+        59,
+        20,
+        17,
+        87
+      ],
+      "INVALID_B",
+      "INVALID_A",
+      [
+        23,
+        1,
+        93,
+        79
+      ],
+      [
+        75,
+        85,
+        63,
+        81
+      ],
+      [
+        44,
+        90,
+        9,
+        2
+      ],
+      [
+        35,
+        10,
+        34,
+        40
+      ],
+      [
+        24,
+        19,
+        21,
+        63
+      ],
+      [
+        20,
+        89,
+        86,
+        37
+      ],
+      [
+        0,
+        0,
+        0,
+        30
+      ],
+      [
+        56,
+        46,
+        42,
+        66
+      ],
+      [
+        82,
+        61,
+        53,
+        78
+      ],
+      [
+        35,
+        22,
+        34,
+        40
+      ],
+      [
+        96,
+        13,
+        89,
+        90
+      ],
+      [
+        73,
+        33,
+        47,
+        79
+      ]
+    ],
+    "base_scene_id": "693bc38cff6603e42a2a4d421bd19da6",
+    "chart_type": "line",
+    "constraint_family": "cross_series",
+    "event_categories": [
+      "S",
+      "W",
+      "I",
+      "I",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W"
+    ],
+    "group": 3,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "range4",
+    "prompt_id": "2a8ef512ec01f5fefba95467ed047de7",
+    "solution_count": 1,
+    "truth_structure_hash": "0019ab300a010ca3c0c632772b34e29642d75b984e165892d497fbd3e5525b7c",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        64,
+        4,
+        95,
+        57
+      ],
+      [
+        34,
+        66,
+        52,
+        0
+      ],
+      [
+        0,
+        14,
+        28,
+        42
+      ],
+      [
+        52,
+        24,
+        34,
+        20
+      ],
+      [
+        19,
+        79,
+        0,
+        84
+      ],
+      [
+        40,
+        71,
+        90,
+        89
+      ],
+      [
+        14,
+        88,
+        72,
+        98
+      ],
+      [
+        0,
+        0,
+        0,
+        84
+      ],
+      [
+        37,
+        62,
+        75,
+        56
+      ],
+      "INVALID_A",
+      "INVALID_B",
+      [
+        0,
+        14,
+        1,
+        42
+      ],
+      [
+        0,
+        0,
+        1,
+        83
+      ],
+      [
+        43,
+        83,
+        38,
+        87
+      ],
+      [
+        52,
+        29,
+        69,
+        48
+      ],
+      [
+        19,
+        59,
+        71,
+        93
+      ]
+    ],
+    "base_scene_id": "cae4267c516bb26db5c7a9cde37c7c08",
+    "chart_type": "grouped_bar",
+    "constraint_family": "trend",
+    "event_categories": [
+      "W",
+      "W",
+      "X",
+      "W",
+      "W",
+      "W",
+      "W",
+      "S",
+      "W",
+      "I",
+      "I",
+      "W",
+      "S",
+      "W",
+      "W",
+      "W"
+    ],
+    "group": 4,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "sum4",
+    "prompt_id": "9ab93675e7749686984facae3edb0aef",
+    "solution_count": 1,
+    "truth_structure_hash": "4d6a3df4276d2eb3521964d3d9bbb34a93fa3f9e108a1dad5e87440ba73539d3",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        64,
+        4,
+        95,
+        57
+      ],
+      [
+        34,
+        66,
+        52,
+        0
+      ],
+      [
+        0,
+        14,
+        28,
+        42
+      ],
+      [
+        52,
+        24,
+        34,
+        20
+      ],
+      [
+        19,
+        79,
+        0,
+        84
+      ],
+      [
+        40,
+        71,
+        90,
+        89
+      ],
+      [
+        14,
+        88,
+        72,
+        98
+      ],
+      [
+        0,
+        0,
+        0,
+        84
+      ],
+      [
+        37,
+        62,
+        75,
+        56
+      ],
+      "INVALID_A",
+      "INVALID_B",
+      [
+        0,
+        14,
+        1,
+        42
+      ],
+      [
+        0,
+        0,
+        1,
+        83
+      ],
+      [
+        43,
+        83,
+        38,
+        87
+      ],
+      [
+        52,
+        29,
+        69,
+        48
+      ],
+      [
+        19,
+        59,
+        71,
+        93
+      ]
+    ],
+    "base_scene_id": "cae4267c516bb26db5c7a9cde37c7c08",
+    "chart_type": "grouped_bar",
+    "constraint_family": "trend",
+    "event_categories": [
+      "W",
+      "W",
+      "X",
+      "W",
+      "W",
+      "W",
+      "W",
+      "S",
+      "W",
+      "I",
+      "I",
+      "W",
+      "S",
+      "W",
+      "W",
+      "W"
+    ],
+    "group": 5,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "sum4",
+    "prompt_id": "f42cc941645bfc9d085d1ccda97c940c",
+    "solution_count": 1,
+    "truth_structure_hash": "4d6a3df4276d2eb3521964d3d9bbb34a93fa3f9e108a1dad5e87440ba73539d3",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        18,
+        15,
+        12,
+        9
+      ],
+      [
+        84,
+        76,
+        10,
+        7
+      ],
+      [
+        11,
+        12,
+        51,
+        43
+      ],
+      [
+        18,
+        98,
+        12,
+        9
+      ],
+      [
+        35,
+        77,
+        46,
+        57
+      ],
+      [
+        17,
+        78,
+        36,
+        66
+      ],
+      "INVALID_A",
+      [
+        86,
+        96,
+        48,
+        6
+      ],
+      [
+        0,
+        13,
+        0,
+        1
+      ],
+      "INVALID_B",
+      [
+        34,
+        59,
+        8,
+        43
+      ],
+      [
+        5,
+        68,
+        70,
+        85
+      ],
+      [
+        63,
+        0,
+        84,
+        38
+      ],
+      [
+        0,
+        12,
+        0,
+        0
+      ],
+      [
+        94,
+        42,
+        5,
+        38
+      ],
+      [
+        44,
+        59,
+        59,
+        26
+      ]
+    ],
+    "base_scene_id": "567e625774051ca42576cfe0df538b1b",
+    "chart_type": "grouped_bar",
+    "constraint_family": "trend",
+    "event_categories": [
+      "X",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "I",
+      "W",
+      "S",
+      "I",
+      "W",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W"
+    ],
+    "group": 4,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "difference_pairs",
+    "prompt_id": "53b9e7935c5ddedac0f4aaf46a2cb003",
+    "solution_count": 1,
+    "truth_structure_hash": "86f1141c6f27222724c38c8d846566dc3dbd76f983cd06662b79ced602cdc411",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        18,
+        15,
+        12,
+        9
+      ],
+      [
+        84,
+        76,
+        10,
+        7
+      ],
+      [
+        11,
+        12,
+        51,
+        43
+      ],
+      [
+        18,
+        98,
+        12,
+        9
+      ],
+      [
+        35,
+        77,
+        46,
+        57
+      ],
+      [
+        17,
+        78,
+        36,
+        66
+      ],
+      "INVALID_A",
+      [
+        86,
+        96,
+        48,
+        6
+      ],
+      [
+        0,
+        13,
+        0,
+        1
+      ],
+      "INVALID_B",
+      [
+        34,
+        59,
+        8,
+        43
+      ],
+      [
+        5,
+        68,
+        70,
+        85
+      ],
+      [
+        63,
+        0,
+        84,
+        38
+      ],
+      [
+        0,
+        12,
+        0,
+        0
+      ],
+      [
+        94,
+        42,
+        5,
+        38
+      ],
+      [
+        44,
+        59,
+        59,
+        26
+      ]
+    ],
+    "base_scene_id": "567e625774051ca42576cfe0df538b1b",
+    "chart_type": "grouped_bar",
+    "constraint_family": "trend",
+    "event_categories": [
+      "X",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "I",
+      "W",
+      "S",
+      "I",
+      "W",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W"
+    ],
+    "group": 5,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "difference_pairs",
+    "prompt_id": "deaac3b65ffc6860f7a66b18b64e9c75",
+    "solution_count": 1,
+    "truth_structure_hash": "86f1141c6f27222724c38c8d846566dc3dbd76f983cd06662b79ced602cdc411",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        73,
+        47,
+        68,
+        75
+      ],
+      [
+        0,
+        0,
+        83,
+        89
+      ],
+      [
+        0,
+        0,
+        12,
+        0
+      ],
+      [
+        21,
+        39,
+        70,
+        43
+      ],
+      [
+        48,
+        94,
+        73,
+        88
+      ],
+      [
+        77,
+        0,
+        71,
+        37
+      ],
+      "INVALID_B",
+      [
+        47,
+        43,
+        39,
+        35
+      ],
+      [
+        46,
+        85,
+        12,
+        90
+      ],
+      [
+        76,
+        21,
+        76,
+        66
+      ],
+      [
+        7,
+        48,
+        75,
+        60
+      ],
+      [
+        0,
+        0,
+        0,
+        12
+      ],
+      "INVALID_A",
+      [
+        8,
+        8,
+        55,
+        98
+      ],
+      [
+        47,
+        43,
+        39,
+        53
+      ],
+      [
+        97,
+        95,
+        20,
+        1
+      ]
+    ],
+    "base_scene_id": "27f74d0d7eedb980960488a49a50ba74",
+    "chart_type": "grouped_bar",
+    "constraint_family": "trend",
+    "event_categories": [
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "W",
+      "I",
+      "X",
+      "W",
+      "W",
+      "W",
+      "S",
+      "I",
+      "W",
+      "W",
+      "W"
+    ],
+    "group": 4,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "range4",
+    "prompt_id": "d50f7655ebedfe065ea06675bddcaafe",
+    "solution_count": 1,
+    "truth_structure_hash": "dfc13513bf6e79d13655884a6a3089144848f06ead6d9dfe3ca5226a71e88cb1",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        73,
+        47,
+        68,
+        75
+      ],
+      [
+        0,
+        0,
+        83,
+        89
+      ],
+      [
+        0,
+        0,
+        12,
+        0
+      ],
+      [
+        21,
+        39,
+        70,
+        43
+      ],
+      [
+        48,
+        94,
+        73,
+        88
+      ],
+      [
+        77,
+        0,
+        71,
+        37
+      ],
+      "INVALID_B",
+      [
+        47,
+        43,
+        39,
+        35
+      ],
+      [
+        46,
+        85,
+        12,
+        90
+      ],
+      [
+        76,
+        21,
+        76,
+        66
+      ],
+      [
+        7,
+        48,
+        75,
+        60
+      ],
+      [
+        0,
+        0,
+        0,
+        12
+      ],
+      "INVALID_A",
+      [
+        8,
+        8,
+        55,
+        98
+      ],
+      [
+        47,
+        43,
+        39,
+        53
+      ],
+      [
+        97,
+        95,
+        20,
+        1
+      ]
+    ],
+    "base_scene_id": "27f74d0d7eedb980960488a49a50ba74",
+    "chart_type": "grouped_bar",
+    "constraint_family": "trend",
+    "event_categories": [
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "W",
+      "I",
+      "X",
+      "W",
+      "W",
+      "W",
+      "S",
+      "I",
+      "W",
+      "W",
+      "W"
+    ],
+    "group": 5,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "range4",
+    "prompt_id": "d9fd1c74f3c85a94d3d73b848320aa82",
+    "solution_count": 1,
+    "truth_structure_hash": "dfc13513bf6e79d13655884a6a3089144848f06ead6d9dfe3ca5226a71e88cb1",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        37,
+        41,
+        62,
+        26
+      ],
+      [
+        71,
+        17,
+        38,
+        82
+      ],
+      [
+        41,
+        13,
+        79,
+        87
+      ],
+      [
+        0,
+        0,
+        1,
+        97
+      ],
+      [
+        85,
+        86,
+        96,
+        51
+      ],
+      "INVALID_A",
+      [
+        68,
+        11,
+        68,
+        51
+      ],
+      [
+        32,
+        49,
+        16,
+        82
+      ],
+      [
+        97,
+        84,
+        61,
+        15
+      ],
+      [
+        42,
+        42,
+        58,
+        99
+      ],
+      [
+        32,
+        27,
+        22,
+        17
+      ],
+      [
+        32,
+        27,
+        81,
+        17
+      ],
+      [
+        0,
+        0,
+        0,
+        98
+      ],
+      [
+        0,
+        7,
+        42,
+        95
+      ],
+      [
+        96,
+        22,
+        8,
+        99
+      ],
+      "INVALID_B"
+    ],
+    "base_scene_id": "755692e9835fc73bb79cbaff0ecf1bdb",
+    "chart_type": "line",
+    "constraint_family": "trend",
+    "event_categories": [
+      "W",
+      "W",
+      "W",
+      "S",
+      "W",
+      "I",
+      "W",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "S",
+      "W",
+      "W",
+      "I"
+    ],
+    "group": 4,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "sum4",
+    "prompt_id": "d7f5449d21a9797cba0ef59c2bbb7dd2",
+    "solution_count": 1,
+    "truth_structure_hash": "e9ca3d82f4b61f1208a95c128fb9adcaea13408126c2a045218f93308aa78567",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        37,
+        41,
+        62,
+        26
+      ],
+      [
+        71,
+        17,
+        38,
+        82
+      ],
+      [
+        41,
+        13,
+        79,
+        87
+      ],
+      [
+        0,
+        0,
+        1,
+        97
+      ],
+      [
+        85,
+        86,
+        96,
+        51
+      ],
+      "INVALID_A",
+      [
+        68,
+        11,
+        68,
+        51
+      ],
+      [
+        32,
+        49,
+        16,
+        82
+      ],
+      [
+        97,
+        84,
+        61,
+        15
+      ],
+      [
+        42,
+        42,
+        58,
+        99
+      ],
+      [
+        32,
+        27,
+        22,
+        17
+      ],
+      [
+        32,
+        27,
+        81,
+        17
+      ],
+      [
+        0,
+        0,
+        0,
+        98
+      ],
+      [
+        0,
+        7,
+        42,
+        95
+      ],
+      [
+        96,
+        22,
+        8,
+        99
+      ],
+      "INVALID_B"
+    ],
+    "base_scene_id": "755692e9835fc73bb79cbaff0ecf1bdb",
+    "chart_type": "line",
+    "constraint_family": "trend",
+    "event_categories": [
+      "W",
+      "W",
+      "W",
+      "S",
+      "W",
+      "I",
+      "W",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "S",
+      "W",
+      "W",
+      "I"
+    ],
+    "group": 5,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "sum4",
+    "prompt_id": "cd601dcfeb663bcec7bd61354429b380",
+    "solution_count": 1,
+    "truth_structure_hash": "e9ca3d82f4b61f1208a95c128fb9adcaea13408126c2a045218f93308aa78567",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      "INVALID_B",
+      [
+        60,
+        38,
+        82,
+        12
+      ],
+      [
+        0,
+        0,
+        0,
+        16
+      ],
+      [
+        4,
+        83,
+        30,
+        41
+      ],
+      [
+        35,
+        56,
+        67,
+        94
+      ],
+      [
+        19,
+        56,
+        42,
+        36
+      ],
+      [
+        0,
+        0,
+        1,
+        15
+      ],
+      [
+        9,
+        1,
+        51,
+        76
+      ],
+      [
+        17,
+        49,
+        52,
+        65
+      ],
+      "INVALID_A",
+      [
+        8,
+        38,
+        35,
+        6
+      ],
+      [
+        15,
+        55,
+        56,
+        2
+      ],
+      [
+        14,
+        34,
+        83,
+        18
+      ],
+      [
+        29,
+        33,
+        37,
+        41
+      ],
+      [
+        29,
+        33,
+        42,
+        41
+      ],
+      [
+        77,
+        82,
+        22,
+        31
+      ]
+    ],
+    "base_scene_id": "e0ee846d040d1043c5c8f234d78d5d63",
+    "chart_type": "line",
+    "constraint_family": "trend",
+    "event_categories": [
+      "I",
+      "W",
+      "S",
+      "W",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "I",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "W"
+    ],
+    "group": 4,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "difference_pairs",
+    "prompt_id": "20a3c74b6560198167ea99c0c3e383e0",
+    "solution_count": 1,
+    "truth_structure_hash": "70467c3df1364425fc085c25148cef4291fb73be8bd133613732abaf62fe7536",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      "INVALID_B",
+      [
+        60,
+        38,
+        82,
+        12
+      ],
+      [
+        0,
+        0,
+        0,
+        16
+      ],
+      [
+        4,
+        83,
+        30,
+        41
+      ],
+      [
+        35,
+        56,
+        67,
+        94
+      ],
+      [
+        19,
+        56,
+        42,
+        36
+      ],
+      [
+        0,
+        0,
+        1,
+        15
+      ],
+      [
+        9,
+        1,
+        51,
+        76
+      ],
+      [
+        17,
+        49,
+        52,
+        65
+      ],
+      "INVALID_A",
+      [
+        8,
+        38,
+        35,
+        6
+      ],
+      [
+        15,
+        55,
+        56,
+        2
+      ],
+      [
+        14,
+        34,
+        83,
+        18
+      ],
+      [
+        29,
+        33,
+        37,
+        41
+      ],
+      [
+        29,
+        33,
+        42,
+        41
+      ],
+      [
+        77,
+        82,
+        22,
+        31
+      ]
+    ],
+    "base_scene_id": "e0ee846d040d1043c5c8f234d78d5d63",
+    "chart_type": "line",
+    "constraint_family": "trend",
+    "event_categories": [
+      "I",
+      "W",
+      "S",
+      "W",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "I",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "W"
+    ],
+    "group": 5,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "difference_pairs",
+    "prompt_id": "224b27561da6f27a4508cf5a3e354aa0",
+    "solution_count": 1,
+    "truth_structure_hash": "70467c3df1364425fc085c25148cef4291fb73be8bd133613732abaf62fe7536",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        0,
+        0,
+        0,
+        15
+      ],
+      [
+        18,
+        38,
+        56,
+        97
+      ],
+      [
+        42,
+        37,
+        32,
+        27
+      ],
+      [
+        42,
+        37,
+        35,
+        27
+      ],
+      [
+        3,
+        12,
+        65,
+        81
+      ],
+      [
+        60,
+        93,
+        25,
+        57
+      ],
+      [
+        33,
+        60,
+        17,
+        65
+      ],
+      [
+        33,
+        7,
+        45,
+        98
+      ],
+      [
+        83,
+        52,
+        34,
+        54
+      ],
+      [
+        46,
+        27,
+        20,
+        60
+      ],
+      [
+        61,
+        53,
+        77,
+        44
+      ],
+      "INVALID_A",
+      [
+        47,
+        93,
+        82,
+        90
+      ],
+      [
+        57,
+        28,
+        62,
+        29
+      ],
+      [
+        62,
+        77,
+        83,
+        23
+      ],
+      "INVALID_B"
+    ],
+    "base_scene_id": "990b515699def6e52cacc8b8d9484bc9",
+    "chart_type": "line",
+    "constraint_family": "trend",
+    "event_categories": [
+      "S",
+      "W",
+      "X",
+      "S",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "I",
+      "W",
+      "W",
+      "W",
+      "I"
+    ],
+    "group": 4,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "range4",
+    "prompt_id": "b66f3c3bc61b265fe17487ae934f10f8",
+    "solution_count": 1,
+    "truth_structure_hash": "bb6379fad93b94f622d171f7feb5a3f0c4da29ba5207edaf67a3abc037aef224",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        0,
+        0,
+        0,
+        15
+      ],
+      [
+        18,
+        38,
+        56,
+        97
+      ],
+      [
+        42,
+        37,
+        32,
+        27
+      ],
+      [
+        42,
+        37,
+        35,
+        27
+      ],
+      [
+        3,
+        12,
+        65,
+        81
+      ],
+      [
+        60,
+        93,
+        25,
+        57
+      ],
+      [
+        33,
+        60,
+        17,
+        65
+      ],
+      [
+        33,
+        7,
+        45,
+        98
+      ],
+      [
+        83,
+        52,
+        34,
+        54
+      ],
+      [
+        46,
+        27,
+        20,
+        60
+      ],
+      [
+        61,
+        53,
+        77,
+        44
+      ],
+      "INVALID_A",
+      [
+        47,
+        93,
+        82,
+        90
+      ],
+      [
+        57,
+        28,
+        62,
+        29
+      ],
+      [
+        62,
+        77,
+        83,
+        23
+      ],
+      "INVALID_B"
+    ],
+    "base_scene_id": "990b515699def6e52cacc8b8d9484bc9",
+    "chart_type": "line",
+    "constraint_family": "trend",
+    "event_categories": [
+      "S",
+      "W",
+      "X",
+      "S",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "I",
+      "W",
+      "W",
+      "W",
+      "I"
+    ],
+    "group": 5,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "range4",
+    "prompt_id": "2f6073ee3ab013335a99b29333db8a8f",
+    "solution_count": 1,
+    "truth_structure_hash": "bb6379fad93b94f622d171f7feb5a3f0c4da29ba5207edaf67a3abc037aef224",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        44,
+        33,
+        23,
+        57
+      ],
+      [
+        78,
+        58,
+        35,
+        66
+      ],
+      [
+        0,
+        0,
+        41,
+        99
+      ],
+      [
+        34,
+        83,
+        13,
+        59
+      ],
+      [
+        56,
+        61,
+        48,
+        8
+      ],
+      [
+        0,
+        0,
+        42,
+        98
+      ],
+      [
+        74,
+        67,
+        93,
+        67
+      ],
+      [
+        39,
+        79,
+        67,
+        65
+      ],
+      [
+        39,
+        20,
+        78,
+        12
+      ],
+      [
+        4,
+        64,
+        11,
+        32
+      ],
+      [
+        36,
+        44,
+        39,
+        21
+      ],
+      [
+        8,
+        81,
+        63,
+        62
+      ],
+      [
+        68,
+        26,
+        96,
+        17
+      ],
+      "INVALID_B",
+      [
+        36,
+        44,
+        39,
+        65
+      ],
+      "INVALID_A"
+    ],
+    "base_scene_id": "d9ceff1e71ed8bfe2635262d2f9f6007",
+    "chart_type": "grouped_bar",
+    "constraint_family": "duplicate_encoding",
+    "event_categories": [
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "W",
+      "I",
+      "W",
+      "I"
+    ],
+    "group": 0,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "sum4",
+    "prompt_id": "bdeaa0644471a9d117932856c3a86181",
+    "solution_count": 1,
+    "truth_structure_hash": "8aea0cdaf710c856e5ff23f306af0a7fe95379b3ffd28088a83d02c513d0e690",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        44,
+        33,
+        23,
+        57
+      ],
+      [
+        78,
+        58,
+        35,
+        66
+      ],
+      [
+        0,
+        0,
+        41,
+        99
+      ],
+      [
+        34,
+        83,
+        13,
+        59
+      ],
+      [
+        56,
+        61,
+        48,
+        8
+      ],
+      [
+        0,
+        0,
+        42,
+        98
+      ],
+      [
+        74,
+        67,
+        93,
+        67
+      ],
+      [
+        39,
+        79,
+        67,
+        65
+      ],
+      [
+        39,
+        20,
+        78,
+        12
+      ],
+      [
+        4,
+        64,
+        11,
+        32
+      ],
+      [
+        36,
+        44,
+        39,
+        21
+      ],
+      [
+        8,
+        81,
+        63,
+        62
+      ],
+      [
+        68,
+        26,
+        96,
+        17
+      ],
+      "INVALID_B",
+      [
+        36,
+        44,
+        39,
+        65
+      ],
+      "INVALID_A"
+    ],
+    "base_scene_id": "d9ceff1e71ed8bfe2635262d2f9f6007",
+    "chart_type": "grouped_bar",
+    "constraint_family": "duplicate_encoding",
+    "event_categories": [
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "W",
+      "I",
+      "W",
+      "I"
+    ],
+    "group": 1,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "sum4",
+    "prompt_id": "82bb5e0119bad00bc6115c97837bf3a6",
+    "solution_count": 1,
+    "truth_structure_hash": "8aea0cdaf710c856e5ff23f306af0a7fe95379b3ffd28088a83d02c513d0e690",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        8,
+        0,
+        72,
+        67
+      ],
+      [
+        15,
+        34,
+        69,
+        27
+      ],
+      [
+        5,
+        26,
+        41,
+        64
+      ],
+      [
+        0,
+        25,
+        0,
+        1
+      ],
+      [
+        42,
+        73,
+        0,
+        60
+      ],
+      [
+        93,
+        73,
+        54,
+        22
+      ],
+      [
+        0,
+        24,
+        0,
+        0
+      ],
+      [
+        31,
+        4,
+        13,
+        33
+      ],
+      [
+        50,
+        93,
+        89,
+        97
+      ],
+      [
+        4,
+        86,
+        25,
+        55
+      ],
+      "INVALID_A",
+      "INVALID_B",
+      [
+        6,
+        40,
+        18,
+        4
+      ],
+      [
+        9,
+        16,
+        94,
+        39
+      ],
+      [
+        40,
+        40,
+        18,
+        4
+      ],
+      [
+        62,
+        58,
+        64,
+        66
+      ]
+    ],
+    "base_scene_id": "54fbec6759f0d40ab4a662a1db6953d5",
+    "chart_type": "grouped_bar",
+    "constraint_family": "duplicate_encoding",
+    "event_categories": [
+      "W",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "W",
+      "I",
+      "I",
+      "X",
+      "W",
+      "W",
+      "W"
+    ],
+    "group": 0,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "difference_pairs",
+    "prompt_id": "00d055e7ff51b5af616a0a8790986492",
+    "solution_count": 1,
+    "truth_structure_hash": "1e1b5120f8ee918184c6709297cd02b740d3de248a4d0b49ae4bf2ae50291066",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        8,
+        0,
+        72,
+        67
+      ],
+      [
+        15,
+        34,
+        69,
+        27
+      ],
+      [
+        5,
+        26,
+        41,
+        64
+      ],
+      [
+        0,
+        25,
+        0,
+        1
+      ],
+      [
+        42,
+        73,
+        0,
+        60
+      ],
+      [
+        93,
+        73,
+        54,
+        22
+      ],
+      [
+        0,
+        24,
+        0,
+        0
+      ],
+      [
+        31,
+        4,
+        13,
+        33
+      ],
+      [
+        50,
+        93,
+        89,
+        97
+      ],
+      [
+        4,
+        86,
+        25,
+        55
+      ],
+      "INVALID_A",
+      "INVALID_B",
+      [
+        6,
+        40,
+        18,
+        4
+      ],
+      [
+        9,
+        16,
+        94,
+        39
+      ],
+      [
+        40,
+        40,
+        18,
+        4
+      ],
+      [
+        62,
+        58,
+        64,
+        66
+      ]
+    ],
+    "base_scene_id": "54fbec6759f0d40ab4a662a1db6953d5",
+    "chart_type": "grouped_bar",
+    "constraint_family": "duplicate_encoding",
+    "event_categories": [
+      "W",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "W",
+      "I",
+      "I",
+      "X",
+      "W",
+      "W",
+      "W"
+    ],
+    "group": 1,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "difference_pairs",
+    "prompt_id": "5561630413fabf63f3c066bc38cc8158",
+    "solution_count": 1,
+    "truth_structure_hash": "1e1b5120f8ee918184c6709297cd02b740d3de248a4d0b49ae4bf2ae50291066",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        11,
+        29,
+        7,
+        5
+      ],
+      [
+        36,
+        8,
+        61,
+        61
+      ],
+      [
+        32,
+        71,
+        60,
+        48
+      ],
+      "INVALID_B",
+      [
+        53,
+        28,
+        15,
+        84
+      ],
+      [
+        11,
+        49,
+        7,
+        5
+      ],
+      [
+        53,
+        24,
+        77,
+        34
+      ],
+      [
+        67,
+        63,
+        34,
+        2
+      ],
+      [
+        0,
+        0,
+        0,
+        44
+      ],
+      [
+        30,
+        45,
+        12,
+        93
+      ],
+      [
+        92,
+        29,
+        63,
+        69
+      ],
+      [
+        57,
+        15,
+        19,
+        98
+      ],
+      "INVALID_A",
+      [
+        99,
+        3,
+        69,
+        61
+      ],
+      [
+        91,
+        77,
+        43,
+        58
+      ],
+      [
+        0,
+        0,
+        44,
+        0
+      ]
+    ],
+    "base_scene_id": "d2d38a103bcb45119606aa6ac3ddf3b8",
+    "chart_type": "grouped_bar",
+    "constraint_family": "duplicate_encoding",
+    "event_categories": [
+      "W",
+      "W",
+      "W",
+      "I",
+      "W",
+      "X",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "W",
+      "I",
+      "W",
+      "W",
+      "S"
+    ],
+    "group": 0,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "range4",
+    "prompt_id": "55db7e158963c68773cff5ce2ed1bdc4",
+    "solution_count": 1,
+    "truth_structure_hash": "ab518de5d1d7e560c09d8e9cb109919eac6b5e2e74a1290dee010c8c98303f83",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        11,
+        29,
+        7,
+        5
+      ],
+      [
+        36,
+        8,
+        61,
+        61
+      ],
+      [
+        32,
+        71,
+        60,
+        48
+      ],
+      "INVALID_B",
+      [
+        53,
+        28,
+        15,
+        84
+      ],
+      [
+        11,
+        49,
+        7,
+        5
+      ],
+      [
+        53,
+        24,
+        77,
+        34
+      ],
+      [
+        67,
+        63,
+        34,
+        2
+      ],
+      [
+        0,
+        0,
+        0,
+        44
+      ],
+      [
+        30,
+        45,
+        12,
+        93
+      ],
+      [
+        92,
+        29,
+        63,
+        69
+      ],
+      [
+        57,
+        15,
+        19,
+        98
+      ],
+      "INVALID_A",
+      [
+        99,
+        3,
+        69,
+        61
+      ],
+      [
+        91,
+        77,
+        43,
+        58
+      ],
+      [
+        0,
+        0,
+        44,
+        0
+      ]
+    ],
+    "base_scene_id": "d2d38a103bcb45119606aa6ac3ddf3b8",
+    "chart_type": "grouped_bar",
+    "constraint_family": "duplicate_encoding",
+    "event_categories": [
+      "W",
+      "W",
+      "W",
+      "I",
+      "W",
+      "X",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "W",
+      "I",
+      "W",
+      "W",
+      "S"
+    ],
+    "group": 1,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "range4",
+    "prompt_id": "5b37320aea0634c69fb7d4aa5a9b9789",
+    "solution_count": 1,
+    "truth_structure_hash": "ab518de5d1d7e560c09d8e9cb109919eac6b5e2e74a1290dee010c8c98303f83",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      "INVALID_A",
+      [
+        18,
+        48,
+        2,
+        4
+      ],
+      [
+        0,
+        0,
+        0,
+        72
+      ],
+      "INVALID_B",
+      [
+        29,
+        22,
+        55,
+        58
+      ],
+      [
+        69,
+        77,
+        55,
+        80
+      ],
+      [
+        58,
+        56,
+        28,
+        58
+      ],
+      [
+        95,
+        32,
+        75,
+        12
+      ],
+      [
+        0,
+        0,
+        1,
+        71
+      ],
+      [
+        69,
+        29,
+        51,
+        24
+      ],
+      [
+        12,
+        84,
+        99,
+        23
+      ],
+      [
+        98,
+        92,
+        17,
+        97
+      ],
+      [
+        16,
+        48,
+        2,
+        4
+      ],
+      [
+        7,
+        35,
+        26,
+        56
+      ],
+      [
+        55,
+        95,
+        78,
+        49
+      ],
+      [
+        54,
+        41,
+        11,
+        5
+      ]
+    ],
+    "base_scene_id": "c9afcecf4342b0b630b1997eac4053ab",
+    "chart_type": "line",
+    "constraint_family": "duplicate_encoding",
+    "event_categories": [
+      "I",
+      "X",
+      "S",
+      "I",
+      "W",
+      "W",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W"
+    ],
+    "group": 0,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "sum4",
+    "prompt_id": "de45753c5b918841299547d0de867016",
+    "solution_count": 1,
+    "truth_structure_hash": "c28066093cb356c749fb81e8b0a249aa61227aaa07f36b0c61cf6a568cfb08a5",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      "INVALID_A",
+      [
+        18,
+        48,
+        2,
+        4
+      ],
+      [
+        0,
+        0,
+        0,
+        72
+      ],
+      "INVALID_B",
+      [
+        29,
+        22,
+        55,
+        58
+      ],
+      [
+        69,
+        77,
+        55,
+        80
+      ],
+      [
+        58,
+        56,
+        28,
+        58
+      ],
+      [
+        95,
+        32,
+        75,
+        12
+      ],
+      [
+        0,
+        0,
+        1,
+        71
+      ],
+      [
+        69,
+        29,
+        51,
+        24
+      ],
+      [
+        12,
+        84,
+        99,
+        23
+      ],
+      [
+        98,
+        92,
+        17,
+        97
+      ],
+      [
+        16,
+        48,
+        2,
+        4
+      ],
+      [
+        7,
+        35,
+        26,
+        56
+      ],
+      [
+        55,
+        95,
+        78,
+        49
+      ],
+      [
+        54,
+        41,
+        11,
+        5
+      ]
+    ],
+    "base_scene_id": "c9afcecf4342b0b630b1997eac4053ab",
+    "chart_type": "line",
+    "constraint_family": "duplicate_encoding",
+    "event_categories": [
+      "I",
+      "X",
+      "S",
+      "I",
+      "W",
+      "W",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W"
+    ],
+    "group": 1,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "sum4",
+    "prompt_id": "3bfcdf4c11de856a2eabe091c3f811b8",
+    "solution_count": 1,
+    "truth_structure_hash": "c28066093cb356c749fb81e8b0a249aa61227aaa07f36b0c61cf6a568cfb08a5",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        15,
+        7,
+        95,
+        68
+      ],
+      [
+        60,
+        62,
+        3,
+        98
+      ],
+      [
+        0,
+        11,
+        0,
+        0
+      ],
+      [
+        13,
+        42,
+        16,
+        28
+      ],
+      [
+        13,
+        42,
+        16,
+        90
+      ],
+      [
+        67,
+        41,
+        59,
+        18
+      ],
+      [
+        47,
+        64,
+        0,
+        77
+      ],
+      [
+        43,
+        44,
+        52,
+        37
+      ],
+      "INVALID_A",
+      [
+        58,
+        9,
+        18,
+        61
+      ],
+      [
+        93,
+        33,
+        22,
+        72
+      ],
+      [
+        0,
+        12,
+        0,
+        1
+      ],
+      [
+        17,
+        69,
+        64,
+        96
+      ],
+      "INVALID_B",
+      [
+        18,
+        10,
+        60,
+        27
+      ],
+      [
+        71,
+        33,
+        49,
+        11
+      ]
+    ],
+    "base_scene_id": "2608c15c8c488c3d06185458775a4792",
+    "chart_type": "line",
+    "constraint_family": "duplicate_encoding",
+    "event_categories": [
+      "W",
+      "W",
+      "S",
+      "X",
+      "W",
+      "W",
+      "W",
+      "W",
+      "I",
+      "W",
+      "W",
+      "S",
+      "W",
+      "I",
+      "W",
+      "W"
+    ],
+    "group": 0,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "difference_pairs",
+    "prompt_id": "8e95915cee2622ae9a1778c19731e9f6",
+    "solution_count": 1,
+    "truth_structure_hash": "971b5126452c5c45fd4f73ddac660932117ca0bdcbc8a0d9b9fa148e244bda5a",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        15,
+        7,
+        95,
+        68
+      ],
+      [
+        60,
+        62,
+        3,
+        98
+      ],
+      [
+        0,
+        11,
+        0,
+        0
+      ],
+      [
+        13,
+        42,
+        16,
+        28
+      ],
+      [
+        13,
+        42,
+        16,
+        90
+      ],
+      [
+        67,
+        41,
+        59,
+        18
+      ],
+      [
+        47,
+        64,
+        0,
+        77
+      ],
+      [
+        43,
+        44,
+        52,
+        37
+      ],
+      "INVALID_A",
+      [
+        58,
+        9,
+        18,
+        61
+      ],
+      [
+        93,
+        33,
+        22,
+        72
+      ],
+      [
+        0,
+        12,
+        0,
+        1
+      ],
+      [
+        17,
+        69,
+        64,
+        96
+      ],
+      "INVALID_B",
+      [
+        18,
+        10,
+        60,
+        27
+      ],
+      [
+        71,
+        33,
+        49,
+        11
+      ]
+    ],
+    "base_scene_id": "2608c15c8c488c3d06185458775a4792",
+    "chart_type": "line",
+    "constraint_family": "duplicate_encoding",
+    "event_categories": [
+      "W",
+      "W",
+      "S",
+      "X",
+      "W",
+      "W",
+      "W",
+      "W",
+      "I",
+      "W",
+      "W",
+      "S",
+      "W",
+      "I",
+      "W",
+      "W"
+    ],
+    "group": 1,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "difference_pairs",
+    "prompt_id": "f06cf05ec5d555e5e9480ec045151e72",
+    "solution_count": 1,
+    "truth_structure_hash": "971b5126452c5c45fd4f73ddac660932117ca0bdcbc8a0d9b9fa148e244bda5a",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        80,
+        73,
+        53,
+        62
+      ],
+      [
+        0,
+        0,
+        30,
+        0
+      ],
+      [
+        1,
+        80,
+        29,
+        54
+      ],
+      [
+        0,
+        0,
+        0,
+        30
+      ],
+      [
+        35,
+        37,
+        24,
+        47
+      ],
+      [
+        48,
+        87,
+        70,
+        67
+      ],
+      [
+        63,
+        25,
+        80,
+        70
+      ],
+      "INVALID_B",
+      [
+        3,
+        65,
+        89,
+        43
+      ],
+      [
+        67,
+        66,
+        73,
+        51
+      ],
+      [
+        32,
+        38,
+        39,
+        83
+      ],
+      [
+        46,
+        45,
+        42,
+        16
+      ],
+      [
+        34,
+        18,
+        99,
+        46
+      ],
+      [
+        31,
+        45,
+        42,
+        16
+      ],
+      "INVALID_A",
+      [
+        65,
+        91,
+        46,
+        88
+      ]
+    ],
+    "base_scene_id": "90cf47cd283c62a1e649a684c84e3ec2",
+    "chart_type": "line",
+    "constraint_family": "duplicate_encoding",
+    "event_categories": [
+      "W",
+      "S",
+      "W",
+      "S",
+      "W",
+      "W",
+      "W",
+      "I",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "W",
+      "I",
+      "W"
+    ],
+    "group": 0,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "range4",
+    "prompt_id": "044f041f45afa775cf1990f803e5cb29",
+    "solution_count": 1,
+    "truth_structure_hash": "16670898c8ffe87d0fb1c8ce82304005441538096e000c13d3bd9aa17b89ee87",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        80,
+        73,
+        53,
+        62
+      ],
+      [
+        0,
+        0,
+        30,
+        0
+      ],
+      [
+        1,
+        80,
+        29,
+        54
+      ],
+      [
+        0,
+        0,
+        0,
+        30
+      ],
+      [
+        35,
+        37,
+        24,
+        47
+      ],
+      [
+        48,
+        87,
+        70,
+        67
+      ],
+      [
+        63,
+        25,
+        80,
+        70
+      ],
+      "INVALID_B",
+      [
+        3,
+        65,
+        89,
+        43
+      ],
+      [
+        67,
+        66,
+        73,
+        51
+      ],
+      [
+        32,
+        38,
+        39,
+        83
+      ],
+      [
+        46,
+        45,
+        42,
+        16
+      ],
+      [
+        34,
+        18,
+        99,
+        46
+      ],
+      [
+        31,
+        45,
+        42,
+        16
+      ],
+      "INVALID_A",
+      [
+        65,
+        91,
+        46,
+        88
+      ]
+    ],
+    "base_scene_id": "90cf47cd283c62a1e649a684c84e3ec2",
+    "chart_type": "line",
+    "constraint_family": "duplicate_encoding",
+    "event_categories": [
+      "W",
+      "S",
+      "W",
+      "S",
+      "W",
+      "W",
+      "W",
+      "I",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "W",
+      "I",
+      "W"
+    ],
+    "group": 1,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "range4",
+    "prompt_id": "f5cd0df50025181e1b93c739c9f37476",
+    "solution_count": 1,
+    "truth_structure_hash": "16670898c8ffe87d0fb1c8ce82304005441538096e000c13d3bd9aa17b89ee87",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        78,
+        72,
+        16,
+        50
+      ],
+      "INVALID_A",
+      [
+        34,
+        52,
+        22,
+        52
+      ],
+      [
+        31,
+        92,
+        44,
+        9
+      ],
+      [
+        0,
+        0,
+        24,
+        98
+      ],
+      [
+        17,
+        11,
+        49,
+        40
+      ],
+      [
+        2,
+        91,
+        9,
+        97
+      ],
+      "INVALID_B",
+      [
+        10,
+        82,
+        10,
+        34
+      ],
+      [
+        0,
+        0,
+        23,
+        99
+      ],
+      [
+        22,
+        11,
+        49,
+        40
+      ],
+      [
+        97,
+        58,
+        80,
+        62
+      ],
+      [
+        24,
+        94,
+        53,
+        53
+      ],
+      [
+        83,
+        82,
+        30,
+        44
+      ],
+      [
+        46,
+        52,
+        25,
+        45
+      ],
+      [
+        28,
+        22,
+        17,
+        22
+      ]
+    ],
+    "base_scene_id": "c9dfcaa8ae7bfb4fcf1328d5dfc4b099",
+    "chart_type": "grouped_bar",
+    "constraint_family": "cross_series",
+    "event_categories": [
+      "W",
+      "I",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "I",
+      "W",
+      "S",
+      "X",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W"
+    ],
+    "group": 2,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "sum4",
+    "prompt_id": "c3c511c0929457bd5ccb16059f87ee86",
+    "solution_count": 1,
+    "truth_structure_hash": "933547bdfd7560dc456ce5744f4eae2b07305d3a69f1f24f4cc8851cd8096cd0",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        78,
+        72,
+        16,
+        50
+      ],
+      "INVALID_A",
+      [
+        34,
+        52,
+        22,
+        52
+      ],
+      [
+        31,
+        92,
+        44,
+        9
+      ],
+      [
+        0,
+        0,
+        24,
+        98
+      ],
+      [
+        17,
+        11,
+        49,
+        40
+      ],
+      [
+        2,
+        91,
+        9,
+        97
+      ],
+      "INVALID_B",
+      [
+        10,
+        82,
+        10,
+        34
+      ],
+      [
+        0,
+        0,
+        23,
+        99
+      ],
+      [
+        22,
+        11,
+        49,
+        40
+      ],
+      [
+        97,
+        58,
+        80,
+        62
+      ],
+      [
+        24,
+        94,
+        53,
+        53
+      ],
+      [
+        83,
+        82,
+        30,
+        44
+      ],
+      [
+        46,
+        52,
+        25,
+        45
+      ],
+      [
+        28,
+        22,
+        17,
+        22
+      ]
+    ],
+    "base_scene_id": "c9dfcaa8ae7bfb4fcf1328d5dfc4b099",
+    "chart_type": "grouped_bar",
+    "constraint_family": "cross_series",
+    "event_categories": [
+      "W",
+      "I",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "I",
+      "W",
+      "S",
+      "X",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W"
+    ],
+    "group": 3,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "sum4",
+    "prompt_id": "dc6cdf034319637eea68854937cbd382",
+    "solution_count": 1,
+    "truth_structure_hash": "933547bdfd7560dc456ce5744f4eae2b07305d3a69f1f24f4cc8851cd8096cd0",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        0,
+        26,
+        0,
+        1
+      ],
+      [
+        87,
+        87,
+        30,
+        33
+      ],
+      [
+        20,
+        99,
+        96,
+        10
+      ],
+      [
+        7,
+        31,
+        34,
+        98
+      ],
+      [
+        52,
+        61,
+        85,
+        66
+      ],
+      [
+        7,
+        98,
+        78,
+        34
+      ],
+      [
+        58,
+        55,
+        41,
+        80
+      ],
+      "INVALID_A",
+      [
+        43,
+        72,
+        92,
+        55
+      ],
+      [
+        57,
+        57,
+        57,
+        91
+      ],
+      [
+        37,
+        43,
+        22,
+        53
+      ],
+      [
+        37,
+        43,
+        22,
+        33
+      ],
+      [
+        0,
+        25,
+        0,
+        0
+      ],
+      "INVALID_B",
+      [
+        62,
+        5,
+        28,
+        56
+      ],
+      [
+        4,
+        40,
+        62,
+        6
+      ]
+    ],
+    "base_scene_id": "08b52b786b7df3c55cec440910016e5a",
+    "chart_type": "grouped_bar",
+    "constraint_family": "cross_series",
+    "event_categories": [
+      "S",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "I",
+      "W",
+      "W",
+      "W",
+      "X",
+      "S",
+      "I",
+      "W",
+      "W"
+    ],
+    "group": 2,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "difference_pairs",
+    "prompt_id": "d2b7ababa2bfd669084e0da8af9959d5",
+    "solution_count": 1,
+    "truth_structure_hash": "ece345533989e0e50f9cb3098e245c8f57d18db9a2f944d2cbdd22afc736dc18",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        0,
+        26,
+        0,
+        1
+      ],
+      [
+        87,
+        87,
+        30,
+        33
+      ],
+      [
+        20,
+        99,
+        96,
+        10
+      ],
+      [
+        7,
+        31,
+        34,
+        98
+      ],
+      [
+        52,
+        61,
+        85,
+        66
+      ],
+      [
+        7,
+        98,
+        78,
+        34
+      ],
+      [
+        58,
+        55,
+        41,
+        80
+      ],
+      "INVALID_A",
+      [
+        43,
+        72,
+        92,
+        55
+      ],
+      [
+        57,
+        57,
+        57,
+        91
+      ],
+      [
+        37,
+        43,
+        22,
+        53
+      ],
+      [
+        37,
+        43,
+        22,
+        33
+      ],
+      [
+        0,
+        25,
+        0,
+        0
+      ],
+      "INVALID_B",
+      [
+        62,
+        5,
+        28,
+        56
+      ],
+      [
+        4,
+        40,
+        62,
+        6
+      ]
+    ],
+    "base_scene_id": "08b52b786b7df3c55cec440910016e5a",
+    "chart_type": "grouped_bar",
+    "constraint_family": "cross_series",
+    "event_categories": [
+      "S",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "I",
+      "W",
+      "W",
+      "W",
+      "X",
+      "S",
+      "I",
+      "W",
+      "W"
+    ],
+    "group": 3,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "difference_pairs",
+    "prompt_id": "f4cf76b01d14cb956b52c7a16cdda73e",
+    "solution_count": 1,
+    "truth_structure_hash": "ece345533989e0e50f9cb3098e245c8f57d18db9a2f944d2cbdd22afc736dc18",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        97,
+        34,
+        71,
+        17
+      ],
+      [
+        76,
+        54,
+        4,
+        45
+      ],
+      [
+        75,
+        56,
+        30,
+        27
+      ],
+      [
+        27,
+        83,
+        57,
+        78
+      ],
+      [
+        0,
+        0,
+        0,
+        31
+      ],
+      [
+        0,
+        0,
+        31,
+        0
+      ],
+      [
+        31,
+        19,
+        73,
+        22
+      ],
+      "INVALID_B",
+      [
+        31,
+        19,
+        0,
+        22
+      ],
+      [
+        68,
+        38,
+        14,
+        89
+      ],
+      [
+        33,
+        5,
+        86,
+        66
+      ],
+      [
+        2,
+        90,
+        19,
+        52
+      ],
+      "INVALID_A",
+      [
+        63,
+        22,
+        33,
+        80
+      ],
+      [
+        79,
+        88,
+        13,
+        54
+      ],
+      [
+        89,
+        63,
+        53,
+        81
+      ]
+    ],
+    "base_scene_id": "d2d475ebb70187fbc7c6c9e6d2cc84a1",
+    "chart_type": "grouped_bar",
+    "constraint_family": "cross_series",
+    "event_categories": [
+      "W",
+      "W",
+      "W",
+      "W",
+      "S",
+      "S",
+      "W",
+      "I",
+      "X",
+      "W",
+      "W",
+      "W",
+      "I",
+      "W",
+      "W",
+      "W"
+    ],
+    "group": 2,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "range4",
+    "prompt_id": "e64d958aca5606916678688dcbfd71ba",
+    "solution_count": 1,
+    "truth_structure_hash": "54c0d09bb5b8f3cb0a9f2fc956f5584aa2f1386ace2e24a75d005b80d35dddca",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        97,
+        34,
+        71,
+        17
+      ],
+      [
+        76,
+        54,
+        4,
+        45
+      ],
+      [
+        75,
+        56,
+        30,
+        27
+      ],
+      [
+        27,
+        83,
+        57,
+        78
+      ],
+      [
+        0,
+        0,
+        0,
+        31
+      ],
+      [
+        0,
+        0,
+        31,
+        0
+      ],
+      [
+        31,
+        19,
+        73,
+        22
+      ],
+      "INVALID_B",
+      [
+        31,
+        19,
+        0,
+        22
+      ],
+      [
+        68,
+        38,
+        14,
+        89
+      ],
+      [
+        33,
+        5,
+        86,
+        66
+      ],
+      [
+        2,
+        90,
+        19,
+        52
+      ],
+      "INVALID_A",
+      [
+        63,
+        22,
+        33,
+        80
+      ],
+      [
+        79,
+        88,
+        13,
+        54
+      ],
+      [
+        89,
+        63,
+        53,
+        81
+      ]
+    ],
+    "base_scene_id": "d2d475ebb70187fbc7c6c9e6d2cc84a1",
+    "chart_type": "grouped_bar",
+    "constraint_family": "cross_series",
+    "event_categories": [
+      "W",
+      "W",
+      "W",
+      "W",
+      "S",
+      "S",
+      "W",
+      "I",
+      "X",
+      "W",
+      "W",
+      "W",
+      "I",
+      "W",
+      "W",
+      "W"
+    ],
+    "group": 3,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "range4",
+    "prompt_id": "0a6e0c1a9827a219c7c853558c60d9ee",
+    "solution_count": 1,
+    "truth_structure_hash": "54c0d09bb5b8f3cb0a9f2fc956f5584aa2f1386ace2e24a75d005b80d35dddca",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        55,
+        0,
+        87,
+        26
+      ],
+      [
+        67,
+        89,
+        76,
+        89
+      ],
+      "INVALID_B",
+      [
+        81,
+        20,
+        86,
+        23
+      ],
+      [
+        45,
+        68,
+        15,
+        42
+      ],
+      [
+        45,
+        30,
+        15,
+        42
+      ],
+      [
+        0,
+        0,
+        34,
+        98
+      ],
+      [
+        0,
+        0,
+        33,
+        99
+      ],
+      [
+        36,
+        71,
+        16,
+        55
+      ],
+      [
+        92,
+        14,
+        95,
+        82
+      ],
+      "INVALID_A",
+      [
+        75,
+        34,
+        70,
+        12
+      ],
+      [
+        3,
+        68,
+        68,
+        77
+      ],
+      [
+        12,
+        35,
+        68,
+        79
+      ],
+      [
+        23,
+        80,
+        88,
+        50
+      ],
+      [
+        79,
+        9,
+        99,
+        16
+      ]
+    ],
+    "base_scene_id": "6e99a19b206d04db432d4d8e4c86fc69",
+    "chart_type": "line",
+    "constraint_family": "cross_series",
+    "event_categories": [
+      "W",
+      "W",
+      "I",
+      "W",
+      "W",
+      "X",
+      "S",
+      "S",
+      "W",
+      "W",
+      "I",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W"
+    ],
+    "group": 2,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "sum4",
+    "prompt_id": "177887726abdd7c8ebbbe31cfaeeb991",
+    "solution_count": 1,
+    "truth_structure_hash": "74c75f482b4327e23d70d5fb5902184f706b2590df63f1406e209c6eba12f9b2",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        55,
+        0,
+        87,
+        26
+      ],
+      [
+        67,
+        89,
+        76,
+        89
+      ],
+      "INVALID_B",
+      [
+        81,
+        20,
+        86,
+        23
+      ],
+      [
+        45,
+        68,
+        15,
+        42
+      ],
+      [
+        45,
+        30,
+        15,
+        42
+      ],
+      [
+        0,
+        0,
+        34,
+        98
+      ],
+      [
+        0,
+        0,
+        33,
+        99
+      ],
+      [
+        36,
+        71,
+        16,
+        55
+      ],
+      [
+        92,
+        14,
+        95,
+        82
+      ],
+      "INVALID_A",
+      [
+        75,
+        34,
+        70,
+        12
+      ],
+      [
+        3,
+        68,
+        68,
+        77
+      ],
+      [
+        12,
+        35,
+        68,
+        79
+      ],
+      [
+        23,
+        80,
+        88,
+        50
+      ],
+      [
+        79,
+        9,
+        99,
+        16
+      ]
+    ],
+    "base_scene_id": "6e99a19b206d04db432d4d8e4c86fc69",
+    "chart_type": "line",
+    "constraint_family": "cross_series",
+    "event_categories": [
+      "W",
+      "W",
+      "I",
+      "W",
+      "W",
+      "X",
+      "S",
+      "S",
+      "W",
+      "W",
+      "I",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W"
+    ],
+    "group": 3,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "sum4",
+    "prompt_id": "244388adc6646ea343a618c32af23d34",
+    "solution_count": 1,
+    "truth_structure_hash": "74c75f482b4327e23d70d5fb5902184f706b2590df63f1406e209c6eba12f9b2",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        48,
+        49,
+        89,
+        64
+      ],
+      "INVALID_B",
+      [
+        6,
+        21,
+        28,
+        65
+      ],
+      [
+        93,
+        56,
+        87,
+        99
+      ],
+      [
+        96,
+        21,
+        44,
+        88
+      ],
+      [
+        0,
+        0,
+        0,
+        31
+      ],
+      [
+        15,
+        50,
+        19,
+        30
+      ],
+      [
+        48,
+        6,
+        9,
+        77
+      ],
+      [
+        26,
+        13,
+        90,
+        20
+      ],
+      [
+        25,
+        90,
+        62,
+        63
+      ],
+      [
+        0,
+        0,
+        1,
+        30
+      ],
+      "INVALID_A",
+      [
+        79,
+        81,
+        14,
+        54
+      ],
+      [
+        64,
+        8,
+        61,
+        48
+      ],
+      [
+        42,
+        92,
+        62,
+        27
+      ],
+      [
+        15,
+        3,
+        19,
+        30
+      ]
+    ],
+    "base_scene_id": "1a267a61023520c6371e903107b88019",
+    "chart_type": "line",
+    "constraint_family": "cross_series",
+    "event_categories": [
+      "W",
+      "I",
+      "W",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "W",
+      "W",
+      "S",
+      "I",
+      "W",
+      "W",
+      "W",
+      "X"
+    ],
+    "group": 2,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "difference_pairs",
+    "prompt_id": "a1a3729401cb8f8158c608195a10d483",
+    "solution_count": 1,
+    "truth_structure_hash": "de871ffd548b3ee889aead8a4093c5697336c548c4aa8127c033f19bd149209e",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        48,
+        49,
+        89,
+        64
+      ],
+      "INVALID_B",
+      [
+        6,
+        21,
+        28,
+        65
+      ],
+      [
+        93,
+        56,
+        87,
+        99
+      ],
+      [
+        96,
+        21,
+        44,
+        88
+      ],
+      [
+        0,
+        0,
+        0,
+        31
+      ],
+      [
+        15,
+        50,
+        19,
+        30
+      ],
+      [
+        48,
+        6,
+        9,
+        77
+      ],
+      [
+        26,
+        13,
+        90,
+        20
+      ],
+      [
+        25,
+        90,
+        62,
+        63
+      ],
+      [
+        0,
+        0,
+        1,
+        30
+      ],
+      "INVALID_A",
+      [
+        79,
+        81,
+        14,
+        54
+      ],
+      [
+        64,
+        8,
+        61,
+        48
+      ],
+      [
+        42,
+        92,
+        62,
+        27
+      ],
+      [
+        15,
+        3,
+        19,
+        30
+      ]
+    ],
+    "base_scene_id": "1a267a61023520c6371e903107b88019",
+    "chart_type": "line",
+    "constraint_family": "cross_series",
+    "event_categories": [
+      "W",
+      "I",
+      "W",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "W",
+      "W",
+      "S",
+      "I",
+      "W",
+      "W",
+      "W",
+      "X"
+    ],
+    "group": 3,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "difference_pairs",
+    "prompt_id": "cf1509ceb8afdcfab25c3e3f09716e4a",
+    "solution_count": 1,
+    "truth_structure_hash": "de871ffd548b3ee889aead8a4093c5697336c548c4aa8127c033f19bd149209e",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        15,
+        52,
+        16,
+        54
+      ],
+      [
+        53,
+        10,
+        30,
+        54
+      ],
+      [
+        14,
+        83,
+        10,
+        78
+      ],
+      [
+        92,
+        4,
+        23,
+        40
+      ],
+      [
+        69,
+        68,
+        5,
+        82
+      ],
+      [
+        99,
+        84,
+        59,
+        36
+      ],
+      [
+        71,
+        64,
+        36,
+        12
+      ],
+      [
+        40,
+        19,
+        14,
+        10
+      ],
+      [
+        40,
+        29,
+        14,
+        10
+      ],
+      [
+        20,
+        2,
+        3,
+        49
+      ],
+      [
+        51,
+        19,
+        36,
+        0
+      ],
+      [
+        25,
+        36,
+        73,
+        57
+      ],
+      "INVALID_A",
+      "INVALID_B",
+      [
+        6,
+        61,
+        36,
+        50
+      ],
+      [
+        0,
+        0,
+        0,
+        30
+      ]
+    ],
+    "base_scene_id": "5080bdfa8758dcc19ee64b0446fe56e6",
+    "chart_type": "line",
+    "constraint_family": "cross_series",
+    "event_categories": [
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "S",
+      "X",
+      "W",
+      "W",
+      "W",
+      "I",
+      "I",
+      "W",
+      "S"
+    ],
+    "group": 2,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "range4",
+    "prompt_id": "fa1ad4807456225ea2872b1a9a0a0033",
+    "solution_count": 1,
+    "truth_structure_hash": "00169cb88d1615d0557ddcf04e7bd442a175d549685f052f13b19213ab500ba4",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        15,
+        52,
+        16,
+        54
+      ],
+      [
+        53,
+        10,
+        30,
+        54
+      ],
+      [
+        14,
+        83,
+        10,
+        78
+      ],
+      [
+        92,
+        4,
+        23,
+        40
+      ],
+      [
+        69,
+        68,
+        5,
+        82
+      ],
+      [
+        99,
+        84,
+        59,
+        36
+      ],
+      [
+        71,
+        64,
+        36,
+        12
+      ],
+      [
+        40,
+        19,
+        14,
+        10
+      ],
+      [
+        40,
+        29,
+        14,
+        10
+      ],
+      [
+        20,
+        2,
+        3,
+        49
+      ],
+      [
+        51,
+        19,
+        36,
+        0
+      ],
+      [
+        25,
+        36,
+        73,
+        57
+      ],
+      "INVALID_A",
+      "INVALID_B",
+      [
+        6,
+        61,
+        36,
+        50
+      ],
+      [
+        0,
+        0,
+        0,
+        30
+      ]
+    ],
+    "base_scene_id": "5080bdfa8758dcc19ee64b0446fe56e6",
+    "chart_type": "line",
+    "constraint_family": "cross_series",
+    "event_categories": [
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "S",
+      "X",
+      "W",
+      "W",
+      "W",
+      "I",
+      "I",
+      "W",
+      "S"
+    ],
+    "group": 3,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "range4",
+    "prompt_id": "27f85404ddb0ca93300a5f99b298571f",
+    "solution_count": 1,
+    "truth_structure_hash": "00169cb88d1615d0557ddcf04e7bd442a175d549685f052f13b19213ab500ba4",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        40,
+        45,
+        93,
+        6
+      ],
+      [
+        29,
+        7,
+        33,
+        1
+      ],
+      "INVALID_B",
+      [
+        91,
+        75,
+        53,
+        38
+      ],
+      [
+        59,
+        89,
+        51,
+        28
+      ],
+      [
+        0,
+        0,
+        5,
+        99
+      ],
+      [
+        78,
+        44,
+        59,
+        33
+      ],
+      [
+        80,
+        98,
+        1,
+        64
+      ],
+      [
+        47,
+        33,
+        19,
+        5
+      ],
+      [
+        81,
+        97,
+        49,
+        77
+      ],
+      "INVALID_A",
+      [
+        8,
+        64,
+        56,
+        76
+      ],
+      [
+        84,
+        97,
+        45,
+        14
+      ],
+      [
+        20,
+        28,
+        45,
+        49
+      ],
+      [
+        47,
+        33,
+        57,
+        5
+      ],
+      [
+        0,
+        0,
+        6,
+        98
+      ]
+    ],
+    "base_scene_id": "6a7c23359408cc7f0ec6391518731b9e",
+    "chart_type": "grouped_bar",
+    "constraint_family": "trend",
+    "event_categories": [
+      "W",
+      "W",
+      "I",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "X",
+      "W",
+      "I",
+      "W",
+      "W",
+      "W",
+      "W",
+      "S"
+    ],
+    "group": 4,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "sum4",
+    "prompt_id": "0df56981f7051426ce36f96d6ea3951d",
+    "solution_count": 1,
+    "truth_structure_hash": "360b51a26180d6bd24982956c74e0983a103119e970ba49ded1e59410693486d",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        40,
+        45,
+        93,
+        6
+      ],
+      [
+        29,
+        7,
+        33,
+        1
+      ],
+      "INVALID_B",
+      [
+        91,
+        75,
+        53,
+        38
+      ],
+      [
+        59,
+        89,
+        51,
+        28
+      ],
+      [
+        0,
+        0,
+        5,
+        99
+      ],
+      [
+        78,
+        44,
+        59,
+        33
+      ],
+      [
+        80,
+        98,
+        1,
+        64
+      ],
+      [
+        47,
+        33,
+        19,
+        5
+      ],
+      [
+        81,
+        97,
+        49,
+        77
+      ],
+      "INVALID_A",
+      [
+        8,
+        64,
+        56,
+        76
+      ],
+      [
+        84,
+        97,
+        45,
+        14
+      ],
+      [
+        20,
+        28,
+        45,
+        49
+      ],
+      [
+        47,
+        33,
+        57,
+        5
+      ],
+      [
+        0,
+        0,
+        6,
+        98
+      ]
+    ],
+    "base_scene_id": "6a7c23359408cc7f0ec6391518731b9e",
+    "chart_type": "grouped_bar",
+    "constraint_family": "trend",
+    "event_categories": [
+      "W",
+      "W",
+      "I",
+      "W",
+      "W",
+      "S",
+      "W",
+      "W",
+      "X",
+      "W",
+      "I",
+      "W",
+      "W",
+      "W",
+      "W",
+      "S"
+    ],
+    "group": 5,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "sum4",
+    "prompt_id": "94b8206d3eaa5a519b582d5b14e3df92",
+    "solution_count": 1,
+    "truth_structure_hash": "360b51a26180d6bd24982956c74e0983a103119e970ba49ded1e59410693486d",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        40,
+        24,
+        59,
+        44
+      ],
+      [
+        97,
+        42,
+        45,
+        95
+      ],
+      [
+        43,
+        41,
+        95,
+        97
+      ],
+      [
+        0,
+        0,
+        1,
+        35
+      ],
+      "INVALID_A",
+      [
+        59,
+        29,
+        10,
+        94
+      ],
+      [
+        6,
+        48,
+        79,
+        24
+      ],
+      [
+        10,
+        19,
+        64,
+        37
+      ],
+      [
+        94,
+        28,
+        53,
+        30
+      ],
+      [
+        72,
+        27,
+        15,
+        30
+      ],
+      "INVALID_B",
+      [
+        86,
+        44,
+        84,
+        92
+      ],
+      [
+        10,
+        18,
+        77,
+        92
+      ],
+      [
+        0,
+        0,
+        0,
+        36
+      ],
+      [
+        14,
+        73,
+        56,
+        11
+      ],
+      [
+        10,
+        19,
+        28,
+        37
+      ]
+    ],
+    "base_scene_id": "d872321f40544c7c4d36748a456ab387",
+    "chart_type": "grouped_bar",
+    "constraint_family": "trend",
+    "event_categories": [
+      "W",
+      "W",
+      "W",
+      "S",
+      "I",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "I",
+      "W",
+      "W",
+      "S",
+      "W",
+      "X"
+    ],
+    "group": 4,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "difference_pairs",
+    "prompt_id": "fe12cb91e50ff255f911bc64480739f5",
+    "solution_count": 1,
+    "truth_structure_hash": "5fc18a7c3e8a552288c3199df6a44814e553953ea7e11a784b4b50558cb29102",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        40,
+        24,
+        59,
+        44
+      ],
+      [
+        97,
+        42,
+        45,
+        95
+      ],
+      [
+        43,
+        41,
+        95,
+        97
+      ],
+      [
+        0,
+        0,
+        1,
+        35
+      ],
+      "INVALID_A",
+      [
+        59,
+        29,
+        10,
+        94
+      ],
+      [
+        6,
+        48,
+        79,
+        24
+      ],
+      [
+        10,
+        19,
+        64,
+        37
+      ],
+      [
+        94,
+        28,
+        53,
+        30
+      ],
+      [
+        72,
+        27,
+        15,
+        30
+      ],
+      "INVALID_B",
+      [
+        86,
+        44,
+        84,
+        92
+      ],
+      [
+        10,
+        18,
+        77,
+        92
+      ],
+      [
+        0,
+        0,
+        0,
+        36
+      ],
+      [
+        14,
+        73,
+        56,
+        11
+      ],
+      [
+        10,
+        19,
+        28,
+        37
+      ]
+    ],
+    "base_scene_id": "d872321f40544c7c4d36748a456ab387",
+    "chart_type": "grouped_bar",
+    "constraint_family": "trend",
+    "event_categories": [
+      "W",
+      "W",
+      "W",
+      "S",
+      "I",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "I",
+      "W",
+      "W",
+      "S",
+      "W",
+      "X"
+    ],
+    "group": 5,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "difference_pairs",
+    "prompt_id": "155b9426f027f9b9b64f9e31980eaa0d",
+    "solution_count": 1,
+    "truth_structure_hash": "5fc18a7c3e8a552288c3199df6a44814e553953ea7e11a784b4b50558cb29102",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        45,
+        9,
+        53,
+        38
+      ],
+      [
+        25,
+        75,
+        31,
+        81
+      ],
+      [
+        61,
+        13,
+        17,
+        98
+      ],
+      [
+        8,
+        3,
+        92,
+        14
+      ],
+      "INVALID_B",
+      [
+        34,
+        44,
+        24,
+        76
+      ],
+      [
+        76,
+        90,
+        97,
+        81
+      ],
+      [
+        46,
+        75,
+        60,
+        28
+      ],
+      [
+        0,
+        0,
+        0,
+        30
+      ],
+      [
+        61,
+        76,
+        6,
+        59
+      ],
+      [
+        32,
+        7,
+        12,
+        2
+      ],
+      [
+        94,
+        39,
+        7,
+        53
+      ],
+      [
+        2,
+        97,
+        55,
+        14
+      ],
+      "INVALID_A",
+      [
+        78,
+        84,
+        98,
+        93
+      ],
+      [
+        32,
+        22,
+        12,
+        2
+      ]
+    ],
+    "base_scene_id": "ba129d2ae3a502ee03ee794a34d6cd3c",
+    "chart_type": "grouped_bar",
+    "constraint_family": "trend",
+    "event_categories": [
+      "W",
+      "W",
+      "W",
+      "W",
+      "I",
+      "W",
+      "W",
+      "W",
+      "S",
+      "W",
+      "S",
+      "W",
+      "W",
+      "I",
+      "W",
+      "X"
+    ],
+    "group": 4,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "range4",
+    "prompt_id": "c11abcbe83987a48007fc1af64d27e1c",
+    "solution_count": 1,
+    "truth_structure_hash": "92e26e4f6a66ff1fc403cc4fb247b727fabd435d553cd8e53f7607f4d6dd49ea",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        45,
+        9,
+        53,
+        38
+      ],
+      [
+        25,
+        75,
+        31,
+        81
+      ],
+      [
+        61,
+        13,
+        17,
+        98
+      ],
+      [
+        8,
+        3,
+        92,
+        14
+      ],
+      "INVALID_B",
+      [
+        34,
+        44,
+        24,
+        76
+      ],
+      [
+        76,
+        90,
+        97,
+        81
+      ],
+      [
+        46,
+        75,
+        60,
+        28
+      ],
+      [
+        0,
+        0,
+        0,
+        30
+      ],
+      [
+        61,
+        76,
+        6,
+        59
+      ],
+      [
+        32,
+        7,
+        12,
+        2
+      ],
+      [
+        94,
+        39,
+        7,
+        53
+      ],
+      [
+        2,
+        97,
+        55,
+        14
+      ],
+      "INVALID_A",
+      [
+        78,
+        84,
+        98,
+        93
+      ],
+      [
+        32,
+        22,
+        12,
+        2
+      ]
+    ],
+    "base_scene_id": "ba129d2ae3a502ee03ee794a34d6cd3c",
+    "chart_type": "grouped_bar",
+    "constraint_family": "trend",
+    "event_categories": [
+      "W",
+      "W",
+      "W",
+      "W",
+      "I",
+      "W",
+      "W",
+      "W",
+      "S",
+      "W",
+      "S",
+      "W",
+      "W",
+      "I",
+      "W",
+      "X"
+    ],
+    "group": 5,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "range4",
+    "prompt_id": "a1798108055d3467694e89da20bb413c",
+    "solution_count": 1,
+    "truth_structure_hash": "92e26e4f6a66ff1fc403cc4fb247b727fabd435d553cd8e53f7607f4d6dd49ea",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        51,
+        9,
+        85,
+        31
+      ],
+      [
+        78,
+        71,
+        81,
+        2
+      ],
+      [
+        2,
+        13,
+        54,
+        53
+      ],
+      [
+        13,
+        67,
+        57,
+        87
+      ],
+      [
+        52,
+        12,
+        85,
+        89
+      ],
+      [
+        7,
+        18,
+        29,
+        40
+      ],
+      [
+        52,
+        91,
+        42,
+        84
+      ],
+      [
+        90,
+        10,
+        42,
+        1
+      ],
+      [
+        1,
+        62,
+        80,
+        13
+      ],
+      [
+        7,
+        18,
+        29,
+        89
+      ],
+      "INVALID_B",
+      "INVALID_A",
+      [
+        0,
+        0,
+        0,
+        94
+      ],
+      [
+        65,
+        7,
+        16,
+        60
+      ],
+      [
+        0,
+        0,
+        1,
+        93
+      ],
+      [
+        36,
+        60,
+        96,
+        30
+      ]
+    ],
+    "base_scene_id": "e8420a1c915d88b0e6c3af448bd23876",
+    "chart_type": "line",
+    "constraint_family": "trend",
+    "event_categories": [
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "W",
+      "W",
+      "W",
+      "I",
+      "I",
+      "S",
+      "W",
+      "S",
+      "W"
+    ],
+    "group": 4,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "sum4",
+    "prompt_id": "6df3735c94773ce46cace819f0e5989f",
+    "solution_count": 1,
+    "truth_structure_hash": "cfc849b8c73f93b8756614fcd2f15370094d32aa48521416753db6ab99f7be8a",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        51,
+        9,
+        85,
+        31
+      ],
+      [
+        78,
+        71,
+        81,
+        2
+      ],
+      [
+        2,
+        13,
+        54,
+        53
+      ],
+      [
+        13,
+        67,
+        57,
+        87
+      ],
+      [
+        52,
+        12,
+        85,
+        89
+      ],
+      [
+        7,
+        18,
+        29,
+        40
+      ],
+      [
+        52,
+        91,
+        42,
+        84
+      ],
+      [
+        90,
+        10,
+        42,
+        1
+      ],
+      [
+        1,
+        62,
+        80,
+        13
+      ],
+      [
+        7,
+        18,
+        29,
+        89
+      ],
+      "INVALID_B",
+      "INVALID_A",
+      [
+        0,
+        0,
+        0,
+        94
+      ],
+      [
+        65,
+        7,
+        16,
+        60
+      ],
+      [
+        0,
+        0,
+        1,
+        93
+      ],
+      [
+        36,
+        60,
+        96,
+        30
+      ]
+    ],
+    "base_scene_id": "e8420a1c915d88b0e6c3af448bd23876",
+    "chart_type": "line",
+    "constraint_family": "trend",
+    "event_categories": [
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "W",
+      "W",
+      "W",
+      "I",
+      "I",
+      "S",
+      "W",
+      "S",
+      "W"
+    ],
+    "group": 5,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "sum4",
+    "prompt_id": "8e3e7875e66bd8fdfcc6556f5c5d894e",
+    "solution_count": 1,
+    "truth_structure_hash": "cfc849b8c73f93b8756614fcd2f15370094d32aa48521416753db6ab99f7be8a",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        17,
+        37,
+        56,
+        35
+      ],
+      [
+        10,
+        36,
+        4,
+        29
+      ],
+      "INVALID_A",
+      [
+        0,
+        0,
+        0,
+        12
+      ],
+      [
+        89,
+        83,
+        60,
+        5
+      ],
+      "INVALID_B",
+      [
+        0,
+        0,
+        1,
+        11
+      ],
+      [
+        71,
+        0,
+        53,
+        9
+      ],
+      [
+        58,
+        42,
+        7,
+        5
+      ],
+      [
+        64,
+        99,
+        72,
+        15
+      ],
+      [
+        32,
+        73,
+        77,
+        81
+      ],
+      [
+        22,
+        70,
+        85,
+        56
+      ],
+      [
+        1,
+        74,
+        6,
+        10
+      ],
+      [
+        27,
+        30,
+        33,
+        36
+      ],
+      [
+        27,
+        30,
+        62,
+        36
+      ],
+      [
+        64,
+        78,
+        60,
+        28
+      ]
+    ],
+    "base_scene_id": "0cc9b0d5b9136a5382616eab2ffff2e0",
+    "chart_type": "line",
+    "constraint_family": "trend",
+    "event_categories": [
+      "W",
+      "W",
+      "I",
+      "S",
+      "W",
+      "I",
+      "S",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "W"
+    ],
+    "group": 4,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "difference_pairs",
+    "prompt_id": "4594ee3e181c4360803f7612d657e4d9",
+    "solution_count": 1,
+    "truth_structure_hash": "5e3eee58885cc938d7c7430689b634b8ab35a945b99f6dfe32e4301b31d45f81",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        17,
+        37,
+        56,
+        35
+      ],
+      [
+        10,
+        36,
+        4,
+        29
+      ],
+      "INVALID_A",
+      [
+        0,
+        0,
+        0,
+        12
+      ],
+      [
+        89,
+        83,
+        60,
+        5
+      ],
+      "INVALID_B",
+      [
+        0,
+        0,
+        1,
+        11
+      ],
+      [
+        71,
+        0,
+        53,
+        9
+      ],
+      [
+        58,
+        42,
+        7,
+        5
+      ],
+      [
+        64,
+        99,
+        72,
+        15
+      ],
+      [
+        32,
+        73,
+        77,
+        81
+      ],
+      [
+        22,
+        70,
+        85,
+        56
+      ],
+      [
+        1,
+        74,
+        6,
+        10
+      ],
+      [
+        27,
+        30,
+        33,
+        36
+      ],
+      [
+        27,
+        30,
+        62,
+        36
+      ],
+      [
+        64,
+        78,
+        60,
+        28
+      ]
+    ],
+    "base_scene_id": "0cc9b0d5b9136a5382616eab2ffff2e0",
+    "chart_type": "line",
+    "constraint_family": "trend",
+    "event_categories": [
+      "W",
+      "W",
+      "I",
+      "S",
+      "W",
+      "I",
+      "S",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "W"
+    ],
+    "group": 5,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "difference_pairs",
+    "prompt_id": "a4e79d19dbcbf9d1b54417127b37fc09",
+    "solution_count": 1,
+    "truth_structure_hash": "5e3eee58885cc938d7c7430689b634b8ab35a945b99f6dfe32e4301b31d45f81",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        43,
+        43,
+        71,
+        56
+      ],
+      [
+        0,
+        0,
+        0,
+        21
+      ],
+      "INVALID_B",
+      [
+        35,
+        49,
+        18,
+        60
+      ],
+      [
+        18,
+        93,
+        16,
+        55
+      ],
+      [
+        6,
+        58,
+        32,
+        73
+      ],
+      [
+        82,
+        83,
+        85,
+        20
+      ],
+      [
+        42,
+        83,
+        19,
+        94
+      ],
+      [
+        19,
+        46,
+        33,
+        40
+      ],
+      [
+        21,
+        38,
+        56,
+        5
+      ],
+      [
+        19,
+        26,
+        33,
+        40
+      ],
+      [
+        94,
+        5,
+        98,
+        11
+      ],
+      [
+        66,
+        38,
+        37,
+        61
+      ],
+      [
+        79,
+        75,
+        52,
+        52
+      ],
+      [
+        0,
+        0,
+        21,
+        0
+      ],
+      "INVALID_A"
+    ],
+    "base_scene_id": "f9248c6b0b914d2a0bbe918e13c912d8",
+    "chart_type": "line",
+    "constraint_family": "trend",
+    "event_categories": [
+      "W",
+      "S",
+      "I",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "W",
+      "W",
+      "S",
+      "I"
+    ],
+    "group": 4,
+    "interface": "SYMBOLIC_PROXY",
+    "operation": "range4",
+    "prompt_id": "03c167742957041d92ff115cce647619",
+    "solution_count": 1,
+    "truth_structure_hash": "1637c8d0dde6f923d31475bd65ded2958fbd25d21f97f42782cb700d74f5a442",
+    "weight": 0.013888888888888888
+  },
+  {
+    "S_status": "PRESENT",
+    "actions": [
+      [
+        43,
+        43,
+        71,
+        56
+      ],
+      [
+        0,
+        0,
+        0,
+        21
+      ],
+      "INVALID_B",
+      [
+        35,
+        49,
+        18,
+        60
+      ],
+      [
+        18,
+        93,
+        16,
+        55
+      ],
+      [
+        6,
+        58,
+        32,
+        73
+      ],
+      [
+        82,
+        83,
+        85,
+        20
+      ],
+      [
+        42,
+        83,
+        19,
+        94
+      ],
+      [
+        19,
+        46,
+        33,
+        40
+      ],
+      [
+        21,
+        38,
+        56,
+        5
+      ],
+      [
+        19,
+        26,
+        33,
+        40
+      ],
+      [
+        94,
+        5,
+        98,
+        11
+      ],
+      [
+        66,
+        38,
+        37,
+        61
+      ],
+      [
+        79,
+        75,
+        52,
+        52
+      ],
+      [
+        0,
+        0,
+        21,
+        0
+      ],
+      "INVALID_A"
+    ],
+    "base_scene_id": "f9248c6b0b914d2a0bbe918e13c912d8",
+    "chart_type": "line",
+    "constraint_family": "trend",
+    "event_categories": [
+      "W",
+      "S",
+      "I",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "W",
+      "X",
+      "W",
+      "W",
+      "W",
+      "S",
+      "I"
+    ],
+    "group": 5,
+    "interface": "EVIDENCE_PROXY",
+    "operation": "range4",
+    "prompt_id": "839e2589fba9b6c5f0b71d5567d5bde0",
+    "solution_count": 1,
+    "truth_structure_hash": "1637c8d0dde6f923d31475bd65ded2958fbd25d21f97f42782cb700d74f5a442",
+    "weight": 0.013888888888888888
+  }
+]

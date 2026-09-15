@@ -1,0 +1,65 @@
+{
+  "schema_version": "ssvc-n4-delivery-verification-v1",
+  "status": "PASS",
+  "checked_at_utc": "2026-09-15T12:20:33.911827+00:00",
+  "scope": "local delivery integrity and recorded server test/audit receipts; no new model experiment",
+  "report_sha256": "4980c77631368636b4774a9e8b5367f6f845eadd925b35a103ffd5ea9a97a870",
+  "original_n0_n3_report_preserved_sha256": "f9c7b1d1f83e901fe76df221f247f5de0684bb765e05f583f864105d75f167f9",
+  "execution_source_commit": "c6727f1349ba2c24e31b590d381556edcc9263f5",
+  "posthoc_source_commit": "c7a1666a162854c3b1c2004ced804d6a9bc466e4",
+  "stage_manifests_match_independent_audit": true,
+  "selected_stage_payload_hashes": [
+    {
+      "stage": "N3_server",
+      "local_payloads_verified": 17,
+      "remote_manifest_payloads": 17
+    },
+    {
+      "stage": "N4",
+      "local_payloads_verified": 5,
+      "remote_manifest_payloads": 143
+    },
+    {
+      "stage": "N4_validation",
+      "local_payloads_verified": 10,
+      "remote_manifest_payloads": 3217
+    }
+  ],
+  "posthoc_outputs_verified": 3,
+  "posthoc_code_hashes_verified": 3,
+  "independent_server_audit_verified_file_count": 6353,
+  "independent_server_audit_sha256": "e91894052b82dffa7a76afd7cebb4ae886a28ac65182e15f4c088c7359af95d7",
+  "test_receipts": {
+    "server_preflight": {
+      "xml": "evidence/control/preflight_155490/tests.xml",
+      "tests": 265,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "posthoc_tools": {
+      "xml": "evidence/provenance/POSTHOC_UNIT_TESTS.xml",
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "report_relative_links_checked": 23,
+  "scientific_outcome": {
+    "prediction": "PASS",
+    "absolute_error_resolution": "FAIL",
+    "proxy_recommended_for_use": false
+  },
+  "scope_clarification": "all population includes inactive samples within four evaluation banks 10-13; six groups are named in report",
+  "secret_pattern_scan": "PASS",
+  "local_full_raw_copy": false,
+  "raw_server_root": "/projects/_ssd/varunssd/louis-ssvc/modeling_contrast_v2_20260915/checkout/ssvc_flow/runs/modeling_contrast_v2",
+  "coverage_detail": "evidence/provenance/LOCAL_EVIDENCE_COVERAGE.json",
+  "limitations": [
+    "Local evidence is a selected subset of N4 and N4_validation outputs; full raw arrays remain on server.",
+    "Independent numerical recomputation covers primary/all selected n64 and C0/nonzero C1, not every method or sampling level.",
+    "Historical repository fixture and early timing gaps remain; this receipt does not assert full-repository acceptance."
+  ],
+  "manifest_policy": "REPORT_MANIFEST.json hashes every local delivery file except itself, including this receipt."
+}

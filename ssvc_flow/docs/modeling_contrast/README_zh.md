@@ -1,8 +1,18 @@
-# 候选差异建模 V2：本地 CPU 复现
+# 候选差异建模 V2：CPU 实现与复现
 
 主协议原件在 `design/START_HERE_FOR_CODEX.md`；协议 JSON 不改写。
-最终决定及验收位于 `results/MODELING_DECISION_V2_zh.md` 和
-`results/CPU_ACCEPTANCE_RESULTS_zh.md`。旧模块 `src/modeling_qualification/` 保持不变。
+N0–N3 原始决定及验收位于 `results/MODELING_DECISION_V2_zh.md` 和
+`results/CPU_ACCEPTANCE_RESULTS_zh.md`，保留原件及哈希。
+服务器 N4 后续决定位于 `results/server_N4/MODELING_DECISION_V2_zh.md`。
+旧模块 `src/modeling_qualification/` 保持不变。
+
+## 执行位置
+
+按用户要求，较大的 CPU 模型实验在已授权的服务器执行；本机用于代码修改、文件核验和轻量单元测试。
+本轮服务器执行修订、原始锁保留方式和资源门禁见 `SERVER_N4_EXECUTION_zh.md`。
+`scripts/modeling_contrast_server.sbatch` 分别执行预检及冻结收集/验证；
+完成后由 `scripts/modeling_contrast_posthoc.sbatch` 在 CPU 节点独立复算并汇总。
+后续实验仍需遵守科学选择、种子身份及资源门禁，不因本轮授权而自动启动新的实验。
 
 ## 环境和输入
 

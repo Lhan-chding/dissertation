@@ -1,0 +1,37 @@
+{
+  "scope": "frozen server N4 continuation after user-approved resource-only amendment",
+  "original_report_preserved_sha256": "f9c7b1d1f83e901fe76df221f247f5de0684bb765e05f583f864105d75f167f9",
+  "original_selection_sha256": "559a1b513d49c1683e19155c4183cfc0c34daf92d0892c7fbfa46f6709c88645",
+  "server_selection_sha256": "ad6d95604b63cfdb4731e8b4ac6fa04c1449304e7dfca81d6ba551a3e2289e71",
+  "protocol_server_sha256": "0890341d4932e53404140ac74f78ef1b5e398cbf7b31e7500550de782614894c",
+  "scientific_selected_unchanged": true,
+  "execution_source_commit": "c6727f1349ba2c24e31b590d381556edcc9263f5",
+  "original_n0_n3_commit": "56c33e4bab41a177747216af73607026a04f8bcd",
+  "server_root": "/projects/varunssd/louis-ssvc/modeling_contrast_v2_20260915",
+  "preflight_job_id": 155490,
+  "n4_execution_job_id": 155496,
+  "preflight_failed_attempts": [
+    {
+      "job_id": 155450,
+      "wall_seconds": 9.18,
+      "log_sha256": "edb44d7a50e314929d76a4d765d72eb6117c01a5de26f04e4d1c4ad12c28a9e5",
+      "new_optimizer_updates": 0
+    },
+    {
+      "job_id": 155467,
+      "wall_seconds": 20.04,
+      "log_sha256": "f1c2307edf6daf0597edae7af7f4f3725eba4c4e9dc7ac45ffaf3384e08134c9",
+      "new_optimizer_updates": 0
+    },
+    {
+      "job_id": 155484,
+      "wall_seconds": 13.04,
+      "log_sha256": "e2ca581f808bedd037f510d6c65dde72ecc74763c025570680cc60b30269dbff",
+      "new_optimizer_updates": 0
+    }
+  ],
+  "prior_failed_wall_seconds": 42.26,
+  "resource_amendment": "added results cap 3 to 6 GiB; thread 1, RAM 8 GiB, scratch 1 GiB, total CPU experiment wall 4 h unchanged",
+  "user_upload_authorization": "explicit approval of the two named frozen evidence archives and continuing N4 in this conversation",
+  "larger_cpu_experiments_location": "server"
+}

@@ -1,0 +1,27 @@
+{
+  "status": "COMPLETE",
+  "job_id": "155521",
+  "execution_job_id": "155496",
+  "code": {
+    "source_commit": "c7a1666a162854c3b1c2004ced804d6a9bc466e4",
+    "files": {
+      "audit_modeling_n4_results.py": "faafe32315c7d458ccad802fd0e14790989e7695dab425f5516a81c4cead79df",
+      "summarize_modeling_n4_results.py": "f2364292e03f1b40209599525e09d09a6c569ef52b047f64ba35982aa71106f9",
+      "modeling_contrast_posthoc.sbatch": "71e325500e01eaf8d5178f89ee86cea5699f995d09df1a40585429c2c81ff209"
+    },
+    "scope": "read-only posthoc statistical audit and factual summary; no model calls"
+  },
+  "outputs": {
+    "N4_AUDIT.json": "e91894052b82dffa7a76afd7cebb4ae886a28ac65182e15f4c088c7359af95d7",
+    "summary/N4_FACTUAL_METRICS.csv": "a57fb6d3a5f5b279fb7d9fb29c11ce83b9ce9c0a143370c5db402ba3661251df",
+    "summary/N4_FACTUAL_SUMMARY.json": "2d370a85e6c82077a890ee7211bd2e463b485a2ab7e6a2e31285f756bbd387e8"
+  },
+  "output_root": "/projects/_ssd/varunssd/louis-ssvc/modeling_contrast_v2_20260915/checkout/ssvc_flow/runs/modeling_contrast_v2/posthoc_155521",
+  "wall_seconds": 13.756644633016549,
+  "prior_experiment_wall_seconds": 3051.0269909700055,
+  "model_library_imported": false,
+  "new_optimizer_updates": 0,
+  "new_gpu_calls": 0,
+  "new_qwen_calls": 0,
+  "online_ssvc": false
+}

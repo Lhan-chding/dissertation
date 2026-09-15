@@ -1,0 +1,293 @@
+{
+  "status": "FROZEN_FRESH_CPU_VALIDATION_COMPLETE",
+  "calibration_seed_count": 6,
+  "test_seed_count": 10,
+  "trajectory_count": 32,
+  "anchor_count": 96,
+  "configurations": [
+    {
+      "stage": "N4_FROZEN",
+      "method": "C6",
+      "observation": "O_LR_MIX",
+      "n": 64,
+      "rank": 4,
+      "alpha": 1e-05,
+      "eta": 0.01,
+      "fit_banks": 2,
+      "selection_primary_n": 64,
+      "retuned_on_fresh_data": false
+    },
+    {
+      "stage": "N4_FROZEN",
+      "method": "C3",
+      "observation": "O_LR_MIX",
+      "n": 64,
+      "rank": "FULL",
+      "alpha": 1e-05,
+      "eta": 0.01,
+      "fit_banks": 2,
+      "selection_primary_n": 64,
+      "retuned_on_fresh_data": false
+    },
+    {
+      "stage": "N4_FROZEN",
+      "method": "C6",
+      "observation": "O_LR_MIX",
+      "n": 16,
+      "rank": 4,
+      "alpha": 1e-05,
+      "eta": 0.01,
+      "fit_banks": 2,
+      "selection_primary_n": 64,
+      "retuned_on_fresh_data": false
+    },
+    {
+      "stage": "N4_FROZEN",
+      "method": "C3",
+      "observation": "O_LR_MIX",
+      "n": 16,
+      "rank": "FULL",
+      "alpha": 1e-05,
+      "eta": 0.01,
+      "fit_banks": 2,
+      "selection_primary_n": 64,
+      "retuned_on_fresh_data": false
+    },
+    {
+      "stage": "N4_FROZEN",
+      "method": "C6",
+      "observation": "O_LR_MIX",
+      "n": 256,
+      "rank": 4,
+      "alpha": 1e-05,
+      "eta": 0.01,
+      "fit_banks": 2,
+      "selection_primary_n": 64,
+      "retuned_on_fresh_data": false
+    },
+    {
+      "stage": "N4_FROZEN",
+      "method": "C3",
+      "observation": "O_LR_MIX",
+      "n": 256,
+      "rank": "FULL",
+      "alpha": 1e-05,
+      "eta": 0.01,
+      "fit_banks": 2,
+      "selection_primary_n": 64,
+      "retuned_on_fresh_data": false
+    },
+    {
+      "stage": "N4_FROZEN",
+      "method": "C5",
+      "observation": "O_LR_ORIGIN",
+      "n": 64,
+      "rank": 4,
+      "alpha": 1e-05,
+      "eta": 0.01,
+      "fit_banks": 2,
+      "selection_primary_n": 64,
+      "retuned_on_fresh_data": false
+    },
+    {
+      "stage": "N4_FROZEN",
+      "method": "C3",
+      "observation": "O_LR_ORIGIN",
+      "n": 64,
+      "rank": "FULL",
+      "alpha": 1e-05,
+      "eta": 0.01,
+      "fit_banks": 2,
+      "selection_primary_n": 64,
+      "retuned_on_fresh_data": false
+    },
+    {
+      "stage": "N4_FROZEN",
+      "method": "C5",
+      "observation": "O_LR_ORIGIN",
+      "n": 16,
+      "rank": 4,
+      "alpha": 1e-05,
+      "eta": 0.01,
+      "fit_banks": 2,
+      "selection_primary_n": 64,
+      "retuned_on_fresh_data": false
+    },
+    {
+      "stage": "N4_FROZEN",
+      "method": "C3",
+      "observation": "O_LR_ORIGIN",
+      "n": 16,
+      "rank": "FULL",
+      "alpha": 1e-05,
+      "eta": 0.01,
+      "fit_banks": 2,
+      "selection_primary_n": 64,
+      "retuned_on_fresh_data": false
+    },
+    {
+      "stage": "N4_FROZEN",
+      "method": "C5",
+      "observation": "O_LR_ORIGIN",
+      "n": 256,
+      "rank": 4,
+      "alpha": 1e-05,
+      "eta": 0.01,
+      "fit_banks": 2,
+      "selection_primary_n": 64,
+      "retuned_on_fresh_data": false
+    },
+    {
+      "stage": "N4_FROZEN",
+      "method": "C3",
+      "observation": "O_LR_ORIGIN",
+      "n": 256,
+      "rank": "FULL",
+      "alpha": 1e-05,
+      "eta": 0.01,
+      "fit_banks": 2,
+      "selection_primary_n": 64,
+      "retuned_on_fresh_data": false
+    },
+    {
+      "stage": "N4_FROZEN_BASELINE",
+      "method": "C0",
+      "observation": "O_IND",
+      "n": 64,
+      "rank": 0,
+      "alpha": 0.01,
+      "eta": 0.01,
+      "fit_banks": 8,
+      "retuned_on_fresh_data": false
+    },
+    {
+      "stage": "N4_FROZEN_BASELINE",
+      "method": "C1_LEGACY_FROZEN",
+      "observation": "O_IND",
+      "n": 64,
+      "rank": 0,
+      "alpha": 0.01,
+      "eta": 0.01,
+      "fit_banks": 8,
+      "retuned_on_fresh_data": false
+    },
+    {
+      "stage": "N4_FROZEN_BASELINE",
+      "method": "C1_LEGACY_EXACT_RULE",
+      "observation": "O_IND",
+      "n": 64,
+      "rank": 1,
+      "alpha": 0.01,
+      "eta": 0.01,
+      "fit_banks": 8,
+      "retuned_on_fresh_data": false
+    },
+    {
+      "stage": "N4_FROZEN_BASELINE",
+      "method": "C0",
+      "observation": "O_IND",
+      "n": 16,
+      "rank": 0,
+      "alpha": 0.01,
+      "eta": 0.01,
+      "fit_banks": 8,
+      "retuned_on_fresh_data": false
+    },
+    {
+      "stage": "N4_FROZEN_BASELINE",
+      "method": "C1_LEGACY_FROZEN",
+      "observation": "O_IND",
+      "n": 16,
+      "rank": 0,
+      "alpha": 0.01,
+      "eta": 0.01,
+      "fit_banks": 8,
+      "retuned_on_fresh_data": false
+    },
+    {
+      "stage": "N4_FROZEN_BASELINE",
+      "method": "C1_LEGACY_EXACT_RULE",
+      "observation": "O_IND",
+      "n": 16,
+      "rank": 1,
+      "alpha": 0.01,
+      "eta": 0.01,
+      "fit_banks": 8,
+      "retuned_on_fresh_data": false
+    },
+    {
+      "stage": "N4_FROZEN_BASELINE",
+      "method": "C0",
+      "observation": "O_IND",
+      "n": 256,
+      "rank": 0,
+      "alpha": 0.01,
+      "eta": 0.01,
+      "fit_banks": 8,
+      "retuned_on_fresh_data": false
+    },
+    {
+      "stage": "N4_FROZEN_BASELINE",
+      "method": "C1_LEGACY_FROZEN",
+      "observation": "O_IND",
+      "n": 256,
+      "rank": 0,
+      "alpha": 0.01,
+      "eta": 0.01,
+      "fit_banks": 8,
+      "retuned_on_fresh_data": false
+    },
+    {
+      "stage": "N4_FROZEN_BASELINE",
+      "method": "C1_LEGACY_EXACT_RULE",
+      "observation": "O_IND",
+      "n": 256,
+      "rank": 1,
+      "alpha": 0.01,
+      "eta": 0.01,
+      "fit_banks": 8,
+      "retuned_on_fresh_data": false
+    }
+  ],
+  "wall_seconds": 1423.2245430509793,
+  "calibration_sha256": "4f0b498bb3c194a8818bfd105217513eb0f5e0892beccd49b6a5a59477a1e2ce",
+  "distribution_free_95_claim": false,
+  "simultaneous_safety_certification": false,
+  "new_optimizer_updates": 0,
+  "new_qwen_calls": 0,
+  "new_gpu_calls": 0,
+  "online_ssvc": false,
+  "generalization_scope": "new training RNG only; same dataset, initialization and finite-action CPU model",
+  "resources": {
+    "label": "complete",
+    "measured": {
+      "wall_seconds": 2946.762370847049,
+      "peak_ram_gib": 1.3080062866210938,
+      "added_output_bytes": 3367664030,
+      "temporary_bytes": 0
+    },
+    "gate": {
+      "passed": true,
+      "status": "PASS",
+      "forecast": {
+        "wall_seconds": 2946.762370847049,
+        "peak_ram_gib": 1.3080062866210938,
+        "added_output_bytes": 3367664030,
+        "temporary_bytes": 0
+      },
+      "limits": {
+        "wall_seconds": 14400,
+        "peak_ram_gib": 8,
+        "added_output_bytes": 6442450944,
+        "temporary_bytes": 1073741824
+      },
+      "reasons": []
+    },
+    "process_user_cpu_seconds": 1425.50481,
+    "process_system_cpu_seconds": 34.864078,
+    "disk_peak_bytes": 3367664030,
+    "wall_scope": "completed formal stages and recorded smoke attempts plus current stage; excludes manual implementation idle time",
+    "temporary_scope": "no separate scratch arrays created by N2; compressed publication uses output directory",
+    "ram_scope": "current process peak; sequential experiments; one numerical CPU thread"
+  }
+}

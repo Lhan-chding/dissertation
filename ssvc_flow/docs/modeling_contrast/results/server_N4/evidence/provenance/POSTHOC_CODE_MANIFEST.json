@@ -1,0 +1,9 @@
+{
+  "source_commit": "c7a1666a162854c3b1c2004ced804d6a9bc466e4",
+  "files": {
+    "audit_modeling_n4_results.py": "faafe32315c7d458ccad802fd0e14790989e7695dab425f5516a81c4cead79df",
+    "summarize_modeling_n4_results.py": "f2364292e03f1b40209599525e09d09a6c569ef52b047f64ba35982aa71106f9",
+    "modeling_contrast_posthoc.sbatch": "71e325500e01eaf8d5178f89ee86cea5699f995d09df1a40585429c2c81ff209"
+  },
+  "scope": "read-only posthoc statistical audit and factual summary; no model calls"
+}

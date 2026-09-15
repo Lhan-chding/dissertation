@@ -1,0 +1,452 @@
+{
+  "budget_derived": {
+    "anchor_count": 180,
+    "fork_base_sampled_actions": 80640,
+    "fork_optimizer_steps": 7560,
+    "main_optimizer_steps": 3840,
+    "main_sampled_actions": 122880,
+    "seed_count": 30,
+    "total_optimizer_steps": 6080,
+    "total_sampled_finite_actions": 203520,
+    "trajectory_count": 60
+  },
+  "contrast_adapter": {
+    "derived_budget": {
+      "expected_trajectories": 32,
+      "fork_updates": 4032,
+      "main_updates": 2048,
+      "total_optimizer_updates": 6080,
+      "training_and_branch_actions": 108544
+    },
+    "parent_config_preserved_except_profile_and_measurement": true,
+    "protocol_version": "modeling-contrast-v2-20260915"
+  },
+  "dataset": {
+    "candidate_actions": 16,
+    "families": [
+      "duplicate_encoding",
+      "cross_series",
+      "trend"
+    ],
+    "forbid_candidate_index_feature": true,
+    "interfaces": [
+      "SYMBOLIC_PROXY",
+      "EVIDENCE_PROXY"
+    ],
+    "invalid_candidates": 2,
+    "operations": [
+      "sum4",
+      "difference_pairs",
+      "range4"
+    ],
+    "probe_interfaces_per_scene": 2,
+    "probe_prompt_count": 72,
+    "randomize_candidate_order": true,
+    "render": false,
+    "reuse_scene_definitions": true,
+    "same_answer_alternatives_target": 2,
+    "seed": 20260915,
+    "sizes": {
+      "control": 36,
+      "train": 72
+    },
+    "structurally_empty_S_allowed": true,
+    "train_probe_truth_disjoint": true,
+    "valid_candidates": 14
+  },
+  "events": [
+    "X",
+    "S",
+    "W",
+    "I"
+  ],
+  "final_reports": [
+    "MATH_AUDIT_zh.md",
+    "RESULTS_zh.md",
+    "MODELING_DECISION_zh.md",
+    "REAL_EVIDENCE_READINESS_zh.md",
+    "machine_readable_readiness.json"
+  ],
+  "fork_interventions": [
+    {
+      "lambda": 0.0,
+      "name": "joint_0",
+      "policy": "joint"
+    },
+    {
+      "lambda": 1.0,
+      "name": "joint_1",
+      "policy": "joint"
+    },
+    {
+      "lambda": 1.0,
+      "name": "no_x_off_1",
+      "policy": "no_x_off_before_joint_normalization"
+    }
+  ],
+  "loss": {
+    "Lnorm": 1,
+    "beta_KL": 0.0,
+    "clip_epsilon": 0.2,
+    "denominator": "B*K",
+    "entropy_coef": 0.0,
+    "type": "single_atomic_action_group_relative",
+    "updates_per_rollout": 1
+  },
+  "measurement": {
+    "interval_level": 0.95,
+    "noise_replicas": 8,
+    "noise_seed_root": 2026091502,
+    "oracle_is_separate_view": true,
+    "pointwise_interval": "clopper_pearson",
+    "primary_noise_replicas": 3,
+    "primary_samples_per_prompt": 64,
+    "pseudocount_primary": 0.0,
+    "samples_per_prompt_grid": [
+      16,
+      64,
+      256
+    ],
+    "share_anchor_counts_within_difference_block": true,
+    "simultaneous_panel_interval": "bonferroni_if_reported"
+  },
+  "model_selection": {
+    "baseline_energy_fraction": 0.95,
+    "group_delta_pX_abs_error_q95_max": 0.01,
+    "group_delta_v_abs_error_q95_max": 0.01,
+    "no_passing_rank": "NO_ACCEPTABLE_R",
+    "nrmse_energy_floor": 1e-20,
+    "per_prompt_event_mae_max": 0.02,
+    "raw_invalid_simplex_fraction_max": 0.05,
+    "response_nrmse_max": 0.75,
+    "split": "model_selection",
+    "targets_are_design_goals_not_assertions": true,
+    "test_tuning": false
+  },
+  "optimizer": {
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "eps": 1e-08,
+    "explicit_zero_gradients": true,
+    "global_grad_clip": 1.0,
+    "lr": 0.01,
+    "name": "AdamW",
+    "scheduler": null,
+    "step_on_zero_advantage": true,
+    "weight_decay": 0.0
+  },
+  "profiles": {
+    "contrast_fresh": {
+      "B": 4,
+      "K": 8,
+      "anchors": [
+        8,
+        24,
+        40
+      ],
+      "arms": [
+        "X_BASE",
+        "X_VALID"
+      ],
+      "diagnostic_bank_indices": [
+        8,
+        9
+      ],
+      "evaluation_bank_indices": [
+        10,
+        11,
+        12,
+        13
+      ],
+      "fit_bank_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "seeds_by_role": {
+        "fresh_calibration": [
+          501,
+          502,
+          503,
+          504,
+          505,
+          506
+        ],
+        "fresh_locked_test": [
+          601,
+          602,
+          603,
+          604,
+          605,
+          606,
+          607,
+          608,
+          609,
+          610
+        ]
+      },
+      "steps": 64
+    },
+    "core": {
+      "B": 4,
+      "K": 8,
+      "anchors": [
+        8,
+        24,
+        40
+      ],
+      "arms": [
+        "X_BASE",
+        "X_VALID"
+      ],
+      "diagnostic_bank_indices": [
+        8,
+        9
+      ],
+      "evaluation_bank_indices": [
+        10,
+        11,
+        12,
+        13
+      ],
+      "fit_bank_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "seeds_by_role": {
+        "development_fit": [
+          101,
+          102,
+          103,
+          104,
+          105,
+          106
+        ],
+        "interval_calibration": [
+          251,
+          252,
+          253,
+          254,
+          255,
+          256,
+          257,
+          258,
+          259,
+          260
+        ],
+        "locked_test": [
+          301,
+          302,
+          303,
+          304,
+          305,
+          306,
+          307,
+          308,
+          309,
+          310
+        ],
+        "model_selection": [
+          201,
+          202,
+          203,
+          204
+        ]
+      },
+      "steps": 64
+    },
+    "smoke": {
+      "B": 4,
+      "K": 8,
+      "anchors": [
+        4
+      ],
+      "arms": [
+        "X_BASE",
+        "X_VALID"
+      ],
+      "diagnostic_banks": 1,
+      "evaluation_banks": 1,
+      "fit_banks": 4,
+      "seeds": [
+        101,
+        301
+      ],
+      "steps": 8
+    }
+  },
+  "protocol_version": "modeling-qualification-v1-20260915",
+  "purpose": "CPU-only qualification of semantic probability representation and local response dimension",
+  "repository": {
+    "name": "Lhan-chding/dissertation",
+    "observed_parent_branch": "codex/ssvc-mechanism-followup-20260914",
+    "observed_parent_commit": "97b7fd646046cfd58c45e0083f0e8fe6f37d6f1e",
+    "proposed_new_branch": "codex/ssvc-modeling-qualification-20260915",
+    "recheck_current_head": true,
+    "separate_worktree": true,
+    "workdir": "ssvc_flow"
+  },
+  "representations": {
+    "conditional_boundary": "null_with_reason",
+    "conditional_diagnostic_oracle_min_mass": 0.05,
+    "interpretation": [
+      "v",
+      "q",
+      "s"
+    ],
+    "primary_group_q": "ratio_of_weighted_probabilities",
+    "primary_regression": "orthonormal_helmert",
+    "projection": "store_raw_and_projected_separately",
+    "storage": "four_counts_with_prompt_identity"
+  },
+  "resources": {
+    "automatic_dependency_upgrade": false,
+    "cpu_threads": 1,
+    "estimated_core_walltime_limit_hours": 4,
+    "on_exceed": "RESOURCE_REVIEW_REQUIRED",
+    "output_limit_gib": 2,
+    "peak_ram_limit_gib": 8
+  },
+  "response": {
+    "Q_from": "local_fit_banks_only",
+    "center_update_matrix": false,
+    "effective_r": "min(cap,k) or k for FULL",
+    "fit_budget_ablation": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "grid_policy": "Primary exact/n64 three-noise grid, then frozen-selected methods robust check; no full Cartesian search",
+    "input_space": "actual_realized_parameter_updates",
+    "intercept": false,
+    "models": [
+      "B0_PERSISTENCE",
+      "B1_LOG_RIDGE",
+      "B2_RANDOM_Q",
+      "B3_UPDATE_PCA",
+      "B4_RESPONSE_SVD",
+      "B5_WORST_GROUP_RANK",
+      "B6_FULL_Q_RIDGE",
+      "O0_FULL_J_ORACLE",
+      "O1_JQ_SVD_ORACLE"
+    ],
+    "out_of_span_ratio_bins": [
+      0.05,
+      0.2
+    ],
+    "output_space": "concatenated_per_prompt_helmert",
+    "primary_fit_banks": 8,
+    "rank_caps": [
+      0,
+      1,
+      2,
+      4,
+      8,
+      16,
+      "FULL"
+    ],
+    "ridge_alpha_grid": [
+      0.0,
+      1e-08,
+      1e-05,
+      0.01
+    ],
+    "ridge_scale": "alpha*largest_singular_value(A)**2",
+    "svd_rank_atol": 1e-14,
+    "svd_rank_rtol": 1e-10
+  },
+  "reward": {
+    "alpha_A": 0.0,
+    "alpha_X": 2.0,
+    "denominator": "sqrt(population_variance+epsilon**2)",
+    "epsilon": 0.0001,
+    "resample_zero_groups": false,
+    "zero_variance_advantage": 0.0
+  },
+  "runtime_default": {
+    "execution_permitted": "CPU_ONLY_WITH_PREFLIGHT",
+    "new_gpu_started": false,
+    "online_ssvc_started": false,
+    "safety_certified": false
+  },
+  "scope": {
+    "automatic_sbatch": false,
+    "cpu_toy_training": true,
+    "existing_jobs_mutable": false,
+    "new_gpu_training": false,
+    "new_qwen_calls": false,
+    "online_detector": false,
+    "online_ssvc": false,
+    "real_artifacts_readonly": true
+  },
+  "statistics": {
+    "bootstrap_replicates": 5000,
+    "bootstrap_seed": 99001,
+    "direction_threshold_grid": [
+      0.002,
+      0.005,
+      0.01
+    ],
+    "fixed_model_init_and_dataset_scope": true,
+    "keep_arms_and_anchor_branches_together": true,
+    "percentage_point_multiplier": 100,
+    "probability_units": true,
+    "top_cluster": "training_rng_seed"
+  },
+  "toy_model": {
+    "activation": "tanh",
+    "dtype": "float64",
+    "hidden_dim": 16,
+    "input_dim": 44,
+    "model_initialization_seed": 7001,
+    "name": "shared_candidate_score_mlp",
+    "no_batchnorm": true,
+    "no_dropout": true,
+    "output_dim": 1,
+    "parameter_count": 737,
+    "same_initialization_across_trajectories": true,
+    "threads": 1
+  },
+  "tracking": {
+    "analytic_L": "3*spectral_norm(A)**2 for the specified affine-softmax witnesses",
+    "basis_fixed_in_window": true,
+    "bounds": [
+      "NET_DISPLACEMENT",
+      "PATH_LENGTH"
+    ],
+    "claim_distribution_free_95_percent": false,
+    "cost_not_feasible_status": "NOT_COST_FEASIBLE_AT_TESTED_HORIZON",
+    "empirical_quantile": 0.9,
+    "enabled": "offline_only",
+    "horizons": [
+      1,
+      2,
+      4,
+      8,
+      16
+    ],
+    "no_online_trigger": true,
+    "nonlinear_bound_label": "EMPIRICAL_CALIBRATED_ENVELOPE",
+    "reestimate_J_every_step": false,
+    "require_calibration_amortization_audit": true,
+    "telemetry": [
+      "NORM_ONLY",
+      "PROJECTION_AND_PATH",
+      "PROJECTION_AND_NET_DISPLACEMENT"
+    ]
+  }
+}

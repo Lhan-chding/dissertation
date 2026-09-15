@@ -1,0 +1,3 @@
+{"status": "PASS", "out": "/projects/_ssd/varunssd/louis-ssvc/modeling_contrast_v2_20260915/checkout/ssvc_flow/runs/modeling_contrast_v2/posthoc_155521/N4_AUDIT.json"}
+{"status": "FACTUAL_SUMMARY_COMPLETE", "coverage": "COMPLETE", "pooled_rows": 62, "out_dir": "/projects/_ssd/varunssd/louis-ssvc/modeling_contrast_v2_20260915/checkout/ssvc_flow/runs/modeling_contrast_v2/posthoc_155521/summary"}
+{"status": "POSTHOC_COMPLETE", "output_root": "/projects/_ssd/varunssd/louis-ssvc/modeling_contrast_v2_20260915/checkout/ssvc_flow/runs/modeling_contrast_v2/posthoc_155521"}

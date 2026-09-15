@@ -1,0 +1,27 @@
+{
+  "status": "RESOURCE_REVIEW_REQUIRED",
+  "allow_fresh_cpu": false,
+  "candidate_count": 118,
+  "science_pass_count": 110,
+  "cost_pass_count": 4,
+  "selection_seed_count": 4,
+  "scope": "POSTHOC_LEGACY_DEVELOPMENT_ONLY",
+  "calibration_resolution": {
+    "calibration_seed_count": 6,
+    "nominal_coverage": 0.95,
+    "maximum_supported_nominal_coverage": 0.8571428571428571,
+    "status": "INSUFFICIENT_CALIBRATION_FOR_DISTRIBUTION_FREE_95",
+    "distribution_free_95_claim": false,
+    "simultaneous_safety_certification": false,
+    "interval_type": "independent_empirical_calibration_only"
+  },
+  "fresh_cpu_executed": false,
+  "new_qwen_calls": 0,
+  "new_gpu_calls": 0,
+  "online_ssvc": false,
+  "evidence_mismatches": [],
+  "deduplicated_rows": 2240,
+  "unique_metric_rows": 164310,
+  "independent_interval_status": "NOT_RUN_FRESH_CALIBRATION",
+  "direction_status": "DESCRIPTIVE_LEGACY_ONLY"
+}

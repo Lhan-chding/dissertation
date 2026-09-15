@@ -1,0 +1,7 @@
+{
+  "status": "COMPLETE",
+  "mode": "execute",
+  "wall_seconds": 1479.777296902961,
+  "wall_scope": "entire server driver including preflight tests, identity, smoke and freeze",
+  "selection_manifest_sha256": "f15b98b3a1d013c1192100e7719e5bfc3deb7061ac3104dc006729f7355d2238"
+}
