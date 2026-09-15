@@ -13,6 +13,8 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[2]
 DESIGN = ROOT / "docs/modeling_contrast/design/protocol.json"
 CONFIG_SHA256 = "c15f7e6e955fa4de09ce2688cc24f41b032d4177eaa42379ef79d17c53df900c"
+SERVER_CONFIG = ROOT / "configs/modeling_contrast/protocol_server.json"
+SERVER_CONFIG_SHA256 = "0890341d4932e53404140ac74f78ef1b5e398cbf7b31e7500550de782614894c"
 
 
 def _frozen_bytes() -> bytes:
@@ -24,7 +26,7 @@ def _frozen_bytes() -> bytes:
 
 def load_config(path: Path | str = DESIGN) -> dict[str, Any]:
     data = Path(path).read_bytes()
-    if data != _frozen_bytes():
+    if data != _frozen_bytes() and hashlib.sha256(data).hexdigest() != SERVER_CONFIG_SHA256:
         raise ValueError("locked protocol byte mismatch; do not rewrite or tune the config")
     config = json.loads(data)
     validate_config(config)
@@ -38,7 +40,23 @@ def validate_config(config: dict[str, Any]) -> dict[str, int]:
         return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
 
     if not isinstance(config, dict) or encode(config) != encode(expected):
-        raise ValueError("locked protocol semantic mismatch")
+        server_bytes = SERVER_CONFIG.read_bytes()
+        if hashlib.sha256(server_bytes).hexdigest() != SERVER_CONFIG_SHA256:
+            raise ValueError("locked protocol server amendment byte mismatch")
+        server = json.loads(server_bytes)
+        if not isinstance(config, dict) or encode(config) != encode(server):
+            raise ValueError("locked protocol semantic mismatch")
+        # The separately pinned revision authorizes only this resource ceiling.
+        # No method, sample, seed, rank, threshold or CPU threading rule changes.
+        normalized = json.loads(server_bytes)
+        amendment = normalized.pop("execution_amendment")
+        normalized["resources"]["max_added_output_gib"] = 3
+        if (
+            encode(normalized) != encode(expected)
+            or server["resources"]["max_added_output_gib"] != 6
+            or amendment["base_protocol_sha256"] != CONFIG_SHA256
+        ):
+            raise ValueError("locked protocol server amendment changes scientific parameters")
     roles = config["data_roles"]
     role_names = (
         "observation_development_seeds",
@@ -68,6 +86,12 @@ def validate_config(config: dict[str, Any]) -> dict[str, int]:
     if any(fresh[key] != value for key, value in derived.items()):
         raise ValueError("locked protocol derived budget mismatch")
     return derived
+
+
+def config_sha256(config: dict[str, Any]) -> str:
+    """Return the exact approved file identity after checking all semantics."""
+    validate_config(config)
+    return SERVER_CONFIG_SHA256 if "execution_amendment" in config else CONFIG_SHA256
 
 
 def cpu_environment() -> dict[str, str]:

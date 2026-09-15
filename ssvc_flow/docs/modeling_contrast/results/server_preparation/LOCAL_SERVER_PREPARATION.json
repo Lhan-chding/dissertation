@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "scope": "server-only N4 migration and resource amendment; local lightweight tests only",
+  "test_count": 255,
+  "test_log_sha256": "1573fe8d6554589adab4007be3dddabfac74e2cd7f0a1b20dcfba036dcc27486",
+  "server_config_sha256": "0890341d4932e53404140ac74f78ef1b5e398cbf7b31e7500550de782614894c",
+  "scientific_configuration_changes": [],
+  "disk_budget_gib": {
+    "before": 3,
+    "after": 6
+  },
+  "source_sha256": {
+    "src/modeling_contrast/collect_fresh.py": "83c0085bc9c06cf9153d8e42084b7bdcb7413eaf6d686568ea0ac49c4eb72239",
+    "src/modeling_contrast/frozen_validation.py": "dc4d2a39ea5500ac735e37f8b2fbede9b6235caa89e660b1ca3fd1718304ef14",
+    "src/modeling_contrast/protocol.py": "de335b15e4968659081a2ff6f750a43dfd3179d859e5eb0d740b758517a5ac37",
+    "src/modeling_contrast/server_cli.py": "1d893d17c04cbbacd436bd8b8adbcf64d186e9fe72f7aa7d2f87b23281f61139",
+    "src/modeling_contrast/server_checks.py": "ee13c0afa3a85b15952beede9ae47b0e0fc634d809b80d47558e29cc5435214d",
+    "src/modeling_contrast/server_transfer.py": "0c5be0d52844eedabd3aebb9f36bb8da1b00bc2fbaae6ec2fd17272faf0b2218"
+  },
+  "original_parent_module_diff_exit_code": 0,
+  "new_local_optimizer_updates": 0,
+  "large_local_model_experiments": 0
+}

@@ -88,7 +88,7 @@ def _current_resources(run_root):
     return measured
 
 
-def project_frozen_validation_budget(config, lock, run_root, *, fresh_root=None):
+def project_frozen_validation_budget(config, lock, run_root, *, fresh_root=None, parent_root=None):
     """Project all 96 fresh anchors from actual packet and frozen-fit artifacts.
 
     Uses the maximum observed bytes/time for each method/n and the maximum
@@ -172,7 +172,8 @@ def project_frozen_validation_budget(config, lock, run_root, *, fresh_root=None)
         audit_path = run_root / "N0/parent_integrity_audit.json"
         if audit_path.is_file():
             audit = _json(audit_path)
-            summary_path = Path(audit["root"]) / "summary.json"
+            summary_parent = Path(parent_root if parent_root is not None else audit["root"])
+            summary_path = summary_parent / "summary.json"
             if summary_path.is_file():
                 parent = _json(summary_path)
                 ratio = config["fresh_cpu"]["expected_trajectories"] / parent["trajectory_count"]
@@ -309,13 +310,14 @@ def validate_validation_inputs(
     from .collect_fresh import validate_fresh_gate
     from .parent import audit_seed_collisions
 
+    raw = Path(fresh_root).resolve()
     gate = validate_fresh_gate(
         config,
         selection_path,
         existing_run_roots=existing_run_roots,
         resource_forecast=resource_forecast,
+        completed_collection_root=raw.parent,
     )
-    raw = Path(fresh_root).resolve()
     collection = verify_run_manifest(raw.parent)
     if collection["status"] != "COMPLETE" or collection["binding"] != gate["binding"]:
         raise ValueError("fresh raw collection is incomplete or uses another frozen selection")

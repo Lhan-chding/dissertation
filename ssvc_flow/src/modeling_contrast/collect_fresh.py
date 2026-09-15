@@ -17,7 +17,7 @@ from .io import (
     validate_binding,
     verify_run_manifest,
 )
-from .protocol import CONFIG_SHA256, ROOT, cpu_environment, resource_gate, validate_config
+from .protocol import ROOT, config_sha256, cpu_environment, resource_gate, validate_config
 
 
 def build_fresh_parent_config(config: dict) -> dict:
@@ -120,14 +120,30 @@ def _stable_improvement(value):
 
 
 def validate_fresh_gate(
-    config, selection_path, *, existing_run_roots, resource_forecast, project_root=ROOT
+    config,
+    selection_path,
+    *,
+    existing_run_roots,
+    resource_forecast,
+    project_root=ROOT,
+    completed_collection_root=None,
 ) -> dict:
-    """Revalidate the frozen selector and every referenced file before collection."""
+    """Revalidate frozen inputs, or exempt one verified completed collection.
+
+    Post-collection validation must first prove the collection's COMPLETE
+    manifest, selection binding and every registered byte hash. Only its exact
+    registered raw-file paths are exempt from the fresh-seed collision scan.
+    Calling the pre-collection form never exempts an existing seed.
+    """
     validate_config(config)
     try:
         selection_path = checked_output_path(selection_path, project_root=project_root)
-        if selection_path.name != "MODEL_SELECTION_LOCK.json" or selection_path.parent.name != "N3":
-            raise ValueError("selection must be the N3 MODEL_SELECTION_LOCK.json")
+        allowed_stages = {"N3", "N3_server"} if "execution_amendment" in config else {"N3"}
+        if (
+            selection_path.name != "MODEL_SELECTION_LOCK.json"
+            or selection_path.parent.name not in allowed_stages
+        ):
+            raise ValueError("selection must be the approved N3 MODEL_SELECTION_LOCK.json")
         manifest = verify_run_manifest(selection_path.parent)
         if manifest["status"] != "COMPLETE":
             raise ValueError("N3 run is not complete")
@@ -148,7 +164,8 @@ def validate_fresh_gate(
         ):
             if lock.get(gate, {}).get("status") != "PASS":
                 raise ValueError(f"{gate} did not pass")
-        if lock.get("protocol_sha256") != CONFIG_SHA256:
+        expected_config_sha256 = config_sha256(config)
+        if lock.get("protocol_sha256") != expected_config_sha256:
             raise ValueError("protocol byte hash changed")
         selected = lock.get("selected", [])
         if not 1 <= len(selected) <= 2:
@@ -185,7 +202,9 @@ def validate_fresh_gate(
             if binding[name] != canonical_hash(mapping):
                 raise ValueError(f"{name} binding changed")
         _verify_files(lock.get("selector_source_hashes"), project_root, "selector source")
-        if binding["config"] != CONFIG_SHA256 or binding["selector"] != canonical_hash(selected):
+        if binding["config"] != expected_config_sha256 or binding["selector"] != canonical_hash(
+            selected
+        ):
             raise ValueError("config/selector binding changed")
         if manifest["binding"] != binding:
             raise ValueError("N3 run/selector binding mismatch")
@@ -196,7 +215,36 @@ def validate_fresh_gate(
             config["data_roles"]["fresh_calibration_seeds"]
             + config["data_roles"]["fresh_locked_test_seeds"]
         )
-        collisions = scan_seed_collisions(existing_run_roots, seeds)
+        verified_collection = None
+        excluded_raw_paths = set()
+        if completed_collection_root is not None:
+            collection_root = checked_output_path(
+                completed_collection_root, project_root=project_root
+            )
+            if collection_root.name != "N4":
+                raise ValueError("completed collection must be the N4 stage")
+            collection = verify_run_manifest(collection_root, binding)
+            if collection["status"] != "COMPLETE":
+                raise ValueError("completed collection exemption requires COMPLETE status")
+            raw_root = collection_root / "raw"
+            for relative in collection["outputs"]:
+                path = (collection_root / relative).resolve()
+                if raw_root in path.parents:
+                    excluded_raw_paths.add(path)
+            if raw_root / "manifest.json" not in excluded_raw_paths:
+                raise ValueError("completed collection has no registered raw manifest")
+            verified_collection = {
+                "root": str(collection_root),
+                "status": "COMPLETE",
+                "binding": dict(collection["binding"]),
+                "outputs": dict(collection["outputs"]),
+                "excluded_raw_paths": sorted(map(str, excluded_raw_paths)),
+            }
+        collisions = [
+            row
+            for row in scan_seed_collisions(existing_run_roots, seeds)
+            if Path(row["evidence"]).resolve() not in excluded_raw_paths
+        ]
         if collisions:
             raise ValueError("STOP_FOR_REVIEW seed collision: " + json.dumps(collisions))
         return {
@@ -207,6 +255,7 @@ def validate_fresh_gate(
             "resource_gate": resource,
             "seed_inventory_roots": [str(Path(path).resolve()) for path in existing_run_roots],
             "seed_collisions": [],
+            "verified_collection": verified_collection,
         }
     except (ValueError, KeyError, TypeError, OSError) as error:
         raise ValueError(f"fresh gate: {error}") from error

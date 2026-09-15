@@ -1,0 +1,332 @@
+{
+  "protocol_version": "modeling-contrast-v2-20260915",
+  "repository": {
+    "name": "Lhan-chding/dissertation",
+    "parent_branch": "codex/ssvc-modeling-qualification-20260915",
+    "parent_commit": "c71c60b4dad2d4432869eb195bb82069ebde374f",
+    "proposed_branch": "codex/ssvc-modeling-contrast-v2-20260915",
+    "workdir": "ssvc_flow",
+    "separate_worktree": true,
+    "recheck_head": true,
+    "modify_historical_sources": false
+  },
+  "scope": {
+    "new_gpu_calls": false,
+    "new_qwen_calls": false,
+    "online_detection": false,
+    "online_ssvc": false,
+    "mutate_existing_jobs": false,
+    "cpu_training": "conditional_N4_only",
+    "real_artifacts": "readonly",
+    "local_formula_tests": "allowed"
+  },
+  "parent_input": {
+    "zip": "d48b4ebd-5316-46e8-abf3-cc8a0231a764.zip",
+    "sha256": "c42bf359950de62ab01a22f83fb3ce7b0dfb1fc18ef34719fefcb199551f1ef3",
+    "expected_legacy_trajectories": 60,
+    "complete_legacy_trajectories_in_attachment": 1,
+    "regenerate_missing_as_historical": false
+  },
+  "events": [
+    "X",
+    "S",
+    "W",
+    "I"
+  ],
+  "representation": {
+    "storage": "prompt_identified_four_counts",
+    "regression": "parent_orthonormal_helmert",
+    "interpretation": [
+      "v",
+      "q",
+      "s"
+    ],
+    "undefined_conditionals": null,
+    "prompt_count": 72,
+    "response_coordinates": 216,
+    "weight_change": false
+  },
+  "primary_target": {
+    "name": "joint_1_minus_joint_0",
+    "input": "branch_theta_joint_1 - branch_theta_joint_0",
+    "output": "paired_per_prompt_helmert_difference",
+    "group_metrics": [
+      "pX",
+      "v"
+    ]
+  },
+  "secondary_targets": [
+    "no_x_off_1_minus_joint_0",
+    "joint_1_minus_no_x_off_1"
+  ],
+  "diagnostic_targets": [
+    "overall_response_T",
+    "main_response_B",
+    "level_probability",
+    "qX",
+    "qS"
+  ],
+  "branches": {
+    "operations": [
+      "joint_0",
+      "joint_1",
+      "no_x_off_1"
+    ],
+    "fit_banks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "diagnostic_banks": [
+      8,
+      9
+    ],
+    "evaluation_banks": [
+      10,
+      11,
+      12,
+      13
+    ],
+    "anchors": [
+      8,
+      24,
+      40
+    ],
+    "same_bank_roles_for_all_operations": true,
+    "dedup_scope": "inference_only"
+  },
+  "observation": {
+    "methods": [
+      "O_IND",
+      "O_CRN",
+      "O_LR_ORIGIN",
+      "O_LR_MIX"
+    ],
+    "access_regimes": [
+      "SAMPLE_ONLY",
+      "SAMPLE_AND_LOGP"
+    ],
+    "primary_n": 64,
+    "secondary_n": [
+      16,
+      256
+    ],
+    "noise_replicas": 8,
+    "seed_root": 2026091502,
+    "sampling_type_mix": "iid_bernoulli_source_per_draw",
+    "action_order": "parent_action_id_not_verifier_label",
+    "fit_eval_packets_independent": true,
+    "logp_contract": "normalized_full_action_probability_under_actual_sampling_law",
+    "primary_weight_clipping": false,
+    "self_normalization": false,
+    "lr_primary_coordinate": "helmert",
+    "lr_raw_event_view_also_reported": true,
+    "oracle_covariance": "diagnostic_only",
+    "proposal_support_failure": "BLOCKED_SUPPORT_MISMATCH",
+    "missing_event": "UNOBSERVED_NOT_ZERO"
+  },
+  "fit": {
+    "models": [
+      "C0_ZERO",
+      "C1_LEGACY_TOTAL_DIFFERENCE",
+      "C2_CONTRAST_OLS_FULL",
+      "C3_CONTRAST_GLS_FULL",
+      "C4_PCA_RANDOM",
+      "C5_UNWEIGHTED_RESPONSE",
+      "C6_GROUP_AWARE_RESPONSE"
+    ],
+    "direct_baselines": [
+      "D_DIRECT",
+      "D_KNOWN_EVENT_LOGP",
+      "D_FULL_FINITE_ENUMERATION"
+    ],
+    "ranks": [
+      1,
+      2,
+      4,
+      "FULL"
+    ],
+    "ridge_alpha": [
+      1e-05,
+      0.01
+    ],
+    "covariance_shrinkage": [
+      0.01,
+      0.1
+    ],
+    "covariance_jeffreys_prior": 0.5,
+    "response_pseudocount": 0.0,
+    "rank_rtol": 1e-10,
+    "rank_atol": 1e-14,
+    "fit_budget_ablation": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "spectrum_C6": {
+      "full_block_weight": "1/sqrt(216)",
+      "group_XV_weight": "1/sqrt(12)"
+    },
+    "intercept": false,
+    "no_acceptable_rank": "NO_ACCEPTABLE_MODEL",
+    "ablation_fallback_rank_zero": false,
+    "oracle_direction_and_coefficient_isolation": true
+  },
+  "data_roles": {
+    "legacy": "posthoc_development_and_reproduction_only",
+    "observation_development_seeds": [
+      101,
+      102,
+      103,
+      104,
+      105,
+      106
+    ],
+    "legacy_selection_seeds": [
+      201,
+      202,
+      203,
+      204
+    ],
+    "fresh_calibration_seeds": [
+      501,
+      502,
+      503,
+      504,
+      505,
+      506
+    ],
+    "fresh_locked_test_seeds": [
+      601,
+      602,
+      603,
+      604,
+      605,
+      606,
+      607,
+      608,
+      609,
+      610
+    ],
+    "fresh_selection_frozen_before_generation": true,
+    "seed_collision": "STOP_FOR_REVIEW"
+  },
+  "fresh_cpu": {
+    "enabled": "only_after_N3_science_and_cost_gate",
+    "dataset_seed": 20260915,
+    "initialization_seed": 7001,
+    "fixed_dataset_and_initialization": true,
+    "parameter_count": 737,
+    "candidate_actions": 16,
+    "main_arms": [
+      "X_BASE",
+      "X_VALID"
+    ],
+    "steps": 64,
+    "B": 4,
+    "K": 8,
+    "optimizer": "inherit_exact_parent_AdamW_contract",
+    "reward": "inherit_exact_parent_contract",
+    "expected_trajectories": 32,
+    "main_updates": 2048,
+    "fork_updates": 4032,
+    "total_optimizer_updates": 6080,
+    "training_and_branch_actions": 108544
+  },
+  "statistics": {
+    "probability_units": true,
+    "primary_delta": 0.00025,
+    "delta_grid": [
+      0.0001,
+      0.00025,
+      0.0005,
+      0.001
+    ],
+    "nrmse_pX_max": 0.75,
+    "nrmse_v_max": 0.75,
+    "group_error_q95_max": 0.000125,
+    "primary_nrmse_energy_floor": "numerical_zero_only",
+    "bootstrap_cluster": "training_rng_seed",
+    "bootstrap_replicates": 5000,
+    "bootstrap_seed": 2026091503,
+    "min_direction_anchor_bank_units": 20,
+    "min_direction_training_seeds": 5,
+    "calibration_seed_count": 6,
+    "claim_distribution_free_95_prediction_coverage": false,
+    "simultaneous_safety_certification": false,
+    "interval_unknown_action": "report_unknown_no_safety_claim"
+  },
+  "cost": {
+    "score_to_generation_ratios": [
+      0.05,
+      0.25,
+      1.0
+    ],
+    "toy_walltime_not_vlm_cost": true,
+    "exact_known_event_baseline_required": true,
+    "record_unique_policies_and_packet_reuse": true,
+    "include_all_calibration_scores_and_labels": true,
+    "break_even_required": true
+  },
+  "optional_tracking": {
+    "enabled": "after_finite_contrast_gate_only",
+    "horizons": [
+      1,
+      2,
+      4
+    ],
+    "online_trigger": false,
+    "contrast_head_is_not_time_tracker": true
+  },
+  "resources": {
+    "cpu_threads": 1,
+    "max_ram_gib": 8,
+    "max_added_output_gib": 6,
+    "max_temporary_gib": 1,
+    "max_total_walltime_hours": 4,
+    "forecast_before_core": true,
+    "on_exceed": "RESOURCE_REVIEW_REQUIRED",
+    "dependency_upgrade": false
+  },
+  "new_method_results": "NOT_RUN_IN_HANDOFF",
+  "reference_tests": "independent_formula_only",
+  "final_reports": [
+    "REVISED_IDEA_zh.md",
+    "N0_AUDIT_zh.md",
+    "MISSING_INPUTS.json",
+    "OBSERVATION_COMPARISON.csv",
+    "CONTRAST_PREDICTION_BY_SEED.csv",
+    "NONDEGENERATE_ABLATIONS.csv",
+    "MODEL_SELECTION_LOCK.json",
+    "MODELING_DECISION_V2_zh.md",
+    "COST_FRONTIER.csv",
+    "MEASUREMENT_COVARIANCE_AUDIT.json",
+    "REAL_DATA_REQUIREMENTS_zh.md",
+    "IMPLEMENTATION_REPORT_zh.md",
+    "machine_readable_readiness.json"
+  ],
+  "execution_amendment": {
+    "id": "server-cpu-n4-resource-20260915",
+    "kind": "resource_only_server_execution",
+    "base_protocol_sha256": "c15f7e6e955fa4de09ce2688cc24f41b032d4177eaa42379ef79d17c53df900c",
+    "base_code_commit": "56c33e4bab41a177747216af73607026a04f8bcd",
+    "original_selection_lock_sha256": "559a1b513d49c1683e19155c4183cfc0c34daf92d0892c7fbfa46f6709c88645",
+    "changed_fields": {
+      "resources.max_added_output_gib": {
+        "before": 3,
+        "after": 6
+      }
+    },
+    "authorization": "User authorized server N4 after the assistant proposed a documented resource budget amendment; user response: 那就去做吧",
+    "execution_location": "existing eee-cluster CPU allocation under /projects/varunssd/louis-ssvc",
+    "science_parameters_unchanged": true,
+    "no_qwen_gpu_or_online_ssvc": true,
+    "original_lock_preserved": true
+  }
+}

@@ -1,0 +1,44 @@
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+_____________ test_exact_server_revision_keeps_scientific_protocol _____________
+tests/modeling_contrast/test_server_protocol.py:12: in test_exact_server_revision_keeps_scientific_protocol
+    server = protocol.load_config(protocol.ROOT / "configs/modeling_contrast/protocol_server.json")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/modeling_contrast/protocol.py:28: in load_config
+    raise ValueError("locked protocol byte mismatch; do not rewrite or tune the config")
+E   ValueError: locked protocol byte mismatch; do not rewrite or tune the config
+_ test_server_revision_rejects_unapproved_resource_changes[max_added_output_gib-7] _
+tests/modeling_contrast/test_server_protocol.py:28: in test_server_revision_rejects_unapproved_resource_changes
+    server = protocol.load_config(protocol.ROOT / "configs/modeling_contrast/protocol_server.json")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/modeling_contrast/protocol.py:28: in load_config
+    raise ValueError("locked protocol byte mismatch; do not rewrite or tune the config")
+E   ValueError: locked protocol byte mismatch; do not rewrite or tune the config
+___ test_server_revision_rejects_unapproved_resource_changes[max_ram_gib-16] ___
+tests/modeling_contrast/test_server_protocol.py:28: in test_server_revision_rejects_unapproved_resource_changes
+    server = protocol.load_config(protocol.ROOT / "configs/modeling_contrast/protocol_server.json")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/modeling_contrast/protocol.py:28: in load_config
+    raise ValueError("locked protocol byte mismatch; do not rewrite or tune the config")
+E   ValueError: locked protocol byte mismatch; do not rewrite or tune the config
+___ test_server_revision_rejects_unapproved_resource_changes[cpu_threads-2] ____
+tests/modeling_contrast/test_server_protocol.py:28: in test_server_revision_rejects_unapproved_resource_changes
+    server = protocol.load_config(protocol.ROOT / "configs/modeling_contrast/protocol_server.json")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/modeling_contrast/protocol.py:28: in load_config
+    raise ValueError("locked protocol byte mismatch; do not rewrite or tune the config")
+E   ValueError: locked protocol byte mismatch; do not rewrite or tune the config
+__________ test_server_revision_rejects_tuning_or_reformatted_config ___________
+tests/modeling_contrast/test_server_protocol.py:36: in test_server_revision_rejects_tuning_or_reformatted_config
+    server = protocol.load_config(path)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/modeling_contrast/protocol.py:28: in load_config
+    raise ValueError("locked protocol byte mismatch; do not rewrite or tune the config")
+E   ValueError: locked protocol byte mismatch; do not rewrite or tune the config
+=========================== short test summary info ============================
+FAILED tests/modeling_contrast/test_server_protocol.py::test_exact_server_revision_keeps_scientific_protocol
+FAILED tests/modeling_contrast/test_server_protocol.py::test_server_revision_rejects_unapproved_resource_changes[max_added_output_gib-7]
+FAILED tests/modeling_contrast/test_server_protocol.py::test_server_revision_rejects_unapproved_resource_changes[max_ram_gib-16]
+FAILED tests/modeling_contrast/test_server_protocol.py::test_server_revision_rejects_unapproved_resource_changes[cpu_threads-2]
+FAILED tests/modeling_contrast/test_server_protocol.py::test_server_revision_rejects_tuning_or_reformatted_config
+5 failed in 0.12s

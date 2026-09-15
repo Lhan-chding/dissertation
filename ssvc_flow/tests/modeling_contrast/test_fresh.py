@@ -205,3 +205,67 @@ def test_seed_scan_ignores_explicit_test_fixtures_but_checks_actual_runs(tmp_pat
     (actual / "manifest.json").write_text(json.dumps({"trajectories": [{"seed": 602}]}))
     hits = scan_seed_collisions([tmp_path], {601, 602})
     assert len(hits) == 1 and hits[0]["seed"] == 602
+
+
+def test_post_collection_gate_exempts_only_complete_bound_raw_files(tmp_path):
+    config, path, lock, kwargs = frozen_fixture(tmp_path)
+    collection = tmp_path / "runs/modeling_contrast_v2/N4"
+    with RunWriter(collection, lock["binding"], project_root=tmp_path) as writer:
+        writer.write_json("raw/manifest.json", {"trajectories": [{"seed": 601}]})
+        writer.write_bytes("raw/observations/seed601_X_BASE.npz", b"hash-only raw fixture")
+    # The original pre-collection gate must continue refusing existing seeds.
+    with pytest.raises(ValueError, match="seed collision"):
+        validate_fresh_gate(config, path, **kwargs)
+    receipt = validate_fresh_gate(config, path, completed_collection_root=collection, **kwargs)
+    assert receipt["status"] == "PASS"
+    assert len(receipt["verified_collection"]["excluded_raw_paths"]) == 2
+    other = tmp_path / "runs/other_collection"
+    other.mkdir()
+    (other / "seed601_X_BASE.npz").write_bytes(b"conflicting run")
+    with pytest.raises(ValueError, match="seed collision"):
+        validate_fresh_gate(config, path, completed_collection_root=collection, **kwargs)
+
+
+@pytest.mark.parametrize("corruption", ["bytes", "unregistered", "incomplete", "binding"])
+def test_post_collection_exemption_requires_complete_binding_and_bytes(tmp_path, corruption):
+    config, path, lock, kwargs = frozen_fixture(tmp_path)
+    collection = tmp_path / "runs/modeling_contrast_v2/N4"
+    with RunWriter(collection, lock["binding"], project_root=tmp_path) as writer:
+        writer.write_json("raw/manifest.json", {"trajectories": [{"seed": 601}]})
+    if corruption == "bytes":
+        (collection / "raw/manifest.json").write_text("{}")
+    elif corruption == "unregistered":
+        (collection / "raw/seed601_extra.npz").write_bytes(b"unregistered")
+    else:
+        manifest_path = collection / "RUN_MANIFEST.json"
+        manifest = json.loads(manifest_path.read_text())
+        if corruption == "incomplete":
+            manifest["status"] = "INTERRUPTED"
+        else:
+            manifest["binding"]["selector"] = "b" * 64
+        manifest_path.write_text(json.dumps(manifest))
+    with pytest.raises(ValueError):
+        validate_fresh_gate(config, path, completed_collection_root=collection, **kwargs)
+
+
+@pytest.mark.parametrize("server_amendment", [False, True])
+def test_n3_server_stage_requires_exact_approved_server_amendment(tmp_path, server_amendment):
+    from src.modeling_contrast.protocol import SERVER_CONFIG, config_sha256
+
+    config, _path, lock, kwargs = frozen_fixture(tmp_path)
+    if server_amendment:
+        config = load_config(SERVER_CONFIG)
+        lock["protocol_sha256"] = config_sha256(config)
+        lock["binding"]["config"] = config_sha256(config)
+        lock["lock_sha256"] = canonical_hash(
+            {key: value for key, value in lock.items() if key != "lock_sha256"}
+        )
+    out = tmp_path / "runs/modeling_contrast_v2/N3_server"
+    with RunWriter(out, lock["binding"], project_root=tmp_path) as writer:
+        writer.write_json("MODEL_SELECTION_LOCK.json", lock)
+    if server_amendment:
+        result = validate_fresh_gate(config, out / "MODEL_SELECTION_LOCK.json", **kwargs)
+        assert result["status"] == "PASS"
+    else:
+        with pytest.raises(ValueError, match="N3"):
+            validate_fresh_gate(config, out / "MODEL_SELECTION_LOCK.json", **kwargs)

@@ -89,6 +89,24 @@ def test_missing_measured_resource_profiles_fail_closed_before_any_training(tmp_
     assert "NO_MATCHING_FROZEN_FIT_RESOURCE_EXAMPLE" in result["missing_resource_evidence"]
 
 
+def test_resource_projection_accepts_relocated_parent_without_rewriting_n0(tmp_path):
+    run = tmp_path / "run"
+    (run / "N0").mkdir(parents=True)
+    audit = run / "N0/parent_integrity_audit.json"
+    audit.write_text(json.dumps({"root": "/not/mounted/original/mac/parent"}))
+    before = audit.read_bytes()
+    parent = tmp_path / "mounted_parent"
+    parent.mkdir()
+    (parent / "summary.json").write_text(
+        json.dumps({"trajectory_count": 60, "output_bytes": 6000, "wall_seconds": 600})
+    )
+    result = project_frozen_validation_budget(CONFIG, lock(), run, parent_root=parent)
+    assert result["fresh_raw_bytes"] == pytest.approx(5120)
+    assert "NO_RAW_COLLECTION_RESOURCE_EXAMPLE" not in result["missing_resource_evidence"]
+    assert str((parent / "summary.json").resolve()) in result["evidence_hashes"]
+    assert audit.read_bytes() == before
+
+
 def test_orchestrator_freezes_six_seed_calibration_before_any_test_unit(tmp_path, monkeypatch):
     from src.modeling_contrast import collect_fresh
     from src.modeling_contrast import frozen_validation as module
