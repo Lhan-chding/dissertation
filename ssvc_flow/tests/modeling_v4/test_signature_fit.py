@@ -200,10 +200,12 @@ def test_actual_fold_receipts_gate_and_frozen_safe_independent_predictions(tmp_p
         )
 
 
-def test_production_requires_server_and_calibration_test_labels_cannot_train(tmp_path):
+def test_production_requires_server_and_calibration_test_labels_cannot_train(tmp_path, monkeypatch):
     config, inputs = originals(tmp_path)
-    with pytest.raises(RuntimeError, match=r"server|Slurm"):
-        fit_signature_development(config, inputs, out=tmp_path / "prod")
+    with monkeypatch.context() as scope:
+        scope.delenv("SLURM_JOB_ID", raising=False)
+        with pytest.raises(RuntimeError, match=r"server|Slurm"):
+            fit_signature_development(config, inputs, out=tmp_path / "prod")
     labels = json.loads(Path(inputs[0]["labels"]["path"]).read_text())
     labels["role"] = "test"
     path = tmp_path / "forged.json"
