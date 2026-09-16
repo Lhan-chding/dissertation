@@ -23,7 +23,9 @@ export TMP="$TMPDIR" TEMP="$TMPDIR"
 unset PYTHONPATH PYTHONHOME PYTHONOPTIMIZE PYTEST_ADDOPTS
 mkdir -p "$output_root" "$TMPDIR"
 cd "$project_root"
-/usr/bin/time -v "$python_bin" -m pytest tests --import-mode=importlib --cov=src --cov-report=term-missing \
+# Legacy V3 tests import a few sibling fixture helpers by their bare module name.
+/usr/bin/time -v "$python_bin" -m pytest tests --import-mode=importlib \
+  -o pythonpath=tests/modeling_v3 --cov=src --cov-report=term-missing \
   --junitxml="$output_root/pytest.xml" -q
 "$python_bin" -m ruff check src/modeling_v4 tests/modeling_v4 scripts/submit_modeling_v4.py
 "$python_bin" -m compileall -q src/modeling_v4 scripts/submit_modeling_v4.py
