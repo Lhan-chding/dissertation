@@ -23,7 +23,7 @@ export TMP="$TMPDIR" TEMP="$TMPDIR"
 unset PYTHONPATH PYTHONHOME PYTHONOPTIMIZE PYTEST_ADDOPTS
 mkdir -p "$output_root" "$TMPDIR"
 cd "$project_root"
-/usr/bin/time -v "$python_bin" -m pytest tests --cov=src --cov-report=term-missing \
+/usr/bin/time -v "$python_bin" -m pytest tests --import-mode=importlib --cov=src --cov-report=term-missing \
   --junitxml="$output_root/pytest.xml" -q
 "$python_bin" -m ruff check src/modeling_v4 tests/modeling_v4 scripts/submit_modeling_v4.py
 "$python_bin" -m compileall -q src/modeling_v4 scripts/submit_modeling_v4.py
