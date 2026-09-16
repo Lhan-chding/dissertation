@@ -8,9 +8,12 @@ from __future__ import annotations
 
 import errno
 import importlib.util
+import json
 import os
+import stat
 import tempfile
 import unittest
+from contextlib import contextmanager
 from pathlib import Path
 from unittest.mock import patch
 
@@ -20,7 +23,7 @@ recovery = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(recovery)
 
 
-class RecoveryAttempt02Tests(unittest.TestCase):
+class RecoveryAttempt03Tests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
@@ -33,15 +36,33 @@ class RecoveryAttempt02Tests(unittest.TestCase):
         (self.source / "nested").mkdir()
         (self.source / "nested" / "COMPLETE.json").write_bytes(b'{"status":"COMPLETE"}')
         self.inventory = recovery.tree_entries(self.source, hash_files=True)
-        self.parent = self.root / "INTERRUPTED_ATTEMPT02"
+        self.parent = self.root / "INTERRUPTED_ATTEMPT03"
         self.parent.mkdir(mode=0o700)
         self.destination = self.parent / self.source.name
-        self.owner = {"fixture": True, "attempt": "02"}
+        self.owner = {"fixture": True, "attempt": "03"}
 
     def move(self):
         return recovery.private_ceph_rename(
             self.source, self.destination, self.inventory, self.owner
         )
+
+    @contextmanager
+    def reported_parent_mode(self, mode):
+        """Model Ceph's observed setgid stat; local macOS strips that fixture bit."""
+        self.parent.chmod(mode & 0o777)
+        parent = self.parent.stat()
+        original = os.fstat
+
+        def directory_mode(fd):
+            info = original(fd)
+            if (info.st_dev, info.st_ino) == (parent.st_dev, parent.st_ino):
+                fields = list(info)
+                fields[0] = stat.S_IFMT(info.st_mode) | mode
+                return os.stat_result(fields)
+            return info
+
+        with patch.object(recovery.os, "fstat", side_effect=directory_mode):
+            yield
 
     def previous_failure(self):
         phase, spec = "Q1", recovery.PHASES["Q1"]
@@ -68,9 +89,35 @@ class RecoveryAttempt02Tests(unittest.TestCase):
         recovery.write_new(previous / "VERIFIED_BEFORE_MOVE.json", {"fixture": True})
         old_backup = self.root / ("INTERRUPTED_ORIGINALS_" + spec["job"])
         old_backup.mkdir()
+        first = recovery.verify_attempt01_failure(self.root, phase, spec)
+        previous = self.root / "RECOVERY_Q1_02"
+        previous.mkdir()
+        recovery.write_new(
+            previous / "INTENT.json",
+            {
+                "slurm_job_id": spec["attempt02_recovery_job"],
+                "helper_sha256": recovery.ATTEMPT02_HELPER_SHA256,
+                "snapshot_sha256": recovery.SNAPSHOT_SHA256,
+                "phase": phase,
+                "recovery_attempt": "02",
+            },
+        )
+        recovery.write_new(
+            previous / "FAILED.json",
+            {
+                "exception_type": "ValueError",
+                "status": "STOPPED",
+                "message": "backup parent must be owned by this operator with mode 0700",
+            },
+        )
+        recovery.write_new(previous / "PARTIAL_INVENTORY.json", {"entries": self.inventory})
+        recovery.write_new(previous / "VERIFIED_BEFORE_MOVE.json", {"fixture": True})
+        recovery.write_new(previous / "PREVIOUS_ATTEMPT_PRESERVED.json", first)
+        old_backup = self.root / ("INTERRUPTED_ORIGINALS_" + spec["job"] + "_ATTEMPT02")
+        old_backup.mkdir()
         return previous, old_backup
 
-    def test_explicit_attempt02_plain_rename_preserves_every_byte(self):
+    def test_explicit_attempt03_plain_rename_preserves_every_byte(self):
         outside = self.root / "outside"
         outside.mkdir()
         (outside / "not_read").write_bytes(b"outside")
@@ -85,7 +132,7 @@ class RecoveryAttempt02Tests(unittest.TestCase):
         self.assertEqual(recovery.tree_entries(self.destination, hash_files=True), self.inventory)
         self.assertEqual(receipt["rename_calls"], 1)
         self.assertFalse(receipt["automatic_retry"])
-        self.assertEqual(receipt["mechanism"], "EXPLICIT_ATTEMPT02_CEPH_PLAIN_RENAME")
+        self.assertEqual(receipt["mechanism"], "EXPLICIT_ATTEMPT03_CEPH_PLAIN_RENAME")
         self.assertEqual(
             recovery.sha256_file(self.parent / "OWNER_LOCK.json"), receipt["owner_lock_sha256"]
         )
@@ -138,6 +185,29 @@ class RecoveryAttempt02Tests(unittest.TestCase):
                 self.move()
             operation.assert_not_called()
 
+    def test_setgid_private_parent_is_preserved_and_can_rename(self):
+        with self.reported_parent_mode(0o2700), patch.object(recovery.os, "chmod") as chmod:
+            receipt = self.move()
+            chmod.assert_not_called()
+        self.assertEqual(receipt["destination_parent_mode"], "0o2700")
+        self.assertEqual(receipt["destination_parent_permissions"], "0700")
+        self.assertTrue(receipt["destination_parent_setgid"])
+        self.assertEqual(self.parent.stat().st_mode & 0o777, 0o700)
+        self.assertEqual(recovery.tree_entries(self.destination, hash_files=True), self.inventory)
+
+    def test_setgid_does_not_allow_group_or_other_access(self):
+        for mode in (0o2710, 0o2701):
+            with self.subTest(mode=oct(mode)):
+                with (
+                    self.reported_parent_mode(mode),
+                    patch.object(recovery.os, "rename") as operation,
+                ):
+                    with self.assertRaisesRegex(ValueError, "mode 0700"):
+                        self.move()
+                    operation.assert_not_called()
+                self.assertEqual(self.parent.stat().st_mode & 0o777, mode & 0o777)
+                self.assertTrue(self.source.is_dir())
+
     def test_changed_partial_is_rejected_after_owner_acquired(self):
         (self.source / "data.npz").write_bytes(b"changed")
         with patch.object(recovery.os, "rename") as operation:
@@ -166,14 +236,18 @@ class RecoveryAttempt02Tests(unittest.TestCase):
 
     def test_previous_failure_and_empty_backup_preserved(self):
         previous, old_backup = self.previous_failure()
+        first_record = self.root / "RECOVERY_Q1_01"
+        first_before = recovery.tree_entries(first_record, hash_files=True)
         before = recovery.tree_entries(previous, hash_files=True)
         receipt = recovery.verify_previous_failure(self.root, "Q1", recovery.PHASES["Q1"])
         self.assertEqual(receipt["entries"], before)
         self.move()
         self.assertEqual(recovery.tree_entries(previous, hash_files=True), before)
+        self.assertEqual(recovery.tree_entries(first_record, hash_files=True), first_before)
         self.assertEqual(list(old_backup.iterdir()), [])
+        self.assertEqual(list((self.root / "INTERRUPTED_ORIGINALS_155942").iterdir()), [])
 
-    def test_previous_moved_receipt_or_nonempty_backup_blocks_attempt02(self):
+    def test_previous_moved_receipt_or_nonempty_backup_blocks_attempt03(self):
         previous, old_backup = self.previous_failure()
         (old_backup / "unexpected").write_bytes(b"preserve")
         with self.assertRaisesRegex(ValueError, "empty directory"):
@@ -183,8 +257,17 @@ class RecoveryAttempt02Tests(unittest.TestCase):
             recovery.verify_previous_failure(self.root, "Q1", recovery.PHASES["Q1"])
         self.assertEqual((old_backup / "unexpected").read_bytes(), b"preserve")
 
+    def test_attempt02_must_bind_unchanged_attempt01(self):
+        previous, _ = self.previous_failure()
+        path = previous / "PREVIOUS_ATTEMPT_PRESERVED.json"
+        data = json.loads(path.read_bytes())
+        data["observed_errno"] = 999
+        path.write_text(json.dumps(data))
+        with self.assertRaisesRegex(ValueError, "attempt01 binding"):
+            recovery.verify_previous_failure(self.root, "Q1", recovery.PHASES["Q1"])
+
     def test_original_request_only_gains_resume(self):
-        self.assertEqual(recovery.ATTEMPT, "02")
+        self.assertEqual(recovery.ATTEMPT, "03")
         for spec in recovery.PHASES.values():
             argv = [
                 spec["command"],

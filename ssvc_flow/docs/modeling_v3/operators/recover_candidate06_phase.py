@@ -5,8 +5,8 @@ Run manually inside a Slurm CPU allocation with --phase Q1 or --phase Q2.
 This operator helper is outside the immutable checkout. It never submits jobs,
 deletes originals, changes source/configuration, or follows partial-unit links.
 Every recovery directory is single-use; interruption requires operator review.
-Attempt02 explicitly uses a private, exclusively owned destination for Ceph's
-ordinary rename. It never retries attempt01's unsupported renameat2 operation.
+Attempt03 preserves the first two failed attempts and accepts inherited setgid
+with private 0700 access permissions. It never chmods a server directory.
 """
 
 from __future__ import annotations
@@ -28,8 +28,9 @@ CANONICAL_BASE = Path("/projects/_ssd/varunssd/louis-ssvc/modeling_v3_20260915/c
 PYTHON = Path("/projects/varunssd/louis-ssvc/envs/ssvc-py312/bin/python")
 SNAPSHOT_SHA256 = "cd703f28725212aa17e86ac8d0be82890f253c955aba7293fc9d84728d34b52d"
 CONFIG = "configs/modeling_v3/protocol.json"
-ATTEMPT = "02"
+ATTEMPT = "03"
 PREVIOUS_HELPER_SHA256 = "f20943c7c916ed8f13ad1f9e6cd37b33819040217de2e385b97cadbe51bcd621"
+ATTEMPT02_HELPER_SHA256 = "8023ed7ea8cb8e976615697aad43e59e352ca93f408bede6efc355b729d001bb"
 PHASES = {
     "Q1": {
         "tag": "Q1_OBSERVATION",
@@ -38,6 +39,7 @@ PHASES = {
         "collection": "Q1_historical_collection",
         "job": "155942",
         "previous_recovery_job": "156492",
+        "attempt02_recovery_job": "156527",
         "partial": "historical_seed501_X_BASE_a24_b6_a24_b0_IDENTICAL_POLICY_origin_n4096",
         "completed_count": 27,
         "request_sha256": "3bdb1b69a704e7815d3175243fd0a29aed7ac800b30a6ea26cc10b6987f949ab",
@@ -51,6 +53,7 @@ PHASES = {
         "collection": "Q2_development_collection",
         "job": "155943",
         "previous_recovery_job": "156493",
+        "attempt02_recovery_job": "156528",
         "partial": "seed201_X_BASE_init7001_a8_repeat00",
         "completed_count": 6,
         "request_sha256": "0e64fa7764c5e4058b5c556d348ce1a4e7d8f8e5a894589b11e562924ffac32d",
@@ -274,7 +277,7 @@ def expected_units(phase, config, collection_root, collection, campaign, binding
     return result
 
 
-def verify_previous_failure(base, phase, spec):
+def verify_attempt01_failure(base, phase, spec):
     """Keep attempt01 and its empty destination unchanged; bind their bytes."""
     previous = checked_path(base, "RECOVERY_" + phase + "_01")
     expected_files = {
@@ -313,10 +316,60 @@ def verify_previous_failure(base, phase, spec):
     }
 
 
+def verify_previous_failure(base, phase, spec):
+    """Bind both unchanged failures and their still-empty backup directories."""
+    first = verify_attempt01_failure(base, phase, spec)
+    previous = checked_path(base, "RECOVERY_" + phase + "_02")
+    expected_files = {
+        "INTENT.json",
+        "PARTIAL_INVENTORY.json",
+        "VERIFIED_BEFORE_MOVE.json",
+        "FAILED.json",
+        "PREVIOUS_ATTEMPT_PRESERVED.json",
+    }
+    if {path.name for path in previous.iterdir()} != expected_files:
+        raise ValueError("attempt02 files differ or a move/execution was recorded")
+    entries = tree_entries(previous, hash_files=True)
+    if any(row["type"] != "file" for row in entries.values()):
+        raise ValueError("attempt02 must contain only its original regular receipt files")
+    intent = json.loads(checked_path(previous, "INTENT.json").read_bytes())
+    failed = json.loads(checked_path(previous, "FAILED.json").read_bytes())
+    if (
+        str(intent.get("slurm_job_id")) != spec["attempt02_recovery_job"]
+        or intent.get("helper_sha256") != ATTEMPT02_HELPER_SHA256
+        or intent.get("snapshot_sha256") != SNAPSHOT_SHA256
+        or intent.get("phase") != phase
+        or intent.get("recovery_attempt") != "02"
+        or failed.get("exception_type") != "ValueError"
+        or failed.get("message") != "backup parent must be owned by this operator with mode 0700"
+        or failed.get("status") != "STOPPED"
+    ):
+        raise ValueError("attempt02 is not the known inherited-setgid permission failure")
+    if json.loads(checked_path(previous, "PREVIOUS_ATTEMPT_PRESERVED.json").read_bytes()) != first:
+        raise ValueError("attempt02's preserved attempt01 binding differs")
+    first_inventory = json.loads((Path(first["record"]) / "PARTIAL_INVENTORY.json").read_bytes())
+    second_inventory = json.loads(checked_path(previous, "PARTIAL_INVENTORY.json").read_bytes())
+    if any(first_inventory.get(key) != second_inventory.get(key) for key in ("source", "entries")):
+        raise ValueError("attempt01/02 partial inventories differ")
+    old_backup = checked_path(base, "INTERRUPTED_ORIGINALS_" + spec["job"] + "_ATTEMPT02")
+    if not old_backup.is_dir() or list(old_backup.iterdir()):
+        raise ValueError("attempt02 backup is not an unchanged empty directory")
+    return {
+        "record": str(previous),
+        "entries": entries,
+        "old_backup": str(old_backup),
+        "old_backup_empty": True,
+        "failure_job": spec["attempt02_recovery_job"],
+        "observed_error": failed["message"],
+        "previous_attempt01": first,
+    }
+
+
 def private_ceph_rename(source, destination, inventory, owner):
     """One ordinary rename under a private, exclusive, persistent owner lock.
 
-    The caller must exclusively create the destination parent with mode 0700.
+    The caller must exclusively create the destination parent with access mode
+    0700. Inherited setgid is retained and recorded, never cleared with chmod.
     Plain rename has no no-replace flag: its safety here requires this dedicated
     parent, one cooperative operator owner, and no concurrent external writer.
     The lock is never removed, even on failure. Any error needs a new reviewed
@@ -329,8 +382,14 @@ def private_ceph_rename(source, destination, inventory, owner):
     owner_fd = None
     try:
         parent_stat = os.fstat(parent_fd)
-        if parent_stat.st_uid != os.geteuid() or stat.S_IMODE(parent_stat.st_mode) != 0o700:
+        if parent_stat.st_uid != os.geteuid() or parent_stat.st_mode & 0o777 != 0o700:
             raise ValueError("backup parent must be owned by this operator with mode 0700")
+        parent_modes = {
+            "destination_parent_mode": oct(stat.S_IMODE(parent_stat.st_mode)),
+            "destination_parent_permissions": f"{parent_stat.st_mode & 0o777:04o}",
+            "destination_parent_setgid": bool(parent_stat.st_mode & stat.S_ISGID),
+            "destination_parent_gid": parent_stat.st_gid,
+        }
         if source.lstat().st_dev != parent_stat.st_dev:
             raise ValueError("preservation rename must stay on the same filesystem")
         if os.listdir(parent_fd):
@@ -349,7 +408,8 @@ def private_ceph_rename(source, destination, inventory, owner):
                     "uid": os.geteuid(),
                     "utc": utc(),
                     "exclusive": True,
-                    "mechanism": "EXPLICIT_ATTEMPT02_CEPH_PLAIN_RENAME",
+                    **parent_modes,
+                    "mechanism": f"EXPLICIT_ATTEMPT{ATTEMPT}_CEPH_PLAIN_RENAME",
                 },
                 sort_keys=True,
                 indent=2,
@@ -398,9 +458,9 @@ def private_ceph_rename(source, destination, inventory, owner):
         return {
             "owner_lock": str(destination.parent / "OWNER_LOCK.json"),
             "owner_lock_sha256": hashlib.sha256(owner_data).hexdigest(),
-            "destination_parent_mode": "0700",
+            **parent_modes,
             "uid": os.geteuid(),
-            "mechanism": "EXPLICIT_ATTEMPT02_CEPH_PLAIN_RENAME",
+            "mechanism": f"EXPLICIT_ATTEMPT{ATTEMPT}_CEPH_PLAIN_RENAME",
             "rename_calls": 1,
             "automatic_retry": False,
         }
@@ -518,7 +578,7 @@ def recover(phase, base, record, spec):
         previous_inventory.get("source") != str(partial)
         or previous_inventory.get("entries") != inventory
     ):
-        raise ValueError("partial inventory differs from the preserved attempt01 inventory")
+        raise ValueError("partial inventory differs from the preserved attempt02 inventory")
     backup_parent = checked_path(
         base, "INTERRUPTED_ORIGINALS_" + spec["job"] + "_ATTEMPT" + ATTEMPT, exists=False
     )
@@ -554,7 +614,7 @@ def recover(phase, base, record, spec):
         "partial_inventory_sha256": manifest_sha,
     }
     write_new(record / "VERIFIED_BEFORE_MOVE.json", verification)
-    # This new private parent is never shared with or reused from attempt01.
+    # This private parent is never shared with or reused from either earlier attempt.
     backup_parent.mkdir(mode=0o700)
     fsync_directory(base)
     move = private_ceph_rename(
@@ -666,7 +726,7 @@ def main():
             "utc": utc(),
             "phase": args.phase,
             "recovery_attempt": ATTEMPT,
-            "previous_attempt": "01_PRESERVED_UNCHANGED",
+            "previous_attempts": ["01_PRESERVED_UNCHANGED", "02_PRESERVED_UNCHANGED"],
             "slurm_job_id": os.environ["SLURM_JOB_ID"],
             "helper_sha256": sha256_file(Path(__file__)),
             "snapshot_sha256": SNAPSHOT_SHA256,
