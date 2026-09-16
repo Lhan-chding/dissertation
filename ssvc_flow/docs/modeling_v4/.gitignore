@@ -1,0 +1,3 @@
+# Preserve the user's complete original design locally; publish code documentation only.
+/design/
+/INPUT_RECEIPT.json

@@ -1,0 +1,363 @@
+{
+  "version": "modeling-v4-full-response-20260916",
+  "status": "DESIGN_NOT_EXECUTED",
+  "repository": {
+    "name": "Lhan-chding/dissertation",
+    "workdir": "ssvc_flow",
+    "observed_parent_branch": "codex/ssvc-modeling-v3-observation-coverage",
+    "observed_parent_commit": "5314f5f16d230527223133e4a60058459eb33a61",
+    "new_branch": "codex/ssvc-modeling-v4-full-response",
+    "new_module": "src/modeling_v4",
+    "preserve_dirty_work": true,
+    "force_reset": false
+  },
+  "objective": "establish reliable semantic response modeling; compression and efficiency are secondary",
+  "operations": {
+    "max_concurrent_gpus": 3,
+    "default_workers": 2,
+    "allow_third_worker": true,
+    "default_one_gpu_per_worker": true,
+    "ddp_required": false,
+    "whole_model_hash_each_step": false,
+    "record_config_commit_once": true,
+    "verify_imported_checkpoint_once": true,
+    "hash_new_transfer_when_needed": true,
+    "repeated_full_regression_per_candidate": false,
+    "full_regression_before_campaign_once": true,
+    "inherited_q3_million_fit_gate_required": false,
+    "online_ssvc": false,
+    "cost_success_gate": false,
+    "first_execution": "dry-run unless operator supplies --execute-gpu once for the campaign",
+    "interrupt_other_jobs": false
+  },
+  "events": [
+    "X",
+    "S",
+    "W",
+    "I"
+  ],
+  "targets": {
+    "primary": "joint_1_minus_joint_0",
+    "secondary": [
+      "no_x_off_1_minus_joint_0",
+      "joint_1_minus_no_x_off_1"
+    ],
+    "keep_occupancy_and_contrast_separate": true,
+    "primary_metrics": [
+      "group_pX",
+      "group_v",
+      "prompt_RAW4"
+    ],
+    "v_difference": "-delta_pI",
+    "additional_diagnostics": [
+      "coordinate_correct_0",
+      "coordinate_correct_1",
+      "coordinate_correct_2",
+      "coordinate_correct_3",
+      "constraint_fraction",
+      "edit_exactly_one",
+      "copy_observation"
+    ],
+    "diagnostics_not_a_partition": true
+  },
+  "observations": {
+    "methods": [
+      "RAW4",
+      "PRESERVE_XI",
+      "CROSSFIT_COV_ZERO_SUM"
+    ],
+    "diagnostic_methods": [
+      "EQUAL_ZERO_SUM",
+      "PILOT_SHRINK_ZERO_SUM"
+    ],
+    "primary_n": 1024,
+    "n_curve": [
+      256,
+      1024,
+      4096
+    ],
+    "proposal": "origin reuse, check with pair mixture",
+    "crossfit_folds": 2,
+    "crossfit_ci": "resample original independent draws and refit both folds, or independent packet blocks; never iid corrected-fold contributions",
+    "reference_primary_n": 4096,
+    "reference_validation_n": 8192,
+    "separate_reference_rng": true,
+    "auto_p_value_stopping": false,
+    "known_event_score_toy_required": true,
+    "canonical_string_score_not_event_mass": true
+  },
+  "representations": {
+    "R0": "four-event probabilities with identities; no mandatory latent bottleneck",
+    "R1": "R0 plus seven deterministic diagnostics, ablation only",
+    "R2": "all LoRA factor parameter increments in raw coordinates",
+    "R3": "effective adapter weight contrast using exact low-rank product kernels",
+    "R4": "native-length paired sequence score signature; no response SVD by default"
+  },
+  "models": {
+    "primary": [
+      "ZERO",
+      "DIRECT_MEASURE",
+      "FULL_DUAL_RIDGE",
+      "FULL_EFFECTIVE_WEIGHT_RIDGE",
+      "FULL_RBF_RAW",
+      "FULL_SCORE_JVP"
+    ],
+    "secondary": [
+      "LEGACY_QPROJECTED_RBF",
+      "BASE_SCORE_JVP",
+      "MIDPOINT_DIRECTIONAL",
+      "NONLINEAR_SIGNATURE_RESIDUAL",
+      "LOW_RANK_COMPRESSION"
+    ],
+    "ridge_alpha": [
+      1e-08,
+      1e-05,
+      0.01
+    ],
+    "rbf_bandwidth_multipliers": [
+      0.25,
+      1.0,
+      4.0
+    ],
+    "compression_ranks": [
+      2,
+      8,
+      32,
+      "FULL"
+    ],
+    "compression_secondary_only": true,
+    "full_gls": "small matched penalty diagnostic; not mandatory production default",
+    "nonlinear_hidden_widths": [
+      256,
+      1024
+    ],
+    "nonlinear_depth": 2,
+    "nonlinear_min_development_origins": 6,
+    "nonlinear_min_nonalias_training_pairs": 512,
+    "nonlinear_prediction_zero_at_zero_update": true,
+    "query_outcomes_for_fit": false
+  },
+  "cpu": {
+    "reuse_existing_Q2_first": true,
+    "no_new_large_confirmation_grid": true,
+    "precise_jacobian_decomposition": true,
+    "anchors_from_existing": 12,
+    "fit_banks": [
+      8,
+      24,
+      48,
+      96
+    ],
+    "heldout_banks": 24,
+    "if_missing_raw": "generate only missing local candidates at already saved origins; record as new CPU acquisition",
+    "measurement_repeats": 32,
+    "stage_development_only": true,
+    "must_not_delay_gpu_bridge_for_method_accuracy": true
+  },
+  "qwen": {
+    "id": "Qwen/Qwen3.5-9B",
+    "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+    "runtime": "inherit validated local V3 runtime, no automatic dependency upgrades",
+    "dtype": "inherit actual trained dtype; audit derivative numerical approximation separately",
+    "generation": {
+      "max_new_tokens": 64,
+      "temperature": 1.0,
+      "top_p": 1.0,
+      "top_k": 0,
+      "thinking": false,
+      "path": "validated generation/scoring path; optimize only after one parity smoke"
+    },
+    "lora": {
+      "r": 8,
+      "alpha": 16,
+      "dropout": 0,
+      "target_leaf_modules": [
+        "gate_proj",
+        "up_proj",
+        "down_proj"
+      ],
+      "expected_modules": 96,
+      "freeze_vision": true,
+      "freeze_base": true
+    },
+    "optimizer": {
+      "name": "AdamW",
+      "lr": 1e-05,
+      "betas": [
+        0.9,
+        0.999
+      ],
+      "eps": 1e-08,
+      "weight_decay": 0.0,
+      "grad_clip": 1.0,
+      "explicit_zero_gradients": true
+    },
+    "reward_epsilon": 0.0001,
+    "Lnorm": 64,
+    "B": 4,
+    "K": 8,
+    "steps": 128,
+    "arms": [
+      "X_BASE",
+      "X_VALID"
+    ],
+    "seed_roles": {
+      "development": [
+        41001,
+        41002,
+        41003
+      ],
+      "calibration": [
+        42001,
+        42002,
+        42003
+      ],
+      "test": [
+        43001,
+        43002,
+        43003,
+        43004,
+        43005,
+        43006
+      ]
+    },
+    "primary_origins": {
+      "arm": "X_BASE",
+      "steps": [
+        32,
+        96
+      ]
+    },
+    "shift_origins": {
+      "arm": "X_VALID",
+      "step": 96,
+      "seeds": "test"
+    },
+    "calibration_banks_development": 96,
+    "calibration_banks_confirm_default": 32,
+    "confirm_m_rule": "choose exactly one of 24/32/48/96 before opening test responses",
+    "query_banks": 24,
+    "candidate_arms": [
+      "joint_0",
+      "joint_1",
+      "no_x_off_1"
+    ],
+    "training_prompt_partition": {
+      "calibration_pool": 384,
+      "query_pool": 192,
+      "unique_prompts_per_bank": 4,
+      "no_overlap_between_pools": true
+    },
+    "observation_panel": {
+      "base_scenes": 36,
+      "interfaces": 2,
+      "prompts": 72,
+      "chart_operation_cells": 18,
+      "scenes_per_cell": 2
+    },
+    "signature_panel": {
+      "base_scenes": 18,
+      "interfaces": 2,
+      "prompts": 36,
+      "draws_per_prompt": 16,
+      "disjoint_from_observation_panel": true
+    },
+    "bridge": {
+      "origins": 2,
+      "banks": 4,
+      "prompts": 12,
+      "draws": 64,
+      "include_active_pair": true,
+      "one_null_pair_per_origin": true
+    },
+    "first_development_map": {
+      "origins": 4,
+      "calibration_banks": 32,
+      "query_banks": 16,
+      "prompts": 24,
+      "draws": 256,
+      "then_expand_registered_pool": true
+    },
+    "directional_probe": {
+      "cpu_full_J": true,
+      "vlm_origin_gradient": true,
+      "vlm_primary_scope": "6 groups x 4 events, full LoRA gradient; prompt-level on fixed diagnostic subset",
+      "vlm_base_or_midpoint_banks_per_dev_origin": 4,
+      "sample_budget_per_prompt": [
+        32,
+        128
+      ],
+      "predictor_labels": "anchor samples only; independent from reference",
+      "jvp_fallback": "reverse-mode gradient dot; no silent substitution of endpoint finite difference as derivative"
+    },
+    "continuous_track": {
+      "dev_only_initial": true,
+      "anchor": 64,
+      "horizons": [
+        1,
+        2,
+        4,
+        8,
+        16
+      ],
+      "checkpoints": "save every step from64 to80",
+      "online_control": false
+    }
+  },
+  "statistics": {
+    "Q1_current_fixed_policy_pairs": 8,
+    "Q2_current_independent_train_seeds": 2,
+    "primary_reporting": [
+      "MAE",
+      "RMSE",
+      "q95_absolute",
+      "NRMSE_with_signal_energy",
+      "nonalias_risk_coverage",
+      "reference_interval_width"
+    ],
+    "scope_units": [
+      "prompt",
+      "semantic_group",
+      "training_seed"
+    ],
+    "all_nonalias_and_alias_separate": true,
+    "bootstrap_unit": "training seed (all arms/anchors/queries grouped); scenes are secondary",
+    "bootstrap_reps": 2000,
+    "fit_split_by_whole_origin_and_seed": true,
+    "fixed_rho_gate": null,
+    "euclidean_coverage_only_diagnostic": true,
+    "function_coverage_empirically_calibrated": true,
+    "meaningful_effect_thresholds": [
+      0.00025,
+      0.001,
+      0.005
+    ],
+    "threshold_units": "probability; not mandatory scientific pass thresholds",
+    "three_calibration_seeds_no_95_guarantee": true,
+    "primary_exact_zero_sum_not_a_success_metric": true
+  },
+  "data_layout": {
+    "raw_sequences_once": "Parquet/Zstd in chunks",
+    "scores": "one array per origin/proposal chunk; model checkpoint axis",
+    "predictions": "single aggregated parquet per experiment stage",
+    "candidate_parameters": "one LoRA checkpoint or delta per unique candidate, base shared",
+    "checkpoint_full_optimizer": "origin and resumable latest only; preserve selected actual forks",
+    "per_design_raw_copy": false,
+    "auto_delete_scientific_raw": false,
+    "disk_health": "once before phase and when write error/low watermark occurs, not per token"
+  },
+  "derived": {
+    "source_seeds": 12,
+    "source_trajectories": 24,
+    "source_optimizer_steps": 3072,
+    "source_training_outputs": 98304,
+    "primary_origins": 24,
+    "shift_origins": 6,
+    "total_origins": 30,
+    "dev_origins": 6,
+    "dev_fork_updates_per_origin": 360,
+    "default_confirmation_fork_updates_per_origin": 168,
+    "signature_scores_per_candidate": 576,
+    "confirmation_workload": "recompute after dev fixes m and removes exact inference duplicates; no unknown walltime claimed"
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "version": "v4-analysis-rules-20260916-1",
+  "frozen_before_new_v4_measurements": true,
+  "purpose": "Explicit engineering overlap screens and descriptive reference precision labels",
+  "reference_precision": {
+    "probability_scales": [0.00025, 0.001, 0.005],
+    "normal_approximation_multiplier": 1.96,
+    "max_half_width_as_fraction_of_scale": 0.5,
+    "primary_resolved_scale": 0.005,
+    "nonalias_zero_empirical_variance": "UNRESOLVED",
+    "report_all_finite_observed_residuals": true,
+    "normal_approximation_is_coverage_guarantee": false
+  },
+  "origin_overlap": {
+    "minimum_endpoint_ess_fraction": 0.1,
+    "maximum_normalized_endpoint_weight": 0.1,
+    "bad_if_any_endpoint_or_prompt_fails": true,
+    "action": "INDEPENDENT_PAIR_MIXTURE_REFERENCE",
+    "uncollected_fallback": "REFERENCE_UNRESOLVED",
+    "screen_is_sufficient_condition_for_accuracy": false
+  },
+  "finite_difference": {
+    "relative_steps": [0.25, 0.5, 1.0],
+    "scheme": "CENTRAL",
+    "denominator": "2*h",
+    "direction": "actual complete candidate-minus-baseline parameter update",
+    "record_effective_dtype_perturbation": true,
+    "replaces_autograd": false
+  },
+  "selection": {
+    "query_reference_labels_for_model_fit": false,
+    "test_labels_for_selection": false,
+    "all_scales_reported": true,
+    "evidence_units": "training seeds",
+    "cross_seed_distribution_free_95_guarantee": false
+  },
+  "offline_tracking_eligibility": {
+    "criterion_version": "frozen-calibration-point-resolution-v1",
+    "criterion_scope": "FROZEN_MODELS_ON_CALIBRATION_QUERY",
+    "seed_role": "calibration",
+    "required_origins": 6,
+    "arm": "X_BASE",
+    "steps": [32, 96],
+    "targets": "all_three_registered_candidate_contrasts",
+    "evaluation_unit": "prompt",
+    "exclude_methods": ["ZERO", "DIRECT_MEASURE"],
+    "require_every_registered_nonalias_query_prompt": true,
+    "require_finite_predictions_and_reference": true,
+    "require_independent_reference_resolved_at_primary_scale": true,
+    "pooled_four_event_absolute_error_quantile": 0.95,
+    "maximum_absolute_error_quantile": 0.005,
+    "require_nonalias_event_magnitude_above_reference_noise": true,
+    "signal_reference_se_multiplier": 1.96,
+    "missing_evidence_status": "WAITING_FOR_POINT_RESPONSE_EVIDENCE",
+    "fully_evaluated_failure_status": "POINT_RESPONSE_UNRESOLVED",
+    "descriptive_operational_gate_only": true,
+    "cross_seed_95_coverage_guarantee": false,
+    "scientific_reliability_certified": false
+  }
+}
