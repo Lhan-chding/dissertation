@@ -506,6 +506,10 @@ def test_actual_small_response_has_independent_direct_lr_and_pair_diagnostics(tm
     assert response["direct_baseline"] == "DIRECT_LR_ORIGIN_INDEPENDENT_PACKET"
     diagnostic = gpu.pair_observation_diagnostics(response)
     assert diagnostic["all_finite"]
+    for unit in diagnostic["units"]:
+        assert unit["conditional_support_bounds"]["valid_conditional_bound"]
+        assert unit["conditional_support_bounds"]["model_calls"] == 0
+        assert unit["endpoint_count_intervals"]["single_event_coverage_at_least"] == 0.95
     assert response["scientific_status"] == "NOT_CERTIFIED"
     before = runtime["adapter"].generation_calls
     gpu.collect_response_map(

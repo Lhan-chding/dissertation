@@ -1905,18 +1905,49 @@ def collect_nested_measurements(runtime, forks, probes, response, task, *, out, 
     return result
 
 
-def pair_observation_diagnostics(response):
+def pair_observation_diagnostics(response, *, include_support_bounds=True, row_reader=None):
     """Independent ORIGIN/MIX/DIRECT uncertainty; no method rankings are read."""
     import math
     from statistics import NormalDist
 
     import numpy as np
 
+    from .analysis_rules import endpoint_overlap, load_analysis_rules, reference_precision
+    from .measurement_reporting import (
+        count_difference_intervals,
+        interval_resolution,
+        stable_joint_covariance,
+        validate_diagnostic_packets,
+    )
+
+    rows = _rows if row_reader is None else row_reader
+    rules = load_analysis_rules()
     reports = []
-    reference = list(_rows(response["reference"]))
+    reference = list(rows(response["reference"]))
+    support_packets = {"reference": reference}
+    if include_support_bounds:
+        support_packets.update(
+            {
+                role: list(rows(response[role]))
+                for role in ("work", "direct_work")
+                if role in response
+            }
+        )
+    family_cells = max(
+        1,
+        sum(
+            len(c["mixture"]["identity"]["prompt_ids"]) * 4
+            for c in response["pair_checks"]
+            if c["direct"]
+        ),
+    )
 
     def scores(receipt):
-        return {r["sample_key"]: r for r in _rows(receipt)}
+        records = list(rows(receipt))
+        result = {r["sample_key"]: r for r in records}
+        if len(records) != len(result):
+            raise ValueError("Duplicate diagnostic score sample")
+        return result
 
     for check in response["pair_checks"]:
         left, right = check["left_candidate_id"], check["right_candidate_id"]
@@ -1924,8 +1955,62 @@ def pair_observation_diagnostics(response):
         rs = scores(response["reference_scores"][right]["score_receipt"])
         ml = scores(check["mixture_scores"][left])
         mr = scores(check["mixture_scores"][right])
-        mix = list(_rows(check["mixture"]))
-        direct = {p: list(_rows(check["direct"][p])) for p in check["direct"]}
+        mix = list(rows(check["mixture"]))
+        direct = {p: list(rows(check["direct"][p])) for p in check["direct"]}
+        expected_mixture = tuple(
+            response["policies"][p]["inference_fingerprint"] for p in (left, right)
+        )
+        if (
+            check["mixture"]["identity"]["proposal"] != "MIX"
+            or tuple(p["inference_fingerprint"] for p in check["mixture"]["identity"]["policies"])
+            != expected_mixture
+            or response["reference"]["identity"]["proposal"] != "ORIGIN"
+            or (direct and set(direct) != {left, right})
+        ):
+            raise ValueError("Diagnostic comparison proposal/endpoint target differs")
+        for endpoint in direct:
+            ident = check["direct"][endpoint]["identity"]
+            if ident["proposal"] != "DIRECT" or [
+                p["inference_fingerprint"] for p in ident["policies"]
+            ] != [response["policies"][endpoint]["inference_fingerprint"]]:
+                raise ValueError("Diagnostic count endpoint target differs")
+        validate_diagnostic_packets(
+            [
+                (
+                    response["reference"],
+                    reference,
+                    [
+                        (
+                            response["reference_scores"][p]["score_receipt"],
+                            list(sc.values()),
+                            response["policies"][p]["inference_fingerprint"],
+                        )
+                        for p, sc in ((left, ls), (right, rs))
+                    ],
+                ),
+                (
+                    check["mixture"],
+                    mix,
+                    [
+                        (
+                            check["mixture_scores"][p],
+                            list(sc.values()),
+                            response["policies"][p]["inference_fingerprint"],
+                        )
+                        for p, sc in ((left, ml), (right, mr))
+                    ],
+                ),
+                *[(check["direct"][p], records, []) for p, records in direct.items()],
+            ]
+        )
+        support_scores = {"reference": (ls, rs), "mixture": (ml, mr)}
+        if include_support_bounds:
+            for role, score_key in (("work", "work_scores"), ("direct_work", "direct_scores")):
+                mapping = response.get(score_key, {})
+                if left in mapping and right in mapping:
+                    support_scores[role] = tuple(
+                        scores(mapping[endpoint]["score_receipt"]) for endpoint in (left, right)
+                    )
         for pid in check["mixture"]["identity"]["prompt_ids"]:
             origin = []
             mixture = []
@@ -1970,13 +2055,56 @@ def pair_observation_diagnostics(response):
                 )
                 continue
             means = {"ORIGIN": origin.mean(0), "MIX": mixture.mean(0)}
-            variances = {
-                "ORIGIN": origin.var(0, ddof=1) / len(origin),
-                "MIX": mixture.var(0, ddof=1) / len(mixture),
+            covariances = {
+                "ORIGIN": stable_joint_covariance(origin) / len(origin),
+                "MIX": stable_joint_covariance(mixture) / len(mixture),
             }
             if direct:
                 means["DIRECT"] = a.mean(0) - b.mean(0)
-                variances["DIRECT"] = a.var(0, ddof=1) / len(a) + b.var(0, ddof=1) / len(b)
+                covariances["DIRECT"] = stable_joint_covariance(a) / len(
+                    a
+                ) + stable_joint_covariance(b) / len(b)
+            variances = {k: np.diag(v) for k, v in covariances.items()}
+            origin_rows = [r for r in reference if r["prompt_id"] == pid]
+            overlap = endpoint_overlap(
+                np.asarray(
+                    [
+                        [
+                            ls[r["sample_key"]]["sequence_logp"] - r["generation_sequence_logp"],
+                            rs[r["sample_key"]]["sequence_logp"] - r["generation_sequence_logp"],
+                        ]
+                        for r in origin_rows
+                    ]
+                ),
+                rules=rules,
+            )
+            precision = {
+                name: reference_precision(
+                    np.sqrt(np.maximum(0, variances[name])),
+                    overlap_usable=overlap["all_usable"] if name == "ORIGIN" else True,
+                    rules=rules,
+                )
+                for name in ("ORIGIN", "MIX")
+            }
+            count_intervals = None
+            if direct:
+                cp = count_difference_intervals(a, b)
+                family_cp = count_difference_intervals(a, b, alpha=0.05 / family_cells)
+                precision["DIRECT"] = interval_resolution(cp, means["DIRECT"], rules=rules)
+                count_intervals = {
+                    "method": "CLOPPER_PEARSON_ENDPOINT_UNION_BOUND",
+                    "single_event_coverage_at_least": 0.95,
+                    "single_event": cp.tolist(),
+                    "fixed_count_family": family_cp.tolist(),
+                    "fixed_family_cells": family_cells,
+                    "fixed_family_coverage_at_least": 0.95,
+                    "assumptions": "IID independent endpoint packets for fixed policies/prompts",
+                }
+            support = {"status": "DISABLED", "model_calls": 0}
+            if include_support_bounds:
+                support = _pair_support_diagnostic(
+                    response, check, pid, {**support_packets, "mixture": mix}, support_scores
+                )
             # Diagnostic simultaneous normal intervals, explicitly not exact
             # rare-event certification. Zero variances never imply precision.
             z = NormalDist().inv_cdf(
@@ -1989,7 +2117,19 @@ def pair_observation_diagnostics(response):
                 comparisons[name] = {
                     "difference": gap.tolist(),
                     "standard_error": se.tolist(),
-                    "within_diagnostic_interval": (gap <= z * se + 1e-4).tolist(),
+                    "within_diagnostic_interval": [
+                        bool(value) if valid else None
+                        for value, valid in zip(
+                            gap <= z * se + 1e-4,
+                            (variances["ORIGIN"] > 0) & (variances[name] > 0),
+                            strict=True,
+                        )
+                    ],
+                    "legacy_within_diagnostic_interval": (gap <= z * se + 1e-4).tolist(),
+                    "zero_variance_comparison_is_unresolved": True,
+                    "normal_multiplier": z,
+                    "absolute_tolerance": 1e-4,
+                    "coverage_certified": False,
                 }
             reports.append(
                 {
@@ -1998,15 +2138,106 @@ def pair_observation_diagnostics(response):
                     "status": "MEASURED",
                     "means": {k: v.tolist() for k, v in means.items()},
                     "variance_of_mean": {k: v.tolist() for k, v in variances.items()},
+                    "covariance_of_mean": {k: v.tolist() for k, v in covariances.items()},
                     "comparisons": comparisons,
-                    "reference_precision": "UNRESOLVED_NOT_CERTIFIED",
+                    "reference_precision": _precision_status(precision["ORIGIN"]),
+                    "precision_by_method": _report_plain(precision),
+                    "origin_endpoint_overlap": _report_plain(overlap),
+                    "endpoint_count_intervals": count_intervals,
+                    "conditional_support_bounds": support,
+                    "zero_empirical_variance_is_precision_proof": False,
+                    "scientific_status": "NOT_CERTIFIED",
                 }
             )
     return {
         "units": reports,
         "all_finite": bool(reports) and all(r["status"] == "MEASURED" for r in reports),
         "scope": "INDEPENDENT_PROPOSAL_AND_COUNT_DIAGNOSTICS",
-        "reference_precision": "NOT_CERTIFIED",
+        "reference_precision": {
+            label: sum(r.get("reference_precision") == label for r in reports)
+            for label in (
+                "DESCRIPTIVE_ALL_EVENTS_RESOLVED",
+                "DESCRIPTIVE_PARTIALLY_RESOLVED",
+                "UNRESOLVED",
+            )
+        },
+        "scientific_status": "NOT_CERTIFIED",
+        "all_finite_is_scientific_success": False,
+        "model_calls": 0,
+    }
+
+
+def _report_plain(value):
+    import numpy as np
+
+    if isinstance(value, dict):
+        return {k: _report_plain(v) for k, v in value.items()}
+    if isinstance(value, np.ndarray):
+        return value.tolist()
+    if isinstance(value, np.generic):
+        return value.item()
+    return value
+
+
+def _precision_status(precision):
+    resolved = list(precision["reference_resolved"])
+    if all(resolved):
+        return "DESCRIPTIVE_ALL_EVENTS_RESOLVED"
+    return "DESCRIPTIVE_PARTIALLY_RESOLVED" if any(resolved) else "UNRESOLVED"
+
+
+def _pair_support_diagnostic(response, check, pid, packets, mappings):
+    """Optional arithmetic bounds on already scored complete actions only."""
+    from .bridge_support_bounds import support_bounds
+
+    left, right = check["left_candidate_id"], check["right_candidate_id"]
+    records, input_hashes = [], set()
+    try:
+        for role, score_maps in mappings.items():
+            for row in packets[role]:
+                if row["prompt_id"] != pid:
+                    continue
+                if (
+                    row["probability_execution"] != "uncached_prefix_recompute"
+                    or not row["generation_parity"]["passed"]
+                ):
+                    raise ValueError("Unverified generation probability path")
+                if row["shared_token_identity"] != canonical_hash(row["token_ids"]):
+                    raise ValueError("Complete action tokens differ from shared token identity")
+                input_hashes.add(row["input_hash"])
+                logs = []
+                for candidate, score_map in zip((left, right), score_maps, strict=True):
+                    score = score_map[row["sample_key"]]
+                    for field in ("prompt_id", "shared_token_identity", "input_hash"):
+                        if score[field] != row[field]:
+                            raise ValueError("Score/action identity differs")
+                    if (
+                        score["inference_fingerprint"]
+                        != response["policies"][candidate]["inference_fingerprint"]
+                        or score["probability_execution"] != "uncached_prefix_recompute"
+                    ):
+                        raise ValueError("Endpoint score policy or execution differs")
+                    logs.append(score["sequence_logp"])
+                records.append({**row, "left_logp": logs[0], "right_logp": logs[1]})
+        if len(input_hashes) != 1:
+            raise ValueError("One prompt must retain one prepared input")
+        result = support_bounds(records)
+    except (KeyError, ValueError, TypeError) as exc:
+        return {
+            "status": "UNAVAILABLE_INVALID_OR_INCOMPLETE_RECORDS",
+            "reason": str(exc),
+            "valid_conditional_bound": False,
+            "model_calls": 0,
+        }
+    return {
+        **result,
+        "status": "CONDITIONAL_BOUND"
+        if result["valid_conditional_bound"]
+        else "INVALID_CONDITIONAL_BOUND",
+        "model_calls": 0,
+        "packet_roles": sorted(mappings),
+        "outward_rounded_interval_arithmetic": False,
+        "usable_as_independent_test_reference": False,
     }
 
 

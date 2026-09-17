@@ -119,3 +119,57 @@ sbatch --account=rose --qos=soujanya-poria-startfund-2026-03 \
 
 The batch script requests no GPU and explicitly hides CUDA. It refuses an
 existing nonempty output directory and writes only a new analysis directory.
+
+## Corrected production reporting and frozen-campaign reader
+
+The V4 observation wrapper now computes covariance after subtracting a represented
+row before centering. Identical floating draws therefore have exactly zero
+empirical covariance. Complete event/contrast covariance is retained; iid means
+are divided by the draw count once. Crossfit still refits both coefficients for
+every bootstrap replicate, and the replicate covariance is **not** divided by
+the bootstrap repetition count. Zero variance remains unresolved for a nonalias
+reference. Reference-fit SE and covariance now use the same stable calculation.
+
+`pair_observation_diagnostics()` now validates primary ORIGIN/MIX/COUNT packets
+before computing any mean: complete draw indices, deterministic sample keys and
+seeds, packet independence, event partitions, token/input/runtime identities,
+score bindings, ordered mixture policies and selected mixture source, actual
+EOS/64-token termination, and sequence probability sums. Identity failures raise
+an error; they cannot produce a `MEASURED` label. Optional extra support records
+may instead produce an explicit unavailable-bound diagnostic.
+
+The report includes full covariance, endpoint overlap, actual frozen-scale
+resolution labels, and nondegenerate Clopper-Pearson count intervals. A zero-
+variance normal comparison is `null` (unresolved); the old numerical comparison
+is retained under `legacy_within_diagnostic_interval` for traceability. The
+count interval family covers the fixed reported count cells for that response
+map, under iid endpoint sampling. Normal width labels, finite arithmetic and
+conditional support bounds do not certify prediction accuracy or online SSVC.
+Support bounds use only already scored actions and do not add model calls.
+
+Existing GPU workers keep their original frozen collector and source identity.
+Their historical `PAIR_DIAGNOSTICS.json` files are not overwritten. To obtain
+corrected diagnostics from their original B or completed C maps, use the new
+standalone server-CPU reader from the new analysis checkout:
+
+```bash
+CUDA_VISIBLE_DEVICES='' python -m src.modeling_v4.measurement_report \
+  --tasks /absolute/tasks_initial.json \
+  --task-id B_origin_0 --task-id B_origin_1 \
+  --collection-code /absolute/code_161c591/ssvc_flow \
+  --out /absolute/analysis/new_empty_directory
+```
+
+Run inside a CPU Slurm allocation with the analysis checkout as working directory.
+Replace task IDs with completed C map IDs when available. The reader validates
+the registered task/config/source and analysis-rule identities, checks read
+shards, records separate `collection_source` and `analysis_source`, and writes
+only a new directory outside the campaign. It does not pretend the two source
+versions are equal and does not load the model or fit a predictor.
+
+The strict source guards in response fitting and calibration export remain
+unchanged. The legacy campaign has **not** been migrated to corrected-source
+fitting by this reporting change; that needs an explicit compatible provenance
+path before it can be performed. The stable fitting changes are ready for
+same-source campaigns, while the standalone reader is the supported corrected
+measurement-reporting path for existing originals.

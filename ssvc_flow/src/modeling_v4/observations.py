@@ -20,8 +20,8 @@ from ..modeling_v3.covariance_pilot import (
 from ..modeling_v3.observation_geometry import (
     ContributionBatch,
     estimate_geometry,
-    joint_sample_covariance,
 )
+from .measurement_reporting import stable_joint_covariance
 
 PRIMARY_METHODS = ("RAW4", "PRESERVE_XI", "CROSSFIT_COV_ZERO_SUM")
 DIAGNOSTIC_METHODS = ("EQUAL_ZERO_SUM", "PILOT_SHRINK_ZERO_SUM")
@@ -133,6 +133,10 @@ def observe_packet(
                     ),
                     "model_calls": 0,
                 }
+                # Replicates are estimates, so do not divide by repetitions.
+                uncertainty["covariance_of_mean"] = stable_joint_covariance(
+                    uncertainty["replicate_estimates"]
+                )
                 uncertainty["percentile_interval"] = np.quantile(
                     uncertainty["replicate_estimates"], [0.025, 0.975], axis=0
                 )
@@ -145,6 +149,27 @@ def observe_packet(
         results[method] = _result(estimate, uncertainty)
         if method == "CROSSFIT_COV_ZERO_SUM" and bootstrap_repetitions is not None:
             results[method]["covariance_of_mean"] = uncertainty["covariance_of_mean"]
+        elif method != "CROSSFIT_COV_ZERO_SUM" and estimate.n > 1:
+            results[method]["covariance_of_mean"] = (
+                stable_joint_covariance(estimate.contributions) / estimate.n
+            )
+        if len(estimate.raw_mass_per_draw) > 1:
+            mass = estimate.raw_mass_per_draw
+            mass_se = np.sqrt(np.maximum(0, np.diag(stable_joint_covariance(mass)) / len(mass)))
+            results[method]["diagnostics"] = {
+                **estimate.diagnostics,
+                "raw_mass_standard_error": mass_se.tolist(),
+            }
+        covariance = results[method]["covariance_of_mean"]
+        results[method]["uncertainty_limits"] = {
+            "zero_empirical_variance_is_precision_proof": False,
+            "coverage_certified": False,
+            "unseen_event_tail_bounded": False,
+            "training_seed_uncertainty_included": False,
+            "zero_variance_components": None
+            if covariance is None
+            else (np.diag(covariance) == 0).reshape(estimate.estimate.shape).tolist(),
+        }
     return {
         "methods": results,
         "sample_ids": batch.sample_ids,
@@ -186,7 +211,7 @@ def independent_packet_uncertainty(packets, *, method, split_seed=0, shrink=0.0,
             )["methods"][method]["estimate"]
         )
     values = np.asarray(estimates)
-    covariance = joint_sample_covariance(values)
+    covariance = stable_joint_covariance(values)
     return {
         "status": "INDEPENDENT_COMPLETE_PACKET_EMPIRICAL_UNCERTAINTY",
         "method": method,

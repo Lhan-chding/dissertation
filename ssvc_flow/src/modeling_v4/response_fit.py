@@ -28,6 +28,7 @@ from .analysis_rules import endpoint_overlap, load_analysis_rules, reference_pre
 from .data_adapter import CONTRASTS, bound_json
 from .evaluate import write_evaluation
 from .functional_features import output_diagnostics
+from .measurement_reporting import stable_joint_covariance
 from .observations import PRIMARY_METHODS, assert_predictor_independence, observe_packet
 from .storage import require_space
 
@@ -277,10 +278,9 @@ def _reference_statistics(batch, *, overlap_usable=True):
     if batch.n < 2:
         raise ValueError("Reference uncertainty needs independent repeated draws")
     values = batch.contributions
-    se = np.std(values, axis=0, ddof=1) / np.sqrt(batch.n)
+    covariance = stable_joint_covariance(values) / batch.n
+    se = np.sqrt(np.maximum(0, np.diag(covariance))).reshape(values.shape[1:])
     aliases = np.array([a == b for a, b in batch.policy_pairs])
-    # Remove roundoff of exactly constant arrays, not small genuine variation.
-    se[np.ptp(values, axis=0) == 0] = 0
     precision = reference_precision(
         se, exact_alias=aliases[:, None], overlap_usable=np.asarray(overlap_usable)[..., None]
     )
@@ -289,7 +289,7 @@ def _reference_statistics(batch, *, overlap_usable=True):
         "estimate": values.mean(0),
         "se": se,
         "resolved": resolved,
-        "covariance_of_mean": np.cov(values.reshape(batch.n, -1), rowvar=False) / batch.n,
+        "covariance_of_mean": covariance,
         "uncertainty": "IID_RAW_CONTRIBUTIONS_EMPIRICAL_SE",
         "coverage_certified": False,
         "precision": precision,
@@ -450,8 +450,14 @@ def _origin_reference_statistics(samples, scores, policies, usable):
         for i, packet in enumerate(packets):
             if packet is not None:
                 values[:, i] = packet.contributions[:, 0]
-        se = np.std(values, axis=0, ddof=1) / math.sqrt(len(samples))
-        se[np.ptp(values, axis=0) == 0] = 0
+        flat = values.reshape(len(samples), -1)
+        available = np.isfinite(flat).all(axis=0)
+        covariance = np.full((flat.shape[1], flat.shape[1]), np.nan)
+        if available.any():
+            covariance[np.ix_(available, available)] = stable_joint_covariance(
+                flat[:, available]
+            ) / len(samples)
+        se = np.sqrt(np.maximum(0, np.diag(covariance))).reshape(values.shape[1:])
         aliases = np.array(
             [
                 policies[a]["inference_fingerprint"] == policies[b]["inference_fingerprint"]
@@ -466,8 +472,7 @@ def _origin_reference_statistics(samples, scores, policies, usable):
             "se": se,
             "resolved": precision["reference_resolved"],
             "precision": precision,
-            "covariance_of_mean": np.cov(values.reshape(len(samples), -1), rowvar=False)
-            / len(samples),
+            "covariance_of_mean": covariance,
             "uncertainty": "IID_RAW_CONTRIBUTIONS_EMPIRICAL_SE",
             "coverage_certified": False,
         }
