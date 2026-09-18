@@ -113,3 +113,30 @@ sbatch --parsable \
 - 本地小回执镜像：`ssvc_flow/reports/modeling_v4/preview_20260918/`；原始大数据仍在服务器。
 
 作业启动不等于首题测量完成。监控每小时只读检查一次，在首题完整测量、六题完成、失败或需要用户决策时通知。
+
+## 两卡并行调整（用户追加授权）
+
+用户随后明确要求使用两张卡加速同一首批，不增加题目或样本量。
+新增 `scripts/modeling_v4_preview_parallel.py` 作为单独记录身份的调度器，仍导入服务器
+`code_preview_20260918/ssvc_flow` 的冻结测量代码；不改变 `src`、PLAN、runtime身份或采样键。
+worker0处理题号0/2/4，worker1处理1/3/5；仍然每题完整测量后立即交付。
+
+当前串行作业159870结束后，两个并行作业用 `--resume` 接续原目录。
+只恢复原已登记样本，不把已提交的chunk重新生成；尚未提交的当前chunk按原种子重算。
+根共享锁排斥旧串行进程，worker和题目各有独占锁；汇总另有短时锁，读取全部六题已完成收据，
+不能把一个worker的三题完成误报为全批完成。
+两卡分别将实际同策略读数与原固定null基准比较；恢复时使用当前实测receipt，不能把两段容差累加。
+
+每个worker的提交使用原文同样的partition/account/QoS/gres/CPU/memory/time参数，
+改用 `scripts/modeling_v4_preview_parallel.sbatch`，其六个位置参数为：
+
+1. `/projects/varunssd/louis-ssvc/envs/ssvc-py312/bin/python`
+2. `/projects/varunssd/louis-ssvc/modeling_v4_20260916/code_preview_20260918/ssvc_flow`
+3. `/projects/varunssd/louis-ssvc/modeling_v4_20260916/preview_20260918`
+4. 上述预览目录的 `PLAN.json`
+5. `/projects/varunssd/louis-ssvc/modeling_v4_20260916/launchers/preview_parallel_20260918/modeling_v4_preview_parallel.py`
+6. worker编号 `0` 或 `1`
+
+实际完整argv、作业编号和启动器哈希保存在 `preview_20260918/LAUNCH_PARALLEL.json`。
+串行启动回执不覆盖。两卡能并行不同问题，不能将单题耗时直接减半，也不保证整批恰好两倍加速。
+新增4项并行分工、锁、恢复、汇总和当前卡评分比较测试通过；既有预览6项及实际tiny采集1项检查通过。
