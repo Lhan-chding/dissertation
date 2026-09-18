@@ -2049,6 +2049,9 @@ def pair_observation_diagnostics(response, *, include_support_bounds=True, row_r
                 reports.append(
                     {
                         "bank_id": check["bank_id"],
+                        "contrast_id": check["contrast_id"],
+                        "left_candidate_id": left,
+                        "right_candidate_id": right,
                         "prompt_id": pid,
                         "status": "UNRESOLVED_NONFINITE_OR_INSUFFICIENT",
                     }
@@ -2134,6 +2137,9 @@ def pair_observation_diagnostics(response, *, include_support_bounds=True, row_r
             reports.append(
                 {
                     "bank_id": check["bank_id"],
+                    "contrast_id": check["contrast_id"],
+                    "left_candidate_id": left,
+                    "right_candidate_id": right,
                     "prompt_id": pid,
                     "status": "MEASURED",
                     "means": {k: v.tolist() for k, v in means.items()},

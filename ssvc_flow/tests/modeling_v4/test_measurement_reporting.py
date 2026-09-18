@@ -189,6 +189,7 @@ def response_fixture(vary=False, direct=True):
             }
     check = {
         "bank_id": "calibration_001",
+        "contrast_id": "joint_1_minus_joint_0",
         "left_candidate_id": "left",
         "right_candidate_id": "right",
         "mixture": packets["mixture"],
@@ -213,6 +214,8 @@ def test_pair_diagnostics_use_real_resolution_and_support_without_model_calls():
     result = pair_observation_diagnostics(response_fixture(), row_reader=lambda r: iter(r["rows"]))
     unit = result["units"][0]
     assert result["all_finite"]
+    assert unit["contrast_id"] == "joint_1_minus_joint_0"
+    assert (unit["left_candidate_id"], unit["right_candidate_id"]) == ("left", "right")
     assert unit["reference_precision"] == "UNRESOLVED"
     assert unit["variance_of_mean"]["ORIGIN"] == [0] * 4
     assert unit["comparisons"]["DIRECT"]["within_diagnostic_interval"] == [None] * 4
