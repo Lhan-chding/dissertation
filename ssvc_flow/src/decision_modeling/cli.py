@@ -132,6 +132,9 @@ def _parser():
         p.add_argument("--execute-gpu", action="store_true")
         p.add_argument("--dry-run", action="store_true")
         p.add_argument("--resume", action="store_true")
+        if name == "bridge":
+            p.add_argument("--worker-index", type=int)
+            p.add_argument("--workers", type=int, choices=(1, 2, 3), default=1)
         if name == "block":
             p.add_argument("--origin", choices=("O1", "O2", "O3", "O4"), required=True)
             p.add_argument("--recipe", required=True)
@@ -156,6 +159,12 @@ def _parser():
             p.add_argument(
                 "--append-reason", help="Observed unresolved choice; never a p-value rule"
             )
+    p = sub.add_parser("merge-bridge", help="Metadata-only validated merge of completed D1 workers")
+    p.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
+    p.add_argument("--runtime", type=Path, required=True)
+    p.add_argument("--root", type=Path, required=True)
+    p.add_argument("--out", type=Path, required=True)
+    p.add_argument("--workers", type=int, choices=(1, 2, 3), required=True)
     p = sub.add_parser("report")
     p.add_argument("--root", type=Path, required=True)
     p.add_argument("--out", type=Path, required=True)
@@ -181,6 +190,22 @@ def main(argv=None):
                 panels_path=args.panels,
                 data_root=args.data_root,
                 out=args.out,
+            )
+        elif args.command == "merge-bridge":
+            from .parallel import merge_workers
+            from .runtime import runtime_metadata
+
+            private, _, panels = runtime_metadata(config, args.runtime, out=args.out)
+            prompts = panel_prompts(
+                {"decision_panels": panels, "data_root": private["data_root"]}, "P"
+            )
+            result = merge_workers(
+                private,
+                prompts,
+                root=args.root,
+                out=args.out,
+                workers=args.workers,
+                stream_id=f"{canonical_hash(config)}:D1",
             )
         elif args.command == "report":
             from .reporting import report
@@ -225,19 +250,38 @@ def main(argv=None):
                     )
                 if args.panel == "E":
                     _freeze(args.development_freeze, config, candidate=args.candidate)
+            if args.command == "bridge":
+                if args.worker_index is None and args.workers != 1:
+                    raise ValueError("Parallel bridge requires --worker-index")
+                if args.worker_index is not None:
+                    if not 0 <= args.worker_index < args.workers:
+                        raise ValueError("Worker index outside registered worker count")
+                    args.out = args.out / "workers" / str(args.worker_index)
             with frozen_writer(args.out):
                 runtime = load_runtime(config, args.runtime, out=args.out, execute_gpu=True)
                 prefix = canonical_hash(config)
                 if args.command == "bridge":
                     private = runtime["decision_private"]
-                    result = bridge(
-                        runtime,
-                        private["preview_policies"],
-                        panel_prompts(runtime, "P"),
-                        out=args.out,
-                        stream_id=f"{prefix}:D1",
-                        origin_policy=private["preview_origin"],
-                    )
+                    if args.worker_index is not None:
+                        from .parallel import run_worker
+
+                        result = run_worker(
+                            runtime,
+                            panel_prompts(runtime, "P"),
+                            out=args.out,
+                            worker_index=args.worker_index,
+                            workers=args.workers,
+                            stream_id=f"{prefix}:D1",
+                        )
+                    else:
+                        result = bridge(
+                            runtime,
+                            private["preview_policies"],
+                            panel_prompts(runtime, "P"),
+                            out=args.out,
+                            stream_id=f"{prefix}:D1",
+                            origin_policy=private["preview_origin"],
+                        )
                 elif args.command == "block":
                     origin = runtime["decision_private"]["origins"][args.origin]
                     prompts = panel_prompts(runtime, "P")

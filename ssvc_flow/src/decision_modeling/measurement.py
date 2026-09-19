@@ -123,7 +123,13 @@ def _namespace(runtime):
 
     return {
         "runtime": runtime["identity"],
-        "adapter_audit": runtime["adapter"].audit,
+        # Operational load measurements vary across processes without changing
+        # model probabilities; preserve every semantic adapter field.
+        "adapter_audit": {
+            key: value
+            for key, value in runtime["adapter"].audit.items()
+            if key not in ("load_seconds", "load_peak_cuda_bytes")
+        },
         "implementation": source_identity()["sha256"],
         "path": "uncached_prefix_recompute",
         "generation": {"temperature": 1, "top_p": 1, "top_k": 0, "max_new_tokens": 64},
@@ -142,7 +148,9 @@ def make_backend(runtime, cache):
     )
 
 
-def collect_stream(backend, policies, prompts, *, out, role, draws, stream_id):
+def collect_stream(
+    backend, policies, prompts, *, out, role, draws, stream_id, identity_prompts=None
+):
     """One stream per role/policy; extending a look reuses whole 32-row chunks.
 
     MIX source coins are independent before grouping draws by source. Reordering
@@ -165,7 +173,7 @@ def collect_stream(backend, policies, prompts, *, out, role, draws, stream_id):
         "stream_id": stream_id,
         "role": role,
         "policies": policies,
-        "prompts": digest(prompts),
+        "prompts": digest(prompts if identity_prompts is None else identity_prompts),
         "cache_namespace": backend.cache.namespace,
     }
     gpu._publish(root / "IDENTITY.json", identity)
@@ -285,6 +293,7 @@ def observe(
     stream_id,
     cache_path=None,
     context=None,
+    identity_prompts=None,
 ):
     """Actual model observation; caller supplies an already authorized runtime."""
     root = Path(out)
@@ -299,13 +308,14 @@ def observe(
             role=role,
             draws=look,
             stream_id=stream_id,
+            identity_prompts=identity_prompts,
         )
         result = {
             "status": "OBSERVED",
             "role": role,
             "look": look,
             **(context or {}),
-            "panel_identity": digest(prompts),
+            "panel_identity": digest(prompts if identity_prompts is None else identity_prompts),
             "total_rows": len(rows),
             "sample_ids_hash": digest([r["sample_id"] for r in rows]),
             "scoring_usable": all(r["scoring_usable"] for r in rows),
@@ -334,7 +344,17 @@ def observe(
     return result, rows
 
 
-def bridge(runtime, policies, prompts, *, out, stream_id, origin_policy=None):
+def bridge(
+    runtime,
+    policies,
+    prompts,
+    *,
+    out,
+    stream_id,
+    origin_policy=None,
+    identity_prompts=None,
+    run_scoring_diagnostic=True,
+):
     """D1: two endpoint streams plus fixed 24-action path comparison, no training.
 
     Prefix remains the scoring path after the diagnostic, including when an
@@ -350,6 +370,7 @@ def bridge(runtime, policies, prompts, *, out, stream_id, origin_policy=None):
             out=root / f"endpoint_{index}",
             stream_id=f"{stream_id}:endpoint:{index}",
             cache_path=root / "scores.sqlite",
+            identity_prompts=identity_prompts,
             context={
                 "origin_id": "O1_PREVIEW",
                 "horizon": 1,
@@ -364,6 +385,8 @@ def bridge(runtime, policies, prompts, *, out, stream_id, origin_policy=None):
         gpu._read(root / "SCORING_PATHS.json")
         if (root / "SCORING_PATHS.json").exists()
         else gpu.measure_scoring_paths(runtime, policies[0], prompts, samples[0][:24])
+        if run_scoring_diagnostic
+        else {"status": "DELEGATED_TO_WORKER_0", "tested_sequences": 0}
     )
     runtime["observation_score_mode"] = "uncached_prefix_recompute"
     certificate = {
@@ -388,6 +411,7 @@ def bridge(runtime, policies, prompts, *, out, stream_id, origin_policy=None):
                     role=proposal.lower(),
                     draws=32,
                     stream_id=f"{stream_id}:{proposal}",
+                    identity_prompts=identity_prompts,
                 )
                 scores = []
                 by_id = {p["prompt_id"]: p for p in prompts}

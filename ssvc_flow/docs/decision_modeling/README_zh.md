@@ -1,6 +1,6 @@
 # decision-modeling-v1 服务器交接
 
-本地已实现 D0 及 D1–D4 所需代码；当前应停在 **D1 真实 9B 验证之前**。没有加载真实 9B、提交服务器作业或运行多奖励训练。CPU 测试不是真实模型的概率一致性或研究成功证据。
+本地已实现 D0 及 D1–D4 所需代码。2026-09-19 用户明确同意开始服务器实验；按 D1、D2、开发冻结、D4 的顺序推进，每一后继阶段先检查前序实测结果。实际作业状态以运行目录的提交收据、Slurm 状态和原始结果为准。CPU 测试不是真实模型的概率一致性或研究成功证据。
 
 分支：`codex/decision-modeling-v1-20260919`。从实际 V4 提交 `9f5d19c` 建立独立 worktree，历史模块和原始结果保持不变。原方案见 [CODEX_EXPERIMENT_PLAN_zh.md](design/CODEX_EXPERIMENT_PLAN_zh.md)；入口是本文件。附件引用的同包 `RESEARCH_REVIEW_zh.md`、`SOURCES.md` 及新的配套 protocol 原件未提供；本实现明确根据收到的方案冻结 `configs/decision_modeling/protocol.json`，基线另查原论文/官方实现，映射见 [BASELINE_MAPPING_zh.md](BASELINE_MAPPING_zh.md)。
 
@@ -35,11 +35,20 @@ python -m src.decision_modeling.cli bridge \
 在原环境的一卡分配内运行，每个进程只可见分配给自己的 GPU。继承的生产 loader 检查单卡、既有环境与 PRO 6000；使用分配后的逻辑 `cuda:0`，没有写死物理 GPU 编号。默认两进程，最多三进程；本代码不申请、抢占或终止其他任务。
 
 ```bash
-python -m src.decision_modeling.cli bridge \
+# 分别放在两个独立单卡分配内执行；不要在同一个 GPU 上同时运行。
+python -m src.decision_modeling.cli bridge --workers 2 --worker-index 0 \
   --runtime "$DM_ROOT/runtime.json" --out "$DM_ROOT/D1" --execute-gpu
+python -m src.decision_modeling.cli bridge --workers 2 --worker-index 1 \
+  --runtime "$DM_ROOT/runtime.json" --out "$DM_ROOT/D1" --execute-gpu
+
+# 两个 worker 完成后在 CPU 上合并并检查报告。
+python -m src.decision_modeling.cli merge-bridge --workers 2 \
+  --runtime "$DM_ROOT/runtime.json" --root "$DM_ROOT/D1" --out "$DM_ROOT/D1/merged"
 python -m src.decision_modeling.cli report \
-  --root "$DM_ROOT" --out "$DM_ROOT/reports_after_D1"
+  --root "$DM_ROOT/D1/merged" --out "$DM_ROOT/reports_after_D1"
 ```
+
+`scripts/decision_modeling_gpu.sbatch` 的参数为 `PYTHON PROJECT_ROOT RUN_ROOT CACHE_ROOT COMMAND [ARGS...]`；使用既有冻结环境和已有模型缓存，不下载或升级依赖。按完整 scene 对分片，每个 worker 为 36 prompts、4,608 条生成输出；全局 RNG 流身份保持不变。固定 24 条评分路径诊断仅由 worker 0 执行。合并会验证完整覆盖、checkpoint/config/runtime 身份和原始 chunk 内容，报告只读取 `D1/merged`，避免同时读取 worker 目录重复计数。串行命令仍可不传 worker 参数使用。
 
 D1 在冻结 P 面板上对两个真实 preview 候选各采 32 条/题，另使用共同 ORIGIN 和真正随机 source 的 MIX 各 32 条/题。所有流明确分角色；同一流不因 RAW4/PRESERVE_XI 重复采样。固定前 24 条完整输出来比较 prefix/full/chunk/token。生产评分继续用 prefix；没有通过的加速或梯度路径不启用。有限但不一致的评分保留端点采样、标记禁用相关 LR/质量界；非有限值停止故障任务并保留失败记录。
 
