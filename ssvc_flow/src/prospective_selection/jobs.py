@@ -512,6 +512,159 @@ class TaskRegistry:
             _publish(self._path("completed", task_id), value)
             return value
 
+    def _latest_submission_path(self, task_id: str) -> Path:
+        recovery = self.root / "recoveries" / task_id / "attempt_1"
+        if (recovery / "intent.json").exists():
+            return recovery / "submission.json"
+        return self._path("submissions", task_id)
+
+    def _occupied_slots(self, active_ids: set[str], *, terminal_task_id: str | None = None) -> int:
+        unresolved = 0
+        for path in (self.root / "intents").glob("*.json"):
+            tid = _read(path)["task_id"]
+            if tid == terminal_task_id or self._path("completed", tid).exists():
+                continue
+            receipt_path = self._latest_submission_path(tid)
+            if not receipt_path.exists() or str(_read(receipt_path)["job_id"]) not in active_ids:
+                unresolved += 1
+        return len(active_ids) + unresolved
+
+    def resubmit_terminal(
+        self,
+        task_id: str,
+        terminal_receipt: Mapping,
+        submit: Callable[[dict, Path], str],
+        *,
+        reason: str,
+        query_active: Callable[[], list[Mapping]],
+        max_gpu_jobs: int = 5,
+        available_gpus: int = 5,
+    ) -> dict:
+        """One explicit recovery after a verified Slurm terminal failure.
+
+        The caller must obtain a fresh sacct observation; this method makes no
+        remote calls and never infers failure from absence in squeue. Receipt
+        fields: source='sacct', job_id, state, observed_at (timezone ISO timestamp),
+        code_version, failure_class. NUMERICAL faults additionally require a
+        nonempty reviewed_correction. The reason and evidence become immutable
+        before the single submission callback. One recovery per task is allowed;
+        an uncertain callback outcome, or a second failure, needs separate review.
+        """
+        if not 1 <= max_gpu_jobs <= 5 or available_gpus < 1:
+            raise ValueError("GPU concurrency must be 1..5 with hardware available")
+        if not isinstance(reason, str) or not reason.strip():
+            raise ValueError("explicit recovery reason required")
+        evidence = json.loads(json.dumps(terminal_receipt))
+        fields = {"source", "job_id", "state", "observed_at", "code_version", "failure_class"}
+        if fields - evidence.keys() or evidence.get("source") != "sacct":
+            raise ValueError("observed sacct terminal receipt and code version required")
+        terminal_failures = {
+            "FAILED",
+            "CANCELLED",
+            "TIMEOUT",
+            "NODE_FAIL",
+            "OUT_OF_MEMORY",
+            "BOOT_FAIL",
+            "PREEMPTED",
+            "DEADLINE",
+            "REVOKED",
+        }
+        if evidence["state"] not in terminal_failures:
+            raise ValueError(
+                "recovery requires an explicit terminal failure, never unknown/live/completed"
+            )
+        if evidence["failure_class"] not in {
+            "INFRASTRUCTURE",
+            "RESOURCE",
+            "IMPLEMENTATION",
+            "NUMERICAL",
+        }:
+            raise ValueError("reviewed failure class required; unknown failure cannot be retried")
+        if not isinstance(evidence["code_version"], str) or not evidence["code_version"].strip():
+            raise ValueError("reviewed code version required")
+        correction = evidence.get("reviewed_correction")
+        if evidence["failure_class"] == "NUMERICAL" and (
+            not isinstance(correction, str) or not correction.strip()
+        ):
+            raise ValueError("numerical failure requires an explicit reviewed correction")
+        try:
+            observed = datetime.fromisoformat(evidence["observed_at"])
+        except (TypeError, ValueError) as exc:
+            raise ValueError("terminal observation requires a timezone ISO timestamp") from exc
+        if observed.tzinfo is None or observed > datetime.now(timezone.utc):
+            raise ValueError("terminal observation timestamp must be timezone-aware and not future")
+        with self._lock():
+            task = self.assert_can_execute(task_id)
+            recovery = self.root / "recoveries" / task_id / "attempt_1"
+            if (recovery / "intent.json").exists():
+                raise ValueError(
+                    "one recovery attempt already recorded; never retry an uncertain attempt"
+                )
+            previous_path = self._latest_submission_path(task_id)
+            if not previous_path.exists():
+                raise ValueError(
+                    "original submission outcome unknown; no recorded job ID to reconcile"
+                )
+            previous = _read(previous_path)
+            submitted_at = datetime.fromisoformat(
+                _read(self._path("intents", task_id))["created_at"]
+            )
+            if observed < submitted_at:
+                raise ValueError("terminal observation predates the recorded submission intent")
+            if str(evidence["job_id"]) != str(previous["job_id"]):
+                raise ValueError("terminal receipt does not match the recorded submission job ID")
+            if (
+                self._is_test(task["payload"])
+                and evidence["code_version"] != self.load_freeze()["source_version"]
+            ):
+                raise ValueError("test recovery cannot change the frozen source version")
+            active = list(query_active())
+            if any(int(row.get("gpus", 1)) != 1 for row in active):
+                raise ValueError("project jobs must each request exactly one GPU")
+            active_ids = {str(row["job_id"]) for row in active}
+            if str(previous["job_id"]) in active_ids:
+                raise ValueError(
+                    "recorded job is still active; terminal evidence conflicts with live state"
+                )
+            occupied = self._occupied_slots(active_ids, terminal_task_id=task_id)
+            if occupied >= min(max_gpu_jobs, available_gpus):
+                raise ValueError("no free project GPU slot for recovery")
+            intent = {
+                "task_id": task_id,
+                "attempt": 1,
+                "previous_job_id": previous["job_id"],
+                "created_at": _now(),
+                "status": "RECOVERY_INTENT_UNRESOLVED",
+                "gpus": 1,
+                "reason": reason,
+                "terminal_receipt": evidence,
+            }
+            _publish(recovery / "intent.json", intent)
+            try:
+                job_id = str(submit(task, self._path("tasks", task_id))).strip()
+                if not job_id or not job_id.split(";")[0].isdigit():
+                    raise ValueError("sbatch returned an unrecognized job ID")
+            except Exception as exc:
+                _publish(
+                    recovery / "submission_error.json",
+                    {
+                        "task_id": task_id,
+                        "attempt": 1,
+                        "status": "SUBMISSION_UNKNOWN_DO_NOT_RESUBMIT",
+                        "error_type": type(exc).__name__,
+                    },
+                )
+                raise RuntimeError("recovery submission outcome unknown; do not resubmit") from exc
+            result = {
+                "task_id": task_id,
+                "attempt": 1,
+                "job_id": job_id.split(";")[0],
+                "previous_job_id": previous["job_id"],
+                "status": "RECOVERY_SUBMITTED",
+            }
+            _publish(recovery / "submission.json", result)
+            return result
+
     def submit_ready(
         self,
         query_active: Callable[[], list[Mapping]],
@@ -532,19 +685,7 @@ class TaskRegistry:
             if any(int(row.get("gpus", 1)) != 1 for row in active):
                 raise ValueError("project jobs must each request exactly one GPU")
             active_ids = {str(row["job_id"]) for row in active}
-            intents = [_read(p) for p in (self.root / "intents").glob("*.json")]
-            unresolved = 0
-            for intent in intents:
-                tid = intent["task_id"]
-                if self._path("completed", tid).exists():
-                    continue
-                receipt_path = self._path("submissions", tid)
-                if (
-                    not receipt_path.exists()
-                    or str(_read(receipt_path)["job_id"]) not in active_ids
-                ):
-                    unresolved += 1
-            slots = min(max_gpu_jobs, available_gpus) - len(active_ids) - unresolved
+            slots = min(max_gpu_jobs, available_gpus) - self._occupied_slots(active_ids)
             submissions = []
             for task in self.tasks():
                 if slots <= 0:

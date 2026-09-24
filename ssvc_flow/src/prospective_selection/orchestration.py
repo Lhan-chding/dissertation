@@ -218,6 +218,10 @@ def execute_task(config, root, task_id, runtime_path, *, allow_gpu=False):
     registry = TaskRegistry(root, config)
     task = registry.assert_can_execute(task_id)
     p, kind = task["payload"], task["kind"]
+    if p.get('role') == 'locked_test':
+        from .workflow import verify_frozen_execution
+        private = read_json(runtime_path)
+        verify_frozen_execution(registry.load_freeze(), read_json(private['prepared']['path']))
     with frozen_writer(Path(root) / "worker_locks" / task_id):
         registry.assert_can_execute(task_id)
         load_start = time.perf_counter()

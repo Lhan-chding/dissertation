@@ -224,15 +224,22 @@ def main(argv=None):
         _need(args, "root")
         result = precision_from_development(config, args.root, read_json(args.fit))
     elif command == "freeze":
-        from .workflow import freeze_selectors
+        from .workflow import freeze_selectors, implementation_id
 
         _need(args, "root")
-        status = subprocess.check_output(
-            ["git", "status", "--porcelain", "--untracked-files=no"], text=True
+        status = subprocess.run(
+            ["git", "status", "--porcelain", "--untracked-files=no"],
+            text=True, capture_output=True, check=False,
         )
-        if status.strip():
-            raise ValueError("Commit reviewed implementation before scientific freeze")
-        version = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+        if status.returncode == 0:
+            if status.stdout.strip():
+                raise ValueError("Commit reviewed implementation before scientific freeze")
+            version = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+        else:
+            receipt = read_json(Path(__file__).parents[2] / 'CODE_VERSION.json')
+            if receipt['implementation_id'] != implementation_id():
+                raise ValueError('Deployment code differs from reviewed commit receipt')
+            version = receipt['commit']
         result = freeze_selectors(
             config,
             args.root,

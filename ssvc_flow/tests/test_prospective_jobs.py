@@ -312,3 +312,235 @@ def test_numeric_string_lineage_same_identity(registry):
 def test_origin_alias_cannot_duplicate_physical_run(registry):
     with pytest.raises(ValueError, match="canonical"):
         regbranch(registry, branch(origin_id="alias_of_61001_t32"))
+
+
+def terminal_receipt(job_id="100", **updates):
+    from datetime import datetime, timezone
+
+    return {
+        "source": "sacct",
+        "job_id": job_id,
+        "state": "FAILED",
+        "observed_at": datetime.now(timezone.utc).isoformat(),
+        "code_version": "reviewed-commit",
+        "failure_class": "IMPLEMENTATION",
+        **updates,
+    }
+
+
+def submitted_task(registry):
+    task = registry.register_task("source", source())
+    registry.submit_ready(lambda: [], lambda *args: "100")
+    return task
+
+
+def test_explicit_terminal_recovery_preserves_original_and_publishes_intent(registry):
+    task = submitted_task(registry)
+    tid = task["task_id"]
+    original_intent = (registry.root / "intents" / f"{tid}.json").read_bytes()
+    original_submission = (registry.root / "submissions" / f"{tid}.json").read_bytes()
+    calls = []
+
+    def submit(record, path):
+        intent = registry.root / "recoveries" / tid / "attempt_1/intent.json"
+        evidence = json.loads(intent.read_text())
+        assert evidence["terminal_receipt"]["job_id"] == "100"
+        assert evidence["reason"] == "Reviewed loader correction; resume committed state"
+        assert path.is_file()
+        calls.append(record)
+        return "101;cluster02"
+
+    receipt = registry.resubmit_terminal(
+        tid,
+        terminal_receipt(),
+        submit,
+        reason="Reviewed loader correction; resume committed state",
+        query_active=lambda: [],
+    )
+    assert receipt["job_id"] == "101"
+    assert len(calls) == 1
+    assert (registry.root / "intents" / f"{tid}.json").read_bytes() == original_intent
+    assert (registry.root / "submissions" / f"{tid}.json").read_bytes() == original_submission
+    with pytest.raises(ValueError, match="one recovery"):
+        registry.resubmit_terminal(
+            tid, terminal_receipt("101"), submit, reason="second attempt", query_active=lambda: []
+        )
+    assert len(calls) == 1
+
+
+@pytest.mark.parametrize("state", ["RUNNING", "PENDING", "UNKNOWN", "COMPLETED"])
+def test_recovery_never_uses_unknown_live_or_success_state(registry, state):
+    task = submitted_task(registry)
+    with pytest.raises(ValueError, match="terminal failure"):
+        registry.resubmit_terminal(
+            task["task_id"],
+            terminal_receipt(state=state),
+            lambda *a: "101",
+            reason="review",
+            query_active=lambda: [],
+        )
+    assert not (registry.root / "recoveries").exists()
+
+
+def test_recovery_requires_matching_recorded_job_and_no_live_conflict(registry):
+    task = submitted_task(registry)
+    with pytest.raises(ValueError, match="recorded submission job ID"):
+        registry.resubmit_terminal(
+            task["task_id"],
+            terminal_receipt("999"),
+            lambda *a: "101",
+            reason="review",
+            query_active=lambda: [],
+        )
+    with pytest.raises(ValueError, match="still active"):
+        registry.resubmit_terminal(
+            task["task_id"],
+            terminal_receipt(),
+            lambda *a: "101",
+            reason="review",
+            query_active=lambda: [{"job_id": "100", "gpus": 1}],
+        )
+
+
+def test_numerical_failure_requires_reviewed_correction(registry):
+    task = submitted_task(registry)
+    evidence = terminal_receipt(failure_class="NUMERICAL")
+    with pytest.raises(ValueError, match="reviewed correction"):
+        registry.resubmit_terminal(
+            task["task_id"], evidence, lambda *a: "101", reason="review", query_active=lambda: []
+        )
+    evidence["reviewed_correction"] = "Reviewed nonfinite mask bug, targeted regression passed"
+    assert (
+        registry.resubmit_terminal(
+            task["task_id"], evidence, lambda *a: "101", reason="review", query_active=lambda: []
+        )["job_id"]
+        == "101"
+    )
+
+
+def test_unknown_initial_submission_cannot_be_recovered_by_guessing_job_id(registry):
+    task = registry.register_task("source", source())
+
+    def timeout(*args):
+        raise TimeoutError("unknown")
+
+    with pytest.raises(RuntimeError, match="outcome unknown"):
+        registry.submit_ready(lambda: [], timeout)
+    with pytest.raises(ValueError, match="original submission outcome unknown"):
+        registry.resubmit_terminal(
+            task["task_id"],
+            terminal_receipt(),
+            lambda *a: "101",
+            reason="review",
+            query_active=lambda: [],
+        )
+
+
+def test_recovery_capacity_check_precedes_intent(registry):
+    task = submitted_task(registry)
+    active = [{"job_id": str(n), "gpus": 1} for n in range(201, 206)]
+    with pytest.raises(ValueError, match="no free"):
+        registry.resubmit_terminal(
+            task["task_id"],
+            terminal_receipt(),
+            lambda *a: "101",
+            reason="review",
+            query_active=lambda: active,
+        )
+    assert not (registry.root / "recoveries").exists()
+
+
+def test_latest_recovery_job_counted_once_not_with_absent_original(registry):
+    task = submitted_task(registry)
+    registry.resubmit_terminal(
+        task["task_id"],
+        terminal_receipt(),
+        lambda *a: "101",
+        reason="review",
+        query_active=lambda: [],
+    )
+    for seed in range(61002, 61008):
+        registry.register_task("source", source(seed))
+    count = []
+
+    def submit(*args):
+        count.append(1)
+        return str(200 + len(count))
+
+    active = [{"job_id": "101", "gpus": 1}]
+    assert len(registry.submit_ready(lambda: active, submit)) == 4
+    assert registry.submit_ready(lambda: active, submit) == []
+
+
+def test_unknown_recovery_is_durable_and_never_retried(registry):
+    task = submitted_task(registry)
+    count = []
+
+    def timeout(*args):
+        count.append(1)
+        raise TimeoutError("unknown recovery")
+
+    with pytest.raises(RuntimeError, match="recovery submission outcome unknown"):
+        registry.resubmit_terminal(
+            task["task_id"], terminal_receipt(), timeout, reason="review", query_active=lambda: []
+        )
+    with pytest.raises(ValueError, match="one recovery"):
+        registry.resubmit_terminal(
+            task["task_id"], terminal_receipt(), timeout, reason="review", query_active=lambda: []
+        )
+    assert registry.submit_ready(lambda: [], timeout) == []
+    assert count == [1]
+
+
+def test_test_recovery_cannot_change_frozen_source_version(registry):
+    frozen(registry)
+    task = registry.register_task("source", source(63001))
+    registry.submit_ready(lambda: [], lambda *a: "100")
+    with pytest.raises(ValueError, match="frozen source version"):
+        registry.resubmit_terminal(
+            task["task_id"],
+            terminal_receipt(code_version="modified"),
+            lambda *a: "101",
+            reason="review",
+            query_active=lambda: [],
+        )
+
+
+@pytest.mark.parametrize(
+    "updates",
+    [
+        {"source": "squeue"},
+        {"failure_class": "UNKNOWN"},
+        {"code_version": ""},
+        {"observed_at": "2026-01-01T00:00:00"},
+        {"observed_at": "invalid"},
+    ],
+)
+def test_recovery_requires_reviewed_evidence(registry, updates):
+    task = submitted_task(registry)
+    with pytest.raises(ValueError):
+        registry.resubmit_terminal(
+            task["task_id"],
+            terminal_receipt(**updates),
+            lambda *a: "101",
+            reason="review",
+            query_active=lambda: [],
+        )
+
+
+def test_stale_terminal_observation_rejected(registry):
+    task = submitted_task(registry)
+    evidence = terminal_receipt(observed_at="2000-01-01T00:00:00+00:00")
+    with pytest.raises(ValueError, match="predates"):
+        registry.resubmit_terminal(
+            task["task_id"], evidence, lambda *a: "101", reason="review", query_active=lambda: []
+        )
+
+
+def test_numerical_correction_requires_text_not_boolean(registry):
+    task = submitted_task(registry)
+    evidence = terminal_receipt(failure_class="NUMERICAL", reviewed_correction=False)
+    with pytest.raises(ValueError, match="reviewed correction"):
+        registry.resubmit_terminal(
+            task["task_id"], evidence, lambda *a: "101", reason="review", query_active=lambda: []
+        )

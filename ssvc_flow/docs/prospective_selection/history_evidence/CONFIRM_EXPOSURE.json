@@ -1,0 +1,1148 @@
+{
+  "schema": "prospective-confirm-exposure-audit-v1",
+  "status": "COMPLETE",
+  "coverage_status": "COMPLETE_FOR_REGISTERED_LOCAL_HISTORY",
+  "claim": "No matching target identity or truth alias beyond the two recorded historical CPU-proxy truth exposures in the audited metadata scope.",
+  "scope": [
+    "/projects/varunssd/louis-ssvc/runs",
+    "/projects/varunssd/louis-ssvc/modeling_v3_20260915",
+    "/projects/varunssd/louis-ssvc/modeling_v4_20260916",
+    "/projects/varunssd/louis-ssvc/decision_modeling_v1_20260919"
+  ],
+  "scope_definition": "Existing original run metadata named access/manifest/binding/plan/tasks/config/summary/receipt/result/panel/progress (.json/.jsonl); target ID/hash and truth-array alias scan. Five nested generated access logs (depth<=7), plus reviewed-data access log, inspected separately.",
+  "universal_never_read_claim": false,
+  "complete_access_capture_proven": false,
+  "exclusions": [
+    "copied code_* snapshots",
+    "checkout",
+    "tmp and pytest/test_* fixtures",
+    "validation and fixture directories",
+    "images",
+    "raw completion/sample/bank trees",
+    "checkpoint tensors and resume states",
+    "archives",
+    "unregistered external paths"
+  ],
+  "relevant_metadata_files_read": 2344,
+  "relevant_metadata_bytes_read": 1038469890,
+  "skipped_relevant_metadata_files": [],
+  "read_errors": [],
+  "target_confirm_source": {
+    "path": "/projects/varunssd/louis-ssvc/reviewed-data-20260908/generated/confirm.jsonl",
+    "sha256": "1d45afdca90fc7fe8be1df1e015e14bdf577d1ec90bd2b640369408f6d34703c",
+    "metadata_rows": 288,
+    "read_scope": "Only identity/hash/family/chart/operation/split projected; no prompt/completion/endpoint outcome returned. Original JSON rows were parsed in memory for this metadata-only audit."
+  },
+  "exposed_base_scene_ids": [
+    "7a65b897492b4df107489fab05f7a8a3",
+    "d5f86d6420552f802a71673f9d002fbd"
+  ],
+  "exposed_truth_hashes": [
+    "92e26e4f6a66ff1fc403cc4fb247b727fabd435d553cd8e53f7607f4d6dd49ea",
+    "cfc849b8c73f93b8756614fcd2f15370094d32aa48521416753db6ab99f7be8a"
+  ],
+  "known_exposures": [
+    {
+      "base_scene_id": "7a65b897492b4df107489fab05f7a8a3",
+      "truth_structure_hash": "92e26e4f6a66ff1fc403cc4fb247b727fabd435d553cd8e53f7607f4d6dd49ea",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "d5f86d6420552f802a71673f9d002fbd",
+      "truth_structure_hash": "cfc849b8c73f93b8756614fcd2f15370094d32aa48521416753db6ab99f7be8a",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    }
+  ],
+  "known_exposure_kind": "Historical CPU finite-action SYMBOLIC_PROXY/EVIDENCE_PROXY analysis. Not evidence of prior real-Qwen confirm generation.",
+  "scope_eligible_scene_count": 286,
+  "scope_eligible_base_scene_ids": [
+    "03493fb5cd5f71c2702c22fbb9f1622e",
+    "0491b17102eeef5198c6154ec669e965",
+    "0565a242d2bdb0a510be970495b09a18",
+    "059dfd236ccaeadaaaa900bf331d3193",
+    "065d9282295c78579a3aaf5a5415a7d5",
+    "096186dd0d707812bf46e8a183672ad8",
+    "0a7c21c0364dd795699cf93add6d5801",
+    "0a8293a61816543bd4c3bee5fd26a551",
+    "0b87ff396ae7fd8dcc80f26a9230cdf2",
+    "0ba026ef883dd9663c41ad45b6cf7839",
+    "0bc0cbdb7c1063c8a80c2f541d40c24d",
+    "0bdcc86096a3c1bb333221c4188eb064",
+    "0c00afa12f0e4ea152470ce3dd5c84f1",
+    "0c42fc9f4c6504577b2be8d72cce7576",
+    "0cf338e95497bbbba26d29d435b0d0de",
+    "0d09087eadacbc8661aa9f36007a3b4f",
+    "1017c4c017f3a4e5b554f836426b0ff9",
+    "1071c749856f9af93f195736d152e553",
+    "110142369fdc6f61c7fa8ccba9f6b480",
+    "11b20b380de22ee16374eec36dd17c12",
+    "11b252f09d5d1f1a8ba3612bd947bcda",
+    "127cc445c15c0e7a5de79d9e88b3042e",
+    "1302305f60ea4587f17b42c11ba355b2",
+    "1352d39aab2837b078e88b8f4ca2a196",
+    "15fbda5668e38c1aabefc64714028ba9",
+    "16a7e9501deaf4a4db907a50905b3238",
+    "1777417ff9394bc0bfe24dc827885ed7",
+    "17fa36af48404b7682b5e70f8097f8d5",
+    "18c8f4dd8d78da83fe18020a8362b015",
+    "197ac0cea139fea1a9993ad90afc9af0",
+    "1aa141eacfdd99cd998e0ab28959ec25",
+    "1b8fd532f76110895b66362ebb07c9bd",
+    "1d1e3c57270b411dffd4d01bbb82a17a",
+    "1d7e49b761581beda361f4a1ac7a3a4d",
+    "1de3812ec5113f4488422cfa12789023",
+    "1e03db0080fbe56f35c2cc055bc7d860",
+    "1ef604aac5a638c4c737e20219d6d9cc",
+    "1f96156206a065112fb2cbf70a7b300b",
+    "205f160aae6c33f11e5dc02f0c762103",
+    "2216835020c1e89d74d586d9ceb1546a",
+    "22656f2703a2c4be63aacfca5439b8fb",
+    "23286b9b2710dd308af9163b11d07b01",
+    "2435fd2000ec275b83e1fd253ac22e87",
+    "2551ed8accb3b205786ea37440202b83",
+    "25b7203b2935013354173ae8cfb2a266",
+    "25cbea9077925931ad755bef44e37d89",
+    "25d53b663ae7460e44cd620406a5f0b2",
+    "2684d5a2b9fb9b7315cdcadb24ed47a0",
+    "2766721926a661a44fc69298fe0b4841",
+    "29beab5984b6bcfe4691973fbc0d829a",
+    "2af240c95ea51598ad6e7c9f873f1e87",
+    "2b10cd2e00344e59b0ae7755e8f46d92",
+    "2b6f7b00019878f7943bb08aa7599e8f",
+    "2b9412324b02ce165916fade4ac6b223",
+    "2dcfa7d23321bbc1205d9d1d7715f20f",
+    "2de0e9296ae5948d2ac7e60700c9ea66",
+    "2eb05a86a7bdfff49d0151cc3bb79465",
+    "34016de61575344d38c701a2a71deecf",
+    "36379c01a419436afa32dfd7773de512",
+    "3722656161c0bf3cd858eb3a86983ee1",
+    "38c30122956da5ca4a50603fb41a2f32",
+    "39f1c718019902c96f4db4a7443ebf7a",
+    "3a9f99bc5d9dbd33b9bede1ec9b6aa14",
+    "3b5887d76169e1bd3466e513b567a328",
+    "3c0ebcf80c34b16667808477136067a4",
+    "3caa6f9ffcc570b2daed59c9ea4fc96e",
+    "3cd517427a0467bcd90e8cbbf3016a91",
+    "3d7457701264fe16230333820f33ee5b",
+    "3de1c347ffa96ba4f5a9ff30e9511a74",
+    "3dfde3279949ba23a98ff13ccf2c5cf5",
+    "3e674a61d532bfb230fcb27c9a7bac74",
+    "3ec1e4fff2930f95e1250d1d10c2ab41",
+    "3ff26e9fc537c8e60b551033d07ab291",
+    "42c183da52972517c6939a373e5545cb",
+    "4468ae2ce2aefbf2ff1785cb2350d013",
+    "44696f429a904e3eda6b8939a9a2be6c",
+    "44767bef68b9ab552576be3011bbd80a",
+    "4485d7846621c54944384d295edd2352",
+    "46923ce174667c9a6a3f7cc98e40e4f4",
+    "47b5fbb0f84f79afc59037937a10220f",
+    "47d39f55d4a309f829a361ad7d1662c1",
+    "48bcf1a6bd3b2409469564e6342aeb05",
+    "491dff3223e58f78f9bcfdb4ca52bceb",
+    "4aa05a9899352e116aee392c36117a6d",
+    "4af9b0bd826ee81255521b464391abf1",
+    "4d68509047e41e87c399a5d6156ef3d9",
+    "4e6c4a5047344573559903e7e47edd7b",
+    "4ef9dfa6684b05b5b87698445f8a4f35",
+    "4fc25dcb42824b16805dc69e029fd920",
+    "507c292064d637d052bed7be66920ec1",
+    "5227e2bac68d3d4cb5f0a734c9d4b5ef",
+    "52ec624fff6f3e076f548b432c4300f5",
+    "53ea61c5a734c35a51f615e32eac102f",
+    "54d26bfbe8a0843c53104f34d95384eb",
+    "55757bfc38e5a8374437708bd1055b16",
+    "55bb093ea2e3e31f78a8d71d85a99bf6",
+    "55f9f59640f6b3e545ec662610788c18",
+    "575e887f0d7e02b6cf755f08b36cbf95",
+    "5800cde88c7f520e939eac59c2ad32a2",
+    "5838310384e53e8a0c63a29d4bc8a2df",
+    "58ab69c0ce0a4593b5502a546f4a2b21",
+    "591e2d51cd6ec7b95fbe5c00ee979e1b",
+    "5959ccedd69f38cf3d5568031da7353d",
+    "5b898df7f73322bef5d7856983e9735d",
+    "5c4dd735d73d364ba6dd5b118bdf65d1",
+    "5ec7cbe0613f67ad325162b34305746c",
+    "5f784f54adc8bced5cacf6e80db43d19",
+    "5f8e873e5b4256696c460e773532f2d5",
+    "61c206bbe543f1f97c369ce8900f1063",
+    "62612a5696e5f89fc05f267ef3908c0a",
+    "64164fcd648d871e4231059552e3da48",
+    "64bab044b1ae206e6736da8433119374",
+    "666d59a7624b6772735311fbf13801ae",
+    "67427fc10dede3c78cbfcb62051aa160",
+    "68a4140ad88a3bf2a4f9fc5472aca246",
+    "68c1565997b63a883781eb09549f78c3",
+    "6a88e2d8f3998620242c9e6fdc3e92bf",
+    "6ab4ae3ccaeaff64adb5339d44846961",
+    "6b02ce837704f493e03932023f4b2d2f",
+    "6bf5502cbc52a508d347363e01731472",
+    "6c678b9cac2affcd4a7bfd1de84cf97d",
+    "6c9a66b3963ae9b80ece2aaf349f0b6c",
+    "6ccf26cdfbc7f763d92d4ae8ab31b71c",
+    "6f1c0eb9a217ec89ffa31bc405270c7f",
+    "7080108788ec1d762e0318253d50696b",
+    "7189f980433b736508f9a7d920fc92de",
+    "72fa43f439e1501ccd4324a75480ec9e",
+    "7356fdd04636e2ac100286d1e5367fad",
+    "735b07751aa546acc699feea1f789325",
+    "738dddd267657b897fe06b61c2758d6d",
+    "744ff345cdbe55ab7fe2f8e5874daf10",
+    "7456b3d0ba33811622efc42b0720208f",
+    "74eecc5d4f318e7901ffaa450be06a87",
+    "7523a7e008f94efdbdb99ab0f6abfb24",
+    "7536407f781f52fb59f7bb7065b6056b",
+    "75b273ef6335c8cf52d12080e031c01b",
+    "76deb8bd57526c5f173ef576a1ac5f92",
+    "77bc9026dd33c83dab0022a07d81d130",
+    "785b15304dddf7bb8c476a0d702a27dd",
+    "792fbfc785ee9b092c70445d22e62a8d",
+    "79ab4351d04d482a18e64fb172765bd5",
+    "7a02787420b475e625cab42cff01f201",
+    "7a69976135c003f67149e727009bd532",
+    "7b6fa5aeafd300920af30948f429a0dc",
+    "7d498aacdc9ac9952c88619d557895ed",
+    "7eaa133d23a075061379deeec189c7ea",
+    "7fdef9a9a31ee207cf9db54f24ba10ae",
+    "80bef771c4b773809738b148a67c59aa",
+    "814f5e38b30077f794418caa3b3ebbdb",
+    "817742eb70b909db23826f58bb8d79c3",
+    "81eea50e2c330fc3f0f19f64ed968513",
+    "8300a8b10d74f8b49421172efa5acb4f",
+    "83337d2043782b1f60da18f47ad6696d",
+    "844b8d6ad87148cc5c4627453077e0a3",
+    "84b8d0fef37a2baf75ebe250fc3f6b38",
+    "84cc8e63bfa5b7fc8ab2f895f69ea974",
+    "871cef83ae0187974e8d0f53c87e3cec",
+    "882de36d407e8075ce79d2db3dea030f",
+    "891bb28009bf97b67ab75aeb7af1266e",
+    "897ba75b8e6a05d94b39ff43a78661e6",
+    "89d64d98f9612c47d77596ec96d626fc",
+    "89f86170c00bdf339622c8b2a9c65174",
+    "8a4c89952f0b98f247a495cb9e622667",
+    "8abcd4285c3f0686841820972064d542",
+    "8b0f2656258eea73e15cc133fa805f53",
+    "8dceec9f6500a8d992b4121915c7ba28",
+    "8fa487734de7efc181a36e58d89702cc",
+    "907744e2ff172ba109ea8260aac46794",
+    "9159da790678a0b1b935ff2d601fb3d2",
+    "9227d44299115f014e2798b9a2b67ae7",
+    "9269807ab19eb5b7af8ecaab335f3b95",
+    "92ef12f2910c3b5ead73a106a3a22b65",
+    "930b3c6bb8f5ade4272eccac9607b738",
+    "938873b01986bddd6467308442a8cf83",
+    "93ace7b885d4341b91cd9cdb5082c95a",
+    "93dbcba5306fc3763d6eaf63244a3f1c",
+    "94512f9d47c4dbad0314bd458f81140d",
+    "95fd45a15c87317e568e3391be11b74f",
+    "96f9265eefcecbda0a81459715d9e9a1",
+    "97cf83ee059ec15170b07e8d6501669e",
+    "99c78e74f558ac71d6d5d7b3dc94f26b",
+    "9b5b75791d3295395ff8c35f7b65e324",
+    "9b657296b2c5945cf1b9e5ab62f7e92b",
+    "a046261fb7d0fa5c7293311dcca3974e",
+    "a066cf71ed4048f32e23a4440ff90b6c",
+    "a4dcdd05a9278e76de931c94707ceff0",
+    "a5e6f76ec51637c81c3efc73d879026e",
+    "a62d841f750783248d3fd83d2ee92832",
+    "a643f190ba060113cde3e20bb91bfa3a",
+    "a866641827976e2890a2bc2269ab41e3",
+    "a9fc949231c27c30bf39548dc31e0d3d",
+    "ac3901f4d80f56ea76591723189002cb",
+    "accdcdb1794369910a65a37336c8202e",
+    "adc37f231e9ceb30f9b8ab167157caed",
+    "ae0db6906d1df884577a1612d4e15e83",
+    "af8c50b6cd145ec833744bddd52dbb4a",
+    "b028d0ebf8b0413e833bd06eb0f18004",
+    "b27f2b5877cf788f4d0970595c95b5c6",
+    "b31d702e9cf036b426507e4d7737a1b2",
+    "b3272f8bcbef0058fa6e3d75d990f048",
+    "b3aca6cd1b56c88fe730f83e294a6891",
+    "b3dde33a5ee1a67763d5a8e47a41e5db",
+    "b53f7897c10612f3418c4ca4c6de193c",
+    "bcec7c496852f83bbf83a0c60df49b54",
+    "bdc40bbea6e2e2f8a87b46bf7dc88c7a",
+    "be17244a960366ff3e5ebbc13e777e6e",
+    "bf056f9a56a0d870a4dce32bf4b7b211",
+    "c0c31ec16f4b804f7f7e1f00ee5709ae",
+    "c0f8e6f532181c81c6bf5cf9c8f963ba",
+    "c1279b1c31e5fcd176377bba76e95a0c",
+    "c1812be606ca96ee1e258aa279f0cb76",
+    "c1f0b9e2ce0057a2a0432074e11b8b30",
+    "c368b0ddc08916b7739f968292acdca7",
+    "c6e95956541349834c27e1d6fd570325",
+    "c7621a0299a104080ab9aa52973f03ba",
+    "c77d9b743235d1198ac9224dceee1685",
+    "c95ada306b2c20d12d6c9b111b9938e3",
+    "c9a2bf78768b2443c45c81bcf97a5ea6",
+    "c9f3b2c0f8f65ef0cd41c3fde0df2741",
+    "cb7ca7225b41fd617edd5243b729c749",
+    "ccfdf2f9a72528600ae265e2618ed936",
+    "cd72efe0472b123d356e2e7200a83bc5",
+    "ce1df43b942f1b5747f9fb222ea19fb8",
+    "ce886a4e1f149b85391d63afaa8d7c85",
+    "cfe6eb1dfe3b62c879e877ffabf81367",
+    "d0a84f1cbe8059c3fec915f3d9a1e59b",
+    "d1d5e31cb7a1ece70049d3e241ec1b0c",
+    "d1e1f0c621d2fa9ba60a09d5c7445d30",
+    "d22aeb0dfb6b180fce5eb34869437a45",
+    "d34f4aa0b988b53234fee1e27ff53c20",
+    "d449aaa7d21b2388270b97b53d136905",
+    "d66314b296cfa287d745cc29b5d2846e",
+    "d6b593b2e711417361650bc0d56afe38",
+    "d7d440bad9f8d446270f8e81907a0eb3",
+    "d85c3d15cd3b1939888eb177ca5dd701",
+    "d93afbcf8f2217497cbabbc5242fe5ac",
+    "d95485aa9c2b020ee0ba8701293d6b8d",
+    "dce1fd239c3bfe1acee31d094be2540d",
+    "de5b0dde6425577cb20b4a9382ea1c87",
+    "de6e92be7ab8c908e902a4c13a278c57",
+    "df2f6c91195ed5d62ac9e4adfacf2898",
+    "df3ad1a98c6c9744c253588c21afeade",
+    "dfd7e34f19fa70ced2398b4941f0f513",
+    "e0355e8dee8c32cc965d84938f7a560e",
+    "e16db32b5fe224a0dff3fb9032cac83b",
+    "e223368587d98438d68cd6e60cae887d",
+    "e3276fad071bf218ae7648ebc913ca42",
+    "e40d0bbd5d169ab68d8afe427b5c7100",
+    "e4ff5074ccb8254c6e59cbff7dadb464",
+    "e6bbe83424a023170269f8558ac12870",
+    "e6d14d7d6ac886a15ab24cabb6d7b485",
+    "e8d4c6d928d8aa9374cd00a400deebf2",
+    "ea69fcac836d801779095a0843b34f0f",
+    "eba3f179223f3b85743f9ceb81b34fe6",
+    "ecefe077f2971c5c2e2860b303f93af5",
+    "ee541060121c2f15a7788f95d22d241e",
+    "ee860767069114773d34c61070f2c8d5",
+    "ee93971eb7b3dfbc2e6cee4d9d9ba342",
+    "ef07720c88418756c3aab641d9c3283e",
+    "ef103240ff0962d099809d52eae0aa54",
+    "ef667078250bd52887d6fe42f313a247",
+    "ef8528280af5b691cbc42b40c71ee914",
+    "f04d5927d3c059b82a5bb9474819f8e2",
+    "f04dc72d7e2f6bef60ff2d592cf8578f",
+    "f0733736ddba2a4ac956d3c8607185f7",
+    "f1236a001c8aeb4cb7f696989184bffd",
+    "f17d0bb5c835c99e541083c8aa9a870a",
+    "f1a55adaae71d75f06a0103e0a866776",
+    "f3e82a693681b6ae32be3a24a638bae3",
+    "f42e58d2d3a1e97a6a01ec11199475e7",
+    "f5ad67037f70d2cb60aa101b40ac6b9d",
+    "f6c711357f71ba06ea23a886f1f08e07",
+    "f770a1107ce9945a9d38426fd978ecf1",
+    "f77ed1001ccf183f03664e101f01497c",
+    "f7a45d0544460e6a0f35f68c123cf5e3",
+    "f7fb1faacabfadcc62967b46440e9b3d",
+    "f87556aefc80e0c0f3b8faac7280a8a9",
+    "f8cdc8f034f29668be80b89471c8e413",
+    "f8e728fc073ea9d3904e1fc1a32502c7",
+    "f977de87feb2c15e9d34e576496bb292",
+    "fa659c1c5fac428bd9283ccf99d9a278",
+    "facf626a6e98c451e1538dae1d3a63e4",
+    "fbef1ceca8bbe6fda2d4371f5fc7a5d9",
+    "fd2d0c247c992849578f5a93b8afd9d1",
+    "fd3f5a2cbff0f480fb90380de7fd183d",
+    "fe58ecc2af12d39f9d443ad0f0edc952"
+  ],
+  "scope_eligible_cells": [
+    {
+      "family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "available": 16,
+      "T_required": 8
+    },
+    {
+      "family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "available": 16,
+      "T_required": 8
+    },
+    {
+      "family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "available": 16,
+      "T_required": 8
+    },
+    {
+      "family": "cross_series",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "available": 16,
+      "T_required": 8
+    },
+    {
+      "family": "cross_series",
+      "chart_type": "line",
+      "operation": "range4",
+      "available": 16,
+      "T_required": 8
+    },
+    {
+      "family": "cross_series",
+      "chart_type": "line",
+      "operation": "sum4",
+      "available": 16,
+      "T_required": 8
+    },
+    {
+      "family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "available": 16,
+      "T_required": 8
+    },
+    {
+      "family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "available": 16,
+      "T_required": 8
+    },
+    {
+      "family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "available": 16,
+      "T_required": 8
+    },
+    {
+      "family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "available": 16,
+      "T_required": 8
+    },
+    {
+      "family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "range4",
+      "available": 16,
+      "T_required": 8
+    },
+    {
+      "family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "sum4",
+      "available": 16,
+      "T_required": 8
+    },
+    {
+      "family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "available": 16,
+      "T_required": 8
+    },
+    {
+      "family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "available": 16,
+      "T_required": 8
+    },
+    {
+      "family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "available": 16,
+      "T_required": 8
+    },
+    {
+      "family": "trend",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "available": 16,
+      "T_required": 8
+    },
+    {
+      "family": "trend",
+      "chart_type": "line",
+      "operation": "range4",
+      "available": 16,
+      "T_required": 8
+    },
+    {
+      "family": "trend",
+      "chart_type": "line",
+      "operation": "sum4",
+      "available": 14,
+      "T_required": 8
+    }
+  ],
+  "T144_capacity_after_known_exposure_exclusion": true,
+  "final_panel_selected": false,
+  "other_dataset_disjointness_and_truth_uniqueness_checks_still_required": true,
+  "direct_confirm_access_entries_found": [],
+  "access_logs": [
+    {
+      "kind": "access_log",
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-145423-attempt-0/data/generated/access.jsonl",
+      "sha256": "5ae6fb925a06cf9ca61b5eed7fd079ac7498352b0a3b080719b5b4ae2cd174b2",
+      "rows": [
+        {
+          "split": "calibration",
+          "purpose": "P1 compatibility panel",
+          "row_count": 144,
+          "source_commit": "afdca362474762718ecb2215b890295ca8fa1c2e",
+          "accessed_at": "2026-09-08T13:47:55.495072+00:00"
+        }
+      ]
+    },
+    {
+      "kind": "access_log",
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-144840-attempt-0/data/generated/access.jsonl",
+      "sha256": "347b0b6f71280580ec6af2b7e5a7ecf7210e983108c5d7d3bf8f4a0697d54d82",
+      "rows": [
+        {
+          "split": "calibration",
+          "purpose": "P1 compatibility panel",
+          "row_count": 144,
+          "source_commit": "ba012a3f2c3037fda16e3df5d966db3a0df1e532",
+          "accessed_at": "2026-09-08T06:42:38.844549+00:00"
+        }
+      ]
+    },
+    {
+      "kind": "access_log",
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-145356-attempt-0/data/generated/access.jsonl",
+      "sha256": "0bcab6aa23e1df7e6f4199370c951b0b47dcf849608d6a36031c911ebd9c40cf",
+      "rows": [
+        {
+          "split": "calibration",
+          "purpose": "P1 compatibility panel",
+          "row_count": 144,
+          "source_commit": "afdca362474762718ecb2215b890295ca8fa1c2e",
+          "accessed_at": "2026-09-08T12:58:05.318603+00:00"
+        }
+      ]
+    },
+    {
+      "kind": "access_log",
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-146375-attempt-0/data/generated/access.jsonl",
+      "sha256": "65e665905aca889a64c312636b277d2569c9eff4dc276f9f38a214e2130e20df",
+      "rows": [
+        {
+          "split": "calibration",
+          "purpose": "P1 compatibility panel",
+          "row_count": 144,
+          "source_commit": "c6ed546d6d4f944ef5039fb873807f2cfadf3efb",
+          "accessed_at": "2026-09-09T10:25:14.412236+00:00"
+        }
+      ]
+    },
+    {
+      "kind": "access_log",
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-144911-attempt-0/data/generated/access.jsonl",
+      "sha256": "bda3aa3da0f9e67448a2e32139cc013e060f2a2526149596fc934844ba1ade35",
+      "rows": [
+        {
+          "split": "calibration",
+          "purpose": "P1 compatibility panel",
+          "row_count": 144,
+          "source_commit": "73f744b3626f73800eba696ab53424d1e09819d5",
+          "accessed_at": "2026-09-08T08:00:39.939735+00:00"
+        }
+      ]
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/reviewed-data-20260908/generated/access.jsonl",
+      "rows": [
+        {
+          "split": "dev",
+          "purpose": "P3 fixed frozen dev; no confirm access",
+          "row_count": 144,
+          "source_commit": "afdca362474762718ecb2215b890295ca8fa1c2e",
+          "accessed_at": "2026-09-08T15:26:06.343133+00:00"
+        },
+        {
+          "split": "dev",
+          "purpose": "P3 fixed frozen dev; no confirm access",
+          "row_count": 144,
+          "source_commit": "afdca362474762718ecb2215b890295ca8fa1c2e",
+          "accessed_at": "2026-09-08T15:26:14.617544+00:00"
+        },
+        {
+          "split": "calibration",
+          "purpose": "R1 fixed reference panel and isolated smoke",
+          "row_count": 144,
+          "source_commit": "c80a33d5637948aad7193adb11608e7b7a0a6ede",
+          "accessed_at": "2026-09-09T12:16:04.783371+00:00"
+        },
+        {
+          "split": "calibration",
+          "purpose": "R1 fixed reference panel and isolated smoke",
+          "row_count": 144,
+          "source_commit": "5292a446bba4e14ef9dc4f0668dcea2b6e36bc31",
+          "accessed_at": "2026-09-09T12:22:48.995973+00:00"
+        },
+        {
+          "split": "calibration",
+          "purpose": "R1 fixed reference panel and isolated smoke",
+          "row_count": 144,
+          "source_commit": "f11c7e5887afa583ebf483abaa5a65f584691242",
+          "accessed_at": "2026-09-09T12:36:58.149182+00:00"
+        },
+        {
+          "split": "calibration",
+          "purpose": "R1 reference and isolated smoke",
+          "row_count": 144,
+          "source_commit": "5ee61b083e9812ec7ab33d9ff8ff8da51359ae71",
+          "accessed_at": "2026-09-09T14:08:44.420863+00:00"
+        }
+      ]
+    }
+  ],
+  "historical_reference_access_receipts": [
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_full/units/seed201_X_BASE_init7001_a8_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "e85ed70c90789f3974b2beef81579609eae460856b2fe0f93397275959992d15",
+        "reference_source_sha256": "bb2946ed15ec739724dbf995dbc7ba61ebd9a2da9793f129d91a35c43730308f",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 201
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_full/units/seed101_X_BASE_init7001_a40_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "700195838b4aea73d1cd118fd6230f2c517e8b8aab16867dec44a8a37afef6ac",
+        "reference_source_sha256": "a9ca5fb54ae9cc15b4961b600d58313f1e9448e4d855a6619b67656d32a2d02a",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 101
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_full/units/seed201_X_VALID_init7001_a8_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "f0b6a15491376176b2376fd03c257f1d623a378a050a1ca4680012dc8fb9fb0d",
+        "reference_source_sha256": "70a5316ff5c02b18a0a855c56e3b54d03f013b1c98a75a9a346d1695c5b15eb1",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 201
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_full/units/seed201_X_BASE_init7001_a40_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "a3ec838542e2cdcdbf8c669e958b3f1de3c26e29763d6cf906219616e474c8e9",
+        "reference_source_sha256": "bb2946ed15ec739724dbf995dbc7ba61ebd9a2da9793f129d91a35c43730308f",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 201
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_full/units/seed101_X_VALID_init7001_a40_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "1133be517fefbb4a2ddccbff5f9a21821dae8efd5d8f65ba497d12b1f029ea8f",
+        "reference_source_sha256": "fbfac38d1f4939a08df558e8070d71d2d2433a79e0bf92c3f50638d10e2c27fc",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 101
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_full/units/seed101_X_VALID_init7001_a24_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "ea2d89edac8ba68ee18011a7d58ddd6fefed6d522d5407e022845e758c7a01a1",
+        "reference_source_sha256": "fbfac38d1f4939a08df558e8070d71d2d2433a79e0bf92c3f50638d10e2c27fc",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 101
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_full/units/seed201_X_BASE_init7001_a24_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "de654cc282b25a29fd5eb656bcf140a08e79fac214ee6e60f4688316dd0e7698",
+        "reference_source_sha256": "bb2946ed15ec739724dbf995dbc7ba61ebd9a2da9793f129d91a35c43730308f",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 201
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_full/units/seed201_X_VALID_init7001_a24_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "bf61dad1c064eb83b3d04ee0913e142fd323c1d631bf82ec67a16aae3f762116",
+        "reference_source_sha256": "70a5316ff5c02b18a0a855c56e3b54d03f013b1c98a75a9a346d1695c5b15eb1",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 201
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_full/units/seed101_X_BASE_init7001_a8_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "5bf7569af1d27298204d5c2b55e562c82312434cd2307c4e37ea655061823d7e",
+        "reference_source_sha256": "a9ca5fb54ae9cc15b4961b600d58313f1e9448e4d855a6619b67656d32a2d02a",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 101
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_full/units/seed201_X_VALID_init7001_a40_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "e09344f100d89a5d928c088b1e5029fa3ac6e5dbdee838021dd95b92d26f56b4",
+        "reference_source_sha256": "70a5316ff5c02b18a0a855c56e3b54d03f013b1c98a75a9a346d1695c5b15eb1",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 201
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_full/units/seed101_X_BASE_init7001_a24_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "3fe22b3a5e6bd0d8b280793f9ba373c300dda51b5166193d10d8fb534c87bd05",
+        "reference_source_sha256": "a9ca5fb54ae9cc15b4961b600d58313f1e9448e4d855a6619b67656d32a2d02a",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 101
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_full/units/seed101_X_VALID_init7001_a8_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "0aaa73613aa3907d461b6b62de2d25b49d5d0992ed4f72f9c6b84aadb7f82139",
+        "reference_source_sha256": "fbfac38d1f4939a08df558e8070d71d2d2433a79e0bf92c3f50638d10e2c27fc",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 101
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_timing_pilot/units/seed201_X_BASE_init7001_a8_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "1b57aeba9f00c3c16063c9daae9148dc60f6653959326e07008f8cdb99ed79e2",
+        "reference_source_sha256": "bb2946ed15ec739724dbf995dbc7ba61ebd9a2da9793f129d91a35c43730308f",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 201
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_timing_pilot/units/seed101_X_BASE_init7001_a40_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "bdb6a55c9917b3b90ecd2443e2eea4878f9923368116ed56442a490b6fb5223b",
+        "reference_source_sha256": "a9ca5fb54ae9cc15b4961b600d58313f1e9448e4d855a6619b67656d32a2d02a",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 101
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_timing_pilot/units/seed201_X_VALID_init7001_a8_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "8ccac85522018914fac857deb0abbd6c5309a2a5718f798febd62d725dbc7ce7",
+        "reference_source_sha256": "70a5316ff5c02b18a0a855c56e3b54d03f013b1c98a75a9a346d1695c5b15eb1",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 201
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_timing_pilot/units/seed201_X_BASE_init7001_a40_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "58b1e97aba00a1610cf1748d4d41b00fb84164cbd2b0cd402fc57d191211c4d3",
+        "reference_source_sha256": "bb2946ed15ec739724dbf995dbc7ba61ebd9a2da9793f129d91a35c43730308f",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 201
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_timing_pilot/units/seed101_X_VALID_init7001_a40_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "1aa1da9457d245eb0186a6740d860bb4e45641da99dafc82e812e27e66d87c0e",
+        "reference_source_sha256": "fbfac38d1f4939a08df558e8070d71d2d2433a79e0bf92c3f50638d10e2c27fc",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 101
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_timing_pilot/units/seed101_X_VALID_init7001_a24_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "7bd38ddcd3fcb466232eab70c5e0421876c0f2ba721fdbbb792335674b7b6b43",
+        "reference_source_sha256": "fbfac38d1f4939a08df558e8070d71d2d2433a79e0bf92c3f50638d10e2c27fc",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 101
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_timing_pilot/units/seed201_X_BASE_init7001_a24_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "1a0485beecfc877dd17be053a3115a3ec7c98793ab54bd5ff7ead5a5dcc6c20d",
+        "reference_source_sha256": "bb2946ed15ec739724dbf995dbc7ba61ebd9a2da9793f129d91a35c43730308f",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 201
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_timing_pilot/units/seed201_X_VALID_init7001_a24_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "c116f8256f26042ac364d558b6b23cd1b5e4f09420ed84f5ce155f8d8e3471d7",
+        "reference_source_sha256": "70a5316ff5c02b18a0a855c56e3b54d03f013b1c98a75a9a346d1695c5b15eb1",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 201
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_timing_pilot/units/seed101_X_BASE_init7001_a8_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "bcb1100c2280e552ae69a4fbc4a65a6ff24cda0ebac1afa11faaaf8697de1485",
+        "reference_source_sha256": "a9ca5fb54ae9cc15b4961b600d58313f1e9448e4d855a6619b67656d32a2d02a",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 101
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_timing_pilot/units/seed201_X_VALID_init7001_a40_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "6ab6b98b265dcce3f5cee18e95da6f5c2b0fa893b84dbd8805eeb57c63bf37d1",
+        "reference_source_sha256": "70a5316ff5c02b18a0a855c56e3b54d03f013b1c98a75a9a346d1695c5b15eb1",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 201
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_timing_pilot/units/seed101_X_BASE_init7001_a24_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "d3866130dd5fb6c325ced8b278abc13ea9b968704595b84fff8ed176f6e042fd",
+        "reference_source_sha256": "a9ca5fb54ae9cc15b4961b600d58313f1e9448e4d855a6619b67656d32a2d02a",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 101
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_timing_pilot/units/seed101_X_VALID_init7001_a8_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "8fe3d3e29e28940c6c9a36fda0dac3dcbb46ebd7f1e7ec97f69da23aecb364fd",
+        "reference_source_sha256": "fbfac38d1f4939a08df558e8070d71d2d2433a79e0bf92c3f50638d10e2c27fc",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 101
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate06/Q2_coverage_full/units/seed201_X_BASE_init7001_a8_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "e85ed70c90789f3974b2beef81579609eae460856b2fe0f93397275959992d15",
+        "reference_source_sha256": "bb2946ed15ec739724dbf995dbc7ba61ebd9a2da9793f129d91a35c43730308f",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 201
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate06/Q2_coverage_full/units/seed101_X_BASE_init7001_a40_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "700195838b4aea73d1cd118fd6230f2c517e8b8aab16867dec44a8a37afef6ac",
+        "reference_source_sha256": "a9ca5fb54ae9cc15b4961b600d58313f1e9448e4d855a6619b67656d32a2d02a",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 101
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate06/Q2_coverage_full/units/seed201_X_VALID_init7001_a8_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "f0b6a15491376176b2376fd03c257f1d623a378a050a1ca4680012dc8fb9fb0d",
+        "reference_source_sha256": "70a5316ff5c02b18a0a855c56e3b54d03f013b1c98a75a9a346d1695c5b15eb1",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 201
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate06/Q2_coverage_full/units/seed201_X_BASE_init7001_a40_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "a3ec838542e2cdcdbf8c669e958b3f1de3c26e29763d6cf906219616e474c8e9",
+        "reference_source_sha256": "bb2946ed15ec739724dbf995dbc7ba61ebd9a2da9793f129d91a35c43730308f",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 201
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate06/Q2_coverage_full/units/seed101_X_VALID_init7001_a40_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "1133be517fefbb4a2ddccbff5f9a21821dae8efd5d8f65ba497d12b1f029ea8f",
+        "reference_source_sha256": "fbfac38d1f4939a08df558e8070d71d2d2433a79e0bf92c3f50638d10e2c27fc",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 101
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate06/Q2_coverage_full/units/seed101_X_VALID_init7001_a24_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "ea2d89edac8ba68ee18011a7d58ddd6fefed6d522d5407e022845e758c7a01a1",
+        "reference_source_sha256": "fbfac38d1f4939a08df558e8070d71d2d2433a79e0bf92c3f50638d10e2c27fc",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 101
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate06/Q2_coverage_full/units/seed201_X_BASE_init7001_a24_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "de654cc282b25a29fd5eb656bcf140a08e79fac214ee6e60f4688316dd0e7698",
+        "reference_source_sha256": "bb2946ed15ec739724dbf995dbc7ba61ebd9a2da9793f129d91a35c43730308f",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 201
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate06/Q2_coverage_full/units/seed201_X_VALID_init7001_a24_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "bf61dad1c064eb83b3d04ee0913e142fd323c1d631bf82ec67a16aae3f762116",
+        "reference_source_sha256": "70a5316ff5c02b18a0a855c56e3b54d03f013b1c98a75a9a346d1695c5b15eb1",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 201
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate06/Q2_coverage_full/units/seed101_X_BASE_init7001_a8_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "5bf7569af1d27298204d5c2b55e562c82312434cd2307c4e37ea655061823d7e",
+        "reference_source_sha256": "a9ca5fb54ae9cc15b4961b600d58313f1e9448e4d855a6619b67656d32a2d02a",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 101
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate06/Q2_coverage_full/units/seed201_X_VALID_init7001_a40_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "e09344f100d89a5d928c088b1e5029fa3ac6e5dbdee838021dd95b92d26f56b4",
+        "reference_source_sha256": "70a5316ff5c02b18a0a855c56e3b54d03f013b1c98a75a9a346d1695c5b15eb1",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 201
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate06/Q2_coverage_full/units/seed101_X_BASE_init7001_a24_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "3fe22b3a5e6bd0d8b280793f9ba373c300dda51b5166193d10d8fb534c87bd05",
+        "reference_source_sha256": "a9ca5fb54ae9cc15b4961b600d58313f1e9448e4d855a6619b67656d32a2d02a",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 101
+      }
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate06/Q2_coverage_full/units/seed101_X_VALID_init7001_a8_repeat00/REFERENCE_ACCESS_RECEIPT.json",
+      "content": {
+        "heldout_read_after_prediction_freeze": true,
+        "prediction_lock_sha256": "0aaa73613aa3907d461b6b62de2d25b49d5d0992ed4f72f9c6b84aadb7f82139",
+        "reference_source_sha256": "fbfac38d1f4939a08df558e8070d71d2d2433a79e0bf92c3f50638d10e2c27fc",
+        "reference_status": "KNOWN_EVENT_SCORE_EXACT_FINITE_ACTION_ENUMERATION",
+        "training_seed": 101
+      }
+    }
+  ],
+  "confirm_reference_metadata": [
+    {
+      "source": "/projects/varunssd/louis-ssvc/runs/slurm-145423-attempt-0/locked-config.json",
+      "field": "$.authorization.confirm_training",
+      "value": false
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/runs/slurm-144840-attempt-0/locked-config.json",
+      "field": "$.authorization.confirm_training",
+      "value": false
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/runs/slurm-145356-attempt-0/locked-config.json",
+      "field": "$.authorization.confirm_training",
+      "value": false
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/runs/slurm-146375-attempt-0/locked-config.json",
+      "field": "$.authorization.confirm_training",
+      "value": false
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/runs/MECHANISM_20260914_154599c/receipts/s1_bank00_manifest_verification_154220.json",
+      "field": "$.update_budget.confirmed_optimizer_calls",
+      "value": 3
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/runs/slurm-144911-attempt-0/locked-config.json",
+      "field": "$.authorization.confirm_training",
+      "value": false
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/runs/NEXT_20260909/R4_server_147871_attempt_0/R4/two_arm_training_config.json",
+      "field": "$.data_binding.confirm_access",
+      "value": "NOT_OPENED; separation inherited from passed R0"
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/runs/NEXT_20260909/R4_server_149847_attempt_0/R4/two_arm_training_config.json",
+      "field": "$.data_binding.confirm_access",
+      "value": "NOT_OPENED; separation inherited from passed R0"
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/runs/NEXT_20260909/R4_server_149847_attempt_0/R4/inherited_parent/two_arm_training_config.json",
+      "field": "$.data_binding.confirm_access",
+      "value": "NOT_OPENED; separation inherited from passed R0"
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/runs/NEXT_20260909/CPU_R4_input_stop_149847_20260911T1315Z/result.json",
+      "field": "$.confirm_opened",
+      "value": false
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/runs/NEXT_20260909/R4_server_150317_attempt_0/R4/two_arm_training_config.json",
+      "field": "$.data_binding.confirm_access",
+      "value": "NOT_OPENED; separation inherited from passed R0"
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/runs/NEXT_20260909/R4_server_150317_attempt_0/R4/inherited_parent/two_arm_training_config.json",
+      "field": "$.data_binding.confirm_access",
+      "value": "NOT_OPENED; separation inherited from passed R0"
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/runs/NEXT_20260909/R4_server_150317_attempt_0/R4/inherited_parent/inherited_parent/two_arm_training_config.json",
+      "field": "$.data_binding.confirm_access",
+      "value": "NOT_OPENED; separation inherited from passed R0"
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_coverage_timing_pilot/COVERAGE_SUMMARY.json",
+      "field": "$.scientific_status",
+      "value": "PILOT_NOT_CONFIRMATION"
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/cleanup_20260916/CLEANUP_RECEIPT.json",
+      "field": "$.deleted[0].confirmed_absent",
+      "value": true
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/cleanup_20260916/CLEANUP_RECEIPT.json",
+      "field": "$.deleted[1].confirmed_absent",
+      "value": true
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/cleanup_20260916/CLEANUP_RECEIPT.json",
+      "field": "$.deleted[2].confirmed_absent",
+      "value": true
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/cleanup_20260916/CLEANUP_RECEIPT.json",
+      "field": "$.deleted[3].confirmed_absent",
+      "value": true
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/cleanup_20260916/CLEANUP_RECEIPT.json",
+      "field": "$.deleted[4].confirmed_absent",
+      "value": true
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/pilot01/collection/COLLECTION_SUMMARY.json",
+      "field": "$.scientific_status",
+      "value": "PILOT_NOT_CONFIRMATION"
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/pilot01/collection/COLLECTION_SUMMARY.json",
+      "field": "$.trajectories[0].scientific_status",
+      "value": "PILOT_NOT_CONFIRMATION"
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate03/Q1_timing_pilot/OBSERVATION_SUMMARY.json",
+      "field": "$.analytic_witnesses.scientific_confirmation",
+      "value": false
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate03/Q1_timing_pilot/OBSERVATION_SUMMARY.json",
+      "field": "$.scientific_status",
+      "value": "PILOT_NOT_CONFIRMATION"
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate06/PACKAGE_MANIFEST.json",
+      "field": "$.file_sizes.src/compensability_v4/qwen/phase8_confirm_runtime.py",
+      "value": 28348
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate06/PACKAGE_MANIFEST.json",
+      "field": "$.files.src/compensability_v4/qwen/phase8_confirm_runtime.py",
+      "value": "34967215360843b29bcff5fcda88a7d482cf4036200393237ec1af5de4a8a5e5"
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate06/PACKAGE_MANIFEST.json",
+      "field": "$.git_modes.src/compensability_v4/qwen/phase8_confirm_runtime.py",
+      "value": "100644"
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate06/DEPLOYMENT_RECEIPT.json",
+      "field": "$.sealed_confirm_copied_or_opened",
+      "value": false
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/modeling_v4_20260916/tasks_initial.json",
+      "field": "$.config.cpu.no_new_large_confirmation_grid",
+      "value": true
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/modeling_v4_20260916/tasks_initial.json",
+      "field": "$.config.qwen.calibration_banks_confirm_default",
+      "value": 32
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/modeling_v4_20260916/tasks_initial.json",
+      "field": "$.config.qwen.confirm_m_rule",
+      "value": "choose exactly one of 24/32/48/96 before opening test responses"
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/modeling_v4_20260916/tasks_initial.json",
+      "field": "$.config.derived.default_confirmation_fork_updates_per_origin",
+      "value": 168
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/modeling_v4_20260916/tasks_initial.json",
+      "field": "$.config.derived.confirmation_workload",
+      "value": "recompute after dev fixes m and removes exact inference duplicates; no unknown walltime claimed"
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/decision_modeling_v1_20260919/plan.json",
+      "field": "$.config.model.calibration_banks_confirm_default",
+      "value": 32
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/decision_modeling_v1_20260919/plan.json",
+      "field": "$.config.model.confirm_m_rule",
+      "value": "choose exactly one of 24/32/48/96 before opening test responses"
+    },
+    {
+      "source": "/projects/varunssd/louis-ssvc/decision_modeling_v1_20260919/receipts/D2_H32_LAUNCH_PLAN.json",
+      "field": "$.shared_H00_lock",
+      "value": "For O1 resume, pre-existing H00.json/steps are NOT evidence of this invocation leaving shared H00. Before a second same-origin launch, require first current job beyond initialization: fresh H09 attempt after job start for initial H8 resume, or next uncommitted step after a recovery; also confirm shared .writer.lock can be acquired nonblocking. For fresh O2 require current job H00.json/steps after job start. Do not queue two same-origin initializations together."
+    }
+  ],
+  "evidence_paths": [
+    "ssvc_flow/docs/prospective_selection/history_evidence/REGISTERED_HISTORY_EXPOSURE_SCAN.json",
+    "ssvc_flow/docs/prospective_selection/CONFIRM_EXPOSURE_AUDIT_zh.md"
+  ],
+  "scanner_algorithm": "Chunked bytes, exact known target ID/hash matches in named metadata identity fields; canonical SHA256 of four-integer arrays under truth_world/truth; overlap carry512bytes. No arbitrary raw completion matching.",
+  "scanner_source_sha256": "b5b743c40a0f759c5e86f8f3481dedc54ae2ef832f5986001b5f837de02bf1e3"
+}

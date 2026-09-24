@@ -1,0 +1,2311 @@
+{
+  "kind": "confirm_metadata_only",
+  "path": "/projects/varunssd/louis-ssvc/reviewed-data-20260908/generated/confirm.jsonl",
+  "sha256": "1d45afdca90fc7fe8be1df1e015e14bdf577d1ec90bd2b640369408f6d34703c",
+  "rows": [
+    {
+      "base_scene_id": "3caa6f9ffcc570b2daed59c9ea4fc96e",
+      "truth_structure_hash": "9fcc20697c82ff2c189077af458f4ad6d28c073546c15364ed820aa61ae7f3d9",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "b3aca6cd1b56c88fe730f83e294a6891",
+      "truth_structure_hash": "c0ad54be9680e3b759abb4481f59cbc330dd3be47c720f27d4ba6075c748adf3",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "2216835020c1e89d74d586d9ceb1546a",
+      "truth_structure_hash": "5b1a7deb2a761d95a2fe8bf84f6ff40ada92dc383cc7f2366451a2bf8763b3a8",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "42c183da52972517c6939a373e5545cb",
+      "truth_structure_hash": "7adc2565deac05ebf90e92ae889a3e9d888bdf3c1cb9ed7c3da5c77280ffc062",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "6c9a66b3963ae9b80ece2aaf349f0b6c",
+      "truth_structure_hash": "daea55d002964b8660f23a0750211bf524d2b701acb942edbb79d37ff8dd6220",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "6ccf26cdfbc7f763d92d4ae8ab31b71c",
+      "truth_structure_hash": "aef08d63b044135104cefe2c8800956ad3ca0de357e8f4f7716be4f73b2770f5",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "3ec1e4fff2930f95e1250d1d10c2ab41",
+      "truth_structure_hash": "9a3525a4216a3b6fcf74b1eaf354a9f41069bdd3625c0bd1addaf90c5685c11e",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "ccfdf2f9a72528600ae265e2618ed936",
+      "truth_structure_hash": "318abdca100b8e5d8a777a835db362bdb987995b528b9b13e08f7b041c0796b1",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "18c8f4dd8d78da83fe18020a8362b015",
+      "truth_structure_hash": "5d9e6ed3e5c4a72cd8299c778cfd68a0c424f8cb9f77e6a70f869f3fb8ce0527",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "25cbea9077925931ad755bef44e37d89",
+      "truth_structure_hash": "6aa1eafe52731eb6d29e3414149907449acaec830d4c26d5f98966d87e76c8f4",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "814f5e38b30077f794418caa3b3ebbdb",
+      "truth_structure_hash": "24d4d8277d610fd4b410725c85b0c5ddd999c0a6a61ff181b8a7b37d18dcfb62",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "0a8293a61816543bd4c3bee5fd26a551",
+      "truth_structure_hash": "49abe8a0b214dbc305cd7a6660c3b9555a5a5a59ce8c7efc2fee6c784309d28f",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "6b02ce837704f493e03932023f4b2d2f",
+      "truth_structure_hash": "2d4f11d8c5d256dee748ec303360330c10be97e185ee06453e6e13f2296c7f34",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "1302305f60ea4587f17b42c11ba355b2",
+      "truth_structure_hash": "a737193ca03edcb2056e8cd6c7a5ee4debe1f78508ad96c173a837bfac7c26bf",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "059dfd236ccaeadaaaa900bf331d3193",
+      "truth_structure_hash": "0138467cecce8b8c6c1c3135d7317382e63d0ca388638b5da2da3a60d42fd727",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "0d09087eadacbc8661aa9f36007a3b4f",
+      "truth_structure_hash": "1b0885af835cb0808daf976cf30764f955d45d04b9256d62e932efa17ae77c25",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "b3dde33a5ee1a67763d5a8e47a41e5db",
+      "truth_structure_hash": "5a666a4403814c021b543d60e7c63c7b575dfd3230e87c0bef3dad53bff20d8d",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "d6b593b2e711417361650bc0d56afe38",
+      "truth_structure_hash": "35fc4ff75f749a65d917a04ec12ec1bc2613957cb80bbdde4441db9efb0f558e",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "0a7c21c0364dd795699cf93add6d5801",
+      "truth_structure_hash": "8467c7400136c71b5ec8fd651fb6c9ff173bd4fb10e18d99900ee51b864fa1ff",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "cd72efe0472b123d356e2e7200a83bc5",
+      "truth_structure_hash": "9347cbe8d2e877f6070356f14823ecce4e5cb74d24a93e81c245d5d371c2be5b",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "ee93971eb7b3dfbc2e6cee4d9d9ba342",
+      "truth_structure_hash": "600dcb3c04996d3ff55db775485764290943ec48bcc4879294e5b189e3c8793b",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "1f96156206a065112fb2cbf70a7b300b",
+      "truth_structure_hash": "2c2f7b1b5686aea9a0e402894db8301c9070dbc7b05c7361c0da49ce8be81969",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "3ff26e9fc537c8e60b551033d07ab291",
+      "truth_structure_hash": "c031a1bbf0b5a585e7de04a8258912d5a2f3ea0244e8bc4320ac7c3a5ac7c82f",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "930b3c6bb8f5ade4272eccac9607b738",
+      "truth_structure_hash": "d9974f3a0dae2d0723d6f023d63e5653f97a509bcde3f794db91b2e9527778ae",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "b31d702e9cf036b426507e4d7737a1b2",
+      "truth_structure_hash": "01f58ca183a0e0d3b84da85f42766737655a1ce5c83b670fc9dbf4616ad76d7f",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "3d7457701264fe16230333820f33ee5b",
+      "truth_structure_hash": "55e94cc1d15800396b38b804b9eb8669827f618630b76a007cb83e4ab56c5ea6",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "d85c3d15cd3b1939888eb177ca5dd701",
+      "truth_structure_hash": "c3e016f596b676762b97c45ab07e528dc4940c7f7a4c3d58bf85d93ff8993501",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "34016de61575344d38c701a2a71deecf",
+      "truth_structure_hash": "016c453acadf5bdde4f4227f63ef6abbfb76982c75d36774c8390623598a0531",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "4e6c4a5047344573559903e7e47edd7b",
+      "truth_structure_hash": "ceb639411d797f4b53f47f203b9273c6e1b41cac68350262846358aef796578c",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "f977de87feb2c15e9d34e576496bb292",
+      "truth_structure_hash": "2e1e97ad63c1f5898fcc424ee7e5053fcc971523dbe306976a7dff6f39ffe4ba",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "2af240c95ea51598ad6e7c9f873f1e87",
+      "truth_structure_hash": "61e1476d19eb98f5fbc99704a1026eca86839a89baaeff7de183fd19e3ec101e",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "25d53b663ae7460e44cd620406a5f0b2",
+      "truth_structure_hash": "c42be3b85ad01ac57608a765cc558364556f95590bc3255effcab541ae9733d8",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "84cc8e63bfa5b7fc8ab2f895f69ea974",
+      "truth_structure_hash": "7c71fd609657490e413455454621d8e35a234ef9d09c01dd25ac39a1baf783bf",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "c9a2bf78768b2443c45c81bcf97a5ea6",
+      "truth_structure_hash": "91e1d2ed2895d0488c0f9e0af6ed45a9d8a29e3659806b6cd5192e7b790bf336",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "dfd7e34f19fa70ced2398b4941f0f513",
+      "truth_structure_hash": "cacbf51c04b7ed841b19cf2ad177c481c7becfe8910cc9582e7cad89580fad4e",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "f04dc72d7e2f6bef60ff2d592cf8578f",
+      "truth_structure_hash": "a2d2bf62c666f61c906886b9a78d448338f1aab1a6dbed76c0fb66e07fefccd2",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "23286b9b2710dd308af9163b11d07b01",
+      "truth_structure_hash": "134bba3ae6ffb6d073f77093d1dbbfa50483320ff730135c0c394709dc7ff991",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "e40d0bbd5d169ab68d8afe427b5c7100",
+      "truth_structure_hash": "17c011e5971a91c4c3cfc745baaa9195443fdde0fa69378a21c457057555f381",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "c6e95956541349834c27e1d6fd570325",
+      "truth_structure_hash": "4c889c5371424a4de40add503ed291618e2944d7daecbb484fb802b4c9dd6be6",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "3722656161c0bf3cd858eb3a86983ee1",
+      "truth_structure_hash": "b2f1bb3bba167f3d0c333008d726395ab2b011afc04bfad49191e936aea6b196",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "065d9282295c78579a3aaf5a5415a7d5",
+      "truth_structure_hash": "6d672ef220ee414cc8b0375cf93906591339ff17a30fb429f2d5905fe36d5df4",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "d449aaa7d21b2388270b97b53d136905",
+      "truth_structure_hash": "0c59ac5780930f5ebf4f2620f57c77a3c9b1ec36a1b5c6780b3fb93ccdd6aa67",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "6f1c0eb9a217ec89ffa31bc405270c7f",
+      "truth_structure_hash": "671a046cfb6af15c964f99d84cc567cf2a5e5b51ffbcc69c68fef3738e3ef34b",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "1071c749856f9af93f195736d152e553",
+      "truth_structure_hash": "d6e2efe8397a9a8bd5f3308a2f9e8dd32e694f4c22dbc75f0a1ede835f86ab2b",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "ecefe077f2971c5c2e2860b303f93af5",
+      "truth_structure_hash": "a72d82d1f239e17bff7d2a9303e350f1b035ee17d5d9ba92290b02d51a53079f",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "0ba026ef883dd9663c41ad45b6cf7839",
+      "truth_structure_hash": "edc6ec23f37cd35f5f2c496dd784f82fba04fd54374ab8764ce158447aebecbd",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "58ab69c0ce0a4593b5502a546f4a2b21",
+      "truth_structure_hash": "222e00621187ccd9a860c1f8b9628268c21ef020a37947bbbed69abfb831be9e",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "dce1fd239c3bfe1acee31d094be2540d",
+      "truth_structure_hash": "615cd2c5d7604c25fddb6beaa1135cb20f7f240b9ab9f634f2d5401263d87d90",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "127cc445c15c0e7a5de79d9e88b3042e",
+      "truth_structure_hash": "70a1f340bb3f8643d9cc7e52248092d0f16dae108a7760328198458a83a2178c",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "7d498aacdc9ac9952c88619d557895ed",
+      "truth_structure_hash": "d27903f93a33e8aebab2b04ce81f35df139f7a1855629900a9a6e498d2730404",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "d95485aa9c2b020ee0ba8701293d6b8d",
+      "truth_structure_hash": "c323365d12ea78dfeb7f9bd4ad80ae2e9d5b2c52e4ca5e12a9dcefe2d17f07a0",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "7a65b897492b4df107489fab05f7a8a3",
+      "truth_structure_hash": "92e26e4f6a66ff1fc403cc4fb247b727fabd435d553cd8e53f7607f4d6dd49ea",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "1b8fd532f76110895b66362ebb07c9bd",
+      "truth_structure_hash": "8edb4d5d16c6f61302711acb8a9b124e0b28796d31e77cd570e1ff836678dca1",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "1d1e3c57270b411dffd4d01bbb82a17a",
+      "truth_structure_hash": "0103c511d3ce955750458187f54e6daff015df617279bd13531fe8e95e42bc39",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "ac3901f4d80f56ea76591723189002cb",
+      "truth_structure_hash": "e8c2548c2f1996cad4ffcb08943eb682956e1f1c034e0e495e9fb38dbd19d7d0",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "47b5fbb0f84f79afc59037937a10220f",
+      "truth_structure_hash": "74946843fd6814aeb69e2b1cc1a5de559d6f06230f9c40af316e88007b49122b",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "9b5b75791d3295395ff8c35f7b65e324",
+      "truth_structure_hash": "6ebf3631b390ab3f20505274c9badf37c77025c985a08f5e4d423271d05b64ce",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "096186dd0d707812bf46e8a183672ad8",
+      "truth_structure_hash": "8028d8e5f9f826b2b4ffc0c77c280cda63bad260b1968f8eb767928507dfc5d4",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "c9f3b2c0f8f65ef0cd41c3fde0df2741",
+      "truth_structure_hash": "8c01e4b52e4675eab6915628f5fe4ece493d5c6ad1321d0ead5e2ed9e0972494",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "c1f0b9e2ce0057a2a0432074e11b8b30",
+      "truth_structure_hash": "9f8e27a294b79e456f0fc619f4575d37528b3b11554a96da941f2286dd77965a",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "1352d39aab2837b078e88b8f4ca2a196",
+      "truth_structure_hash": "cfc1f8e4b4b8f465c932e962e57f8d28a437705df7c671030e2b3ab599401bc4",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "84b8d0fef37a2baf75ebe250fc3f6b38",
+      "truth_structure_hash": "ed946184a2e1e6dc90ebc68652e223d0602add008eb303ae1a2653cff206aca5",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "89f86170c00bdf339622c8b2a9c65174",
+      "truth_structure_hash": "99b6434a3fe378e6bd516232c0c9e7fdd9b6f4596f5deb15b65b0e738fd3eed8",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "53ea61c5a734c35a51f615e32eac102f",
+      "truth_structure_hash": "ec79f7839c582c5416c86e0c5874f350cdb72c0cd40e5a302e9f2aaeb1a4aa22",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "5b898df7f73322bef5d7856983e9735d",
+      "truth_structure_hash": "83682c19f80a2eaccc7a8e08a167471d04e4e616eabe89e0ca55a7bb410a53f6",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "61c206bbe543f1f97c369ce8900f1063",
+      "truth_structure_hash": "44438ec8a53c2111d303d8db01ac564e0666a8b1371e536e4fbd04c260aba4bd",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "f3e82a693681b6ae32be3a24a638bae3",
+      "truth_structure_hash": "fb86852a6ff025537d18f9926a54ffe93988a4909d808c22e876d9eb5cf01902",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "4af9b0bd826ee81255521b464391abf1",
+      "truth_structure_hash": "cc4a379a3617dedefb1ebaf82986524ce360aa03895f3a339f19dd8f822dee8c",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "facf626a6e98c451e1538dae1d3a63e4",
+      "truth_structure_hash": "0935820056dc4270c0ea2d056f40ef2a853d71f3556e63854fa6cb3c14706cf6",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "f770a1107ce9945a9d38426fd978ecf1",
+      "truth_structure_hash": "d6c98e4aaa52ba14549fa85068b244fd7a8f63f46a2aea30d5649b347339a78f",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "f1236a001c8aeb4cb7f696989184bffd",
+      "truth_structure_hash": "68a61256aad2cbe958b6432dd3aed1c3b1682f030af20548159cde7704886d79",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "9b657296b2c5945cf1b9e5ab62f7e92b",
+      "truth_structure_hash": "bb72e28e5a7510347e4832a7e0a4335972e772915177fe5b8b63dab409d59b97",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "7a02787420b475e625cab42cff01f201",
+      "truth_structure_hash": "475a907b88be7301af8bed86923fde4820077be7f804df7a58babe7fd2a68d79",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "e0355e8dee8c32cc965d84938f7a560e",
+      "truth_structure_hash": "071fe658ad9deb0e08c6dcbd569b2bb05db09ba2f1fce73d365ef5cf4cc84391",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "1d7e49b761581beda361f4a1ac7a3a4d",
+      "truth_structure_hash": "de6b138346dab2c00c5eff0cff2141af41f5c1ae220b59962def8a0c3522bd0d",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "df3ad1a98c6c9744c253588c21afeade",
+      "truth_structure_hash": "3558ad603f80c2708432caccd36f910865581bebdc121cf626c490bf0df177e2",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "92ef12f2910c3b5ead73a106a3a22b65",
+      "truth_structure_hash": "b4566a0bf3d1d4a5bfe02e20eab5daa0533524ee7c3dcb4dbb8ac410bd664240",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "3c0ebcf80c34b16667808477136067a4",
+      "truth_structure_hash": "55324896bfcf9f278dff34ac02de293a1eec0998f5630ca76cf60f2c3350c0a0",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "1aa141eacfdd99cd998e0ab28959ec25",
+      "truth_structure_hash": "edb52208dc3a15bbca32170b2ca7ef2d532b091af937db0a18d6bd39fbbc1a63",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "df2f6c91195ed5d62ac9e4adfacf2898",
+      "truth_structure_hash": "3d61ef579ae90a841e8f9da8f40d10d2aa0840ae5c7867019eef76bf159c924e",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "0565a242d2bdb0a510be970495b09a18",
+      "truth_structure_hash": "dce813c74fdb9954e03981e14a924ac4053bbb2c78556bef8fcd7f4f0c19a96c",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "15fbda5668e38c1aabefc64714028ba9",
+      "truth_structure_hash": "9ba48e35ca7643239e505f956e3f42b4c48d9cf9613e19ee5f66d24d0721aad9",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "ef07720c88418756c3aab641d9c3283e",
+      "truth_structure_hash": "f0d243045e7010c1d404d144cded5e73beb8e0645a7a2d92a5b9c88ea259f90d",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "f17d0bb5c835c99e541083c8aa9a870a",
+      "truth_structure_hash": "b4e8d74e57929e4e08eb36080d4770875c9f88910a28f102bd7ca525f9514efd",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "205f160aae6c33f11e5dc02f0c762103",
+      "truth_structure_hash": "0812c65171cd2b070c218333e7a25141f2d1789ab3f0caecb8ee96e2e7515f89",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "7080108788ec1d762e0318253d50696b",
+      "truth_structure_hash": "14b7bb1bd6a252ddd7ae1b32064f5e012e55601271d914d93fac74e22ccb172f",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "9269807ab19eb5b7af8ecaab335f3b95",
+      "truth_structure_hash": "82841e9dc436ae7379d065051dd5bca7dbb73df3c57ea7a10da1d73c2048d704",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "54d26bfbe8a0843c53104f34d95384eb",
+      "truth_structure_hash": "7238db8fcd11d2ecc8d68822c4dcdebf0a48bd575829cdd947de13ad89b6ba22",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "d0a84f1cbe8059c3fec915f3d9a1e59b",
+      "truth_structure_hash": "89060413558e37d5c6ca1fb39812fee49c18504fe5418e28128a3913604f6868",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "4485d7846621c54944384d295edd2352",
+      "truth_structure_hash": "3ae50f48be0d85915274b7cbe6e000b5ded3644f70377e03a45d774c82200564",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "7456b3d0ba33811622efc42b0720208f",
+      "truth_structure_hash": "ff3e0835ca089bee96327e711199e997ed3a4e7ae5d5c6d2799474bed5328b19",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "11b20b380de22ee16374eec36dd17c12",
+      "truth_structure_hash": "8d5f61d1b2e6a47f69cf461321429d8d58e11dd894acd5b8539d38fbfaae59e5",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "3dfde3279949ba23a98ff13ccf2c5cf5",
+      "truth_structure_hash": "29a34f3ea50801445f4d98e36d61eb1946e9f0d0d58f000ae3184d84bff785a4",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "64164fcd648d871e4231059552e3da48",
+      "truth_structure_hash": "69f4f7aaa4462ba60cb4c7c245bb171e091a0f58202e7979908d3aa4fc789482",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "5800cde88c7f520e939eac59c2ad32a2",
+      "truth_structure_hash": "7390fe24b6c7057120262c476991aa589a2dab0ae8ded208537296e099d7cc6d",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "68c1565997b63a883781eb09549f78c3",
+      "truth_structure_hash": "189b7c04da8e2dc4883509f04c8283ceaf0ab263c025d040871c849bbcfe2a68",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "b27f2b5877cf788f4d0970595c95b5c6",
+      "truth_structure_hash": "bc162113eed5697bdac256ce22a40ff042e6abee14a23b2cc8550b0ef602d8c5",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "ee860767069114773d34c61070f2c8d5",
+      "truth_structure_hash": "bff20963cbf785fc8e9659b7619dc35b6c636e3963b2f516eb60378e6b93deda",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "fd2d0c247c992849578f5a93b8afd9d1",
+      "truth_structure_hash": "e5fe63cdb9633c581446dba332030ec2e27adb1c3262bb1e48f584f9477d3bd7",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "22656f2703a2c4be63aacfca5439b8fb",
+      "truth_structure_hash": "28da4c3d9ab1cb0b3830e85ed2d724f65004d735d33a305d6a1b36a5eb5011a4",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "3e674a61d532bfb230fcb27c9a7bac74",
+      "truth_structure_hash": "987e9534ea0e0fcf4bd9d016ed70cc20148128edd4f58baf5ae1f9899d53e9c0",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "55757bfc38e5a8374437708bd1055b16",
+      "truth_structure_hash": "66bbfe7989b845ec438658d5cc7ff561946275801a82400889f953a6c50f57e7",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "785b15304dddf7bb8c476a0d702a27dd",
+      "truth_structure_hash": "86f472a4c6a95d26741ba1737230d6dd641f350873b6ec7c21fa2f6ddb0e7d15",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "03493fb5cd5f71c2702c22fbb9f1622e",
+      "truth_structure_hash": "22c431b5cfab14e56ce12b96372bfdac7a3191d02e11c3e9730e4043340581c2",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "0c42fc9f4c6504577b2be8d72cce7576",
+      "truth_structure_hash": "20e51c59237d0b6bcc00e12b93f5516e5e1c503c198e31a0bb977aef2fefce71",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "c368b0ddc08916b7739f968292acdca7",
+      "truth_structure_hash": "14399118904544a3b51d404fba6005780e9997c24a68f16150ec2ff649345ef1",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "f0733736ddba2a4ac956d3c8607185f7",
+      "truth_structure_hash": "aa7854d35eefe93e76ad0e9f3c703b0fb291db8620c20f22a3466ef455b8535c",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "b53f7897c10612f3418c4ca4c6de193c",
+      "truth_structure_hash": "9ba9eb32b56e2230dc8933414a40804bcd7bb6374281463c473a6bbc33eeb2c6",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "1017c4c017f3a4e5b554f836426b0ff9",
+      "truth_structure_hash": "a1dbcce2d8c5cac6285af5433598ddaaacfaf0b105815b41deab43a90f9b3cf1",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "6bf5502cbc52a508d347363e01731472",
+      "truth_structure_hash": "4f6d09f45daf32df3cd53e53908f896de3f940d65bfd6e8d930cb7bc643e294b",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "5838310384e53e8a0c63a29d4bc8a2df",
+      "truth_structure_hash": "e2c2c3d19bba1ee20891bc7db6601fcaf31877860cfe1c1c02f61b00279aa005",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "99c78e74f558ac71d6d5d7b3dc94f26b",
+      "truth_structure_hash": "163adc7e906a5a5b6516bcf1b9743eb172820f1db4f44954c7c715daa176bd84",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "f04d5927d3c059b82a5bb9474819f8e2",
+      "truth_structure_hash": "3b22780ce8d8a3dbe16b58de945b785ac9333da0f197944c18ba08c88d9b381c",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "fbef1ceca8bbe6fda2d4371f5fc7a5d9",
+      "truth_structure_hash": "5e08c04e130b2e5f6d7d8465353b6f66892e59698d43995c65ff39579fbb7c43",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "738dddd267657b897fe06b61c2758d6d",
+      "truth_structure_hash": "56876522627840ab30b60a46a3996254512f9c13305de87adae3552f72ea0047",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "96f9265eefcecbda0a81459715d9e9a1",
+      "truth_structure_hash": "77800b9c6c3b8ea09e2edd9daebb5d5c1f0d84add6882bf6463ddf6863d96100",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "7189f980433b736508f9a7d920fc92de",
+      "truth_structure_hash": "da36c18e70e3ed0b5ffeb0ee4bda064adda5505853cf0294505fa09a5e7537f8",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "95fd45a15c87317e568e3391be11b74f",
+      "truth_structure_hash": "1a85fa3a0f36acc026cb2759b6f82866797de1a1822aaa73026c45b7b4564ae7",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "7536407f781f52fb59f7bb7065b6056b",
+      "truth_structure_hash": "afb519f247d39dac8786c22b9b3ab3340cd82830d9d5319328402320614ceece",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "0cf338e95497bbbba26d29d435b0d0de",
+      "truth_structure_hash": "9df511258a517fa6f1a8f167100d61b0362a7d4cde3efb4f7fd9f0db0137e9fd",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "7523a7e008f94efdbdb99ab0f6abfb24",
+      "truth_structure_hash": "72fdd547d4262033b759f0379d72377be9eeefc485f16b3a267fa72b8faa8698",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "83337d2043782b1f60da18f47ad6696d",
+      "truth_structure_hash": "9476b986716388b2c962407d3eee67be3b645cf1299477c15a5b7cfdd2070033",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "f8e728fc073ea9d3904e1fc1a32502c7",
+      "truth_structure_hash": "1a4eb791470714fe1269cf2a148606f996c81802c02c6e60c9c24f3b1f0433b8",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "f6c711357f71ba06ea23a886f1f08e07",
+      "truth_structure_hash": "d31d5522bc96fd386fa21e51c249567d54cd76c48944b9e721b65378a9f804e6",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "e3276fad071bf218ae7648ebc913ca42",
+      "truth_structure_hash": "c17bb723eeef5ce58199381baf11d13f6202ef8e1080966b50dc171a9be16620",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "3cd517427a0467bcd90e8cbbf3016a91",
+      "truth_structure_hash": "b129c3fbde96050418a8220d542e3f41588f6a54f81ebfc39dc8e754a1bacbe3",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "97cf83ee059ec15170b07e8d6501669e",
+      "truth_structure_hash": "20ff680b6641dabdf9cabb7b943e0805f07ad99018f083c019d1604c7c9b9a72",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "93ace7b885d4341b91cd9cdb5082c95a",
+      "truth_structure_hash": "4df560a297d94e5385ad597340fbad0ee7fd8f5ca226810bb344669956b38f57",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "74eecc5d4f318e7901ffaa450be06a87",
+      "truth_structure_hash": "7561c4a25e8ea6ea72b88989286ef7c2b721e843d50ec8ca3a9252951ed3d2b1",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "2de0e9296ae5948d2ac7e60700c9ea66",
+      "truth_structure_hash": "f2918aec2340043f9f3ff9723dc86198658015c7edb12a385cd14477e72a64e0",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "2435fd2000ec275b83e1fd253ac22e87",
+      "truth_structure_hash": "a6927106bf78f59d96828675d7add558ddadb71d96ac47002450eb454faa6760",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "575e887f0d7e02b6cf755f08b36cbf95",
+      "truth_structure_hash": "284c223b145891fe2f4da7b409e51b460558bff944ad3ec3817e31de760fdd20",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "72fa43f439e1501ccd4324a75480ec9e",
+      "truth_structure_hash": "97e3501c295023f4b039537806c931d0fdaddcdd1767e7482b9a9ff64ad0ffe2",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "67427fc10dede3c78cbfcb62051aa160",
+      "truth_structure_hash": "05b7d74e032a92035b0174dc2c1b61c54724d52f5632f05ba7bfdc8533783e93",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "e6bbe83424a023170269f8558ac12870",
+      "truth_structure_hash": "e54f6e784aa6c95833836dc7ea3ad34332e46018622183fa1074414c7d783874",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "2eb05a86a7bdfff49d0151cc3bb79465",
+      "truth_structure_hash": "15af1e7c01d28e9d732bbfb04776b968208695d8b2965a997f032b8ffb70ef1e",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "591e2d51cd6ec7b95fbe5c00ee979e1b",
+      "truth_structure_hash": "001b3b1071438bf8678fe9b401e992c4f0eebda4285d41f8d44f9763f2696f21",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "16a7e9501deaf4a4db907a50905b3238",
+      "truth_structure_hash": "a12a1a1d90afd76b151a8ea28e55f73d557f9a3b093945672006a8cc3625da51",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "94512f9d47c4dbad0314bd458f81140d",
+      "truth_structure_hash": "193e62864f7c06c05dc0d3ec8760bd25ae7b13109ebd026dfaf510d3c7bfce39",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "c1812be606ca96ee1e258aa279f0cb76",
+      "truth_structure_hash": "0db589021ab2ca065d365b95ae1e5e5f26c421d5713ad9ba9b648ac4ddb773c2",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "a866641827976e2890a2bc2269ab41e3",
+      "truth_structure_hash": "c7a04351d4102e7c03f4977a29a5adaff834cec4608188f525326995968d4308",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "44696f429a904e3eda6b8939a9a2be6c",
+      "truth_structure_hash": "caac3f16471222beb55407dee40e79d272a4c2050579d5254aba1d61eb25fa22",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "64bab044b1ae206e6736da8433119374",
+      "truth_structure_hash": "3acccd02604849b71bb30208b8740d0b3e0c5b15ecd32a568164610fd78666e5",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "4aa05a9899352e116aee392c36117a6d",
+      "truth_structure_hash": "ea77422dd63ef35155611e1e2adb93ca92549139746c0aa0398087b4c5c27ae8",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "eba3f179223f3b85743f9ceb81b34fe6",
+      "truth_structure_hash": "ff1b5c0b8e14df7960ee05331d9e50a6235fc1b8fcec00c7fb1396d5fca0c7bb",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "47d39f55d4a309f829a361ad7d1662c1",
+      "truth_structure_hash": "8b543482247f971e0ba0021741ba21b671da0345c070b9f4eb7d6158856921ed",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "1777417ff9394bc0bfe24dc827885ed7",
+      "truth_structure_hash": "6c29ea2b870ce9b1afed2711ba1e0f88bb570190e496ce39ce5c2a2c77050d2d",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "f8cdc8f034f29668be80b89471c8e413",
+      "truth_structure_hash": "2df8e289452541df7eb30f5a89b1867569b7fed7553b6b446bde9a00596972f1",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "de5b0dde6425577cb20b4a9382ea1c87",
+      "truth_structure_hash": "559d0d8bf4d3f654e31b8f87685668de68d888e0994dd4c3b687f83e49af80d2",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "4468ae2ce2aefbf2ff1785cb2350d013",
+      "truth_structure_hash": "b0458a006b0ed71e7c39dc9da0a4ccfc0f3d8e2d423303f807ae423f24ab359e",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "ce886a4e1f149b85391d63afaa8d7c85",
+      "truth_structure_hash": "27be5dd97f9b870a04bb737d59f032b40d48669bd372b1aa6b13a0c7f4454968",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "f42e58d2d3a1e97a6a01ec11199475e7",
+      "truth_structure_hash": "1230a1c9e4fa85c0dc396576b7d3c18d2c254162eae889a04f672a16cd17ea34",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "f77ed1001ccf183f03664e101f01497c",
+      "truth_structure_hash": "83bf58dd1c19945393a975024505ba1640296d9b5edc730e664194388c307b17",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "4d68509047e41e87c399a5d6156ef3d9",
+      "truth_structure_hash": "0f542fe0243017c8e9414ba92a612861440229c4b8d1d8e999f1bb5f236247a7",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "ce1df43b942f1b5747f9fb222ea19fb8",
+      "truth_structure_hash": "dc76dfe09acce1d340d89537e0ae41e4f1201c4f66efc1c6864e02935f616b5c",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "cfe6eb1dfe3b62c879e877ffabf81367",
+      "truth_structure_hash": "ad4a6fcafd2bbf62654e6d6f17e0cd564f74cd1f7442fa6436a826f6f7947ffb",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "75b273ef6335c8cf52d12080e031c01b",
+      "truth_structure_hash": "b6f888bef4cb0d60f6a51704fe13f7a3340085df6f5077826709397bce240ae5",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "907744e2ff172ba109ea8260aac46794",
+      "truth_structure_hash": "26a7c901b98c695e6db365fad7a9256d1c9c059b52b6b0073afb63b4ffecd04c",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "c0f8e6f532181c81c6bf5cf9c8f963ba",
+      "truth_structure_hash": "9996048b9a372d9e9c286b50e6dd916199fcf3d2db7bb548bde67dd5957dfe52",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "7eaa133d23a075061379deeec189c7ea",
+      "truth_structure_hash": "6e9c167b6f8909c688bb8f4f93cdc9ba958ec7ea37ee5dda8bf278685dd10904",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "29beab5984b6bcfe4691973fbc0d829a",
+      "truth_structure_hash": "201f6d3c50df0b6d160dc3375fffa4d829ebaa8471d7d201459e7dcbac9ec394",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "5c4dd735d73d364ba6dd5b118bdf65d1",
+      "truth_structure_hash": "9ed865fbfea7f6da032edf8a02188ffffe258a494c2c4f3c35f386d9ff29710a",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "844b8d6ad87148cc5c4627453077e0a3",
+      "truth_structure_hash": "1056c71babb152401c84afa2bd8295345ade51694f9cdef438fb88f10ed5ee58",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "a643f190ba060113cde3e20bb91bfa3a",
+      "truth_structure_hash": "6ab9276031febe2fa969d572ba8e4b8030ba8bf597eb6024d566c925711494bb",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "c77d9b743235d1198ac9224dceee1685",
+      "truth_structure_hash": "49793dca6c7924192a28145c9251d9b118d29e2ea720c86c2458209eb9a0a96d",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "e16db32b5fe224a0dff3fb9032cac83b",
+      "truth_structure_hash": "d67e93b55f7d9e3d80d54e136950dd6309d2806bb6e64cbd75dc2ec26bac3d0e",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "6ab4ae3ccaeaff64adb5339d44846961",
+      "truth_structure_hash": "b410234b067729a2f63c14589ec1ca7f81f83f34cb72fc51f29cccc59cf3c502",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "110142369fdc6f61c7fa8ccba9f6b480",
+      "truth_structure_hash": "83961307ce8ee7d81c98c501e3ac066229820180f4fc7d3d245e2c1fc0f9ddb7",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "36379c01a419436afa32dfd7773de512",
+      "truth_structure_hash": "ccb69159b2c110ed6dfc90401adfa44e4255ba0aca030038e7bcdd57fa8d5f21",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "735b07751aa546acc699feea1f789325",
+      "truth_structure_hash": "6a15e6403229657df9ef8bff5f9de836d9f2ad786cb76a09634b8cbf6f4ece5c",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "7b6fa5aeafd300920af30948f429a0dc",
+      "truth_structure_hash": "3bbbe16fdabca36010b8248eba400c531bdb54032fa5b46ff1e8b3459c5b4ebe",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "f87556aefc80e0c0f3b8faac7280a8a9",
+      "truth_structure_hash": "29a92bb921a0cdebc27e2bd4853eb25c0f657874daad3485493f2526a3b028c4",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "46923ce174667c9a6a3f7cc98e40e4f4",
+      "truth_structure_hash": "6ede6079ea0fa7731773f20fed0dfe89e9b08adadc9ba9c3c6588d0966890383",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "4ef9dfa6684b05b5b87698445f8a4f35",
+      "truth_structure_hash": "739432e792dadd166468a9fb311a8bc4855e55d2889c3574ad1a13e9a86d5ed0",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "4fc25dcb42824b16805dc69e029fd920",
+      "truth_structure_hash": "7a337ad86e39b3926f417a75ef9067dafd8f8b2a53acc484658ad79a83b35454",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "1e03db0080fbe56f35c2cc055bc7d860",
+      "truth_structure_hash": "70d71fd2d99948d1ffa4efe3295d84300f401ffe821832cd594737abfb48e442",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "f5ad67037f70d2cb60aa101b40ac6b9d",
+      "truth_structure_hash": "35004eda00fc0d6d3e2b8f3d41de444b2ec78e328827fafcfdc50a5a85abc6d4",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "e8d4c6d928d8aa9374cd00a400deebf2",
+      "truth_structure_hash": "fb982554c36253cf193bb5d63aa8faab54d0660b8165ce98395e2be40292f813",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "891bb28009bf97b67ab75aeb7af1266e",
+      "truth_structure_hash": "abf896ed6ad6b3f0b5f09568283f752c13f408a00e8fa44dc5722c8be83b754f",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "a4dcdd05a9278e76de931c94707ceff0",
+      "truth_structure_hash": "6220f2afc7a493326a69a2b1bec4f8d04300ed6419a9c317a68079d97e43d1ec",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "3b5887d76169e1bd3466e513b567a328",
+      "truth_structure_hash": "8c64b5346d946ce10585dabba57310fb6df6ec526e2f1f08395d9e634f0077f2",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "2b6f7b00019878f7943bb08aa7599e8f",
+      "truth_structure_hash": "78ea1d9cd0fecfc00072dbd691b0d83bfe18acf077e21199800c5b92e6bede5f",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "ef667078250bd52887d6fe42f313a247",
+      "truth_structure_hash": "5e258cb38ed541a31e8089888a828b21da0aa77e486dbbe64475224e7ba6f897",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "bcec7c496852f83bbf83a0c60df49b54",
+      "truth_structure_hash": "65496c271f9d192b9b51b9c325653e27fcc0544ffec9e21d5955615e4724d1bb",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "d22aeb0dfb6b180fce5eb34869437a45",
+      "truth_structure_hash": "e06ad46d77fa81d86c9429acbcb8bab9fb116b015c2c8b8716465c329010a360",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "8abcd4285c3f0686841820972064d542",
+      "truth_structure_hash": "fec94fbac9abe25fee0a8a066f45e6aa5d72ef08297416f89c799cd3e71fa087",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "3a9f99bc5d9dbd33b9bede1ec9b6aa14",
+      "truth_structure_hash": "dd09c0bcf1be41e36385018739125b68dcc176781d4518fcd4ccaf64e1f7c295",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "e6d14d7d6ac886a15ab24cabb6d7b485",
+      "truth_structure_hash": "7c90d8c673badaa067f1527deeb9913b80a5cd86a161ea0e3ee1b786edccd1e0",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "accdcdb1794369910a65a37336c8202e",
+      "truth_structure_hash": "509aa3bb4ff8adea7ad55f8fe39d74806ccaba4fba79b5d4d16251fdac273135",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "817742eb70b909db23826f58bb8d79c3",
+      "truth_structure_hash": "2664a68ba23c154e8008e52ce4909226a5edc683bd1d7b942d0af01d3dc165e4",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "bf056f9a56a0d870a4dce32bf4b7b211",
+      "truth_structure_hash": "7bc972fa0fd51daa94f39723f3a38e34adde6128df559466c2d91df2dba639b9",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "77bc9026dd33c83dab0022a07d81d130",
+      "truth_structure_hash": "6fb32b0969e515ef41408d6799b8577952e88fa6dcc85ad7e8dfdeaea82e376f",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "ef103240ff0962d099809d52eae0aa54",
+      "truth_structure_hash": "0a8d98802e4ccf62757463b96e86da53fc72abadec321d87972f0f68a2e4c635",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "e4ff5074ccb8254c6e59cbff7dadb464",
+      "truth_structure_hash": "734c1dc041f6bae8a9886d3d927f10d16acbd37dedfb4ba9d87fb6a70366c198",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "5ec7cbe0613f67ad325162b34305746c",
+      "truth_structure_hash": "a44d260847edfd460e9c9e8e585fb596cea20ab7a54370a2bb1eb3e76d56515b",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "0c00afa12f0e4ea152470ce3dd5c84f1",
+      "truth_structure_hash": "c33e746cea32a48b47d2b364c3292e1ef50afdc37cf1eaa5596831553c729069",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "a9fc949231c27c30bf39548dc31e0d3d",
+      "truth_structure_hash": "a56837c591e3401839bacfda111f01e98fa36c3a9197c08fa35eb9147a33eba9",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "c95ada306b2c20d12d6c9b111b9938e3",
+      "truth_structure_hash": "6666b826f10350f57092339356f173cc766ee39bd0d1b0e07992e7422f648720",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "8a4c89952f0b98f247a495cb9e622667",
+      "truth_structure_hash": "2efa516aa1037806ce5cdeaca7dd83876045b9531dfa5ab558625020d9a5409a",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "ef8528280af5b691cbc42b40c71ee914",
+      "truth_structure_hash": "e251770dfd56a505e979a86aace30144daa259c99c19001172918c0097e233b7",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "55bb093ea2e3e31f78a8d71d85a99bf6",
+      "truth_structure_hash": "07b9ee06876ce97f987605016a8de2413caf25ad8e9f3aef996a2e753930d160",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "8fa487734de7efc181a36e58d89702cc",
+      "truth_structure_hash": "3b8f38fa4426866f285ab90bd3089066ef9b536e5a123f634422044dd588348d",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "792fbfc785ee9b092c70445d22e62a8d",
+      "truth_structure_hash": "6cf201a0ec70556aaad3554ee65d39c66adddc7559ca141fa9cdbd82c17d9d0e",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "ae0db6906d1df884577a1612d4e15e83",
+      "truth_structure_hash": "d18ebdb2fde4b9b9cdde852dba399d04e0353b4d6c57c9b96d4fcc4994934471",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "6a88e2d8f3998620242c9e6fdc3e92bf",
+      "truth_structure_hash": "5ad0562faf203c6fa66c03f4490d2de567ab95b5a2629bf8d3c01a4ff62cf3d5",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "8300a8b10d74f8b49421172efa5acb4f",
+      "truth_structure_hash": "4852ab4fb6418981d5708d29cd9b4ffad592edcf509f5f38cb007fed3ad3f87b",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "fa659c1c5fac428bd9283ccf99d9a278",
+      "truth_structure_hash": "87d3c04289becb53508ffd2a2f091caf0c88ad7b7ee175d83d4c8cfce17fa0a6",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "2684d5a2b9fb9b7315cdcadb24ed47a0",
+      "truth_structure_hash": "b748d682d33544c93336bfb2565ab3fb181aa92b860488cf6a3e036698aeb65a",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "af8c50b6cd145ec833744bddd52dbb4a",
+      "truth_structure_hash": "63c59eab30215c92d91a1f1fa3106c388a6683537c0da89127a2789a768f49ef",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "93dbcba5306fc3763d6eaf63244a3f1c",
+      "truth_structure_hash": "e82990e0ac41098e2f5110a4df25732ad35b2565197a0ea9c3ede664a368a6c6",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "871cef83ae0187974e8d0f53c87e3cec",
+      "truth_structure_hash": "61ef17a0baaa43faf0ed3b57d7c676791b4fd3fdcde712f4c2d505f7fca9176d",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "5959ccedd69f38cf3d5568031da7353d",
+      "truth_structure_hash": "220018de842ddf87dd1add4df11eca7ee1fc93a150d8ae066536792b29f10ac7",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "d1d5e31cb7a1ece70049d3e241ec1b0c",
+      "truth_structure_hash": "05c28275bd808731372e90f2ab2d79807e22631a8e1b5620d67672d566a19db1",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "62612a5696e5f89fc05f267ef3908c0a",
+      "truth_structure_hash": "a29dbdf97c8505b2b88826d4dad37ffc28229ace8e183e7f16d4009eedb5e8aa",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "ee541060121c2f15a7788f95d22d241e",
+      "truth_structure_hash": "29a4ea950a5e625fa60b2b868bee084d535831966ce49ded124876e86a2da337",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "80bef771c4b773809738b148a67c59aa",
+      "truth_structure_hash": "2d8e9adea6cb3520fa2bd8135e4917427266d32df739d1fea4907fa6846cee3d",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "bdc40bbea6e2e2f8a87b46bf7dc88c7a",
+      "truth_structure_hash": "98f28d6209f2edc0746973350b2c30f695eb66183843a28b2e4b9cf6df50013b",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "b3272f8bcbef0058fa6e3d75d990f048",
+      "truth_structure_hash": "6cc205d2ed45ad673f694cba3150a7a5633e0e3036dad4e61e07d85fee2cd627",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "744ff345cdbe55ab7fe2f8e5874daf10",
+      "truth_structure_hash": "587f8940a503abb5de0bda5c5b8fe7258cf866a2ba4320514f95250c29423ecc",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "25b7203b2935013354173ae8cfb2a266",
+      "truth_structure_hash": "8257166c52a168aaf813122fde87325f8180aabb6d23fb0cb1d06a2cd7b9dc1f",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "2dcfa7d23321bbc1205d9d1d7715f20f",
+      "truth_structure_hash": "dfef140a28fa2a72326697aa058c3583d222ad38f370527906da002c14a2bcaf",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "5227e2bac68d3d4cb5f0a734c9d4b5ef",
+      "truth_structure_hash": "bca2c14abf2f22e8a4f166b12b16ef1bb4299c9a2ec89c432aec828403317b98",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "1de3812ec5113f4488422cfa12789023",
+      "truth_structure_hash": "c670feaec949e54a71c0c7d705eb135b9b158e673e656deb5b2e303c28a8d680",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "cb7ca7225b41fd617edd5243b729c749",
+      "truth_structure_hash": "011c203448b7fb211a3ecf44242f44bd0182d91b4da2a63f9e64e661d9bea8dd",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "5f8e873e5b4256696c460e773532f2d5",
+      "truth_structure_hash": "496727973d728b3f50efaaec2671c01493fe7a82d3d50d1f54673b98b5f12c0a",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "e223368587d98438d68cd6e60cae887d",
+      "truth_structure_hash": "4a436d23bc9a109b08932674d74f231897e4da9bcdc8a96ff1e554e312cfa11b",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "17fa36af48404b7682b5e70f8097f8d5",
+      "truth_structure_hash": "760fb35e0920ecbddd2485c21abb3e3157ee6897eaba03d97a1d37f328c3c831",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "f1a55adaae71d75f06a0103e0a866776",
+      "truth_structure_hash": "9367cbf6a556cc0b3ff40ba57d46bb1fc6e89f5f5577df2d3a51e9c61c9f3fda",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "a5e6f76ec51637c81c3efc73d879026e",
+      "truth_structure_hash": "e5ae8d2fa4c906f6c8d6183557076b3d80245e018707d51ded8df036565b2d3a",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "491dff3223e58f78f9bcfdb4ca52bceb",
+      "truth_structure_hash": "de1f2f731d01e40a051725106e588ebbea735fa77128e6341eaf2b88d5697b87",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "1ef604aac5a638c4c737e20219d6d9cc",
+      "truth_structure_hash": "c45d50a6d4fca9cbd76c89f90acb1c87bfb7fa9c20d697694718136dcd7d659d",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "2b9412324b02ce165916fade4ac6b223",
+      "truth_structure_hash": "1ed35275fcf4e369a9372952b310e540f587209419af4c23c33e69ec8a718e58",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "666d59a7624b6772735311fbf13801ae",
+      "truth_structure_hash": "0ebea980ae66bc19629c329d9f721736055545554836aad215a65e07f1de59c0",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "38c30122956da5ca4a50603fb41a2f32",
+      "truth_structure_hash": "6a86bcd699fd92f56813329bd70575187d075dcf586083812bd78cfc6ff1bf0c",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "f7fb1faacabfadcc62967b46440e9b3d",
+      "truth_structure_hash": "fed0f04f4b88f244c1764a42702b851fc14007413f1043b90d580795175cedc5",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "fe58ecc2af12d39f9d443ad0f0edc952",
+      "truth_structure_hash": "0e03b052feb316a449ada5deee19c28d0d4a3c38ec569b1c3250b2621cf6de5c",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "2b10cd2e00344e59b0ae7755e8f46d92",
+      "truth_structure_hash": "e5c0f1a8eec9cc250a73d0b97b447af4a38b24c98cbbd1fefb3227522727f70e",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "d66314b296cfa287d745cc29b5d2846e",
+      "truth_structure_hash": "ec47f718e0ad9bcfc8e9a3407f628b366140d25543c6e1890755e909ed8175cc",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "68a4140ad88a3bf2a4f9fc5472aca246",
+      "truth_structure_hash": "74376177234cbd6676dcca44b01c97b3beace03e1630c7633512eab3405ece5b",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "f7a45d0544460e6a0f35f68c123cf5e3",
+      "truth_structure_hash": "46931db8b4a4eb5167e2f0fdde5c4669ac013c3601c704851dd2d4f2ee8f01cc",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "81eea50e2c330fc3f0f19f64ed968513",
+      "truth_structure_hash": "a7b07d4c7bbc5fd124eca804c3268ddde963cb90ea30494b4a5d87b24a3d53dc",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "9227d44299115f014e2798b9a2b67ae7",
+      "truth_structure_hash": "bd342719e6ec022a43d15ce530ee42466c61b8965fdbd1338127f66cc851eff7",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "89d64d98f9612c47d77596ec96d626fc",
+      "truth_structure_hash": "6043707286d2808bd97b24cadd179342a04683c779c1ae04b8c4410c7201a02b",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "d7d440bad9f8d446270f8e81907a0eb3",
+      "truth_structure_hash": "1aeb75373384a37e2d06d85c49974808be60621f6fdf0298a4b2a4d908ac34af",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "ea69fcac836d801779095a0843b34f0f",
+      "truth_structure_hash": "18ac71e9733b06573c7a6ba81772c66d092de0690fddc066d62fad362459013f",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "39f1c718019902c96f4db4a7443ebf7a",
+      "truth_structure_hash": "419648d84723959c3e51042f49eb58a7780dcd786da792c676c919d0223cc8a5",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "55f9f59640f6b3e545ec662610788c18",
+      "truth_structure_hash": "f58f3af511534d267a8df6b758fa538b6d1b92bc3ce98d3df1ebff7e077021c4",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "0491b17102eeef5198c6154ec669e965",
+      "truth_structure_hash": "ed720e09c9d1b03ead649a778ddca9a1c8a004de2daab5e52a7cef5f97c0afb7",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "adc37f231e9ceb30f9b8ab167157caed",
+      "truth_structure_hash": "f05389f0cc0f4b06d1e72d779a5d03177efe8d0f19af483e62daa957c7a87808",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "197ac0cea139fea1a9993ad90afc9af0",
+      "truth_structure_hash": "0f4e5aa1ac0f82bf033cd64589f8aed2d16a4778ad9e4e08a57cebe81fb8750e",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "7fdef9a9a31ee207cf9db54f24ba10ae",
+      "truth_structure_hash": "034cb431d565c97660d35abe24b645106e3bd8b849ee5231a2d21bed6aea6b49",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "3de1c347ffa96ba4f5a9ff30e9511a74",
+      "truth_structure_hash": "f85ec492272a70c24ead14ee7e6b909839a49999949fc718ea88d7ef8f02c3b9",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "44767bef68b9ab552576be3011bbd80a",
+      "truth_structure_hash": "11b21193c68c87c04f8c4016e34884729f108d9933be81c4c6dcb03e0413cbb8",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "79ab4351d04d482a18e64fb172765bd5",
+      "truth_structure_hash": "dbb91368d5d8d80289fdee706a6c87fc10e8c166d4d815eb16cabd933db2c615",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "507c292064d637d052bed7be66920ec1",
+      "truth_structure_hash": "aeb5d553e66b18c5d5064d843450bb72b30f2ff14bb3a6789a639a811561abb9",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "fd3f5a2cbff0f480fb90380de7fd183d",
+      "truth_structure_hash": "f3b96aff7f773d44354da2bfb6465acb549445be5da93dc5855b1b7fa3a536e6",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "938873b01986bddd6467308442a8cf83",
+      "truth_structure_hash": "440b0bfbbc909c03f2eed7601a86c1c154dec5f60cfd9ce38cba429eb6fac0ac",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "9159da790678a0b1b935ff2d601fb3d2",
+      "truth_structure_hash": "0343110cc4fdf3729bcde5ef8042e7c35f36ac112c7e2e4e97c59d69030f5a95",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "a62d841f750783248d3fd83d2ee92832",
+      "truth_structure_hash": "25012dc9606e8a4616fea3c51117d588053dc74fb5ae9c83618ed5f9bf7df57a",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "6c678b9cac2affcd4a7bfd1de84cf97d",
+      "truth_structure_hash": "d8e163b7ee6aa2b28e7b8d9d88f3e0a919b57ba5edd7198bfd0c72dc302cedb9",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "7a69976135c003f67149e727009bd532",
+      "truth_structure_hash": "efda1a158bd0817762e89fd452598b69d20ff9e5d89e94d18ec4555a6d5b420b",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "d1e1f0c621d2fa9ba60a09d5c7445d30",
+      "truth_structure_hash": "578a3dd48266306bd1ba1cef3e3c46b218b8090a91ab886d0858ba4051f811b1",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "8dceec9f6500a8d992b4121915c7ba28",
+      "truth_structure_hash": "ef2eb9c6aad7134bcfccf3589bb7ded651fbad8da7f0f649e493ad01a1b7b0c5",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "0bc0cbdb7c1063c8a80c2f541d40c24d",
+      "truth_structure_hash": "fa469b30a80e7eac2f81a9979d26b375d0c0b862e303a07c3ecadceebad114be",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "2766721926a661a44fc69298fe0b4841",
+      "truth_structure_hash": "bbf90bb2c8e0d71658cee3d09eef4a4809ef9f1e73e8022ecf667aef018112a7",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "76deb8bd57526c5f173ef576a1ac5f92",
+      "truth_structure_hash": "2008780ee10e721d032517605a1134c853d90a38a18b953f9c2ed10493d34d6d",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "52ec624fff6f3e076f548b432c4300f5",
+      "truth_structure_hash": "5db35bfa4bd20d481ff20700a120c50dab6b786251c75de8ef63a4971074cb22",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "11b252f09d5d1f1a8ba3612bd947bcda",
+      "truth_structure_hash": "d5be6110c22fddc79aac1e76dba465e35bbb875232a19f9d680e554ea3434700",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "0b87ff396ae7fd8dcc80f26a9230cdf2",
+      "truth_structure_hash": "881f27f9a4836d6f0722ac5f4e123857425ab98384e761573ab8a2763ccca5af",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "897ba75b8e6a05d94b39ff43a78661e6",
+      "truth_structure_hash": "f0c846c333d8dbaaf25e2befdab833844ebe7dc31116b769a1f3e720d93eea66",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "c0c31ec16f4b804f7f7e1f00ee5709ae",
+      "truth_structure_hash": "2cfd99552c30ea2288bb3eb6846aaafcaadd16658d8f7fe886d4a91c2a983443",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "882de36d407e8075ce79d2db3dea030f",
+      "truth_structure_hash": "fc6b5495421c1dd7afad137d9f1c88ed0b7a338487a8f425b7f9e86d8bb6010e",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "7356fdd04636e2ac100286d1e5367fad",
+      "truth_structure_hash": "aac9cdbb62c83e06fad01abf5225e89135b389cdf670008de538620b2c366bc5",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "a066cf71ed4048f32e23a4440ff90b6c",
+      "truth_structure_hash": "7979db8b6befbf5e3e7fb460cfa50f3add359f96f03c037352b2cd5036dff00d",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "d93afbcf8f2217497cbabbc5242fe5ac",
+      "truth_structure_hash": "44a68446173cff795c83965107ba605e7613573f42379b10edf2795bcaa28b69",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "c7621a0299a104080ab9aa52973f03ba",
+      "truth_structure_hash": "e544ab3bbdb888dee4ab15282a0ec232b1ad9bce4ba063e862e0c9f7bfe11651",
+      "constraint_family": "duplicate_encoding",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "2551ed8accb3b205786ea37440202b83",
+      "truth_structure_hash": "6ca934857b9985abae379ce258ef0d3e03fec322db5bc3aa9df6d9cb09864716",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "c1279b1c31e5fcd176377bba76e95a0c",
+      "truth_structure_hash": "61df0e98b16fae164f31b9e116edb6113fbce3106a630ebee061b382fd5048cb",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "d34f4aa0b988b53234fee1e27ff53c20",
+      "truth_structure_hash": "e3f4a719be1e4c9e9b997dff00ac309e10b970de9c61f7680d762d32fa6a0038",
+      "constraint_family": "cross_series",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "b028d0ebf8b0413e833bd06eb0f18004",
+      "truth_structure_hash": "32f974fc1e7d1047be5224a7ab7bb89e744ed5459e7c30b33b536852baf61bf8",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "a046261fb7d0fa5c7293311dcca3974e",
+      "truth_structure_hash": "36b2d9b1738de6d8206120a1f951f80a43effd29e2b404c52c5ad03644b5b62b",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "48bcf1a6bd3b2409469564e6342aeb05",
+      "truth_structure_hash": "8c8f6170978997e1c2cde7db0d33c80ba2f82c12ff22fb8af2a9ad457edfcdc3",
+      "constraint_family": "cross_series",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "0bdcc86096a3c1bb333221c4188eb064",
+      "truth_structure_hash": "8513843c22f10d7babfb0fbf81de1e744d35dc830b27d804a38259d7238b2a8b",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "be17244a960366ff3e5ebbc13e777e6e",
+      "truth_structure_hash": "9563316a48732d8610af409aef5e8c1746db3a4293aec2f317302a12db161481",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "8b0f2656258eea73e15cc133fa805f53",
+      "truth_structure_hash": "45a875e8cfddeb52fb3df40137429292cf65ef42c69e83fb682277e2068d1788",
+      "constraint_family": "trend",
+      "chart_type": "grouped_bar",
+      "operation": "range4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "d5f86d6420552f802a71673f9d002fbd",
+      "truth_structure_hash": "cfc849b8c73f93b8756614fcd2f15370094d32aa48521416753db6ab99f7be8a",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "sum4",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "5f784f54adc8bced5cacf6e80db43d19",
+      "truth_structure_hash": "e6cc0bd7156a5ee0e775f85d7a4c9f5b2c8e17904263e112480c5a7b7ee06baa",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "difference_pairs",
+      "split": "confirm"
+    },
+    {
+      "base_scene_id": "de6e92be7ab8c908e902a4c13a278c57",
+      "truth_structure_hash": "3745cb05ea1a1d3d5bf0c103dad2fa7843219582994d1a91d23f65fbd16afa25",
+      "constraint_family": "trend",
+      "chart_type": "line",
+      "operation": "range4",
+      "split": "confirm"
+    }
+  ]
+}
