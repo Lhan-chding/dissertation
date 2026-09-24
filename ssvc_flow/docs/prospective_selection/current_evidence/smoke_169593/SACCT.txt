@@ -1,0 +1,4 @@
+JobID|State|Elapsed|ExitCode|AllocTRES|NodeList
+169593|COMPLETED|00:31:08|0:0|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=33G,node=1|gpu-pro6000-14
+169593.batch|COMPLETED|00:31:08|0:0|cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=33G,node=1|gpu-pro6000-14
+169593.extern|COMPLETED|00:31:08|0:0|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=33G,node=1|gpu-pro6000-14

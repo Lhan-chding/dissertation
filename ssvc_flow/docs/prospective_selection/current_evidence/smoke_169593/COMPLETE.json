@@ -1,0 +1,102 @@
+{
+  "status": "GPU_SMOKE_COMPLETE",
+  "recipes": {
+    "R0": {
+      "status": "TRAINING_COMPLETE",
+      "identity": {
+        "lineage_id": 60000,
+        "source_recipe": "R0",
+        "role": "source",
+        "schedule_id": "source-0-0db650d34285460f"
+      },
+      "steps": 2,
+      "training_outputs": 64,
+      "checkpoints": {
+        "0": {
+          "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/smoke/R0/checkpoints/H00.pt",
+          "sha256": "f570a8443d145f983e028e110e67b2e997bc1efb66ed35c78208565bf3ada646",
+          "identity": {
+            "manifest_hash": "780883a4abc1f3e82af705b818259fc5d755f382a684eba41c29547cc978c139",
+            "step": 0
+          },
+          "state_hash": "41dc6fceb7b65f2fecbaf2e6cc25ad14d94347845cb3a77d831c401f5e3ccb47"
+        },
+        "2": {
+          "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/smoke/R0/segments/001_002/attempt_1790239993050084566/state.pt",
+          "sha256": "c74ce5b37a6f432a2aa51e99052ed0fcb63f28701fbd27a78f0d66f1b518eb25",
+          "identity": {
+            "manifest_hash": "780883a4abc1f3e82af705b818259fc5d755f382a684eba41c29547cc978c139",
+            "step": 2
+          },
+          "state_hash": "419bb2679cad42b8d0cec1272567d45d2f1c1fa1165e67a499454880c1f22f86"
+        }
+      },
+      "checkpoint": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/smoke/R0/segments/001_002/attempt_1790239993050084566/state.pt",
+        "sha256": "c74ce5b37a6f432a2aa51e99052ed0fcb63f28701fbd27a78f0d66f1b518eb25",
+        "identity": {
+          "manifest_hash": "780883a4abc1f3e82af705b818259fc5d755f382a684eba41c29547cc978c139",
+          "step": 2
+        },
+        "state_hash": "419bb2679cad42b8d0cec1272567d45d2f1c1fa1165e67a499454880c1f22f86"
+      },
+      "elapsed_training_seconds": 831.6490453009028,
+      "sampling_seconds": 140.90919322287664,
+      "update_seconds": 690.0647899580654,
+      "authoritative_segments": [
+        "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/smoke/R0/segments/001_002/COMMIT.json"
+      ]
+    },
+    "R1": {
+      "status": "TRAINING_COMPLETE",
+      "identity": {
+        "lineage_id": 60000,
+        "source_recipe": "R1",
+        "role": "source",
+        "schedule_id": "source-0-0db650d34285460f"
+      },
+      "steps": 2,
+      "training_outputs": 64,
+      "checkpoints": {
+        "0": {
+          "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/smoke/R1/checkpoints/H00.pt",
+          "sha256": "0c3db1eda5ffb9175f62b4d42f9686fdf930b4df93791364d6cc6fab2d002b2f",
+          "identity": {
+            "manifest_hash": "18253a51b3226df5f7fd82ba904ea71893813a047157bbfaa4c4712eefa57b13",
+            "step": 0
+          },
+          "state_hash": "81272366b6f635adb6769037b86cfd1fe3c94c608998fcd9a8c1bd3963112b77"
+        },
+        "2": {
+          "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/smoke/R1/segments/001_002/attempt_1790240826941481355/state.pt",
+          "sha256": "1dec4778011960d731910b03918a8769f9a22a9a25a634f3877fa7189667a685",
+          "identity": {
+            "manifest_hash": "18253a51b3226df5f7fd82ba904ea71893813a047157bbfaa4c4712eefa57b13",
+            "step": 2
+          },
+          "state_hash": "0190304777128e30c31274509b8e2d8b35d083385c8dacf29e77f863b99df51b"
+        }
+      },
+      "checkpoint": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/smoke/R1/segments/001_002/attempt_1790240826941481355/state.pt",
+        "sha256": "1dec4778011960d731910b03918a8769f9a22a9a25a634f3877fa7189667a685",
+        "identity": {
+          "manifest_hash": "18253a51b3226df5f7fd82ba904ea71893813a047157bbfaa4c4712eefa57b13",
+          "step": 2
+        },
+        "state_hash": "0190304777128e30c31274509b8e2d8b35d083385c8dacf29e77f863b99df51b"
+      },
+      "elapsed_training_seconds": 838.6191261180211,
+      "sampling_seconds": 142.23758552712388,
+      "update_seconds": 695.7353516560979,
+      "authoritative_segments": [
+        "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/smoke/R1/segments/001_002/COMMIT.json"
+      ]
+    }
+  },
+  "optimizer_updates": 4,
+  "evaluation_complete_state_unchanged": true,
+  "behavior_score_parity": true,
+  "full_checkpoint_restore": true,
+  "execution_kind": "REAL_CUDA_MODEL"
+}

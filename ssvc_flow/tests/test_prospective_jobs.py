@@ -266,6 +266,92 @@ def test_reject_multi_gpu_and_over_cap(registry):
         registry.submit_ready(lambda: [], lambda *a: "2", max_gpu_jobs=6)
 
 
+def historical_e(r, count=16):
+    return [
+        r.register_task(
+            "historical_e", {"policy_id": f"old-{i}", "panel_id": "E", "draw_role": "historical_E"}
+        )
+        for i in range(count)
+    ]
+
+
+@pytest.mark.parametrize("capacity", [4, 5])
+def test_training_and_evaluation_balanced_independent_of_task_hash(registry, capacity):
+    historical_e(registry)
+    for seed in range(61001, 61009):
+        registry.register_task("source", source(seed))
+    calls = []
+
+    def submit(task, path):
+        calls.append(task)
+        return str(1000 + len(calls))
+
+    registry.submit_ready(lambda: [], submit, available_gpus=capacity)
+    assert [task["kind"] for task in calls] == ["source"] * (capacity - 1) + ["historical_e"]
+    # Completed E leaves a slot, but the source submissions are not yet visible
+    # in squeue. Their durable intents still consume training slots.
+    registry.mark_complete(calls[-1]["task_id"], {"status": "COMPLETE"})
+    registry.submit_ready(lambda: [], submit, available_gpus=capacity)
+    assert len(calls) == capacity + 1
+    assert calls[-1]["kind"] == "historical_e"
+    assert registry.submit_ready(lambda: [], submit, available_gpus=capacity) == []
+
+
+def test_ready_prestate_precedes_historical_e_when_training_slots_full(registry):
+    deps = dependencies(registry)
+    registry.mark_complete(deps[0], {"status": "COMPLETE"})
+    for seed in range(61002, 61006):
+        registry.register_task("source", source(seed))
+    historical_e(registry)
+    calls = []
+
+    def submit(task, path):
+        calls.append(task)
+        return str(1000 + len(calls))
+
+    registry.submit_ready(lambda: [], submit)
+    assert [task["kind"] for task in calls] == ["source"] * 4 + ["prestate"]
+    assert calls[-1]["task_id"] == deps[1]
+
+
+def test_branch_backlog_keeps_one_evaluation_slot(registry):
+    deps = dependencies(registry)
+    for tid in deps:
+        registry.mark_complete(tid, {"status": "COMPLETE"})
+    for recipe in [f"R{i}" for i in range(8)]:
+        regbranch(registry, branch(recipe_id=recipe), deps)
+    historical_e(registry)
+    calls = []
+
+    def submit(task, path):
+        calls.append(task)
+        return str(1000 + len(calls))
+
+    registry.submit_ready(lambda: [], submit)
+    assert [task["kind"] for task in calls] == ["branch"] * 4 + ["historical_e"]
+
+
+def test_branch_origins_round_robin_survives_one_slot_wakeups(registry):
+    for seed in (61001, 61002):
+        deps = dependencies(registry, seed)
+        for tid in deps:
+            registry.mark_complete(tid, {"status": "COMPLETE"})
+        for recipe in [f"R{i}" for i in range(4)]:
+            regbranch(registry, branch(seed, recipe_id=recipe), deps)
+    calls = []
+
+    def submit(task, path):
+        calls.append(task)
+        return str(1000 + len(calls))
+
+    for _ in range(6):
+        registry.submit_ready(lambda: [], submit, max_gpu_jobs=1)
+        registry.mark_complete(calls[-1]["task_id"], {"status": "COMPLETE"})
+    assert [task["payload"]["origin_id"] for task in calls] == [
+        "61001_t32", "61002_t32", "61001_t32", "61002_t32", "61001_t32", "61002_t32"
+    ]
+
+
 def test_frozen_evaluation_draws(registry):
     frozen(registry)
     registry.write_decision(decision(registry))

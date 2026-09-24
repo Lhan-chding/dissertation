@@ -12,6 +12,7 @@ import hashlib
 import json
 import os
 import tempfile
+from collections import Counter
 from collections.abc import Callable, Mapping
 from contextlib import contextmanager
 from datetime import datetime, timezone
@@ -677,6 +678,8 @@ class TaskRegistry:
 
         Active rows: job_id, gpus (must equal 1). Unknown intents consume slots
         even when a queue query sees no job; queue lag cannot trigger resubmission.
+        With both queues ready, prefer capacity-minus-one training workers and
+        one observation/evaluation worker. Empty queues never leave capacity idle.
         """
         if not 1 <= max_gpu_jobs <= 5 or available_gpus < 1:
             raise ValueError("GPU concurrency must be 1..5 with hardware available")
@@ -685,18 +688,62 @@ class TaskRegistry:
             if any(int(row.get("gpus", 1)) != 1 for row in active):
                 raise ValueError("project jobs must each request exactly one GPU")
             active_ids = {str(row["job_id"]) for row in active}
-            slots = min(max_gpu_jobs, available_gpus) - self._occupied_slots(active_ids)
-            submissions = []
+            capacity = min(max_gpu_jobs, available_gpus)
+            slots = capacity - self._occupied_slots(active_ids)
+            training_kinds = {"source", "branch", "smoke"}
+            occupied_training = 0
+            submitted_branches = Counter()
+            ready = []
             for task in self.tasks():
-                if slots <= 0:
-                    break
                 tid = task["task_id"]
-                if (
-                    self._path("intents", tid).exists()
-                    or self._path("completed", tid).exists()
-                    or not self._dependencies_complete(task)
-                ):
-                    continue
+                submitted = self._path("intents", tid).exists()
+                completed = self._path("completed", tid).exists()
+                if submitted:
+                    if task["kind"] == "branch":
+                        submitted_branches[task["payload"]["origin_id"]] += 1
+                    receipt_path = self._latest_submission_path(tid)
+                    still_active = (
+                        receipt_path.exists()
+                        and str(_read(receipt_path)["job_id"]) in active_ids
+                    )
+                    # Unknown submissions occupy their role as well as a GPU
+                    # slot, even if a queue query has not observed them yet.
+                    if (not completed or still_active) and task["kind"] in training_kinds:
+                        occupied_training += 1
+                elif not completed and self._dependencies_complete(task):
+                    ready.append(task)
+            priority = {
+                "smoke": 0,
+                "source": 1,
+                "branch": 2,
+                "prestate": 0,
+                "evaluation": 1,
+                "historical_e": 2,
+            }
+            branch_ranks = {}
+            for task in ready:
+                if task["kind"] == "branch":
+                    origin = task["payload"]["origin_id"]
+                    branch_ranks[task["task_id"]] = (submitted_branches[origin], origin)
+                    submitted_branches[origin] += 1
+            queues = {
+                is_training: sorted(
+                    (task for task in ready if (task["kind"] in training_kinds) == is_training),
+                    key=lambda task: (
+                        priority[task["kind"]],
+                        *branch_ranks.get(task["task_id"], (0, "")),
+                        task["task_id"],
+                    ),
+                )
+                for is_training in (True, False)
+            }
+            submissions = []
+            while slots > 0 and (queues[True] or queues[False]):
+                train = bool(queues[True]) and (
+                    not queues[False] or occupied_training < max(1, capacity - 1)
+                )
+                task = queues[train].pop(0)
+                tid = task["task_id"]
                 self.assert_can_execute(tid)
                 intent = {
                     "task_id": tid,
@@ -725,4 +772,5 @@ class TaskRegistry:
                 _publish(self._path("submissions", tid), receipt)
                 submissions.append(receipt)
                 slots -= 1
+                occupied_training += int(train)
             return submissions
