@@ -1,0 +1,780 @@
+{
+  "status": "EVALUATION_COMPLETE",
+  "identity": {
+    "lineage_id": 41002,
+    "origin_id": "O2",
+    "policy_id": "O2_R0",
+    "panel_id": "E_old",
+    "horizon": 32,
+    "draws": 32,
+    "repeat": 0,
+    "experiment_seed": 20260924,
+    "role": "historical_E",
+    "checkpoint_state_hash": "f0fe4711bb7e4eabb328445d2fc79ecbb318c00efddd878973ad43f904c4c095",
+    "prompts_hash": "dd9334bf485e28c0755b18db823aa6fecae60b1ba7fc738fdddef8e9c0c5804a",
+    "config_hash": "a7fb48ce5e09d747501615f2f6a9ffe909d28ee053d1e56688347bf830a513e9"
+  },
+  "summary": {
+    "J": 0.8268229166666666,
+    "six_stratum_macro_pX": 0.8268229166666666,
+    "strata": {
+      "cross_series/IMAGE_CUE_FRESH": {
+        "n": 384,
+        "pX": 1.0,
+        "pI": 0.0,
+        "relation_full_wrong": 0.0,
+        "coord_accuracy": 1.0,
+        "valid_n": 384,
+        "valid_repair_mask": true,
+        "damage_any_given_valid": 0.0,
+        "F_given_valid": 1.0,
+        "B_given_valid": 0.0,
+        "M_given_valid": 1.0,
+        "single_edit_given_valid": 1.0,
+        "copy_given_valid": 0.0,
+        "Bdamage_all_outputs": 0.0
+      },
+      "cross_series/SYMBOLIC_FRESH": {
+        "n": 384,
+        "pX": 0.5520833333333334,
+        "pI": 0.1171875,
+        "relation_full_wrong": 0.0,
+        "coord_accuracy": 0.7643229166666666,
+        "valid_n": 339,
+        "valid_repair_mask": true,
+        "damage_any_given_valid": 0.16224188790560473,
+        "F_given_valid": 0.6342182890855457,
+        "B_given_valid": 0.1710914454277286,
+        "M_given_valid": 0.9321533923303835,
+        "single_edit_given_valid": 0.8938053097345132,
+        "copy_given_valid": 0.08849557522123894,
+        "Bdamage_all_outputs": 0.1675347222222222
+      },
+      "duplicate_encoding/IMAGE_CUE_FRESH": {
+        "n": 384,
+        "pX": 1.0,
+        "pI": 0.0,
+        "relation_full_wrong": 0.0,
+        "coord_accuracy": 1.0,
+        "valid_n": 384,
+        "valid_repair_mask": true,
+        "damage_any_given_valid": 0.0,
+        "F_given_valid": 1.0,
+        "B_given_valid": 0.0,
+        "M_given_valid": 1.0,
+        "single_edit_given_valid": 1.0,
+        "copy_given_valid": 0.0,
+        "Bdamage_all_outputs": 0.0
+      },
+      "duplicate_encoding/SYMBOLIC_FRESH": {
+        "n": 384,
+        "pX": 0.9973958333333334,
+        "pI": 0.0,
+        "relation_full_wrong": 0.0026041666666666665,
+        "coord_accuracy": 0.9993489583333334,
+        "valid_n": 384,
+        "valid_repair_mask": true,
+        "damage_any_given_valid": 0.0026041666666666665,
+        "F_given_valid": 1.0,
+        "B_given_valid": 0.0026041666666666665,
+        "M_given_valid": 1.0026041666666667,
+        "single_edit_given_valid": 0.9973958333333334,
+        "copy_given_valid": 0.0,
+        "Bdamage_all_outputs": 0.0008680555555555555
+      },
+      "trend/IMAGE_CUE_FRESH": {
+        "n": 384,
+        "pX": 1.0,
+        "pI": 0.0,
+        "relation_full_wrong": 0.0,
+        "coord_accuracy": 1.0,
+        "valid_n": 384,
+        "valid_repair_mask": true,
+        "damage_any_given_valid": 0.0,
+        "F_given_valid": 1.0,
+        "B_given_valid": 0.0,
+        "M_given_valid": 1.0,
+        "single_edit_given_valid": 1.0,
+        "copy_given_valid": 0.0,
+        "Bdamage_all_outputs": 0.0
+      },
+      "trend/SYMBOLIC_FRESH": {
+        "n": 384,
+        "pX": 0.4114583333333333,
+        "pI": 0.0625,
+        "relation_full_wrong": 0.22135416666666666,
+        "coord_accuracy": 0.62890625,
+        "valid_n": 360,
+        "valid_repair_mask": true,
+        "damage_any_given_valid": 0.42777777777777776,
+        "F_given_valid": 0.4388888888888889,
+        "B_given_valid": 0.7555555555555555,
+        "M_given_valid": 1.2027777777777777,
+        "single_edit_given_valid": 0.5416666666666666,
+        "copy_given_valid": 0.13333333333333333,
+        "Bdamage_all_outputs": 0.2986111111111111
+      }
+    },
+    "interfaces": {
+      "IMAGE_CUE_FRESH": 1.0,
+      "SYMBOLIC_FRESH": 0.6536458333333334
+    },
+    "samples": 2304,
+    "prompts": 72,
+    "fixed_panel_mc_se": 0.002034277681049734,
+    "observed_saturation_not_probability_one": true
+  },
+  "chunks": [
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/651c1cb9ad2e0c8f72a8f14091f587e9efab833ac69f46a0347251c393f38804/attempt_1790242341985676610/samples.jsonl",
+        "sha256": "a6221fdca67a2481ce6083b11e85c6d5075b22482cbea502190116764fb1b763"
+      },
+      "count": 32,
+      "elapsed_seconds": 75.51204572900315
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/cb7f9d6a7e025a1a332d63c42d3a84924f3b13485aa79a27459bae009d584830/attempt_1790242417501210405/samples.jsonl",
+        "sha256": "8cf8a09e6fccbd4dd4c27acedf707b259aaf52c6122be3cbea0b6fbbb616847e"
+      },
+      "count": 32,
+      "elapsed_seconds": 107.11762092400022
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/35bf6429238c034148793f82b8b3eedfa90284d974f383f406afd7f8b7667f96/attempt_1790242524622107347/samples.jsonl",
+        "sha256": "e71c54b498e10866c27b884c92458e3375ecbaec2c986375895adf55ad065156"
+      },
+      "count": 32,
+      "elapsed_seconds": 68.34489125599794
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/8ac0135639b6f62e239834deb4d8c1fe865da413d6f7b33938eacc130227b7ec/attempt_1790242592970085512/samples.jsonl",
+        "sha256": "d3e05aba443680aa2bbceb5bf8dddb0684be4654f53c4a52f3e7f34e5688af0d"
+      },
+      "count": 32,
+      "elapsed_seconds": 97.26089381099882
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/1015bc76efea32882eaab5451daf246c655484eff05abfac584093508cf420ac/attempt_1790242690234216381/samples.jsonl",
+        "sha256": "5f5f3b4c7020c2f69af687a1bbb969a81a72380320cccdbc8f0bc90920b29147"
+      },
+      "count": 32,
+      "elapsed_seconds": 68.14479763899726
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/15d697ccca6745b5ecfbd2e159a1bc539d3964743f986ef66c54e4e10047f52b/attempt_1790242758381923161/samples.jsonl",
+        "sha256": "3b9c8cd45354f4a72e44f32e1a3b6c2f4fea23ab7c748a5efdfb1d36e87b2b28"
+      },
+      "count": 32,
+      "elapsed_seconds": 96.79681276400152
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/c3f594691034ef7b92547678972c0e98ceb4ecec96a9fe951d602bbce418afef/attempt_1790242855181123299/samples.jsonl",
+        "sha256": "96399bdbc053e0658dfbfcbebfca354250ed8599865191b86c1b91b3d5c74e6b"
+      },
+      "count": 32,
+      "elapsed_seconds": 70.99725261500134
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/ce40ac5a8312faa150e3cd9d878625efb293b670959c15078aa9848c71a2aac2/attempt_1790242926181196144/samples.jsonl",
+        "sha256": "44e0bb41561c7ff6889543654d732619bb99a990b25a7c7f46b145a12dffa285"
+      },
+      "count": 32,
+      "elapsed_seconds": 100.40727849399991
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/a58b000ecabb5033a2c0277d6629ec0ba4d77177d01aaca554c64111e028b5ac/attempt_1790243026592801219/samples.jsonl",
+        "sha256": "97a5f440d6d42df64cf393b7cd12da82b021aae6198638a4a10191955eef1acb"
+      },
+      "count": 32,
+      "elapsed_seconds": 70.62522784700195
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/9637a10e37813870c8295baa7a43fa0cdc3df98b55c1a960d671361c13d63726/attempt_1790243097220507290/samples.jsonl",
+        "sha256": "a929318dc16c1bf9dfb6e9779be176269fe10a70dcc2f19a36ed0fd394089369"
+      },
+      "count": 32,
+      "elapsed_seconds": 100.23005905100217
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/effd4e2cffb35a57a543fecc4bfac36e8a6424ff03c4a9a10ffeda0580293cca/attempt_1790243197453450901/samples.jsonl",
+        "sha256": "a52ded6e0bd4f2b3960878ccec029d12d11f5a7952c74567143a00a5a8bda4fb"
+      },
+      "count": 32,
+      "elapsed_seconds": 71.2962762160023
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/90b3c20c5464e5c563650ed0af0667a09d78e640c71920addddcd1af7b6fdbe9/attempt_1790243268752460190/samples.jsonl",
+        "sha256": "961bc11bbdd9db32b67b7d61a539e292a378d111f4bf87b5fd7aad47a38bf1cf"
+      },
+      "count": 32,
+      "elapsed_seconds": 101.55443783699957
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/4480183cf3f59fdd56b1790b34dd1d02197854eeef1dbc5d208bec8a4a6b61ea/attempt_1790243370309598699/samples.jsonl",
+        "sha256": "ff39a1ef7b9b7a6550977bff344e02939907e99577292de45dfcf8fecb1b5966"
+      },
+      "count": 32,
+      "elapsed_seconds": 72.08650219599804
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/6a8a93e2c8d75dd163c8fae88b9714c0c93eae7258308cbb71679733dd4d5415/attempt_1790243442402762312/samples.jsonl",
+        "sha256": "02ebae4d9e89205266d7f24f8adf25bc82074ffe6bb92307e818d80ba651beea"
+      },
+      "count": 32,
+      "elapsed_seconds": 103.49502469299841
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/f35c77328c339ce00d4b036d95f0c3a33289c7b0505c88b63ac3bdee704a48a9/attempt_1790243545900960664/samples.jsonl",
+        "sha256": "f9736c2290ccfea9712fe8d67664c68913338597e2ed29d462b56e797f3e8b82"
+      },
+      "count": 32,
+      "elapsed_seconds": 71.80550816600226
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/369dbf32d349a6bb4aebff148987f3d718c146f4f90011a6012bf5e1c1b0f661/attempt_1790243617711072161/samples.jsonl",
+        "sha256": "2ab26bfc3bd86c04a4764ac2f0cfbefc771c9e15a3c9fc9439ed4ffaa5c0064f"
+      },
+      "count": 32,
+      "elapsed_seconds": 103.54886097299823
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/fc1a5fd6102dd49cf8f74bbff05858eab853861017df1a7e37305735bfc1b43b/attempt_1790243721262656685/samples.jsonl",
+        "sha256": "49625c92235025f91fce5a0162b07817521ebe90e80c0cf3b9bbec31426bdba8"
+      },
+      "count": 32,
+      "elapsed_seconds": 75.0574345219975
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/629880344ed6eae023588c989b456167e6abca0bb94344796dd39e5672373cb2/attempt_1790243796323330735/samples.jsonl",
+        "sha256": "e139f2bd4f1ced7a0c029a216f3b5a34fc14ee389eef16aba08e36c4fd6994c6"
+      },
+      "count": 32,
+      "elapsed_seconds": 108.5177551079978
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/6c6aa1125e70bf768c93ec6ef52c264641ca2c6f731c541bccc888245849b60f/attempt_1790243904844460661/samples.jsonl",
+        "sha256": "569f84c3b946978f71d83fc36b37ff4b0454999b68756763d463d136b9195112"
+      },
+      "count": 32,
+      "elapsed_seconds": 74.25975533599922
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/d72c08bc5aebd40822be91bfda84f3a4520cbad362f5fc9bbabd74a3ac6718d9/attempt_1790243979107370975/samples.jsonl",
+        "sha256": "eb044b2273ed9ee67f7abb2627335c339bc8bc8d4b093ce3b3558f26cdba4322"
+      },
+      "count": 32,
+      "elapsed_seconds": 108.41736844800107
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/71ec6c79aca2e7944919a1605ae298803d02d504cafc5c87e30029204d76b858/attempt_1790244087527704543/samples.jsonl",
+        "sha256": "9fe9f87a0c5e63842fcc3982b1c3719e3539b5381fa961700619b7a6494f5077"
+      },
+      "count": 32,
+      "elapsed_seconds": 74.65826200800075
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/32796af28e5d771d69f553b566953175e2e2749a8c3c6287599d84ff25c6735d/attempt_1790244162192549607/samples.jsonl",
+        "sha256": "58078200a1750116e75a09e41010250a0e5b519e1d95b9e09a19ee34a0326d6a"
+      },
+      "count": 32,
+      "elapsed_seconds": 107.42732691499987
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/2484cb3917932fab64805afbd69ee20d1f54b8d2b69bd7f99d32f19d29f9fa60/attempt_1790244269623125239/samples.jsonl",
+        "sha256": "544975deb655269259d93c19417c2dccf620c73a85df39e35f90576945b19a4b"
+      },
+      "count": 32,
+      "elapsed_seconds": 68.81166577299882
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/521781c9ee2630a7ad797a65f7c712bd4564d8c450beebd993ddbf178b6b5943/attempt_1790244338437971100/samples.jsonl",
+        "sha256": "35a45cfe046df5ae078719655f1b168c7e01bc550b180d34d530cb46225a8465"
+      },
+      "count": 32,
+      "elapsed_seconds": 92.43609515299977
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/13c5eb0728be906b6915696be7c842dc0821f4e4aeca77eac1c41f5d07c17a0c/attempt_1790244430877380301/samples.jsonl",
+        "sha256": "8b4b5c07b83461ae9da69db31d873578fd4b615bf7022572e1068d03264f7b38"
+      },
+      "count": 32,
+      "elapsed_seconds": 73.78813370400167
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/57ffbd06eeb370487ae00d4be4ddf8f2bcba367dda80e4054b9ee3a8c674b4ca/attempt_1790244504670130535/samples.jsonl",
+        "sha256": "1b2809f13f26a48bdc7c31fc11440188174b36cd6bd554d2a18d6909430f1281"
+      },
+      "count": 32,
+      "elapsed_seconds": 105.44620106300135
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/f77bae7c369d44bf7b4196167a0ea9a3382696cdc1c3fc72e876582ba393a32c/attempt_1790244610119561567/samples.jsonl",
+        "sha256": "ecedb33c623a0433865b2cf7c4623748727d5321b194670a486deb13398fd70c"
+      },
+      "count": 32,
+      "elapsed_seconds": 73.79323293999914
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/39414f06ad522fb3297be5a31d087958961283dea69a32b054d98b389e87f404/attempt_1790244683915825977/samples.jsonl",
+        "sha256": "d6f84d4d80fdb21ba4812096496d868388b8c8c03eacfce616952462aeaf0fb0"
+      },
+      "count": 32,
+      "elapsed_seconds": 106.32917404900218
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/3300a44b4f91038f5505c6599988a1a1a6e91a3dbe23d306bb9a6be3c646f713/attempt_1790244790248046216/samples.jsonl",
+        "sha256": "d5c8035a6e16f8afd4be272e6d2b47cd8cfd41135f56e287b26dbc9900adc597"
+      },
+      "count": 32,
+      "elapsed_seconds": 73.82807184899866
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/44930acb2dba216727af5e1f823bcaeb387cb354817808f765cbee6dd5b0fbfd/attempt_1790244864079276854/samples.jsonl",
+        "sha256": "6fb34200ff69c6779f78b09fb3e3e9662fd8deb980fcf0cfdcd2e9c39fa0e7d2"
+      },
+      "count": 32,
+      "elapsed_seconds": 108.07602720599971
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/617d740c5dfaacd5ed83c063e58984ba63e29084c2796a4b0e7a388e32e48c87/attempt_1790244972158323529/samples.jsonl",
+        "sha256": "c0580920d7d37580b198aa2a300caef77f1bab830a0cf56a76f8f0b3f88c1826"
+      },
+      "count": 32,
+      "elapsed_seconds": 70.94763989100102
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/42aed44a800d4980d506b99bb80d3d39e7822f65195eb2e28c737bb6847ef1c1/attempt_1790245043108878100/samples.jsonl",
+        "sha256": "97e6c2eb1dceef8ec4a3b93e256c832825a81a7502da3e9e5664bf28ade04548"
+      },
+      "count": 32,
+      "elapsed_seconds": 102.29648856500353
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/92bd43c7c949598a08401f7a5709abb9d5a48ef775290b805d30cf5713bdb741/attempt_1790245145408423184/samples.jsonl",
+        "sha256": "35136aa7c99da0799c9f17b70c6e35ec58ffb57374736de367b46a1aacb512e5"
+      },
+      "count": 32,
+      "elapsed_seconds": 71.10615233300268
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/087b85ac407f1583749cb49d378f649e031e1b6b32fc2d0db891c547f42921bd/attempt_1790245216517612906/samples.jsonl",
+        "sha256": "f40ca564a1a1da7ea48ff1cb0cd3ba6c09a82beded5b3d963d6db4b9b2105566"
+      },
+      "count": 32,
+      "elapsed_seconds": 102.58259932999863
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/cffbdf36c03080360ee8daab934c4391db16f2dadfaf4d463119c60968f0d4b8/attempt_1790245319103095816/samples.jsonl",
+        "sha256": "c36edaa1d4ad30ea269d19b53a8eb9bcf5c13017a319cfc88a0cbc657aa5be83"
+      },
+      "count": 32,
+      "elapsed_seconds": 73.4843330980002
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/ff695c37db9345bb3ad66d7d4b494615028c93296539dc3f4b9339899519c741/attempt_1790245392590696961/samples.jsonl",
+        "sha256": "f1c0a3983b78ebca7e9503f2b05fcdb491af57215573f63e4727e457542e291c"
+      },
+      "count": 32,
+      "elapsed_seconds": 108.10775236299742
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/06f9174e52da9c5ecf4dfe7224c6430ef496990ec8d7a576fa4f9c349c9c31ca/attempt_1790245500702141329/samples.jsonl",
+        "sha256": "f26dcf9321254ab779e321875deaa599c6f2748dd78574e422b35133bf57f1ad"
+      },
+      "count": 32,
+      "elapsed_seconds": 71.04578979100188
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/dc77387ec36f0e9dd9ec130ded0a9a955812f265ae784ac0c68357b89977758c/attempt_1790245571754854522/samples.jsonl",
+        "sha256": "29b8e6167be4fe611b14e5710e17ae996e26b06c3a235ba73277c58a3cc88eed"
+      },
+      "count": 32,
+      "elapsed_seconds": 102.03853021699979
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/ed357b2236de5364cd32c0b33b76bb1b248daf756cdbe941ed1e77fbb76eaee6/attempt_1790245673796068120/samples.jsonl",
+        "sha256": "dd1f84b28d683aa0b4da245373b3e7d139c3e9514fde05d0de354b43d707a4ab"
+      },
+      "count": 32,
+      "elapsed_seconds": 68.05010576900168
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/f64110a9ef4b67a055919150714ef317423272b713afa28b14dff19c908ff18e/attempt_1790245741850759865/samples.jsonl",
+        "sha256": "45321e5d751d163238ee5eb15a1fc076bf1e7e43b5cc7e4ee4fbacc5f158b102"
+      },
+      "count": 32,
+      "elapsed_seconds": 96.0549152800013
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/8fda5ff9e56a15f46d64054659f9d957ad7db7274f9ff74b045d0868e5eabe32/attempt_1790245837913477157/samples.jsonl",
+        "sha256": "116270a88b89a93d2bdb667fe99b2b616b6765cc3ca409bf84507bfc168426cc"
+      },
+      "count": 32,
+      "elapsed_seconds": 74.03291040900149
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/b9a490f2bde4876abed922f07ef32bc9c348cae662e3831f6fe78036536793ce/attempt_1790245911950121079/samples.jsonl",
+        "sha256": "f60f06dcb9ee2b531aad8b574146ff03e3798cebda5cd3868abe999423440162"
+      },
+      "count": 32,
+      "elapsed_seconds": 105.86948911400032
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/984385d73d8fd4e1f563accd0d340cefe737518acc4d4fa61ac0c5c216ca4904/attempt_1790246017823541435/samples.jsonl",
+        "sha256": "15834158ac4cb285424de6a12090bdbcfefdd1b95614a26b003be0cd97809b58"
+      },
+      "count": 32,
+      "elapsed_seconds": 68.02491325799929
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/ecfdc41a2d9cdeadd83d832a05236d01e424e65dcbb6758c77bf236a142f69f8/attempt_1790246085851370834/samples.jsonl",
+        "sha256": "6a56ab35b62e4359cc4a790d9e32454ce1edd0c02b4d55a3e268a210330edb02"
+      },
+      "count": 32,
+      "elapsed_seconds": 95.63131498200164
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/326df0ce732481d2a22b6d3018b5168509c22fc5c81107acc8ccde00755fcb45/attempt_1790246181485454327/samples.jsonl",
+        "sha256": "8d848d02db1561bf5873bd24a3f1c4a44a7b3b390b9bd51d3b69be1c77ff2928"
+      },
+      "count": 32,
+      "elapsed_seconds": 71.09121332399809
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/768781295c0b8ba097c303cfdf88f7af0514bfc5a09a69e0037084ea95c5fe10/attempt_1790246252578870165/samples.jsonl",
+        "sha256": "0543cba767900967fab268bd793030d7d6f3b13021b99cc1116e2914a91dee91"
+      },
+      "count": 32,
+      "elapsed_seconds": 101.64616008699886
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/dc51d824e89ab306796f6f0aa6e626ca8f7a5fde2c960997bf6da43cbfde3e42/attempt_1790246354228148273/samples.jsonl",
+        "sha256": "17dfb47a81085d2030359506313efc5288579be5cc57344c69ee9e04d12e2e4f"
+      },
+      "count": 32,
+      "elapsed_seconds": 74.2957015739994
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/7de99d985039026b8e5d7319d4df5285422f694ea174751d1adbf4670a76be41/attempt_1790246428526718418/samples.jsonl",
+        "sha256": "ba7e9c53d63627aebdc90efc621ef4824283d4c5a0eb6c66464b88c2508ea2c4"
+      },
+      "count": 32,
+      "elapsed_seconds": 107.40881684800115
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/b5f6bb2a1c95f125a829fa1a43c92642e1f15e0873678ead68e891518dbd3505/attempt_1790246535938616614/samples.jsonl",
+        "sha256": "5ae1eb92a7862a8807c810cfcd442e102a97f204b9f6c0e5b8cd560677b50770"
+      },
+      "count": 32,
+      "elapsed_seconds": 71.43561310299992
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/a71520d99ac98e1673bed9c5d43a57ca4003b9373b2fc708941b4746862fa857/attempt_1790246607376698010/samples.jsonl",
+        "sha256": "dde9c0888fcee714cb70cd669641d6d0643e9bde2bdb628f7c3711475cbaf767"
+      },
+      "count": 32,
+      "elapsed_seconds": 103.57972567300021
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/a3114822bdf9ab0688bf8b45fa07c807dcca54a49ccf87009af9a82dbc556d19/attempt_1790246710959802652/samples.jsonl",
+        "sha256": "72214e100e6d511c3a66774dc271211e9292eb5ad835ba8a2b449f8ae73ec25b"
+      },
+      "count": 32,
+      "elapsed_seconds": 69.39868101100001
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/6fe5f4ea55e85943ff4992b02220378dfbd728692d3235af83dd3af5dfb6bb4e/attempt_1790246780361998070/samples.jsonl",
+        "sha256": "8d642d4ccfa8ae3d1099452abed208bcdd59767342fddd9ce2b274abf2537875"
+      },
+      "count": 32,
+      "elapsed_seconds": 98.84107580300042
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/abbb666ad16173f7272b27bb767d9faeb85ccae62b6eae4728861609c1f68364/attempt_1790246879206089184/samples.jsonl",
+        "sha256": "8d3f73233194dfcb4a085dc3db43e5b5988a337368cfa35423350bf9a3b95651"
+      },
+      "count": 32,
+      "elapsed_seconds": 74.98569797799792
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/630c7ffb6ae23a9e1478e539e3de47bc176219a541cf58b12ee2be41944fbb06/attempt_1790246954194984891/samples.jsonl",
+        "sha256": "97666dd2f71ffa66d838e76f89f1c4fb3fc96cbeaed6dfb629f45de74011fde9"
+      },
+      "count": 32,
+      "elapsed_seconds": 108.32737315599661
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/bf0db24e7c44175a7a9d89f9f18a0a2da72427ca6951c85d58af9f7ecca82fb0/attempt_1790247062529508719/samples.jsonl",
+        "sha256": "d9d8e9fd3dc54b35375b9f41025253bee92603bd72cd67a3839734317e8e3b31"
+      },
+      "count": 32,
+      "elapsed_seconds": 69.31270857100026
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/7019bf50c4ed25e57975e755541e947f47487b8569ebad4ca6977ef766e3b46e/attempt_1790247131847365296/samples.jsonl",
+        "sha256": "ff6a31b6ebede17b7b5a4ad6b831757c3e82635882404ecdd90d4399bb174ccc"
+      },
+      "count": 32,
+      "elapsed_seconds": 102.50771785899997
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/4aa9ec37d627df0da19315bd3b0d56ff972276453023c6193931ff8cc255ec9a/attempt_1790247234358033386/samples.jsonl",
+        "sha256": "7439ffbc63da69732414f9c8f86b08048144e4e7b2cb6f361c70118ef3950203"
+      },
+      "count": 32,
+      "elapsed_seconds": 71.45733815099811
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/2aaef60f6405355306d3c8cb614ea1508564f6a161d2deb69e5f9e324e945225/attempt_1790247305818166819/samples.jsonl",
+        "sha256": "7a53d032915ab0d3df435a43c2831b53300c75d63f58aab64b82814f204d1fd9"
+      },
+      "count": 32,
+      "elapsed_seconds": 102.16878679300135
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/3fd1188f2ccf174435611d14b10d980a478f0295b46bbaa3d9ce070ede5f2d01/attempt_1790247407989585355/samples.jsonl",
+        "sha256": "cf75b86ba31b381f043cd917b25edbaaad7bf08af88ee09255debf44872e216d"
+      },
+      "count": 32,
+      "elapsed_seconds": 75.741308259996
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/754785934c992e99b7e9b492105815c5dae4938f48df27fba73aeca47fe5506c/attempt_1790247483733857967/samples.jsonl",
+        "sha256": "f56e5d7a5d475103d768d98a8ad14d4fe5885060f444d96b02825899e93deec9"
+      },
+      "count": 32,
+      "elapsed_seconds": 106.83728064799652
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/21c3b0bda2db8a9a323447f252b6860f8e3e8ca8ce17bfe10ca02a4aa66f29aa/attempt_1790247590573993948/samples.jsonl",
+        "sha256": "632243df766d71bf226a66d5f8f8731cc99036398643b961fda336009a8484e2"
+      },
+      "count": 32,
+      "elapsed_seconds": 73.96059744000377
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/de3acd1421a99a072e8076fc70ad85c207cf8cd7c1f631a6bb15c5f7a79bce03/attempt_1790247664538438594/samples.jsonl",
+        "sha256": "6a16f9e8a9af802bee80545301c722e75d8207856cce68fb53449455a08e1413"
+      },
+      "count": 32,
+      "elapsed_seconds": 106.99534876799589
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/2c4b29ef1d52f5fd88319fc28630e2093b6ba261f84c3fed49f3022f8e126555/attempt_1790247771537660829/samples.jsonl",
+        "sha256": "808147e62d1a6c43a60e79f850321f7e02cbe45b790cb861ba0eadd795774541"
+      },
+      "count": 32,
+      "elapsed_seconds": 68.38451454500319
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/cab72c9985efb8ee967221c7b2c950db6cf2934d218ab3a8a6b31ea5fbe40b13/attempt_1790247839925644835/samples.jsonl",
+        "sha256": "2a5683651423f367576e4d02597033d61c668be5856235f45bb83e31ed623f03"
+      },
+      "count": 32,
+      "elapsed_seconds": 98.05522042800294
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/fbbde3af21d667e74acfff8beada98440656a792003497f6f20e013d6d1e51ce/attempt_1790247937985262437/samples.jsonl",
+        "sha256": "e88dd5ecd5975f629e33857c5cce60cdcf9325bf4fd45b8c71b84e62df0f0a7b"
+      },
+      "count": 32,
+      "elapsed_seconds": 73.95470824000222
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/9950dfa4da9ffded45eec43c1bf742ffbbe2217c7ccd8a7fdeab6a32e14e4c15/attempt_1790248011943778543/samples.jsonl",
+        "sha256": "e2e1cbbaf4a6df648f17756c406201e3fbf1e5d2422e4fb7c4fe2349d5b52ffa"
+      },
+      "count": 32,
+      "elapsed_seconds": 108.11128997800552
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/77ff13f699408bb40a8ab6b8858ee03523b53147ead959f2417923d37dc8eefb/attempt_1790248120058084019/samples.jsonl",
+        "sha256": "a7e4900812ea79746d0a2ef5d0fcfd8932b865de64116fa3acb3c20bbb548893"
+      },
+      "count": 32,
+      "elapsed_seconds": 74.87821403799899
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/b004b214e88ee1f3a2f62daac6d87c28f977913bb1222373ac78aaa1722473fa/attempt_1790248194939891352/samples.jsonl",
+        "sha256": "7ca38057976a67b42437bb75344f46721c05c3f85d8c95242feb022595c0ae00"
+      },
+      "count": 32,
+      "elapsed_seconds": 107.49725298600242
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/0031a14d5187c1feaed3ba47a6cd5e5e9d1026803ff661fcc2515596c146891a/attempt_1790248302440006199/samples.jsonl",
+        "sha256": "334fb2bdd1bb5df7805dc28662266cb946a2557daff0166cee1fe38f828e335e"
+      },
+      "count": 32,
+      "elapsed_seconds": 71.15845113999967
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/1cf71c77f5e48488979debd8040a93cf8415b8498ab1a54cffa3a44a752b8ccb/attempt_1790248373601678408/samples.jsonl",
+        "sha256": "bd4b14b939485042cb71ef4a9f070ce6cb6e55cf2591ffc6a16f45098358d2e5"
+      },
+      "count": 32,
+      "elapsed_seconds": 102.620863603006
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/e1719b96302e745110326e8a5c0e47416a301591c770e632bb8094d113679c7a/attempt_1790248476225277543/samples.jsonl",
+        "sha256": "f53505e45a446129c6c59b17be4c6a8ca77edfb02f20f17709a2c9ab28386a02"
+      },
+      "count": 32,
+      "elapsed_seconds": 73.93674238899985
+    },
+    {
+      "identity_hash": "2cd8f3efba5c8a9b4e040ad92992e4f1caa69627239e994311d7488bdb430012",
+      "samples": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/historical_E/O2_R0/prompts/69dc5805510f11dfd2c1b26eb02ae864a426eaa610cc09dbe6830819a86b35b7/attempt_1790248550165506658/samples.jsonl",
+        "sha256": "c483a866bea5e7dd779fa6c316b2ba65df2a2258a81d19a514eba11cc52410b4"
+      },
+      "count": 32,
+      "elapsed_seconds": 107.13937507000082
+    }
+  ],
+  "elapsed_sampling_seconds": 6315.0707061490175,
+  "generated_outputs": 2304,
+  "extra_scoring_calls": 0
+}
