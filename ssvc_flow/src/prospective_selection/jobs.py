@@ -551,8 +551,8 @@ class TaskRegistry:
         before the single submission callback. One recovery per task is allowed;
         an uncertain callback outcome, or a second failure, needs separate review.
         """
-        if not 1 <= max_gpu_jobs <= 5 or available_gpus < 1:
-            raise ValueError("GPU concurrency must be 1..5 with hardware available")
+        if not 1 <= max_gpu_jobs <= 7 or available_gpus < 1:
+            raise ValueError("GPU concurrency must be 1..7 with hardware available")
         if not isinstance(reason, str) or not reason.strip():
             raise ValueError("explicit recovery reason required")
         evidence = json.loads(json.dumps(terminal_receipt))
@@ -681,8 +681,8 @@ class TaskRegistry:
         With both queues ready, prefer capacity-minus-one training workers and
         one observation/evaluation worker. Empty queues never leave capacity idle.
         """
-        if not 1 <= max_gpu_jobs <= 5 or available_gpus < 1:
-            raise ValueError("GPU concurrency must be 1..5 with hardware available")
+        if not 1 <= max_gpu_jobs <= 7 or available_gpus < 1:
+            raise ValueError("GPU concurrency must be 1..7 with hardware available")
         with self._lock():
             active = list(query_active())
             if any(int(row.get("gpus", 1)) != 1 for row in active):

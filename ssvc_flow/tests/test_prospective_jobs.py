@@ -262,8 +262,8 @@ def test_pending_running_cap(registry, available, active, expected):
 def test_reject_multi_gpu_and_over_cap(registry):
     with pytest.raises(ValueError, match="exactly one"):
         registry.submit_ready(lambda: [{"job_id": "1", "gpus": 2}], lambda *a: "2")
-    with pytest.raises(ValueError, match=r"1\.\.5"):
-        registry.submit_ready(lambda: [], lambda *a: "2", max_gpu_jobs=6)
+    with pytest.raises(ValueError, match=r"1\.\.7"):
+        registry.submit_ready(lambda: [], lambda *a: "2", max_gpu_jobs=8)
 
 
 def historical_e(r, count=16):
@@ -275,7 +275,7 @@ def historical_e(r, count=16):
     ]
 
 
-@pytest.mark.parametrize("capacity", [4, 5])
+@pytest.mark.parametrize("capacity", [4, 5, 7])
 def test_training_and_evaluation_balanced_independent_of_task_hash(registry, capacity):
     historical_e(registry)
     for seed in range(61001, 61009):
@@ -286,15 +286,48 @@ def test_training_and_evaluation_balanced_independent_of_task_hash(registry, cap
         calls.append(task)
         return str(1000 + len(calls))
 
-    registry.submit_ready(lambda: [], submit, available_gpus=capacity)
+    registry.submit_ready(lambda: [], submit, max_gpu_jobs=capacity, available_gpus=capacity)
     assert [task["kind"] for task in calls] == ["source"] * (capacity - 1) + ["historical_e"]
     # Completed E leaves a slot, but the source submissions are not yet visible
     # in squeue. Their durable intents still consume training slots.
     registry.mark_complete(calls[-1]["task_id"], {"status": "COMPLETE"})
-    registry.submit_ready(lambda: [], submit, available_gpus=capacity)
+    registry.submit_ready(lambda: [], submit, max_gpu_jobs=capacity, available_gpus=capacity)
     assert len(calls) == capacity + 1
     assert calls[-1]["kind"] == "historical_e"
-    assert registry.submit_ready(lambda: [], submit, available_gpus=capacity) == []
+    assert registry.submit_ready(
+        lambda: [], submit, max_gpu_jobs=capacity, available_gpus=capacity
+    ) == []
+
+
+def test_seven_gpu_override_adds_only_two_to_five_active(registry):
+    for seed in range(61001, 61009):
+        registry.register_task("source", source(seed))
+    calls = []
+
+    def submit(task, path):
+        calls.append(task)
+        return str(1000 + len(calls))
+
+    active = [{"job_id": str(n), "gpus": 1} for n in range(5)]
+    assert len(registry.submit_ready(
+        lambda: active, submit, max_gpu_jobs=7, available_gpus=7
+    )) == 2
+    assert registry.submit_ready(
+        lambda: active, submit, max_gpu_jobs=7, available_gpus=7
+    ) == []
+    assert len(calls) == 2
+
+
+def test_seven_gpu_observation_only_queue_fills_capacity(registry):
+    historical_e(registry)
+    calls = []
+
+    def submit(task, path):
+        calls.append(task)
+        return str(1000 + len(calls))
+
+    registry.submit_ready(lambda: [], submit, max_gpu_jobs=7, available_gpus=7)
+    assert [task["kind"] for task in calls] == ["historical_e"] * 7
 
 
 def test_ready_prestate_precedes_historical_e_when_training_slots_full(registry):
@@ -534,6 +567,23 @@ def test_recovery_capacity_check_precedes_intent(registry):
             query_active=lambda: active,
         )
     assert not (registry.root / "recoveries").exists()
+
+
+def test_recovery_seven_gpu_cap_and_eight_rejection(registry):
+    task = submitted_task(registry)
+    active = [{"job_id": str(n), "gpus": 1} for n in range(201, 208)]
+    for cap, rows, message in [(8, [], r"1\.\.7"), (7, active, "no free")]:
+        with pytest.raises(ValueError, match=message):
+            registry.resubmit_terminal(
+                task["task_id"], terminal_receipt(), lambda *a: "101", reason="review",
+                query_active=lambda rows=rows: rows, max_gpu_jobs=cap, available_gpus=7,
+            )
+        assert not (registry.root / "recoveries").exists()
+    result = registry.resubmit_terminal(
+        task["task_id"], terminal_receipt(), lambda *a: "101", reason="review",
+        query_active=lambda: active[:6], max_gpu_jobs=7, available_gpus=7,
+    )
+    assert result["job_id"] == "101"
 
 
 def test_latest_recovery_job_counted_once_not_with_absent_original(registry):

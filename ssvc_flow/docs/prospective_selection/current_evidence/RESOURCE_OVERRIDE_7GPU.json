@@ -1,0 +1,11 @@
+{
+  "authorized_date": "2026-09-24",
+  "user_request": "那这样我允许你再增加两张卡去跑，尽可能加快速度",
+  "previous_max_concurrent_gpu_jobs": 5,
+  "max_concurrent_gpu_jobs": 7,
+  "gpus_per_job": 1,
+  "gpu_type": "PRO6000",
+  "includes_pending_and_unresolved_intents": true,
+  "scientific_protocol_unchanged": true,
+  "existing_runtime_snapshots_unchanged": true
+}
