@@ -11,6 +11,9 @@ from ..modeling_v4 import gpu_collect as gpu
 from .protocol import DEFAULT_PATH, load_protocol, workload
 from .runtime import read_json
 
+TEACHER_QOS = "soujanya-poria-startfund-2026-03"
+PREEMPTIBLE_QOS = "override-limits-but-killable"
+
 
 def parser():
     p = argparse.ArgumentParser(description=__doc__)
@@ -66,6 +69,7 @@ def parser():
         if name == "worker":
             q.add_argument("--task", type=Path, required=True)
         if name == "submit-ready":
+            q.add_argument("--qos", choices=(TEACHER_QOS, PREEMPTIBLE_QOS), default=TEACHER_QOS)
             q.add_argument("--max-gpu-jobs", type=int, default=5)
             q.add_argument("--available-gpus", type=int, default=5)
             q.add_argument("--python", required=True)
@@ -116,6 +120,9 @@ def submit_ready(args, config):
         command = [
             "sbatch",
             "--parsable",
+            "--qos=" + args.qos,
+            "--requeue" if args.qos == PREEMPTIBLE_QOS else "--no-requeue",
+            "--open-mode=append",
             "--job-name=" + prefix + task["task_id"][:12],
             "--output=" + str(logs / "%j.out"),
             "--error=" + str(logs / "%j.err"),
@@ -132,7 +139,12 @@ def submit_ready(args, config):
     submitted = registry.submit_ready(
         query, submit, max_gpu_jobs=args.max_gpu_jobs, available_gpus=args.available_gpus
     )
-    return {"status": "SUBMISSIONS_RECORDED", "submissions": submitted}
+    return {
+        "status": "SUBMISSIONS_RECORDED",
+        "qos": args.qos,
+        "requeue": args.qos == PREEMPTIBLE_QOS,
+        "submissions": submitted,
+    }
 
 
 def main(argv=None):
