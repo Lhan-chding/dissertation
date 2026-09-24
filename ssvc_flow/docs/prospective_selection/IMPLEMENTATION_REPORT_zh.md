@@ -16,4 +16,4 @@ P0已重读旧16个H32端点的36,864条P输出，6类恒等式精确成立，42
 
 尚未完成的科学交付：旧E复核、前4条开发轨迹、实测工期、完整开发/调参、冻结、最终独立测试以及有结果支持的FINAL_DECISION_zh.md。
 
-当前真实GPU smoke为Slurm169593，代码快照414df78，4条行为logp与独立prefix评分比较差值均为0；完整R0/R1各2步及恢复检查已通过，SlurmCOMPLETED31分08秒。4条开发source及1个旧E复核已在bb23e9b启动；首批结果尚未完成。用户已授权每20分钟持久续跑，automation `ssvc` 已激活；阶段进度以EXECUTION_STATE_zh.md及服务器原件为准。
+当前真实GPU smoke为Slurm169593，代码快照414df78，4条行为logp与独立prefix评分比较差值均为0；完整R0/R1各2步及恢复检查已通过，SlurmCOMPLETED31分08秒。4条开发source及1个旧E复核已在bb23e9b启动；首批结果尚未完成。用户已授权每小时持久续跑，automation `ssvc` 已激活；阶段进度以EXECUTION_STATE_zh.md及服务器原件为准。
