@@ -1,19 +1,19 @@
 # 服务器执行入口
 
-当前开发真实GPU快照为bb23e9b（smoke使用414df78）。以下命令在 `ssh eee-cluster` 后执行；不修改历史D2目录。单次 submit-ready 只提交当下依赖满足的任务，没有后台循环。提交数量以包含pending的项目队列及持久化intent共同限流。
+后续调度使用afd3119，用户新增授权上限7卡。既有5个作业仍使用bb23e9b，smoke使用414df78；各原快照保留。以下命令在 `ssh eee-cluster` 后执行；不修改历史D2目录。单次 submit-ready 只提交当下依赖满足的任务，没有后台循环。提交数量以包含pending的项目队列及持久化intent共同限流。
 
 ```bash
-cd /projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/code_bb23e9b/ssvc_flow
+cd /projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/code_afd3119/ssvc_flow
 /projects/varunssd/louis-ssvc/envs/ssvc-py312/bin/python -m src.prospective_selection.cli submit-ready \
   --root /projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign \
   --runtime /projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/runtime.json \
-  --max-gpu-jobs 5 --available-gpus 5 \
+  --max-gpu-jobs 7 --available-gpus 5 \
   --python /projects/varunssd/louis-ssvc/envs/ssvc-py312/bin/python \
-  --project-root /projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/code_bb23e9b/ssvc_flow \
+  --project-root /projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/code_afd3119/ssvc_flow \
   --cache-root /projects/varunssd/louis-ssvc/cache
 ```
 
-实际只允许4个worker时将两处GPU数量改4。不要改B4/K8或题序。smoke169593已COMPLETED并核验全部门禁。首次开发已提交169616–169620，均单PRO6000；后续运行上面的命令自动核对槽位并保留提交意图。
+按实际可用卡数降低两处GPU数量，绝不超过7；pending和未知提交也占槽。不要改B4/K8或题序。smoke169593已COMPLETED并核验全部门禁。首次开发已提交169616–169620，均单PRO6000；后续运行上面的命令自动核对槽位并保留提交意图。
 
 ```bash
 squeue -u varun024 -o '%i %j %T %M %R %b'
@@ -33,3 +33,7 @@ E复核使用保存的16个H32 checkpoint和原E面板；不要重训旧分支�
 当前轮转记录：169620（O2_R0旧E）已完成并重算核验，继任169684为O1_R3旧E。后续须从campaign/submissions及recoveries读取最新job ID；不要固定沿用示例ID判断以后进度。
 
 2026-09-24T14:18Z：169684（O1_R3旧E）完成并重算核验；4条source均已有H32，下一槽按优先级给前置观测61001_t32，作业169906。其它旧E与其余prestate继续由同一5卡队列轮转。
+
+用户授权7卡的完整说明见RESOURCE_OVERRIDE_zh.md。原设计包和protocol.json中5卡是历史资源设置，已被本次显式授权覆盖；不要为修改并发而改动原协议文件身份。
+
+实际站点门限：2026-09-24核实教师QOS MaxSubmitJobsPU=5，7卡尝试被拒绝且无新JobID。当前示例available-gpus=5反映有效容量；保留用户授权上限7。管理员调整并核实后可改7。拒绝提交已归档并完成无作业核对，不留下永久未知占位。

@@ -28,3 +28,7 @@
 2026-09-24T14:17:48Z：用户告知网络恢复后已重新连接；先前Network is unreachable没有作为作业失败或重提依据。4个source观察更新分别36/38/36/37步，权威段与H32均已完成32步。第二个旧E端点O1_R3的J=0.8302951389，72×32原始输出与回执一致；保留为历史审计结果。已通过队列启动prestate61001_t32，Slurm169906，任务键2da3a7a59cb5d3b5f1134ecc8fc38a9222916093bdd199cb3a3a49d7937b9c75，首次检查RUNNING，当前共5个单PRO6000作业。该任务从t24/t32 checkpoint采集共同P样本，4层选择器共享；不能把正在生成的前置观测称为已完成branch。
 
 用户新增授权：上限提高到7张PRO6000，见RESOURCE_OVERRIDE_zh.md。原protocol.json不改，避免改变已经生成的科学证据身份；后续使用更新调度器与显式--max-gpu-jobs 7 --available-gpus 7。现有5个作业持续运行，不需要重启。自动续跑提示已同步为7卡，每小时频率不变。
+
+7卡调度代码afd3119已commit/push；针对集51 passed、ruff和diffcheck通过。后续单次submit-ready须从code_afd3119/ssvc_flow运行并显式传7；此前5个运行任务继续读code_bb23e9b，不改写原目录。
+
+资源实际阻塞（2026-09-24T14:34Z）：用户授权7卡，代码afd3119已部署并核验，但教师QOS soujanya-poria-startfund-2026-03 的 MaxSubmitJobsPU=5。新增prestate61003_t32的sbatch明确以QOSMaxSubmitJobPerUserLimit拒绝，没有创建JobID；squeue/sacct核对无对应名称，原intent和submission_error已移入campaign/rejected_submissions/3f36a48b3a603c5a04fd05745d52d0599a79081f51cc370a23f3ab3c60d8d854/attempt_1，RECONCILIATION.json保留依据。不是未知提交盲重试，也没有取消其它作业。当前仍为原5个作业运行，尚未启用新增2张卡。后续调度使用--max-gpu-jobs 7 --available-gpus 5；正常槽位释放后继续队列。管理员提高配额且重新核实后才把available-gpus改7，不切换QOS绕过上限。

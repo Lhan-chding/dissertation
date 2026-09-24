@@ -1,0 +1,26 @@
+{
+  "observed_at": "2026-09-24T14:34:08.300578+00:00",
+  "task_id": "3f36a48b3a603c5a04fd05745d52d0599a79081f51cc370a23f3ab3c60d8d854",
+  "payload": {
+    "draw_role": "predecision",
+    "lineage_id": 61003,
+    "origin_id": "61003_t32",
+    "origin_step": 32,
+    "panel_id": "P",
+    "policy_id": "61003_t32",
+    "protocol": "ssvc-prospective-selection-v2-20260924",
+    "role": "development",
+    "snapshot_t": 32,
+    "source_recipe": "R0"
+  },
+  "classification": "EXPLICIT_SCHEDULER_REJECTION_NO_JOB_CREATED",
+  "sbatch_exit_code": 1,
+  "scheduler_error": "QOSMaxSubmitJobPerUserLimit",
+  "scheduler_message": "Batch job submission failed: Job violates accounting/QOS policy (job submit limit, user size and/or time limits)",
+  "squeue_and_sacct_no_matching_job": true,
+  "qos": "soujanya-poria-startfund-2026-03",
+  "MaxSubmitJobsPU": 5,
+  "authorized_cap": 7,
+  "effective_cap_until_site_change": 5,
+  "action": "Preserve original rejected intent and error; allow normal queue submission only when a verified slot exists"
+}
