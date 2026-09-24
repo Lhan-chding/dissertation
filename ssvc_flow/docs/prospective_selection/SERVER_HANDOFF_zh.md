@@ -1,15 +1,15 @@
 # 服务器执行入口
 
-后续调度使用afd3119，用户新增授权上限7卡。既有5个作业仍使用bb23e9b，smoke使用414df78；各原快照保留。以下命令在 `ssh eee-cluster` 后执行；不修改历史D2目录。单次 submit-ready 只提交当下依赖满足的任务，没有后台循环。提交数量以包含pending的项目队列及持久化intent共同限流。
+后续调度使用e59b9ee，用户新增授权上限7卡。既有5个作业仍使用bb23e9b，smoke使用414df78；各原快照保留。以下命令在 `ssh eee-cluster` 后执行；不修改历史D2目录。单次 submit-ready 只提交当下依赖满足的任务，没有后台循环。提交数量以包含pending的项目队列及持久化intent共同限流。
 
 ```bash
-cd /projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/code_afd3119/ssvc_flow
+cd /projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/code_e59b9ee/ssvc_flow
 /projects/varunssd/louis-ssvc/envs/ssvc-py312/bin/python -m src.prospective_selection.cli submit-ready \
   --root /projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign \
   --runtime /projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/runtime.json \
-  --max-gpu-jobs 7 --available-gpus 5 \
+  --max-gpu-jobs 7 --available-gpus 5 --qos soujanya-poria-startfund-2026-03 \
   --python /projects/varunssd/louis-ssvc/envs/ssvc-py312/bin/python \
-  --project-root /projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/code_afd3119/ssvc_flow \
+  --project-root /projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/code_e59b9ee/ssvc_flow \
   --cache-root /projects/varunssd/louis-ssvc/cache
 ```
 
@@ -37,3 +37,10 @@ E复核使用保存的16个H32 checkpoint和原E面板；不要重训旧分支�
 用户授权7卡的完整说明见RESOURCE_OVERRIDE_zh.md。原设计包和protocol.json中5卡是历史资源设置，已被本次显式授权覆盖；不要为修改并发而改动原协议文件身份。
 
 实际站点门限：2026-09-24核实教师QOS MaxSubmitJobsPU=5，7卡尝试被拒绝且无新JobID。当前示例available-gpus=5反映有效容量；保留用户授权上限7。管理员调整并核实后可改7。拒绝提交已归档并完成无作业核对，不留下永久未知占位。
+
+
+2026-09-24T14:45Z后续决定（覆盖上文扩卡执行安排）：现场确认账户允许官方可抢占QOS `override-limits-but-killable`，所以并非只能等待管理员增加教师配额。CLI提交e59b9ee已新增显式QOS选择，可抢占任务启用requeue并追加日志，54项针对性测试、ruff、diffcheck通过，代码已push。新快照为 `code_e59b9ee/ssvc_flow`，已有运行快照不变。
+
+两个新增PRO6000前置观测169962/169963成功提交，但Slurm在14:45:31Z给出的预计启动为次日00:17:23Z/00:31:39Z，需等待约9小时32分/9小时46分。用户随后要求排队太久就放弃，因此取消此次扩卡尝试。保留取消终态及从未分配GPU的核验，归档其intent/submission后让原任务回到正常五卡队列；不是删除科学任务或更换seed。最新证据见current_evidence/EXTRA_GPU_CANCELLED_20260924.json。
+
+后续只使用教师QOS，`--max-gpu-jobs 7 --available-gpus 5 --qos soujanya-poria-startfund-2026-03`；不再自动重试额外可抢占资源，也不混用其它型号。每小时续跑已同步此决定。原5个作业169616–169619和169906保持运行；授权上限7保留，但本次扩卡安排已放弃。

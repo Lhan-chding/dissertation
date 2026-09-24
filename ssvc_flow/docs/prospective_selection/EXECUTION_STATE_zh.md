@@ -32,3 +32,10 @@
 7卡调度代码afd3119已commit/push；针对集51 passed、ruff和diffcheck通过。后续单次submit-ready须从code_afd3119/ssvc_flow运行并显式传7；此前5个运行任务继续读code_bb23e9b，不改写原目录。
 
 资源实际阻塞（2026-09-24T14:34Z）：用户授权7卡，代码afd3119已部署并核验，但教师QOS soujanya-poria-startfund-2026-03 的 MaxSubmitJobsPU=5。新增prestate61003_t32的sbatch明确以QOSMaxSubmitJobPerUserLimit拒绝，没有创建JobID；squeue/sacct核对无对应名称，原intent和submission_error已移入campaign/rejected_submissions/3f36a48b3a603c5a04fd05745d52d0599a79081f51cc370a23f3ab3c60d8d854/attempt_1，RECONCILIATION.json保留依据。不是未知提交盲重试，也没有取消其它作业。当前仍为原5个作业运行，尚未启用新增2张卡。后续调度使用--max-gpu-jobs 7 --available-gpus 5；正常槽位释放后继续队列。管理员提高配额且重新核实后才把available-gpus改7，不切换QOS绕过上限。
+
+
+2026-09-24T14:45Z后续决定（覆盖上文扩卡执行安排）：现场确认账户允许官方可抢占QOS `override-limits-but-killable`，所以并非只能等待管理员增加教师配额。CLI提交e59b9ee已新增显式QOS选择，可抢占任务启用requeue并追加日志，54项针对性测试、ruff、diffcheck通过，代码已push。新快照为 `code_e59b9ee/ssvc_flow`，已有运行快照不变。
+
+两个新增PRO6000前置观测169962/169963成功提交，但Slurm在14:45:31Z给出的预计启动为次日00:17:23Z/00:31:39Z，需等待约9小时32分/9小时46分。用户随后要求排队太久就放弃，因此取消此次扩卡尝试。保留取消终态及从未分配GPU的核验，归档其intent/submission后让原任务回到正常五卡队列；不是删除科学任务或更换seed。最新证据见current_evidence/EXTRA_GPU_CANCELLED_20260924.json。
+
+后续只使用教师QOS，`--max-gpu-jobs 7 --available-gpus 5 --qos soujanya-poria-startfund-2026-03`；不再自动重试额外可抢占资源，也不混用其它型号。每小时续跑已同步此决定。原5个作业169616–169619和169906保持运行；授权上限7保留，但本次扩卡安排已放弃。

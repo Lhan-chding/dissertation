@@ -1,0 +1,26 @@
+{
+  "observed_at": "2026-09-24T14:47:43.205834+00:00",
+  "reason": "User instructed abandoning extra GPU attempt if queue too long",
+  "estimated_start_utc": {
+    "169962": "2026-09-25T00:17:23",
+    "169963": "2026-09-25T00:31:39"
+  },
+  "estimate_observed_at_utc": "2026-09-24T14:45:31Z",
+  "sacct": "169962|CANCELLED by 295800338|None|00:00:00|\n169963|CANCELLED by 295800338|None|00:00:00|\n",
+  "squeue": "169539|obj2-prot-40-80|rose|PENDING|N/A\n166960|obj4-prot-120-150|rose|PENDING|N/A\n169543|obj2-prot-80-120|rose|PENDING|N/A\n169906|ps2-2da3a7a59cb5|soujanya-poria-startfund-2026-03|RUNNING|gres/gpu:pro6000:1\n169617|ps2-44c9e04da6ad|soujanya-poria-startfund-2026-03|RUNNING|gres/gpu:pro6000:1\n169618|ps2-63571b7a98b2|soujanya-poria-startfund-2026-03|RUNNING|gres/gpu:pro6000:1\n169619|ps2-a2ae105ae278|soujanya-poria-startfund-2026-03|RUNNING|gres/gpu:pro6000:1\n169616|ps2-42d215a6c673|soujanya-poria-startfund-2026-03|RUNNING|gres/gpu:pro6000:1\n168415|sep8-25d-fv|rose|RUNNING|gres/gpu:6000ada:1\n",
+  "code_commit": "e59b9eeb244d9a010b59c1dc54f5b47ee3274583",
+  "qos": "override-limits-but-killable",
+  "never_started": true,
+  "tasks_returned_to_normal_queue": [
+    {
+      "task_id": "3f36a48b3a603c5a04fd05745d52d0599a79081f51cc370a23f3ab3c60d8d854",
+      "job_id": "169962",
+      "origin_id": "61003_t32"
+    },
+    {
+      "task_id": "6ee79086abbfb09b140668e400874d639920c0ae090b51a3b6828a3a41d926c1",
+      "job_id": "169963",
+      "origin_id": "61002_t32"
+    }
+  ]
+}
