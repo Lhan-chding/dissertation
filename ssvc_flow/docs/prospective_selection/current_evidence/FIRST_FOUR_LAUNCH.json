@@ -1,0 +1,52 @@
+{
+  "observed_at": "2026-09-24T09:31:47.206962+00:00",
+  "code_commit": "bb23e9b74683a479a6a40262542d5894a2a16527",
+  "submissions": [
+    {
+      "job_id": "169616",
+      "status": "SUBMITTED",
+      "task_id": "42d215a6c6736241e6150b072098ea82bc10844aad00d3bbf6cbd2064c8e16d0",
+      "kind": "source",
+      "lineage_id": 61001,
+      "policy_id": null,
+      "source_recipe": "R0"
+    },
+    {
+      "job_id": "169617",
+      "status": "SUBMITTED",
+      "task_id": "44c9e04da6adae98081ba6d4a329b82bd307f17cbdc867e00e281013e579e6c2",
+      "kind": "source",
+      "lineage_id": 61003,
+      "policy_id": null,
+      "source_recipe": "R0"
+    },
+    {
+      "job_id": "169618",
+      "status": "SUBMITTED",
+      "task_id": "63571b7a98b2639d8a90a2f1accc3e401a17837724b7868debf8e6f6cf6f3908",
+      "kind": "source",
+      "lineage_id": 61002,
+      "policy_id": null,
+      "source_recipe": "R1"
+    },
+    {
+      "job_id": "169619",
+      "status": "SUBMITTED",
+      "task_id": "a2ae105ae2785fb34df2fff7f8c29f7d4443d74d6f195bf8f268bdd738d8d7c0",
+      "kind": "source",
+      "lineage_id": 61004,
+      "policy_id": null,
+      "source_recipe": "R1"
+    },
+    {
+      "job_id": "169620",
+      "status": "SUBMITTED",
+      "task_id": "2fa6cb8108e6a065c83c7750b2961fee8dbab474d514c10844af71a89c2845fd",
+      "kind": "historical_e",
+      "lineage_id": 41002,
+      "policy_id": "O2_R0",
+      "source_recipe": null
+    }
+  ],
+  "squeue": "169620|ps2-2fa6cb8108e6|RUNNING|1:13|gpu-pro6000-7|gres/gpu:pro6000:1\n169617|ps2-44c9e04da6ad|RUNNING|1:16|gpu-pro6000-14|gres/gpu:pro6000:1\n169618|ps2-63571b7a98b2|RUNNING|1:16|gpu-pro6000-9|gres/gpu:pro6000:1\n169619|ps2-a2ae105ae278|RUNNING|1:16|gpu-pro6000-9|gres/gpu:pro6000:1\n169616|ps2-42d215a6c673|RUNNING|1:17|gpu-pro6000-14|gres/gpu:pro6000:1\n"
+}
