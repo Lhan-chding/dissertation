@@ -1,0 +1,17 @@
+{
+  "recorded_at_utc": "2026-09-24T08:13:29.975793+00:00",
+  "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "numpy": "2.3.5",
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+  "command": "cd reference && python -m unittest -v test_contracts.py",
+  "tests_run": 45,
+  "test_duration_seconds": 0.009,
+  "result": "PASS",
+  "scope": "Independent mathematics, information access, selector and protocol contracts only",
+  "production_repository_modified": false,
+  "production_integration_tests_run": false,
+  "model_loaded": false,
+  "gpu_jobs_started": false,
+  "new_research_results_generated": false,
+  "historical_D2_reanalysis_repeated": false
+}

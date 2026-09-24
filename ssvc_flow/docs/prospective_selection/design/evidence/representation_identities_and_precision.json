@@ -1,0 +1,33 @@
+{
+  "evaluation_four_events_from_XAV_max_error": 0.0,
+  "evaluation_trend_fullwrong_from_C_moments_max_error": 0.0,
+  "evaluation_fullC_singleEdit_equivalent_X_mismatches": 0,
+  "training_four_events_from_XAV_max_error": 0.0,
+  "training_trend_fullwrong_from_C_moments_max_error": 0.0,
+  "training_fullC_singleEdit_equivalent_X_mismatches": 0,
+  "hoeffding": [
+    {
+      "draws_per_prompt": 32,
+      "prompts_per_group": 12,
+      "endpoint_radius": 0.11399726212945094,
+      "two_interior_endpoint_radius": 0.22799452425890188,
+      "both_all_success_interval_halfwidth": 0.11399726212945094
+    },
+    {
+      "draws_per_prompt": 128,
+      "prompts_per_group": 12,
+      "endpoint_radius": 0.05699863106472547,
+      "two_interior_endpoint_radius": 0.11399726212945094,
+      "both_all_success_interval_halfwidth": 0.05699863106472547
+    },
+    {
+      "draws_per_prompt": 512,
+      "prompts_per_group": 12,
+      "endpoint_radius": 0.028499315532362735,
+      "two_interior_endpoint_radius": 0.05699863106472547,
+      "both_all_success_interval_halfwidth": 0.028499315532362735
+    }
+  ],
+  "minimum_draws_per_prompt_for_radius_le_1pp": 4159,
+  "minimum_draws_per_prompt_for_2radius_le_1pp": 16635
+}

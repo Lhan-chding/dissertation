@@ -1,0 +1,940 @@
+{
+  "protocol": "ssvc-prospective-selection-v2-20260924",
+  "status": "DESIGN_NOT_RUN",
+  "repository": {
+    "name": "Lhan-chding/dissertation",
+    "observed_branch": "codex/decision-modeling-v1-20260919",
+    "observed_commit": "b52f55993791a9954be07a0195eb656441b53651",
+    "new_branch": "codex/prospective-reward-selection-20260924"
+  },
+  "execution": {
+    "max_concurrent_gpu_jobs": 5,
+    "preferred_gpu": "NVIDIA RTX PRO 6000",
+    "gpus_per_job": 1,
+    "allow_four_worker_fallback": true,
+    "ddp_default": false,
+    "repeat_full_base_hash": false,
+    "run_full_test_suite_each_branch": false,
+    "auto_advance_development": true,
+    "test_requires_frozen_rule_and_predecision": true
+  },
+  "model": {
+    "id": "Qwen/Qwen3.5-9B",
+    "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+    "base_dtype": "bfloat16",
+    "adapter_config": "INHERIT_MEASURED_D2_CONFIG",
+    "lora_initialization_seed": 17,
+    "do_not_change_base_model": true
+  },
+  "training": {
+    "B": 4,
+    "K": 8,
+    "branch_steps": 32,
+    "source_steps_max": 96,
+    "max_new_tokens": 64,
+    "thinking": false,
+    "temperature": 1.0,
+    "top_p": 1.0,
+    "top_k": 0,
+    "sampling_note": "Verify against inherited measured generation contract; mismatch requires bridge, not silent override.",
+    "Lnorm": 64,
+    "reward_epsilon": 0.0001,
+    "clip_epsilon": 0.2,
+    "gradient_clip": 1.0,
+    "adamw": {
+      "lr": 1e-05,
+      "betas": [
+        0.9,
+        0.999
+      ],
+      "eps": 1e-08,
+      "weight_decay": 0.0
+    },
+    "scheduler": null,
+    "kl_beta": 0.0,
+    "ppo_epochs_per_batch": 1,
+    "explicit_zero_gradient_adam_step": true,
+    "common_arm_schedule": true,
+    "source_pool_scenes": 384,
+    "branch_pool_scenes": 192,
+    "source_schedule_seed": 73001,
+    "branch_schedule_seeds": [
+      73011,
+      73012
+    ],
+    "training_rng_excludes_recipe": true,
+    "evaluation_rng_restored": true,
+    "test_continuation_repeats": 2,
+    "development_continuation_repeats": 1,
+    "save_source_steps": [
+      0,
+      24,
+      32,
+      88,
+      96
+    ],
+    "save_branch_steps": [
+      0,
+      8,
+      32
+    ],
+    "resume_checkpoint_every_steps": 8
+  },
+  "actions": {
+    "channels": [
+      "X",
+      "A",
+      "V",
+      "C"
+    ],
+    "selectable": {
+      "R0": [
+        2,
+        0,
+        0,
+        0
+      ],
+      "R1": [
+        0,
+        2,
+        0,
+        0
+      ],
+      "R2": [
+        2,
+        0,
+        1,
+        0
+      ],
+      "R3": [
+        2,
+        0,
+        0,
+        1
+      ],
+      "R4": [
+        2,
+        0,
+        0.5,
+        0.5
+      ],
+      "R5": [
+        0,
+        2,
+        1,
+        0
+      ],
+      "R6": [
+        0,
+        2,
+        0,
+        1
+      ],
+      "R7": [
+        0,
+        2,
+        0.5,
+        0.5
+      ]
+    },
+    "external_baselines": [
+      "GDPO_R4",
+      "SAW_R4",
+      "DIRECT_REPAIR_R4"
+    ],
+    "direct_repair": {
+      "reward": "R4 - 0.5 * Bdamage",
+      "invalid_Bdamage": 1.0,
+      "valid_Bdamage": "number_damaged_originally_correct_coordinates / 3"
+    },
+    "semantic_fields_used_as_reward_only_in_direct_repair_baseline": true
+  },
+  "panels": {
+    "P": {
+      "source": "existing_D2_P",
+      "base_scenes": 36,
+      "prompts": 72,
+      "draws": 32,
+      "history_lag_steps": 8
+    },
+    "D": {
+      "source": "dev",
+      "base_scenes": 72,
+      "prompts": 144,
+      "draws_H32": 16,
+      "selection_seed": 74001
+    },
+    "T": {
+      "source": "confirm",
+      "base_scenes": 144,
+      "prompts": 288,
+      "draws_initial": 16,
+      "draws_choices": [
+        16,
+        32,
+        64
+      ],
+      "selection_seed": 74002
+    },
+    "T_H8": {
+      "base_scenes": 12,
+      "prompts": 24,
+      "draws": 8,
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    "historical_E": {
+      "source": "existing_D2_E",
+      "prompts": 72,
+      "draws": 32
+    },
+    "base_scene_disjoint": [
+      "train",
+      "P",
+      "D",
+      "T"
+    ],
+    "final_test_panel_read_for_outcomes_only_after_decisions": true
+  },
+  "origins": {
+    "development": [
+      {
+        "seed": 61001,
+        "role": "development",
+        "source_recipe": "R0",
+        "anchors": [
+          32,
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 61002,
+        "role": "development",
+        "source_recipe": "R1",
+        "anchors": [
+          32,
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 61003,
+        "role": "development",
+        "source_recipe": "R0",
+        "anchors": [
+          32,
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 61004,
+        "role": "development",
+        "source_recipe": "R1",
+        "anchors": [
+          32,
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 61005,
+        "role": "development",
+        "source_recipe": "R0",
+        "anchors": [
+          32,
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 61006,
+        "role": "development",
+        "source_recipe": "R1",
+        "anchors": [
+          32,
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 61007,
+        "role": "development",
+        "source_recipe": "R0",
+        "anchors": [
+          32,
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 61008,
+        "role": "development",
+        "source_recipe": "R1",
+        "anchors": [
+          32,
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 61009,
+        "role": "development",
+        "source_recipe": "R0",
+        "anchors": [
+          32,
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 61010,
+        "role": "development",
+        "source_recipe": "R1",
+        "anchors": [
+          32,
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 61011,
+        "role": "development",
+        "source_recipe": "R0",
+        "anchors": [
+          32,
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 61012,
+        "role": "development",
+        "source_recipe": "R1",
+        "anchors": [
+          32,
+          96
+        ],
+        "source_steps": 96
+      }
+    ],
+    "tuning": [
+      {
+        "seed": 62001,
+        "role": "tuning",
+        "source_recipe": "R0",
+        "anchors": [
+          32,
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 62002,
+        "role": "tuning",
+        "source_recipe": "R1",
+        "anchors": [
+          32,
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 62003,
+        "role": "tuning",
+        "source_recipe": "R0",
+        "anchors": [
+          32,
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 62004,
+        "role": "tuning",
+        "source_recipe": "R1",
+        "anchors": [
+          32,
+          96
+        ],
+        "source_steps": 96
+      }
+    ],
+    "test_pool": [
+      {
+        "seed": 63001,
+        "role": "locked_test",
+        "source_recipe": "R0",
+        "anchors": [
+          32
+        ],
+        "source_steps": 32
+      },
+      {
+        "seed": 63002,
+        "role": "locked_test",
+        "source_recipe": "R0",
+        "anchors": [
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 63003,
+        "role": "locked_test",
+        "source_recipe": "R1",
+        "anchors": [
+          32
+        ],
+        "source_steps": 32
+      },
+      {
+        "seed": 63004,
+        "role": "locked_test",
+        "source_recipe": "R1",
+        "anchors": [
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 63005,
+        "role": "locked_test",
+        "source_recipe": "R0",
+        "anchors": [
+          32
+        ],
+        "source_steps": 32
+      },
+      {
+        "seed": 63006,
+        "role": "locked_test",
+        "source_recipe": "R0",
+        "anchors": [
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 63007,
+        "role": "locked_test",
+        "source_recipe": "R1",
+        "anchors": [
+          32
+        ],
+        "source_steps": 32
+      },
+      {
+        "seed": 63008,
+        "role": "locked_test",
+        "source_recipe": "R1",
+        "anchors": [
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 63009,
+        "role": "locked_test",
+        "source_recipe": "R0",
+        "anchors": [
+          32
+        ],
+        "source_steps": 32
+      },
+      {
+        "seed": 63010,
+        "role": "locked_test",
+        "source_recipe": "R0",
+        "anchors": [
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 63011,
+        "role": "locked_test",
+        "source_recipe": "R1",
+        "anchors": [
+          32
+        ],
+        "source_steps": 32
+      },
+      {
+        "seed": 63012,
+        "role": "locked_test",
+        "source_recipe": "R1",
+        "anchors": [
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 63013,
+        "role": "locked_test",
+        "source_recipe": "R0",
+        "anchors": [
+          32
+        ],
+        "source_steps": 32
+      },
+      {
+        "seed": 63014,
+        "role": "locked_test",
+        "source_recipe": "R0",
+        "anchors": [
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 63015,
+        "role": "locked_test",
+        "source_recipe": "R1",
+        "anchors": [
+          32
+        ],
+        "source_steps": 32
+      },
+      {
+        "seed": 63016,
+        "role": "locked_test",
+        "source_recipe": "R1",
+        "anchors": [
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 63017,
+        "role": "locked_test",
+        "source_recipe": "R0",
+        "anchors": [
+          32
+        ],
+        "source_steps": 32
+      },
+      {
+        "seed": 63018,
+        "role": "locked_test",
+        "source_recipe": "R0",
+        "anchors": [
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 63019,
+        "role": "locked_test",
+        "source_recipe": "R1",
+        "anchors": [
+          32
+        ],
+        "source_steps": 32
+      },
+      {
+        "seed": 63020,
+        "role": "locked_test",
+        "source_recipe": "R1",
+        "anchors": [
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 63021,
+        "role": "locked_test",
+        "source_recipe": "R0",
+        "anchors": [
+          32
+        ],
+        "source_steps": 32
+      },
+      {
+        "seed": 63022,
+        "role": "locked_test",
+        "source_recipe": "R0",
+        "anchors": [
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 63023,
+        "role": "locked_test",
+        "source_recipe": "R1",
+        "anchors": [
+          32
+        ],
+        "source_steps": 32
+      },
+      {
+        "seed": 63024,
+        "role": "locked_test",
+        "source_recipe": "R1",
+        "anchors": [
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 63025,
+        "role": "locked_test",
+        "source_recipe": "R0",
+        "anchors": [
+          32
+        ],
+        "source_steps": 32
+      },
+      {
+        "seed": 63026,
+        "role": "locked_test",
+        "source_recipe": "R0",
+        "anchors": [
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 63027,
+        "role": "locked_test",
+        "source_recipe": "R1",
+        "anchors": [
+          32
+        ],
+        "source_steps": 32
+      },
+      {
+        "seed": 63028,
+        "role": "locked_test",
+        "source_recipe": "R1",
+        "anchors": [
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 63029,
+        "role": "locked_test",
+        "source_recipe": "R0",
+        "anchors": [
+          32
+        ],
+        "source_steps": 32
+      },
+      {
+        "seed": 63030,
+        "role": "locked_test",
+        "source_recipe": "R0",
+        "anchors": [
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 63031,
+        "role": "locked_test",
+        "source_recipe": "R1",
+        "anchors": [
+          32
+        ],
+        "source_steps": 32
+      },
+      {
+        "seed": 63032,
+        "role": "locked_test",
+        "source_recipe": "R1",
+        "anchors": [
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 63033,
+        "role": "locked_test",
+        "source_recipe": "R0",
+        "anchors": [
+          32
+        ],
+        "source_steps": 32
+      },
+      {
+        "seed": 63034,
+        "role": "locked_test",
+        "source_recipe": "R0",
+        "anchors": [
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 63035,
+        "role": "locked_test",
+        "source_recipe": "R1",
+        "anchors": [
+          32
+        ],
+        "source_steps": 32
+      },
+      {
+        "seed": 63036,
+        "role": "locked_test",
+        "source_recipe": "R1",
+        "anchors": [
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 63037,
+        "role": "locked_test",
+        "source_recipe": "R0",
+        "anchors": [
+          32
+        ],
+        "source_steps": 32
+      },
+      {
+        "seed": 63038,
+        "role": "locked_test",
+        "source_recipe": "R0",
+        "anchors": [
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 63039,
+        "role": "locked_test",
+        "source_recipe": "R1",
+        "anchors": [
+          32
+        ],
+        "source_steps": 32
+      },
+      {
+        "seed": 63040,
+        "role": "locked_test",
+        "source_recipe": "R1",
+        "anchors": [
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 63041,
+        "role": "locked_test",
+        "source_recipe": "R0",
+        "anchors": [
+          32
+        ],
+        "source_steps": 32
+      },
+      {
+        "seed": 63042,
+        "role": "locked_test",
+        "source_recipe": "R0",
+        "anchors": [
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 63043,
+        "role": "locked_test",
+        "source_recipe": "R1",
+        "anchors": [
+          32
+        ],
+        "source_steps": 32
+      },
+      {
+        "seed": 63044,
+        "role": "locked_test",
+        "source_recipe": "R1",
+        "anchors": [
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 63045,
+        "role": "locked_test",
+        "source_recipe": "R0",
+        "anchors": [
+          32
+        ],
+        "source_steps": 32
+      },
+      {
+        "seed": 63046,
+        "role": "locked_test",
+        "source_recipe": "R0",
+        "anchors": [
+          96
+        ],
+        "source_steps": 96
+      },
+      {
+        "seed": 63047,
+        "role": "locked_test",
+        "source_recipe": "R1",
+        "anchors": [
+          32
+        ],
+        "source_steps": 32
+      },
+      {
+        "seed": 63048,
+        "role": "locked_test",
+        "source_recipe": "R1",
+        "anchors": [
+          96
+        ],
+        "source_steps": 96
+      }
+    ],
+    "test_n_initial": 12,
+    "test_n_choices": [
+      12,
+      16,
+      20,
+      24,
+      32,
+      48
+    ],
+    "test_n_selected_before_any_test_outcome": true,
+    "old_D2_origins_role": "HISTORICAL_EXPLORATION_ONLY"
+  },
+  "representations": {
+    "levels": [
+      "Z0_MOMENTS_GLOBAL",
+      "Z1_MOMENTS_STRATIFIED",
+      "Z2_REWARD_DISTRIBUTION",
+      "Z3_REPAIR_STRUCTURE"
+    ],
+    "baseline_reward_channels": [
+      "X",
+      "A",
+      "V",
+      "C"
+    ],
+    "reward_histogram": "per-prompt empirical event x exact-rational C histogram",
+    "semantic_histogram": "per-prompt sparse joint reward_bin x F x damage_count x edit_count; separate INVALID atom",
+    "identities_preserved": true,
+    "forced_low_rank": false,
+    "all_levels_receive_same_predecision_samples_and_source_metadata": true,
+    "history_weight": 0.25,
+    "structural_kernel_weight": 0.5,
+    "nuisance_weight": 0.25,
+    "only_development_feature_scaling": true
+  },
+  "selector": {
+    "model": "kernel ridge, action-specific utility deltas to R0",
+    "alpha_grid": [
+      0.0001,
+      0.001,
+      0.01,
+      0.1,
+      1,
+      10
+    ],
+    "kernel_ridge_matrix": "K + n_fit * alpha * I",
+    "horizon_primary": 32,
+    "target_primary": "six-stratum macro pX",
+    "target_secondary": "symbolic macro pX",
+    "utility_preference_weights": {
+      "pX": 1.0
+    },
+    "practical_tie": 0.005,
+    "default_action": "best static recipe chosen on development/tuning, never test",
+    "primary_comparison": [
+      "Z3_REPAIR_STRUCTURE",
+      "Z2_REWARD_DISTRIBUTION"
+    ],
+    "kernel_histogram": "sqrt empirical frequency inner product; no post-outcome target features",
+    "fit_target_scalar_not_full_probability_dynamics": true,
+    "confidence_status": "DESCRIPTIVE_NOT_SAFETY_CERTIFICATE"
+  },
+  "statistics": {
+    "primary_effect_scale": 0.01,
+    "alpha": 0.05,
+    "power_planning": 0.8,
+    "lineage_sd_planning_quantile": 0.75,
+    "mc_se_fraction_of_effect": 0.25,
+    "primary_sampling": "fixed N and m, frozen before test outcomes",
+    "primary_unit": "independent source lineage; average two branch repetitions",
+    "fixed_panel_primary_estimand": true,
+    "bootstrap_repetitions": 10000,
+    "primary_test": "four-cell stratified paired lineage Welch-t interval; within-cell lineage bootstrap sensitivity",
+    "sd_unidentified_default_test_n": 32,
+    "sd_min_independent_lineages": 8,
+    "power_planning_anchors": "one predetermined anchor per lineage, never average both source anchors",
+    "secondary_Holm_family": [
+      "best_static",
+      "GDPO_R4",
+      "SAW_R4",
+      "DIRECT_REPAIR_R4"
+    ],
+    "all_prompt_simultaneous_noninferiority_gate": false,
+    "subgroup_harm_reference": 0.02,
+    "subgroup_harm_role": "REPORT_NOT_TRAINING_GATE",
+    "practical_equivalence_interval": [
+      -0.01,
+      0.01
+    ],
+    "allow_optional_stopping_for_significance": false,
+    "seed_power_planner": "ceil(((1.96+0.841621)*sd/0.01)**2), round to next allowed N, report residual MDE if >48"
+  },
+  "phases": [
+    "P0_INFORMATION_AUDIT",
+    "P1_IMPLEMENTATION_SMOKE",
+    "P2_DEVELOPMENT_MATRIX",
+    "P3_FREEZE_SELECTORS",
+    "P4_PROSPECTIVE_TEST",
+    "P5_ANALYSIS",
+    "P6_OPTIONAL_CLOSED_LOOP"
+  ],
+  "closed_loop": {
+    "default_enabled": false,
+    "reason": "new estimand and trajectories require separate follow-on plan"
+  },
+  "workload_min_test": {
+    "test_lineages": 12,
+    "test_draws": 16,
+    "source_updates": 2304,
+    "development_updates": 11264,
+    "test_updates_upper": 6912,
+    "all_updates_upper": 20480,
+    "all_training_outputs_upper": 655360,
+    "development_branches": 352,
+    "test_unique_branches_upper": 216,
+    "prestate_outputs": 202752,
+    "development_H32_outputs": 811008,
+    "test_H32_outputs_upper": 995328,
+    "test_H8_diagnostic_outputs_upper": 41472,
+    "historical_E_outputs": 36864
+  },
+  "workload_max_registered_test": {
+    "test_lineages": 48,
+    "test_draws": 64,
+    "source_updates": 4608,
+    "development_updates": 11264,
+    "test_updates_upper": 27648,
+    "all_updates_upper": 43520,
+    "all_training_outputs_upper": 1392640,
+    "development_branches": 352,
+    "test_unique_branches_upper": 864,
+    "prestate_outputs": 368640,
+    "development_H32_outputs": 811008,
+    "test_H32_outputs_upper": 15925248,
+    "test_H8_diagnostic_outputs_upper": 165888,
+    "historical_E_outputs": 36864
+  },
+  "notes": [
+    "No new experiments were run by this protocol generator.",
+    "GPU counts affect scheduling, never statistical independence.",
+    "The optional precision choice changes evaluation count, not training hyperparameters.",
+    "Test action deduplication commonly reduces the conservative 9-branch upper bound."
+  ]
+}

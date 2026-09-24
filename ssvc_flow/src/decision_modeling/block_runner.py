@@ -161,7 +161,15 @@ class SourceGroupSampler:
 
 
 def update_batch(
-    runtime, groups, recipe, *, epsilon=1e-4, lnorm=64, clip_epsilon=0.2, grad_clip=1.0
+    runtime,
+    groups,
+    recipe,
+    *,
+    epsilon=1e-4,
+    lnorm=64,
+    clip_epsilon=0.2,
+    grad_clip=1.0,
+    advantage_callback=None,
 ):
     """One true Adam update; inherited token PPO denominator, per-sample rewards."""
     import torch
@@ -184,7 +192,15 @@ def update_batch(
                 raise ValueError("Stored reward vector disagrees with sampled semantic event")
             vectors.append(vector)
         rewards.append(vectors)
-    stats = compute_advantages(rewards, recipe, epsilon=epsilon)
+    stats = (
+        compute_advantages(rewards, recipe, epsilon=epsilon)
+        if advantage_callback is None
+        else advantage_callback(rewards, groups, recipe=recipe, epsilon=epsilon)
+    )
+    if len(stats["advantages"]) != len(groups) or any(
+        len(a) != len(g) for a, g in zip(stats["advantages"], groups, strict=True)
+    ):
+        raise ValueError("Advantage callback changed the sampled bank shape")
     params = legacy._parameters(adapter.model)
     modes = complete._forward_state(adapter.model, adapter)
     versions = {n: p._version for n, p in params.items()}

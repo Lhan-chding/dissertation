@@ -1,0 +1,16 @@
+{
+  "test_lineages": 12,
+  "test_draws": 16,
+  "source_updates": 2304,
+  "development_updates": 11264,
+  "test_updates_upper": 6912,
+  "all_updates_upper": 20480,
+  "all_training_outputs_upper": 655360,
+  "development_branches": 352,
+  "test_unique_branches_upper": 216,
+  "prestate_outputs": 202752,
+  "development_H32_outputs": 811008,
+  "test_H32_outputs_upper": 995328,
+  "test_H8_diagnostic_outputs_upper": 41472,
+  "historical_E_outputs": 36864
+}

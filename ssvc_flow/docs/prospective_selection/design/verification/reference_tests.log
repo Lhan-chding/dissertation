@@ -1,0 +1,50 @@
+test_boolean_coordinate_not_integer (test_contracts.InformationTests.test_boolean_coordinate_not_integer) ... ok
+test_duplicate_information_not_new (test_contracts.InformationTests.test_duplicate_information_not_new) ... ok
+test_event_inversion (test_contracts.InformationTests.test_event_inversion) ... ok
+test_event_mass (test_contracts.InformationTests.test_event_mass) ... ok
+test_exact_repair_identity (test_contracts.InformationTests.test_exact_repair_identity) ... ok
+test_information_can_help (test_contracts.InformationTests.test_information_can_help) ... ok
+test_invalid_missingness (test_contracts.InformationTests.test_invalid_missingness) ... ok
+test_invalid_nesting (test_contracts.InformationTests.test_invalid_nesting) ... ok
+test_more_information_need_not_help (test_contracts.InformationTests.test_more_information_need_not_help) ... ok
+test_same_reward_different_repair (test_contracts.InformationTests.test_same_reward_different_repair) ... ok
+test_trend_identity (test_contracts.InformationTests.test_trend_identity) ... ok
+test_wrong_corruption_count (test_contracts.InformationTests.test_wrong_corruption_count) ... ok
+test_budget_json (test_contracts.PlanningTests.test_budget_json) ... ok
+test_draw_plan (test_contracts.PlanningTests.test_draw_plan) ... ok
+test_final_cells_balanced (test_contracts.PlanningTests.test_final_cells_balanced) ... ok
+test_gpu_cap (test_contracts.PlanningTests.test_gpu_cap) ... ok
+test_monte_carlo_scale (test_contracts.PlanningTests.test_monte_carlo_scale) ... ok
+test_more_seeds_not_larger_se (test_contracts.PlanningTests.test_more_seeds_not_larger_se) ... ok
+test_power_2pp_sd (test_contracts.PlanningTests.test_power_2pp_sd) ... ok
+test_power_unresolved (test_contracts.PlanningTests.test_power_unresolved) ... ok
+test_registry_disjoint (test_contracts.PlanningTests.test_registry_disjoint) ... ok
+test_action_dedup (test_contracts.SelectionTests.test_action_dedup) ... ok
+test_choose_non_tie (test_contracts.SelectionTests.test_choose_non_tie) ... ok
+test_choose_not_safety (test_contracts.SelectionTests.test_choose_not_safety) ... ok
+test_choose_tie (test_contracts.SelectionTests.test_choose_tie) ... ok
+test_histogram_kernel_psd (test_contracts.SelectionTests.test_histogram_kernel_psd) ... ok
+test_krr_constant_targets (test_contracts.SelectionTests.test_krr_constant_targets) ... ok
+test_krr_fit (test_contracts.SelectionTests.test_krr_fit) ... ok
+test_lineage_leakage_rejected (test_contracts.SelectionTests.test_lineage_leakage_rejected) ... ok
+test_no_future_outcome (test_contracts.SelectionTests.test_no_future_outcome) ... ok
+test_no_nested_future (test_contracts.SelectionTests.test_no_nested_future) ... ok
+test_packet_minimal (test_contracts.SelectionTests.test_packet_minimal) ... ok
+test_repeats_not_new_seed (test_contracts.SelectionTests.test_repeats_not_new_seed) ... ok
+test_same_lineage_same_role_allowed (test_contracts.SelectionTests.test_same_lineage_same_role_allowed) ... ok
+test_cell_mean (test_contracts.StratifiedTests.test_cell_mean) ... ok
+test_repeat_rejected (test_contracts.StratifiedTests.test_repeat_rejected) ... ok
+test_selection_bound (test_contracts.StratifiedTests.test_selection_bound) ... ok
+test_zero_variance_not_certificate (test_contracts.StratifiedTests.test_zero_variance_not_certificate) ... ok
+test_direct_damage (test_contracts.TrainingTests.test_direct_damage) ... ok
+test_invalid_damage_required (test_contracts.TrainingTests.test_invalid_damage_required) ... ok
+test_normalization_shift (test_contracts.TrainingTests.test_normalization_shift) ... ok
+test_population_normalization (test_contracts.TrainingTests.test_population_normalization) ... ok
+test_recipes_exact (test_contracts.TrainingTests.test_recipes_exact) ... ok
+test_x_relation_consistency (test_contracts.TrainingTests.test_x_relation_consistency) ... ok
+test_zero_group (test_contracts.TrainingTests.test_zero_group) ... ok
+
+----------------------------------------------------------------------
+Ran 45 tests in 0.009s
+
+OK

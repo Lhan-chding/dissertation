@@ -1,0 +1,5 @@
+schema: prospective-private-runtime-v1
+# Create the real binding using prepare-runtime; no keys or credentials belong here.
+historical_runtime: /projects/varunssd/louis-ssvc/decision_modeling_v1_20260919/runtime.json
+prepared: /projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/prepared_development.json
+data_root: /projects/_ssd/varunssd/louis-ssvc/reviewed-data-20260908/generated

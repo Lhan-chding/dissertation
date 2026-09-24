@@ -1,0 +1,72 @@
+{
+  "power": [
+    {
+      "sd": 0.01,
+      "required_approx": 8,
+      "selected": 12,
+      "target_power_not_reached_by_plan": false,
+      "approx_detectable_effect": 0.008087583866931657
+    },
+    {
+      "sd": 0.015,
+      "required_approx": 18,
+      "selected": 20,
+      "target_power_not_reached_by_plan": false,
+      "approx_detectable_effect": 0.009396923288304625
+    },
+    {
+      "sd": 0.02,
+      "required_approx": 32,
+      "selected": 32,
+      "target_power_not_reached_by_plan": false,
+      "approx_detectable_effect": 0.0099052268629739
+    },
+    {
+      "sd": 0.025,
+      "required_approx": 50,
+      "selected": 48,
+      "target_power_not_reached_by_plan": true,
+      "approx_detectable_effect": 0.01010947983366457
+    },
+    {
+      "sd": 0.03,
+      "required_approx": 71,
+      "selected": 48,
+      "target_power_not_reached_by_plan": true,
+      "approx_detectable_effect": 0.012131375800397484
+    }
+  ],
+  "mc": [
+    {
+      "N": 12,
+      "draws": 16,
+      "mc_se_upper": 0.0021262931794992865,
+      "meets_target": true
+    },
+    {
+      "N": 16,
+      "draws": 16,
+      "mc_se_upper": 0.0018414239093399675,
+      "meets_target": true
+    },
+    {
+      "N": 24,
+      "draws": 16,
+      "mc_se_upper": 0.0015035163260146505,
+      "meets_target": true
+    },
+    {
+      "N": 32,
+      "draws": 16,
+      "mc_se_upper": 0.0013020833333333333,
+      "meets_target": true
+    },
+    {
+      "N": 48,
+      "draws": 16,
+      "mc_se_upper": 0.0010631465897496433,
+      "meets_target": true
+    }
+  ],
+  "meaning": "Planning examples; no guarantee about the unknown actual effect or training variance"
+}
