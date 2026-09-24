@@ -17,7 +17,7 @@ cd /projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/code_bb23e9b/
 
 ```bash
 squeue -u varun024 -o '%i %j %T %M %R %b'
-sacct -j 169616,169617,169618,169619,169684 --format=JobID,State,ExitCode,Elapsed,AllocTRES,NodeList -P
+sacct -j 169616,169617,169618,169619,169906 --format=JobID,State,ExitCode,Elapsed,AllocTRES,NodeList -P
 /projects/varunssd/louis-ssvc/envs/ssvc-py312/bin/python -m src.prospective_selection.cli analyze \
   --phase first-four \
   --root /projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign \
@@ -31,3 +31,5 @@ E复核使用保存的16个H32 checkpoint和原E面板；不要重训旧分支�
 最终测试尚未获执行门禁：必须先完成全部开发/调参、真实吞吐报告、四选择器拟合、嵌套lineage精度规划，锁定N/m、代码和T，再为每个测试原点写decision。后续代码快照需记录阶段版本，不覆盖正在运行的414df78文件；本地已补强冻结与最终证据验证，P3前必须部署经过验证的最终版本。
 
 当前轮转记录：169620（O2_R0旧E）已完成并重算核验，继任169684为O1_R3旧E。后续须从campaign/submissions及recoveries读取最新job ID；不要固定沿用示例ID判断以后进度。
+
+2026-09-24T14:18Z：169684（O1_R3旧E）完成并重算核验；4条source均已有H32，下一槽按优先级给前置观测61001_t32，作业169906。其它旧E与其余prestate继续由同一5卡队列轮转。

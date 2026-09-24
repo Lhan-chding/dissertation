@@ -1,0 +1,22 @@
+{
+  "observed_at": "2026-09-24T14:17:48.177945+00:00",
+  "policy_id": "O1_R3",
+  "job_id": "169684",
+  "slurm_state": "COMPLETED",
+  "elapsed": "01:53:14",
+  "exit_code": "0:0",
+  "validation": "RAW_ROWS_RECOMPUTED_AND_RECEIPTS_MATCH",
+  "validated_samples": 2304,
+  "validated_prompts": 72,
+  "summary_recomputed": true,
+  "bound_historical_E_panel_and_checkpoint_verified": true,
+  "full_raw_outputs": "server-only campaign/historical_E/O1_R3/prompts",
+  "successor": {
+    "job_id": "169906",
+    "task_id": "2da3a7a59cb5d3b5f1134ecc8fc38a9222916093bdd199cb3a3a49d7937b9c75",
+    "kind": "prestate",
+    "origin_id": "61001_t32",
+    "first_observed_state": "RUNNING"
+  },
+  "scientific_scope": "Historical endpoint audit; not independent prospective selection evidence"
+}
