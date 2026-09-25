@@ -1,0 +1,22 @@
+{
+  "observed_at": "2026-09-25T06:36:47.879671+00:00",
+  "status": "VERIFIED",
+  "origin": "61001_t96",
+  "raw_outputs": 4608,
+  "four_packets_rebuilt": true,
+  "numeric_tolerance": 1e-12,
+  "max_difference": 7.771561172376096e-16,
+  "snapshots": {
+    "88": {
+      "J": 0.8346354166666666,
+      "outputs": 2304,
+      "sampling_seconds": 9101.215280722827
+    },
+    "96": {
+      "J": 0.8342013888888888,
+      "outputs": 2304,
+      "sampling_seconds": 9106.927047112025
+    }
+  },
+  "sacct": "170522|COMPLETED|0:0|05:06:48|2026-09-25T01:06:21|2026-09-25T06:13:09\n170522.batch|COMPLETED|0:0|05:06:48|2026-09-25T01:06:21|2026-09-25T06:13:09\n170522.extern|COMPLETED|0:0|05:06:48|2026-09-25T01:06:21|2026-09-25T06:13:09\n"
+}
