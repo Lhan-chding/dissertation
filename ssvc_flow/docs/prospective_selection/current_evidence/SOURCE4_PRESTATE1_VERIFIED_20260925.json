@@ -1,0 +1,70 @@
+{
+  "observed_at": "2026-09-25T01:05:33.834362+00:00",
+  "sources": [
+    {
+      "lineage_id": 61001,
+      "recipe": "R0",
+      "steps": 96,
+      "raw_outputs": 3072,
+      "segments": 12,
+      "elapsed_training_seconds": 46429.677775838645,
+      "sampling_seconds": 8630.26561173913,
+      "update_seconds": 37789.747686150484,
+      "initial_state_hash": "c367b6a398f6079fb4333e1dc76b3272f123bb427f2393f22b71e3304599f267"
+    },
+    {
+      "lineage_id": 61002,
+      "recipe": "R1",
+      "steps": 96,
+      "raw_outputs": 3072,
+      "segments": 12,
+      "elapsed_training_seconds": 43571.37817138102,
+      "sampling_seconds": 8389.161454725108,
+      "update_seconds": 35175.41899913692,
+      "initial_state_hash": "98b4d8795488d6d2bfebaf2eaf5acda59f1b0e8a96558c9bc37d16f6318097ec"
+    },
+    {
+      "lineage_id": 61003,
+      "recipe": "R0",
+      "steps": 96,
+      "raw_outputs": 3072,
+      "segments": 12,
+      "elapsed_training_seconds": 45577.50049570366,
+      "sampling_seconds": 8446.847884511342,
+      "update_seconds": 37120.600555346115,
+      "initial_state_hash": "e94cc69d5f99a7c319bfce04889c90206c0c41be94dc6efde5f1261ff93e1a79"
+    },
+    {
+      "lineage_id": 61004,
+      "recipe": "R1",
+      "steps": 96,
+      "raw_outputs": 3072,
+      "segments": 12,
+      "elapsed_training_seconds": 44731.83772113387,
+      "sampling_seconds": 8543.976583425887,
+      "update_seconds": 36180.61446253699,
+      "initial_state_hash": "b86e8b6fb5b5afe3d6714c3200111c7ddce4d5174e23246f9ecf2101ae3116be"
+    }
+  ],
+  "prestate": {
+    "origin_id": "61001_t32",
+    "snapshots": {
+      "24": {
+        "J": 0.650173611111111,
+        "raw_outputs": 2304,
+        "sampling_seconds": 7674.830352321267
+      },
+      "32": {
+        "J": 0.6905381944444445,
+        "raw_outputs": 2304,
+        "sampling_seconds": 7718.148310725577
+      }
+    },
+    "four_packets_rebuilt_equal_with_numeric_tolerance": 1e-12,
+    "max_numeric_difference": 1.7763568394002505e-15,
+    "shared_raw_outputs": 4608,
+    "note": "MC standard error summation order changes last floating point bit; all metrics and packet fields verified within tolerance"
+  },
+  "raw_source_verification": "prior check this session: all 4 x 3072 raw outputs, 96 finite updates, 12 segments, small artifact hashes and endpoint bindings passed; no model weight rehash",
+  "sacct": "169616|COMPLETED|0:0|12:56:39|2026-09-24T09:30:30|2026-09-24T22:27:09\n169616.batch|COMPLETED|0:0|12:56:39|2026-09-24T09:30:30|2026-09-24T22:27:09\n169616.extern|COMPLETED|0:0|12:56:39|2026-09-24T09:30:30|2026-09-24T22:27:09\n169617|COMPLETED|0:0|12:42:26|2026-09-24T09:30:31|2026-09-24T22:12:57\n169617.batch|COMPLETED|0:0|12:42:26|2026-09-24T09:30:31|2026-09-24T22:12:57\n169617.extern|COMPLETED|0:0|12:42:26|2026-09-24T09:30:31|2026-09-24T22:12:57\n169618|COMPLETED|0:0|12:08:15|2026-09-24T09:30:31|2026-09-24T21:38:46\n169618.batch|COMPLETED|0:0|12:08:15|2026-09-24T09:30:31|2026-09-24T21:38:46\n169618.extern|COMPLETED|0:0|12:08:15|2026-09-24T09:30:31|2026-09-24T21:38:46\n169619|COMPLETED|0:0|12:27:35|2026-09-24T09:30:31|2026-09-24T21:58:06\n169619.batch|COMPLETED|0:0|12:27:35|2026-09-24T09:30:31|2026-09-24T21:58:06\n169619.extern|COMPLETED|0:0|12:27:35|2026-09-24T09:30:31|2026-09-24T21:58:06\n169906|COMPLETED|0:0|04:20:39|2026-09-24T14:18:59|2026-09-24T18:39:38\n169906.batch|COMPLETED|0:0|04:20:39|2026-09-24T14:18:59|2026-09-24T18:39:38\n169906.extern|COMPLETED|0:0|04:20:39|2026-09-24T14:18:59|2026-09-24T18:39:38\n"
+}
