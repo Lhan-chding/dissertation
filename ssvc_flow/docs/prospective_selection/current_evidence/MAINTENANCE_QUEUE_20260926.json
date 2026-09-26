@@ -1,0 +1,11 @@
+{
+  "observed_at": "2026-09-26T05:39:09.832559+00:00",
+  "pending_job_id": "171346",
+  "attempted_time_limit": "08:00:00",
+  "time_limit_update_status": "REJECTED_BY_SITE_POLICY",
+  "site_message": "slurm_job_submit: Updating TimeLimit is not allowed",
+  "retained_time_limit": "1-00:00:00",
+  "action": "No cancellation or resubmission; preserve pending queue.",
+  "reservations": "ReservationName=maintenance StartTime=2026-09-26T16:00:00 EndTime=2026-09-27T13:00:00 Duration=21:00:00\n   Nodes=cpu-[1-2],gpu-5090-[1-5],gpu-6000ada-[1-3],gpu-a40-[1-2],gpu-a6000-1,gpu-l40-[1-2],gpu-pro6000-[1-11,13-14] NodeCnt=28 CoreCnt=984 Features=(null) PartitionName=(null) Flags=MAINT,IGNORE_JOBS,SPEC_NODES,ALL_NODES\n   TRES=cpu=984\n   Users=root Groups=(null) Accounts=(null) Licenses=(null) State=INACTIVE BurstBuffer=(null) Watts=n/a\n   MaxStartDelay=(null)\n\n",
+  "queue": "171346|ps2-bbfc472877f5|soujanya-poria-startfund-2026-03|PENDING|0:00|gres/gpu:pro6000:1|(ReqNodeNotAvail, Reserved for maintenance)\n171708|ps2-29da8baa0a49|soujanya-poria-startfund-2026-03|PENDING|0:00|gres/gpu:pro6000:1|(ReqNodeNotAvail, Reserved for maintenance)\n171707|ps2-156ac589b59c|soujanya-poria-startfund-2026-03|PENDING|0:00|gres/gpu:pro6000:1|(ReqNodeNotAvail, Reserved for maintenance)\n171706|ps2-0744b2433f9f|soujanya-poria-startfund-2026-03|PENDING|0:00|gres/gpu:pro6000:1|(ReqNodeNotAvail, Reserved for maintenance)\n171705|ps2-029ed3def515|soujanya-poria-startfund-2026-03|PENDING|0:00|gres/gpu:pro6000:1|(ReqNodeNotAvail, Reserved for maintenance)\n169539|obj2-prot-40-80|rose|PENDING|0:00|N/A|(ReqNodeNotAvail, Reserved for maintenance)\n166960|obj4-prot-120-150|rose|PENDING|0:00|N/A|(BeginTime)\n171552|sep8-25d-fixedlr|rose|PENDING|0:00|gres/gpu:6000ada:1|(ReqNodeNotAvail, Reserved for maintenance)\n169543|obj2-prot-80-120|rose|PENDING|0:00|N/A|(Dependency)\n"
+}
