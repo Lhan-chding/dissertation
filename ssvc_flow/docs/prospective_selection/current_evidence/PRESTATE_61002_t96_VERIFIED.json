@@ -1,0 +1,22 @@
+{
+  "observed_at": "2026-09-27T20:20:53.892221+00:00",
+  "status": "VERIFIED",
+  "origin": "61002_t96",
+  "raw_outputs": 4608,
+  "four_packets_rebuilt": true,
+  "numeric_tolerance": 1e-12,
+  "max_difference": 1.3322676295501878e-15,
+  "snapshots": {
+    "88": {
+      "J": 0.8328993055555555,
+      "outputs": 2304,
+      "sampling_seconds": 6083.975851367024
+    },
+    "96": {
+      "J": 0.8346354166666666,
+      "outputs": 2304,
+      "sampling_seconds": 6118.621170803002
+    }
+  },
+  "sacct": "173523|COMPLETED|0:0|03:25:31|2026-09-27T16:20:07|2026-09-27T19:45:38\n"
+}
