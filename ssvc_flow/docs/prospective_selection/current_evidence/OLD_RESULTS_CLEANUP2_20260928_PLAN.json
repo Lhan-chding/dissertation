@@ -1,0 +1,42 @@
+{
+  "status": "PLANNED_USER_AUTHORIZED",
+  "observed_at": "2026-09-28T04:51:21.287108+00:00",
+  "authorized_root": "/projects/_ssd/varunssd/louis-ssvc",
+  "scope": "Old candidate06 Q1 repeat directories; Q2 calibration/direct/fits directories and unit-root npz arrays only. Preserve unit-root JSON audit and summary files.",
+  "statistics": {
+    "Q1_observation_full": {
+      "selected_paths": 38400,
+      "files": 124800,
+      "logical_bytes": 37374690063,
+      "allocated_bytes": 37409714688,
+      "latest_utc": "2026-09-16T08:16:49.461388+00:00"
+    },
+    "Q2_coverage_full": {
+      "selected_paths": 336,
+      "files": 41796,
+      "logical_bytes": 21357804428,
+      "allocated_bytes": 21366651392,
+      "latest_utc": "2026-09-16T07:08:07.434472+00:00"
+    }
+  },
+  "examples": {
+    "Q1_observation_full": [
+      "Q1_observation_full/units/historical_seed606_X_BASE_a40_b13_a40_b0_IDENTICAL_POLICY_origin_n4096/repeat115",
+      "Q1_observation_full/units/historical_seed606_X_BASE_a40_b13_a40_b0_IDENTICAL_POLICY_origin_n4096/repeat003",
+      "Q1_observation_full/units/historical_seed606_X_BASE_a40_b13_a40_b0_IDENTICAL_POLICY_origin_n4096/repeat050"
+    ],
+    "Q2_coverage_full": [
+      "Q2_coverage_full/units/seed201_X_BASE_init7001_a8_repeat00/calibration_n128",
+      "Q2_coverage_full/units/seed201_X_BASE_init7001_a8_repeat00/direct_n3072",
+      "Q2_coverage_full/units/seed201_X_BASE_init7001_a8_repeat00/direct_n128"
+    ]
+  },
+  "manifest_path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/OLD_RESULTS_CLEANUP2_20260928_TARGETS.txt",
+  "manifest_sha256": "da9f4f148e8af6e8fbdafb2863b18bfb9bfcf343f53926fec7507466a4286a35",
+  "current_runtime_task_files_checked": 119,
+  "historical_job_accounting": "JobID|State|End\n155942|FAILED|2026-09-15T19:18:33\n155943|FAILED|2026-09-15T19:18:33\n",
+  "protected": [
+    "all current campaign, D2, V4, runs, cache, envs, dataset",
+    "candidate06 unit-root JSON audit records, stage summaries, source checkouts and remaining artifacts"
+  ]
+}

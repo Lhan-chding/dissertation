@@ -144,3 +144,7 @@ Git上传边界：996b610分析数据推送曾被自动审批拒绝，用户尚�
 通过TaskRegistry.resubmit_terminal逐个登记attempt_1，保留原intents/submissions和失败文件；生产代码仍e59b9ee，样本、seed、协议未改。恢复JobID：174109接续173821=61002_t96/R3，174110接续173822=61004_t32/R5，174111接续173823=61002_t96/DIRECT_REPAIR_R4，174112接续173824=61003_t96前置观测，174113接续173845=61004_t32/R1。回执RECOVERY_LAUNCH_20260928.json及campaign/recoveries/<task>/attempt_1中的intent/submission为当前恢复记录。04:46Z五项均RUNNING，单PRO6000教师QOS，启动日志没有错误标记；不等同于训练已完成。再次失败或恢复提交未知时须另行诊断，禁止重复恢复或盲目submit-ready。
 
 本次清理范围已完成，不继续扩大删除。已核验累计仍20/88分支、7/8前置观测、2/16旧E；无首四条交付、冻结或最终测试。每小时续跑保持。服务器清理授权不包含GitHub数据外发，996b610及后续历史仍不push。
+
+2026-09-28T04:55Z：用户再次明确要求继续清理自己目录内更早、不必要的实验结果。本轮仅删除modeling_v3_20260915/candidate06/Q1_observation_full/units下的repeat数字目录，以及Q2_coverage_full/units下的calibration_n数字、direct_n数字、fits目录和unit根部npz数组；共38736个目标路径、166596个文件、58732494491字节（约58.7 GB）。保留unit根部JSON、error_decomposition、阶段汇总、源码及其他未选目录。当前runtime和119个配置/任务文件未引用目标；历史审计引用的669个现有文件与目标无交集，删除前后哈希全部一致。清理后不能再声明这些旧实验原件完整：这些旧实验的逐次输出已按用户要求永久删除，保留汇总不能代替重新执行所需的全部旧原件。
+
+清理前后证据在current_evidence/OLD_RESULTS_CLEANUP2_20260928_PLAN.json、PROTECTED_PATHS.json（同前缀）及RECEIPT.json（同前缀）。完整38736行目标清单和保护文件哈希记录留在当前服务器实验根，清单SHA256为da9f4f148e8af6e8fbdafb2863b18bfb9bfcf343f53926fec7507466a4286a35。两轮累计删除逻辑大小118626421427字节（约118.6 GB）。1MiB写入+fsync再次成功；04:56Z 174109–174113均RUNNING、原5张PRO6000教师QOS，当前实验及D2/V4/runs/模型/数据/环境未动。此次追加清理已完成，不再自行扩大范围；原科学门禁、每小时续跑和Git数据推送限制保持。

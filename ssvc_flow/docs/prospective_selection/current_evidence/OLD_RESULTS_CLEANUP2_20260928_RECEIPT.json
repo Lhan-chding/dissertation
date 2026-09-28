@@ -1,0 +1,15 @@
+{
+  "status": "CLEANUP_COMPLETE_WRITE_PASS",
+  "started_at": "2026-09-28T04:53:20.706752+00:00",
+  "completed_at": "2026-09-28T04:55:35.206700+00:00",
+  "target_manifest_sha256": "da9f4f148e8af6e8fbdafb2863b18bfb9bfcf343f53926fec7507466a4286a35",
+  "deleted_paths": 38736,
+  "deleted_files": 166596,
+  "deleted_logical_bytes": 58732494491,
+  "deleted_allocated_bytes_inventory": 58776366080,
+  "protected_references": 669,
+  "existing_protected_files_unchanged": 669,
+  "preexisting_missing": [],
+  "write_probe_bytes": 1048576,
+  "current_experiment_and_dependencies": "PRESERVED"
+}
