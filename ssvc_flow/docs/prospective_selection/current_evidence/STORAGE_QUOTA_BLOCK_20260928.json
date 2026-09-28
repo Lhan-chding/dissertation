@@ -1,0 +1,114 @@
+{
+  "observed_at": "2026-09-28T03:23:35.413274+00:00",
+  "status": "BLOCKED_STORAGE_QUOTA",
+  "failure_cause": "UNKNOWN: no exception traceback in job logs; concurrent EDQUOT independently reproduced",
+  "write_probe": {
+    "path": "/projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/IO_PROBE_20260928_0327.txt",
+    "errno": 122,
+    "error": "Disk quota exceeded",
+    "result": "zero-byte file created; write/flush failed"
+  },
+  "filesystem": {
+    "size": "281T",
+    "used": "78T",
+    "available": "204T",
+    "used_percent": 28
+  },
+  "quota_inspection": {
+    "quota_executable": false,
+    "lfs_executable": false,
+    "getfattr_root_and_two_parents": "successful; no attributes returned"
+  },
+  "jobs": [
+    {
+      "job_id": "173821",
+      "origin": "61002_t96",
+      "recipe": "R3",
+      "state": "FAILED",
+      "exit_code": "1:0",
+      "elapsed": "00:35:15",
+      "end_utc": "2026-09-28T02:41:43Z",
+      "node": "gpu-pro6000-2",
+      "uncommitted_updates": 3,
+      "uncommitted_updates_finite": true,
+      "committed_training_segments": 0,
+      "H00_present": true,
+      "prestate_committed_prompts": null,
+      "log_evidence": "stdout empty; stderr generation warnings only; no traceback or time footer"
+    },
+    {
+      "job_id": "173822",
+      "origin": "61004_t32",
+      "recipe": "R5",
+      "state": "FAILED",
+      "exit_code": "1:0",
+      "elapsed": "00:36:06",
+      "end_utc": "2026-09-28T02:42:34Z",
+      "node": "gpu-pro6000-2",
+      "uncommitted_updates": 3,
+      "uncommitted_updates_finite": true,
+      "committed_training_segments": 0,
+      "H00_present": true,
+      "prestate_committed_prompts": null,
+      "log_evidence": "stdout empty; stderr generation warnings only; no traceback or time footer"
+    },
+    {
+      "job_id": "173823",
+      "origin": "61002_t96",
+      "recipe": "DIRECT_REPAIR_R4",
+      "state": "FAILED",
+      "exit_code": "1:0",
+      "elapsed": "00:40:05",
+      "end_utc": "2026-09-28T02:46:33Z",
+      "node": "gpu-pro6000-13",
+      "uncommitted_updates": 4,
+      "uncommitted_updates_finite": true,
+      "committed_training_segments": 0,
+      "H00_present": true,
+      "prestate_committed_prompts": null,
+      "log_evidence": "stdout empty; stderr generation warnings only; no traceback or time footer"
+    },
+    {
+      "job_id": "173824",
+      "origin": "61003_t96",
+      "recipe": null,
+      "state": "FAILED",
+      "exit_code": "1:0",
+      "elapsed": "00:34:21",
+      "end_utc": "2026-09-28T02:40:49Z",
+      "node": "gpu-pro6000-14",
+      "uncommitted_updates": null,
+      "uncommitted_updates_finite": null,
+      "committed_training_segments": null,
+      "H00_present": null,
+      "prestate_committed_prompts": {
+        "88": 23,
+        "96": 0
+      },
+      "log_evidence": "stdout empty; stderr generation warnings only; no traceback or time footer"
+    },
+    {
+      "job_id": "173845",
+      "origin": "61004_t32",
+      "recipe": "R1",
+      "state": "FAILED",
+      "exit_code": "1:0",
+      "elapsed": "00:19:46",
+      "end_utc": "2026-09-28T02:48:19Z",
+      "node": "gpu-pro6000-12",
+      "uncommitted_updates": 0,
+      "uncommitted_updates_finite": null,
+      "committed_training_segments": 0,
+      "H00_present": true,
+      "prestate_committed_prompts": null,
+      "log_evidence": "stdout empty; stderr generation warnings only; no traceback or time footer"
+    }
+  ],
+  "verified_totals": {
+    "source": 4,
+    "prestate": 7,
+    "branch": 20,
+    "historical_E": 2
+  },
+  "action": "No resubmission while writes fail. Preserve all failed attempts. After quota resolution, recheck accounting, validate checkpoints and prestate chunks, then use TaskRegistry.resubmit_terminal with explicit terminal evidence. No new candidates or test runs."
+}
