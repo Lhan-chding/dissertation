@@ -91,3 +91,9 @@ E复核使用保存的16个H32 checkpoint和原E面板；不要重训旧分支�
 四个失败branch均保留H00和原attempt，无8步COMMIT；R3/R5/DIRECT_REPAIR/R1分别保留3/3/4/0条未提交更新，已有更新数值有限，不能当完整恢复段或完成结果。61003_t96前置观测保留t88的23/72个提示COMMIT，t96为0。已核验总数仍为source4/4、prestate7/8、branch20/88、旧E2/16。未删除原件、改seed或提交替代任务。
 
 恢复前置条件：先解除实验目录写入配额阻塞，确认一次小文件写入成功，再实时核对旧JobID终态、原始绑定及H00完整恢复状态，按现有TaskRegistry.resubmit_terminal保留原intent/submission并登记一次显式恢复。禁止因squeue为空直接submit-ready或擦除失败提交；禁止把未提交更新当Adam恢复点。当前仍按5卡有效容量与教师QOS；待用户/管理员处理存储配额。自动化保持每小时检查；不扩展、冻结或运行最终测试。Git仍仅本地保存，未重试既有受限push。
+
+2026-09-28T04:46Z：用户授权且限定仅自己目录内的旧结果清理已完成，candidate04的Q1/Q2 units共约59.9 GB已删除；当前campaign、D2/V4、runs、模型、环境、数据均保留。1MiB写入+fsync成功，配额阻塞解除。清单及恢复输入见current_evidence/OLD_RESULTS_CLEANUP_20260928_PLAN.json、OLD_RESULTS_CLEANUP_20260928_RECEIPT.json、RECOVERY_INPUTS_20260928.json。
+
+当前恢复ID全部RUNNING：174109=61002_t96/R3，174110=61004_t32/R5，174111=61002_t96/DIRECT_REPAIR_R4，174112=61003_t96前置观测，174113=61004_t32/R1，分别接续173821/173822/173823/173824/173845。使用TaskRegistry.resubmit_terminal登记attempt_1，RECOVERY_LAUNCH_20260928.json及campaign/recoveries/<task>/attempt_1/submission.json是当前权威提交。旧失败attempt及原submission保留；再次失败或状态未知时须单独诊断，不能重复恢复。
+
+仍为5卡教师QOS、e59b9ee生产代码；已核验20/88分支、7/8前置观测、2/16旧E。清理完成后不扩大删除范围，不扩展开发范围或最终测试，保持每小时检查。服务器清理授权不解除GitHub数据推送限制，仍不push包含996b610的历史。

@@ -1,0 +1,62 @@
+{
+  "status": "RECOVERY_INPUTS_VALID",
+  "observed_at": "2026-09-28T04:42:11.763516+00:00",
+  "branches": [
+    {
+      "origin": "61002_t96",
+      "recipe": "R3",
+      "checkpoint": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/branches/61002_t96/R3/repeat_1/checkpoints/H00.pt",
+      "complete_state_valid": true,
+      "adam_entries": 192,
+      "adam_steps": [
+        96
+      ],
+      "byte_and_state_identity_valid": true,
+      "resume_from": "H00; retain uncommitted attempts"
+    },
+    {
+      "origin": "61004_t32",
+      "recipe": "R5",
+      "checkpoint": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/branches/61004_t32/R5/repeat_1/checkpoints/H00.pt",
+      "complete_state_valid": true,
+      "adam_entries": 192,
+      "adam_steps": [
+        32
+      ],
+      "byte_and_state_identity_valid": true,
+      "resume_from": "H00; retain uncommitted attempts"
+    },
+    {
+      "origin": "61002_t96",
+      "recipe": "DIRECT_REPAIR_R4",
+      "checkpoint": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/branches/61002_t96/DIRECT_REPAIR_R4/repeat_1/checkpoints/H00.pt",
+      "complete_state_valid": true,
+      "adam_entries": 192,
+      "adam_steps": [
+        96
+      ],
+      "byte_and_state_identity_valid": true,
+      "resume_from": "H00; retain uncommitted attempts"
+    },
+    {
+      "origin": "61004_t32",
+      "recipe": "R1",
+      "checkpoint": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/branches/61004_t32/R1/repeat_1/checkpoints/H00.pt",
+      "complete_state_valid": true,
+      "adam_entries": 192,
+      "adam_steps": [
+        32
+      ],
+      "byte_and_state_identity_valid": true,
+      "resume_from": "H00; retain uncommitted attempts"
+    }
+  ],
+  "prestate": {
+    "origin": "61003_t96",
+    "window": 88,
+    "committed_prompts": 23,
+    "raw_outputs": 736,
+    "binding_and_identity_valid": true
+  },
+  "scientific_settings_unchanged": true
+}

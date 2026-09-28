@@ -136,3 +136,11 @@ Git上传边界：996b610分析数据推送曾被自动审批拒绝，用户尚�
 四个失败branch均保留H00和原attempt，无8步COMMIT；R3/R5/DIRECT_REPAIR/R1分别保留3/3/4/0条未提交更新，已有更新数值有限，不能当完整恢复段或完成结果。61003_t96前置观测保留t88的23/72个提示COMMIT，t96为0。已核验总数仍为source4/4、prestate7/8、branch20/88、旧E2/16。未删除原件、改seed或提交替代任务。
 
 恢复前置条件：先解除实验目录写入配额阻塞，确认一次小文件写入成功，再实时核对旧JobID终态、原始绑定及H00完整恢复状态，按现有TaskRegistry.resubmit_terminal保留原intent/submission并登记一次显式恢复。禁止因squeue为空直接submit-ready或擦除失败提交；禁止把未提交更新当Adam恢复点。当前仍按5卡有效容量与教师QOS；待用户/管理员处理存储配额。自动化保持每小时检查；不扩展、冻结或运行最终测试。Git仍仅本地保存，未重试既有受限push。
+
+2026-09-28T04:44–04:46Z：用户明确授权删除旧实验结果，并限定“只在我目录里”。仅删除/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q1_observation_full/units及Q2_coverage_full/units，共168564个普通文件、逻辑大小59893926936字节（约59.9 GB / 55.8 GiB）。旧作业155812/155844均已于09-15 COMPLETED，目标无符号链接和Git目录，不在当前及历史runtime引用中。保留旧汇总、清单、源码，以及当前campaign、D2/V4依赖、runs、模型缓存、环境和数据。candidate04清理后du=930155520字节。清单及删除回执见current_evidence/OLD_RESULTS_CLEANUP_20260928_PLAN.json和OLD_RESULTS_CLEANUP_20260928_RECEIPT.json。
+
+当前实验目录小文件写入及1MiB写入+fsync均成功，配额阻塞解除。四个branch H00的字节hash、逻辑state hash和完整状态结构核验通过，均含192个Adam条目及一阶、二阶矩；61002_t96两臂Adam步数96，61004_t32两臂32。前置观测61003_t96/t88的23个提示、736条输出绑定及身份核验通过，见RECOVERY_INPUTS_20260928.json。实际GPU恢复仍由原_restore_checked核对所有运行状态，不使用失败attempt的未提交更新。
+
+通过TaskRegistry.resubmit_terminal逐个登记attempt_1，保留原intents/submissions和失败文件；生产代码仍e59b9ee，样本、seed、协议未改。恢复JobID：174109接续173821=61002_t96/R3，174110接续173822=61004_t32/R5，174111接续173823=61002_t96/DIRECT_REPAIR_R4，174112接续173824=61003_t96前置观测，174113接续173845=61004_t32/R1。回执RECOVERY_LAUNCH_20260928.json及campaign/recoveries/<task>/attempt_1中的intent/submission为当前恢复记录。04:46Z五项均RUNNING，单PRO6000教师QOS，启动日志没有错误标记；不等同于训练已完成。再次失败或恢复提交未知时须另行诊断，禁止重复恢复或盲目submit-ready。
+
+本次清理范围已完成，不继续扩大删除。已核验累计仍20/88分支、7/8前置观测、2/16旧E；无首四条交付、冻结或最终测试。每小时续跑保持。服务器清理授权不包含GitHub数据外发，996b610及后续历史仍不push。

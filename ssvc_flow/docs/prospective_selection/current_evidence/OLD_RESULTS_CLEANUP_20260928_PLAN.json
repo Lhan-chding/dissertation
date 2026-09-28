@@ -1,0 +1,41 @@
+{
+  "status": "PLANNED_USER_AUTHORIZED",
+  "authorization": "User authorized deleting old experiment results; scope only own directory.",
+  "observed_at": "2026-09-28T04:38:56.688436+00:00",
+  "authorized_root": "/projects/varunssd/louis-ssvc",
+  "resolved_root": "/projects/_ssd/varunssd/louis-ssvc",
+  "targets": [
+    {
+      "relative_path": "modeling_v3_20260915/candidate04/Q1_observation_full/units",
+      "files": 125376,
+      "logical_bytes": 37394810305,
+      "allocated_bytes": 37429600768,
+      "old_job": "155812",
+      "old_state": "COMPLETED"
+    },
+    {
+      "relative_path": "modeling_v3_20260915/candidate04/Q2_coverage_full/units",
+      "files": 43188,
+      "logical_bytes": 22499116631,
+      "allocated_bytes": 22508213760,
+      "old_job": "155844",
+      "old_state": "COMPLETED"
+    }
+  ],
+  "preserve": [
+    "prospective_selection_v2_20260924",
+    "decision_modeling_v1_20260919",
+    "modeling_v4_20260916",
+    "runs",
+    "cache",
+    "envs",
+    "reviewed-data-20260908",
+    "candidate04 summaries, manifests and checkout"
+  ],
+  "checks": [
+    "No symlinks or Git directories inside targets",
+    "Both old jobs completed on 2026-09-15",
+    "Current and historical runtime dependency paths exclude target directories",
+    "Current user queue only has unrelated pending jobs outside louis-ssvc"
+  ]
+}

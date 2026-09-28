@@ -1,0 +1,45 @@
+{
+  "status": "RECOVERY_SUBMISSIONS_RECORDED",
+  "observed_at": "2026-09-28T04:43:51.172627+00:00",
+  "submissions": [
+    {
+      "task_id": "0311dd25e3b810ad5f1d534cdc048fc63287553ea4f48d9158c1c97fe0029602",
+      "attempt": 1,
+      "job_id": "174109",
+      "previous_job_id": "173821",
+      "status": "RECOVERY_SUBMITTED"
+    },
+    {
+      "task_id": "2beca8de78f19c74dc8b7ca07902ffcd0857ad613d06f88e97b9829855fe39af",
+      "attempt": 1,
+      "job_id": "174110",
+      "previous_job_id": "173822",
+      "status": "RECOVERY_SUBMITTED"
+    },
+    {
+      "task_id": "364175cc4b883714ce240ec3bcebeb1a5d514c23203c63b72ebbafcc9877c3ca",
+      "attempt": 1,
+      "job_id": "174111",
+      "previous_job_id": "173823",
+      "status": "RECOVERY_SUBMITTED"
+    },
+    {
+      "task_id": "e8e8070463000bbf009bcb8d05551c055f7abafc2e887c742bf6efe25284d0eb",
+      "attempt": 1,
+      "job_id": "174112",
+      "previous_job_id": "173824",
+      "status": "RECOVERY_SUBMITTED"
+    },
+    {
+      "task_id": "425b460406d9cc9eecbf4e99f586442ce826889489566ed2f558ad534919dd55",
+      "attempt": 1,
+      "job_id": "174113",
+      "previous_job_id": "173845",
+      "status": "RECOVERY_SUBMITTED"
+    }
+  ],
+  "code_version": "e59b9ee",
+  "qos": "soujanya-poria-startfund-2026-03",
+  "max_gpu_jobs": 7,
+  "available_gpus": 5
+}
