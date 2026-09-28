@@ -99,3 +99,6 @@ E复核使用保存的16个H32 checkpoint和原E面板；不要重训旧分支�
 仍为5卡教师QOS、e59b9ee生产代码；已核验20/88分支、7/8前置观测、2/16旧E。清理完成后不扩大删除范围，不扩展开发范围或最终测试，保持每小时检查。服务器清理授权不解除GitHub数据推送限制，仍不push包含996b610的历史。
 
 2026-09-28T04:56Z：用户追加授权的第二轮清理已完成，仅清理旧candidate06的Q1 repeat及Q2 calibration/direct/fits和unit根部npz输出，约58.7 GB；保留669条当前历史审计引用文件且前后哈希一致。两轮共删除约118.6 GB旧输出，当前campaign、D2/V4、runs、模型、环境、数据未动。1MiB写入+fsync成功，174109–174113仍全部RUNNING。证据见current_evidence/OLD_RESULTS_CLEANUP2_20260928_PLAN.json、OLD_RESULTS_CLEANUP2_20260928_PROTECTED_PATHS.json、OLD_RESULTS_CLEANUP2_20260928_RECEIPT.json；服务器保留精确目标清单及保护哈希。旧逐次输出删除后不可再声称旧实验原件完整。追加清理范围已结束，后续沿用当前作业和协议，未经新指示不扩大删除；Git推送限制保持。
+
+
+2026-09-28T07:25Z小时检查：两次有界SSH连接eee-cluster（10.97.216.128:22）均Operation timed out，当前无法核验174109–174113；不能将连接失败解释为GPU任务失败。最近成功核查为06:24Z：五项均RUNNING，四个branch均有首8步COMMIT及24/24提示H8输出，最后前置观测61003_t96为t88完成72/72、t96完成22/72提示，日志未发现错误标记。以上仅为历史快照，已核验累计仍branch20/88、prestate7/8、旧E2/16。此次未提交、取消或重提任何任务，也未扩大清理范围。网络恢复后先核对当前恢复ID、完成回执与原始输出，再按门禁补位；每小时检查保持，Git数据推送限制不变。
