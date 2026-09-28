@@ -1,0 +1,100 @@
+{
+  "observed_at": "2026-09-28T12:54:36.332002+00:00",
+  "status": "VERIFIED",
+  "branches": [
+    {
+      "job_id": "174109",
+      "origin": "61002_t96",
+      "recipe": "R3",
+      "training_outputs": 1024,
+      "finite_updates": 32,
+      "initial_state_hash": "f8d5c255487efccf232ed541ddb3b0bb7e5e08ca8144e401f57f0560b766c921",
+      "evaluations": {
+        "8": {
+          "J": 0.7083333333333334,
+          "outputs": 192,
+          "prompts": 24
+        },
+        "32": {
+          "J": 0.7864583333333334,
+          "outputs": 2304,
+          "prompts": 144
+        }
+      },
+      "training_seconds": 19338.81861789401
+    },
+    {
+      "job_id": "174110",
+      "origin": "61004_t32",
+      "recipe": "R5",
+      "training_outputs": 1024,
+      "finite_updates": 32,
+      "initial_state_hash": "ef1c2cf9883b07cda5828e3ae9e951817e25b4a23be82616820a1d4dfdb3f1f3",
+      "evaluations": {
+        "8": {
+          "J": 0.5833333333333334,
+          "outputs": 192,
+          "prompts": 24
+        },
+        "32": {
+          "J": 0.7599826388888888,
+          "outputs": 2304,
+          "prompts": 144
+        }
+      },
+      "training_seconds": 16257.27570267499
+    },
+    {
+      "job_id": "174111",
+      "origin": "61002_t96",
+      "recipe": "DIRECT_REPAIR_R4",
+      "training_outputs": 1024,
+      "finite_updates": 32,
+      "initial_state_hash": "f8d5c255487efccf232ed541ddb3b0bb7e5e08ca8144e401f57f0560b766c921",
+      "evaluations": {
+        "8": {
+          "J": 0.7083333333333334,
+          "outputs": 192,
+          "prompts": 24
+        },
+        "32": {
+          "J": 0.7855902777777778,
+          "outputs": 2304,
+          "prompts": 144
+        }
+      },
+      "training_seconds": 14335.233408833956
+    },
+    {
+      "job_id": "174113",
+      "origin": "61004_t32",
+      "recipe": "R1",
+      "training_outputs": 1024,
+      "finite_updates": 32,
+      "initial_state_hash": "ef1c2cf9883b07cda5828e3ae9e951817e25b4a23be82616820a1d4dfdb3f1f3",
+      "evaluations": {
+        "8": {
+          "J": 0.5625,
+          "outputs": 192,
+          "prompts": 24
+        },
+        "32": {
+          "J": 0.7543402777777778,
+          "outputs": 2304,
+          "prompts": 144
+        }
+      },
+      "training_seconds": 14430.781220491976
+    }
+  ],
+  "historical_E": {
+    "J": 0.8194444444444445,
+    "outputs": 2304,
+    "prompts": 72,
+    "job_id": "174365",
+    "policy_id": "O2_R4"
+  },
+  "sacct": "174109|COMPLETED|0:0|07:51:14|2026-09-28T04:43:53|2026-09-28T12:35:07\n174110|COMPLETED|0:0|06:29:28|2026-09-28T04:43:56|2026-09-28T11:13:24\n174111|COMPLETED|0:0|05:51:02|2026-09-28T04:43:58|2026-09-28T10:35:00\n174113|COMPLETED|0:0|05:52:31|2026-09-28T04:43:58|2026-09-28T10:36:29\n174365|COMPLETED|0:0|01:44:00|2026-09-28T07:49:12|2026-09-28T09:33:12\n",
+  "max_summary_difference": 4.336808689942018e-19,
+  "note": "Small raw bindings checked once; no repeated large checkpoint or 9B model hashing. Recovery job durations exclude original failed attempts."
+}
