@@ -1,0 +1,115 @@
+{
+  "observed_at": "2026-09-29T01:18:06.858824+00:00",
+  "status": "VERIFIED",
+  "branches": [
+    {
+      "job_id": "174815",
+      "origin": "61003_t96",
+      "recipe": "R2",
+      "training_outputs": 1024,
+      "finite_updates": 32,
+      "initial_state_hash": "2e7e9d38033909d99fc6b3961ad035885aaa62b2918839b8d61ed1901d019fc3",
+      "evaluations": {
+        "8": {
+          "J": 0.7083333333333334,
+          "outputs": 192,
+          "prompts": 24
+        },
+        "32": {
+          "J": 0.7847222222222222,
+          "outputs": 2304,
+          "prompts": 144
+        }
+      },
+      "training_seconds": 13762.746915361
+    },
+    {
+      "job_id": "174816",
+      "origin": "61003_t96",
+      "recipe": "R1",
+      "training_outputs": 1024,
+      "finite_updates": 32,
+      "initial_state_hash": "2e7e9d38033909d99fc6b3961ad035885aaa62b2918839b8d61ed1901d019fc3",
+      "evaluations": {
+        "8": {
+          "J": 0.7083333333333334,
+          "outputs": 192,
+          "prompts": 24
+        },
+        "32": {
+          "J": 0.7855902777777778,
+          "outputs": 2304,
+          "prompts": 144
+        }
+      },
+      "training_seconds": 14463.800378103988
+    },
+    {
+      "job_id": "174817",
+      "origin": "61002_t96",
+      "recipe": "R5",
+      "training_outputs": 1024,
+      "finite_updates": 32,
+      "initial_state_hash": "f8d5c255487efccf232ed541ddb3b0bb7e5e08ca8144e401f57f0560b766c921",
+      "evaluations": {
+        "8": {
+          "J": 0.7083333333333334,
+          "outputs": 192,
+          "prompts": 24
+        },
+        "32": {
+          "J": 0.7855902777777778,
+          "outputs": 2304,
+          "prompts": 144
+        }
+      },
+      "training_seconds": 19593.28410199401
+    },
+    {
+      "job_id": "174818",
+      "origin": "61003_t96",
+      "recipe": "R6",
+      "training_outputs": 1024,
+      "finite_updates": 32,
+      "initial_state_hash": "2e7e9d38033909d99fc6b3961ad035885aaa62b2918839b8d61ed1901d019fc3",
+      "evaluations": {
+        "8": {
+          "J": 0.703125,
+          "outputs": 192,
+          "prompts": 24
+        },
+        "32": {
+          "J": 0.7847222222222222,
+          "outputs": 2304,
+          "prompts": 144
+        }
+      },
+      "training_seconds": 20750.49448018399
+    }
+  ],
+  "historical_E": {
+    "J": 0.8255208333333334,
+    "outputs": 2304,
+    "prompts": 72,
+    "job_id": "175129",
+    "policy_id": "O1_SAW_R4"
+  },
+  "completed_same_origin_J": {
+    "61003_t96": {
+      "R6": 0.7847222222222222,
+      "R2": 0.7847222222222222,
+      "R1": 0.7855902777777778
+    },
+    "61002_t96": {
+      "DIRECT_REPAIR_R4": 0.7855902777777778,
+      "R3": 0.7864583333333334,
+      "R5": 0.7855902777777778
+    }
+  },
+  "historical_O1_J": {
+    "O1_SAW_R4": 0.8255208333333334,
+    "O1_R3": 0.8302951388888888
+  },
+  "sacct": "174815|COMPLETED|0:0|05:36:57|2026-09-28T12:55:50|2026-09-28T18:32:47\n174816|COMPLETED|0:0|05:48:53|2026-09-28T12:55:52|2026-09-28T18:44:45\n174817|COMPLETED|0:0|07:54:41|2026-09-28T12:55:54|2026-09-28T20:50:35\n174818|COMPLETED|0:0|08:25:11|2026-09-28T13:00:57|2026-09-28T21:26:08\n175129|COMPLETED|0:0|01:45:32|2026-09-28T16:18:37|2026-09-28T18:04:09\n",
+  "max_summary_difference": 0.0
+}
