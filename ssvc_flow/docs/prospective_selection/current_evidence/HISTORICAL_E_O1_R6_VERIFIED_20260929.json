@@ -1,0 +1,24 @@
+{
+  "status": "VERIFIED",
+  "observed_at": "2026-09-29T16:01:39.614285+00:00",
+  "policy_id": "O1_R6",
+  "job_id": "176508",
+  "outputs": 2304,
+  "prompt_commits": 72,
+  "J": 0.8250868055555555,
+  "max_summary_difference": 4.336808689942018e-19,
+  "checks": [
+    "raw_sha256",
+    "unique_sample_ids",
+    "row_identity",
+    "checkpoint_state_hash",
+    "chunk_commit_set",
+    "summary_recomputed"
+  ],
+  "sacct": "176508|COMPLETED|0:0|01:47:01|2026-09-29T12:33:27|2026-09-29T14:20:28",
+  "O1_E_J": {
+    "O1_SAW_R4": 0.8255208333333334,
+    "O1_R3": 0.8302951388888888,
+    "O1_R6": 0.8250868055555555
+  }
+}
