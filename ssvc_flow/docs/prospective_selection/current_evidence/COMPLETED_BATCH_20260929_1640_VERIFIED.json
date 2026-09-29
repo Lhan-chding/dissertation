@@ -1,0 +1,66 @@
+{
+  "status": "VERIFIED",
+  "observed_at": "2026-09-29T16:40:02.939638+00:00",
+  "branches": [
+    {
+      "job_id": "176359",
+      "origin_id": "61002_t32",
+      "recipe": "R6",
+      "training_outputs": 1024,
+      "finite_updates": 32,
+      "sacct": "176359|COMPLETED|0:0|06:02:39|2026-09-29T10:21:45|2026-09-29T16:24:24",
+      "evaluations": {
+        "8": {
+          "outputs": 192,
+          "J": 0.578125
+        },
+        "32": {
+          "outputs": 2304,
+          "J": 0.7595486111111112
+        }
+      },
+      "same_origin_J": {
+        "R6": 0.7595486111111112,
+        "R7": 0.7586805555555555,
+        "R0": 0.7660590277777778,
+        "R2": 0.7599826388888888,
+        "R1": 0.7647569444444445
+      }
+    },
+    {
+      "job_id": "176127",
+      "origin_id": "61001_t32",
+      "recipe": "R2",
+      "training_outputs": 1024,
+      "finite_updates": 32,
+      "sacct": "176127|COMPLETED|0:0|08:37:01|2026-09-29T08:02:17|2026-09-29T16:39:18",
+      "evaluations": {
+        "8": {
+          "outputs": 192,
+          "J": 0.6458333333333334
+        },
+        "32": {
+          "outputs": 2304,
+          "J": 0.7556423611111112
+        }
+      },
+      "same_origin_J": {
+        "SAW_R4": 0.7699652777777778,
+        "R4": 0.7677951388888888,
+        "R5": 0.7565104166666666,
+        "GDPO_R4": 0.7734375,
+        "R2": 0.7556423611111112
+      }
+    }
+  ],
+  "max_summary_difference": 3.469446951953614e-18,
+  "checks": [
+    "training_and_evaluation_raw_bindings",
+    "row_identities",
+    "unique_sample_keys",
+    "segment_checkpoint_metadata",
+    "same_origin_initial_state",
+    "finite_updates",
+    "independent_summary_recompute"
+  ]
+}
