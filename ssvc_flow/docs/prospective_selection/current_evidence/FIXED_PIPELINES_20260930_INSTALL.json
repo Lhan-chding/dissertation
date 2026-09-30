@@ -1,0 +1,36 @@
+{
+  "status": "INSTALLED",
+  "at": "2026-09-30T13:20:07.819566+00:00",
+  "host": "login-3.cluster02.eee.ntu.edu.sg",
+  "entry": "*/5 * * * * PATH=/usr/bin:/bin /projects/varunssd/louis-ssvc/envs/ssvc-py312/bin/python /projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/fixed_pipelines_20260930/server_controller.py --config /projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/fixed_pipelines_20260930/config.json --launch-only >> /projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/fixed_pipelines_20260930/bootstrap.log 2>&1 # SSVC_FIXED_PIPELINES_20260930",
+  "preserved_existing_crontab": true,
+  "initial_live_check": {
+    "status": "RUNNING",
+    "observed_at": "2026-09-30T13:20:07.791683+00:00",
+    "verified_branches": 42,
+    "verified_historical_E": 10,
+    "active_gpu_jobs": [
+      {
+        "job_id": "178094",
+        "gpus": 1
+      },
+      {
+        "job_id": "178091",
+        "gpus": 1
+      },
+      {
+        "job_id": "178092",
+        "gpus": 1
+      },
+      {
+        "job_id": "178093",
+        "gpus": 1
+      },
+      {
+        "job_id": "178090",
+        "gpus": 1
+      }
+    ],
+    "launched_lanes": []
+  }
+}

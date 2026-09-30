@@ -24,3 +24,21 @@ Slurm单次最多72小时。脚本在运行46小时后不再开始新实验，�
 本地每三小时自动检查用于读取这些回执、分析与通知，不再调用原`submit-ready`抢占清单任务。断开本地SSH不影响已提交的Slurm脚本；服务器本身故障、维护、配额和作业失败仍会造成中断。
 
 针对性验证：固定清单归属、重复执行拒绝、连续执行顺序、原始文件损坏拒绝、汇总错误拒绝、失败停止、STOP、未知提交以及GPU容量计数；并运行原任务登记调度测试。
+
+
+## 2026-09-30部署清单
+
+当前已有5项独立作业178090–178094，保持原提交。尚未提交47项固定分配如下：
+
+| 脚本 | 分支 | 旧E | 总项数 |
+|---|---:|---:|---:|
+| 1 | 9 | 0 | 9 |
+| 2 | 9 | 0 | 9 |
+| 3 | 8 | 2 | 10 |
+| 4 | 8 | 2 | 10 |
+| 5 | 8 | 1 | 9 |
+
+入口安装回执在current_evidence/FIXED_PIPELINES_20260930_INSTALL.json，配置与版本绑定在FIXED_PIPELINES_20260930_CONFIG.json。五份逐项清单为lane_1_tasks.json至lane_5_tasks.json。代码本地提交893f504，服务器原训练快照未改；GitHub推送仍受原数据外发审批限制。
+
+
+2026-09-30T13:25:01Z: cron independently ran after installation SSH disconnected; five original GPU jobs were still active, no new lane submitted, no BLOCKED marker. GPU pipeline execution awaits a free slot. See current_evidence/FIXED_PIPELINES_20260930_CRON_VERIFIED.json.

@@ -185,3 +185,14 @@ E复核使用保存的16个H32 checkpoint和原E面板；不要重训旧分支�
 检查时项目GPU队列为空；上一批最后作业于11:16:51Z结束，至本次约12:49Z补位，全队列空闲约1小时32分，部分槽位更早空闲；现有证据不足以断言整个间隔的原因。通过原调度补入178090=61002_t32/DIRECT_REPAIR_R4、178091=61002_t96/R7、178092=61003_t32/DIRECT_REPAIR_R4、178093=61003_t96/R4（均repeat1），178094=旧O1_R4 E，持久回执LAUNCH_20260930_1249.json。12:49Z五项全部RUNNING，单PRO6000教师QOS，维持--max-gpu-jobs 7 --available-gpus 5，未触碰无关作业。
 
 首四条完整交付仍未满足；不扩展lineage、不冻结或预跑最终测试。每小时续跑保持，回执与执行记录仅本地保存；既有996b610及后续历史的数据推送审批限制未解除，不重试push。
+
+
+2026-09-30T13:20–13:25Z：按用户最新明确要求，部署五份预分配固定清单。新代码本地提交893f504；60项针对性测试和shell语法检查通过。部署后用61004_t32/R0真实原件验证新核验器，J=0.7604166667与已有核验一致。原code_e59b9ee训练快照及protocol未改。
+
+服务器独立目录fixed_pipelines_20260930保存配置和五份清单。现有178090–178094继续；未提交42分支+5旧E共47项固定分为9/9/10/10/9项，清单互斥完整，不按分数筛选。已核验42分支/10旧E、在途4分支/1旧E与固定47项的并集恰为88分支+16旧E。每个GPU脚本顺序调用原worker，子进程退出0、原始核验和描述比较完成后立即运行下一项，不动态领取。同一Slurm JobID可对应多个顺序任务；单项完成不再等待整条流水COMPLETED。失败或未知提交写BLOCKED，保留原件，不自动重试。
+
+教师QOS实测MaxSubmitPU=5，包括pending，不另占CPU控制作业。login-3用户crontab标记SSVC_FIXED_PIPELINES_20260930每五分钟只负责首次空位交接和Slurm时限接续，不跑模型或核验原始数据；GPU脚本内部不等待该入口。单次分配最长72小时，脚本运行46小时后不再开新实验，给原worker24小时时限留2小时余量；正常退出后按原清单接续并跳过已核验项。
+
+13:25:01Z安装SSH连接退出后，服务器cron实际自行触发成功：五个原作业占满，launched_lanes为空，无BLOCKED。新流水尚待空位启动。证据：current_evidence/FIXED_PIPELINES_20260930_INSTALL.json、FIXED_PIPELINES_20260930_CONFIG.json、FIXED_PIPELINES_20260930_CRON_VERIFIED.json及lane_1_tasks.json至lane_5_tasks.json。本地与部署代码SHA256一致。
+
+**覆盖旧调度指令：固定流水部署期间，本地自动化每三小时只检查服务器STATUS/BLOCKED/verified/allocations和真实Slurm、分析及通知；禁止调用原submit-ready或抢占固定清单任务。** 已更新ssvc自动化。首四条收齐仅进入FIRST_FOUR_COLLECTED_AWAITING_ANALYSIS，先分析并完成首批交付，再停用该入口、准备后续阶段；不得自动扩展、冻结或预跑测试。参见SERVER_PIPELINES_zh.md。代码与证据仅本地提交，既有GitHub数据推送限制保持，未重试push。

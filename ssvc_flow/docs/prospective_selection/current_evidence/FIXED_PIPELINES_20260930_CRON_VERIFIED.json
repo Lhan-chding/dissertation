@@ -1,0 +1,29 @@
+{
+  "status": "RUNNING",
+  "observed_at": "2026-09-30T13:25:01.726931+00:00",
+  "verified_branches": 42,
+  "verified_historical_E": 10,
+  "active_gpu_jobs": [
+    {
+      "job_id": "178094",
+      "gpus": 1
+    },
+    {
+      "job_id": "178091",
+      "gpus": 1
+    },
+    {
+      "job_id": "178092",
+      "gpus": 1
+    },
+    {
+      "job_id": "178093",
+      "gpus": 1
+    },
+    {
+      "job_id": "178090",
+      "gpus": 1
+    }
+  ],
+  "launched_lanes": []
+}
