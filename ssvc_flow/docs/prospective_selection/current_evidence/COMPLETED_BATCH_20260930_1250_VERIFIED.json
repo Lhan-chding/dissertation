@@ -1,0 +1,132 @@
+{
+  "status": "VERIFIED",
+  "observed_at": "2026-09-30T12:48:02.064132+00:00",
+  "branches": [
+    {
+      "job_id": "177302",
+      "origin_id": "61004_t32",
+      "recipe": "R0",
+      "training_outputs": 1024,
+      "finite_updates": 32,
+      "sacct": "177302|COMPLETED|0:0|08:49:33|2026-09-30T01:55:43|2026-09-30T10:45:16",
+      "evaluations": {
+        "8": {
+          "outputs": 192,
+          "J": 0.59375
+        },
+        "32": {
+          "outputs": 2304,
+          "J": 0.7604166666666666
+        }
+      },
+      "same_origin_J": {
+        "R0": 0.7604166666666666,
+        "R3": 0.7608506944444445,
+        "R5": 0.7599826388888888,
+        "GDPO_R4": 0.765625,
+        "R1": 0.7543402777777778
+      }
+    },
+    {
+      "job_id": "177303",
+      "origin_id": "61004_t96",
+      "recipe": "R0",
+      "training_outputs": 1024,
+      "finite_updates": 32,
+      "sacct": "177303|COMPLETED|0:0|08:57:30|2026-09-30T01:55:43|2026-09-30T10:53:13",
+      "evaluations": {
+        "8": {
+          "outputs": 192,
+          "J": 0.703125
+        },
+        "32": {
+          "outputs": 2304,
+          "J": 0.7855902777777778
+        }
+      },
+      "same_origin_J": {
+        "DIRECT_REPAIR_R4": 0.7925347222222222,
+        "R4": 0.7860243055555555,
+        "R0": 0.7855902777777778,
+        "R5": 0.7842881944444445,
+        "R2": 0.7860243055555555
+      }
+    },
+    {
+      "job_id": "177304",
+      "origin_id": "61001_t32",
+      "recipe": "DIRECT_REPAIR_R4",
+      "training_outputs": 1024,
+      "finite_updates": 32,
+      "sacct": "177304|COMPLETED|0:0|08:45:09|2026-09-30T01:55:43|2026-09-30T10:40:52",
+      "evaluations": {
+        "8": {
+          "outputs": 192,
+          "J": 0.6041666666666666
+        },
+        "32": {
+          "outputs": 2304,
+          "J": 0.76171875
+        }
+      },
+      "same_origin_J": {
+        "DIRECT_REPAIR_R4": 0.76171875,
+        "SAW_R4": 0.7699652777777778,
+        "R4": 0.7677951388888888,
+        "R5": 0.7565104166666666,
+        "GDPO_R4": 0.7734375,
+        "R2": 0.7556423611111112
+      }
+    },
+    {
+      "job_id": "177305",
+      "origin_id": "61001_t96",
+      "recipe": "R6",
+      "training_outputs": 1024,
+      "finite_updates": 32,
+      "sacct": "177305|COMPLETED|0:0|09:21:08|2026-09-30T01:55:43|2026-09-30T11:16:51",
+      "evaluations": {
+        "8": {
+          "outputs": 192,
+          "J": 0.703125
+        },
+        "32": {
+          "outputs": 2304,
+          "J": 0.7860243055555555
+        }
+      },
+      "same_origin_J": {
+        "R6": 0.7860243055555555,
+        "R7": 0.7864583333333334,
+        "R4": 0.7881944444444445,
+        "R5": 0.7860243055555555,
+        "R2": 0.7881944444444445,
+        "R1": 0.7873263888888888
+      }
+    }
+  ],
+  "historical_E": {
+    "outputs": 2304,
+    "J": 0.8190104166666666,
+    "job_id": "177306",
+    "policy_id": "O1_R5",
+    "sacct": "177306|COMPLETED|0:0|02:17:22|2026-09-30T01:55:43|2026-09-30T04:13:05",
+    "same_origin_J": {
+      "O1_R5": 0.8190104166666666,
+      "O1_R7": 0.8224826388888888,
+      "O1_SAW_R4": 0.8255208333333334,
+      "O1_R3": 0.8302951388888888,
+      "O1_R6": 0.8250868055555555
+    }
+  },
+  "max_summary_difference": 4.336808689942018e-19,
+  "checks": [
+    "training_and_evaluation_raw_bindings",
+    "row_identities",
+    "unique_sample_keys",
+    "segment_checkpoint_metadata",
+    "same_origin_initial_state",
+    "finite_updates",
+    "independent_summary_recompute"
+  ]
+}
