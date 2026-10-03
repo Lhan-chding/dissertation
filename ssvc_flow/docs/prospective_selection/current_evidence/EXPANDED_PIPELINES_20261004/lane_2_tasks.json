@@ -1,0 +1,2225 @@
+[
+  {
+    "dependencies": [
+      "ba84fb3d931915804cfac154024181573d6fac6f9e9206fb95177bff7c6a6cfa"
+    ],
+    "gpus": 1,
+    "key": [
+      "ssvc-prospective-selection-v2-20260924",
+      61006,
+      "R1"
+    ],
+    "kind": "source",
+    "payload": {
+      "lineage_id": 61006,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "role": "development",
+      "source_recipe": "R1"
+    },
+    "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61006/H32.json",
+        "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+      }
+    ],
+    "gpus": 1,
+    "key": [
+      61006,
+      "61006_t32",
+      "61006_t32",
+      "P",
+      32,
+      "predecision"
+    ],
+    "kind": "prestate",
+    "payload": {
+      "draw_role": "predecision",
+      "lineage_id": 61006,
+      "origin_id": "61006_t32",
+      "origin_step": 32,
+      "panel_id": "P",
+      "policy_id": "61006_t32",
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "role": "development",
+      "snapshot_t": 32,
+      "source_recipe": "R1"
+    },
+    "task_id": "a2579ea7158b7b9bb233fbd3d9ab6d95da1f9ee8860709b62d99b33a2f5aa62c"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61006/H96.json",
+        "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+      }
+    ],
+    "gpus": 1,
+    "key": [
+      61006,
+      "61006_t96",
+      "61006_t96",
+      "P",
+      96,
+      "predecision"
+    ],
+    "kind": "prestate",
+    "payload": {
+      "draw_role": "predecision",
+      "lineage_id": 61006,
+      "origin_id": "61006_t96",
+      "origin_step": 96,
+      "panel_id": "P",
+      "policy_id": "61006_t96",
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "role": "development",
+      "snapshot_t": 96,
+      "source_recipe": "R1"
+    },
+    "task_id": "ce4a58eda4491bd41c61d502cbe7f4e7ad3b4c645e953abca3c31d3f492cf62a"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61006/H32.json",
+        "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+      },
+      "a2579ea7158b7b9bb233fbd3d9ab6d95da1f9ee8860709b62d99b33a2f5aa62c"
+    ],
+    "gpus": 1,
+    "key": [
+      "61006_t32",
+      "DIRECT_REPAIR_R4",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61006,
+      "origin_id": "61006_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "DIRECT_REPAIR_R4",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "3190cfd6a5d29bbac538b641583948d9deed5f29963815e944d4677de1204a64"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61006/H32.json",
+        "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+      },
+      "a2579ea7158b7b9bb233fbd3d9ab6d95da1f9ee8860709b62d99b33a2f5aa62c"
+    ],
+    "gpus": 1,
+    "key": [
+      "61006_t32",
+      "GDPO_R4",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61006,
+      "origin_id": "61006_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "GDPO_R4",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "fcf0f1c10bb2c4b2af6c5b59f4312c83416b9e9c5f31a4e450e1871a61671143"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61006/H32.json",
+        "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+      },
+      "a2579ea7158b7b9bb233fbd3d9ab6d95da1f9ee8860709b62d99b33a2f5aa62c"
+    ],
+    "gpus": 1,
+    "key": [
+      "61006_t32",
+      "R0",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61006,
+      "origin_id": "61006_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R0",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "0fed04433f8c487eac50ba8161a6d054fea16ca46e62d2f83595e460593e67a1"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61006/H32.json",
+        "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+      },
+      "a2579ea7158b7b9bb233fbd3d9ab6d95da1f9ee8860709b62d99b33a2f5aa62c"
+    ],
+    "gpus": 1,
+    "key": [
+      "61006_t32",
+      "R1",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61006,
+      "origin_id": "61006_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R1",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "9fabd9b55de28744d62a4bced537ef533508c422ce85793dfc7259ef2e1434c2"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61006/H32.json",
+        "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+      },
+      "a2579ea7158b7b9bb233fbd3d9ab6d95da1f9ee8860709b62d99b33a2f5aa62c"
+    ],
+    "gpus": 1,
+    "key": [
+      "61006_t32",
+      "R2",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61006,
+      "origin_id": "61006_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R2",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "65877975aafb1292ada1cf85acb84e94ecf3be73596eb53b8af06217cc1d83dc"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61006/H32.json",
+        "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+      },
+      "a2579ea7158b7b9bb233fbd3d9ab6d95da1f9ee8860709b62d99b33a2f5aa62c"
+    ],
+    "gpus": 1,
+    "key": [
+      "61006_t32",
+      "R3",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61006,
+      "origin_id": "61006_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R3",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "000cb2ffa14b031433760f1c6ceec8682ad41fc42386aef74e6818896551d217"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61006/H32.json",
+        "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+      },
+      "a2579ea7158b7b9bb233fbd3d9ab6d95da1f9ee8860709b62d99b33a2f5aa62c"
+    ],
+    "gpus": 1,
+    "key": [
+      "61006_t32",
+      "R4",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61006,
+      "origin_id": "61006_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R4",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "ae173c75d0d3420648722696853ba939de27e7b781e20cc1eb39e193e78a0d24"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61006/H32.json",
+        "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+      },
+      "a2579ea7158b7b9bb233fbd3d9ab6d95da1f9ee8860709b62d99b33a2f5aa62c"
+    ],
+    "gpus": 1,
+    "key": [
+      "61006_t32",
+      "R5",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61006,
+      "origin_id": "61006_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R5",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "f4c814bbdb66551adafc919f1854beb5f45eae1946d921ea745d1904d8173b29"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61006/H32.json",
+        "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+      },
+      "a2579ea7158b7b9bb233fbd3d9ab6d95da1f9ee8860709b62d99b33a2f5aa62c"
+    ],
+    "gpus": 1,
+    "key": [
+      "61006_t32",
+      "R6",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61006,
+      "origin_id": "61006_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R6",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "cfe08cd9a4dcb1c7abd287ff34c2dbe99e2cc440477f956f3375a0b389498c44"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61006/H32.json",
+        "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+      },
+      "a2579ea7158b7b9bb233fbd3d9ab6d95da1f9ee8860709b62d99b33a2f5aa62c"
+    ],
+    "gpus": 1,
+    "key": [
+      "61006_t32",
+      "R7",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61006,
+      "origin_id": "61006_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R7",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "60afafa0d56e95eefe083f3a0eec464769b9d046b299380f83c461166841bd9d"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61006/H32.json",
+        "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+      },
+      "a2579ea7158b7b9bb233fbd3d9ab6d95da1f9ee8860709b62d99b33a2f5aa62c"
+    ],
+    "gpus": 1,
+    "key": [
+      "61006_t32",
+      "SAW_R4",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61006,
+      "origin_id": "61006_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "SAW_R4",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "b48b7c29db65df794366689c866b2caf3ef792366601241fafef9cc9544a9069"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61006/H96.json",
+        "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+      },
+      "ce4a58eda4491bd41c61d502cbe7f4e7ad3b4c645e953abca3c31d3f492cf62a"
+    ],
+    "gpus": 1,
+    "key": [
+      "61006_t96",
+      "DIRECT_REPAIR_R4",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61006,
+      "origin_id": "61006_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "DIRECT_REPAIR_R4",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "4f34eb1df3c11904c6bfd085bf5d50670468a61156801b32945a5cff3fc1b0fc"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61006/H96.json",
+        "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+      },
+      "ce4a58eda4491bd41c61d502cbe7f4e7ad3b4c645e953abca3c31d3f492cf62a"
+    ],
+    "gpus": 1,
+    "key": [
+      "61006_t96",
+      "GDPO_R4",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61006,
+      "origin_id": "61006_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "GDPO_R4",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "a626e80a98449debefd5730ea887248a82b38e4adaf615e1a1a5bdbc470d577d"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61006/H96.json",
+        "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+      },
+      "ce4a58eda4491bd41c61d502cbe7f4e7ad3b4c645e953abca3c31d3f492cf62a"
+    ],
+    "gpus": 1,
+    "key": [
+      "61006_t96",
+      "R0",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61006,
+      "origin_id": "61006_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R0",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "a3f33da8cc5e37fae1627a663f29f75473d35c1bb7e2d18dc8c39e607bf7c62a"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61006/H96.json",
+        "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+      },
+      "ce4a58eda4491bd41c61d502cbe7f4e7ad3b4c645e953abca3c31d3f492cf62a"
+    ],
+    "gpus": 1,
+    "key": [
+      "61006_t96",
+      "R1",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61006,
+      "origin_id": "61006_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R1",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "99b58741e20e9b7a59edf2804becafd545411a66bdf135dae80bb88cacac9e3f"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61006/H96.json",
+        "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+      },
+      "ce4a58eda4491bd41c61d502cbe7f4e7ad3b4c645e953abca3c31d3f492cf62a"
+    ],
+    "gpus": 1,
+    "key": [
+      "61006_t96",
+      "R2",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61006,
+      "origin_id": "61006_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R2",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "2ed2ed9758145f01279e3304d35fc76cbabcc904ccfaba6c6d756cafb292bc9b"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61006/H96.json",
+        "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+      },
+      "ce4a58eda4491bd41c61d502cbe7f4e7ad3b4c645e953abca3c31d3f492cf62a"
+    ],
+    "gpus": 1,
+    "key": [
+      "61006_t96",
+      "R3",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61006,
+      "origin_id": "61006_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R3",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "4d8fec6ee4167f96e6069d3e2b9efac01fa69768c22907792cdc9bd2df8315e0"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61006/H96.json",
+        "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+      },
+      "ce4a58eda4491bd41c61d502cbe7f4e7ad3b4c645e953abca3c31d3f492cf62a"
+    ],
+    "gpus": 1,
+    "key": [
+      "61006_t96",
+      "R4",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61006,
+      "origin_id": "61006_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R4",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "fb8e613ee1e89d0c4d46c456be6ceddf4c39a33b3facf9d9d9c51219fb74a4f0"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61006/H96.json",
+        "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+      },
+      "ce4a58eda4491bd41c61d502cbe7f4e7ad3b4c645e953abca3c31d3f492cf62a"
+    ],
+    "gpus": 1,
+    "key": [
+      "61006_t96",
+      "R5",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61006,
+      "origin_id": "61006_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R5",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "a3a8ef0803c027cf391d3084e3e264cfc4cf6ed0968e0dc5426be75f2a722119"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61006/H96.json",
+        "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+      },
+      "ce4a58eda4491bd41c61d502cbe7f4e7ad3b4c645e953abca3c31d3f492cf62a"
+    ],
+    "gpus": 1,
+    "key": [
+      "61006_t96",
+      "R6",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61006,
+      "origin_id": "61006_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R6",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "a8a2ee7977c310b3cc05c2eab276cd0fde2b44d6d0f236179693e073ea7ad0f5"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61006/H96.json",
+        "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+      },
+      "ce4a58eda4491bd41c61d502cbe7f4e7ad3b4c645e953abca3c31d3f492cf62a"
+    ],
+    "gpus": 1,
+    "key": [
+      "61006_t96",
+      "R7",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61006,
+      "origin_id": "61006_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R7",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "7492972b3e724fa989303c3208b39a83cffb8d82e39321713a7b048720dbd946"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61006/H96.json",
+        "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d"
+      },
+      "ce4a58eda4491bd41c61d502cbe7f4e7ad3b4c645e953abca3c31d3f492cf62a"
+    ],
+    "gpus": 1,
+    "key": [
+      "61006_t96",
+      "SAW_R4",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61006,
+      "origin_id": "61006_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "SAW_R4",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "5a9f4f8e7769599b80fb23d0bf9c5a06d04bc6f11bf383a8e976db395441132a"
+  },
+  {
+    "dependencies": [
+      "ba84fb3d931915804cfac154024181573d6fac6f9e9206fb95177bff7c6a6cfa"
+    ],
+    "gpus": 1,
+    "key": [
+      "ssvc-prospective-selection-v2-20260924",
+      61011,
+      "R0"
+    ],
+    "kind": "source",
+    "payload": {
+      "lineage_id": 61011,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "role": "development",
+      "source_recipe": "R0"
+    },
+    "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61011/H32.json",
+        "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+      }
+    ],
+    "gpus": 1,
+    "key": [
+      61011,
+      "61011_t32",
+      "61011_t32",
+      "P",
+      32,
+      "predecision"
+    ],
+    "kind": "prestate",
+    "payload": {
+      "draw_role": "predecision",
+      "lineage_id": 61011,
+      "origin_id": "61011_t32",
+      "origin_step": 32,
+      "panel_id": "P",
+      "policy_id": "61011_t32",
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "role": "development",
+      "snapshot_t": 32,
+      "source_recipe": "R0"
+    },
+    "task_id": "9994ceb0ce5ad3a58fb993e9cc73b412dbe5b79cb2e7a4579a3d4f59ae6cf324"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61011/H96.json",
+        "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+      }
+    ],
+    "gpus": 1,
+    "key": [
+      61011,
+      "61011_t96",
+      "61011_t96",
+      "P",
+      96,
+      "predecision"
+    ],
+    "kind": "prestate",
+    "payload": {
+      "draw_role": "predecision",
+      "lineage_id": 61011,
+      "origin_id": "61011_t96",
+      "origin_step": 96,
+      "panel_id": "P",
+      "policy_id": "61011_t96",
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "role": "development",
+      "snapshot_t": 96,
+      "source_recipe": "R0"
+    },
+    "task_id": "04d32304d7b9a895f48f61b7ab8ce4d20588c3e4633c9e953cd7e8f44d131a4e"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61011/H32.json",
+        "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+      },
+      "9994ceb0ce5ad3a58fb993e9cc73b412dbe5b79cb2e7a4579a3d4f59ae6cf324"
+    ],
+    "gpus": 1,
+    "key": [
+      "61011_t32",
+      "DIRECT_REPAIR_R4",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61011,
+      "origin_id": "61011_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "DIRECT_REPAIR_R4",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R0"
+    },
+    "task_id": "1d92b78c7367a5ed696955f7fed3d27c5bc4330c588b0dcf3b4f52c425465628"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61011/H32.json",
+        "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+      },
+      "9994ceb0ce5ad3a58fb993e9cc73b412dbe5b79cb2e7a4579a3d4f59ae6cf324"
+    ],
+    "gpus": 1,
+    "key": [
+      "61011_t32",
+      "GDPO_R4",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61011,
+      "origin_id": "61011_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "GDPO_R4",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R0"
+    },
+    "task_id": "1011e91232b50be72c04e1bd272067bf3473b4b62dd4d553a9e9c074460b903a"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61011/H32.json",
+        "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+      },
+      "9994ceb0ce5ad3a58fb993e9cc73b412dbe5b79cb2e7a4579a3d4f59ae6cf324"
+    ],
+    "gpus": 1,
+    "key": [
+      "61011_t32",
+      "R0",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61011,
+      "origin_id": "61011_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R0",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R0"
+    },
+    "task_id": "204ee1fc23f645e51da92ef239ee3195848cf8c2e0e4bab0eefd37e57dfb1460"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61011/H32.json",
+        "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+      },
+      "9994ceb0ce5ad3a58fb993e9cc73b412dbe5b79cb2e7a4579a3d4f59ae6cf324"
+    ],
+    "gpus": 1,
+    "key": [
+      "61011_t32",
+      "R1",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61011,
+      "origin_id": "61011_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R1",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R0"
+    },
+    "task_id": "c8b8727c5ca85549fd0826c2f9e7bcfbba2ed7ac2518f8c434397f8efa9d65e4"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61011/H32.json",
+        "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+      },
+      "9994ceb0ce5ad3a58fb993e9cc73b412dbe5b79cb2e7a4579a3d4f59ae6cf324"
+    ],
+    "gpus": 1,
+    "key": [
+      "61011_t32",
+      "R2",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61011,
+      "origin_id": "61011_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R2",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R0"
+    },
+    "task_id": "e76bba876b02211449eb9b71241135f2800eba3b4778a354fa8afa724717df42"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61011/H32.json",
+        "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+      },
+      "9994ceb0ce5ad3a58fb993e9cc73b412dbe5b79cb2e7a4579a3d4f59ae6cf324"
+    ],
+    "gpus": 1,
+    "key": [
+      "61011_t32",
+      "R3",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61011,
+      "origin_id": "61011_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R3",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R0"
+    },
+    "task_id": "360a3b45d896782458982565715adf11e20535766cd6a708b797ff73a95ce7a1"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61011/H32.json",
+        "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+      },
+      "9994ceb0ce5ad3a58fb993e9cc73b412dbe5b79cb2e7a4579a3d4f59ae6cf324"
+    ],
+    "gpus": 1,
+    "key": [
+      "61011_t32",
+      "R4",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61011,
+      "origin_id": "61011_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R4",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R0"
+    },
+    "task_id": "5ab2d8b8c9ebbd64f793ff03ffe5ab47354e22502ca353afc532fcb2d4cb9bcc"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61011/H32.json",
+        "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+      },
+      "9994ceb0ce5ad3a58fb993e9cc73b412dbe5b79cb2e7a4579a3d4f59ae6cf324"
+    ],
+    "gpus": 1,
+    "key": [
+      "61011_t32",
+      "R5",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61011,
+      "origin_id": "61011_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R5",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R0"
+    },
+    "task_id": "3c654ad978dada36cadb3498b256d19f9351a36eab50bc145e471a72baab1fd0"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61011/H32.json",
+        "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+      },
+      "9994ceb0ce5ad3a58fb993e9cc73b412dbe5b79cb2e7a4579a3d4f59ae6cf324"
+    ],
+    "gpus": 1,
+    "key": [
+      "61011_t32",
+      "R6",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61011,
+      "origin_id": "61011_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R6",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R0"
+    },
+    "task_id": "adff8ea7b258564ddb5e7496add5d709e7fc546d581527383988572fa618244d"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61011/H32.json",
+        "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+      },
+      "9994ceb0ce5ad3a58fb993e9cc73b412dbe5b79cb2e7a4579a3d4f59ae6cf324"
+    ],
+    "gpus": 1,
+    "key": [
+      "61011_t32",
+      "R7",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61011,
+      "origin_id": "61011_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R7",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R0"
+    },
+    "task_id": "8c1cf132eb97e9dbf6ea95ba41118c0cfbb75eff0b094f81f0c2a2c24931a0b8"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61011/H32.json",
+        "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+      },
+      "9994ceb0ce5ad3a58fb993e9cc73b412dbe5b79cb2e7a4579a3d4f59ae6cf324"
+    ],
+    "gpus": 1,
+    "key": [
+      "61011_t32",
+      "SAW_R4",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61011,
+      "origin_id": "61011_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "SAW_R4",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R0"
+    },
+    "task_id": "56e89b6d1e2aa1568e4b77c92ea297d8188bf3f2d3c32176a54c3b6d549eb005"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61011/H96.json",
+        "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+      },
+      "04d32304d7b9a895f48f61b7ab8ce4d20588c3e4633c9e953cd7e8f44d131a4e"
+    ],
+    "gpus": 1,
+    "key": [
+      "61011_t96",
+      "DIRECT_REPAIR_R4",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61011,
+      "origin_id": "61011_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "DIRECT_REPAIR_R4",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R0"
+    },
+    "task_id": "f057ccd25cbdfcfa38316f2ca9f96e2a64feb9d9d853e4063870f13bb8018592"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61011/H96.json",
+        "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+      },
+      "04d32304d7b9a895f48f61b7ab8ce4d20588c3e4633c9e953cd7e8f44d131a4e"
+    ],
+    "gpus": 1,
+    "key": [
+      "61011_t96",
+      "GDPO_R4",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61011,
+      "origin_id": "61011_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "GDPO_R4",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R0"
+    },
+    "task_id": "be07e057a193a3654a52bcb6ab6ee010dc537a901667648a91cb8095bbe9d25c"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61011/H96.json",
+        "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+      },
+      "04d32304d7b9a895f48f61b7ab8ce4d20588c3e4633c9e953cd7e8f44d131a4e"
+    ],
+    "gpus": 1,
+    "key": [
+      "61011_t96",
+      "R0",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61011,
+      "origin_id": "61011_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R0",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R0"
+    },
+    "task_id": "8147d367a4851f54d30e4c133e3f191e2ae0e2ece5f3bc2dc795596495f9beba"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61011/H96.json",
+        "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+      },
+      "04d32304d7b9a895f48f61b7ab8ce4d20588c3e4633c9e953cd7e8f44d131a4e"
+    ],
+    "gpus": 1,
+    "key": [
+      "61011_t96",
+      "R1",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61011,
+      "origin_id": "61011_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R1",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R0"
+    },
+    "task_id": "b848f086e2297a1a61b320136ebc91788cafa9ea3097d1e3ea7ba731dac5c88d"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61011/H96.json",
+        "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+      },
+      "04d32304d7b9a895f48f61b7ab8ce4d20588c3e4633c9e953cd7e8f44d131a4e"
+    ],
+    "gpus": 1,
+    "key": [
+      "61011_t96",
+      "R2",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61011,
+      "origin_id": "61011_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R2",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R0"
+    },
+    "task_id": "f23a7b911a83a2d710d68fc57eff07db8998281c2dc5254fd1688c19a37bc6f1"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61011/H96.json",
+        "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+      },
+      "04d32304d7b9a895f48f61b7ab8ce4d20588c3e4633c9e953cd7e8f44d131a4e"
+    ],
+    "gpus": 1,
+    "key": [
+      "61011_t96",
+      "R3",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61011,
+      "origin_id": "61011_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R3",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R0"
+    },
+    "task_id": "778ef4dc56a0537e457c5dc8965bf3e58f7d8cea87fbaf0954e0321b3d6f6489"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61011/H96.json",
+        "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+      },
+      "04d32304d7b9a895f48f61b7ab8ce4d20588c3e4633c9e953cd7e8f44d131a4e"
+    ],
+    "gpus": 1,
+    "key": [
+      "61011_t96",
+      "R4",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61011,
+      "origin_id": "61011_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R4",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R0"
+    },
+    "task_id": "7bb978cd5856203e9b03574a5a12d04d3835177249ed38b2b74c6db4f36d2ae1"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61011/H96.json",
+        "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+      },
+      "04d32304d7b9a895f48f61b7ab8ce4d20588c3e4633c9e953cd7e8f44d131a4e"
+    ],
+    "gpus": 1,
+    "key": [
+      "61011_t96",
+      "R5",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61011,
+      "origin_id": "61011_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R5",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R0"
+    },
+    "task_id": "7b38ec2055af383d2be555a258a4db189059ae18bc506ff9ebe2e106dc4368f3"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61011/H96.json",
+        "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+      },
+      "04d32304d7b9a895f48f61b7ab8ce4d20588c3e4633c9e953cd7e8f44d131a4e"
+    ],
+    "gpus": 1,
+    "key": [
+      "61011_t96",
+      "R6",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61011,
+      "origin_id": "61011_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R6",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R0"
+    },
+    "task_id": "581c52b7d698c3930d1536b4f21ffb1aaafc41d2574bf9508b1d83f8ac578547"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61011/H96.json",
+        "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+      },
+      "04d32304d7b9a895f48f61b7ab8ce4d20588c3e4633c9e953cd7e8f44d131a4e"
+    ],
+    "gpus": 1,
+    "key": [
+      "61011_t96",
+      "R7",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61011,
+      "origin_id": "61011_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R7",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R0"
+    },
+    "task_id": "54fa95e2801e5b074b891bea6368a0e7222c448f11b80ea05d3361ca034bc960"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61011/H96.json",
+        "task_id": "a046970e0c428c525c457554bbef85f7e5719fb5532f3ee0e0524770ab914709"
+      },
+      "04d32304d7b9a895f48f61b7ab8ce4d20588c3e4633c9e953cd7e8f44d131a4e"
+    ],
+    "gpus": 1,
+    "key": [
+      "61011_t96",
+      "SAW_R4",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 61011,
+      "origin_id": "61011_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "SAW_R4",
+      "repeat": 1,
+      "role": "development",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R0"
+    },
+    "task_id": "5e7e28268daf52b9d8651be78f74f573cf580cb7617029cbd5cadf3c63ead70b"
+  },
+  {
+    "dependencies": [
+      "ba84fb3d931915804cfac154024181573d6fac6f9e9206fb95177bff7c6a6cfa"
+    ],
+    "gpus": 1,
+    "key": [
+      "ssvc-prospective-selection-v2-20260924",
+      62004,
+      "R1"
+    ],
+    "kind": "source",
+    "payload": {
+      "lineage_id": 62004,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "role": "tuning",
+      "source_recipe": "R1"
+    },
+    "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/62004/H32.json",
+        "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+      }
+    ],
+    "gpus": 1,
+    "key": [
+      62004,
+      "62004_t32",
+      "62004_t32",
+      "P",
+      32,
+      "predecision"
+    ],
+    "kind": "prestate",
+    "payload": {
+      "draw_role": "predecision",
+      "lineage_id": 62004,
+      "origin_id": "62004_t32",
+      "origin_step": 32,
+      "panel_id": "P",
+      "policy_id": "62004_t32",
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "role": "tuning",
+      "snapshot_t": 32,
+      "source_recipe": "R1"
+    },
+    "task_id": "2e3294a4b2720dbbc20b12d31f52e71468a04fd6b95fb9b31f4701f817255d14"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/62004/H96.json",
+        "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+      }
+    ],
+    "gpus": 1,
+    "key": [
+      62004,
+      "62004_t96",
+      "62004_t96",
+      "P",
+      96,
+      "predecision"
+    ],
+    "kind": "prestate",
+    "payload": {
+      "draw_role": "predecision",
+      "lineage_id": 62004,
+      "origin_id": "62004_t96",
+      "origin_step": 96,
+      "panel_id": "P",
+      "policy_id": "62004_t96",
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "role": "tuning",
+      "snapshot_t": 96,
+      "source_recipe": "R1"
+    },
+    "task_id": "da7f7773861870081d388bdba4eec336038ebe951ea371fc67e56b887c36b1d2"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/62004/H32.json",
+        "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+      },
+      "2e3294a4b2720dbbc20b12d31f52e71468a04fd6b95fb9b31f4701f817255d14"
+    ],
+    "gpus": 1,
+    "key": [
+      "62004_t32",
+      "DIRECT_REPAIR_R4",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 62004,
+      "origin_id": "62004_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "DIRECT_REPAIR_R4",
+      "repeat": 1,
+      "role": "tuning",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "b5a25dc8b94017a4c35ac234627392eb5af8c90ce1a15a38e14ad6a71e63c496"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/62004/H32.json",
+        "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+      },
+      "2e3294a4b2720dbbc20b12d31f52e71468a04fd6b95fb9b31f4701f817255d14"
+    ],
+    "gpus": 1,
+    "key": [
+      "62004_t32",
+      "GDPO_R4",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 62004,
+      "origin_id": "62004_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "GDPO_R4",
+      "repeat": 1,
+      "role": "tuning",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "cbc5f10e07f300f0cc642c0b7b2903d7af0d8b19d29fed4bd217d4889e68ae60"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/62004/H32.json",
+        "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+      },
+      "2e3294a4b2720dbbc20b12d31f52e71468a04fd6b95fb9b31f4701f817255d14"
+    ],
+    "gpus": 1,
+    "key": [
+      "62004_t32",
+      "R0",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 62004,
+      "origin_id": "62004_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R0",
+      "repeat": 1,
+      "role": "tuning",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "86c065f8e4ccccb7ee900391e45c1593c3932785ef42ecd0d1452ab1d088f96a"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/62004/H32.json",
+        "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+      },
+      "2e3294a4b2720dbbc20b12d31f52e71468a04fd6b95fb9b31f4701f817255d14"
+    ],
+    "gpus": 1,
+    "key": [
+      "62004_t32",
+      "R1",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 62004,
+      "origin_id": "62004_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R1",
+      "repeat": 1,
+      "role": "tuning",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "2ebea9a8973aff866f5d8abd6dec9da99cc928be427a92f15c0d855836a28c9f"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/62004/H32.json",
+        "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+      },
+      "2e3294a4b2720dbbc20b12d31f52e71468a04fd6b95fb9b31f4701f817255d14"
+    ],
+    "gpus": 1,
+    "key": [
+      "62004_t32",
+      "R2",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 62004,
+      "origin_id": "62004_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R2",
+      "repeat": 1,
+      "role": "tuning",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "33f2b3b7a4385ae2ea54d3e521d25950136f3ccc23f90163c6aa8febc5589f08"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/62004/H32.json",
+        "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+      },
+      "2e3294a4b2720dbbc20b12d31f52e71468a04fd6b95fb9b31f4701f817255d14"
+    ],
+    "gpus": 1,
+    "key": [
+      "62004_t32",
+      "R3",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 62004,
+      "origin_id": "62004_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R3",
+      "repeat": 1,
+      "role": "tuning",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "b5e87d3b7d91414064d574206592722ea2dbbce5f3cb4c09410e0f5d85ff3fef"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/62004/H32.json",
+        "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+      },
+      "2e3294a4b2720dbbc20b12d31f52e71468a04fd6b95fb9b31f4701f817255d14"
+    ],
+    "gpus": 1,
+    "key": [
+      "62004_t32",
+      "R4",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 62004,
+      "origin_id": "62004_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R4",
+      "repeat": 1,
+      "role": "tuning",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "3dd76c2d3c9fe2d27fe2a85c69fe8973d57b56f9fafd5a0b9338ae2825831bff"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/62004/H32.json",
+        "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+      },
+      "2e3294a4b2720dbbc20b12d31f52e71468a04fd6b95fb9b31f4701f817255d14"
+    ],
+    "gpus": 1,
+    "key": [
+      "62004_t32",
+      "R5",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 62004,
+      "origin_id": "62004_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R5",
+      "repeat": 1,
+      "role": "tuning",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "7d285a7cb000d49cb0937769170a0752e958024d77769b0a2c98319d1f240d71"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/62004/H32.json",
+        "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+      },
+      "2e3294a4b2720dbbc20b12d31f52e71468a04fd6b95fb9b31f4701f817255d14"
+    ],
+    "gpus": 1,
+    "key": [
+      "62004_t32",
+      "R6",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 62004,
+      "origin_id": "62004_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R6",
+      "repeat": 1,
+      "role": "tuning",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "9ce27a9d722400f768df042648672e951a0950d03d933d2a2ca1d0e6ffbed5f1"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/62004/H32.json",
+        "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+      },
+      "2e3294a4b2720dbbc20b12d31f52e71468a04fd6b95fb9b31f4701f817255d14"
+    ],
+    "gpus": 1,
+    "key": [
+      "62004_t32",
+      "R7",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 62004,
+      "origin_id": "62004_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R7",
+      "repeat": 1,
+      "role": "tuning",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "8ffd0bc68a01af201a5bb08008a4abb687db3a966a77549ba8bbd5ad93df8614"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/62004/H32.json",
+        "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+      },
+      "2e3294a4b2720dbbc20b12d31f52e71468a04fd6b95fb9b31f4701f817255d14"
+    ],
+    "gpus": 1,
+    "key": [
+      "62004_t32",
+      "SAW_R4",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 62004,
+      "origin_id": "62004_t32",
+      "origin_step": 32,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "SAW_R4",
+      "repeat": 1,
+      "role": "tuning",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "98234f9c3dd9c8d8795e8bbac16430c000ba33532b33f83ed73357f26608023b"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/62004/H96.json",
+        "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+      },
+      "da7f7773861870081d388bdba4eec336038ebe951ea371fc67e56b887c36b1d2"
+    ],
+    "gpus": 1,
+    "key": [
+      "62004_t96",
+      "DIRECT_REPAIR_R4",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 62004,
+      "origin_id": "62004_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "DIRECT_REPAIR_R4",
+      "repeat": 1,
+      "role": "tuning",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "5fa820fc48324787b25d6cd52e62215946a8db1d881a8cca14e1a63420342af7"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/62004/H96.json",
+        "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+      },
+      "da7f7773861870081d388bdba4eec336038ebe951ea371fc67e56b887c36b1d2"
+    ],
+    "gpus": 1,
+    "key": [
+      "62004_t96",
+      "GDPO_R4",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 62004,
+      "origin_id": "62004_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "GDPO_R4",
+      "repeat": 1,
+      "role": "tuning",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "7e61af7556b2ea390edf75040bb17f24a5f04b051df16ef03f773ebc952ff561"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/62004/H96.json",
+        "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+      },
+      "da7f7773861870081d388bdba4eec336038ebe951ea371fc67e56b887c36b1d2"
+    ],
+    "gpus": 1,
+    "key": [
+      "62004_t96",
+      "R0",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 62004,
+      "origin_id": "62004_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R0",
+      "repeat": 1,
+      "role": "tuning",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "6369c32744a7888f7bd34b3b046ba967c55dd92b938cf15a71de53cc3c3ca792"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/62004/H96.json",
+        "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+      },
+      "da7f7773861870081d388bdba4eec336038ebe951ea371fc67e56b887c36b1d2"
+    ],
+    "gpus": 1,
+    "key": [
+      "62004_t96",
+      "R1",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 62004,
+      "origin_id": "62004_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R1",
+      "repeat": 1,
+      "role": "tuning",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "f4316bd1af70f8d6ea5fcca893873d0f00843c8b7befcaad1fc7690dec696efb"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/62004/H96.json",
+        "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+      },
+      "da7f7773861870081d388bdba4eec336038ebe951ea371fc67e56b887c36b1d2"
+    ],
+    "gpus": 1,
+    "key": [
+      "62004_t96",
+      "R2",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 62004,
+      "origin_id": "62004_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R2",
+      "repeat": 1,
+      "role": "tuning",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "8639457af89b2b8462d9b985474987a391eb3f22ceeb5b876ac25519d3158ab6"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/62004/H96.json",
+        "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+      },
+      "da7f7773861870081d388bdba4eec336038ebe951ea371fc67e56b887c36b1d2"
+    ],
+    "gpus": 1,
+    "key": [
+      "62004_t96",
+      "R3",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 62004,
+      "origin_id": "62004_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R3",
+      "repeat": 1,
+      "role": "tuning",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "8f00f29f5ad7eefa8efbcad70ad969f091a0ee899ec01b66ffdfbd2f8aa5a9c1"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/62004/H96.json",
+        "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+      },
+      "da7f7773861870081d388bdba4eec336038ebe951ea371fc67e56b887c36b1d2"
+    ],
+    "gpus": 1,
+    "key": [
+      "62004_t96",
+      "R4",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 62004,
+      "origin_id": "62004_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R4",
+      "repeat": 1,
+      "role": "tuning",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "24f63a6ce1e958612bdf7bfc82849745bccbb4a9ba76780cd5e43da53dee85fd"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/62004/H96.json",
+        "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+      },
+      "da7f7773861870081d388bdba4eec336038ebe951ea371fc67e56b887c36b1d2"
+    ],
+    "gpus": 1,
+    "key": [
+      "62004_t96",
+      "R5",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 62004,
+      "origin_id": "62004_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R5",
+      "repeat": 1,
+      "role": "tuning",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "56684d965afb398f067456f0f9aaf1f68fb0a407da4c5758aee3520304f220b2"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/62004/H96.json",
+        "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+      },
+      "da7f7773861870081d388bdba4eec336038ebe951ea371fc67e56b887c36b1d2"
+    ],
+    "gpus": 1,
+    "key": [
+      "62004_t96",
+      "R6",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 62004,
+      "origin_id": "62004_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R6",
+      "repeat": 1,
+      "role": "tuning",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "e5929e75e6033f29f324f2806f92222aabe21347583709095ae9376e1abb5450"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/62004/H96.json",
+        "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+      },
+      "da7f7773861870081d388bdba4eec336038ebe951ea371fc67e56b887c36b1d2"
+    ],
+    "gpus": 1,
+    "key": [
+      "62004_t96",
+      "R7",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 62004,
+      "origin_id": "62004_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "R7",
+      "repeat": 1,
+      "role": "tuning",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "0dcefaab13c2af8e8dbbaf52e0f2411751f22af2da30b085061b5d5457d8928b"
+  },
+  {
+    "dependencies": [
+      {
+        "completed_artifact": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/62004/H96.json",
+        "task_id": "bec862b91e8410f80ae300953d1e0d685d17833bf9d15974a80017bc526de9a9"
+      },
+      "da7f7773861870081d388bdba4eec336038ebe951ea371fc67e56b887c36b1d2"
+    ],
+    "gpus": 1,
+    "key": [
+      "62004_t96",
+      "SAW_R4",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    "kind": "branch",
+    "payload": {
+      "branch_schedule_seed": 73011,
+      "lineage_id": 62004,
+      "origin_id": "62004_t96",
+      "origin_step": 96,
+      "protocol": "ssvc-prospective-selection-v2-20260924",
+      "recipe_id": "SAW_R4",
+      "repeat": 1,
+      "role": "tuning",
+      "schedule_id": "continuation-1-4bf8e355e07158b2",
+      "source_recipe": "R1"
+    },
+    "task_id": "b4e6922cbf3cb8cb94d4e29885b215251e0918c10fea6d8beff758cdf9caaac2"
+  }
+]

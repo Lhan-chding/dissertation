@@ -1,0 +1,33 @@
+{
+  "status": "RUNNING",
+  "observed_at": "2026-10-03T21:47:50.251124+00:00",
+  "verified_branches": 88,
+  "verified_historical_E": 16,
+  "active_gpu_jobs": [],
+  "launched_lanes": [
+    {
+      "job_id": "182756",
+      "lane": 1,
+      "at": "2026-10-03T21:47:50.269926+00:00",
+      "status": "SUBMITTED"
+    },
+    {
+      "job_id": "182757",
+      "lane": 2,
+      "at": "2026-10-03T21:47:50.288737+00:00",
+      "status": "SUBMITTED"
+    },
+    {
+      "job_id": "182758",
+      "lane": 3,
+      "at": "2026-10-03T21:47:50.309929+00:00",
+      "status": "SUBMITTED"
+    },
+    {
+      "job_id": "182759",
+      "lane": 4,
+      "at": "2026-10-03T21:47:50.329560+00:00",
+      "status": "SUBMITTED"
+    }
+  ]
+}

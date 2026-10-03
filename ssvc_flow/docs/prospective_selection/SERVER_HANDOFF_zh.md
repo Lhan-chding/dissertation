@@ -1,3 +1,13 @@
+# 最新交接：2026-10-04开发与调参阶段
+
+首四条88/88分支、16/16旧E已完成分析交付，服务器FIRST_FOUR_DELIVERED.json已写入。完整报告：[first_four_20261004/README_zh.md](first_four_20261004/README_zh.md)。完整事实、验证与限制见[EXECUTION_STATE_zh.md](EXECUTION_STATE_zh.md)末尾2026-10-04记录。
+
+当前使用`fixed_pipelines_20261004`，旧`fixed_pipelines_20260930`已STOP且cron已替换。新阶段300项：12source、24prestate、264分支；固定五清单75/75/50/50/50。182756–182759为lane1–4，05:48 UTC+8已RUNNING；同QOS无关182577占一槽，第5lane等待空位。以后以实时Slurm和回执为准。
+
+本地自动化每三小时检查新目录，不调用旧submit-ready。完成后停DEVELOPMENT_TUNING_COLLECTED_AWAITING_ANALYSIS，分析后才能拟合/冻结；禁止预跑最终测试候选。GitHub数据推送限制未解除。部署证据：current_evidence/EXPANDED_PIPELINES_20261004/。
+
+---
+
 # 服务器执行入口
 
 后续调度使用e59b9ee，用户新增授权上限7卡。当前开发分支与前置观测使用e59b9ee；已完成source使用bb23e9b，smoke使用414df78，各原快照保留。以下命令在 `ssh eee-cluster` 后执行；不修改历史D2目录。单次 submit-ready 只提交当下依赖满足的任务，没有后台循环。提交数量以包含pending的项目队列及持久化intent共同限流。

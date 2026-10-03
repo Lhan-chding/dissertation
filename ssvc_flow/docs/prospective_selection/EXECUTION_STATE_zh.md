@@ -256,3 +256,20 @@ Git上传边界：996b610分析数据推送曾被自动审批拒绝，用户尚�
 
 
 2026-10-03T14:55Z三小时检查：两次有界只读SSH均返回Connection closed by 10.97.216.128 port 22，未取得新服务器状态。未提交、重提、取消或迁移任务，未改服务器固定流水入口。最近成功核验仍为12:15Z的86/88分支、16/16旧E，181157(R1)、181326(R6)运行且无STOP/BLOCKED；这是历史状态，不能据此确认当前完成情况。服务器连续执行不依赖本地本次连接，连接关闭不视为实验失败。已交付的86项阶段分析继续保留，首四条完整交付、扩展及最终测试门禁仍未放行。下次恢复连接优先核对两项原任务与原始核验回执，不重试受限GitHub推送。
+
+
+## 2026-10-04：首四条已交付，进入剩余开发与调参固定流水
+
+本条覆盖此前首四条未交付、旧固定入口和旧JobID的操作指令。完整报告为[first_four_20261004/README_zh.md](first_four_20261004/README_zh.md)：4source、8prestate、88/88分支、16/16旧E全部齐全；正式整批核验FIRST_FOUR_COMPLETE，88项J与正式响应表一致，缺失0。最后181157/181326均COMPLETED/0:0。服务器campaign/FIRST_FOUR_DELIVERED.json已绑定20个交付文件及哈希，旧fixed_pipelines_20260930/STOP已写入。
+
+开发描述：四个t32最高均GDPO；四个t96最高依次R3/R0/R7/DIRECT_REPAIR。8原点R0–R7中事后最佳静态R3均值77.648%，事后逐原点最佳77.859%，差0.211589个百分点；不是Z3已实现收益，不是最终统计结论。88成功分支合计623.7069 GPU小时、均值7.0876小时，旧Slurm分配时长与新worker时长混合口径，排队/失败/其他阶段不计入。保留全部配方、seed与目标。
+
+用户要求完成后进入下一步，已按协议注册余下8开发61005–61012和4调参62001–62004，共300新任务（12 source、24 prestate、264 branch），加117旧已审计任务共417。新控制目录为`/projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/fixed_pipelines_20261004`。代码88ed250；原code_e59b9ee训练快照未改。每条lineage全链在同一lane，固定清单75/75/50/50/50项，无动态领取或跨lane依赖等待。
+
+login-3的旧cron入口已替换为SSVC_FIXED_PIPELINES_20261004，每五分钟只处理首次空位和72小时分配后的同清单接续，模型内部逐项连续。2026-10-03T21:47:50Z首次提交182756–182759，对应lane1–4；同账户同教师QOS无关182577占一槽，第5份等待槽位，不改动该无关作业。用户上限7、available_gpus5，实际教师QOS MaxSubmitPU5含pending与未知提交。使用所有同QOS用户作业计数，避免把无关作业误当空位。
+
+本地每三小时只读新目录STATUS/BLOCKED、lane、verified、allocations及Slurm，不调用原submit-ready、旧入口或重提未知任务。新阶段完成状态为DEVELOPMENT_TUNING_COLLECTED_AWAITING_ANALYSIS。先分析完整开发/调参矩阵，再按主方案拟合、冻结N/m与规则；最终测试先decision.json，仅运行选择与固定对照去重并集。本阶段没有拟合、冻结或提交最终测试。
+
+验证：26项针对性测试、shell语法、git diff --check通过。真实61001源训练3072输出/96有限更新及61001_t96前置观测4608输出/四层信息包重建通过；预检发现原样本role=train而清单role=source，核验器已按真实训练实现修正，未改原件。安装与配置证据保存于current_evidence/EXPANDED_PIPELINES_20261004/。既有996b610及后续历史GitHub数据外发审批限制未解除；本地提交、服务器部署继续，未重试push。
+
+2026-10-03T21:48:32Z复核：182756–182759全部RUNNING，lane1–4 EXECUTING，任务为61005–61008源训练；新目录STOP/BLOCKED均不存在。部署代码三文件与本地SHA256逐一一致，300清单唯一覆盖及cron替换回执复验通过。

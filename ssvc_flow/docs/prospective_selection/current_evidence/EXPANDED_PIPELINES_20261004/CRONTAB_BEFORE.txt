@@ -1,0 +1,2 @@
+
+*/5 * * * * PATH=/usr/bin:/bin /projects/varunssd/louis-ssvc/envs/ssvc-py312/bin/python /projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/fixed_pipelines_20260930/server_controller.py --config /projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/fixed_pipelines_20260930/config.json --launch-only >> /projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/fixed_pipelines_20260930/bootstrap.log 2>&1 # SSVC_FIXED_PIPELINES_20260930

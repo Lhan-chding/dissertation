@@ -1,3 +1,17 @@
+# 当前固定流水：2026-10-04扩展阶段
+
+控制目录：`/projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/fixed_pipelines_20261004`。旧20260930目录保留且STOP；login-3 cron已改为SSVC_FIXED_PIPELINES_20261004。
+
+代码88ed250，训练仍用原code_e59b9ee。新任务300项按整条lineage分成五份75/75/50/50/50项，同lane依次source、两个prestate、22分支；验证退出码、原件和身份后立即执行下一项。注册总数417，旧117为不可变审计baseline。配置绑定首批交付回执SHA256及完整固定矩阵，拒绝最终测试任务。
+
+教师QOS所有用户作业合计最多5（含pending、无关同QOS作业及未知提交）；用户项目总上限7，本阶段available_gpus5。初次182756–182759启动四lane，182577占第五槽位。每五分钟cron只交接首次空槽和72小时时限后的同清单接续，GPU内不轮询领取。缺失/异常/未知提交停止新项，不自动重提。
+
+source核验96有限更新/3072样本，prestate复算两时点4608样本及四层包。300项全部核验后状态DEVELOPMENT_TUNING_COLLECTED_AWAITING_ANALYSIS；先分析、拟合、冻结，再按decision.json选择测试。详细事实与验证见[执行记录](EXECUTION_STATE_zh.md)最后一节及current_evidence/EXPANDED_PIPELINES_20261004/。
+
+以下为历史首四条部署记录，不再是当前入口。
+
+---
+
 # 五份固定任务清单连续执行
 
 用户于2026-09-30明确要求：预先分好五份任务，每份脚本完成一个实验后直接执行下一个，不再等本地网络恢复或定时补交。

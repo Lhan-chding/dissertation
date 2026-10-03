@@ -1,0 +1,119 @@
+{
+  "observed_at": "2026-10-03T21:48:32.191135+00:00",
+  "code_commit": "88ed250",
+  "status": {
+    "status": "RUNNING",
+    "observed_at": "2026-10-03T21:47:50.251124+00:00",
+    "verified_branches": 88,
+    "verified_historical_E": 16,
+    "active_gpu_jobs": [],
+    "launched_lanes": [
+      {
+        "job_id": "182756",
+        "lane": 1,
+        "at": "2026-10-03T21:47:50.269926+00:00",
+        "status": "SUBMITTED"
+      },
+      {
+        "job_id": "182757",
+        "lane": 2,
+        "at": "2026-10-03T21:47:50.288737+00:00",
+        "status": "SUBMITTED"
+      },
+      {
+        "job_id": "182758",
+        "lane": 3,
+        "at": "2026-10-03T21:47:50.309929+00:00",
+        "status": "SUBMITTED"
+      },
+      {
+        "job_id": "182759",
+        "lane": 4,
+        "at": "2026-10-03T21:47:50.329560+00:00",
+        "status": "SUBMITTED"
+      }
+    ]
+  },
+  "blocked": false,
+  "stop": false,
+  "old_stop": true,
+  "lanes": {
+    "lane_4.json": {
+      "status": "EXECUTING",
+      "job_id": "182759",
+      "task_id": "bc39385bcaf0baae6589690fb05d943c64d9c573519cc5584e3ee90abdbb20fe",
+      "at": "2026-10-03T21:48:05.384698+00:00"
+    },
+    "lane_1.json": {
+      "status": "EXECUTING",
+      "job_id": "182756",
+      "task_id": "12a5d67676e3d94e58873d6471be61611cfec67beac69385b4dbcb2e36fa5179",
+      "at": "2026-10-03T21:48:01.850607+00:00"
+    },
+    "lane_3.json": {
+      "status": "EXECUTING",
+      "job_id": "182758",
+      "task_id": "9c9a07f73e5896ccfa60486c254153a1e40381ff3cb4d0577e4bb47459ec6c90",
+      "at": "2026-10-03T21:47:54.200925+00:00"
+    },
+    "lane_2.json": {
+      "status": "EXECUTING",
+      "job_id": "182757",
+      "task_id": "d9418dbf668bae7d062344387b868052961e83a50758524d42d5d83f0285964d",
+      "at": "2026-10-03T21:47:54.243229+00:00"
+    }
+  },
+  "allocations": {
+    "844ec9bca91341d9a844e95b9fc2c427.intent.json": {
+      "status": "SUBMISSION_INTENT_UNRESOLVED",
+      "lane": 4,
+      "at": "2026-10-03T21:47:50.321728+00:00"
+    },
+    "a62c5e919e9e48729537b4f8f25760e0.intent.json": {
+      "status": "SUBMISSION_INTENT_UNRESOLVED",
+      "lane": 3,
+      "at": "2026-10-03T21:47:50.302407+00:00"
+    },
+    "c6bb6b9a3e564fd2bde58bc55585bbfe.intent.json": {
+      "status": "SUBMISSION_INTENT_UNRESOLVED",
+      "lane": 2,
+      "at": "2026-10-03T21:47:50.281083+00:00"
+    },
+    "607113081794465e87ccc6560c2a4a8f.intent.json": {
+      "status": "SUBMISSION_INTENT_UNRESOLVED",
+      "lane": 1,
+      "at": "2026-10-03T21:47:50.260130+00:00"
+    },
+    "844ec9bca91341d9a844e95b9fc2c427.submitted.json": {
+      "job_id": "182759",
+      "lane": 4,
+      "at": "2026-10-03T21:47:50.329560+00:00",
+      "status": "SUBMITTED"
+    },
+    "607113081794465e87ccc6560c2a4a8f.submitted.json": {
+      "job_id": "182756",
+      "lane": 1,
+      "at": "2026-10-03T21:47:50.269926+00:00",
+      "status": "SUBMITTED"
+    },
+    "c6bb6b9a3e564fd2bde58bc55585bbfe.submitted.json": {
+      "job_id": "182757",
+      "lane": 2,
+      "at": "2026-10-03T21:47:50.288737+00:00",
+      "status": "SUBMITTED"
+    },
+    "a62c5e919e9e48729537b4f8f25760e0.submitted.json": {
+      "job_id": "182758",
+      "lane": 3,
+      "at": "2026-10-03T21:47:50.309929+00:00",
+      "status": "SUBMITTED"
+    }
+  },
+  "squeue": "182759|ps2-pipe-4|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-9\n182757|ps2-pipe-2|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-14\n182758|ps2-pipe-3|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-14\n182756|ps2-pipe-1|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-6\n182577|abl-base|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-11\n",
+  "files_sha256": {
+    "config.json": "d2d13805b80c37f42fd2685d0c9eb1b3a618fd23e0fcd0659166886cec763272",
+    "launch_pipeline.sbatch": "5bdabe336ac6c777cb2170ed3b9e855fbda2f667b02b284e7de141b6965ff698",
+    "server_controller.py": "e9852298bf10ba4704ada1325ada3142deb7dc07f15b5b31c3d283fb59e512a1",
+    "prepare_expanded_pipelines.py": "30c6d660194d30ce2f3fc2fc3ba49ac6808b4de3b5197cce836db5313754fb2b"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "status": "FIRST_FOUR_DELIVERED",
+  "delivered_at": "2026-10-03T21:41:01.999459+00:00",
+  "lineages": [
+    61001,
+    61002,
+    61003,
+    61004
+  ],
+  "verified_branches": 88,
+  "verified_historical_E": 16,
+  "prestates": 8,
+  "source_count": 4,
+  "canonical_status": "FIRST_FOUR_COMPLETE",
+  "report_files": {
+    "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/first_four_20261004/delivery/CANONICAL_VALIDATION.json": "afbf94330c54cac4ca6effd1cb1c25f62e336fce9bfe26b267f0d9e5b1e3c9b2",
+    "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/first_four_20261004/delivery/DEVELOPMENT_RESULTS_zh.md": "69c65895923e0cb4d9a79fdfb0a3980bd0226e938612e567d61265c1be868a10",
+    "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/first_four_20261004/delivery/HISTORICAL_E_zh.md": "ef4fd967528e49d8277152445413d5153d6f3bf01a575d1a697020e3a18b3677",
+    "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/first_four_20261004/delivery/INPUT_SHA256.txt": "f16e96e000e571a832d810168e7d792077d47854ef815ab0bb54b931fa3b6759",
+    "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/first_four_20261004/delivery/README_zh.md": "a332c1848e8022b0adb8df0dbb76adc4f5a2b6ce116aa5cf65b01ea4f5c18531",
+    "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/first_four_20261004/delivery/REPRODUCE_zh.md": "3f24c684347e49b5c225a2aa22576739954bac3da24bbe92b1c9a497a5671656",
+    "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/first_four_20261004/delivery/RUNTIME_AND_RESOURCE_zh.md": "0552247dca86ec1eea563d14c7b8c0f78de7b41a7d747ac632a6faba25d4c9b7",
+    "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/first_four_20261004/delivery/STATE_VARIABLE_AUDIT_zh.md": "7be063a531859c43678be196335d4a5e8b39cb8dd3f022e8a6e67db163047474",
+    "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/first_four_20261004/delivery/baseline_timing.json": "28adfff28db2611aca1127c6561ec545d6014782e3b1a81bc0459bd8f081ca33",
+    "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/first_four_20261004/delivery/branch_summary.csv": "a52ec7ce6add7616589d14354c1fcf9f69170ed74c4fc4fb66ef7ff1be924e7d",
+    "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/first_four_20261004/delivery/compact_input.json": "0e5907397c4425ecb4268a9054c0019c406a02995b271988ee46238c6e4e2abd",
+    "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/first_four_20261004/delivery/historical_E.csv": "f91ca7a0e287a18bad8a13e8db5d2129e5e6d45007ac20b952d5354ab14c1046",
+    "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/first_four_20261004/delivery/information_audit.csv": "147c234d5da71a243200213f616d2e87a857f085b2db967d7966bdba98b87d49",
+    "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/first_four_20261004/delivery/origin_summary.csv": "574806b9b6d34043d770097ca2994cd077e47518b557d507c8c2fa08b2e876b2",
+    "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/first_four_20261004/delivery/response_matrix.csv": "14939b084ca6889bb3688defcaf68b5ef84ae11893a505c839a0274f7ed660da",
+    "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/first_four_20261004/delivery/response_matrix.pdf": "4d3a1b0a227387f03648fa043f43f38d5f3e2510c80e1cfd5e5e2c912ff13d7d",
+    "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/first_four_20261004/delivery/response_matrix.png": "4ba03dae83d9dd1f04094a1905dc57c9487af2f63c1da4d35448141501209585",
+    "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/first_four_20261004/delivery/six_strata.csv": "92461384c0e4dd87fd5f4889c7e10b22c7ae7d92e5053d56b4eaf484027d7441",
+    "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/first_four_20261004/delivery/static_complete_origins.csv": "8f93cdfa88f967b483800aaa53da20d72d8a96e042267f68c6f32342e8857afb",
+    "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/first_four_20261004/delivery/summary.json": "acb0684ad0dbf2b71ec824e92888a5ecbff571f99fe9569149eefc3828e57753"
+  },
+  "interpretation": "Development evidence only; no selector/freeze/final-test claim",
+  "local_entrypoint": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/prospective-reward-selection-20260924/ssvc_flow/docs/prospective_selection/first_four_20261004/README_zh.md"
+}

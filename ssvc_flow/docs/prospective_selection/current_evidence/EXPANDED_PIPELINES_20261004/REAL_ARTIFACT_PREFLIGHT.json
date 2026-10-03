@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "observed_at": "2026-10-03T21:46:57.570699+00:00",
+  "controller_sha256": "e9852298bf10ba4704ada1325ada3142deb7dc07f15b5b31c3d283fb59e512a1",
+  "results": [
+    {
+      "kind": "source",
+      "lineage_id": 61001,
+      "training_outputs": 3072,
+      "finite_updates": 96
+    },
+    {
+      "kind": "prestate",
+      "origin_id": "61001_t96",
+      "lineage_id": 61001,
+      "shared_generated_outputs": 4608,
+      "four_levels_same_samples": true,
+      "raw_packet_reconstruction": true
+    }
+  ]
+}
