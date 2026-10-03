@@ -196,3 +196,6 @@ E复核使用保存的16个H32 checkpoint和原E面板；不要重训旧分支�
 13:25:01Z安装SSH连接退出后，服务器cron实际自行触发成功：五个原作业占满，launched_lanes为空，无BLOCKED。新流水尚待空位启动。证据：current_evidence/FIXED_PIPELINES_20260930_INSTALL.json、FIXED_PIPELINES_20260930_CONFIG.json、FIXED_PIPELINES_20260930_CRON_VERIFIED.json及lane_1_tasks.json至lane_5_tasks.json。本地与部署代码SHA256一致。
 
 **覆盖旧调度指令：固定流水部署期间，本地自动化每三小时只检查服务器STATUS/BLOCKED/verified/allocations和真实Slurm、分析及通知；禁止调用原submit-ready或抢占固定清单任务。** 已更新ssvc自动化。首四条收齐仅进入FIRST_FOUR_COLLECTED_AWAITING_ANALYSIS，先分析并完成首批交付，再停用该入口、准备后续阶段；不得自动扩展、冻结或预跑测试。参见SERVER_PIPELINES_zh.md。代码与证据仅本地提交，既有GitHub数据推送限制保持，未重试push。
+
+
+2026-10-03最新：固定五清单仍有效，R6已由原lane2/job181326于11:56:53Z自行开始，无需交接或补提。另R1为181157。交接前检重复检测正确拒绝，但误写BLOCKED已核实归档修复，12:15Z无STOP/BLOCKED。86/88阶段分析已提前完成，见analysis_progress_20261003/README_zh.md和EXECUTION_STATE最后一节；不得把它作为FIRST_FOUR_DELIVERED。后续只需新增R1/R6核验后补齐最终首批报告。保持原科学门禁和GitHub数据推送限制。

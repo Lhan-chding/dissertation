@@ -244,3 +244,12 @@ Git上传边界：996b610分析数据推送曾被自动审批拒绝，用户尚�
 13:25:01Z安装SSH连接退出后，服务器cron实际自行触发成功：五个原作业占满，launched_lanes为空，无BLOCKED。新流水尚待空位启动。证据：current_evidence/FIXED_PIPELINES_20260930_INSTALL.json、FIXED_PIPELINES_20260930_CONFIG.json、FIXED_PIPELINES_20260930_CRON_VERIFIED.json及lane_1_tasks.json至lane_5_tasks.json。本地与部署代码SHA256一致。
 
 **覆盖旧调度指令：固定流水部署期间，本地自动化每三小时只检查服务器STATUS/BLOCKED/verified/allocations和真实Slurm、分析及通知；禁止调用原submit-ready或抢占固定清单任务。** 已更新ssvc自动化。首四条收齐仅进入FIRST_FOUR_COLLECTED_AWAITING_ANALYSIS，先分析并完成首批交付，再停用该入口、准备后续阶段；不得自动扩展、冻结或预跑测试。参见SERVER_PIPELINES_zh.md。代码与证据仅本地提交，既有GitHub数据推送限制保持，未重试push。
+
+
+2026-10-03T11:56–12:20Z：用户要求将最后R6并行转到空卡，同时对已完成分支提前分析。准备显式交接期间，lane2原GDPO于11:56:53Z正常完成并通过原核验（J=0.7825520833），原流水立即自行启动61004_t96/R6，job181326，task c0c93ec61bc3ac9c2aee03b60f78a59985363556527dbf6974229229089eb95f。交接前检在11:57:55Z发现已有intent/submission，拒绝重复；没有新JobID、TAIL_HANDOFF、STOP或任务迁移，五份清单未变。
+
+前检拒绝最初被新辅助脚本误写为全局BLOCKED；随后核对原R6已运行且无交接reservation，在controller.lock下将该准确错误记录归档HANDOFF_PREFLIGHT_REFUSAL_20261003.json，保持原件，清除该误标。已修复为预留前拒绝不阻塞健康原流水，并用回归测试验证；修复脚本已同步但无需再调用。12:15Z STATUS为86/88分支、16/16历史E，181157(R1)、181326(R6)均RUNNING，STOP/BLOCKED均不存在。未改训练快照、样本、配方或科学门禁。
+
+按用户要求提前完成analysis_progress_20261003/README_zh.md：快照12:09:55Z覆盖86分支、16旧E、32四层信息包；响应矩阵、六群体、信息冗余、旧E和耗时均已生成。7个完整原点上R0–R7的事后最佳固定R3均值0.775421627、逐原点事后最佳均值0.777343750，差0.1922123个百分点；只作开发描述，不是冻结BestStatic或选择器效果。四个t32原点上GDPO最高；t96配方排序不同。16信息快照四事件由奖励均值重建最大误差8.67e-17，均发现同(prompt,event,C)下不同修复结构，但未证明该结构改善选择。
+
+另从sacct核对旧42个成功分支时长，与44个已有完整计时合并，86个成功分支共610.8665 GPU小时、均值7.1031小时。旧单分支使用分配时长，流水内使用worker时长；不包含其它阶段、失败、排队或空闲。缺失仍为61004_t96/R1与R6，分析状态PARTIAL_DEVELOPMENT_ANALYSIS_NOT_DELIVERY；收齐后补表、整批核验、交付并写回执，才能关闭当前固定入口并扩展。没有冻结或预跑测试。针对性69测试通过，图已目视检查。本轮仅本地提交，既有996b610及其后续历史GitHub数据外发限制未解除，不重试push。

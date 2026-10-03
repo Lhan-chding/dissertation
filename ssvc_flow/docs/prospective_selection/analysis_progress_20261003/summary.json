@@ -1,0 +1,406 @@
+{
+  "extracted_at": "2026-10-03T12:09:55.465924+00:00",
+  "branches": 86,
+  "expected_branches": 88,
+  "independent_lineages": 4,
+  "origins": [
+    {
+      "origin": "61001_t32",
+      "completed": 11,
+      "best_observed_J": 0.7734375,
+      "best_observed_recipes": "GDPO_R4",
+      "worst_observed_J": 0.7556423611111112,
+      "observed_spread_pp": 1.779513888888884,
+      "complete": true
+    },
+    {
+      "origin": "61001_t96",
+      "completed": 11,
+      "best_observed_J": 0.7938368055555555,
+      "best_observed_recipes": "R3",
+      "worst_observed_J": 0.7860243055555555,
+      "observed_spread_pp": 0.78125,
+      "complete": true
+    },
+    {
+      "origin": "61002_t32",
+      "completed": 11,
+      "best_observed_J": 0.7708333333333334,
+      "best_observed_recipes": "GDPO_R4",
+      "worst_observed_J": 0.7543402777777778,
+      "observed_spread_pp": 1.649305555555558,
+      "complete": true
+    },
+    {
+      "origin": "61002_t96",
+      "completed": 11,
+      "best_observed_J": 0.7903645833333334,
+      "best_observed_recipes": "R0",
+      "worst_observed_J": 0.78515625,
+      "observed_spread_pp": 0.520833333333337,
+      "complete": true
+    },
+    {
+      "origin": "61003_t32",
+      "completed": 11,
+      "best_observed_J": 0.7725694444444445,
+      "best_observed_recipes": "GDPO_R4",
+      "worst_observed_J": 0.7599826388888888,
+      "observed_spread_pp": 1.2586805555555691,
+      "complete": true
+    },
+    {
+      "origin": "61003_t96",
+      "completed": 11,
+      "best_observed_J": 0.7860243055555555,
+      "best_observed_recipes": "R7",
+      "worst_observed_J": 0.7842881944444445,
+      "observed_spread_pp": 0.17361111111109384,
+      "complete": true
+    },
+    {
+      "origin": "61004_t32",
+      "completed": 11,
+      "best_observed_J": 0.765625,
+      "best_observed_recipes": "GDPO_R4",
+      "worst_observed_J": 0.7543402777777778,
+      "observed_spread_pp": 1.128472222222221,
+      "complete": true
+    },
+    {
+      "origin": "61004_t96",
+      "completed": 9,
+      "best_observed_J": 0.7925347222222222,
+      "best_observed_recipes": "DIRECT_REPAIR_R4",
+      "worst_observed_J": 0.7825520833333334,
+      "observed_spread_pp": 0.998263888888884,
+      "complete": false
+    }
+  ],
+  "complete_origins": [
+    "61001_t32",
+    "61001_t96",
+    "61002_t32",
+    "61002_t96",
+    "61003_t32",
+    "61003_t96",
+    "61004_t32"
+  ],
+  "historical_E": 16,
+  "missing": [
+    [
+      "61004_t96",
+      "R1",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ],
+    [
+      "61004_t96",
+      "R6",
+      1,
+      "continuation-1-4bf8e355e07158b2"
+    ]
+  ],
+  "information_audit": [
+    {
+      "origin": "61001_t32",
+      "snapshot": 24,
+      "raw_outputs": 2304,
+      "reward_event_reconstruction_error": 8.673617379884035e-17,
+      "valid_reward_buckets": 197,
+      "repeated_reward_buckets": 151,
+      "mixed_repair_buckets": 65,
+      "mixed_n_ge_8": 31,
+      "prompts_with_mixed_repair": 40,
+      "same_reward_pairs": 23676,
+      "different_repair_pairs": 1900,
+      "pair_disagreement": 0.08025004223686434
+    },
+    {
+      "origin": "61001_t32",
+      "snapshot": 32,
+      "raw_outputs": 2304,
+      "reward_event_reconstruction_error": 5.551115123125783e-17,
+      "valid_reward_buckets": 188,
+      "repeated_reward_buckets": 148,
+      "mixed_repair_buckets": 60,
+      "mixed_n_ge_8": 27,
+      "prompts_with_mixed_repair": 35,
+      "same_reward_pairs": 25533,
+      "different_repair_pairs": 1571,
+      "pair_disagreement": 0.06152821838405201
+    },
+    {
+      "origin": "61001_t96",
+      "snapshot": 88,
+      "raw_outputs": 2304,
+      "reward_event_reconstruction_error": 2.7755575615628914e-17,
+      "valid_reward_buckets": 86,
+      "repeated_reward_buckets": 82,
+      "mixed_repair_buckets": 6,
+      "mixed_n_ge_8": 5,
+      "prompts_with_mixed_repair": 6,
+      "same_reward_pairs": 32565,
+      "different_repair_pairs": 205,
+      "pair_disagreement": 0.006295102103485337
+    },
+    {
+      "origin": "61001_t96",
+      "snapshot": 96,
+      "raw_outputs": 2304,
+      "reward_event_reconstruction_error": 4.163336342344337e-17,
+      "valid_reward_buckets": 87,
+      "repeated_reward_buckets": 84,
+      "mixed_repair_buckets": 10,
+      "mixed_n_ge_8": 5,
+      "prompts_with_mixed_repair": 10,
+      "same_reward_pairs": 32717,
+      "different_repair_pairs": 243,
+      "pair_disagreement": 0.007427331356786991
+    },
+    {
+      "origin": "61002_t32",
+      "snapshot": 24,
+      "raw_outputs": 2304,
+      "reward_event_reconstruction_error": 3.469446951953614e-17,
+      "valid_reward_buckets": 208,
+      "repeated_reward_buckets": 166,
+      "mixed_repair_buckets": 73,
+      "mixed_n_ge_8": 31,
+      "prompts_with_mixed_repair": 44,
+      "same_reward_pairs": 23433,
+      "different_repair_pairs": 1974,
+      "pair_disagreement": 0.08424017411342978
+    },
+    {
+      "origin": "61002_t32",
+      "snapshot": 32,
+      "raw_outputs": 2304,
+      "reward_event_reconstruction_error": 1.3877787807814457e-17,
+      "valid_reward_buckets": 205,
+      "repeated_reward_buckets": 152,
+      "mixed_repair_buckets": 64,
+      "mixed_n_ge_8": 30,
+      "prompts_with_mixed_repair": 37,
+      "same_reward_pairs": 24959,
+      "different_repair_pairs": 1718,
+      "pair_disagreement": 0.06883288593293001
+    },
+    {
+      "origin": "61002_t96",
+      "snapshot": 88,
+      "raw_outputs": 2304,
+      "reward_event_reconstruction_error": 2.42861286636753e-17,
+      "valid_reward_buckets": 87,
+      "repeated_reward_buckets": 82,
+      "mixed_repair_buckets": 6,
+      "mixed_n_ge_8": 2,
+      "prompts_with_mixed_repair": 6,
+      "same_reward_pairs": 32431,
+      "different_repair_pairs": 166,
+      "pair_disagreement": 0.005118559403040301
+    },
+    {
+      "origin": "61002_t96",
+      "snapshot": 96,
+      "raw_outputs": 2304,
+      "reward_event_reconstruction_error": 6.245004513516506e-17,
+      "valid_reward_buckets": 83,
+      "repeated_reward_buckets": 79,
+      "mixed_repair_buckets": 5,
+      "mixed_n_ge_8": 1,
+      "prompts_with_mixed_repair": 5,
+      "same_reward_pairs": 32815,
+      "different_repair_pairs": 56,
+      "pair_disagreement": 0.0017065366448270607
+    },
+    {
+      "origin": "61003_t32",
+      "snapshot": 24,
+      "raw_outputs": 2304,
+      "reward_event_reconstruction_error": 5.551115123125783e-17,
+      "valid_reward_buckets": 202,
+      "repeated_reward_buckets": 163,
+      "mixed_repair_buckets": 69,
+      "mixed_n_ge_8": 30,
+      "prompts_with_mixed_repair": 38,
+      "same_reward_pairs": 24226,
+      "different_repair_pairs": 1648,
+      "pair_disagreement": 0.06802608767439941
+    },
+    {
+      "origin": "61003_t32",
+      "snapshot": 32,
+      "raw_outputs": 2304,
+      "reward_event_reconstruction_error": 5.551115123125783e-17,
+      "valid_reward_buckets": 191,
+      "repeated_reward_buckets": 142,
+      "mixed_repair_buckets": 54,
+      "mixed_n_ge_8": 23,
+      "prompts_with_mixed_repair": 32,
+      "same_reward_pairs": 26206,
+      "different_repair_pairs": 1382,
+      "pair_disagreement": 0.05273601465313287
+    },
+    {
+      "origin": "61003_t96",
+      "snapshot": 88,
+      "raw_outputs": 2304,
+      "reward_event_reconstruction_error": 3.642919299551295e-17,
+      "valid_reward_buckets": 82,
+      "repeated_reward_buckets": 77,
+      "mixed_repair_buckets": 5,
+      "mixed_n_ge_8": 3,
+      "prompts_with_mixed_repair": 5,
+      "same_reward_pairs": 33070,
+      "different_repair_pairs": 357,
+      "pair_disagreement": 0.010795282733595403
+    },
+    {
+      "origin": "61003_t96",
+      "snapshot": 96,
+      "raw_outputs": 2304,
+      "reward_event_reconstruction_error": 3.642919299551295e-17,
+      "valid_reward_buckets": 84,
+      "repeated_reward_buckets": 78,
+      "mixed_repair_buckets": 7,
+      "mixed_n_ge_8": 3,
+      "prompts_with_mixed_repair": 7,
+      "same_reward_pairs": 33141,
+      "different_repair_pairs": 377,
+      "pair_disagreement": 0.011375637427959325
+    },
+    {
+      "origin": "61004_t32",
+      "snapshot": 24,
+      "raw_outputs": 2304,
+      "reward_event_reconstruction_error": 6.245004513516506e-17,
+      "valid_reward_buckets": 202,
+      "repeated_reward_buckets": 155,
+      "mixed_repair_buckets": 66,
+      "mixed_n_ge_8": 36,
+      "prompts_with_mixed_repair": 39,
+      "same_reward_pairs": 23929,
+      "different_repair_pairs": 2164,
+      "pair_disagreement": 0.09043420117848636
+    },
+    {
+      "origin": "61004_t32",
+      "snapshot": 32,
+      "raw_outputs": 2304,
+      "reward_event_reconstruction_error": 7.28583859910259e-17,
+      "valid_reward_buckets": 197,
+      "repeated_reward_buckets": 147,
+      "mixed_repair_buckets": 61,
+      "mixed_n_ge_8": 30,
+      "prompts_with_mixed_repair": 36,
+      "same_reward_pairs": 24817,
+      "different_repair_pairs": 1640,
+      "pair_disagreement": 0.06608373292501109
+    },
+    {
+      "origin": "61004_t96",
+      "snapshot": 88,
+      "raw_outputs": 2304,
+      "reward_event_reconstruction_error": 6.938893903907228e-17,
+      "valid_reward_buckets": 85,
+      "repeated_reward_buckets": 80,
+      "mixed_repair_buckets": 8,
+      "mixed_n_ge_8": 6,
+      "prompts_with_mixed_repair": 8,
+      "same_reward_pairs": 32153,
+      "different_repair_pairs": 409,
+      "pair_disagreement": 0.01272043044194943
+    },
+    {
+      "origin": "61004_t96",
+      "snapshot": 96,
+      "raw_outputs": 2304,
+      "reward_event_reconstruction_error": 8.326672684688674e-17,
+      "valid_reward_buckets": 83,
+      "repeated_reward_buckets": 78,
+      "mixed_repair_buckets": 5,
+      "mixed_n_ge_8": 3,
+      "prompts_with_mixed_repair": 5,
+      "same_reward_pairs": 32275,
+      "different_repair_pairs": 155,
+      "pair_disagreement": 0.004802478698683191
+    }
+  ],
+  "candidate_recipes": [
+    "R0",
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "R5",
+    "R6",
+    "R7"
+  ],
+  "descriptive_best_static_recipe": "R3",
+  "descriptive_best_static_mean": 0.775421626984127,
+  "descriptive_hindsight_oracle_mean": 0.77734375,
+  "descriptive_oracle_gap_pp": 0.1922123015873023,
+  "static": [
+    {
+      "recipe": "R0",
+      "complete_origins": 7,
+      "mean_J": 0.7722594246031746
+    },
+    {
+      "recipe": "R1",
+      "complete_origins": 7,
+      "mean_J": 0.7721974206349207
+    },
+    {
+      "recipe": "R2",
+      "complete_origins": 7,
+      "mean_J": 0.7703993055555556
+    },
+    {
+      "recipe": "R3",
+      "complete_origins": 7,
+      "mean_J": 0.775421626984127
+    },
+    {
+      "recipe": "R4",
+      "complete_origins": 7,
+      "mean_J": 0.7746775793650794
+    },
+    {
+      "recipe": "R5",
+      "complete_origins": 7,
+      "mean_J": 0.7699652777777778
+    },
+    {
+      "recipe": "R6",
+      "complete_origins": 7,
+      "mean_J": 0.7730654761904762
+    },
+    {
+      "recipe": "R7",
+      "complete_origins": 7,
+      "mean_J": 0.7730654761904762
+    },
+    {
+      "recipe": "SAW_R4",
+      "complete_origins": 7,
+      "mean_J": 0.7723214285714286
+    },
+    {
+      "recipe": "GDPO_R4",
+      "complete_origins": 7,
+      "mean_J": 0.777405753968254
+    },
+    {
+      "recipe": "DIRECT_REPAIR_R4",
+      "complete_origins": 7,
+      "mean_J": 0.7726314484126984
+    }
+  ],
+  "timing_rows": 86,
+  "available_worker_mean_hours": 7.103099127057936,
+  "status": "PARTIAL_DEVELOPMENT_ANALYSIS_NOT_DELIVERY",
+  "selector_fitted": false,
+  "final_test_run": false
+}

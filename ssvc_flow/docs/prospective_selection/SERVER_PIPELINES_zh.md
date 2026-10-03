@@ -42,3 +42,6 @@ Slurm单次最多72小时。脚本在运行46小时后不再开始新实验，�
 
 
 2026-09-30T13:25:01Z: cron independently ran after installation SSH disconnected; five original GPU jobs were still active, no new lane submitted, no BLOCKED marker. GPU pipeline execution awaits a free slot. See current_evidence/FIXED_PIPELINES_20260930_CRON_VERIFIED.json.
+
+
+2026-10-03补充：R6转空卡请求到达时，原lane2已完成GDPO并自动开始R6，交接前检拒绝重复，未迁移任务、未新提交、未更改五清单。辅助parallel_tail_handoff.py只供审计本次预备流程，现在不要运行。前检错误BLOCKED已归档HANDOFF_PREFLIGHT_REFUSAL_20261003.json，STOP不存在，两个原作业继续。已提前分析86项，见analysis_progress_20261003/README_zh.md。
