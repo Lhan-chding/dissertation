@@ -72,7 +72,7 @@ def compare(a, b):
     return 0.0
 
 
-def verify_evaluation(path, expected, prompts, draws, state_hash):
+def verify_evaluation(path, expected, prompts, draws, state_hash, *, include_rows=False):
     from src.modeling_v3.io import canonical_hash
     from src.prospective_selection.evaluation import summarize_rows
     m, c = read(path/'MANIFEST.json'), read(path/'COMPLETE.json')
@@ -97,21 +97,186 @@ def verify_evaluation(path, expected, prompts, draws, state_hash):
     require(len(rows) == prompts*draws and len({x['sample_id'] for x in rows}) == len(rows),
             'duplicate or missing evaluation samples')
     delta = compare(summarize_rows(rows), c['summary'])
-    return {'outputs': len(rows), 'J': c['summary']['J'], 'max_summary_difference': delta}
+    result = {'outputs': len(rows), 'J': c['summary']['J'], 'max_summary_difference': delta}
+    if include_rows: result['rows'] = rows
+    return result
 
 
-def verify_task(root, task):
+def complete_status(cfg):
+    return ('DEVELOPMENT_TUNING_COLLECTED_AWAITING_ANALYSIS'
+            if cfg.get('phase') == 'development-tuning'
+            else 'FIRST_FOUR_COLLECTED_AWAITING_ANALYSIS')
+
+
+def validate_expanded_task(cfg, protocol, task):
+    p = task['payload']
+    specs = {x['seed']: x for role in ('development', 'tuning')
+             for x in protocol['origins'][role]}
+    lid = p.get('lineage_id')
+    require(task['kind'] in ('source', 'prestate', 'branch')
+            and lid in cfg['allowed_lineages'] and lid in specs,
+            'task outside development-tuning whitelist')
+    spec = specs[lid]
+    require(p['role'] == spec['role'] and p['source_recipe'] == spec['source_recipe'],
+            'expanded lineage role/source mismatch')
+    if task['kind'] != 'source':
+        require(p['origin_step'] in spec['anchors']
+                and p['origin_id'] == f"{lid}_t{p['origin_step']}", 'expanded origin mismatch')
+    if task['kind'] == 'branch':
+        require(p['repeat'] == 1 and p['recipe_id'] in (
+            *protocol['actions']['selectable'], *protocol['actions']['external_baselines']),
+            'expanded recipe/repeat mismatch')
+
+
+def validate_phase(cfg, registry, tasks):
+    phase = cfg.get('phase', 'first-four')
+    require(phase in ('first-four', 'development-tuning'), 'unknown fixed pipeline phase')
+    if phase == 'first-four': return
+    root = registry.root
+    binding = cfg['first_four_delivery']
+    receipt_path = Path(binding['path']).resolve()
+    require(receipt_path == (root/'FIRST_FOUR_DELIVERED.json').resolve(), 'delivery receipt location')
+    require(digest(receipt_path) == binding['sha256'], 'delivery receipt changed')
+    receipt = read(receipt_path)
+    require(receipt['status'] == 'FIRST_FOUR_DELIVERED'
+            and receipt['lineages'] == [61001,61002,61003,61004]
+            and receipt['verified_branches'] == 88 and receipt['verified_historical_E'] == 16,
+            'first-four delivery evidence incomplete')
+    protocol = read(root/'protocol.json')
+    expected = {x['seed'] for x in protocol['origins']['development'][4:]
+                + protocol['origins']['tuning']}
+    require(len(cfg['allowed_lineages']) == len(expected)
+            and set(cfg['allowed_lineages']) == expected, 'expanded lineage whitelist mismatch')
+    require(all(t['payload'].get('role') not in ('locked_test','test_pool') for t in tasks.values()),
+            'final-test tasks forbidden in development-tuning pipeline')
+    targets = set(cfg['targets'])
+    require(targets <= tasks.keys() and not targets.intersection(cfg['baseline'])
+            and set(tasks)-targets <= cfg['baseline'].keys(), 'all old tasks require reviewed baseline')
+    require(not cfg['inflight_at_setup'], 'expanded phase requires drained prior pipelines')
+    expected_keys = set()
+    specs = {x['seed']: x for role in ('development','tuning') for x in protocol['origins'][role]}
+    for lid in expected:
+        expected_keys.add(('source',lid,None,None))
+        for step in specs[lid]['anchors']:
+            expected_keys.add(('prestate',lid,step,None))
+            for recipe in (*protocol['actions']['selectable'],*protocol['actions']['external_baselines']):
+                expected_keys.add(('branch',lid,step,recipe))
+    actual = set()
+    for tid in targets:
+        task = tasks[tid]; validate_expanded_task(cfg,protocol,task); p = task['payload']
+        actual.add((task['kind'],p['lineage_id'],p.get('origin_step'),p.get('recipe_id')))
+    require(actual == expected_keys and len(targets) == len(expected_keys), 'expanded matrix coverage')
+    for lane in cfg['lanes'].values():
+        prior = set(cfg['baseline'])
+        for tid in lane:
+            deps = [d if isinstance(d,str) else d['task_id'] for d in tasks[tid]['dependencies']]
+            require(set(deps) <= prior, 'fixed lane dependency must precede task in same lane')
+            prior.add(tid)
+
+
+def verify_source(root, task):
+    """Audit small committed raw artifacts; never reload/hash base or Adam tensors."""
+    from src.modeling_v3.io import canonical_hash
+    from src.prospective_selection.protocol import get_lineage
+    p = task['payload']; lid = p['lineage_id']
+    spec = get_lineage(read(root/'protocol.json'), lid)
+    path = root/'sources'/str(lid); m = read(path/'MANIFEST.json'); c = read(path/'COMPLETE.json')
+    mh = canonical_hash(m); steps = spec['source_steps']
+    require(m['kind'] == 'PROSPECTIVE_TRAINING' and m['fixture'] is False
+            and m['runtime_identity']['execution_kind'] == 'REAL_CUDA_MODEL', 'non-real source')
+    require(c['status'] == 'TRAINING_COMPLETE' and c['identity'] == m['identity']
+            and c['steps'] == m['steps'] == steps and c['training_outputs'] == steps*32,
+            'incomplete source')
+    require(m['identity']['lineage_id'] == lid and m['identity']['source_recipe'] == p['source_recipe']
+            and m['identity']['role'] == 'source', 'source identity mismatch')
+    require(c['checkpoints']['0']['state_hash'] == m['initial_state_hash'], 'source initial state binding')
+    commits = c['authoritative_segments']
+    require(len(commits) == steps//8 and len(set(commits)) == len(commits), 'source segment count')
+    sample_keys = set(); update_steps = []
+    for i, filename in enumerate(commits):
+        require(Path(filename).resolve().is_relative_to(path.resolve()), 'source segment outside task')
+        segment = read(filename)
+        require(segment['manifest_hash'] == mh and (segment['start'],segment['stop']) == (8*i+1,8*i+8),
+                'source segment identity')
+        cp = segment['checkpoint']
+        require(cp['identity'] == {'manifest_hash':mh,'step':segment['stop']}
+                and Path(cp['path']).resolve().is_relative_to(path.resolve())
+                and Path(cp['path']).stat().st_size > 0, 'source checkpoint metadata')
+        if str(segment['stop']) in c['checkpoints']:
+            require(cp == c['checkpoints'][str(segment['stop'])], 'source checkpoint link')
+        rows = [json.loads(line) for line in bound(segment['samples'],path).splitlines()]
+        require(len(rows) == segment['training_outputs'] == 256, 'source sample count')
+        for row in rows:
+            for key,value in {'origin_id':f'source_{lid}','recipe':p['source_recipe'],'repeat':0,
+                              'role':'train','schedule_id':m['identity']['schedule_id']}.items():
+                require(row[key] == value, 'source sample identity: '+key)
+            require(row['sample_key'] not in sample_keys, 'duplicate source sample')
+            sample_keys.add(row['sample_key'])
+        for binding in segment['updates']:
+            update = json.loads(bound(binding,path))
+            require(math.isfinite(update['loss']) and math.isfinite(update['grad_norm_preclip']),
+                    'non-finite source update')
+            update_steps.append(update['step'])
+    require(sorted(update_steps) == list(range(1,steps+1)), 'source update coverage')
+    required_steps = {0,steps,*spec['anchors'],*(x-8 for x in spec['anchors'])}
+    for step in required_steps:
+        anchor = read(path/f'H{step:02d}.json')
+        require(anchor['step'] == step and anchor['checkpoint'] == c['checkpoints'][str(step)],
+                'source anchor receipt mismatch')
+        cp = anchor['checkpoint']
+        require(cp['identity'] == {'manifest_hash':mh,'step':step}
+                and Path(cp['path']).resolve().is_relative_to(path.resolve())
+                and Path(cp['path']).stat().st_size > 0, 'source anchor checkpoint metadata')
+    require(c['checkpoint'] == c['checkpoints'][str(steps)], 'source terminal checkpoint')
+    return {'kind':'source','lineage_id':lid,'training_outputs':len(sample_keys),'finite_updates':steps}
+
+
+def verify_prestate(root, task):
+    from src.prospective_selection.features import LEVELS, PreDecisionPacket, build_predecision_packet
+    from src.prospective_selection.orchestration import _metadata
+    p = task['payload']; lid = p['lineage_id']; origin = p['origin_id']; step = p['origin_step']
+    path = root/'prestate'/origin; source = root/'sources'/str(lid)
+    completion = read(path/'COMPLETE.json')
+    require(completion == {'status':'PRESTATE_COMPLETE','origin_id':origin,
+            'shared_generated_outputs':4608,'four_levels_same_samples':True}, 'prestate incomplete')
+    snapshots = {}
+    for at in (step-8,step):
+        checkpoint = read(source/f'H{at:02d}.json')['checkpoint']
+        evaluation = verify_evaluation(path/f't{at}', {
+            'lineage_id':lid,'origin_id':origin,'policy_id':f'{lid}_t{at}',
+            'panel_id':'P','horizon':at,'repeat':0,'role':'predecision'},
+            72,32,checkpoint['state_hash'],include_rows=True)
+        fields = ('event','relation_numerator','relation_denominator','F','B','M')
+        snapshots[at] = [{**{k:row[k] for k in ('prompt_id','family','interface')},
+                          **{k:row['semantic'][k] for k in fields}} for row in evaluation['rows']]
+    metadata = _metadata(source,step)
+    for level in LEVELS:
+        packet = PreDecisionPacket.from_dict(read(path/f'{level}.json')).to_dict()
+        expected = build_predecision_packet(origin_id=origin,lineage_id=str(lid),
+            source_recipe=p['source_recipe'],step=step,current_rows=snapshots[step],
+            history_rows=snapshots[step-8],feature_level=level,known_training_metadata=metadata).to_dict()
+        compare(expected,packet)
+    return {'kind':'prestate','origin_id':origin,'lineage_id':lid,'shared_generated_outputs':4608,
+            'four_levels_same_samples':True,'raw_packet_reconstruction':True}
+
+
+def verify_task(root, task, cfg=None):
     from src.modeling_v3.io import canonical_hash
     p = task['payload']
-    origin = p['origin_id']
+    origin = p.get('origin_id')
+    if cfg and cfg.get('phase') == 'development-tuning':
+        validate_expanded_task(cfg, read(root/'protocol.json'), task)
+        if task['kind'] == 'source': return verify_source(root, task)
+        if task['kind'] == 'prestate': return verify_prestate(root, task)
     if task['kind'] == 'historical_e':
         result = verify_evaluation(root/'historical_E'/p['policy_id'], {
             'lineage_id':p['lineage_id'], 'origin_id':origin, 'policy_id':p['policy_id'],
             'panel_id':'E_old','role':'historical_E','horizon':32,'repeat':0},
             72, 32, p['checkpoint']['state_hash'])
         return {'kind':'historical_e', 'origin_id':origin, 'recipe':p['policy_id'], **result}
-    require(task['kind'] == 'branch' and p['role'] == 'development'
-            and int(p['lineage_id']) in (61001,61002,61003,61004) and p['repeat'] == 1,
+    expanded = cfg and cfg.get('phase') == 'development-tuning'
+    require(task['kind'] == 'branch' and p['repeat'] == 1 and (expanded or (
+            p['role'] == 'development' and int(p['lineage_id']) in (61001,61002,61003,61004))),
             'task outside first-four branch scope')
     recipe = p['recipe_id']
     path = root/'branches'/origin/recipe/'repeat_1'
@@ -175,6 +340,15 @@ def active_jobs():
     return rows
 
 
+def teacher_qos_jobs():
+    """MaxSubmitPU applies to all this user's teacher-QOS jobs, including unrelated jobs."""
+    jobs = set()
+    for line in run(['squeue','--noheader','--me','--format=%i|%q']).splitlines():
+        job,qos = line.split('|')
+        if qos.strip() == QOS: jobs.add(job.strip())
+    return jobs
+
+
 def accounting(ids):
     if not ids:
         return {}
@@ -210,6 +384,7 @@ def inspect_scope(cfg, registry):
         registry.task(tid)
     for tid,b in cfg['baseline'].items():
         require(digest(root/'completed'/f'{tid}.json') == b['completion_sha256'], 'reviewed completion changed')
+    validate_phase(cfg, registry, tasks)
     return tasks
 
 
@@ -228,10 +403,11 @@ def audit_completed(cfg, task, execution):
     root, control = Path(cfg['root']), Path(cfg['control'])
     tid=task['task_id'];completion=root/'completed'/f'{tid}.json'
     require(completion.exists() and read(completion)['receipt']['status']=='COMPLETE', 'missing completion')
-    value=verify_task(root,task)
+    value=verify_task(root,task,cfg)
     reviewed=reviewed_records(cfg,{t:None for t in cfg['task_hashes']})
     scores={a['recipe']:a['J'] for a in reviewed.values()
-            if a.get('kind')==value['kind'] and a.get('origin_id')==value['origin_id']}
+            if 'J' in a and 'J' in value and a.get('kind')==value['kind']
+            and a.get('origin_id')==value.get('origin_id')}
     if scores:
         value.update(previous_best_J=max(scores.values()),delta_previous_best=value['J']-max(scores.values()))
     value.update(status='VERIFIED',task_id=tid,observed_at=now(),
@@ -266,7 +442,7 @@ def claim_task(cfg, registry, job_id, lane, tid):
         tasks=inspect_scope(cfg,registry);reviewed=reviewed_records(cfg,tasks)
         require(tid in cfg['lanes'][str(lane)], 'task not assigned to this fixed lane')
         if tid in reviewed:return 'DONE'
-        require(tid in cfg['targets'], 'task outside first-four scope')
+        require(tid in cfg['targets'], 'task outside fixed phase scope')
         require(any(x['job_id']==job_id and x['lane']==lane for x in lane_allocations(cfg)),
                 'unregistered GPU lane')
         running_ids={x['job_id'] for x in active_jobs()}
@@ -306,7 +482,7 @@ def pipeline(cfg, registry, lane):
         value=audit_completed(cfg,task,{'job_id':job,'worker_exit_code':0,
                     'execution_evidence':'GPU subprocess returned 0; allocation may still be RUNNING',
                     'worker_elapsed_seconds':time.monotonic()-began,'pipeline_lane':lane})
-        print(json.dumps({'event':'VERIFIED_TASK','task_id':tid,'J':value['J'],'at':now()}),flush=True)
+        print(json.dumps({'event':'VERIFIED_TASK','task_id':tid,'J':value.get('J'),'at':now()}),flush=True)
     atomic(control/f'lane_{lane}.json',{'status':'DRAINED','job_id':job,'at':now()})
 
 
@@ -344,7 +520,7 @@ def handoff_tick(cfg,registry,config_path,submit=True):
         require(states.get(job,[None,None,None])[1:3]==['COMPLETED','0:0'],'failed/unknown GPU lane: '+job)
     reviewed=reviewed_records(cfg,tasks)
     done=set(cfg['targets']) <= set(reviewed)
-    result={'status':'FIRST_FOUR_COLLECTED_AWAITING_ANALYSIS' if done else 'RUNNING',
+    result={'status':complete_status(cfg) if done else 'RUNNING',
             'observed_at':now(),'controller_job_id':os.environ.get('SLURM_JOB_ID'),
             'verified_branches':sum(x.get('kind')=='branch' for x in reviewed.values()),
             'verified_historical_E':sum(x.get('kind')=='historical_e' for x in reviewed.values()),
@@ -376,7 +552,7 @@ def launch_only(cfg, registry, config_path):
             require(all(t in reviewed for t,j in submissions.items() if j==job),
                     'lane ended with unaudited work; no retry')
     done=set(cfg['targets'])<=set(reviewed)
-    result={'status':'FIRST_FOUR_COLLECTED_AWAITING_ANALYSIS' if done else 'RUNNING',
+    result={'status':complete_status(cfg) if done else 'RUNNING',
             'observed_at':now(),'verified_branches':sum(x.get('kind')=='branch' for x in reviewed.values()),
             'verified_historical_E':sum(x.get('kind')=='historical_e' for x in reviewed.values()),
             'active_gpu_jobs':active,'launched_lanes':[]}
@@ -386,7 +562,8 @@ def launch_only(cfg, registry, config_path):
         for lane in range(1,6):
             if lane in busy or all(t in reviewed for t in cfg['lanes'][str(lane)]):continue
             live={x['job_id'] for x in active_jobs()}
-            if len(live|{x['job_id'] for x in result['launched_lanes']})>=5:break
+            submitted={x['job_id'] for x in result['launched_lanes']}
+            if len(live|submitted)>=5 or len(teacher_qos_jobs()|submitted)>=5:break
             result['launched_lanes'].append(launch_lane(cfg,config_path,lane))
     return result
 

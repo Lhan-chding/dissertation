@@ -120,6 +120,174 @@ def test_handoff_counts_pending_gpus_and_never_overfills(tmp_path,monkeypatch):
     monkeypatch.setattr(c,'latest_submission',lambda root,tid:tid[1:])
     monkeypatch.setattr(c,'active_jobs',lambda:[{'job_id':str(i),'gpus':1} for i in range(4)])
     monkeypatch.setattr(c,'accounting',lambda *_:{})
+    monkeypatch.setattr(c,'teacher_qos_jobs',lambda:set())
     monkeypatch.setattr(c,'launch_lane',lambda *a:{'job_id':'10','lane':a[-1]})
     result=c.launch_only(cfg,registry,tmp_path/'config')
     assert len(result['launched_lanes'])==1
+
+
+def expanded_fixture(tmp_path):
+    from src.prospective_selection.protocol import load_protocol
+    from src.prospective_selection.orchestration import register_development
+    from src.prospective_selection.jobs import TaskRegistry
+    protocol=load_protocol(Path(__file__).parents[1]/'docs/prospective_selection/design/protocol.json')
+    c.atomic(tmp_path/'FIRST_FOUR_DELIVERED.json',{'status':'FIRST_FOUR_DELIVERED',
+        'lineages':[61001,61002,61003,61004],'verified_branches':88,'verified_historical_E':16})
+    prepared={'branch_schedules':{'1':{'schedule_id':'continuation-1-'+'a'*16,
+        'sampler_seed':protocol['training']['branch_schedule_seeds'][0]}}}
+    register_development(protocol,tmp_path,prepared,first_four=False)
+    reg=TaskRegistry(tmp_path,protocol); tasks={t['task_id']:t for t in reg.tasks()}
+    allowed=[s['seed'] for s in protocol['origins']['development'][4:]+protocol['origins']['tuning']]
+    baseline={t:{} for t,v in tasks.items() if v['payload'].get('lineage_id') not in allowed}
+    targets=set(tasks)-baseline.keys(); lanes={str(i):[] for i in range(1,6)}
+    for i,lid in enumerate(allowed):
+        ordered=sorted((t for t in tasks.values() if t['payload'].get('lineage_id')==lid),
+            key=lambda t:({'source':0,'prestate':1,'branch':2}[t['kind']],
+                          t['payload'].get('origin_step',0),t['payload'].get('recipe_id','')))
+        lanes[str(i%5+1)].extend(t['task_id'] for t in ordered)
+    cfg={'phase':'development-tuning','root':str(tmp_path),'control':str(tmp_path),
+         'first_four_delivery':{'path':str(tmp_path/'FIRST_FOUR_DELIVERED.json'),
+                                'sha256':c.digest(tmp_path/'FIRST_FOUR_DELIVERED.json')},
+         'allowed_lineages':allowed,'targets':list(targets),'baseline':baseline,
+         'inflight_at_setup':[],'lanes':lanes}
+    return cfg,reg,tasks
+
+
+def test_expanded_phase_requires_exact_matrix_delivery_and_local_dependencies(tmp_path):
+    import copy
+    cfg,reg,tasks=expanded_fixture(tmp_path)
+    assert len(cfg['targets'])==300
+    c.validate_phase(cfg,reg,tasks)
+    bad=copy.deepcopy(cfg);bad['targets'].pop()
+    with pytest.raises(ValueError,match='old tasks|matrix'):c.validate_phase(bad,reg,tasks)
+    bad=copy.deepcopy(cfg);bad['lanes']['1'].reverse()
+    with pytest.raises(ValueError,match='dependency'):c.validate_phase(bad,reg,tasks)
+    bad=copy.deepcopy(cfg);bad['allowed_lineages'][0]=63001
+    with pytest.raises(ValueError,match='whitelist'):c.validate_phase(bad,reg,tasks)
+    (tmp_path/'FIRST_FOUR_DELIVERED.json').write_text('{}')
+    with pytest.raises(ValueError,match='receipt changed'):c.validate_phase(cfg,reg,tasks)
+
+
+def test_expanded_task_rejects_test_role_and_extra_repeat(tmp_path):
+    import copy
+    cfg,reg,tasks=expanded_fixture(tmp_path)
+    task=next(t for t in tasks.values() if t['task_id'] in cfg['targets'] and t['kind']=='branch')
+    bad=copy.deepcopy(task);bad['payload']['role']='locked_test'
+    with pytest.raises(ValueError,match='role'):c.validate_expanded_task(cfg,reg.protocol,bad)
+    bad=copy.deepcopy(task);bad['payload']['repeat']=2
+    with pytest.raises(ValueError,match='repeat'):c.validate_expanded_task(cfg,reg.protocol,bad)
+
+
+def source_fixture(root,task):
+    from src.modeling_v3.io import canonical_hash
+    lid=task['payload']['lineage_id'];path=root/'sources'/str(lid);path.mkdir(parents=True)
+    m={'kind':'PROSPECTIVE_TRAINING','fixture':False,'runtime_identity':{'execution_kind':'REAL_CUDA_MODEL'},
+       'steps':96,'initial_state_hash':'initial',
+       'identity':{'lineage_id':lid,'source_recipe':task['payload']['source_recipe'],
+                   'role':'source','schedule_id':'source-schedule'}}
+    c.atomic(path/'MANIFEST.json',m);mh=canonical_hash(m)
+    def checkpoint(step):
+        f=path/f'H{step}.pt';f.write_bytes(b'fixture opaque checkpoint')
+        return {'path':str(f),'state_hash':'initial' if step==0 else str(step),
+                'identity':{'manifest_hash':mh,'step':step}}
+    checkpoints={'0':checkpoint(0)};commits=[]
+    for start in range(1,97,8):
+        stop=start+7;segment=path/'segments'/str(start);segment.mkdir(parents=True)
+        rows=[{'origin_id':f'source_{lid}','recipe':task['payload']['source_recipe'],'repeat':0,
+               'role':'train','schedule_id':'source-schedule','sample_key':f'{start}:{i}'} for i in range(256)]
+        f=segment/'samples.jsonl';f.write_text('\n'.join(json.dumps(r) for r in rows))
+        updates=[]
+        for step in range(start,stop+1):
+            u=segment/f'update_{step}.json';c.atomic(u,{'step':step,'loss':.1,'grad_norm_preclip':.2})
+            updates.append({'path':str(u),'sha256':c.digest(u)})
+        cp=checkpoint(stop)
+        if stop in (24,32,88,96):checkpoints[str(stop)]=cp
+        commit=segment/'COMMIT.json';c.atomic(commit,{'manifest_hash':mh,'start':start,'stop':stop,
+            'training_outputs':256,'samples':{'path':str(f),'sha256':c.digest(f)},'updates':updates,'checkpoint':cp})
+        commits.append(str(commit))
+    for step,cp in checkpoints.items():c.atomic(path/f'H{int(step):02d}.json',{'step':int(step),'checkpoint':cp})
+    c.atomic(path/'COMPLETE.json',{'status':'TRAINING_COMPLETE','identity':m['identity'],
+        'steps':96,'training_outputs':3072,'checkpoints':checkpoints,'checkpoint':checkpoints['96'],
+        'authoritative_segments':commits})
+    return path
+
+
+def test_source_audit_checks_raw_updates_and_anchor_binding(tmp_path):
+    cfg,reg,tasks=expanded_fixture(tmp_path)
+    task=next(t for t in tasks.values() if t['task_id'] in cfg['targets'] and t['kind']=='source')
+    path=source_fixture(tmp_path,task)
+    assert c.verify_task(tmp_path,task,cfg)['finite_updates']==96
+    checkpoint=c.read(path/'H32.json');checkpoint['checkpoint']['state_hash']='wrong'
+    c.atomic(path/'H32.json',checkpoint)
+    with pytest.raises(ValueError,match='anchor'):c.verify_task(tmp_path,task,cfg)
+    u=next(path.glob('segments/*/update_1.json'));u.write_text('{}')
+    with pytest.raises(ValueError,match='hash'):c.verify_task(tmp_path,task,cfg)
+
+
+def test_source_and_prestate_audits_can_advance_without_J(tmp_path,monkeypatch):
+    (tmp_path/'allocations').mkdir();c.atomic(tmp_path/'allocations/x.submitted.json',{'job_id':'1','lane':1})
+    cfg={'control':str(tmp_path),'lanes':{'1':['source','prestate','branch']},
+         'python':'python','project_root':str(tmp_path),'runtime':'runtime'}
+    seen=[];monkeypatch.setenv('SLURM_JOB_ID','1')
+    monkeypatch.setattr(c,'claim_task',lambda cfg,reg,job,lane,tid:{'task_id':tid,'key':[tid]})
+    monkeypatch.setattr(c.subprocess,'run',lambda *a,**k:SimpleNamespace(returncode=0))
+    monkeypatch.setattr(c,'audit_completed',lambda cfg,t,e:seen.append(t['task_id']) or {'kind':t['task_id']})
+    c.pipeline(cfg,SimpleNamespace(root=tmp_path),1)
+    assert seen==['source','prestate','branch']
+    assert c.complete_status({'phase':'development-tuning'})=='DEVELOPMENT_TUNING_COLLECTED_AWAITING_ANALYSIS'
+    assert c.complete_status({})=='FIRST_FOUR_COLLECTED_AWAITING_ANALYSIS'
+
+
+def test_prestate_reconstructs_packets_from_both_verified_raw_snapshots(tmp_path,monkeypatch):
+    from src.prospective_selection.features import LEVELS,build_predecision_packet
+    from src.prospective_selection import orchestration
+    cfg,reg,tasks=expanded_fixture(tmp_path)
+    task=next(t for t in tasks.values() if t['task_id'] in cfg['targets'] and t['kind']=='prestate')
+    p=task['payload'];step=p['origin_step'];origin=p['origin_id'];lid=p['lineage_id']
+    path=tmp_path/'prestate'/origin;path.mkdir(parents=True)
+    source=tmp_path/'sources'/str(lid);source.mkdir(parents=True)
+    rows=[dict(prompt_id=str(i),family='trend',interface='SYMBOLIC_FRESH',event='S',
+               relation_numerator=1,relation_denominator=2,F=0,B=j%2,M=j%2)
+          for i in range(72) for j in range(32)]
+    raw=[{**{k:r[k] for k in ('prompt_id','family','interface')},
+          'semantic':{k:r[k] for k in ('event','relation_numerator','relation_denominator','F','B','M')}} for r in rows]
+    calls=[]
+    def verify(path,expected,prompts,draws,state_hash,**kwargs):
+        calls.append((expected['horizon'],state_hash))
+        assert prompts==72 and draws==32 and expected['repeat']==0 and kwargs['include_rows']
+        return {'rows':raw}
+    monkeypatch.setattr(c,'verify_evaluation',verify)
+    monkeypatch.setattr(orchestration,'_metadata',lambda *_:{})
+    for at in (step-8,step):c.atomic(source/f'H{at:02d}.json',{'checkpoint':{'state_hash':str(at)}})
+    for level in LEVELS:
+        packet=build_predecision_packet(origin_id=origin,lineage_id=str(lid),source_recipe=p['source_recipe'],
+             step=step,current_rows=rows,history_rows=rows,feature_level=level).to_dict()
+        c.atomic(path/f'{level}.json',packet)
+    c.atomic(path/'COMPLETE.json',{'status':'PRESTATE_COMPLETE','origin_id':origin,
+             'shared_generated_outputs':4608,'four_levels_same_samples':True})
+    assert c.verify_task(tmp_path,task,cfg)['raw_packet_reconstruction']
+    assert calls==[(step-8,str(step-8)),(step,str(step))]
+    filename=path/f'{LEVELS[0]}.json';packet=c.read(filename);packet['known_training_metadata']={'loss_mean':.9}
+    c.atomic(filename,packet)
+    with pytest.raises(ValueError,match='fields differ'):c.verify_task(tmp_path,task,cfg)
+
+
+def test_unrelated_teacher_qos_job_reserves_its_submit_slot(tmp_path,monkeypatch):
+    (tmp_path/'intents').mkdir()
+    cfg={'root':str(tmp_path),'control':str(tmp_path),'targets':['a','b','c','d','e'],
+         'lanes':{str(i):[chr(96+i)] for i in range(1,6)}}
+    reg=SimpleNamespace(root=tmp_path,_lock=nullcontext)
+    monkeypatch.setattr(c,'inspect_scope',lambda *_:{})
+    monkeypatch.setattr(c,'reviewed_records',lambda *_:{})
+    monkeypatch.setattr(c,'lane_allocations',lambda *_:[])
+    monkeypatch.setattr(c,'active_jobs',lambda:[])
+    monkeypatch.setattr(c,'accounting',lambda *_:{})
+    monkeypatch.setattr(c,'teacher_qos_jobs',lambda:{'unrelated'})
+    monkeypatch.setattr(c,'launch_lane',lambda *a:{'job_id':str(a[-1]),'lane':a[-1]})
+    result=c.launch_only(cfg,reg,tmp_path/'config')
+    assert len(result['launched_lanes'])==4
+
+
+def test_teacher_qos_query_includes_pending_and_unrelated_but_not_other_qos(monkeypatch):
+    monkeypatch.setattr(c,'run',lambda cmd:'1|'+c.QOS+'\n2|other\n3|'+c.QOS)
+    assert c.teacher_qos_jobs()=={'1','3'}

@@ -108,6 +108,7 @@ def build(data,out,baseline_timing=None):
             worst_observed_J=bottom,observed_spread_pp=100*(top-bottom),complete=len(scores)==11))
     static=[dict(recipe=r,complete_origins=len(complete),mean_J=statistics.mean(index[o,r] for o in complete)) for r in RECIPES] if complete else []
     comparison=candidate_comparison(index,complete) if complete else {}
+    assert len(data['prestates'])==8 and {p['origin'] for p in data['prestates']}==set(ORIGINS)
     info=[row for p in data['prestates'] for row in information_audit(p)]
     hist=[]
     for e in data['historical_E']:
@@ -117,18 +118,21 @@ def build(data,out,baseline_timing=None):
                       ('six_strata.csv',strata),('training_updates.csv',updates),('information_audit.csv',info),
                       ('historical_E.csv',hist),('static_complete_origins.csv',static)]:
         if rows:write_csv(out,name,rows)
+    assert len(hist)==16 and len({(h['origin'],h['recipe']) for h in hist})==16
+    status='FIRST_FOUR_ANALYSIS_COMPLETE_AWAITING_DELIVERY' if len(index)==88 and not data['missing'] else 'PARTIAL_DEVELOPMENT_ANALYSIS_NOT_DELIVERY'
     facts=dict(extracted_at=data['extracted_at'],branches=len(branches),expected_branches=88,
         independent_lineages=4,origins=origins,complete_origins=complete,historical_E=len(hist),
         missing=[t['key'] for t in data['missing']],information_audit=info,
         **comparison,
         static=static,timing_rows=sum(b['worker_hours'] is not None for b in branches),
         available_worker_mean_hours=statistics.mean(b['worker_hours'] for b in branches if b['worker_hours'] is not None),
-        status='PARTIAL_DEVELOPMENT_ANALYSIS_NOT_DELIVERY',selector_fitted=False,final_test_run=False)
+        status=status,selector_fitted=False,final_test_run=False)
     (out/'summary.json').write_text(json.dumps(facts,indent=2,ensure_ascii=False)+'\n')
     missing='、'.join('/'.join(map(str,t['key'][:2])) for t in data['missing']) or '无'
     origin_table='\n'.join(f"|{x['origin']}|{x['completed']}/11|{x['best_observed_recipes']}|{100*x['best_observed_J']:.3f}%|{x['observed_spread_pp']:.3f}|" for x in origins)
-    intro=f"# 首四条开发数据阶段分析\n\n数据快照UTC：{data['extracted_at']}。状态：`PARTIAL_DEVELOPMENT_ANALYSIS_NOT_DELIVERY`。\n\n已核验{len(branches)}/88分支、{len(hist)}/16旧E、8个前置原点。缺失：{missing}。\n\n仅分析已通过服务器原始核验的任务，本次重查任务/完成回执哈希，并复核导出汇总与信息包；没有重新逐条复核全部原始生成文本。完整输入文件哈希及服务器小文件索引见INPUT_SHA256.txt和compact_input.json。\n"
-    development=intro+f"\n## 当前响应表\n\n|原点|完成|当前最高配方|H32 J|已观测极差（百分点）|\n|---|---:|---|---:|---:|\n{origin_table}\n\n完整矩阵见response_matrix.csv，分层结果见six_strata.csv。缺失单元格为空，不计作0。\n\n只有{len(complete)}个配方齐全的原点参与static_complete_origins.csv中的均值比较；这一子集的来源/阶段组成可能不均衡，不能冒充完整8原点结论。11列均值表包括三个外部固定对照；四层选择器的可选动作严格限定R0–R7。在R0–R7内，当前事后最佳静态配方为{comparison['descriptive_best_static_recipe']}，均值为{100*comparison['descriptive_best_static_mean']:.3f}%；事后逐原点最高分均值为{100*comparison['descriptive_hindsight_oracle_mean']:.3f}%，两者之差为{facts['descriptive_oracle_gap_pp']:.3f}个百分点。这是使用已知结果的描述性可选空间，存在事后乐观偏差，不是任何实际选择器收益或独立验证上界。\n\nH8和H32使用不同评估面板，branch_summary.csv列出的两个分数不能直接相减解释成训练提升。本轮没有逐题重采样置信区间、选择器拟合、最终测试或显著性宣称。原点之间的同配方差值也同时受来源和训练阶段影响。\n\n统计独立单位仍为4条lineage，88个配方/阶段分支属于嵌套重复测量；每分支只有repeat1，不能由这些数值估计同原点同配方的训练seed方差。\n"
+    intro=f"# 首四条开发数据阶段分析\n\n数据快照UTC：{data['extracted_at']}。状态：`{status}`。\n\n已核验{len(branches)}/88分支、{len(hist)}/16旧E、8个前置原点。缺失：{missing}。\n\n仅分析已通过服务器原始核验的任务，本次重查任务/完成回执哈希，并复核导出汇总与信息包；没有重新逐条复核全部原始生成文本。完整输入文件哈希及服务器小文件索引见INPUT_SHA256.txt和compact_input.json。\n"
+    subset_note='全部8原点已齐全；以下比较仍仅限首4条开发lineage。' if len(complete)==8 else '这一子集的来源/阶段组成可能不均衡，不能冒充完整8原点结论。'
+    development=intro+f"\n## 当前响应表\n\n|原点|完成|当前最高配方|H32 J|已观测极差（百分点）|\n|---|---:|---|---:|---:|\n{origin_table}\n\n完整矩阵见response_matrix.csv，分层结果见six_strata.csv。缺失单元格为空，不计作0。\n\n只有{len(complete)}个配方齐全的原点参与static_complete_origins.csv中的均值比较；{subset_note}11列均值表包括三个外部固定对照；四层选择器的可选动作严格限定R0–R7。在R0–R7内，当前事后最佳静态配方为{comparison['descriptive_best_static_recipe']}，均值为{100*comparison['descriptive_best_static_mean']:.3f}%；事后逐原点最高分均值为{100*comparison['descriptive_hindsight_oracle_mean']:.3f}%，两者之差为{facts['descriptive_oracle_gap_pp']:.3f}个百分点。这是使用已知结果的描述性可选空间，存在事后乐观偏差，不是任何实际选择器收益或独立验证上界。\n\nH8和H32使用不同评估面板，branch_summary.csv列出的两个分数不能直接相减解释成训练提升。本轮没有逐题重采样置信区间、选择器拟合、最终测试或显著性宣称。原点之间的同配方差值也同时受来源和训练阶段影响。\n\n统计独立单位仍为4条lineage，88个配方/阶段分支属于嵌套重复测量；每分支只有repeat1，不能由这些数值估计同原点同配方的训练seed方差。\n"
     (out/'DEVELOPMENT_RESULTS_zh.md').write_text(development)
     info_table='\n'.join(f"|{x['origin']}|{x['snapshot']}|{x['mixed_repair_buckets']}|{x['mixed_n_ge_8']}|{x['prompts_with_mixed_repair']}|{100*x['pair_disagreement']:.2f}%|" for x in info)
     audit=intro+f"\n## 信息冗余与新增结构\n\npX=μX、pS=μA−μX、pW=μV−μA、pI=1−μV在16份前置快照中的最大重建误差为{max(x['reward_event_reconstruction_error'] for x in info):.3g}。四事件不是奖励均值以外的独立新增信息。\n\n32份信息包通过字段权限、有限矩、直方图计数、修复联合分布向同一奖励分布投影以及各层共用样本的校验。合法修复原子的X iff F=1且B=0及F/B/M可行性由原信息包验证器检查；非法输出使用独立INVALID原子。\n\n|原点|快照步|同奖励多修复结构桶|其中n≥8|涉及提示数|同桶样本对结构不同率|\n|---|---:|---:|---:|---:|---:|\n{info_table}\n\n桶严格按(prompt,event,精确关系奖励)分组。样本对不同率来自固定观测样本，不是稳定条件互信息估计或总体概率保证。存在同奖励而修复结构不同，支持逐样本不可完全恢复性；这并不证明该结构有助于选择奖励。完整数字见information_audit.csv。\n"
