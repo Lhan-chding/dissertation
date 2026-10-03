@@ -1,0 +1,7 @@
+{
+  "python": "3.12.14",
+  "numpy": "2.5.2",
+  "matplotlib": "3.11.1",
+  "tests": "27 targeted tests passed",
+  "runtime": "CPU diagnostic only; original GPU snapshots included in raw archive"
+}

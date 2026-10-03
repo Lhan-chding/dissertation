@@ -1,0 +1,5 @@
+{
+  "status": "PASS",
+  "check": "Independent fresh-directory rerun yields byte-identical summary, CSVs, all 16 models and 16 fold records",
+  "input_sha256": "0e5907397c4425ecb4268a9054c0019c406a02995b271988ee46238c6e4e2abd"
+}

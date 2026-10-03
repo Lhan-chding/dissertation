@@ -1,0 +1,109 @@
+{
+  "status": "EXPLORATORY_FIRST_FOUR_NESTED_LOLO_COMPLETE",
+  "source_sha256": "0e5907397c4425ecb4268a9054c0019c406a02995b271988ee46238c6e4e2abd",
+  "decisions_sha256": "e0bd2846920abcedb7afcaee47f63561300099d6d57cfd5342ac78c68fbb5f38",
+  "outer_folds": 4,
+  "inner_folds_per_outer": 3,
+  "independent_lineages": 4,
+  "held_origins": 8,
+  "methods": [
+    {
+      "level": "Z0_MOMENTS_GLOBAL",
+      "J": 0.775390625,
+      "best_static_J": 0.775390625,
+      "delta_static_pp": 0.0,
+      "observed_regret_pp": 0.3200954861111091,
+      "GDPO_J": 0.7780490451388891,
+      "SAW_J": 0.7741427951388888,
+      "DIRECT_REPAIR_J": 0.7751193576388888,
+      "prediction_delta_MAE": 0.004209738196563001,
+      "static_choices": 8,
+      "tie_overrides": 0,
+      "alpha_choices": [
+        10.0,
+        10.0,
+        10.0,
+        10.0
+      ]
+    },
+    {
+      "level": "Z1_MOMENTS_STRATIFIED",
+      "J": 0.775390625,
+      "best_static_J": 0.775390625,
+      "delta_static_pp": 0.0,
+      "observed_regret_pp": 0.3200954861111091,
+      "GDPO_J": 0.7780490451388891,
+      "SAW_J": 0.7741427951388888,
+      "DIRECT_REPAIR_J": 0.7751193576388888,
+      "prediction_delta_MAE": 0.0041795179623013955,
+      "static_choices": 8,
+      "tie_overrides": 0,
+      "alpha_choices": [
+        1.0,
+        10.0,
+        10.0,
+        10.0
+      ]
+    },
+    {
+      "level": "Z2_REWARD_DISTRIBUTION",
+      "J": 0.775390625,
+      "best_static_J": 0.775390625,
+      "delta_static_pp": 0.0,
+      "observed_regret_pp": 0.3200954861111091,
+      "GDPO_J": 0.7780490451388891,
+      "SAW_J": 0.7741427951388888,
+      "DIRECT_REPAIR_J": 0.7751193576388888,
+      "prediction_delta_MAE": 0.004212062213985847,
+      "static_choices": 8,
+      "tie_overrides": 0,
+      "alpha_choices": [
+        10.0,
+        10.0,
+        10.0,
+        10.0
+      ]
+    },
+    {
+      "level": "Z3_REPAIR_STRUCTURE",
+      "J": 0.775390625,
+      "best_static_J": 0.775390625,
+      "delta_static_pp": 0.0,
+      "observed_regret_pp": 0.3200954861111091,
+      "GDPO_J": 0.7780490451388891,
+      "SAW_J": 0.7741427951388888,
+      "DIRECT_REPAIR_J": 0.7751193576388888,
+      "prediction_delta_MAE": 0.004212091440630603,
+      "static_choices": 8,
+      "tie_overrides": 0,
+      "alpha_choices": [
+        10.0,
+        10.0,
+        10.0,
+        10.0
+      ]
+    }
+  ],
+  "paired_lineages": [
+    {
+      "lineage": "61001",
+      "delta_Z3_Z2_pp": 0.0
+    },
+    {
+      "lineage": "61002",
+      "delta_Z3_Z2_pp": 0.0
+    },
+    {
+      "lineage": "61003",
+      "delta_Z3_Z2_pp": 0.0
+    },
+    {
+      "lineage": "61004",
+      "delta_Z3_Z2_pp": 0.0
+    }
+  ],
+  "mean_Z3_Z2_pp": 0.0,
+  "final_test_run": false,
+  "global_freeze_written": false,
+  "caveat": "Previously inspected development labels; exploratory replay, not prospective confirmation."
+}

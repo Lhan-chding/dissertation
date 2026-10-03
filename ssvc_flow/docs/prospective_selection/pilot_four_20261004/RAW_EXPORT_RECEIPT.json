@@ -1,0 +1,9 @@
+{
+  "status": "ARCHIVE_CREATED",
+  "files": 42605,
+  "raw_bytes": 3229971410,
+  "archive_bytes": 258690386,
+  "sha256": "fc2e2f70310c7fabfb4fd1950dcf9351f125243fbdb8ec19a893f8bbdcf99e44",
+  "manifest_sha256": "fac5cd1679926adf0b5cfdbfd94c7fb3ceba19ba187b7e0d7670739e40d4c24d",
+  "omitted_tensor_files": 590
+}

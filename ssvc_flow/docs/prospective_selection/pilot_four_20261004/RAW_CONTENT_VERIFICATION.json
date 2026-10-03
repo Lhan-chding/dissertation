@@ -1,0 +1,28 @@
+{
+  "status": "PASS",
+  "all_files_sha256_verified": 42605,
+  "gzip_read_to_eof": true,
+  "safe_unique_regular_members": true,
+  "compact_summary_and_packets_match": true,
+  "authoritative_rows": {
+    "source_training": 12288,
+    "branch_training": 90112,
+    "prestate_P": 36864,
+    "branch_H8": 16896,
+    "branch_H32": 202752,
+    "historical_E": 36864
+  },
+  "instances": {
+    "source_training": 4,
+    "branch_training": 88,
+    "prestate_P": 16,
+    "branch_H8": 88,
+    "branch_H32": 88,
+    "historical_E": 16
+  },
+  "total_authoritative_rows": 395776,
+  "finite_update_rows": 3200,
+  "missing_images": [],
+  "omitted_files": 590,
+  "scope": "Archive hashes and committed raw-file bindings/line counts; prior semantic identity audits retained. Not a fresh re-score of raw text."
+}
