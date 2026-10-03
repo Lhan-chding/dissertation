@@ -1,0 +1,20 @@
+[
+  {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/prospective-reward-selection-20260924/ssvc_flow/artifacts/pilot_four_20261004/SSVC_FOUR_LINEAGE_ANALYSIS_CORE_20261004.zip",
+    "bytes": 5942710,
+    "sha256": "3ec25ab0f6b1bf3081cedc311802595d3f3d14b88d881747aceae13495806445",
+    "status": "PASS",
+    "unique_safe_paths": true,
+    "all_members_crc_and_sha256_verified": true,
+    "includes_raw_outputs": false
+  },
+  {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/prospective-reward-selection-20260924/ssvc_flow/artifacts/pilot_four_20261004/SSVC_FOUR_LINEAGE_FULL_DATA_20261004.zip",
+    "bytes": 264633319,
+    "sha256": "b827a46c957bd3bdb34623957f86f036e178efbe51bff6a504c8dfd0721c8a0c",
+    "status": "PASS",
+    "unique_safe_paths": true,
+    "all_members_crc_and_sha256_verified": true,
+    "includes_raw_outputs": true
+  }
+]
