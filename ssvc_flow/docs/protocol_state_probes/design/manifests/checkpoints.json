@@ -1,0 +1,104 @@
+[
+  {
+    "id": "S32",
+    "lineage": 61001,
+    "source_step": 32,
+    "kind": "source",
+    "role": "primary_T1",
+    "export_time_candidates": [
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/025_032/attempt_1790253742258368643/state.pt",
+        "bytes": 151373427,
+        "reason": "Tensor/binary/cache kept server-side; no rehash"
+      }
+    ],
+    "status": "SERVER_EXISTENCE_AND_COMMIT_POINTER_UNVERIFIED",
+    "allow_retraining_if_missing": false
+  },
+  {
+    "id": "S96",
+    "lineage": 61001,
+    "source_step": 96,
+    "kind": "source",
+    "role": "primary_T1",
+    "export_time_candidates": [
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/089_096/attempt_1790284878289928374/state.pt",
+        "bytes": 151373427,
+        "reason": "Tensor/binary/cache kept server-side; no rehash"
+      }
+    ],
+    "status": "SERVER_EXISTENCE_AND_COMMIT_POINTER_UNVERIFIED",
+    "allow_retraining_if_missing": false
+  },
+  {
+    "id": "R4_128",
+    "lineage": 61001,
+    "source_step": 96,
+    "continuation_steps": 32,
+    "recipe": "R4",
+    "repeat": 1,
+    "kind": "branch",
+    "role": "primary_T2",
+    "export_time_candidates": [
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/branches/61001_t96/R4/repeat_1/segments/025_032/attempt_1790338255833230466/state.pt",
+        "bytes": 151374451,
+        "reason": "Tensor/binary/cache kept server-side; no rehash"
+      }
+    ],
+    "status": "SERVER_EXISTENCE_AND_COMMIT_POINTER_UNVERIFIED",
+    "allow_retraining_if_missing": false
+  },
+  {
+    "id": "DIRECT_128",
+    "lineage": 61001,
+    "source_step": 96,
+    "continuation_steps": 32,
+    "recipe": "DIRECT_REPAIR_R4",
+    "repeat": 1,
+    "kind": "branch",
+    "role": "primary_T2",
+    "export_time_candidates": [
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/branches/61001_t96/DIRECT_REPAIR_R4/repeat_1/segments/025_032/attempt_1790842821842184892/state.pt",
+        "bytes": 151374451,
+        "reason": "Tensor/binary/cache kept server-side; no rehash"
+      }
+    ],
+    "status": "SERVER_EXISTENCE_AND_COMMIT_POINTER_UNVERIFIED",
+    "allow_retraining_if_missing": false
+  },
+  {
+    "id": "REP32",
+    "lineage": 61003,
+    "source_step": 32,
+    "kind": "source",
+    "role": "predeclared_robustness",
+    "export_time_candidates": [
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61003/segments/025_032/attempt_1790253768449228995/state.pt",
+        "bytes": 151373427,
+        "reason": "Tensor/binary/cache kept server-side; no rehash"
+      }
+    ],
+    "status": "SERVER_EXISTENCE_AND_COMMIT_POINTER_UNVERIFIED",
+    "allow_retraining_if_missing": false
+  },
+  {
+    "id": "REP96",
+    "lineage": 61003,
+    "source_step": 96,
+    "kind": "source",
+    "role": "predeclared_robustness",
+    "export_time_candidates": [
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61003/segments/089_096/attempt_1790284167213371794/state.pt",
+        "bytes": 151373427,
+        "reason": "Tensor/binary/cache kept server-side; no rehash"
+      }
+    ],
+    "status": "SERVER_EXISTENCE_AND_COMMIT_POINTER_UNVERIFIED",
+    "allow_retraining_if_missing": false
+  }
+]

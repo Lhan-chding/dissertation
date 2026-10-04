@@ -1,0 +1,59 @@
+{
+  "total_cases": 509,
+  "aliases": 35,
+  "unique_case_prompts": 474,
+  "job_cells": 1944,
+  "scheduled_completions_after_exact_prompt_alias_reuse": 70656,
+  "by_phase": {
+    "primary_core_and_controls": {
+      "cells": 864,
+      "completions": 27648
+    },
+    "input_output_factorial": {
+      "cells": 384,
+      "completions": 12288
+    },
+    "holdout_replication": {
+      "cells": 264,
+      "completions": 16896
+    },
+    "replication_existing_checkpoint": {
+      "cells": 432,
+      "completions": 13824
+    }
+  },
+  "by_checkpoint": {
+    "S32": {
+      "cells": 474,
+      "completions": 17280
+    },
+    "S96": {
+      "cells": 474,
+      "completions": 17280
+    },
+    "R4_128": {
+      "cells": 282,
+      "completions": 11136
+    },
+    "DIRECT_128": {
+      "cells": 282,
+      "completions": 11136
+    },
+    "REP32": {
+      "cells": 216,
+      "completions": 6912
+    },
+    "REP96": {
+      "cells": 216,
+      "completions": 6912
+    }
+  },
+  "smoke_outputs_not_in_primary": {
+    "per_allocated_worker": 16,
+    "max_workers": 5,
+    "maximum": 80
+  },
+  "model_training_steps": 0,
+  "new_source_trajectories": 0,
+  "likelihood_rescoring_calls": 0
+}

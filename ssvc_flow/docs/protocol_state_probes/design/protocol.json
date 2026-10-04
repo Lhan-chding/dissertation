@@ -1,0 +1,253 @@
+{
+  "protocol_id": "ssvc-protocol-state-probes-v1-20261005",
+  "created_date": "2026-10-05",
+  "purpose": "frozen checkpoint response characterization; not reward-selection confirmation",
+  "source_data_cutoff": "2026-10-04",
+  "research_status": "PROPOSED_NO_NEW_MODEL_RUNS",
+  "repo": {
+    "name": "Lhan-chding/dissertation",
+    "base_branch": "codex/prospective-reward-selection-20260924",
+    "base_commit": "76ff2eab62d7fa6d902be972853fe73ca33dee9e",
+    "analysis_reference_branch": "codex/four-lineage-existing-only-20261004",
+    "analysis_reference_commit": "eb58174c6992e8a82e04ca75cdf06a682f5e9a46",
+    "suggested_work_branch": "codex/protocol-state-probes-20261005"
+  },
+  "execution": {
+    "frozen_inference_only": true,
+    "max_concurrent_gpus": 5,
+    "gpus_per_job": 1,
+    "new_training_allowed": false,
+    "new_selector_fit_allowed": false,
+    "ddp": false,
+    "stage_complete_not_outcome_selected": true,
+    "no_per_output_full_model_hash": true,
+    "no_per_output_rescoring": true,
+    "resume_chunk_draws": 8,
+    "max_technical_retries": 2
+  },
+  "model": {
+    "id": "Qwen/Qwen3.5-9B",
+    "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+    "base_dtype": "bfloat16",
+    "adapter_dtype": "inherit measured checkpoint loader",
+    "primary_engine": "historical uncached-prefix-recompute",
+    "replace_engine_without_bridge": false
+  },
+  "generation": {
+    "temperature": 1.0,
+    "top_p": 1.0,
+    "top_k": 0,
+    "do_sample": true,
+    "max_new_tokens": 64,
+    "enable_thinking": false,
+    "constrained_decoding": false,
+    "persist_full_vocab_logits": false,
+    "new_likelihood_scoring": false,
+    "stop_rule": "original eos or length64; no custom bracket-stop",
+    "generation_config": {
+      "do_sample": true,
+      "temperature": 1.0,
+      "top_p": 1.0,
+      "top_k": 0,
+      "min_p": 0.0,
+      "typical_p": 1.0,
+      "epsilon_cutoff": 0.0,
+      "eta_cutoff": 0.0,
+      "repetition_penalty": 1.0,
+      "encoder_repetition_penalty": 1.0,
+      "num_beams": 1,
+      "num_beam_groups": 1,
+      "num_return_sequences": 1,
+      "max_new_tokens": 64,
+      "min_length": 0,
+      "min_new_tokens": 0,
+      "no_repeat_ngram_size": 0,
+      "encoder_no_repeat_ngram_size": 0,
+      "forced_bos_token_id": null,
+      "forced_eos_token_id": null,
+      "bad_words_ids": null,
+      "force_words_ids": null,
+      "suppress_tokens": null,
+      "begin_suppress_tokens": null,
+      "sequence_bias": null,
+      "renormalize_logits": false,
+      "remove_invalid_values": false,
+      "penalty_alpha": null,
+      "constraints": null,
+      "watermarking_config": null,
+      "guidance_scale": null,
+      "dola_layers": null,
+      "token_healing": false,
+      "use_cache": false,
+      "return_dict_in_generate": true,
+      "output_scores": true
+    },
+    "eos_pad_bos": "inherit original adapter/model/tokenizer; record actual IDs at runtime"
+  },
+  "panels": {
+    "D48": {
+      "cross_series": 24,
+      "trend": 24,
+      "draws": 32,
+      "role": "seen developmental diagnostic"
+    },
+    "U22": {
+      "cross_series": 11,
+      "trend": 11,
+      "draws": 64,
+      "role": "not previously executed outcomes; metadata seen"
+    },
+    "P24": {
+      "new_model_calls": 0,
+      "role": "historical contextual description only"
+    },
+    "controls": {
+      "copy": 12,
+      "duplicate": 12,
+      "clean_relation": 12,
+      "protocols_per_item": 2,
+      "draws": 32
+    }
+  },
+  "inference_grid": {
+    "T1_core": [
+      "S32",
+      "S96"
+    ],
+    "T2_core": [
+      "R4_128",
+      "DIRECT_128"
+    ],
+    "input_output_factorial": [
+      "S32",
+      "S96"
+    ],
+    "robustness_core": [
+      "REP32",
+      "REP96"
+    ],
+    "primary_protocols_cross": [
+      "O0",
+      "A1",
+      "B0",
+      "B1",
+      "BR"
+    ],
+    "primary_protocols_trend": [
+      "O0",
+      "A1"
+    ],
+    "factorial": [
+      "L00",
+      "L01",
+      "L10",
+      "L11"
+    ]
+  },
+  "measurement": {
+    "canonical_order": [
+      "a",
+      "b",
+      "c",
+      "d"
+    ],
+    "domain": [
+      0,
+      99
+    ],
+    "strict_entire_json": true,
+    "malformed_or_out_of_domain_event": "I",
+    "C_primary": "original reliable relations; zero on I",
+    "C_display": "secondary; not interchangeable partial scores",
+    "out_of_domain_vectors_kept_for_program_match": true,
+    "unknown_internal_algorithm_weights": true,
+    "DPE_used_to_render": false
+  },
+  "statistics": {
+    "final_sample_size_fixed": true,
+    "effect_units": "probability; pp=100*probability",
+    "primary_target": "pX for each fixed checkpoint and each fixed panel",
+    "primary_comparisons": [
+      "A1-O0",
+      "B1-B0"
+    ],
+    "T1": "difference of protocol effects S96 minus S32",
+    "T2": "difference of protocol effects DIRECT_128 minus R4_128",
+    "bootstrap": "paired base-scene within strata, resample scenes only; 5000; descriptive",
+    "per_prompt_interval": "Clopper-Pearson 95% marginal",
+    "finite_panel_uncertainty": "independent Beta(0.5,0.5) posterior per cell; 20000 draws; 95% credible; explicitly model-conditional",
+    "sensitivity_prior": "Beta(1,1)",
+    "practical_effect_reference_pp": 10.0,
+    "equivalence_margin": null,
+    "hard_success_threshold": null,
+    "no_zero_se_as_certainty": true,
+    "unobserved_event_is_zero_probability": false
+  },
+  "optional_not_in_default_run": [
+    "scratchpad",
+    "input_repetition",
+    "location_hint",
+    "new_RL",
+    "learned_router",
+    "all24_output_orders"
+  ],
+  "workload": {
+    "total_cases": 509,
+    "aliases": 35,
+    "unique_case_prompts": 474,
+    "job_cells": 1944,
+    "scheduled_completions_after_exact_prompt_alias_reuse": 70656,
+    "by_phase": {
+      "primary_core_and_controls": {
+        "cells": 864,
+        "completions": 27648
+      },
+      "input_output_factorial": {
+        "cells": 384,
+        "completions": 12288
+      },
+      "holdout_replication": {
+        "cells": 264,
+        "completions": 16896
+      },
+      "replication_existing_checkpoint": {
+        "cells": 432,
+        "completions": 13824
+      }
+    },
+    "by_checkpoint": {
+      "S32": {
+        "cells": 474,
+        "completions": 17280
+      },
+      "S96": {
+        "cells": 474,
+        "completions": 17280
+      },
+      "R4_128": {
+        "cells": 282,
+        "completions": 11136
+      },
+      "DIRECT_128": {
+        "cells": 282,
+        "completions": 11136
+      },
+      "REP32": {
+        "cells": 216,
+        "completions": 6912
+      },
+      "REP96": {
+        "cells": 216,
+        "completions": 6912
+      }
+    },
+    "smoke_outputs_not_in_primary": {
+      "per_allocated_worker": 16,
+      "max_workers": 5,
+      "maximum": 80
+    },
+    "model_training_steps": 0,
+    "new_source_trajectories": 0,
+    "likelihood_rescoring_calls": 0
+  }
+}

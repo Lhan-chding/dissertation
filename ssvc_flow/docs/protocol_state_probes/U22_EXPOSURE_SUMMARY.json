@@ -1,0 +1,31 @@
+{
+  "schema": "protocol-probes-prior-exposure-v1",
+  "status": "CONTAMINATED_DOWNGRADED",
+  "audited_at_utc": "2026-10-04T17:01:20.949361+00:00",
+  "roots": [
+    "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign",
+    "/projects/_ssd/varunssd/louis-ssvc/runs",
+    "/projects/_ssd/varunssd/louis-ssvc/modeling_v3_20260915",
+    "/projects/_ssd/varunssd/louis-ssvc/modeling_v4_20260916",
+    "/projects/_ssd/varunssd/louis-ssvc/decision_modeling_v1_20260919"
+  ],
+  "original_split": "train",
+  "split_role": "development_diagnostic",
+  "files_scanned": 33997,
+  "bytes_scanned": 7650659676,
+  "executed_matching_rows": 5432,
+  "metadata_matching_rows": 352,
+  "errors": [],
+  "scope_limit": "JSONL execution evidence in the named historical roots; no claim about deleted or inaccessible evidence.",
+  "audit_complete": true,
+  "verified": true,
+  "safe_to_generate": true,
+  "downgraded_to_development": true,
+  "effective_split_role": "development_diagnostic",
+  "original_audit_sha256": "0b6b317bf59ee252173a27a9ed40a47b2cb6be0ab807517bd2e066859ff56671",
+  "nonvalidation_output_candidates": 736,
+  "nonvalidation_source_files": 72,
+  "current_campaign_matching_rows": 0,
+  "row_count_is_not_unique_generations": true,
+  "interpretation": "U22 is untouched by current prospective campaign repeat1, but older executed outcomes are exposed. Keep all 22 registered tasks and downgrade this panel; no replacement or independent untouched-outcome claim."
+}

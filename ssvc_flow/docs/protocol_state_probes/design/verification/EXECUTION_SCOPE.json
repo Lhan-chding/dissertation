@@ -1,0 +1,37 @@
+{
+  "created": "2026-10-05",
+  "basis_data_cutoff": "2026-10-04",
+  "artifact_status": "EXECUTION_PLAN_WITH_DETERMINISTIC_REFERENCES",
+  "tests_run": 46,
+  "test_result": "PASS",
+  "metadata_program_assertions_included": 19008,
+  "compiled_cases": 509,
+  "exact_prompt_aliases": 35,
+  "logical_job_cells": 1944,
+  "planned_primary_generation_outputs": 70656,
+  "planned_smoke_maximum": 80,
+  "model_generations_executed": 0,
+  "new_scores_executed": 0,
+  "backward_calls": 0,
+  "optimizer_steps": 0,
+  "selector_fits": 0,
+  "github_writes": 0,
+  "server_jobs_submitted": 0,
+  "server_checkpoint_loads": 0,
+  "files_read_for_design": [
+    "round6 discussion/code/registry",
+    "round5 prepared metadata",
+    "four-lineage RAW_MANIFEST checkpoint pointers",
+    "original source code"
+  ],
+  "github_observed_runtime_commit": "76ff2eab62d7fa6d902be972853fe73ca33dee9e",
+  "github_observed_analysis_commit": "eb58174c6992e8a82e04ca75cdf06a682f5e9a46",
+  "not_validated": [
+    "new GPU runner integration",
+    "current server checkpoint availability",
+    "actual GPU throughput",
+    "new model protocol effects",
+    "generalization to unseen training lineages",
+    "online SSVC benefit"
+  ]
+}

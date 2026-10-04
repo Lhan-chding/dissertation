@@ -1,0 +1,11 @@
+{
+  "parent_commit": "eb58174c6992e8a82e04ca75cdf06a682f5e9a46",
+  "parent_branch": "codex/four-lineage-existing-only-20261004",
+  "new_branch": "codex/protocol-state-probes-20261005",
+  "specification_zip": "SSVC_Protocol_State_Probes_20261005.zip",
+  "specification_zip_sha256": "6b3a4378068e2c03f95e09490c584ef79d2043c7b1653d51e40ee05f04fff2d0",
+  "archive_crc_checked": true,
+  "historical_generation_loading_sources_changed_from_spec_base": false,
+  "new_training_authorized": false,
+  "max_concurrent_gpus": 5
+}

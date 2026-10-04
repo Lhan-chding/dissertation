@@ -1,0 +1,51 @@
+test_01_permutation_roundtrip_all24 (test_contracts.ContractTests.test_01_permutation_roundtrip_all24) ... ok
+test_02_bad_permutation (test_contracts.ContractTests.test_02_bad_permutation) ... ok
+test_03_reverse_answer_is_canonical (test_contracts.ContractTests.test_03_reverse_answer_is_canonical) ... ok
+test_04_full_json_only (test_contracts.ContractTests.test_04_full_json_only) ... ok
+test_05_whitespace_allowed (test_contracts.ContractTests.test_05_whitespace_allowed) ... ok
+test_06_domain_invalid_not_discarded (test_contracts.ContractTests.test_06_domain_invalid_not_discarded) ... ok
+test_07_answer_event_partition (test_contracts.ContractTests.test_07_answer_event_partition) ... ok
+test_08_literal_O0 (test_contracts.ContractTests.test_08_literal_O0) ... ok
+test_09_A1_only_final_output_contract (test_contracts.ContractTests.test_09_A1_only_final_output_contract) ... ok
+test_10_no_truth_renderer_input (test_contracts.ContractTests.test_10_no_truth_renderer_input) ... ok
+test_11_no_DPE_renderer_input (test_contracts.ContractTests.test_11_no_DPE_renderer_input) ... ok
+test_12_input_named_order_preserves_values (test_contracts.ContractTests.test_12_input_named_order_preserves_values) ... ok
+test_13_star_transform_row_equivalence (test_contracts.ContractTests.test_13_star_transform_row_equivalence) ... ok
+test_14_B1_full_conjunction_invariance (test_contracts.ContractTests.test_14_B1_full_conjunction_invariance) ... ok
+test_15_partial_C_not_invariant (test_contracts.ContractTests.test_15_partial_C_not_invariant) ... ok
+test_16_BR_program_invariance (test_contracts.ContractTests.test_16_BR_program_invariance) ... ok
+test_17_PTLC_majority (test_contracts.ContractTests.test_17_PTLC_majority) ... ok
+test_18_PTLC_conflict_copy (test_contracts.ContractTests.test_18_PTLC_conflict_copy) ... ok
+test_19_V2_sequential_fallback (test_contracts.ContractTests.test_19_V2_sequential_fallback) ... ok
+test_20_no_rounding (test_contracts.ContractTests.test_20_no_rounding) ... ok
+test_21_DPE_program_theorem_all_metadata (test_contracts.ContractTests.test_21_DPE_program_theorem_all_metadata) ... ok
+test_22_expected_D_and_U_B1_flip_counts (test_contracts.ContractTests.test_22_expected_D_and_U_B1_flip_counts) ... ok
+test_23_expected_A1_D_transition (test_contracts.ContractTests.test_23_expected_A1_D_transition) ... ok
+test_24_B1_risk_by_literal_predictions (test_contracts.ContractTests.test_24_B1_risk_by_literal_predictions) ... ok
+test_25_cases_unique (test_contracts.ContractTests.test_25_cases_unique) ... ok
+test_26_audit_separate (test_contracts.ContractTests.test_26_audit_separate) ... ok
+test_27_core_new_labels_ground_truth_check (test_contracts.ContractTests.test_27_core_new_labels_ground_truth_check) ... ok
+test_28_aliases_exact_only (test_contracts.ContractTests.test_28_aliases_exact_only) ... ok
+test_29_seed_role_independent (test_contracts.ContractTests.test_29_seed_role_independent) ... ok
+test_30_cp_zero_bound (test_contracts.ContractTests.test_30_cp_zero_bound) ... ok
+test_31_boundary_se_not_certainty (test_contracts.ContractTests.test_31_boundary_se_not_certainty) ... ok
+test_32_interaction_not_routing_value (test_contracts.ContractTests.test_32_interaction_not_routing_value) ... ok
+test_33_masks_do_not_double_count (test_contracts.ContractTests.test_33_masks_do_not_double_count) ... ok
+test_34_unparseable_repair_fields_null (test_contracts.ContractTests.test_34_unparseable_repair_fields_null) ... ok
+test_35_out_of_domain_match_allowed (test_contracts.ContractTests.test_35_out_of_domain_match_allowed) ... ok
+test_36_workload_and_no_train (test_contracts.ContractTests.test_36_workload_and_no_train) ... ok
+test_37_checkpoint_missing_no_retrain (test_contracts.ContractTests.test_37_checkpoint_missing_no_retrain) ... ok
+test_38_controls_not_core (test_contracts.ContractTests.test_38_controls_not_core) ... ok
+test_39_U_fixed_not_history_selected (test_contracts.ContractTests.test_39_U_fixed_not_history_selected) ... ok
+test_40_factorial_complete (test_contracts.ContractTests.test_40_factorial_complete) ... ok
+test_41_B_not_for_trend (test_contracts.ContractTests.test_41_B_not_for_trend) ... ok
+test_42_posteriors_of_alias_need_same_variable (test_contracts.ContractTests.test_42_posteriors_of_alias_need_same_variable) ... ok
+test_43_undefined_condition_not_zero (test_contracts.ContractTests.test_43_undefined_condition_not_zero) ... ok
+test_44_reference_predictions_unchanged (test_contracts.ContractTests.test_44_reference_predictions_unchanged) ... ok
+test_45_B1_literal_subtraction_not_leading_negative (test_contracts.ContractTests.test_45_B1_literal_subtraction_not_leading_negative) ... ok
+test_46_sampling_config_frozen_completely (test_contracts.ContractTests.test_46_sampling_config_frozen_completely) ... ok
+
+----------------------------------------------------------------------
+Ran 46 tests in 0.918s
+
+OK

@@ -1,0 +1,5 @@
+source_step,family,n,X,copy,V1_match,V2_match,v1_or_copy,v1_union_unique,v1_union_overlap,observed_first2_kept
+32,cross_series,768,26,135,255,255,284,149,106,193
+32,trend,640,19,10,52,48,62,52,0,228
+96,cross_series,768,0,435,596,596,631,196,400,541
+96,trend,640,0,44,153,151,197,153,0,600
