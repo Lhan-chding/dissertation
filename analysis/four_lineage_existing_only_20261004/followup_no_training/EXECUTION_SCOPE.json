@@ -1,0 +1,41 @@
+{
+  "execution_type": "EXISTING_DATA_ONLY_FOLLOWUP",
+  "parent_analysis_commit": "2898c6f3f7874cc045a1421145eb9f5c485e249f",
+  "new_training_runs": 0,
+  "new_model_calls": 0,
+  "new_samples": 0,
+  "selector_refits": 0,
+  "hyperparameter_searches": 0,
+  "new_kernel_weight_searches": 0,
+  "new_ablation_runs": 0,
+  "gpu_jobs_submitted": 0,
+  "final_T_records_read": 0,
+  "raw_full_tree_audit_repeats": 0,
+  "statistical_resampling": {
+    "seed": 20261004,
+    "replicates_per_origin": 10000,
+    "origins": 8,
+    "distinct_joint_origin_replicates": 80000,
+    "within_each_replicate": "reuse 16 saved binary X values per each of 144 prompts and 11 saved endpoints at that origin",
+    "source_H32_outputs": 202752,
+    "same_seed_script_executions": 2,
+    "reason_for_repeat": "CSV SE column renamed for precision; same seed and numeric result",
+    "not_new_model_observations": true
+  },
+  "existing_half_analysis": {
+    "source": "prior fixed draw_index 0..7 vs 8..15",
+    "directions_per_origin": 2,
+    "new_random_partition": false,
+    "saved_BestStatic_fixed": true
+  },
+  "input_and_command_manifests": [
+    "failure_scope.json",
+    "attribution_scope.json",
+    "ranking_scope.json"
+  ],
+  "unresolved": [
+    "causal benefit of changed training/actions/weights/learner",
+    "out-of-lineage and new training-seed reproducibility",
+    "uncertainty outside observed empirical support"
+  ]
+}

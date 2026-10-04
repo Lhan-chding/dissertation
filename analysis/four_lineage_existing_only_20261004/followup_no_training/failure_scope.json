@@ -1,0 +1,52 @@
+{
+  "command": "python3 analysis/four_lineage_existing_only_20261004/followup_no_training/failure_algebra.py",
+  "git_commit_at_execution": "2898c6f3f7874cc045a1421145eb9f5c485e249f",
+  "script_sha256": "e38ffcc857fd9584193ddd49de73da61fd532a29aae57821f2806c73777a76c1",
+  "inputs": [
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/analysis/four_lineage_existing_only_20261004/endpoint_prompt_metrics.csv",
+      "sha256": "e460a6ab187bef3b40a971cee6328ed6c81dce180d766b5d9d68297e09f98a7a"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/analysis/four_lineage_existing_only_20261004/prompt_posthoc_classes.csv",
+      "sha256": "14b21bd380f1180e4599777c231c7a504a67ecf8fb7b14634c46c77ce4a3afdf"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/analysis/four_lineage_existing_only_20261004/support_response_summary.csv",
+      "sha256": "eba837b1374ae7c59c9a854c391f2fe4bf4649f4dfb4dc1b23cb16895a19ef4e"
+    }
+  ],
+  "semantic_source": {
+    "git_commit": "7af92dff42e9c0432716550f6611dc244af23ecb",
+    "path": "ssvc_flow/src/prospective_selection/semantics.py",
+    "sha256": "870bd2105987b0e6952304658694bf2b82e3f11e08efbd3ae5b3b4ffc4a7220d"
+  },
+  "checks": {
+    "endpoint_prompt_rows": 14784,
+    "failure_rows": 22935,
+    "delta_rows": 22935,
+    "all_count_partitions_exact": true,
+    "all_delta_count_identities_exact": true,
+    "all_counts_nonnegative": true,
+    "same_R0_denominators": true
+  },
+  "execution_scope": {
+    "new_training_runs": 0,
+    "new_model_calls": 0,
+    "new_samples": 0,
+    "selector_refits": 0,
+    "hyperparameter_searches": 0,
+    "gpu_jobs_submitted": 0,
+    "statistical_resamples": 0,
+    "new_scoring_calls": 0,
+    "final_T_reads": 0
+  },
+  "interpretation": [
+    "F is binary on valid draws only; I repair coordinates remain missing. F1_n/draws means observed valid F1 mass, not imputing F=0 for I.",
+    "X=F1-F1damage and nonX=I+copy+F0noncopy+F1damage are exact observed count identities.",
+    "F1damage means F1 with B>0; it is not a measured recoverable gain or a new policy.",
+    "All_H32 prompt classes are posthoc; H8 inherits H32 class solely for diagnosis.",
+    "4 independent lineages; recipes and prompts are repeated measurements, not new independent states.",
+    "Training/evaluation pools correspond only by stage/family/interface, never by prompt identity or causal mapping."
+  ]
+}

@@ -1,0 +1,536 @@
+{
+  "actual_inputs": {
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/CODE_VERSION.json": {
+      "bytes": 299,
+      "sha256": "e5d1677c50dd47ed830302274489ee38b9be1aebd7d4aec0b4f5deef592af205"
+    },
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/src/prospective_selection/features.py": {
+      "bytes": 13833,
+      "sha256": "c79129c9d8b4a768ceab89e580f057428bf2d2f443cfe4e26b54998453a820db"
+    },
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/src/prospective_selection/kernels.py": {
+      "bytes": 8915,
+      "sha256": "b1112a8758ebaf7110abe931b8ce0715798082bd82bfbcd91cb456ee8edc3609"
+    },
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/src/prospective_selection/semantics.py": {
+      "bytes": 3736,
+      "sha256": "870bd2105987b0e6952304658694bf2b82e3f11e08efbd3ae5b3b4ffc4a7220d"
+    },
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/src/prospective_selection/selectors.py": {
+      "bytes": 12687,
+      "sha256": "9b2ab20bee197e6767edad0f982ede8a3822a6281b1f99ec05e87166f581cfb9"
+    },
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/first_four_20261004/compact_input.json": {
+      "bytes": 1951742,
+      "sha256": "0e5907397c4425ecb4268a9054c0019c406a02995b271988ee46238c6e4e2abd"
+    },
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/all_candidate_predictions.csv": {
+      "bytes": 26285,
+      "sha256": "1efac73e45997412bbee76618cb2cd1a208eae29e20d571ab738669a6d81dbcd"
+    },
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/models/61001_Z2_REWARD_DISTRIBUTION.json": {
+      "bytes": 374275,
+      "sha256": "be92a4bb638823e47bafbe4da36525d06ee9ff2fa6b357fa65cdd88c59577016"
+    },
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/models/61001_Z3_REPAIR_STRUCTURE.json": {
+      "bytes": 1043861,
+      "sha256": "53f382d5c1687f21b00c4792a8e308b2d1a59d22602e4f67fa3bd139d2fad869"
+    },
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds/61001_Z2_REWARD_DISTRIBUTION.json": {
+      "bytes": 42958,
+      "sha256": "e79fb39cb430ed4ef295100377dc558a7264ccbce4c9d0b563257ab267750e71"
+    },
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds/61001_Z3_REPAIR_STRUCTURE.json": {
+      "bytes": 43333,
+      "sha256": "8df5a1c8930c938f1cfefd9f7fbf5af1abf0b815150038d2dbdafc2857aae6a3"
+    },
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/models/61002_Z2_REWARD_DISTRIBUTION.json": {
+      "bytes": 373523,
+      "sha256": "1a4b26ea83cc74116edcf991a59742049e63850bb04335e48bce5ebe746e9643"
+    },
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/models/61002_Z3_REPAIR_STRUCTURE.json": {
+      "bytes": 1042077,
+      "sha256": "9fdfeca1ffc1090f823144c37faf097240778212e7730f319a4c3c03a548a7d4"
+    },
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds/61002_Z2_REWARD_DISTRIBUTION.json": {
+      "bytes": 42782,
+      "sha256": "87730aab21a4ee1366df5fd119584a60aa34f8cc99a6700e9d8629f3fd86b1d9"
+    },
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds/61002_Z3_REPAIR_STRUCTURE.json": {
+      "bytes": 43202,
+      "sha256": "78cb825eb7d2468708df03079ca2b1361ae63256ed0aefb7a6bbc5b3a7fc4945"
+    },
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/models/61003_Z2_REWARD_DISTRIBUTION.json": {
+      "bytes": 374236,
+      "sha256": "ec78971116d408e74e85f32f0622ffed9cffe5c8a95e384a9500979dccbfa4f0"
+    },
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/models/61003_Z3_REPAIR_STRUCTURE.json": {
+      "bytes": 1046134,
+      "sha256": "2e840e28513d08198a8ccd0d85e292dd9f2487d0ec50a67d454853b1121d1b09"
+    },
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds/61003_Z2_REWARD_DISTRIBUTION.json": {
+      "bytes": 42873,
+      "sha256": "52ac38eadfb63bd77595ca54f07863595cd4ca00a54b58a4f0b76a3618f1e0bf"
+    },
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds/61003_Z3_REPAIR_STRUCTURE.json": {
+      "bytes": 43248,
+      "sha256": "b57f81c264ed7e398e0151dbe4cb74585705645192a1af4324e4d868930413c5"
+    },
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/models/61004_Z2_REWARD_DISTRIBUTION.json": {
+      "bytes": 374273,
+      "sha256": "811014bb4979d9dec049b3a445bf064be3ad1b83b39825afb72abbd38604848a"
+    },
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/models/61004_Z3_REPAIR_STRUCTURE.json": {
+      "bytes": 1044104,
+      "sha256": "0ce2cbfbae965658ecae197189aeb165f6fc7ea9ca4053f3563db9da46a8a186"
+    },
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds/61004_Z2_REWARD_DISTRIBUTION.json": {
+      "bytes": 42811,
+      "sha256": "d359267336ed59e6dd2b0cab8d87dabd457861d8e2feb164320597b828709c49"
+    },
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds/61004_Z3_REPAIR_STRUCTURE.json": {
+      "bytes": 43181,
+      "sha256": "080c9ac31af718aff5557e23de060fec81807e6d8693c0397194df8f85c67aa3"
+    }
+  },
+  "experiment_source_checks": {
+    "features.py": {
+      "experiment_commit": "7af92dff42e9c0432716550f6611dc244af23ecb",
+      "byte_identical": true,
+      "sha256": "c79129c9d8b4a768ceab89e580f057428bf2d2f443cfe4e26b54998453a820db"
+    },
+    "kernels.py": {
+      "experiment_commit": "7af92dff42e9c0432716550f6611dc244af23ecb",
+      "byte_identical": true,
+      "sha256": "b1112a8758ebaf7110abe931b8ce0715798082bd82bfbcd91cb456ee8edc3609"
+    },
+    "semantics.py": {
+      "experiment_commit": "7af92dff42e9c0432716550f6611dc244af23ecb",
+      "byte_identical": true,
+      "sha256": "870bd2105987b0e6952304658694bf2b82e3f11e08efbd3ae5b3b4ffc4a7220d"
+    },
+    "selectors.py": {
+      "experiment_commit": "7af92dff42e9c0432716550f6611dc244af23ecb",
+      "byte_identical": true,
+      "sha256": "9b2ab20bee197e6767edad0f982ede8a3822a6281b1f99ec05e87166f581cfb9"
+    }
+  },
+  "script_sha256": "2d4b4c3a1ba0fead540c7d79ebac41f842d0c51a8173b2bc46bdb4824880d345",
+  "current_git_commit": "2898c6f3f7874cc045a1421145eb9f5c485e249f",
+  "command": "/Users/louis/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/analysis/four_lineage_existing_only_20261004/followup_no_training/prediction_attribution.py --root /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004",
+  "numpy_version": "2.3.5",
+  "checks": {
+    "prediction_attribution_rows": 64,
+    "saved_predictions_replayed": 128,
+    "saved_replay_bit_equal_count": 128,
+    "fold_count": 4,
+    "max_abs_errors": {
+      "saved_replay": 0.0,
+      "component_sum": 2.220446049250313e-16,
+      "forward_identity": 3.8201185921168945e-19,
+      "reverse_identity": 3.9498205121652093e-19,
+      "relative_BestStatic_identity": 5.642827615489742e-19,
+      "cross_shared_component": 0.0
+    },
+    "all_identities_under_1e_minus_12": true
+  },
+  "fold_checks": [
+    {
+      "lineage": "61001",
+      "train_origin_order": [
+        "61002_t32",
+        "61002_t96",
+        "61003_t32",
+        "61003_t96",
+        "61004_t32",
+        "61004_t96"
+      ],
+      "shared_means_identical": true,
+      "shared_embeddings_identical": true,
+      "shared_scalers_identical": true,
+      "shared_scales_identical": true,
+      "Z2_weights": {
+        "current": 1.0,
+        "history": 0.25,
+        "nuisance": 0.25
+      },
+      "Z3_weights": {
+        "current": 0.5,
+        "history": 0.125,
+        "nuisance": 0.25,
+        "repair": 0.5,
+        "repair_history": 0.125
+      },
+      "Z2_scales": {
+        "current": 1.0,
+        "history": 0.04355903038600909,
+        "nuisance": 8.0
+      },
+      "Z3_scales": {
+        "current": 1.0,
+        "history": 0.04355903038600909,
+        "nuisance": 8.0,
+        "repair": 1.0,
+        "repair_history": 0.04201547184654231
+      },
+      "n_fit": 6,
+      "saved_alpha": 10.0,
+      "best_static": "R4"
+    },
+    {
+      "lineage": "61002",
+      "train_origin_order": [
+        "61001_t32",
+        "61001_t96",
+        "61003_t32",
+        "61003_t96",
+        "61004_t32",
+        "61004_t96"
+      ],
+      "shared_means_identical": true,
+      "shared_embeddings_identical": true,
+      "shared_scalers_identical": true,
+      "shared_scales_identical": true,
+      "Z2_weights": {
+        "current": 1.0,
+        "history": 0.25,
+        "nuisance": 0.25
+      },
+      "Z3_weights": {
+        "current": 0.5,
+        "history": 0.125,
+        "nuisance": 0.25,
+        "repair": 0.5,
+        "repair_history": 0.125
+      },
+      "Z2_scales": {
+        "current": 1.0,
+        "history": 0.045091247916295325,
+        "nuisance": 8.0
+      },
+      "Z3_scales": {
+        "current": 1.0,
+        "history": 0.045091247916295325,
+        "nuisance": 8.0,
+        "repair": 1.0,
+        "repair_history": 0.043751919163217516
+      },
+      "n_fit": 6,
+      "saved_alpha": 10.0,
+      "best_static": "R3"
+    },
+    {
+      "lineage": "61003",
+      "train_origin_order": [
+        "61001_t32",
+        "61001_t96",
+        "61002_t32",
+        "61002_t96",
+        "61004_t32",
+        "61004_t96"
+      ],
+      "shared_means_identical": true,
+      "shared_embeddings_identical": true,
+      "shared_scalers_identical": true,
+      "shared_scales_identical": true,
+      "Z2_weights": {
+        "current": 1.0,
+        "history": 0.25,
+        "nuisance": 0.25
+      },
+      "Z3_weights": {
+        "current": 0.5,
+        "history": 0.125,
+        "nuisance": 0.25,
+        "repair": 0.5,
+        "repair_history": 0.125
+      },
+      "Z2_scales": {
+        "current": 1.0,
+        "history": 0.045029759468995616,
+        "nuisance": 8.0
+      },
+      "Z3_scales": {
+        "current": 1.0,
+        "history": 0.045029759468995616,
+        "nuisance": 8.0,
+        "repair": 1.0,
+        "repair_history": 0.043663167403170215
+      },
+      "n_fit": 6,
+      "saved_alpha": 10.0,
+      "best_static": "R3"
+    },
+    {
+      "lineage": "61004",
+      "train_origin_order": [
+        "61001_t32",
+        "61001_t96",
+        "61002_t32",
+        "61002_t96",
+        "61003_t32",
+        "61003_t96"
+      ],
+      "shared_means_identical": true,
+      "shared_embeddings_identical": true,
+      "shared_scalers_identical": true,
+      "shared_scales_identical": true,
+      "Z2_weights": {
+        "current": 1.0,
+        "history": 0.25,
+        "nuisance": 0.25
+      },
+      "Z3_weights": {
+        "current": 0.5,
+        "history": 0.125,
+        "nuisance": 0.25,
+        "repair": 0.5,
+        "repair_history": 0.125
+      },
+      "Z2_scales": {
+        "current": 1.0,
+        "history": 0.045469626291113195,
+        "nuisance": 8.0
+      },
+      "Z3_scales": {
+        "current": 1.0,
+        "history": 0.045469626291113195,
+        "nuisance": 8.0,
+        "repair": 1.0,
+        "repair_history": 0.04406751437616194
+      },
+      "n_fit": 6,
+      "saved_alpha": 10.0,
+      "best_static": "R3"
+    }
+  ],
+  "ranking_checks": [
+    {
+      "origin": "61001_t32",
+      "Z2_ranking": [
+        "R4",
+        "R3",
+        "R0",
+        "R7",
+        "R1",
+        "R6",
+        "R2",
+        "R5"
+      ],
+      "Z3_ranking": [
+        "R4",
+        "R3",
+        "R0",
+        "R7",
+        "R1",
+        "R6",
+        "R2",
+        "R5"
+      ],
+      "full_ranking_unchanged": true,
+      "best_static": "R4",
+      "both_top_equal_best_static": true
+    },
+    {
+      "origin": "61001_t96",
+      "Z2_ranking": [
+        "R4",
+        "R3",
+        "R0",
+        "R7",
+        "R1",
+        "R6",
+        "R2",
+        "R5"
+      ],
+      "Z3_ranking": [
+        "R4",
+        "R3",
+        "R0",
+        "R7",
+        "R1",
+        "R6",
+        "R2",
+        "R5"
+      ],
+      "full_ranking_unchanged": true,
+      "best_static": "R4",
+      "both_top_equal_best_static": true
+    },
+    {
+      "origin": "61002_t32",
+      "Z2_ranking": [
+        "R3",
+        "R4",
+        "R6",
+        "R7",
+        "R1",
+        "R0",
+        "R5",
+        "R2"
+      ],
+      "Z3_ranking": [
+        "R3",
+        "R4",
+        "R6",
+        "R7",
+        "R1",
+        "R0",
+        "R5",
+        "R2"
+      ],
+      "full_ranking_unchanged": true,
+      "best_static": "R3",
+      "both_top_equal_best_static": true
+    },
+    {
+      "origin": "61002_t96",
+      "Z2_ranking": [
+        "R3",
+        "R4",
+        "R6",
+        "R7",
+        "R1",
+        "R0",
+        "R2",
+        "R5"
+      ],
+      "Z3_ranking": [
+        "R3",
+        "R4",
+        "R6",
+        "R7",
+        "R1",
+        "R0",
+        "R2",
+        "R5"
+      ],
+      "full_ranking_unchanged": true,
+      "best_static": "R3",
+      "both_top_equal_best_static": true
+    },
+    {
+      "origin": "61003_t32",
+      "Z2_ranking": [
+        "R3",
+        "R4",
+        "R0",
+        "R6",
+        "R1",
+        "R7",
+        "R2",
+        "R5"
+      ],
+      "Z3_ranking": [
+        "R3",
+        "R4",
+        "R0",
+        "R6",
+        "R1",
+        "R7",
+        "R2",
+        "R5"
+      ],
+      "full_ranking_unchanged": true,
+      "best_static": "R3",
+      "both_top_equal_best_static": true
+    },
+    {
+      "origin": "61003_t96",
+      "Z2_ranking": [
+        "R3",
+        "R4",
+        "R0",
+        "R1",
+        "R6",
+        "R7",
+        "R2",
+        "R5"
+      ],
+      "Z3_ranking": [
+        "R3",
+        "R4",
+        "R0",
+        "R1",
+        "R6",
+        "R7",
+        "R2",
+        "R5"
+      ],
+      "full_ranking_unchanged": true,
+      "best_static": "R3",
+      "both_top_equal_best_static": true
+    },
+    {
+      "origin": "61004_t32",
+      "Z2_ranking": [
+        "R3",
+        "R4",
+        "R1",
+        "R6",
+        "R7",
+        "R0",
+        "R2",
+        "R5"
+      ],
+      "Z3_ranking": [
+        "R3",
+        "R4",
+        "R1",
+        "R6",
+        "R7",
+        "R0",
+        "R2",
+        "R5"
+      ],
+      "full_ranking_unchanged": true,
+      "best_static": "R3",
+      "both_top_equal_best_static": true
+    },
+    {
+      "origin": "61004_t96",
+      "Z2_ranking": [
+        "R3",
+        "R4",
+        "R1",
+        "R6",
+        "R7",
+        "R0",
+        "R2",
+        "R5"
+      ],
+      "Z3_ranking": [
+        "R3",
+        "R4",
+        "R1",
+        "R6",
+        "R7",
+        "R0",
+        "R2",
+        "R5"
+      ],
+      "full_ranking_unchanged": true,
+      "best_static": "R3",
+      "both_top_equal_best_static": true
+    }
+  ],
+  "execution_scope": {
+    "new_training_runs": 0,
+    "new_model_calls": 0,
+    "new_samples": 0,
+    "selector_refits": 0,
+    "hyperparameter_searches": 0,
+    "new_ablation_runs": 0,
+    "gpu_jobs_submitted": 0,
+    "statistical_resamples": 0,
+    "forward_backward_Jacobian_calls": 0,
+    "final_T_reads": 0
+  },
+  "interpretation": [
+    "Exact algebraic attribution of two existing predictions only.",
+    "Forward and reverse paths are nonunique decompositions; components are not causal effects.",
+    "Saved weights, scales and coefficients only; no hybrid model selected or evaluated.",
+    "Cancellation is measured after multiplication by saved coefficients, not information redundancy."
+  ],
+  "missing_fields": []
+}

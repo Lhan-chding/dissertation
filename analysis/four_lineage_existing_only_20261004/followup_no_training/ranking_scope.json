@@ -1,0 +1,45 @@
+{
+  "status": "PASS",
+  "actual_inputs": [
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/analysis/four_lineage_existing_only_20261004/endpoint_prompt_metrics.csv",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/analysis/four_lineage_existing_only_20261004/action_opportunity_comparison.csv",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/analysis/four_lineage_existing_only_20261004/prompt_posthoc_classes.csv",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/analysis/four_lineage_existing_only_20261004/existing_output_split_stability.csv"
+  ],
+  "command": "/Users/louis/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/analysis/four_lineage_existing_only_20261004/followup_no_training/ranking_stability.py --repetitions 10000 --seed 20261004",
+  "source_analysis_commit": "2898c6f3f7874cc045a1421145eb9f5c485e249f",
+  "script_sha256": "f3b544fe7e8bed7f196a662254595e951c329a348c3430e17b7f9a68b1125fdc",
+  "numpy": "2.3.5",
+  "statistical_resampling": {
+    "method": "within endpoint/prompt empirical binary bootstrap with replacement, implemented exactly via Binomial(16,X_n/16)",
+    "seed": 20261004,
+    "joint_replicates_per_origin": 10000,
+    "origins": 8,
+    "total_origin_replicates": 80000,
+    "candidate_sets_share_same_draw_resamples": true,
+    "resampled_saved_H32_records": 202752,
+    "independence_assumption": "draws within each fixed prompt/endpoint and across endpoints; trained states/panel held fixed",
+    "observed_zero_or_one_probabilities_remain_degenerate": true
+  },
+  "checks": {
+    "margin_decomposition": "PASS",
+    "tie_split_probability_conservation": "PASS",
+    "core_rows": 64,
+    "all11_rows": 88,
+    "split_transfer_rows": 32
+  },
+  "new_training_runs": 0,
+  "new_model_calls": 0,
+  "new_samples": 0,
+  "selector_refits": 0,
+  "hyperparameter_searches": 0,
+  "gpu_jobs_submitted": 0,
+  "final_T_records_read": 0,
+  "limits": [
+    "conditional resampling frequencies are not population confidence or posterior probabilities",
+    "no unseen successes can be created for X_n=0; no uncertainty about trained states or training seeds quantified",
+    "original saved fold BestStatic remains fixed; no refit on bootstrap",
+    "winner transfer is a posthoc diagnostic on original 8/8 outputs, not a newly validated selection policy",
+    "prompt contribution bookkeeping does not recompute a changed evaluation target"
+  ]
+}

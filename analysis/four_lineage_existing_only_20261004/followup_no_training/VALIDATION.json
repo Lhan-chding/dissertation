@@ -1,0 +1,40 @@
+{
+  "status": "PASS",
+  "code_base_commit": "2898c6f3f7874cc045a1421145eb9f5c485e249f",
+  "scope": "Actual saved and derived outputs only; no model execution",
+  "checks": {
+    "failure_count_identities": {
+      "rows": 22935,
+      "delta_rows": 22935,
+      "late_unseen_X_F1": 0,
+      "late_unseen_X_valid": 17529,
+      "status": "PASS"
+    },
+    "saved_prediction_attribution": {
+      "rows": 64,
+      "replay": {
+        "prediction_attribution_rows": 64,
+        "saved_predictions_replayed": 128,
+        "saved_replay_bit_equal_count": 128,
+        "fold_count": 4,
+        "max_abs_errors": {
+          "saved_replay": 0.0,
+          "component_sum": 2.220446049250313e-16,
+          "forward_identity": 3.8201185921168945e-19,
+          "reverse_identity": 3.9498205121652093e-19,
+          "relative_BestStatic_identity": 5.642827615489742e-19,
+          "cross_shared_component": 0.0
+        },
+        "all_identities_under_1e_minus_12": true
+      },
+      "independent_identity_residual": 5.634092588221182e-19
+    },
+    "conditional_ranking": {
+      "action_rows": 152,
+      "origin_set_groups": 16,
+      "half_transfer_rows": 32,
+      "counts_and_margins": "PASS"
+    },
+    "links_script_hashes_scope": "PASS"
+  }
+}
