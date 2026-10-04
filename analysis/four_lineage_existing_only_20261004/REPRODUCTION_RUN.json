@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "command": "/Users/louis/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 analysis/four_lineage_existing_only_20261004/run_analysis.py --raw /private/tmp/ssvc-four-existing-20261004",
+  "exit_code": 0,
+  "executed_steps": [
+    "opportunity_b.py",
+    "support_cost.py",
+    "selector_d.py",
+    "prestate_e.py",
+    "finalize_scope.py",
+    "verify_analysis.py"
+  ],
+  "date_Asia_Singapore": "2026-10-04",
+  "scope": "Full existing-data analysis entrypoint executed successfully; no model operations, no new fitting",
+  "validation": "VALIDATION.json",
+  "line_endings": "LF; CSV output writers explicitly configured",
+  "source_audit": "Bounded independent script and report review; one aggregation-label typo fixed, no unresolved blocking findings"
+}

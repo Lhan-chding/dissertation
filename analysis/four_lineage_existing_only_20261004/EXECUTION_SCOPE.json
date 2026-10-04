@@ -1,0 +1,16 @@
+{
+  "new_training_runs": 0,
+  "new_model_calls": 0,
+  "new_samples": 0,
+  "selector_refits": 0,
+  "hyperparameter_searches": 0,
+  "gpu_jobs_submitted": 0,
+  "final_T_records_read": 0,
+  "statistical_random_resampling_repetitions": 0,
+  "deterministic_existing_output_partitions": 1,
+  "partition_scope": "88 H32 endpoints x 144 prompts x 16 saved outputs, draw_index 0..7 versus 8..15; no new seed",
+  "algebraic_noise_correction": "multinomial collision U-statistic on saved P counts, not resampling or fitting",
+  "new_alpha_values": 0,
+  "old_experiment_files_modified": 0,
+  "execution_type": "READ-ONLY DATA ANALYSIS; writes only new analysis artifacts"
+}

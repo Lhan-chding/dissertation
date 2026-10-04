@@ -1,0 +1,56 @@
+{
+  "inputs": [
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/first_four_20261004/compact_input.json",
+      "bytes": 1951742,
+      "sha256": "0e5907397c4425ecb4268a9054c0019c406a02995b271988ee46238c6e4e2abd"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/selected_outcomes.csv",
+      "bytes": 7251,
+      "sha256": "5e9daf84829ebf8f1aa7c19b3f9661ed514334bcc0b109ed55ff082849a10a8c"
+    },
+    {
+      "path": "/private/tmp/ssvc-four-existing-20261004/inputs/prepared_first_four_ONLY.json",
+      "bytes": 2260198,
+      "sha256": "93f09574c41ba5de65caaf9d8706a720cddf60727a7b1a406e07e619847e5075"
+    },
+    {
+      "path": "/private/tmp/ssvc-four-existing-20261004/code_afd3119/ssvc_flow/src/prospective_selection/features.py",
+      "bytes": 13833,
+      "sha256": "c79129c9d8b4a768ceab89e580f057428bf2d2f443cfe4e26b54998453a820db"
+    }
+  ],
+  "script_sha256": "d0e7262ae3168fc95e51595f0eebdff06392d4ff0807e11efa5a99132e638646",
+  "commands": [
+    "python3 analysis/four_lineage_existing_only_20261004/prestate_e.py"
+  ],
+  "scope": "Only existing P(t-8), P(t) packets; existing H32 branch J and saved fold selections used solely for eight-point descriptive table.",
+  "rows": {
+    "prestate_reward_conditional_repair.csv": 2960,
+    "prestate_information_vs_response.csv": 8,
+    "prestate_E_prompt_summary.csv": 576,
+    "prestate_E_group_summary.csv": 56,
+    "prestate_E_between_origins.csv": 20720,
+    "prestate_E_between_origins_summary.csv": 56
+  },
+  "new_model_calls": 0,
+  "new_samples": 0,
+  "selector_refits": 0,
+  "hyperparameter_searches": 0,
+  "statistical_resamples": 0,
+  "missing": [
+    {
+      "item": "Original independent-analysis count-noise L2 implementation",
+      "impact": "Not available in supplied checkout or located archive; standard multinomial collision U-statistic used as explicitly new algebraic analysis, not claimed original-code replay."
+    }
+  ],
+  "notes": [
+    "Atoms are union observed in the sixteen P snapshots for each question plus I and X; atoms never observed anywhere are not an identified full universe. Zero support is UNKNOWN, never a zero conditional distribution.",
+    "Count-corrected squared distance: sum c(c-1)/(n(n-1)) + sum d(d-1)/(m(m-1)) - 2 sum cd/(nm). Requires n,m>=2 and independent multinomial draws; nonpaired history/current samples, no paired-draw covariance estimated.",
+    "Overlap-mass weight min(n,m)/32 is empirical; its product with corrected conditional distance is descriptive and is NOT an unbiased unconditional estimator. Unsupported comparisons omitted from sums and coverage reported; never interpreted as zero.",
+    "Negative corrected estimates preserved as noise estimates, not negative true distances.",
+    "All prompt aggregation uses equal 1/72 weights, six fixed strata each 12 prompts. Eight origin points from four lineages are the state units; prompt rows are repeated measurements, not independent states.",
+    "I repair fields remain missing. No endpoint labels used to select features or atoms."
+  ]
+}

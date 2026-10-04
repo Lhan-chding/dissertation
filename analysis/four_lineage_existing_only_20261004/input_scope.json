@@ -1,0 +1,89 @@
+{
+  "task": "first-four development existing-only diagnostic",
+  "analysis_base_commit": "6f1ce27",
+  "git_commit_at_execution": "6f1ce2721cde3774da9904f9bd7ce1f644deacfb",
+  "experiment_selector_commit": "7af92dff42e9c0432716550f6611dc244af23ecb",
+  "raw_root": "/private/tmp/ssvc-four-existing-20261004",
+  "archive_manifest": "/private/tmp/ssvc-four-existing-20261004/RAW_MANIFEST.json",
+  "source_package": "SSVC_FOUR_LINEAGE_FULL_DATA_20261004.zip; raw/FIRST_FOUR_RAW_ANALYSIS.tar.gz",
+  "input_lists": [
+    "inputs_B.json",
+    "inputs_CF.json",
+    "inputs_D.json",
+    "inputs_E.json"
+  ],
+  "actual_unique_input_count": 19135,
+  "input_list_policy": "Exact actual paths are listed in component manifests; no repeat full-tree hash audit. RAW_MANIFEST maps extracted names to archived origins.",
+  "source_files_read_for_setup": [
+    "/Users/louis/Downloads/CODEX_EXISTING_DATA_ANALYSIS_ONLY_zh.md",
+    "ssvc_flow/docs/prospective_selection/design/START_HERE_FOR_CODEX.md",
+    "ssvc_flow/docs/prospective_selection/pilot_four_20261004/REPRODUCE_zh.md",
+    "ssvc_flow/docs/prospective_selection/pilot_four_20261004/RAW_CONTENT_VERIFICATION.json"
+  ],
+  "reused_integrity": "prior 395776 authoritative outputs and 42605-file receipt, not re-audited",
+  "coverage": {
+    "lineages": 4,
+    "origins": 8,
+    "branches": 88,
+    "P_snapshots": 16,
+    "P_prompts_per_snapshot": 72,
+    "P_draws_per_prompt": 32,
+    "D_H32_endpoints": 88,
+    "D_H32_prompts": 144,
+    "D_H32_draws_per_prompt": 16,
+    "D_H8_endpoints": 88,
+    "D_H8_prompts": 24,
+    "D_H8_draws_per_prompt": 8,
+    "E_old_endpoints": 16,
+    "E_old_prompts": 72,
+    "E_old_draws_per_prompt": 32,
+    "branch_training_groups": 11264,
+    "source_training_groups": 1536,
+    "unified_index_rows": 29888
+  },
+  "identity_rule": "successful COMPLETE.authoritative_segments->COMMIT and evaluation COMPLETE.chunks only; source step is not branch H; metadata and raw semantics kept in original versions",
+  "missing": [
+    {
+      "file": "SSVC_Four_Lineage_Independent_Analysis_20261004.zip / support/latest_four_lineage/",
+      "impact": "cannot reuse independent script, prior split, prior noise-correction implementation",
+      "completed": "fixed existing 8/8 split and explicitly labelled algebraic multinomial distance from available records"
+    },
+    {
+      "fields": [
+        "semantic_scoring_seconds",
+        "model_loading_seconds",
+        "full successful job start/end interval set"
+      ],
+      "impact": "separate exact scoring/loading cost and parallel wall time unavailable",
+      "completed": "saved generation/sampling/update/other successful work timers"
+    },
+    {
+      "fields": [
+        "F",
+        "B",
+        "M"
+      ],
+      "condition": "I outputs",
+      "impact": "structurally missing by original rule, not file failure",
+      "completed": "valid denominator maintained; 39 late no-X groups wholly I"
+    }
+  ],
+  "script_sha256": {
+    "run_analysis.py": "f1bda5b90ce358b899572c89c05adb957a4892a5a65d405ae31e06c5bf11d05f",
+    "prestate_e.py": "d0e7262ae3168fc95e51595f0eebdff06392d4ff0807e11efa5a99132e638646",
+    "opportunity_b.py": "af4f852c5994938b8bc9b010a77f926c4f5720dce03ab96b60f2fc94ec3dd5e0",
+    "finalize_scope.py": "2189e0ebadcc886ad97ed7807e3a49d7656f5156db64f1a46702230dea63acb4",
+    "support_cost.py": "79e5886ac8226f19c50daade3eed3e874472948e99468023dfc17fdffe378239",
+    "selector_d.py": "601e5ae9aa8d65e7afd6e64c056c9f8d2a7eba041c43be115bd1413a4581b207",
+    "verify_analysis.py": "b78041d40b26a244b5a383d701ea5a22f8332f8fde537cba7ac2ee3eb7815c4b"
+  },
+  "reproduce_command": "python3 /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/analysis/four_lineage_existing_only_20261004/run_analysis.py --raw /private/tmp/ssvc-four-existing-20261004",
+  "validation_command": "python3 /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/analysis/four_lineage_existing_only_20261004/verify_analysis.py",
+  "dependencies": "Python standard library; numpy for saved-kernel spectral analysis only",
+  "limitations": [
+    "Only 4 independent development lineages; no population significance claim",
+    "H32 prompt classes are posthoc and never fed to saved predictor",
+    "Independent source states within a lineage are not independent lineages",
+    "No original raw text or full dataset copied into the analysis-only delivery ZIP"
+  ]
+}

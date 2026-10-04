@@ -1,0 +1,94 @@
+{
+  "actual_input_files": [
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/first_four_20261004/compact_input.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/CODE_VERSION.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/all_candidate_predictions.csv",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/alpha_sensitivity_POSTHOC.csv",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/decisions_before_scoring.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds/61001_Z0_MOMENTS_GLOBAL.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds/61001_Z1_MOMENTS_STRATIFIED.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds/61001_Z2_REWARD_DISTRIBUTION.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds/61001_Z3_REPAIR_STRUCTURE.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds/61002_Z0_MOMENTS_GLOBAL.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds/61002_Z1_MOMENTS_STRATIFIED.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds/61002_Z2_REWARD_DISTRIBUTION.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds/61002_Z3_REPAIR_STRUCTURE.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds/61003_Z0_MOMENTS_GLOBAL.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds/61003_Z1_MOMENTS_STRATIFIED.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds/61003_Z2_REWARD_DISTRIBUTION.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds/61003_Z3_REPAIR_STRUCTURE.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds/61004_Z0_MOMENTS_GLOBAL.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds/61004_Z1_MOMENTS_STRATIFIED.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds/61004_Z2_REWARD_DISTRIBUTION.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds/61004_Z3_REPAIR_STRUCTURE.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/inner_tuning_288.csv",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/models/61001_Z0_MOMENTS_GLOBAL.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/models/61001_Z1_MOMENTS_STRATIFIED.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/models/61001_Z2_REWARD_DISTRIBUTION.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/models/61001_Z3_REPAIR_STRUCTURE.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/models/61002_Z0_MOMENTS_GLOBAL.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/models/61002_Z1_MOMENTS_STRATIFIED.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/models/61002_Z2_REWARD_DISTRIBUTION.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/models/61002_Z3_REPAIR_STRUCTURE.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/models/61003_Z0_MOMENTS_GLOBAL.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/models/61003_Z1_MOMENTS_STRATIFIED.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/models/61003_Z2_REWARD_DISTRIBUTION.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/models/61003_Z3_REPAIR_STRUCTURE.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/models/61004_Z0_MOMENTS_GLOBAL.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/models/61004_Z1_MOMENTS_STRATIFIED.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/models/61004_Z2_REWARD_DISTRIBUTION.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/docs/prospective_selection/pilot_four_20261004/models/61004_Z3_REPAIR_STRUCTURE.json",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/src/prospective_selection/features.py",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/src/prospective_selection/kernels.py",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/src/prospective_selection/selectors.py",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/src/prospective_selection/semantics.py"
+  ],
+  "experiment_code_version": {
+    "features.py": {
+      "experiment_commit": "7af92dff42e9c0432716550f6611dc244af23ecb",
+      "byte_identical": true,
+      "sha256": "c79129c9d8b4a768ceab89e580f057428bf2d2f443cfe4e26b54998453a820db"
+    },
+    "kernels.py": {
+      "experiment_commit": "7af92dff42e9c0432716550f6611dc244af23ecb",
+      "byte_identical": true,
+      "sha256": "b1112a8758ebaf7110abe931b8ce0715798082bd82bfbcd91cb456ee8edc3609"
+    },
+    "semantics.py": {
+      "experiment_commit": "7af92dff42e9c0432716550f6611dc244af23ecb",
+      "byte_identical": true,
+      "sha256": "870bd2105987b0e6952304658694bf2b82e3f11e08efbd3ae5b3b4ffc4a7220d"
+    },
+    "selectors.py": {
+      "experiment_commit": "7af92dff42e9c0432716550f6611dc244af23ecb",
+      "byte_identical": true,
+      "sha256": "9b2ab20bee197e6767edad0f982ede8a3822a6281b1f99ec05e87166f581cfb9"
+    }
+  },
+  "current_git_commit": "6f1ce2721cde3774da9904f9bd7ce1f644deacfb",
+  "command": "/Users/louis/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/analysis/four_lineage_existing_only_20261004/selector_d.py --root /Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004",
+  "numpy_version": "2.3.5",
+  "checks": {
+    "prediction_rows": 256,
+    "replay_max_abs_error": 0.0,
+    "gram_max_abs_error": 0.0,
+    "target_mean_max_abs_error": 0.0,
+    "saved_beta_equation_max_abs_residual": 3.469446951953614e-18
+  },
+  "execution_scope": {
+    "new_training_runs": 0,
+    "new_model_calls": 0,
+    "new_samples": 0,
+    "selector_refits": 0,
+    "hyperparameter_searches": 0,
+    "gpu_jobs_submitted": 0,
+    "statistical_resamples": 0
+  },
+  "missing_fields": [],
+  "notes": [
+    "Only saved alpha grid read; no new solve.",
+    "Centered spectra are descriptive geometry, not centered model predictions.",
+    "X-X repair marginal attribution splits observed marginal embeddings by X mass; includes no X-other cross attribution in numerator.",
+    "No raw outputs or final T accessed."
+  ]
+}

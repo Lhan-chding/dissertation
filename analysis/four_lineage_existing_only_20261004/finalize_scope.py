@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+"""Collect provenance and unify existing observation identities, no raw re-audit."""
+import csv,json,hashlib,subprocess,argparse,sys
+from pathlib import Path
+P=Path(__file__).resolve().parent;ROOT=P.parents[1]
+def write_csv(p,rr):
+ keys=list(dict.fromkeys(k for r in rr for k in r))
+ with p.open('w',newline='') as f:
+  w=csv.DictWriter(f,fieldnames=keys,lineterminator="\n");w.writeheader();w.writerows(rr)
+def main():
+ ap=argparse.ArgumentParser();ap.add_argument('--raw',type=Path,required=True);a=ap.parse_args()
+ manifests={n:json.loads((P/n).read_text()) for n in ['inputs_B.json','inputs_CF.json','inputs_D.json','inputs_E.json']}
+ unique=set(manifests['inputs_B.json']['files'])|set(manifests['inputs_D.json']['actual_input_files'])|{r['path'] for r in manifests['inputs_CF.json']['actual_inputs']}
+ e=manifests['inputs_E.json']['inputs'];unique.update(e if isinstance(e,list) and all(isinstance(x,str) for x in e) else [x['path'] for x in e])
+ with (P/'unified_observation_index.csv').open() as f:index=[r for r in csv.DictReader(f) if r.get('panel')!='train']
+ for r in index:r['observation_kind']='prestate' if r['panel']=='P' else 'historical_evaluation' if r['panel']=='E_old' else 'branch_evaluation'
+ with (P/'training_group_detail_CF.csv').open() as f:
+  for r in csv.DictReader(f):
+   z={k:r.get(k,'') for k in ['lineage_id','source_recipe','source_step','origin_id','branch_recipe','H','panel','base_scene_id','prompt_id','interface','family','operation','draws','step','step_bin']};z.update(stage=r['source_stage'],observation_kind=r['scope'],authoritative_file=r['sample_path'],update_path=r['update_path']);index.append(z)
+ write_csv(P/'unified_observation_index.csv',index)
+ with (P/'artifact_inventory.csv').open() as f:inv=[r for r in csv.DictReader(f) if r['artifact'] not in ['existing_table','existing_fold','missing_requested_input']]
+ for folder in ['first_four_20261004','pilot_four_20261004']:
+  for p in sorted((ROOT/'ssvc_flow/docs/prospective_selection'/folder).glob('*.csv')):inv.append({'artifact':'existing_table','available':True,'path':str(p)})
+ for p in sorted((ROOT/'ssvc_flow/docs/prospective_selection/pilot_four_20261004/folds').glob('*.json')):inv.append({'artifact':'existing_fold','available':True,'path':str(p)})
+ for name in ['SSVC_Four_Lineage_Independent_Analysis_20261004.zip','support/latest_four_lineage/']:inv.append({'artifact':'missing_requested_input','available':False,'path':name})
+ write_csv(P/'artifact_inventory.csv',inv)
+ scripts={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in P.glob('*.py')}
+ scope={'task':'first-four development existing-only diagnostic','analysis_base_commit':'6f1ce27','git_commit_at_execution':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'experiment_selector_commit':'7af92dff42e9c0432716550f6611dc244af23ecb','raw_root':str(a.raw.resolve()),'archive_manifest':str(a.raw/'RAW_MANIFEST.json'),'source_package':'SSVC_FOUR_LINEAGE_FULL_DATA_20261004.zip; raw/FIRST_FOUR_RAW_ANALYSIS.tar.gz','input_lists':list(manifests),'actual_unique_input_count':len(unique),'input_list_policy':'Exact actual paths are listed in component manifests; no repeat full-tree hash audit. RAW_MANIFEST maps extracted names to archived origins.','source_files_read_for_setup':['/Users/louis/Downloads/CODEX_EXISTING_DATA_ANALYSIS_ONLY_zh.md','ssvc_flow/docs/prospective_selection/design/START_HERE_FOR_CODEX.md','ssvc_flow/docs/prospective_selection/pilot_four_20261004/REPRODUCE_zh.md','ssvc_flow/docs/prospective_selection/pilot_four_20261004/RAW_CONTENT_VERIFICATION.json'],'reused_integrity':'prior 395776 authoritative outputs and 42605-file receipt, not re-audited','coverage':{'lineages':4,'origins':8,'branches':88,'P_snapshots':16,'P_prompts_per_snapshot':72,'P_draws_per_prompt':32,'D_H32_endpoints':88,'D_H32_prompts':144,'D_H32_draws_per_prompt':16,'D_H8_endpoints':88,'D_H8_prompts':24,'D_H8_draws_per_prompt':8,'E_old_endpoints':16,'E_old_prompts':72,'E_old_draws_per_prompt':32,'branch_training_groups':11264,'source_training_groups':1536,'unified_index_rows':len(index)},'identity_rule':'successful COMPLETE.authoritative_segments->COMMIT and evaluation COMPLETE.chunks only; source step is not branch H; metadata and raw semantics kept in original versions','missing':[{'file':'SSVC_Four_Lineage_Independent_Analysis_20261004.zip / support/latest_four_lineage/','impact':'cannot reuse independent script, prior split, prior noise-correction implementation','completed':'fixed existing 8/8 split and explicitly labelled algebraic multinomial distance from available records'},{'fields':['semantic_scoring_seconds','model_loading_seconds','full successful job start/end interval set'],'impact':'separate exact scoring/loading cost and parallel wall time unavailable','completed':'saved generation/sampling/update/other successful work timers'},{'fields':['F','B','M'],'condition':'I outputs','impact':'structurally missing by original rule, not file failure','completed':'valid denominator maintained; 39 late no-X groups wholly I'}],'script_sha256':scripts,'reproduce_command':f'python3 {P}/run_analysis.py --raw {a.raw}','validation_command':f'python3 {P}/verify_analysis.py','dependencies':'Python standard library; numpy for saved-kernel spectral analysis only','limitations':['Only 4 independent development lineages; no population significance claim','H32 prompt classes are posthoc and never fed to saved predictor','Independent source states within a lineage are not independent lineages','No original raw text or full dataset copied into the analysis-only delivery ZIP']}
+ (P/'input_scope.json').write_text(json.dumps(scope,ensure_ascii=False,indent=2)+'\n')
+ execution={'new_training_runs':0,'new_model_calls':0,'new_samples':0,'selector_refits':0,'hyperparameter_searches':0,'gpu_jobs_submitted':0,'final_T_records_read':0,'statistical_random_resampling_repetitions':0,'deterministic_existing_output_partitions':1,'partition_scope':'88 H32 endpoints x 144 prompts x 16 saved outputs, draw_index 0..7 versus 8..15; no new seed','algebraic_noise_correction':'multinomial collision U-statistic on saved P counts, not resampling or fitting','new_alpha_values':0,'old_experiment_files_modified':0,'execution_type':'READ-ONLY DATA ANALYSIS; writes only new analysis artifacts'}
+ (P/'EXECUTION_SCOPE.json').write_text(json.dumps(execution,ensure_ascii=False,indent=2)+'\n');print(json.dumps({'inputs':len(unique),'index_rows':len(index)}))
+if __name__=='__main__':main()

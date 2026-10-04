@@ -1,0 +1,33 @@
+{
+  "status": "PASS",
+  "scope": "actual existing and derived tables; no new experiments",
+  "checks": {
+    "contribution_sum_max_error": 1.0061396160665481e-16,
+    "metric_numerators_denominators": "PASS",
+    "posthoc_classes": {
+      "early/all_X": 43,
+      "early/unseen_X": 20,
+      "early/mixed": 81,
+      "late/all_X": 108,
+      "late/unseen_X": 28,
+      "late/mixed": 8
+    },
+    "H8_H32_intersection": "88 x 24 prompt IDs; 8 vs 16 saved draws",
+    "saved_model_replay": {
+      "prediction_rows": 256,
+      "replay_max_abs_error": 0.0,
+      "gram_max_abs_error": 0.0,
+      "target_mean_max_abs_error": 0.0,
+      "saved_beta_equation_max_abs_residual": 3.469446951953614e-18
+    },
+    "external_baselines_not_in_original_selector": "PASS",
+    "training_support": "11264 branch groups; early/late no-X and F1 counts; 39 all-I groups verified",
+    "train_eval_common_strata_rows": 168,
+    "prestate_point_and_atom_coverage": {
+      "origins": 8,
+      "atom_rows": 2960
+    },
+    "required_deliverables": 15,
+    "local_report_links": "PASS"
+  }
+}
