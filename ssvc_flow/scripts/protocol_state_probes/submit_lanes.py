@@ -43,7 +43,7 @@ def main():
                 "--qos=" + a.qos,
                 "--gres=gpu:pro6000:1",
                 "--cpus-per-task=4",
-                "--mem=48G",
+                "--mem=33G",
                 "--ntasks=1",
                 "--nodes=1",
                 "--time=3-00:00:00",

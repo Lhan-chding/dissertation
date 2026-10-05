@@ -265,6 +265,7 @@ def test_full_loader_restores_checkpoint_without_optimizer_or_lora_reset(tmp_pat
     }
     adapter = SimpleNamespace(
         model=model,
+        device="cpu",
         audit=audit,
         eos_ids={9},
         pad_id=9,
@@ -393,3 +394,55 @@ def test_sample_rng_is_restored_and_mutation_fault_preserves_raw(monkeypatch):
     with pytest.raises(ObservationFault) as fault:
         backend.generate_public({"system": "x", "user": "y"}, seed=42)
     assert fault.value.raw_result["raw_completion"] == "not json"
+
+
+def test_cpu_fixture_does_not_read_cuda_memory_counters(monkeypatch):
+    import torch
+
+    def forbid_counter(*args, **kwargs):
+        raise AssertionError("CPU fixtures must not access CUDA memory metrics")
+
+    monkeypatch.setattr(torch.cuda, "max_memory_allocated", forbid_counter)
+    monkeypatch.setattr(torch.cuda, "max_memory_reserved", forbid_counter)
+    backend = fake_backend(monkeypatch)
+    raw = backend.generate_public({"system": "x", "user": "y"}, seed=1)
+    assert raw["peak_memory_allocated_bytes"] is None
+    assert raw["peak_memory_reserved_bytes"] is None
+    assert backend.counters["peak_memory_allocated_bytes"] is None
+
+
+def test_cuda_answers_and_counters_record_allocator_peaks(monkeypatch):
+    from contextlib import nullcontext
+
+    import torch
+
+    backend = fake_backend(monkeypatch)
+    backend.adapter.device = "cuda:0"
+    observed = {"allocated": 2048, "reserved": 4096}
+    devices = []
+
+    def peak(kind, device):
+        devices.append(str(device))
+        return observed[kind]
+
+    monkeypatch.setattr(
+        torch.cuda, "max_memory_allocated", lambda device: peak("allocated", device)
+    )
+    monkeypatch.setattr(torch.cuda, "max_memory_reserved", lambda device: peak("reserved", device))
+    monkeypatch.setattr(torch.random, "fork_rng", lambda **kwargs: nullcontext())
+    first = backend.generate_public({"system": "x", "user": "y"}, seed=1)
+    assert first["peak_memory_allocated_bytes"] == 2048
+    assert first["peak_memory_reserved_bytes"] == 4096
+    observed.update(allocated=3072, reserved=8192)
+    second = backend.generate_public({"system": "x", "user": "y"}, seed=2)
+    assert (
+        second["peak_memory_allocated_bytes"]
+        == backend.counters["peak_memory_allocated_bytes"]
+        == 3072
+    )
+    assert (
+        second["peak_memory_reserved_bytes"]
+        == backend.counters["peak_memory_reserved_bytes"]
+        == 8192
+    )
+    assert devices == ["cuda:0"] * 4

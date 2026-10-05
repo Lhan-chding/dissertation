@@ -413,6 +413,56 @@ def _assert_no_training(backend) -> dict:
     return counters
 
 
+def _resource_metrics(rows: list[dict]) -> dict:
+    """Summarize measured generation only; memory peaks include the model load."""
+    lengths = sorted(row["generated_length"] for row in rows)
+
+    def percentile(fraction):
+        index = (len(lengths) - 1) * fraction
+        lower = int(index)
+        upper = min(lower + 1, len(lengths) - 1)
+        return lengths[lower] + (lengths[upper] - lengths[lower]) * (index - lower)
+
+    seconds = sum(row["elapsed_seconds"] for row in rows)
+    result = {
+        "generation_seconds": seconds,
+        "generation_seconds_per_output": seconds / len(rows),
+        "generation_timing_scope": "backend_generation_only_excludes_loading_and_commit_io",
+        "generated_tokens": sum(lengths),
+        "generated_length_p50": percentile(0.5),
+        "generated_length_p90": percentile(0.9),
+        "memory_peak_scope": "process_since_historical_loader_reset_before_model_load",
+    }
+    for key in ("peak_memory_allocated_bytes", "peak_memory_reserved_bytes"):
+        observed = [row[key] for row in rows if row.get(key) is not None]
+        result[key] = max(observed) if observed else None
+        result[key + "_observed_outputs"] = len(observed)
+    return result
+
+
+def _first_block_receipt(root: Path, checkpoint: str, role: str, identity: str, rows: list[dict]):
+    if len(rows) != 8:
+        return
+    path = root / "first_block_receipts" / checkpoint / f"{role}.json"
+    if path.exists():
+        if read_json(path)["identity"] != identity:
+            raise ValueError(f"First resource block identity changed: {path}")
+        return
+    write_once_json(
+        path,
+        {
+            "schema": "protocol-probe-first-eight-resources-v1",
+            "identity": identity,
+            "checkpoint": checkpoint,
+            "role": role,
+            "committed_outputs": 8,
+            "sample_keys": [row["sample_key"] for row in rows],
+            "generated_lengths": [row["generated_length"] for row in rows],
+            **_resource_metrics(rows),
+        },
+    )
+
+
 def run_worker(
     run_path: str | Path,
     checkpoint: str,
@@ -516,6 +566,7 @@ def run_worker(
         "run_identity": context["manifest"]["identity"],
     }
     results = []
+    first_rows = {"smoke": [], "frozen_probe": []}
     started = time.monotonic()
     backend = None
     with (
@@ -578,6 +629,11 @@ def run_worker(
                         ):
                             raise ValueError(f"Committed chunk run identity/range changed: {path}")
                         completed += len(rows)
+                        if len(first_rows[row_role]) < 8:
+                            first_rows[row_role].extend(rows[: 8 - len(first_rows[row_role])])
+                            _first_block_receipt(
+                                root, checkpoint, row_role, identity, first_rows[row_role]
+                            )
                         continue
                     pending = chunks / f"{row_role}-{start:06d}.pending"
                     try:
@@ -600,6 +656,11 @@ def run_worker(
                     commit_chunk(path, rows, identity)
                     completed += len(rows)
                     _assert_no_training(backend)
+                    if len(first_rows[row_role]) < 8:
+                        first_rows[row_role].extend(rows[: 8 - len(first_rows[row_role])])
+                        _first_block_receipt(
+                            root, checkpoint, row_role, identity, first_rows[row_role]
+                        )
                     _append_event(
                         root / "progress.jsonl",
                         {
@@ -610,7 +671,7 @@ def run_worker(
                             "draws_committed": completed,
                             "chunk_outputs": len(rows),
                             "elapsed_seconds": time.monotonic() - started,
-                            "generation_seconds": sum(row["elapsed_seconds"] for row in rows),
+                            **_resource_metrics(rows),
                             "generated_lengths": [row["generated_length"] for row in rows],
                             "timestamp_ns": time.time_ns(),
                         },

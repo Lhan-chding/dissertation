@@ -337,6 +337,71 @@ def test_smoke_and_main_share_single_load_keep_separate_roles(tmp_path):
     assert skipped["new_outputs"] == 0 and len(loads) == 1
 
 
+def test_first_eight_resource_receipts_use_measured_rows_and_survive_resume(tmp_path):
+    root = make_run(tmp_path)
+    backend = FakeBackend()
+    original_generate = backend.generate_public
+
+    def measured(prompt, *, seed, max_new_tokens):
+        raw = original_generate(prompt, seed=seed, max_new_tokens=max_new_tokens)
+        count = len(backend.calls)
+        return {
+            **raw,
+            "peak_memory_allocated_bytes": count * 1024,
+            "peak_memory_reserved_bytes": count * 2048,
+        }
+
+    backend.generate_public = measured
+    r.run_worker(
+        root,
+        "S96",
+        allow_gpu=True,
+        with_smoke=True,
+        lane_id="lane-0",
+        backend_factory=lambda *args, **kwargs: backend,
+    )
+    smoke_path = root / "first_block_receipts/S96/smoke.json"
+    main_path = root / "first_block_receipts/S96/frozen_probe.json"
+    smoke, main = p.read_json(smoke_path), p.read_json(main_path)
+    assert smoke["committed_outputs"] == main["committed_outputs"] == 8
+    assert smoke["generation_seconds"] == pytest.approx(0.08)
+    assert main["generation_seconds_per_output"] == pytest.approx(0.01)
+    assert smoke["generated_length_p50"] == smoke["generated_length_p90"] == 2
+    assert smoke["generated_tokens"] == main["generated_tokens"] == 16
+    assert smoke["peak_memory_allocated_bytes"] == 8 * 1024
+    assert main["peak_memory_allocated_bytes"] == 24 * 1024
+    assert main["peak_memory_reserved_bytes"] == 24 * 2048
+    assert main["peak_memory_allocated_bytes_observed_outputs"] == 8
+    assert "before_model_load" in main["memory_peak_scope"]
+    progress = p.read_jsonl(root / "progress.jsonl")
+    assert progress[-1]["peak_memory_allocated_bytes"] == main["peak_memory_allocated_bytes"]
+    assert progress[0]["chunk_outputs"] == 2
+    saved = smoke_path.read_bytes(), main_path.read_bytes()
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("Completed resume attempted model load")
+
+    r.run_worker(
+        root,
+        "S96",
+        allow_gpu=True,
+        resume=True,
+        with_smoke=True,
+        lane_id="lane-0",
+        backend_factory=forbidden,
+    )
+    assert saved == (smoke_path.read_bytes(), main_path.read_bytes())
+
+
+def test_unavailable_memory_stays_null_not_zero():
+    metrics = r._resource_metrics(
+        [{"generated_length": 2, "elapsed_seconds": 0.1, "peak_memory_allocated_bytes": None}]
+    )
+    assert metrics["peak_memory_allocated_bytes"] is None
+    assert metrics["peak_memory_reserved_bytes"] is None
+    assert metrics["peak_memory_allocated_bytes_observed_outputs"] == 0
+
+
 def test_technical_smoke_failure_blocks_main_not_invalid_answer_rate(tmp_path):
     root = make_run(tmp_path)
     backend = FakeBackend(failures=100)

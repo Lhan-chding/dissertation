@@ -25,6 +25,19 @@ def _model_guard(model):
     )
 
 
+def _memory_peaks(device):
+    """Read process-local allocator counters without synchronizing or scanning."""
+    import torch
+
+    device = torch.device(device)
+    if device.type != "cuda":
+        return {"peak_memory_allocated_bytes": None, "peak_memory_reserved_bytes": None}
+    return {
+        "peak_memory_allocated_bytes": int(torch.cuda.max_memory_allocated(device)),
+        "peak_memory_reserved_bytes": int(torch.cuda.max_memory_reserved(device)),
+    }
+
+
 def restore_frozen_state(adapter, state):
     """Validate all forward tensor names/shapes/dtypes before modifying the model."""
     import torch
@@ -301,6 +314,7 @@ class FrozenBackend:
         self.data_root = private.get("data_root")
         self._prepared_cache = {}
         self._guard_baseline = _model_guard(self.adapter.model)
+        load_memory = _memory_peaks(self.adapter.device)
         self.counters = {
             "generated_sequences": 0,
             "generated_tokens": 0,
@@ -311,6 +325,7 @@ class FrozenBackend:
             "scored_sequences": 0,
             "scored_tokens": 0,
             "elapsed_seconds": 0.0,
+            **load_memory,
         }
         self.receipt = {
             "schema": "protocol-probe-frozen-backend-v1",
@@ -344,6 +359,9 @@ class FrozenBackend:
             "environment": environment,
             "checkpoint_load_and_verify_seconds": checkpoint_seconds,
             "total_load_seconds": time.perf_counter() - began,
+            "load_peak_memory_allocated_bytes": load_memory["peak_memory_allocated_bytes"],
+            "load_peak_memory_reserved_bytes": load_memory["peak_memory_reserved_bytes"],
+            "memory_peak_scope": "process_since_historical_loader_reset_before_model_load",
             "optimizer_constructed": False,
             "optimizer_tensors_on_gpu": False,
             "backward_calls": 0,
@@ -400,6 +418,11 @@ class FrozenBackend:
         finally:
             self.counters["elapsed_seconds"] += time.perf_counter() - began
             self.counters["forward_calls"] += self.adapter.forward_calls - before
+            memory = _memory_peaks(device)
+            for name, value in memory.items():
+                self.counters[name] = (
+                    max(self.counters.get(name) or 0, value) if value is not None else None
+                )
             if _model_guard(self.adapter.model) != self._guard_baseline:
                 raise ObservationFault("Frozen model changed during generation", raw)
         return {
@@ -416,5 +439,6 @@ class FrozenBackend:
             "pad_token_id": self.adapter.pad_id,
             "seed": seed,
             "extra_rescoring": False,
+            **memory,
             **flags,
         }

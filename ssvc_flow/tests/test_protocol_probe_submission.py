@@ -36,6 +36,7 @@ def test_staged_submission_never_duplicates_or_exceeds_five(tmp_path, monkeypatc
     submit.main()
     assert len(calls) == 5
     assert all("--gres=gpu:pro6000:1" in c for c in calls)
+    assert all("--mem=33G" in c for c in calls)
     assert calls[0][-1] == "S96"
     assert calls[-1][-2:] == ["REP96", "REP32"]
     monkeypatch.setattr("sys.argv", args(tmp_path, [1]))

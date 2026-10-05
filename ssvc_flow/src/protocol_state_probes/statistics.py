@@ -1225,6 +1225,23 @@ class RunAnalysis:
                     else None,
                     token_length_p50=float(np.quantile(lengths, 0.5)) if lengths else None,
                     token_length_p90=float(np.quantile(lengths, 0.9)) if lengths else None,
+                    peak_memory_allocated_bytes=max(
+                        (
+                            row["peak_memory_allocated_bytes"]
+                            for row in rows
+                            if row.get("peak_memory_allocated_bytes") is not None
+                        ),
+                        default=None,
+                    ),
+                    peak_memory_reserved_bytes=max(
+                        (
+                            row["peak_memory_reserved_bytes"]
+                            for row in rows
+                            if row.get("peak_memory_reserved_bytes") is not None
+                        ),
+                        default=None,
+                    ),
+                    memory_peak_scope="allocator high-water mark since checkpoint load",
                     status="COMPLETE" if completed == len(jobs) else "INCOMPLETE",
                 )
             )
