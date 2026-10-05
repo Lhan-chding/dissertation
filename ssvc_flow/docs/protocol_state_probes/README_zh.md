@@ -14,6 +14,8 @@
 
 ## 运行与结果
 
+当前状态和继续入口见 [EXECUTION_STATE_zh.md](EXECUTION_STATE_zh.md)。详细运行审计保存在本地忽略目录，不向公开仓库新增发布。启动证据不等于完整核心或科学结论。
+
 服务器独立目录为 `/projects/varunssd/louis-ssvc/protocol_state_probes_v1_20261005/`。运行和原始回答留在服务器与本地忽略目录，代码推送不自动发布新模型输出。大权重保持原路径。
 
 CLI：`prepare`、`check-checkpoints`、`smoke`、`worker`、`summarize`。每8条原子提交，原始输出在评分前持久化，错误或非法答案不重试；技术错误最多重试两次。恢复绑定协议、代码、检查点、公开提示、角色、draw和seed，冲突留存并停止。
