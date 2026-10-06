@@ -1,0 +1,7 @@
+{
+  "command": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python -m pytest -q tests/test_vdt_historical_inputs.py",
+  "status": "PASS",
+  "passed": 10,
+  "failed": 0,
+  "elapsed_seconds": 0.1
+}

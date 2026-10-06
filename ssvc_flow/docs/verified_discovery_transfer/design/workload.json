@@ -1,0 +1,22 @@
+{
+  "status": "planned_upper_counts_before_aliases_or_empty_return_parent",
+  "generated_sequences": {
+    "teacher_T": 61440,
+    "teacher_V": 7680,
+    "teacher_E": 30720,
+    "SFT_final_E_G": 69120,
+    "SFT_intermediate_V": 15360,
+    "SFT_train_sentinels": 960,
+    "parent_G": 768,
+    "RL_rollouts": 4096,
+    "RL_evaluation": 15360
+  },
+  "total_generated_sequences": 205504,
+  "technical_smoke_max": 128,
+  "SFT_jobs": 20,
+  "RL_jobs": 4,
+  "SFT_updates": 5120,
+  "RL_updates": 128,
+  "SFT_processed_target_sequences": 75776,
+  "new_model_results": false
+}

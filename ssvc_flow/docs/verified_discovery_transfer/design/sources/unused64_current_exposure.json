@@ -1,0 +1,29 @@
+{
+  "nominal_unused_prompts": 64,
+  "nominal_unused_scenes": 64,
+  "U22_evaluated_scenes": 22,
+  "overlapping_nominal_unused_scenes": 22,
+  "overlapping_nominal_unused_prompt_records": 22,
+  "remaining_task_family_interfaces": [
+    {
+      "family": "cross_series",
+      "interface": "IMAGE_CUE_FRESH",
+      "n": 11
+    },
+    {
+      "family": "duplicate_encoding",
+      "interface": "IMAGE_CUE_FRESH",
+      "n": 10
+    },
+    {
+      "family": "duplicate_encoding",
+      "interface": "SYMBOLIC_FRESH",
+      "n": 10
+    },
+    {
+      "family": "trend",
+      "interface": "IMAGE_CUE_FRESH",
+      "n": 11
+    }
+  ]
+}

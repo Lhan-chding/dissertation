@@ -1,0 +1,26 @@
+{
+  "status": "EXAMPLE_REQUIRES_SERVER_VALUES",
+  "repository_worktree": "/REPLACE_WITH_ACTUAL_WORKTREE/dissertation/ssvc_flow",
+  "python_executable": "/REPLACE_WITH_EXISTING_ENV/bin/python",
+  "model_snapshot_root": "/REPLACE_WITH_EXISTING_MODEL_SNAPSHOT",
+  "run_root": "/REPLACE_WITH_WRITABLE_RUN_ROOT/verified_discovery_transfer_20261006",
+  "historical_data_only_zip": "/REPLACE_WITH_QWEN35_DATA_ONLY_20261006.zip",
+  "historical_four_lineage_root": "/REPLACE_WITH_EXISTING_FOUR_LINEAGE_OUTPUTS",
+  "historical_metadata_index": "/REPLACE_WITH_COMPILED_HISTORICAL_EXPOSURE_INDEX.json",
+  "checkpoint_catalog": "/path/to/this_bundle/sources/checkpoints_historical.json",
+  "path_mapping": {},
+  "max_concurrent_gpus": 5,
+  "slurm": {
+    "enabled": true,
+    "partition": "REPLACE_FROM_CURRENT_ALLOCATION",
+    "qos": "REPLACE_FROM_CURRENT_AUTHORIZATION",
+    "account": "REPLACE_OR_OMIT_IF_NOT_REQUIRED",
+    "gpus_per_worker": 1,
+    "cpus_per_worker": 8,
+    "memory_gib_per_worker": 64,
+    "time_limit": "REPLACE_FROM_QUEUE_POLICY"
+  },
+  "resume_completed_only": true,
+  "test_results_sealed": true,
+  "automatic_dependency_upgrade": false
+}

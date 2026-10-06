@@ -1,0 +1,144 @@
+{
+  "banned_scene_count": 130,
+  "banned_sources": [
+    {
+      "path": "/projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/prepared_development.json",
+      "scope": "all historical D/P panel scene IDs",
+      "sha256": "c3b89628769a57aaffaec958d777511f39016a7666838f63303fc02abe32b60f"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/protocol_state_probes_v1_20261005/code_ad09688/ssvc_flow/docs/protocol_state_probes/design/manifests/cases.jsonl",
+      "scope": "all probe D/P/U22 scene IDs, including all transformations",
+      "sha256": "2ed7988888574bf59b425cd97fe1247f1ddf7044e9b997d86eb639201d365d85"
+    }
+  ],
+  "complete": true,
+  "counts": {
+    "cross_series": 16,
+    "duplicate_encoding": 32,
+    "trend": 16
+  },
+  "eligible_counts_before_scene_id_selection": {
+    "cross_series": 39,
+    "duplicate_encoding": 64,
+    "trend": 31
+  },
+  "required_counts": {
+    "cross_series": 16,
+    "duplicate_encoding": 32,
+    "trend": 16
+  },
+  "scanned_sources": [
+    {
+      "bytes": 2020895,
+      "commit_path": "/projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/001_008/COMMIT.json",
+      "commit_sha256": "7407c225db6013ef40b7f90988ad2d9b3427c54e69e036be7fd0fb042b3e6140",
+      "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/001_008/attempt_1790242399070003003/samples.jsonl",
+      "sha256": "3d8faa984698b6187ea1f6214a88925f7479bf79c7160e0780db37fd23329318",
+      "start": 1,
+      "stop": 8
+    },
+    {
+      "bytes": 2035923,
+      "commit_path": "/projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/009_016/COMMIT.json",
+      "commit_sha256": "06f99bb5a3e5c981cc772cba1a3f4716655c3a5c441642d2c51c2068ac4bd001",
+      "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/009_016/attempt_1790246041445040889/samples.jsonl",
+      "sha256": "03174a56b663a03779d7247ffecbe6867655795198f11803e4cdcf8bd7bf6faf",
+      "start": 9,
+      "stop": 16
+    },
+    {
+      "bytes": 2030174,
+      "commit_path": "/projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/017_024/COMMIT.json",
+      "commit_sha256": "1359f3668e1730837dcb23af44cd031c9702836a702c44c78855a0ca89fe5002",
+      "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/017_024/attempt_1790249925321915653/samples.jsonl",
+      "sha256": "218820616b85dd0d645af1b557348b87115c6273c6c6172439ac9ae75be20e3e",
+      "start": 17,
+      "stop": 24
+    },
+    {
+      "bytes": 2028275,
+      "commit_path": "/projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/025_032/COMMIT.json",
+      "commit_sha256": "5eb9eec3c9a885b698a939a17ff308cf3fe9ad7316f65fe2d216cf0ef4631a1a",
+      "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/025_032/attempt_1790253742258368643/samples.jsonl",
+      "sha256": "163f672464adc3840975754c26707bf5d74373280baaf5ed78cabfbf21df1e06",
+      "start": 25,
+      "stop": 32
+    },
+    {
+      "bytes": 2036153,
+      "commit_path": "/projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/033_040/COMMIT.json",
+      "commit_sha256": "4158f56415a3741e2f7a03e17a294724963aad6ef7fb084582cfc0c9f518a63f",
+      "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/033_040/attempt_1790257528475682676/samples.jsonl",
+      "sha256": "3843eaa56d3f8b148626257d224a947e8caef36fd1c10f03e4256af936151931",
+      "start": 33,
+      "stop": 40
+    },
+    {
+      "bytes": 2039555,
+      "commit_path": "/projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/041_048/COMMIT.json",
+      "commit_sha256": "a177754584bfff34d7250e2ad517a121e0d57b4cbdab1d172861ca25a6f7fa2f",
+      "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/041_048/attempt_1790261417626616152/samples.jsonl",
+      "sha256": "ce5d2182613578db4227a14eec2ca47069809569df54d867f62d4f4a373b7a72",
+      "start": 41,
+      "stop": 48
+    },
+    {
+      "bytes": 2034239,
+      "commit_path": "/projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/049_056/COMMIT.json",
+      "commit_sha256": "d711a364454d9cdea3bea5bcd9abae16682e54a21e0b06efd9aace1118834668",
+      "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/049_056/attempt_1790265345985872167/samples.jsonl",
+      "sha256": "3b12a4b9d4becd4ecb781b7261b8875db0e8c473e7e04f13a9e425d76ee995da",
+      "start": 49,
+      "stop": 56
+    },
+    {
+      "bytes": 2031986,
+      "commit_path": "/projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/057_064/COMMIT.json",
+      "commit_sha256": "7bf92e898d5723f4159bf80f27d2fef3b49d88052102e84643815f38051c7421",
+      "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/057_064/attempt_1790269244171872539/samples.jsonl",
+      "sha256": "0c80ffc5995d128cbe77fe3dd8dc30d229198e5df3ca3534ec33457a7929c99c",
+      "start": 57,
+      "stop": 64
+    },
+    {
+      "bytes": 2015983,
+      "commit_path": "/projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/065_072/COMMIT.json",
+      "commit_sha256": "6f72ce94212de528ce45794afd5a0ca1efa31c0643e56192fd28f702a401cf9d",
+      "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/065_072/attempt_1790273168326390245/samples.jsonl",
+      "sha256": "503345b23e18e364d954206cdb1d9314cf9d5a7be2b9faefed10203298f7442f",
+      "start": 65,
+      "stop": 72
+    },
+    {
+      "bytes": 2001425,
+      "commit_path": "/projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/073_080/COMMIT.json",
+      "commit_sha256": "dc46be3da405592f455469d6b1a4b57639a054f5ce602d6c898fb06372702ea3",
+      "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/073_080/attempt_1790277064791445315/samples.jsonl",
+      "sha256": "ac729689180be5e3c0499df15755f175a05919701a569d52741f752f589450b5",
+      "start": 73,
+      "stop": 80
+    },
+    {
+      "bytes": 1999346,
+      "commit_path": "/projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/081_088/COMMIT.json",
+      "commit_sha256": "96e964beb381219ab7d259d5f396dc68f840a7ad889db4dc01e5caa4b3f58cc0",
+      "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/081_088/attempt_1790280943178909834/samples.jsonl",
+      "sha256": "91a0b91c1e46f5a9195c21791fc1ccfad3df3ef3031c61a819f48bc732bda471",
+      "start": 81,
+      "stop": 88
+    },
+    {
+      "bytes": 1994823,
+      "commit_path": "/projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/089_096/COMMIT.json",
+      "commit_sha256": "173216cb7b9dbe628218e3225c1ab99732e5cf03348d71d026c592f33c875223",
+      "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/089_096/attempt_1790284878289928374/samples.jsonl",
+      "sha256": "fb3e3e906a3f96063f4507b0523173995de631f8558410e271a62b825ee13e2f",
+      "start": 89,
+      "stop": 96
+    }
+  ],
+  "schema": "vdt-historical-replay-receipt-v1",
+  "selection_rule": "source lineage 61001; all COMMIT.json-bound and SHA256-verified samples; first accepted raw per eligible scene by segment/row order; then global ascending base_scene_id and fixed family quotas",
+  "verification": "actual historical train output; exact registered O0 system/user in actual input; strict integer vector equals scene truth; no new model call or solver target"
+}

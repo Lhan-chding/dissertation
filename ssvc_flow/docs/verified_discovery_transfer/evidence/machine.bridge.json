@@ -1,0 +1,23 @@
+{
+  "repository_worktree": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/code_bridge_v1/ssvc_flow",
+  "python_executable": "/projects/varunssd/louis-ssvc/envs/ssvc-py312/bin/python",
+  "run_root": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/technical_bridge_v1",
+  "runtime_path": "/projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/runtime.json",
+  "frozen_protocol_path": "/projects/varunssd/louis-ssvc/protocol_state_probes_v1_20261005/run_v2/protocol.json",
+  "checkpoint_catalog": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/evidence/PARENT_VERIFICATION.json",
+  "historical_metadata_index": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/inputs/historical_exclusion.json",
+  "replay_rows_path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/inputs/replay_candidates.jsonl",
+  "max_concurrent_gpus": 5,
+  "path_mapping": {},
+  "test_results_sealed": true,
+  "automatic_dependency_upgrade": false,
+  "slurm": {
+    "partition": "cluster02",
+    "qos": "rose",
+    "account": "rose",
+    "gpus_per_worker": 1,
+    "cpus_per_worker": 8,
+    "memory_gib_per_worker": 64,
+    "time_limit": "03:00:00"
+  }
+}

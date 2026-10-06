@@ -1,0 +1,223 @@
+{
+  "status": "PLANNED_ONLY",
+  "not_a_server_queue_yet": true,
+  "data_views_and_checkpoint_availability_must_be_resolved": true,
+  "jobs": [
+    {
+      "kind": "SFT",
+      "parent": "S96",
+      "repeat": 0,
+      "seed": 73101,
+      "arm": "SELF_O0",
+      "steps": 256,
+      "status": "PENDING_IMPLEMENTATION_AND_SERVER_CHECK"
+    },
+    {
+      "kind": "SFT",
+      "parent": "S96",
+      "repeat": 0,
+      "seed": 73101,
+      "arm": "SELF_MIX",
+      "steps": 256,
+      "status": "PENDING_IMPLEMENTATION_AND_SERVER_CHECK"
+    },
+    {
+      "kind": "SFT",
+      "parent": "S96",
+      "repeat": 0,
+      "seed": 73101,
+      "arm": "SELF_SINGLE",
+      "steps": 256,
+      "status": "PENDING_IMPLEMENTATION_AND_SERVER_CHECK"
+    },
+    {
+      "kind": "SFT",
+      "parent": "S96",
+      "repeat": 0,
+      "seed": 73101,
+      "arm": "GOLD_ALL",
+      "steps": 256,
+      "status": "PENDING_IMPLEMENTATION_AND_SERVER_CHECK"
+    },
+    {
+      "kind": "SFT",
+      "parent": "S96",
+      "repeat": 0,
+      "seed": 73101,
+      "arm": "GOLD_MATCH_MIX",
+      "steps": 256,
+      "status": "PENDING_IMPLEMENTATION_AND_SERVER_CHECK"
+    },
+    {
+      "kind": "SFT",
+      "parent": "S96",
+      "repeat": 0,
+      "seed": 73101,
+      "arm": "REPLAY_ONLY",
+      "steps": 256,
+      "status": "PENDING_IMPLEMENTATION_AND_SERVER_CHECK"
+    },
+    {
+      "kind": "SFT",
+      "parent": "S96",
+      "repeat": 1,
+      "seed": 73102,
+      "arm": "SELF_O0",
+      "steps": 256,
+      "status": "PENDING_IMPLEMENTATION_AND_SERVER_CHECK"
+    },
+    {
+      "kind": "SFT",
+      "parent": "S96",
+      "repeat": 1,
+      "seed": 73102,
+      "arm": "SELF_MIX",
+      "steps": 256,
+      "status": "PENDING_IMPLEMENTATION_AND_SERVER_CHECK"
+    },
+    {
+      "kind": "SFT",
+      "parent": "S96",
+      "repeat": 1,
+      "seed": 73102,
+      "arm": "SELF_SINGLE",
+      "steps": 256,
+      "status": "PENDING_IMPLEMENTATION_AND_SERVER_CHECK"
+    },
+    {
+      "kind": "SFT",
+      "parent": "S96",
+      "repeat": 1,
+      "seed": 73102,
+      "arm": "GOLD_ALL",
+      "steps": 256,
+      "status": "PENDING_IMPLEMENTATION_AND_SERVER_CHECK"
+    },
+    {
+      "kind": "SFT",
+      "parent": "S96",
+      "repeat": 1,
+      "seed": 73102,
+      "arm": "GOLD_MATCH_MIX",
+      "steps": 256,
+      "status": "PENDING_IMPLEMENTATION_AND_SERVER_CHECK"
+    },
+    {
+      "kind": "SFT",
+      "parent": "S96",
+      "repeat": 1,
+      "seed": 73102,
+      "arm": "REPLAY_ONLY",
+      "steps": 256,
+      "status": "PENDING_IMPLEMENTATION_AND_SERVER_CHECK"
+    },
+    {
+      "kind": "SFT",
+      "parent": "REP96",
+      "repeat": 0,
+      "seed": 73101,
+      "arm": "SELF_O0",
+      "steps": 256,
+      "status": "PENDING_IMPLEMENTATION_AND_SERVER_CHECK"
+    },
+    {
+      "kind": "SFT",
+      "parent": "REP96",
+      "repeat": 0,
+      "seed": 73101,
+      "arm": "SELF_MIX",
+      "steps": 256,
+      "status": "PENDING_IMPLEMENTATION_AND_SERVER_CHECK"
+    },
+    {
+      "kind": "SFT",
+      "parent": "REP96",
+      "repeat": 0,
+      "seed": 73101,
+      "arm": "SELF_SINGLE",
+      "steps": 256,
+      "status": "PENDING_IMPLEMENTATION_AND_SERVER_CHECK"
+    },
+    {
+      "kind": "SFT",
+      "parent": "REP96",
+      "repeat": 0,
+      "seed": 73101,
+      "arm": "GOLD_ALL",
+      "steps": 256,
+      "status": "PENDING_IMPLEMENTATION_AND_SERVER_CHECK"
+    },
+    {
+      "kind": "SFT",
+      "parent": "REP96",
+      "repeat": 1,
+      "seed": 73102,
+      "arm": "SELF_O0",
+      "steps": 256,
+      "status": "PENDING_IMPLEMENTATION_AND_SERVER_CHECK"
+    },
+    {
+      "kind": "SFT",
+      "parent": "REP96",
+      "repeat": 1,
+      "seed": 73102,
+      "arm": "SELF_MIX",
+      "steps": 256,
+      "status": "PENDING_IMPLEMENTATION_AND_SERVER_CHECK"
+    },
+    {
+      "kind": "SFT",
+      "parent": "REP96",
+      "repeat": 1,
+      "seed": 73102,
+      "arm": "SELF_SINGLE",
+      "steps": 256,
+      "status": "PENDING_IMPLEMENTATION_AND_SERVER_CHECK"
+    },
+    {
+      "kind": "SFT",
+      "parent": "REP96",
+      "repeat": 1,
+      "seed": 73102,
+      "arm": "GOLD_ALL",
+      "steps": 256,
+      "status": "PENDING_IMPLEMENTATION_AND_SERVER_CHECK"
+    },
+    {
+      "kind": "RL_CONTEXT",
+      "parent": "S96",
+      "repeat": 0,
+      "seed": 73101,
+      "arm": "R0_RESET32",
+      "steps": 32,
+      "status": "PENDING_IMPLEMENTATION_AND_SERVER_CHECK"
+    },
+    {
+      "kind": "RL_CONTEXT",
+      "parent": "S96",
+      "repeat": 1,
+      "seed": 73102,
+      "arm": "R0_RESET32",
+      "steps": 32,
+      "status": "PENDING_IMPLEMENTATION_AND_SERVER_CHECK"
+    },
+    {
+      "kind": "RL_CONTEXT",
+      "parent": "REP96",
+      "repeat": 0,
+      "seed": 73101,
+      "arm": "R0_RESET32",
+      "steps": 32,
+      "status": "PENDING_IMPLEMENTATION_AND_SERVER_CHECK"
+    },
+    {
+      "kind": "RL_CONTEXT",
+      "parent": "REP96",
+      "repeat": 1,
+      "seed": 73102,
+      "arm": "R0_RESET32",
+      "steps": 32,
+      "status": "PENDING_IMPLEMENTATION_AND_SERVER_CHECK"
+    }
+  ]
+}

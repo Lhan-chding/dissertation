@@ -1,0 +1,798 @@
+{
+  "schema": "vdt-cohort-v1",
+  "status": "FROZEN",
+  "cohort_name": "FRESH_VALID_0_99_v1",
+  "protocol_digest": "7e7d8948f508e7c81a05006120660d738753c1b6723558ae4706a3d6e01c1cff",
+  "historical_index_digest": "a1e252542a856453393271c86c0483571a6a76995146faf0a1023fd1a8323782",
+  "historical_sources": [
+    {
+      "bytes": 41569,
+      "path": "/projects/varunssd/louis-ssvc/modeling_contrast_v2_20260915/parent_M2/generated_dataset/control.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "dc600fbd021b46b27b8ee08b287443f6f41b4707cc8e880589592126efed95b2",
+      "world_occurrences": 36
+    },
+    {
+      "bytes": 77642,
+      "path": "/projects/varunssd/louis-ssvc/modeling_contrast_v2_20260915/parent_M2/generated_dataset/train.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "f212063814e6701ff2187ba28348fa7ad4321e5b3e5181364df714227e4fbc5a",
+      "world_occurrences": 72
+    },
+    {
+      "bytes": 175749,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate03/checkout/ssvc_flow/data/generated/calibration.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "549085d22eceabf6b8aaefcd6549254ef1854ff9a1bc3f9f3b98c44dc9556f63",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 175194,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate03/checkout/ssvc_flow/data/generated/control.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "bbf1a6200e9814dfa5b2421ff0a2913fce86df6dc95368812302b5f76db75491",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 174569,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate03/checkout/ssvc_flow/data/generated/dev.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "e6ed0488845f55fdf796e8a9bba7acdd9f60d7cc8983618c77eaedb3ec64170b",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 356879,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate03/checkout/ssvc_flow/data/generated/ood.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "36ce6969a73e5ef8ae2a002a77ceca8df20c1fc9262e1dcdb08f566b9df05385",
+      "world_occurrences": 288
+    },
+    {
+      "bytes": 656899,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate03/checkout/ssvc_flow/data/generated/train.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "d47bc1e7c8a9796f5f2fcfeec8fd0f14e18be507f89a0fcaaf65472bb7a33954",
+      "world_occurrences": 576
+    },
+    {
+      "bytes": 41569,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_development_collection/dataset/generated/control.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "dc600fbd021b46b27b8ee08b287443f6f41b4707cc8e880589592126efed95b2",
+      "world_occurrences": 36
+    },
+    {
+      "bytes": 77642,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/Q2_development_collection/dataset/generated/train.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "f212063814e6701ff2187ba28348fa7ad4321e5b3e5181364df714227e4fbc5a",
+      "world_occurrences": 72
+    },
+    {
+      "bytes": 175749,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/checkout/ssvc_flow/data/generated/calibration.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "549085d22eceabf6b8aaefcd6549254ef1854ff9a1bc3f9f3b98c44dc9556f63",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 175194,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/checkout/ssvc_flow/data/generated/control.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "bbf1a6200e9814dfa5b2421ff0a2913fce86df6dc95368812302b5f76db75491",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 174569,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/checkout/ssvc_flow/data/generated/dev.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "e6ed0488845f55fdf796e8a9bba7acdd9f60d7cc8983618c77eaedb3ec64170b",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 356879,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/checkout/ssvc_flow/data/generated/ood.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "36ce6969a73e5ef8ae2a002a77ceca8df20c1fc9262e1dcdb08f566b9df05385",
+      "world_occurrences": 288
+    },
+    {
+      "bytes": 656899,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04/checkout/ssvc_flow/data/generated/train.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "d47bc1e7c8a9796f5f2fcfeec8fd0f14e18be507f89a0fcaaf65472bb7a33954",
+      "world_occurrences": 576
+    },
+    {
+      "bytes": 175749,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04_gitcontrol/checkout/ssvc_flow/data/generated/calibration.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "549085d22eceabf6b8aaefcd6549254ef1854ff9a1bc3f9f3b98c44dc9556f63",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 175194,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04_gitcontrol/checkout/ssvc_flow/data/generated/control.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "bbf1a6200e9814dfa5b2421ff0a2913fce86df6dc95368812302b5f76db75491",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 174569,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04_gitcontrol/checkout/ssvc_flow/data/generated/dev.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "e6ed0488845f55fdf796e8a9bba7acdd9f60d7cc8983618c77eaedb3ec64170b",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 356879,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04_gitcontrol/checkout/ssvc_flow/data/generated/ood.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "36ce6969a73e5ef8ae2a002a77ceca8df20c1fc9262e1dcdb08f566b9df05385",
+      "world_occurrences": 288
+    },
+    {
+      "bytes": 656899,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate04_gitcontrol/checkout/ssvc_flow/data/generated/train.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "d47bc1e7c8a9796f5f2fcfeec8fd0f14e18be507f89a0fcaaf65472bb7a33954",
+      "world_occurrences": 576
+    },
+    {
+      "bytes": 175749,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate05/checkout/ssvc_flow/data/generated/calibration.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "549085d22eceabf6b8aaefcd6549254ef1854ff9a1bc3f9f3b98c44dc9556f63",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 175194,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate05/checkout/ssvc_flow/data/generated/control.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "bbf1a6200e9814dfa5b2421ff0a2913fce86df6dc95368812302b5f76db75491",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 174569,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate05/checkout/ssvc_flow/data/generated/dev.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "e6ed0488845f55fdf796e8a9bba7acdd9f60d7cc8983618c77eaedb3ec64170b",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 356879,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate05/checkout/ssvc_flow/data/generated/ood.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "36ce6969a73e5ef8ae2a002a77ceca8df20c1fc9262e1dcdb08f566b9df05385",
+      "world_occurrences": 288
+    },
+    {
+      "bytes": 656899,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate05/checkout/ssvc_flow/data/generated/train.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "d47bc1e7c8a9796f5f2fcfeec8fd0f14e18be507f89a0fcaaf65472bb7a33954",
+      "world_occurrences": 576
+    },
+    {
+      "bytes": 41569,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate06/Q2_development_collection/dataset/generated/control.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "dc600fbd021b46b27b8ee08b287443f6f41b4707cc8e880589592126efed95b2",
+      "world_occurrences": 36
+    },
+    {
+      "bytes": 77642,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate06/Q2_development_collection/dataset/generated/train.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "f212063814e6701ff2187ba28348fa7ad4321e5b3e5181364df714227e4fbc5a",
+      "world_occurrences": 72
+    },
+    {
+      "bytes": 175749,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate06/checkout/ssvc_flow/data/generated/calibration.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "549085d22eceabf6b8aaefcd6549254ef1854ff9a1bc3f9f3b98c44dc9556f63",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 175194,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate06/checkout/ssvc_flow/data/generated/control.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "bbf1a6200e9814dfa5b2421ff0a2913fce86df6dc95368812302b5f76db75491",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 174569,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate06/checkout/ssvc_flow/data/generated/dev.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "e6ed0488845f55fdf796e8a9bba7acdd9f60d7cc8983618c77eaedb3ec64170b",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 356879,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate06/checkout/ssvc_flow/data/generated/ood.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "36ce6969a73e5ef8ae2a002a77ceca8df20c1fc9262e1dcdb08f566b9df05385",
+      "world_occurrences": 288
+    },
+    {
+      "bytes": 656899,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/candidate06/checkout/ssvc_flow/data/generated/train.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "d47bc1e7c8a9796f5f2fcfeec8fd0f14e18be507f89a0fcaaf65472bb7a33954",
+      "world_occurrences": 576
+    },
+    {
+      "bytes": 41569,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/pilot01/collection/dataset/generated/control.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "dc600fbd021b46b27b8ee08b287443f6f41b4707cc8e880589592126efed95b2",
+      "world_occurrences": 36
+    },
+    {
+      "bytes": 77642,
+      "path": "/projects/varunssd/louis-ssvc/modeling_v3_20260915/pilot01/collection/dataset/generated/train.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "f212063814e6701ff2187ba28348fa7ad4321e5b3e5181364df714227e4fbc5a",
+      "world_occurrences": 72
+    },
+    {
+      "bytes": 2260198,
+      "path": "/projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/pilot_four_20261004_raw_export/prepared_first_four_ONLY.json",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "93f09574c41ba5de65caaf9d8706a720cddf60727a7b1a406e07e619847e5075",
+      "world_occurrences": 864
+    },
+    {
+      "bytes": 2260198,
+      "path": "/projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/pilot_four_20261004_raw_export_v2/prepared_first_four_ONLY.json",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "93f09574c41ba5de65caaf9d8706a720cddf60727a7b1a406e07e619847e5075",
+      "world_occurrences": 864
+    },
+    {
+      "bytes": 2634338,
+      "path": "/projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/prepared_development.json",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "c3b89628769a57aaffaec958d777511f39016a7666838f63303fc02abe32b60f",
+      "world_occurrences": 792
+    },
+    {
+      "bytes": 110477,
+      "path": "/projects/varunssd/louis-ssvc/protocol_state_probes_v1_20261005/code_ad09688/ssvc_flow/docs/protocol_state_probes/design/manifests/audit_labels_NOT_FOR_MODEL.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "7f998911911b576a47ad87926f771f75a470c458eca85fc4f9958a51d362cc13",
+      "world_occurrences": 509
+    },
+    {
+      "bytes": 110477,
+      "path": "/projects/varunssd/louis-ssvc/protocol_state_probes_v1_20261005/code_d15c015/ssvc_flow/docs/protocol_state_probes/design/manifests/audit_labels_NOT_FOR_MODEL.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "7f998911911b576a47ad87926f771f75a470c458eca85fc4f9958a51d362cc13",
+      "world_occurrences": 509
+    },
+    {
+      "bytes": 110477,
+      "path": "/projects/varunssd/louis-ssvc/protocol_state_probes_v1_20261005/cpu_preflight/ssvc_flow/docs/protocol_state_probes/design/manifests/audit_labels_NOT_FOR_MODEL.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "7f998911911b576a47ad87926f771f75a470c458eca85fc4f9958a51d362cc13",
+      "world_occurrences": 509
+    },
+    {
+      "bytes": 110477,
+      "path": "/projects/varunssd/louis-ssvc/protocol_state_probes_v1_20261005/run/audit_labels.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "681909a9d7665f117a657fddedffa869d3bd26af0244476a718963b25704f3a9",
+      "world_occurrences": 509
+    },
+    {
+      "bytes": 110477,
+      "path": "/projects/varunssd/louis-ssvc/protocol_state_probes_v1_20261005/run_v2/audit_labels.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "681909a9d7665f117a657fddedffa869d3bd26af0244476a718963b25704f3a9",
+      "world_occurrences": 509
+    },
+    {
+      "bytes": 110477,
+      "path": "/projects/varunssd/louis-ssvc/protocol_state_probes_v1_20261005/verification/S96_smoke_resume_184672/audit_labels.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "681909a9d7665f117a657fddedffa869d3bd26af0244476a718963b25704f3a9",
+      "world_occurrences": 509
+    },
+    {
+      "bytes": 175749,
+      "path": "/projects/varunssd/louis-ssvc/reviewed-data-20260908/generated/calibration.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "549085d22eceabf6b8aaefcd6549254ef1854ff9a1bc3f9f3b98c44dc9556f63",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 350339,
+      "path": "/projects/varunssd/louis-ssvc/reviewed-data-20260908/generated/confirm.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "1d45afdca90fc7fe8be1df1e015e14bdf577d1ec90bd2b640369408f6d34703c",
+      "world_occurrences": 288
+    },
+    {
+      "bytes": 175194,
+      "path": "/projects/varunssd/louis-ssvc/reviewed-data-20260908/generated/control.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "bbf1a6200e9814dfa5b2421ff0a2913fce86df6dc95368812302b5f76db75491",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 174569,
+      "path": "/projects/varunssd/louis-ssvc/reviewed-data-20260908/generated/dev.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "e6ed0488845f55fdf796e8a9bba7acdd9f60d7cc8983618c77eaedb3ec64170b",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 2526286,
+      "path": "/projects/varunssd/louis-ssvc/reviewed-data-20260908/generated/natural_pool.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "5ddf0571e62a204233a5ca27e8edba69bc2a5fb5063f592c48d0ad3ce411c3ec",
+      "world_occurrences": 2048
+    },
+    {
+      "bytes": 356879,
+      "path": "/projects/varunssd/louis-ssvc/reviewed-data-20260908/generated/ood.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "36ce6969a73e5ef8ae2a002a77ceca8df20c1fc9262e1dcdb08f566b9df05385",
+      "world_occurrences": 288
+    },
+    {
+      "bytes": 656899,
+      "path": "/projects/varunssd/louis-ssvc/reviewed-data-20260908/generated/train.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "d47bc1e7c8a9796f5f2fcfeec8fd0f14e18be507f89a0fcaaf65472bb7a33954",
+      "world_occurrences": 576
+    },
+    {
+      "bytes": 175749,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-144840-attempt-0/data/generated/calibration.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "660d3407f452aba0e6e7cbb50bf57c3fdf974b9751ab272a3f1ef9ad5ebfd1f9",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 350339,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-144840-attempt-0/data/generated/confirm.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "5d123fa2c1bf2371cdb920e9bd4ef167f71baf3cd659438b2935e8fc5a11a318",
+      "world_occurrences": 288
+    },
+    {
+      "bytes": 175194,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-144840-attempt-0/data/generated/control.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "2f702d0f417649fe77520f33a94143bbed0ef6ed38700a6d02c67356e19e49f2",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 174569,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-144840-attempt-0/data/generated/dev.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "fdb0730aab857339588ab159d8dcd350819f368ca76356414847ecf4b4d6e810",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 2526286,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-144840-attempt-0/data/generated/natural_pool.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "8c571561b8e585436d6a5742489606f34f9f9d4a986dbfeea7a034dc56a011a5",
+      "world_occurrences": 2048
+    },
+    {
+      "bytes": 356879,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-144840-attempt-0/data/generated/ood.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "e4733e950e10b5700631523ae3cc7782edd4621e48a5bfdd08cb3a5f6423391b",
+      "world_occurrences": 288
+    },
+    {
+      "bytes": 656899,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-144840-attempt-0/data/generated/train.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "36b227a5dbfbd55dbb0468265bcff9fbb54aa678c24f51bc21ec908eee67e92b",
+      "world_occurrences": 576
+    },
+    {
+      "bytes": 175749,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-144911-attempt-0/data/generated/calibration.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "660d3407f452aba0e6e7cbb50bf57c3fdf974b9751ab272a3f1ef9ad5ebfd1f9",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 350339,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-144911-attempt-0/data/generated/confirm.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "5d123fa2c1bf2371cdb920e9bd4ef167f71baf3cd659438b2935e8fc5a11a318",
+      "world_occurrences": 288
+    },
+    {
+      "bytes": 175194,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-144911-attempt-0/data/generated/control.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "2f702d0f417649fe77520f33a94143bbed0ef6ed38700a6d02c67356e19e49f2",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 174569,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-144911-attempt-0/data/generated/dev.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "fdb0730aab857339588ab159d8dcd350819f368ca76356414847ecf4b4d6e810",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 2526286,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-144911-attempt-0/data/generated/natural_pool.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "8c571561b8e585436d6a5742489606f34f9f9d4a986dbfeea7a034dc56a011a5",
+      "world_occurrences": 2048
+    },
+    {
+      "bytes": 356879,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-144911-attempt-0/data/generated/ood.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "e4733e950e10b5700631523ae3cc7782edd4621e48a5bfdd08cb3a5f6423391b",
+      "world_occurrences": 288
+    },
+    {
+      "bytes": 656899,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-144911-attempt-0/data/generated/train.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "36b227a5dbfbd55dbb0468265bcff9fbb54aa678c24f51bc21ec908eee67e92b",
+      "world_occurrences": 576
+    },
+    {
+      "bytes": 175749,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-145356-attempt-0/data/generated/calibration.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "660d3407f452aba0e6e7cbb50bf57c3fdf974b9751ab272a3f1ef9ad5ebfd1f9",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 350339,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-145356-attempt-0/data/generated/confirm.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "5d123fa2c1bf2371cdb920e9bd4ef167f71baf3cd659438b2935e8fc5a11a318",
+      "world_occurrences": 288
+    },
+    {
+      "bytes": 175194,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-145356-attempt-0/data/generated/control.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "2f702d0f417649fe77520f33a94143bbed0ef6ed38700a6d02c67356e19e49f2",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 174569,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-145356-attempt-0/data/generated/dev.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "fdb0730aab857339588ab159d8dcd350819f368ca76356414847ecf4b4d6e810",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 2526286,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-145356-attempt-0/data/generated/natural_pool.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "8c571561b8e585436d6a5742489606f34f9f9d4a986dbfeea7a034dc56a011a5",
+      "world_occurrences": 2048
+    },
+    {
+      "bytes": 356879,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-145356-attempt-0/data/generated/ood.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "e4733e950e10b5700631523ae3cc7782edd4621e48a5bfdd08cb3a5f6423391b",
+      "world_occurrences": 288
+    },
+    {
+      "bytes": 656899,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-145356-attempt-0/data/generated/train.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "36b227a5dbfbd55dbb0468265bcff9fbb54aa678c24f51bc21ec908eee67e92b",
+      "world_occurrences": 576
+    },
+    {
+      "bytes": 175749,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-145423-attempt-0/data/generated/calibration.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "660d3407f452aba0e6e7cbb50bf57c3fdf974b9751ab272a3f1ef9ad5ebfd1f9",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 350339,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-145423-attempt-0/data/generated/confirm.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "5d123fa2c1bf2371cdb920e9bd4ef167f71baf3cd659438b2935e8fc5a11a318",
+      "world_occurrences": 288
+    },
+    {
+      "bytes": 175194,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-145423-attempt-0/data/generated/control.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "2f702d0f417649fe77520f33a94143bbed0ef6ed38700a6d02c67356e19e49f2",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 174569,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-145423-attempt-0/data/generated/dev.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "fdb0730aab857339588ab159d8dcd350819f368ca76356414847ecf4b4d6e810",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 2526286,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-145423-attempt-0/data/generated/natural_pool.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "8c571561b8e585436d6a5742489606f34f9f9d4a986dbfeea7a034dc56a011a5",
+      "world_occurrences": 2048
+    },
+    {
+      "bytes": 356879,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-145423-attempt-0/data/generated/ood.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "e4733e950e10b5700631523ae3cc7782edd4621e48a5bfdd08cb3a5f6423391b",
+      "world_occurrences": 288
+    },
+    {
+      "bytes": 656899,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-145423-attempt-0/data/generated/train.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "36b227a5dbfbd55dbb0468265bcff9fbb54aa678c24f51bc21ec908eee67e92b",
+      "world_occurrences": 576
+    },
+    {
+      "bytes": 175749,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-146375-attempt-0/data/generated/calibration.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "660d3407f452aba0e6e7cbb50bf57c3fdf974b9751ab272a3f1ef9ad5ebfd1f9",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 350339,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-146375-attempt-0/data/generated/confirm.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "5d123fa2c1bf2371cdb920e9bd4ef167f71baf3cd659438b2935e8fc5a11a318",
+      "world_occurrences": 288
+    },
+    {
+      "bytes": 175194,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-146375-attempt-0/data/generated/control.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "2f702d0f417649fe77520f33a94143bbed0ef6ed38700a6d02c67356e19e49f2",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 174569,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-146375-attempt-0/data/generated/dev.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "fdb0730aab857339588ab159d8dcd350819f368ca76356414847ecf4b4d6e810",
+      "world_occurrences": 144
+    },
+    {
+      "bytes": 2526286,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-146375-attempt-0/data/generated/natural_pool.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "8c571561b8e585436d6a5742489606f34f9f9d4a986dbfeea7a034dc56a011a5",
+      "world_occurrences": 2048
+    },
+    {
+      "bytes": 356879,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-146375-attempt-0/data/generated/ood.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "e4733e950e10b5700631523ae3cc7782edd4621e48a5bfdd08cb3a5f6423391b",
+      "world_occurrences": 288
+    },
+    {
+      "bytes": 656899,
+      "path": "/projects/varunssd/louis-ssvc/runs/slurm-146375-attempt-0/data/generated/train.jsonl",
+      "scope": "all generated scenes including train, evaluation and uncalled metadata",
+      "sha256": "36b227a5dbfbd55dbb0468265bcff9fbb54aa678c24f51bc21ec908eee67e92b",
+      "world_occurrences": 576
+    }
+  ],
+  "historical_completeness_scope": "extant generated scene and scene/prompt/case/prepared metadata in the inventoried project tree",
+  "historical_limitations": [
+    "Deleted, inaccessible and external historical metadata cannot be certified.",
+    "Archived copies and raw model output trees are not reparsed; all extant generated metadata is conservatively excluded.",
+    "Completeness is metadata-inventory scoped, not a universal claim about every historical exposure."
+  ],
+  "capacity": {
+    "total_trend_orbits": 1617,
+    "historically_excluded_trend_orbits": 421,
+    "remaining_trend_orbits": 1196,
+    "required_trend_orbits": 432
+  },
+  "replay": {
+    "available_unique": 64,
+    "selected_count": 64,
+    "shortfall": 0,
+    "composition": {
+      "duplicate_encoding": 32,
+      "cross_series": 16,
+      "trend": 16
+    },
+    "selection": "scene-ID order; preferred32/16/16 then deterministic available fill"
+  },
+  "files": {
+    "T_train/tasks_public.jsonl": {
+      "sha256": "5a3c995634e20f19c1bada8f0e104ba33d8529ffc6ce11b14354f690feeb83ab",
+      "rows": 384
+    },
+    "T_train/audit_only.jsonl": {
+      "sha256": "573866819258c26d19f1b07ee47ed1b97694fbccb32b4f0aa7044400ba8bd92c",
+      "rows": 384
+    },
+    "V_selection/tasks_public.jsonl": {
+      "sha256": "161efa1541c6605192e1cac87efd068cc3e2d04c270c8d32beaefac3b875475e",
+      "rows": 96
+    },
+    "V_selection/audit_only.jsonl": {
+      "sha256": "b34fc9ab4e48b424080db33a5f0d15f42523b07c2245c17a5fa701d90d5785bd",
+      "rows": 96
+    },
+    "E_test/tasks_public.jsonl": {
+      "sha256": "e866d48c7b9fe0c1959dc570a8a28938a50ecfba935de25554d7b50bf4662334",
+      "rows": 384
+    },
+    "E_test/audit_only.jsonl": {
+      "sha256": "c01f20f15b7f5c2cf6ee665cc1457275034cf13aecd5c33b41971d5e1d60e504",
+      "rows": 384
+    },
+    "G_guard/tasks_public.jsonl": {
+      "sha256": "0b7b439b0984007a7849a03206c9d56ddc2783df3ffd7b93a7ace5f1a2d7236f",
+      "rows": 96
+    },
+    "G_guard/audit_only.jsonl": {
+      "sha256": "87b80a16ab820f214c1c4cb267847377fc9e0d20158ef317b1af994562ec205b",
+      "rows": 96
+    },
+    "R_replay/tasks_public.jsonl": {
+      "sha256": "38b559b98d5d7edddc1f7ee8154ea1f59ea04a7c6e5dd930bea7b7f1e4b25ac7",
+      "rows": 64
+    },
+    "R_replay/verified_targets.jsonl": {
+      "sha256": "d40af8d16a2bff850df63c044e6094a4adf3a9594f5457777d33e354a4c67ad0",
+      "rows": 64
+    }
+  },
+  "guard_image_scenes_shared_with_E": 64,
+  "independent_guard_scenes": 32,
+  "distribution": {
+    "T_train": {
+      "family_by_j": {
+        "trend:0": 48,
+        "cross_series:0": 48,
+        "trend:2": 48,
+        "trend:1": 48,
+        "trend:3": 48,
+        "cross_series:3": 48,
+        "cross_series:1": 48,
+        "cross_series:2": 48
+      },
+      "cross_center_by_j": {
+        "0:0": 12,
+        "0:3": 12,
+        "3:3": 12,
+        "2:1": 12,
+        "3:1": 12,
+        "3:0": 12,
+        "1:3": 12,
+        "2:2": 12,
+        "0:1": 12,
+        "2:3": 12,
+        "1:0": 12,
+        "0:2": 12,
+        "1:2": 12,
+        "3:2": 12,
+        "1:1": 12,
+        "2:0": 12
+      },
+      "truth_all_in_0_49": 16,
+      "count": 384
+    },
+    "V_selection": {
+      "family_by_j": {
+        "cross_series:2": 12,
+        "cross_series:0": 12,
+        "trend:3": 12,
+        "trend:0": 12,
+        "cross_series:3": 12,
+        "trend:2": 12,
+        "trend:1": 12,
+        "cross_series:1": 12
+      },
+      "cross_center_by_j": {
+        "0:2": 3,
+        "2:2": 3,
+        "3:0": 3,
+        "3:2": 3,
+        "1:2": 3,
+        "1:0": 3,
+        "1:3": 3,
+        "1:1": 3,
+        "2:0": 3,
+        "2:3": 3,
+        "0:0": 3,
+        "3:1": 3,
+        "0:3": 3,
+        "0:1": 3,
+        "3:3": 3,
+        "2:1": 3
+      },
+      "truth_all_in_0_49": 5,
+      "count": 96
+    },
+    "E_test": {
+      "family_by_j": {
+        "cross_series:3": 48,
+        "trend:2": 48,
+        "trend:3": 48,
+        "cross_series:0": 48,
+        "trend:1": 48,
+        "cross_series:1": 48,
+        "trend:0": 48,
+        "cross_series:2": 48
+      },
+      "cross_center_by_j": {
+        "0:3": 12,
+        "1:0": 12,
+        "3:0": 12,
+        "2:1": 12,
+        "0:1": 12,
+        "1:1": 12,
+        "3:3": 12,
+        "1:2": 12,
+        "0:2": 12,
+        "0:0": 12,
+        "2:3": 12,
+        "3:1": 12,
+        "3:2": 12,
+        "2:0": 12,
+        "1:3": 12,
+        "2:2": 12
+      },
+      "truth_all_in_0_49": 12,
+      "count": 384
+    },
+    "G_guard": {
+      "family_by_j": {
+        "cross_series:0": 8,
+        "cross_series:1": 8,
+        "cross_series:2": 8,
+        "cross_series:3": 8,
+        "trend:0": 8,
+        "trend:1": 8,
+        "trend:2": 8,
+        "trend:3": 8,
+        "duplicate_encoding:0": 8,
+        "duplicate_encoding:1": 8,
+        "duplicate_encoding:2": 8,
+        "duplicate_encoding:3": 8
+      },
+      "cross_center_by_j": {
+        "2:0": 1,
+        "1:0": 5,
+        "3:0": 1,
+        "0:0": 1,
+        "2:1": 5,
+        "0:1": 2,
+        "1:1": 1,
+        "1:2": 1,
+        "0:2": 3,
+        "3:2": 2,
+        "2:2": 2,
+        "2:3": 2,
+        "3:3": 1,
+        "0:3": 4,
+        "1:3": 1
+      },
+      "truth_all_in_0_49": 3,
+      "count": 96
+    }
+  },
+  "manifest_digest": "ad1d1a7dc193ed0ae9e35d5a9c17e473c35f565d8e6e9a33e34eded3176e15af"
+}

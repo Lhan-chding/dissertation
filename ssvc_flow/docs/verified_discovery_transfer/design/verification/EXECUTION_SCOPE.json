@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-06",
+  "status": "DOCUMENT_AND_REFERENCE_CONTRACTS_ONLY",
+  "requested_artifact": "Next Codex experiment implementation plan",
+  "read_materials": [
+    "latest GPT–Claude discussion document",
+    "prior protocol probe execution plan",
+    "historical checkpoint manifests and runtime/source snapshots from uploaded data archive"
+  ],
+  "live_repository_read": {
+    "branch": "codex/protocol-state-probes-20261005",
+    "sha": "2f8c6b19970f49542b009f2816f1c1a91eb9974c",
+    "files": [
+      "ssvc_flow/src/protocol_state_probes/inference.py",
+      "ssvc_flow/src/generate_worlds.py"
+    ]
+  },
+  "external_sources": "Original-author STaR, ReST_EM, Reverse Training, OC-GRPO pages; official TRL documentation. Not a complete novelty audit.",
+  "reference_tests": {
+    "run": 53,
+    "passed": 53,
+    "uses_gpu": false,
+    "fits_predictor": false,
+    "real_Qwen_integration": false
+  },
+  "metadata_products": [
+    "protocol.json",
+    "workload.json",
+    "templates/run_matrix.json"
+  ],
+  "new_model_generations": 0,
+  "new_model_scores": 0,
+  "new_model_training_updates": 0,
+  "new_actual_T_V_E_instances_generated": 0,
+  "github_writes": 0,
+  "current_server_checkpoint_readability_checked": false,
+  "old_raw_model_outputs_reparsed_this_turn": false,
+  "new_design_vs_source_facts": "New design values explicitly marked; copied historical evidence kept in sources."
+}

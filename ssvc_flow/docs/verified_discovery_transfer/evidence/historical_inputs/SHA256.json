@@ -1,0 +1,26 @@
+{
+  "README_zh.md": {
+    "bytes": 4485,
+    "sha256": "e563f9e071591e847d9ab49c386283b7c91853cb4680a6f3f018217d94141891"
+  },
+  "collector_tests.json": {
+    "bytes": 210,
+    "sha256": "3759a5e634301865a7a2450da4e019af751a9b3d198e8ff6f0898cb82d7f5c6c"
+  },
+  "dataset_bindings_audit.json": {
+    "bytes": 1497411,
+    "sha256": "bedf40bfc06707e396ad8387efb598b2b33cba5c3a256e1bda97803acffb8b17"
+  },
+  "historical_exclusion.json": {
+    "bytes": 982464,
+    "sha256": "61110b82b0e779ffc5a8c3e434de92480a6e15404b53897bcef5ebf2952c8b95"
+  },
+  "replay_candidates.jsonl": {
+    "bytes": 239420,
+    "sha256": "35b01c731a9745d29981a211b07c2741f42115627dbb3635292d45c2f0e3e807"
+  },
+  "replay_receipt.json": {
+    "bytes": 8117,
+    "sha256": "a678a9d7ef8bbeef16c628b51b2bf11129cc0053b76bcfb5689412b0c21537b0"
+  }
+}

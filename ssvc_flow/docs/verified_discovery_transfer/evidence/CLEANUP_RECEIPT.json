@@ -1,0 +1,14 @@
+{
+  "status": "CLEANUP_COMPLETE",
+  "plan_sha256": "18197359d02fe9dc918a448e12e781f1e6af28d29b7beb29ec22851547989d40",
+  "deleted_files": 103723,
+  "deleted_logical_bytes": 5632339970,
+  "deleted_allocated_bytes_inventory": 5659526144,
+  "remaining_targets": 0,
+  "completed_at_utc": "2026-10-06T04:00:23.193931+00:00",
+  "preserved": "All raw research data, real checkpoints, validation summaries/logs/XML and source; shared fixture inodes",
+  "active_jobs_checked": 2,
+  "active_jobs_not_modified": true,
+  "full_server_receipt": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/evidence/CLEANUP_RECEIPT.json",
+  "full_server_receipt_sha256": "d3e75703a9c861f4e30df748744f525b33539c1f61838457114238e57f996404"
+}

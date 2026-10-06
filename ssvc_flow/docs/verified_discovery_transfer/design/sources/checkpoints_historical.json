@@ -1,0 +1,127 @@
+{
+  "scope": "Export-time evidence only; current server readability not checked here",
+  "checkpoints": [
+    {
+      "checkpoint": {
+        "identity": {
+          "manifest_hash": "ea69256390e3e710ad8924a89efc4dd4003ab370a25013422025efd8f1f12d11",
+          "step": 96
+        },
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/089_096/attempt_1790284878289928374/state.pt",
+        "sha256": "80f028d07492b0b7ba895fbd0d93352e234db2337ff48e33130120721bf179a9",
+        "state_hash": "090ed9fa2d56a901b40a4eaa1cc46eed0686ed355070840d539ba378be5f94e5"
+      },
+      "checkpoint_bytes": 151373427,
+      "checkpoint_id": "S96",
+      "commit": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/089_096/COMMIT.json",
+        "sha256": "173216cb7b9dbe628218e3225c1ab99732e5cf03348d71d026c592f33c875223"
+      },
+      "manifest": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/MANIFEST.json",
+        "sha256": "ea95ebb24d9a3ba5b86d2816249a4b468d7751f6976793c6785465ae320b36bd"
+      },
+      "runtime_identity": {
+        "bindings_hash": "3e9c2898cc7772927f941079849b6a57ecaaafb300690fb102d53c1c8e22c8d1",
+        "config_hash": "c6a2c72915278943a6e040435d43eb901852d06648da342709b58475d8bba38e",
+        "data_hash": "50e35fe7713a7357e247fc49518e779f3be609c62c582512b4434fa2ec9c4f07",
+        "environment": {
+          "historical_version_coverage": [
+            "python",
+            "transformers"
+          ],
+          "observed_packages": {
+            "Pillow": "12.3.0",
+            "accelerate": "1.14.0",
+            "huggingface-hub": "1.30.0",
+            "numpy": "2.5.2",
+            "peft": "0.19.1",
+            "safetensors": "0.8.0",
+            "tokenizers": "0.22.2",
+            "torch": "2.13.0+cu130",
+            "transformers": "5.14.1"
+          },
+          "original_environment_sha256": "cc9f3c4b6685f12b57012011398b541ff2c193d3254bf8d1c951eeb364badd19",
+          "python": "3.12.14",
+          "status": "PASS",
+          "versions_not_recorded_in_original_R1": [
+            "torch",
+            "peft",
+            "tokenizers",
+            "accelerate",
+            "huggingface-hub",
+            "numpy",
+            "Pillow",
+            "safetensors"
+          ]
+        },
+        "execution_kind": "REAL_CUDA_MODEL",
+        "model_hash": "d1f8056878403747da56556b6bf2ff37c711cb400666b8474c6741dd47e3cd30",
+        "protocol_version": "modeling-v4-full-response-20260916",
+        "source_hash": "daa32fb55f6daa520e96cc348044e1b1f829db3520a5d199df5f3b60498a8775"
+      },
+      "status": "AVAILABLE"
+    },
+    {
+      "checkpoint": {
+        "identity": {
+          "manifest_hash": "9527b6da3f41d9cc486db08b6b5776626522741b0c082a696d93848c4998e400",
+          "step": 96
+        },
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61003/segments/089_096/attempt_1790284167213371794/state.pt",
+        "sha256": "13a2769a787962587e81d3ffc446245e1e71772589bf3b3506cd650c4b60c29c",
+        "state_hash": "eca26a58bb3d2462e832a364ce10ea99b0d9796369d116d2e7e24b2471a5146d"
+      },
+      "checkpoint_bytes": 151373427,
+      "checkpoint_id": "REP96",
+      "commit": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61003/segments/089_096/COMMIT.json",
+        "sha256": "5ecdbfcf5904dcf5335f4e9cfb54ff2e891332375f0ba2de81b0ec577ffe1c36"
+      },
+      "manifest": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61003/MANIFEST.json",
+        "sha256": "9563a110cf6e73d8a0e226e9e7b0a52fa8b81a4883289202b21ca7c2a188fd91"
+      },
+      "runtime_identity": {
+        "bindings_hash": "3e9c2898cc7772927f941079849b6a57ecaaafb300690fb102d53c1c8e22c8d1",
+        "config_hash": "c6a2c72915278943a6e040435d43eb901852d06648da342709b58475d8bba38e",
+        "data_hash": "50e35fe7713a7357e247fc49518e779f3be609c62c582512b4434fa2ec9c4f07",
+        "environment": {
+          "historical_version_coverage": [
+            "python",
+            "transformers"
+          ],
+          "observed_packages": {
+            "Pillow": "12.3.0",
+            "accelerate": "1.14.0",
+            "huggingface-hub": "1.30.0",
+            "numpy": "2.5.2",
+            "peft": "0.19.1",
+            "safetensors": "0.8.0",
+            "tokenizers": "0.22.2",
+            "torch": "2.13.0+cu130",
+            "transformers": "5.14.1"
+          },
+          "original_environment_sha256": "cc9f3c4b6685f12b57012011398b541ff2c193d3254bf8d1c951eeb364badd19",
+          "python": "3.12.14",
+          "status": "PASS",
+          "versions_not_recorded_in_original_R1": [
+            "torch",
+            "peft",
+            "tokenizers",
+            "accelerate",
+            "huggingface-hub",
+            "numpy",
+            "Pillow",
+            "safetensors"
+          ]
+        },
+        "execution_kind": "REAL_CUDA_MODEL",
+        "model_hash": "d1f8056878403747da56556b6bf2ff37c711cb400666b8474c6741dd47e3cd30",
+        "protocol_version": "modeling-v4-full-response-20260916",
+        "source_hash": "daa32fb55f6daa520e96cc348044e1b1f829db3520a5d199df5f3b60498a8775"
+      },
+      "status": "AVAILABLE"
+    }
+  ]
+}
