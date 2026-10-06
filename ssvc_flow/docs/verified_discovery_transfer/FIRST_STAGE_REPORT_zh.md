@@ -1,3 +1,7 @@
+# QOS 更正及当前进度
+
+用户指出 soujanya QOS 后，实时核实账户具备 `soujanya-poria-startfund-2026-03` 权限；其 MaxSubmitJobsPerUser=5，MaxJobsPerUser 未设置。集群禁止原地更改 QOS，故将尚未启动的 187023 取消，并重提同一桥接为 **187045**。新作业已在 `gpu-pro6000-6` 使用 1 张 PRO6000 完成，Slurm 0:0，耗时 5分41秒。两父均 future/PAD delta=0、resume_exact=true，但数值门槛为 NUMERICAL_REVIEW_REQUIRED；正式训练未放行。原始回执见 [bridge_v1](evidence/bridge_v1/bridge.json)。以下保留先前排队阶段的历史快照，不能当作当前调度状态。
+
 # 第一阶段事实记录：等待 GPU 调度
 
 截至 2026-10-06 12:10（新加坡时间），本轮尚未产生真实 Qwen bridge、teacher、SFT、R0 或 E/G 结果。Slurm 作业 **187023** 已提交，状态 **PENDING / QOSMaxJobsPerUserLimit**。`rose` QOS 每用户最多同时运行 2 个作业、最多提交 5 个作业；当前两个运行名额被既有作业占用，未修改它们。排队时间不计作 GPU 执行或吞吐。

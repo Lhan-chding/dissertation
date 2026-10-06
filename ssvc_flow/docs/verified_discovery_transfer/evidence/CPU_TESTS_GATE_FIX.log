@@ -1,0 +1,3 @@
+68 passed, 35 subtests passed in 11.60s
+Affected-source Ruff: All checks passed
+launch.sbatch: bash -n passed

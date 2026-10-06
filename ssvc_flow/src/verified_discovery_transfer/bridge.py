@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 
 from .sft_loss import (
@@ -236,19 +237,8 @@ def run_bridge(runtime, examples, *, output_dir, rows=None, data_root=None):
     resumed = runtime.capture()
     resume_exact = state_hash(expected) == state_hash(resumed)
     runtime.restore(initial)
-    numerical_differences = micro_grad["relative_l2"] > baseline_grad["relative_l2"] or any(
-        d["full_token_nll"] != d["batch_token_nll"] for d in diagnostics
-    )
-    status = (
-        "BLOCKED_CAUSALITY_OR_RESUME"
-        if not exact_causal or not resume_exact
-        else "NUMERICAL_REVIEW_REQUIRED"
-        if numerical_differences
-        else "PASS"
-    )
     result = {
         "schema": "verified-discovery-sft-bridge-v1",
-        "status": status,
         "execution_kind": "REAL_CUDA_TECHNICAL_BRIDGE",
         "examples": diagnostics,
         "padding_diagnostics": padding_diagnostics,
@@ -269,5 +259,160 @@ def run_bridge(runtime, examples, *, output_dir, rows=None, data_root=None):
             "Review BF16 deltas and causality before formal SFT; reload parent for every arm"
         ),
     }
+    result.update(assess_bridge_diagnostics(result))
     (output / "SFT_BRIDGE.json").write_text(json.dumps(result, sort_keys=True, indent=2) + "\n")
     return result
+
+
+def assess_bridge_diagnostics(result):
+    """Fail closed on incomplete evidence; compare prefix errors to observed noise.
+
+    This is a pure readout: no forward calls, revised budgets, or BF16 tolerance.
+    Gradient comparisons use dimensionless errors because the one-example prefix
+    gradient and four-example microbatch diagnostic have different loss scales.
+    """
+    invalid, causal, review = [], [], []
+
+    def finite(value):
+        return type(value) in (int, float) and math.isfinite(value)
+
+    examples = result.get("examples")
+    if not isinstance(examples, list) or len(examples) != 8:
+        invalid.append("Eight complete train-only token diagnostics are required")
+        examples = []
+    task_ids = []
+    for index, example in enumerate(examples):
+        label = f"example[{index}]"
+        if not isinstance(example, dict):
+            invalid.append(f"{label}: missing diagnostic object")
+            continue
+        task_id = example.get("task_id")
+        if not isinstance(task_id, str) or not task_id:
+            invalid.append(f"{label}: missing task identity")
+        else:
+            task_ids.append(task_id)
+        target_ids = example.get("target_ids")
+        if (
+            not isinstance(target_ids, list)
+            or not target_ids
+            or any(type(t) is not int or t < 0 for t in target_ids)
+        ):
+            invalid.append(f"{label}: missing target token identities")
+            target_ids = []
+        prompt_tokens = example.get("prompt_tokens")
+        if (
+            type(prompt_tokens) is not int
+            or prompt_tokens <= 0
+            or example.get("first_target_logit_index") != prompt_tokens - 1
+        ):
+            invalid.append(f"{label}: incorrect or missing first-target shift")
+        vectors = {}
+        for key in ("full_token_nll", "repeat_token_nll", "batch_token_nll", "prefix_token_nll"):
+            values = example.get(key)
+            if (
+                not isinstance(values, list)
+                or not values
+                or len(values) != len(target_ids)
+                or not all(finite(value) for value in values)
+            ):
+                invalid.append(f"{label}: missing, nonfinite or misaligned {key}")
+            else:
+                vectors[key] = values
+        if len(vectors) == 4:
+            full, repeat, prefix = (
+                vectors[key] for key in ("full_token_nll", "repeat_token_nll", "prefix_token_nll")
+            )
+            if any(abs(p - f) > abs(r - f) for f, r, p in zip(full, repeat, prefix, strict=True)):
+                review.append(f"{label}: prefix/full token difference exceeds same-path noise")
+            # Preserve the existing conservative batch gate.
+            if full != vectors["batch_token_nll"]:
+                review.append(f"{label}: batch/full token values differ")
+        for key in (
+            "sequence_nll",
+            "batch_sequence_nll",
+            "future_logits_max_abs",
+            "same_path_logits_max_abs",
+        ):
+            if not finite(example.get(key)):
+                invalid.append(f"{label}: missing or nonfinite {key}")
+        delta, baseline = (
+            example.get("future_logits_max_abs"),
+            example.get("same_path_logits_max_abs"),
+        )
+        if finite(delta) and finite(baseline):
+            if delta < 0 or baseline < 0:
+                invalid.append(f"{label}: negative absolute logit error")
+            elif delta > baseline:
+                causal.append(f"{label}: future suffix changes earlier logits beyond baseline")
+    if examples and len(set(task_ids)) != 8:
+        invalid.append("Eight distinct task identities are required")
+
+    padding = result.get("padding_diagnostics")
+    if not isinstance(padding, list) or len(padding) != 2:
+        invalid.append("Two padding diagnostic batches are required")
+        padding = []
+    padded_tasks = []
+    for index, item in enumerate(padding):
+        if not isinstance(item, dict):
+            invalid.append(f"padding[{index}]: missing diagnostic object")
+            continue
+        tasks = item.get("tasks")
+        if (
+            not isinstance(tasks, list)
+            or len(tasks) != 4
+            or not all(isinstance(t, str) for t in tasks)
+        ):
+            invalid.append(f"padding[{index}]: four task identities required")
+        else:
+            padded_tasks.extend(tasks)
+        delta, baseline = item.get("padding_logits_max_abs"), item.get("same_batch_logits_max_abs")
+        if not finite(delta) or not finite(baseline) or delta < 0 or baseline < 0:
+            invalid.append(f"padding[{index}]: missing or invalid numerical evidence")
+        elif delta > baseline:
+            causal.append(f"padding[{index}]: masked padding changes valid logits beyond baseline")
+    if padding and sorted(padded_tasks) != sorted(task_ids):
+        invalid.append("Padding batches do not cover the eight token diagnostic tasks exactly")
+
+    gradients = {}
+    for key in ("gradient_same_path", "gradient_microbatch", "gradient_full_vs_prefix"):
+        value = result.get(key)
+        fields = ("cosine", "relative_l2", "left_norm", "right_norm", "max_abs")
+        if (
+            not isinstance(value, dict)
+            or value.get("finite") is not True
+            or any(not finite(value.get(field)) for field in fields)
+        ):
+            invalid.append(f"Missing or nonfinite {key}")
+        elif (
+            value["left_norm"] <= 0
+            or value["right_norm"] <= 0
+            or value["relative_l2"] < 0
+            or value["max_abs"] < 0
+        ):
+            invalid.append(f"Zero gradient or invalid error in {key}")
+        else:
+            gradients[key] = value
+    if len(gradients) == 3:
+        baseline = gradients["gradient_same_path"]
+        for key in ("gradient_microbatch", "gradient_full_vs_prefix"):
+            value = gradients[key]
+            if value["relative_l2"] > baseline["relative_l2"] or abs(1 - value["cosine"]) > abs(
+                1 - baseline["cosine"]
+            ):
+                review.append(f"{key}: gradient difference exceeds same-path noise")
+
+    for key in ("causal_within_same_path_baseline", "resume_exact"):
+        if type(result.get(key)) is not bool:
+            invalid.append(f"Missing boolean evidence: {key}")
+        elif not result[key]:
+            causal.append(f"Failed required evidence: {key}")
+    status = (
+        "BLOCKED_INVALID_DIAGNOSTICS"
+        if invalid
+        else "BLOCKED_CAUSALITY_OR_RESUME"
+        if causal
+        else "NUMERICAL_REVIEW_REQUIRED"
+        if review
+        else "PASS"
+    )
+    return {"status": status, "diagnostic_gate_reasons": invalid + causal + review}

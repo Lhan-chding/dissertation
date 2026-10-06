@@ -1,3 +1,9 @@
+# QOS 更正
+
+账户已确认可以使用 `soujanya-poria-startfund-2026-03`，MaxSubmitJobsPerUser 为 5（运行加排队），没有设置该 QOS 的 MaxJobsPerUser。集群禁止原地修改已提交作业 QOS。实际执行 `scancel --state=PENDING 187023` 后，将下方 sbatch 的 QOS 改为 `soujanya-poria-startfund-2026-03`、CPU 改为 4、内存改为 33G，其他参数相同，重提得到 **187045**，已确认 RUNNING。不要重复提交；后续查询使用 187045。
+
+以下保留此前实际命令作为历史记录。
+
 # 实际服务器命令与恢复入口
 
 以下命令在服务器已验证项目内执行。准备与矩阵登记已经完成；不是要求重新运行这些阶段。调度状态与路径以 [DEPLOYMENT.json](evidence/DEPLOYMENT.json) 为准。

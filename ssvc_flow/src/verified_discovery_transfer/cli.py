@@ -514,23 +514,34 @@ def _generate(run, job, backend):
 
 
 def _bridge_passed(run):
+    from .bridge import assess_bridge_diagnostics
+
     path = run / "bridge.json"
     if not path.exists():
         raise RuntimeError("SFT bridge not yet executed")
     receipt = read_json(path)
-    if receipt.get("status") == "PASS":
+    parents = receipt.get("parents") if isinstance(receipt, dict) else None
+    if not isinstance(parents, dict) or set(parents) != {"S96", "REP96"}:
+        raise RuntimeError("SFT bridge requires complete evidence for both S96 and REP96")
+    if any(not isinstance(parent, dict) for parent in parents.values()):
+        raise RuntimeError("SFT bridge parent diagnostics are invalid")
+    # Reassess evidence instead of trusting an old or incorrectly written PASS label.
+    statuses = {
+        name: assess_bridge_diagnostics(parent)["status"] for name, parent in parents.items()
+    }
+    if any(status not in {"PASS", "NUMERICAL_REVIEW_REQUIRED"} for status in statuses.values()):
+        raise RuntimeError(f"SFT bridge has non-overridable diagnostic failures: {statuses}")
+    if all(status == "PASS" for status in statuses.values()):
         return
     acceptance = run / "BRIDGE_NUMERICAL_ACCEPTANCE.json"
     if acceptance.exists():
         review = read_json(acceptance)
         if (
-            review.get("bridge_hash") == digest(receipt)
+            isinstance(review, dict)
+            and review.get("bridge_hash") == digest(receipt)
             and review.get("status") == "ACCEPTED"
-            and review.get("rationale")
-            and all(
-                r.get("causal_within_same_path_baseline") and r.get("resume_exact")
-                for r in receipt["parents"].values()
-            )
+            and isinstance(review.get("rationale"), str)
+            and review["rationale"].strip()
         ):
             return
     raise RuntimeError("Real SFT bridge requires successful causality/resume and numerical review")

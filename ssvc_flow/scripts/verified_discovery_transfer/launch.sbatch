@@ -20,9 +20,13 @@ unset PYTHONPATH PYTHONHOME PYTHONOPTIMIZE PYTEST_ADDOPTS TRANSFORMERS_CACHE
 mkdir -p "$TMPDIR"
 cd "$project_root"
 nvidia-smi --query-gpu=index,name,memory.total,uuid --format=csv
-if [[ "$lane" == bridge ]]; then
+if [[ "$lane" == bridge || "$lane" == bridge-numerics ]]; then
   "$python_bin" -m src.verified_discovery_transfer.cli bridge \
     --plan "$run_root/protocol.json" --machine "$machine_file" --out "$run_root"
+  if [[ "$lane" == bridge-numerics ]]; then
+    PYTHONPATH="$project_root" "$python_bin" scripts/verified_discovery_transfer/numerical_probe.py \
+      --run "$run_root" --output "$run_root/numerical_probe"
+  fi
 else
   "$python_bin" -m src.verified_discovery_transfer.cli worker \
     --queue "$run_root/queue.sqlite" --worker-id "$lane" --device cuda:0

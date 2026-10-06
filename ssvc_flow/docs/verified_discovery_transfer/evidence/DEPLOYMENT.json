@@ -7,7 +7,7 @@
   "run_root": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v1",
   "run_identity": "4de8c0c0358cf73617414b03da6e15304c6d03629057ff3a24893c43ef5e44fd",
   "cohort_matches_technical_preparation_byte_identically": true,
-  "bridge_job": 187023,
+  "bridge_job": 187045,
   "bridge_status_at_submission": "SUBMITTED_UNVERIFIED",
   "scheduler_enforced": {
     "cpus": 4,
@@ -15,22 +15,36 @@
     "PRO6000": 1
   },
   "new_scientific_training_launched": false,
-  "bridge_status_last_verified": "PENDING",
-  "scheduler_pending_reason": "QOSMaxJobsPerUserLimit",
-  "qos_max_running_jobs_per_user": 2,
+  "bridge_status_last_verified": "COMPLETED",
+  "scheduler_pending_reason": null,
+  "qos_max_running_jobs_per_user": null,
   "qos_max_submitted_jobs_per_user": 5,
   "existing_running_jobs_count": 2,
   "queue_registered": true,
   "registered_work_items": 294,
   "registered_sft_jobs": 20,
   "registered_r0_jobs": 4,
-  "bridge_gpu_execution_observed": false,
+  "bridge_gpu_execution_observed": true,
   "scientific_workers_submitted": 0,
   "test_results_revealed": false,
-  "scheduler_verified_at_utc": "2026-10-06T04:10:37Z",
+  "scheduler_verified_at_utc": null,
   "downloaded_server_receipt_sha256": {
     "REGISTERED_MATRIX.json": "066389a9e5acfaae69cffdae6a9f153f2a58303f259fc589ff0288658b471fc3",
     "EXECUTION_SCOPE.json": "dc2ec10ffc5b806e6f88b97cc8054e173778c2dc42cc2d69c157c077297c4353",
     "EXECUTION_COSTS.json": "3122df94dec2511c44780bc9f8da94e044292510e4f5b3916fac1db33ab156b7"
-  }
+  },
+  "prior_bridge_jobs": [
+    {
+      "job": 187023,
+      "qos": "rose",
+      "state": "CANCELLED",
+      "elapsed": "00:00:00",
+      "reason": "Cluster forbids changing QOS of submitted jobs; replaced while pending."
+    }
+  ],
+  "qos": "soujanya-poria-startfund-2026-03",
+  "scheduler_node": "gpu-pro6000-6",
+  "bridge_slurm_exit_code": "0:0",
+  "bridge_elapsed_seconds": 341,
+  "bridge_scientific_gate": "NUMERICAL_REVIEW_REQUIRED"
 }
