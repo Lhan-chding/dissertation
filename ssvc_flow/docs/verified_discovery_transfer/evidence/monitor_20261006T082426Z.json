@@ -1,0 +1,153 @@
+{
+  "checked_at_utc": "2026-10-06T08:24:26.122205+00:00",
+  "frozen_context_verified": true,
+  "run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+  "E_G_results_read": false,
+  "failure_cause": "UNKNOWN",
+  "remaining_time_status": "SUSPENDED_UNTIL_RECOVERY",
+  "r0_recovery": {
+    "checkpoint": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/r0.S96.0/step027.pt",
+    "sha256": "5f1a87001974c4ad0f3a332caab27cbc0c1888e548c7a020c934cd0fd55ff939",
+    "full_state_hash_verified": true,
+    "identity_matches_last_commit_and_rollout": true,
+    "state_step": 27,
+    "last_commit_pointer_step": 26,
+    "rollout_rows": 32,
+    "rollout_status": "ROLLOUT_COMPLETE_UNCOMMITTED",
+    "zero_byte_commit_temporary": true,
+    "restore_rule": "Current frozen runtime resumes latest valid atomic checkpoint, not LAST_COMMIT pointer."
+  },
+  "queue_status_counts": {
+    "COMPLETE": 67,
+    "RUNNING": 5,
+    "PENDING": 222
+  },
+  "interrupted_work_items": [
+    {
+      "id": "teacher.S96.T_train.0.96",
+      "worker": "v2-lane2",
+      "atomic_file_count": 533,
+      "committed_chunk_files": 13,
+      "temporary_file_count": 3,
+      "temporary_bytes": [
+        0,
+        0,
+        0
+      ],
+      "atomic_raw_hashes_verified": true
+    },
+    {
+      "id": "r0.S96.0",
+      "worker": "v2-lane4",
+      "atomic_file_count": 0,
+      "committed_chunk_files": 0,
+      "temporary_file_count": 3,
+      "temporary_bytes": [
+        0,
+        0,
+        0
+      ],
+      "rollout_atomic_count": 864,
+      "rollout_raw_hashes_verified": true
+    },
+    {
+      "id": "eval.S96.1.GOLD_ALL.E_test.256",
+      "worker": "v2-lane3",
+      "atomic_file_count": 1297,
+      "committed_chunk_files": 162,
+      "temporary_file_count": 3,
+      "temporary_bytes": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "eval.S96.1.REPLAY_ONLY.V_selection.128",
+      "worker": "v2-lane1",
+      "atomic_file_count": 20,
+      "committed_chunk_files": 5,
+      "temporary_file_count": 3,
+      "temporary_bytes": [
+        0,
+        0,
+        0
+      ],
+      "atomic_raw_hashes_verified": true
+    },
+    {
+      "id": "teacher.REP96.T_train.0.144",
+      "worker": "v2-lane0",
+      "atomic_file_count": 681,
+      "committed_chunk_files": 16,
+      "temporary_file_count": 3,
+      "temporary_bytes": [
+        0,
+        0,
+        0
+      ],
+      "atomic_raw_hashes_verified": true
+    }
+  ],
+  "completed_generation_rows_from_receipts": 43136,
+  "slurm": "187115|FAILED|1:0|2026-10-06T04:27:06|2026-10-06T08:18:35|gpu-pro6000-10\n187115.batch|FAILED|1:0|2026-10-06T04:27:06|2026-10-06T08:18:35|gpu-pro6000-10\n187115.extern|COMPLETED|0:0|2026-10-06T04:27:06|2026-10-06T08:18:35|gpu-pro6000-10\n187116|FAILED|1:0|2026-10-06T04:27:08|2026-10-06T08:18:35|gpu-pro6000-10\n187116.batch|FAILED|1:0|2026-10-06T04:27:08|2026-10-06T08:18:35|gpu-pro6000-10\n187116.extern|COMPLETED|0:0|2026-10-06T04:27:08|2026-10-06T08:18:36|gpu-pro6000-10\n187154|FAILED|1:0|2026-10-06T04:35:43|2026-10-06T08:18:36|gpu-pro6000-10\n187154.batch|FAILED|1:0|2026-10-06T04:35:43|2026-10-06T08:18:36|gpu-pro6000-10\n187154.extern|COMPLETED|0:0|2026-10-06T04:35:43|2026-10-06T08:18:36|gpu-pro6000-10\n187155|FAILED|1:0|2026-10-06T04:35:44|2026-10-06T08:18:35|gpu-pro6000-10\n187155.batch|FAILED|1:0|2026-10-06T04:35:44|2026-10-06T08:18:35|gpu-pro6000-10\n187155.extern|COMPLETED|0:0|2026-10-06T04:35:44|2026-10-06T08:18:35|gpu-pro6000-10\n187156|FAILED|1:0|2026-10-06T04:39:30|2026-10-06T08:18:35|gpu-pro6000-10\n187156.batch|FAILED|1:0|2026-10-06T04:39:30|2026-10-06T08:18:35|gpu-pro6000-10\n187156.extern|COMPLETED|0:0|2026-10-06T04:39:30|2026-10-06T08:18:35|gpu-pro6000-10\n",
+  "scope": "Read-only monitoring; no queue retry, job submission, experiment writes, or E/G scientific readout.",
+  "visible_findings": {
+    "completed_sft_arms": 6,
+    "steps_per_completed_sft": 256,
+    "completed_sft_categories": {
+      "GOLD_ALL": 4,
+      "REPLAY_ONLY": 2
+    },
+    "self_discovery_sets_completed": 0,
+    "selection_frozen_for_both_parents": {
+      "B16": {
+        "trend": "O0",
+        "cross_series": "B1"
+      },
+      "B2_single": {
+        "trend": "O0",
+        "cross_series": "O0"
+      },
+      "B2_pair": {
+        "trend": [
+          "O0",
+          "L11"
+        ],
+        "cross_series": [
+          "O0",
+          "B1"
+        ]
+      }
+    },
+    "S96_GOLD_ALL_V_family_equal_pX": {
+      "repeat0": {
+        "step64": 0.38802083333333337,
+        "step128": 0.5442708333333334
+      },
+      "repeat1": {
+        "step64": 0.37760416666666663,
+        "step128": 0.5260416666666667
+      }
+    },
+    "S96_REPLAY_ONLY_V_family_equal_pX": {
+      "repeat0": {
+        "step64": 0.4192708333333333,
+        "step128": 0.42447916666666663
+      },
+      "repeat1": {
+        "step64": 0.40885416666666663,
+        "step128": "INTERRUPTED_NOT_SCORED"
+      }
+    }
+  },
+  "generated_answer_accounting": {
+    "completed_job_rows": 43136,
+    "interrupted_atomic_rows": 2531,
+    "r0_atomic_rollouts": 864,
+    "total_observed_persisted_rows": 46531,
+    "planned_upper_before_aliases": 205504,
+    "remaining_upper_before_aliases": 158973
+  },
+  "recovery_authorization": "Not performed: heartbeat scope specifies monitoring, no new server experimental data, and reporting technical failures and required operations."
+}
