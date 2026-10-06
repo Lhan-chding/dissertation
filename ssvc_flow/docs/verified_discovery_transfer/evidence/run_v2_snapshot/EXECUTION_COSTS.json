@@ -1,0 +1,1848 @@
+{
+  "jobs": {
+    "teacher.S96.V_selection.0.0": {
+      "accepted_physical_calls": 388,
+      "generated_tokens": 6581,
+      "generation_seconds": 528.4987937148544,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.V_selection.0.24": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.V_selection.0.48": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.V_selection.0.72": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.0.0": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.0.24": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.0.48": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.0.72": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.0.96": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.0.120": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.0.144": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.0.168": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.0.192": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.0.216": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.0.240": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.0.264": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.0.288": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.0.312": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.0.336": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.0.360": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.1.0": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.1.24": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.1.48": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.1.72": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.1.96": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.1.120": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.1.144": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.1.168": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.1.192": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.1.216": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.1.240": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.1.264": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.1.288": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.1.312": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.1.336": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.T_train.1.360": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.E_test.0.0": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.E_test.0.24": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.E_test.0.48": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.E_test.0.72": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.E_test.0.96": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.E_test.0.120": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.E_test.0.144": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.E_test.0.168": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.E_test.0.192": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.E_test.0.216": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.E_test.0.240": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.E_test.0.264": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.E_test.0.288": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.E_test.0.312": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.E_test.0.336": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.E_test.0.360": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.G_guard.0.0": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.G_guard.0.24": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.G_guard.0.48": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.S96.G_guard.0.72": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "sft.S96.0.GOLD_ALL": {
+      "logical_optimizer_updates": 0,
+      "measured_physical_optimizer_updates": 25,
+      "recomputed_updates_lower_bound": 25,
+      "processed_target_sequences": 400,
+      "processed_target_tokens": 5427,
+      "update_wall_seconds": 55.375436412054114,
+      "update_gpu_seconds": 55.374986083984375,
+      "incomplete_update_attempts": 1
+    },
+    "eval.S96.0.GOLD_ALL.V_selection.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.0.GOLD_ALL.V_selection.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.0.GOLD_ALL.E_test.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.0.GOLD_ALL.G_guard.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.0.GOLD_ALL.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.0.GOLD_ALL.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.0.GOLD_ALL.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sft.S96.0.REPLAY_ONLY": {
+      "logical_optimizer_updates": 0,
+      "measured_physical_optimizer_updates": 0,
+      "recomputed_updates_lower_bound": 0,
+      "processed_target_sequences": 0,
+      "processed_target_tokens": 0,
+      "update_wall_seconds": 0,
+      "update_gpu_seconds": 0,
+      "incomplete_update_attempts": 0
+    },
+    "eval.S96.0.REPLAY_ONLY.V_selection.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.0.REPLAY_ONLY.V_selection.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.0.REPLAY_ONLY.E_test.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.0.REPLAY_ONLY.G_guard.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.0.REPLAY_ONLY.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.0.REPLAY_ONLY.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.0.REPLAY_ONLY.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sft.S96.0.SELF_O0": {
+      "logical_optimizer_updates": 0,
+      "measured_physical_optimizer_updates": 0,
+      "recomputed_updates_lower_bound": 0,
+      "processed_target_sequences": 0,
+      "processed_target_tokens": 0,
+      "update_wall_seconds": 0,
+      "update_gpu_seconds": 0,
+      "incomplete_update_attempts": 0
+    },
+    "eval.S96.0.SELF_O0.V_selection.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.0.SELF_O0.V_selection.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.0.SELF_O0.E_test.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.0.SELF_O0.G_guard.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.0.SELF_O0.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.0.SELF_O0.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.0.SELF_O0.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sft.S96.0.SELF_MIX": {
+      "logical_optimizer_updates": 0,
+      "measured_physical_optimizer_updates": 0,
+      "recomputed_updates_lower_bound": 0,
+      "processed_target_sequences": 0,
+      "processed_target_tokens": 0,
+      "update_wall_seconds": 0,
+      "update_gpu_seconds": 0,
+      "incomplete_update_attempts": 0
+    },
+    "eval.S96.0.SELF_MIX.V_selection.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.0.SELF_MIX.V_selection.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.0.SELF_MIX.E_test.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.0.SELF_MIX.G_guard.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.0.SELF_MIX.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.0.SELF_MIX.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.0.SELF_MIX.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sft.S96.0.SELF_SINGLE": {
+      "logical_optimizer_updates": 0,
+      "measured_physical_optimizer_updates": 0,
+      "recomputed_updates_lower_bound": 0,
+      "processed_target_sequences": 0,
+      "processed_target_tokens": 0,
+      "update_wall_seconds": 0,
+      "update_gpu_seconds": 0,
+      "incomplete_update_attempts": 0
+    },
+    "eval.S96.0.SELF_SINGLE.V_selection.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.0.SELF_SINGLE.V_selection.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.0.SELF_SINGLE.E_test.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.0.SELF_SINGLE.G_guard.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.0.SELF_SINGLE.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.0.SELF_SINGLE.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.0.SELF_SINGLE.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sft.S96.0.GOLD_MATCH_MIX": {
+      "logical_optimizer_updates": 0,
+      "measured_physical_optimizer_updates": 0,
+      "recomputed_updates_lower_bound": 0,
+      "processed_target_sequences": 0,
+      "processed_target_tokens": 0,
+      "update_wall_seconds": 0,
+      "update_gpu_seconds": 0,
+      "incomplete_update_attempts": 0
+    },
+    "eval.S96.0.GOLD_MATCH_MIX.V_selection.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.0.GOLD_MATCH_MIX.V_selection.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.0.GOLD_MATCH_MIX.E_test.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.0.GOLD_MATCH_MIX.G_guard.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.0.GOLD_MATCH_MIX.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.0.GOLD_MATCH_MIX.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.0.GOLD_MATCH_MIX.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "r0.S96.0": {
+      "accepted_on_policy_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0,
+      "logical_optimizer_updates": 0,
+      "gradient_processed_sequences": 0,
+      "zero_gradient_adam_updates": 0,
+      "failed_attempts": 0,
+      "not_equal_compute_to_SFT": true
+    },
+    "eval.S96.0.R0_RESET32.V_selection.8": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.0.R0_RESET32.E_test.32": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.0.R0_RESET32.G_guard.32": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "sft.S96.1.GOLD_ALL": {
+      "logical_optimizer_updates": 0,
+      "measured_physical_optimizer_updates": 25,
+      "recomputed_updates_lower_bound": 25,
+      "processed_target_sequences": 400,
+      "processed_target_tokens": 5435,
+      "update_wall_seconds": 55.59924196411157,
+      "update_gpu_seconds": 55.59890661621094,
+      "incomplete_update_attempts": 1
+    },
+    "eval.S96.1.GOLD_ALL.V_selection.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.1.GOLD_ALL.V_selection.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.1.GOLD_ALL.E_test.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.1.GOLD_ALL.G_guard.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.1.GOLD_ALL.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.1.GOLD_ALL.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.1.GOLD_ALL.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sft.S96.1.REPLAY_ONLY": {
+      "logical_optimizer_updates": 0,
+      "measured_physical_optimizer_updates": 0,
+      "recomputed_updates_lower_bound": 0,
+      "processed_target_sequences": 0,
+      "processed_target_tokens": 0,
+      "update_wall_seconds": 0,
+      "update_gpu_seconds": 0,
+      "incomplete_update_attempts": 0
+    },
+    "eval.S96.1.REPLAY_ONLY.V_selection.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.1.REPLAY_ONLY.V_selection.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.1.REPLAY_ONLY.E_test.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.1.REPLAY_ONLY.G_guard.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.1.REPLAY_ONLY.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.1.REPLAY_ONLY.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.1.REPLAY_ONLY.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sft.S96.1.SELF_O0": {
+      "logical_optimizer_updates": 0,
+      "measured_physical_optimizer_updates": 0,
+      "recomputed_updates_lower_bound": 0,
+      "processed_target_sequences": 0,
+      "processed_target_tokens": 0,
+      "update_wall_seconds": 0,
+      "update_gpu_seconds": 0,
+      "incomplete_update_attempts": 0
+    },
+    "eval.S96.1.SELF_O0.V_selection.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.1.SELF_O0.V_selection.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.1.SELF_O0.E_test.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.1.SELF_O0.G_guard.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.1.SELF_O0.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.1.SELF_O0.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.1.SELF_O0.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sft.S96.1.SELF_MIX": {
+      "logical_optimizer_updates": 0,
+      "measured_physical_optimizer_updates": 0,
+      "recomputed_updates_lower_bound": 0,
+      "processed_target_sequences": 0,
+      "processed_target_tokens": 0,
+      "update_wall_seconds": 0,
+      "update_gpu_seconds": 0,
+      "incomplete_update_attempts": 0
+    },
+    "eval.S96.1.SELF_MIX.V_selection.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.1.SELF_MIX.V_selection.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.1.SELF_MIX.E_test.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.1.SELF_MIX.G_guard.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.1.SELF_MIX.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.1.SELF_MIX.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.1.SELF_MIX.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sft.S96.1.SELF_SINGLE": {
+      "logical_optimizer_updates": 0,
+      "measured_physical_optimizer_updates": 0,
+      "recomputed_updates_lower_bound": 0,
+      "processed_target_sequences": 0,
+      "processed_target_tokens": 0,
+      "update_wall_seconds": 0,
+      "update_gpu_seconds": 0,
+      "incomplete_update_attempts": 0
+    },
+    "eval.S96.1.SELF_SINGLE.V_selection.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.1.SELF_SINGLE.V_selection.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.1.SELF_SINGLE.E_test.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.1.SELF_SINGLE.G_guard.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.1.SELF_SINGLE.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.1.SELF_SINGLE.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.1.SELF_SINGLE.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sft.S96.1.GOLD_MATCH_MIX": {
+      "logical_optimizer_updates": 0,
+      "measured_physical_optimizer_updates": 0,
+      "recomputed_updates_lower_bound": 0,
+      "processed_target_sequences": 0,
+      "processed_target_tokens": 0,
+      "update_wall_seconds": 0,
+      "update_gpu_seconds": 0,
+      "incomplete_update_attempts": 0
+    },
+    "eval.S96.1.GOLD_MATCH_MIX.V_selection.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.1.GOLD_MATCH_MIX.V_selection.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.1.GOLD_MATCH_MIX.E_test.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.1.GOLD_MATCH_MIX.G_guard.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.1.GOLD_MATCH_MIX.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.1.GOLD_MATCH_MIX.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.S96.1.GOLD_MATCH_MIX.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "r0.S96.1": {
+      "accepted_on_policy_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0,
+      "logical_optimizer_updates": 0,
+      "gradient_processed_sequences": 0,
+      "zero_gradient_adam_updates": 0,
+      "failed_attempts": 0,
+      "not_equal_compute_to_SFT": true
+    },
+    "eval.S96.1.R0_RESET32.V_selection.8": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.1.R0_RESET32.E_test.32": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "eval.S96.1.R0_RESET32.G_guard.32": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.V_selection.0.0": {
+      "accepted_physical_calls": 391,
+      "generated_tokens": 6618,
+      "generation_seconds": 530.7435049425112,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.V_selection.0.24": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.V_selection.0.48": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.V_selection.0.72": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.0.0": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.0.24": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.0.48": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.0.72": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.0.96": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.0.120": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.0.144": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.0.168": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.0.192": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.0.216": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.0.240": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.0.264": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.0.288": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.0.312": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.0.336": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.0.360": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.1.0": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.1.24": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.1.48": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.1.72": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.1.96": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.1.120": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.1.144": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.1.168": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.1.192": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.1.216": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.1.240": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.1.264": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.1.288": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.1.312": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.1.336": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.T_train.1.360": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.E_test.0.0": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.E_test.0.24": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.E_test.0.48": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.E_test.0.72": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.E_test.0.96": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.E_test.0.120": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.E_test.0.144": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.E_test.0.168": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.E_test.0.192": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.E_test.0.216": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.E_test.0.240": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.E_test.0.264": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.E_test.0.288": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.E_test.0.312": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.E_test.0.336": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.E_test.0.360": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.G_guard.0.0": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.G_guard.0.24": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.G_guard.0.48": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "teacher.REP96.G_guard.0.72": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "sft.REP96.0.GOLD_ALL": {
+      "logical_optimizer_updates": 0,
+      "measured_physical_optimizer_updates": 0,
+      "recomputed_updates_lower_bound": 0,
+      "processed_target_sequences": 0,
+      "processed_target_tokens": 0,
+      "update_wall_seconds": 0,
+      "update_gpu_seconds": 0,
+      "incomplete_update_attempts": 0
+    },
+    "eval.REP96.0.GOLD_ALL.V_selection.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.0.GOLD_ALL.V_selection.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.0.GOLD_ALL.E_test.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.0.GOLD_ALL.G_guard.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "sentinel.REP96.0.GOLD_ALL.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.REP96.0.GOLD_ALL.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.REP96.0.GOLD_ALL.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sft.REP96.0.SELF_O0": {
+      "logical_optimizer_updates": 0,
+      "measured_physical_optimizer_updates": 0,
+      "recomputed_updates_lower_bound": 0,
+      "processed_target_sequences": 0,
+      "processed_target_tokens": 0,
+      "update_wall_seconds": 0,
+      "update_gpu_seconds": 0,
+      "incomplete_update_attempts": 0
+    },
+    "eval.REP96.0.SELF_O0.V_selection.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.0.SELF_O0.V_selection.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.0.SELF_O0.E_test.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.0.SELF_O0.G_guard.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "sentinel.REP96.0.SELF_O0.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.REP96.0.SELF_O0.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.REP96.0.SELF_O0.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sft.REP96.0.SELF_MIX": {
+      "logical_optimizer_updates": 0,
+      "measured_physical_optimizer_updates": 0,
+      "recomputed_updates_lower_bound": 0,
+      "processed_target_sequences": 0,
+      "processed_target_tokens": 0,
+      "update_wall_seconds": 0,
+      "update_gpu_seconds": 0,
+      "incomplete_update_attempts": 0
+    },
+    "eval.REP96.0.SELF_MIX.V_selection.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.0.SELF_MIX.V_selection.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.0.SELF_MIX.E_test.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.0.SELF_MIX.G_guard.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "sentinel.REP96.0.SELF_MIX.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.REP96.0.SELF_MIX.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.REP96.0.SELF_MIX.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sft.REP96.0.SELF_SINGLE": {
+      "logical_optimizer_updates": 0,
+      "measured_physical_optimizer_updates": 0,
+      "recomputed_updates_lower_bound": 0,
+      "processed_target_sequences": 0,
+      "processed_target_tokens": 0,
+      "update_wall_seconds": 0,
+      "update_gpu_seconds": 0,
+      "incomplete_update_attempts": 0
+    },
+    "eval.REP96.0.SELF_SINGLE.V_selection.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.0.SELF_SINGLE.V_selection.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.0.SELF_SINGLE.E_test.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.0.SELF_SINGLE.G_guard.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "sentinel.REP96.0.SELF_SINGLE.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.REP96.0.SELF_SINGLE.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.REP96.0.SELF_SINGLE.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "r0.REP96.0": {
+      "accepted_on_policy_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0,
+      "logical_optimizer_updates": 0,
+      "gradient_processed_sequences": 0,
+      "zero_gradient_adam_updates": 0,
+      "failed_attempts": 0,
+      "not_equal_compute_to_SFT": true
+    },
+    "eval.REP96.0.R0_RESET32.V_selection.8": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.0.R0_RESET32.E_test.32": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.0.R0_RESET32.G_guard.32": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "sft.REP96.1.GOLD_ALL": {
+      "logical_optimizer_updates": 0,
+      "measured_physical_optimizer_updates": 0,
+      "recomputed_updates_lower_bound": 0,
+      "processed_target_sequences": 0,
+      "processed_target_tokens": 0,
+      "update_wall_seconds": 0,
+      "update_gpu_seconds": 0,
+      "incomplete_update_attempts": 0
+    },
+    "eval.REP96.1.GOLD_ALL.V_selection.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.1.GOLD_ALL.V_selection.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.1.GOLD_ALL.E_test.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.1.GOLD_ALL.G_guard.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "sentinel.REP96.1.GOLD_ALL.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.REP96.1.GOLD_ALL.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.REP96.1.GOLD_ALL.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sft.REP96.1.SELF_O0": {
+      "logical_optimizer_updates": 0,
+      "measured_physical_optimizer_updates": 0,
+      "recomputed_updates_lower_bound": 0,
+      "processed_target_sequences": 0,
+      "processed_target_tokens": 0,
+      "update_wall_seconds": 0,
+      "update_gpu_seconds": 0,
+      "incomplete_update_attempts": 0
+    },
+    "eval.REP96.1.SELF_O0.V_selection.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.1.SELF_O0.V_selection.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.1.SELF_O0.E_test.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.1.SELF_O0.G_guard.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "sentinel.REP96.1.SELF_O0.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.REP96.1.SELF_O0.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.REP96.1.SELF_O0.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sft.REP96.1.SELF_MIX": {
+      "logical_optimizer_updates": 0,
+      "measured_physical_optimizer_updates": 0,
+      "recomputed_updates_lower_bound": 0,
+      "processed_target_sequences": 0,
+      "processed_target_tokens": 0,
+      "update_wall_seconds": 0,
+      "update_gpu_seconds": 0,
+      "incomplete_update_attempts": 0
+    },
+    "eval.REP96.1.SELF_MIX.V_selection.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.1.SELF_MIX.V_selection.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.1.SELF_MIX.E_test.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.1.SELF_MIX.G_guard.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "sentinel.REP96.1.SELF_MIX.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.REP96.1.SELF_MIX.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.REP96.1.SELF_MIX.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sft.REP96.1.SELF_SINGLE": {
+      "logical_optimizer_updates": 0,
+      "measured_physical_optimizer_updates": 0,
+      "recomputed_updates_lower_bound": 0,
+      "processed_target_sequences": 0,
+      "processed_target_tokens": 0,
+      "update_wall_seconds": 0,
+      "update_gpu_seconds": 0,
+      "incomplete_update_attempts": 0
+    },
+    "eval.REP96.1.SELF_SINGLE.V_selection.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.1.SELF_SINGLE.V_selection.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.1.SELF_SINGLE.E_test.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.1.SELF_SINGLE.G_guard.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "sentinel.REP96.1.SELF_SINGLE.64": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.REP96.1.SELF_SINGLE.128": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "sentinel.REP96.1.SELF_SINGLE.256": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "r0.REP96.1": {
+      "accepted_on_policy_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0,
+      "logical_optimizer_updates": 0,
+      "gradient_processed_sequences": 0,
+      "zero_gradient_adam_updates": 0,
+      "failed_attempts": 0,
+      "not_equal_compute_to_SFT": true
+    },
+    "eval.REP96.1.R0_RESET32.V_selection.8": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": 0,
+      "generation_seconds": 0.0,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.1.R0_RESET32.E_test.32": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    },
+    "eval.REP96.1.R0_RESET32.G_guard.32": {
+      "accepted_physical_calls": 0,
+      "generated_tokens": null,
+      "generation_seconds": null,
+      "failed_attempt_records": 0
+    }
+  },
+  "strict_alias_and_parent_return_savings": {
+    "sft_updates_avoided": 0,
+    "sft_target_sequences_avoided": 0,
+    "evaluation_calls_avoided": 0
+  },
+  "technical_bridge_draws": 4,
+  "extra_teacher_likelihood_scoring_calls": 0,
+  "physical_cost_complete": false,
+  "unknown_or_lower_bound_costs": [
+    {
+      "job": "sft.S96.0.GOLD_ALL",
+      "reason": "failed/in-progress update work has only a lower-bound cost"
+    },
+    {
+      "job": "sft.S96.1.GOLD_ALL",
+      "reason": "failed/in-progress update work has only a lower-bound cost"
+    }
+  ],
+  "retained_negative_outputs_included": true,
+  "scope": "Actual retained calls and all SFT attempt journals; no inference speedup inferred from offline early-stop counts"
+}

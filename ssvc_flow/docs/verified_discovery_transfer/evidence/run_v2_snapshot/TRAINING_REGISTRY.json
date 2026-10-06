@@ -1,0 +1,194 @@
+[
+  {
+    "job": "sft.S96.0.GOLD_ALL",
+    "parent": "S96",
+    "arm": "GOLD_ALL",
+    "repeat": 0,
+    "status": "RUNNING",
+    "result": null
+  },
+  {
+    "job": "sft.S96.0.REPLAY_ONLY",
+    "parent": "S96",
+    "arm": "REPLAY_ONLY",
+    "repeat": 0,
+    "status": "PENDING",
+    "result": null
+  },
+  {
+    "job": "sft.S96.0.SELF_O0",
+    "parent": "S96",
+    "arm": "SELF_O0",
+    "repeat": 0,
+    "status": "PENDING",
+    "result": null
+  },
+  {
+    "job": "sft.S96.0.SELF_MIX",
+    "parent": "S96",
+    "arm": "SELF_MIX",
+    "repeat": 0,
+    "status": "PENDING",
+    "result": null
+  },
+  {
+    "job": "sft.S96.0.SELF_SINGLE",
+    "parent": "S96",
+    "arm": "SELF_SINGLE",
+    "repeat": 0,
+    "status": "PENDING",
+    "result": null
+  },
+  {
+    "job": "sft.S96.0.GOLD_MATCH_MIX",
+    "parent": "S96",
+    "arm": "GOLD_MATCH_MIX",
+    "repeat": 0,
+    "status": "PENDING",
+    "result": null
+  },
+  {
+    "job": "r0.S96.0",
+    "parent": "S96",
+    "arm": null,
+    "repeat": 0,
+    "status": "PENDING",
+    "result": null
+  },
+  {
+    "job": "sft.S96.1.GOLD_ALL",
+    "parent": "S96",
+    "arm": "GOLD_ALL",
+    "repeat": 1,
+    "status": "RUNNING",
+    "result": null
+  },
+  {
+    "job": "sft.S96.1.REPLAY_ONLY",
+    "parent": "S96",
+    "arm": "REPLAY_ONLY",
+    "repeat": 1,
+    "status": "PENDING",
+    "result": null
+  },
+  {
+    "job": "sft.S96.1.SELF_O0",
+    "parent": "S96",
+    "arm": "SELF_O0",
+    "repeat": 1,
+    "status": "PENDING",
+    "result": null
+  },
+  {
+    "job": "sft.S96.1.SELF_MIX",
+    "parent": "S96",
+    "arm": "SELF_MIX",
+    "repeat": 1,
+    "status": "PENDING",
+    "result": null
+  },
+  {
+    "job": "sft.S96.1.SELF_SINGLE",
+    "parent": "S96",
+    "arm": "SELF_SINGLE",
+    "repeat": 1,
+    "status": "PENDING",
+    "result": null
+  },
+  {
+    "job": "sft.S96.1.GOLD_MATCH_MIX",
+    "parent": "S96",
+    "arm": "GOLD_MATCH_MIX",
+    "repeat": 1,
+    "status": "PENDING",
+    "result": null
+  },
+  {
+    "job": "r0.S96.1",
+    "parent": "S96",
+    "arm": null,
+    "repeat": 1,
+    "status": "PENDING",
+    "result": null
+  },
+  {
+    "job": "sft.REP96.0.GOLD_ALL",
+    "parent": "REP96",
+    "arm": "GOLD_ALL",
+    "repeat": 0,
+    "status": "PENDING",
+    "result": null
+  },
+  {
+    "job": "sft.REP96.0.SELF_O0",
+    "parent": "REP96",
+    "arm": "SELF_O0",
+    "repeat": 0,
+    "status": "PENDING",
+    "result": null
+  },
+  {
+    "job": "sft.REP96.0.SELF_MIX",
+    "parent": "REP96",
+    "arm": "SELF_MIX",
+    "repeat": 0,
+    "status": "PENDING",
+    "result": null
+  },
+  {
+    "job": "sft.REP96.0.SELF_SINGLE",
+    "parent": "REP96",
+    "arm": "SELF_SINGLE",
+    "repeat": 0,
+    "status": "PENDING",
+    "result": null
+  },
+  {
+    "job": "r0.REP96.0",
+    "parent": "REP96",
+    "arm": null,
+    "repeat": 0,
+    "status": "PENDING",
+    "result": null
+  },
+  {
+    "job": "sft.REP96.1.GOLD_ALL",
+    "parent": "REP96",
+    "arm": "GOLD_ALL",
+    "repeat": 1,
+    "status": "PENDING",
+    "result": null
+  },
+  {
+    "job": "sft.REP96.1.SELF_O0",
+    "parent": "REP96",
+    "arm": "SELF_O0",
+    "repeat": 1,
+    "status": "PENDING",
+    "result": null
+  },
+  {
+    "job": "sft.REP96.1.SELF_MIX",
+    "parent": "REP96",
+    "arm": "SELF_MIX",
+    "repeat": 1,
+    "status": "PENDING",
+    "result": null
+  },
+  {
+    "job": "sft.REP96.1.SELF_SINGLE",
+    "parent": "REP96",
+    "arm": "SELF_SINGLE",
+    "repeat": 1,
+    "status": "PENDING",
+    "result": null
+  },
+  {
+    "job": "r0.REP96.1",
+    "parent": "REP96",
+    "arm": null,
+    "repeat": 1,
+    "status": "PENDING",
+    "result": null
+  }
+]

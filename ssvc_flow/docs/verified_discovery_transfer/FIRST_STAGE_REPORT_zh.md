@@ -1,3 +1,22 @@
+# 当前进度：正确 QOS 下已并行启动
+
+截至 2026-10-06 12:37:24（新加坡），已使用账户授权的 `soujanya-poria-startfund-2026-03`，其 MaxSubmitJobsPerUser=5（运行＋排队）、MaxJobsPerUser 未设置。此前只查默认 rose 导致误报配额阻塞，此处更正。
+
+- `187023`：错误默认 QOS 下排队，零运行时间取消。
+- `187045`：正确 QOS 下完成 v1 两父真实桥接，5分41秒，Slurm 0:0。
+- `187112`：完成 v2 门禁复核与固定训练题数值定位，5分39秒，Slurm 0:0。
+- 正式 worker `187115 / 187116 / 187154 / 187155` 已运行；`187156` 等待 Resources。已提交五个单 GPU worker，当前实际四张 PRO6000，不超过五张上限。
+- 两个 teacher 与两个 S96 GOLD_ALL repeat 正在并行。快照记录 782 条 V 原子回答、51 次正式 SFT 更新；294 个工作项中 4 RUNNING、290 PENDING，无 BLOCKED_TECHNICAL 项。快照之后计数会继续增加。
+- 原始 BF16 差异报告保留；两父因果/PAD与精确恢复通过，受控精度诊断及独立审阅后接受固定共同 SFT 路径。详见 [数值审阅](NUMERICAL_REVIEW_zh.md)。不声称旧 prefix 等价或科学效果成立。
+
+当前正式运行目录为服务器 `verified_discovery_transfer_20261006/run_v2`，代码 `code_v2/ssvc_flow`，代码提交 `ed1d248`。新旧 cohort 清单字节一致；旧 run_v1 没有正式科学模型调用，只保留技术桥接证据。v2 在任何 teacher 回答前已重新冻结源码和同一预登记矩阵。
+
+[实时阶段快照](evidence/run_v2_snapshot/SCHEDULER_RECEIPT.json)、[执行范围](evidence/run_v2_snapshot/EXECUTION_SCOPE.json)、[训练登记表](evidence/run_v2_snapshot/TRAINING_REGISTRY.json)、[生成与训练成本](evidence/run_v2_snapshot/EXECUTION_COSTS.json)。E/G 仍封存，实验未完成，尚未生成最终发现/迁移/保持性结论；未新增定时监控。
+
+以下保留较早的准备与排队快照，属于历史记录。
+
+---
+
 # QOS 更正及当前进度
 
 用户指出 soujanya QOS 后，实时核实账户具备 `soujanya-poria-startfund-2026-03` 权限；其 MaxSubmitJobsPerUser=5，MaxJobsPerUser 未设置。集群禁止原地更改 QOS，故将尚未启动的 187023 取消，并重提同一桥接为 **187045**。新作业已在 `gpu-pro6000-6` 使用 1 张 PRO6000 完成，Slurm 0:0，耗时 5分41秒。两父均 future/PAD delta=0、resume_exact=true，但数值门槛为 NUMERICAL_REVIEW_REQUIRED；正式训练未放行。原始回执见 [bridge_v1](evidence/bridge_v1/bridge.json)。以下保留先前排队阶段的历史快照，不能当作当前调度状态。

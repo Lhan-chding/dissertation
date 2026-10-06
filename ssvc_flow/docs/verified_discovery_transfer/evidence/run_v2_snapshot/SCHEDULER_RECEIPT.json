@@ -1,0 +1,48 @@
+{
+  "recorded_at_utc": "2026-10-06T04:37:24.369690+00:00",
+  "code_commit": "ed1d24839dc6bd374d17a92bd29678b7185c7605",
+  "code_archive_sha256": "cc39e48d85a2d140a9115dbbfaa3722e1a19eabd1b5a0644d9d0570a5377c69b",
+  "run_root": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2",
+  "run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+  "qos": "soujanya-poria-startfund-2026-03",
+  "account": "rose",
+  "qos_max_submit_jobs_per_user": 5,
+  "qos_max_jobs_per_user": null,
+  "project_gpu_cap": 5,
+  "numeric_job": 187112,
+  "numeric_job_status": "COMPLETED 0:0 00:05:39",
+  "worker_jobs": [
+    187115,
+    187116,
+    187154,
+    187155,
+    187156
+  ],
+  "scheduler": "187156|PENDING|0:00|(Resources)\n187155|RUNNING|1:40|gpu-pro6000-10\n187154|RUNNING|1:41|gpu-pro6000-10\n187116|RUNNING|10:16|gpu-pro6000-10\n187115|RUNNING|10:18|gpu-pro6000-10\n",
+  "active_work_items": [
+    [
+      "teacher.S96.V_selection.0.0",
+      "v2-lane1"
+    ],
+    [
+      "sft.S96.0.GOLD_ALL",
+      "v2-lane3"
+    ],
+    [
+      "sft.S96.1.GOLD_ALL",
+      "v2-lane2"
+    ],
+    [
+      "teacher.REP96.V_selection.0.0",
+      "v2-lane0"
+    ]
+  ],
+  "queue_counts": {
+    "RUNNING": 4,
+    "PENDING": 290
+  },
+  "V_atomic_receipts": 782,
+  "formal_sft_updates_written": 51,
+  "numeric_acceptance": "ACCEPTED",
+  "E_G_revealed": false
+}

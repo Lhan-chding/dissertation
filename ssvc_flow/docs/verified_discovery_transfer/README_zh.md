@@ -7,7 +7,7 @@
 新分支从 `2f8c6b19970f49542b009f2816f1c1a91eb9974c` 建立，旧工作区和旧流水线 STOP 保留。
 模型调用、训练与科学结论各自记账；CPU 单测或队列注册不表示真实实验完成。
 
-当前进度见 [第一阶段事实报告](FIRST_STAGE_REPORT_zh.md)：清理及 CPU 准备完成；更正 QOS 后，GPU bridge 作业 187045 已完成，数值审阅尚未放行正式训练。
+当前进度见 [第一阶段事实报告](FIRST_STAGE_REPORT_zh.md)：已更正到 soujanya QOS，两个 teacher 与 GOLD 参照并行；数值审阅接受共同 BF16 SFT 路径并保留原差异，完整实验尚未结束。
 
 ## 输入及信息边界
 

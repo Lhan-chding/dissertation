@@ -1,0 +1,1491 @@
+{
+  "schema": "verified-discovery-execution-scope-v1",
+  "status": "IN_PROGRESS",
+  "scientific_complete": false,
+  "job_status_counts": {
+    "RUNNING": 4,
+    "PENDING": 290
+  },
+  "missing_or_pending": [
+    {
+      "job": "teacher.S96.V_selection.0.0",
+      "status": "RUNNING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.V_selection.0.24",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.V_selection.0.48",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.V_selection.0.72",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.0.0",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.0.24",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.0.48",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.0.72",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.0.96",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.0.120",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.0.144",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.0.168",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.0.192",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.0.216",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.0.240",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.0.264",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.0.288",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.0.312",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.0.336",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.0.360",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.1.0",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.1.24",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.1.48",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.1.72",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.1.96",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.1.120",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.1.144",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.1.168",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.1.192",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.1.216",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.1.240",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.1.264",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.1.288",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.1.312",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.1.336",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.T_train.1.360",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.E_test.0.0",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.E_test.0.24",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.E_test.0.48",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.E_test.0.72",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.E_test.0.96",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.E_test.0.120",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.E_test.0.144",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.E_test.0.168",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.E_test.0.192",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.E_test.0.216",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.E_test.0.240",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.E_test.0.264",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.E_test.0.288",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.E_test.0.312",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.E_test.0.336",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.E_test.0.360",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.G_guard.0.0",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.G_guard.0.24",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.G_guard.0.48",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.S96.G_guard.0.72",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "select.S96",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "discover.S96.0",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sft.S96.0.GOLD_ALL",
+      "status": "RUNNING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.GOLD_ALL.V_selection.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.GOLD_ALL.V_selection.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.GOLD_ALL.E_test.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.GOLD_ALL.G_guard.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.0.GOLD_ALL.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.0.GOLD_ALL.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.0.GOLD_ALL.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sft.S96.0.REPLAY_ONLY",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.REPLAY_ONLY.V_selection.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.REPLAY_ONLY.V_selection.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.REPLAY_ONLY.E_test.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.REPLAY_ONLY.G_guard.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.0.REPLAY_ONLY.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.0.REPLAY_ONLY.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.0.REPLAY_ONLY.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sft.S96.0.SELF_O0",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.SELF_O0.V_selection.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.SELF_O0.V_selection.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.SELF_O0.E_test.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.SELF_O0.G_guard.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.0.SELF_O0.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.0.SELF_O0.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.0.SELF_O0.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sft.S96.0.SELF_MIX",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.SELF_MIX.V_selection.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.SELF_MIX.V_selection.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.SELF_MIX.E_test.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.SELF_MIX.G_guard.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.0.SELF_MIX.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.0.SELF_MIX.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.0.SELF_MIX.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sft.S96.0.SELF_SINGLE",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.SELF_SINGLE.V_selection.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.SELF_SINGLE.V_selection.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.SELF_SINGLE.E_test.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.SELF_SINGLE.G_guard.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.0.SELF_SINGLE.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.0.SELF_SINGLE.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.0.SELF_SINGLE.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sft.S96.0.GOLD_MATCH_MIX",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.GOLD_MATCH_MIX.V_selection.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.GOLD_MATCH_MIX.V_selection.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.GOLD_MATCH_MIX.E_test.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.GOLD_MATCH_MIX.G_guard.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.0.GOLD_MATCH_MIX.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.0.GOLD_MATCH_MIX.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.0.GOLD_MATCH_MIX.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "r0.S96.0",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.R0_RESET32.V_selection.8",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.R0_RESET32.E_test.32",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.0.R0_RESET32.G_guard.32",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "discover.S96.1",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sft.S96.1.GOLD_ALL",
+      "status": "RUNNING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.GOLD_ALL.V_selection.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.GOLD_ALL.V_selection.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.GOLD_ALL.E_test.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.GOLD_ALL.G_guard.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.1.GOLD_ALL.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.1.GOLD_ALL.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.1.GOLD_ALL.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sft.S96.1.REPLAY_ONLY",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.REPLAY_ONLY.V_selection.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.REPLAY_ONLY.V_selection.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.REPLAY_ONLY.E_test.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.REPLAY_ONLY.G_guard.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.1.REPLAY_ONLY.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.1.REPLAY_ONLY.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.1.REPLAY_ONLY.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sft.S96.1.SELF_O0",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.SELF_O0.V_selection.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.SELF_O0.V_selection.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.SELF_O0.E_test.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.SELF_O0.G_guard.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.1.SELF_O0.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.1.SELF_O0.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.1.SELF_O0.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sft.S96.1.SELF_MIX",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.SELF_MIX.V_selection.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.SELF_MIX.V_selection.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.SELF_MIX.E_test.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.SELF_MIX.G_guard.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.1.SELF_MIX.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.1.SELF_MIX.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.1.SELF_MIX.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sft.S96.1.SELF_SINGLE",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.SELF_SINGLE.V_selection.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.SELF_SINGLE.V_selection.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.SELF_SINGLE.E_test.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.SELF_SINGLE.G_guard.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.1.SELF_SINGLE.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.1.SELF_SINGLE.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.1.SELF_SINGLE.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sft.S96.1.GOLD_MATCH_MIX",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.GOLD_MATCH_MIX.V_selection.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.GOLD_MATCH_MIX.V_selection.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.GOLD_MATCH_MIX.E_test.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.GOLD_MATCH_MIX.G_guard.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.1.GOLD_MATCH_MIX.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.1.GOLD_MATCH_MIX.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.S96.1.GOLD_MATCH_MIX.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "r0.S96.1",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.R0_RESET32.V_selection.8",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.R0_RESET32.E_test.32",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.S96.1.R0_RESET32.G_guard.32",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.V_selection.0.0",
+      "status": "RUNNING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.V_selection.0.24",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.V_selection.0.48",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.V_selection.0.72",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.0.0",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.0.24",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.0.48",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.0.72",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.0.96",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.0.120",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.0.144",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.0.168",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.0.192",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.0.216",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.0.240",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.0.264",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.0.288",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.0.312",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.0.336",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.0.360",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.1.0",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.1.24",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.1.48",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.1.72",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.1.96",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.1.120",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.1.144",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.1.168",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.1.192",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.1.216",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.1.240",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.1.264",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.1.288",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.1.312",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.1.336",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.T_train.1.360",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.E_test.0.0",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.E_test.0.24",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.E_test.0.48",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.E_test.0.72",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.E_test.0.96",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.E_test.0.120",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.E_test.0.144",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.E_test.0.168",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.E_test.0.192",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.E_test.0.216",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.E_test.0.240",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.E_test.0.264",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.E_test.0.288",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.E_test.0.312",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.E_test.0.336",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.E_test.0.360",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.G_guard.0.0",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.G_guard.0.24",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.G_guard.0.48",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "teacher.REP96.G_guard.0.72",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "select.REP96",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "discover.REP96.0",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sft.REP96.0.GOLD_ALL",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.0.GOLD_ALL.V_selection.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.0.GOLD_ALL.V_selection.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.0.GOLD_ALL.E_test.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.0.GOLD_ALL.G_guard.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.REP96.0.GOLD_ALL.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.REP96.0.GOLD_ALL.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.REP96.0.GOLD_ALL.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sft.REP96.0.SELF_O0",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.0.SELF_O0.V_selection.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.0.SELF_O0.V_selection.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.0.SELF_O0.E_test.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.0.SELF_O0.G_guard.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.REP96.0.SELF_O0.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.REP96.0.SELF_O0.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.REP96.0.SELF_O0.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sft.REP96.0.SELF_MIX",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.0.SELF_MIX.V_selection.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.0.SELF_MIX.V_selection.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.0.SELF_MIX.E_test.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.0.SELF_MIX.G_guard.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.REP96.0.SELF_MIX.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.REP96.0.SELF_MIX.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.REP96.0.SELF_MIX.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sft.REP96.0.SELF_SINGLE",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.0.SELF_SINGLE.V_selection.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.0.SELF_SINGLE.V_selection.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.0.SELF_SINGLE.E_test.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.0.SELF_SINGLE.G_guard.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.REP96.0.SELF_SINGLE.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.REP96.0.SELF_SINGLE.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.REP96.0.SELF_SINGLE.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "r0.REP96.0",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.0.R0_RESET32.V_selection.8",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.0.R0_RESET32.E_test.32",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.0.R0_RESET32.G_guard.32",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "discover.REP96.1",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sft.REP96.1.GOLD_ALL",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.1.GOLD_ALL.V_selection.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.1.GOLD_ALL.V_selection.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.1.GOLD_ALL.E_test.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.1.GOLD_ALL.G_guard.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.REP96.1.GOLD_ALL.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.REP96.1.GOLD_ALL.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.REP96.1.GOLD_ALL.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sft.REP96.1.SELF_O0",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.1.SELF_O0.V_selection.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.1.SELF_O0.V_selection.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.1.SELF_O0.E_test.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.1.SELF_O0.G_guard.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.REP96.1.SELF_O0.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.REP96.1.SELF_O0.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.REP96.1.SELF_O0.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sft.REP96.1.SELF_MIX",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.1.SELF_MIX.V_selection.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.1.SELF_MIX.V_selection.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.1.SELF_MIX.E_test.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.1.SELF_MIX.G_guard.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.REP96.1.SELF_MIX.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.REP96.1.SELF_MIX.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.REP96.1.SELF_MIX.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sft.REP96.1.SELF_SINGLE",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.1.SELF_SINGLE.V_selection.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.1.SELF_SINGLE.V_selection.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.1.SELF_SINGLE.E_test.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.1.SELF_SINGLE.G_guard.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.REP96.1.SELF_SINGLE.64",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.REP96.1.SELF_SINGLE.128",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "sentinel.REP96.1.SELF_SINGLE.256",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "r0.REP96.1",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.1.R0_RESET32.V_selection.8",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.1.R0_RESET32.E_test.32",
+      "status": "PENDING",
+      "reason": null
+    },
+    {
+      "job": "eval.REP96.1.R0_RESET32.G_guard.32",
+      "status": "PENDING",
+      "reason": null
+    }
+  ],
+  "test_results_revealed": false,
+  "fixture_results_are_not_model_evidence": true,
+  "runtime_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+  "discovery": "public-verifier-only SELF; no solver fill",
+  "fitting": "completion-only full sequence SFT; exact view aliases retained",
+  "transfer": "E O0 fixed step256",
+  "retention": "G separate from E; shared base scenes stay clustered",
+  "no_automatic_expansion": true,
+  "execution_costs_path": "EXECUTION_COSTS.json",
+  "physical_cost_complete": false
+}

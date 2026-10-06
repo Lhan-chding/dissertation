@@ -1,0 +1,97 @@
+{
+  "bridge_hash": "dbdaf80f34b0f2b685d16ef1394d562a6ff24ba23090c868d117f08c20d65757",
+  "parents": {
+    "S96": {
+      "gate": {
+        "status": "NUMERICAL_REVIEW_REQUIRED",
+        "diagnostic_gate_reasons": [
+          "example[0]: prefix/full token difference exceeds same-path noise",
+          "example[0]: batch/full token values differ",
+          "example[1]: prefix/full token difference exceeds same-path noise",
+          "example[1]: batch/full token values differ",
+          "example[2]: prefix/full token difference exceeds same-path noise",
+          "example[2]: batch/full token values differ",
+          "example[3]: prefix/full token difference exceeds same-path noise",
+          "example[3]: batch/full token values differ",
+          "example[4]: prefix/full token difference exceeds same-path noise",
+          "example[4]: batch/full token values differ",
+          "example[5]: prefix/full token difference exceeds same-path noise",
+          "example[5]: batch/full token values differ",
+          "example[6]: prefix/full token difference exceeds same-path noise",
+          "example[6]: batch/full token values differ",
+          "example[7]: prefix/full token difference exceeds same-path noise",
+          "example[7]: batch/full token values differ",
+          "gradient_microbatch: gradient difference exceeds same-path noise",
+          "gradient_full_vs_prefix: gradient difference exceeds same-path noise"
+        ]
+      },
+      "v1_v2_identical_diagnostics": {
+        "examples": true,
+        "padding_diagnostics": true,
+        "gradient_same_path": true,
+        "gradient_microbatch": true,
+        "gradient_full_vs_prefix": true,
+        "update1": true,
+        "update2": true,
+        "resumed_update2": true
+      },
+      "exactly_one_eos": true,
+      "target_shift": true,
+      "resume_exact": true,
+      "causal_padding_within_baseline": true,
+      "nonzero_updates": true,
+      "bf16_micro_relative_l2": 0.13573516698859395,
+      "bf16_prefix_relative_l2": 0.0764957427337614,
+      "fp32_micro_relative_l2": 2.9068273345722356e-05,
+      "fp32_prefix_relative_l2": 2.6125358387301083e-06
+    },
+    "REP96": {
+      "gate": {
+        "status": "NUMERICAL_REVIEW_REQUIRED",
+        "diagnostic_gate_reasons": [
+          "example[0]: prefix/full token difference exceeds same-path noise",
+          "example[0]: batch/full token values differ",
+          "example[1]: prefix/full token difference exceeds same-path noise",
+          "example[1]: batch/full token values differ",
+          "example[2]: prefix/full token difference exceeds same-path noise",
+          "example[2]: batch/full token values differ",
+          "example[3]: prefix/full token difference exceeds same-path noise",
+          "example[3]: batch/full token values differ",
+          "example[4]: prefix/full token difference exceeds same-path noise",
+          "example[4]: batch/full token values differ",
+          "example[5]: prefix/full token difference exceeds same-path noise",
+          "example[5]: batch/full token values differ",
+          "example[6]: prefix/full token difference exceeds same-path noise",
+          "example[6]: batch/full token values differ",
+          "example[7]: prefix/full token difference exceeds same-path noise",
+          "example[7]: batch/full token values differ",
+          "gradient_microbatch: gradient difference exceeds same-path noise",
+          "gradient_full_vs_prefix: gradient difference exceeds same-path noise"
+        ]
+      },
+      "v1_v2_identical_diagnostics": {
+        "examples": true,
+        "padding_diagnostics": true,
+        "gradient_same_path": true,
+        "gradient_microbatch": true,
+        "gradient_full_vs_prefix": true,
+        "update1": true,
+        "update2": true,
+        "resumed_update2": true
+      },
+      "exactly_one_eos": true,
+      "target_shift": true,
+      "resume_exact": true,
+      "causal_padding_within_baseline": true,
+      "nonzero_updates": true,
+      "bf16_micro_relative_l2": 0.182156114274776,
+      "bf16_prefix_relative_l2": 0.05164205297624897,
+      "fp32_micro_relative_l2": 3.916954909922921e-05,
+      "fp32_prefix_relative_l2": 2.954979417217526e-06
+    }
+  },
+  "total_bridge_generated_answers_v1_v2": 8,
+  "numerical_probe_generated_answers": 0,
+  "individual_kernel_cause": "NOT_ISOLATED",
+  "scientific_performance": "NOT_EVALUATED"
+}

@@ -1,3 +1,17 @@
+# 当前正式运行入口（run_v2）
+
+当前源码 `code_v2/ssvc_flow`，运行目录 `run_v2`，机器配置 `machine.v2.json`；绝对项目根仍为 `/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006`。QOS 为 `soujanya-poria-startfund-2026-03`，account 为 `rose`，每worker一张PRO6000/4 CPU/33G。正式worker时限为分区允许的3天，这是作业上限，不是完成时间预测。
+
+`bridge-numerics` lane 已提交并完成为187112；它先运行真实bridge，再运行固定桥接题的0生成0更新精度诊断。随后原子发布绑定当前bridge哈希的接受记录。
+
+已提交五个正式lane：`v2-lane0=187115`、`v2-lane1=187116`、`v2-lane2=187154`、`v2-lane3=187155`、`v2-lane4=187156`。沿用下方launch.sbatch的5参数接口，传入上述新code/run/machine路径，最后参数为对应lane。不要重复提交或重新生成数据。
+
+只读查询：`squeue -j 187115,187116,187154,187155,187156`。报告使用 `cli report --run .../run_v2`；完整登记矩阵尚未终态，不能传 `--reveal-test-after-completion`。
+
+以下保留最初命令及QOS更正记录。
+
+---
+
 # QOS 更正
 
 账户已确认可以使用 `soujanya-poria-startfund-2026-03`，MaxSubmitJobsPerUser 为 5（运行加排队），没有设置该 QOS 的 MaxJobsPerUser。集群禁止原地修改已提交作业 QOS。实际执行 `scancel --state=PENDING 187023` 后，将下方 sbatch 的 QOS 改为 `soujanya-poria-startfund-2026-03`、CPU 改为 4、内存改为 33G，其他参数相同，重提得到 **187045**，已确认 RUNNING。不要重复提交；后续查询使用 187045。

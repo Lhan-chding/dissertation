@@ -1,0 +1,15 @@
+{
+  "run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+  "script_sha256": "16f95c04fc63678a6a7171d89cd26d90bddd4a8c3eb735944577977ec6e7922c",
+  "train_only": true,
+  "fixed_bridge_tasks": [
+    "00c368c42f773b30e45769f2e242722d",
+    "03ffb5cb7887afcf7ad9aef86fde9aaa",
+    "04304ed085226c68239588e4e9275007",
+    "0506f33450248e4d452c7abddaef7fdf",
+    "00bcf349f1cae2ef9f286848d13c57a9",
+    "00fa857177d6d0e5828589d9b25a0570",
+    "01c08a45db77e9fdf255d03807dd2928",
+    "0231e5168586f12bcc8b4c1bc469fbbe"
+  ]
+}
