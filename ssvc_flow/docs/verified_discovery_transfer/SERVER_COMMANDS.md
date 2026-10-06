@@ -1,5 +1,7 @@
 # 当前正式运行入口（run_v2）
 
+2026-10-06 17:04已授权恢复后，当前worker为 `v2-lane0=187958`、`v2-lane1=187959`、`v2-lane2=187960`、`v2-lane3=187961`、`v2-lane4=187962`。只读查询使用 `squeue -j 187958,187959,187960,187961,187962`。旧187115/187116/187154/187155/187156均FAILED/1:0，原五个工作项已显式retry一次；不要再次retry或提交。17:06:33为1运行4排队，实际增量见 [恢复核验](RECOVERY_20261006_zh.md)。以下初次提交ID保留为历史。
+
 当前源码 `code_v2/ssvc_flow`，运行目录 `run_v2`，机器配置 `machine.v2.json`；绝对项目根仍为 `/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006`。QOS 为 `soujanya-poria-startfund-2026-03`，account 为 `rose`，每worker一张PRO6000/4 CPU/33G。正式worker时限为分区允许的3天，这是作业上限，不是完成时间预测。
 
 `bridge-numerics` lane 已提交并完成为187112；它先运行真实bridge，再运行固定桥接题的0生成0更新精度诊断。随后原子发布绑定当前bridge哈希的接受记录。

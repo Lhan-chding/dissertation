@@ -1,0 +1,81 @@
+{
+  "utc": "2026-10-06T09:06:33.390686+00:00",
+  "scheduler": "187959|PENDING|(Resources)|gres/gpu:pro6000:1|soujanya-poria-startfund-2026-03\n187960|PENDING|(Priority)|gres/gpu:pro6000:1|soujanya-poria-startfund-2026-03\n187961|PENDING|(Priority)|gres/gpu:pro6000:1|soujanya-poria-startfund-2026-03\n187962|PENDING|(Priority)|gres/gpu:pro6000:1|soujanya-poria-startfund-2026-03\n187958|RUNNING|gpu-pro6000-10|gres/gpu:pro6000:1|soujanya-poria-startfund-2026-03\n",
+  "queue_counts": {
+    "COMPLETE": 67,
+    "PENDING": 226,
+    "RUNNING": 1
+  },
+  "running": [
+    [
+      "teacher.S96.T_train.0.96",
+      "v2-lane0"
+    ]
+  ],
+  "retry_events": [
+    [
+      "teacher.S96.T_train.0.96",
+      "EXPLICIT_RETRY",
+      1791277478.423132
+    ],
+    [
+      "r0.S96.0",
+      "EXPLICIT_RETRY",
+      1791277478.4337063
+    ],
+    [
+      "eval.S96.1.GOLD_ALL.E_test.256",
+      "EXPLICIT_RETRY",
+      1791277478.4451346
+    ],
+    [
+      "eval.S96.1.REPLAY_ONLY.V_selection.128",
+      "EXPLICIT_RETRY",
+      1791277478.453263
+    ],
+    [
+      "teacher.REP96.T_train.0.144",
+      "EXPLICIT_RETRY",
+      1791277478.4610705
+    ]
+  ],
+  "files": {
+    "teacher.S96.T_train.0.96": {
+      "atomic_json": 575,
+      "chunks_json": 14,
+      "checkpoint_names": []
+    },
+    "teacher.REP96.T_train.0.144": {
+      "atomic_json": 681,
+      "chunks_json": 16,
+      "checkpoint_names": []
+    },
+    "eval.S96.1.REPLAY_ONLY.V_selection.128": {
+      "atomic_json": 20,
+      "chunks_json": 5,
+      "checkpoint_names": []
+    },
+    "eval.S96.1.GOLD_ALL.E_test.256": {
+      "atomic_json": 1297,
+      "chunks_json": 162,
+      "checkpoint_names": []
+    },
+    "r0.S96.0": {
+      "atomic_json": 0,
+      "chunks_json": 0,
+      "checkpoint_names": [
+        "step000.pt",
+        "step008.pt",
+        "step026.pt",
+        "step027.pt"
+      ]
+    }
+  },
+  "log_errors": {
+    "v2-lane0-recovery-187958.err": {
+      "bytes": 14308,
+      "matches": []
+    }
+  },
+  "sealed_scientific_results_read": false
+}

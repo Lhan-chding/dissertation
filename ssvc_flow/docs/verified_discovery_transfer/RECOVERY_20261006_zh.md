@@ -1,4 +1,28 @@
-# 2026-10-06 16:39：已授权恢复，等待 VPN 登录
+# 2026-10-06 17:06：恢复已执行，核验到新增回答
+
+用户确认网络恢复后，再次核验原五个Slurm作业FAILED/1:0、原五个队列残留RUNNING、无既有retry事件、五lane锁可用、冻结身份与桥接接受有效。重复1 MiB写读/fsync/原子重命名探针通过。R0 step027再次通过完整状态哈希；文件SHA256为 `5f1a87001974c4ad0f3a332caab27cbc0c1888e548c7a020c934cd0fd55ff939`。
+
+17:04:37开始执行已授权恢复：备份旧queue.sqlite，复制保留15个零字节临时文件；用已有Queue.retry为原五个中断项写入EXPLICIT_RETRY与原始行。67个COMPLETE逐行比对不变，重置后227 PENDING。没有更改源码、科学设置、矩阵或E/G揭晓状态。
+
+| lane | 新Slurm ID | 17:06:33状态 |
+|---|---:|---|
+| v2-lane0 | 187958 | RUNNING，gpu-pro6000-10 |
+| v2-lane1 | 187959 | PENDING，Resources |
+| v2-lane2 | 187960 | PENDING，Priority |
+| v2-lane3 | 187961 | PENDING，Priority |
+| v2-lane4 | 187962 | PENDING，Priority |
+
+全部使用soujanya-poria-startfund-2026-03、单PRO6000、4 CPU、33G及原3天时限。其他项目的rose作业187922未改动。现有三小时监控已切换新ID；本次恢复授权已执行，不能重复提交。
+
+17:06:33队列为67 COMPLETE、1 RUNNING、226 PENDING。S96 teacher.T_train.0.96已发布原子回答从533增至575，chunk从13增至14，确认实际续跑；新worker日志未匹配到Traceback/Error/Exception/Killed/No space。REP96 teacher、两个中断评估和R0尚待worker领取；不得将已提交五个worker写为五卡都在计算。R0将按冻结运行器选取step027继续，当前尚未证明第28步已执行。
+
+原同时失败原因仍为UNKNOWN；新worker再次由调度器分到gpu-pro6000-10，本次观察到写入成功不证明根因已解决。E/G仅统计文件数量，科学结果未读取。实验尚未完成，恢复不是科学结论。
+
+回执：[显式恢复与提交](evidence/recovery_20261006T090437Z.json)、[实际续跑核验](evidence/resume_check_20261006T090633Z.json)。服务器完整操作证据在 `run_v2/recovery_evidence/20261006T090437Z/`；旧队列备份和临时文件副本保留在服务器。本地恢复回执SHA256与服务器核验值为 `4c7a69c1fb37a6ba1fb4558f31627e93eef477c92b4e89c217a7ac52df5bf0b1`。
+
+---
+
+# 2026-10-06 16:39：已授权恢复，等待 VPN 登录（历史）
 
 用户在五个 worker 故障报告后要求想办法恢复。此次授权仅用于原冻结矩阵的五个中断项续跑，不改变数据、预算、SFT 设置或科学源码。
 
