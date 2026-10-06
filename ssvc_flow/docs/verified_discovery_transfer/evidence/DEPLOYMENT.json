@@ -1,0 +1,36 @@
+{
+  "code_commit": "6902fe8fa7634a819ac9dd9a4cfdb537d27559b7",
+  "remote_branch_verified": "codex/verified-discovery-transfer-20261006",
+  "server_root": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006",
+  "source_archive_sha256": "6ff6daaa742daaa7566227c7daba441f5601d7e0588b7bdca168e193568d4e92",
+  "code_path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/code_v1/ssvc_flow",
+  "run_root": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v1",
+  "run_identity": "4de8c0c0358cf73617414b03da6e15304c6d03629057ff3a24893c43ef5e44fd",
+  "cohort_matches_technical_preparation_byte_identically": true,
+  "bridge_job": 187023,
+  "bridge_status_at_submission": "SUBMITTED_UNVERIFIED",
+  "scheduler_enforced": {
+    "cpus": 4,
+    "memory_mib": 33792,
+    "PRO6000": 1
+  },
+  "new_scientific_training_launched": false,
+  "bridge_status_last_verified": "PENDING",
+  "scheduler_pending_reason": "QOSMaxJobsPerUserLimit",
+  "qos_max_running_jobs_per_user": 2,
+  "qos_max_submitted_jobs_per_user": 5,
+  "existing_running_jobs_count": 2,
+  "queue_registered": true,
+  "registered_work_items": 294,
+  "registered_sft_jobs": 20,
+  "registered_r0_jobs": 4,
+  "bridge_gpu_execution_observed": false,
+  "scientific_workers_submitted": 0,
+  "test_results_revealed": false,
+  "scheduler_verified_at_utc": "2026-10-06T04:10:37Z",
+  "downloaded_server_receipt_sha256": {
+    "REGISTERED_MATRIX.json": "066389a9e5acfaae69cffdae6a9f153f2a58303f259fc589ff0288658b471fc3",
+    "EXECUTION_SCOPE.json": "dc2ec10ffc5b806e6f88b97cc8054e173778c2dc42cc2d69c157c077297c4353",
+    "EXECUTION_COSTS.json": "3122df94dec2511c44780bc9f8da94e044292510e4f5b3916fac1db33ab156b7"
+  }
+}
