@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "semantic_aggregate_rows": 91,
+  "checks": [
+    "X/S/W/I sum to one in every stratum aggregate",
+    "K8 counts equal task-model instance counts",
+    "semantic endpoint differences reproduce frozen primary and secondary differences",
+    "synthetic constant paired differences and identity and incomplete-panel rejection"
+  ],
+  "scope": "offline supplemental analysis; not new experiment or scientific superiority certificate"
+}

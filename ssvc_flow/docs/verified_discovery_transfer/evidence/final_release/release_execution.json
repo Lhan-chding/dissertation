@@ -1,0 +1,19 @@
+{
+  "schema": "verified-discovery-execution-scope-v1",
+  "status": "MATRIX_TERMINAL",
+  "scientific_complete": true,
+  "job_status_counts": {
+    "COMPLETE": 294
+  },
+  "missing_or_pending": [],
+  "test_results_revealed": true,
+  "fixture_results_are_not_model_evidence": true,
+  "runtime_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+  "discovery": "public-verifier-only SELF; no solver fill",
+  "fitting": "completion-only full sequence SFT; exact view aliases retained",
+  "transfer": "E O0 fixed step256",
+  "retention": "G separate from E; shared base scenes stay clustered",
+  "no_automatic_expansion": true,
+  "execution_costs_path": "EXECUTION_COSTS.json",
+  "physical_cost_complete": true
+}

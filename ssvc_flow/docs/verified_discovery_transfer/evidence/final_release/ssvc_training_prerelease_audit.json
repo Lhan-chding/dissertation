@@ -1,0 +1,1299 @@
+{
+  "schema": "ssvc-training-prerelease-audit-v1",
+  "at_utc": "2026-10-07T04:35:01.555267+00:00",
+  "run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+  "matrix_identity": "f0700d4648aef58ed706c52e16050aed00117ce1e520a1eeef6b3e01adf9ba81",
+  "matrix_digest": "271e14e2179cc2b5598f410ffcb6dad7079e5d26ddfcd4b4bf060ea9e34b8542",
+  "all_294_complete": true,
+  "E_G_content_not_accessed": true,
+  "E_G_panel_gate_pending": true,
+  "checkpoints": [
+    {
+      "job": "sft.S96.0.GOLD_ALL",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.GOLD_ALL/step000.pt",
+      "step": 0,
+      "file_sha256": "cce4b4d9c83ec8c341c578c6de916393c8cf1fbc4537291f0a3c8ee07011a473",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.GOLD_ALL",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.GOLD_ALL/step032.pt",
+      "step": 32,
+      "file_sha256": "2c2fd1ba7936dac1f1a7dd0fc5478aeab1017516febb00670fb2ea0d6f6ade10",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.GOLD_ALL",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.GOLD_ALL/step064.pt",
+      "step": 64,
+      "file_sha256": "39cb90ba347449ad0801fc65396f93e507467b947ba734fc2745178f14878002",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.GOLD_ALL",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.GOLD_ALL/step128.pt",
+      "step": 128,
+      "file_sha256": "9b3145dc1e276648e67baa0d83646a18cc98fefe3b01098ee547c12370bbebfe",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.GOLD_ALL",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.GOLD_ALL/step256.pt",
+      "step": 256,
+      "file_sha256": "37e9635833782ab896a45677cc7c9d7df8f19340f5b83fe315c35bd6a52c9440",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.REPLAY_ONLY",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.REPLAY_ONLY/step000.pt",
+      "step": 0,
+      "file_sha256": "1f8edd81c9a7c400fcea0f9017b85b377450f8ebf376093f83d13171c5dd8dcf",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.REPLAY_ONLY",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.REPLAY_ONLY/step032.pt",
+      "step": 32,
+      "file_sha256": "d0ede2e4d71033002b330296235fb24af59cd0df16dc59dfda94c5eb401e2fe5",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.REPLAY_ONLY",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.REPLAY_ONLY/step064.pt",
+      "step": 64,
+      "file_sha256": "c35e04c0c8610f9eb3a490eb3c913e3b551742c9783c51763f5182731f9b9f4c",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.REPLAY_ONLY",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.REPLAY_ONLY/step128.pt",
+      "step": 128,
+      "file_sha256": "134ea24d7d88c3988d7ecc07d295b5000d0033d4879c5a12c3c81cb3d5771157",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.REPLAY_ONLY",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.REPLAY_ONLY/step256.pt",
+      "step": 256,
+      "file_sha256": "e61002e722ba7de8b43fa01a611d2a14582788f62c1531a98f6fe21d66e9bdda",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.SELF_O0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.SELF_O0/step000.pt",
+      "step": 0,
+      "file_sha256": "92a308119b81e7b618ce0e466920cfe0e378aa3f8d343d9f54b31483a4754954",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.SELF_O0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.SELF_O0/step032.pt",
+      "step": 32,
+      "file_sha256": "aeac8e14d5ab9b2bbee964553a9d63be65a87eb639ceae60ac0412e2b236831a",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.SELF_O0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.SELF_O0/step064.pt",
+      "step": 64,
+      "file_sha256": "8dbf94f6df7c683debb4179edf9e2510443c2e7cccbf4d00f14e6b203462dd38",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.SELF_O0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.SELF_O0/step128.pt",
+      "step": 128,
+      "file_sha256": "252b067a638bbb65b56866e202384554abdabb4c0d34baa31a535dd8832d008e",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.SELF_O0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.SELF_O0/step256.pt",
+      "step": 256,
+      "file_sha256": "656cb53f72dd81a4a98b4db49d0247ae79a884b1ff6811b0c240f8db0c8ea5d2",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.SELF_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.SELF_MIX/step000.pt",
+      "step": 0,
+      "file_sha256": "f8364e1976377b3769e2c6c21bc120600c7125d9d5aab9a63588faf1a45442c1",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.SELF_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.SELF_MIX/step032.pt",
+      "step": 32,
+      "file_sha256": "c37cf7798d113471d580aa59c71161961da998633f84b90ff5acabaae93373b1",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.SELF_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.SELF_MIX/step064.pt",
+      "step": 64,
+      "file_sha256": "8465cee231fc073fe612914ed186916005c6e01a255cb7e4dc127acd6183b89c",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.SELF_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.SELF_MIX/step128.pt",
+      "step": 128,
+      "file_sha256": "9dfe1b679db68bfaa811e1c42b214fff7915e8b413c6578b677630685f57b234",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.SELF_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.SELF_MIX/step256.pt",
+      "step": 256,
+      "file_sha256": "b2d91a439c4ad076657ac39416426f247b2d5476cb17280f61ac5e3c2ac09368",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.SELF_SINGLE",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.SELF_SINGLE/step000.pt",
+      "step": 0,
+      "file_sha256": "2fbce8b8208d12283003d14e48df8b1fdd64eb5b0a9673ff07f317ef2d7e0458",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.SELF_SINGLE",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.SELF_SINGLE/step032.pt",
+      "step": 32,
+      "file_sha256": "4966bad6176adb7adfa3e0a1f0065c658bcf234fa8a5a19a563d9c12caea1a65",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.SELF_SINGLE",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.SELF_SINGLE/step064.pt",
+      "step": 64,
+      "file_sha256": "1be9e1a8740a598b31056ab09fbaa96b82883085ea100064c991606329e6951d",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.SELF_SINGLE",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.SELF_SINGLE/step128.pt",
+      "step": 128,
+      "file_sha256": "f0aab34dfdb709347b77259a2617ccfa15c4edde072e566c605d2b3ffa5cea38",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.SELF_SINGLE",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.SELF_SINGLE/step256.pt",
+      "step": 256,
+      "file_sha256": "57d042e57a0036613278fb2fc202238123f93af8696f1d94dbc55fa7aaa72cb3",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.GOLD_MATCH_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.GOLD_MATCH_MIX/step000.pt",
+      "step": 0,
+      "file_sha256": "36a32ef2c8bf6d7abeeaece9ebd3b9b2cbf4eee1308a47975047697909af8362",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.GOLD_MATCH_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.GOLD_MATCH_MIX/step032.pt",
+      "step": 32,
+      "file_sha256": "96c121f0a7eb9cb6f64d699e84cdb69a1b51352daa9b30978cd810cf72557d3e",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.GOLD_MATCH_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.GOLD_MATCH_MIX/step064.pt",
+      "step": 64,
+      "file_sha256": "6af9ca54a1bd0780ff7b4652a65780d014b9717d141eb78d927dd463af2a17ca",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.GOLD_MATCH_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.GOLD_MATCH_MIX/step128.pt",
+      "step": 128,
+      "file_sha256": "3d1793f37ae954af6ee5e540ebab657a2ddf217b0d9467481c07d32fe5863454",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.0.GOLD_MATCH_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.0.GOLD_MATCH_MIX/step256.pt",
+      "step": 256,
+      "file_sha256": "c5b9ffce5b2d82c4e33fba3c40e6d5269fad4e9d4b7d2d39435ec2b68eb41be5",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "r0.S96.0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/r0.S96.0/step000.pt",
+      "step": 0,
+      "file_sha256": "365456a2afed0accd032f1b3e6c10161d83a3d8117cb88adc50f882ec74ec509",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "r0.S96.0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/r0.S96.0/step008.pt",
+      "step": 8,
+      "file_sha256": "476a7252ad25829247b80ffc4b7fd8cfdbdcd047a1870ba8444ac48dbfd9b978",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "r0.S96.0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/r0.S96.0/step026.pt",
+      "step": 26,
+      "file_sha256": "f600d3edad8b8ee6d1ef8d7efff1dd48857c909dbfd8a07816001eba07a9ddb2",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "r0.S96.0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/r0.S96.0/step032.pt",
+      "step": 32,
+      "file_sha256": "6ef4cc5133099add9cfef3bb2cab17dcef4e83b76afe65a68ace1847a51b6f53",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.GOLD_ALL",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.GOLD_ALL/step000.pt",
+      "step": 0,
+      "file_sha256": "1b0cfefb80dd386c42eb4d6f5b2142aa426ad60042fe2efd5e2dc0fed9f1f827",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.GOLD_ALL",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.GOLD_ALL/step032.pt",
+      "step": 32,
+      "file_sha256": "dbaac567a1b61a06185d14ba8552483f2f62f21aa0fb2f063a534f01cc2ad83a",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.GOLD_ALL",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.GOLD_ALL/step064.pt",
+      "step": 64,
+      "file_sha256": "5ef2d7eb82321ba52ae0a1a82f3166d610d3a12fe9de88730f7cee4a6be5a2e9",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.GOLD_ALL",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.GOLD_ALL/step128.pt",
+      "step": 128,
+      "file_sha256": "4a9451126f7fcfad20cd2892cf2491c87a81c4a7e3f16c6da5b6c4fa1081d93e",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.GOLD_ALL",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.GOLD_ALL/step256.pt",
+      "step": 256,
+      "file_sha256": "ae96e9c1cfe040e2459cb154ae82cc391c31c63be96bd78ab131b6018d76facf",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.REPLAY_ONLY",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.REPLAY_ONLY/step000.pt",
+      "step": 0,
+      "file_sha256": "acc8968d515ab8ece4485b83e482a54f510fed4715cf6b13421d408180424710",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.REPLAY_ONLY",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.REPLAY_ONLY/step032.pt",
+      "step": 32,
+      "file_sha256": "849fcc34affc13b88b37ce3677259345bd7101a1a432462c164d9c1a575976da",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.REPLAY_ONLY",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.REPLAY_ONLY/step064.pt",
+      "step": 64,
+      "file_sha256": "d4247c5bedadf358f848b0867e19a8248f7717a82fa5d925721beff6362d6a45",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.REPLAY_ONLY",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.REPLAY_ONLY/step128.pt",
+      "step": 128,
+      "file_sha256": "40580d8cb7a99131658c9f1d3e456aed41e5d9bd0458431e8c2d0114217d2c3a",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.REPLAY_ONLY",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.REPLAY_ONLY/step256.pt",
+      "step": 256,
+      "file_sha256": "07db87f37d8fb372f4ed2cde7c2e35cb782d5f1f1b73c0f90435eed667dc9d7d",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.SELF_O0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.SELF_O0/step000.pt",
+      "step": 0,
+      "file_sha256": "18d54b18ff4c1836f06c7dca9f93dbc737395204d531d102bcb105cd79e5c7be",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.SELF_O0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.SELF_O0/step032.pt",
+      "step": 32,
+      "file_sha256": "69fd61604cbfbf5939e954588806c1a8970a3b3169805701d251ac7fb916c7fa",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.SELF_O0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.SELF_O0/step064.pt",
+      "step": 64,
+      "file_sha256": "6317e2a5eb99579dae0b0badeb33a49efa441c74cdc735d5eb3a4a64341b7d5a",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.SELF_O0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.SELF_O0/step128.pt",
+      "step": 128,
+      "file_sha256": "233e9bab3759922faf5e38e73b861da78357610d4e0439321f8b7f9d0f335c8a",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.SELF_O0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.SELF_O0/step256.pt",
+      "step": 256,
+      "file_sha256": "7976c6111dd05606474b788d6871bac93d8cf87eaaf6187b7f6f5bfa51ebc46c",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.SELF_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.SELF_MIX/step000.pt",
+      "step": 0,
+      "file_sha256": "c82a259ce4e42a6b33c86cee64eee10e627f79c67ff6a942094da0e7fea5c627",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.SELF_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.SELF_MIX/step032.pt",
+      "step": 32,
+      "file_sha256": "0a7415b6f1d55f52c0a424a462307a8862222432aa291afefbf2f58bf8af07e2",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.SELF_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.SELF_MIX/step064.pt",
+      "step": 64,
+      "file_sha256": "0df0617646c8dab07d51d8e11d8e49ba1ed78c061aa6059e012a0a10eb0fa566",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.SELF_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.SELF_MIX/step128.pt",
+      "step": 128,
+      "file_sha256": "72b8fdb3d85b175ac319121b204deb3b33130c2328e92de2ea79ac28c7202338",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.SELF_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.SELF_MIX/step256.pt",
+      "step": 256,
+      "file_sha256": "7a170b79d4d5b0cad81d09a81d60aa5a44414ace0c12c16db7c711492f0a7dd5",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.SELF_SINGLE",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.SELF_SINGLE/step000.pt",
+      "step": 0,
+      "file_sha256": "135ae4e81f9693fed25bb1d9c41ff29ae6ed6d70afd3c869f146bf7a0d66f659",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.SELF_SINGLE",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.SELF_SINGLE/step032.pt",
+      "step": 32,
+      "file_sha256": "985188fdd22833659915f86a3f197497ffbeeed75dd3d16cffc2496723386e63",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.SELF_SINGLE",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.SELF_SINGLE/step064.pt",
+      "step": 64,
+      "file_sha256": "e3cace7a25be15bd07f9d8be90d7e5a530bb3c52448da6e0e5a52ddd07446b41",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.SELF_SINGLE",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.SELF_SINGLE/step128.pt",
+      "step": 128,
+      "file_sha256": "a0c2495fd63206d9e04d2332c9aaaa9064e96853f88da936783556dabd266682",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.SELF_SINGLE",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.SELF_SINGLE/step256.pt",
+      "step": 256,
+      "file_sha256": "1363af785cd095b7583232273bf05689ddc4cae5c354db689a8a36b3c6e796eb",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.GOLD_MATCH_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.GOLD_MATCH_MIX/step000.pt",
+      "step": 0,
+      "file_sha256": "4d036b0d4db973e01bcca4c50851e3df0bb2fc9d7e9b21bbb39835b296e7812d",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.GOLD_MATCH_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.GOLD_MATCH_MIX/step032.pt",
+      "step": 32,
+      "file_sha256": "42e73fbf34508cbb799fd69caa842cea93b674f5724578dfc5d580487e04e317",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.GOLD_MATCH_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.GOLD_MATCH_MIX/step064.pt",
+      "step": 64,
+      "file_sha256": "1ed903ad9ff73da2ea60698f6ec553ab3e19b91e4d07ab283c13be32f626d812",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.GOLD_MATCH_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.GOLD_MATCH_MIX/step128.pt",
+      "step": 128,
+      "file_sha256": "bb8ad1d7a1f1c4e7e6e83d03f864ae6cf7e69cfa9dc37189a06016cc70e207ce",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.S96.1.GOLD_MATCH_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.S96.1.GOLD_MATCH_MIX/step256.pt",
+      "step": 256,
+      "file_sha256": "4166eee23fa6138e5cc21ae799b7d0d1409c94717523d3ab4f6e9bf9361245dc",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "r0.S96.1",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/r0.S96.1/step000.pt",
+      "step": 0,
+      "file_sha256": "dd108c78684e25a80b51bc10757342713a975debdf7af699f5e8a4f16afec0cc",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "r0.S96.1",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/r0.S96.1/step008.pt",
+      "step": 8,
+      "file_sha256": "8d78e2b2c041ee659809d590e2966282c701922afc76b16c0934e5e3488121d8",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "r0.S96.1",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/r0.S96.1/step032.pt",
+      "step": 32,
+      "file_sha256": "db36d4a71e5345152e11c9b648c44555d92caa17caab11dd5b41ef5d28813b10",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.0.GOLD_ALL",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.0.GOLD_ALL/step000.pt",
+      "step": 0,
+      "file_sha256": "4694662daa771a0639bf6c4c005aa6e64e998f5a10780fd12dff95dcb59c5985",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.0.GOLD_ALL",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.0.GOLD_ALL/step032.pt",
+      "step": 32,
+      "file_sha256": "9eeb9550c8b21a82fb8fa14eaee3149e308237432800f014f59d11bce24c2ed4",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.0.GOLD_ALL",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.0.GOLD_ALL/step064.pt",
+      "step": 64,
+      "file_sha256": "b08265710e8751eb51df341734b6d93d303e52e8f7be159438527ba0c3b02648",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.0.GOLD_ALL",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.0.GOLD_ALL/step128.pt",
+      "step": 128,
+      "file_sha256": "e4fbc729ea92c993df5d797098c347ed0544cb452530a1c9f6e1279b3a473efe",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.0.GOLD_ALL",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.0.GOLD_ALL/step256.pt",
+      "step": 256,
+      "file_sha256": "c175d3b20c7948d6f62ee1a0fbedf359e179de3b57fed09b8744fbf124471557",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.0.SELF_O0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.0.SELF_O0/step000.pt",
+      "step": 0,
+      "file_sha256": "70345c7c3fb1f9f6b034706c6c1809770a4293fcaf80e041dffeaa8a57bbd826",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.0.SELF_O0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.0.SELF_O0/step032.pt",
+      "step": 32,
+      "file_sha256": "b608b23a8364a66b22196ea6409c8c85dbcc686797233a9df9ad2e2c2fd9bae8",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.0.SELF_O0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.0.SELF_O0/step064.pt",
+      "step": 64,
+      "file_sha256": "a2478eaf531b19ff23ea060d249eab8fed14bef106532400bff1b5bdafe91302",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.0.SELF_O0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.0.SELF_O0/step128.pt",
+      "step": 128,
+      "file_sha256": "ccaa533487083cd87ffd93120ff2d838455099f101dd8027171ec4c49f393217",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.0.SELF_O0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.0.SELF_O0/step256.pt",
+      "step": 256,
+      "file_sha256": "940ad8c6e8da1dc97719e849435ec3b58571665fc7e410560b3fb099c017f758",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.0.SELF_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.0.SELF_MIX/step000.pt",
+      "step": 0,
+      "file_sha256": "f65ed69b63a39e88c5b6229cbaaa6eedcabb21cf1da403f9779c91a47495d52e",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.0.SELF_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.0.SELF_MIX/step032.pt",
+      "step": 32,
+      "file_sha256": "3115e6727cb01636b0d005056b066d21369065bc87ea3c67653ab497a29b516d",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.0.SELF_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.0.SELF_MIX/step064.pt",
+      "step": 64,
+      "file_sha256": "cc311063e2675c2652343f616dc387eb4171b00413608815e1865ff6f6287438",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.0.SELF_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.0.SELF_MIX/step128.pt",
+      "step": 128,
+      "file_sha256": "3bdecafeb811a2bcebf5783dd44977d64a8c8ba14f4cf501f49b413991ac7619",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.0.SELF_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.0.SELF_MIX/step256.pt",
+      "step": 256,
+      "file_sha256": "b9ee90fe2ab68139e06b6f4dab51c97d2edc065e2dc701f3961347546effce9e",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.0.SELF_SINGLE",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.0.SELF_SINGLE/step000.pt",
+      "step": 0,
+      "file_sha256": "cbfb69594e7d007053813356a6d0706d2281ca74d4d0ada5ffb60915fafa9ecf",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.0.SELF_SINGLE",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.0.SELF_SINGLE/step032.pt",
+      "step": 32,
+      "file_sha256": "39bccebb10672b7555375f1170cd004538edd8f372a3092b275fd21ed44c3c92",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.0.SELF_SINGLE",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.0.SELF_SINGLE/step064.pt",
+      "step": 64,
+      "file_sha256": "c72d9f46fc932a8bed5d3e73f6ff2ce438274e18530ef2ce1a44070ac57caa3e",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.0.SELF_SINGLE",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.0.SELF_SINGLE/step128.pt",
+      "step": 128,
+      "file_sha256": "05bfbfe03dcfd17648fce158be50db31bffb8e818fe337475da6f7f58cefa693",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.0.SELF_SINGLE",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.0.SELF_SINGLE/step256.pt",
+      "step": 256,
+      "file_sha256": "48310e46a21ea50a25ceb4b040ec9603f4db4cc5889ade632ca5032382e30e7f",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "r0.REP96.0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/r0.REP96.0/step000.pt",
+      "step": 0,
+      "file_sha256": "5acd3940b4fe3828dab74ff872b0152997e0d725e6c10f24eb16af4350b859df",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "r0.REP96.0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/r0.REP96.0/step008.pt",
+      "step": 8,
+      "file_sha256": "9e4c608a5487aa54e7149a0c42aec40596d1ec09b100e4dcbdce8bf8d5aad7f4",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "r0.REP96.0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/r0.REP96.0/step032.pt",
+      "step": 32,
+      "file_sha256": "9323ce3099a229239c62646c103bdb35a5b42d6e4c05a7eec9ef102583cd0e02",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.1.GOLD_ALL",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.1.GOLD_ALL/step000.pt",
+      "step": 0,
+      "file_sha256": "27b70126236758db1ce00cc206d705ce73083ee0e481eba752ba056af879306a",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.1.GOLD_ALL",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.1.GOLD_ALL/step032.pt",
+      "step": 32,
+      "file_sha256": "942b61140f31dfbe8db2e8a460caec60446cebf7d0e91c310bfec73aef77efdb",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.1.GOLD_ALL",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.1.GOLD_ALL/step064.pt",
+      "step": 64,
+      "file_sha256": "e63c32e76d3f3c2b95649f966159dfc448e544a32b49bf6fc1e7a3c98f7f192c",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.1.GOLD_ALL",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.1.GOLD_ALL/step128.pt",
+      "step": 128,
+      "file_sha256": "95b53d251e450e7ec6c3ad0638780f2c8e1e40e79e53a498b40c77867d03d747",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.1.GOLD_ALL",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.1.GOLD_ALL/step256.pt",
+      "step": 256,
+      "file_sha256": "01daae56342a750e98de65795e472b4e00119d890e349d437347c2ccc62e7fe4",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.1.SELF_O0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.1.SELF_O0/step000.pt",
+      "step": 0,
+      "file_sha256": "c5d3dff271d25b2560c716e30490a220608b936b1f013a59a0943b1bace597d3",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.1.SELF_O0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.1.SELF_O0/step032.pt",
+      "step": 32,
+      "file_sha256": "d7694d121626a5cd7548ce0ba341e48ec1834cec26bfc98de4d5588a0932dc90",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.1.SELF_O0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.1.SELF_O0/step064.pt",
+      "step": 64,
+      "file_sha256": "7c81191ad46574490e4bd28cc23b63badbdc4ef8a25a89b06266c347f7d552d2",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.1.SELF_O0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.1.SELF_O0/step128.pt",
+      "step": 128,
+      "file_sha256": "d3304d6df12334638fd2ee616f2a0fca83714d075d3dd170cac6e05ab602cf67",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.1.SELF_O0",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.1.SELF_O0/step256.pt",
+      "step": 256,
+      "file_sha256": "2942a49b409df555c8b4e35f76ca5d583c3858608101919843dabf982d994c0b",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.1.SELF_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.1.SELF_MIX/step000.pt",
+      "step": 0,
+      "file_sha256": "e9bfe14cb79155a9f5dda1ce791b3810039d458050769a6465db37421c28e743",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.1.SELF_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.1.SELF_MIX/step032.pt",
+      "step": 32,
+      "file_sha256": "2628696feed14a53ff0a85d36f055ee0099d98fd58d67ead5a216f73c5c0c1c5",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.1.SELF_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.1.SELF_MIX/step064.pt",
+      "step": 64,
+      "file_sha256": "3d7e20e7f5c56ade3c18f620f2e7eab54befa3cb435d052261b093565bc6a741",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.1.SELF_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.1.SELF_MIX/step128.pt",
+      "step": 128,
+      "file_sha256": "64dd2635b4d772f71d972245712ffb92bfac605fa45ac60f69c766981e84db4e",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.1.SELF_MIX",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.1.SELF_MIX/step256.pt",
+      "step": 256,
+      "file_sha256": "2e5941c87ecb3c9d89cfbfd90766957c6dc09092eb12830ac4e9264bc4fd943d",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.1.SELF_SINGLE",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.1.SELF_SINGLE/step000.pt",
+      "step": 0,
+      "file_sha256": "47a49364f276fc4d0b6eff715966d96476326fa256a7c9b363cd214006d6e84c",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.1.SELF_SINGLE",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.1.SELF_SINGLE/step032.pt",
+      "step": 32,
+      "file_sha256": "99aaa916f74612fe2f30db6369fb9b5217dad3483db1111b7820c46e2d900cd3",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.1.SELF_SINGLE",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.1.SELF_SINGLE/step064.pt",
+      "step": 64,
+      "file_sha256": "0ae850bfa1f16dc61a475e22ebd9656ed30ca449dd00302aa253ad06702a3f08",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.1.SELF_SINGLE",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.1.SELF_SINGLE/step128.pt",
+      "step": 128,
+      "file_sha256": "6db270d3fbcb7e31752c971ec0d6ce4461ec320da9599491e9f1cbe89bf1a2e6",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "sft.REP96.1.SELF_SINGLE",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/sft.REP96.1.SELF_SINGLE/step256.pt",
+      "step": 256,
+      "file_sha256": "147cde2df682b816429130996b4d19f86b1807815d73c39768f387f6d5019501",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "r0.REP96.1",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/r0.REP96.1/step000.pt",
+      "step": 0,
+      "file_sha256": "c451947582491891b7c14e8460fc5396ebfc91dcbc57e065429cf6d64a7df235",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "r0.REP96.1",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/r0.REP96.1/step008.pt",
+      "step": 8,
+      "file_sha256": "76992542e1b42945e6f970e772ce5fb24ff890780eb1211acd047f450c266f1b",
+      "full_state_hash_verified": true
+    },
+    {
+      "job": "r0.REP96.1",
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/evidence/r0.REP96.1/step032.pt",
+      "step": 32,
+      "file_sha256": "9aef4de0da8946a7ba14294a13270cee32ec8046eadaf9208d59bde71c3a251b",
+      "full_state_hash_verified": true
+    }
+  ],
+  "training": [
+    {
+      "job": "sft.S96.0.GOLD_ALL",
+      "updates": 256,
+      "identity": {
+        "arm": "GOLD_ALL",
+        "training_signature": "9282b82d2013a8652da5d2f66b5bf088e2b3aa6ffe2eb4774fbdb138e7f66ac4",
+        "run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+        "encoded_focus_hash": "3fce1f1b30a79ab85fcf3a0b8052689d973e0e3da9114734e49e76d9d919657f",
+        "encoded_replay_hash": "cc2f870874cdcd759f7f4c70ea23129ede1b6e4fa10f95c696f858c4b55fd863",
+        "seed": 73101,
+        "steps": 256,
+        "loss": "completion_sequence_mean_slots16",
+        "parent_checkpoint_sha256": "80f028d07492b0b7ba895fbd0d93352e234db2337ff48e33130120721bf179a9"
+      },
+      "zero_advantage_updates": 0
+    },
+    {
+      "job": "sft.S96.0.REPLAY_ONLY",
+      "updates": 256,
+      "identity": {
+        "arm": "REPLAY_ONLY",
+        "training_signature": "da904e4e27562cf7e4fc69bbe9cff13ea792836f5380012d3a1e013f9fba57fc",
+        "run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+        "encoded_focus_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "encoded_replay_hash": "cc2f870874cdcd759f7f4c70ea23129ede1b6e4fa10f95c696f858c4b55fd863",
+        "seed": 73101,
+        "steps": 256,
+        "loss": "completion_sequence_mean_slots16",
+        "parent_checkpoint_sha256": "80f028d07492b0b7ba895fbd0d93352e234db2337ff48e33130120721bf179a9"
+      },
+      "zero_advantage_updates": 0
+    },
+    {
+      "job": "sft.S96.0.SELF_O0",
+      "updates": 256,
+      "identity": {
+        "arm": "SELF_O0",
+        "training_signature": "7d7b304f32f961b5ed7761f9ea94336eb37dcdb3c86b1983a6b7b37c1f95fd74",
+        "run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+        "encoded_focus_hash": "8a77044a803137666fdc550fc362d356c8e286d0e86d87e36c4877092fdc4a52",
+        "encoded_replay_hash": "cc2f870874cdcd759f7f4c70ea23129ede1b6e4fa10f95c696f858c4b55fd863",
+        "seed": 73101,
+        "steps": 256,
+        "loss": "completion_sequence_mean_slots16",
+        "parent_checkpoint_sha256": "80f028d07492b0b7ba895fbd0d93352e234db2337ff48e33130120721bf179a9"
+      },
+      "zero_advantage_updates": 0
+    },
+    {
+      "job": "sft.S96.0.SELF_MIX",
+      "updates": 256,
+      "identity": {
+        "arm": "SELF_MIX",
+        "training_signature": "ad83968c846a054b1208b04e660e69912b6857bc4d97916b695296f53709364f",
+        "run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+        "encoded_focus_hash": "d8a316d8c4d4cdeeaed415e4346f91193f11b7edfecc8ef204430e223c481e9d",
+        "encoded_replay_hash": "cc2f870874cdcd759f7f4c70ea23129ede1b6e4fa10f95c696f858c4b55fd863",
+        "seed": 73101,
+        "steps": 256,
+        "loss": "completion_sequence_mean_slots16",
+        "parent_checkpoint_sha256": "80f028d07492b0b7ba895fbd0d93352e234db2337ff48e33130120721bf179a9"
+      },
+      "zero_advantage_updates": 0
+    },
+    {
+      "job": "sft.S96.0.SELF_SINGLE",
+      "updates": 256,
+      "identity": {
+        "arm": "SELF_SINGLE",
+        "training_signature": "ebe7faa9886e068b4805f22e84a411b7b530adcb6c5f8f983bf5a762994d3386",
+        "run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+        "encoded_focus_hash": "bfe11e4b036aa9649701d64c2b161dae51365ffad27dd6dc2124b63d2f3b8c28",
+        "encoded_replay_hash": "cc2f870874cdcd759f7f4c70ea23129ede1b6e4fa10f95c696f858c4b55fd863",
+        "seed": 73101,
+        "steps": 256,
+        "loss": "completion_sequence_mean_slots16",
+        "parent_checkpoint_sha256": "80f028d07492b0b7ba895fbd0d93352e234db2337ff48e33130120721bf179a9"
+      },
+      "zero_advantage_updates": 0
+    },
+    {
+      "job": "sft.S96.0.GOLD_MATCH_MIX",
+      "updates": 256,
+      "identity": {
+        "arm": "GOLD_MATCH_MIX",
+        "training_signature": "3f3646944b6f202bb8696067caf08f172d759471b4d2317b76889b3f1514db31",
+        "run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+        "encoded_focus_hash": "63176e6dfdcd3fe40c7f82b39c59cd47d63ecc47d56e751103cdbaf992bc1c83",
+        "encoded_replay_hash": "cc2f870874cdcd759f7f4c70ea23129ede1b6e4fa10f95c696f858c4b55fd863",
+        "seed": 73101,
+        "steps": 256,
+        "loss": "completion_sequence_mean_slots16",
+        "parent_checkpoint_sha256": "80f028d07492b0b7ba895fbd0d93352e234db2337ff48e33130120721bf179a9"
+      },
+      "zero_advantage_updates": 0
+    },
+    {
+      "job": "r0.S96.0",
+      "updates": 32,
+      "identity": {
+        "kind": "R0_RESET32",
+        "parent": "S96",
+        "repeat": 0,
+        "seed": 73101,
+        "parent_checkpoint": {
+          "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/089_096/attempt_1790284878289928374/state.pt",
+          "sha256": "80f028d07492b0b7ba895fbd0d93352e234db2337ff48e33130120721bf179a9",
+          "identity": {
+            "manifest_hash": "ea69256390e3e710ad8924a89efc4dd4003ab370a25013422025efd8f1f12d11",
+            "step": 96
+          },
+          "state_hash": "090ed9fa2d56a901b40a4eaa1cc46eed0686ed355070840d539ba378be5f94e5"
+        },
+        "tasks_hash": "4c714e1e8240fa30d29d185ae2eb4b7c57ff08332aeecfca5de00e21f5a5f851",
+        "settings": {
+          "steps": 32,
+          "B": 4,
+          "K": 8,
+          "reward": "2*X",
+          "epsilon": 0.0001,
+          "Lnorm": 64,
+          "ppo_clip": 0.2,
+          "fresh_AdamW": true,
+          "warmup": 8
+        }
+      },
+      "zero_advantage_updates": 20
+    },
+    {
+      "job": "sft.S96.1.GOLD_ALL",
+      "updates": 256,
+      "identity": {
+        "arm": "GOLD_ALL",
+        "training_signature": "948324561c6fed2eae77fe86cc506070ea517a2618d0236d371746e8b8f4d9c5",
+        "run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+        "encoded_focus_hash": "3fce1f1b30a79ab85fcf3a0b8052689d973e0e3da9114734e49e76d9d919657f",
+        "encoded_replay_hash": "cc2f870874cdcd759f7f4c70ea23129ede1b6e4fa10f95c696f858c4b55fd863",
+        "seed": 73102,
+        "steps": 256,
+        "loss": "completion_sequence_mean_slots16",
+        "parent_checkpoint_sha256": "80f028d07492b0b7ba895fbd0d93352e234db2337ff48e33130120721bf179a9"
+      },
+      "zero_advantage_updates": 0
+    },
+    {
+      "job": "sft.S96.1.REPLAY_ONLY",
+      "updates": 256,
+      "identity": {
+        "arm": "REPLAY_ONLY",
+        "training_signature": "19fe7926c89fe2c54e6e99ba21c73cf00ce8a11e887512f7913170678f683520",
+        "run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+        "encoded_focus_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "encoded_replay_hash": "cc2f870874cdcd759f7f4c70ea23129ede1b6e4fa10f95c696f858c4b55fd863",
+        "seed": 73102,
+        "steps": 256,
+        "loss": "completion_sequence_mean_slots16",
+        "parent_checkpoint_sha256": "80f028d07492b0b7ba895fbd0d93352e234db2337ff48e33130120721bf179a9"
+      },
+      "zero_advantage_updates": 0
+    },
+    {
+      "job": "sft.S96.1.SELF_O0",
+      "updates": 256,
+      "identity": {
+        "arm": "SELF_O0",
+        "training_signature": "21f9bfc3ffc899df62aed8bfa9435a1a524bd97ca17322bbaf3714c9c1004940",
+        "run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+        "encoded_focus_hash": "b42baaaa8d876a588f48a49460e21648579fa2cb1d9da97eeb1b70135af35147",
+        "encoded_replay_hash": "cc2f870874cdcd759f7f4c70ea23129ede1b6e4fa10f95c696f858c4b55fd863",
+        "seed": 73102,
+        "steps": 256,
+        "loss": "completion_sequence_mean_slots16",
+        "parent_checkpoint_sha256": "80f028d07492b0b7ba895fbd0d93352e234db2337ff48e33130120721bf179a9"
+      },
+      "zero_advantage_updates": 0
+    },
+    {
+      "job": "sft.S96.1.SELF_MIX",
+      "updates": 256,
+      "identity": {
+        "arm": "SELF_MIX",
+        "training_signature": "e270881138272dff19f1c9930229025c0f589346a9c8764891a49d201cdb0d84",
+        "run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+        "encoded_focus_hash": "4e086658b0c36e6477f6d9ec0b921a31aaea8159020df80de16fa4604cdd6ad1",
+        "encoded_replay_hash": "cc2f870874cdcd759f7f4c70ea23129ede1b6e4fa10f95c696f858c4b55fd863",
+        "seed": 73102,
+        "steps": 256,
+        "loss": "completion_sequence_mean_slots16",
+        "parent_checkpoint_sha256": "80f028d07492b0b7ba895fbd0d93352e234db2337ff48e33130120721bf179a9"
+      },
+      "zero_advantage_updates": 0
+    },
+    {
+      "job": "sft.S96.1.SELF_SINGLE",
+      "updates": 256,
+      "identity": {
+        "arm": "SELF_SINGLE",
+        "training_signature": "743c438459365559d3714f31db5fe259401ae6ba12d0b91de92182d0f4a733da",
+        "run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+        "encoded_focus_hash": "21665e1b728a721765a28683d9a9ba9826dda649624c2c9a014f07988abeff1a",
+        "encoded_replay_hash": "cc2f870874cdcd759f7f4c70ea23129ede1b6e4fa10f95c696f858c4b55fd863",
+        "seed": 73102,
+        "steps": 256,
+        "loss": "completion_sequence_mean_slots16",
+        "parent_checkpoint_sha256": "80f028d07492b0b7ba895fbd0d93352e234db2337ff48e33130120721bf179a9"
+      },
+      "zero_advantage_updates": 0
+    },
+    {
+      "job": "sft.S96.1.GOLD_MATCH_MIX",
+      "updates": 256,
+      "identity": {
+        "arm": "GOLD_MATCH_MIX",
+        "training_signature": "808dbb7e7603d56cce6bc76a6c264324c06587905568d50acac5cf832994cdcf",
+        "run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+        "encoded_focus_hash": "b73d949bea54db8d26a938250f91e4a462d650115cbd2b7da7568ecad37212c2",
+        "encoded_replay_hash": "cc2f870874cdcd759f7f4c70ea23129ede1b6e4fa10f95c696f858c4b55fd863",
+        "seed": 73102,
+        "steps": 256,
+        "loss": "completion_sequence_mean_slots16",
+        "parent_checkpoint_sha256": "80f028d07492b0b7ba895fbd0d93352e234db2337ff48e33130120721bf179a9"
+      },
+      "zero_advantage_updates": 0
+    },
+    {
+      "job": "r0.S96.1",
+      "updates": 32,
+      "identity": {
+        "kind": "R0_RESET32",
+        "parent": "S96",
+        "repeat": 1,
+        "seed": 73102,
+        "parent_checkpoint": {
+          "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/089_096/attempt_1790284878289928374/state.pt",
+          "sha256": "80f028d07492b0b7ba895fbd0d93352e234db2337ff48e33130120721bf179a9",
+          "identity": {
+            "manifest_hash": "ea69256390e3e710ad8924a89efc4dd4003ab370a25013422025efd8f1f12d11",
+            "step": 96
+          },
+          "state_hash": "090ed9fa2d56a901b40a4eaa1cc46eed0686ed355070840d539ba378be5f94e5"
+        },
+        "tasks_hash": "b7638fb014a0e0a1b72a923e7dd4289cd604f3240a81dc99289718381a0d0d08",
+        "settings": {
+          "steps": 32,
+          "B": 4,
+          "K": 8,
+          "reward": "2*X",
+          "epsilon": 0.0001,
+          "Lnorm": 64,
+          "ppo_clip": 0.2,
+          "fresh_AdamW": true,
+          "warmup": 8
+        }
+      },
+      "zero_advantage_updates": 24
+    },
+    {
+      "job": "sft.REP96.0.GOLD_ALL",
+      "updates": 256,
+      "identity": {
+        "arm": "GOLD_ALL",
+        "training_signature": "a62209e90be00da7b3748693d38a95461387aadcd2fc5b6d6e28e1ae38b6e370",
+        "run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+        "encoded_focus_hash": "3fce1f1b30a79ab85fcf3a0b8052689d973e0e3da9114734e49e76d9d919657f",
+        "encoded_replay_hash": "cc2f870874cdcd759f7f4c70ea23129ede1b6e4fa10f95c696f858c4b55fd863",
+        "seed": 73101,
+        "steps": 256,
+        "loss": "completion_sequence_mean_slots16",
+        "parent_checkpoint_sha256": "13a2769a787962587e81d3ffc446245e1e71772589bf3b3506cd650c4b60c29c"
+      },
+      "zero_advantage_updates": 0
+    },
+    {
+      "job": "sft.REP96.0.SELF_O0",
+      "updates": 256,
+      "identity": {
+        "arm": "SELF_O0",
+        "training_signature": "23867dccc858b644fcb93a19379977f5950fd95748f61e57f7167bd0d716483b",
+        "run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+        "encoded_focus_hash": "493939593305a872086098b0493030ff4f4f2165eff32ecbabecc3fc25327b40",
+        "encoded_replay_hash": "cc2f870874cdcd759f7f4c70ea23129ede1b6e4fa10f95c696f858c4b55fd863",
+        "seed": 73101,
+        "steps": 256,
+        "loss": "completion_sequence_mean_slots16",
+        "parent_checkpoint_sha256": "13a2769a787962587e81d3ffc446245e1e71772589bf3b3506cd650c4b60c29c"
+      },
+      "zero_advantage_updates": 0
+    },
+    {
+      "job": "sft.REP96.0.SELF_MIX",
+      "updates": 256,
+      "identity": {
+        "arm": "SELF_MIX",
+        "training_signature": "224503a8a6d66f00cf6dd57925add8a38427ab4a5edaae1da36f99ec04e793f9",
+        "run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+        "encoded_focus_hash": "5e8285ff730c829bac9766f4f0d0b91b7b64802149fe95142f4832f151571ae1",
+        "encoded_replay_hash": "cc2f870874cdcd759f7f4c70ea23129ede1b6e4fa10f95c696f858c4b55fd863",
+        "seed": 73101,
+        "steps": 256,
+        "loss": "completion_sequence_mean_slots16",
+        "parent_checkpoint_sha256": "13a2769a787962587e81d3ffc446245e1e71772589bf3b3506cd650c4b60c29c"
+      },
+      "zero_advantage_updates": 0
+    },
+    {
+      "job": "sft.REP96.0.SELF_SINGLE",
+      "updates": 256,
+      "identity": {
+        "arm": "SELF_SINGLE",
+        "training_signature": "a468b79f9f5880bbd4348a61784336036dd091bd399cd337a22375fb75605d4a",
+        "run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+        "encoded_focus_hash": "ef4f1d0b8e74c1a19e1a5319f78f5f1d1209c74285b76d4d5446d48d37599e0e",
+        "encoded_replay_hash": "cc2f870874cdcd759f7f4c70ea23129ede1b6e4fa10f95c696f858c4b55fd863",
+        "seed": 73101,
+        "steps": 256,
+        "loss": "completion_sequence_mean_slots16",
+        "parent_checkpoint_sha256": "13a2769a787962587e81d3ffc446245e1e71772589bf3b3506cd650c4b60c29c"
+      },
+      "zero_advantage_updates": 0
+    },
+    {
+      "job": "r0.REP96.0",
+      "updates": 32,
+      "identity": {
+        "kind": "R0_RESET32",
+        "parent": "REP96",
+        "repeat": 0,
+        "seed": 73101,
+        "parent_checkpoint": {
+          "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61003/segments/089_096/attempt_1790284167213371794/state.pt",
+          "sha256": "13a2769a787962587e81d3ffc446245e1e71772589bf3b3506cd650c4b60c29c",
+          "identity": {
+            "manifest_hash": "9527b6da3f41d9cc486db08b6b5776626522741b0c082a696d93848c4998e400",
+            "step": 96
+          },
+          "state_hash": "eca26a58bb3d2462e832a364ce10ea99b0d9796369d116d2e7e24b2471a5146d"
+        },
+        "tasks_hash": "4c714e1e8240fa30d29d185ae2eb4b7c57ff08332aeecfca5de00e21f5a5f851",
+        "settings": {
+          "steps": 32,
+          "B": 4,
+          "K": 8,
+          "reward": "2*X",
+          "epsilon": 0.0001,
+          "Lnorm": 64,
+          "ppo_clip": 0.2,
+          "fresh_AdamW": true,
+          "warmup": 8
+        }
+      },
+      "zero_advantage_updates": 19
+    },
+    {
+      "job": "sft.REP96.1.GOLD_ALL",
+      "updates": 256,
+      "identity": {
+        "arm": "GOLD_ALL",
+        "training_signature": "ec166f3f8fe839ff87a030bf0dccd55c2eb642b1305d8d34932fb68d9659fd0e",
+        "run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+        "encoded_focus_hash": "3fce1f1b30a79ab85fcf3a0b8052689d973e0e3da9114734e49e76d9d919657f",
+        "encoded_replay_hash": "cc2f870874cdcd759f7f4c70ea23129ede1b6e4fa10f95c696f858c4b55fd863",
+        "seed": 73102,
+        "steps": 256,
+        "loss": "completion_sequence_mean_slots16",
+        "parent_checkpoint_sha256": "13a2769a787962587e81d3ffc446245e1e71772589bf3b3506cd650c4b60c29c"
+      },
+      "zero_advantage_updates": 0
+    },
+    {
+      "job": "sft.REP96.1.SELF_O0",
+      "updates": 256,
+      "identity": {
+        "arm": "SELF_O0",
+        "training_signature": "a2001a3e6af9876c8836e974e85857786f9ff3d342932f98b20cecf4023fb3ff",
+        "run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+        "encoded_focus_hash": "a8f9a4ae83b1606917702dcb436385440af0fec762407fd23fad50b96d327bf3",
+        "encoded_replay_hash": "cc2f870874cdcd759f7f4c70ea23129ede1b6e4fa10f95c696f858c4b55fd863",
+        "seed": 73102,
+        "steps": 256,
+        "loss": "completion_sequence_mean_slots16",
+        "parent_checkpoint_sha256": "13a2769a787962587e81d3ffc446245e1e71772589bf3b3506cd650c4b60c29c"
+      },
+      "zero_advantage_updates": 0
+    },
+    {
+      "job": "sft.REP96.1.SELF_MIX",
+      "updates": 256,
+      "identity": {
+        "arm": "SELF_MIX",
+        "training_signature": "4e5ecddf6cfb86cf00279452219fbdf1d7eb3c369c82a6290021f2fbec0b5213",
+        "run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+        "encoded_focus_hash": "5ccbe446ecfcc09a5fd13735abe809264dade963ad69dce3e7478c9120712136",
+        "encoded_replay_hash": "cc2f870874cdcd759f7f4c70ea23129ede1b6e4fa10f95c696f858c4b55fd863",
+        "seed": 73102,
+        "steps": 256,
+        "loss": "completion_sequence_mean_slots16",
+        "parent_checkpoint_sha256": "13a2769a787962587e81d3ffc446245e1e71772589bf3b3506cd650c4b60c29c"
+      },
+      "zero_advantage_updates": 0
+    },
+    {
+      "job": "sft.REP96.1.SELF_SINGLE",
+      "updates": 256,
+      "identity": {
+        "arm": "SELF_SINGLE",
+        "training_signature": "df70e28e98356390a9e081bbb235555b70f0172809855ed17eb8887e0c0460b8",
+        "run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+        "encoded_focus_hash": "707017f26436248fce7ed37106d8ab37634287a6853a485657112559347264bc",
+        "encoded_replay_hash": "cc2f870874cdcd759f7f4c70ea23129ede1b6e4fa10f95c696f858c4b55fd863",
+        "seed": 73102,
+        "steps": 256,
+        "loss": "completion_sequence_mean_slots16",
+        "parent_checkpoint_sha256": "13a2769a787962587e81d3ffc446245e1e71772589bf3b3506cd650c4b60c29c"
+      },
+      "zero_advantage_updates": 0
+    },
+    {
+      "job": "r0.REP96.1",
+      "updates": 32,
+      "identity": {
+        "kind": "R0_RESET32",
+        "parent": "REP96",
+        "repeat": 1,
+        "seed": 73102,
+        "parent_checkpoint": {
+          "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61003/segments/089_096/attempt_1790284167213371794/state.pt",
+          "sha256": "13a2769a787962587e81d3ffc446245e1e71772589bf3b3506cd650c4b60c29c",
+          "identity": {
+            "manifest_hash": "9527b6da3f41d9cc486db08b6b5776626522741b0c082a696d93848c4998e400",
+            "step": 96
+          },
+          "state_hash": "eca26a58bb3d2462e832a364ce10ea99b0d9796369d116d2e7e24b2471a5146d"
+        },
+        "tasks_hash": "b7638fb014a0e0a1b72a923e7dd4289cd604f3240a81dc99289718381a0d0d08",
+        "settings": {
+          "steps": 32,
+          "B": 4,
+          "K": 8,
+          "reward": "2*X",
+          "epsilon": 0.0001,
+          "Lnorm": 64,
+          "ppo_clip": 0.2,
+          "fresh_AdamW": true,
+          "warmup": 8
+        }
+      },
+      "zero_advantage_updates": 25
+    }
+  ],
+  "nonsealed_atomic_count": 86976,
+  "nonsealed_chunk_count": 6912,
+  "retained_extra_checkpoints": {
+    "r0.S96.0": [
+      26
+    ]
+  },
+  "events": [
+    {
+      "id": 1,
+      "job": "teacher.S96.T_train.0.96",
+      "event": "EXPLICIT_RETRY",
+      "at": 1791277478.423132,
+      "details": "{\"reason\": \"User authorized this recovery and confirmed network restored; old five Slurm jobs FAILED 1:0; all lane locks free; storage write/read/fsync/rename reverified; frozen context and bridge accepted; reuse atomic outputs and verified R0 step027; cause UNKNOWN; no matrix or budget changes.\", \"previous\": {\"id\": \"teacher.S96.T_train.0.96\", \"payload\": \"{\\\"dependencies\\\": [], \\\"draws\\\": 16, \\\"gpu_count\\\": 1, \\\"id\\\": \\\"teacher.S96.T_train.0.96\\\", \\\"kind\\\": \\\"teacher\\\", \\\"parent\\\": \\\"S96\\\", \\\"priority\\\": 3, \\\"repeat\\\": 0, \\\"role\\\": \\\"teacher_train\\\", \\\"split\\\": \\\"T_train\\\", \\\"task_ids\\\": [\\\"3b0af98c1ad0d56901cd8d4927b0a487\\\", \\\"3c7cf7e949fed47d7916691bb28178df\\\", \\\"3d6c5cf0bdc06282c0d060dec8956082\\\", \\\"3da650a0d2cf6900773360e6a71fc010\\\", \\\"3db07667d7fb9a3a12488d8d6a615452\\\", \\\"3f4fc303eae14fb1bb0e79948990cb4b\\\", \\\"4068e716b3d9eb33f1212b35e75c0ad2\\\", \\\"406c03fab57c7f6803da6738225fae0d\\\", \\\"41c549473b52d0b71ba9fddde2126200\\\", \\\"428ac2a2f7bb487e51dbaa547a39270e\\\", \\\"43bc28e3050a3faa335d1a547dae86be\\\", \\\"4436b65b6434ef8922f3bcc1f19d61ff\\\", \\\"448953f2dd2324b1c9e37177136d2dde\\\", \\\"449d8a39956292a073aa50d1d5331bca\\\", \\\"45645f5d9880561f82e16bc5d4ec4bc4\\\", \\\"465ecbd61b2f857aebc8222ae679a0e4\\\", \\\"486149516ed7efb7990be38200ed1fe7\\\", \\\"488f157b16b46d5a09f77abe80ec28b5\\\", \\\"493c97629818db2f847fb63b60403e19\\\", \\\"4a1900e2e31b2bb6268a4671121dc4f3\\\", \\\"4a24871139d750ac2ae08216572a0d57\\\", \\\"4baa3ad55661e3e84497b0005ab8d409\\\", \\\"4bb4f37a8685797683e652b686c27827\\\", \\\"4bef4163eb7c90d96e0603f5bd86d0cf\\\"]}\", \"status\": \"RUNNING\", \"worker\": \"v2-lane2\", \"started\": 1791273986.5700638, \"finished\": null, \"result\": null}}"
+    },
+    {
+      "id": 2,
+      "job": "r0.S96.0",
+      "event": "EXPLICIT_RETRY",
+      "at": 1791277478.4337063,
+      "details": "{\"reason\": \"User authorized this recovery and confirmed network restored; old five Slurm jobs FAILED 1:0; all lane locks free; storage write/read/fsync/rename reverified; frozen context and bridge accepted; reuse atomic outputs and verified R0 step027; cause UNKNOWN; no matrix or budget changes.\", \"previous\": {\"id\": \"r0.S96.0\", \"payload\": \"{\\\"dependencies\\\": [], \\\"gpu_count\\\": 1, \\\"id\\\": \\\"r0.S96.0\\\", \\\"kind\\\": \\\"r0\\\", \\\"parent\\\": \\\"S96\\\", \\\"priority\\\": 6, \\\"repeat\\\": 0, \\\"seed\\\": 73101, \\\"steps\\\": 32}\", \"status\": \"RUNNING\", \"worker\": \"v2-lane4\", \"started\": 1791270564.7995758, \"finished\": null, \"result\": null}}"
+    },
+    {
+      "id": 3,
+      "job": "eval.S96.1.GOLD_ALL.E_test.256",
+      "event": "EXPLICIT_RETRY",
+      "at": 1791277478.4451346,
+      "details": "{\"reason\": \"User authorized this recovery and confirmed network restored; old five Slurm jobs FAILED 1:0; all lane locks free; storage write/read/fsync/rename reverified; frozen context and bridge accepted; reuse atomic outputs and verified R0 step027; cause UNKNOWN; no matrix or budget changes.\", \"previous\": {\"id\": \"eval.S96.1.GOLD_ALL.E_test.256\", \"payload\": \"{\\\"arm\\\": \\\"GOLD_ALL\\\", \\\"dependencies\\\": [\\\"sft.S96.1.GOLD_ALL\\\", \\\"teacher.S96.E_test.0.0\\\", \\\"teacher.S96.E_test.0.24\\\", \\\"teacher.S96.E_test.0.48\\\", \\\"teacher.S96.E_test.0.72\\\", \\\"teacher.S96.E_test.0.96\\\", \\\"teacher.S96.E_test.0.120\\\", \\\"teacher.S96.E_test.0.144\\\", \\\"teacher.S96.E_test.0.168\\\", \\\"teacher.S96.E_test.0.192\\\", \\\"teacher.S96.E_test.0.216\\\", \\\"teacher.S96.E_test.0.240\\\", \\\"teacher.S96.E_test.0.264\\\", \\\"teacher.S96.E_test.0.288\\\", \\\"teacher.S96.E_test.0.312\\\", \\\"teacher.S96.E_test.0.336\\\", \\\"teacher.S96.E_test.0.360\\\"], \\\"draws\\\": 8, \\\"gpu_count\\\": 1, \\\"id\\\": \\\"eval.S96.1.GOLD_ALL.E_test.256\\\", \\\"kind\\\": \\\"evaluate\\\", \\\"parent\\\": \\\"S96\\\", \\\"priority\\\": 6, \\\"repeat\\\": 1, \\\"source_job\\\": \\\"sft.S96.1.GOLD_ALL\\\", \\\"split\\\": \\\"E_test\\\", \\\"step\\\": 256}\", \"status\": \"RUNNING\", \"worker\": \"v2-lane3\", \"started\": 1791273225.373662, \"finished\": null, \"result\": null}}"
+    },
+    {
+      "id": 4,
+      "job": "eval.S96.1.REPLAY_ONLY.V_selection.128",
+      "event": "EXPLICIT_RETRY",
+      "at": 1791277478.453263,
+      "details": "{\"reason\": \"User authorized this recovery and confirmed network restored; old five Slurm jobs FAILED 1:0; all lane locks free; storage write/read/fsync/rename reverified; frozen context and bridge accepted; reuse atomic outputs and verified R0 step027; cause UNKNOWN; no matrix or budget changes.\", \"previous\": {\"id\": \"eval.S96.1.REPLAY_ONLY.V_selection.128\", \"payload\": \"{\\\"arm\\\": \\\"REPLAY_ONLY\\\", \\\"dependencies\\\": [\\\"sft.S96.1.REPLAY_ONLY\\\"], \\\"draws\\\": 4, \\\"gpu_count\\\": 1, \\\"id\\\": \\\"eval.S96.1.REPLAY_ONLY.V_selection.128\\\", \\\"kind\\\": \\\"evaluate\\\", \\\"parent\\\": \\\"S96\\\", \\\"priority\\\": 6, \\\"repeat\\\": 1, \\\"source_job\\\": \\\"sft.S96.1.REPLAY_ONLY\\\", \\\"split\\\": \\\"V_selection\\\", \\\"step\\\": 128}\", \"status\": \"RUNNING\", \"worker\": \"v2-lane1\", \"started\": 1791274656.2321162, \"finished\": null, \"result\": null}}"
+    },
+    {
+      "id": 5,
+      "job": "teacher.REP96.T_train.0.144",
+      "event": "EXPLICIT_RETRY",
+      "at": 1791277478.4610705,
+      "details": "{\"reason\": \"User authorized this recovery and confirmed network restored; old five Slurm jobs FAILED 1:0; all lane locks free; storage write/read/fsync/rename reverified; frozen context and bridge accepted; reuse atomic outputs and verified R0 step027; cause UNKNOWN; no matrix or budget changes.\", \"previous\": {\"id\": \"teacher.REP96.T_train.0.144\", \"payload\": \"{\\\"dependencies\\\": [], \\\"draws\\\": 16, \\\"gpu_count\\\": 1, \\\"id\\\": \\\"teacher.REP96.T_train.0.144\\\", \\\"kind\\\": \\\"teacher\\\", \\\"parent\\\": \\\"REP96\\\", \\\"priority\\\": 3, \\\"repeat\\\": 0, \\\"role\\\": \\\"teacher_train\\\", \\\"split\\\": \\\"T_train\\\", \\\"task_ids\\\": [\\\"651f637dbff122d7b00d2d2420cbae50\\\", \\\"652041c38a7aa3ef43c4e8b069ecf6c9\\\", \\\"667bb8c146fc5365c4f564c5b5b1bb58\\\", \\\"6697f6265ce23f88a7c30fd6d493d630\\\", \\\"67251665176189ee0a863711f8578d32\\\", \\\"67eea7622aa765efd80e9fac33605a00\\\", \\\"67f59722bad2cd842d9c3183795d1158\\\", \\\"68bc42960bbc09bf56501d679162b1d8\\\", \\\"69654f16c296b290fddac432ec2971a1\\\", \\\"6a584bbe9882de3d3dcc5e267e1fe631\\\", \\\"6a870409b697b248b33459ebb3d974fa\\\", \\\"6c38242bbcb97bb96dd2692dbdb81fc7\\\", \\\"6cb0cd8be2d0fcec7641ed1b49b05af0\\\", \\\"6d002199a4609109bb1c388ebfeab5a8\\\", \\\"6d22390eab04d732d9c4758a53376375\\\", \\\"6d59e620343c891a78faa6722c581034\\\", \\\"6dcf854f6c7c84566ce4995b8ad6cdd1\\\", \\\"6e52782a59ef2c148ea480840afa7a75\\\", \\\"6e757ac6241b2f32659e258e2a0ca2f5\\\", \\\"6ef2180cf1f9f32a6576e7faa62a1c48\\\", \\\"704d0ff2c224dd4adcd5f18bd01967d4\\\", \\\"707c2fdf70cba98b37cdcb7c58fe394d\\\", \\\"70b75d5e9ac1ed115bbd90faf33df27d\\\", \\\"70c91a9adc6aedcfcccce28262efa608\\\"]}\", \"status\": \"RUNNING\", \"worker\": \"v2-lane0\", \"started\": 1791273807.7084818, \"finished\": null, \"result\": null}}"
+    }
+  ],
+  "audit_tool_note": "Initial temporary audit used an incomplete expected SFT identity; corrected to runtime binding including encoded hashes. R0 S96 repeat0 retains pre-interruption step026 in addition to registered endpoints; it is retained and verified. No experiment artifact was changed.",
+  "status": "PASS_TRAINING_AND_NONSEALED_INTEGRITY_ONLY"
+}

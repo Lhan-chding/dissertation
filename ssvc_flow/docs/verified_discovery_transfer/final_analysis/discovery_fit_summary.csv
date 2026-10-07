@@ -1,0 +1,5 @@
+parent,repeat,N,J_O0,J_MIX,J_SINGLE,mix_added,mix_lost,mix_o0_intersection,mix_single_intersection,o0_single_intersection,three_way_intersection,union_all,calls_per_task_policy,logical_calls_per_policy,physical_bank_calls
+REP96,0,384,200,279,209,82,3,197,205,178,175,283,16,6144,15360
+REP96,1,384,196,278,204,82,0,196,203,174,174,279,16,6144,15360
+S96,0,384,200,290,209,91,1,199,207,180,179,292,16,6144,15360
+S96,1,384,202,293,211,92,1,201,208,180,180,297,16,6144,15360

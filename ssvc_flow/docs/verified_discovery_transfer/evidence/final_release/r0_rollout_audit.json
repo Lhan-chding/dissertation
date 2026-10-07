@@ -1,0 +1,30 @@
+{
+  "status": "PASS_RETAINED_R0_ROLLOUTS",
+  "jobs": {
+    "r0.REP96.0": {
+      "rollouts": 1024,
+      "steps": 32,
+      "raw_hashes_verified": true,
+      "last_commit_step": 32
+    },
+    "r0.REP96.1": {
+      "rollouts": 1024,
+      "steps": 32,
+      "raw_hashes_verified": true,
+      "last_commit_step": 32
+    },
+    "r0.S96.0": {
+      "rollouts": 1024,
+      "steps": 32,
+      "raw_hashes_verified": true,
+      "last_commit_step": 32
+    },
+    "r0.S96.1": {
+      "rollouts": 1024,
+      "steps": 32,
+      "raw_hashes_verified": true,
+      "last_commit_step": 32
+    }
+  },
+  "total": 4096
+}

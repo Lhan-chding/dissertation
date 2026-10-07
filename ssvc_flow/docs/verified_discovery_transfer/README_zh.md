@@ -7,7 +7,7 @@
 新分支从 `2f8c6b19970f49542b009f2816f1c1a91eb9974c` 建立，旧工作区和旧流水线 STOP 保留。
 模型调用、训练与科学结论各自记账；CPU 单测或队列注册不表示真实实验完成。
 
-当前进度见 [第一阶段事实报告](FIRST_STAGE_REPORT_zh.md)：三小时监控发现五个worker于10月6日16:18停止；已完成6个SFT臂，保存数据及R0恢复点已核验，尚未自动重提，完整实验未结束。
+本轮已完成全部294个登记工作项并统一揭晓。先读[最终结果](FINAL_FINDINGS_zh.md)、[交付入口](DELIVERY_zh.md)和[后续讨论边界](DISCUSSION_FOR_CLAUDE_zh.md)；[第一阶段报告](FIRST_STAGE_REPORT_zh.md)保留准备、故障及恢复历史。
 
 ## 输入及信息边界
 

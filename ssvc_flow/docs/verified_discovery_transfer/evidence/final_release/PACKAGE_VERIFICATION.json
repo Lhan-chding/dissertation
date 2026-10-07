@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "archive": "SSVC_VERIFIED_DISCOVERY_TRANSFER_RESULTS_20261007.zip",
+  "sha256": "6ea68577a467091446191a25d5223fed2f4b58083fa0eb76fd2b9769ff69e22d",
+  "archive_bytes": 213082511,
+  "payload_files": 34761,
+  "uncompressed_payload_bytes": 2490538437,
+  "manifest_sha256": "6fcffafd151400b69e3e8f5fab3537ab38ba6d96a85909f3619ff3c9dca480e9",
+  "unique_safe_paths": true,
+  "zip_CRC_read_to_EOF": true,
+  "all_payload_sha256_verified": true,
+  "checkpoint_weights_included": false,
+  "standalone_training_rerun_bundle": false,
+  "verified_at_utc": "2026-10-07T05:03:09.564332+00:00"
+}

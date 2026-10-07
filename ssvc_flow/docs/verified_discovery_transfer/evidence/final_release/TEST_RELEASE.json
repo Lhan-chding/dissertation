@@ -1,0 +1,8 @@
+{
+  "schema": "verified-discovery-release-v1",
+  "status": "RELEASED",
+  "queue_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+  "matrix_digest": "271e14e2179cc2b5598f410ffcb6dad7079e5d26ddfcd4b4bf060ea9e34b8542",
+  "technical_missing": [],
+  "scientific_completion": true
+}

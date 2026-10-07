@@ -1,0 +1,46 @@
+{
+  "source_snapshot": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2",
+  "release": {
+    "schema": "verified-discovery-release-v1",
+    "status": "RELEASED",
+    "queue_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+    "matrix_digest": "271e14e2179cc2b5598f410ffcb6dad7079e5d26ddfcd4b4bf060ea9e34b8542",
+    "technical_missing": [],
+    "scientific_completion": true
+  },
+  "checks": [
+    {
+      "parent": "REP96",
+      "repeat": 0,
+      "chunks_hash_verified": true,
+      "physical_records": 15360,
+      "B16_reconstruction_matches": true,
+      "selection_digest": "d2536e87c020d31a10fc3f139dae9da59073e6ef1962dfbba1c67e4115d24658"
+    },
+    {
+      "parent": "REP96",
+      "repeat": 1,
+      "chunks_hash_verified": true,
+      "physical_records": 15360,
+      "B16_reconstruction_matches": true,
+      "selection_digest": "d2536e87c020d31a10fc3f139dae9da59073e6ef1962dfbba1c67e4115d24658"
+    },
+    {
+      "parent": "S96",
+      "repeat": 0,
+      "chunks_hash_verified": true,
+      "physical_records": 15360,
+      "B16_reconstruction_matches": true,
+      "selection_digest": "f6cee7de49d1acaebc647fe20332aa29c9e1c598efcb77e9f72c96e877b4751d"
+    },
+    {
+      "parent": "S96",
+      "repeat": 1,
+      "chunks_hash_verified": true,
+      "physical_records": 15360,
+      "B16_reconstruction_matches": true,
+      "selection_digest": "f6cee7de49d1acaebc647fe20332aa29c9e1c598efcb77e9f72c96e877b4751d"
+    }
+  ],
+  "scope": "Existing data only; B<16 is descriptive prefix, no refit, no new model calls. Fit/V are not final transfer."
+}

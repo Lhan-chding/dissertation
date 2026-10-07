@@ -1,0 +1,691 @@
+{
+  "scope": "Conditional on executed checkpoints; family-stratified base-scene bootstrap, all parents/repeats moved together; not training-seed-population inference. Exploratory unless explicitly primary. No multiplicity correction.",
+  "warning": "V_BEST_SINGLE is V-selected frozen best single, never E-selected. B1_REPEAT is cross-only; do not compare its marginal directly with two-family scores. Offline replay does not measure wall time.",
+  "comparisons": [
+    {
+      "policy": "B1_REPEAT",
+      "baseline": "O0_REPEAT",
+      "metric": "unbiased_success",
+      "families": [
+        "cross_series"
+      ],
+      "classification": "frozen B2 exploratory paired contrast",
+      "difference": -0.03825954861111111,
+      "interval_95": [
+        -0.11030815972222222,
+        0.03285590277777778
+      ],
+      "replicates": 5000,
+      "scene_count": 192,
+      "unit_count": 2,
+      "scope": "conditional on executed checkpoints; scene-cluster uncertainty, not a seed-population interval"
+    },
+    {
+      "policy": "B1_REPEAT",
+      "baseline": "O0_REPEAT",
+      "metric": "offline_trial_success",
+      "families": [
+        "cross_series"
+      ],
+      "classification": "frozen B2 exploratory paired contrast",
+      "difference": -0.039713541666666664,
+      "interval_95": [
+        -0.111328125,
+        0.031901041666666664
+      ],
+      "replicates": 5000,
+      "scene_count": 192,
+      "unit_count": 2,
+      "scope": "conditional on executed checkpoints; scene-cluster uncertainty, not a seed-population interval"
+    },
+    {
+      "policy": "B1_REPEAT",
+      "baseline": "V_BEST_SINGLE",
+      "metric": "unbiased_success",
+      "families": [
+        "cross_series"
+      ],
+      "classification": "frozen B2 exploratory paired contrast",
+      "difference": -0.03825954861111111,
+      "interval_95": [
+        -0.11030815972222222,
+        0.03285590277777778
+      ],
+      "replicates": 5000,
+      "scene_count": 192,
+      "unit_count": 2,
+      "scope": "conditional on executed checkpoints; scene-cluster uncertainty, not a seed-population interval"
+    },
+    {
+      "policy": "B1_REPEAT",
+      "baseline": "V_BEST_SINGLE",
+      "metric": "offline_trial_success",
+      "families": [
+        "cross_series"
+      ],
+      "classification": "frozen B2 exploratory paired contrast",
+      "difference": -0.039713541666666664,
+      "interval_95": [
+        -0.111328125,
+        0.031901041666666664
+      ],
+      "replicates": 5000,
+      "scene_count": 192,
+      "unit_count": 2,
+      "scope": "conditional on executed checkpoints; scene-cluster uncertainty, not a seed-population interval"
+    },
+    {
+      "policy": "FIXED_MIX",
+      "baseline": "O0_REPEAT",
+      "metric": "unbiased_success",
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "classification": "frozen B2 exploratory paired contrast",
+      "difference": 0.12938978407118057,
+      "interval_95": [
+        0.1000732421875,
+        0.16043192545572918
+      ],
+      "replicates": 5000,
+      "scene_count": 384,
+      "unit_count": 2,
+      "scope": "conditional on executed checkpoints; scene-cluster uncertainty, not a seed-population interval"
+    },
+    {
+      "policy": "FIXED_MIX",
+      "baseline": "O0_REPEAT",
+      "metric": "offline_trial_success",
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "classification": "frozen B2 exploratory paired contrast",
+      "difference": 0.12809244791666669,
+      "interval_95": [
+        0.0986328125,
+        0.15901692708333331
+      ],
+      "replicates": 5000,
+      "scene_count": 384,
+      "unit_count": 2,
+      "scope": "conditional on executed checkpoints; scene-cluster uncertainty, not a seed-population interval"
+    },
+    {
+      "policy": "FIXED_MIX",
+      "baseline": "V_BEST_SINGLE",
+      "metric": "unbiased_success",
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "classification": "frozen B2 exploratory paired contrast",
+      "difference": 0.12938978407118057,
+      "interval_95": [
+        0.1000732421875,
+        0.16043192545572918
+      ],
+      "replicates": 5000,
+      "scene_count": 384,
+      "unit_count": 2,
+      "scope": "conditional on executed checkpoints; scene-cluster uncertainty, not a seed-population interval"
+    },
+    {
+      "policy": "FIXED_MIX",
+      "baseline": "V_BEST_SINGLE",
+      "metric": "offline_trial_success",
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "classification": "frozen B2 exploratory paired contrast",
+      "difference": 0.12809244791666669,
+      "interval_95": [
+        0.0986328125,
+        0.15901692708333331
+      ],
+      "replicates": 5000,
+      "scene_count": 384,
+      "unit_count": 2,
+      "scope": "conditional on executed checkpoints; scene-cluster uncertainty, not a seed-population interval"
+    },
+    {
+      "policy": "L11_REPEAT",
+      "baseline": "O0_REPEAT",
+      "metric": "unbiased_success",
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "classification": "frozen B2 exploratory paired contrast",
+      "difference": -0.31565755208333335,
+      "interval_95": [
+        -0.3848524305555555,
+        -0.2458767361111111
+      ],
+      "replicates": 5000,
+      "scene_count": 384,
+      "unit_count": 2,
+      "scope": "conditional on executed checkpoints; scene-cluster uncertainty, not a seed-population interval"
+    },
+    {
+      "policy": "L11_REPEAT",
+      "baseline": "O0_REPEAT",
+      "metric": "offline_trial_success",
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "classification": "frozen B2 exploratory paired contrast",
+      "difference": -0.3125,
+      "interval_95": [
+        -0.3819986979166667,
+        -0.24251302083333334
+      ],
+      "replicates": 5000,
+      "scene_count": 384,
+      "unit_count": 2,
+      "scope": "conditional on executed checkpoints; scene-cluster uncertainty, not a seed-population interval"
+    },
+    {
+      "policy": "L11_REPEAT",
+      "baseline": "V_BEST_SINGLE",
+      "metric": "unbiased_success",
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "classification": "frozen B2 exploratory paired contrast",
+      "difference": -0.31565755208333335,
+      "interval_95": [
+        -0.3848524305555555,
+        -0.2458767361111111
+      ],
+      "replicates": 5000,
+      "scene_count": 384,
+      "unit_count": 2,
+      "scope": "conditional on executed checkpoints; scene-cluster uncertainty, not a seed-population interval"
+    },
+    {
+      "policy": "L11_REPEAT",
+      "baseline": "V_BEST_SINGLE",
+      "metric": "offline_trial_success",
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "classification": "frozen B2 exploratory paired contrast",
+      "difference": -0.3125,
+      "interval_95": [
+        -0.3819986979166667,
+        -0.24251302083333334
+      ],
+      "replicates": 5000,
+      "scene_count": 384,
+      "unit_count": 2,
+      "scope": "conditional on executed checkpoints; scene-cluster uncertainty, not a seed-population interval"
+    },
+    {
+      "policy": "O0_REPEAT",
+      "baseline": "O0_REPEAT",
+      "metric": "unbiased_success",
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "classification": "frozen B2 exploratory paired contrast",
+      "difference": 0.0,
+      "interval_95": [
+        0.0,
+        0.0
+      ],
+      "replicates": 5000,
+      "scene_count": 384,
+      "unit_count": 2,
+      "scope": "conditional on executed checkpoints; scene-cluster uncertainty, not a seed-population interval"
+    },
+    {
+      "policy": "O0_REPEAT",
+      "baseline": "O0_REPEAT",
+      "metric": "offline_trial_success",
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "classification": "frozen B2 exploratory paired contrast",
+      "difference": 0.0,
+      "interval_95": [
+        0.0,
+        0.0
+      ],
+      "replicates": 5000,
+      "scene_count": 384,
+      "unit_count": 2,
+      "scope": "conditional on executed checkpoints; scene-cluster uncertainty, not a seed-population interval"
+    },
+    {
+      "policy": "O0_REPEAT",
+      "baseline": "V_BEST_SINGLE",
+      "metric": "unbiased_success",
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "classification": "frozen B2 exploratory paired contrast",
+      "difference": 0.0,
+      "interval_95": [
+        0.0,
+        0.0
+      ],
+      "replicates": 5000,
+      "scene_count": 384,
+      "unit_count": 2,
+      "scope": "conditional on executed checkpoints; scene-cluster uncertainty, not a seed-population interval"
+    },
+    {
+      "policy": "O0_REPEAT",
+      "baseline": "V_BEST_SINGLE",
+      "metric": "offline_trial_success",
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "classification": "frozen B2 exploratory paired contrast",
+      "difference": 0.0,
+      "interval_95": [
+        0.0,
+        0.0
+      ],
+      "replicates": 5000,
+      "scene_count": 384,
+      "unit_count": 2,
+      "scope": "conditional on executed checkpoints; scene-cluster uncertainty, not a seed-population interval"
+    },
+    {
+      "policy": "V_BEST_PAIR",
+      "baseline": "O0_REPEAT",
+      "metric": "unbiased_success",
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "classification": "frozen B2 exploratory paired contrast",
+      "difference": 0.12938978407118057,
+      "interval_95": [
+        0.1000732421875,
+        0.16043192545572918
+      ],
+      "replicates": 5000,
+      "scene_count": 384,
+      "unit_count": 2,
+      "scope": "conditional on executed checkpoints; scene-cluster uncertainty, not a seed-population interval"
+    },
+    {
+      "policy": "V_BEST_PAIR",
+      "baseline": "O0_REPEAT",
+      "metric": "offline_trial_success",
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "classification": "frozen B2 exploratory paired contrast",
+      "difference": 0.12809244791666669,
+      "interval_95": [
+        0.0986328125,
+        0.15901692708333331
+      ],
+      "replicates": 5000,
+      "scene_count": 384,
+      "unit_count": 2,
+      "scope": "conditional on executed checkpoints; scene-cluster uncertainty, not a seed-population interval"
+    },
+    {
+      "policy": "V_BEST_PAIR",
+      "baseline": "V_BEST_SINGLE",
+      "metric": "unbiased_success",
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "classification": "frozen B2 exploratory paired contrast",
+      "difference": 0.12938978407118057,
+      "interval_95": [
+        0.1000732421875,
+        0.16043192545572918
+      ],
+      "replicates": 5000,
+      "scene_count": 384,
+      "unit_count": 2,
+      "scope": "conditional on executed checkpoints; scene-cluster uncertainty, not a seed-population interval"
+    },
+    {
+      "policy": "V_BEST_PAIR",
+      "baseline": "V_BEST_SINGLE",
+      "metric": "offline_trial_success",
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "classification": "frozen B2 exploratory paired contrast",
+      "difference": 0.12809244791666669,
+      "interval_95": [
+        0.0986328125,
+        0.15901692708333331
+      ],
+      "replicates": 5000,
+      "scene_count": 384,
+      "unit_count": 2,
+      "scope": "conditional on executed checkpoints; scene-cluster uncertainty, not a seed-population interval"
+    },
+    {
+      "policy": "V_BEST_SINGLE",
+      "baseline": "O0_REPEAT",
+      "metric": "unbiased_success",
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "classification": "frozen B2 exploratory paired contrast",
+      "difference": 0.0,
+      "interval_95": [
+        0.0,
+        0.0
+      ],
+      "replicates": 5000,
+      "scene_count": 384,
+      "unit_count": 2,
+      "scope": "conditional on executed checkpoints; scene-cluster uncertainty, not a seed-population interval"
+    },
+    {
+      "policy": "V_BEST_SINGLE",
+      "baseline": "O0_REPEAT",
+      "metric": "offline_trial_success",
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "classification": "frozen B2 exploratory paired contrast",
+      "difference": 0.0,
+      "interval_95": [
+        0.0,
+        0.0
+      ],
+      "replicates": 5000,
+      "scene_count": 384,
+      "unit_count": 2,
+      "scope": "conditional on executed checkpoints; scene-cluster uncertainty, not a seed-population interval"
+    },
+    {
+      "policy": "V_BEST_SINGLE",
+      "baseline": "V_BEST_SINGLE",
+      "metric": "unbiased_success",
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "classification": "frozen B2 exploratory paired contrast",
+      "difference": 0.0,
+      "interval_95": [
+        0.0,
+        0.0
+      ],
+      "replicates": 5000,
+      "scene_count": 384,
+      "unit_count": 2,
+      "scope": "conditional on executed checkpoints; scene-cluster uncertainty, not a seed-population interval"
+    },
+    {
+      "policy": "V_BEST_SINGLE",
+      "baseline": "V_BEST_SINGLE",
+      "metric": "offline_trial_success",
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "classification": "frozen B2 exploratory paired contrast",
+      "difference": 0.0,
+      "interval_95": [
+        0.0,
+        0.0
+      ],
+      "replicates": 5000,
+      "scene_count": 384,
+      "unit_count": 2,
+      "scope": "conditional on executed checkpoints; scene-cluster uncertainty, not a seed-population interval"
+    }
+  ],
+  "averages": [
+    {
+      "policy": "B1_REPEAT",
+      "parent": "S96",
+      "rows": 192,
+      "families": [
+        "cross_series"
+      ],
+      "unbiased_success": 0.4825954861111111,
+      "offline_trial_success": 0.482421875,
+      "early_stop_expected_calls": 1.5758463541666667,
+      "offline_trial_calls": 1.5774739583333333
+    },
+    {
+      "policy": "B1_REPEAT",
+      "parent": "REP96",
+      "rows": 192,
+      "families": [
+        "cross_series"
+      ],
+      "unbiased_success": 0.48637152777777776,
+      "offline_trial_success": 0.484375,
+      "early_stop_expected_calls": 1.5598958333333333,
+      "offline_trial_calls": 1.5625
+    },
+    {
+      "policy": "B1_REPEAT",
+      "parent": "BOTH",
+      "rows": 384,
+      "families": [
+        "cross_series"
+      ],
+      "unbiased_success": 0.4844835069444444,
+      "offline_trial_success": 0.4833984375,
+      "early_stop_expected_calls": 1.56787109375,
+      "offline_trial_calls": 1.5699869791666667
+    },
+    {
+      "policy": "FIXED_MIX",
+      "parent": "S96",
+      "rows": 384,
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "unbiased_success": 0.6182861328125,
+      "offline_trial_success": 0.6165364583333333,
+      "early_stop_expected_calls": 1.5506184895833335,
+      "offline_trial_calls": 1.5462239583333333
+    },
+    {
+      "policy": "FIXED_MIX",
+      "parent": "REP96",
+      "rows": 384,
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "unbiased_success": 0.5999552408854167,
+      "offline_trial_success": 0.5979817708333334,
+      "early_stop_expected_calls": 1.5470377604166667,
+      "offline_trial_calls": 1.5452473958333335
+    },
+    {
+      "policy": "FIXED_MIX",
+      "parent": "BOTH",
+      "rows": 768,
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "unbiased_success": 0.6091206868489583,
+      "offline_trial_success": 0.6072591145833333,
+      "early_stop_expected_calls": 1.548828125,
+      "offline_trial_calls": 1.5457356770833335
+    },
+    {
+      "policy": "L11_REPEAT",
+      "parent": "S96",
+      "rows": 384,
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "unbiased_success": 0.1798611111111111,
+      "offline_trial_success": 0.18294270833333334,
+      "early_stop_expected_calls": 1.8621419270833333,
+      "offline_trial_calls": 1.8665364583333335
+    },
+    {
+      "policy": "L11_REPEAT",
+      "parent": "REP96",
+      "rows": 384,
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "unbiased_success": 0.14828559027777777,
+      "offline_trial_success": 0.150390625,
+      "early_stop_expected_calls": 1.8855794270833335,
+      "offline_trial_calls": 1.8834635416666665
+    },
+    {
+      "policy": "L11_REPEAT",
+      "parent": "BOTH",
+      "rows": 768,
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "unbiased_success": 0.16407335069444445,
+      "offline_trial_success": 0.16666666666666666,
+      "early_stop_expected_calls": 1.8738606770833335,
+      "offline_trial_calls": 1.875
+    },
+    {
+      "policy": "O0_REPEAT",
+      "parent": "S96",
+      "rows": 384,
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "unbiased_success": 0.47981770833333337,
+      "offline_trial_success": 0.47819010416666663,
+      "early_stop_expected_calls": 1.5506184895833335,
+      "offline_trial_calls": 1.5491536458333335
+    },
+    {
+      "policy": "O0_REPEAT",
+      "parent": "REP96",
+      "rows": 384,
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "unbiased_success": 0.47964409722222223,
+      "offline_trial_success": 0.48014322916666663,
+      "early_stop_expected_calls": 1.5470377604166667,
+      "offline_trial_calls": 1.546875
+    },
+    {
+      "policy": "O0_REPEAT",
+      "parent": "BOTH",
+      "rows": 768,
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "unbiased_success": 0.47973090277777775,
+      "offline_trial_success": 0.47916666666666663,
+      "early_stop_expected_calls": 1.548828125,
+      "offline_trial_calls": 1.5480143229166667
+    },
+    {
+      "policy": "V_BEST_PAIR",
+      "parent": "S96",
+      "rows": 384,
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "unbiased_success": 0.6182861328125,
+      "offline_trial_success": 0.6165364583333333,
+      "early_stop_expected_calls": 1.5506184895833335,
+      "offline_trial_calls": 1.5462239583333333
+    },
+    {
+      "policy": "V_BEST_PAIR",
+      "parent": "REP96",
+      "rows": 384,
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "unbiased_success": 0.5999552408854167,
+      "offline_trial_success": 0.5979817708333334,
+      "early_stop_expected_calls": 1.5470377604166667,
+      "offline_trial_calls": 1.5452473958333335
+    },
+    {
+      "policy": "V_BEST_PAIR",
+      "parent": "BOTH",
+      "rows": 768,
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "unbiased_success": 0.6091206868489583,
+      "offline_trial_success": 0.6072591145833333,
+      "early_stop_expected_calls": 1.548828125,
+      "offline_trial_calls": 1.5457356770833335
+    },
+    {
+      "policy": "V_BEST_SINGLE",
+      "parent": "S96",
+      "rows": 384,
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "unbiased_success": 0.47981770833333337,
+      "offline_trial_success": 0.47819010416666663,
+      "early_stop_expected_calls": 1.5506184895833335,
+      "offline_trial_calls": 1.5491536458333335
+    },
+    {
+      "policy": "V_BEST_SINGLE",
+      "parent": "REP96",
+      "rows": 384,
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "unbiased_success": 0.47964409722222223,
+      "offline_trial_success": 0.48014322916666663,
+      "early_stop_expected_calls": 1.5470377604166667,
+      "offline_trial_calls": 1.546875
+    },
+    {
+      "policy": "V_BEST_SINGLE",
+      "parent": "BOTH",
+      "rows": 768,
+      "families": [
+        "cross_series",
+        "trend"
+      ],
+      "unbiased_success": 0.47973090277777775,
+      "offline_trial_success": 0.47916666666666663,
+      "early_stop_expected_calls": 1.548828125,
+      "offline_trial_calls": 1.5480143229166667
+    }
+  ]
+}

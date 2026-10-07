@@ -1,0 +1,3 @@
+parent,repeat,N_GOLD_MATCH,N_MIX,intersection,gold_only,mix_only,jaccard,actual_exposure_ids_equal_frozen_matching,causal_scope
+S96,0,290,290,257,33,33,0.7956656346749226,True,family_x_position_and_count_matched_not_difficulty_matched
+S96,1,293,293,265,28,28,0.8255451713395638,True,family_x_position_and_count_matched_not_difficulty_matched
