@@ -1,0 +1,251 @@
+{
+  "schema": "ssvc-structural-exposure-substitution-v1",
+  "version": "2026-10-07",
+  "experiment_id": "SER_J2_20261007",
+  "status": "PLAN_CPU_COMPILED_NOT_GPU_EXECUTED",
+  "scope": {
+    "sft": true,
+    "frozen_eval": true,
+    "new_rl": false,
+    "new_discovery": false,
+    "fit_controller": false,
+    "auxiliary_reward": false,
+    "extra_scoring": false
+  },
+  "repository": {
+    "name": "Lhan-chding/dissertation",
+    "checked_branch": "codex/verified-discovery-transfer-20261006",
+    "checked_sha": "e375caa9118645f5f93aa76705f634c971e1fb7d",
+    "original_results_source_sha": "ed1d24839dc6bd374d17a92bd29678b7185c7605",
+    "new_worktree": "codex/structural-exposure-replacement-20261007"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.5-9B",
+    "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+    "parents": [
+      "S96",
+      "REP96"
+    ],
+    "base_dtype": "bfloat16",
+    "lora": {
+      "r": 8,
+      "alpha": 16,
+      "dropout": 0,
+      "target_leaf_modules": [
+        "gate_proj",
+        "up_proj",
+        "down_proj"
+      ],
+      "expected_modules": 96,
+      "freeze_base": true,
+      "freeze_vision": true,
+      "reinitialize_lora": false
+    }
+  },
+  "generation": {
+    "temperature": 1.0,
+    "top_p": 1.0,
+    "top_k": 0,
+    "max_new_tokens": 64,
+    "enable_thinking": false,
+    "use_cache": false,
+    "grammar_constrained": false,
+    "initial_engine": "historical uncached-prefix-recompute",
+    "extra_likelihood_rescoring": false
+  },
+  "hardware": {
+    "max_gpus": 5,
+    "fallback_gpus": 4,
+    "parallelism": "independent job per GPU",
+    "upgrade_environment": false
+  },
+  "arms": {
+    "A_LOCAL_C1": {
+      "center_0based": 0,
+      "corrupted_index_0based": 1
+    },
+    "B_FORWARD_C4": {
+      "center_0based": 3,
+      "corrupted_index_0based": 1
+    },
+    "C_FORWARD_C3": {
+      "center_0based": 2,
+      "corrupted_index_0based": 1
+    }
+  },
+  "data": {
+    "common_pool_rule": "intersection of four legacy SELF_O0 focus sets minus c1j2/c3j2/c4j2",
+    "common_expected_count": 182,
+    "replay_count": 64,
+    "donor_roots": 32,
+    "matched_targets_identical": true,
+    "donor_label_source": "explicitly privileged generator labels for a controlled experiment",
+    "new_cross_truth_distinct_values": true,
+    "new_truth_domain": [
+      0,
+      99
+    ],
+    "root_splits": [
+      "DONOR_TRAIN",
+      "E_DIAG",
+      "E_CONFIRM"
+    ],
+    "diagonal_confirm_counts": {
+      "c3j3": 128,
+      "c4j4": 128,
+      "other_cross_cells": 32
+    },
+    "confirm_tasks": 800,
+    "diagnostic_tasks": 48,
+    "seeds": {
+      "donors": 107071,
+      "diagnostic": 107072,
+      "confirm": 107073,
+      "fit_sentinels": 107074
+    },
+    "exclude_later_local_runs_before_first_gpu": true
+  },
+  "training": {
+    "parents": [
+      "S96",
+      "REP96"
+    ],
+    "schedule_seeds": [
+      108701,
+      108702,
+      108703
+    ],
+    "blocks_per_parent": 3,
+    "steps": 256,
+    "common_per_step": 11,
+    "donor_per_step": 1,
+    "replay_per_step": 4,
+    "donor_slot_0based": 11,
+    "microbatch_slots": [
+      [
+        0,
+        1,
+        2,
+        3
+      ],
+      [
+        4,
+        5,
+        6,
+        7
+      ],
+      [
+        8,
+        9,
+        10
+      ],
+      [
+        11
+      ],
+      [
+        12,
+        13,
+        14,
+        15
+      ]
+    ],
+    "loss_denominator": 16,
+    "sequence_normalized": true,
+    "answer_only": true,
+    "append_exactly_one_eos": true,
+    "max_total_tokens": 1024,
+    "optimizer": {
+      "name": "AdamW",
+      "lr": 1e-05,
+      "betas": [
+        0.9,
+        0.999
+      ],
+      "eps": 1e-08,
+      "weight_decay": 0.0,
+      "grad_clip": 1.0,
+      "fresh_state": true
+    },
+    "warmup_steps": 8,
+    "checkpoint_steps": [
+      0,
+      64,
+      128,
+      192,
+      256
+    ],
+    "reset_lora": false,
+    "dose_grid": false,
+    "allow_zero_finite_gradient": true,
+    "new_runner_required": true
+  },
+  "evaluation": {
+    "protocol": "O0",
+    "draws": 8,
+    "diagnostic_steps": [
+      128,
+      256
+    ],
+    "confirm_step": 256,
+    "base_model_probe": "E_DIAG only, no LoRA, same base snapshot",
+    "train_sentinel_count": 16,
+    "train_sentinel_draws": 4,
+    "parent_confirm_reuse_across_blocks": true,
+    "confirm_release": "after all registered terminal endpoints and frozen analysis",
+    "parse": "whole-string JSON, four exact ints; record out-of-domain separately",
+    "projection": "deterministic extra-readout only, never replaces raw X"
+  },
+  "statistics": {
+    "primary": "Gamma = ((B4-C4)-(B3-C3))/2",
+    "primary_expected_direction": "negative, two-sided interval",
+    "bootstrap_seed": 107079,
+    "bootstrap_replicates": 5000,
+    "ci_level": 0.95,
+    "n_primary_roots": 128,
+    "unit": "matched numeric root, keeping all models and repeats",
+    "primary_ci_condition": "two fixed parents and three actual schedules per parent",
+    "secondary_confirmatory_comparisons": [
+      "B4-A4",
+      "C3-A3",
+      "B3-A3",
+      "C4-A4"
+    ],
+    "secondary_bonferroni_level": 0.9875,
+    "practical_reference_pp": 5,
+    "reference_is_not_gate": true,
+    "auto_add_samples_after_result": false
+  },
+  "workload": {
+    "formal_sft_runs": 18,
+    "formal_sft_updates": 4608,
+    "formal_sft_target_exposures": 73728,
+    "per_run_common_exposures": 2816,
+    "per_run_donor_exposures": 256,
+    "per_run_replay_exposures": 1024,
+    "confirm_student_generations": 115200,
+    "confirm_parent_generations": 12800,
+    "diagnostic_parent_and_base_generations": 1152,
+    "diagnostic_student_generations": 13824,
+    "training_fit_sentinel_generations": 2304,
+    "formal_generation_total": 145280,
+    "additional_model_scoring": 0,
+    "new_rl_updates": 0,
+    "new_discovery_campaign": 0
+  },
+  "technical_budget": {
+    "max_generations": 256,
+    "max_updates": 16,
+    "all_separate_from_formal": true
+  },
+  "deliverables": [
+    "PREPARATION_REPORT_zh.md",
+    "IMPLEMENTATION_AND_BRIDGE_zh.md",
+    "PRIMARY_EFFECT.json",
+    "METRICS_BY_CELL.csv",
+    "VALUE_VS_EXTRA_ERRORS.csv",
+    "PROJECTION_DIAGNOSTIC.csv",
+    "EXPOSURE_EXACT.csv",
+    "FINAL_FINDINGS_zh.md",
+    "EXECUTION_SCOPE.json"
+  ]
+}

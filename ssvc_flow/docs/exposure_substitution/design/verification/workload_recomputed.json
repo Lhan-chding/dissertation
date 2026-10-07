@@ -1,0 +1,7 @@
+{
+  "training_runs": 18,
+  "eval_jobs": 95,
+  "formal_output_draws": 145280,
+  "formal_sft_updates": 4608,
+  "identity": "planned work, not executed Qwen results"
+}

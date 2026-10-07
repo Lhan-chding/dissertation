@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-07",
+  "artifact": "SSVC_Structural_Exposure_Replacement_20261007",
+  "source_review": {
+    "latest_claude_md_read": true,
+    "latest_claude_script_executed": true,
+    "original_E_chunks_loaded_by_script": 9216,
+    "original_student_E_rows_loaded_by_script": 73728,
+    "not_a_fresh_independent_full_semantics_audit": true,
+    "historical_exposure_table_and_T_E_metadata_read": true,
+    "VDT_frozen_sft_source_read": true,
+    "live_github_branch_and_sft_runtime_read": true
+  },
+  "cpu_actions": {
+    "common_views_intersection_before_removal": 194,
+    "common_views_after_removal": 182,
+    "replay_targets_verified": 64,
+    "matched_donor_roots_generated": 32,
+    "donor_variants_generated": 96,
+    "new_diagnostic_tasks": 48,
+    "new_confirm_tasks": 800,
+    "new_unique_repair_tasks_checked": 944,
+    "new_numeric_roots": 274,
+    "historical_exclusion_orbits": 4219,
+    "explicit_schedules": 3,
+    "formal_training_jobs_planned": 18,
+    "bulk_eval_jobs_planned": 95,
+    "unittest_tests_run": 51,
+    "unittest_status": "PASS",
+    "toy_pytorch_loss_autograd_executed": true,
+    "toy_pytorch_optimizer_steps_executed": true
+  },
+  "not_performed": {
+    "Qwen_generation": true,
+    "Qwen_likelihood_rescoring": true,
+    "Qwen_gradients": true,
+    "new_real_model_training": true,
+    "server_checkpoint_load": true,
+    "server_GPU_submission": true,
+    "repository_write": true,
+    "trained_observer_fit": true
+  },
+  "limits": [
+    "Reference code and manifests are CPU artefacts; full GPU integration remains Codex work.",
+    "Historical exclusion covers imported archived index and VDT cohort; later server runs must be checked before first GPU execution.",
+    "New matched-root design is proposed here; no outcome or statistical power has been observed.",
+    "Two parent checkpoints and three schedules do not create six independent parent lineages."
+  ]
+}

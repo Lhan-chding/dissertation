@@ -1,0 +1,260 @@
+{
+  "common_intersection_before_removal": 194,
+  "common_removed_donor_cells": 12,
+  "historical_exclusion": {
+    "additional_unique_orbits": 0,
+    "baseline": [
+      {
+        "bytes": 982464,
+        "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/project_docs/evidence/historical_inputs/historical_exclusion.json",
+        "sha256": "61110b82b0e779ffc5a8c3e434de92480a6e15404b53897bcef5ebf2952c8b95",
+        "truth_orbits": 3323
+      },
+      {
+        "bytes": 134262,
+        "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort/E_test/audit_only.jsonl",
+        "sha256": "c01f20f15b7f5c2cf6ee665cc1457275034cf13aecd5c33b41971d5e1d60e504",
+        "truth_orbits": 384
+      },
+      {
+        "bytes": 36648,
+        "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort/G_guard/audit_only.jsonl",
+        "sha256": "87b80a16ab820f214c1c4cb267847377fc9e0d20158ef317b1af994562ec205b",
+        "truth_orbits": 96
+      },
+      {
+        "bytes": 109511,
+        "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort/R_replay/verified_targets.jsonl",
+        "sha256": "d40af8d16a2bff850df63c044e6094a4adf3a9594f5457777d33e354a4c67ad0",
+        "truth_orbits": 64
+      },
+      {
+        "bytes": 134705,
+        "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort/T_train/audit_only.jsonl",
+        "sha256": "573866819258c26d19f1b07ee47ed1b97694fbccb32b4f0aa7044400ba8bd92c",
+        "truth_orbits": 384
+      },
+      {
+        "bytes": 34045,
+        "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort/V_selection/audit_only.jsonl",
+        "sha256": "b34fc9ab4e48b424080db33a5f0d15f42523b07c2245c17a5fa701d90d5785bd",
+        "truth_orbits": 96
+      }
+    ],
+    "explicit_later_scan_paths": [
+      "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort"
+    ],
+    "external_scan_receipt": {
+      "bytes": 7218,
+      "path": "/Users/louis/.codex/worktrees/ser-j2-20261007/dissertation-ntu/ssvc_flow/docs/exposure_substitution/evidence/LATER_HISTORY_AUDIT.json",
+      "sha256": "abf903bc5da4fb31f3b3ebafbe9a72b3a3aeaa93713ca851c3f92fe0ff778b06"
+    },
+    "final_exclusion_orbits": 4219,
+    "later_files": [
+      {
+        "bytes": 134262,
+        "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort/E_test/audit_only.jsonl",
+        "sha256": "c01f20f15b7f5c2cf6ee665cc1457275034cf13aecd5c33b41971d5e1d60e504",
+        "truth_orbits": 384
+      },
+      {
+        "bytes": 36648,
+        "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort/G_guard/audit_only.jsonl",
+        "sha256": "87b80a16ab820f214c1c4cb267847377fc9e0d20158ef317b1af994562ec205b",
+        "truth_orbits": 96
+      },
+      {
+        "bytes": 109511,
+        "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort/R_replay/verified_targets.jsonl",
+        "sha256": "d40af8d16a2bff850df63c044e6094a4adf3a9594f5457777d33e354a4c67ad0",
+        "truth_orbits": 64
+      },
+      {
+        "bytes": 134705,
+        "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort/T_train/audit_only.jsonl",
+        "sha256": "573866819258c26d19f1b07ee47ed1b97694fbccb32b4f0aa7044400ba8bd92c",
+        "truth_orbits": 384
+      },
+      {
+        "bytes": 34045,
+        "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort/V_selection/audit_only.jsonl",
+        "sha256": "b34fc9ab4e48b424080db33a5f0d15f42523b07c2245c17a5fa701d90d5785bd",
+        "truth_orbits": 96
+      }
+    ],
+    "limitations": "Only explicit scan scope and recorded receipt were audited; no model outcomes used",
+    "regeneration": "fixed seeds; sequential sampling skips all historical collisions before freeze",
+    "status": "VERIFIED_EXPLICIT_SCAN"
+  },
+  "legacy_run_root": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2",
+  "original_run_identity": "6e93b2305fdf089109b918945742f962d9f776ba2c432674504f14deb478ed27",
+  "original_targets_verified_against_training_signatures": true,
+  "original_views": [
+    {
+      "focus_count": 200,
+      "original_training_signature_verified": true,
+      "parent": "S96",
+      "repeat": 0,
+      "training_signature": "7d7b304f32f961b5ed7761f9ea94336eb37dcdb3c86b1983a6b7b37c1f95fd74"
+    },
+    {
+      "focus_count": 202,
+      "original_training_signature_verified": true,
+      "parent": "S96",
+      "repeat": 1,
+      "training_signature": "21f9bfc3ffc899df62aed8bfa9435a1a524bd97ca17322bbaf3714c9c1004940"
+    },
+    {
+      "focus_count": 200,
+      "original_training_signature_verified": true,
+      "parent": "REP96",
+      "repeat": 0,
+      "training_signature": "23867dccc858b644fcb93a19379977f5950fd95748f61e57f7167bd0d716483b"
+    },
+    {
+      "focus_count": 196,
+      "original_training_signature_verified": true,
+      "parent": "REP96",
+      "repeat": 1,
+      "training_signature": "a2001a3e6af9876c8836e974e85857786f9ff3d342932f98b20cecf4023fb3ff"
+    }
+  ],
+  "parent_bindings": {
+    "REP96": {
+      "checkpoint_tensor_content_verified": false,
+      "checks": {
+        "checkpoint": "UNAVAILABLE_LOCAL",
+        "commit": "UNAVAILABLE_LOCAL",
+        "manifest": "UNAVAILABLE_LOCAL"
+      },
+      "inherited_checkpoint": {
+        "identity": {
+          "manifest_hash": "9527b6da3f41d9cc486db08b6b5776626522741b0c082a696d93848c4998e400",
+          "step": 96
+        },
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61003/segments/089_096/attempt_1790284167213371794/state.pt",
+        "sha256": "13a2769a787962587e81d3ffc446245e1e71772589bf3b3506cd650c4b60c29c",
+        "state_hash": "eca26a58bb3d2462e832a364ce10ea99b0d9796369d116d2e7e24b2471a5146d"
+      }
+    },
+    "S96": {
+      "checkpoint_tensor_content_verified": false,
+      "checks": {
+        "checkpoint": "UNAVAILABLE_LOCAL",
+        "commit": "UNAVAILABLE_LOCAL",
+        "manifest": "UNAVAILABLE_LOCAL"
+      },
+      "inherited_checkpoint": {
+        "identity": {
+          "manifest_hash": "ea69256390e3e710ad8924a89efc4dd4003ab370a25013422025efd8f1f12d11",
+          "step": 96
+        },
+        "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/089_096/attempt_1790284878289928374/state.pt",
+        "sha256": "80f028d07492b0b7ba895fbd0d93352e234db2337ff48e33130120721bf179a9",
+        "state_hash": "090ed9fa2d56a901b40a4eaa1cc46eed0686ed355070840d539ba378be5f94e5"
+      }
+    }
+  },
+  "public_renderer_inherited_match": true,
+  "removed_task_ids": [
+    "0abbc57884afc413778b00c79d048dc6",
+    "323c0f0e5395b594d5e473bda2aaf674",
+    "61644df4fa55a85e25378b7594e5e85a",
+    "707c2fdf70cba98b37cdcb7c58fe394d",
+    "7f7131dc33ed8c6174425fee95309c50",
+    "8be55ea0d5bcabae5bd69c94c1f87e42",
+    "903a06a148697b0013923baec881ccb9",
+    "9e258b0bb53c29690f86c001f7af99a5",
+    "a8818d0ca86f1f03298a3d1c9f8cdc72",
+    "ad1b903970252a9705fb07c4385275d3",
+    "e410e574aef4071dba6ffc0005cbfefa",
+    "e9f54053c2070fac0ca8d39e59f2d058"
+  ],
+  "source_files": [
+    {
+      "bytes": 27067,
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/freeze.json",
+      "sha256": "27e3a162b1ab14742ffc3a369e95f883e78387fa24b6dbdf3aab3c1bbeeed1cf"
+    },
+    {
+      "bytes": 8813,
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/protocol.json",
+      "sha256": "4ed9ad8284438c86daad8ae5dfc59e2d29aed2012ae8511bd4443f124439fcc1"
+    },
+    {
+      "bytes": 1213,
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/machine.json",
+      "sha256": "1b4fca4ac0c62a33357910196bcc436b75c28d1ceb4976b727ca7506476e4a56"
+    },
+    {
+      "bytes": 35593,
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort/cohort_manifest.json",
+      "sha256": "a7d3b0863b07dcca64f54fac256c2daf84f4fceb190d7d03b2be5ed35c40297b"
+    },
+    {
+      "bytes": 177839,
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort/T_train/tasks_public.jsonl",
+      "sha256": "5a3c995634e20f19c1bada8f0e104ba33d8529ffc6ce11b14354f690feeb83ab"
+    },
+    {
+      "bytes": 134705,
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort/T_train/audit_only.jsonl",
+      "sha256": "573866819258c26d19f1b07ee47ed1b97694fbccb32b4f0aa7044400ba8bd92c"
+    },
+    {
+      "bytes": 109511,
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort/R_replay/verified_targets.jsonl",
+      "sha256": "d40af8d16a2bff850df63c044e6094a4adf3a9594f5457777d33e354a4c67ad0"
+    },
+    {
+      "bytes": 29550,
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort/R_replay/tasks_public.jsonl",
+      "sha256": "38b559b98d5d7edddc1f7ee8154ea1f59ea04a7c6e5dd930bea7b7f1e4b25ac7"
+    },
+    {
+      "bytes": 848457,
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/evidence/discover.S96.0/discovery.json",
+      "sha256": "7c1b19f7587de2a0e950f8c44b47c80ede9e7e76002762b496be8d510639d69c"
+    },
+    {
+      "bytes": 4326066,
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/evidence/sft.S96.0.SELF_O0/result.json",
+      "sha256": "33ebdedd9bddb1a5bf3cf453461078b37e0d1e364426e2fa97475f7a2cad7c75"
+    },
+    {
+      "bytes": 847382,
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/evidence/discover.S96.1/discovery.json",
+      "sha256": "34ccd11afaf2705a4adb77bae38401e034f102659c40c8bda1b7c440d54e22a7"
+    },
+    {
+      "bytes": 4349635,
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/evidence/sft.S96.1.SELF_O0/result.json",
+      "sha256": "c08371730cb6364a248e293575acc74c8bd982004a07dc87f4fad0d68cef5234"
+    },
+    {
+      "bytes": 847662,
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/evidence/discover.REP96.0/discovery.json",
+      "sha256": "aad8b3e91b04b1cdf493c47d7ff8173ad81501445f43e20aba6053afb7206ea9"
+    },
+    {
+      "bytes": 4326518,
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/evidence/sft.REP96.0.SELF_O0/result.json",
+      "sha256": "6f52b4a18fcb9c3e7b8b95b10952642c758b56b48d959a0b3000d657f9a119a3"
+    },
+    {
+      "bytes": 844887,
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/evidence/discover.REP96.1/discovery.json",
+      "sha256": "c5613d8ae6197009ac0aead718e363eb3c2bbf103cc87fa4e53c5bd3205e99dd"
+    },
+    {
+      "bytes": 4282767,
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/evidence/sft.REP96.1.SELF_O0/result.json",
+      "sha256": "f91ef1115d71e2fe62811cebd0facb5e68467a57dba2f1196d7136368e245062"
+    },
+    {
+      "bytes": 8876,
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/parent_availability.json",
+      "sha256": "4741ea1ea86293642e7400eb3eefaac001da51ef8c235a15e5bea162653d7b56"
+    }
+  ]
+}

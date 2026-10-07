@@ -1,0 +1,24 @@
+== (1) same-structure donor share vs extra-edit (misfire) share, mean over units
+                 donor_share                                     misfire_share                                    
+arm                 GOLD_ALL GOLD_MATCH_MIX SELF_MIX SELF_SINGLE      GOLD_ALL GOLD_MATCH_MIX SELF_MIX SELF_SINGLE
+hub_pos leaf_pos                                                                                                  
+3       1               0.33           0.00     0.00        0.00          0.00           0.00     0.00        0.00
+        2               0.33           0.44     0.36        0.41          0.95           1.00     0.99        0.68
+        4               0.33           0.56     0.64        0.59          0.05           0.00     0.01        0.32
+4       1               0.33           0.00     0.01        0.01          0.00           0.00     0.00        0.00
+        2               0.33           0.49     0.53        0.52          0.46           0.54     0.57        0.53
+        3               0.33           0.51     0.46        0.47          0.54           0.46     0.43        0.47
+corr over rows: 0.447 n 81
+
+== (2) leaf corrupted, hub after: right-location single edits by value kind (%)
+kind            correct  equals_hub  off_by_<=2  other  other_relation_constant  wrong_partner
+arm                                                                                           
+GOLD_ALL           98.3         0.0         0.0    0.4                      0.0            1.3
+GOLD_MATCH_MIX     79.0         0.0         3.4   15.8                      0.0            1.8
+SELF_MIX           69.8         1.2         4.2   11.6                      0.3           12.9
+SELF_SINGLE        63.3         0.9         3.7   20.7                      4.3            7.1
+arm
+GOLD_ALL          1735
+GOLD_MATCH_MIX     386
+SELF_MIX           683
+SELF_SINGLE        695

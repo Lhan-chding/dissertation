@@ -1,0 +1,86 @@
+{
+  "schema": "ser-j2-later-history-audit-v1",
+  "status": "COMPLETE",
+  "audited_at_utc": "2026-10-07T09:15:14.395808+00:00",
+  "local_scanned_roots": [
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/ssvc_flow/runs",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/ssvc_flow/data",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/protocol-state-probes-20261005/artifacts",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/protocol-state-probes-20261005/ssvc_flow/artifacts",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/protocol-state-probes-20261005/ssvc_flow/data",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/artifacts",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/artifacts",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/four-lineage-existing-only-20261004/ssvc_flow/data",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-v3-observation-coverage/artifacts",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-v3-observation-coverage/ssvc_flow/runs",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-v3-observation-coverage/ssvc_flow/data",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/decision-modeling-v1-20260919/artifacts",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/decision-modeling-v1-20260919/ssvc_flow/runs",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/decision-modeling-v1-20260919/ssvc_flow/data",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-v4-full-response/artifacts",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-v4-full-response/ssvc_flow/runs",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-v4-full-response/ssvc_flow/data",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/ssvc_flow/artifacts",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/ssvc_flow/data",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/artifacts",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/runs",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-qualification-20260915/ssvc_flow/data",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/artifacts",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/runs",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/ssvc-modeling-contrast-v2-20260915/ssvc_flow/data",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/prospective-reward-selection-20260924/artifacts",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/prospective-reward-selection-20260924/ssvc_flow/artifacts",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/prospective-reward-selection-20260924/ssvc_flow/runs",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/prospective-reward-selection-20260924/ssvc_flow/data"
+  ],
+  "local_manifests": [
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort/R_replay/tasks_public.jsonl",
+      "sha256": "38b559b98d5d7edddc1f7ee8154ea1f59ea04a7c6e5dd930bea7b7f1e4b25ac7"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort/G_guard/audit_only.jsonl",
+      "sha256": "87b80a16ab820f214c1c4cb267847377fc9e0d20158ef317b1af994562ec205b"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort/G_guard/tasks_public.jsonl",
+      "sha256": "0b7b439b0984007a7849a03206c9d56ddc2783df3ffd7b93a7ace5f1a2d7236f"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort/V_selection/audit_only.jsonl",
+      "sha256": "b34fc9ab4e48b424080db33a5f0d15f42523b07c2245c17a5fa701d90d5785bd"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort/V_selection/tasks_public.jsonl",
+      "sha256": "161efa1541c6605192e1cac87efd068cc3e2d04c270c8d32beaefac3b875475e"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort/E_test/audit_only.jsonl",
+      "sha256": "c01f20f15b7f5c2cf6ee665cc1457275034cf13aecd5c33b41971d5e1d60e504"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort/E_test/tasks_public.jsonl",
+      "sha256": "e866d48c7b9fe0c1959dc570a8a28938a50ecfba935de25554d7b50bf4662334"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort/T_train/audit_only.jsonl",
+      "sha256": "573866819258c26d19f1b07ee47ed1b97694fbccb32b4f0aa7044400ba8bd92c"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/run_v2/cohort/T_train/tasks_public.jsonl",
+      "sha256": "5a3c995634e20f19c1bada8f0e104ba33d8529ffc6ce11b14354f690feeb83ab"
+    },
+    {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/verified-discovery-transfer-20261006/artifacts/reports/verified_discovery_transfer_20261007/project_docs/evidence/historical_inputs/historical_exclusion.json",
+      "sha256": "61110b82b0e779ffc5a8c3e434de92480a6e15404b53897bcef5ebf2952c8b95"
+    }
+  ],
+  "server_inventory": "SERVER_SOURCE_INVENTORY.json",
+  "server_manifest_count": 28,
+  "novel_server_manifest_hashes": [],
+  "new_orbits_after_archive": 0,
+  "coverage_note": "Known local SSVC artifacts/data directories across existing repository worktrees and server louis-ssvc task manifest inventory. Server run_v1 and technical bridge task manifests byte-match archived run_v2. No new task manifests found in this scope. Does not claim access to unrelated users or external unregistered storage.",
+  "gpu_calls_before_audit": 0
+}

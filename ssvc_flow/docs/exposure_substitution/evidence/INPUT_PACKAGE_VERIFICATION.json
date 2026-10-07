@@ -1,0 +1,251 @@
+{
+  "archive": "/Users/louis/Downloads/SSVC_Structural_Exposure_Replacement_20261007.zip",
+  "archive_sha256": "11bda35cdab2e783ab7af98366a7bd83d3eaa5a5f8f1bfbe2789a1c862ab2a80",
+  "entries": 48,
+  "crc_checked": true,
+  "unique_safe_paths": true,
+  "source_files_byte_identical": true,
+  "files": [
+    {
+      "path": "CODEX_EXECUTION_PLAN_zh.md",
+      "bytes": 28740,
+      "sha256": "605ec48176428315219dfefed141d979acdf4fd20d545addd73707fb147e0622"
+    },
+    {
+      "path": "DATA_CONTRACTS_zh.md",
+      "bytes": 3749,
+      "sha256": "c96b92abac2c75d1f1f28eb311e6d95540a5d65ed6771d62cfa34903925811ce"
+    },
+    {
+      "path": "GPU_RUNBOOK_zh.md",
+      "bytes": 6267,
+      "sha256": "995dd94bf8fe3676cca577fb778fa686a9b3918885a081d8e42300c7a48d93ff"
+    },
+    {
+      "path": "OVERVIEW_zh.md",
+      "bytes": 2901,
+      "sha256": "d72a1d68ef2ccd7605da40581597aedfd0858cd66cf719066a41554b32c81eea"
+    },
+    {
+      "path": "START_HERE_FOR_CODEX.md",
+      "bytes": 2145,
+      "sha256": "8dab1c0aabdc9f06d647eb5ab0c3847fbb4b6bff51882b339ef70cdd31a93f26"
+    },
+    {
+      "path": "THEORY_AND_STATISTICS_zh.md",
+      "bytes": 8762,
+      "sha256": "2368e75a2dd108b158b1aabe1b482443b34e9206019d2af1da5a0a3fccac6741"
+    },
+    {
+      "path": "evidence/claude_final_script_reproduction.log",
+      "bytes": 1890,
+      "sha256": "26a1b83e72a874cbaff63ebfdc7c4c2067577a42726ed06b58bc90f206b984f1"
+    },
+    {
+      "path": "manifests/BUILD_REPORT.json",
+      "bytes": 1444,
+      "sha256": "b2a4f7f2856b9c3cae8774fd703225a8dca041de1c13d2838f2f50508d5f9738"
+    },
+    {
+      "path": "manifests/E_CONFIRM/audit_only.jsonl",
+      "bytes": 197100,
+      "sha256": "94e924df306fdfa2a12246e4d6fdcd5f1af13d013733aab55b73de8ead7d8b46"
+    },
+    {
+      "path": "manifests/E_CONFIRM/tasks_public.jsonl",
+      "bytes": 431706,
+      "sha256": "f468fd16eefbde4bf2e6798030ba9ecaa0fe00bd6ce99a651e18864b9ab1b644"
+    },
+    {
+      "path": "manifests/E_DIAG/audit_only.jsonl",
+      "bytes": 10470,
+      "sha256": "1de13e7b77a459716015977aaef9f344cc04383d5ae0ec96f9ea958f4a23ae6c"
+    },
+    {
+      "path": "manifests/E_DIAG/tasks_public.jsonl",
+      "bytes": 24228,
+      "sha256": "f5d9700f5871ebf677202c38dbded65d2c4f63b92e139955c5c4adfa8b0e21a1"
+    },
+    {
+      "path": "manifests/common_audit.jsonl",
+      "bytes": 64755,
+      "sha256": "468d60f79553fb57ff263a83f11f53179e267fce7f1042532ba0e71b27f5540a"
+    },
+    {
+      "path": "manifests/common_targets.jsonl",
+      "bytes": 122536,
+      "sha256": "1522091e7d9b44c8d2261ad7f966a775076342ebe041a32d6f8e625d03f19a76"
+    },
+    {
+      "path": "manifests/donor_targets.jsonl",
+      "bytes": 19754,
+      "sha256": "f298d887298ba484c8dcd0e3241db3ec819d6d0a9d282c26c057609522758c37"
+    },
+    {
+      "path": "manifests/donors_audit.jsonl",
+      "bytes": 21300,
+      "sha256": "fdecb5717e3655af87d2a3133091a796531e58e78b61b240f5c4730c8cf79982"
+    },
+    {
+      "path": "manifests/donors_public.jsonl",
+      "bytes": 49831,
+      "sha256": "963d7867796f39153d99a22c212ba7f279ca9fc1b5062f484487da145341e9b1"
+    },
+    {
+      "path": "manifests/evaluation_jobs.jsonl",
+      "bytes": 16625,
+      "sha256": "2fdacc5d6d00c1b0025a81254e4d02e7cd7b4f3b1eef12bd65565bc0278cd37b"
+    },
+    {
+      "path": "manifests/fit_sentinels.json",
+      "bytes": 729,
+      "sha256": "8e0599c35af675c8e77cccd0970655760ff76e46eb72ae55b3997750a49c0f2d"
+    },
+    {
+      "path": "manifests/new_prompts_public.jsonl",
+      "bytes": 658597,
+      "sha256": "ab49133d2523ed746f30481022efe09f250209e0313ed556d1fc8beb144e672a"
+    },
+    {
+      "path": "manifests/new_root_registry_AUDIT_ONLY.jsonl",
+      "bytes": 43936,
+      "sha256": "9ec91f5665370dce3ddabbce3233350b28044383ad327b993b50b00c553f11f6"
+    },
+    {
+      "path": "manifests/replay_targets.jsonl",
+      "bytes": 108182,
+      "sha256": "086c2a0ee404a76d9bc29bf1c5a09c7aa6eb6acdcc8ab43367d89c4250a7216b"
+    },
+    {
+      "path": "manifests/schedule_108701.jsonl",
+      "bytes": 1733824,
+      "sha256": "c6c04d8fe6e0b546345c7fd2210920a65cb1d30056c18b5554636bc6273218e8"
+    },
+    {
+      "path": "manifests/schedule_108702.jsonl",
+      "bytes": 1733824,
+      "sha256": "4fc443715afcc4e1fe9d14f5311a076dd3511b2b5484e6522a24aa4c8445bcd7"
+    },
+    {
+      "path": "manifests/schedule_108703.jsonl",
+      "bytes": 1733824,
+      "sha256": "52b4853d1f83b9f4fb1f07b5b70912122a96169b6fd42160ad3236438bc838db"
+    },
+    {
+      "path": "manifests/training_jobs.jsonl",
+      "bytes": 1644,
+      "sha256": "a65d841c277b9c306fd5008cbaa097602bc3b6f6e5e9baa5bee1be71a8a52849"
+    },
+    {
+      "path": "protocol.json",
+      "bytes": 6191,
+      "sha256": "7bdd5063901575af5f6212ada91dd81bd3116e96fb2659fa4b302b2dcabcb3d0"
+    },
+    {
+      "path": "reference/build_manifests.py",
+      "bytes": 9209,
+      "sha256": "1de652069b053cf97e6756db5652e7ab7f1271086bac2b058a44765ecd4be246"
+    },
+    {
+      "path": "reference/contracts.py",
+      "bytes": 8954,
+      "sha256": "743819f3fabeac8c67cca67ba126cb538a70a59d9e66089d74d4cfbb238a887d"
+    },
+    {
+      "path": "reference/statistics_reference.py",
+      "bytes": 1802,
+      "sha256": "abc442e74c5e20fb9cffcda17ca5c0ec410ff77d21b2a69c66ba767fa8306fb3"
+    },
+    {
+      "path": "reference/test_contracts.py",
+      "bytes": 11810,
+      "sha256": "9e71bc9d5d48059f45bb0f732fe2896399900437b1650642c3586ff4393dc0cd"
+    },
+    {
+      "path": "sources/CLAUDE_FINAL_zh.md",
+      "bytes": 16636,
+      "sha256": "783e93879a82c3f6dd3cc1b21f66950148161bbeb8600ac3ac168a060d9ff17f"
+    },
+    {
+      "path": "sources/PREVIOUS_JOINT_REPLY_zh.md",
+      "bytes": 32786,
+      "sha256": "10b0d5d05d18ce130147c09bb58e74daaccc75d3cd11026d09ce1cbfd960734c"
+    },
+    {
+      "path": "sources/SOURCE_README_zh.md",
+      "bytes": 1069,
+      "sha256": "de9856d52fd2d529d9154574a057bae5c546faeed7c1655fa62afef0df0f0eac"
+    },
+    {
+      "path": "sources/VDT_DELIVERY_README_zh.md",
+      "bytes": 2308,
+      "sha256": "3192e95710da1ac95f1b3f16cf8156e4c92fd0a1c97e177ad79dc972c309515b"
+    },
+    {
+      "path": "sources/VDT_NUMERICAL_REVIEW_zh.md",
+      "bytes": 3259,
+      "sha256": "7bf2c05e5ed84da4cd474996a0c6757902a853dd21381e251c042e6ab537a284"
+    },
+    {
+      "path": "sources/VDT_frozen_protocol.json",
+      "bytes": 8812,
+      "sha256": "2332bb3ddf4a3a6e230d89a8564fcff0d98e3df861194ded6b29835686c10ea9"
+    },
+    {
+      "path": "sources/VDT_sft_loss.py",
+      "bytes": 5800,
+      "sha256": "7c301ac95b69ca17d62ef28814c6c44ac3ae24d202257333eca684f1c6f11793"
+    },
+    {
+      "path": "sources/VDT_sft_runner.py",
+      "bytes": 10397,
+      "sha256": "57e2f2ab890885d11cf3872aa01d162ab540c3b30bfda8acb072f02e89ec0496"
+    },
+    {
+      "path": "sources/VDT_sft_runtime.py",
+      "bytes": 14723,
+      "sha256": "f7022bd2d43e0fbffd078de36cb4e3db1c25f1b7fa6e8c097fa9d9b23124429b"
+    },
+    {
+      "path": "sources/checkpoints_historical.json",
+      "bytes": 5407,
+      "sha256": "c336bf9d63b337a1b97b5932102e3b0dbae4a0939599a2beb0eeae7200cb213e"
+    },
+    {
+      "path": "sources/vdt_misfire_position_and_operand.py",
+      "bytes": 5096,
+      "sha256": "06745bfdcb9db4933c19a243174faa0179516aa01159bfafdb68c41be116c377"
+    },
+    {
+      "path": "verification/EXECUTION_SCOPE.json",
+      "bytes": 1914,
+      "sha256": "b6204e0d77f23c1794129d9bc4344972f0f0cca4005b9d430fc7ee03d37403a4"
+    },
+    {
+      "path": "verification/build.log",
+      "bytes": 1445,
+      "sha256": "b31789120400d2676bd2b260c7f625c7843f5c0b092739b23eb2a6cc400d6126"
+    },
+    {
+      "path": "verification/contract_tests.log",
+      "bytes": 4771,
+      "sha256": "5117e814efd733c56d4cb779eb9e9069628acc596cb48375cfe97ab395c87682"
+    },
+    {
+      "path": "verification/package_QA.json",
+      "bytes": 191,
+      "sha256": "11f5215ed3bf4b98eba2bf81e3bc375118207b741d2affa5c88fd2f4b5bcac44"
+    },
+    {
+      "path": "verification/source_inventory.json",
+      "bytes": 806,
+      "sha256": "8564e17a01a35cae1774a1e45ea6dd6821288d6601eda692a8a255b40acc45c4"
+    },
+    {
+      "path": "verification/workload_recomputed.json",
+      "bytes": 164,
+      "sha256": "2c5ddeaf0c9112260e417879eaad5f07c22f32fbfbf9a113afe114ea9e36a9b4"
+    }
+  ],
+  "whitespace_exception": "Supplied immutable reproduction log retains its original three trailing-whitespace lines; new implementation passes git diff --check."
+}

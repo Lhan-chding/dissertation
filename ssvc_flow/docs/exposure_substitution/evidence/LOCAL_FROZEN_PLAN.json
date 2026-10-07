@@ -1,0 +1,106 @@
+{
+  "checkpoint_tensors_verified": false,
+  "experiment_id": "SER_J2_20261007",
+  "external_inputs": {
+    "checkpoint_catalog": {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/evidence/PARENT_VERIFICATION.json",
+      "sha256": null,
+      "status": "UNAVAILABLE_LOCAL"
+    },
+    "frozen_protocol_path": {
+      "path": "/projects/varunssd/louis-ssvc/protocol_state_probes_v1_20261005/run_v2/protocol.json",
+      "sha256": null,
+      "status": "UNAVAILABLE_LOCAL"
+    },
+    "runtime_path": {
+      "path": "/projects/varunssd/louis-ssvc/prospective_selection_v2_20260924/runtime.json",
+      "sha256": null,
+      "status": "UNAVAILABLE_LOCAL"
+    }
+  },
+  "files": {
+    "LATER_HISTORY_AUDIT.json": {
+      "sha256": "ca3f107df5c321423687838e50f3bd5b51b492be3a437d09f128a9956533be14"
+    },
+    "MANIFEST_COMPARISON.json": {
+      "sha256": "98cb1cae87ad9f0f9369536859f4ec13872d888f57df45a959dac27594e40c0a"
+    },
+    "SOURCE_PROVENANCE.json": {
+      "sha256": "906113489e83342f08b854768f980728aeb22f9027d2abd9c5be63564ff3bab9"
+    },
+    "machine.json": {
+      "sha256": "0ea4519f2b41b2548737ac77c0a1e36b9f401ce1055750f52eb77ce82e45b106"
+    },
+    "manifests/BUILD_REPORT.json": {
+      "sha256": "ce923654007f4a5b69ef7bb61f3cccadb33f931486a62d08660ca75f3b0d5187"
+    },
+    "manifests/E_CONFIRM/audit_only.jsonl": {
+      "sha256": "94e924df306fdfa2a12246e4d6fdcd5f1af13d013733aab55b73de8ead7d8b46"
+    },
+    "manifests/E_CONFIRM/tasks_public.jsonl": {
+      "sha256": "f468fd16eefbde4bf2e6798030ba9ecaa0fe00bd6ce99a651e18864b9ab1b644"
+    },
+    "manifests/E_DIAG/audit_only.jsonl": {
+      "sha256": "1de13e7b77a459716015977aaef9f344cc04383d5ae0ec96f9ea958f4a23ae6c"
+    },
+    "manifests/E_DIAG/tasks_public.jsonl": {
+      "sha256": "f5d9700f5871ebf677202c38dbded65d2c4f63b92e139955c5c4adfa8b0e21a1"
+    },
+    "manifests/common_audit.jsonl": {
+      "sha256": "6ae4cebce21a3ad123f7bc97568fb204b177b2090ae8555006255b2f07c3d650"
+    },
+    "manifests/common_targets.jsonl": {
+      "sha256": "1522091e7d9b44c8d2261ad7f966a775076342ebe041a32d6f8e625d03f19a76"
+    },
+    "manifests/donor_targets.jsonl": {
+      "sha256": "f298d887298ba484c8dcd0e3241db3ec819d6d0a9d282c26c057609522758c37"
+    },
+    "manifests/donors_audit.jsonl": {
+      "sha256": "fdecb5717e3655af87d2a3133091a796531e58e78b61b240f5c4730c8cf79982"
+    },
+    "manifests/donors_public.jsonl": {
+      "sha256": "963d7867796f39153d99a22c212ba7f279ca9fc1b5062f484487da145341e9b1"
+    },
+    "manifests/evaluation_jobs.jsonl": {
+      "sha256": "2fdacc5d6d00c1b0025a81254e4d02e7cd7b4f3b1eef12bd65565bc0278cd37b"
+    },
+    "manifests/fit_sentinels.json": {
+      "sha256": "0f18e23b4ef17f98dd0cf714e501d54d04a3260f3c27ead68423160f2d911eae"
+    },
+    "manifests/new_prompts_public.jsonl": {
+      "sha256": "ab49133d2523ed746f30481022efe09f250209e0313ed556d1fc8beb144e672a"
+    },
+    "manifests/new_root_registry_AUDIT_ONLY.jsonl": {
+      "sha256": "9ec91f5665370dce3ddabbce3233350b28044383ad327b993b50b00c553f11f6"
+    },
+    "manifests/replay_audit.jsonl": {
+      "sha256": "f2ebce7f9b93f6d55c4bc0f425c205b305569c2b88eea9e7b92be5d45e99f75d"
+    },
+    "manifests/replay_targets.jsonl": {
+      "sha256": "086c2a0ee404a76d9bc29bf1c5a09c7aa6eb6acdcc8ab43367d89c4250a7216b"
+    },
+    "manifests/schedule_108701.jsonl": {
+      "sha256": "c6c04d8fe6e0b546345c7fd2210920a65cb1d30056c18b5554636bc6273218e8"
+    },
+    "manifests/schedule_108702.jsonl": {
+      "sha256": "4fc443715afcc4e1fe9d14f5311a076dd3511b2b5484e6522a24aa4c8445bcd7"
+    },
+    "manifests/schedule_108703.jsonl": {
+      "sha256": "52b4853d1f83b9f4fb1f07b5b70912122a96169b6fd42160ad3236438bc838db"
+    },
+    "manifests/training_jobs.jsonl": {
+      "sha256": "a65d841c277b9c306fd5008cbaa097602bc3b6f6e5e9baa5bee1be71a8a52849"
+    },
+    "parent_availability.json": {
+      "sha256": "9e56ae0ff45729599a92ab92b105a9fca8694d4b21bafab895242c39304f78c7"
+    },
+    "protocol.json": {
+      "sha256": "e2b73ae6480f3a6f34f0910e094d91ce19fb035f1026f5e7e39fece1d12fce53"
+    }
+  },
+  "later_exclusion_status": "VERIFIED_EXPLICIT_SCAN",
+  "plan_hash": "1b7719f5ce0ab369aeaa8ca3cc6f0c133605fb9b55b028dde37a8cab7ef0de87",
+  "schema": "SER-J2-frozen-plan-v1",
+  "source_protocol_sha256": "7bdd5063901575af5f6212ada91dd81bd3116e96fb2659fa4b302b2dcabcb3d0",
+  "status": "FROZEN"
+}

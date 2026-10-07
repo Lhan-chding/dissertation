@@ -1,0 +1,21 @@
+{
+  "E_CONFIRM/audit_only.jsonl": "EXACT_RECORD_MATCH",
+  "E_CONFIRM/tasks_public.jsonl": "EXACT_RECORD_MATCH",
+  "E_DIAG/audit_only.jsonl": "EXACT_RECORD_MATCH",
+  "E_DIAG/tasks_public.jsonl": "EXACT_RECORD_MATCH",
+  "common_audit.jsonl": "EXACT_RECORD_MATCH",
+  "common_targets.jsonl": "EXACT_RECORD_MATCH",
+  "donor_targets.jsonl": "EXACT_RECORD_MATCH",
+  "donors_audit.jsonl": "EXACT_RECORD_MATCH",
+  "donors_public.jsonl": "EXACT_RECORD_MATCH",
+  "evaluation_jobs.jsonl": "EXACT_RECORD_MATCH",
+  "fit_sentinels.json": "EXACT_RECORD_MATCH",
+  "new_prompts_public.jsonl": "EXACT_RECORD_MATCH",
+  "new_root_registry_AUDIT_ONLY.jsonl": "EXACT_RECORD_MATCH",
+  "replay_audit.jsonl": "ADDED_AUDIT_METADATA",
+  "replay_targets.jsonl": "EXACT_RECORD_MATCH",
+  "schedule_108701.jsonl": "EXACT_RECORD_MATCH",
+  "schedule_108702.jsonl": "EXACT_RECORD_MATCH",
+  "schedule_108703.jsonl": "EXACT_RECORD_MATCH",
+  "training_jobs.jsonl": "EXACT_RECORD_MATCH"
+}

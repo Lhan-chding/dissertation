@@ -1,0 +1,17 @@
+{
+  "latest_claude_file": "/mnt/data/Claude对三方讨论第二轮的回应.md",
+  "latest_script": "/mnt/data/vdt_misfire_position_and_operand.py",
+  "latest_script_rerun": "completed on original E_test chunks plus source exposure table",
+  "original_E_chunks_read_by_script": 9216,
+  "source_archive": "SSVC_VERIFIED_DISCOVERY_TRANSFER_RESULTS_20261007(1).zip",
+  "checked_repo_branch": {
+    "name": "Lhan-chding/dissertation",
+    "checked_branch": "codex/verified-discovery-transfer-20261006",
+    "checked_sha": "e375caa9118645f5f93aa76705f634c971e1fb7d",
+    "original_results_source_sha": "ed1d24839dc6bd374d17a92bd29678b7185c7605",
+    "new_worktree": "codex/structural-exposure-replacement-20261007"
+  },
+  "no_model_weights_loaded": true,
+  "no_gpu_used": true,
+  "read_only_repository": true
+}

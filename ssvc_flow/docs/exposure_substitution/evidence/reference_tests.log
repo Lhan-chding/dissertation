@@ -1,0 +1,56 @@
+test_actual_different_schedules (test_contracts.ManifestTests.test_actual_different_schedules) ... ok
+test_all_new_unique (test_contracts.ManifestTests.test_all_new_unique) ... ok
+test_build_counts (test_contracts.ManifestTests.test_build_counts) ... ok
+test_common_replay_validate (test_contracts.ManifestTests.test_common_replay_validate) ... ok
+test_confirm_counts (test_contracts.ManifestTests.test_confirm_counts) ... ok
+test_donor_observations_equal (test_contracts.ManifestTests.test_donor_observations_equal) ... ok
+test_donor_targets_equal (test_contracts.ManifestTests.test_donor_targets_equal) ... ok
+test_donors_verify (test_contracts.ManifestTests.test_donors_verify) ... ok
+test_exact_donor_exposure (test_contracts.ManifestTests.test_exact_donor_exposure) ... ok
+test_j2_only (test_contracts.ManifestTests.test_j2_only) ... ok
+test_job_matrix (test_contracts.ManifestTests.test_job_matrix) ... ok
+test_main_roots_paired (test_contracts.ManifestTests.test_main_roots_paired) ... ok
+test_new_roots_disjoint (test_contracts.ManifestTests.test_new_roots_disjoint) ... ok
+test_no_extra_training_factors (test_contracts.ManifestTests.test_no_extra_training_factors) ... ok
+test_role_no_audit_in_prompt (test_contracts.ManifestTests.test_role_no_audit_in_prompt) ... ok
+test_schedule_role_counts (test_contracts.ManifestTests.test_schedule_role_counts) ... ok
+test_schedule_sizes_and_shared_slots (test_contracts.ManifestTests.test_schedule_sizes_and_shared_slots) ... ok
+test_workload (test_contracts.ManifestTests.test_workload) ... ok
+test_bool_rejected (test_contracts.MathContractTests.test_bool_rejected) ... ok
+test_bootstrap_retains_pairing (test_contracts.MathContractTests.test_bootstrap_retains_pairing) ... ok
+test_bootstrap_seed_reproducible (test_contracts.MathContractTests.test_bootstrap_seed_reproducible) ... ok
+test_conditional_empty_null (test_contracts.MathContractTests.test_conditional_empty_null) ... ok
+test_copy_not_accepted (test_contracts.MathContractTests.test_copy_not_accepted) ... ok
+test_donor_isolated (test_contracts.MathContractTests.test_donor_isolated) ... ok
+test_edit_identity (test_contracts.MathContractTests.test_edit_identity) ... ok
+test_false_equivalence_counterexample (test_contracts.MathContractTests.test_false_equivalence_counterexample) ... ok
+test_float_rejected (test_contracts.MathContractTests.test_float_rejected) ... ok
+test_interaction_not_absolute_harm (test_contracts.MathContractTests.test_interaction_not_absolute_harm) ... ok
+test_lr (test_contracts.MathContractTests.test_lr) ... ok
+test_macro_not_count_weighted (test_contracts.MathContractTests.test_macro_not_count_weighted) ... ok
+test_main_sign (test_contracts.MathContractTests.test_main_sign) ... ok
+test_microbatch_partition (test_contracts.MathContractTests.test_microbatch_partition) ... ok
+test_multiple_json_rejected (test_contracts.MathContractTests.test_multiple_json_rejected) ... ok
+test_oob_parse_retained (test_contracts.MathContractTests.test_oob_parse_retained) ... ok
+test_passk_correct (test_contracts.MathContractTests.test_passk_correct) ... ok
+test_passk_invalid (test_contracts.MathContractTests.test_passk_invalid) ... ok
+test_passk_zero (test_contracts.MathContractTests.test_passk_zero) ... ok
+test_projection_does_not_read_truth (test_contracts.MathContractTests.test_projection_does_not_read_truth) ... ok
+test_projection_equivalence (test_contracts.MathContractTests.test_projection_equivalence) ... ok
+test_projection_missing_value (test_contracts.MathContractTests.test_projection_missing_value) ... ok
+test_projection_unparsed (test_contracts.MathContractTests.test_projection_unparsed) ... ok
+test_unique_repair (test_contracts.MathContractTests.test_unique_repair) ... ok
+test_wilson_all_not_one_lower (test_contracts.MathContractTests.test_wilson_all_not_one_lower) ... ok
+test_wilson_zero_not_zero_upper (test_contracts.MathContractTests.test_wilson_zero_not_zero_upper) ... ok
+test_wrapped_json_rejected (test_contracts.MathContractTests.test_wrapped_json_rejected) ... ok
+test_wrong_value_not_accepted (test_contracts.MathContractTests.test_wrong_value_not_accepted) ... ok
+test_microbatch_accumulation_equal_weight (test_contracts.TinyLossTests.test_microbatch_accumulation_equal_weight) ... ok
+test_seed_only_not_training_replication (test_contracts.TinyLossTests.test_seed_only_not_training_replication) ... ok
+test_shift_and_eos_mask (test_contracts.TinyLossTests.test_shift_and_eos_mask) ... ok
+test_variable_target_sequence_mean (test_contracts.TinyLossTests.test_variable_target_sequence_mean) ... ok
+test_zero_grad_and_none_differ (test_contracts.TinyLossTests.test_zero_grad_and_none_differ) ... ok
+
+----------------------------------------------------------------------
+Ran 51 tests in 1.188s
+
+OK

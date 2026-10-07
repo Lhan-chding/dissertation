@@ -1,0 +1,85 @@
+{
+  "verified_at_utc": "2026-10-07T09:24:40.527368+00:00",
+  "python": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+  "commands": [
+    {
+      "log": "integrated_pytest.log",
+      "command": [
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_exposure_analysis.py",
+        "tests/test_exposure_data_contracts.py",
+        "tests/test_exposure_evaluate.py",
+        "tests/test_exposure_queue.py",
+        "tests/test_exposure_training_runtime.py",
+        "tests/test_verified_discovery_sft_runtime.py",
+        "tests/test_verified_discovery_data_contracts.py",
+        "tests/test_verified_discovery_pipeline.py",
+        "tests/test_verified_discovery_bridge_gate.py",
+        "tests/test_verified_discovery_semantics.py",
+        "-q",
+        "-p",
+        "no:cacheprovider"
+      ],
+      "cwd": "/Users/louis/.codex/worktrees/ser-j2-20261007/dissertation-ntu/ssvc_flow",
+      "exit_code": 0
+    },
+    {
+      "log": "ruff_check.log",
+      "command": [
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "--no-cache",
+        "src/exposure_substitution",
+        "tests/test_exposure_analysis.py",
+        "tests/test_exposure_data_contracts.py",
+        "tests/test_exposure_evaluate.py",
+        "tests/test_exposure_queue.py",
+        "tests/test_exposure_training_runtime.py",
+        "tests/test_verified_discovery_sft_runtime.py"
+      ],
+      "cwd": "/Users/louis/.codex/worktrees/ser-j2-20261007/dissertation-ntu/ssvc_flow",
+      "exit_code": 0
+    },
+    {
+      "log": "ruff_format.log",
+      "command": [
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python",
+        "-m",
+        "ruff",
+        "format",
+        "--no-cache",
+        "--check",
+        "src/exposure_substitution",
+        "tests/test_exposure_analysis.py",
+        "tests/test_exposure_data_contracts.py",
+        "tests/test_exposure_evaluate.py",
+        "tests/test_exposure_queue.py",
+        "tests/test_exposure_training_runtime.py",
+        "tests/test_verified_discovery_sft_runtime.py"
+      ],
+      "cwd": "/Users/louis/.codex/worktrees/ser-j2-20261007/dissertation-ntu/ssvc_flow",
+      "exit_code": 0
+    },
+    {
+      "log": "reference_tests.log",
+      "command": [
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ssvc_flow/docs/exposure_substitution/design/reference",
+        "-p",
+        "test_contracts.py",
+        "-v"
+      ],
+      "cwd": "/Users/louis/.codex/worktrees/ser-j2-20261007/dissertation-ntu",
+      "exit_code": 0
+    }
+  ],
+  "gpu_execution": false
+}

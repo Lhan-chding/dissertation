@@ -1,0 +1,328 @@
+{
+  "schema": "ssvc-verified-discovery-transfer-1",
+  "version": "2026-10-06",
+  "status": "DESIGN_NOT_MODEL_EXECUTED",
+  "repository": {
+    "name": "Lhan-chding/dissertation",
+    "checked_parent_branch": "codex/protocol-state-probes-20261005",
+    "checked_parent_sha": "2f8c6b19970f49542b009f2816f1c1a91eb9974c",
+    "new_branch_suggestion": "codex/verified-discovery-transfer-20261006"
+  },
+  "scope": {
+    "new_frozen_inference": true,
+    "new_sft": true,
+    "new_R0_context_reference": true,
+    "dynamic_reward_controller": false,
+    "new_selector_fit": false,
+    "importance_weighted_off_policy_RL": false,
+    "new_source_pretraining": false
+  },
+  "hardware": {
+    "max_gpus": 5,
+    "preferred_parallelism": "one independent model job per GPU",
+    "fallback_gpus": 4,
+    "automatic_package_upgrades": false
+  },
+  "model": {
+    "id": "Qwen/Qwen3.5-9B",
+    "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+    "parents": [
+      "S96",
+      "REP96"
+    ],
+    "base_dtype": "bfloat16",
+    "lora": {
+      "r": 8,
+      "alpha": 16,
+      "dropout": 0,
+      "target_leaf_modules": [
+        "gate_proj",
+        "up_proj",
+        "down_proj"
+      ],
+      "expected_modules": 96,
+      "freeze_base": true,
+      "freeze_vision": true,
+      "reinitialize_lora": false
+    }
+  },
+  "generation": {
+    "temperature": 1.0,
+    "top_p": 1.0,
+    "top_k": 0,
+    "max_new_tokens": 64,
+    "enable_thinking": false,
+    "use_cache": false,
+    "grammar_constrained": false,
+    "initial_engine": "historical uncached-prefix-recompute",
+    "extra_likelihood_rescoring": false
+  },
+  "data": {
+    "cohort_name": "FRESH_VALID_0_99_v1",
+    "truth_domain": [
+      0,
+      99
+    ],
+    "observed_domain": [
+      0,
+      99
+    ],
+    "historical_truth_domain": [
+      0,
+      49
+    ],
+    "historical_ID_claim": false,
+    "families": [
+      "cross_series",
+      "trend"
+    ],
+    "cross_graph": "star",
+    "operations": [
+      "sum4",
+      "difference_pairs",
+      "range4"
+    ],
+    "new_task_counts": {
+      "T_train": 384,
+      "V_selection": 96,
+      "E_test": 384,
+      "G_guard_prompts": 96
+    },
+    "allocation": {
+      "family_equal": true,
+      "corruption_position_equal": true,
+      "cross_center_by_corruption_equal": true,
+      "operation_round_robin": true
+    },
+    "guard": {
+      "image_cross_from_E": 32,
+      "image_trend_from_E": 32,
+      "new_symbolic_duplicate": 32,
+      "independent_of_main_test_scenes": false
+    },
+    "replay": {
+      "count": 64,
+      "source": "existing train-only verified O0 successes",
+      "preferred_counts": {
+        "symbolic_duplicate": 32,
+        "symbolic_cross": 16,
+        "symbolic_trend": 16
+      },
+      "never_use_P_D_U22_or_new_V_E": true
+    },
+    "generator_seeds": {
+      "T_train": 106061,
+      "V_selection": 106062,
+      "E_test": 106063,
+      "G_guard": 106064
+    },
+    "dedup_rule": "canonical truth multiset across all current splits and historical exposed scenes; equivalent transforms remain one base family",
+    "allow_silent_domain_expansion": false,
+    "test_model_results_before_design_freeze": false
+  },
+  "protocols": {
+    "trend": [
+      "O0",
+      "L11"
+    ],
+    "cross_series": [
+      "O0",
+      "L11",
+      "B1"
+    ],
+    "fixed_companion": {
+      "trend": "L11",
+      "cross_series": "B1"
+    },
+    "no_truth_or_corruption_position_in_prompt": true,
+    "verify_on_original_relations": true,
+    "mapping": "canonical[output_order[k]]=emitted[k]"
+  },
+  "discovery": {
+    "per_protocol_draws": 16,
+    "pipeline_repeats": [
+      0,
+      1
+    ],
+    "T_repeats": 2,
+    "V_repeats": 1,
+    "E_repeats": 1,
+    "budget_per_policy": 16,
+    "MIX_allocation": {
+      "O0": 8,
+      "family_companion": 8
+    },
+    "repeat_policy": "O0:16",
+    "single_policy": "per-family best fixed protocol selected on V by pass@16",
+    "portfolio_eval_budget": 2,
+    "best_single_for_two_calls": "select independently on V by pass@2",
+    "best_pair_for_two_calls": "select fixed pair on V, allowing repeated protocols",
+    "success_frequency_weighting": false,
+    "one_canonical_target_per_discovered_task": true,
+    "teacher_updates_during_discovery": false
+  },
+  "sft": {
+    "main_arms": [
+      "SELF_O0",
+      "SELF_MIX",
+      "SELF_SINGLE",
+      "GOLD_ALL"
+    ],
+    "S96_additional_arms": [
+      "GOLD_MATCH_MIX",
+      "REPLAY_ONLY"
+    ],
+    "seeds": [
+      73101,
+      73102
+    ],
+    "discovery_repeat_to_sft_seed": {
+      "0": 73101,
+      "1": 73102
+    },
+    "steps": 256,
+    "checkpoints": [
+      0,
+      32,
+      64,
+      128,
+      256
+    ],
+    "main_endpoint": 256,
+    "microbatch_max": 4,
+    "batch_examples": 16,
+    "focus_examples_per_update": 12,
+    "replay_examples_per_update": 4,
+    "loss": "0.75 * mean per-sequence mean completion NLL on focus + 0.25 * replay NLL",
+    "replay_only_loss": "0.25 * mean per-sequence mean completion NLL on replay; do not renormalize",
+    "optimizer": {
+      "name": "AdamW",
+      "lr": 1e-05,
+      "betas": [
+        0.9,
+        0.999
+      ],
+      "eps": 1e-08,
+      "weight_decay": 0.0,
+      "grad_clip": 1.0,
+      "fresh_state": true
+    },
+    "warmup_steps": 8,
+    "scheduler_after_warmup": "constant",
+    "response_only_loss": true,
+    "include_one_eos_in_loss": true,
+    "pack_sequences": false,
+    "max_total_tokens": 1024,
+    "no_truncate_prompt_or_target": true,
+    "full_sequence_teacher_forcing": "new explicit SFT execution path, causality and loss/gradient audit required; no PPO ratio",
+    "large_hyperparameter_grid": false,
+    "auto_extend_after_negative_result": false,
+    "early_results_not_test": "V and train sentinels only; no method adaptation within frozen round"
+  },
+  "R0_reference": {
+    "enabled": true,
+    "parents": [
+      "S96",
+      "REP96"
+    ],
+    "seeds": [
+      73101,
+      73102
+    ],
+    "steps": 32,
+    "B": 4,
+    "K": 8,
+    "reward": "2 * indicator(X)",
+    "epsilon": 0.0001,
+    "Lnorm": 64,
+    "ppo_clip": 0.2,
+    "grad_clip": 1.0,
+    "optimizer_state": "fresh, same AdamW hyperparameters as SFT; explicitly not original-momentum continuation",
+    "prompt_schedule": "T_train fixed shuffled schedule, same within repeat",
+    "no_claim_of_equal_compute_to_SFT": true,
+    "warmup_steps": 8,
+    "scheduler_after_warmup": "constant"
+  },
+  "evaluation": {
+    "frozen_protocol_draws": 16,
+    "trained_E_draws": 8,
+    "trained_G_draws": 4,
+    "trained_V_draws": 4,
+    "V_evaluation_steps": [
+      64,
+      128
+    ],
+    "train_sentinel_tasks": 16,
+    "train_sentinel_greedy_steps": [
+      64,
+      128,
+      256
+    ],
+    "R0_V_step": 8,
+    "primary_metric": "E_test O0 pX at SFT step256, equal family and equal task weights",
+    "primary_contrast": "SELF_MIX - SELF_O0",
+    "key_stronger_baseline": "SELF_MIX - SELF_SINGLE",
+    "coverage_k": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "static_structure_strata": [
+      "family",
+      "corruption_position",
+      "DPE1_O0",
+      "truth_all_in_0_49"
+    ],
+    "truth_based_strata_audit_only": true,
+    "new_model_generations_on_old_D_P_U22": false,
+    "technical_smoke_max_draws": 128
+  },
+  "statistics": {
+    "method": "paired task-cluster bootstrap, preserving all parents/repeats/protocols per scene; report finite-scene MC uncertainty separately",
+    "bootstrap_replicates": 5000,
+    "seed": 106069,
+    "two_sided_confidence_level": 0.95,
+    "primary_comparison_count": 1,
+    "multiple_comparison_policy": "secondary exploratory, no all-claims safety gate",
+    "practical_effect_pp": 2.0,
+    "practical_effect_is_not_success_gate": true,
+    "planning_effect_pp": 5.0,
+    "automatically_increase_after_test_result": false,
+    "seed_unit": "two existing source trajectories; repeats nested, not four independent lineages",
+    "unseen_success_is_not_probability_zero": true
+  },
+  "gates": {
+    "stop_on": [
+      "verifier_contract_violation",
+      "test_orbit_leakage",
+      "incorrect_prompt_or_permutation",
+      "nonfinite_training",
+      "checkpoint_restore_failure",
+      "future_target_leakage"
+    ],
+    "do_not_stop_on": [
+      "no_gain",
+      "few_successes",
+      "PTLC_mismatch",
+      "wide_intervals"
+    ],
+    "empty_discovered_set": "NO_VERIFIED_TARGETS_RETURN_PARENT; no focus training or oracle fill; use first 8 parent E draws and first 4 parent G draws as evaluation alias"
+  },
+  "artifacts": {
+    "main_report": "FINAL_FINDINGS_zh.md",
+    "scope_report": "EXECUTION_SCOPE.json",
+    "cache_key_contains": [
+      "parent",
+      "split",
+      "task",
+      "protocol",
+      "role",
+      "pipeline_repeat",
+      "draw_index",
+      "template_version"
+    ],
+    "hash_model_each_step": false,
+    "new_test_needed_after_test_driven_redesign": true
+  }
+}

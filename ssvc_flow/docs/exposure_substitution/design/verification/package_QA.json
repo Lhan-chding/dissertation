@@ -1,0 +1,7 @@
+{
+  "O0_literal_template_equal_to_archived_source": true,
+  "reference_tests": 51,
+  "reference_status": "PASS",
+  "all_promised_main_documents_exist": true,
+  "Qwen_or_GPU_executed": false
+}

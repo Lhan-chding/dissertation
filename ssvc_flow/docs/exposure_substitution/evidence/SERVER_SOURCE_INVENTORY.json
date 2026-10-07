@@ -1,0 +1,205 @@
+{
+  "root": "/projects/varunssd/louis-ssvc",
+  "pruned_directory_names": [
+    ".cache",
+    ".git",
+    "__pycache__",
+    "attempts",
+    "envs",
+    "hf_cache",
+    "logs",
+    "models",
+    "node_modules",
+    "sealed",
+    "tmp",
+    "venv"
+  ],
+  "task_manifest_inventory": [
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v1/cohort/R_replay/tasks_public.jsonl",
+      "mtime": 1791259423.8660967,
+      "bytes": 29550,
+      "sha256": "38b559b98d5d7edddc1f7ee8154ea1f59ea04a7c6e5dd930bea7b7f1e4b25ac7"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v1/cohort/T_train/audit_only.jsonl",
+      "mtime": 1791259423.8230975,
+      "bytes": 134705,
+      "sha256": "573866819258c26d19f1b07ee47ed1b97694fbccb32b4f0aa7044400ba8bd92c"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v1/cohort/T_train/tasks_public.jsonl",
+      "mtime": 1791259423.8140976,
+      "bytes": 177839,
+      "sha256": "5a3c995634e20f19c1bada8f0e104ba33d8529ffc6ce11b14354f690feeb83ab"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v1/cohort/E_test/audit_only.jsonl",
+      "mtime": 1791259423.852097,
+      "bytes": 134262,
+      "sha256": "c01f20f15b7f5c2cf6ee665cc1457275034cf13aecd5c33b41971d5e1d60e504"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v1/cohort/E_test/tasks_public.jsonl",
+      "mtime": 1791259423.8390973,
+      "bytes": 177442,
+      "sha256": "e866d48c7b9fe0c1959dc570a8a28938a50ecfba935de25554d7b50bf4662334"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v1/cohort/V_selection/audit_only.jsonl",
+      "mtime": 1791259423.8330975,
+      "bytes": 34045,
+      "sha256": "b34fc9ab4e48b424080db33a5f0d15f42523b07c2245c17a5fa701d90d5785bd"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v1/cohort/V_selection/tasks_public.jsonl",
+      "mtime": 1791259423.8290975,
+      "bytes": 44871,
+      "sha256": "161efa1541c6605192e1cac87efd068cc3e2d04c270c8d32beaefac3b875475e"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v1/cohort/G_guard/audit_only.jsonl",
+      "mtime": 1791259423.8620968,
+      "bytes": 36648,
+      "sha256": "87b80a16ab820f214c1c4cb267847377fc9e0d20158ef317b1af994562ec205b"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v1/cohort/G_guard/tasks_public.jsonl",
+      "mtime": 1791259423.859097,
+      "bytes": 50502,
+      "sha256": "0b7b439b0984007a7849a03206c9d56ddc2783df3ffd7b93a7ace5f1a2d7236f"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/cohort/R_replay/tasks_public.jsonl",
+      "mtime": 1791260705.2340465,
+      "bytes": 29550,
+      "sha256": "38b559b98d5d7edddc1f7ee8154ea1f59ea04a7c6e5dd930bea7b7f1e4b25ac7"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/cohort/T_train/audit_only.jsonl",
+      "mtime": 1791260705.1800475,
+      "bytes": 134705,
+      "sha256": "573866819258c26d19f1b07ee47ed1b97694fbccb32b4f0aa7044400ba8bd92c"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/cohort/T_train/tasks_public.jsonl",
+      "mtime": 1791260705.1680477,
+      "bytes": 177839,
+      "sha256": "5a3c995634e20f19c1bada8f0e104ba33d8529ffc6ce11b14354f690feeb83ab"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/cohort/E_test/audit_only.jsonl",
+      "mtime": 1791260705.2140467,
+      "bytes": 134262,
+      "sha256": "c01f20f15b7f5c2cf6ee665cc1457275034cf13aecd5c33b41971d5e1d60e504"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/cohort/E_test/tasks_public.jsonl",
+      "mtime": 1791260705.203047,
+      "bytes": 177442,
+      "sha256": "e866d48c7b9fe0c1959dc570a8a28938a50ecfba935de25554d7b50bf4662334"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/cohort/V_selection/audit_only.jsonl",
+      "mtime": 1791260705.196047,
+      "bytes": 34045,
+      "sha256": "b34fc9ab4e48b424080db33a5f0d15f42523b07c2245c17a5fa701d90d5785bd"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/cohort/V_selection/tasks_public.jsonl",
+      "mtime": 1791260705.1900473,
+      "bytes": 44871,
+      "sha256": "161efa1541c6605192e1cac87efd068cc3e2d04c270c8d32beaefac3b875475e"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/cohort/G_guard/audit_only.jsonl",
+      "mtime": 1791260705.2290466,
+      "bytes": 36648,
+      "sha256": "87b80a16ab820f214c1c4cb267847377fc9e0d20158ef317b1af994562ec205b"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/run_v2/cohort/G_guard/tasks_public.jsonl",
+      "mtime": 1791260705.2230465,
+      "bytes": 50502,
+      "sha256": "0b7b439b0984007a7849a03206c9d56ddc2783df3ffd7b93a7ace5f1a2d7236f"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/technical_bridge_v1/cohort/R_replay/tasks_public.jsonl",
+      "mtime": 1791258558.092382,
+      "bytes": 29550,
+      "sha256": "38b559b98d5d7edddc1f7ee8154ea1f59ea04a7c6e5dd930bea7b7f1e4b25ac7"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/technical_bridge_v1/cohort/T_train/audit_only.jsonl",
+      "mtime": 1791258557.4803944,
+      "bytes": 134705,
+      "sha256": "573866819258c26d19f1b07ee47ed1b97694fbccb32b4f0aa7044400ba8bd92c"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/technical_bridge_v1/cohort/T_train/tasks_public.jsonl",
+      "mtime": 1791258557.4723945,
+      "bytes": 177839,
+      "sha256": "5a3c995634e20f19c1bada8f0e104ba33d8529ffc6ce11b14354f690feeb83ab"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/technical_bridge_v1/cohort/E_test/audit_only.jsonl",
+      "mtime": 1791258558.077382,
+      "bytes": 134262,
+      "sha256": "c01f20f15b7f5c2cf6ee665cc1457275034cf13aecd5c33b41971d5e1d60e504"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/technical_bridge_v1/cohort/E_test/tasks_public.jsonl",
+      "mtime": 1791258557.496394,
+      "bytes": 177442,
+      "sha256": "e866d48c7b9fe0c1959dc570a8a28938a50ecfba935de25554d7b50bf4662334"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/technical_bridge_v1/cohort/V_selection/audit_only.jsonl",
+      "mtime": 1791258557.491394,
+      "bytes": 34045,
+      "sha256": "b34fc9ab4e48b424080db33a5f0d15f42523b07c2245c17a5fa701d90d5785bd"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/technical_bridge_v1/cohort/V_selection/tasks_public.jsonl",
+      "mtime": 1791258557.4863942,
+      "bytes": 44871,
+      "sha256": "161efa1541c6605192e1cac87efd068cc3e2d04c270c8d32beaefac3b875475e"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/technical_bridge_v1/cohort/G_guard/audit_only.jsonl",
+      "mtime": 1791258558.088382,
+      "bytes": 36648,
+      "sha256": "87b80a16ab820f214c1c4cb267847377fc9e0d20158ef317b1af994562ec205b"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/technical_bridge_v1/cohort/G_guard/tasks_public.jsonl",
+      "mtime": 1791258558.084382,
+      "bytes": 50502,
+      "sha256": "0b7b439b0984007a7849a03206c9d56ddc2783df3ffd7b93a7ace5f1a2d7236f"
+    },
+    {
+      "path": "/projects/varunssd/louis-ssvc/verified_discovery_transfer_20261006/inputs/historical_exclusion.json",
+      "mtime": 1791258518.0453563,
+      "bytes": 982464,
+      "sha256": "61110b82b0e779ffc5a8c3e434de92480a6e15404b53897bcef5ebf2952c8b95"
+    }
+  ],
+  "parents": [
+    {
+      "id": "S96",
+      "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61001/segments/089_096/attempt_1790284878289928374/state.pt",
+      "bytes": 151373427,
+      "sha256": "80f028d07492b0b7ba895fbd0d93352e234db2337ff48e33130120721bf179a9",
+      "expected_sha256": "80f028d07492b0b7ba895fbd0d93352e234db2337ff48e33130120721bf179a9",
+      "matches": true
+    },
+    {
+      "id": "REP96",
+      "path": "/projects/_ssd/varunssd/louis-ssvc/prospective_selection_v2_20260924/campaign/sources/61003/segments/089_096/attempt_1790284167213371794/state.pt",
+      "bytes": 151373427,
+      "sha256": "13a2769a787962587e81d3ffc446245e1e71772589bf3b3506cd650c4b60c29c",
+      "expected_sha256": "13a2769a787962587e81d3ffc446245e1e71772589bf3b3506cd650c4b60c29c",
+      "matches": true
+    }
+  ]
+}

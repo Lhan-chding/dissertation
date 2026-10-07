@@ -62,3 +62,6 @@ configs/paths.yaml
 
 # Local historical metadata fixtures copied for scoped probe regression tests.
 /reports/SSVC_GPT_PRO_DELIVERY_20260914/
+
+# SER-J2 local preparation/run artifacts; versioned receipts live under docs.
+/artifacts/ser_j2_20261007/

@@ -1,0 +1,23 @@
+{
+  "canonical_target_matching": true,
+  "checkpoint_tensors_verified": false,
+  "common_intersection": 194,
+  "common_removed": 12,
+  "common_tasks": 182,
+  "donor_roots": 32,
+  "execution_kind": "CPU_DATA_INTEGRATION_ONLY",
+  "formal_generated_answers": 145280,
+  "formal_sft_jobs": 18,
+  "gpu_execution": false,
+  "inherited_prompt_match": true,
+  "later_exclusion_status": "VERIFIED_EXPLICIT_SCAN",
+  "original_training_views": 4,
+  "plan_hash": "1b7719f5ce0ab369aeaa8ca3cc6f0c133605fb9b55b028dde37a8cab7ef0de87",
+  "root_split_disjoint": true,
+  "schedule_count": 3,
+  "status": "PASS",
+  "token_EOS_equality": "REQUIRES_TOKENIZER_CHECK_IN_GPU_BRIDGE",
+  "unique_public_repairs_new": 944,
+  "unique_public_repairs_reused": 246,
+  "updates": 4608
+}
