@@ -1,0 +1,37 @@
+{
+  "experiment_id": "SER_J2_20261007",
+  "status": "CPU_INTEGRATED_GPU_NOT_STARTED_NETWORK_BLOCKED",
+  "code_commit": "cc8bdf246564c70b21688a1a49d44aae42ce963e",
+  "remote_sha_verified": true,
+  "planned": {
+    "formal_sft_runs": 18,
+    "formal_updates": 4608,
+    "formal_target_exposures": 73728,
+    "formal_generations": 145280,
+    "technical_max_updates": 16,
+    "technical_max_generations": 256
+  },
+  "observed_this_task": {
+    "cpu_integrated_tests_passed": 115,
+    "subtests_passed": 35,
+    "reference_tests_passed": 51,
+    "new_tasks_unique_repair_verified": 944,
+    "reused_targets_unique_repair_verified": 246,
+    "local_registered_jobs": 113,
+    "technical_gpu_updates": 0,
+    "technical_generations": 0,
+    "formal_updates": 0,
+    "formal_generations": 0,
+    "new_rl": 0,
+    "new_discovery": 0
+  },
+  "gpu_bridge_status": "NOT_RUN",
+  "structural_effect_status": "NOT_MEASURED",
+  "Gamma": null,
+  "Delta3": null,
+  "Delta4": null,
+  "confirmation_released": false,
+  "blocker": "Cluster connection unavailable before server preparation; no new GPU job submitted by this task.",
+  "raw_output_archive": "NOT_APPLICABLE_NO_NEW_MODEL_OUTPUTS",
+  "private_deployment_receipts": "Retained locally; not included in this public status."
+}
