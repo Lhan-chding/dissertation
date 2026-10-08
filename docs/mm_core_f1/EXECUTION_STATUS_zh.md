@@ -4,7 +4,19 @@
 [执行修订](USER_AMENDMENT_20261008_zh.md)：最多同时五张 Pro 6000，GPU 小时只记账，无累计限制或通过门槛。
 生成尝试4096、物理更新64、额外评分前向8192及阶段授权保持原契约。
 
-## 当前 9B 运行
+## 2026-10-09 非零梯度补充：已完成
+
+用户新授权的独立`NONZERO_SFT_RESUME`作业193946已COMPLETED（0:0）。
+8次物理更新均有非零梯度和实际参数变化；连续4步与新进程2+2步的完整状态、采样及RNG精确一致，
+独立CPU检查点复核也通过。实际单卡339秒，0.094166666667 GPU小时；与旧审计合计2.018333333333 GPU小时，仅记账。
+累计生成尝试2441、物理更新16、额外前向4881。原审计结果、失败和未知尝试原样保留。
+
+见[非零恢复最终报告](NONZERO_RECOVERY_RESULT_20261009_zh.md)及
+[供Pro审阅的DEV草案v2](dev_review/DEV_FREEZE_PROPOSAL.pro_review_v2_zh.md)。
+此结果仅支持所登记SFT轨迹的非零恢复，不证明非零GRPO或能力收益；公共起点未替换。
+MM-DEV仍未执行、`authorized=false`，下一阶段参数交Pro审阅后由用户决定。
+
+## 原 9B 审计记录
 
 当前交付状态：`READY_WITH_OPEN_DEV_FIELDS`，终态`STOP_FOR_REVIEW`，`MM-DEV authorized=false`。
 原始release记录`READY_FOR_DEV_REVIEW`，未来参数仍有开放项，不能据此启动下一阶段。
