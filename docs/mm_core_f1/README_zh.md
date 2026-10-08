@@ -38,10 +38,19 @@ CPU 检查可运行 `python -m pytest tests/mm_core`；测试成功不能代替�
 8. 同一公共起点只做一次独立 FORMAT_CHECK。失败时本轮停止；通过才可运行测量。
 9. `run_measurement_audit.py` 执行 AUDIT_MEASURE，原始回答先落盘，附加字段评分随后
    独立保存。附加评分失败不能抹掉已经生成的回答。
-10. 没有身份完全匹配的恢复回执时，独立登记 ENGINE，运行连续四步和重启恢复四步。
+10. 测量完成后以 `score_measurement.py --stage MEASUREMENT_AUDIT` 评分并核对全部1536个槽位。
+    没有身份完全匹配的恢复回执时，独立登记 ENGINE，运行连续四步和重启恢复四步。
     精确比较参数、优化器、RNG、槽位和原始 token，不把“可加载”当作恢复一致。
-11. `score_measurement.py`、`release_audit_report.py` 输出有分母的表、成本、未执行项和
-    `authorized=false` 的 DEV 冻结补充表。到此停止。
+    ENGINE配方和八题顺序在执行前冻结；提交前另绑定测量审阅回执与原始成本/请求账本前缀。
+11. `release_audit_report.py` 输出原始状态、成本、未执行项和
+    `authorized=false` 的 DEV 冻结补充表。
+12. `build_scientific_report.py --run-root RUN` 将已有机器表展开成中文科学报告及六份附录，
+    只读原始输入，不重新评分或调用模型。原始释放状态保留，DEV参数仍开放时明确解释为
+    `READY_WITH_OPEN_DEV_FIELDS`，不增加执行权限。
+13. `verify_final_evidence.py --run-root RUN --source-root FROZEN_SRC` 在服务器核验当前冻结、
+    测量身份、三段ENGINE记录、真实CPU加载的自身检查点与所有物理成本，再生成最终文件哈希清单。
+    只有先完成所有表、报告和调度回执，才能形成稳定快照；核验后不再修改已纳入清单的文件。
+    核验工具的CPU测试不是实际ENGINE通过回执。交付后停止，不自动进入MM-DEV。
 
 ## 实现边界
 
