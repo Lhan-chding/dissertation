@@ -62,3 +62,5 @@ configs/paths.yaml
 
 # MM-CORE private raw data, weights, inventory, and execution receipts
 /artifacts/mm_core_f1_*/
+/artifacts/mm_core_nonzero_*/
+/artifacts/mm_core_pro_review_*/
