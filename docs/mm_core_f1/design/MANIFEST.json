@@ -1,0 +1,100 @@
+{
+  "plan_id": "MM-CORE-F1-20261008",
+  "files": [
+    {
+      "path": "CODEX_FINAL_PLAN_MM_AUDIT_ENGINE_zh.md",
+      "bytes": 47346,
+      "sha256": "2fedc979f947ea94086f44bbed1909a5caf3e53dc2caf7e6c8945422ff4750d0"
+    },
+    {
+      "path": "FINAL_DECISIONS_zh.md",
+      "bytes": 2318,
+      "sha256": "bc89c4476b96e7da299aec3a8801622d68a62482e9af0decd55afdb78669d5f1"
+    },
+    {
+      "path": "MM_CORE_F1.json",
+      "bytes": 8245,
+      "sha256": "3ce0a154c310b6f032d68b0a0853faa2fc0174ae0967c71543576092a6eff197"
+    },
+    {
+      "path": "README_zh.md",
+      "bytes": 2447,
+      "sha256": "ac87a4587199983e689723b530be04913e369f44b94135e9d04bf7ea423bf42b"
+    },
+    {
+      "path": "reference/__init__.py",
+      "bytes": 74,
+      "sha256": "66731ac983c670b24024132365cd94a2a0b9bd6e5871d551a01b1c73ee6094db"
+    },
+    {
+      "path": "reference/contracts.py",
+      "bytes": 12474,
+      "sha256": "cb092352b95846131b017d01898b01a3d575c0d7cb8d4e2fe62c5798ca04fa50"
+    },
+    {
+      "path": "run_reference_checks.py",
+      "bytes": 1449,
+      "sha256": "7de2f4c41e3a380cbb2f527ce4574f7ff42e7910811e9cc74677a18370c3eb47"
+    },
+    {
+      "path": "sources/CLAUDE_MULTIMODAL_R3_zh.md",
+      "bytes": 16239,
+      "sha256": "ac20abc7a1333e0a47bc9e58b55535f9885aab87654ea7144edfa58571830b6c"
+    },
+    {
+      "path": "sources/CORE_IDEA_ANCHOR_zh.md",
+      "bytes": 2072,
+      "sha256": "8ec1e3a59a09e85865059368f632fcb8498f6a4d2699c1daf498b956fd504dd0"
+    },
+    {
+      "path": "sources/GPT_MULTIMODAL_R3_zh.md",
+      "bytes": 41034,
+      "sha256": "5f96f0a407ca3ac67f6654e9109d34a2be3e2e43031d175a1d23c9c89ce07449"
+    },
+    {
+      "path": "templates/DEV_FREEZE_PROPOSAL.template.json",
+      "bytes": 1273,
+      "sha256": "bccd6c4c6bf31d16b1351d80a2e3d54e9b43c9958c31c7ae7165ee08480ad25f"
+    },
+    {
+      "path": "templates/FINAL_AUDIT_REPORT.template.md",
+      "bytes": 2199,
+      "sha256": "96059ada18dc7c3413f1f07305c1881a2ae7dae249bf9c0c887e5a01108343b3"
+    },
+    {
+      "path": "templates/PRE_INFERENCE_FREEZE.template.json",
+      "bytes": 751,
+      "sha256": "9fdb6a3c7ab7b187ecc4c495edad54bf00122629fc660b7f7b462cc99de9c123"
+    },
+    {
+      "path": "templates/QUESTION_SIDECAR.schema.json",
+      "bytes": 2237,
+      "sha256": "c3e3fa9e05f25d68c0ce4b13542870a1835401575499e1de4759700e102e1d95"
+    },
+    {
+      "path": "tests/test_contracts.py",
+      "bytes": 11689,
+      "sha256": "407a201dea61dbb051e66f0b01c5e1ddc7a1c1b80be43fc2e5c50c2eac04ace8"
+    },
+    {
+      "path": "validation/CPU_TEST_LOG.txt",
+      "bytes": 5949,
+      "sha256": "b04fc9a45094f6c72fe7685578e0b2aeabd2bd11d41e72abc67dd6f36b4c318c"
+    },
+    {
+      "path": "validation/CPU_VALIDATION.json",
+      "bytes": 938,
+      "sha256": "714a3d8232f877bd19a79aa91deca3fd029b45d74c8b7c465ab555c58eb29e27"
+    },
+    {
+      "path": "validation/DELIVERY_CHECK.json",
+      "bytes": 320,
+      "sha256": "d132c16ce0b3720522a1e36c1df7fa6b0ffa40f11a355b49b394036559d206b3"
+    },
+    {
+      "path": "validation/SCOPE_zh.md",
+      "bytes": 1244,
+      "sha256": "75fe9b138ae91356fd92a3f341da7b841bce0264bd15121b8ccfdefcd7086d2d"
+    }
+  ]
+}

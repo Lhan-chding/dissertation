@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MM-CORE-F1 private question-sidecar record",
+  "description": "Private scorer-side data. Never pass truth fields to model generation.",
+  "type": "object",
+  "required": [
+    "question_id",
+    "root_family_id",
+    "numeric_root_id",
+    "split",
+    "image_hash",
+    "source_graph_hash",
+    "chart_type",
+    "operation",
+    "visual_level",
+    "numeric_level",
+    "readset_id",
+    "ordered_item_ids",
+    "true_values_decimal",
+    "delta_decimal",
+    "protocol_hash"
+  ],
+  "properties": {
+    "question_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "root_family_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "numeric_root_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "split": {
+      "type": "string",
+      "minLength": 1
+    },
+    "image_hash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_graph_hash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "readset_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "delta_decimal": {
+      "type": "string",
+      "minLength": 1
+    },
+    "protocol_hash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "chart_type": {
+      "enum": [
+        "grouped_bar",
+        "line"
+      ]
+    },
+    "operation": {
+      "enum": [
+        "sum",
+        "difference",
+        "range"
+      ]
+    },
+    "visual_level": {
+      "enum": [
+        "low",
+        "high"
+      ]
+    },
+    "numeric_level": {
+      "enum": [
+        "low",
+        "high"
+      ]
+    },
+    "ordered_item_ids": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "string"
+      }
+    },
+    "true_values_decimal": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "string"
+      }
+    },
+    "processed_image_hash": {
+      "type": "string"
+    },
+    "processor_hash": {
+      "type": "string"
+    },
+    "delta_source": {
+      "type": "string"
+    },
+    "readability_status": {
+      "type": "string"
+    },
+    "quantity_units": {
+      "type": "string"
+    },
+    "actual_model_prompt_hash": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

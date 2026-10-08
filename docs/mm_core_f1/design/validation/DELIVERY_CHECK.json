@@ -1,0 +1,11 @@
+{
+  "delivery_files_parse": true,
+  "phase_permissions_consistent": true,
+  "context_feature_audit_only": true,
+  "budgets_consistent_with_tests": true,
+  "markdown_fences_balanced": true,
+  "math_display_delimiters_balanced": true,
+  "main_sections": 19,
+  "cpu_test_count": 55,
+  "model_or_server_validation": false
+}

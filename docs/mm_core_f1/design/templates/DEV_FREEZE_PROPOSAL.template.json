@@ -1,0 +1,60 @@
+{
+  "plan_id": "MM-CORE-F1-20261008",
+  "status": "NOT_RUN_REQUIRES_SEPARATE_REVIEW",
+  "authorized": false,
+  "model_common_start_hash": null,
+  "protocol_hash": null,
+  "processor_hash": null,
+  "scorer_hash": null,
+  "generator_contract": null,
+  "Hp": 32,
+  "H": 32,
+  "preparation_paths": 4,
+  "states": 5,
+  "response_paths": 30,
+  "logical_optimizer_updates": 1088,
+  "preparation_beta": null,
+  "future_seed_matrix": null,
+  "data_pool_hashes": null,
+  "training_recipe_expanded": null,
+  "KL_reference_policy": "one_frozen_copy_of_each_state_shared_by_its_actions",
+  "quota_table": {
+    "a0": [
+      "1/4",
+      "1/4",
+      "1/4",
+      "1/4"
+    ],
+    "aP": [
+      "1/8",
+      "3/8",
+      "1/8",
+      "3/8"
+    ],
+    "aC": [
+      "1/8",
+      "1/8",
+      "3/8",
+      "3/8"
+    ]
+  },
+  "integer_remainder_policy": null,
+  "panel_root_and_question_counts": null,
+  "weights_and_utility": {
+    "anchor": "initial_state",
+    "w": null,
+    "v": null,
+    "lambda": null,
+    "epsilon": null,
+    "eta": null,
+    "cost_unit": null,
+    "no_train": {
+      "updates": 0,
+      "absolute_delta": 0
+    }
+  },
+  "actual_cost_envelope": null,
+  "prediction_model_and_uncertainty_calibration": "NOT_FROZEN",
+  "open_fields": [],
+  "review_result": null
+}

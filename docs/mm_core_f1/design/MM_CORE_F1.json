@@ -1,0 +1,319 @@
+{
+  "plan_id": "MM-CORE-F1-20261008",
+  "version": "1.0",
+  "language": "zh-CN",
+  "authority": "CODEX_FINAL_PLAN_MM_AUDIT_ENGINE_zh.md",
+  "scope": {
+    "allowed_unconditional": [
+      "INVENTORY",
+      "CPU_CONTRACT_AND_GENERATOR"
+    ],
+    "allowed_after_prefreeze": [
+      "MM-AUDIT"
+    ],
+    "allowed_conditional": [
+      "MM-ENGINE",
+      "BRIDGE"
+    ],
+    "forbidden": [
+      "SER-J23",
+      "NEW_SYMBOLIC_SCIENTIFIC_TRAINING",
+      "MM-CAL",
+      "MM-DEV",
+      "MM-LOCK",
+      "MM-ONLINE"
+    ],
+    "terminal_state": "STOP_FOR_REVIEW",
+    "dev_authorized": false,
+    "automatic_scope_expansion": false
+  },
+  "model": {
+    "required_model_family": "Qwen/Qwen2.5-VL-3B-Instruct",
+    "actual_snapshot_revision": null,
+    "actual_model_hash": null,
+    "actual_processor_hash": null,
+    "actual_project_root": null,
+    "unresolved_values_must_not_be_inferred": true,
+    "historical_contract_routes": [
+      "A_VERIFIED_SAME_COMPLETION_DUAL_FIELDS",
+      "B_NEW_REGISTERED_DUAL_FIELDS"
+    ],
+    "select_route_by": "source_completeness_not_behavior_outcome"
+  },
+  "budgets": {
+    "max_concurrent_gpus": 1,
+    "max_allocated_gpu_hours": 8,
+    "max_new_completion_attempts": 4096,
+    "max_physical_optimizer_updates": 64,
+    "max_extra_scoring_forward_sequences": 8192,
+    "max_common_bridge_recipes": 1,
+    "max_explicit_technical_retries": 1,
+    "include_failed_attempts": true,
+    "budget_type": "F1_engineering_caps_not_measured_cost_estimates"
+  },
+  "new_protocol_defaults": {
+    "protocol_id": "MM-DUAL-READFIRST-F1",
+    "fields_in_prompt_order": [
+      "readings",
+      "answer"
+    ],
+    "field_origin": "both_model_generated_in_one_completion",
+    "decoding_constraints": false,
+    "tool_use": false,
+    "reasoning_field_requested": false,
+    "generation": {
+      "do_sample": true,
+      "temperature": 0.7,
+      "top_p": 0.9,
+      "top_k": 0,
+      "repetition_penalty": 1.0,
+      "max_new_tokens": 192,
+      "num_samples": 4
+    },
+    "parser": {
+      "full_json_only": true,
+      "reject_duplicate_keys": true,
+      "reject_nonfinite": true,
+      "reject_boolean_numeric": true,
+      "rescue_from_code_blocks": false,
+      "max_utf8_bytes": 65536,
+      "max_numeric_mantissa_digits": 64,
+      "max_abs_decimal_exponent": 128,
+      "out_of_axis_finite_values_still_scorable": true,
+      "reversed_fields_still_scorable": true,
+      "extra_fields_still_scorable": true
+    },
+    "scoring": {
+      "exact_primary": true,
+      "rational_arithmetic": true,
+      "LP_LA_L_separate": true,
+      "exact_feasible_cells": [
+        "111",
+        "100",
+        "011",
+        "010",
+        "001",
+        "000"
+      ],
+      "tolerance_cells": "all_8_directly_counted",
+      "tolerance_readings_delta_multiplier": "1/2",
+      "tolerance_answer_delta_multiplier": "1/2",
+      "tolerance_consistency_delta_multiplier": "1/2",
+      "default_delta": "1",
+      "primary_reward_determined_later": true
+    }
+  },
+  "new_generator_prototype": {
+    "chart_types": [
+      "grouped_bar",
+      "line"
+    ],
+    "operations": [
+      "sum",
+      "difference",
+      "range"
+    ],
+    "arity": {
+      "sum": 2,
+      "difference": 2,
+      "range": 3
+    },
+    "canvas_pixels": [
+      896,
+      672
+    ],
+    "axis_type": "single_linear",
+    "axis_min": "0",
+    "axis_max": "100",
+    "required_values_min": "10",
+    "required_values_max": "89",
+    "delta": "1",
+    "min_processed_pixel_spacing_per_delta": 4,
+    "factor_cell_order": [
+      "LL",
+      "HL",
+      "LH",
+      "HH"
+    ],
+    "complexity_labels_are_generator_metadata_not_pure_capabilities": true,
+    "root_family_prompt_count_if_complete": 24,
+    "cross_operation_pair": [
+      "sum",
+      "difference"
+    ],
+    "require_same_image_readset_units_delta": true,
+    "future_dev_generator_not_automatically_frozen": true
+  },
+  "panels": {
+    "FORMAT_TUNE": {
+      "root_families": 4,
+      "questions": 96,
+      "K": 4
+    },
+    "FORMAT_CHECK": {
+      "root_families": 4,
+      "questions": 96,
+      "K": 4
+    },
+    "AUDIT_MEASURE": {
+      "root_families": 16,
+      "questions": 384,
+      "K": 4
+    },
+    "BRIDGE_TRAIN": {
+      "root_families": 8,
+      "pool_questions": 192,
+      "generation_K": 0
+    },
+    "ENGINE_TEST": {
+      "root_families": 4,
+      "pool_questions": 96
+    },
+    "do_not_create": [
+      "LOCK_PROBE",
+      "LOCK_EVAL",
+      "LOCK_TRAIN"
+    ]
+  },
+  "format_gate": {
+    "metric": "schema_ok_and_field_order_ok_and_L_and_not_truncated",
+    "overall_min": 0.95,
+    "each_chart_operation_min": 0.9,
+    "gate_purpose": "engineering_not_significance_or_semantic_performance",
+    "one_independent_check_only": true,
+    "tune_failure_root_cause_must_be_format": true
+  },
+  "bridge": {
+    "conditional": true,
+    "optimizer_updates": 16,
+    "effective_batch_sequences": 8,
+    "sequence_exposures": 128,
+    "microbatch_sequences": 1,
+    "objective": "mean_per_sequence_completion_NLL_then_equal_sequence_mean",
+    "gold_supervision_disclosed": true,
+    "select_best_checkpoint": false,
+    "default_lora": {
+      "rank": 8,
+      "alpha": 16,
+      "dropout": 0,
+      "scope": "language_only_q_proj_v_proj",
+      "vision_encoder_frozen": true,
+      "projector_frozen": true
+    },
+    "default_optimizer": {
+      "type": "AdamW",
+      "learning_rate": 1e-05,
+      "betas": [
+        0.9,
+        0.999
+      ],
+      "eps": 1e-08,
+      "weight_decay": 0,
+      "clip_grad_norm": 1,
+      "schedule": "constant",
+      "warmup": 0
+    },
+    "recipe_inheritance": "verified_existing_recipe_allowed_once_before_trigger_freeze_no_comparison",
+    "checkpoint_is_new_common_start_not_untouched_base": true
+  },
+  "engine": {
+    "conditional_on_no_matching_receipt": true,
+    "isolated_copy": true,
+    "logical_steps": 4,
+    "continuous_steps": 4,
+    "interrupted_plus_resumed_steps": 4,
+    "planned_physical_steps": 8,
+    "prompts_per_step": 2,
+    "group_G": 8,
+    "planned_rollouts": 128,
+    "scientific_response_eval": false,
+    "require_same_tokens_slots_optimizer_rng": true,
+    "posthoc_tolerance_relaxation": false
+  },
+  "features": {
+    "registry": [
+      "B0",
+      "BJ",
+      "BTab",
+      "BNum",
+      "BGeo-S"
+    ],
+    "future_primary_comparison": [
+      "BNum",
+      "BGeo-S"
+    ],
+    "geometry_primary_candidate": "S(e)=mean(e)^2/mean(e^2)",
+    "S_on_exact_correct": "missing_not_zero",
+    "near_miss": "0<max_abs(e)<=1",
+    "context_consistency": {
+      "status": "AUDIT_ONLY_NOT_PRIMARY_BGEO",
+      "metrics": [
+        "C11",
+        "C22",
+        "C12",
+        "(C11+C22)/2-C12"
+      ],
+      "retain_negative_estimates": true,
+      "do_not_interpret_as_internal_mechanism": true
+    },
+    "z_status": "always_preserve_counts_even_when_sparse",
+    "same_history_and_truth_access_for_all_baselines": true
+  },
+  "reward_support": {
+    "audit_K": 4,
+    "engineering_G": 8,
+    "assumption": "per_question_iid_Bernoulli",
+    "posterior_prior_alpha": "1/2",
+    "posterior_prior_beta": "1/2",
+    "not_a_training_gain_prediction": true
+  },
+  "future_dev_fixed_scaffold": {
+    "authorized": false,
+    "prepared_state_count": 5,
+    "preparation_paths": 4,
+    "response_paths": 30,
+    "preparation_updates": 32,
+    "response_updates": 32,
+    "total_optimizer_updates": 1088,
+    "actions": [
+      "a0",
+      "aP",
+      "aC"
+    ],
+    "two_future_seeds_per_state_action": true,
+    "fresh_optimizer": true,
+    "KL_reference": "frozen_copy_of_each_own_start",
+    "action_weights": {
+      "a0": [
+        "1/4",
+        "1/4",
+        "1/4",
+        "1/4"
+      ],
+      "aP": [
+        "1/8",
+        "3/8",
+        "1/8",
+        "3/8"
+      ],
+      "aC": [
+        "1/8",
+        "1/8",
+        "3/8",
+        "3/8"
+      ]
+    },
+    "future_primary_utility_anchor": "pre_training_start",
+    "absolute_perception_preservation": true,
+    "do_not_train_action_included": true,
+    "beta_preparation": null,
+    "lambda_interference": null,
+    "epsilon_protection": null,
+    "eta_cost": null,
+    "target_weights": null,
+    "protection_weights": null,
+    "actual_optimizer_recipe": null,
+    "probe_root_families": null,
+    "eval_root_families": null
+  }
+}

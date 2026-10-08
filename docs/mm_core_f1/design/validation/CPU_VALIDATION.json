@@ -1,0 +1,31 @@
+{
+  "scope": "CPU constructed examples and contract/budget checks only",
+  "model_calls": 0,
+  "optimizer_updates": 0,
+  "server_jobs_modified": 0,
+  "historical_rollouts_rescored": 0,
+  "tests_run": 55,
+  "failures": 0,
+  "errors": 0,
+  "passed": true,
+  "plan_budget_with_bridge": {
+    "format_completions": 1152,
+    "audit_completions": 1536,
+    "engine_rollouts": 128,
+    "technical_generation_allowance": 48,
+    "normal_total_with_technical_allowance": 2864,
+    "optimizer_physical_updates": 24,
+    "bridge_sequence_exposures": 128,
+    "future_dev_updates_not_authorized": 1088
+  },
+  "plan_budget_without_bridge": {
+    "format_completions": 768,
+    "audit_completions": 1536,
+    "engine_rollouts": 128,
+    "technical_generation_allowance": 48,
+    "normal_total_with_technical_allowance": 2480,
+    "optimizer_physical_updates": 8,
+    "bridge_sequence_exposures": 0,
+    "future_dev_updates_not_authorized": 1088
+  }
+}
