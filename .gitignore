@@ -65,3 +65,6 @@ configs/paths.yaml
 
 # SER-J2 local preparation/run artifacts; versioned receipts live under docs.
 /artifacts/ser_j2_20261007/
+
+# SER-J23 private inputs, run manifests, weights, raw outputs and receipts.
+/artifacts/ser_j23_20261008/
