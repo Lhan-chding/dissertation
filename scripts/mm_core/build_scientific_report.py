@@ -899,6 +899,136 @@ def open_fields(value, prefix=""):
     return result
 
 
+def token_accounting(inputs):
+    """Count saved token metadata and ledger reservations without inferring success."""
+    generated = {}
+    for pattern in ("raw/*/outputs_*.jsonl", "engineering/engine/*/RAW_COMPLETIONS.jsonl"):
+        for path in inputs.paths(pattern):
+            parts = Path(path).parts
+            stage, branch = (parts[1], "-") if parts[0] == "raw" else ("ENGINE", parts[2])
+            summary = generated.setdefault((stage, branch), Counter())
+            for row in inputs.jsonl(path):
+                require(row.get("stage", stage) == stage, f"TOKEN_STAGE_MISMATCH:{path}")
+                if branch != "-":
+                    require(row.get("branch", branch) == branch, f"TOKEN_BRANCH_MISMATCH:{path}")
+                summary["records"] += 1
+                for field in ("prompt_token_count", "completion_token_count"):
+                    value = row.get(field)
+                    if value is not None:
+                        require(integer(value), f"INVALID_TOKEN_COUNT:{path}:{field}")
+                        summary[field] += value
+                        summary[field + "_records"] += 1
+                tokens = row.get("tokens")
+                if tokens is not None:
+                    require(
+                        isinstance(tokens, list) and all(integer(t) for t in tokens),
+                        f"INVALID_TOKEN_IDS:{path}",
+                    )
+                    if row.get("completion_token_count") is not None:
+                        require(
+                            row["completion_token_count"] == len(tokens),
+                            f"COMPLETION_TOKEN_LENGTH_MISMATCH:{path}",
+                        )
+                        summary["length_checked"] += 1
+    text = "\n## 已保存生成token与额外前向登记token\n\n"
+    text += table(
+        [
+            "stage",
+            "branch",
+            "保存记录数",
+            "prompt token合计",
+            "prompt已记载/记录",
+            "completion token合计",
+            "completion已记载/记录",
+            "tokens长度已核对/记录",
+        ],
+        (
+            [
+                stage,
+                branch,
+                row["records"],
+                row["prompt_token_count"] if row["prompt_token_count_records"] else "UNKNOWN",
+                f"{row['prompt_token_count_records']}/{row['records']}",
+                row["completion_token_count"]
+                if row["completion_token_count_records"]
+                else "UNKNOWN",
+                f"{row['completion_token_count_records']}/{row['records']}",
+                f"{row['length_checked']}/{row['records']}",
+            ]
+            for (stage, branch), row in sorted(generated.items())
+        ),
+    )
+    if not generated:
+        text += "\n生成token: UNKNOWN; 无已保存生成文件。\n"
+    text += (
+        "\n合计只覆盖已记载字段, 不把缺字段记录补0或用max_new_tokens推算。"
+        "未保存的生成尝试及其prompt/completion token均为UNKNOWN。"
+        "score sidecar不计为第二次生成, 生成内部解码步不重复计入额外前向。\n"
+    )
+    ledger = inputs.jsonl("accounting/COST_LEDGER.jsonl")
+    purposes, attempts = {}, 0
+    if ledger is not None:
+        for row in ledger:
+            kind = row.get("kind")
+            if kind not in {"completion_attempts", "extra_forward_sequences"}:
+                continue
+            amount = row.get("amount")
+            require(integer(amount), "INVALID_TOKEN_LEDGER_AMOUNT")
+            if kind == "completion_attempts":
+                attempts += amount
+                continue
+            identity = row.get("identity", {})
+            require(isinstance(identity, dict), "INVALID_TOKEN_LEDGER_IDENTITY")
+            purpose = identity.get("purpose", "UNKNOWN")
+            require(isinstance(purpose, str) and bool(purpose), "INVALID_FORWARD_PURPOSE")
+            summary = purposes.setdefault(purpose, Counter())
+            summary["records"] += 1
+            summary["sequences"] += amount
+            value = identity.get("completion_tokens")
+            if value is not None:
+                require(integer(value), "INVALID_FORWARD_TOKEN_COUNT")
+                summary["target_tokens"] += value
+                summary["token_records"] += 1
+        text += (
+            f"\nledger登记生成尝试: {attempts}; "
+            f"已保存生成记录: {sum(r['records'] for r in generated.values())}。"
+            "两者分别报告, 不假定每笔预留均完成或可逐条匹配。\n"
+        )
+    else:
+        text += "\nCOST_LEDGER: UNKNOWN; 无法核对生成尝试和额外前向登记。\n"
+    text += "\n" + table(
+        [
+            "purpose",
+            "登记extra_forward_sequences",
+            "ledger条目",
+            "登记目标token合计",
+            "completion_tokens已记载/条目",
+            "前向prompt token",
+        ],
+        (
+            [
+                purpose,
+                row["sequences"],
+                row["records"],
+                row["target_tokens"] if row["token_records"] else "UNKNOWN",
+                f"{row['token_records']}/{row['records']}",
+                "UNKNOWN",
+            ]
+            for purpose, row in sorted(purposes.items())
+        ),
+    )
+    text += (
+        "\n目标token逐条累加identity.completion_tokens; 是登记的目标长度, "
+        "不冒充成功前向或完整输入token, 不计作新回答。"
+        "未记载的前向prompt token为UNKNOWN。CPU处理总利用时: UNKNOWN。"
+        "队列等待与CPU调度原始证据见 "
+        "[RESOURCE_DETAIL.json](../accounting/RESOURCE_DETAIL.json); "
+        "本生成器不读取该后续文件或推算Submit/Start/CPUTimeRAW/TotalCPU, "
+        "已记录的时间戳由独立补表展示。\n"
+    )
+    return text
+
+
 def engine_and_time(inputs):
     text = "\n## ENGINE实际更新、奖励与零对比\n\n"
     summaries = []
@@ -996,6 +1126,7 @@ def engine_and_time(inputs):
         "\n无计时字段的记录为UNKNOWN; 生成/字段评分秒数是已记录调用耗时, "
         "不含未写入的失败尝试, 不能代替含加载、等待、失败的scheduler GPU小时, 彼此不相加。\n"
     )
+    text += token_accounting(inputs)
     return text
 
 

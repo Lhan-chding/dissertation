@@ -291,6 +291,117 @@ class ScientificReportTests(unittest.TestCase):
         self.assertIn("scores_0.jsonl | scoring_seconds | 1/1 | 3", text)
         self.assertNotIn("scores_0.jsonl | generation_seconds", text)
 
+    def write_lines(self, relative, rows):
+        path = self.root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("".join(json.dumps(row) + "\n" for row in rows), encoding="utf-8")
+
+    def test_saved_token_totals_group_stage_branch_and_ignore_sidecars(self):
+        self.write_lines(
+            "raw/MEASUREMENT_AUDIT/outputs_0.jsonl",
+            [
+                {
+                    "stage": "MEASUREMENT_AUDIT",
+                    "prompt_token_count": 10,
+                    "completion_token_count": 2,
+                    "tokens": [7, 8],
+                },
+            ],
+        )
+        self.write_lines(
+            "raw/MEASUREMENT_AUDIT/outputs_1.jsonl",
+            [
+                {"prompt_token_count": 20, "completion_token_count": 1, "tokens": [9]},
+                {"status": "failed"},
+            ],
+        )
+        self.write_lines(
+            "raw/MEASUREMENT_AUDIT/scores_0.jsonl",
+            [
+                {"prompt_token_count": 999, "completion_token_count": 999},
+            ],
+        )
+        for branch in ("continuous", "resumed"):
+            self.write_lines(
+                f"engineering/engine/{branch}/RAW_COMPLETIONS.jsonl",
+                [
+                    {
+                        "stage": "ENGINE",
+                        "branch": branch,
+                        "prompt_token_count": 40,
+                        "completion_token_count": 2,
+                        "tokens": [7, 8],
+                    },
+                ],
+            )
+        text = report.token_accounting(report.Inputs(self.root))
+        self.assertIn("MEASUREMENT_AUDIT | - | 3 | 30 | 2/3 | 3 | 2/3 | 2/3", text)
+        self.assertIn("ENGINE | continuous | 1 | 40 | 1/1 | 2 | 1/1 | 1/1", text)
+        self.assertIn("ENGINE | resumed | 1 | 40 | 1/1 | 2 | 1/1 | 1/1", text)
+        self.assertNotIn("999", text)
+        self.assertIn("未保存的生成尝试及其prompt/completion token均为UNKNOWN", text)
+
+    def test_completion_token_count_must_match_saved_tokens(self):
+        self.write_lines(
+            "raw/FORMAT_CHECK/outputs_0.jsonl",
+            [
+                {"completion_token_count": 2, "tokens": [7]},
+            ],
+        )
+        with self.assertRaisesRegex(ValueError, "COMPLETION_TOKEN_LENGTH_MISMATCH"):
+            report.token_accounting(report.Inputs(self.root))
+
+    def test_token_metadata_stage_cannot_disagree_with_path(self):
+        self.write_lines("raw/FORMAT_CHECK/outputs_0.jsonl", [{"stage": "ENGINE"}])
+        with self.assertRaisesRegex(ValueError, "TOKEN_STAGE_MISMATCH"):
+            report.token_accounting(report.Inputs(self.root))
+
+    def test_missing_token_counts_remain_unknown_even_with_tokens(self):
+        self.write_lines("raw/FORMAT_CHECK/outputs_0.jsonl", [{"tokens": [7]}])
+        text = report.token_accounting(report.Inputs(self.root))
+        self.assertIn("FORMAT_CHECK | - | 1 | UNKNOWN | 0/1 | UNKNOWN | 0/1 | 0/1", text)
+
+    def test_extra_forward_target_tokens_are_ledger_reservations_by_purpose(self):
+        self.write_lines(
+            "accounting/COST_LEDGER.jsonl",
+            [
+                {"kind": "completion_attempts", "amount": 4, "identity": {}},
+                {
+                    "kind": "extra_forward_sequences",
+                    "amount": 1,
+                    "status": "CONSUMED_OR_RESERVED",
+                    "identity": {"purpose": "self", "completion_tokens": 3},
+                },
+                {"kind": "extra_forward_sequences", "amount": 1, "identity": {"purpose": "self"}},
+                {
+                    "kind": "extra_forward_sequences",
+                    "amount": 1,
+                    "identity": {"purpose": "gold", "completion_tokens": 5},
+                },
+                {
+                    "kind": "physical_optimizer_updates",
+                    "amount": 1,
+                    "identity": {"completion_tokens": 999},
+                },
+            ],
+        )
+        text = report.token_accounting(report.Inputs(self.root))
+        self.assertIn("self | 2 | 2 | 3 | 1/2 | UNKNOWN", text)
+        self.assertIn("gold | 1 | 1 | 5 | 1/1 | UNKNOWN", text)
+        self.assertIn("ledger登记生成尝试: 4", text)
+        self.assertIn("不冒充成功前向或完整输入token", text)
+        self.assertNotIn("999", text)
+
+    def test_resource_detail_is_only_linked_without_schema_dependency(self):
+        path = self.root / "accounting/RESOURCE_DETAIL.json"
+        path.parent.mkdir(parents=True)
+        path.write_text("future schema is deliberately unreadable")
+        inputs = report.Inputs(self.root)
+        text = report.token_accounting(inputs)
+        self.assertIn("../accounting/RESOURCE_DETAIL.json", text)
+        self.assertIn("CPU处理总利用时: UNKNOWN", text)
+        self.assertNotIn("accounting/RESOURCE_DETAIL.json", inputs.hashes)
+
     def test_read_only_inputs_manifest_hashes_and_all_links_resolve(self):
         self.write_tables()
         before = {str(p.relative_to(self.root)): p.read_bytes() for p in self.root.rglob("*.json")}
@@ -305,7 +416,11 @@ class ScientificReportTests(unittest.TestCase):
             self.assertEqual(
                 hashlib.sha256((self.root / relative).read_bytes()).hexdigest(), digest
             )
-        future_evidence = {"FINAL_EVIDENCE_VERIFICATION.json", "FINAL_EVIDENCE_SHA256.json"}
+        future_evidence = {
+            "FINAL_EVIDENCE_VERIFICATION.json",
+            "FINAL_EVIDENCE_SHA256.json",
+            "../accounting/RESOURCE_DETAIL.json",
+        }
         for path in (self.root / "report").glob("SCIENTIFIC_*.md"):
             for target in re.findall(r"\]\(([^)]+)\)", path.read_text()):
                 if target not in future_evidence:
