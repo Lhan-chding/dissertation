@@ -5,6 +5,7 @@
 [执行修订](USER_AMENDMENT_20261008_zh.md)：使用 Qwen/Qwen3.5-9B，最多五张 Pro 6000，
 GPU 小时只记账，没有累计上限，也不作为执行或通过门槛；其余生成、更新、前向及阶段上限不变。
 五卡是并发上限，不代表现场一定可同时分配五卡。所有账户和调度限制照常生效。
+当前执行结果、验证与限制见[执行状态](EXECUTION_STATUS_zh.md)。
 
 本轮只允许资产核验、CPU 契约/生成器、MM-AUDIT，以及登记触发的公共桥接与
 真实多模态 ENGINE。完成报告后停止；`MM-DEV/MM-LOCK/MM-CAL/MM-ONLINE/SER-J23`
