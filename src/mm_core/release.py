@@ -5,7 +5,165 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from .execution import BudgetLedger, atomic_json, read_json, read_jsonl, sha256_file, utc_now
+from .execution import (
+    BudgetLedger,
+    _verify_freeze,
+    atomic_json,
+    checked_path,
+    object_hash,
+    read_json,
+    read_jsonl,
+    sha256_file,
+    utc_now,
+    verify_common_start,
+    verify_format_report,
+    verify_stage_plan,
+)
+
+
+def format_not_ready(report):
+    """A complete failed independent panel is distinct from missing measurements."""
+    if not report or report.get("gate_passed") is not False:
+        return False
+    if report.get("status") == "FORMAT_NOT_READY":
+        return True
+    coverage = report.get("coverage", {})
+    if coverage.get("complete") is False:
+        return False
+    return coverage.get("complete") is True or any(
+        cohort.get("status") == "FORMAT_NOT_READY" for cohort in report.get("cohorts", [])
+    )
+
+
+def verify_scoring_receipt(root, receipt):
+    """Validate all current inputs and scored output against the saved receipt."""
+    root = Path(root)
+    source = Path(__file__).parent
+    required = {
+        "question_file_sha256": root / "data/questions.jsonl",
+        "scored_outputs_sha256": root / "scoring/MEASUREMENT_AUDIT/SCORED_OUTPUTS.jsonl",
+        "implementation_sha256": source / "scoring.py",
+        "contracts_sha256": source / "contracts.py",
+    }
+    for field, path in required.items():
+        if receipt.get(field) != sha256_file(path):
+            raise PermissionError(f"Stale scoring receipt: {field}")
+    for field, pattern in (
+        ("raw_file_sha256", "outputs_*.jsonl"),
+        ("field_score_file_sha256", "scores_*.jsonl"),
+    ):
+        records = receipt.get(field)
+        if not isinstance(records, list):
+            raise PermissionError(f"Scoring receipt omits {field}")
+        expected = {
+            str(p.relative_to(root)) for p in (root / "raw/MEASUREMENT_AUDIT").glob(pattern)
+        }
+        names = [item["name"] for item in records]
+        if len(names) != len(set(names)) or set(names) != expected:
+            raise PermissionError(f"Scoring receipt file set differs: {field}")
+        for item in records:
+            if sha256_file(checked_path(root, item["name"])) != item["sha256"]:
+                raise PermissionError(f"Stale scoring input: {item['name']}")
+    scored = read_jsonl(required["scored_outputs_sha256"])
+    if receipt.get("scored_record_count") != len(scored):
+        raise PermissionError("Scored output count differs from receipt")
+    return receipt
+
+
+def verify_measurement_complete(root, audit_plan, freeze):
+    """Require the frozen request set, shard receipts and actual row identities."""
+    if not audit_plan:
+        return False
+    root = Path(root)
+    plan = verify_stage_plan(root, "MEASUREMENT_AUDIT", 0, audit_plan["shards"])
+    if audit_plan != plan:
+        raise PermissionError("Measurement dispatch plan changed")
+    expected = {slot["request_id"]: slot for slot in plan["expected_slots"]}
+    questions = {q["question_id"]: q for q in read_jsonl(root / "data/questions.jsonl")}
+    directory = root / "raw/MEASUREMENT_AUDIT"
+    expected_files = {f"outputs_{i}.jsonl" for i in range(plan["shards"])}
+    if {p.name for p in directory.glob("outputs_*.jsonl")} - expected_files:
+        raise PermissionError("Unregistered measurement shard")
+    seen, complete = set(), True
+    for shard in range(plan["shards"]):
+        output_path = directory / f"outputs_{shard}.jsonl"
+        claim_path = directory / f"SHARD_{shard}_STARTED.json"
+        receipt_path = directory / f"SHARD_{shard}_COMPLETE.json"
+        if not all(path.is_file() for path in (output_path, claim_path, receipt_path)):
+            complete = False
+        if claim_path.exists():
+            claim = read_json(claim_path)
+            if (
+                claim.get("stage") != "MEASUREMENT_AUDIT"
+                or claim.get("shard") != shard
+                or claim.get("shards") != plan["shards"]
+                or claim.get("freeze_hash") != plan["pre_freeze_hash"]
+                or claim.get("stage_plan_hash") != object_hash(plan)
+            ):
+                raise PermissionError("Measurement shard claim identity mismatch")
+        rows = read_jsonl(output_path)
+        if receipt_path.exists():
+            receipt = read_json(receipt_path)
+            if (
+                not output_path.exists()
+                or receipt.get("output_hash") != sha256_file(output_path)
+                or receipt.get("stage") != "MEASUREMENT_AUDIT"
+                or receipt.get("shard") != shard
+                or receipt.get("shards") != plan["shards"]
+                or receipt.get("status") != "completed"
+                or receipt.get("completed") != sum(row.get("status") == "completed" for row in rows)
+            ):
+                raise PermissionError("Measurement completion receipt identity mismatch")
+        for row in rows:
+            slot = expected.get(row.get("request_id"))
+            if slot is None or row["request_id"] in seen or slot["shard"] != shard:
+                raise PermissionError("Unexpected or duplicate measurement request identity")
+            seen.add(row["request_id"])
+            q = questions[slot["question_id"]]
+            required = dict(
+                stage="MEASUREMENT_AUDIT",
+                question_id=slot["question_id"],
+                sample_index=slot["sample_index"],
+                seed=slot["seed"],
+                model_hash=plan["model_hash"],
+                processor_hash=freeze["processor_hash"],
+                image_sha256=q["image_sha256"],
+                prompt_hash=q["prompt_sha256"],
+            )
+            if any(row.get(key) != value for key, value in required.items()):
+                raise PermissionError("Measurement raw row differs from frozen request")
+            complete = complete and row.get("status") == "completed"
+    return complete and len(expected) == 1536 and seen == set(expected)
+
+
+def release_integrity(root, freeze, common, format_check, measure, audit_plan):
+    """Read-only verification; preserve incomplete evidence and fail the READY claim."""
+    issues, checked = [], []
+    checks = []
+    if freeze:
+        checks.append(("pre_inference_freeze", lambda: _verify_freeze(root)))
+    if common:
+        checks.append(("common_start", lambda: verify_common_start(root)))
+    if format_check:
+        checks.append(("independent_format", lambda: verify_format_report(root, "FORMAT_CHECK")))
+    if measure:
+        checks.append(("scoring_receipt", lambda: verify_scoring_receipt(root, measure)))
+    for name, check in checks:
+        try:
+            check()
+            checked.append(name)
+        except (OSError, ValueError, TypeError, KeyError, PermissionError) as error:
+            issues.append(dict(artifact=name, error_type=type(error).__name__, detail=str(error)))
+    audit_complete = False
+    if audit_plan:
+        try:
+            audit_complete = verify_measurement_complete(root, audit_plan, freeze)
+            checked.append("measurement_request_identity")
+        except (OSError, ValueError, TypeError, KeyError, PermissionError) as error:
+            issues.append(
+                dict(artifact="measurement", error_type=type(error).__name__, detail=str(error))
+            )
+    return dict(status="FAIL" if issues else "PASS", checked=checked, issues=issues), audit_complete
 
 
 def release_report(run_root, template_root):
@@ -25,21 +183,23 @@ def release_report(run_root, template_root):
     measure = optional("tables/MEASUREMENT_AUDIT/SCORING_RECEIPT.json")
     processor = optional("manifests/PROCESSOR_READABILITY_REVIEW.json")
     audit_plan = optional("manifests/STAGE_PLAN_MEASUREMENT_AUDIT.json")
-    audit_rows = []
-    for path in sorted((root / "raw/MEASUREMENT_AUDIT").glob("outputs_*.jsonl")):
-        audit_rows.extend(read_jsonl(path))
-    audit_complete = (
-        bool(audit_plan)
-        and len(audit_rows) == 1536
-        and all(row.get("status") == "completed" for row in audit_rows)
-        and {row["request_id"] for row in audit_rows}
-        == {row["request_id"] for row in audit_plan["expected_slots"]}
+    integrity, audit_complete = release_integrity(
+        root, freeze, common, format_check, measure, audit_plan
     )
-    if format_check and format_check.get("status") == "FORMAT_NOT_READY":
+    if integrity["status"] != "PASS":
+        status = "BLOCKED_EVIDENCE_INTEGRITY"
+    elif format_not_ready(format_check):
         status = "FORMAT_NOT_READY"
     elif not freeze:
         status = "BLOCKED_PRE_INFERENCE_FREEZE"
-    elif not measure or measure.get("status") == "NO_OUTPUTS" or not audit_complete:
+    elif not common or not format_check or format_check.get("gate_passed") is not True:
+        status = "BLOCKED_FORMAT_CHECK_INCOMPLETE"
+    elif (
+        not measure
+        or measure.get("status") != "SCORED"
+        or measure.get("scored_record_count") != 1536
+        or not audit_complete
+    ):
         status = "BLOCKED_MEASUREMENT_INCOMPLETE"
     elif not engine or engine.get("status") != "PASS":
         status = "ENGINE_REPRO_NOT_READY"
@@ -64,7 +224,9 @@ def release_report(run_root, template_root):
         processor_hash=freeze.get("processor_hash") if freeze else None,
         protocol_hash=freeze.get("protocol_hash") if freeze else None,
         actual_cost_envelope={
-            "reserved_caps_consumed": totals,
+            "physical_counts_and_allocation_estimates": totals,
+            "gpu_hours_policy": "ACCOUNTING_ONLY",
+            "max_allocated_gpu_hours": None,
             "verified_allocated_gpu_hours": actual,
             "unknown_allocations": unresolved,
             "future_cost_extrapolation": "NOT_CERTIFIED",
@@ -82,12 +244,14 @@ def release_report(run_root, template_root):
     summary = {
         "time": utc_now(),
         "status": status,
+        "evidence_integrity": integrity,
         "terminal_state": "STOP_FOR_REVIEW",
         "dev_authorized": False,
         "raw_model_responses": len(outputs),
         "completed_responses": sum(r.get("status") == "completed" for r in outputs),
         "failed_responses": sum(r.get("status") == "failed" for r in outputs),
         "budget_reservations": totals,
+        "gpu_hours_are_execution_gate": False,
         "verified_allocated_gpu_hours": actual,
         "unknown_allocations": unresolved,
         "base_format_status": base.get("status") if base else "NOT_RUN",
@@ -99,6 +263,7 @@ def release_report(run_root, template_root):
     text = f"""# MM-CORE F1 审计报告
 
 状态：**{status}**。交付边界 `STOP_FOR_REVIEW`，`MM-DEV authorized=false`。
+证据完整性：{integrity["status"]}；具体核验项与失败原因见 `FINAL_AUDIT_STATUS.json`。
 
 ## 停止核验与来源
 
@@ -131,7 +296,8 @@ S 的零误差分母记 missing；稳定性差异允许负估计；gold NLL 属�
 ENGINE：{summary["engine_status"]}。只有真实连续/重启恢复逐字段精确一致才记 PASS。
 CPU 测试不是 CUDA 回执；ENGINE 模型不替换公共起点，不进入科学响应表。
 
-最多五张 Pro 6000，累计上限 8 GPU 小时。累计已预留 {totals["allocated_gpu_hours"]:.6f} GPU 小时，
+最多五张 Pro 6000。GPU 小时仅记账，不设总量上限或阶段门槛。
+登记的调度分配时限估计合计 {totals["allocated_gpu_hours"]:.6f} GPU 小时，
 当前终态调度记录核验实际 {actual:.6f} GPU 小时；尚未核验 allocations：{unresolved}。
 生成尝试 {totals["completion_attempts"]} / 4096，
 物理更新 {totals["physical_optimizer_updates"]} / 64，

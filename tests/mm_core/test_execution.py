@@ -19,6 +19,7 @@ from mm_core.execution import (
     verify_gate,
     verify_stage_plan,
 )
+from mm_core.vl_runtime import hash_json
 
 
 @pytest.fixture
@@ -28,7 +29,7 @@ def run(tmp_path):
         json.dumps(
             {
                 "max_concurrent_gpus": 5,
-                "max_allocated_gpu_hours": 8,
+                "max_allocated_gpu_hours": None,
             }
         )
     )
@@ -74,11 +75,13 @@ def test_parallel_budget_reservations_are_serialized(run):
         reserve(65)
 
 
-def test_allocation_counts_loading_and_idle_upfront(run):
+def test_gpu_hours_accounted_without_any_total_limit(run):
     ledger = BudgetLedger(run)
     ledger.reserve("allocated_gpu_hours", 5 * 1.5, {"gpus": 5, "hours": 1.5})
-    with pytest.raises(RuntimeError):
-        ledger.reserve("allocated_gpu_hours", 1, "extra")
+    ledger.reserve("allocated_gpu_hours", 1000, "additional_accounted_time")
+    assert ledger.totals()["allocated_gpu_hours"] == 1007.5
+    assert ledger.caps["allocated_gpu_hours"] is None
+    assert all(row["status"] == "ALLOCATION_TIME_ESTIMATE" for row in read_jsonl(ledger.path))
 
 
 def test_seed_changes_by_question_stage_and_sample():
@@ -143,6 +146,9 @@ def frozen_run(run):
     _save_jsonl(run / "data/questions.jsonl", questions)
     freeze = dict(
         status="FROZEN",
+        model_id="Qwen/Qwen3.5-9B",
+        chat_template_kwargs={"enable_thinking": False},
+        chat_template_kwargs_hash=hash_json({"enable_thinking": False}),
         dev_authorized=False,
         readability_review_status="PASS",
         old_work_stop_status="already_stopped",
@@ -158,6 +164,25 @@ def frozen_run(run):
     )
     atomic_json(run / "manifests/PRE_INFERENCE_FREEZE.json", freeze)
     return run
+
+
+@pytest.mark.parametrize("model", [None, "Qwen/Qwen2.5-VL-3B-Instruct"])
+def test_previous_model_freeze_cannot_dispatch(frozen_run, model):
+    path = frozen_run / "manifests/PRE_INFERENCE_FREEZE.json"
+    payload = json.loads(path.read_text())
+    payload["model_id"] = model
+    atomic_json(path, payload)
+    with pytest.raises(PermissionError, match="requires Qwen"):
+        verify_gate(frozen_run, "FORMAT_BASE_TEST")
+
+
+def test_thinking_mode_cannot_change_after_model_override(frozen_run):
+    path = frozen_run / "manifests/PRE_INFERENCE_FREEZE.json"
+    payload = json.loads(path.read_text())
+    payload["chat_template_kwargs"] = {"enable_thinking": True}
+    atomic_json(path, payload)
+    with pytest.raises(PermissionError, match="thinking mode"):
+        verify_gate(frozen_run, "FORMAT_BASE_TEST")
 
 
 def _finish_panel(root, stage, *, shards=2, skip_shard=None, invalid=False):

@@ -22,11 +22,17 @@ class TrainingContracts(unittest.TestCase):
         from pathlib import Path
 
         from mm_core.execution import object_hash
-        from mm_core.vl_runtime import QwenRuntime, model_file_path
+        from mm_core.vl_runtime import (
+            CHAT_TEMPLATE_KWARGS,
+            MODEL_ID,
+            QwenRuntime,
+            hash_json,
+            model_file_path,
+        )
 
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            repo = root / "models--Qwen--Qwen2.5-VL-3B-Instruct"
+            repo = root / "models--Qwen--Qwen3.5-9B"
             snapshot = repo / "snapshots" / ("a" * 40)
             blobs = repo / "blobs"
             snapshot.mkdir(parents=True)
@@ -42,6 +48,13 @@ class TrainingContracts(unittest.TestCase):
             runtime.model_path = str(snapshot)
             runtime.adapter_path = None
             runtime.identity = dict(
+                model_id=MODEL_ID,
+                chat_template_kwargs=dict(CHAT_TEMPLATE_KWARGS),
+                chat_template_kwargs_hash=hash_json(CHAT_TEMPLATE_KWARGS),
+                linear_kernel_identity={"selected_callables": {"chunk": "frozen-kernel"}},
+                linear_kernel_identity_hash=hash_json(
+                    {"selected_callables": {"chunk": "frozen-kernel"}}
+                ),
                 processor_hash="processor",
                 chat_template_hash="chat",
                 generation_config_expanded={"do_sample": True},
@@ -52,6 +65,14 @@ class TrainingContracts(unittest.TestCase):
                 "model_weights_hash": object_hash({f["name"]: f["sha256"] for f in files}),
             }
             self.assertTrue(runtime.verify_identity(freeze)["verified"])
+            changed_kernels = {
+                **freeze,
+                "linear_kernel_identity": {"selected_callables": {"chunk": "other"}},
+            }
+            with self.assertRaisesRegex(PermissionError, "kernel identity differs"):
+                runtime.verify_identity(changed_kernels)
+            with self.assertRaisesRegex(PermissionError, "kernel identity hash differs"):
+                runtime.verify_identity({**freeze, "linear_kernel_identity_hash": "wrong"})
             outside = root / "private-file"
             outside.write_text("outside")
             (snapshot / "escape.bin").symlink_to(outside)
@@ -70,14 +91,59 @@ class TrainingContracts(unittest.TestCase):
             with self.assertRaises(PermissionError):
                 runtime.verify_identity(freeze)
 
+    def test_model_validation_rejects_old_family_and_wrong_hybrid_layout(self):
+        import copy
+
+        from mm_core.vl_runtime import validate_model_config
+
+        config = dict(
+            model_type="qwen3_5",
+            text_config=dict(
+                hidden_size=4096,
+                intermediate_size=12288,
+                num_hidden_layers=32,
+                num_attention_heads=16,
+                num_key_value_heads=4,
+                head_dim=256,
+                linear_num_key_heads=16,
+                linear_num_value_heads=32,
+                linear_key_head_dim=128,
+                linear_value_head_dim=128,
+                layer_types=[
+                    "full_attention" if i % 4 == 3 else "linear_attention" for i in range(32)
+                ],
+            ),
+            vision_config=dict(patch_size=16, spatial_merge_size=2, out_hidden_size=4096),
+        )
+        identity = validate_model_config(config)
+        self.assertEqual(identity["model_id"], "Qwen/Qwen3.5-9B")
+        self.assertEqual(identity["chat_template_kwargs"], {"enable_thinking": False})
+        self.assertEqual(identity["full_attention_layers"], list(range(3, 32, 4)))
+        with self.assertRaises(ValueError):
+            validate_model_config(
+                dict(model_type="qwen2_5_vl", hidden_size=2048, num_hidden_layers=36)
+            )
+        changed = copy.deepcopy(config)
+        changed["text_config"]["layer_types"][0] = "full_attention"
+        with self.assertRaises(ValueError):
+            validate_model_config(changed)
+
     def test_exact_language_enumeration_excludes_visual(self):
         names = [
             f"model.language_model.layers.{i}.self_attn.{kind}"
-            for i in range(36)
+            for i in range(3, 32, 4)
             for kind in ("q_proj", "v_proj")
         ]
         visual = [f"model.visual.layers.{i}.self_attn.q_proj" for i in range(32)]
-        self.assertEqual(language_qv_modules(names + visual), sorted(names))
+        linear = [
+            f"model.language_model.layers.{i}.linear_attn.in_proj_qkv"
+            for i in range(32)
+            if i % 4 != 3
+        ]
+        self.assertEqual(len(names), 16)
+        self.assertEqual(language_qv_modules(names + visual + linear), sorted(names))
+        with self.assertRaises(ValueError):
+            language_qv_modules([*names, "model.language_model.layers.0.self_attn.q_proj"])
         with self.assertRaises(ValueError):
             language_qv_modules(names[:-1] + visual)
 
@@ -248,18 +314,30 @@ class TensorRecovery(unittest.TestCase):
 
         from mm_core.vl_runtime import QwenRuntime
 
-        config = transformers.Qwen2_5_VLConfig(
+        config = transformers.Qwen3_5Config(
             text_config=dict(
                 vocab_size=64,
                 hidden_size=32,
                 intermediate_size=48,
                 num_hidden_layers=2,
+                layer_types=["linear_attention", "full_attention"],
+                head_dim=8,
+                linear_num_key_heads=2,
+                linear_num_value_heads=4,
+                linear_key_head_dim=8,
+                linear_value_head_dim=8,
+                linear_conv_kernel_dim=4,
                 num_attention_heads=4,
                 num_key_value_heads=2,
                 bos_token_id=1,
                 eos_token_id=2,
                 pad_token_id=0,
-                rope_parameters={"rope_type": "default", "mrope_section": [1, 1, 2]},
+                rope_parameters={
+                    "rope_type": "default",
+                    "mrope_section": [1, 1, 2],
+                    "mrope_interleaved": True,
+                    "partial_rotary_factor": 1.0,
+                },
             ),
             vision_config=dict(
                 depth=1,
@@ -270,8 +348,7 @@ class TensorRecovery(unittest.TestCase):
                 spatial_merge_size=2,
                 temporal_patch_size=2,
                 out_hidden_size=32,
-                window_size=4,
-                fullatt_block_indexes=[0],
+                num_position_embeddings=16,
             ),
             image_token_id=60,
             video_token_id=61,
@@ -280,7 +357,7 @@ class TensorRecovery(unittest.TestCase):
         )
         runtime = QwenRuntime.__new__(QwenRuntime)
         runtime.torch, runtime.device, runtime.image_calls = torch, "cpu", 0
-        runtime.model = transformers.Qwen2_5_VLForConditionalGeneration(config).eval()
+        runtime.model = transformers.Qwen3_5ForConditionalGeneration(config).eval()
         reservations = []
         runtime.account = lambda kind, count, meta: reservations.append((kind, count, meta))
         hook = runtime._visual_module().register_forward_pre_hook(runtime._mark_vision)
@@ -290,13 +367,32 @@ class TensorRecovery(unittest.TestCase):
             attention_mask=torch.ones_like(ids),
             pixel_values=torch.full((4, 24), 0.5),
             image_grid_thw=torch.tensor([[1, 2, 2]]),
+            mm_token_type_ids=torch.tensor([[0, 0, 1, 0, 0, 0]]),
         )
         tokens = [10, 11, 2]
+        from mm_core.vl_runtime import linear_kernel_identity
+
+        static_kernels = linear_kernel_identity()
+        loaded_kernels = linear_kernel_identity(runtime.model, expected_linear_count=1)
+        self.assertEqual(static_kernels, loaded_kernels)
+        linear = next(
+            module
+            for module in runtime.model.modules()
+            if hasattr(module, "recurrent_gated_delta_rule")
+        )
+        original_kernel = linear.chunk_gated_delta_rule
+        linear.chunk_gated_delta_rule = torch.add
+        try:
+            with self.assertRaisesRegex(RuntimeError, "kernel differs"):
+                linear_kernel_identity(runtime.model)
+        finally:
+            linear.chunk_gated_delta_rule = original_kernel
         result = runtime.sequence_forward({"inputs": inputs}, tokens, purpose="CPU_RANDOM_FIXTURE")
         actual_inputs = {
             **inputs,
             "input_ids": torch.cat([ids, torch.tensor([tokens])], dim=1),
             "attention_mask": torch.ones(1, 9, dtype=torch.long),
+            "mm_token_type_ids": torch.tensor([[0, 0, 1, 0, 0, 0, 0, 0, 0]]),
             "use_cache": False,
         }
         runtime.model.model.rope_deltas = None
@@ -307,6 +403,19 @@ class TensorRecovery(unittest.TestCase):
         self.assertEqual(result["vision_forward_calls"], 1)
         self.assertEqual(reservations[0][:2], ("extra_forward_sequences", 1))
         self.assertEqual(tuple(result["entropy"].shape), (3,))
+        # Exercise the native hybrid cache and multimodal type extension too.
+        with torch.no_grad():
+            generated = runtime.model.generate(
+                **inputs, max_new_tokens=3, do_sample=False, use_cache=True, pad_token_id=0
+            )
+        self.assertEqual(tuple(generated.shape[:1]), (1,))
+        self.assertGreater(generated.shape[1], ids.shape[1])
+        self.assertGreater(runtime.image_calls, 2)
+        missing_types = {k: v for k, v in inputs.items() if k != "mm_token_type_ids"}
+        with self.assertRaisesRegex(RuntimeError, "multimodal token types"):
+            runtime.sequence_forward(
+                {"inputs": missing_types}, tokens, purpose="CPU_INVALID_FIXTURE"
+            )
         hook.remove()
 
 

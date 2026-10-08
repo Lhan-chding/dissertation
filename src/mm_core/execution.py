@@ -24,7 +24,7 @@ CAPS = {
     "completion_attempts": 4096,
     "physical_optimizer_updates": 64,
     "extra_forward_sequences": 8192,
-    "allocated_gpu_hours": 8,
+    "allocated_gpu_hours": None,
 }
 GENERATION = {
     "do_sample": True,
@@ -142,17 +142,17 @@ def derive_seed(stage, model_hash, row, sample_index):
 
 
 class BudgetLedger:
-    """Reservations are consumed before work; uncertain work is never refunded."""
+    """Count caps fail closed; GPU hours are retained for accounting only."""
 
     def __init__(self, run_root):
         self.root = Path(run_root)
         self.path = self.root / "accounting/COST_LEDGER.jsonl"
         config = read_json(self.root / "manifests/RESOURCE_OVERRIDE.json")
-        self.caps = {**CAPS, "allocated_gpu_hours": config["max_allocated_gpu_hours"]}
+        self.caps = dict(CAPS)
         if config["max_concurrent_gpus"] != 5:
             raise ValueError("This run is bound to the user five-GPU override")
-        if self.caps["allocated_gpu_hours"] not in (8, 40):
-            raise ValueError("Unregistered GPU-hour envelope")
+        if config.get("max_allocated_gpu_hours") is not None:
+            raise ValueError("GPU hours must be accounting-only in the current resource override")
 
     def totals(self):
         totals = dict.fromkeys(self.caps, 0)
@@ -175,7 +175,7 @@ class BudgetLedger:
             raise ValueError("Sequence/update counts must be integers")
         with locked(self.root / "accounting/BUDGET.lock"):
             totals = self.totals()
-            if totals[kind] + amount > self.caps[kind]:
+            if self.caps[kind] is not None and totals[kind] + amount > self.caps[kind]:
                 raise RuntimeError(f"BUDGET_EXHAUSTED: {kind}")
             append_jsonl(
                 self.path,
@@ -184,9 +184,24 @@ class BudgetLedger:
                     "kind": kind,
                     "amount": amount,
                     "identity": identity,
-                    "status": "CONSUMED_OR_RESERVED",
+                    "status": (
+                        "ALLOCATION_TIME_ESTIMATE"
+                        if kind == "allocated_gpu_hours"
+                        else "CONSUMED_OR_RESERVED"
+                    ),
                 },
             )
+
+
+def _verify_model_override(identity):
+    from .vl_runtime import CHAT_TEMPLATE_KWARGS, MODEL_ID, hash_json
+
+    if identity.get("model_id") != MODEL_ID:
+        raise PermissionError("Current user override requires Qwen/Qwen3.5-9B")
+    if identity.get("chat_template_kwargs") != CHAT_TEMPLATE_KWARGS or identity.get(
+        "chat_template_kwargs_hash"
+    ) != hash_json(CHAT_TEMPLATE_KWARGS):
+        raise PermissionError("Qwen3.5 thinking mode is not frozen consistently")
 
 
 def _verify_freeze(run_root):
@@ -194,6 +209,7 @@ def _verify_freeze(run_root):
     freeze = read_json(root / "manifests/PRE_INFERENCE_FREEZE.json")
     if freeze.get("status") != "FROZEN" or freeze.get("dev_authorized") is not False:
         raise PermissionError("A complete execution freeze is required")
+    _verify_model_override(freeze)
     if freeze.get("readability_review_status") != "PASS":
         raise PermissionError("Actual processor readability review is required")
     if freeze.get("old_work_stop_status") not in {"already_stopped", "cancelled_verified"}:
@@ -603,6 +619,8 @@ def _validate_preflight(root, env, qa, splits):
         or preflight.get("status") != "CPU_PASS_PENDING_VISUAL"
     ):
         raise PermissionError("Readability review is not bound to this processor preflight")
+    _verify_model_override(env)
+    _verify_model_override(preflight)
     if (
         splits.get("status") != "PASS"
         or splits.get("processed_image_audit") != "PASS_ALL_REGISTERED_IMAGES"
@@ -613,9 +631,20 @@ def _validate_preflight(root, env, qa, splits):
         "chat_template_hash",
         "tokenizer_hash",
         "environment_lock_hash",
+        "chat_template_kwargs_hash",
+        "linear_kernel_identity_hash",
     ):
         if not env.get(field) or env[field] != preflight.get(field):
             raise PermissionError(f"Preflight identity mismatch: {field}")
+    from .vl_runtime import hash_json
+
+    kernels = env.get("linear_kernel_identity")
+    if (
+        not isinstance(kernels, dict)
+        or kernels != preflight.get("linear_kernel_identity")
+        or hash_json(kernels) != env["linear_kernel_identity_hash"]
+    ):
+        raise PermissionError("Actual hybrid attention kernels must be frozen")
     if env["environment_lock_hash"] != sha256_file(
         root / "manifests/PROCESSOR_ENVIRONMENT_LOCK.json"
     ):

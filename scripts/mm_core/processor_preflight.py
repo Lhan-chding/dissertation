@@ -23,6 +23,32 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
 from mm_core.generator import CANVAS, PLOT, audit_split_rows, validate_dataset
 from mm_core.vl_runtime import GENERATION, QwenRuntime, hash_json
 
+EXPECTED_MODEL_ID = "Qwen/Qwen3.5-9B"
+EXPECTED_CHAT_TEMPLATE_KWARGS = {"enable_thinking": False}
+
+
+def _verified_runtime(model_path: Path) -> QwenRuntime:
+    """Reject an older model or unverified identity before any data annotation."""
+    runtime = QwenRuntime.processor_only(model_path)
+    identity = runtime.identity
+    if (
+        identity.get("model_id") != EXPECTED_MODEL_ID
+        or identity.get("model_type") != "qwen3_5"
+        or identity.get("architecture_verified") is not True
+    ):
+        raise ValueError("Processor preflight requires a verified Qwen/Qwen3.5-9B runtime")
+    if identity.get("chat_template_kwargs") != EXPECTED_CHAT_TEMPLATE_KWARGS or identity.get(
+        "chat_template_kwargs_hash"
+    ) != hash_json(EXPECTED_CHAT_TEMPLATE_KWARGS):
+        raise ValueError("Qwen3.5 preflight requires the frozen enable_thinking=False template")
+    geometry = tuple(
+        int(getattr(runtime.processor.image_processor, key))
+        for key in ("patch_size", "merge_size", "temporal_patch_size")
+    )
+    if geometry != (16, 2, 2):
+        raise ValueError("Qwen3.5-9B processor geometry must match its native vision architecture")
+    return runtime
+
 
 def file_hash(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -48,7 +74,8 @@ def read_jsonl(path: Path) -> list[dict[str, Any]]:
 def reconstruct_rgb(pixel_values: Any, grid: list[list[int]], image_processor: Any) -> Any:
     """Invert the installed Qwen merged spatial/temporal patch layout exactly.
 
-    Verified against Qwen2VLImageProcessor._preprocess: flattened axes are
+    Qwen3.5 uses Qwen2VLImageProcessor with its registered patch_size (16).
+    Verified against the installed _preprocess source: flattened axes are
     [grid_h/merge, grid_w/merge, merge_h, merge_w, C, temporal, patch_h, patch_w].
     A still image duplicates its temporal plane. No interpolation is performed.
     """
@@ -61,6 +88,10 @@ def reconstruct_rgb(pixel_values: Any, grid: list[list[int]], image_processor: A
     patch = int(image_processor.patch_size)
     merge = int(image_processor.merge_size)
     temporal = int(image_processor.temporal_patch_size)
+    if min(patch, merge, temporal, grid_h, grid_w) <= 0:
+        raise ValueError("Patch and grid dimensions must be positive")
+    if grid_h % merge or grid_w % merge:
+        raise ValueError("Image grid must contain complete spatial merge groups")
     array = (
         pixel_values.detach().cpu().numpy()
         if hasattr(pixel_values, "detach")
@@ -90,10 +121,24 @@ def reconstruct_rgb(pixel_values: Any, grid: list[list[int]], image_processor: A
 
 
 def _expanded_generation(model_path: Path, processor: Any) -> dict[str, Any]:
-    from transformers import GenerationConfig
+    from transformers import AutoConfig, GenerationConfig
 
-    original = json.loads((model_path / "generation_config.json").read_text())
-    eos = original.get("eos_token_id")
+    generation_path = model_path / "generation_config.json"
+    if generation_path.is_file():
+        original_config = GenerationConfig.from_pretrained(model_path, local_files_only=True)
+        original_source = "generation_config.json"
+        original_hash = file_hash(generation_path)
+    else:
+        # Transformers derives these defaults from the nested text config when
+        # a repository omits generation_config.json; no weight loading is needed.
+        model_config = AutoConfig.from_pretrained(
+            model_path, local_files_only=True, trust_remote_code=False
+        )
+        original_config = GenerationConfig.from_model_config(model_config)
+        original_source = "config.json:GenerationConfig.from_model_config"
+        original_hash = None
+    original = original_config.to_dict()
+    eos = original_config.eos_token_id
     eos_ids = [int(x) for x in (eos if isinstance(eos, list) else [eos]) if x is not None]
     if not eos_ids:
         raise ValueError("Model generation EOS set is unavailable")
@@ -106,12 +151,14 @@ def _expanded_generation(model_path: Path, processor: Any) -> dict[str, Any]:
     return {
         "generation_config_expanded": config.to_dict(),
         "original_generation_config": original,
-        "original_generation_config_sha256": file_hash(model_path / "generation_config.json"),
+        "original_generation_config_source": original_source,
+        "original_generation_config_sha256": original_hash,
+        "model_config_sha256": file_hash(model_path / "config.json"),
         "runtime_generation_overrides": GENERATION,
     }
 
 
-def _environment(torch: Any, processor: Any) -> dict[str, Any]:
+def _environment(torch: Any, processor: Any, runtime_identity: dict[str, Any]) -> dict[str, Any]:
     versions = {}
     for name in (
         "torch",
@@ -139,8 +186,14 @@ def _environment(torch: Any, processor: Any) -> dict[str, Any]:
         "cpu_threads": torch.get_num_threads(),
         "processor_class": f"{processor_class.__module__}.{processor_class.__qualname__}",
         "processor_preprocess_source_sha256": hashlib.sha256(source.encode()).hexdigest(),
+        "processor_geometry": {
+            key: int(getattr(processor.image_processor, key))
+            for key in ("patch_size", "merge_size", "temporal_patch_size")
+        },
         "preflight_code_sha256": file_hash(Path(__file__)),
         "vl_runtime_code_sha256": file_hash(Path(inspect.getfile(QwenRuntime))),
+        "linear_kernel_identity": runtime_identity["linear_kernel_identity"],
+        "linear_kernel_identity_hash": runtime_identity["linear_kernel_identity_hash"],
         "cuda_context_initialized": torch.cuda.is_initialized(),
         "model_weights_loaded": False,
         "new_model_calls": 0,
@@ -183,9 +236,10 @@ def preflight(run_root: Path, model_path: Path) -> dict[str, Any]:
     torch.set_num_threads(2)
     if torch.cuda.is_initialized():
         raise RuntimeError("CPU-only preflight cannot start in an initialized CUDA context")
-    runtime = QwenRuntime.processor_only(model_path)
+    runtime = _verified_runtime(model_path)
     processor = runtime.processor
-    environment = _environment(torch, processor)
+    environment = _environment(torch, processor, runtime.identity)
+    expanded_generation = _expanded_generation(model_path, processor)
     write_json(root / "manifests/PROCESSOR_ENVIRONMENT_LOCK.json", environment)
     input_paths = [
         "data/questions.jsonl",
@@ -216,6 +270,11 @@ def preflight(run_root: Path, model_path: Path) -> dict[str, Any]:
     for index, (private, model_input) in enumerate(zip(questions, inputs, strict=True)):
         prepared = runtime.prepare(model_input, root)
         routing = prepared["routing"]
+        if (
+            routing.get("chat_template_kwargs_hash")
+            != runtime.identity["chat_template_kwargs_hash"]
+        ):
+            raise ValueError("Prepared Qwen3.5 template kwargs lack matching frozen provenance")
         image_id = private["image_id"]
         if image_id not in processed:
             rgb = reconstruct_rgb(
@@ -277,6 +336,7 @@ def preflight(run_root: Path, model_path: Path) -> dict[str, Any]:
                 "processed_pixels_per_delta": image_record["pixels_per_delta"],
                 "processor_hash": runtime.identity["processor_hash"],
                 "chat_template_hash": runtime.identity["chat_template_hash"],
+                "chat_template_kwargs_hash": runtime.identity["chat_template_kwargs_hash"],
                 "processor_status": "ACTUAL_CPU_PROCESSOR_VERIFIED",
                 "readability_status": "CPU_PASS_PENDING_VISUAL",
                 "actual_model_tokenized_prompt_hash": routing["input_ids_sha256"],
@@ -350,7 +410,7 @@ def preflight(run_root: Path, model_path: Path) -> dict[str, Any]:
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         **runtime.identity,
         "tokenizer_hash": hash_json(processor.tokenizer.get_vocab()),
-        **_expanded_generation(model_path, processor),
+        **expanded_generation,
         "environment_lock_hash": file_hash(root / "manifests/PROCESSOR_ENVIRONMENT_LOCK.json"),
         "environment_lock_path": "manifests/PROCESSOR_ENVIRONMENT_LOCK.json",
         "source_image_count": len(registered_images),

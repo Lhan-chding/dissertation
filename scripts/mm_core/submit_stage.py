@@ -36,7 +36,7 @@ def main():
     args = p.parse_args()
     root, code = args.run_root.resolve(), args.code_root.resolve()
     verify_gate(root, args.stage)
-    if not 1 <= args.shards <= 5 or not 1 <= args.minutes <= 480:
+    if not 1 <= args.shards <= 5 or args.minutes < 1:
         raise ValueError("Invalid resource envelope")
     if args.stage in {"BRIDGE", "ENGINE"}:
         if args.shards != 1:

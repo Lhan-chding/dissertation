@@ -14,7 +14,7 @@ import re
 import tempfile
 from pathlib import Path
 
-from .vl_runtime import QwenRuntime, gold_completion, hash_json, seed_all
+from .vl_runtime import FULL_ATTENTION_LAYERS, QwenRuntime, gold_completion, hash_json, seed_all
 
 OPTIMIZER_RECIPE = dict(
     type="AdamW",
@@ -30,7 +30,11 @@ LORA_RECIPE = dict(
     rank=8,
     alpha=16,
     dropout=0.0,
-    scope="language_only_q_proj_v_proj",
+    scope="qwen3_5_language_full_attention_only_q_proj_v_proj",
+    layer_indices=list(FULL_ATTENTION_LAYERS),
+    module_count=16,
+    linear_attention_frozen=True,
+    q_proj_semantics="native_full_attention_query_and_gate_projection",
     vision_encoder_frozen=True,
     projector_frozen=True,
 )
@@ -65,15 +69,15 @@ ENGINE_RECIPE = dict(
 )
 
 
-def language_qv_modules(names, layers=36):
+def language_qv_modules(names, full_attention_layers=FULL_ATTENTION_LAYERS):
     pattern = re.compile(
         r"(?:model\.)?(?:language_model\.)?layers\.(\d+)\.self_attn\.(q_proj|v_proj)"
     )
     selected = [(name, pattern.fullmatch(name)) for name in names]
     selected = [(name, match) for name, match in selected if match]
     actual = {(int(match[1]), match[2]) for _, match in selected}
-    expected = {(i, kind) for i in range(layers) for kind in ("q_proj", "v_proj")}
-    if actual != expected or len(selected) != 2 * layers:
+    expected = {(i, kind) for i in full_attention_layers for kind in ("q_proj", "v_proj")}
+    if actual != expected or len(selected) != 2 * len(full_attention_layers):
         raise ValueError("Exact language q/v module enumeration failed")
     return sorted(name for name, _ in selected)
 
@@ -240,6 +244,10 @@ def configure_training(runtime):
     from peft import LoraConfig, get_peft_model
 
     model = runtime.model
+    layer_types = model.config.text_config.layer_types
+    actual_full = tuple(i for i, kind in enumerate(layer_types) if kind == "full_attention")
+    if actual_full != FULL_ATTENTION_LAYERS or len(layer_types) != 32:
+        raise ValueError("Training model hybrid attention layout changed")
     if not hasattr(model, "peft_config"):
         modules = language_qv_modules([name for name, _ in model.named_modules()])
         for param in model.parameters():

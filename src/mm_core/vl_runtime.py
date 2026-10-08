@@ -1,4 +1,4 @@
-"""Native Qwen2.5-VL-3B runtime; importing does not load weights or contact a network."""
+"""Native Qwen3.5-9B runtime; importing does not load weights or contact a network."""
 
 from __future__ import annotations
 
@@ -9,7 +9,9 @@ import random
 import time
 from pathlib import Path
 
-MODEL_ID = "Qwen/Qwen2.5-VL-3B-Instruct"
+MODEL_ID = "Qwen/Qwen3.5-9B"
+CHAT_TEMPLATE_KWARGS = {"enable_thinking": False}
+FULL_ATTENTION_LAYERS = tuple(range(3, 32, 4))
 CANVAS = (896, 672)
 GENERATION = dict(
     do_sample=True,
@@ -51,6 +53,136 @@ GENERATION = dict(
 
 def hash_json(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, default=str).encode()).hexdigest()
+
+
+def _callable_identity(value):
+    if value is None:
+        return None
+    result = dict(
+        module=getattr(value, "__module__", type(value).__module__),
+        qualified_name=getattr(value, "__qualname__", type(value).__qualname__),
+    )
+    try:
+        source = inspect.getsourcefile(value)
+    except (TypeError, OSError):
+        source = None
+    if source and Path(source).is_file():
+        result["source_sha256"] = hashlib.sha256(Path(source).read_bytes()).hexdigest()
+    wrapped = getattr(value, "__wrapped__", None)
+    if wrapped is not None and wrapped is not value:
+        result["wrapped_callable"] = _callable_identity(wrapped)
+    return result
+
+
+def linear_kernel_identity(model=None, *, expected_linear_count=None):
+    """Inspect optional native kernel selection without loading weights or executing it.
+
+    Eager attention selects full attention only. Gated DeltaNet independently
+    chooses optional FLA/causal-conv1d/norm implementations, which must also be
+    frozen. With a loaded model, verify its actual module callables match the
+    no-weight inspection used before inference.
+    """
+    from importlib.metadata import PackageNotFoundError, version
+
+    import torch
+    from transformers.integrations import hub_kernels
+    from transformers.models.qwen3_5 import modeling_qwen3_5 as native
+
+    versions = {}
+    for package in (
+        "flash-linear-attention",
+        "fla-core",
+        "causal-conv1d",
+        "triton",
+        "kernels",
+        "mamba-ssm",
+    ):
+        try:
+            versions[package] = version(package)
+        except PackageNotFoundError:
+            versions[package] = None
+    chosen = dict(
+        causal_conv1d_fn=native.causal_conv1d_fn,
+        causal_conv1d_update=native.causal_conv1d_update or native.torch_causal_conv1d_update,
+        chunk_gated_delta_rule=native.chunk_gated_delta_rule or native.torch_chunk_gated_delta_rule,
+        recurrent_gated_delta_rule=native.fused_recurrent_gated_delta_rule
+        or native.torch_recurrent_gated_delta_rule,
+        norm_class=native.FusedRMSNormGated or native.Qwen3_5RMSNormGated,
+        forward=native.Qwen3_5GatedDeltaNet.forward,
+    )
+    selected = {key: _callable_identity(value) for key, value in chosen.items()}
+    if model is not None:
+        modules = [
+            module for module in model.modules() if isinstance(module, native.Qwen3_5GatedDeltaNet)
+        ]
+        if not modules or (
+            expected_linear_count is not None and len(modules) != expected_linear_count
+        ):
+            raise RuntimeError("Loaded native linear-attention module count differs")
+        for module in modules:
+            actual = {
+                name: getattr(module, name)
+                for name in (
+                    "causal_conv1d_fn",
+                    "causal_conv1d_update",
+                    "chunk_gated_delta_rule",
+                    "recurrent_gated_delta_rule",
+                    "forward",
+                )
+            }
+            actual["norm_class"] = type(module.norm)
+            if {key: _callable_identity(value) for key, value in actual.items()} != selected:
+                raise RuntimeError(
+                    "Loaded linear-attention kernel differs from inspected native selection"
+                )
+    return dict(
+        optional_package_versions=versions,
+        selected_callables=selected,
+        unfused_prefill_conv=_callable_identity(torch.nn.Conv1d.forward),
+        unfused_prefill_activation=_callable_identity(torch.nn.functional.silu),
+        all_fast_kernels_available=bool(native.is_fast_path_available),
+        hub_kernels_enabled=bool(hub_kernels._kernels_enabled),
+        hub_kernels_environment=hub_kernels._TRANSFORMERS_USE_HUB_KERNELS,
+    )
+
+
+def validate_model_config(config):
+    """Reject other Qwen sizes/families and changed hybrid-layer definitions."""
+    text = config.get("text_config", {})
+    expected_layers = [
+        "full_attention" if i in FULL_ATTENTION_LAYERS else "linear_attention" for i in range(32)
+    ]
+    expected = dict(
+        hidden_size=4096,
+        intermediate_size=12288,
+        num_hidden_layers=32,
+        num_attention_heads=16,
+        num_key_value_heads=4,
+        head_dim=256,
+        linear_num_key_heads=16,
+        linear_num_value_heads=32,
+        linear_key_head_dim=128,
+        linear_value_head_dim=128,
+    )
+    if config.get("model_type") != "qwen3_5" or any(text.get(k) != v for k, v in expected.items()):
+        raise ValueError("Required local Qwen3.5-9B architecture does not match")
+    if text.get("layer_types") != expected_layers:
+        raise ValueError("Qwen3.5-9B hybrid attention layout differs from the frozen definition")
+    vision = config.get("vision_config", {})
+    if (
+        vision.get("patch_size"),
+        vision.get("spatial_merge_size"),
+        vision.get("out_hidden_size"),
+    ) != (16, 2, 4096):
+        raise ValueError("Qwen3.5-9B native vision architecture does not match")
+    return dict(
+        model_id=MODEL_ID,
+        model_type="qwen3_5",
+        architecture_verified=True,
+        full_attention_layers=list(FULL_ATTENTION_LAYERS),
+        chat_template_kwargs=dict(CHAT_TEMPLATE_KWARGS),
+        chat_template_kwargs_hash=hash_json(CHAT_TEMPLATE_KWARGS),
+    )
 
 
 def model_file_path(model_path, relative):
@@ -180,18 +312,12 @@ class QwenRuntime:
     ):
         import torch
         import transformers
-        from transformers import AutoProcessor, GenerationConfig, Qwen2_5_VLForConditionalGeneration
+        from transformers import AutoProcessor, GenerationConfig, Qwen3_5ForConditionalGeneration
 
         self.torch, self.device, self.account = torch, device, account
         self.model_path = str(Path(model_path).resolve())
         config = json.loads(Path(self.model_path, "config.json").read_text())
-        tc = config.get("text_config", config)
-        if (
-            config.get("model_type") != "qwen2_5_vl"
-            or tc.get("hidden_size") != 2048
-            or tc.get("num_hidden_layers") != 36
-        ):
-            raise ValueError("Required local Qwen2.5-VL-3B architecture does not match")
+        architecture = validate_model_config(config)
         if str(device).startswith("cuda"):
             if not torch.cuda.is_available():
                 raise RuntimeError("CUDA unavailable; no model execution occurred")
@@ -206,7 +332,7 @@ class QwenRuntime:
             min_pixels=896 * 672,
             max_pixels=896 * 672,
         )
-        self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+        self.model = Qwen3_5ForConditionalGeneration.from_pretrained(
             self.model_path,
             local_files_only=True,
             trust_remote_code=False,
@@ -231,8 +357,11 @@ class QwenRuntime:
         )
         self.image_calls = 0
         self._vision_hook = self._visual_module().register_forward_pre_hook(self._mark_vision)
+        kernels = linear_kernel_identity(self.model, expected_linear_count=24)
         self.identity = dict(
-            model_id=MODEL_ID,
+            **architecture,
+            linear_kernel_identity=kernels,
+            linear_kernel_identity_hash=hash_json(kernels),
             transformers_version=transformers.__version__,
             torch_version=torch.__version__,
             dtype=dtype,
@@ -252,6 +381,17 @@ class QwenRuntime:
         files = freeze.get("model_files")
         if not isinstance(files, list) or not files:
             raise PermissionError("Freeze lacks actual model file identities")
+        if freeze.get("model_id") != MODEL_ID:
+            raise PermissionError("Freeze specifies a different model family/size")
+        if freeze.get("chat_template_kwargs") != CHAT_TEMPLATE_KWARGS:
+            raise PermissionError("Non-thinking chat-template kwargs must be frozen")
+        if freeze.get("chat_template_kwargs_hash") != hash_json(CHAT_TEMPLATE_KWARGS):
+            raise PermissionError("Chat-template kwargs identity mismatch")
+        kernels = self.identity.get("linear_kernel_identity")
+        if not kernels or freeze.get("linear_kernel_identity") != kernels:
+            raise PermissionError("Native linear-attention kernel identity differs from freeze")
+        if freeze.get("linear_kernel_identity_hash") != hash_json(kernels):
+            raise PermissionError("Native linear-attention kernel identity hash differs")
         observed = {}
         for entry in files:
             path = model_file_path(self.model_path, entry["name"])
@@ -306,6 +446,9 @@ class QwenRuntime:
 
         instance = cls.__new__(cls)
         instance.device = "cpu"
+        architecture = validate_model_config(
+            json.loads(Path(model_path, "config.json").read_text())
+        )
         instance.processor = AutoProcessor.from_pretrained(
             str(model_path),
             local_files_only=True,
@@ -318,7 +461,11 @@ class QwenRuntime:
                 str(model_path), local_files_only=True, trust_remote_code=False
             )
         )
+        kernels = linear_kernel_identity()
         instance.identity = dict(
+            **architecture,
+            linear_kernel_identity=kernels,
+            linear_kernel_identity_hash=hash_json(kernels),
             processor_hash=hash_json(instance.processor.to_dict()),
             chat_template_hash=hash_json(instance.processor.chat_template),
         )
@@ -366,14 +513,16 @@ class QwenRuntime:
             }
         ]
         text = self.processor.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
+            messages, tokenize=False, add_generation_prompt=True, **CHAT_TEMPLATE_KWARGS
         )
+        if not text.endswith("<|im_start|>assistant\n<think>\n\n</think>\n\n"):
+            raise RuntimeError("Native chat template did not apply enable_thinking=False")
         inputs = self.processor(text=[text], images=[rgb], padding=False, return_tensors="pt")
         if "pixel_values" not in inputs or "image_grid_thw" not in inputs:
             raise RuntimeError("Processor did not route real pixels and image_grid_thw")
         grid = inputs["image_grid_thw"].tolist()
         ip = self.processor.image_processor
-        patch, merge = int(getattr(ip, "patch_size", 14)), int(getattr(ip, "merge_size", 2))
+        patch, merge = int(getattr(ip, "patch_size", 16)), int(getattr(ip, "merge_size", 2))
         if len(grid) != 1 or grid[0][0] != 1:
             raise ValueError("Exactly one still image per request required")
         processed_size = (int(grid[0][2]) * patch, int(grid[0][1]) * patch)
@@ -385,6 +534,11 @@ class QwenRuntime:
         actual = int((inputs["input_ids"] == image_id).sum())
         if actual <= 0 or actual != grid[0][0] * grid[0][1] * grid[0][2] // merge**2:
             raise RuntimeError("Image grid and model image-token count differ")
+        mm_types = inputs.get("mm_token_type_ids")
+        if mm_types is None or mm_types.shape != inputs["input_ids"].shape:
+            raise RuntimeError("Qwen3.5 native multimodal token type IDs are missing")
+        if not bool(((mm_types == 1) == (inputs["input_ids"] == image_id)).all()):
+            raise RuntimeError("Image token flags disagree with native multimodal token types")
         pixels = inputs["pixel_values"].detach().cpu().contiguous()
         pixel_hash = hashlib.sha256(pixels.numpy().tobytes()).hexdigest()
         if row.get("processed_pixel_sha256") and row["processed_pixel_sha256"] != pixel_hash:
@@ -398,6 +552,10 @@ class QwenRuntime:
             image_grid_thw=grid,
             pixel_values_shape=list(inputs["pixel_values"].shape),
             input_ids_shape=list(inputs["input_ids"].shape),
+            mm_token_type_ids_shape=list(mm_types.shape),
+            mm_token_type_ids_sha256=hash_json(mm_types.tolist()),
+            chat_template_kwargs=dict(CHAT_TEMPLATE_KWARGS),
+            chat_template_kwargs_hash=hash_json(CHAT_TEMPLATE_KWARGS),
             image_token_count=actual,
             image_token_id=image_id,
             processor_hash=self.identity["processor_hash"],
@@ -423,6 +581,11 @@ class QwenRuntime:
         inputs["input_ids"] = torch.cat([inputs["input_ids"], completion], dim=1)
         inputs["attention_mask"] = torch.ones_like(inputs["input_ids"])
         inputs.pop("token_type_ids", None)
+        if "mm_token_type_ids" not in inputs or inputs["mm_token_type_ids"].shape[1] != prompt_len:
+            raise RuntimeError("Teacher forcing requires original native multimodal token types")
+        inputs["mm_token_type_ids"] = torch.cat(
+            [inputs["mm_token_type_ids"], torch.zeros_like(completion)], dim=1
+        )
         inputs["use_cache"] = False
         base = self.model.get_base_model() if hasattr(self.model, "get_base_model") else self.model
         for module in (base, getattr(base, "model", None)):

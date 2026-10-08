@@ -15,6 +15,9 @@ from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 from typing import Any
 
+MODEL_FAMILY = "Qwen/Qwen3.5-9B"
+MODEL_CACHE_REPOSITORY = "models--Qwen--Qwen3.5-9B"
+
 CONTRACT_FIELDS = (
     "branch",
     "real_visual_input",
@@ -277,29 +280,77 @@ def _archive_supports_contract(name: str, archive: dict[str, Any]) -> bool:
     )
 
 
+def _verified_weight_names(names: set[str], weight_map: Any = None) -> set[str]:
+    """Require a complete single-file or numbered-shard Hugging Face weight layout."""
+    weights = {name for name in names if name.endswith(".safetensors")}
+    if weights == {"model.safetensors"}:
+        if "model.safetensors.index.json" in names:
+            raise ValueError("single-file model has an unexpected shard index")
+    else:
+        shards = [
+            re.fullmatch(r"(model(?:\.safetensors)?)-(\d+)-of-(\d+)\.safetensors", name)
+            for name in weights
+        ]
+        if not shards or any(match is None for match in shards):
+            raise ValueError("unrecognized or mixed safetensors weight layout")
+        prefixes = {match.group(1) for match in shards if match is not None}
+        counts = {int(match.group(3)) for match in shards if match is not None}
+        indices = {int(match.group(2)) for match in shards if match is not None}
+        total = next(iter(counts))
+        if (
+            len(prefixes) != 1
+            or len(counts) != 1
+            or total != len(shards)
+            or indices != set(range(1, total + 1))
+            or "model.safetensors.index.json" not in names
+        ):
+            raise ValueError("safetensors shard enumeration is incomplete or inconsistent")
+    if weight_map is not None and (
+        not isinstance(weight_map, dict)
+        or not weight_map
+        or any(not isinstance(key, str) or not key for key in weight_map)
+        or any(not isinstance(value, str) for value in weight_map.values())
+        or set(weight_map.values()) != weights
+    ):
+        raise ValueError("weight index does not match the complete safetensors file list")
+    return weights
+
+
 def inspect_model_receipt(path: Path) -> dict[str, Any]:
     """Import exact server hash evidence; do not label it a local weight rehash."""
     receipt = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(receipt, dict):
+        raise ValueError("model receipt must be an object")
     revision = receipt.get("revision", "")
     model_path = receipt.get("model_path", "")
+    receipt_status = receipt.get("status")
     if (
-        receipt.get("status") != "DOWNLOADED_AND_HASHED"
+        not isinstance(receipt_status, str)
+        or receipt_status not in {"DOWNLOADED_AND_HASHED", "CACHED_AND_HASHED"}
+        or receipt.get("model_id", MODEL_FAMILY) != MODEL_FAMILY
         or not isinstance(revision, str)
         or not re.fullmatch(r"[0-9a-f]{40}", revision)
         or not isinstance(model_path, str)
-        or not model_path.endswith("/snapshots/" + revision)
-        or "models--Qwen--Qwen2.5-VL-3B-Instruct/" not in model_path
+        or not PurePosixPath(model_path).is_absolute()
+        or ".." in PurePosixPath(model_path).parts
+        or PurePosixPath(model_path).parts[-3:] != (MODEL_CACHE_REPOSITORY, "snapshots", revision)
     ):
         raise ValueError("receipt does not identify the required verified model family")
     entries = receipt.get("files", [])
+    if not isinstance(entries, list) or not entries:
+        raise ValueError("model receipt must contain a nonempty file list")
     names: set[str] = set()
     for item in entries:
+        if not isinstance(item, dict):
+            raise ValueError("model receipt file entries must be objects")
         name = item.get("name", "")
         digest = item.get("sha256", "")
         size = item.get("bytes")
         if (
             not isinstance(name, str)
             or not name
+            or "\x00" in name
+            or name in {".", ".."}
             or PurePosixPath(name).name != name
             or name in names
             or not isinstance(digest, str)
@@ -314,48 +365,62 @@ def inspect_model_receipt(path: Path) -> dict[str, Any]:
         "preprocessor_config.json",
         "tokenizer_config.json",
         "tokenizer.json",
-        "chat_template.json",
-        "model.safetensors.index.json",
-        "model-00001-of-00002.safetensors",
-        "model-00002-of-00002.safetensors",
     }
-    if not required <= names:
+    if not required <= names or not names & {"chat_template.json", "chat_template.jinja"}:
         raise ValueError("model receipt is incomplete")
-    weights = [item for item in entries if item["name"].endswith(".safetensors")]
+    if "weight_map" in receipt and receipt["weight_map"] is None:
+        raise ValueError("weight index mapping must not be null when provided")
+    weight_names = _verified_weight_names(names, receipt.get("weight_map"))
+    weights = [item for item in entries if item["name"] in weight_names]
     processor = [
         item
         for item in entries
         if item["name"]
         in {
             "preprocessor_config.json",
+            "video_preprocessor_config.json",
             "tokenizer_config.json",
             "tokenizer.json",
             "chat_template.json",
+            "chat_template.jinja",
             "vocab.json",
             "merges.txt",
         }
     ]
 
     def group_hash(items: list[dict[str, Any]]) -> str:
+        normalized = [{key: item[key] for key in ("name", "bytes", "sha256")} for item in items]
         canonical = json.dumps(
-            sorted(items, key=lambda row: row["name"]), sort_keys=True, separators=(",", ":")
+            sorted(normalized, key=lambda row: row["name"]),
+            sort_keys=True,
+            separators=(",", ":"),
         ).encode()
         return hashlib.sha256(canonical).hexdigest()
 
     return {
         "status": "server_receipt_verified",
+        "source_receipt_status": receipt_status,
+        "model_id": MODEL_FAMILY,
         "path": model_path,
         "revision": revision,
         "weights_sha256": group_hash(weights),
         "processor_sha256": group_hash(processor),
         "hash_algorithm": "SHA256 of sorted canonical JSON per-file name/bytes/sha256 entries",
         "file_hashes": entries,
+        "weight_files": sorted(weight_names),
+        "shard_count": len(weight_names),
+        "weight_index_mapping_checked": "weight_map" in receipt,
         "active_adapter": None,
         "receipt_path": str(path.resolve()),
         "receipt_sha256": sha256_file(path),
-        "verification_level": "server_download_receipt; no local weight copy",
+        "verification_level": (
+            "server_download_receipt; no local weight copy"
+            if receipt_status == "DOWNLOADED_AND_HASHED"
+            else "server_cache_rehash_receipt; no local weight copy"
+        ),
         "historical_snapshot_equivalence": "unknown; do not equate to old ModelScope snapshot",
-        "new_base_asset": True,
+        "new_base_asset": receipt_status == "DOWNLOADED_AND_HASHED",
+        "downloaded_in_this_receipt": receipt_status == "DOWNLOADED_AND_HASHED",
     }
 
 
@@ -413,7 +478,7 @@ def inventory_assets(
     manifest: dict[str, Any] = {
         "schema": "mm-core-asset-inventory-v1",
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
-        "model_family": "Qwen/Qwen2.5-VL-3B-Instruct",
+        "model_family": MODEL_FAMILY,
         "selected_path": "B",
         "selection_reason": "no verified historical same-completion visual readings+answer",
         "historical_results_rescored": False,

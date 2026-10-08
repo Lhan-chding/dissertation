@@ -1,4 +1,4 @@
-"""Slurm allocation reservations: charge the full requested device wall time first."""
+"""Bind Slurm identities and concurrency; track device time without a time cap."""
 
 from __future__ import annotations
 
@@ -65,8 +65,34 @@ def bind_allocation(run_root, allocation_key, job_id):
     return record
 
 
+def verify_live_gpu_resources(fields, registered_gpus):
+    """Cross-check aggregate allocated TRES against the one-node reservation."""
+    allocated = dict(
+        item.split("=", 1) for item in fields.get("AllocTRES", "").split(",") if "=" in item
+    )
+    if fields.get("NumNodes") != "1" or allocated.get("node") != "1":
+        raise PermissionError("Exactly one live allocated node must be verified")
+    counts = [allocated.get("gres/gpu"), allocated.get("gres/gpu:pro6000")]
+    if any(value is None or not value.isdigit() for value in counts):
+        raise PermissionError("Live GPU counts/type cannot be verified")
+    if any(int(value) != registered_gpus for value in counts):
+        raise PermissionError("Live GPU count differs from registered allocation")
+    other_types = [
+        key
+        for key in allocated
+        if key.startswith("gres/gpu:") and key != "gres/gpu:pro6000" and allocated[key] != "0"
+    ]
+    if other_types:
+        raise PermissionError("Unregistered GPU types in live allocation")
+    per_node = fields.get("TresPerNode", "").split(",")
+    gpu_specs = [part for part in per_node if part.startswith("gres/gpu")]
+    if gpu_specs != [f"gres/gpu:pro6000:{registered_gpus}"]:
+        raise PermissionError("Per-node GPU resource identity differs from allocation")
+    return dict(nodes=1, gpu_count=registered_gpus, gpu_type="pro6000")
+
+
 def require_allocation(run_root, stage):
-    """Must run before CUDA model loading; verifies live job name/type/wall envelope."""
+    """Verify live job identity before CUDA loading; time is accounting metadata."""
     root = Path(run_root)
     job_id = os.environ.get("SLURM_JOB_ID", "")
     if not job_id.isdigit():
@@ -91,8 +117,11 @@ def require_allocation(run_root, stage):
         if r["kind"] == "allocated_gpu_hours"
         and r.get("identity", {}).get("allocation_key") == record["allocation_key"]
     ]
-    if len(bound) != 1 or bound[0]["amount"] != expected:
-        raise PermissionError("Allocation budget was not reserved before submission")
+    time_accounting_status = (
+        "MATCHED"
+        if len(bound) == 1 and bound[0]["amount"] == expected
+        else "MISSING_OR_MISMATCHED_ESTIMATE"
+    )
     result = subprocess.run(
         ["scontrol", "show", "job", job_id, "-o"],
         text=True,
@@ -105,18 +134,15 @@ def require_allocation(run_root, stage):
         raise PermissionError("Live scheduler allocation is not verified running")
     if fields.get("JobName") != "mmcore-" + record["allocation_key"]:
         raise PermissionError("Scheduler job name mismatch")
-    if "pro6000" not in fields.get("TresPerNode", "").lower():
-        raise PermissionError("Scheduler allocation is not registered Pro 6000")
+    live_resources = verify_live_gpu_resources(fields, record["gpus"])
     wall = fields.get("TimeLimit", "")
     days, sep, clock = wall.partition("-")
     if not sep:
         days, clock = "0", days
     parts = clock.split(":")
-    if len(parts) != 3 or not all(part.isdigit() for part in [days, *parts]):
-        raise PermissionError("Unknown scheduler wall-time format")
-    live_seconds = int(days) * 86400 + int(parts[0]) * 3600 + int(parts[1]) * 60 + int(parts[2])
-    if live_seconds > record["seconds"]:
-        raise PermissionError("Scheduler time limit exceeds charged envelope")
+    live_seconds = None
+    if len(parts) == 3 and all(part.isdigit() for part in [days, *parts]):
+        live_seconds = int(days) * 86400 + int(parts[0]) * 3600 + int(parts[1]) * 60 + int(parts[2])
     evidence = root / f"accounting/allocation_checks/{job_id}_{os.getpid()}.json"
     atomic_json(
         evidence,
@@ -125,6 +151,13 @@ def require_allocation(run_root, stage):
             "job_id": job_id,
             "stage": stage,
             "scheduler_output": result.stdout,
+            "live_resources": live_resources,
+            "scheduler_time_limit": wall,
+            "scheduler_time_limit_seconds": live_seconds,
+            "gpu_hours_are_execution_gate": False,
+            "time_accounting_status": time_accounting_status,
+            "expected_allocation_time_estimate": expected,
+            "recorded_allocation_time_estimates": bound,
             "reservation": record,
         },
     )

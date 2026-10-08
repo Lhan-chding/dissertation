@@ -1,8 +1,9 @@
 # MM-CORE F1 多模态审计
 
 执行依据是 [用户提供的 F1 契约](design/CODEX_FINAL_PLAN_MM_AUDIT_ENGINE_zh.md)。
-原包逐文件保留，其 `MANIFEST.json` 可复核输入。用户本轮指定最多五张 Pro 6000，
-覆盖原文单卡并发限制；累计 GPU 小时仍为 8，其余生成、更新、前向及阶段上限不变。
+原包逐文件保留，其 `MANIFEST.json` 可复核输入。本轮用户覆盖条件见
+[执行修订](USER_AMENDMENT_20261008_zh.md)：使用 Qwen/Qwen3.5-9B，最多五张 Pro 6000，
+GPU 小时只记账，没有累计上限，也不作为执行或通过门槛；其余生成、更新、前向及阶段上限不变。
 五卡是并发上限，不代表现场一定可同时分配五卡。所有账户和调度限制照常生效。
 
 本轮只允许资产核验、CPU 契约/生成器、MM-AUDIT，以及登记触发的公共桥接与
@@ -28,8 +29,8 @@ CPU 检查可运行 `python -m pytest tests/mm_core`；测试成功不能代替�
 3. `processor_preflight.py` 在真实 processor 上执行 CPU 图像处理，保存实际 tensor、
    grid/token 数、重建图像与处理后去重证据；再完成处理后图像的视觉审查。
 4. 环境、模型文件、数据和资源清单全部真实填妥后，`freeze_audit.py` 产生唯一冻结。
-5. 先登记不可变阶段分片计划，再为精确 Slurm allocation 预留设备数×整个请求时限。
-   加载、空闲和失败都包含在预留中；只有终态调度证据可以释放并发名额。
+5. 先登记不可变阶段分片计划，再为精确 Slurm allocation 记录设备数×请求时限估计。
+   加载、空闲和失败均计入实际分配时间；这些小时数不阻止执行。只有终态调度证据可以释放并发名额。
 6. `run_format_check.py --stage FORMAT_BASE_TEST` 在 FORMAT_TUNE 执行 K=4。
    汇总器核验全部样本槽位、原始记录哈希和同一模型身份，不能只信报告中的 PASS。
 7. 只有真实格式遵从不足才登记一次 `BRIDGE_TRIGGER` 并运行 16 步短 SFT。
@@ -52,7 +53,7 @@ CPU 检查可运行 `python -m pytest tests/mm_core`；测试成功不能代替�
 S 在正确读数上记 missing；跨提示量包含同提示噪声对照，允许负差异估计。
 CPU 合成验证、实际模型测量、训练接口恢复与科学结论分别报告。
 
-接口核对来源为 [Qwen 官方模型卡](https://huggingface.co/Qwen/Qwen2.5-VL-3B-Instruct)、
-[Transformers Qwen2.5-VL 文档](https://huggingface.co/docs/transformers/en/model_doc/qwen2_5_vl)
+接口核对来源为 [Qwen 官方模型卡](https://huggingface.co/Qwen/Qwen3.5-9B)、
+[Transformers Qwen3.5 文档](https://huggingface.co/docs/transformers/model_doc/qwen3_5)
 和 [TRL GRPO 文档](https://huggingface.co/docs/trl/grpo_trainer)。这些资料只用于接口核对；
 本次 native GRPO 的 reward、归一化、clipping、KL、优化器等由 ENGINE 冻结完整展开。
