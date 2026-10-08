@@ -1,0 +1,146 @@
+{
+  "H": 32,
+  "Hp": 32,
+  "KL_reference_policy": "one_frozen_copy_of_each_state_shared_by_its_actions",
+  "actual_cost_envelope": {
+    "future_cost_extrapolation": "NOT_CERTIFIED",
+    "gpu_hours_policy": "ACCOUNTING_ONLY",
+    "max_allocated_gpu_hours": null,
+    "physical_counts_and_allocation_estimates": {
+      "allocated_gpu_hours": 24.0,
+      "completion_attempts": 2433,
+      "extra_forward_sequences": 4865,
+      "physical_optimizer_updates": 8
+    },
+    "unknown_allocations": [],
+    "verified_allocated_gpu_hours": 1.9241666666666666
+  },
+  "authorized": false,
+  "data_pool_hashes": null,
+  "factual_addendum": {
+    "changed_original_fields": [
+      "scorer_hash",
+      "generator_contract",
+      "open_fields"
+    ],
+    "engine_limitation": "All 16 reward groups had zero contrast and all 8 gradient norms were zero; nonzero-parameter-update recovery remains unvalidated.",
+    "new_experiments": 0,
+    "original_report_archive_unchanged": true,
+    "pre_inference_freeze_sha256": "92a6a3ee30da2562c861ccd0b59ca16d3690e56e5f5473ddc46eef28d27ecd2a",
+    "runtime_commit": "863cac0a52c66131a0f9e030fe7a51cd2a638b5d",
+    "source_proposal_sha256": "ac5bf08dfae062fe274e41d04101543eb46a5dfd8c20a19f4f4116076ee359f9",
+    "version": "factfill-v1-20261009"
+  },
+  "future_seed_matrix": null,
+  "generator_contract": {
+    "axis_inclusive": [
+      0,
+      100
+    ],
+    "chart_types": [
+      "grouped_bar",
+      "line"
+    ],
+    "contracts_sha256": "1e3fe2d9c7a36256a38099721669470882bc56f454dc10868349c55fbdadb965",
+    "delta": "1",
+    "dev_confirmation": null,
+    "dev_note": "Audit prototype facts do not freeze future data, reward precision, or numerical domain; independent new roots and separate review are required.",
+    "generator_sha256": "fd188556668a165498032544fd90316c515e04b449fa44f80b509f8dc505984d",
+    "numeric_domain_inclusive": [
+      10,
+      89
+    ],
+    "numeric_factor": {
+      "definition": "base_10_units_digits; all_three_operations_share_one_level_within_each_numeric_root",
+      "high": "sum_carry_and_difference_borrow_and_range_borrow",
+      "low": "no_carry_or_borrow"
+    },
+    "operands": {
+      "difference": 2,
+      "range": 3,
+      "sum": 2
+    },
+    "ordered_difference": "first_value_greater_than_second",
+    "scope": "MEASURED_AUDIT_PROTOTYPE_ONLY",
+    "scoring": {
+      "diagnostic_tolerance": "absolute_error_less_than_or_equal_to_delta_over_2",
+      "primary": "exact_rational_equality",
+      "tolerance_applies_to": [
+        "each_reading",
+        "answer_vs_true_result",
+        "answer_vs_result_of_model_readings"
+      ]
+    },
+    "target_minimum_pairwise_gap": 5,
+    "units": "count",
+    "version": "mm-core-f1-chart-v1",
+    "visual_factor": {
+      "high_series": 4,
+      "low_series": 2,
+      "shared_complete_numeric_source": true
+    }
+  },
+  "integer_remainder_policy": null,
+  "logical_optimizer_updates": 1088,
+  "model_common_start_hash": "921fb7dbfce93fbcf3ab0ccc4fe63bdc41269e7b6ce8f8d6fc315c042fee5511",
+  "open_fields": [
+    "generator_contract.dev_confirmation",
+    "preparation_beta",
+    "future_seed_matrix",
+    "data_pool_hashes",
+    "training_recipe_expanded",
+    "integer_remainder_policy",
+    "panel_root_and_question_counts",
+    "review_result",
+    "weights_and_utility.w/v/lambda/epsilon/eta/cost_unit",
+    "new_independent_data_roots",
+    "independent_user_authorization"
+  ],
+  "panel_root_and_question_counts": null,
+  "plan_id": "MM-CORE-F1-20261008",
+  "prediction_model_and_uncertainty_calibration": "NOT_FROZEN",
+  "preparation_beta": null,
+  "preparation_paths": 4,
+  "processor_hash": "58e5eaeaa5298aa79fc4d27f7c3b9553e720c85320cfa86286a3ab46773d8afd",
+  "protocol_hash": "3d4ed7681485e75973ec0af3dfed4d42a0b79921f45e886fb7aa1c8ca0277e52",
+  "quota_table": {
+    "a0": [
+      "1/4",
+      "1/4",
+      "1/4",
+      "1/4"
+    ],
+    "aC": [
+      "1/8",
+      "1/8",
+      "3/8",
+      "3/8"
+    ],
+    "aP": [
+      "1/8",
+      "3/8",
+      "1/8",
+      "3/8"
+    ]
+  },
+  "response_paths": 30,
+  "review_readiness": "READY_WITH_OPEN_DEV_FIELDS",
+  "review_result": null,
+  "scorer_hash": "d7b14f9669660199b7306eb8652e17c9d30a426186fba66e7972c69a111cf409",
+  "states": 5,
+  "status": "NOT_RUN_REQUIRES_SEPARATE_REVIEW",
+  "training_recipe_expanded": null,
+  "weights_and_utility": {
+    "anchor": "initial_state",
+    "cost_unit": null,
+    "epsilon": null,
+    "eta": null,
+    "lambda": null,
+    "no_train": {
+      "absolute_delta": 0,
+      "updates": 0
+    },
+    "v": null,
+    "w": null
+  }
+}
