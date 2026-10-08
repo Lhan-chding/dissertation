@@ -88,6 +88,7 @@ def main():
         submit = [
             "sbatch",
             "--hold",
+            "--no-requeue",
             "--parsable",
             "--account",
             args.account,
