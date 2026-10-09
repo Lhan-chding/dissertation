@@ -68,6 +68,11 @@ def main():
         action="store_true",
         help="Explicitly resume STOP_REQUESTED paths after the STOP file is removed",
     )
+    parser.add_argument(
+        "--resume-repaired-common-start",
+        action="store_true",
+        help="One-shot authenticated pre-bridge repair transition; submits no jobs",
+    )
     parser.add_argument("--poll-seconds", type=int, default=30)
     parser.add_argument(
         "--controller-requeue-on-lease",
@@ -75,6 +80,12 @@ def main():
         help="Continue this CPU controller JobID on USR1/TERM; requires Slurm --requeue",
     )
     args = parser.parse_args()
+    if args.resume_repaired_common_start and (
+        args.watch or args.resume_stopped or args.controller_requeue_on_lease
+    ):
+        parser.error(
+            "resume-repaired-common-start is one-shot and cannot combine with watch/resume"
+        )
     if not 5 <= args.poll_seconds <= 60:
         parser.error("poll-seconds must be between 5 and 60")
     scheduler = Scheduler(
@@ -100,6 +111,11 @@ def main():
             previous_handlers[signum] = signal.signal(signum, mark_boundary)
     with process_lease(args.run_root / "orchestration/controller_process.lock"):
         try:
+            if args.resume_repaired_common_start:
+                print(
+                    json.dumps(scheduler.resume_repaired_common_start(), sort_keys=True), flush=True
+                )
+                return 0
             if args.resume_stopped:
                 scheduler.resume_stopped()
             return run_controller(

@@ -1,0 +1,78 @@
+{
+  "timestamp_utc": "2026-10-09T13:33:18.661999+00:00",
+  "status": "PASS",
+  "checks": [
+    {
+      "check": "pytest",
+      "command": [
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "--import-mode=importlib",
+        "tests/sr_f1",
+        "tests/mm_dev/test_cached_teacher_forcing.py",
+        "tests/mm_core/test_training.py",
+        "docs/sr_f1/package/tests"
+      ],
+      "returncode": 0,
+      "output": "........................................................................ [ 26%]\n..................................................................... [ 51%]\n........................................................................ [ 77%]\n...............................................................          [100%]\n276 passed, 3 subtests passed in 14.23s\n"
+    },
+    {
+      "check": "ruff",
+      "command": [
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/ruff",
+        "check",
+        "src/sr_f1",
+        "scripts/sr_f1",
+        "tests/sr_f1"
+      ],
+      "returncode": 0,
+      "output": "All checks passed!\n"
+    },
+    {
+      "check": "format",
+      "command": [
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/ruff",
+        "format",
+        "--check",
+        "src/sr_f1",
+        "scripts/sr_f1",
+        "tests/sr_f1"
+      ],
+      "returncode": 0,
+      "output": "32 files already formatted\n"
+    },
+    {
+      "check": "shell",
+      "command": [
+        "bash",
+        "-n",
+        "scripts/sr_f1/controller.sbatch"
+      ],
+      "returncode": 0,
+      "output": ""
+    },
+    {
+      "check": "package",
+      "command": [
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python",
+        "docs/sr_f1/package/verify_package.py"
+      ],
+      "returncode": 0,
+      "output": "{\n  \"checked_files\": 76,\n  \"mismatches\": [],\n  \"model_training_verified\": false\n}\n"
+    },
+    {
+      "check": "diff",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "returncode": 0,
+      "output": ""
+    }
+  ],
+  "native_cpu_review": "PENDING",
+  "repaired_gpu_execution": "NOT_STARTED"
+}

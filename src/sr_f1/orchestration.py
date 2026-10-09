@@ -726,11 +726,22 @@ class Scheduler:
         self.verify_execution(
             self.plan, self.root, require_engine=spec["phase"] in {"S3", "S4", "S5", "S6"}
         )
+        repair_resume = None
         if task["status"] == "RETRYABLE":
-            require(
-                self._marker_valid(task_id, task["attempts"][-1], checkpoint=True),
-                "RESUME_CHECKPOINT_REQUIRED",
-            )
+            if task_id == "COMMON_START" and not task.get("resume_checkpoint"):
+                repair_resume = self.state.get("common_start_repair_resume")
+                require(repair_resume, "RESUME_CHECKPOINT_OR_EXPLICIT_REPAIR_REQUIRED")
+                require(not repair_resume.get("consumed_by_attempt_id"), "REPAIR_ALREADY_CONSUMED")
+                verified, _ = self._verify_repaired_common_start(expected_status="RETRYABLE")
+                require(
+                    all(repair_resume.get(key) == value for key, value in verified.items()),
+                    "REPAIR_RESUME_AUTHORIZATION_CHANGED",
+                )
+            else:
+                require(
+                    self._marker_valid(task_id, task["attempts"][-1], checkpoint=True),
+                    "RESUME_CHECKPOINT_REQUIRED",
+                )
         if not self._capacity_available(task_id):
             return False
         attempt_id = f"{task_id}_attempt{len(task['attempts']):04d}"
@@ -745,6 +756,15 @@ class Scheduler:
             "comment": f"srf1:{prefix}:{attempt_id}",
             "manifest_path": f"orchestration/attempts/{attempt_id}.json",
         }
+        if repair_resume is not None:
+            require(
+                attempt_id == repair_resume["permitted_next_attempt_id"],
+                "REPAIR_NEXT_ATTEMPT_ID_CHANGED",
+            )
+            attempt["technical_repair_resume"] = {
+                key: repair_resume[key]
+                for key in ("repair_id", "repair_sha256", "review_sha256", "failed_attempt_id")
+            }
         worker = [
             str(self.python),
             str(self.code_root / "scripts/sr_f1/run_worker.py"),
@@ -826,6 +846,8 @@ class Scheduler:
         )
         task["attempts"].append(attempt)
         task["status"] = "SUBMITTING"
+        if repair_resume is not None:
+            repair_resume["consumed_by_attempt_id"] = attempt_id
         self._save("SUBMISSION_INTENT_DURABLE", task_id=task_id, attempt_id=attempt_id)
         try:
             receipt = self.backend.submit(command)
@@ -959,6 +981,175 @@ class Scheduler:
             self._phase()
             self._save("EXPLICIT_STOPPED_PATH_RESUME", task_ids=resumed)
             return resumed
+
+    def _verify_repaired_common_start(self, *, expected_status):
+        """Authenticate the narrowly scoped pre-bridge repair, without clearing history."""
+        from .format_review import verify_format_review
+        from .freeze import verify_technical_repair
+
+        root, task = self.root, self.state["tasks"]["COMMON_START"]
+        require(not (root / "STOP").exists(), "STOP_PREVENTS_TECHNICAL_REPAIR_RESUME")
+        require(task["status"] == expected_status, "COMMON_START_NOT_REPAIR_ELIGIBLE")
+        require(len(task["attempts"]) == 1, "REPAIR_REQUIRES_ORIGINAL_SINGLE_ATTEMPT")
+        attempt = task["attempts"][0]
+        require(
+            attempt["attempt_id"] == "COMMON_START_attempt0000"
+            and attempt["status"] == "FAILED"
+            and attempt.get("accounting", {}).get("terminal_state") == "FAILED"
+            and attempt["accounting"].get("exit_code") == "1:0",
+            "ORIGINAL_COMMON_START_FAILURE_NOT_AUTHENTICATED",
+        )
+        require(
+            all(
+                item["status"] == "WAITING" and not item["attempts"]
+                for key, item in self.state["tasks"].items()
+                if key != "COMMON_START"
+            ),
+            "REPAIR_FORBIDDEN_AFTER_DOWNSTREAM_WORK",
+        )
+        require(not task.get("resume_checkpoint"), "REPAIR_CANNOT_REPLACE_FULL_STATE_CONTINUATION")
+        forbidden = [
+            "COMMON_START.json",
+            "states/SRF1_COMMON_START",
+            "engineering/bridge",
+            "engineering/engine",
+            "orchestration/completions/COMMON_START.json",
+            *[
+                relative
+                for row in read_json(root / "manifests/RUN_MATRIX.json")
+                for relative in ("training/" + row["run_id"], "states/" + row["run_id"])
+            ],
+        ]
+        for relative in forbidden:
+            path = contained(root, relative)
+            require(
+                not path.exists() or (path.is_dir() and not any(path.iterdir())),
+                "REPAIR_FORBIDDEN_EXISTING_PROGRESS:" + relative,
+            )
+        for ledger in (root / "accounting").glob("*.jsonl"):
+            for line in ledger.read_text().splitlines():
+                row = json.loads(line)
+                require(
+                    not (row.get("kind") == "physical_optimizer_updates" and row.get("count", 0)),
+                    "REPAIR_FORBIDDEN_PRIOR_OPTIMIZER_UPDATE",
+                )
+
+        repair = verify_technical_repair(root)
+        review = verify_format_review(root)
+        freeze_hash = file_hash(root / "EXECUTION_FREEZE.json")
+        require(
+            repair["original_freeze_sha256"]
+            == review["freeze_sha256"]
+            == self.registration["freeze_sha256"]
+            == freeze_hash
+            and repair["repair_sha256"] == file_hash(root / "TECHNICAL_REPAIR.json")
+            and repair["review_sha256"] == file_hash(root / "FORMAT_TECHNICAL_REVIEW.json"),
+            "REPAIR_REVIEW_IDENTITY_MISMATCH",
+        )
+        require(
+            review["status"] == "VERIFIED_PROTOCOL_NONADHERENCE"
+            and review.get("permit_bridge") is True
+            and review.get("prior_bridge_executed") is False
+            and review.get("model_calls") == 0
+            and review.get("counts")
+            == {
+                "responses": 256,
+                "covered": 93,
+                "truncated": 22,
+                "untruncated": 234,
+                "untruncated_covered": 93,
+            }
+            and 0 <= review["upper_bound_coverage_if_all_truncated_valid"] < 0.95
+            and review.get("checks")
+            and all(value is True for value in review["checks"].values()),
+            "FORMAT_REVIEW_DOES_NOT_AUTHORIZE_ORIGINAL_ONE_BRIDGE",
+        )
+        archived = "technical_incidents/format_guard_20261009/FORMAT_AND_BRIDGE_RECEIPT.json"
+        blocked_path = root / "FORMAT_AND_BRIDGE_RECEIPT.json"
+        archived_hash = review["artifact_hashes"][archived]
+        require(
+            file_hash(contained(root, archived)) == file_hash(blocked_path) == archived_hash,
+            "ORIGINAL_BLOCKED_RECEIPT_CHANGED",
+        )
+        blocked = read_json(blocked_path)
+        require(
+            blocked.get("status") == "PROTOCOL_BLOCKED"
+            and blocked.get("reason") == "FORMAT_TRUNCATION_REQUIRES_TECHNICAL_REVIEW"
+            and blocked.get("bridge_executed") is False,
+            "BLOCKED_RECEIPT_OUTSIDE_AUTHORIZED_REPAIR",
+        )
+        failure_relative = f"orchestration/failures/{attempt['attempt_id']}.json"
+        failure_path = contained(root, failure_relative)
+        failure = read_json(failure_path)
+        require(
+            failure.get("plan_id") == PLAN_ID
+            and failure.get("registration_hash") == digest(self.registration)
+            and failure.get("task_id") == "COMMON_START"
+            and failure.get("attempt_id") == attempt["attempt_id"]
+            and failure.get("status") == "TECHNICAL_FAILED"
+            and failure.get("error") == task.get("blocker"),
+            "ORIGINAL_FAILURE_MARKER_CHANGED",
+        )
+        prior = attempt["observation"]
+        require(
+            file_hash(contained(root, prior["path"])) == prior["sha256"],
+            "ORIGINAL_SCHEDULER_OBSERVATION_CHANGED",
+        )
+        prior_observation = read_json(contained(root, prior["path"]))
+        observed = self.backend.observe(attempt, self.registration["permission"])
+        for evidence in (prior_observation, observed):
+            require(not evidence["queue"], "ORIGINAL_ALLOCATION_STILL_ACTIVE")
+            require(
+                summarize_accounting(
+                    evidence["accounting"], attempt, self.registration["permission"], 1
+                )
+                == attempt["accounting"],
+                "ORIGINAL_TERMINAL_ACCOUNTING_CHANGED",
+            )
+        return {
+            "repair_id": safe_id(repair["repair_id"]),
+            "repair_sha256": repair["repair_sha256"],
+            "review_sha256": repair["review_sha256"],
+            "original_freeze_sha256": freeze_hash,
+            "registration_hash": digest(self.registration),
+            "failed_attempt_id": attempt["attempt_id"],
+            "failed_job_id": attempt["job_id"],
+            "original_attempt_sha256": digest(attempt),
+            "original_blocker": task["blocker"],
+            "failure_marker_path": failure_relative,
+            "failure_marker_sha256": file_hash(failure_path),
+            "original_blocked_receipt_sha256": archived_hash,
+            "permitted_next_attempt_id": "COMMON_START_attempt0001",
+        }, observed
+
+    def resume_repaired_common_start(self):
+        """One explicit pre-bridge repair; original attempts and freeze stay immutable."""
+        with (
+            process_lease(self.root.parent / ".sr_f1_project_controller.lock"),
+            process_lease(self.folder / "controller.lock"),
+            worker_lease(self.root, "COMMON_START"),
+        ):
+            self._load()
+            require(
+                not self.state.get("common_start_repair_resume"),
+                "COMMON_START_TECHNICAL_REPAIR_ALREADY_AUTHORIZED",
+            )
+            authorization, observation = self._verify_repaired_common_start(
+                expected_status="BLOCKED"
+            )
+            relative = f"orchestration/observations/technical_repair/{self.sequence + 1:08d}.json"
+            atomic_json(self.root / relative, observation, exclusive=True)
+            authorization.update(
+                authorized_at=now(),
+                reason="ORIGINAL_ANY_TRUNCATION_GUARD_OVERBROAD_AFTER_TECHNICAL_EXCLUSION",
+                scheduler_observation={"path": relative, "sha256": file_hash(self.root / relative)},
+                consumed_by_attempt_id=None,
+            )
+            self.state["common_start_repair_resume"] = authorization
+            self.state["tasks"]["COMMON_START"]["status"] = "RETRYABLE"
+            self._phase()
+            self._save("EXPLICIT_REPAIRED_COMMON_START_RESUME", authorization=authorization)
+            return copy.deepcopy(authorization)
 
     def tick(self):
         # All SR-F1 run roots in the authorized project parent use this lock.

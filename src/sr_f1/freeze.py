@@ -12,10 +12,194 @@ from mm_core.execution import atomic_json, object_hash, read_json, utc_now
 from .contract import PACKAGE, PLAN_ID, file_hash, load_config
 from .data import bounded_path, read_jsonl
 
+TECHNICAL_REPAIR_ID = "SR_F1_FORMAT_GUARD_REPAIR_20261009"
+TECHNICAL_REPAIR_ALLOWED_FILES = frozenset(
+    {
+        "src/sr_f1/freeze.py",
+        "src/sr_f1/runtime.py",
+        "src/sr_f1/format_review.py",
+        "src/sr_f1/orchestration.py",
+        "scripts/sr_f1/submit_matrix.py",
+    }
+)
+
 
 def _required(value, expected, message):
     if value != expected:
         raise PermissionError(message)
+
+
+def _checked_source_files(value, name):
+    if not isinstance(value, dict) or not value:
+        raise PermissionError(name + " source-file inventory is missing")
+    for relative, expected in value.items():
+        if (
+            not isinstance(relative, str)
+            or Path(relative).is_absolute()
+            or ".." in Path(relative).parts
+            or str(Path(relative)) != relative
+            or not isinstance(expected, str)
+            or re.fullmatch(r"[0-9a-f]{64}", expected) is None
+        ):
+            raise PermissionError(name + " source-file inventory is invalid")
+    return value
+
+
+def _preserved_source_files(snapshot):
+    """Apply the original source_identity inventory policy to the preserved copy."""
+    files = {}
+    for folder in ("src/sr_f1", "scripts/sr_f1", "src/mm_core", "src/mm_dev"):
+        for path in sorted((snapshot / folder).rglob("*")):
+            if path.is_symlink():
+                raise PermissionError("Preserved original source contains unsafe links")
+            if not path.is_file() or path.suffix not in (".py", ".sh", ".sbatch"):
+                continue
+            if not path.resolve().is_relative_to(snapshot):
+                raise PermissionError("Preserved original source contains unsafe links")
+            files[str(path.relative_to(snapshot))] = file_hash(path)
+    for name in ("pyproject.toml", "uv.lock"):
+        path = snapshot / name
+        if path.is_file():
+            if path.is_symlink():
+                raise PermissionError("Preserved original dependency identity is a symlink")
+            files[name] = file_hash(path)
+    return files
+
+
+def verify_technical_repair(root, actual_source=None):
+    """Authenticate the one scoped source amendment without rewriting the freeze.
+
+    The original model/data/processor gates remain in verify_execution. This
+    additional source gate stays valid after the one-time resume has progressed;
+    the scheduler separately enforces the before-bridge/science resume boundary.
+    """
+    from .prepare import source_identity, verify_package
+
+    root = Path(root).resolve(strict=True)
+    verify_package()
+    freeze_path = root / "EXECUTION_FREEZE.json"
+    source_path = root / "SOURCE_AND_RENDER_MANIFEST.json"
+    repair_path = root / "TECHNICAL_REPAIR.json"
+    freeze, original, repair = map(read_json, (freeze_path, source_path, repair_path))
+    _required(freeze.get("plan_id"), PLAN_ID, "Technical repair has the wrong frozen plan")
+    _required(freeze.get("status"), "FROZEN", "Technical repair requires the original freeze")
+    _required(freeze.get("run_root"), str(root), "Technical repair root differs from the freeze")
+    for key, expected in {
+        "schema_version": 1,
+        "plan_id": PLAN_ID,
+        "repair_id": TECHNICAL_REPAIR_ID,
+        "status": "AUTHORIZED_TECHNICAL_REPAIR",
+        "original_freeze_sha256": file_hash(freeze_path),
+        "original_source_manifest_sha256": file_hash(source_path),
+        "original_source_tree_sha256": freeze.get("source_tree_sha256"),
+        "original_source_commit": freeze.get("source_commit"),
+        "preserved_source_root": "code_before_format_guard_repair",
+        "scientific_contract_changes": [],
+        "source_dirty_files": [],
+    }.items():
+        _required(repair.get(key), expected, "Technical repair identity differs: " + key)
+    if not isinstance(repair.get("reason"), str) or not repair["reason"].strip():
+        raise PermissionError("Technical repair requires an explicit implementation-only reason")
+    if not re.fullmatch(r"[0-9a-f]{40}", freeze.get("source_commit") or ""):
+        raise PermissionError("Technical repair lacks the original committed source identity")
+    for relative, expected in freeze.get("artifact_hashes", {}).items():
+        _required(
+            file_hash(bounded_path(root, relative)),
+            expected,
+            "Technical repair changed an original frozen artifact: " + relative,
+        )
+    _required(
+        freeze.get("artifact_hashes", {}).get("SOURCE_AND_RENDER_MANIFEST.json"),
+        file_hash(source_path),
+        "Original source manifest is not bound to the execution freeze",
+    )
+    before = _checked_source_files(original.get("source_file_hashes"), "Original")
+    for candidate in (freeze.get("source_file_hashes"), repair.get("original_source_file_hashes")):
+        _required(candidate, before, "Technical repair substituted the original file inventory")
+    for candidate in (original.get("source_tree_sha256"), freeze.get("source_tree_sha256")):
+        _required(candidate, object_hash(before), "Original source aggregate is inconsistent")
+    for relative, expected in original["package_input_hashes"].items():
+        _required(
+            file_hash(bounded_path(root, relative)),
+            expected,
+            "Technical repair changed a registered input: " + relative,
+        )
+        _required(
+            file_hash(bounded_path(PACKAGE, relative)),
+            expected,
+            "Technical repair substituted the uploaded input contract: " + relative,
+        )
+    declared_snapshot = root / repair["preserved_source_root"]
+    snapshot = bounded_path(root, repair["preserved_source_root"])
+    if not snapshot.is_dir() or declared_snapshot.is_symlink():
+        raise PermissionError("Preserve the actual original source directory before repair")
+    _required(
+        _preserved_source_files(snapshot),
+        before,
+        "Preserved source differs from the original freeze",
+    )
+    actual = source_identity() if actual_source is None else actual_source
+    after = _checked_source_files(actual.get("source_file_hashes"), "Actual repaired")
+    _required(
+        actual.get("source_tree_sha256"), object_hash(after), "Repaired source hash is invalid"
+    )
+    _required(actual.get("source_dirty_files"), [], "Commit the technical repair before deployment")
+    if not re.fullmatch(r"[0-9a-f]{40}", actual.get("source_commit") or ""):
+        raise PermissionError("Technical repair requires its actual full clean commit identity")
+    if actual["source_commit"] == freeze["source_commit"]:
+        raise PermissionError("Changed technical source cannot retain the original commit identity")
+    for key in ("source_commit", "source_tree_sha256", "source_file_hashes"):
+        _required(repair.get(key), actual[key], "Actual repaired source differs: " + key)
+    if set(before) - set(after):
+        raise PermissionError("Technical repair cannot remove frozen source files")
+    changed = [
+        {"path": name, "before_sha256": before.get(name), "after_sha256": after[name]}
+        for name in sorted(after)
+        if before.get(name) != after[name]
+    ]
+    if not changed or any(row["path"] not in TECHNICAL_REPAIR_ALLOWED_FILES for row in changed):
+        raise PermissionError("Technical repair exceeds the explicit source-file allowlist")
+    _required(repair.get("changed_files"), changed, "Technical repair file changes are not exact")
+    review_path = root / "FORMAT_TECHNICAL_REVIEW.json"
+    _required(
+        repair.get("format_review_sha256"),
+        file_hash(review_path),
+        "Technical repair references a different FORMAT technical review",
+    )
+    review = read_json(review_path)
+    for key, expected in {
+        "plan_id": PLAN_ID,
+        "freeze_sha256": file_hash(freeze_path),
+        "status": "VERIFIED_PROTOCOL_NONADHERENCE",
+    }.items():
+        _required(review.get(key), expected, "FORMAT technical review identity differs: " + key)
+    # Imported only after the repair module's bytes, original freeze and review
+    # identity have been checked; no circular module import or scientific state read.
+    from .format_review import verify_format_review
+
+    verify_format_review(root)
+    return {
+        "status": "VERIFIED_TECHNICAL_REPAIR",
+        "repair_id": TECHNICAL_REPAIR_ID,
+        "repair_sha256": file_hash(repair_path),
+        "review_sha256": file_hash(review_path),
+        "original_freeze_sha256": file_hash(freeze_path),
+        "source_commit": actual["source_commit"],
+        "source_tree_sha256": actual["source_tree_sha256"],
+        "changed_files": changed,
+    }
+
+
+def _verify_execution_source(root, original_source, actual_source=None):
+    from .prepare import source_identity
+
+    actual = source_identity() if actual_source is None else actual_source
+    files = _checked_source_files(actual.get("source_file_hashes"), "Actual")
+    _required(actual.get("source_tree_sha256"), object_hash(files), "Actual source hash is invalid")
+    if original_source.get("source_tree_sha256") == actual.get("source_tree_sha256"):
+        _required(original_source.get("source_file_hashes"), files, "Original source files differ")
+        return None
+    return verify_technical_repair(root, actual_source=actual)
 
 
 def verify_engine_receipt(root):
@@ -103,7 +287,7 @@ def verify_engine_receipt(root):
 
 def verify_execution(plan, root, require_engine=False):
     """Verify actual artifacts before GPU work, not just a self-reported PASS."""
-    from .prepare import BOLD_HASH, FONT_HASH, source_identity, verify_package
+    from .prepare import BOLD_HASH, FONT_HASH, verify_package
 
     root = Path(root).resolve(strict=True)
     if isinstance(plan, (str, Path)):
@@ -140,11 +324,7 @@ def verify_execution(plan, root, require_engine=False):
         raise PermissionError("Freeze lacks the complete CPU evidence chain")
     source = read_json(root / "SOURCE_AND_RENDER_MANIFEST.json")
     _required(source.get("status"), "CPU_VERIFIED", "Source/render preparation incomplete")
-    _required(
-        source.get("source_tree_sha256"),
-        source_identity()["source_tree_sha256"],
-        "Executing source bytes differ from frozen source",
-    )
+    _verify_execution_source(root, source)
     for relative, expected in source["package_input_hashes"].items():
         if file_hash(bounded_path(root, relative)) != expected:
             raise PermissionError("Registered copied input changed: " + relative)

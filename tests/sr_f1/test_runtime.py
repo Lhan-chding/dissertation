@@ -103,3 +103,78 @@ def test_registered_sampling_recipe_has_no_warpers_and_exact_lengths():
         assert r["max_new_tokens"] == limit and r["output_logits"] and r["output_scores"]
     with pytest.raises(ValueError):
         generation_recipe(max_new_tokens=192)
+
+
+def format_repair_fixture(tmp_path, monkeypatch):
+    from sr_f1 import format_review, freeze, runtime
+
+    blocked = dict(
+        status="PROTOCOL_BLOCKED",
+        reason="FORMAT_TRUNCATION_REQUIRES_TECHNICAL_REVIEW",
+        bridge_executed=False,
+    )
+    archived = "technical_incidents/format_guard_20261009/FORMAT_AND_BRIDGE_RECEIPT.json"
+    runtime.atomic_json(tmp_path / "FORMAT_AND_BRIDGE_RECEIPT.json", blocked)
+    runtime.atomic_json(tmp_path / archived, blocked)
+    review = dict(artifact_hashes={archived: runtime.file_hash(tmp_path / archived)})
+    monkeypatch.setattr(format_review, "verify_format_review", lambda root: review)
+    monkeypatch.setattr(
+        freeze,
+        "verify_technical_repair",
+        lambda root: dict(repair_sha256="repair", review_sha256="review"),
+    )
+    return runtime, archived
+
+
+def test_format_repair_retains_original_failure_before_new_outcome(tmp_path, monkeypatch):
+    runtime, archived = format_repair_fixture(tmp_path, monkeypatch)
+    original = (tmp_path / "FORMAT_AND_BRIDGE_RECEIPT.json").read_bytes()
+    runtime.activate_reviewed_format_repair(tmp_path)
+    assert not (tmp_path / "FORMAT_AND_BRIDGE_RECEIPT.json").exists()
+    assert (tmp_path / archived).read_bytes() == original
+    receipt = runtime.read_json(tmp_path / "FORMAT_REPAIR_ACTIVATION.json")
+    assert receipt["original_format_records_reused"]
+    assert receipt["new_format_before_generations"] == 0
+
+
+@pytest.mark.parametrize("contamination", ["changed_block", "bridge", "science"])
+def test_format_repair_cannot_remove_changed_failure_or_restart_training(
+    tmp_path, monkeypatch, contamination
+):
+    runtime, _ = format_repair_fixture(tmp_path, monkeypatch)
+    if contamination == "changed_block":
+        runtime.atomic_json(
+            tmp_path / "FORMAT_AND_BRIDGE_RECEIPT.json",
+            dict(reason="ONE_BRIDGE_CONFIRMATION_BELOW_95_PERCENT", bridge_executed=True),
+        )
+    else:
+        relative = (
+            "engineering/bridge/steps/01.json"
+            if contamination == "bridge"
+            else "training/x/01.json"
+        )
+        runtime.atomic_json(tmp_path / relative, {"step": 1})
+    with pytest.raises(PermissionError):
+        runtime.activate_reviewed_format_repair(tmp_path)
+    assert (tmp_path / "FORMAT_AND_BRIDGE_RECEIPT.json").exists()
+    assert not (tmp_path / "FORMAT_REPAIR_ACTIVATION.json").exists()
+
+
+def test_bridge_format_identity_names_updated_weights_before_confirmation(monkeypatch, tmp_path):
+    from sr_f1 import runtime
+
+    obj = SimpleNamespace(identity=dict(zero_output_exact=True, base_logits_hash="zero-logits"))
+
+    def publish(root, actual, model_id, *, extra):
+        assert root == tmp_path and actual is obj and model_id == "SRF1_FORMAT_BRIDGED"
+        assert "zero_output_exact" not in actual.identity
+        assert "base_logits_hash" not in actual.identity
+        assert extra["bridge_logical_updates"] == 16
+        assert extra["zero_output_initialization"] == "zero-policy"
+        return dict(model_id=model_id, **extra)
+
+    monkeypatch.setattr(runtime, "publish_adapter", publish)
+    result = runtime.publish_bridge_format_identity(
+        tmp_path, obj, {"trainable_state_hash": "zero-policy"}, {"logical_updates": 16}
+    )
+    assert result["bridge_executed"] is True

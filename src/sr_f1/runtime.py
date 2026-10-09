@@ -760,6 +760,67 @@ def format_panel(runtime, root, pool, label, boundary=None):
     return receipt
 
 
+def activate_reviewed_format_repair(root):
+    """Retain the original failure and authorize only its audited guard repair."""
+    from .format_review import verify_format_review
+    from .freeze import verify_technical_repair
+
+    root = Path(root)
+    repair = verify_technical_repair(root)
+    review = verify_format_review(root)
+    blocked = root / "FORMAT_AND_BRIDGE_RECEIPT.json"
+    archived_name = "technical_incidents/format_guard_20261009/FORMAT_AND_BRIDGE_RECEIPT.json"
+    archived = bounded_path(root, archived_name)
+    if (
+        read_json(blocked).get("reason") != "FORMAT_TRUNCATION_REQUIRES_TECHNICAL_REVIEW"
+        or read_json(blocked).get("bridge_executed") is not False
+        or file_hash(blocked) != review["artifact_hashes"].get(archived_name)
+        or blocked.read_bytes() != archived.read_bytes()
+    ):
+        raise PermissionError("Only the preserved, reviewed pre-bridge block can be resumed")
+    if (
+        (root / "COMMON_START.json").exists()
+        or any((root / "engineering/bridge").rglob("*.json"))
+        or any((root / "training").rglob("*.json"))
+    ):
+        raise PermissionError("Format guard repair cannot restart existing training")
+    receipt = dict(
+        plan_id=PLAN_ID,
+        status="ACTIVATED",
+        repair_sha256=repair["repair_sha256"],
+        review_sha256=repair["review_sha256"],
+        retained_block_path=archived_name,
+        retained_block_sha256=file_hash(archived),
+        original_format_records_reused=True,
+        new_format_before_generations=0,
+    )
+    marker = root / "FORMAT_REPAIR_ACTIVATION.json"
+    if marker.exists():
+        if read_json(marker) != receipt:
+            raise PermissionError("Existing format repair activation differs")
+    else:
+        atomic_json(marker, receipt, exclusive=True)
+    # The original bytes are already durably retained and authenticated above.
+    # Removing only this duplicate permits the eventual new outcome receipt.
+    blocked.unlink()
+
+
+def publish_bridge_format_identity(root, runtime, zero, bridge):
+    """Name the actual bridged weights before either post-bridge FORMAT panel."""
+    runtime.identity.pop("zero_output_exact", None)
+    runtime.identity.pop("base_logits_hash", None)
+    return publish_adapter(
+        root,
+        runtime,
+        "SRF1_FORMAT_BRIDGED",
+        extra={
+            "bridge_executed": True,
+            "bridge_logical_updates": bridge["logical_updates"],
+            "zero_output_initialization": zero["trainable_state_hash"],
+        },
+    )
+
+
 def _establish_common_start(plan, root, boundary):
     """Zero-output init, format-only trigger, at most one fixed shared bridge."""
     import gc
@@ -776,7 +837,13 @@ def _establish_common_start(plan, root, boundary):
         if result["status"] == "COMPLETE":
             verified_adapter(root, "SRF1_COMMON_START")
             return result
-        raise PermissionError("Protocol is blocked; repeated bridge is forbidden")
+        if (
+            result.get("reason") == "FORMAT_TRUNCATION_REQUIRES_TECHNICAL_REVIEW"
+            and result.get("bridge_executed") is False
+        ):
+            activate_reviewed_format_repair(root)
+        else:
+            raise PermissionError("Protocol is blocked; repeated bridge is forbidden")
     runtime = load_runtime(plan, root, account=runtime_account(root, "COMMON_START"))
     inputs, tasks = load_inputs(root), load_tasks(root)
     zero_path = root / "COMMON_ZERO_LORA.json"
@@ -827,15 +894,28 @@ def _establish_common_start(plan, root, boundary):
     confirmation, repeated = None, None
     if initial["coverage"] < 0.95:
         if initial["truncated"]:
-            blocked = dict(
-                status="PROTOCOL_BLOCKED",
-                reason="FORMAT_TRUNCATION_REQUIRES_TECHNICAL_REVIEW",
-                format_before=initial,
-                bridge_executed=False,
-                artifacts=[str(zero_path.relative_to(root))],
-            )
-            atomic_json(final_receipt, blocked, exclusive=True)
-            return blocked
+            # Natural length failures stay in the original denominator. Only an
+            # authenticated audit excluding technical causes can qualify them
+            # as part of genuine protocol non-adherence before the one bridge.
+            from .format_review import verify_format_review
+
+            try:
+                review = verify_format_review(root)
+                counts = review["counts"]
+                if any(
+                    counts[key] != initial[key] for key in ("responses", "covered", "truncated")
+                ):
+                    raise PermissionError("Reviewed FORMAT counts differ from actual panel")
+            except (FileNotFoundError, PermissionError, ValueError, KeyError):
+                blocked = dict(
+                    status="PROTOCOL_BLOCKED",
+                    reason="FORMAT_TRUNCATION_REQUIRES_TECHNICAL_REVIEW",
+                    format_before=initial,
+                    bridge_executed=False,
+                    artifacts=[str(zero_path.relative_to(root))],
+                )
+                atomic_json(final_receipt, blocked, exclusive=True)
+                return blocked
         # Native template, parser CPU contract and image routing are separately gated.
         preflight = read_json(root / "PROCESSOR_PREFLIGHT.json")
         if preflight.get("status") not in ("PASS", "VERIFIED", "COMPLETE"):
@@ -843,6 +923,7 @@ def _establish_common_start(plan, root, boundary):
         bridge = run_common_bridge(runtime, root, plan, boundary)
         if bridge["status"] == "CHECKPOINTED":
             return bridge
+        publish_bridge_format_identity(root, runtime, zero, bridge)
         confirmation = format_panel(runtime, root, "FORMAT_CONFIRM", "confirm", boundary)
         repeated = format_panel(runtime, root, "FORMAT", "after", boundary)
         if confirmation["coverage"] < 0.95:

@@ -7,6 +7,7 @@ import os
 import tempfile
 import types
 import unittest
+from contextlib import contextmanager
 from datetime import datetime, timedelta
 from pathlib import Path
 from unittest.mock import patch
@@ -21,6 +22,7 @@ from sr_f1.orchestration import (
     controller_incarnation,
     digest,
     fail_task,
+    file_hash,
     read_json,
     request_controller_requeue,
     tasks_for,
@@ -235,6 +237,197 @@ class SchedulerTests(unittest.TestCase):
         self.engine_verified = True
         self.scheduler.tick()
         self.finish("BASELINE")
+
+    def prepare_common_repair(self):
+        self.scheduler.tick()
+        attempt = self.finish("COMMON_START", failure=True, terminal="FAILED")
+        self.backend.jobs[attempt["job_id"]]["exit_code"] = "1:0"
+        self.scheduler.tick()
+        archived = "technical_incidents/format_guard_20261009/FORMAT_AND_BRIDGE_RECEIPT.json"
+        blocked = {
+            "status": "PROTOCOL_BLOCKED",
+            "reason": "FORMAT_TRUNCATION_REQUIRES_TECHNICAL_REVIEW",
+            "bridge_executed": False,
+            "format_before": {"coverage": 93 / 256, "truncated": 22},
+        }
+        atomic_json(self.root / "FORMAT_AND_BRIDGE_RECEIPT.json", blocked)
+        atomic_json(self.root / archived, blocked)
+        self.review = {
+            "status": "VERIFIED_PROTOCOL_NONADHERENCE",
+            "permit_bridge": True,
+            "prior_bridge_executed": False,
+            "model_calls": 0,
+            "freeze_sha256": file_hash(self.root / "EXECUTION_FREEZE.json"),
+            "counts": {
+                "responses": 256,
+                "covered": 93,
+                "truncated": 22,
+                "untruncated": 234,
+                "untruncated_covered": 93,
+            },
+            "upper_bound_coverage_if_all_truncated_valid": 115 / 256,
+            "checks": {"complete_frozen_inputs": True, "nontruncated_protocol_failures": True},
+            "artifact_hashes": {archived: file_hash(self.root / archived)},
+        }
+        atomic_json(self.root / "FORMAT_TECHNICAL_REVIEW.json", self.review)
+        atomic_json(self.root / "TECHNICAL_REPAIR.json", {"repair_id": "format_guard_20261009"})
+        self.repair_auth = {
+            "repair_id": "format_guard_20261009",
+            "repair_sha256": file_hash(self.root / "TECHNICAL_REPAIR.json"),
+            "review_sha256": file_hash(self.root / "FORMAT_TECHNICAL_REVIEW.json"),
+            "original_freeze_sha256": file_hash(self.root / "EXECUTION_FREEZE.json"),
+        }
+        return copy.deepcopy(self.scheduler.state["tasks"]["COMMON_START"]["attempts"][0])
+
+    @contextmanager
+    def authenticated_repair(self):
+        # Source/raw semantic authentication is tested by their owning modules.
+        # These stubs isolate the scheduler's immutable-state transition guards.
+        with (
+            patch(
+                "sr_f1.freeze.verify_technical_repair", return_value=self.repair_auth, create=True
+            ),
+            patch.dict(
+                "sys.modules",
+                {
+                    "sr_f1.format_review": types.SimpleNamespace(
+                        verify_format_review=lambda root: read_json(
+                            root / "FORMAT_TECHNICAL_REVIEW.json"
+                        )
+                    )
+                },
+            ),
+        ):
+            yield
+
+    def test_repaired_common_transition_preserves_history_and_submits_nothing(self):
+        original = self.prepare_common_repair()
+        registry_hash = file_hash(self.root / "orchestration/REGISTRATION.json")
+        freeze_hash = file_hash(self.root / "EXECUTION_FREEZE.json")
+        journal = self.root / "orchestration/journal.jsonl"
+        original_journal = journal.read_bytes()
+        with self.authenticated_repair():
+            authorization = self.scheduler.resume_repaired_common_start()
+            with self.assertRaisesRegex(ValueError, "ALREADY_AUTHORIZED"):
+                self.scheduler.resume_repaired_common_start()
+        task = self.scheduler.state["tasks"]["COMMON_START"]
+        self.assertEqual(task["status"], "RETRYABLE")
+        self.assertEqual(task["attempts"], [original])
+        self.assertEqual(len(self.backend.jobs), 1)
+        self.assertEqual(authorization["permitted_next_attempt_id"], "COMMON_START_attempt0001")
+        self.assertEqual(file_hash(self.root / "orchestration/REGISTRATION.json"), registry_hash)
+        self.assertEqual(file_hash(self.root / "EXECUTION_FREEZE.json"), freeze_hash)
+        self.assertTrue(journal.read_bytes().startswith(original_journal))
+        self.assertEqual(
+            read_json(self.root / "FORMAT_AND_BRIDGE_RECEIPT.json")["status"], "PROTOCOL_BLOCKED"
+        )
+        self.assertTrue((self.root / authorization["failure_marker_path"]).is_file())
+
+    def test_repaired_common_consumed_once_and_unknown_submission_not_repeated(self):
+        original = self.prepare_common_repair()
+        with self.authenticated_repair():
+            self.scheduler.resume_repaired_common_start()
+            self.backend.ambiguous = True
+            self.scheduler.tick()
+            self.backend.outage = True
+            self.scheduler = self.new_scheduler()
+            self.scheduler.tick()
+            self.scheduler.tick()
+        task = self.scheduler.state["tasks"]["COMMON_START"]
+        self.assertEqual(task["status"], "UNKNOWN")
+        self.assertEqual(task["attempts"][0], original)
+        self.assertEqual(len(task["attempts"]), 2)
+        self.assertEqual(len(self.backend.jobs), 2)
+        self.assertEqual(
+            self.scheduler.state["common_start_repair_resume"]["consumed_by_attempt_id"],
+            "COMMON_START_attempt0001",
+        )
+
+    def test_repaired_common_rechecks_review_before_first_submission(self):
+        self.prepare_common_repair()
+        with self.authenticated_repair():
+            self.scheduler.resume_repaired_common_start()
+            review_path = self.root / "FORMAT_TECHNICAL_REVIEW.json"
+            original = review_path.read_bytes()
+            review_path.write_bytes(original + b"\n")
+            with self.assertRaisesRegex(ValueError, "REPAIR_REVIEW_IDENTITY"):
+                self.scheduler.tick()
+        self.assertEqual(len(self.backend.jobs), 1)
+        self.assertIsNone(
+            self.scheduler.state["common_start_repair_resume"]["consumed_by_attempt_id"]
+        )
+
+    def test_repaired_common_requires_positive_terminal_scheduler_evidence(self):
+        original = self.prepare_common_repair()
+        self.backend.jobs[original["job_id"]]["state"] = "RUNNING"
+        with self.authenticated_repair(), self.assertRaisesRegex(ValueError, "STILL_ACTIVE"):
+            self.scheduler.resume_repaired_common_start()
+        self.assertEqual(self.scheduler.state["tasks"]["COMMON_START"]["status"], "BLOCKED")
+        self.assertNotIn("common_start_repair_resume", self.scheduler.state)
+
+    def test_repaired_common_rejects_bridge_progress_or_prior_optimizer_updates(self):
+        self.prepare_common_repair()
+        for relative in (
+            "engineering/bridge/checkpoints/LATEST.json",
+            "COMMON_START.json",
+            "training/SRF1_A_s71001/RUN_MANIFEST.json",
+        ):
+            with self.subTest(relative=relative):
+                atomic_json(self.root / relative, {"prior_progress": True})
+                with (
+                    self.authenticated_repair(),
+                    self.assertRaisesRegex(ValueError, "EXISTING_PROGRESS"),
+                ):
+                    self.scheduler.resume_repaired_common_start()
+                (self.root / relative).unlink()
+                for parent in (self.root / relative).parents:
+                    if parent == self.root:
+                        break
+                    if parent.is_dir() and not any(parent.iterdir()):
+                        parent.rmdir()
+                    else:
+                        break
+        ledger = self.root / "accounting/COMMON_START.jsonl"
+        atomic_json(ledger, {"kind": "physical_optimizer_updates", "count": 1})
+        with (
+            self.authenticated_repair(),
+            self.assertRaisesRegex(ValueError, "PRIOR_OPTIMIZER_UPDATE"),
+        ):
+            self.scheduler.resume_repaired_common_start()
+        self.assertNotIn("common_start_repair_resume", self.scheduler.state)
+
+    def test_repaired_common_cli_is_one_shot_and_does_not_run_controller(self):
+        self.prepare_common_repair()
+        module_spec = importlib.util.spec_from_file_location(
+            "srf1_repair_cli_test", REPO / "scripts/sr_f1/submit_matrix.py"
+        )
+        cli = importlib.util.module_from_spec(module_spec)
+        module_spec.loader.exec_module(cli)
+        argv = [
+            "submit_matrix.py",
+            "--plan",
+            str(self.plan),
+            "--run-root",
+            str(self.root),
+            "--code-root",
+            str(REPO),
+            "--python",
+            "/usr/bin/python3",
+            "--resume-repaired-common-start",
+        ]
+        with (
+            self.authenticated_repair(),
+            patch("sys.argv", argv),
+            patch.object(cli, "Scheduler", return_value=self.scheduler),
+            patch.object(cli, "run_controller") as controller,
+            patch("builtins.print"),
+        ):
+            self.assertEqual(cli.main(), 0)
+            controller.assert_not_called()
+        self.assertEqual(len(self.backend.jobs), 1)
+        with patch("sys.argv", [*argv, "--watch"]), self.assertRaises(SystemExit) as caught:
+            cli.main()
+        self.assertEqual(caught.exception.code, 2)
 
     def test_fixed_matrix_and_common_start_gate(self):
         tasks = tasks_for(self.matrix)
