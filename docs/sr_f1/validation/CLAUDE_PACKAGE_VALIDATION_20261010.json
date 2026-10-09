@@ -1,0 +1,29 @@
+{
+  "status": "PASS",
+  "archive": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/sr-f1-20261009/reports/SR_F1_CLAUDE_FACTS_AND_CODE_20261010.zip",
+  "sha256": "39a09d0506e29ec9d5f9b96e10e958018435d4709cbe9dc54832c7fc8351e9b8",
+  "bytes": 15125712,
+  "members": 1504,
+  "uncompressed_bytes": 79999665,
+  "checks": [
+    "CRC and read to EOF",
+    "safe unique relative paths",
+    "all payload SHA256",
+    "manifest and checksum consistency",
+    "deployed source byte identity",
+    "server capture byte identity",
+    "recipient document relative links",
+    "credential pattern scan"
+  ],
+  "raw_counts": {
+    "before": 256,
+    "confirm": 256,
+    "after": 113
+  },
+  "standalone_retraining_bundle": false,
+  "payload_files": 1502,
+  "manifest_and_checksum_verified": true,
+  "fresh_extract_portable_verifier": "PASS",
+  "authored_documents_match_committed_sources": true,
+  "bundled_source_tests": "276 passed, 3 subtests passed"
+}
