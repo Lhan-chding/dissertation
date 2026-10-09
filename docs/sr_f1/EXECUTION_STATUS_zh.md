@@ -2,9 +2,17 @@
 
 ## SR-F1.1 修正案执行（2026-10-10）
 
-用户已授权按新方案执行，并明确选择所有科学臂及 ENGINE 的学习率为 `1e-4`。新独立根：`/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010`；当前为 `CPU_VERIFIED_QOS_SCOPE_REPAIR_IN_PROGRESS`。实现预填 token90、配平停止、严格评分与完整状态恢复身份；五臂×三种子×96步不变。新 FORMAT256 / CONFIRM512 与 ENGINE 通过后自动进入科学训练；当前尚未宣称新协议通过或训练已开始。
+实测时间：`2026-10-09T17:32:33+00:00`（新加坡时间2026-10-10 01:32:33）。这是时间点快照；实时进度以服务器注册、Slurm 和原始记录为准。
 
-[执行修正案](amendments/SR_F1_1_20261010/AMENDMENT_zh.md)、[有效配置](amendments/SR_F1_1_20261010/SR_F1_1.json)、[本地检查](validation/SR_F1_1_LOCAL_CHECKS_20261010.json)、[旧数据复算](validation/PREFILL_BASELINE_REGRESSION_20261010_zh.md)。本地完整测试 345 passed / 3 subtests passed，真实小型 CPU Qwen 生成及概率/梯度检查通过；这不替代实际 9B CUDA ENGINE。服务器已复制并逐文件校验 4409 个既有输入资产，未复制旧桥接/科学状态或回答。服务器实际源码为 `76d1afccac416027bce3646f507be5763fd5922d`，149 项部署文件哈希全部一致；服务器环境测试为 346 passed / 3 subtests passed（比此前本地全套多包含后来补齐的报告测试）。CPU 预检 196011 已完成（7分52秒，退出0），4800题、2890图和白图全部通过；新冻结 SHA-256 为 `c7cf051d3aa6fb45889324e64b08d31a008137668aff2382283e4e19f99ff2b8`。取回10项冻结证据并逐项验证哈希，4800条预填路由一致。见 [服务器完整预检](validation/SR_F1_1_SERVER_PREFLIGHT_20261010.json)。用户最新指示撤销额外账号范围上限，所有本实验 GPU 作业只用老师 QoS 并依其实际配额排队；当前正执行 [QoS 调度修订](QOS_SCOPE_REPAIR_zh.md)，仅重启本实验控制器196012，不改无关作业。原实验已发布 `PROTOCOL_BLOCKED`：before93/256、confirm100/256、after105/256；下游未执行。见 [服务器部署与旧协议终态](validation/SR_F1_1_SERVER_LAUNCH_20261010.json)。半小时自动监控已更新为本修正案。
+用户已授权按新方案执行，并选择所有科学臂及 ENGINE 学习率为 `1e-4`。新独立根为 `/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010`。目前状态 `QOS_REPAIR_VERIFIED_GPU_REGISTERED`：CPU 控制器 **196046 RUNNING**；GPU **196047 PENDING / Resources**，任务 `COMMON_START_attempt0000`，使用老师 QoS `soujanya-poria-startfund-2026-03`。新 FORMAT 和 ENGINE 尚未完成，科学训练尚未开始，TEST 仍封存。
+
+已按用户最新指示去掉额外的账号范围五卡 guard，依老师 QoS 的实际配额提交，保留未知提交预留和防重复机制；所有本实验 GPU 使用老师 QoS，CPU QoS 为 `override-limits-but-killable`。原控制器196012已确认 CANCELLED，仅本实验被维护，无关作业修改数为0。修复前新根无任何 GPU attempt，维护标记已归档并解除。服务器实际源码提交 **`023a56699a6faad7b7b2521706996b82b0c61496`** 已推送核实，151项部署文件逐项哈希一致。CPU 修复验证196045 COMPLETED / 0:0，363项测试及3项子测试通过，执行冻结和修订链校验通过。见 [QoS 恢复回执](validation/SR_F1_1_QOS_RECOVERY_20261010.json) 与 [修订说明](QOS_SCOPE_REPAIR_zh.md)。
+
+新方案的预填 token90、配平停止、严格评分与完整状态恢复身份已实现；五臂×三种子×96步不变。FORMAT256 / CONFIRM512、ENGINE 通过后，由控制器自动进入基线评价及科学训练。半小时监控为 ACTIVE，后续技术故障先保存证据、修复并测试、提交推送、部署，再核实完整状态并自动恢复。真实协议停止条件不改写为技术通过。
+
+此前CPU预检196011 COMPLETED / 0:0（7分52秒），4800题、2890图和白图全部通过，4800条预填路由一致；取回10项冻结证据并核验哈希。新冻结 SHA-256 为 `c7cf051d3aa6fb45889324e64b08d31a008137668aff2382283e4e19f99ff2b8`，本次修复未改写。见 [服务器完整预检](validation/SR_F1_1_SERVER_PREFLIGHT_20261010.json)。旧 SR-F1 为 `PROTOCOL_BLOCKED`：before93/256、confirm100/256、after105/256，下游未执行；旧桥接与旧回答完整保留且未作为新科学起点。见 [原部署与旧终态](validation/SR_F1_1_SERVER_LAUNCH_20261010.json)。
+
+方案与证据：[执行修正案](amendments/SR_F1_1_20261010/AMENDMENT_zh.md)、[有效配置](amendments/SR_F1_1_20261010/SR_F1_1.json)、[本地初始检查](validation/SR_F1_1_LOCAL_CHECKS_20261010.json)、[旧数据复算](validation/PREFILL_BASELINE_REGRESSION_20261010_zh.md)。早期测试数字及旧作业状态仅代表对应回执时点；服务器当前修复测试结果以本节为准。
 
 ## 以下为旧 SR-F1 历史快照（不代表新实验状态）
 

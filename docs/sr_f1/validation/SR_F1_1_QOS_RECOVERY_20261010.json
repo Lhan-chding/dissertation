@@ -1,0 +1,76 @@
+{
+  "checked_at": "2026-10-09T17:32:33.379276+00:00",
+  "status": "QOS_REPAIR_VERIFIED_GPU_REGISTERED",
+  "source_commit": "023a56699a6faad7b7b2521706996b82b0c61496",
+  "source_tree_sha256": "e52fdaf947668aadc513d75e0d3caa1d5ece2fd4ca077985d45fd3f72c828cbf",
+  "source_archive_sha256": "51f787af4a515d24da22755d5d4ae32de8811e3ab63dfffd6eda653305f305a1",
+  "source_archive_files": 151,
+  "qos_repair_sha256": "7d6af82c0e355c0097e21e644284299d4b2943d59ce87eeb98af468983226b31",
+  "execution_freeze_sha256": "c7cf051d3aa6fb45889324e64b08d31a008137668aff2382283e4e19f99ff2b8",
+  "scientific_protocol_unchanged": true,
+  "old_controller": "196012",
+  "old_controller_terminal": "CANCELLED",
+  "cpu_verification_job": "196045",
+  "cpu_verification_status": "COMPLETED",
+  "cpu_verification_exit_code": "0:0",
+  "server_tests": {
+    "passed": 363,
+    "subtests_passed": 3,
+    "elapsed_seconds": 43.62
+  },
+  "replacement_controller": "196046",
+  "gpu_job": "196047",
+  "gpu_task": "COMMON_START_attempt0000",
+  "gpu_status": "PENDING",
+  "gpu_pending_reason": "Resources",
+  "gpu_qos": "soujanya-poria-startfund-2026-03",
+  "capacity": {
+    "capacity_mode": "TEACHER_QOS_SCHEDULER_ONLY",
+    "max_submit_jobs_per_user": 5,
+    "qos": "soujanya-poria-startfund-2026-03",
+    "status": "AVAILABLE",
+    "submission_slots_used": 1
+  },
+  "extra_owner_wide_gpu_cap": false,
+  "registration_unchanged": true,
+  "test_sealed": true,
+  "science_started": false,
+  "unrelated_jobs_modified": 0,
+  "validated_artifact_hashes": {
+    "technical_incidents/qos_scope_20261010/SERVER_TESTS.log": "050e1e99aaa8209a1445a8a69a4531ea8e7cedb8fbb9983fb0944c8cab0e5d21",
+    "technical_incidents/qos_scope_20261010/PREFLIGHT.log": "c53b98ffeaca33a8190a572107c2d18a5fa1df5b2ceaf221ecebf67f94677eb4",
+    "technical_incidents/qos_scope_20261010/QOS_VERIFY.log": "27215647a322f6bfb56d00c4378cd8e6e4040b1be1c8d7621b23028a5fa75afe",
+    "EXECUTION_FREEZE.json": "c7cf051d3aa6fb45889324e64b08d31a008137668aff2382283e4e19f99ff2b8",
+    "AMENDMENT.json": "7a50aff34d56b3809bae2842761efd34adaf30728ed51e4d149c67a620903e67",
+    "QOS_SCOPE_REPAIR.json": "7d6af82c0e355c0097e21e644284299d4b2943d59ce87eeb98af468983226b31"
+  },
+  "authorization": "而且其实你不用设置这个上限，因为本身老师那个qos就只支持五张gpu卡同时运行",
+  "server_incident_path": "/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010/technical_incidents/qos_scope_20261010",
+  "automation": {
+    "id": "sr-f1-30",
+    "status": "ACTIVE",
+    "interval_minutes": 30,
+    "technical_fix_and_resume": true
+  },
+  "registered_gpu_attempt": {
+    "attempt_id": "COMMON_START_attempt0000",
+    "status": "ACTIVE",
+    "job_id": "196047"
+  },
+  "gpu_identity": {
+    "JobId": "196047",
+    "JobName": "srf1-9ef274c9fc6a-COMMON_START_attempt0000",
+    "QOS": "soujanya-poria-startfund-2026-03",
+    "Account": "rose",
+    "ReqTRES": "cpu=4,mem=33G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1",
+    "Command": "/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010/orchestration/attempts/COMMON_START_attempt0000.sh",
+    "StdOut": "/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010/orchestration/attempts/COMMON_START_attempt0000_196047.log"
+  },
+  "gpu_identity_snapshot_sha256": "53aa3b854719c01659b8e381bd028e7b8bad32a241d24fc5f71b099b6089d070",
+  "technical_blockers": [],
+  "scheduler_accounting": {
+    "returncode": 0,
+    "stdout": "196011|COMPLETED|00:07:52|0:0\n196011.batch|COMPLETED|00:07:52|0:0\n196011.extern|COMPLETED|00:07:52|0:0\n196012|CANCELLED by 295800338|00:12:20|0:0\n196012.batch|COMPLETED|00:13:02|0:0\n196012.extern|COMPLETED|00:12:20|0:0\n196045|COMPLETED|00:00:59|0:0\n196045.batch|COMPLETED|00:00:59|0:0\n196045.extern|COMPLETED|00:00:59|0:0\n196046|RUNNING|00:01:55|0:0\n196046.batch|RUNNING|00:01:55|0:0\n196046.extern|RUNNING|00:01:55|0:0\n196047|PENDING|00:00:00|0:0\n",
+    "stderr": ""
+  }
+}
