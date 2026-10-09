@@ -1,0 +1,2119 @@
+{
+  "checked_at": "2026-10-09T05:40:48.297847+00:00",
+  "run_root": "/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos",
+  "commands": [
+    {
+      "command": [
+        "squeue",
+        "-u",
+        "varun024",
+        "-h",
+        "-o",
+        "%i|%j|%q|%T|%M|%R"
+      ],
+      "stdout": "194795|mmdev-f2-controller|soujanya-poria-startfund-2026-03|PENDING|0:00|(Dependency)\n194796|mmdev-06581bd7a72b-ENGINE_F2_attempt0000|soujanya-poria-startfund-2026-03|RUNNING|0:19|gpu-pro6000-2\n194201|sk2g-fb30-s1|soujanya-poria-startfund-2026-03|RUNNING|4:03:48|gpu-pro6000-9\n194794|mmdev-f2-controller|soujanya-poria-startfund-2026-03|RUNNING|0:22|cpu-2\n193374|goal-base2-f_full_53k|rose|RUNNING|4:55:39|gpu-6000ada-1\n193375|arm-monitor|rose|RUNNING|15:52:19|cpu-2\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "sacct",
+        "-X",
+        "-j",
+        "194699,194700,194701,194792",
+        "-nP",
+        "--format=JobID,State,ElapsedRaw,AllocTRES%180,QOS%50,ExitCode"
+      ],
+      "stdout": "194699|COMPLETED|2068|cpu=2,mem=6G,node=1|soujanya-poria-startfund-2026-03|0:0\n194700|CANCELLED by 295800338|0||override-limits-but-killable|0:0\n194701|CANCELLED by 295800338|0||soujanya-poria-startfund-2026-03|0:0\n194792|COMPLETED|36|cpu=2,mem=6G,node=1|soujanya-poria-startfund-2026-03|0:0\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "scontrol",
+        "show",
+        "job",
+        "194796",
+        "-o"
+      ],
+      "stdout": "JobId=194796 JobName=mmdev-06581bd7a72b-ENGINE_F2_attempt0000 UserId=varun024(295800338) GroupId=varun024(295800338) MCS_label=N/A Priority=101 Nice=0 Account=rose QOS=soujanya-poria-startfund-2026-03 JobState=RUNNING Reason=None Dependency=(null) Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=00:00:19 TimeLimit=12:00:00 TimeMin=N/A SubmitTime=2026-10-09T05:40:27 EligibleTime=2026-10-09T05:40:29 AccrueTime=2026-10-09T05:40:29 StartTime=2026-10-09T05:40:29 EndTime=2026-10-09T17:40:29 Deadline=N/A PreemptEligibleTime=2026-10-09T05:40:29 PreemptTime=None SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-09T05:40:29 Scheduler=Main Partition=cluster02 AllocNode:Sid=cpu-2:2406578 ReqNodeList=(null) ExcNodeList=(null) NodeList=gpu-pro6000-2 BatchHost=gpu-pro6000-2 NumNodes=1 NumCPUs=4 NumTasks=1 CPUs/Task=4 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=4,mem=33G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1 AllocTRES=cpu=4,mem=33G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1 Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=4 MinMemoryNode=33G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null) Command=/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos/orchestration/attempts/ENGINE_F2_attempt0000.sh WorkDir=/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos Comment=mmdev:06581bd7a72b:ENGINE_F2_attempt0000  StdErr=/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos/orchestration/attempts/ENGINE_F2_attempt0000_194796.log StdIn=/dev/null StdOut=/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos/orchestration/attempts/ENGINE_F2_attempt0000_194796.log Power= TresPerNode=gres/gpu:pro6000:1 TresPerTask=cpu:4 \n",
+      "stderr": "",
+      "returncode": 0
+    }
+  ],
+  "state": {
+    "accounting": {
+      "known_actual_gpu_seconds": 0,
+      "max_allocated_gpu_hours": null,
+      "max_wallclock_hours_for_study": null,
+      "policy": "ACCOUNTING_ONLY",
+      "unresolved_attempt_ids": [
+        "ENGINE_F2_attempt0000"
+      ]
+    },
+    "phase": "F2_FROZEN",
+    "submission_capacity": {
+      "available_slots": 1,
+      "max_submit_jobs_per_user": 5,
+      "observation": {
+        "path": "orchestration/observations/capacity/00000002.json",
+        "sha256": "247edb8f3c5bda9c49b6d02b873b2b184f454fe441a148209f5c1eb9f33b7c93"
+      },
+      "owner": "varun024",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queued_jobs": 4,
+      "reserved_attempt_ids": [],
+      "status": "AVAILABLE",
+      "time": "2026-10-09T05:40:27.483789+00:00"
+    },
+    "tasks": {
+      "ANALYZE": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "ENGINE_F2": {
+        "attempts": [
+          {
+            "attempt_id": "ENGINE_F2_attempt0000",
+            "command": [
+              "sbatch",
+              "--hold",
+              "--no-requeue",
+              "--nodes=1",
+              "--cpus-per-task=4",
+              "--mem=64G",
+              "--parsable",
+              "--account",
+              "rose",
+              "--qos",
+              "soujanya-poria-startfund-2026-03",
+              "--job-name",
+              "mmdev-06581bd7a72b-ENGINE_F2_attempt0000",
+              "--comment",
+              "mmdev:06581bd7a72b:ENGINE_F2_attempt0000",
+              "--time",
+              "720",
+              "--signal=B:USR1@600",
+              "--output",
+              "/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos/orchestration/attempts/ENGINE_F2_attempt0000_%j.log",
+              "--gres",
+              "gpu:pro6000:1",
+              "--partition",
+              "cluster02",
+              "/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos/orchestration/attempts/ENGINE_F2_attempt0000.sh"
+            ],
+            "comment": "mmdev:06581bd7a72b:ENGINE_F2_attempt0000",
+            "created_at": "2026-10-09T05:40:27.668032+00:00",
+            "job_id": "194796",
+            "job_name": "mmdev-06581bd7a72b-ENGINE_F2_attempt0000",
+            "manifest_path": "orchestration/attempts/ENGINE_F2_attempt0000.json",
+            "release_receipt": {
+              "command": [
+                "scontrol",
+                "release",
+                "194796"
+              ],
+              "returncode": 0,
+              "stderr": "",
+              "stdout": "",
+              "time": "2026-10-09T05:40:27.698526+00:00"
+            },
+            "released": true,
+            "status": "REGISTERED",
+            "submission_receipt": {
+              "command": [
+                "sbatch",
+                "--hold",
+                "--no-requeue",
+                "--nodes=1",
+                "--cpus-per-task=4",
+                "--mem=64G",
+                "--parsable",
+                "--account",
+                "rose",
+                "--qos",
+                "soujanya-poria-startfund-2026-03",
+                "--job-name",
+                "mmdev-06581bd7a72b-ENGINE_F2_attempt0000",
+                "--comment",
+                "mmdev:06581bd7a72b:ENGINE_F2_attempt0000",
+                "--time",
+                "720",
+                "--signal=B:USR1@600",
+                "--output",
+                "/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos/orchestration/attempts/ENGINE_F2_attempt0000_%j.log",
+                "--gres",
+                "gpu:pro6000:1",
+                "--partition",
+                "cluster02",
+                "/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos/orchestration/attempts/ENGINE_F2_attempt0000.sh"
+              ],
+              "returncode": 0,
+              "stderr": "sbatch: slurm_job_submit: enforced 4 CPUs for 1 task and 33792 MiB mem/node for 1 GPU(s) (model=pro6000)\nsbatch: slurm_job_submit: you requested 4 CPUs/node and 65536 MiB mem/node\n",
+              "stdout": "194796\n",
+              "time": "2026-10-09T05:40:27.685667+00:00"
+            }
+          }
+        ],
+        "status": "REGISTERED"
+      },
+      "RELEASE": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S0_a0_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S0_a0_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S0_aC_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S0_aC_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S0_aP_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S0_aP_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S_AP_0_a0_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S_AP_0_a0_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S_AP_0_aC_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S_AP_0_aC_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S_AP_0_aP_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S_AP_0_aP_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S_AP_1_a0_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S_AP_1_a0_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S_AP_1_aC_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S_AP_1_aC_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S_AP_1_aP_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S_AP_1_aP_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S_A_0_a0_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S_A_0_a0_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S_A_0_aC_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S_A_0_aC_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S_A_0_aP_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S_A_0_aP_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S_A_1_a0_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S_A_1_a0_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S_A_1_aC_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S_A_1_aC_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S_A_1_aP_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "cont_S_A_1_aP_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_S0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_S_AP_0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_S_AP_1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_S_A_0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_S_A_1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S0_a0_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S0_a0_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S0_aC_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S0_aC_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S0_aP_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S0_aP_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S_AP_0_a0_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S_AP_0_a0_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S_AP_0_aC_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S_AP_0_aC_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S_AP_0_aP_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S_AP_0_aP_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S_AP_1_a0_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S_AP_1_a0_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S_AP_1_aC_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S_AP_1_aC_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S_AP_1_aP_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S_AP_1_aP_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S_A_0_a0_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S_A_0_a0_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S_A_0_aC_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S_A_0_aC_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S_A_0_aP_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S_A_0_aP_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S_A_1_a0_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S_A_1_a0_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S_A_1_aC_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S_A_1_aC_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S_A_1_aP_f0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "eval_cont_S_A_1_aP_f1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "prep_AP_0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "prep_AP_1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "prep_A_0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "prep_A_1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "probe_S0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "probe_S_AP_0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "probe_S_AP_1": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "probe_S_A_0": {
+        "attempts": [],
+        "status": "WAITING"
+      },
+      "probe_S_A_1": {
+        "attempts": [],
+        "status": "WAITING"
+      }
+    },
+    "technical_blockers": []
+  },
+  "registration": {
+    "code_root": "/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos/code",
+    "engine_lease_minutes": 720,
+    "freeze_sha256": "b4279f3f1fcf46ef4e3e52326b15e74e89633dc2d8de4ec7f20d13d14435c3c9",
+    "lease_minutes": 4320,
+    "matrix_sha256": "8068c184f18506c18893039753ae7361acf421ac3b83708100887e87b258d963",
+    "measurement_shards": 1,
+    "permission": {
+      "account": "rose",
+      "authorized": true,
+      "evidence_path": "transfer/ALLOCATION_PERMISSION_EVIDENCE_20261009.json",
+      "evidence_sha256": "0b51df2292da3baee42d6cdf4c7691b8ad7ff6dcc5287d25ae78ecb6d26e680a",
+      "gpu_hours_policy": "ACCOUNTING_ONLY",
+      "gpus_per_worker": 1,
+      "gres": "gpu:pro6000:1",
+      "human_authorization": "2026-10-09 user: \u5b8c\u6574\u6267\u884c\u5427; \u5c31\u7528\u8001\u5e08\u7684\u7279\u6b8aqos\u53bb\u505a\u5b9e\u9a8c\u554a\u8bb0\u4f4f\u4e86; \u628a\u539f\u6765\u6392\u961f\u7684\u53d6\u6d88\u4e86",
+      "lease_note": "Cluster max per allocation 3 days; resume identical science state under a new allocation without a cumulative stop gate.",
+      "max_allocated_gpu_hours": null,
+      "max_gpus_concurrent": 5,
+      "max_wallclock_hours_for_study": null,
+      "owner": "varun024",
+      "partition": "cluster02",
+      "plan_id": "MM-DEV-F2-QWEN35-9B-20261009",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "qos_selection_reason": "Explicit user choice of teacher QoS; wait for submission slots and never substitute another QoS.",
+      "run_root": "/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos",
+      "verified_at": "2026-10-09T05:34:12.664940+00:00"
+    },
+    "permission_receipt_sha256": "992f703c4db4cdbb13f7983106ae6fbf10ef527bcf6be4e2423adae406cb260f",
+    "plan_id": "MM-DEV-F2-QWEN35-9B-20261009",
+    "plan_path": "/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos/code/docs/mm_dev_f2/design/config/MM_DEV_F2.json",
+    "plan_sha256": "2e20d757d32493cde1f27184b40e15b7077df594a8c95ae0e4ad2705df5515bb",
+    "python": "/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12",
+    "schema_version": 1,
+    "source_hashes": {
+      "scripts/mm_dev/run_engine_f2.py": "b2d5a64563f79cf8286f8805f6e866873c1dfc271ef4432e4685f3f73dbc4521",
+      "scripts/mm_dev/run_eval.py": "179f9efaaa437f0a277c97be4038c4992f5dcb0320f6f474e7bc41db210772ab",
+      "scripts/mm_dev/run_probe.py": "ae46d01879522c2e035e0baea254100d21a7c2aa335d8eaf1686460e168ac8df",
+      "scripts/mm_dev/run_train_path.py": "8ae453a497af2a0c3a8af64fe4e4e03b7aeed6de744659c4266107625a1e44d5",
+      "scripts/mm_dev/score_and_analyze.py": "599a4bdaee3c782cf7faacc8c597f7897a8aef718f0489f6278afc1f7923e9a6",
+      "scripts/mm_dev/verify_release.py": "900826c71ba7162bdad97bbac638c72fca5c65d0a906979dd25c5fe90a111805"
+    },
+    "task_order": [
+      "ENGINE_F2",
+      "prep_A_0",
+      "prep_AP_0",
+      "prep_A_1",
+      "prep_AP_1",
+      "probe_S0",
+      "probe_S_A_0",
+      "probe_S_AP_0",
+      "probe_S_A_1",
+      "probe_S_AP_1",
+      "cont_S0_a0_f0",
+      "cont_S0_aP_f0",
+      "cont_S0_aC_f0",
+      "cont_S0_a0_f1",
+      "cont_S0_aP_f1",
+      "cont_S0_aC_f1",
+      "cont_S_A_0_a0_f0",
+      "cont_S_A_0_aP_f0",
+      "cont_S_A_0_aC_f0",
+      "cont_S_A_0_a0_f1",
+      "cont_S_A_0_aP_f1",
+      "cont_S_A_0_aC_f1",
+      "cont_S_AP_0_a0_f0",
+      "cont_S_AP_0_aP_f0",
+      "cont_S_AP_0_aC_f0",
+      "cont_S_AP_0_a0_f1",
+      "cont_S_AP_0_aP_f1",
+      "cont_S_AP_0_aC_f1",
+      "cont_S_A_1_a0_f0",
+      "cont_S_A_1_aP_f0",
+      "cont_S_A_1_aC_f0",
+      "cont_S_A_1_a0_f1",
+      "cont_S_A_1_aP_f1",
+      "cont_S_A_1_aC_f1",
+      "cont_S_AP_1_a0_f0",
+      "cont_S_AP_1_aP_f0",
+      "cont_S_AP_1_aC_f0",
+      "cont_S_AP_1_a0_f1",
+      "cont_S_AP_1_aP_f1",
+      "cont_S_AP_1_aC_f1",
+      "eval_S0",
+      "eval_S_A_0",
+      "eval_S_AP_0",
+      "eval_S_A_1",
+      "eval_S_AP_1",
+      "eval_cont_S0_a0_f0",
+      "eval_cont_S0_aP_f0",
+      "eval_cont_S0_aC_f0",
+      "eval_cont_S0_a0_f1",
+      "eval_cont_S0_aP_f1",
+      "eval_cont_S0_aC_f1",
+      "eval_cont_S_A_0_a0_f0",
+      "eval_cont_S_A_0_aP_f0",
+      "eval_cont_S_A_0_aC_f0",
+      "eval_cont_S_A_0_a0_f1",
+      "eval_cont_S_A_0_aP_f1",
+      "eval_cont_S_A_0_aC_f1",
+      "eval_cont_S_AP_0_a0_f0",
+      "eval_cont_S_AP_0_aP_f0",
+      "eval_cont_S_AP_0_aC_f0",
+      "eval_cont_S_AP_0_a0_f1",
+      "eval_cont_S_AP_0_aP_f1",
+      "eval_cont_S_AP_0_aC_f1",
+      "eval_cont_S_A_1_a0_f0",
+      "eval_cont_S_A_1_aP_f0",
+      "eval_cont_S_A_1_aC_f0",
+      "eval_cont_S_A_1_a0_f1",
+      "eval_cont_S_A_1_aP_f1",
+      "eval_cont_S_A_1_aC_f1",
+      "eval_cont_S_AP_1_a0_f0",
+      "eval_cont_S_AP_1_aP_f0",
+      "eval_cont_S_AP_1_aC_f0",
+      "eval_cont_S_AP_1_a0_f1",
+      "eval_cont_S_AP_1_aP_f1",
+      "eval_cont_S_AP_1_aC_f1",
+      "ANALYZE",
+      "RELEASE"
+    ],
+    "tasks": {
+      "ANALYZE": {
+        "arguments": [],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "cont_S0_a0_f0",
+          "cont_S0_aP_f0",
+          "cont_S0_aC_f0",
+          "cont_S0_a0_f1",
+          "cont_S0_aP_f1",
+          "cont_S0_aC_f1",
+          "cont_S_A_0_a0_f0",
+          "cont_S_A_0_aP_f0",
+          "cont_S_A_0_aC_f0",
+          "cont_S_A_0_a0_f1",
+          "cont_S_A_0_aP_f1",
+          "cont_S_A_0_aC_f1",
+          "cont_S_AP_0_a0_f0",
+          "cont_S_AP_0_aP_f0",
+          "cont_S_AP_0_aC_f0",
+          "cont_S_AP_0_a0_f1",
+          "cont_S_AP_0_aP_f1",
+          "cont_S_AP_0_aC_f1",
+          "cont_S_A_1_a0_f0",
+          "cont_S_A_1_aP_f0",
+          "cont_S_A_1_aC_f0",
+          "cont_S_A_1_a0_f1",
+          "cont_S_A_1_aP_f1",
+          "cont_S_A_1_aC_f1",
+          "cont_S_AP_1_a0_f0",
+          "cont_S_AP_1_aP_f0",
+          "cont_S_AP_1_aC_f0",
+          "cont_S_AP_1_a0_f1",
+          "cont_S_AP_1_aP_f1",
+          "cont_S_AP_1_aC_f1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1",
+          "eval_S0",
+          "eval_S_A_0",
+          "eval_S_AP_0",
+          "eval_S_A_1",
+          "eval_S_AP_1",
+          "eval_cont_S0_a0_f0",
+          "eval_cont_S0_aP_f0",
+          "eval_cont_S0_aC_f0",
+          "eval_cont_S0_a0_f1",
+          "eval_cont_S0_aP_f1",
+          "eval_cont_S0_aC_f1",
+          "eval_cont_S_A_0_a0_f0",
+          "eval_cont_S_A_0_aP_f0",
+          "eval_cont_S_A_0_aC_f0",
+          "eval_cont_S_A_0_a0_f1",
+          "eval_cont_S_A_0_aP_f1",
+          "eval_cont_S_A_0_aC_f1",
+          "eval_cont_S_AP_0_a0_f0",
+          "eval_cont_S_AP_0_aP_f0",
+          "eval_cont_S_AP_0_aC_f0",
+          "eval_cont_S_AP_0_a0_f1",
+          "eval_cont_S_AP_0_aP_f1",
+          "eval_cont_S_AP_0_aC_f1",
+          "eval_cont_S_A_1_a0_f0",
+          "eval_cont_S_A_1_aP_f0",
+          "eval_cont_S_A_1_aC_f0",
+          "eval_cont_S_A_1_a0_f1",
+          "eval_cont_S_A_1_aP_f1",
+          "eval_cont_S_A_1_aC_f1",
+          "eval_cont_S_AP_1_a0_f0",
+          "eval_cont_S_AP_1_aP_f0",
+          "eval_cont_S_AP_1_aC_f0",
+          "eval_cont_S_AP_1_a0_f1",
+          "eval_cont_S_AP_1_aP_f1",
+          "eval_cont_S_AP_1_aC_f1"
+        ],
+        "gpus": 0,
+        "phase": "ANALYZE",
+        "script": "score_and_analyze.py"
+      },
+      "ENGINE_F2": {
+        "arguments": [],
+        "dependencies": [],
+        "gpus": 1,
+        "phase": "ENGINE",
+        "script": "run_engine_f2.py"
+      },
+      "RELEASE": {
+        "arguments": [],
+        "dependencies": [
+          "ANALYZE",
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "cont_S0_a0_f0",
+          "cont_S0_aP_f0",
+          "cont_S0_aC_f0",
+          "cont_S0_a0_f1",
+          "cont_S0_aP_f1",
+          "cont_S0_aC_f1",
+          "cont_S_A_0_a0_f0",
+          "cont_S_A_0_aP_f0",
+          "cont_S_A_0_aC_f0",
+          "cont_S_A_0_a0_f1",
+          "cont_S_A_0_aP_f1",
+          "cont_S_A_0_aC_f1",
+          "cont_S_AP_0_a0_f0",
+          "cont_S_AP_0_aP_f0",
+          "cont_S_AP_0_aC_f0",
+          "cont_S_AP_0_a0_f1",
+          "cont_S_AP_0_aP_f1",
+          "cont_S_AP_0_aC_f1",
+          "cont_S_A_1_a0_f0",
+          "cont_S_A_1_aP_f0",
+          "cont_S_A_1_aC_f0",
+          "cont_S_A_1_a0_f1",
+          "cont_S_A_1_aP_f1",
+          "cont_S_A_1_aC_f1",
+          "cont_S_AP_1_a0_f0",
+          "cont_S_AP_1_aP_f0",
+          "cont_S_AP_1_aC_f0",
+          "cont_S_AP_1_a0_f1",
+          "cont_S_AP_1_aP_f1",
+          "cont_S_AP_1_aC_f1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1",
+          "eval_S0",
+          "eval_S_A_0",
+          "eval_S_AP_0",
+          "eval_S_A_1",
+          "eval_S_AP_1",
+          "eval_cont_S0_a0_f0",
+          "eval_cont_S0_aP_f0",
+          "eval_cont_S0_aC_f0",
+          "eval_cont_S0_a0_f1",
+          "eval_cont_S0_aP_f1",
+          "eval_cont_S0_aC_f1",
+          "eval_cont_S_A_0_a0_f0",
+          "eval_cont_S_A_0_aP_f0",
+          "eval_cont_S_A_0_aC_f0",
+          "eval_cont_S_A_0_a0_f1",
+          "eval_cont_S_A_0_aP_f1",
+          "eval_cont_S_A_0_aC_f1",
+          "eval_cont_S_AP_0_a0_f0",
+          "eval_cont_S_AP_0_aP_f0",
+          "eval_cont_S_AP_0_aC_f0",
+          "eval_cont_S_AP_0_a0_f1",
+          "eval_cont_S_AP_0_aP_f1",
+          "eval_cont_S_AP_0_aC_f1",
+          "eval_cont_S_A_1_a0_f0",
+          "eval_cont_S_A_1_aP_f0",
+          "eval_cont_S_A_1_aC_f0",
+          "eval_cont_S_A_1_a0_f1",
+          "eval_cont_S_A_1_aP_f1",
+          "eval_cont_S_A_1_aC_f1",
+          "eval_cont_S_AP_1_a0_f0",
+          "eval_cont_S_AP_1_aP_f0",
+          "eval_cont_S_AP_1_aC_f0",
+          "eval_cont_S_AP_1_a0_f1",
+          "eval_cont_S_AP_1_aP_f1",
+          "eval_cont_S_AP_1_aC_f1"
+        ],
+        "gpus": 0,
+        "phase": "RELEASE",
+        "script": "verify_release.py"
+      },
+      "cont_S0_a0_f0": {
+        "arguments": [
+          "--run-id",
+          "cont_S0_a0_f0"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S0_a0_f1": {
+        "arguments": [
+          "--run-id",
+          "cont_S0_a0_f1"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S0_aC_f0": {
+        "arguments": [
+          "--run-id",
+          "cont_S0_aC_f0"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S0_aC_f1": {
+        "arguments": [
+          "--run-id",
+          "cont_S0_aC_f1"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S0_aP_f0": {
+        "arguments": [
+          "--run-id",
+          "cont_S0_aP_f0"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S0_aP_f1": {
+        "arguments": [
+          "--run-id",
+          "cont_S0_aP_f1"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S_AP_0_a0_f0": {
+        "arguments": [
+          "--run-id",
+          "cont_S_AP_0_a0_f0"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S_AP_0_a0_f1": {
+        "arguments": [
+          "--run-id",
+          "cont_S_AP_0_a0_f1"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S_AP_0_aC_f0": {
+        "arguments": [
+          "--run-id",
+          "cont_S_AP_0_aC_f0"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S_AP_0_aC_f1": {
+        "arguments": [
+          "--run-id",
+          "cont_S_AP_0_aC_f1"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S_AP_0_aP_f0": {
+        "arguments": [
+          "--run-id",
+          "cont_S_AP_0_aP_f0"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S_AP_0_aP_f1": {
+        "arguments": [
+          "--run-id",
+          "cont_S_AP_0_aP_f1"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S_AP_1_a0_f0": {
+        "arguments": [
+          "--run-id",
+          "cont_S_AP_1_a0_f0"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S_AP_1_a0_f1": {
+        "arguments": [
+          "--run-id",
+          "cont_S_AP_1_a0_f1"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S_AP_1_aC_f0": {
+        "arguments": [
+          "--run-id",
+          "cont_S_AP_1_aC_f0"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S_AP_1_aC_f1": {
+        "arguments": [
+          "--run-id",
+          "cont_S_AP_1_aC_f1"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S_AP_1_aP_f0": {
+        "arguments": [
+          "--run-id",
+          "cont_S_AP_1_aP_f0"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S_AP_1_aP_f1": {
+        "arguments": [
+          "--run-id",
+          "cont_S_AP_1_aP_f1"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S_A_0_a0_f0": {
+        "arguments": [
+          "--run-id",
+          "cont_S_A_0_a0_f0"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S_A_0_a0_f1": {
+        "arguments": [
+          "--run-id",
+          "cont_S_A_0_a0_f1"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S_A_0_aC_f0": {
+        "arguments": [
+          "--run-id",
+          "cont_S_A_0_aC_f0"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S_A_0_aC_f1": {
+        "arguments": [
+          "--run-id",
+          "cont_S_A_0_aC_f1"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S_A_0_aP_f0": {
+        "arguments": [
+          "--run-id",
+          "cont_S_A_0_aP_f0"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S_A_0_aP_f1": {
+        "arguments": [
+          "--run-id",
+          "cont_S_A_0_aP_f1"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S_A_1_a0_f0": {
+        "arguments": [
+          "--run-id",
+          "cont_S_A_1_a0_f0"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S_A_1_a0_f1": {
+        "arguments": [
+          "--run-id",
+          "cont_S_A_1_a0_f1"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S_A_1_aC_f0": {
+        "arguments": [
+          "--run-id",
+          "cont_S_A_1_aC_f0"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S_A_1_aC_f1": {
+        "arguments": [
+          "--run-id",
+          "cont_S_A_1_aC_f1"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S_A_1_aP_f0": {
+        "arguments": [
+          "--run-id",
+          "cont_S_A_1_aP_f0"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "cont_S_A_1_aP_f1": {
+        "arguments": [
+          "--run-id",
+          "cont_S_A_1_aP_f1"
+        ],
+        "dependencies": [
+          "prep_A_0",
+          "prep_AP_0",
+          "prep_A_1",
+          "prep_AP_1",
+          "probe_S0",
+          "probe_S_A_0",
+          "probe_S_AP_0",
+          "probe_S_A_1",
+          "probe_S_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "CONTINUE",
+        "script": "run_train_path.py"
+      },
+      "eval_S0": {
+        "arguments": [
+          "--state-id",
+          "S0",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "ENGINE_F2"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_S_AP_0": {
+        "arguments": [
+          "--state-id",
+          "S_AP_0",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "prep_AP_0"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_S_AP_1": {
+        "arguments": [
+          "--state-id",
+          "S_AP_1",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "prep_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_S_A_0": {
+        "arguments": [
+          "--state-id",
+          "S_A_0",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "prep_A_0"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_S_A_1": {
+        "arguments": [
+          "--state-id",
+          "S_A_1",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "prep_A_1"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S0_a0_f0": {
+        "arguments": [
+          "--state-id",
+          "cont_S0_a0_f0",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S0_a0_f0"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S0_a0_f1": {
+        "arguments": [
+          "--state-id",
+          "cont_S0_a0_f1",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S0_a0_f1"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S0_aC_f0": {
+        "arguments": [
+          "--state-id",
+          "cont_S0_aC_f0",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S0_aC_f0"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S0_aC_f1": {
+        "arguments": [
+          "--state-id",
+          "cont_S0_aC_f1",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S0_aC_f1"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S0_aP_f0": {
+        "arguments": [
+          "--state-id",
+          "cont_S0_aP_f0",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S0_aP_f0"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S0_aP_f1": {
+        "arguments": [
+          "--state-id",
+          "cont_S0_aP_f1",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S0_aP_f1"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S_AP_0_a0_f0": {
+        "arguments": [
+          "--state-id",
+          "cont_S_AP_0_a0_f0",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S_AP_0_a0_f0"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S_AP_0_a0_f1": {
+        "arguments": [
+          "--state-id",
+          "cont_S_AP_0_a0_f1",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S_AP_0_a0_f1"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S_AP_0_aC_f0": {
+        "arguments": [
+          "--state-id",
+          "cont_S_AP_0_aC_f0",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S_AP_0_aC_f0"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S_AP_0_aC_f1": {
+        "arguments": [
+          "--state-id",
+          "cont_S_AP_0_aC_f1",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S_AP_0_aC_f1"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S_AP_0_aP_f0": {
+        "arguments": [
+          "--state-id",
+          "cont_S_AP_0_aP_f0",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S_AP_0_aP_f0"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S_AP_0_aP_f1": {
+        "arguments": [
+          "--state-id",
+          "cont_S_AP_0_aP_f1",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S_AP_0_aP_f1"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S_AP_1_a0_f0": {
+        "arguments": [
+          "--state-id",
+          "cont_S_AP_1_a0_f0",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S_AP_1_a0_f0"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S_AP_1_a0_f1": {
+        "arguments": [
+          "--state-id",
+          "cont_S_AP_1_a0_f1",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S_AP_1_a0_f1"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S_AP_1_aC_f0": {
+        "arguments": [
+          "--state-id",
+          "cont_S_AP_1_aC_f0",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S_AP_1_aC_f0"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S_AP_1_aC_f1": {
+        "arguments": [
+          "--state-id",
+          "cont_S_AP_1_aC_f1",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S_AP_1_aC_f1"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S_AP_1_aP_f0": {
+        "arguments": [
+          "--state-id",
+          "cont_S_AP_1_aP_f0",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S_AP_1_aP_f0"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S_AP_1_aP_f1": {
+        "arguments": [
+          "--state-id",
+          "cont_S_AP_1_aP_f1",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S_AP_1_aP_f1"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S_A_0_a0_f0": {
+        "arguments": [
+          "--state-id",
+          "cont_S_A_0_a0_f0",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S_A_0_a0_f0"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S_A_0_a0_f1": {
+        "arguments": [
+          "--state-id",
+          "cont_S_A_0_a0_f1",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S_A_0_a0_f1"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S_A_0_aC_f0": {
+        "arguments": [
+          "--state-id",
+          "cont_S_A_0_aC_f0",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S_A_0_aC_f0"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S_A_0_aC_f1": {
+        "arguments": [
+          "--state-id",
+          "cont_S_A_0_aC_f1",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S_A_0_aC_f1"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S_A_0_aP_f0": {
+        "arguments": [
+          "--state-id",
+          "cont_S_A_0_aP_f0",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S_A_0_aP_f0"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S_A_0_aP_f1": {
+        "arguments": [
+          "--state-id",
+          "cont_S_A_0_aP_f1",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S_A_0_aP_f1"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S_A_1_a0_f0": {
+        "arguments": [
+          "--state-id",
+          "cont_S_A_1_a0_f0",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S_A_1_a0_f0"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S_A_1_a0_f1": {
+        "arguments": [
+          "--state-id",
+          "cont_S_A_1_a0_f1",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S_A_1_a0_f1"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S_A_1_aC_f0": {
+        "arguments": [
+          "--state-id",
+          "cont_S_A_1_aC_f0",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S_A_1_aC_f0"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S_A_1_aC_f1": {
+        "arguments": [
+          "--state-id",
+          "cont_S_A_1_aC_f1",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S_A_1_aC_f1"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S_A_1_aP_f0": {
+        "arguments": [
+          "--state-id",
+          "cont_S_A_1_aP_f0",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S_A_1_aP_f0"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "eval_cont_S_A_1_aP_f1": {
+        "arguments": [
+          "--state-id",
+          "cont_S_A_1_aP_f1",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "cont_S_A_1_aP_f1"
+        ],
+        "gpus": 1,
+        "phase": "EVAL",
+        "script": "run_eval.py"
+      },
+      "prep_AP_0": {
+        "arguments": [
+          "--run-id",
+          "prep_AP_0"
+        ],
+        "dependencies": [
+          "ENGINE_F2"
+        ],
+        "gpus": 1,
+        "phase": "PREP",
+        "script": "run_train_path.py"
+      },
+      "prep_AP_1": {
+        "arguments": [
+          "--run-id",
+          "prep_AP_1"
+        ],
+        "dependencies": [
+          "ENGINE_F2"
+        ],
+        "gpus": 1,
+        "phase": "PREP",
+        "script": "run_train_path.py"
+      },
+      "prep_A_0": {
+        "arguments": [
+          "--run-id",
+          "prep_A_0"
+        ],
+        "dependencies": [
+          "ENGINE_F2"
+        ],
+        "gpus": 1,
+        "phase": "PREP",
+        "script": "run_train_path.py"
+      },
+      "prep_A_1": {
+        "arguments": [
+          "--run-id",
+          "prep_A_1"
+        ],
+        "dependencies": [
+          "ENGINE_F2"
+        ],
+        "gpus": 1,
+        "phase": "PREP",
+        "script": "run_train_path.py"
+      },
+      "probe_S0": {
+        "arguments": [
+          "--state-id",
+          "S0",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "ENGINE_F2"
+        ],
+        "gpus": 1,
+        "phase": "PROBE",
+        "script": "run_probe.py"
+      },
+      "probe_S_AP_0": {
+        "arguments": [
+          "--state-id",
+          "S_AP_0",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "prep_AP_0"
+        ],
+        "gpus": 1,
+        "phase": "PROBE",
+        "script": "run_probe.py"
+      },
+      "probe_S_AP_1": {
+        "arguments": [
+          "--state-id",
+          "S_AP_1",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "prep_AP_1"
+        ],
+        "gpus": 1,
+        "phase": "PROBE",
+        "script": "run_probe.py"
+      },
+      "probe_S_A_0": {
+        "arguments": [
+          "--state-id",
+          "S_A_0",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "prep_A_0"
+        ],
+        "gpus": 1,
+        "phase": "PROBE",
+        "script": "run_probe.py"
+      },
+      "probe_S_A_1": {
+        "arguments": [
+          "--state-id",
+          "S_A_1",
+          "--shard",
+          "0",
+          "--shards",
+          "1"
+        ],
+        "dependencies": [
+          "prep_A_1"
+        ],
+        "gpus": 1,
+        "phase": "PROBE",
+        "script": "run_probe.py"
+      }
+    }
+  },
+  "controller_submission": {
+    "command": [
+      "sbatch",
+      "--parsable",
+      "--no-requeue",
+      "--account=rose",
+      "--qos=soujanya-poria-startfund-2026-03",
+      "--partition=cluster02",
+      "--cpus-per-task=2",
+      "--time=4320",
+      "--signal=B:USR1@900",
+      "--job-name=mmdev-f2-controller",
+      "--chdir=/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos",
+      "--output=/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos/logs/controller_%j.log",
+      "/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos/ops/controller.sh"
+    ],
+    "time": "2026-10-09T05:40:26.461134+00:00",
+    "status": "SUBMITTED",
+    "freeze_sha256": "b4279f3f1fcf46ef4e3e52326b15e74e89633dc2d8de4ec7f20d13d14435c3c9",
+    "freeze_accounting": "194792|COMPLETED|36|0:0|soujanya-poria-startfund-2026-03\n",
+    "returncode": 0,
+    "stdout": "194794\n",
+    "stderr": "",
+    "job_id": "194794"
+  },
+  "controller_leases": {
+    "194794.json": {
+      "command": [
+        "sbatch",
+        "--parsable",
+        "--no-requeue",
+        "--account=rose",
+        "--qos=soujanya-poria-startfund-2026-03",
+        "--partition=cluster02",
+        "--cpus-per-task=2",
+        "--time=4320",
+        "--signal=B:USR1@900",
+        "--job-name=mmdev-f2-controller",
+        "--dependency=afterany:194794",
+        "--chdir=/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos",
+        "--output=/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos/logs/controller_%j.log",
+        "/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos/ops/controller.sh"
+      ],
+      "parent_job_id": "194794",
+      "status": "SUBMITTING_SUCCESSOR"
+    },
+    "194794_result.json": {
+      "command": [
+        "sbatch",
+        "--parsable",
+        "--no-requeue",
+        "--account=rose",
+        "--qos=soujanya-poria-startfund-2026-03",
+        "--partition=cluster02",
+        "--cpus-per-task=2",
+        "--time=4320",
+        "--signal=B:USR1@900",
+        "--job-name=mmdev-f2-controller",
+        "--dependency=afterany:194794",
+        "--chdir=/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos",
+        "--output=/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos/logs/controller_%j.log",
+        "/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos/ops/controller.sh"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "194795\n"
+    }
+  },
+  "logs": {
+    "controller_194794.log": "{\"status\": \"SUCCESSOR_SLOT_AVAILABLE\", \"capacity\": {\"owner\": \"varun024\", \"qos\": \"soujanya-poria-startfund-2026-03\", \"max_submit_jobs_per_user\": 5, \"queued_job_ids\": [\"194792\", \"194201\", \"194794\"], \"receipts\": {\"sacctmgr\": {\"command\": [\"sacctmgr\", \"--noheader\", \"--parsable2\", \"show\", \"qos\", \"where\", \"name=soujanya-poria-startfund-2026-03\", \"format=Name%256,MaxSubmitJobsPU\"], \"stdout\": \"soujanya-poria-startfund-2026-03|5\\n\", \"stderr\": \"\", \"returncode\": 0, \"time\": \"2026-10-09T05:40:27.394061+00:00\"}, \"squeue\": {\"command\": [\"squeue\", \"--noheader\", \"--array\", \"--states=all\", \"--user\", \"varun024\", \"--format=%i|%u|%q|%T\"], \"stdout\": \"194792|varun024|soujanya-poria-startfund-2026-03|COMPLETED\\n194201|varun024|soujanya-poria-startfund-2026-03|RUNNING\\n194794|varun024|soujanya-poria-startfund-2026-03|RUNNING\\n193374|varun024|rose|RUNNING\\n193375|varun024|rose|RUNNING\\n\", \"stderr\": \"\", \"returncode\": 0, \"time\": \"2026-10-09T05:40:27.398944+00:00\"}}}}\n{\"controller_job\": \"194794\", \"successor_job\": \"194795\"}\n{\"controller_job\": \"194794\", \"phase\": \"F2_FROZEN\", \"accounting\": {\"policy\": \"ACCOUNTING_ONLY\", \"max_allocated_gpu_hours\": null, \"max_wallclock_hours_for_study\": null, \"known_actual_gpu_seconds\": 0, \"unresolved_attempt_ids\": [\"ENGINE_F2_attempt0000\"]}, \"technical_blockers\": []}\n"
+  },
+  "freeze_sha256": "b4279f3f1fcf46ef4e3e52326b15e74e89633dc2d8de4ec7f20d13d14435c3c9"
+}

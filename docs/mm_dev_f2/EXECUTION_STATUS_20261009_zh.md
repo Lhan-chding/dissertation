@@ -1,10 +1,15 @@
 # MM-DEV F2 执行状态（未完成）
 
-旧链终态证据时间：2026-10-09T05:33:21.164762+00:00。用户要求改用老师 QoS，
-原排队链已停止；新根正在重新核验冻结。这不是实验结果或最终交付。
+最新运行证据时间：2026-10-09T05:41:32.427929+00:00。用户指定的老师 QoS 已生效，
+原排队链已停止，新 ENGINE 已实际运行。这不是实验结果或最终交付。
 
 - 完整合同已获用户“完整执行吧”授权；固定的 77 个调度任务已登记。
-- 科学阶段尚未进入 ENGINE。旧 ENGINE **194700** 已 `CANCELLED`，
+- 新 ENGINE **194796** 已在 `gpu-pro6000-2` 上 `RUNNING`，实际分配一张 Pro6000、
+  4 CPU、33 GiB 主机内存。Slurm 明确记录 account `rose`、QoS
+  `soujanya-poria-startfund-2026-03`。Qwen3.5-9B 的760项权重已加载。
+- 新 CPU 控制器 **194794** 正常运行；后继 **194795** 为 `PENDING / Dependency`。
+  固定77任务已登记，ENGINE为`ACTIVE`，76个后续任务等待，未发现技术blocker。
+- 旧 ENGINE **194700** 已 `CANCELLED`，
   `ElapsedRaw=0`、无 `AllocTRES`，此前没有 GPU 结果或模型生成。
 - 旧 CPU 控制器 **194699** 已经信号正常退出：`COMPLETED 0:0`，2068秒；
   后继 **194701** 已 `CANCELLED`，`ElapsedRaw=0`。三者均已离开队列。
@@ -20,20 +25,28 @@
 固定10张接触表（原图和处理图各80样本）及20对全分辨率图片已实际复核。
 原始来源、图像、处理张量、token/路由、模型13文件、依赖环境均核验。
 
-本地完整回归 **696 tests + 163 subtests PASS**，Ruff检查和格式检查通过。
-额外CPU控制器边界回归1项通过。核心ENGINE包含独立CPU进程的step2/4张量、Adam、
-scheduler、reference与RNG逐元素复算；真实GPU产物尚不存在。
+本次修改后完整回归 **706 tests + 175 subtests PASS**，耗时142.16秒；
+Ruff检查和格式检查36文件通过。核心ENGINE包含独立CPU进程的step2/4张量、Adam、
+scheduler、reference与RNG逐元素复算；真实9B ENGINE门禁尚未通过。
 
-服务器最终CPU冻结任务 **194681**：`COMPLETED 0:0`，32秒；
+原服务器CPU冻结任务 **194681**：`COMPLETED 0:0`，32秒；
 35个执行文件、4694个输入文件。
 冻结SHA256：`d19d8f99398b4fcf4295ad3156cf94186744a4d010b2f321dc55951c16fcaed9`。
+
+老师QoS的新CPU冻结任务 **194792**：`COMPLETED 0:0`，36秒；
+35个执行文件、4694个输入文件。仅冻结执行源码中的`orchestration.py`因提交容量
+保护发生改变，训练/模型/数据/分析执行源码未变。
+新冻结SHA256：`b4279f3f1fcf46ef4e3e52326b15e74e89633dc2d8de4ec7f20d13d14435c3c9`。
+源码与验证见`validation/TEACHER_QOS_VALIDATION.json`，实际调度回执见
+`validation/TEACHER_QOS_LAUNCH_SNAPSHOT.json`。
 
 ## 身份与操作入口
 
 - 当前服务器运行根：`/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos`
 - 原服务器根：`/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009`，完整保留。
 - SSH别名：`eee-cluster`
-- 新部署位置：当前根下 `code`，新冻结将记录实际已提交的代码SHA。
+- 新部署位置：当前根下 `code`，运行代码commit
+  `3557e66748cf2e8778d0e389a2c2fe0446ad7e86`，已push并核验远端SHA。
 - 原科学代码commit：`c65b406204e052aa35b2c0e9915c8470d5bfb413`。
 - 原运维控制器commit：`8ee5e66169d75613650e907feda7ef739efdfdf1`。
 - Git分支：`codex/mm-dev-f2-20261009`。
@@ -41,6 +54,8 @@ scheduler、reference与RNG逐元素复算；真实GPU产物尚不存在。
 - GPU许可：account rose，用户指定的 `soujanya-poria-startfund-2026-03` QoS，单worker一张
   Pro6000，本计划最多五张并行。GPU小时仅记账，无累计GPU/研究墙钟门槛。
 - 该QoS的MaxSubmitJobsPU=5，CPU控制器和依赖后继均占槽；满额时等待，不换QoS。
+- 容量查询保守计入`squeue --states=all`短暂保留的已终止行，因此实际空槽可能稍晚
+  才放行；这些行从Slurm缓存移除后下一tick自动推进，不改变科学任务或GPU小时规则。
 - 集群覆盖内存请求：首个GPU请求实际为4 CPU/33 GiB主机内存/1 Pro6000；
   CPU控制器为2 CPU/6 GiB。后续实际分配继续以Slurm证据为准。
 
