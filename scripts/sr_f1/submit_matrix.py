@@ -83,6 +83,11 @@ def main():
         action="store_true",
         help="One-shot authenticated ENGINE host-memory/storage repair; submits no jobs",
     )
+    parser.add_argument(
+        "--resume-repaired-engine-io",
+        action="store_true",
+        help="One-shot authenticated ENGINE activation I/O repair; submits no jobs",
+    )
     parser.add_argument("--poll-seconds", type=int, default=30)
     parser.add_argument(
         "--controller-requeue-on-lease",
@@ -95,6 +100,7 @@ def main():
             args.resume_repaired_common_start,
             args.resume_repaired_engine,
             args.resume_repaired_engine_storage,
+            args.resume_repaired_engine_io,
         )
     )
     if repaired_resumes and (
@@ -142,6 +148,9 @@ def main():
                     json.dumps(scheduler.resume_repaired_engine_storage(), sort_keys=True),
                     flush=True,
                 )
+                return 0
+            if args.resume_repaired_engine_io:
+                print(json.dumps(scheduler.resume_repaired_engine_io(), sort_keys=True), flush=True)
                 return 0
             if args.resume_stopped:
                 scheduler.resume_stopped()

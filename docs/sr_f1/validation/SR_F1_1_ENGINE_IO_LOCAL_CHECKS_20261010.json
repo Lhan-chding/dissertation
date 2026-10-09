@@ -1,0 +1,25 @@
+{
+  "time": "2026-10-09T21:28:28.199460+00:00",
+  "status": "LOCAL_CHECKS_PASS_SERVER_GPU_NOT_YET_VERIFIED",
+  "tests_passed": 588,
+  "subtests_passed": 6,
+  "test_log_sha256": "8aeeb2fd137cdb75d514b9f103ba152880ebe0aac7537a84ca35d48dd967d944",
+  "ruff_check": "PASS",
+  "ruff_format": "PASS",
+  "git_diff_check": "PASS",
+  "controller_shell_syntax": "PASS",
+  "original_package_hashes": "PASS",
+  "science_recipe_changed": false,
+  "original_gpu_failure_errno": "NOT_RECORDED",
+  "cpu_state_review_job": "196221",
+  "journal_review_job": "196222",
+  "cpu_state_review": "PASS_ZERO_UPDATE_FULL_STATE",
+  "journal_recovery_review": "PASS_INTERRUPTED_ENGINE_RESTART",
+  "first_review_script_failure": "Journal validation initially used contract.digest instead of orchestration.digest; second version preserved old script and used native scheduler hash encoding.",
+  "server_deployment": "PENDING",
+  "gpu_engine_acceptance": "PENDING",
+  "additional_review_fixes": [
+    "Delayed close error still attempts private scratch unlink without retrying close",
+    "Reject source snapshot symlink before resolving path"
+  ]
+}

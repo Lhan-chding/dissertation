@@ -55,6 +55,16 @@ ENGINE_STORAGE_ALLOWED_FILES = frozenset(
     }
 )
 
+ENGINE_IO_REPAIR_ID = "SR_F1_1_ENGINE_IO_20261010"
+ENGINE_IO_ALLOWED_FILES = frozenset(
+    {
+        "src/sr_f1/freeze.py",
+        "src/sr_f1/runtime.py",
+        "src/sr_f1/orchestration.py",
+        "scripts/sr_f1/submit_matrix.py",
+    }
+)
+
 
 def _required(value, expected, message):
     if value != expected:
@@ -349,6 +359,22 @@ def _verify_original_engine_memory_repair(root, actual_source=None):
 
 
 def verify_engine_storage_repair(root, actual_source=None):
+    """Preserve the storage receipt's identity through an authenticated I/O repair."""
+    if (Path(root) / "ENGINE_IO_REPAIR.json").exists():
+        io = verify_engine_io_repair(root, actual_source=actual_source)
+        return {
+            "repair_id": ENGINE_STORAGE_REPAIR_ID,
+            "repair_sha256": file_hash(Path(root) / "ENGINE_STORAGE_REPAIR.json"),
+            "source_commit": io["source_commit"],
+            "original_execution_freeze_sha256": io["original_execution_freeze_sha256"],
+            "gpu_worker_constraint": io["gpu_worker_constraint"],
+            "minimum_gpu_host_memory_gb": io["minimum_gpu_host_memory_gb"],
+            "engine_io_repair_sha256": io["repair_sha256"],
+        }
+    return _verify_original_engine_storage_repair(root, actual_source=actual_source)
+
+
+def _verify_original_engine_storage_repair(root, actual_source=None):
     """Bind bounded exact storage and supported Slurm resources to unstarted history."""
     from .prepare import source_identity
 
@@ -460,6 +486,225 @@ def verify_engine_storage_repair(root, actual_source=None):
         "original_execution_freeze_sha256": expected["original_execution_freeze_sha256"],
         "gpu_worker_constraint": expected["gpu_worker_constraint"],
         "minimum_gpu_host_memory_gb": expected["minimum_gpu_host_memory_gb"],
+    }
+
+
+def verify_engine_io_repair(root, actual_source=None):
+    """Authenticate external derived storage and an interrupted ENGINE restart.
+
+    Original receipts, recovery bytes and consumed markers remain immutable.
+    Only preserved STATE/LATEST participate: a subsequent valid trial may advance.
+    """
+    from .prepare import source_identity
+
+    root = Path(root).resolve(strict=True)
+    repair_path = root / "ENGINE_IO_REPAIR.json"
+    repair = read_json(repair_path)
+    declared_source = root / "code_before_engine_io_20261010"
+    if declared_source.is_symlink():
+        raise PermissionError("Pre-I/O source snapshot must be a real directory")
+    saved_source = bounded_path(root, declared_source.name)
+    before = read_json(saved_source / "SOURCE_DEPLOYMENT.json")
+    _required(
+        _preserved_source_files(saved_source, include_amendments=True),
+        before.get("source_file_hashes"),
+        "Pre-I/O source changed",
+    )
+    parent = _verify_original_engine_storage_repair(root, actual_source=before)
+    quota_root = "/projects/_hdd/varunhdd"
+    expected = {
+        "repair_id": ENGINE_IO_REPAIR_ID,
+        "status": "AUTHORIZED_TECHNICAL_IO_REPAIR",
+        "plan_id": PLAN_ID,
+        "run_root": str(root),
+        "original_execution_freeze_sha256": parent["original_execution_freeze_sha256"],
+        "previous_engine_storage_repair_sha256": parent["repair_sha256"],
+        "previous_source_commit": before["source_commit"],
+        "previous_source_tree_sha256": before["source_tree_sha256"],
+        "preserved_source_relative_path": saved_source.name,
+        "scientific_protocol_unchanged": True,
+        "old_onetime_consumed_preserved": True,
+        "failed_attempt_id": "ENGINE_attempt0002",
+        "failed_job_id": "196156",
+        "gpu_worker_constraint": "highmem",
+        "minimum_gpu_host_memory_gb": 80,
+        "cpu_activation_budget_bytes": 48 * 1024**3,
+        "activation_storage": "BOUNDED_CPU_EXACT_DTYPE_EXTERNAL_DISK_SPILL",
+        "quota_root": quota_root,
+        "activation_spill_directory": f"{quota_root}/louis-ssvc/{root.name}_activation_offload",
+        "quota_reserve_bytes": 10 * 1024**3,
+    }
+    for key, value in expected.items():
+        _required(repair.get(key), value, "ENGINE I/O repair differs: " + key)
+    if not repair.get("authorized_user_message") or not repair.get("authorized_at"):
+        raise PermissionError("I/O repair lacks authorization provenance")
+    prefix = "technical_incidents/io_exit120_20261010/"
+    required = {
+        prefix + name
+        for name in (
+            "PRESERVATION.json",
+            "TERMINAL_JOBS.json",
+            "CPU_STATE_REVIEW.json",
+            "RECOVERY_REVIEW.json",
+        )
+    }
+    artifacts = _checked_source_files(repair.get("historical_artifact_hashes"), "I/O history")
+    if not required.issubset(artifacts) or any(not name.startswith(prefix) for name in artifacts):
+        raise PermissionError("I/O history inventory is missing or unbounded")
+    for name, expected_hash in artifacts.items():
+        _required(file_hash(bounded_path(root, name)), expected_hash, "I/O history changed")
+    preservation = read_json(root / (prefix + "PRESERVATION.json"))
+    files = preservation.get("artifact_hashes")
+    if not isinstance(files, dict) or not files:
+        raise PermissionError("I/O preservation inventory empty")
+    hashes = _checked_source_files(
+        {
+            name: entry.get("sha256") if isinstance(entry, dict) else None
+            for name, entry in files.items()
+        },
+        "I/O preserved",
+    )
+    _required(preservation.get("files"), len(hashes), "I/O preservation file count differs")
+    preserved_bytes = 0
+    evidence = root / (prefix + "evidence")
+    for name, expected_hash in hashes.items():
+        saved = bounded_path(evidence, name)
+        if (evidence / name).is_symlink():
+            raise PermissionError("Preserved I/O artifact is a symlink")
+        _required(file_hash(saved), expected_hash, "Preserved I/O artifact changed")
+        size = files[name].get("bytes")
+        if type(size) is not int or size < 0:
+            raise PermissionError("Preserved I/O artifact size invalid")
+        _required(saved.stat().st_size, size, "Preserved I/O artifact size changed")
+        preserved_bytes += size
+    _required(preservation.get("bytes"), preserved_bytes, "I/O preservation byte count differs")
+    terminal = read_json(root / (prefix + "TERMINAL_JOBS.json"))
+    for key, value in {
+        "controller_terminal": True,
+        "gpu_terminal": True,
+        "controller_job_id": "196155",
+        "gpu_job_id": "196156",
+        "gpu_exit_code": "120:0",
+    }.items():
+        _required(
+            terminal.get(key), value, "I/O failed allocation is not verified terminal: " + key
+        )
+    original_recovery = read_json(root / "ENGINE_MEMORY_REPAIR.json")["zero_update_recovery"]
+    original_hashes = _checked_source_files(original_recovery.get("artifact_hashes"), "Original")
+    for name, expected_hash in original_hashes.items():
+        _required(hashes.get(name), expected_hash, "I/O history changed original recovery bytes")
+    review = read_json(root / (prefix + "CPU_STATE_REVIEW.json"))
+    for key, value in {
+        "status": "PASS_ZERO_UPDATE_FULL_STATE",
+        "committed_logical_step": 0,
+        "physical_optimizer_updates": 0,
+        "optimizer_empty": True,
+        "raw_rollouts": 128,
+        "raw_record_hashes_verified": True,
+        "learning_rate": 1e-4,
+        "checkpoint_state_hash": original_recovery["original_checkpoint_state_hash"],
+    }.items():
+        _required(review.get(key), value, "Invalid I/O zero-update review: " + key)
+    recovery = read_json(root / (prefix + "RECOVERY_REVIEW.json"))
+    for key, value in {
+        "status": "PASS_INTERRUPTED_ENGINE_RESTART",
+        "science_attempts": 0,
+        "test_sealed": True,
+        "once_activation_consumed": True,
+        "once_process_consumed": True,
+        "journal_integrity": True,
+        "original_artifact_hashes_unchanged": True,
+    }.items():
+        _required(recovery.get(key), value, "Invalid I/O recovery review: " + key)
+    state_name = "orchestration/STATE.json"
+    if state_name not in hashes:
+        raise PermissionError("I/O history lacks preserved orchestration state")
+    state = read_json(evidence / state_name)
+    if state.get("test_sealed") is not True or any(
+        task.get("attempts")
+        for name, task in state.get("tasks", {}).items()
+        if name not in {"COMMON_START", "ENGINE"}
+    ):
+        raise PermissionError("I/O repair does not preserve sealed pre-science history")
+    attempts = state.get("tasks", {}).get("ENGINE", {}).get("attempts", [])
+    if not any(
+        attempt.get("attempt_id") == expected["failed_attempt_id"]
+        and str(attempt.get("job_id")) == expected["failed_job_id"]
+        for attempt in attempts
+    ):
+        raise PermissionError("I/O history does not include the failed ENGINE allocation")
+    marker_prefix = "technical_incidents/engine_memory_20261010/"
+    marker_names = [
+        marker_prefix + name
+        for name in ("ZERO_UPDATE_REUSE_ACTIVATED.json", "ZERO_UPDATE_REUSE_PROCESS.json")
+    ]
+    for name in marker_names:
+        if name not in hashes:
+            raise PermissionError("I/O history lacks consumed recovery markers")
+        _required(file_hash(bounded_path(root, name)), hashes[name], "Consumed marker changed")
+    activation, process = [read_json(evidence / name) for name in marker_names]
+    memory_sha = file_hash(root / "ENGINE_MEMORY_REPAIR.json")
+    for key, value in {
+        "plan_id": PLAN_ID,
+        "repair_sha256": memory_sha,
+        "staged_track_relative_path": original_recovery["staged_track_relative_path"],
+        "archived_track_relative_path": original_recovery["archived_track_relative_path"],
+        "original_raw_count": 128,
+        "engine_mode": "natural",
+        "resume_step": 0,
+        "original_checkpoint_state_hash": original_recovery["original_checkpoint_state_hash"],
+        "staged_inventory_sha256": object_hash(original_hashes),
+    }.items():
+        _required(activation.get(key), value, "Consumed activation identity changed: " + key)
+    for key, value in {
+        "repair_sha256": memory_sha,
+        "activation_sha256": hashes[marker_names[0]],
+        "resume_step": 0,
+    }.items():
+        _required(process.get(key), value, "Consumed process identity changed: " + key)
+    if any(
+        type(pid) is not int or pid <= 0
+        for pid in (
+            activation.get("activating_pid"),
+            process.get("pid"),
+        )
+    ):
+        raise PermissionError("Consumed ENGINE process identity missing")
+    actual = source_identity() if actual_source is None else actual_source
+    previous_files = _checked_source_files(before.get("source_file_hashes"), "Pre-I/O")
+    current_files = _checked_source_files(actual.get("source_file_hashes"), "I/O actual")
+    _required(actual.get("source_dirty_files"), [], "I/O repair requires committed source")
+    _required(actual.get("source_tree_sha256"), object_hash(current_files), "I/O tree invalid")
+    changed = sorted(
+        name
+        for name in previous_files.keys() | current_files.keys()
+        if previous_files.get(name) != current_files.get(name)
+    )
+    _required(set(changed), ENGINE_IO_ALLOWED_FILES, "I/O repair changed scientific source")
+    _required(repair.get("changed_files"), changed, "I/O repair file inventory differs")
+    for key in ("source_commit", "source_tree_sha256", "source_file_hashes"):
+        _required(repair.get(key), actual.get(key), "I/O source identity differs: " + key)
+    if not re.fullmatch(r"[0-9a-f]{40}", actual.get("source_commit") or ""):
+        raise PermissionError("I/O repair source commit missing")
+    return {
+        "repair_id": ENGINE_IO_REPAIR_ID,
+        "repair_sha256": file_hash(repair_path),
+        "source_commit": actual["source_commit"],
+        **{
+            key: expected[key]
+            for key in (
+                "original_execution_freeze_sha256",
+                "previous_engine_storage_repair_sha256",
+                "failed_attempt_id",
+                "failed_job_id",
+                "gpu_worker_constraint",
+                "minimum_gpu_host_memory_gb",
+                "activation_spill_directory",
+                "quota_root",
+                "quota_reserve_bytes",
+                "cpu_activation_budget_bytes",
+            )
+        },
     }
 
 

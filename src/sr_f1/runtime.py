@@ -8,9 +8,11 @@ from __future__ import annotations
 
 import contextlib
 import copy
+import errno
 import hashlib
 import math
 import os
+import sys
 import tempfile
 import threading
 import time
@@ -59,6 +61,47 @@ TARGET_PIXELS = 786432
 PLAN_ID = "SR-F1-20261009"
 
 
+def _activation_directory(path, *, create=False):
+    """Check every component before touching the authenticated scratch location."""
+    path = Path(path)
+    if not path.is_absolute() or ".." in path.parts:
+        raise PermissionError("Activation scratch must be an absolute canonical path")
+    current = Path(path.anchor)
+    for component in path.parts[1:]:
+        current /= component
+        if current.is_symlink():
+            raise PermissionError("Activation scratch cannot follow a symlink")
+        if create:
+            current.mkdir(mode=0o700, exist_ok=True)
+        if not current.is_dir():
+            raise PermissionError("Activation scratch component is not a directory")
+    return path
+
+
+def _activation_failure_receipt(directory, error, statistics):
+    """Best effort metadata only; a failed diagnostic must not hide its cause."""
+    if directory is None:
+        return
+    try:
+        directory = _activation_directory(directory)
+        atomic_json(
+            directory / f"failure-{os.getpid()}-{time.time_ns()}.json",
+            dict(
+                status="ACTIVATION_IO_TECHNICAL_FAILURE",
+                pid=os.getpid(),
+                attempt_id=os.environ.get("SR_F1_ATTEMPT_ID"),
+                error_type=type(error).__name__,
+                error=str(error),
+                errno=getattr(error, "errno", None),
+                notes=list(getattr(error, "__notes__", [])),
+                activation_offload=copy.deepcopy(statistics),
+            ),
+            exclusive=True,
+        )
+    except BaseException as secondary:
+        error.add_note(f"Activation failure receipt also failed: {secondary!r}")
+
+
 class _DiskActivation:
     """One saved-tensor reference; retain_graph keeps this reference alive."""
 
@@ -69,7 +112,11 @@ class _DiskActivation:
     def __del__(self):
         store = getattr(self, "store", None)
         if store is not None:
-            store.release()
+            try:
+                store.release()
+            except BaseException as error:
+                store.statistics["cleanup_error"] = repr(error)
+                _activation_failure_receipt(store.path.parent, error, store.statistics)
 
 
 class _ActivationSpillFile:
@@ -78,22 +125,92 @@ class _ActivationSpillFile:
     chunk_bytes = 32 << 20
     flush_bytes = 64 << 20
 
-    def __init__(self, output_root, statistics):
+    safety_reserve_bytes = 10 << 30
+
+    def __init__(self, output_root, statistics, *, spill_directory=None, quota_root=None):
         if output_root is None:
             raise PermissionError("Activation spill requires an explicit runtime output_root")
         root = Path(output_root).resolve(strict=True)
-        directory = root
-        for component in ("technical_scratch", "activation_offload"):
-            directory = directory / component
-            if directory.is_symlink():
-                raise PermissionError("Activation scratch cannot follow a symlink")
-            directory.mkdir(mode=0o700, exist_ok=True)
+        self.statistics, self.offset = statistics, 0
+        self.quota_root = None
+        self.quota_baseline_bytes = None
+        if (spill_directory is None) != (quota_root is None):
+            raise PermissionError("Activation scratch and quota root must be supplied together")
+        if spill_directory is not None:
+            self.quota_root = _activation_directory(quota_root)
+            expected = self.quota_root / "louis-ssvc" / (root.name + "_activation_offload")
+            if Path(spill_directory) != expected:
+                raise PermissionError(
+                    "Activation scratch is not the dedicated current-run directory"
+                )
+            # Capacity is checked before creating a directory or scratch file.
+            self._check_capacity(self.flush_bytes)
+            directory = _activation_directory(expected, create=True)
+            if directory.stat().st_uid != os.geteuid() or directory.stat().st_mode & 0o077:
+                raise PermissionError(
+                    "Activation scratch leaf must be private and owned by this user"
+                )
+        else:
+            directory = root
+            for component in ("technical_scratch", "activation_offload"):
+                directory = directory / component
+                if directory.is_symlink():
+                    raise PermissionError("Activation scratch cannot follow a symlink")
+                directory.mkdir(mode=0o700, exist_ok=True)
         self.fd, filename = tempfile.mkstemp(prefix=f"{os.getpid()}-", suffix=".bin", dir=directory)
         self.path, self.statistics = Path(filename), statistics
         self.offset = self.unflushed_bytes = self.references = 0
         self.finished = self.closed = False
         self.lock = threading.RLock()
         statistics.update(spill_file_created=True, spill_path=str(self.path))
+
+    def _check_capacity(self, required_bytes):
+        if self.quota_root is None:
+            return
+        _activation_directory(self.quota_root)
+        try:
+            maximum = int(os.getxattr(self.quota_root, "ceph.quota.max_bytes"))
+            used = int(os.getxattr(self.quota_root, "ceph.dir.rbytes"))
+            filesystem = os.statvfs(self.quota_root)
+        except (OSError, ValueError, AttributeError) as error:
+            raise PermissionError("Cannot verify activation Ceph quota and free space") from error
+        if maximum <= 0 or used < 0:
+            raise PermissionError("Activation Ceph quota must have a positive authenticated limit")
+        if self.quota_baseline_bytes is None:
+            self.quota_baseline_bytes = used
+        # Ceph recursive usage is asynchronous. Account for our own writes even
+        # when a fresh xattr has not yet caught up with this file's growth.
+        effective_used = max(used, self.quota_baseline_bytes + self.offset)
+        available = filesystem.f_bavail * filesystem.f_frsize
+        effective_available = min(maximum - effective_used, available)
+        check_index = self.statistics.get("capacity_check_count", 0) + 1
+        observation = dict(
+            check_index=check_index,
+            time_ns=time.time_ns(),
+            quota_root=str(self.quota_root),
+            quota_max_bytes=maximum,
+            quota_used_bytes=used,
+            effective_quota_used_bytes=effective_used,
+            statvfs_available_bytes=available,
+            effective_available_bytes=effective_available,
+            spill_written_bytes=self.offset,
+            requested_window_bytes=required_bytes,
+            safety_reserve_bytes=self.safety_reserve_bytes,
+        )
+        retained = self.statistics.setdefault("capacity_observations", [])
+        first = retained[0] if retained else observation
+        minimum = min(
+            [*retained, observation],
+            key=lambda item: (item["effective_available_bytes"], item["check_index"]),
+        )
+        # Full quota checks still run for every window. The durable per-sequence
+        # ledger needs only first/latest/worst, not thousands of duplicate rows.
+        selected = {item["check_index"]: item for item in (first, minimum, observation)}
+        retained[:] = [selected[index] for index in sorted(selected)]
+        self.statistics["capacity_check_count"] = check_index
+        self.statistics["minimum_available_bytes"] = minimum["effective_available_bytes"]
+        if effective_available < self.safety_reserve_bytes + required_bytes:
+            raise OSError(errno.ENOSPC, "Activation spill would consume protected quota headroom")
 
     def _drop_cache(self, offset, size):
         if hasattr(os, "posix_fadvise") and hasattr(os, "POSIX_FADV_DONTNEED"):
@@ -118,6 +235,11 @@ class _ActivationSpillFile:
             try:
                 os.lseek(self.fd, self.offset, os.SEEK_SET)
                 for start in range(0, size, self.chunk_bytes):
+                    width = min(self.chunk_bytes, size - start)
+                    if self.unflushed_bytes and self.unflushed_bytes + width > self.flush_bytes:
+                        self._flush()
+                    if not self.unflushed_bytes:
+                        self._check_capacity(max(self.flush_bytes, width))
                     chunk = data[start : start + self.chunk_bytes].cpu()
                     view = memoryview(chunk.numpy())
                     if os.write(self.fd, view) != len(view):
@@ -131,8 +253,8 @@ class _ActivationSpillFile:
                 self.statistics["disk_storage_bytes"] += size
                 self.statistics["disk_saved_tensors"] += 1
                 return record
-            except BaseException:
-                self.abort()
+            except BaseException as error:
+                self.abort(error)
                 raise
 
     def restore(self, record, metadata):
@@ -159,8 +281,8 @@ class _ActivationSpillFile:
                 self._drop_cache(record.offset, record.size)
                 self.statistics["disk_read_bytes"] += record.size
                 return storage
-            except BaseException:
-                self.abort()
+            except BaseException as error:
+                self.abort(error)
                 raise
 
     def finish_forward(self):
@@ -172,8 +294,8 @@ class _ActivationSpillFile:
                 self.finished = True
                 if not self.references:
                     self._close()
-            except BaseException:
-                self.abort()
+            except BaseException as error:
+                self.abort(error)
                 raise
 
     def release(self):
@@ -185,19 +307,42 @@ class _ActivationSpillFile:
     def _close(self):
         if self.closed:
             return
-        os.close(self.fd)
+        # Do not retry an indeterminate close and risk closing a reused fd.
         self.closed = True
-        self.path.unlink()
-        self.statistics["spill_file_cleaned"] = True
+        close_error = None
+        try:
+            os.close(self.fd)
+        except BaseException as error:
+            close_error = error
+        # A delayed close error can arrive after the descriptor has closed.
+        # Removing our private derived file is independent of that result.
+        try:
+            self.path.unlink()
+        except BaseException as error:
+            if close_error is None:
+                raise
+            close_error.add_note(f"Activation scratch unlink also failed: {error!r}")
+        else:
+            self.statistics["spill_file_cleaned"] = True
+        if close_error is not None:
+            raise close_error
 
-    def abort(self):
+    def abort(self, error=None):
         with self.lock:
             self.statistics["spill_aborted"] = True
-            self._close()
+            try:
+                self._close()
+            except BaseException as secondary:
+                self.statistics["cleanup_error"] = repr(secondary)
+                if error is None:
+                    raise
+                error.add_note(f"Activation scratch cleanup also failed: {secondary!r}")
+            if error is not None:
+                _activation_failure_receipt(self.path.parent, error, self.statistics)
 
 
 class SavedActivationOffload:
-    """Bound CPU activation storage and spill excess exact bytes to run-local disk.
+    """Bound CPU activation storage and spill exact bytes to authenticated scratch.
 
     Native CUDA forward/backward kernels and the differentiable recurrent cache
     are unchanged. Parameter-storage views stay resident: copying every saved
@@ -209,12 +354,21 @@ class SavedActivationOffload:
     policy = "saved_activation_cpu48g_lossless_disk_parameter_resident_v2"
     default_cpu_budget_bytes = 48 << 30
 
-    def __init__(self, model, *, output_root=None, cpu_budget_bytes=default_cpu_budget_bytes):
+    def __init__(
+        self,
+        model,
+        *,
+        output_root=None,
+        cpu_budget_bytes=default_cpu_budget_bytes,
+        spill_directory=None,
+        quota_root=None,
+    ):
         import torch
 
         if type(cpu_budget_bytes) is not int or cpu_budget_bytes < 0:
             raise ValueError("Activation CPU budget must be a nonnegative integer")
         self.output_root, self.cpu_budget_bytes = output_root, cpu_budget_bytes
+        self.spill_directory, self.quota_root = spill_directory, quota_root
         self.parameter_storages = {self._storage_key(parameter) for parameter in model.parameters()}
         self.hooks = torch.autograd.graph.saved_tensors_hooks(self.pack, self.unpack)
         self.store = None
@@ -237,6 +391,9 @@ class SavedActivationOffload:
             spill_file_cleaned=False,
             spill_aborted=False,
             io_chunk_bytes=_ActivationSpillFile.chunk_bytes,
+            capacity_observations=[],
+            capacity_check_count=0,
+            minimum_available_bytes=None,
         )
 
     @staticmethod
@@ -277,7 +434,12 @@ class SavedActivationOffload:
             packed = "activation", metadata, saved
         else:
             if self.store is None:
-                self.store = _ActivationSpillFile(self.output_root, self.statistics)
+                self.store = _ActivationSpillFile(
+                    self.output_root,
+                    self.statistics,
+                    spill_directory=self.spill_directory,
+                    quota_root=self.quota_root,
+                )
             packed = "disk_activation", metadata, self.store.append(flat)
         self.statistics["saved_activation_tensors"] += 1
         self.statistics["saved_activation_bytes"] += size
@@ -290,8 +452,11 @@ class SavedActivationOffload:
         kind, first, second = packed
         if kind == "parameter":
             if first._version != second:
-                self.abort()
-                raise RuntimeError("Resident parameter changed before activation-offload backward")
+                error = RuntimeError(
+                    "Resident parameter changed before activation-offload backward"
+                )
+                self.abort(error)
+                raise error
             return first
         try:
             saved = (
@@ -303,8 +468,8 @@ class SavedActivationOffload:
             self.statistics["unpacked_activation_tensors"] += 1
             self.statistics["unpacked_activation_bytes"] += result.numel() * result.element_size()
             return result
-        except BaseException:
-            self.abort()
+        except BaseException as error:
+            self.abort(error)
             raise
 
     def __enter__(self):
@@ -315,13 +480,13 @@ class SavedActivationOffload:
         self.hooks.__exit__(*args)
         if self.store is not None:
             if args[0] is not None:
-                self.store.abort()
+                self.store.abort(args[1])
             else:
                 self.store.finish_forward()
 
-    def abort(self):
+    def abort(self, error=None):
         if self.store is not None:
-            self.store.abort()
+            self.store.abort(error)
 
 
 def generation_recipe(*, max_new_tokens=768, do_sample=True):
@@ -351,10 +516,13 @@ class SRRuntime(QwenRuntime):
         account=None,
         protocol_amendment=None,
         output_root=None,
+        spill_directory=None,
+        quota_root=None,
     ):
         self.output_root = (
             Path(output_root).resolve(strict=True) if output_root is not None else None
         )
+        self.activation_spill_directory, self.activation_quota_root = spill_directory, quota_root
         amended = amendment_enabled(protocol_amendment)
         self.protocol_amendment = copy.deepcopy(protocol_amendment)
         if dtype != "bfloat16" or attention_backend != "eager":
@@ -838,6 +1006,8 @@ class SRRuntime(QwenRuntime):
             SavedActivationOffload(
                 self.model,
                 output_root=getattr(self, "output_root", None),
+                spill_directory=getattr(self, "activation_spill_directory", None),
+                quota_root=getattr(self, "activation_quota_root", None),
                 cpu_budget_bytes=getattr(
                     self,
                     "activation_cpu_budget_bytes",
@@ -899,19 +1069,44 @@ class SRRuntime(QwenRuntime):
             # One durable accounting row per sequence, including failed forwards.
             # The sequence was reserved before execution; these are actual calls,
             # with no GPU-hour or token-budget acceptance threshold.
-            if not complete and offload is not None:
-                offload.abort()
-            self.reserve(
-                "cached_training_model_forward_calls",
-                calls["prefill_model_forward_calls"] + calls["decode_model_forward_calls"],
-                purpose=purpose,
-                **calls,
-                requested_completion_tokens=len(tokens),
-                scored_completion_tokens=len(selected),
-                vision_forward_calls=self.image_calls - before,
-                status="COMPLETE" if complete else "TECHNICAL_FAILED",
-                activation_offload=dict(offload.statistics) if offload is not None else None,
-            )
+            primary = sys.exc_info()[1]
+            try:
+                if not complete and offload is not None:
+                    offload.abort(primary)
+                self.reserve(
+                    "cached_training_model_forward_calls",
+                    calls["prefill_model_forward_calls"] + calls["decode_model_forward_calls"],
+                    purpose=purpose,
+                    **calls,
+                    requested_completion_tokens=len(tokens),
+                    scored_completion_tokens=len(selected),
+                    vision_forward_calls=self.image_calls - before,
+                    status="COMPLETE" if complete else "TECHNICAL_FAILED",
+                    activation_offload=copy.deepcopy(offload.statistics)
+                    if offload is not None
+                    else None,
+                )
+            except BaseException as secondary:
+                if offload is not None:
+                    offload.statistics["accounting_error"] = dict(
+                        error_type=type(secondary).__name__,
+                        error=str(secondary),
+                        errno=getattr(secondary, "errno", None),
+                    )
+                if primary is None:
+                    _activation_failure_receipt(
+                        getattr(self, "activation_spill_directory", None),
+                        secondary,
+                        offload.statistics if offload is not None else {},
+                    )
+                    raise
+                primary.add_note(f"Forward failure accounting also failed: {secondary!r}")
+            if primary is not None:
+                _activation_failure_receipt(
+                    getattr(self, "activation_spill_directory", None),
+                    primary,
+                    offload.statistics if offload is not None else {},
+                )
 
 
 def runtime_account(root, task_id):
@@ -973,6 +1168,14 @@ def load_runtime(plan, root, *, state_id=None, step=96, account=None):
         or identity.get("model_weights_hash") != plan["model"]["prior_composite_weight_hash"]
     ):
         raise PermissionError("SR-F1 requires the exact original untrained 9B snapshot")
+    scratch = {}
+    if (root / "ENGINE_IO_REPAIR.json").exists():
+        from .freeze import verify_engine_io_repair
+
+        repair = verify_engine_io_repair(root)
+        scratch = dict(
+            spill_directory=repair["activation_spill_directory"], quota_root=repair["quota_root"]
+        )
     determinism = configure_audited_backend()
     hardware = actual_cuda_identity()
     runtime = SRRuntime(
@@ -980,6 +1183,7 @@ def load_runtime(plan, root, *, state_id=None, step=96, account=None):
         account=account,
         protocol_amendment=plan.get("protocol_amendment"),
         output_root=root,
+        **scratch,
     )
     runtime.training_learning_rate = plan["training"]["lr"]
     runtime.verify_identity(identity)

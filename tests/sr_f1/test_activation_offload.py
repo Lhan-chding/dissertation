@@ -1,8 +1,10 @@
 """Exact CPU/disk offload checks; actual 9B CUDA ENGINE qualification is separate."""
 
 import gc
+import json
 import os
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 import torch
@@ -392,3 +394,276 @@ def test_failed_restore_allocation_aborts_private_spill(tmp_path, monkeypatch):
     with pytest.raises(RuntimeError, match="restore allocation"):
         offload.unpack(packed)
     assert offload.statistics["spill_aborted"] and offload.statistics["spill_file_cleaned"]
+
+
+def external_spill_fixture(tmp_path, monkeypatch, *, maximum=5 << 40, used=1 << 40):
+    quota = tmp_path.resolve() / "quota"
+    quota.mkdir()
+    run = tmp_path.resolve() / "sr_f11_fixture"
+    run.mkdir()
+    directory = quota / "louis-ssvc" / (run.name + "_activation_offload")
+    values = {"ceph.quota.max_bytes": str(maximum), "ceph.dir.rbytes": str(used)}
+    monkeypatch.setattr(os, "getxattr", lambda path, key: values[key].encode(), raising=False)
+    monkeypatch.setattr(os, "statvfs", lambda path: SimpleNamespace(f_bavail=195 << 40, f_frsize=1))
+    return run, quota, directory, values
+
+
+@pytest.mark.parametrize("dtype", [torch.float32, torch.bfloat16])
+def test_external_quota_spill_keeps_exact_dual_backward(tmp_path, monkeypatch, dtype):
+    run, quota, directory, _ = external_spill_fixture(tmp_path, monkeypatch)
+    value = torch.arange(16, dtype=dtype).div(20).requires_grad_()
+    offload = SavedActivationOffload(
+        torch.nn.Identity(),
+        output_root=run,
+        cpu_budget_bytes=0,
+        spill_directory=directory,
+        quota_root=quota,
+    )
+    with offload:
+        actual = value.square().tanh().sum()
+    expected = value.square().tanh().sum()
+    assert torch.equal(actual, expected)
+    assert torch.equal(
+        torch.autograd.grad(actual, value, retain_graph=True)[0],
+        torch.autograd.grad(expected, value, retain_graph=True)[0],
+    )
+    assert list(directory.glob("*.bin"))
+    assert torch.equal(
+        torch.autograd.grad(actual, value)[0], torch.autograd.grad(expected, value)[0]
+    )
+    assert not list(directory.glob("*.bin"))
+    assert offload.statistics["spill_file_cleaned"]
+    observations = offload.statistics["capacity_observations"]
+    assert observations and observations[0]["quota_max_bytes"] == 5 << 40
+    assert observations[0]["safety_reserve_bytes"] == 10 << 30
+    assert not (run / "technical_scratch").exists()
+
+
+def test_ceph_quota_guard_rejects_before_file_creation_despite_global_free_space(
+    tmp_path, monkeypatch
+):
+    from sr_f1.runtime import _ActivationSpillFile
+
+    run, quota, directory, _ = external_spill_fixture(
+        tmp_path,
+        monkeypatch,
+        maximum=(10 << 30) + (16 << 20),
+        used=0,
+    )
+    statistics = {}
+    with pytest.raises(OSError, match="protected quota") as failure:
+        _ActivationSpillFile(run, statistics, spill_directory=directory, quota_root=quota)
+    assert failure.value.errno == 28
+    assert not directory.exists()
+    assert statistics["capacity_observations"][0]["statvfs_available_bytes"] == 195 << 40
+
+
+def test_quota_windows_account_for_own_growth_when_ceph_usage_lags(tmp_path, monkeypatch):
+    from sr_f1.runtime import _ActivationSpillFile
+
+    run, quota, directory, _ = external_spill_fixture(tmp_path, monkeypatch, maximum=128, used=80)
+    monkeypatch.setattr(_ActivationSpillFile, "safety_reserve_bytes", 16)
+    monkeypatch.setattr(_ActivationSpillFile, "flush_bytes", 16)
+    monkeypatch.setattr(_ActivationSpillFile, "chunk_bytes", 8)
+    offload = SavedActivationOffload(
+        torch.nn.Identity(),
+        output_root=run,
+        cpu_budget_bytes=0,
+        spill_directory=directory,
+        quota_root=quota,
+    )
+    with pytest.raises(OSError, match="protected quota"), offload:
+        offload.pack(torch.ones(16))
+    assert offload.store.offset == 32
+    assert offload.statistics["capacity_observations"][-1]["effective_quota_used_bytes"] == 112
+    assert offload.statistics["spill_aborted"] and offload.statistics["spill_file_cleaned"]
+    assert not list(directory.glob("*.bin"))
+
+
+def test_statvfs_guard_also_applies_when_quota_has_space(tmp_path, monkeypatch):
+    from sr_f1.runtime import _ActivationSpillFile
+
+    run, quota, directory, _ = external_spill_fixture(tmp_path, monkeypatch)
+    monkeypatch.setattr(os, "statvfs", lambda path: SimpleNamespace(f_bavail=1, f_frsize=4096))
+    with pytest.raises(OSError, match="protected quota"):
+        _ActivationSpillFile(run, {}, spill_directory=directory, quota_root=quota)
+    assert not directory.exists()
+
+
+def test_capacity_statistics_stay_bounded_across_one_thousand_checks(tmp_path, monkeypatch):
+    from sr_f1.runtime import _ActivationSpillFile
+
+    run, quota, directory, values = external_spill_fixture(tmp_path, monkeypatch)
+    statistics = {}
+    store = _ActivationSpillFile(run, statistics, spill_directory=directory, quota_root=quota)
+    try:
+        for index in range(1000):
+            values["ceph.dir.rbytes"] = str((3 if index == 499 else 2) << 40)
+            store._check_capacity(store.flush_bytes)
+            assert len(statistics["capacity_observations"]) <= 3
+        assert statistics["capacity_check_count"] == 1001
+        assert statistics["minimum_available_bytes"] == 2 << 40
+        assert [row["check_index"] for row in statistics["capacity_observations"]] == [
+            1,
+            501,
+            1001,
+        ]
+        assert statistics["capacity_observations"][-1]["effective_available_bytes"] == 3 << 40
+    finally:
+        store.finish_forward()
+
+
+@pytest.mark.parametrize("value", ["0", "-1", "not-an-integer"])
+def test_missing_or_invalid_ceph_quota_fails_closed(tmp_path, monkeypatch, value):
+    from sr_f1.runtime import _ActivationSpillFile
+
+    run, quota, directory, values = external_spill_fixture(tmp_path, monkeypatch)
+    values["ceph.quota.max_bytes"] = value
+    with pytest.raises(PermissionError, match="quota"):
+        _ActivationSpillFile(run, {}, spill_directory=directory, quota_root=quota)
+    assert not directory.exists()
+
+
+def test_unavailable_ceph_quota_fails_closed(tmp_path, monkeypatch):
+    from sr_f1.runtime import _ActivationSpillFile
+
+    run, quota, directory, _ = external_spill_fixture(tmp_path, monkeypatch)
+
+    def unavailable(*args):
+        raise OSError(95, "xattrs unavailable")
+
+    monkeypatch.setattr(os, "getxattr", unavailable)
+    with pytest.raises(PermissionError, match="verify activation Ceph"):
+        _ActivationSpillFile(run, {}, spill_directory=directory, quota_root=quota)
+    assert not directory.exists()
+
+
+@pytest.mark.parametrize("component", ["ancestor", "parent", "leaf"])
+def test_external_spill_rejects_symlink_in_every_path_component(tmp_path, monkeypatch, component):
+    from sr_f1.runtime import _ActivationSpillFile
+
+    run, quota, directory, _ = external_spill_fixture(tmp_path, monkeypatch)
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    if component == "ancestor":
+        link = tmp_path / "linked-quota"
+        link.symlink_to(quota, target_is_directory=True)
+        quota, directory = link, link / "louis-ssvc" / directory.name
+    elif component == "parent":
+        directory.parent.symlink_to(outside, target_is_directory=True)
+    else:
+        directory.parent.mkdir()
+        directory.symlink_to(outside, target_is_directory=True)
+    with pytest.raises(PermissionError, match="symlink"):
+        _ActivationSpillFile(run, {}, spill_directory=directory, quota_root=quota)
+    assert not list(outside.iterdir())
+
+
+def test_external_spill_requires_matching_run_leaf_and_private_permissions(tmp_path, monkeypatch):
+    from sr_f1.runtime import _ActivationSpillFile
+
+    run, quota, directory, _ = external_spill_fixture(tmp_path, monkeypatch)
+    with pytest.raises(PermissionError, match="current-run"):
+        _ActivationSpillFile(run, {}, spill_directory=quota / "wrong", quota_root=quota)
+    directory.mkdir(parents=True, mode=0o755)
+    directory.chmod(0o755)
+    with pytest.raises(PermissionError, match="private"):
+        _ActivationSpillFile(run, {}, spill_directory=directory, quota_root=quota)
+    assert not list(directory.iterdir())
+    directory.chmod(0o700)
+    monkeypatch.setattr(os, "geteuid", lambda: directory.stat().st_uid + 1)
+    with pytest.raises(PermissionError, match="owned"):
+        _ActivationSpillFile(run, {}, spill_directory=directory, quota_root=quota)
+    assert not list(directory.iterdir())
+
+
+def test_primary_disk_error_survives_cleanup_error(tmp_path, monkeypatch):
+    offload = SavedActivationOffload(torch.nn.Identity(), output_root=tmp_path, cpu_budget_bytes=0)
+    original_unlink = Path.unlink
+
+    def write_failure(*args):
+        raise OSError(28, "primary write failure")
+
+    def unlink_failure(path, *args, **kwargs):
+        if path.suffix == ".bin":
+            raise OSError(5, "secondary unlink failure")
+        return original_unlink(path, *args, **kwargs)
+
+    monkeypatch.setattr(os, "write", write_failure)
+    monkeypatch.setattr(Path, "unlink", unlink_failure)
+    with pytest.raises(OSError, match="primary write failure") as failure, offload:
+        offload.pack(torch.ones(2))
+    assert any("secondary unlink failure" in note for note in failure.value.__notes__)
+    assert "secondary unlink failure" in offload.statistics["cleanup_error"]
+    assert not offload.statistics["spill_file_cleaned"]
+
+
+@pytest.mark.parametrize("unlink_fails", [False, True])
+def test_delayed_close_error_still_attempts_private_spill_unlink(
+    tmp_path, monkeypatch, unlink_fails
+):
+    offload = SavedActivationOffload(torch.nn.Identity(), output_root=tmp_path, cpu_budget_bytes=0)
+    with offload:
+        packed = offload.pack(torch.ones(2))
+    path, descriptor = offload.store.path, offload.store.fd
+    real_close, real_unlink = os.close, Path.unlink
+    close_calls, unlink_calls = [], []
+
+    def delayed_close(fd):
+        close_calls.append(fd)
+        real_close(fd)
+        raise OSError(5, "delayed close writeback failure")
+
+    def unlink(target, *args, **kwargs):
+        unlink_calls.append(target)
+        if unlink_fails:
+            raise OSError(5, "independent unlink failure")
+        return real_unlink(target, *args, **kwargs)
+
+    monkeypatch.setattr(os, "close", delayed_close)
+    monkeypatch.setattr(Path, "unlink", unlink)
+    with pytest.raises(OSError, match="delayed close writeback failure") as failure:
+        offload.store._close()
+    assert close_calls == [descriptor] and unlink_calls == [path]
+    assert offload.store.closed
+    assert offload.statistics["spill_file_cleaned"] is not unlink_fails
+    assert path.exists() is unlink_fails
+    if unlink_fails:
+        assert any("independent unlink failure" in note for note in failure.value.__notes__)
+    offload.store._close()
+    assert close_calls == [descriptor] and unlink_calls == [path]
+    del packed
+
+
+def test_primary_forward_error_survives_accounting_error(hybrid_runtime, monkeypatch):
+    runtime, prepared = hybrid_runtime
+    run, quota, directory, _ = external_spill_fixture(runtime.output_root, monkeypatch)
+    directory.mkdir(parents=True, mode=0o700)
+    runtime.output_root = run
+    runtime.activation_spill_directory, runtime.activation_quota_root = directory, quota
+
+    def forward_failure(*args, **kwargs):
+        raise RuntimeError("primary native forward failure")
+
+    def account(kind, count, metadata):
+        if kind == "cached_training_model_forward_calls":
+            raise OSError(28, "secondary accounting failure")
+
+    runtime.account = account
+    monkeypatch.setattr(runtime.model, "forward", forward_failure)
+    with pytest.raises(RuntimeError, match="primary native forward failure") as failure:
+        runtime.cached_training_forward(prepared, [6, 2], purpose="failure_fixture", grad=True)
+    assert any("secondary accounting failure" in note for note in failure.value.__notes__)
+    receipt = json.loads(next(directory.glob("failure-*.json")).read_text())
+    assert receipt["error"] == "primary native forward failure"
+    assert receipt["activation_offload"]["accounting_error"]["errno"] == 28
+    assert set(receipt) == {
+        "status",
+        "pid",
+        "attempt_id",
+        "error_type",
+        "error",
+        "errno",
+        "notes",
+        "activation_offload",
+    }
