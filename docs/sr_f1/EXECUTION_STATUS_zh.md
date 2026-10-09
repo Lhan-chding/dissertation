@@ -1,5 +1,18 @@
 # SR-F1 当前执行状态
 
+## 当前：I/O修复部署完成，ENGINE重新运行（2026-10-10 05:34:52 新加坡时间）
+
+实时快照`2026-10-09T21:34:52.346289Z`：CPU控制器 **196225 RUNNING**，GPU **196227（ENGINE_attempt0003）RUNNING**，节点`gpu-pro6000-10`，老师QoS `soujanya-poria-startfund-2026-03`、单PRO6000、highmem、90GiB。释放前实际资源和作业身份核查通过，technical_blockers为空。旧中断natural路径已整体归档，新ENGINE从公共起点重新完成原连续4步与独立2+2；旧一次性step0复用标记完整保留且没有重置。详见 [恢复回执](validation/SR_F1_1_ENGINE_IO_RECOVERY_20261010.json)。
+
+此前GPU196156与控制器196155在21:04Z以退出码120失败，优化器更新0。已保存427项故障证据，完整step0、128条原回答及调度journal核验通过。原始errno未落盘；SSD实际目录配额750GB、当时使用约694GB，不能用df显示的全局空闲代替目录额度。新实现将大型派生暂存写入本实验独立HDD目录，按Ceph实际配额保留10GiB余量，并保留原始异常；原dtype、完整梯度图、双反向、分块和哈希验证保持。详见 [故障与I/O修复](ENGINE_IO_REPAIR_zh.md)。
+
+部署源码 **b48a638128bfeb6fc41201341df4902b3f2e660a** 已提交、推送并核实远端一致；159项部署文件逐项哈希相符。本地与服务器均 **588项测试、6项子测试通过**；CPU196224 `COMPLETED / 0:0`，冻结/全部修订链、真实HDD FP32/BF16双反向逐位一致、暂存清理及一次性恢复授权通过。25份下载回执与服务器SHA256逐项一致。新增`ENGINE_IO_REPAIR.json`绑定全部旧修订，原冻结未改写。
+
+当前新ENGINE首批已保存5/128条回答，正在正常采样；未进入修复后的真实梯度前向，不能据此宣布原GPU故障已完成验收。ENGINE尚未通过，科学训练attempt0，物理优化器更新0，TEST继续封存；格式确认500/512、PASS_95保持。监控已加入独立HDD暂存、真实目录配额和新作业身份检查，继续每30分钟执行。无关作业修改数为0。
+
+以下保留此前阶段快照；当前状态以上述时间点回执为准。
+
+
 ## 当前：修复完成，ENGINE等待资源（2026-10-10 04:13:42 新加坡时间）
 
 实时快照 `2026-10-09T20:13:42.294334+00:00`：CPU控制器 **196155 RUNNING**；新GPU **196156（ENGINE_attempt0002）PENDING / Resources**。释放前真实 `scontrol` 核验为老师QoS `soujanya-poria-startfund-2026-03`、单张PRO6000、`highmem`、**90GiB主机内存**；已解除提交时的hold，等待原生资源调度。当前technical_blockers为空，历史blocker保留而不代表新attempt失败。详见 [恢复与实际资源回执](validation/SR_F1_1_ENGINE_STORAGE_RECOVERY_20261010.json)。
