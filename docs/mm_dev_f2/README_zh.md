@@ -23,7 +23,8 @@ PROBE、30 条 CONTINUE 和 35 个模型身份的 DEV_EVAL。科学训练共 108
 ENGINE、失败、未知尝试、重做和额外前向单独计数。
 
 每个 worker 一张实际 Pro6000，本计划最多五张同时占用。每次分配显式请求
-4 CPU、64 GiB 主机内存。GPU 小时只记账，没有累计 GPU 或研究墙钟停止门槛。
+4 CPU、64 GiB 主机内存；集群会按实际 CPU/GPU 配比覆盖 RAM 请求，最终以
+Slurm 分配回执为准（CPU 每核 3 GiB）。GPU 小时只记账，没有累计 GPU 或研究墙钟停止门槛。
 集群单次分配的三天上限是可续租约；正常抢占/到期用新 attempt 恢复同一完整状态。
 禁止 Slurm 隐式 requeue；技术错误、身份不符及未知提交必须先保留并核对证据。
 
@@ -39,6 +40,15 @@ ENGINE、失败、未知尝试、重做和额外前向单独计数。
    实际 Slurm 分配和 hash-chain journal 推进依赖。ENGINE 不通过则不推进科学任务。
 5. 全部科学路径及测量完成、所有 GPU attempt 已有真实终态记账后，才执行
    `score_and_analyze.py` 和 `verify_release.py`。独立复算通过不等于科学效果成功。
+
+调度进程在独立 CPU Slurm 作业中运行。运维入口
+`scripts/operations/mm_dev_f2_controller.py` 与 `ops/CONTROLLER_CODE.json` 单独绑定源码
+哈希，不改变冻结的 35 个科学执行文件。每个控制作业只登记一个 afterany 后继；
+正常租约信号在完整调度 tick 后交接，未知提交不盲目重提。后继发现 RELEASED 或
+全部 worker 停止后的技术阻断即退出，不再生成新后继。
+这样不依赖登录连接存续，符合集群的
+[登录节点说明](https://github.com/NTUEEECluster/docs/blob/main/quickstart.md)与
+[Slurm 资源规则](https://github.com/NTUEEECluster/docs/blob/main/slurm-guide.md)。
 
 典型服务器命令（`CODE` 指向已经校验的单个 commit 部署目录）：
 
