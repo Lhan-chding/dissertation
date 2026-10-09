@@ -1,0 +1,242 @@
+[
+  {
+    "run_id": "SRF1_A_s71001",
+    "arm": "A",
+    "paired_seed": 71001,
+    "common_start": "SRF1_COMMON_START",
+    "schedule": "manifests/schedules/train_seed_71001.jsonl",
+    "H": 96,
+    "B": 16,
+    "G": 8,
+    "checkpoint_steps": [
+      0,
+      32,
+      64,
+      96
+    ]
+  },
+  {
+    "run_id": "SRF1_J_s71001",
+    "arm": "J",
+    "paired_seed": 71001,
+    "common_start": "SRF1_COMMON_START",
+    "schedule": "manifests/schedules/train_seed_71001.jsonl",
+    "H": 96,
+    "B": 16,
+    "G": 8,
+    "checkpoint_steps": [
+      0,
+      32,
+      64,
+      96
+    ]
+  },
+  {
+    "run_id": "SRF1_PART_s71001",
+    "arm": "PART",
+    "paired_seed": 71001,
+    "common_start": "SRF1_COMMON_START",
+    "schedule": "manifests/schedules/train_seed_71001.jsonl",
+    "H": 96,
+    "B": 16,
+    "G": 8,
+    "checkpoint_steps": [
+      0,
+      32,
+      64,
+      96
+    ]
+  },
+  {
+    "run_id": "SRF1_DEC_s71001",
+    "arm": "DEC",
+    "paired_seed": 71001,
+    "common_start": "SRF1_COMMON_START",
+    "schedule": "manifests/schedules/train_seed_71001.jsonl",
+    "H": 96,
+    "B": 16,
+    "G": 8,
+    "checkpoint_steps": [
+      0,
+      32,
+      64,
+      96
+    ]
+  },
+  {
+    "run_id": "SRF1_GATE_s71001",
+    "arm": "GATE",
+    "paired_seed": 71001,
+    "common_start": "SRF1_COMMON_START",
+    "schedule": "manifests/schedules/train_seed_71001.jsonl",
+    "H": 96,
+    "B": 16,
+    "G": 8,
+    "checkpoint_steps": [
+      0,
+      32,
+      64,
+      96
+    ]
+  },
+  {
+    "run_id": "SRF1_A_s71002",
+    "arm": "A",
+    "paired_seed": 71002,
+    "common_start": "SRF1_COMMON_START",
+    "schedule": "manifests/schedules/train_seed_71002.jsonl",
+    "H": 96,
+    "B": 16,
+    "G": 8,
+    "checkpoint_steps": [
+      0,
+      32,
+      64,
+      96
+    ]
+  },
+  {
+    "run_id": "SRF1_J_s71002",
+    "arm": "J",
+    "paired_seed": 71002,
+    "common_start": "SRF1_COMMON_START",
+    "schedule": "manifests/schedules/train_seed_71002.jsonl",
+    "H": 96,
+    "B": 16,
+    "G": 8,
+    "checkpoint_steps": [
+      0,
+      32,
+      64,
+      96
+    ]
+  },
+  {
+    "run_id": "SRF1_PART_s71002",
+    "arm": "PART",
+    "paired_seed": 71002,
+    "common_start": "SRF1_COMMON_START",
+    "schedule": "manifests/schedules/train_seed_71002.jsonl",
+    "H": 96,
+    "B": 16,
+    "G": 8,
+    "checkpoint_steps": [
+      0,
+      32,
+      64,
+      96
+    ]
+  },
+  {
+    "run_id": "SRF1_DEC_s71002",
+    "arm": "DEC",
+    "paired_seed": 71002,
+    "common_start": "SRF1_COMMON_START",
+    "schedule": "manifests/schedules/train_seed_71002.jsonl",
+    "H": 96,
+    "B": 16,
+    "G": 8,
+    "checkpoint_steps": [
+      0,
+      32,
+      64,
+      96
+    ]
+  },
+  {
+    "run_id": "SRF1_GATE_s71002",
+    "arm": "GATE",
+    "paired_seed": 71002,
+    "common_start": "SRF1_COMMON_START",
+    "schedule": "manifests/schedules/train_seed_71002.jsonl",
+    "H": 96,
+    "B": 16,
+    "G": 8,
+    "checkpoint_steps": [
+      0,
+      32,
+      64,
+      96
+    ]
+  },
+  {
+    "run_id": "SRF1_A_s71003",
+    "arm": "A",
+    "paired_seed": 71003,
+    "common_start": "SRF1_COMMON_START",
+    "schedule": "manifests/schedules/train_seed_71003.jsonl",
+    "H": 96,
+    "B": 16,
+    "G": 8,
+    "checkpoint_steps": [
+      0,
+      32,
+      64,
+      96
+    ]
+  },
+  {
+    "run_id": "SRF1_J_s71003",
+    "arm": "J",
+    "paired_seed": 71003,
+    "common_start": "SRF1_COMMON_START",
+    "schedule": "manifests/schedules/train_seed_71003.jsonl",
+    "H": 96,
+    "B": 16,
+    "G": 8,
+    "checkpoint_steps": [
+      0,
+      32,
+      64,
+      96
+    ]
+  },
+  {
+    "run_id": "SRF1_PART_s71003",
+    "arm": "PART",
+    "paired_seed": 71003,
+    "common_start": "SRF1_COMMON_START",
+    "schedule": "manifests/schedules/train_seed_71003.jsonl",
+    "H": 96,
+    "B": 16,
+    "G": 8,
+    "checkpoint_steps": [
+      0,
+      32,
+      64,
+      96
+    ]
+  },
+  {
+    "run_id": "SRF1_DEC_s71003",
+    "arm": "DEC",
+    "paired_seed": 71003,
+    "common_start": "SRF1_COMMON_START",
+    "schedule": "manifests/schedules/train_seed_71003.jsonl",
+    "H": 96,
+    "B": 16,
+    "G": 8,
+    "checkpoint_steps": [
+      0,
+      32,
+      64,
+      96
+    ]
+  },
+  {
+    "run_id": "SRF1_GATE_s71003",
+    "arm": "GATE",
+    "paired_seed": 71003,
+    "common_start": "SRF1_COMMON_START",
+    "schedule": "manifests/schedules/train_seed_71003.jsonl",
+    "H": 96,
+    "B": 16,
+    "G": 8,
+    "checkpoint_steps": [
+      0,
+      32,
+      64,
+      96
+    ]
+  }
+]

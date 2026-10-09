@@ -1,0 +1,290 @@
+[
+  {
+    "file": "examples/images/TRAIN/dc0b40e1d495efd53750755e7660063555d37510102e967d3243d5ea38bbd502.png",
+    "sha256": "9bef97470bb5fb467fd19361f431f17a76b3d707bdcb50f8f34d55fb87dabda1",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/75fe161c82b5ce1e972883c28f3e53c04babde1d6c8a8169713da4a7f826a852.png",
+    "sha256": "e5580239cedb5f3975988b59ba05eb01fea0b90d802e0140f88c43939fca48b5",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/0f2c6d1b688c2fab68d774d037f5094f7946e1b35f182a7eed39aee916892003.png",
+    "sha256": "3c2b262bb64b138a9782965838f87abfdb75ce51b581c6ae5d364ec677acf34d",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/9b76d1db69dd5c3bdbfb26361e8f16c1dde72370cde605fe932cc20cdaa11d0e.png",
+    "sha256": "a8e798c6fd9357b342ba13fd1b01c90cf65db0cb029ee80d1f6156025e503834",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/9a49a0e6b6dfaaa91c6868efb10d449b8422aeef24a6dc71f8fee9ad873f4f6a.png",
+    "sha256": "6d5594fed8764a35efe6acf3447b83606f7b21a859bbea04ea61b33511cc3c6b",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/5344cad768422b9481aa93976c81ed52cb8d4c75add7f7a5eeb958114b0ced8b.png",
+    "sha256": "d113f32ab6f1319c1821efcf50ff36b53d71ced617cce1c89c120386fe1d45bd",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/a7ce59ea4c33ffcaafc5aa56c7dc329649f94f8e7cde009eec94514332bca7c5.png",
+    "sha256": "840ce4ff69b38e5cc20113bf020519106d35be5fa917e85ece6c484c2af38665",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/12314554949c30fcbffdccf05c55dc2cdd26064a4efe9842a6b0e1c0862cbc57.png",
+    "sha256": "55aa62f4916758d3bac05e29834185de00de18a1009d3866ed0b208896307e84",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/710eef9224b346eabbf278954bf4d1e82516c117c5f6ea2313482ffb3be26c7f.png",
+    "sha256": "b07c5bd238705705b10c0eccf5dc81e7d222b65a5a3cd12356995df8088483c8",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/648f3160c801ba3c4ee703eb6e286b4842fbb00ca39542cf734d25cabdeb26bc.png",
+    "sha256": "fe797ce3fc4c4c449405f6053f9df08913ac617fe34f1b2065a79822bbb8ac13",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/be8963a5a5f086fa38b88a4885221b4706e94aba99fb6b48f3e46cfb3e62d000.png",
+    "sha256": "c197cfcfebe18a2ccb07d71322cba1dd661d83c15bc08f3d00b5c26a75a7890a",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/2fdcd6bf48ccd4c37ecb26b00c53ff3cd5eddbed9fe4476077bc5c6cfc9a25bd.png",
+    "sha256": "9b352500591054320dc9fecdab0e3137570def4a6a2c9127804b55efb3be20c1",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/d85136cafbe3444259ac8a58a56c6619301e04646a911bfdd09d728fdc91e6df.png",
+    "sha256": "bc742f276791429a33168102ab4c0c268c8a9797dd8049c8671184c97c5c0491",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/22eab1fd7523551ceee5affcab33253b3f4a763bcce5abd8348e2141a870f631.png",
+    "sha256": "2fc8d7fa8a1dfd3b608d2bb68cb9a54e712c61f83f0a4df634a687c289bfd8ca",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/4451a57e57ecf78433342b84509139b75704cb1f7867d5810752bfaf3e8fecef.png",
+    "sha256": "0cc1688734c3d81efaaff39b2b28a17b7f07b9bb834d9f127f4fede0bf130c1d",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/1d3b1785796bbf92c73b86a2949b44f6da880fbdb201e0ed820326b4d4e6927c.png",
+    "sha256": "b0b5a70c6c1439d671e51f71ed08b7cba0ae22701348a26fab528fa7f076281b",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/dc32218fac6f2e25dca4d760a048d674c7dcb12fbc941e4e99c7dfa1e52a0225.png",
+    "sha256": "6e5d0ad5a64fa4556055d0c6336e2fe291b282479c17d5f6f17756880060bf92",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/51ba1ddda0ab6be76fbacff95a737267226eb01d6ad6ed902050269b4726de48.png",
+    "sha256": "927d276a0a1a0ad8479dd66f0884588785ff16dae4ebf7539d35833eff14a72a",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/7fab692e37d961bbd7e7ae401e33569ef642a150873f75c3c29fcd27778d8642.png",
+    "sha256": "403afe414e3cb9cf0912b6d0fa3a7ab83883f532e330a028f796d721145be314",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/21d74217054ad511ee5eb508e4287f054b701e97c48115ab677890d064df4969.png",
+    "sha256": "07a59554e7f0dd8f0de6d20d0f4d07e886b3eee311506eb2e04d3db17fc71d52",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/22ea3d69f1188760f2c19579ba6fbf31c040ce6d0548a30a35420ee694088b21.png",
+    "sha256": "a1c0fbf82e42e88a7b66b73d7189f8601a7bb33447f0e892eda72055dc61bb10",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/23ae1eea854b29ef48db4a2a1950417ba0dd4fea65885bbee3626ef68d278649.png",
+    "sha256": "979fe452c2ba75dfc20bc81b97298b1624678730919adef5f2b1f386fd4b4767",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/c54624d6ada47576517d7f2ca2477bbc0178df5f559248f12735a85a701c5cf5.png",
+    "sha256": "89332fe3d233c9f62220588d9a87ec4d8e30bfab37b420ae9133384cf9b95fe5",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/a489f3d29b9a2bec52b7ba918354b25f76a7be539789636792f115ca231e9760.png",
+    "sha256": "6b92bd2b1afe682ff9cf1ee8fcc0962ff691d4604db8637be14e651f8cce3a19",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/e3c77c9a238037f3508cd77e573c2d11a2c7774984e3330980833b9b2eec12d8.png",
+    "sha256": "6522c4bd207533ce9b9566a3dbf45dd1d630e9f5151647cfd89ebec2453025f3",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/37a9a99317be3a4a380f8fe3eacd113eafed86ce2de148d14fd1ec1d094502d0.png",
+    "sha256": "7523616a2665581d0936ea222102ca32ca86c636e876f227eef7bac8d6191544",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/86384b3fdd67e780f007ad7a2c86f7d20fcb8f4141289de6a86fc0530ffcbd8f.png",
+    "sha256": "693b3dc022535e5a81ab2030c41a2b7f93b970968fa5f12d87472ec798b9620e",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/b782797bf68b98cc716e90ba38c74d9cf6561fb35a5cd808716315cebf30de75.png",
+    "sha256": "4e594825627f2e72fd7ba617e17264a825591efa3a723f513ffe4d92d58890e1",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/065dbbd192db8edc8afc340a3ce2f9f5d29c452c421140146bd8fb7e669954d4.png",
+    "sha256": "db3166644879207c8564dafc7e462efa86eb70b99ea48e83bce7d3acc3f56494",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/c1da68eb848d7c003727e943ce422a058234b3007eba0b618b5107247acd3f33.png",
+    "sha256": "90cc976cd97a14b27da01bb3cddf41318d509adcca84135789756a95bb883863",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/478a2c067c5941c74e61688cc363d7eb9221be7b5ac474a5722ef0989fcf85b9.png",
+    "sha256": "32030ba88222fd29af893b704c327b489756d2f07fe03f6cd14ef89092e68af0",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/2a7409863becfd1329779eb4666d9a820357ac84f3d44b21c55b6ac4017863dc.png",
+    "sha256": "4320d6414a1d57b6212d30767d6349e7af059d430ee06fd5fdea47d4dd0d680a",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/198d288d69c858c21feb36225d6f802f3c38c2178fafb6608ddab8b3c18b38ce.png",
+    "sha256": "09891f7f43a572fe8bc2ca2159c818ea115cbfb9d74d434891ee45e21a403def",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/9ab1caec7011bd9beba89df121b12c15dc5a74f830c7d4f82ee977ddf75c3fbd.png",
+    "sha256": "25f0166ef160620f147898e57113935e9e77643a14014b8e95cd67d38d6276c9",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/1a5f64222d69ddc00477ade96b3510194eac2dbb409bc04b51cf5c2018b54824.png",
+    "sha256": "45eb95823a8a33ca7eed6167dc7b093886cf1a9bf7c90f0f4713e3f52c6ed560",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  },
+  {
+    "file": "examples/images/TRAIN/1359f0e32d02ad920fc4aeee09fd76e414203a34e4764cb07c178efd1f10f79b.png",
+    "sha256": "61c7e9b044b09dbf2b75315c5114f417cc9da595f4f323595ebe0121717f207c",
+    "width": 1024,
+    "height": 768,
+    "pixels_per_unit_before_processor": 5.15,
+    "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+  }
+]

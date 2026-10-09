@@ -1,0 +1,2 @@
+10 pre-existing Markdown hard-break trailing-space lines retained byte-identically; excluded from new-code whitespace gate.
+Scoped staged diff excluding authenticated original package: PASS

@@ -1,0 +1,19 @@
+{
+  "created_in_local_container_utc": "2026-10-09T10:20:00.404763+00:00",
+  "python": "3.13.5",
+  "numpy": "2.3.5",
+  "pillow": "12.3.0",
+  "pytest": "9.0.2",
+  "pytest_passed": 111,
+  "numeric_roots": 496,
+  "questions": 4800,
+  "training_paths": 15,
+  "steps_per_training_path": 96,
+  "independently_recomputed_gold_questions": 4800,
+  "rendered_example_images": 36,
+  "all_synthetic_images_rendered": false,
+  "qwen_inference_performed": false,
+  "gpu_training_performed": false,
+  "server_jobs_operated": false,
+  "ChartQA_images_downloaded": false
+}

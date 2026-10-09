@@ -1,0 +1,38 @@
+{
+  "version": "SR-F1-20261009",
+  "root_count": 496,
+  "task_count": 4800,
+  "pool_roots": {
+    "ENGINE": 8,
+    "FORMAT": 16,
+    "FORMAT_CONFIRM": 16,
+    "BRIDGE": 8,
+    "TRAIN": 96,
+    "MONITOR": 32,
+    "TEST_ID": 128,
+    "TEST_COMPOSITION": 64,
+    "TEST_LANGUAGE": 64,
+    "TEST_RENDER": 64
+  },
+  "pool_tasks": {
+    "ENGINE": 128,
+    "FORMAT": 32,
+    "FORMAT_CONFIRM": 32,
+    "BRIDGE": 128,
+    "TRAIN": 1536,
+    "MONITOR": 512,
+    "TEST_ID": 2048,
+    "TEST_COMPOSITION": 128,
+    "TEST_LANGUAGE": 128,
+    "TEST_RENDER": 128
+  },
+  "training_paths": 15,
+  "training_steps_total": 1440,
+  "training_prompt_exposures": 23040,
+  "training_rollouts": 184320,
+  "train_ast_count": 12,
+  "composition_ast_count": 4,
+  "ast_overlap": 0,
+  "images_rendered": false,
+  "unique_images_to_render": 2890
+}

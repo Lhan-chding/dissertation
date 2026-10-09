@@ -1,0 +1,15 @@
+{
+  "byte_identical": {
+    "BUILD_SUMMARY.json": true,
+    "MANIFEST_SHA256.json": true,
+    "MODEL_INPUTS.jsonl": true,
+    "ROOTS_AUDIT_ONLY.jsonl": true,
+    "RUN_MATRIX.json": true,
+    "TASKS_GOLD_AUDIT_ONLY.jsonl": true,
+    "TRAIN_FIT_QIDS.json": true,
+    "schedules/train_seed_71001.jsonl": true,
+    "schedules/train_seed_71002.jsonl": true,
+    "schedules/train_seed_71003.jsonl": true
+  },
+  "all_passed": true
+}

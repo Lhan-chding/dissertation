@@ -1,0 +1,12 @@
+{
+  "MODEL_INPUTS.jsonl": true,
+  "BUILD_SUMMARY.json": true,
+  "TRAIN_FIT_QIDS.json": true,
+  "MANIFEST_SHA256.json": true,
+  "ROOTS_AUDIT_ONLY.jsonl": true,
+  "RUN_MATRIX.json": true,
+  "TASKS_GOLD_AUDIT_ONLY.jsonl": true,
+  "schedules/train_seed_71001.jsonl": true,
+  "schedules/train_seed_71003.jsonl": true,
+  "schedules/train_seed_71002.jsonl": true
+}

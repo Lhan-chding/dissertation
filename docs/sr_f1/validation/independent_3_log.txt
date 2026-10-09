@@ -1,0 +1,25 @@
+{
+  "planned_generated_completions": {
+    "scientific_training": 184320,
+    "monitor_baseline_plus_endpoints": 65536,
+    "train_fit_baseline_and_steps32_64_96": 5888,
+    "test_ID_two_protocols": 262144,
+    "three_shift_panels_two_protocols": 49152,
+    "five_diagnostic_views": 40960,
+    "ChartQA_expected_2500": 40000
+  },
+  "total_if_ChartQA_has_2500": 648000,
+  "without_external": 608000,
+  "base_format_check": 256,
+  "post_bridge_format_check_if_used": 256,
+  "post_bridge_paired_format_recheck": 256,
+  "natural_engine_generations": 1024,
+  "optional_nonzero_kernel_generations": 1024,
+  "common_bridge_updates_if_used": 16,
+  "scientific_updates": 1440,
+  "single_run_rollouts": 12288,
+  "additional_teacher_and_probe_teacher_forcing": "Record separately, not generations",
+  "gpu_hours_limit": null,
+  "wallclock_stop_limit": null,
+  "actual_runtime_measurements": false
+}

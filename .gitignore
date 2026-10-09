@@ -67,3 +67,7 @@ configs/paths.yaml
 
 # MM-DEV private rendered data, runtime evidence, and release bundles
 /artifacts/mm_dev_f2*/
+
+# SR-F1 private runtime payloads and externally downloaded data
+/artifacts/sr_f1*/
+/.local/

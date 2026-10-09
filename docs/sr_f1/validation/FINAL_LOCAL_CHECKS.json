@@ -1,0 +1,83 @@
+{
+  "timestamp_utc": "2026-10-09T10:53:33.984576+00:00",
+  "status": "PASS",
+  "checks": [
+    {
+      "check": "pytest",
+      "command": [
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "--import-mode=importlib",
+        "tests/sr_f1",
+        "tests/mm_dev/test_cached_teacher_forcing.py",
+        "tests/mm_core/test_training.py",
+        "docs/sr_f1/package/tests"
+      ],
+      "returncode": 0,
+      "output": "........................................................................ [ 32%]\n........................................................................ [ 64%]\n........................................................................ [ 96%]\n.......                                                                  [100%]\n223 passed in 12.73s\n"
+    },
+    {
+      "check": "ruff",
+      "command": [
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/ruff",
+        "check",
+        "src/sr_f1",
+        "scripts/sr_f1",
+        "tests/sr_f1"
+      ],
+      "returncode": 0,
+      "output": "All checks passed!\n"
+    },
+    {
+      "check": "format",
+      "command": [
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/ruff",
+        "format",
+        "--check",
+        "src/sr_f1",
+        "scripts/sr_f1",
+        "tests/sr_f1"
+      ],
+      "returncode": 0,
+      "output": "29 files already formatted\n"
+    },
+    {
+      "check": "shell",
+      "command": [
+        "bash",
+        "-n",
+        "scripts/sr_f1/controller.sbatch"
+      ],
+      "returncode": 0,
+      "output": ""
+    },
+    {
+      "check": "package",
+      "command": [
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python",
+        "docs/sr_f1/package/verify_package.py"
+      ],
+      "returncode": 0,
+      "output": "{\n  \"checked_files\": 76,\n  \"mismatches\": [],\n  \"model_training_verified\": false\n}\n"
+    },
+    {
+      "check": "diff",
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--check",
+        "--",
+        ".",
+        ":!docs/sr_f1/package"
+      ],
+      "returncode": 0,
+      "output": ""
+    }
+  ],
+  "gpu_validation": "NOT_RUN",
+  "scientific_training": "NOT_STARTED",
+  "archived_package_whitespace": "10 pre-existing Markdown hard-break trailing-space lines retained byte-identically; excluded from new-code whitespace gate."
+}

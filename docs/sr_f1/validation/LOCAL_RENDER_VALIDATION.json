@@ -1,0 +1,172 @@
+{
+  "chart_count": 2890,
+  "example_pixel_matches": 0,
+  "font_bytes_must_not_be_distributed": true,
+  "fonts": {
+    "bold": {
+      "path": "/private/tmp/sr-f1-exact-fonts-72qlyxex/DejaVuSans-Bold.ttf",
+      "sha256": "a4c5bc453ca281d90ea079e596da7ae0dfeb5777497c29ec254e76d97ff6f890"
+    },
+    "normal": {
+      "path": "/private/tmp/sr-f1-exact-fonts-72qlyxex/DejaVuSans.ttf",
+      "sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+    }
+  },
+  "image_count": 2891,
+  "original_package_bold_and_freetype_identity": "NOT_RECORDED",
+  "reference_example_comparison_is_acceptance_gate": false,
+  "reference_example_pixel_comparison": [
+    {
+      "file": "images/TRAIN/dc0b40e1d495efd53750755e7660063555d37510102e967d3243d5ea38bbd502.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/75fe161c82b5ce1e972883c28f3e53c04babde1d6c8a8169713da4a7f826a852.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/0f2c6d1b688c2fab68d774d037f5094f7946e1b35f182a7eed39aee916892003.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/9b76d1db69dd5c3bdbfb26361e8f16c1dde72370cde605fe932cc20cdaa11d0e.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/9a49a0e6b6dfaaa91c6868efb10d449b8422aeef24a6dc71f8fee9ad873f4f6a.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/5344cad768422b9481aa93976c81ed52cb8d4c75add7f7a5eeb958114b0ced8b.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/a7ce59ea4c33ffcaafc5aa56c7dc329649f94f8e7cde009eec94514332bca7c5.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/12314554949c30fcbffdccf05c55dc2cdd26064a4efe9842a6b0e1c0862cbc57.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/710eef9224b346eabbf278954bf4d1e82516c117c5f6ea2313482ffb3be26c7f.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/648f3160c801ba3c4ee703eb6e286b4842fbb00ca39542cf734d25cabdeb26bc.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/be8963a5a5f086fa38b88a4885221b4706e94aba99fb6b48f3e46cfb3e62d000.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/2fdcd6bf48ccd4c37ecb26b00c53ff3cd5eddbed9fe4476077bc5c6cfc9a25bd.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/d85136cafbe3444259ac8a58a56c6619301e04646a911bfdd09d728fdc91e6df.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/22eab1fd7523551ceee5affcab33253b3f4a763bcce5abd8348e2141a870f631.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/4451a57e57ecf78433342b84509139b75704cb1f7867d5810752bfaf3e8fecef.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/1d3b1785796bbf92c73b86a2949b44f6da880fbdb201e0ed820326b4d4e6927c.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/dc32218fac6f2e25dca4d760a048d674c7dcb12fbc941e4e99c7dfa1e52a0225.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/51ba1ddda0ab6be76fbacff95a737267226eb01d6ad6ed902050269b4726de48.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/7fab692e37d961bbd7e7ae401e33569ef642a150873f75c3c29fcd27778d8642.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/21d74217054ad511ee5eb508e4287f054b701e97c48115ab677890d064df4969.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/22ea3d69f1188760f2c19579ba6fbf31c040ce6d0548a30a35420ee694088b21.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/23ae1eea854b29ef48db4a2a1950417ba0dd4fea65885bbee3626ef68d278649.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/c54624d6ada47576517d7f2ca2477bbc0178df5f559248f12735a85a701c5cf5.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/a489f3d29b9a2bec52b7ba918354b25f76a7be539789636792f115ca231e9760.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/e3c77c9a238037f3508cd77e573c2d11a2c7774984e3330980833b9b2eec12d8.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/37a9a99317be3a4a380f8fe3eacd113eafed86ce2de148d14fd1ec1d094502d0.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/86384b3fdd67e780f007ad7a2c86f7d20fcb8f4141289de6a86fc0530ffcbd8f.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/b782797bf68b98cc716e90ba38c74d9cf6561fb35a5cd808716315cebf30de75.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/065dbbd192db8edc8afc340a3ce2f9f5d29c452c421140146bd8fb7e669954d4.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/c1da68eb848d7c003727e943ce422a058234b3007eba0b618b5107247acd3f33.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/478a2c067c5941c74e61688cc363d7eb9221be7b5ac474a5722ef0989fcf85b9.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/2a7409863becfd1329779eb4666d9a820357ac84f3d44b21c55b6ac4017863dc.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/198d288d69c858c21feb36225d6f802f3c38c2178fafb6608ddab8b3c18b38ce.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/9ab1caec7011bd9beba89df121b12c15dc5a74f830c7d4f82ee977ddf75c3fbd.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/1a5f64222d69ddc00477ade96b3510194eac2dbb409bc04b51cf5c2018b54824.png",
+      "pixel_identical": false
+    },
+    {
+      "file": "images/TRAIN/1359f0e32d02ad920fc4aeee09fd76e414203a34e4764cb07c178efd1f10f79b.png",
+      "pixel_identical": false
+    }
+  ],
+  "renderer_environment": {
+    "FreeType": "2.14.3",
+    "Pillow": "12.3.0",
+    "renderer_sha256": "2bc900d16e4da2e1838eb3cf923ff8587958a118e1e86c4ff4574279ca5e693d"
+  },
+  "status": "RENDERED",
+  "receipt_sha256": "9813ac327515d0e5b8613cc626cdada45b540e8194891c1598cd25e7d08f604b",
+  "execution_scope": "local CPU materialization; not native server processor certification"
+}

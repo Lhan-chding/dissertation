@@ -1,0 +1,12 @@
+{
+  "root_count": 496,
+  "questions": 4800,
+  "independent_gold_mismatches": [],
+  "gold_outputs_scored_J1": 4800,
+  "complete_chart_variant_families_checked": 544,
+  "training_streams_checked": 3,
+  "steps_per_stream": 96,
+  "prompts_per_step": 16,
+  "train_composition_AST_overlap": 0,
+  "manifest_hashes_checked": 9
+}

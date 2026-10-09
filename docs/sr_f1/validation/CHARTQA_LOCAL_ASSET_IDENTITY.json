@@ -1,0 +1,111 @@
+{
+  "assets": {
+    "augmented": {
+      "bytes": 184320,
+      "sha256": "9df43a15e93ecb8496c3e5dc23f6a733cfeccac838ab41126ab56576b9305de1",
+      "url": "https://raw.githubusercontent.com/vis-nlp/ChartQA/044eabfc306abfe9340c5741f0093aefc5973d06/ChartQA%20Dataset/test/test_augmented.json"
+    },
+    "human": {
+      "bytes": 156786,
+      "sha256": "5fba61b508a96b85cd5906bb14adfc1ba552bdcf88ac568ed6e2f79dcf0460b7",
+      "url": "https://raw.githubusercontent.com/vis-nlp/ChartQA/044eabfc306abfe9340c5741f0093aefc5973d06/ChartQA%20Dataset/test/test_human.json"
+    },
+    "scorer": {
+      "bytes": 6407,
+      "sha256": "22f627ab2396fc43c3edaf568148ea6c1f3edfbbc592fdef14668bfdf2b5e4ab",
+      "url": "https://raw.githubusercontent.com/vis-nlp/UniChart/56dd59af1c3ebec1773fe8a4bf43694cd565130c/model/chartqa_model.py"
+    },
+    "test_parquet": {
+      "bytes": 68916402,
+      "sha256": "84889bae30aaf6e24ff899e1604221606c0b65e658b6c70a7d02c79f50fc87df",
+      "url": "https://huggingface.co/datasets/ahmed-masry/ChartQA/resolve/af8b6f5c08c95085271561c2a3f9d15f2b5a9031/data/test-00000-of-00001.parquet"
+    }
+  },
+  "author_repository_revision": "044eabfc306abfe9340c5741f0093aefc5973d06",
+  "dataset": "ahmed-masry/ChartQA",
+  "dataset_revision": "af8b6f5c08c95085271561c2a3f9d15f2b5a9031",
+  "manifest_sha256": "ded2f16aae000a9856104accd28e8bd0061b53aa04aba1aefbd04a0d1be42df4",
+  "pretrained_contamination_excluded": false,
+  "question_count": 2500,
+  "scoring": {
+    "cases": [
+      {
+        "prediction": "105",
+        "score": 1,
+        "target": "100"
+      },
+      {
+        "prediction": "105.01",
+        "score": 0,
+        "target": "100"
+      },
+      {
+        "prediction": "-95",
+        "score": 1,
+        "target": "-100"
+      },
+      {
+        "prediction": "0.0",
+        "score": 1,
+        "target": "0"
+      },
+      {
+        "prediction": "0.0001",
+        "score": 0,
+        "target": "0"
+      },
+      {
+        "prediction": "alpha",
+        "score": 1,
+        "target": "Alpha"
+      },
+      {
+        "prediction": "5%",
+        "score": 1,
+        "target": "5%"
+      },
+      {
+        "prediction": "0.05",
+        "score": 0,
+        "target": "5%"
+      },
+      {
+        "prediction": "1000",
+        "score": 0,
+        "target": "1,000"
+      },
+      {
+        "prediction": "the answer is 1",
+        "score": 0,
+        "target": "1"
+      },
+      {
+        "prediction": "-0",
+        "score": 0,
+        "target": "0"
+      },
+      {
+        "prediction": "nan",
+        "score": 0,
+        "target": "nan"
+      }
+    ],
+    "implementation": "UniChart ChartQAModule.compute_metric",
+    "normalization": "strip ASCII spaces, then author float/lower behaviour",
+    "percent_handling": "no conversion",
+    "relative_tolerance": 0.05,
+    "source_sha256": "22f627ab2396fc43c3edaf568148ea6c1f3edfbbc592fdef14668bfdf2b5e4ab",
+    "source_url": "https://raw.githubusercontent.com/vis-nlp/UniChart/56dd59af1c3ebec1773fe8a4bf43694cd565130c/model/chartqa_model.py",
+    "status": "VERIFIED_AGAINST_PINNED_AUTHOR_FUNCTION",
+    "zero_truth": "author numeric conversion then division-by-zero string fallback"
+  },
+  "status": "AVAILABLE_VERIFIED",
+  "subset_counts": {
+    "augmented": 1250,
+    "human": 1250
+  },
+  "tables_or_annotations_as_input": false,
+  "unique_image_count": 1509,
+  "identity_sha256": "27bf8fdb14749a7ef0091d6f15979dada6bc94dcaa5f3bcfc572ae674065ef94",
+  "execution_scope": "local asset verification only; no model inference"
+}
