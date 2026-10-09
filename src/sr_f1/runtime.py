@@ -6,6 +6,7 @@ mechanics; their prompts, samplers, gates, adapters and scientific state are not
 
 from __future__ import annotations
 
+import contextlib
 import copy
 import hashlib
 import math
@@ -54,6 +55,79 @@ from .json_protocol import (
 CANVAS = (1024, 768)
 TARGET_PIXELS = 786432
 PLAN_ID = "SR-F1-20261009"
+
+
+class SavedActivationOffload:
+    """Store autograd's saved activations on CPU without changing its graph.
+
+    Native CUDA forward/backward kernels and the differentiable recurrent cache
+    are unchanged. Parameter-storage views stay resident: copying every saved
+    base-weight view once per decoded token would exhaust host memory instead.
+    The detach below is only the saved-tensor packing API's byte snapshot; it
+    does not detach any forward value, cache state, or gradient edge.
+    """
+
+    policy = "saved_activation_cpu_parameter_storage_resident_v1"
+
+    def __init__(self, model):
+        import torch
+
+        self.parameter_storages = {self._storage_key(parameter) for parameter in model.parameters()}
+        self.copy_hooks = torch.autograd.graph.save_on_cpu(pin_memory=False)
+        self.hooks = torch.autograd.graph.saved_tensors_hooks(self.pack, self.unpack)
+        self.statistics = dict(
+            policy=self.policy,
+            pin_memory=False,
+            saved_activation_tensors=0,
+            saved_activation_bytes=0,
+            largest_saved_activation_bytes=0,
+            resident_parameter_views=0,
+            resident_parameter_view_bytes=0,
+            unpacked_activation_tensors=0,
+            unpacked_activation_bytes=0,
+        )
+
+    @staticmethod
+    def _storage_key(tensor):
+        storage = tensor.untyped_storage()
+        return tensor.device, storage.data_ptr(), storage.nbytes()
+
+    def pack(self, tensor):
+        size = tensor.numel() * tensor.element_size()
+        if self._storage_key(tensor) in self.parameter_storages:
+            self.statistics["resident_parameter_views"] += 1
+            self.statistics["resident_parameter_view_bytes"] += size
+            # Hooks bypass PyTorch's ordinary saved-tensor version check. Keep
+            # an explicit check for the resident views, which are not snapshots.
+            saved = tensor.detach()
+            return "parameter", saved, saved._version
+        device, saved = self.copy_hooks.pack_hook(tensor.detach())
+        if tensor.device.type == "cpu":
+            # Exercise actual snapshot semantics in CPU regression tests too.
+            saved = saved.clone()
+        self.statistics["saved_activation_tensors"] += 1
+        self.statistics["saved_activation_bytes"] += size
+        self.statistics["largest_saved_activation_bytes"] = max(
+            self.statistics["largest_saved_activation_bytes"], size
+        )
+        return "activation", device, saved
+
+    def unpack(self, packed):
+        kind, first, second = packed
+        if kind == "parameter":
+            if first._version != second:
+                raise RuntimeError("Resident parameter changed before activation-offload backward")
+            return first
+        self.statistics["unpacked_activation_tensors"] += 1
+        self.statistics["unpacked_activation_bytes"] += second.numel() * second.element_size()
+        return self.copy_hooks.unpack_hook((first, second))
+
+    def __enter__(self):
+        self.hooks.__enter__()
+        return self
+
+    def __exit__(self, *args):
+        return self.hooks.__exit__(*args)
 
 
 def generation_recipe(*, max_new_tokens=768, do_sample=True):
@@ -562,10 +636,12 @@ class SRRuntime(QwenRuntime):
             completed_model_forward_calls=0,
         )
         complete = False
+        offload = SavedActivationOffload(self.model) if grad else None
         try:
             with (
                 cache_compatible_autograd(self.model),
                 torch.enable_grad() if grad else torch.no_grad(),
+                offload if offload is not None else contextlib.nullcontext(),
             ):
                 for index, token in enumerate(tokens):
                     # Native one-token conv updates write their input cache in place.
@@ -605,6 +681,7 @@ class SRRuntime(QwenRuntime):
                 entropy=None if grad else torch.stack(entropies),
                 vision_forward_calls=self.image_calls - before,
                 cached_model_forward_calls=len(tokens),
+                activation_offload=offload.statistics if offload is not None else None,
             )
             complete = True
             return result
@@ -621,6 +698,7 @@ class SRRuntime(QwenRuntime):
                 scored_completion_tokens=len(selected),
                 vision_forward_calls=self.image_calls - before,
                 status="COMPLETE" if complete else "TECHNICAL_FAILED",
+                activation_offload=dict(offload.statistics) if offload is not None else None,
             )
 
 

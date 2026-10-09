@@ -102,6 +102,7 @@ def _run_segment(plan, root, *, mode, segment, boundary):
     actual_start = read_json(latest)["step"] if latest.exists() else 0
     if actual_start != expected_start:
         raise PermissionError("ENGINE segment must begin at its registered fresh-process boundary")
+    recovery = _claim_zero_update_recovery_process(root, mode, segment)
     if mode == "stress":
         natural = read_json(root / "engineering/engine/natural/COMPARISON.json")
         if not natural.get("stress_allowed"):
@@ -145,6 +146,8 @@ def _run_segment(plan, root, *, mode, segment, boundary):
         determinism=runtime.identity["determinism"],
         common_start_hash=verified_adapter(root, "SRF1_COMMON_START")["trainable_state_hash"],
     )
+    if recovery is not None:
+        receipt["zero_update_recovery"] = recovery
     atomic_json(directory / (segment.upper() + "_COMPLETE.json"), receipt, exclusive=True)
     return result
 
@@ -341,6 +344,30 @@ def compare_engine(root, mode):
         for p in track.rglob("*")
         if p.is_file()
     }
+    recovery = segments[0].get("zero_update_recovery")
+    if recovery is not None:
+        expected = _zero_update_recovery_identity(root)[0]
+        activation_path, process_path = _zero_update_recovery_markers(root)
+        activation, process = read_json(activation_path), read_json(process_path)
+        if (
+            mode != "natural"
+            or any(activation.get(k) != v for k, v in expected.items())
+            or process != recovery
+            or process.get("activation_sha256") != file_hash(activation_path)
+            or process.get("repair_sha256") != expected["repair_sha256"]
+            or process.get("pid") != segments[0]["pid"]
+            or process.get("resume_step") != 0
+        ):
+            raise PermissionError("ENGINE zero-update process identity differs")
+        physical = read_json(next(tracks[0].glob("PROCESS-*.json")))
+        if physical["pid"] != process["pid"] or physical["initial_step"] != 0:
+            raise PermissionError("ENGINE zero-update recovery was not its one actual process")
+        artifacts.update(
+            {
+                str(p.relative_to(root)): file_hash(p)
+                for p in (activation_path, process_path, root / "ENGINE_MEMORY_REPAIR.json")
+            }
+        )
     result = dict(
         plan_id=PLAN_ID,
         mode=mode,
@@ -368,10 +395,141 @@ def run_engine(plan, root):
         return _run_engine(plan, root, lease)
 
 
+def _zero_update_recovery_markers(root):
+    incident = Path(root) / "technical_incidents/engine_memory_20261010"
+    return (
+        incident / "ZERO_UPDATE_REUSE_ACTIVATED.json",
+        incident / "ZERO_UPDATE_REUSE_PROCESS.json",
+    )
+
+
+def _zero_update_recovery_identity(root):
+    """Authenticate permanent history; never bind a later preflight to live LATEST."""
+    from .freeze import verify_engine_memory_repair
+
+    verified = verify_engine_memory_repair(root)
+    recovery = read_json(Path(root) / "ENGINE_MEMORY_REPAIR.json")["zero_update_recovery"]
+    expected = {
+        "staged_track_relative_path": "engineering/engine/natural/continuous",
+        "archived_track_relative_path": (
+            "technical_incidents/engine_memory_20261010/evidence/"
+            "engineering/engine/natural/continuous"
+        ),
+        "original_raw_count": 128,
+        "engine_mode": "natural",
+        "resume_step": 0,
+    }
+    if any(recovery.get(k) != v for k, v in expected.items()):
+        raise PermissionError("ENGINE zero-update recovery boundary differs")
+    return (
+        dict(
+            **expected,
+            plan_id=PLAN_ID,
+            repair_sha256=verified["repair_sha256"],
+            original_checkpoint_state_hash=recovery["original_checkpoint_state_hash"],
+            staged_inventory_sha256=digest(recovery["artifact_hashes"]),
+        ),
+        recovery,
+    )
+
+
+def _validate_zero_update_stage(root, recovery):
+    """Permit only the authenticated initial checkpoint and its first 16x8 raw batch."""
+    root = Path(root).resolve()
+    relative = recovery["staged_track_relative_path"]
+    directory = bounded_path(root, relative)
+    latest = read_json(directory / "checkpoints/LATEST.json")
+    committed = read_json(directory / "checkpoints/commit-00.json")
+    if (
+        latest != committed
+        or latest.get("step") != 0
+        or latest.get("state_hash") != recovery["original_checkpoint_state_hash"]
+    ):
+        raise PermissionError("ENGINE recovery requires the original committed step zero")
+    checkpoint = bounded_path(directory / "checkpoints", latest["path"])
+    expected = {
+        relative + "/RUN_MANIFEST.json",
+        relative + "/checkpoints/LATEST.json",
+        relative + "/checkpoints/commit-00.json",
+        str(checkpoint.relative_to(root)),
+        *{
+            relative + f"/rollouts/01-{slot:02d}-{index}.json"
+            for slot in range(16)
+            for index in range(8)
+        },
+    }
+    if set(recovery["artifact_hashes"]) != expected:
+        raise PermissionError("ENGINE zero-update recovery inventory differs")
+    paths = list((root / relative).rglob("*"))
+    if (root / relative).is_symlink() or any(
+        p.is_symlink() or not (p.is_file() or p.is_dir()) for p in paths
+    ):
+        raise PermissionError("ENGINE recovery staging contains non-regular artifacts")
+    actual = {str(p.relative_to(root)): file_hash(p) for p in paths if p.is_file()}
+    if actual != recovery["artifact_hashes"] or file_hash(checkpoint) != latest["sha256"]:
+        raise PermissionError("ENGINE recovery staging bytes or complete inventory differ")
+
+
+def _activate_zero_update_recovery(root, mode):
+    root = Path(root)
+    activation_path, _ = _zero_update_recovery_markers(root)
+    if (
+        mode != "natural"
+        or not (root / "ENGINE_MEMORY_REPAIR.json").exists()
+        or activation_path.exists()
+    ):
+        return False
+    identity, recovery = _zero_update_recovery_identity(root)
+    directory = root / recovery["staged_track_relative_path"]
+    if set(directory.parent.iterdir()) != {directory}:
+        raise PermissionError("ENGINE recovery staging contains another trial or process")
+    _validate_zero_update_stage(root, recovery)
+    # An exclusive, fsynced marker consumes the exception even if the child never
+    # starts. A later interrupted attempt follows the normal whole-mode archive.
+    atomic_json(
+        activation_path,
+        {**identity, "activating_pid": os.getpid()},
+        exclusive=True,
+    )
+    return True
+
+
+def _claim_zero_update_recovery_process(root, mode, segment):
+    root = Path(root)
+    if mode != "natural" or segment != "continuous":
+        return None
+    if not (root / "ENGINE_MEMORY_REPAIR.json").exists():
+        return None
+    staged = root / "engineering/engine/natural/continuous"
+    if not (staged / "checkpoints/LATEST.json").exists():
+        return None  # An ordinary fresh trial after archiving an interrupted retry.
+    activation_path, process_path = _zero_update_recovery_markers(root)
+    if not activation_path.exists() or process_path.exists():
+        raise PermissionError("ENGINE zero-update reuse is absent or already consumed")
+    identity, recovery = _zero_update_recovery_identity(root)
+    activation = read_json(activation_path)
+    if (
+        any(activation.get(k) != v for k, v in identity.items())
+        or activation.get("activating_pid") != os.getppid()
+    ):
+        raise PermissionError("ENGINE recovery activation does not belong to this parent")
+    _validate_zero_update_stage(root, recovery)
+    claim = dict(
+        repair_sha256=identity["repair_sha256"],
+        activation_sha256=file_hash(activation_path),
+        pid=os.getpid(),
+        resume_step=0,
+    )
+    atomic_json(process_path, claim, exclusive=True)
+    return claim
+
+
 def _preserve_interrupted_mode(root, mode):
     """Retain an interrupted physical trace before repeating its registered trial."""
     import time
 
+    if _activate_zero_update_recovery(root, mode):
+        return None
     directory = Path(root) / "engineering/engine" / mode
     continuous, split = directory / "continuous", directory / "split"
     partial_continuous = (

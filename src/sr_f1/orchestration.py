@@ -42,6 +42,7 @@ SEEDS = (71001, 71002, 71003)
 PERMISSION_PATH = "manifests/ALLOCATION_PERMISSION.json"
 TEACHER_QOS = "soujanya-poria-startfund-2026-03"
 QOS_CAPACITY_MODE = "TEACHER_QOS_SCHEDULER_ONLY"
+ENGINE_MEMORY_REPAIR_ID = "SR_F1_1_ENGINE_MEMORY_20261010"
 
 
 def worker_lease(root, task_id):
@@ -771,6 +772,15 @@ class Scheduler:
                     all(repair_resume.get(key) == value for key, value in verified.items()),
                     "REPAIR_RESUME_AUTHORIZATION_CHANGED",
                 )
+            elif task_id == "ENGINE" and not task.get("resume_checkpoint"):
+                repair_resume = self.state.get("engine_memory_repair_resume")
+                require(repair_resume, "RESUME_CHECKPOINT_OR_EXPLICIT_REPAIR_REQUIRED")
+                require(not repair_resume.get("consumed_by_attempt_id"), "REPAIR_ALREADY_CONSUMED")
+                verified, _ = self._verify_repaired_engine(expected_status="RETRYABLE")
+                require(
+                    all(repair_resume.get(key) == value for key, value in verified.items()),
+                    "ENGINE_REPAIR_RESUME_AUTHORIZATION_CHANGED",
+                )
             else:
                 require(
                     self._marker_valid(task_id, task["attempts"][-1], checkpoint=True),
@@ -778,6 +788,9 @@ class Scheduler:
                 )
         if not self._capacity_available(task_id):
             return False
+        worker_memory_gb = 64
+        if spec["gpus"] and (self.root / "ENGINE_MEMORY_REPAIR.json").exists():
+            worker_memory_gb = self._engine_memory_repair()["gpu_worker_host_memory_gb"]
         attempt_id = f"{task_id}_attempt{len(task['attempts']):04d}"
         registration_hash = digest(self.registration)
         prefix = registration_hash[:12]
@@ -797,7 +810,14 @@ class Scheduler:
             )
             attempt["technical_repair_resume"] = {
                 key: repair_resume[key]
-                for key in ("repair_id", "repair_sha256", "review_sha256", "failed_attempt_id")
+                for key in (
+                    "repair_id",
+                    "repair_sha256",
+                    "review_sha256",
+                    "source_commit",
+                    "failed_attempt_id",
+                )
+                if key in repair_resume
             }
         worker = [
             str(self.python),
@@ -844,7 +864,7 @@ class Scheduler:
             "--no-requeue",
             "--nodes=1",
             "--cpus-per-task=4",
-            "--mem=64G",
+            f"--mem={worker_memory_gb}G",
             "--parsable",
             "--account",
             permission["account"],
@@ -1183,6 +1203,142 @@ class Scheduler:
             self.state["tasks"]["COMMON_START"]["status"] = "RETRYABLE"
             self._phase()
             self._save("EXPLICIT_REPAIRED_COMMON_START_RESUME", authorization=authorization)
+            return copy.deepcopy(authorization)
+
+    def _engine_memory_repair(self):
+        from .freeze import verify_engine_memory_repair
+
+        repair = verify_engine_memory_repair(self.root)
+        require(
+            repair["repair_id"] == ENGINE_MEMORY_REPAIR_ID
+            and repair["original_execution_freeze_sha256"]
+            == self.registration["freeze_sha256"]
+            == file_hash(self.root / "EXECUTION_FREEZE.json")
+            and repair["repair_sha256"] == file_hash(self.root / "ENGINE_MEMORY_REPAIR.json")
+            and re.fullmatch(r"[0-9a-f]{40}", repair["source_commit"]),
+            "ENGINE_MEMORY_REPAIR_IDENTITY_MISMATCH",
+        )
+        memory = repair["gpu_worker_host_memory_gb"]
+        require(type(memory) is int and memory >= 64, "INVALID_REPAIRED_GPU_HOST_MEMORY")
+        return repair
+
+    def _verify_repaired_engine(self, *, expected_status):
+        """Authorize only the original ENGINE OOM before its first optimizer update."""
+        root, task = self.root, self.state["tasks"]["ENGINE"]
+        require(not (root / "STOP").exists(), "STOP_PREVENTS_TECHNICAL_REPAIR_RESUME")
+        require(task["status"] == expected_status, "ENGINE_NOT_REPAIR_ELIGIBLE")
+        require(len(task["attempts"]) == 1, "ENGINE_REPAIR_REQUIRES_ORIGINAL_SINGLE_ATTEMPT")
+        attempt = task["attempts"][0]
+        require(
+            attempt["attempt_id"] == "ENGINE_attempt0000"
+            and attempt["status"] == "FAILED"
+            and attempt.get("accounting", {}).get("terminal_state") == "FAILED"
+            and attempt["accounting"].get("exit_code") == "1:0",
+            "ORIGINAL_ENGINE_FAILURE_NOT_AUTHENTICATED",
+        )
+        require(
+            self.state["tasks"]["COMMON_START"]["status"] == "COMPLETE"
+            and all(
+                item["status"] == "WAITING" and not item["attempts"]
+                for key, item in self.state["tasks"].items()
+                if key not in {"COMMON_START", "ENGINE"}
+            ),
+            "ENGINE_REPAIR_FORBIDDEN_AFTER_DOWNSTREAM_WORK",
+        )
+        require(not task.get("resume_checkpoint"), "REPAIR_CANNOT_REPLACE_FULL_STATE_CONTINUATION")
+        for relative in (
+            "ENGINE_PROBABILITY_GRADIENT_RESUME.json",
+            "orchestration/completions/ENGINE.json",
+            "orchestration/checkpoints/ENGINE_attempt0000.json",
+        ):
+            require(
+                not contained(root, relative).exists(),
+                "ENGINE_REPAIR_FORBIDDEN_EXISTING_COMPLETION_OR_CONTINUATION:" + relative,
+            )
+        for path in (root / "orchestration/attempts").glob("ENGINE_attempt*"):
+            require(
+                re.match(r"ENGINE_attempt0000[._]", path.name),
+                "ENGINE_REPAIR_FUTURE_ATTEMPT_EXISTS",
+            )
+        for ledger in (root / "accounting").glob("*.jsonl"):
+            for line in ledger.read_text().splitlines():
+                row = json.loads(line)
+                require(
+                    not (row.get("kind") == "physical_optimizer_updates" and row.get("count", 0)),
+                    "ENGINE_REPAIR_FORBIDDEN_PRIOR_OPTIMIZER_UPDATE",
+                )
+        repair = self._engine_memory_repair()
+        failure_relative = f"orchestration/failures/{attempt['attempt_id']}.json"
+        failure_path = contained(root, failure_relative)
+        failure = read_json(failure_path)
+        require(
+            failure.get("plan_id") == PLAN_ID
+            and failure.get("registration_hash") == digest(self.registration)
+            and failure.get("task_id") == "ENGINE"
+            and failure.get("attempt_id") == attempt["attempt_id"]
+            and failure.get("status") == "TECHNICAL_FAILED"
+            and failure.get("error") == task.get("blocker"),
+            "ORIGINAL_ENGINE_FAILURE_MARKER_CHANGED",
+        )
+        prior = attempt["observation"]
+        require(
+            file_hash(contained(root, prior["path"])) == prior["sha256"],
+            "ORIGINAL_ENGINE_SCHEDULER_OBSERVATION_CHANGED",
+        )
+        prior_observation = read_json(contained(root, prior["path"]))
+        observed = self.backend.observe(attempt, self.registration["permission"])
+        for evidence in (prior_observation, observed):
+            require(not evidence["queue"], "ORIGINAL_ENGINE_ALLOCATION_STILL_ACTIVE")
+            require(
+                summarize_accounting(
+                    evidence["accounting"], attempt, self.registration["permission"], 1
+                )
+                == attempt["accounting"],
+                "ORIGINAL_ENGINE_TERMINAL_ACCOUNTING_CHANGED",
+            )
+        return {
+            "repair_id": repair["repair_id"],
+            "repair_sha256": repair["repair_sha256"],
+            "source_commit": repair["source_commit"],
+            "original_execution_freeze_sha256": repair["original_execution_freeze_sha256"],
+            "gpu_worker_host_memory_gb": repair["gpu_worker_host_memory_gb"],
+            "registration_hash": digest(self.registration),
+            "failed_attempt_id": attempt["attempt_id"],
+            "failed_job_id": attempt["job_id"],
+            "original_attempt_sha256": digest(attempt),
+            "original_blocker": task["blocker"],
+            "failure_marker_path": failure_relative,
+            "failure_marker_sha256": file_hash(failure_path),
+            "permitted_next_attempt_id": "ENGINE_attempt0001",
+        }, observed
+
+    def resume_repaired_engine(self):
+        """Explicit one-shot repair transition; the original failed trace remains intact."""
+        with (
+            process_lease(self.root.parent / ".sr_f1_project_controller.lock"),
+            process_lease(self.folder / "controller.lock"),
+            worker_lease(self.root, "ENGINE"),
+        ):
+            self._load()
+            require(
+                not self.state.get("engine_memory_repair_resume"),
+                "ENGINE_MEMORY_REPAIR_ALREADY_AUTHORIZED",
+            )
+            authorization, observation = self._verify_repaired_engine(expected_status="BLOCKED")
+            relative = (
+                f"orchestration/observations/engine_memory_repair/{self.sequence + 1:08d}.json"
+            )
+            atomic_json(self.root / relative, observation, exclusive=True)
+            authorization.update(
+                authorized_at=now(),
+                reason="AUTHENTICATED_ENGINE_CUDA_OOM_BEFORE_FIRST_OPTIMIZER_UPDATE",
+                scheduler_observation={"path": relative, "sha256": file_hash(self.root / relative)},
+                consumed_by_attempt_id=None,
+            )
+            self.state["engine_memory_repair_resume"] = authorization
+            self.state["tasks"]["ENGINE"]["status"] = "RETRYABLE"
+            self._phase()
+            self._save("EXPLICIT_REPAIRED_ENGINE_RESUME", authorization=authorization)
             return copy.deepcopy(authorization)
 
     def tick(self):

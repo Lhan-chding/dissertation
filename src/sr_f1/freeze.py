@@ -35,6 +35,16 @@ TECHNICAL_REPAIR_ALLOWED_FILES = frozenset(
 )
 QOS_SCOPE_REPAIR_ID = "SR_F1_1_QOS_SCOPE_20261010"
 QOS_SCOPE_ALLOWED_FILES = frozenset({"src/sr_f1/freeze.py", "src/sr_f1/orchestration.py"})
+ENGINE_MEMORY_REPAIR_ID = "SR_F1_1_ENGINE_MEMORY_20261010"
+ENGINE_MEMORY_ALLOWED_FILES = frozenset(
+    {
+        "src/sr_f1/freeze.py",
+        "src/sr_f1/runtime.py",
+        "src/sr_f1/engine.py",
+        "src/sr_f1/orchestration.py",
+        "scripts/sr_f1/submit_matrix.py",
+    }
+)
 
 
 def _required(value, expected, message):
@@ -85,7 +95,7 @@ def _preserved_source_files(snapshot, *, include_amendments=False):
     return files
 
 
-def verify_qos_scope_repair(root, actual_source=None):
+def _verify_original_qos_scope_repair(root, actual_source=None):
     """Authenticate the user's scheduler-only correction without rewriting a freeze."""
     from .prepare import source_identity
 
@@ -171,6 +181,145 @@ def verify_qos_scope_repair(root, actual_source=None):
         "repair_sha256": file_hash(receipt_path),
         "source_commit": actual["source_commit"],
         "original_execution_freeze_sha256": expected["original_execution_freeze_sha256"],
+    }
+
+
+def verify_qos_scope_repair(root, actual_source=None):
+    """Keep the original QoS receipt valid through an authenticated later repair."""
+    if (Path(root) / "ENGINE_MEMORY_REPAIR.json").exists():
+        repair = verify_engine_memory_repair(root, actual_source=actual_source)
+        return {
+            "capacity_mode": "TEACHER_QOS_SCHEDULER_ONLY",
+            "qos": "soujanya-poria-startfund-2026-03",
+            "repair_sha256": repair["previous_qos_repair_sha256"],
+            "source_commit": repair["source_commit"],
+            "original_execution_freeze_sha256": repair["original_execution_freeze_sha256"],
+            "engine_memory_repair_sha256": repair["repair_sha256"],
+        }
+    return _verify_original_qos_scope_repair(root, actual_source=actual_source)
+
+
+def verify_engine_memory_repair(root, actual_source=None):
+    """Bind activation storage and step-zero recovery to preserved failure evidence.
+
+    Only historical copies are permanent identity inputs. Current STATE/LATEST
+    legitimately advance after the one-time scheduler and ENGINE activation.
+    """
+    from .prepare import source_identity
+
+    root = Path(root).resolve(strict=True)
+    repair_path = root / "ENGINE_MEMORY_REPAIR.json"
+    repair = read_json(repair_path)
+    historical_root = bounded_path(root, "code_before_engine_memory_20261010")
+    historical = read_json(historical_root / "SOURCE_DEPLOYMENT.json")
+    _required(
+        _preserved_source_files(historical_root, include_amendments=True),
+        historical.get("source_file_hashes"),
+        "Preserved pre-memory source changed",
+    )
+    parent = _verify_original_qos_scope_repair(root, actual_source=historical)
+    expected = {
+        "repair_id": ENGINE_MEMORY_REPAIR_ID,
+        "status": "AUTHORIZED_TECHNICAL_MEMORY_REPAIR",
+        "plan_id": PLAN_ID,
+        "run_root": str(root),
+        "original_execution_freeze_sha256": parent["original_execution_freeze_sha256"],
+        "previous_qos_repair_sha256": file_hash(root / "QOS_SCOPE_REPAIR.json"),
+        "previous_source_commit": historical["source_commit"],
+        "previous_source_tree_sha256": historical["source_tree_sha256"],
+        "preserved_source_relative_path": historical_root.name,
+        "scientific_protocol_unchanged": True,
+        "optimizer_updates_before_repair": 0,
+        "gpu_worker_host_memory_gb": 384,
+        "activation_storage": "CPU_SAVED_NONPARAMETER_TENSORS_EXACT_DTYPE",
+    }
+    for key, value in expected.items():
+        _required(repair.get(key), value, "ENGINE memory repair differs: " + key)
+    if not repair.get("authorized_user_message") or not repair.get("authorized_at"):
+        raise PermissionError("ENGINE memory repair lacks user authorization provenance")
+    prefix = "technical_incidents/engine_memory_20261010/"
+    required = {
+        prefix + n
+        for n in ("EVIDENCE_MANIFEST.json", "TERMINAL_JOBS.json", "CPU_STATE_REVIEW.json")
+    }
+    artifacts = _checked_source_files(repair.get("historical_artifact_hashes"), "Historical")
+    if not required.issubset(artifacts) or any(not n.startswith(prefix) for n in artifacts):
+        raise PermissionError("ENGINE memory repair lacks its bounded historical evidence")
+    for name, expected_hash in artifacts.items():
+        _required(file_hash(bounded_path(root, name)), expected_hash, "Repair history changed")
+    manifest = read_json(root / (prefix + "EVIDENCE_MANIFEST.json"))
+    _required(manifest.get("status"), "BYTE_VERIFIED_PRESERVED", "Failure preservation absent")
+    files = manifest.get("files", {})
+    if not files:
+        raise PermissionError("Failure evidence inventory is empty")
+    for name, entry in files.items():
+        saved = bounded_path(root / (prefix + "evidence"), name)
+        _required(file_hash(saved), entry["sha256"], "Preserved failure artifact changed")
+        _required(saved.stat().st_size, entry["bytes"], "Preserved artifact size changed")
+    terminal = read_json(root / (prefix + "TERMINAL_JOBS.json"))
+    if not (
+        terminal.get("old_controller_terminal") is True
+        and terminal.get("old_engine_terminal") is True
+    ):
+        raise PermissionError("Previous allocations are not verified terminal")
+    state = read_json(root / (prefix + "evidence/orchestration/STATE.json"))
+    if state.get("test_sealed") is not True or state["tasks"]["ENGINE"]["status"] != "BLOCKED":
+        raise PermissionError("ENGINE repair does not preserve a sealed technical failure")
+    if any(
+        t.get("attempts") for k, t in state["tasks"].items() if k not in {"COMMON_START", "ENGINE"}
+    ):
+        raise PermissionError("ENGINE repair was not established before downstream work")
+    review = read_json(root / (prefix + "CPU_STATE_REVIEW.json"))
+    for key, value in {
+        "status": "PASS_ZERO_UPDATE_FULL_STATE",
+        "committed_logical_step": 0,
+        "physical_optimizer_updates": 0,
+        "optimizer_empty": True,
+        "raw_rollouts": 128,
+        "raw_record_hashes_verified": True,
+        "learning_rate": 1e-4,
+    }.items():
+        _required(review.get(key), value, "Invalid zero-update state review: " + key)
+    recovery = repair.get("zero_update_recovery", {})
+    track = "engineering/engine/natural/continuous"
+    for key, value in {
+        "staged_track_relative_path": track,
+        "archived_track_relative_path": prefix + "evidence/" + track,
+        "original_checkpoint_state_hash": review.get("checkpoint_state_hash"),
+        "original_raw_count": 128,
+        "engine_mode": "natural",
+        "resume_step": 0,
+    }.items():
+        _required(recovery.get(key), value, "ENGINE recovery boundary differs: " + key)
+    restore = _checked_source_files(recovery.get("artifact_hashes"), "Recovery")
+    expected_restore = {
+        name: entry["sha256"]
+        for name, entry in files.items()
+        if name == track + "/RUN_MANIFEST.json"
+        or name.startswith(track + "/checkpoints/")
+        or name.startswith(track + "/rollouts/")
+    }
+    _required(restore, expected_restore, "Recovery inventory does not match preserved state")
+    actual = source_identity() if actual_source is None else actual_source
+    before = _checked_source_files(historical.get("source_file_hashes"), "Previous")
+    after = _checked_source_files(actual.get("source_file_hashes"), "Actual")
+    if actual.get("source_dirty_files"):
+        raise PermissionError("ENGINE memory repair requires committed source")
+    _required(actual.get("source_tree_sha256"), object_hash(after), "Actual source hash invalid")
+    changed = sorted(k for k in before.keys() | after.keys() if before.get(k) != after.get(k))
+    _required(set(changed), ENGINE_MEMORY_ALLOWED_FILES, "Memory repair changed scientific source")
+    _required(repair.get("changed_files"), changed, "Memory repair source inventory differs")
+    for key in ("source_commit", "source_tree_sha256", "source_file_hashes"):
+        _required(repair.get(key), actual.get(key), "Memory repair deployed source differs: " + key)
+    if not re.fullmatch(r"[0-9a-f]{40}", actual.get("source_commit") or ""):
+        raise PermissionError("Memory repair source commit is missing")
+    return {
+        "repair_id": ENGINE_MEMORY_REPAIR_ID,
+        "repair_sha256": file_hash(repair_path),
+        "source_commit": actual["source_commit"],
+        "original_execution_freeze_sha256": expected["original_execution_freeze_sha256"],
+        "previous_qos_repair_sha256": expected["previous_qos_repair_sha256"],
+        "gpu_worker_host_memory_gb": expected["gpu_worker_host_memory_gb"],
     }
 
 
