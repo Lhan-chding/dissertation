@@ -20,4 +20,8 @@
 
 ## 实际执行边界
 
-服务器CPU技术审计、修复部署、恢复作业号及GPU实际进度，以本次随后保存的机器回执和`EXECUTION_STATUS_zh.md`为准。代码实现及本地测试本身不代表恢复已成功。
+服务器CPU技术审计195666和部署激活195668均已COMPLETED/0:0。18项原生审计全部通过；三个题池192个标准completion最长118 tokens（含EOS）。原冻结SHA256保持`b84d6d1ad26761cb07e3db706be0b8ca2b4e4a8d436473b0ad3e964a81f463f9`，修复源码提交`e61e9de86e6954c94c751b6383b53da68718185b`。
+
+截至2026-10-09 21:46:59新加坡时间，恢复控制器195677和GPU作业195679均RUNNING。桥接第1/16步已真实更新参数、写出完整检查点；8条序列的损失与梯度均有限，参数hash不同于公共零LoRA。原FORMAT256条复用，新增before生成0。技术阻塞列表为空，任务中的旧blocker字段保留attempt0000失败历史。
+
+当前只能确认技术恢复和首步实际训练；独立FORMAT确认、原题复测、ENGINE及科学训练尚未完成。详见 [原生审计回执](validation/VERIFIED_FORMAT_REPAIR_20261009.json)、[GPU恢复快照](validation/GPU_REPAIR_RECOVERY_20261009.json) 和 [当前状态](EXECUTION_STATUS_zh.md)。

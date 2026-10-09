@@ -1,0 +1,115 @@
+{
+  "checked_at": "2026-10-09T13:46:59.531095+00:00",
+  "run_root": "/projects/_ssd/varunssd/louis-ssvc/sr_f1_20261009",
+  "source_commit": "e61e9de86e6954c94c751b6383b53da68718185b",
+  "execution_freeze_sha256": "b84d6d1ad26761cb07e3db706be0b8ca2b4e4a8d436473b0ad3e964a81f463f9",
+  "queue": {
+    "returncode": 0,
+    "stdout": "195679|srf1-6e5d1d89e034-COMMON_START_attempt0001|RUNNING|gpu-pro6000-12|4:43\n195677|srf1-controller-repair|RUNNING|cpu-2|8:12\n",
+    "stderr": ""
+  },
+  "repair_accounting": {
+    "returncode": 0,
+    "stdout": "195666|COMPLETED|00:00:24|0:0\n195666.batch|COMPLETED|00:00:24|0:0\n195666.extern|COMPLETED|00:00:24|0:0\n195668|COMPLETED|00:00:52|0:0\n195668.batch|COMPLETED|00:00:52|0:0\n195668.extern|COMPLETED|00:00:52|0:0\n195677|RUNNING|00:08:12|0:0\n195677.batch|RUNNING|00:08:12|0:0\n195677.extern|RUNNING|00:08:12|0:0\n195679|RUNNING|00:04:43|0:0\n195679.batch|RUNNING|00:04:43|0:0\n195679.extern|RUNNING|00:04:43|0:0\n",
+    "stderr": ""
+  },
+  "FORMAT_TECHNICAL_REVIEW.json": {
+    "status": "VERIFIED_PROTOCOL_NONADHERENCE",
+    "counts": {
+      "covered": 93,
+      "responses": 256,
+      "truncated": 22,
+      "untruncated": 234,
+      "untruncated_covered": 93
+    },
+    "permit_bridge": true,
+    "sha256": "9a71bcc11642ce3712047fae254411963d90e4cdc7fd2760a0fbc87bbbda25d3"
+  },
+  "TECHNICAL_REPAIR.json": {
+    "status": "AUTHORIZED_TECHNICAL_REPAIR",
+    "reason": "Correct overly broad any-truncation bridge guard after independent native CPU technical exclusion; preserve original 256 responses and all frozen scientific settings; correct post-bridge model identity before confirmation.",
+    "repair_id": "SR_F1_FORMAT_GUARD_REPAIR_20261009",
+    "source_commit": "e61e9de86e6954c94c751b6383b53da68718185b",
+    "sha256": "2582d98475ba479fd08526b83d5694fb9e69ede4b4e4a8e2838829b3957a3b22"
+  },
+  "FORMAT_REPAIR_ACTIVATION.json": {
+    "status": "ACTIVATED",
+    "new_format_before_generations": 0,
+    "original_format_records_reused": true,
+    "sha256": "a1fd4f6976d9f40fd51c6f619df9e8947f49808053e41bd2543f5d535bc55b74"
+  },
+  "engineering/bridge/checkpoints/LATEST.json": {
+    "step": 1,
+    "path": "step-01-ef8cf9dc7bf523895a2e903bd6f1c249b6e80a30f024cfca9bdb910713fa6869.pt",
+    "sha256": "61bd46be3f60abfed45559f4c9112cf05359fbe4503849e12f90e3f144c12cc9"
+  },
+  "format_raw_counts": {
+    "before": 256,
+    "confirm": 0,
+    "after": 0
+  },
+  "bridge_update_attempts": 1,
+  "work_counters_by_attempt": [
+    {
+      "kind": "extra_forward_sequences",
+      "attempt_id": "COMMON_START_attempt0000",
+      "count": 2
+    },
+    {
+      "kind": "completion_attempts",
+      "attempt_id": "COMMON_START_attempt0000",
+      "count": 256
+    },
+    {
+      "kind": "generated_tokens",
+      "attempt_id": "COMMON_START_attempt0000",
+      "count": 91739
+    },
+    {
+      "kind": "extra_forward_sequences",
+      "attempt_id": "COMMON_START_attempt0001",
+      "count": 9
+    },
+    {
+      "kind": "cached_training_model_forward_calls",
+      "attempt_id": "COMMON_START_attempt0001",
+      "count": 1028
+    },
+    {
+      "kind": "physical_optimizer_updates",
+      "attempt_id": "COMMON_START_attempt0001",
+      "count": 1
+    }
+  ],
+  "orchestration": {
+    "phase": "S1_VERIFIED",
+    "test_sealed": true,
+    "technical_blockers": [],
+    "technical_failed_runs": []
+  },
+  "tasks": {
+    "COMMON_START": {
+      "status": "ACTIVE",
+      "job_ids": [
+        "195415",
+        "195679"
+      ],
+      "blocker": "ValueError('WORKER_RESULT_NOT_COMPLETE')"
+    }
+  },
+  "bridge_updates_saved": [
+    1
+  ],
+  "bridge_update_verification": {
+    "saved_steps": [
+      1
+    ],
+    "all_steps_eight_sequences": true,
+    "all_losses_and_gradient_norms_finite": true,
+    "latest_parameter_hash": "6e7e4be0ba490a27f5bdcaed66d14b4018d00065e0fff7a19f4d9a20e9b43ecd",
+    "latest_parameters_differ_from_zero": true
+  },
+  "new_format_before_generations": 0,
+  "snapshot_status": "FORMAT_REPAIR_BRIDGE_UPDATES_VERIFIED_RUNNING",
+  "scope_note": "Technical recovery snapshot only; format confirmation, ENGINE and science are not complete. The task blocker field retains the original attempt failure; current technical_blockers is empty."
+}

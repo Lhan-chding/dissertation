@@ -1,0 +1,110 @@
+{
+  "plan_id": "SR-F1-20261009",
+  "status": "VERIFIED_PROTOCOL_NONADHERENCE",
+  "freeze_sha256": "b84d6d1ad26761cb07e3db706be0b8ca2b4e4a8d436473b0ad3e964a81f463f9",
+  "permit_bridge": true,
+  "model_calls": 0,
+  "model_weights_loaded": false,
+  "cuda_context_initialized": false,
+  "prior_bridge_executed": false,
+  "counts": {
+    "covered": 93,
+    "responses": 256,
+    "truncated": 22,
+    "untruncated": 234,
+    "untruncated_covered": 93
+  },
+  "upper_bound_coverage_if_all_truncated_valid": 0.44921875,
+  "checks": {
+    "all_256_original_slots_seeds_inputs_and_policy": true,
+    "all_32_native_cpu_routes_match_saved_routes": true,
+    "all_record_hashes_valid": true,
+    "all_truncations_retained_in_full_denominator": true,
+    "cpu_only_no_weights_no_model_calls_no_cuda_context": true,
+    "eos_and_length_stopping_coherent": true,
+    "finite_equal_actual_sampling_logprobs": true,
+    "frozen_config_and_parser_unchanged": true,
+    "frozen_model_and_processor_identity": true,
+    "generation_complete_no_technical_errors_and_visual_forward": true,
+    "gold_completions_fit_768_including_eos_all_three_pools": true,
+    "no_prior_bridge_or_scientific_progress_at_review": true,
+    "nontruncated_protocol_deficiency_independently_established": true,
+    "original_block_archived_unchanged": true,
+    "original_coverage_receipt_reproduced_without_accuracy": true,
+    "raw_tokens_decode_exactly_without_repair": true,
+    "sampling_parameters_and_hashes_unchanged": true,
+    "strict_parser_accepts_gold_and_rejects_malformed_wrappers": true
+  },
+  "receipt_hash": "3cc1de3075234ccecdd1c6f87fad96f99f305cf6740a2e8b72d35c2c82b3aeeb",
+  "format_review_file_sha256": "9a71bcc11642ce3712047fae254411963d90e4cdc7fd2760a0fbc87bbbda25d3",
+  "gold_channel": {
+    "maximum_completion_tokens_including_eos": 118,
+    "output_token_limit": 768,
+    "pool_counts": {
+      "BRIDGE": 128,
+      "FORMAT": 32,
+      "FORMAT_CONFIRM": 32
+    },
+    "same_encoding_as_registered_bridge": true
+  },
+  "field_coverage_diagnostics": {
+    "all_responses": {
+      "answer_not_scorable": 1,
+      "covered": 93,
+      "invalid_whole_json_or_top_level_contract": 162
+    },
+    "eos_responses": {
+      "answer_not_scorable": 1,
+      "covered": 93,
+      "invalid_whole_json_or_top_level_contract": 140
+    }
+  },
+  "source_repair": {
+    "repair_id": "SR_F1_FORMAT_GUARD_REPAIR_20261009",
+    "source_commit": "e61e9de86e6954c94c751b6383b53da68718185b",
+    "source_tree_sha256": "314dc8dfefec06a6ded430b92ed1767448cf972f80b5ba1350f8f76b1038bb62",
+    "original_source_commit": "c3001259acfb2347180bf9f9d62227c3997a3e40",
+    "original_source_tree_sha256": "8ee738c603765c65f867c3bd87162a8fef2db38d033a2dcee81b13d72229bc3d",
+    "original_freeze_sha256": "b84d6d1ad26761cb07e3db706be0b8ca2b4e4a8d436473b0ad3e964a81f463f9",
+    "scientific_contract_changes": [],
+    "changed_files": [
+      {
+        "path": "scripts/sr_f1/submit_matrix.py",
+        "before_sha256": "dcca677cd6efb9494890ac537ca52cfb28739c69e0627b45529491bd8a87133d",
+        "after_sha256": "387143ac2288a673016db29403cbd306177b43eba6475ae2a29250030bd53aa9"
+      },
+      {
+        "path": "src/sr_f1/format_review.py",
+        "before_sha256": null,
+        "after_sha256": "4f85c425fc15cd634e9cd2f8245b8b98b592032902d59a968feb1120bc1cd224"
+      },
+      {
+        "path": "src/sr_f1/freeze.py",
+        "before_sha256": "c9012398e7980d0378c2dc1ba55f5b8eb5105dc782e0678cf4458c7d6d9fa8fd",
+        "after_sha256": "ec3d782b866d0abe54c40daf2e52ef94b3887a0f65a57155104d6ba7fc6ab713"
+      },
+      {
+        "path": "src/sr_f1/orchestration.py",
+        "before_sha256": "f4694cf2bbd69ba43e8606a91e0ee1bca9178b960e409e630fc5936d627f33c9",
+        "after_sha256": "1348baa93418410aad3cfa154a85876634cfb27b3d33aa46ecfefa5ea912c42e"
+      },
+      {
+        "path": "src/sr_f1/runtime.py",
+        "before_sha256": "72e73553a55c28f8117da502f79a9c82b05482d6ab9bfc01eb3bb949d3d67713",
+        "after_sha256": "7c45937f821e1a603bee40f90ca1cc07bbf2bd5838094af315236fba7d108eb5"
+      }
+    ]
+  },
+  "native_cpu_review_job": {
+    "job_id": "195666",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed": "00:00:24"
+  },
+  "deployment_activation_job": {
+    "job_id": "195668",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed": "00:00:52"
+  }
+}
