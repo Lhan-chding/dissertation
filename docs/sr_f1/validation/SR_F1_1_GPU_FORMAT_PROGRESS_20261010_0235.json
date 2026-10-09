@@ -1,0 +1,94 @@
+{
+  "checked_at": "2026-10-09T18:35:23.612094+00:00",
+  "status": "PARTIAL_FORMAT_AUDIT_PASS_NOT_A_GATE",
+  "panels": {
+    "before": {
+      "pool": "FORMAT",
+      "records": 256,
+      "expected_records": 256,
+      "unique_slots": 256,
+      "covered": 252,
+      "finish_reasons": {
+        "balanced": 256
+      },
+      "format_protocol_errors": {
+        "none": 256
+      },
+      "technical_invalid": 0,
+      "verified_coverage_receipt": {
+        "component_means": {
+          "A": 0.50390625,
+          "E": 0.7109375,
+          "J": 0.29296875,
+          "P": 0.62890625
+        },
+        "coverage": 0.984375,
+        "coverage_uses_gold_accuracy": false,
+        "covered": 252,
+        "label": "before",
+        "panel": "FORMAT",
+        "policy_hash": "2a11c71fa0bdee21cc69123fa50810253be71e4e69d0fc243a7e5beeb89687b2",
+        "responses": 256,
+        "samples_per_prompt": 8,
+        "truncated": 0
+      },
+      "coverage_receipt_sha256": "00c3af92ec23be830ad6b1f8c74442cddbe4b4930dbdcf762436712be9995b8b"
+    },
+    "confirm": {
+      "pool": "FORMAT_CONFIRM",
+      "records": 243,
+      "expected_records": 512,
+      "unique_slots": 243,
+      "covered": 236,
+      "finish_reasons": {
+        "balanced": 243
+      },
+      "format_protocol_errors": {
+        "none": 243
+      },
+      "technical_invalid": 0
+    }
+  },
+  "record_inventory_sha256": "0aa49816f410c6372083a14a3d055fcb107e378221944ad67743e6b665449b0b",
+  "source_commit": "023a56699a6faad7b7b2521706996b82b0c61496",
+  "source_tree_sha256": "e52fdaf947668aadc513d75e0d3caa1d5ece2fd4ca077985d45fd3f72c828cbf",
+  "source_files_verified": 52,
+  "zero_receipt_sha256": "f3d8af65071e1c5620471595468abbfa3b79a1f341b693664afae91cab00c30c",
+  "model_manifest_sha256": "256bb6b24510d9461e791e8ab0ae9508ca2f2a30c49937dc8a3c9919af6c3510",
+  "model_weights_hash": "921fb7dbfce93fbcf3ab0ccc4fe63bdc41269e7b6ce8f8d6fc315c042fee5511",
+  "model_weights_rehashed_this_monitor": false,
+  "model_identity_bound_to_frozen_manifest_and_raw_records": true,
+  "freeze_sha256": "c7cf051d3aa6fb45889324e64b08d31a008137668aff2382283e4e19f99ff2b8",
+  "amendment_sha256": "7a50aff34d56b3809bae2842761efd34adaf30728ed51e4d149c67a620903e67",
+  "qos_repair_sha256": "7d6af82c0e355c0097e21e644284299d4b2943d59ce87eeb98af468983226b31",
+  "registered_jobs": [
+    "196047"
+  ],
+  "queue": "196047|RUNNING|soujanya-poria-startfund-2026-03|gpu-pro6000-7|41:11\n",
+  "test_sealed": true,
+  "technical_blockers": [],
+  "engine_receipt_exists": false,
+  "release_receipt_exists": false,
+  "new_bridge_exists": false,
+  "audit_model_calls": 0,
+  "zero_lora": {
+    "status": "VERIFIED",
+    "zero_output_exact": true,
+    "model_id": "SRF1_COMMON_ZERO",
+    "adapter_path": "states/SRF1_COMMON_ZERO",
+    "adapter_hash": "69e0045e4753541ad0537d1f9aa8250617332ce7cd33a508fb110c0d74b6e134",
+    "trainable_state_hash": "2a11c71fa0bdee21cc69123fa50810253be71e4e69d0fc243a7e5beeb89687b2",
+    "base_model_weights_hash": "921fb7dbfce93fbcf3ab0ccc4fe63bdc41269e7b6ce8f8d6fc315c042fee5511",
+    "freeze_sha256": "c7cf051d3aa6fb45889324e64b08d31a008137668aff2382283e4e19f99ff2b8"
+  },
+  "full_audit_sha256": "6dc7c5b4ce8394a2b88a8061442d4dd1341b09a64916ac9d2d00252059714201",
+  "controller_job": "196046",
+  "controller_status_at_initial_snapshot": "RUNNING",
+  "scheduler_accounting": {
+    "returncode": 0,
+    "stdout": "196011|COMPLETED|00:07:52|0:0\n196011.batch|COMPLETED|00:07:52|0:0\n196011.extern|COMPLETED|00:07:52|0:0\n196012|CANCELLED by 295800338|00:12:20|0:0\n196012.batch|COMPLETED|00:13:02|0:0\n196012.extern|COMPLETED|00:12:20|0:0\n196045|COMPLETED|00:00:59|0:0\n196045.batch|COMPLETED|00:00:59|0:0\n196045.extern|COMPLETED|00:00:59|0:0\n196046|RUNNING|01:04:14|0:0\n196046.batch|RUNNING|01:04:14|0:0\n196046.extern|RUNNING|01:04:14|0:0\n196047|RUNNING|00:40:40|0:0\n196047.batch|RUNNING|00:40:40|0:0\n196047.extern|RUNNING|00:40:40|0:0\n",
+    "stderr": ""
+  },
+  "scientific_training_started": false,
+  "final_format_gate_published": false
+}

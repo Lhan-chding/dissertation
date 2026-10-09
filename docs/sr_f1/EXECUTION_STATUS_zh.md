@@ -2,9 +2,9 @@
 
 ## SR-F1.1 修正案执行（2026-10-10）
 
-实测时间：`2026-10-09T18:06:18+00:00`（新加坡时间2026-10-10 02:06:18）。这是时间点快照；实时进度以服务器注册、Slurm 和原始记录为准。
+实测时间：`2026-10-09T18:35:23+00:00`（新加坡时间2026-10-10 02:35:23）。这是时间点快照；实时进度以服务器注册、Slurm 和原始记录为准。
 
-用户已授权按新方案执行，并选择所有科学臂及 ENGINE 学习率为 `1e-4`。新独立根为 `/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010`。目前状态 `FORMAT_BEFORE_RUNNING`：CPU 控制器 **196046 RUNNING**；GPU **196047 RUNNING**，节点 `gpu-pro6000-7`，任务 `COMMON_START_attempt0000`，使用老师 QoS `soujanya-poria-startfund-2026-03`。新零 LoRA 已完成基座 logits 逐位一致验证。当前 FORMAT 已生成并核验 **137/256** 条，全部按配平停止、技术生成错误0，字段可评分134/137；这只是未完成面板的事实统计，不是门禁通过。FORMAT_CONFIRM 为0/512，ENGINE及科学训练尚未开始，TEST仍封存。52个科学源码/依赖/修正案文件、零LoRA文件哈希、137个原始槽位的记录哈希/种子/输入/模型身份/协议元数据通过只读核验；审计没有新模型调用。详见 [GPU格式进度核验](validation/SR_F1_1_GPU_FORMAT_PROGRESS_20261010_0206.json)。
+用户已授权按新方案执行，并选择所有科学臂及 ENGINE 学习率为 `1e-4`。新独立根为 `/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010`。目前状态 `FORMAT_CONFIRM_RUNNING`：CPU 控制器 **196046 RUNNING**；GPU **196047 RUNNING**，节点 `gpu-pro6000-7`，任务 `COMMON_START_attempt0000`，使用老师 QoS `soujanya-poria-startfund-2026-03`。新零 LoRA 已完成基座 logits 逐位一致验证。FORMAT **256/256** 条全部完成，字段可评分 **252/256（98.4375%）**；完整原始记录独立复算与面板回执一致。FORMAT_CONFIRM 已生成并核验 **243/512** 条，其中236条字段可评分；确认尚未完成，不据此提前通过门禁。两个面板的现有499条记录均按配平停止，技术生成错误0。ENGINE及科学训练尚未开始，TEST仍封存。52个科学源码/依赖/修正案文件、零LoRA文件哈希、499个原始槽位的记录哈希/种子/输入/模型身份/协议元数据通过只读核验；审计没有新模型调用，没有追加桥接。详见 [当前格式确认核验](validation/SR_F1_1_GPU_FORMAT_PROGRESS_20261010_0235.json)；此前 [首次GPU进度](validation/SR_F1_1_GPU_FORMAT_PROGRESS_20261010_0206.json) 保留。
 
 已按用户最新指示去掉额外的账号范围五卡 guard，依老师 QoS 的实际配额提交，保留未知提交预留和防重复机制；所有本实验 GPU 使用老师 QoS，CPU QoS 为 `override-limits-but-killable`。原控制器196012已确认 CANCELLED，仅本实验被维护，无关作业修改数为0。修复前新根无任何 GPU attempt，维护标记已归档并解除。服务器实际源码提交 **`023a56699a6faad7b7b2521706996b82b0c61496`** 已推送核实，151项部署文件逐项哈希一致。CPU 修复验证196045 COMPLETED / 0:0，363项测试及3项子测试通过，执行冻结和修订链校验通过。见 [QoS 恢复回执](validation/SR_F1_1_QOS_RECOVERY_20261010.json) 与 [修订说明](QOS_SCOPE_REPAIR_zh.md)。
 
