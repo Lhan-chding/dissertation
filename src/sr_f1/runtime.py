@@ -39,6 +39,18 @@ from mm_dev.runtime import (
     copy_parameters as copy_parameters,
 )
 
+from .json_protocol import (
+    AMENDMENT_ID,
+    PREFILL,
+    PREFILL_TOKEN_ID,
+    BalancedJSONStop,
+    amendment_enabled,
+    decode_generated,
+    decoded_protocol,
+    first_balanced_token,
+    validate_record,
+)
+
 CANVAS = (1024, 768)
 TARGET_PIXELS = 786432
 PLAN_ID = "SR-F1-20261009"
@@ -69,7 +81,10 @@ class SRRuntime(QwenRuntime):
         dtype="bfloat16",
         attention_backend="eager",
         account=None,
+        protocol_amendment=None,
     ):
+        amended = amendment_enabled(protocol_amendment)
+        self.protocol_amendment = copy.deepcopy(protocol_amendment)
         if dtype != "bfloat16" or attention_backend != "eager":
             raise PermissionError("SR-F1 requires BF16 base and native eager attention")
         super().__init__(
@@ -103,14 +118,18 @@ class SRRuntime(QwenRuntime):
             canvas_pixels=list(CANVAS),
             processor_target_pixels=TARGET_PIXELS,
         )
+        if amended:
+            self.identity["protocol_amendment"] = copy.deepcopy(self.protocol_amendment)
 
     @classmethod
-    def processor_only(cls, model_path):
+    def processor_only(cls, model_path, *, protocol_amendment=None):
         import torch
         import transformers
         from transformers import AutoConfig, AutoProcessor, GenerationConfig
 
         instance = cls.__new__(cls)
+        amended = amendment_enabled(protocol_amendment)
+        instance.protocol_amendment = copy.deepcopy(protocol_amendment)
         instance.device = "cpu"
         instance.model_path = str(Path(model_path).resolve())
         architecture = validate_model_config(read_json(Path(model_path) / "config.json"))
@@ -158,6 +177,8 @@ class SRRuntime(QwenRuntime):
             chat_template_kwargs=dict(CHAT_TEMPLATE_KWARGS),
             chat_template_kwargs_hash=hash_json(CHAT_TEMPLATE_KWARGS),
         )
+        if amended:
+            instance.identity["protocol_amendment"] = copy.deepcopy(instance.protocol_amendment)
         return instance
 
     def prepare(self, row, run_root, *, protocol="evidence_answer"):
@@ -165,15 +186,26 @@ class SRRuntime(QwenRuntime):
 
         safe = model_input(row, protocol=protocol)
         return self.prepare_text(
-            safe["text"], safe["image_file"], run_root, expected_hash=row.get("image_sha256")
+            safe["text"],
+            safe["image_file"],
+            run_root,
+            expected_hash=row.get("image_sha256"),
+            protocol=protocol,
         )
 
-    def prepare_text(self, text, image_path, run_root, *, expected_hash=None):
+    def prepare_text(
+        self, text, image_path, run_root, *, expected_hash=None, protocol="evidence_answer"
+    ):
         """Only explicit text and pixels enter the processor; no gold sidecar is read."""
         from PIL import Image
 
         if not isinstance(text, str) or not text:
             raise ValueError("Nonempty registered prompt text required")
+        if protocol not in ("evidence_answer", "answer_only", "plain_answer"):
+            raise PermissionError("Unknown output protocol")
+        amended = amendment_enabled(getattr(self, "protocol_amendment", None)) and (
+            protocol == "evidence_answer"
+        )
         root = Path(run_root).resolve()
         rgb, source_size, image_hash = None, None, None
         content = []
@@ -204,6 +236,20 @@ class SRRuntime(QwenRuntime):
         if rgb is not None:
             kwargs["images"] = [rgb]
         inputs = self.processor(**kwargs)
+        base_prompt_tokens = inputs["input_ids"]
+        if amended:
+            tokenizer = self.processor.tokenizer
+            if tokenizer.encode(PREFILL, add_special_tokens=False) != [PREFILL_TOKEN_ID]:
+                raise PermissionError("Registered assistant prefill is not token 90")
+            chat += PREFILL
+            inputs = self.processor(**{**kwargs, "text": [chat]})
+            amended_ids = inputs["input_ids"]
+            if (
+                amended_ids.shape != (1, base_prompt_tokens.shape[-1] + 1)
+                or amended_ids[0, -1].item() != PREFILL_TOKEN_ID
+                or not bool((amended_ids[:, :-1] == base_prompt_tokens).all())
+            ):
+                raise PermissionError("Assistant prefill changed the native prompt token boundary")
         ids = inputs["input_ids"]
         if ids.shape[0] != 1:
             raise PermissionError("One independent context per generation is required")
@@ -260,7 +306,30 @@ class SRRuntime(QwenRuntime):
             if source_size == CANVAS
             else None,
         )
+        if amended:
+            routing.update(
+                protocol=protocol,
+                protocol_amendment=copy.deepcopy(self.protocol_amendment),
+                protocol_amendment_id=AMENDMENT_ID,
+                assistant_prefill=PREFILL,
+                assistant_prefill_token_ids=[PREFILL_TOKEN_ID],
+                base_prompt_token_count=base_prompt_tokens.shape[-1],
+            )
         return dict(inputs=inputs.to(self.device), routing=routing, chat_text=chat)
+
+    def encode_completion(self, text, *, eos=True):
+        if not amendment_enabled(getattr(self, "protocol_amendment", None)):
+            return super().encode_completion(text, eos=eos)
+        # Amended gold is the complete JSON object. The prefill is already in
+        # the prompt; reject a tokenizer merge instead of teaching another `{`.
+        if not isinstance(text, str) or not text.startswith(PREFILL):
+            raise PermissionError("Amended gold must include its registered opening prefill")
+        tokens = self.processor.tokenizer.encode(text, add_special_tokens=False)
+        if not tokens or tokens[0] != PREFILL_TOKEN_ID:
+            raise PermissionError("Gold prefill must remain the independent token 90")
+        if decoded_protocol(text[1:])["format_protocol_error"]:
+            raise PermissionError("Amended gold must terminate at a balanced JSON boundary")
+        return tokens[1:]
 
     def current_adapter_identity(self):
         parameters = {
@@ -323,8 +392,9 @@ class SRRuntime(QwenRuntime):
         prepared = (
             self.prepare(row, run_root, protocol=protocol)
             if row is not None
-            else (self.prepare_text(text, image_path, run_root))
+            else (self.prepare_text(text, image_path, run_root, protocol=protocol))
         )
+        amended = prepared["routing"].get("protocol_amendment_id") == AMENDMENT_ID
         config = self.training_generation_config()
         if generation:
             permitted = {
@@ -356,11 +426,39 @@ class SRRuntime(QwenRuntime):
         try:
             seed_all(seed)
             self.model.eval()
-            with self.torch.no_grad():
-                result = self.model.generate(**prepared["inputs"], generation_config=config)
             prompt_len = prepared["inputs"]["input_ids"].shape[-1]
+            generate_kwargs = {}
+            stop = None
+            if amended:
+                from transformers import StoppingCriteriaList
+
+                stop = BalancedJSONStop(self.processor.tokenizer, prompt_len)
+                generate_kwargs["stopping_criteria"] = StoppingCriteriaList([stop])
+            with self.torch.no_grad():
+                result = self.model.generate(
+                    **prepared["inputs"], generation_config=config, **generate_kwargs
+                )
             tokens = result.sequences[0, prompt_len:].cpu().tolist()
             errors, logps, sampler = [], [], []
+            generated_text = decode_generated(self.processor.tokenizer, tokens)
+            amended_record = {}
+            if amended:
+                count, cut = first_balanced_token(self.processor.tokenizer, tokens)
+                amended_record = {
+                    **decoded_protocol(generated_text),
+                    "balanced_token_count": count,
+                }
+                if (
+                    (count, cut) != (stop.balanced_token_count, stop.balanced_cut_char)
+                    or cut != amended_record["balanced_cut_char"]
+                    or (count is not None and count != len(tokens))
+                ):
+                    errors.append("BALANCED_STOP_REPLAY_MISMATCH")
+                if count is None and (
+                    not tokens
+                    or (tokens[-1] not in self.eos_ids and len(tokens) != config.max_new_tokens)
+                ):
+                    errors.append("UNREGISTERED_UNBALANCED_TERMINATION")
             if not tokens or len(result.logits) != len(tokens) or len(result.scores) != len(tokens):
                 errors.append("INCOMPLETE_RAW_SAMPLER_LOGITS")
             for token, raw, transformed in zip(tokens, result.logits, result.scores, strict=False):
@@ -378,9 +476,7 @@ class SRRuntime(QwenRuntime):
                 "generation_vision_forward_calls": self.image_calls - before,
             }
             record = dict(
-                raw_text=self.processor.tokenizer.decode(
-                    tokens, skip_special_tokens=True, clean_up_tokenization_spaces=False
-                ),
+                raw_text=generated_text,
                 tokens=tokens,
                 raw_tokens=tokens,
                 seed=seed,
@@ -406,6 +502,16 @@ class SRRuntime(QwenRuntime):
                 model_identity=self.stable_model_identity(),
                 runtime_hardware=self.identity.get("hardware"),
             )
+            if amended:
+                record.update(amended_record)
+                if amended_record["balanced_cut_char"] is not None:
+                    record.update(finish_reason="balanced", truncated=False)
+                if not errors:
+                    try:
+                        validate_record(record, expected_amendment_id=AMENDMENT_ID)
+                    except (PermissionError, TypeError, ValueError):
+                        errors.append("AMENDED_RECORD_METADATA_MISMATCH")
+                record["generation_status"] = "TECHNICAL_INVALID" if errors else "COMPLETE"
             if on_completion:
                 on_completion(record)
             self.reserve("generated_tokens", len(tokens), seed=seed)
@@ -579,7 +685,12 @@ def load_runtime(plan, root, *, state_id=None, step=96, account=None):
         raise PermissionError("SR-F1 requires the exact original untrained 9B snapshot")
     determinism = configure_audited_backend()
     hardware = actual_cuda_identity()
-    runtime = SRRuntime(identity["model_path"], account=account)
+    runtime = SRRuntime(
+        identity["model_path"],
+        account=account,
+        protocol_amendment=plan.get("protocol_amendment"),
+    )
+    runtime.training_learning_rate = plan["training"]["lr"]
     runtime.verify_identity(identity)
     runtime.identity.update(
         hardware=hardware,
@@ -687,27 +798,32 @@ def adapter_identity(root, relative):
 
 
 def _coverage(record, task):
-    from .contract import score
+    from .json_protocol import score_record
 
-    result = score(record["raw_text"], task["world"], task["query"])
+    result = score_record(record, task)
     # The reference scorer separates legal entities/values from semantic coverage.
     return bool(result["L_json"] and result["L_answer"] and result["L_evidence"])
 
 
-def format_panel(runtime, root, pool, label, boundary=None):
-    from .contract import digest, score, stable_seed
+def format_panel(runtime, root, pool, label, boundary=None, *, samples_per_prompt=8):
+    from .contract import digest, stable_seed
     from .data import load_inputs, load_tasks
+    from .json_protocol import score_record, validate_record
 
     root = Path(root)
     inputs, tasks = load_inputs(root), load_tasks(root)
     qids = sorted(q for q, t in tasks.items() if t["pool"] == pool)
     if len(qids) != 32:
         raise PermissionError("FORMAT panel must contain exactly 32 registered prompts")
+    amended = bool(getattr(runtime, "protocol_amendment", None))
+    expected_samples = 16 if amended and pool == "FORMAT_CONFIRM" else 8
+    if samples_per_prompt != expected_samples:
+        raise PermissionError("FORMAT sampling count differs from the frozen protocol")
     directory = root / "engineering" / "format" / label
     records = []
     policy = state_hash(trainable_state(runtime.model))
     for qid in qids:
-        for index in range(8):
+        for index in range(samples_per_prompt):
             if boundary and boundary["requested"]:
                 from .training import LeaseEnding
 
@@ -721,6 +837,8 @@ def format_panel(runtime, root, pool, label, boundary=None):
                 policy_hash=policy,
                 input_hash=digest(inputs[qid]),
             )
+            if amended:
+                expected["protocol_amendment_sha256"] = file_hash(root / "AMENDMENT.json")
             if path.exists():
                 record = read_json(path)
                 if any(record.get(k) != v for k, v in expected.items()):
@@ -740,12 +858,14 @@ def format_panel(runtime, root, pool, label, boundary=None):
                 raise PermissionError("FORMAT raw response bytes changed")
             if record["generation_status"] != "COMPLETE":
                 raise RuntimeError("FORMAT contains technical generation failure")
-            record["score"] = score(record["raw_text"], tasks[qid]["world"], tasks[qid]["query"])
+            validate_record(record, runtime.protocol_amendment["id"] if amended else None)
+            record["score"] = score_record(record, tasks[qid])
             records.append(record)
     covered = sum(_coverage(r, tasks[r["qid"]]) for r in records)
     receipt = dict(
         panel=pool,
         label=label,
+        samples_per_prompt=samples_per_prompt,
         policy_hash=policy,
         responses=len(records),
         covered=covered,
@@ -821,6 +941,85 @@ def publish_bridge_format_identity(root, runtime, zero, bridge):
     )
 
 
+def amended_format_decision(covered, responses):
+    """The user-authorized SR-F1.1 gate is frozen before any new responses."""
+    if type(covered) is not int or type(responses) is not int or responses != 512:
+        raise ValueError("SR-F1.1 confirmation requires exactly 512 scored records")
+    if not 0 <= covered <= responses:
+        raise ValueError("Invalid confirmation numerator")
+    if covered >= 487:
+        return "PASS_95"
+    if covered >= 461:
+        return "PASS_90_WITH_FORMAT_REPORTING"
+    return "F2_AMENDMENT_REQUIRED"
+
+
+def _amended_common_start(runtime, plan, root, zero, boundary):
+    """Fresh zero-LoRA FORMAT/CONFIRM; the original bridge is never loaded."""
+    root = Path(root)
+    if (root / "engineering/bridge").exists():
+        raise PermissionError("SR-F1.1 common start cannot contain a bridge")
+    amendment_hash = file_hash(root / "AMENDMENT.json")
+    if zero.get("zero_output_exact") is not True:
+        raise PermissionError("SR-F1.1 requires an independently verified zero-output adapter")
+    if state_hash(trainable_state(runtime.model)) != zero["trainable_state_hash"]:
+        raise PermissionError("SR-F1.1 common parameters differ from verified zero LoRA")
+    initial = format_panel(runtime, root, "FORMAT", "before", boundary)
+    confirmation = format_panel(
+        runtime, root, "FORMAT_CONFIRM", "confirm", boundary, samples_per_prompt=16
+    )
+    decision = amended_format_decision(confirmation["covered"], confirmation["responses"])
+    if state_hash(trainable_state(runtime.model)) != zero["trainable_state_hash"]:
+        raise PermissionError("Parameters changed during SR-F1.1 format sampling")
+    metadata = dict(
+        common_start="SRF1_COMMON_START",
+        bridge_executed=False,
+        protocol_amendment=plan["protocol_amendment"],
+        protocol_amendment_sha256=amendment_hash,
+        format_gate_decision=decision,
+        per_arm_per_update_format_reporting=True,
+        old_bridge_used_for_scientific_start=False,
+    )
+    result = dict(
+        status="PROTOCOL_BLOCKED" if decision == "F2_AMENDMENT_REQUIRED" else "COMPLETE",
+        format_before=initial,
+        format_confirmation=confirmation,
+        format_after=None,
+        bridge=None,
+        bridge_executed=False,
+        artifacts=[
+            "COMMON_ZERO_LORA.json",
+            "FORMAT_AND_BRIDGE_RECEIPT.json",
+            "engineering/format/before/COVERAGE.json",
+            "engineering/format/confirm/COVERAGE.json",
+            "AMENDMENT.json",
+        ],
+        metadata=metadata,
+    )
+    if decision == "F2_AMENDMENT_REQUIRED":
+        result["reason"] = "SR_F1_1_CONFIRMATION_BELOW_90_PERCENT"
+    else:
+        entry = publish_adapter(
+            root,
+            runtime,
+            "SRF1_COMMON_START",
+            extra={
+                **metadata,
+                "zero_output_initialization": zero["trainable_state_hash"],
+                "zero_output_exact": True,
+            },
+        )
+        common = root / "COMMON_START.json"
+        if common.exists():
+            if read_json(common) != entry:
+                raise PermissionError("Partially published amended common start differs")
+        else:
+            atomic_json(common, entry, exclusive=True)
+        result["artifacts"].append("COMMON_START.json")
+    atomic_json(root / "FORMAT_AND_BRIDGE_RECEIPT.json", result, exclusive=True)
+    return result
+
+
 def _establish_common_start(plan, root, boundary):
     """Zero-output init, format-only trigger, at most one fixed shared bridge."""
     import gc
@@ -851,6 +1050,12 @@ def _establish_common_start(plan, root, boundary):
         from peft import PeftModel
 
         zero = read_json(zero_path)
+        if (
+            zero.get("plan_id") != PLAN_ID
+            or zero.get("freeze_sha256") != file_hash(root / "EXECUTION_FREEZE.json")
+            or zero.get("zero_output_exact") is not True
+        ):
+            raise PermissionError("Common zero LoRA belongs to a different execution identity")
         actual = adapter_identity(root, zero["adapter_path"])
         if any(zero.get(k) != v for k, v in actual.items()):
             raise PermissionError("Common zero LoRA changed")
@@ -858,6 +1063,8 @@ def _establish_common_start(plan, root, boundary):
             runtime.model, bounded_path(root, zero["adapter_path"]), is_trainable=False
         )
         configure_training(runtime)
+        if state_hash(trainable_state(runtime.model)) != zero["trainable_state_hash"]:
+            raise PermissionError("Restored zero LoRA parameter hash differs")
     else:
         qid = sorted(q for q, t in tasks.items() if t["pool"] == "ENGINE")[0]
         prepared = runtime.prepare(inputs[qid], root)
@@ -889,6 +1096,8 @@ def _establish_common_start(plan, root, boundary):
         atomic_json(zero_path, zero, exclusive=True)
     runtime.identity.update(zero)
     runtime.adapter_path = str(bounded_path(root, zero["adapter_path"]))
+    if plan.get("protocol_amendment"):
+        return _amended_common_start(runtime, plan, root, zero, boundary)
     initial = format_panel(runtime, root, "FORMAT", "before", boundary)
     bridge = None
     confirmation, repeated = None, None

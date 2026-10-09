@@ -15,6 +15,7 @@ def main():
     parser.add_argument("--bold-font", required=True, type=Path)
     parser.add_argument("--operator", default="codex")
     parser.add_argument("--model-path", type=Path)
+    parser.add_argument("--plan", type=Path, help="Explicit registered SR-F1.1 config JSON")
     parser.add_argument("--local-only", action="store_true")
     parser.add_argument("--defer-freeze", action="store_true")
     args = parser.parse_args()
@@ -26,6 +27,7 @@ def main():
         model_path=args.model_path,
         local_only=args.local_only,
         defer_freeze=args.defer_freeze,
+        plan=args.plan,
     )
     print(
         json.dumps(

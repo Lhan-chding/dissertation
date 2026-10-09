@@ -21,7 +21,8 @@ from mm_core.training import (
 )
 from mm_core.vl_runtime import hash_json, seed_all
 
-from .contract import PLAN_ID, digest, reward_advantages, score
+from .contract import PLAN_ID, digest, reward_advantages
+from .json_protocol import AMENDMENT_RECORD_FIELDS, score_record, validate_record
 from .runtime import atomic_json, bounded_path, copy_parameters, file_hash, read_json
 
 CHECKPOINT_FIELDS = frozenset(
@@ -42,6 +43,92 @@ CHECKPOINT_FIELDS = frozenset(
         "token_path_hash",
     }
 )
+
+
+TOKEN_PATH_FIELDS = ("qid", "seed", "tokens", "raw_text", "old_logprobs", "image_routing")
+
+
+def amendment_record_identity(record, expected_amendment_id=None):
+    """Bind decoded stopping evidence to replay without changing legacy identities."""
+    actual = record.get("protocol_amendment_id")
+    if expected_amendment_id is not None and actual != expected_amendment_id:
+        raise PermissionError("Rollout protocol amendment identity differs")
+    if actual is None:
+        return {}
+    if actual != "SR-F1.1-20261010" or any(k not in record for k in AMENDMENT_RECORD_FIELDS):
+        raise PermissionError("Incomplete or unknown amended rollout metadata")
+    if record["assistant_prefill"] != "{" or record["full_decoded_text"] != (
+        "{" + record["generated_text"]
+    ):
+        raise PermissionError("Amended rollout prompt/completion boundary differs")
+    return {key: record[key] for key in AMENDMENT_RECORD_FIELDS}
+
+
+def token_path_record(record):
+    return {
+        **{key: record[key] for key in TOKEN_PATH_FIELDS},
+        **amendment_record_identity(record),
+    }
+
+
+def format_failure_accounting(groups):
+    """Count actual completion failures; no inference, resampling or TEST access."""
+    scores = [value for group in groups for value in group]
+    if not scores:
+        raise ValueError("Format accounting requires actual generated responses")
+    failures = [
+        s for s in scores if not all(s.get(k) for k in ("L_json", "L_answer", "L_evidence"))
+    ]
+    return dict(
+        unit="generated_sequence",
+        denominator=len(scores),
+        numerator=len(failures),
+        format_failure_rate=len(failures) / len(scores),
+        reasons=dict(sorted(Counter(s["reason"] for s in failures).items())),
+    )
+
+
+def _frozen_learning_rate(runtime):
+    if not getattr(runtime, "protocol_amendment", None):
+        return None
+    rate = getattr(runtime, "training_learning_rate", None)
+    if rate != 1e-4 or isinstance(rate, bool):
+        raise PermissionError("Amended training requires its frozen learning-rate choice")
+    return rate
+
+
+def validate_learning_rate_state(runtime, optimizer_state, scheduler_state):
+    rate = _frozen_learning_rate(runtime)
+    if rate is None:
+        return
+    groups = optimizer_state["param_groups"]
+    if not groups or any(g.get("lr") != rate or g.get("initial_lr") != rate for g in groups):
+        raise PermissionError("Optimizer learning rate differs from frozen amendment")
+    if scheduler_state.get("base_lrs") != [rate] * len(groups) or scheduler_state.get(
+        "_last_lr"
+    ) != [rate] * len(groups):
+        raise PermissionError("Scheduler learning rate differs from frozen amendment")
+
+
+def configure_scientific_training(runtime):
+    """Apply the SR-only frozen rate after the shared unchanged LoRA setup."""
+    optimizer, scheduler, identity = configure_training(runtime)
+    rate = _frozen_learning_rate(runtime)
+    if rate is not None:
+        import torch
+
+        if optimizer.state:
+            raise PermissionError("Fresh scientific optimizer unexpectedly contains moments")
+        for group in optimizer.param_groups:
+            group["lr"] = group["initial_lr"] = rate
+        scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lambda _: 1.0)
+        identity = {
+            **identity,
+            "learning_rate": rate,
+            "protocol_amendment": runtime.protocol_amendment,
+        }
+        validate_learning_rate_state(runtime, optimizer.state_dict(), scheduler.state_dict())
+    return optimizer, scheduler, identity
 
 
 def sequence_objective(current, old, reference, coefficient):
@@ -112,6 +199,7 @@ def checkpoint_state(
     diagnostics_hash=None,
     token_path_hash=None,
 ):
+    validate_learning_rate_state(runtime, optimizer.state_dict(), scheduler.state_dict())
     return dict(
         plan_id=PLAN_ID,
         run_identity=run_identity,
@@ -154,6 +242,7 @@ def load_checkpoint(
     validate_checkpoint(
         state, receipt, run_identity, stream_hash, sampling_hash, state_hash(reference)
     )
+    validate_learning_rate_state(runtime, state["optimizer"], state["scheduler"])
     copy_parameters(runtime.model, state["parameters"])
     optimizer.load_state_dict(state["optimizer"])
     scheduler.load_state_dict(state["scheduler"])
@@ -164,6 +253,9 @@ def load_checkpoint(
         raise RuntimeError("Policy parameters were not restored exactly")
     if state_hash(_cpu_tree(optimizer.state_dict())) != state_hash(state["optimizer"]):
         raise RuntimeError("Optimizer was not restored exactly")
+    if state_hash(scheduler.state_dict()) != state_hash(state["scheduler"]):
+        raise RuntimeError("Scheduler was not restored exactly")
+    validate_learning_rate_state(runtime, optimizer.state_dict(), scheduler.state_dict())
     return state
 
 
@@ -221,6 +313,7 @@ def update(
     """Exactly 128 equal-weight sequence losses; no batch or token-count weighting."""
     import torch
 
+    validate_learning_rate_state(runtime, optimizer.state_dict(), scheduler.state_dict())
     if len(examples) != 128:
         raise ValueError("SR-F1 requires the full effective batch of 16 x 8 sequences")
     before = trainable_state(runtime.model)
@@ -293,6 +386,7 @@ def update(
     )
     optimizer.step()
     scheduler.step()
+    validate_learning_rate_state(runtime, optimizer.state_dict(), scheduler.state_dict())
     after = trainable_state(runtime.model)
     delta = max(float((after[n] - before[n]).abs().max()) for n in before)
     return dict(
@@ -429,7 +523,9 @@ def rollout_group(
             or not all(math.isfinite(v) for v in record["old_logprobs"])
         ):
             raise PermissionError("Saved sampling probabilities are invalid")
-        records.append({**record, "score": score(record["raw_text"], task["world"], task["query"])})
+        amendment = getattr(runtime, "protocol_amendment", None)
+        validate_record(record, amendment["id"] if amendment else None)
+        records.append({**record, "score": score_record(record, task)})
     return records
 
 
@@ -453,7 +549,7 @@ def execute_path(
     directory.mkdir(parents=True, exist_ok=True)
     if stress and not engine:
         raise PermissionError("Surrogate coefficients are confined to ENGINE")
-    optimizer, scheduler, module_identity = configure_training(runtime)
+    optimizer, scheduler, module_identity = configure_scientific_training(runtime)
     reference = trainable_state(runtime.model)
     if runtime.identity.get("trainable_state_hash") != state_hash(reference):
         raise PermissionError("Loaded common start differs from its published identity")
@@ -608,13 +704,9 @@ def execute_path(
             natural_nonconstant_groups=natural_groups,
             all_natural_advantages_zero=not bool(final_advantages.any()),
         )
-        token_path = [
-            {
-                key: e["record"][key]
-                for key in ("qid", "seed", "tokens", "raw_text", "old_logprobs", "image_routing")
-            }
-            for e in examples
-        ]
+        if getattr(runtime, "protocol_amendment", None):
+            metrics["format_failures"] = format_failure_accounting(metrics["scores"])
+        token_path = [token_path_record(e["record"]) for e in examples]
         metrics["token_path_hash"] = digest(token_path)
         atomic_json(
             directory / "update_attempts" / f"{step:02d}-{os.getpid()}-{time_ns()}.json",
@@ -764,6 +856,8 @@ def run_common_bridge(runtime, root, plan, boundary=None):
     from .contract import gold_output
     from .data import load_inputs, load_tasks
 
+    if plan.get("protocol_amendment") or getattr(runtime, "protocol_amendment", None):
+        raise PermissionError("SR-F1.1 forbids the original supervised common bridge")
     root = Path(root)
     directory = root / "engineering" / "bridge"
     inputs, tasks = load_inputs(root), load_tasks(root)

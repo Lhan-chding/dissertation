@@ -110,11 +110,37 @@ def _compact(row, score, task):
     return output
 
 
+def _score_retained_training_raw(raw, task, *, applied_update):
+    """Retain technical missingness without converting it to a scientific zero."""
+    from .json_protocol import score_record
+
+    technical = raw.get("generation_status") != "COMPLETE" or raw.get("technical_validation_errors")
+    error = "TECHNICAL_INVALID_GENERATION" if technical else None
+    independent = None
+    if not technical:
+        try:
+            independent = score_record(raw, task)
+        except (PermissionError, KeyError, TypeError, ValueError) as exc:
+            error = f"{type(exc).__name__}: {exc}"
+    if error and applied_update:
+        raise ReleaseBlocked(
+            "Technically unscorable generation entered an applied update: " + error
+        )
+    return dict(
+        independent_score=independent,
+        technical_unscorable=error is not None,
+        independent_scoring_error=error,
+    )
+
+
 def audit_training(root, matrix, tasks):
     """Recompute every retained scientific update from its actual raw completions."""
-    from .contract import digest, reward_advantages, score
+    from .contract import digest, reward_advantages
+    from .json_protocol import AMENDMENT_ID, score_record, validate_record
+    from .training import format_failure_accounting, token_path_record
 
     root = Path(root)
+    amendment_id = AMENDMENT_ID if (root / "AMENDMENT.json").exists() else None
     summary = []
     for run_id, run in matrix.items():
         directory = root / "training" / run_id
@@ -123,6 +149,7 @@ def audit_training(root, matrix, tasks):
             raise ReleaseBlocked("Completed path lacks its 96 actual-update records")
         seen_steps = set()
         token_count = 0
+        format_rounds = []
         for path in steps:
             update = json.loads(path.read_text())
             step = update["logical_step"]
@@ -145,6 +172,7 @@ def audit_training(root, matrix, tasks):
                     "technical_validation_errors"
                 ):
                     raise ReleaseBlocked("Technically invalid generation entered science loss")
+                validate_record(raw, amendment_id)
                 if raw["run_id"] != run_id or raw["logical_step"] != step:
                     raise ReleaseBlocked("Training raw identity mismatch")
                 key = (raw["slot"], raw["sample_index"])
@@ -159,22 +187,19 @@ def audit_training(root, matrix, tasks):
                 for draw in range(8):
                     raw = by_slot[(slot, draw)]
                     task = tasks[raw["qid"]]
-                    group.append(score(raw["raw_text"], task["world"], task["query"]))
+                    group.append(score_record(raw, task))
                     token_count += len(raw["tokens"])
-                    token_path.append(
-                        {
-                            k: raw[k]
-                            for k in (
-                                "qid",
-                                "seed",
-                                "tokens",
-                                "raw_text",
-                                "old_logprobs",
-                                "image_routing",
-                            )
-                        }
-                    )
+                    token_path.append(token_path_record(raw))
                 groups.append(group)
+            if amendment_id and "format_failures" not in update:
+                raise ReleaseBlocked("Amended training lacks per-round format accounting")
+            if "format_failures" in update:
+                accounting = format_failure_accounting(groups)
+                if update["format_failures"] != accounting:
+                    raise ReleaseBlocked("Training per-round format failures differ from raw")
+                format_rounds.append(
+                    dict(run_id=run_id, arm=run["arm"], logical_step=step, **accounting)
+                )
             advantages, info = reward_advantages(run["arm"], groups)
             if update["scores"] != groups or update["reward_advantage_audit"] != info:
                 raise ReleaseBlocked("Raw independent scoring differs from applied training credit")
@@ -200,7 +225,9 @@ def audit_training(root, matrix, tasks):
                     generation_status=raw["generation_status"],
                     applied_update=raw["logical_step"] in seen_steps,
                     technical_errors=raw.get("technical_validation_errors", []),
-                    independent_score=score(raw["raw_text"], task["world"], task["query"]),
+                    **_score_retained_training_raw(
+                        raw, task, applied_update=raw["logical_step"] in seen_steps
+                    ),
                 )
             )
         audit_path = f"score_audit/training/{run_id}.jsonl"
@@ -216,6 +243,7 @@ def audit_training(root, matrix, tasks):
                 raw_recount_path=audit_path,
                 raw_recount_sha256=sha_file(root / audit_path),
                 failure=run.get("failure"),
+                format_failures_by_round=format_rounds,
                 unfavorable_results_retained=True,
             )
         )
@@ -225,6 +253,9 @@ def audit_training(root, matrix, tasks):
 def audit_evaluation(root, tasks, fit, matrix):
     """Check the frozen full slot set, then independently score only actual answers."""
     root = Path(root)
+    from .json_protocol import AMENDMENT_ID
+
+    amendment_id = AMENDMENT_ID if (root / "AMENDMENT.json").exists() else None
     expected = {s["slot_id"]: s for s in iter_evaluation_slots(tasks, fit)}
     unavailable = {m for m, r in matrix.items() if r["status"] == "TECHNICAL_FAILED"}
     inputs = {r["qid"]: r for r in read_jsonl(root / "manifests/MODEL_INPUTS.jsonl")}
@@ -244,7 +275,7 @@ def audit_evaluation(root, tasks, fit, matrix):
             slot = expected[slot_id]
             observed.add(slot_id)
             try:
-                validate_raw(row, slot)
+                validate_raw(row, slot, protocol_amendment_id=amendment_id)
             except ValueError as exc:
                 if row.get("model_id") not in unavailable:
                     raise ReleaseBlocked(f"Unresolved technical evaluation failure: {exc}") from exc
@@ -292,7 +323,9 @@ def audit_evaluation(root, tasks, fit, matrix):
                 and abs(row.get("token_matching", {}).get("token_difference", 100)) > 1
             ):
                 raise ReleaseBlocked("Neutral hint is not tokenizer matched")
-            independent = score_response(row["raw_text"], tasks[row["qid"]], row["protocol"])
+            independent = score_response(
+                row["raw_text"], tasks[row["qid"]], row["protocol"], record=row
+            )
             if "score" in row and row["score"] != independent:
                 raise ReleaseBlocked("Persisted evaluation score differs from raw-text recount")
             compact.append(_compact(row, independent, tasks[row["qid"]]))
@@ -386,6 +419,59 @@ def _audit_external(root, matrix):
     )
 
 
+def amendment_report_lines(root, receipts):
+    """Disclose the registered protocol and observed engineering coverage only."""
+    if "AMENDMENT.json" not in receipts:
+        return []
+    from .amendment import AMENDMENT_ID, ORIGINAL_FREEZE_SHA256
+    from .runtime import amended_format_decision
+
+    root = Path(root)
+    amendment = receipts["AMENDMENT.json"]
+    common = receipts["FORMAT_AND_BRIDGE_RECEIPT.json"]
+    metadata = common["metadata"]
+    if (
+        amendment.get("amendment_id") != AMENDMENT_ID
+        or amendment.get("original_freeze_sha256") != ORIGINAL_FREEZE_SHA256
+        or metadata.get("protocol_amendment") != amendment.get("protocol_amendment")
+        or metadata.get("protocol_amendment_sha256") != sha_file(root / "AMENDMENT.json")
+        or metadata.get("old_bridge_used_for_scientific_start") is not False
+        or common.get("bridge_executed") is not False
+        or common.get("bridge") is not None
+        or common.get("status") != "COMPLETE"
+    ):
+        raise ReleaseBlocked("Amended common-start disclosure differs from registered evidence")
+    before, confirmation = common["format_before"], common["format_confirmation"]
+    for panel, count in ((before, 256), (confirmation, 512)):
+        if (
+            panel.get("responses") != count
+            or type(panel.get("covered")) is not int
+            or not 0 <= panel["covered"] <= count
+            or panel.get("coverage") != panel["covered"] / count
+        ):
+            raise ReleaseBlocked("Amended format coverage numerator/denominator differs")
+    decision = amended_format_decision(confirmation["covered"], confirmation["responses"])
+    if decision == "F2_AMENDMENT_REQUIRED" or metadata.get("format_gate_decision") != decision:
+        raise ReleaseBlocked("Amended confirmation gate does not permit scientific release")
+    return [
+        "",
+        f"协议修正案：{AMENDMENT_ID}；AMENDMENT.json SHA-256："
+        f"{sha_file(root / 'AMENDMENT.json')}；本轮冻结 SHA-256："
+        f"{sha_file(root / 'EXECUTION_FREEZE.json')}。科学各臂及ENGINE统一学习率1e-4。",
+        f"原SR-F1冻结 SHA-256：{ORIGINAL_FREEZE_SHA256}。历史工程FORMAT为93/256"
+        "（36.328125%），原桥接后独立FORMAT_CONFIRM为100/256（39.0625%）。",
+        f"SR-F1.1零LoRA起点实测FORMAT为{before['covered']}/{before['responses']}"
+        f"（{before['coverage']:.6%}），FORMAT_CONFIRM为"
+        f"{confirmation['covered']}/{confirmation['responses']}"
+        f"（{confirmation['coverage']:.6%}），冻结门禁决定为{decision}。",
+        "原SRF1_FORMAT_BRIDGED及128条gold监督曝光保留为历史工程记录；"
+        "该adapter未用于本轮科学起点。本轮公共起点为已验证的零LoRA基座。",
+        "预填字符{属于prompt；配平完成的最后一个生成token进入损失，不补EOS。"
+        "answer_only协议保持原设定。",
+        "",
+    ]
+
+
 def release(root, run_matrix_final):
     from .analysis import (
         absolute_panel_results,
@@ -410,7 +496,13 @@ def release(root, run_matrix_final):
         "ENGINE_PROBABILITY_GRADIENT_RESUME.json",
         "GPU_ACCOUNTING.json",
     )
+    if (root / "AMENDMENT.json").exists():
+        from .amendment import EFFECTIVE_CONFIG, effective_plan
+
+        effective_plan(root)
+        required += ("AMENDMENT.json", EFFECTIVE_CONFIG)
     receipts = {name: json.loads((root / name).read_text()) for name in required}
+    amendment_disclosure = amendment_report_lines(root, receipts)
     if receipts["EXECUTION_FREEZE.json"].get("status") != "FROZEN":
         raise ReleaseBlocked("Real execution freeze is absent")
     if receipts["GPU_ACCOUNTING.json"].get("status") != "COMPLETE":
@@ -540,6 +632,7 @@ def release(root, run_matrix_final):
         "| 主对照 | J变化(pp) | 三种子变化(pp) | 95%区间 | 99%区间 |",
         "|---|---:|---|---|---|",
     ]
+    report[2:2] = amendment_disclosure
     absolute_lookup = {
         (r["model_id"], r["protocol"]): r for r in absolute if r["pool"] == "TEST_ID"
     }
@@ -571,6 +664,15 @@ def release(root, run_matrix_final):
                 f"| {contrast['contrast']} | undefined | 技术缺失 | undefined | undefined |"
             )
     report.extend(absolute_table)
+    format_rounds = [r for run in training for r in run["format_failures_by_round"]]
+    if format_rounds:
+        report.extend(
+            [
+                "",
+                "各臂每轮格式失败率（单位：实际生成序列；分母每轮128）见 "
+                "TRAINING_FORMAT_FAILURES_BY_ROUND.jsonl。格式失败保留在奖励和损失中。",
+            ]
+        )
     report.extend(["", "主要对照解释:"])
     for contrast in primary:
         if contrast["status"] != "ESTIMATED":
@@ -654,6 +756,10 @@ def release(root, run_matrix_final):
         "FINAL_REPORT_zh.md",
         "START_HERE_zh.md",
     ]
+    if format_rounds:
+        format_name = "TRAINING_FORMAT_FAILURES_BY_ROUND.jsonl"
+        _jsonl_once(root, format_name, format_rounds)
+        names.append(format_name)
     hashes = {name: sha_file(root / name) for name in [*required, *names, "RUN_MATRIX_FINAL.json"]}
     _json_once(root, "MANIFEST_SHA256.json", hashes)
     return dict(

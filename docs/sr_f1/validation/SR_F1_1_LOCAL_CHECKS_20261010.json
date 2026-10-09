@@ -1,0 +1,26 @@
+{
+  "checked_at": "2026-10-09T17:01:03.442830+00:00",
+  "status": "LOCAL_PASS_GPU_PENDING",
+  "pytest": {
+    "passed": 345,
+    "subtests_passed": 3,
+    "failed": 0,
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python -m pytest -q --import-mode=importlib tests/sr_f1 tests/mm_dev/test_cached_teacher_forcing.py tests/mm_core/test_training.py docs/sr_f1/package/tests"
+  },
+  "ruff": "PASS",
+  "git_diff_check": "PASS",
+  "original_package": {
+    "status": "PASS",
+    "checked_files": 76,
+    "package_manifest_sha256": "832e6cb387af2b0525b55cd076c5a0eb7ad87dd697c42e67b81f194ea580fa65"
+  },
+  "permitted_plan_changes_only": true,
+  "learning_rate": 0.0001,
+  "old_brace_start_regression": {
+    "valid": 237,
+    "total": 247
+  },
+  "cpu_native_tiny_hybrid_generation_test": "PASS",
+  "actual_9b_cuda_engine": "NOT_YET_RUN",
+  "old_freeze_preserved_sha256": "b84d6d1ad26761cb07e3db706be0b8ca2b4e4a8d436473b0ad3e964a81f463f9"
+}

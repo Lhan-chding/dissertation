@@ -1,5 +1,13 @@
 # SR-F1 当前执行状态
 
+## SR-F1.1 修正案执行（2026-10-10）
+
+用户已授权按新方案执行，并明确选择所有科学臂及 ENGINE 的学习率为 `1e-4`。新独立根：`/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010`；当前为 `LOCAL_VALIDATED_SERVER_PREFLIGHT_PENDING`。实现预填 token90、配平停止、严格评分与完整状态恢复身份；五臂×三种子×96步不变。新 FORMAT256 / CONFIRM512 与 ENGINE 通过后自动进入科学训练；当前尚未宣称新协议通过或训练已开始。
+
+[执行修正案](amendments/SR_F1_1_20261010/AMENDMENT_zh.md)、[有效配置](amendments/SR_F1_1_20261010/SR_F1_1.json)、[本地检查](validation/SR_F1_1_LOCAL_CHECKS_20261010.json)、[旧数据复算](validation/PREFILL_BASELINE_REGRESSION_20261010_zh.md)。本地完整测试 345 passed / 3 subtests passed，真实小型 CPU Qwen 生成及概率/梯度检查通过；这不替代实际 9B CUDA ENGINE。服务器已复制并逐文件校验 4409 个既有输入资产，未复制旧桥接/科学状态或回答。半小时自动监控已更新为本修正案。
+
+## 以下为旧 SR-F1 历史快照（不代表新实验状态）
+
 实测时间：`2026-10-09T16:05:52.315885+00:00`（新加坡时间2026-10-10 00:05:52）；Slurm状态核实于00:03:41。此文件是时间点快照，实时状态以服务器调度器及回执为准。
 
 状态：`CONFIRMATION_GATE_NOT_MET_RETEST_RUNNING`。一次公共桥接16/16步和128条样本已完成。独立FORMAT_CONFIRM全部256条生成完成，但字段覆盖仅100/256（39.0625%），未达到95%门槛。GPU正在完成合同要求的原题复测，已89/256条；最终`PROTOCOL_BLOCKED`回执尚未发布。ENGINE、科学训练及最终评价均未开始，TEST继续封存。这是格式协议未达标，不是科学训练效果结论。

@@ -16,6 +16,13 @@ from pathlib import Path
 
 from mm_core.execution import atomic_json, object_hash, read_json, utc_now
 
+from .amendment import (
+    effective_plan,
+    protocol_amendment,
+    register_amendment,
+    validate_plan,
+    verify_protocol_route,
+)
 from .contract import PACKAGE, PLAN_ID, file_hash, load_config, reference_module
 from .data import bounded_path, load_inputs, load_schedule, load_tasks
 
@@ -55,6 +62,12 @@ def source_identity():
         path = SOURCE_ROOT / name
         if path.is_file():
             files[name] = file_hash(path)
+    # Protocol amendments are executable provenance, not merely commentary.
+    for path in sorted((SOURCE_ROOT / "docs/sr_f1/amendments").rglob("*")):
+        if path.is_file() and path.suffix in (".md", ".json"):
+            if path.is_symlink():
+                raise PermissionError("Amendment source symlinks are forbidden")
+            files[str(path.relative_to(SOURCE_ROOT))] = file_hash(path)
     try:
         commit = subprocess.check_output(
             ["git", "rev-parse", "HEAD"], cwd=SOURCE_ROOT, text=True, stderr=subprocess.DEVNULL
@@ -246,12 +259,15 @@ def render_inputs(root, font_path, bold_path):
     return receipt
 
 
-def model_identity(model_path, runtime):
+def model_identity(model_path, runtime, plan=None):
     """Fresh actual file hashes; no inherited run identity or inference outputs."""
     from mm_core.vl_runtime import model_file_path
 
     snapshot = Path(model_path).resolve(strict=True)
-    plan = load_config()
+    plan = validate_plan(load_config() if plan is None else plan)
+    amendment = protocol_amendment(plan)
+    if runtime.identity.get("protocol_amendment") != amendment:
+        raise PermissionError("Native processor identity differs from the registered protocol")
     if snapshot.name != plan["model"]["revision"]:
         raise PermissionError("Model snapshot directory must identify the frozen revision")
     files = []
@@ -363,13 +379,14 @@ def isolation_tests(runtime, row, root):
     )
 
 
-def processor_preflight(root, runtime, rendered):
+def processor_preflight(root, runtime, rendered, plan=None):
     import numpy as np
     import torch
     from PIL import Image, ImageDraw
 
     from mm_dev.data import reconstruct_rgb
 
+    plan = validate_plan(load_config() if plan is None else plan)
     if torch.cuda.is_initialized():
         raise PermissionError("CPU preparation must not initialize a CUDA context")
     torch.set_num_threads(2)
@@ -381,6 +398,7 @@ def processor_preflight(root, runtime, rendered):
     for index, row in enumerate(inputs.values()):
         prepared = runtime.prepare(row, root)
         routing = prepared["routing"]
+        verify_protocol_route(routing, plan)
         relative = row["image_file"]
         if (
             routing["source_image_sha256"] != image_rows[relative]["sha256"]
@@ -439,6 +457,7 @@ def processor_preflight(root, runtime, rendered):
     )
     if blank["routing"]["processed_size"] != [1024, 768]:
         raise PermissionError("Diagnostic blank lost its native visual channel")
+    verify_protocol_route(blank["routing"], plan)
     controls = isolation_tests(runtime, next(iter(inputs.values())), root)
     # Deterministic contact sheets cover every pool/family/chart/style combination.
     sheets = []
@@ -485,7 +504,15 @@ def processor_preflight(root, runtime, rendered):
 
 
 def prepare_run(
-    root, *, font_path, bold_path, operator, model_path=None, local_only=False, defer_freeze=False
+    root,
+    *,
+    font_path,
+    bold_path,
+    operator,
+    model_path=None,
+    local_only=False,
+    defer_freeze=False,
+    plan=None,
 ):
     from .freeze import freeze_execution, verify_execution
 
@@ -493,11 +520,13 @@ def prepare_run(
     if root == PACKAGE or root.is_relative_to(PACKAGE):
         raise PermissionError("Run root must not be inside the uploaded package")
     root.mkdir(parents=True, exist_ok=True)
+    plan = effective_plan(root) if plan is None else validate_plan(plan)
     frozen = root / "EXECUTION_FREEZE.json"
     if frozen.exists() and read_json(frozen).get("status") == "FROZEN":
-        return verify_execution(load_config(), root)
+        return verify_execution(plan, root)
     package = verify_package()
     _copy_registered(root)
+    register_amendment(root, plan)
     reference = _run_reference_checks(root)
     rendered = render_inputs(root, font_path, bold_path)
     manifest = dict(
@@ -537,10 +566,15 @@ def prepare_run(
         raise ValueError("Real CPU preparation requires --model-path; otherwise use --local-only")
     from .runtime import SRRuntime
 
-    runtime = SRRuntime.processor_only(model_path)
-    identity = model_identity(model_path, runtime)
+    amendment = protocol_amendment(plan)
+    runtime = (
+        SRRuntime.processor_only(model_path, protocol_amendment=amendment)
+        if amendment is not None
+        else SRRuntime.processor_only(model_path)
+    )
+    identity = model_identity(model_path, runtime, plan=plan)
     atomic_json(root / "MODEL_ENVIRONMENT_IDENTITY.json", identity)
-    processor_preflight(root, runtime, rendered)
+    processor_preflight(root, runtime, rendered, plan=plan)
     manifest.update(
         status="CPU_VERIFIED",
         processor_verified=True,
@@ -563,4 +597,4 @@ def prepare_run(
             ),
         )
         return read_json(frozen)
-    return freeze_execution(root, operator=operator)
+    return freeze_execution(root, operator=operator, plan=plan)

@@ -212,10 +212,14 @@ def prepare_input(slot, inputs, diagnostic_inputs, tokenizer=None):
     )
 
 
-def score_response(raw_text, task, protocol):
+def score_response(raw_text, task, protocol, *, record=None):
     from .contract import execute, fraction_of, load_json_strict, score
 
     if protocol == "evidence_answer":
+        if record is not None:
+            from .json_protocol import score_record
+
+            return score_record(record, task)
         return score(raw_text, task["world"], task["query"])
     if protocol != "answer_only":
         raise ValueError("ChartQA uses its separate author-compatible scorer")
@@ -236,7 +240,7 @@ def score_response(raw_text, task, protocol):
     return result
 
 
-def validate_raw(row, slot):
+def validate_raw(row, slot, *, protocol_amendment_id=None):
     for key, value in slot.items():
         if row.get(key) != value:
             raise ValueError(f"Raw identity mismatch: {key}")
@@ -261,6 +265,15 @@ def validate_raw(row, slot):
             raise ValueError(f"Missing raw provenance: {field}")
     if row.get("image_file") is not None and not row.get("image_hash"):
         raise ValueError("Missing image hash")
+    if row.get("protocol") == "evidence_answer":
+        from .json_protocol import validate_record
+
+        try:
+            validate_record(row, protocol_amendment_id)
+        except PermissionError as exc:
+            raise ValueError(str(exc)) from exc
+    elif row.get("protocol_amendment_id") or row.get("assistant_prefill"):
+        raise ValueError("Non-evidence protocol unexpectedly used assistant prefill")
 
 
 def evaluation_model_identity(identity):
@@ -292,6 +305,9 @@ def evaluation_model_identity(identity):
         "canvas_pixels",
         "processor_target_pixels",
         "determinism",
+        "protocol_amendment",
+        "protocol_amendment_id",
+        "protocol_amendment_sha256",
     )
     result = {k: identity[k] for k in fixed if k in identity}
     if not result:
@@ -354,6 +370,8 @@ def evaluate_slots(
                 raise ValueError("Duplicate persisted evaluation slot")
             seen[row["slot_id"]] = row
     completed = 0
+    amendment = getattr(runtime, "protocol_amendment", None)
+    amendment_id = amendment["id"] if amendment else None
     identity = getattr(runtime, "stable_model_identity", None)
     if identity is None:
         identity = getattr(runtime, "identity", None)
@@ -379,7 +397,7 @@ def evaluate_slots(
             ).hexdigest()
             if slot["slot_id"] in seen:
                 previous = seen.pop(slot["slot_id"])
-                validate_raw(previous, slot)
+                validate_raw(previous, slot, protocol_amendment_id=amendment_id)
                 if previous["input_hash"] != input_hash:
                     raise ValueError("Resumed input identity changed")
                 if identity and evaluation_model_identity(
@@ -420,13 +438,14 @@ def evaluate_slots(
                 run_root=root,
                 seed=slot["sampling_seed"],
                 generation=slot["generation"],
+                protocol=slot["protocol"],
                 on_completion=persist,
             )
             if not persisted:
                 raise RuntimeError("Runtime did not durably deliver the actual generation callback")
             if len(persisted) != 1:
                 raise RuntimeError("Runtime delivered multiple generations for one slot")
-            validate_raw(persisted[0], slot)
+            validate_raw(persisted[0], slot, protocol_amendment_id=amendment_id)
             completed += 1
             if (boundary and boundary["requested"]) or (root / "STOP").exists():
                 reason = "STOP_REQUESTED" if (root / "STOP").exists() else "PREEMPTION"

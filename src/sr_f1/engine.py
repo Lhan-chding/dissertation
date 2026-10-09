@@ -12,8 +12,9 @@ from pathlib import Path
 from mm_core.training import state_hash
 from mm_dev.engine import forwarding_lease_signals, wait_engine_child
 
-from .contract import PLAN_ID, digest, reward_advantages, score, stable_seed
+from .contract import PLAN_ID, digest, reward_advantages, stable_seed
 from .data import load_inputs, load_tasks
+from .json_protocol import score_record, validate_record
 from .runtime import (
     atomic_json,
     bounded_path,
@@ -23,7 +24,14 @@ from .runtime import (
     runtime_account,
     verified_adapter,
 )
-from .training import CHECKPOINT_FIELDS, execute_path, stop_at_committed_boundary
+from .training import (
+    CHECKPOINT_FIELDS,
+    amendment_record_identity,
+    execute_path,
+    format_failure_accounting,
+    stop_at_committed_boundary,
+    token_path_record,
+)
 
 
 def engine_schedule(root):
@@ -176,6 +184,9 @@ def compare_engine(root, mode):
         raise PermissionError("ENGINE hardware/deterministic backend differs across processes")
     common = verified_adapter(root, "SRF1_COMMON_START")
     schedule = engine_schedule(root)
+    initial = _read_state(tracks[0], 0)
+    amendment = initial["run_identity"]["training_identity"].get("protocol_amendment")
+    amendment_id = amendment["id"] if amendment else None
     comparisons = []
     for step in range(5):
         states = [_read_state(track, step) for track in tracks]
@@ -256,9 +267,12 @@ def compare_engine(root, mode):
                         or not all(math.isfinite(v) for v in record["old_logprobs"])
                     ):
                         raise PermissionError("ENGINE raw slot or sampling policy identity differs")
+                    validate_record(record, amendment_id)
                     task = tasks[record["qid"]]
-                    group_scores.append(score(record["raw_text"], task["world"], task["query"]))
-                    rows.append({k: record[k] for k in keys})
+                    group_scores.append(score_record(record, task))
+                    rows.append(
+                        {**{k: record[k] for k in keys}, **amendment_record_identity(record)}
+                    )
                 rescored.append(group_scores)
             advantage, audit = reward_advantages(("DEC", "GATE", "DEC", "GATE")[step - 1], rescored)
             expected_coefficients = (
@@ -266,13 +280,11 @@ def compare_engine(root, mode):
                 if mode == "stress"
                 else advantage.reshape(-1).tolist()
             )
-            token_path = [
-                {
-                    k: r[k]
-                    for k in ("qid", "seed", "tokens", "raw_text", "old_logprobs", "image_routing")
-                }
-                for r in rows
-            ]
+            token_path = [token_path_record(r) for r in rows]
+            if "format_failures" in pair[0] and pair[0][
+                "format_failures"
+            ] != format_failure_accounting(rescored):
+                raise PermissionError("ENGINE per-round format failure accounting differs")
             if (
                 rescored != pair[0]["scores"]
                 or audit != pair[0]["reward_advantage_audit"]

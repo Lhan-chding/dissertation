@@ -349,6 +349,7 @@ def _evaluate_chartqa(runtime, root, model_id, boundary):
                 run_root=root,
                 seed=0,
                 generation=slot["generation"],
+                protocol="plain_answer",
                 on_completion=persist,
             )
             if len(persisted) != 1:

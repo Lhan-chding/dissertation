@@ -9,7 +9,18 @@ from pathlib import Path
 
 from mm_core.execution import atomic_json, object_hash, read_json, utc_now
 
-from .contract import PACKAGE, PLAN_ID, file_hash, load_config
+from .amendment import (
+    EFFECTIVE_CONFIG,
+    ORIGINAL_FREEZE_SHA256,
+    REGISTERED_DOCUMENTS,
+    approved_changes,
+    effective_plan,
+    protocol_amendment,
+    validate_plan,
+    verify_amendment,
+    verify_protocol_route,
+)
+from .contract import PACKAGE, PLAN_ID, file_hash
 from .data import bounded_path, read_jsonl
 
 TECHNICAL_REPAIR_ID = "SR_F1_FORMAT_GUARD_REPAIR_20261009"
@@ -290,25 +301,50 @@ def verify_execution(plan, root, require_engine=False):
     from .prepare import BOLD_HASH, FONT_HASH, verify_package
 
     root = Path(root).resolve(strict=True)
-    if isinstance(plan, (str, Path)):
-        plan = read_json(plan)
-    _required(plan, load_config(), "Execution plan differs from authenticated contract")
+    plan = validate_plan(plan)
+    amendment = protocol_amendment(plan)
     verify_package()
     freeze = read_json(root / "EXECUTION_FREEZE.json")
     _required(freeze.get("plan_id"), PLAN_ID, "Wrong execution freeze plan")
     _required(freeze.get("status"), "FROZEN", "CPU preparation has not been frozen")
     _required(freeze.get("run_root"), str(root), "Execution root identity differs")
+    amendment_receipt = verify_amendment(root, plan)
+    _required(
+        freeze.get("config_sha256"),
+        file_hash(root / EFFECTIVE_CONFIG)
+        if amendment
+        else file_hash(PACKAGE / "config/SR_F1.json"),
+        "Frozen effective configuration identity differs",
+    )
+    if amendment is not None:
+        for key, expected in {
+            "amendment_sha256": file_hash(root / "AMENDMENT.json"),
+            "protocol_amendment": amendment,
+            "original_freeze_sha256": ORIGINAL_FREEZE_SHA256,
+            "inherited_or_prior_run_results_used_to_modify_protocol": True,
+            "uploaded_config_sha256": file_hash(PACKAGE / "config/SR_F1.json"),
+        }.items():
+            _required(freeze.get(key), expected, "Frozen amendment identity differs: " + key)
     _required(
         freeze.get("allocation_permission_sha256"),
         file_hash(root / "manifests/ALLOCATION_PERMISSION.json"),
         "Allocation permission differs from the execution freeze",
     )
-    for key in (
-        "formal_test_results_seen_before_freeze",
-        "inherited_or_prior_run_results_used_to_select_parameters",
-    ):
-        _required(freeze.get(key), False, "Prereveal declaration is missing or invalid")
-    _required(freeze.get("changes_from_uploaded_contract"), [], "Unregistered scientific changes")
+    _required(
+        freeze.get("formal_test_results_seen_before_freeze"),
+        False,
+        "Prereveal declaration is missing or invalid",
+    )
+    _required(
+        freeze.get("inherited_or_prior_run_results_used_to_select_parameters"),
+        amendment is not None,
+        "Prior-result declaration is missing or invalid",
+    )
+    _required(
+        freeze.get("changes_from_uploaded_contract"),
+        approved_changes(plan),
+        "Unregistered scientific changes",
+    )
     for relative, expected in freeze.get("artifact_hashes", {}).items():
         if file_hash(bounded_path(root, relative)) != expected:
             raise PermissionError("Frozen artifact changed: " + relative)
@@ -320,6 +356,8 @@ def verify_execution(plan, root, require_engine=False):
         "PROCESSOR_INPUT_ROUTES.jsonl",
         "PROCESSED_IMAGES.jsonl",
     }
+    if amendment_receipt is not None:
+        required.update({"AMENDMENT.json", EFFECTIVE_CONFIG, *REGISTERED_DOCUMENTS})
     if not required.issubset(freeze.get("artifact_hashes", {})):
         raise PermissionError("Freeze lacks the complete CPU evidence chain")
     source = read_json(root / "SOURCE_AND_RENDER_MANIFEST.json")
@@ -380,6 +418,7 @@ def verify_execution(plan, root, require_engine=False):
     _required(len({r["qid"] for r in routes}), 4800, "Duplicate processor questions")
     _required(len(processed), 2890, "Processed image records are incomplete")
     for row in routes:
+        verify_protocol_route(row, plan)
         if (
             row.get("processed_size") != [1024, 768]
             or row.get("pixels_per_count", 0) < 3
@@ -410,6 +449,13 @@ def verify_execution(plan, root, require_engine=False):
     if not processor["qa_contact_sheets"]:
         raise PermissionError("Actual native processor QA contact sheets are missing")
     identity = read_json(root / "MODEL_ENVIRONMENT_IDENTITY.json")
+    for owner in (identity, processor.get("processor_identity", {})):
+        _required(
+            owner.get("protocol_amendment"),
+            amendment,
+            "Processor/model amendment identity conflict",
+        )
+    verify_protocol_route(processor.get("blank_image_routing", {}), plan)
     _required(freeze.get("model_identity"), identity, "Frozen model identity evidence changed")
     _required(identity.get("status"), "ACTUAL_CPU_VERIFIED", "Actual model inspection missing")
     _required(identity.get("model_id"), plan["model"]["id"], "Model family/size differs")
@@ -454,10 +500,13 @@ def verify_execution(plan, root, require_engine=False):
     return freeze
 
 
-def freeze_execution(root, *, operator):
+def freeze_execution(root, *, operator, plan=None):
     from .prepare import source_identity
 
     root = Path(root).resolve(strict=True)
+    plan = effective_plan(root) if plan is None else validate_plan(plan)
+    amendment = protocol_amendment(plan)
+    verify_amendment(root, plan)
     if not isinstance(operator, str) or not operator.strip():
         raise ValueError("Actual execution operator is required")
     destination = root / "EXECUTION_FREEZE.json"
@@ -471,14 +520,16 @@ def freeze_execution(root, *, operator):
     receipt = read_json(root / "SOURCE_AND_RENDER_MANIFEST.json")
     if source["source_tree_sha256"] != receipt["source_tree_sha256"]:
         raise PermissionError("Source changed during CPU preparation")
-    names = (
+    names = [
         "MODEL_ENVIRONMENT_IDENTITY.json",
         "SOURCE_AND_RENDER_MANIFEST.json",
         "RENDER_RECEIPT.json",
         "PROCESSOR_PREFLIGHT.json",
         "PROCESSOR_INPUT_ROUTES.jsonl",
         "PROCESSED_IMAGES.jsonl",
-    )
+    ]
+    if amendment is not None:
+        names.extend(["AMENDMENT.json", EFFECTIVE_CONFIG, *REGISTERED_DOCUMENTS])
     identity = read_json(root / names[0])
     external = root / "EXTERNAL_DATASET_AVAILABILITY.json"
     if not external.exists():
@@ -498,13 +549,15 @@ def freeze_execution(root, *, operator):
     inventory = root / "manifests/ACTIVE_PROJECT_JOBS.json"
     payload = dict(
         plan_id=PLAN_ID,
-        experiment=PLAN_ID,
+        experiment=amendment["id"] if amendment else PLAN_ID,
         status="FROZEN",
         run_root=str(root),
         server_utc_time=utc_now(),
         operator=operator,
         plan_sha256=file_hash(PACKAGE / "CODEX_NEXT_PLAN_SR_F1_zh.md"),
-        config_sha256=file_hash(PACKAGE / "config/SR_F1.json"),
+        config_sha256=file_hash(root / EFFECTIVE_CONFIG)
+        if amendment
+        else file_hash(PACKAGE / "config/SR_F1.json"),
         **source,
         artifact_hashes={name: file_hash(root / name) for name in names},
         allocation_permission_sha256=file_hash(allocation),
@@ -523,19 +576,27 @@ def freeze_execution(root, *, operator):
         bridge_used=None,
         common_start_status="PENDING_GPU_FORMAT_AND_ENGINE",
         formal_test_results_seen_before_freeze=False,
-        inherited_or_prior_run_results_used_to_select_parameters=False,
+        inherited_or_prior_run_results_used_to_select_parameters=amendment is not None,
         active_F2_jobs_read_only_inventory=read_json(inventory) if inventory.exists() else [],
         total_authorised_project_workers=5,
         research_gpu_hours_limit=None,
         external_dataset_availability_and_revision=read_json(external)
         if external.exists()
         else {"status": "PENDING", "main_experiment_may_continue": True},
-        changes_from_uploaded_contract=[],
+        changes_from_uploaded_contract=approved_changes(plan),
     )
+    if amendment is not None:
+        payload.update(
+            amendment_sha256=file_hash(root / "AMENDMENT.json"),
+            protocol_amendment=amendment,
+            original_freeze_sha256=ORIGINAL_FREEZE_SHA256,
+            uploaded_config_sha256=file_hash(PACKAGE / "config/SR_F1.json"),
+            inherited_or_prior_run_results_used_to_modify_protocol=True,
+        )
     # Validate against a candidate, deleting only this unaccepted candidate on error.
     atomic_json(destination, payload)
     try:
-        return verify_execution(load_config(), root)
+        return verify_execution(plan, root)
     except Exception:
         payload["status"] = "CPU_FREEZE_REJECTED"
         atomic_json(destination, payload)
