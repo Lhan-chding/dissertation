@@ -1,16 +1,20 @@
 # MM-DEV F2 执行状态（未完成）
 
-最新终态核验：2026-10-09 13:57（新加坡时间）。老师QoS已生效，但ENGINE194796
-发生概率一致性技术失败，未提交参数更新。修复版正准备独立冻结和重新验收。
+最新状态核验：2026-10-09 14:14（新加坡时间）。原ENGINE194796概率一致性失败，
+未提交参数更新。修复已完成本地验证、独立审阅与服务器重新冻结，重跑ENGINE194850
+已提交，当前为`PENDING / Priority`。实际9B恢复验收尚未通过，正式科学矩阵尚未开始。
 详细原因和失败证据见 [PROBABILITY_GATE_INCIDENT_20261009_zh.md](PROBABILITY_GATE_INCIDENT_20261009_zh.md)。
 
 - 完整合同已获用户“完整执行吧”授权；固定的 77 个调度任务已登记。
+- 修复版ENGINE **194850** 在老师QoS下排队；控制器 **194848** 正在CPU运行，
+  后继 **194849** 为`PENDING / Dependency`。当前根76个后续任务等待、技术blocker为空。
+  状态投影中的`ACTIVE`包含已排队作业，不能解释为GPU已运行。
 - ENGINE **194796**：`FAILED 1:0`，GPU468秒，13:48:17结束。已保存192条回答、
   4957token、0次更新。平均概率差0.002979≤0.005，最大0.584116>0.05。
   Slurm确认account `rose`、QoS `soujanya-poria-startfund-2026-03`。
 - CPU控制器 **194794** 与后继 **194795** 均按技术阻断退出（Slurm `FAILED 2:0`）；
   没有残留的原ENGINE控制链。76个后续科学任务均等待。
-- 诊断 **194828** 仅强制回放192条已存答案，尚需读取实际结果。
+- 诊断 **194828** 仅强制回放192条已存答案，当前也为`PENDING / Priority`。
 - 旧 ENGINE **194700** 已 `CANCELLED`，
   `ElapsedRaw=0`、无 `AllocTRES`，此前没有 GPU 结果或模型生成。
 - 旧 CPU 控制器 **194699** 已经信号正常退出：`COMPLETED 0:0`，2068秒；
@@ -43,6 +47,11 @@ scheduler、reference与RNG逐元素复算；真实9B ENGINE门禁尚未通过�
 源码与验证见`validation/TEACHER_QOS_VALIDATION.json`，实际调度回执见
 `validation/TEACHER_QOS_LAUNCH_SNAPSHOT.json`。
 
+修复版CPU冻结 **194841**：`COMPLETED 0:0`，32秒。35个执行文件、4695个输入；
+多出的输入是`qa/TECHNICAL_REPAIR_PROVENANCE.json`，绑定被保留的失败来源与费用边界。
+修复冻结SHA256：`f0c1a97676579058e09c2d126a1e2a78e51932df60dbc417da4b1325f6437c35`。
+实际启动记录见`validation/CACHEFIX_LAUNCH_SNAPSHOT.json`。
+
 ## 身份与操作入口
 
 - 当前修复运行根：`/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos_cachefix`
@@ -51,6 +60,8 @@ scheduler、reference与RNG逐元素复算；真实9B ENGINE门禁尚未通过�
 - SSH别名：`eee-cluster`
 - 原老师QoS部署：失败根下 `code`，运行代码commit
   `3557e66748cf2e8778d0e389a2c2fe0446ad7e86`，已push并核验远端SHA。
+- 当前修复部署：修复根下 `code`，运行代码commit
+  `d3334ca12de7dfd49df0df75126b17f147e18540`，已push并核验远端SHA。
 - 原科学代码commit：`c65b406204e052aa35b2c0e9915c8470d5bfb413`。
 - 原运维控制器commit：`8ee5e66169d75613650e907feda7ef739efdfdf1`。
 - Git分支：`codex/mm-dev-f2-20261009`。

@@ -37,9 +37,15 @@ PROBE沿用原审计的整段teacher forcing，`mm_core`保持原样。
 - 独立诊断194828使用同一老师QoS，将192条原回答的token强制回放，并对比原生缓存
   raw logits、原整段复算与原old logprob。没有新采样答案、没有optimizer更新。
   诊断代码commit `b1908c5`；结果尚需以实际SUMMARY和Slurm终态为准。
-- 修复运行根预定为
+- 修复运行根为
   `/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos_cachefix`。
   重新核对并复制同一4692个数据/QA文件，独立freeze/registration，不覆盖失败根。
+
+修复已通过719项测试、175项子测试及独立只读代码审阅；代码commit `d3334ca`
+已推送。CPU冻结194841以`COMPLETED 0:0`完成，35执行文件与4695输入文件已锁定。
+额外QA输入绑定本技术失败来源。2026-10-09 14:14新加坡时间，重跑ENGINE194850
+与诊断194828均为老师QoS下`PENDING / Priority`；控制器194848运行、194849依赖排队。
+尚无修复版真实9B验收结果，尚未启动正式科学训练。
 
 最终报告必须分别保留原取消队列、失败ENGINE、只读诊断和修复运行的物理成本；
 不能只把最后成功根的GPU记账当作全过程费用。旧排队194700为0 GPU秒，失败194796
