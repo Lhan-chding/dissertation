@@ -2,9 +2,9 @@
 
 ## SR-F1.1 修正案执行（2026-10-10）
 
-用户已授权按新方案执行，并明确选择所有科学臂及 ENGINE 的学习率为 `1e-4`。新独立根：`/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010`；当前为 `LOCAL_VALIDATED_SERVER_PREFLIGHT_PENDING`。实现预填 token90、配平停止、严格评分与完整状态恢复身份；五臂×三种子×96步不变。新 FORMAT256 / CONFIRM512 与 ENGINE 通过后自动进入科学训练；当前尚未宣称新协议通过或训练已开始。
+用户已授权按新方案执行，并明确选择所有科学臂及 ENGINE 的学习率为 `1e-4`。新独立根：`/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010`；当前为 `CPU_VERIFIED_QOS_SCOPE_REPAIR_IN_PROGRESS`。实现预填 token90、配平停止、严格评分与完整状态恢复身份；五臂×三种子×96步不变。新 FORMAT256 / CONFIRM512 与 ENGINE 通过后自动进入科学训练；当前尚未宣称新协议通过或训练已开始。
 
-[执行修正案](amendments/SR_F1_1_20261010/AMENDMENT_zh.md)、[有效配置](amendments/SR_F1_1_20261010/SR_F1_1.json)、[本地检查](validation/SR_F1_1_LOCAL_CHECKS_20261010.json)、[旧数据复算](validation/PREFILL_BASELINE_REGRESSION_20261010_zh.md)。本地完整测试 345 passed / 3 subtests passed，真实小型 CPU Qwen 生成及概率/梯度检查通过；这不替代实际 9B CUDA ENGINE。服务器已复制并逐文件校验 4409 个既有输入资产，未复制旧桥接/科学状态或回答。半小时自动监控已更新为本修正案。
+[执行修正案](amendments/SR_F1_1_20261010/AMENDMENT_zh.md)、[有效配置](amendments/SR_F1_1_20261010/SR_F1_1.json)、[本地检查](validation/SR_F1_1_LOCAL_CHECKS_20261010.json)、[旧数据复算](validation/PREFILL_BASELINE_REGRESSION_20261010_zh.md)。本地完整测试 345 passed / 3 subtests passed，真实小型 CPU Qwen 生成及概率/梯度检查通过；这不替代实际 9B CUDA ENGINE。服务器已复制并逐文件校验 4409 个既有输入资产，未复制旧桥接/科学状态或回答。服务器实际源码为 `76d1afccac416027bce3646f507be5763fd5922d`，149 项部署文件哈希全部一致；服务器环境测试为 346 passed / 3 subtests passed（比此前本地全套多包含后来补齐的报告测试）。CPU 预检 196011 已完成（7分52秒，退出0），4800题、2890图和白图全部通过；新冻结 SHA-256 为 `c7cf051d3aa6fb45889324e64b08d31a008137668aff2382283e4e19f99ff2b8`。取回10项冻结证据并逐项验证哈希，4800条预填路由一致。见 [服务器完整预检](validation/SR_F1_1_SERVER_PREFLIGHT_20261010.json)。用户最新指示撤销额外账号范围上限，所有本实验 GPU 作业只用老师 QoS 并依其实际配额排队；当前正执行 [QoS 调度修订](QOS_SCOPE_REPAIR_zh.md)，仅重启本实验控制器196012，不改无关作业。原实验已发布 `PROTOCOL_BLOCKED`：before93/256、confirm100/256、after105/256；下游未执行。见 [服务器部署与旧协议终态](validation/SR_F1_1_SERVER_LAUNCH_20261010.json)。半小时自动监控已更新为本修正案。
 
 ## 以下为旧 SR-F1 历史快照（不代表新实验状态）
 

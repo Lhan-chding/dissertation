@@ -1,0 +1,82 @@
+{
+  "checked_at": "2026-10-09T17:04:43.156691+00:00",
+  "new_run_root": "/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010",
+  "source": {
+    "status": "BYTE_VERIFIED",
+    "source_commit": "76d1afccac416027bce3646f507be5763fd5922d",
+    "source_tree_sha256": "44de3b58cfaf5723bad0acfe493fae87ac3572c1e5f358485e1292a30f6b9fc2",
+    "files": 149,
+    "time": "2026-10-09T17:03:18.426536+00:00"
+  },
+  "jobs": {
+    "prepare": "196011",
+    "controller": "196012"
+  },
+  "server_tests": {
+    "passed": 346,
+    "subtests_passed": 3,
+    "failed": 0,
+    "log_tail": "........................................................................ [ 20%]\n........................................................................ [ 41%]\n..................................................................... [ 61%]\n........................................................................ [ 82%]\n.............................................................            [100%]\n346 passed, 3 subtests passed in 45.45s\n"
+  },
+  "amendment": {
+    "status": "REGISTERED_BEFORE_GENERATION",
+    "amendment_id": "SR-F1.1-20261010",
+    "sha256": "7a50aff34d56b3809bae2842761efd34adaf30728ed51e4d149c67a620903e67"
+  },
+  "old_freeze_sha256": "b84d6d1ad26761cb07e3db706be0b8ca2b4e4a8d436473b0ad3e964a81f463f9",
+  "old_protocol_terminal": {
+    "status": "PROTOCOL_BLOCKED",
+    "reason": "ONE_BRIDGE_CONFIRMATION_BELOW_95_PERCENT",
+    "format_before": {
+      "component_means": {
+        "A": 0.15625,
+        "E": 0.26953125,
+        "J": 0.1015625,
+        "P": 0.20703125
+      },
+      "coverage": 0.36328125,
+      "coverage_uses_gold_accuracy": false,
+      "covered": 93,
+      "label": "before",
+      "panel": "FORMAT",
+      "policy_hash": "2a11c71fa0bdee21cc69123fa50810253be71e4e69d0fc243a7e5beeb89687b2",
+      "responses": 256,
+      "truncated": 22
+    },
+    "format_confirmation": {
+      "component_means": {
+        "A": 0.1875,
+        "E": 0.2578125,
+        "J": 0.109375,
+        "P": 0.2265625
+      },
+      "coverage": 0.390625,
+      "coverage_uses_gold_accuracy": false,
+      "covered": 100,
+      "label": "confirm",
+      "panel": "FORMAT_CONFIRM",
+      "policy_hash": "b6b9bb8e78313e7391bd96dbd371046fd75cac400bd9dfb3714d69cd8e284887",
+      "responses": 256,
+      "truncated": 17
+    },
+    "format_after": {
+      "component_means": {
+        "A": 0.19921875,
+        "E": 0.29296875,
+        "J": 0.125,
+        "P": 0.23828125
+      },
+      "coverage": 0.41015625,
+      "coverage_uses_gold_accuracy": false,
+      "covered": 105,
+      "label": "after",
+      "panel": "FORMAT",
+      "policy_hash": "b6b9bb8e78313e7391bd96dbd371046fd75cac400bd9dfb3714d69cd8e284887",
+      "responses": 256,
+      "truncated": 26
+    }
+  },
+  "preflight": "RUNNING",
+  "science_started": false,
+  "raw_snapshot_sha256": "4656cb91caa3cd6db1c95d10e592b36be0ce2456e547454e7523ec98f6529a34"
+}

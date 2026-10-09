@@ -1,5 +1,11 @@
 # SR-F1 运行命令与身份边界
 
+2026-10-10 起，用户授权的新实验使用 [SR-F1.1 修正案](amendments/SR_F1_1_20261010/AMENDMENT_zh.md)。原根和下面原 SR-F1 命令保留为历史。新根为 `/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010`，有效配置为 `config/SR_F1_1.json`，源码提交为 `76d1afccac416027bce3646f507be5763fd5922d`。CPU 预检196011已完成；原新调度器196012的替换状态见当前状态文档。用户已明确撤销额外的账号范围人工GPU上限；按 [QoS 调度修订](QOS_SCOPE_REPAIR_zh.md) 使用老师特殊QoS的实际配额。不要重复运行启动命令。
+
+新根 CPU 准备入口使用 `scripts/sr_f1/prepare.py --plan <CODE_ROOT>/docs/sr_f1/amendments/SR_F1_1_20261010/SR_F1_1.json` 并传入新根及既有 model/font 参数。它写入独立的 `AMENDMENT.json`、全量新输入路由和新冻结；原 `config/SR_F1.json` 仍按上传包保持原字节。调度器的 `--plan` 必须指向新根的 `config/SR_F1_1.json`。`preflight.py` 与 `freeze.py` 自动解析该根已登记的有效配置。
+
+新根的 FORMAT 为 32×8，FORMAT_CONFIRM 为 32×16。监控原始文件应按 JSON 内 `qid`、`sample_index`、`record_hash` 识别，不能使用仅支持 `0–7` 或仅 `format-` 前缀的匹配。确认的固定 512 个槽位完整后才判门槛；`>=487` 标准通过，`461–486` 按修正案通过并报告每臂每轮格式失败率，`<=460` 不释放下游。原桥接不复制、不加载、不重复执行。
+
 下列入口均已实现。实际执行状态与作业号以 [EXECUTION_STATUS_zh.md](EXECUTION_STATUS_zh.md) 和服务器回执为准；命令存在不表示运行完成。
 
 ```bash

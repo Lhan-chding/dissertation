@@ -40,6 +40,8 @@ CHECKPOINT_REASONS = {"PREEMPTION", "TIME_LEASE_END", "STOP_REQUESTED"}
 ARMS = ("A", "J", "PART", "DEC", "GATE")
 SEEDS = (71001, 71002, 71003)
 PERMISSION_PATH = "manifests/ALLOCATION_PERMISSION.json"
+TEACHER_QOS = "soujanya-poria-startfund-2026-03"
+QOS_CAPACITY_MODE = "TEACHER_QOS_SCHEDULER_ONLY"
 
 
 def worker_lease(root, task_id):
@@ -288,18 +290,37 @@ def gpu_count(tres):
 
 class SlurmBackend(BaseSlurmBackend):
     def project_capacity(self, permission):
-        # All of the user's allocations count, regardless of study name or QoS.
-        # Pending GPU requests reserve capacity conservatively as well.
-        receipt = self._run(
-            [
-                "squeue",
-                "--noheader",
-                "--user",
-                permission["owner"],
-                "--states=all",
-                "--format=%i|%u|%T",
-            ]
-        )
+        run_root = permission.get("run_root")
+        if run_root and (Path(run_root) / "QOS_SCOPE_REPAIR.json").exists():
+            from .freeze import verify_qos_scope_repair
+
+            repair = verify_qos_scope_repair(run_root)
+            require(
+                repair["capacity_mode"] == QOS_CAPACITY_MODE
+                and repair["qos"] == permission["qos"] == TEACHER_QOS,
+                "QOS_SCOPE_REPAIR_PERMISSION_MISMATCH",
+            )
+            # submission_capacity already verifies the exact QoS limit and
+            # expanded queue. Re-inspecting job GPU totals would create a second
+            # concurrency guard and make unrelated jobs a source of race errors.
+            return {
+                "owner": permission["owner"],
+                "jobs": [],
+                "capacity_mode": repair["capacity_mode"],
+                "qos": repair["qos"],
+                "repair_sha256": repair["repair_sha256"],
+            }
+        # Legacy roots retain the original owner-wide GPU guard. A verified
+        # amendment delegates GPU concurrency to the teacher QoS scheduler.
+        command = [
+            "squeue",
+            "--noheader",
+            "--user",
+            permission["owner"],
+            "--states=all",
+            "--format=%i|%u|%T",
+        ]
+        receipt = self._run(command)
         require(receipt["returncode"] == 0, "PROJECT_QUEUE_UNKNOWN:" + json.dumps(receipt))
         jobs = []
         for line in receipt["stdout"].splitlines():
@@ -697,15 +718,28 @@ class Scheduler:
                 for key, attempt in reservations
                 if attempt.get("job_id") not in jobs
             )
-            available = (maximum is None or submit_used < maximum) and gpu_used + self.registration[
-                "tasks"
-            ][task_id]["gpus"] <= 5
+            mode = project.get("capacity_mode")
+            require(mode in {None, QOS_CAPACITY_MODE}, "UNKNOWN_CAPACITY_MODE")
+            if mode == QOS_CAPACITY_MODE:
+                require(
+                    project.get("qos") == permission["qos"] == TEACHER_QOS
+                    and re.fullmatch(r"[0-9a-f]{64}", project.get("repair_sha256", "")),
+                    "UNVERIFIED_QOS_CAPACITY_MODE",
+                )
+                available = maximum is None or submit_used < maximum
+            else:
+                available = (
+                    maximum is None or submit_used < maximum
+                ) and gpu_used + self.registration["tasks"][task_id]["gpus"] <= 5
             summary = {
                 "status": "AVAILABLE" if available else "WAITING",
-                "project_reserved_gpus": gpu_used,
                 "submission_slots_used": submit_used,
                 "max_submit_jobs_per_user": maximum,
             }
+            if mode:
+                summary.update(capacity_mode=mode, qos=project["qos"])
+            else:
+                summary["project_reserved_gpus"] = gpu_used
         except Exception as exc:
             available, summary = False, {"status": "UNKNOWN", "error": repr(exc)}
         evidence["summary"] = summary

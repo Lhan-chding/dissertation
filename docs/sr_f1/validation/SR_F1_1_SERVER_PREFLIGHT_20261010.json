@@ -1,0 +1,53 @@
+{
+  "checked_at": "2026-10-09T17:12:10.388623+00:00",
+  "status": "CPU_AND_FREEZE_VERIFIED_GPU_PENDING",
+  "run_root": "/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010",
+  "source_commit": "76d1afccac416027bce3646f507be5763fd5922d",
+  "freeze_sha256": "c7cf051d3aa6fb45889324e64b08d31a008137668aff2382283e4e19f99ff2b8",
+  "amendment_sha256": "7a50aff34d56b3809bae2842761efd34adaf30728ed51e4d149c67a620903e67",
+  "server_tests": {
+    "passed": 346,
+    "subtests_passed": 3
+  },
+  "processor": {
+    "status": "PASS",
+    "question_count": 4800,
+    "chart_image_count": 2890,
+    "blank_image_verified": true,
+    "no_crop_pixel_reconstruction_verified": true,
+    "model_calls": 0,
+    "model_weights_loaded": false,
+    "cuda_context_initialized": false
+  },
+  "artifact_hashes_verified": {
+    "AMENDMENT.json": "7a50aff34d56b3809bae2842761efd34adaf30728ed51e4d149c67a620903e67",
+    "MODEL_ENVIRONMENT_IDENTITY.json": "256bb6b24510d9461e791e8ab0ae9508ca2f2a30c49937dc8a3c9919af6c3510",
+    "PROCESSED_IMAGES.jsonl": "0913d0ff70256317133ba38d51e1f7007450309211b14df9a78f2dd76347d82d",
+    "PROCESSOR_INPUT_ROUTES.jsonl": "11f89a3befb7612e068cfbfe119084d6268cb5bb2065d5e134e5461f96f7f62f",
+    "PROCESSOR_PREFLIGHT.json": "48450cfc0d26e906398c8ad803a4fa5161a31c10c0042a541b23a528676aef64",
+    "RENDER_RECEIPT.json": "2f8da3294e92200fb4e5423741274ee4d70138af218b7b9663b4fbfa626c3516",
+    "SOURCE_AND_RENDER_MANIFEST.json": "1c9fff3fd07a6d66a82a9805b82a3a0980c0824030e24ef9ade20f899d4f4280",
+    "amendment/AMENDMENT_zh.md": "336e853767c38b5527ed8e143cefbc3446fa8d37bf1e1f078da5f908bad7c062",
+    "amendment/USER_SOLUTION_zh.md": "113efeaf2a5f3ad367e3f16577a9ca0be5abdc7d1658604a85a6eb3f075854b5",
+    "config/SR_F1_1.json": "c7188ae33cb5c51e3f49543781cca27735e4d3095469fe871b76a498c17e6da9"
+  },
+  "prefill_routes_rechecked": 4800,
+  "original_freeze_sha256": "b84d6d1ad26761cb07e3db706be0b8ca2b4e4a8d436473b0ad3e964a81f463f9",
+  "jobs": {
+    "returncode": 0,
+    "stdout": "196011|COMPLETED|00:07:52|0:0\n196011.batch|COMPLETED|00:07:52|0:0\n196011.extern|COMPLETED|00:07:52|0:0\n196012|RUNNING|00:00:40|0:0\n196012.batch|RUNNING|00:00:40|0:0\n196012.extern|RUNNING|00:00:40|0:0\n",
+    "stderr": ""
+  },
+  "old_jobs": {
+    "returncode": 0,
+    "stdout": "195677|FAILED|03:20:22|2:0\n195677.batch|FAILED|03:20:22|2:0\n195677.extern|COMPLETED|03:20:22|0:0\n195679|FAILED|03:16:14|1:0\n195679.batch|FAILED|03:16:14|1:0\n195679.extern|COMPLETED|03:16:14|0:0\n",
+    "stderr": ""
+  },
+  "capacity_before_user_scope_correction": {
+    "max_submit_jobs_per_user": 5,
+    "project_reserved_gpus": 17,
+    "status": "WAITING",
+    "submission_slots_used": 1
+  },
+  "science_started": false
+}

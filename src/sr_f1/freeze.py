@@ -33,6 +33,8 @@ TECHNICAL_REPAIR_ALLOWED_FILES = frozenset(
         "scripts/sr_f1/submit_matrix.py",
     }
 )
+QOS_SCOPE_REPAIR_ID = "SR_F1_1_QOS_SCOPE_20261010"
+QOS_SCOPE_ALLOWED_FILES = frozenset({"src/sr_f1/freeze.py", "src/sr_f1/orchestration.py"})
 
 
 def _required(value, expected, message):
@@ -56,7 +58,7 @@ def _checked_source_files(value, name):
     return value
 
 
-def _preserved_source_files(snapshot):
+def _preserved_source_files(snapshot, *, include_amendments=False):
     """Apply the original source_identity inventory policy to the preserved copy."""
     files = {}
     for folder in ("src/sr_f1", "scripts/sr_f1", "src/mm_core", "src/mm_dev"):
@@ -74,7 +76,102 @@ def _preserved_source_files(snapshot):
             if path.is_symlink():
                 raise PermissionError("Preserved original dependency identity is a symlink")
             files[name] = file_hash(path)
+    if include_amendments:
+        for path in sorted((snapshot / "docs/sr_f1/amendments").rglob("*")):
+            if path.is_symlink():
+                raise PermissionError("Preserved amendment source contains unsafe links")
+            if path.is_file() and path.suffix in (".md", ".json"):
+                files[str(path.relative_to(snapshot))] = file_hash(path)
     return files
+
+
+def verify_qos_scope_repair(root, actual_source=None):
+    """Authenticate the user's scheduler-only correction without rewriting a freeze."""
+    from .prepare import source_identity
+
+    root = Path(root).resolve(strict=True)
+    receipt_path = root / "QOS_SCOPE_REPAIR.json"
+    repair = read_json(receipt_path)
+    freeze = read_json(root / "EXECUTION_FREEZE.json")
+    original = read_json(root / "SOURCE_AND_RENDER_MANIFEST.json")
+    permission = read_json(root / "manifests/ALLOCATION_PERMISSION.json")
+    _required(freeze.get("experiment"), "SR-F1.1-20261010", "Wrong QoS repair experiment")
+    _required(freeze.get("status"), "FROZEN", "QoS repair requires a frozen execution")
+    _required(
+        freeze.get("artifact_hashes", {}).get("SOURCE_AND_RENDER_MANIFEST.json"),
+        file_hash(root / "SOURCE_AND_RENDER_MANIFEST.json"),
+        "Original frozen source manifest changed",
+    )
+    expected = {
+        "repair_id": QOS_SCOPE_REPAIR_ID,
+        "status": "USER_AUTHORIZED_QOS_SCHEDULER_ONLY",
+        "plan_id": PLAN_ID,
+        "run_root": str(root),
+        "original_execution_freeze_sha256": file_hash(root / "EXECUTION_FREEZE.json"),
+        "original_source_tree_sha256": original["source_tree_sha256"],
+        "original_source_commit": original["source_commit"],
+        "permission_sha256": file_hash(root / "manifests/ALLOCATION_PERMISSION.json"),
+        "capacity_mode": "TEACHER_QOS_SCHEDULER_ONLY",
+        "qos": "soujanya-poria-startfund-2026-03",
+        "gpus_per_worker": 1,
+        "scientific_protocol_unchanged": True,
+        "new_generation_count_before_activation": 0,
+        "no_gpu_attempts_before_activation": True,
+        "preserved_source_relative_path": "code_before_qos_scope_20261010",
+    }
+    for key, value in expected.items():
+        _required(repair.get(key), value, "QoS scope repair differs: " + key)
+    _required(permission.get("qos"), expected["qos"], "Teacher GPU QoS changed")
+    _required(permission.get("gpus_per_worker"), 1, "GPU workers must remain single-card")
+    if not repair.get("authorized_user_message") or not repair.get("authorized_at"):
+        raise PermissionError("Explicit user QoS-scope authorization is absent")
+    artifacts = repair.get("pre_activation_artifact_hashes", {})
+    prefix = "technical_incidents/qos_scope_20261010/"
+    required = {prefix + name for name in ("STATE_BEFORE.json", "CONTROLLER_TERMINAL.json")}
+    if not required.issubset(artifacts):
+        raise PermissionError("QoS repair lacks pre-activation evidence")
+    for relative, expected_hash in artifacts.items():
+        _required(
+            file_hash(bounded_path(root, relative)),
+            expected_hash,
+            "QoS pre-activation evidence changed",
+        )
+    prior_state = read_json(root / (prefix + "STATE_BEFORE.json"))
+    if (
+        prior_state.get("test_sealed") is not True
+        or not prior_state.get("tasks")
+        or any(task.get("attempts") for task in prior_state["tasks"].values())
+    ):
+        raise PermissionError("QoS correction was not registered before GPU attempts")
+    terminal = read_json(root / (prefix + "CONTROLLER_TERMINAL.json"))
+    if terminal.get("old_controller_terminal") is not True:
+        raise PermissionError("Previous controller termination was not verified")
+    before = _checked_source_files(original.get("source_file_hashes"), "Original")
+    snapshot = bounded_path(root, repair["preserved_source_relative_path"])
+    _required(
+        _preserved_source_files(snapshot, include_amendments=True),
+        before,
+        "Preserved pre-QoS source differs from the original freeze",
+    )
+    actual = source_identity() if actual_source is None else actual_source
+    after = _checked_source_files(actual.get("source_file_hashes"), "Actual")
+    if actual.get("source_dirty_files"):
+        raise PermissionError("QoS repair requires committed source")
+    _required(actual.get("source_tree_sha256"), object_hash(after), "Invalid actual source hash")
+    changed = sorted(k for k in before.keys() | after.keys() if before.get(k) != after.get(k))
+    _required(set(changed), QOS_SCOPE_ALLOWED_FILES, "QoS repair changed scientific source")
+    _required(repair.get("changed_files"), changed, "QoS source change inventory differs")
+    for key in ("source_commit", "source_tree_sha256", "source_file_hashes"):
+        _required(repair.get(key), actual.get(key), "QoS deployed source differs: " + key)
+    if not re.fullmatch(r"[0-9a-f]{40}", actual.get("source_commit") or ""):
+        raise PermissionError("QoS repair source commit is missing")
+    return {
+        "capacity_mode": expected["capacity_mode"],
+        "qos": expected["qos"],
+        "repair_sha256": file_hash(receipt_path),
+        "source_commit": actual["source_commit"],
+        "original_execution_freeze_sha256": expected["original_execution_freeze_sha256"],
+    }
 
 
 def verify_technical_repair(root, actual_source=None):
@@ -210,6 +307,8 @@ def _verify_execution_source(root, original_source, actual_source=None):
     if original_source.get("source_tree_sha256") == actual.get("source_tree_sha256"):
         _required(original_source.get("source_file_hashes"), files, "Original source files differ")
         return None
+    if (Path(root) / "QOS_SCOPE_REPAIR.json").exists():
+        return verify_qos_scope_repair(root, actual_source=actual)
     return verify_technical_repair(root, actual_source=actual)
 
 
