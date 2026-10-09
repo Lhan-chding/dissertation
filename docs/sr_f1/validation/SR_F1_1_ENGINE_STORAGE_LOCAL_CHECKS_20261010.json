@@ -1,0 +1,26 @@
+{
+  "time": "2026-10-09T20:06:45.008933+00:00",
+  "status": "LOCAL_PASS_SERVER_PENDING",
+  "tests": 490,
+  "subtests": 6,
+  "pytest_log": "........................................................................ [ 14%]\n..................................................................... [ 28%]\n........................................................................ [ 43%]\n........................................................................ [ 58%]\n..................................................................... [ 72%]\n........................................................................ [ 86%]\n................................................................         [100%]\n490 passed, 6 subtests passed in 17.50s\n",
+  "ruff_check": "PASS",
+  "ruff_format": "PASS",
+  "shell_syntax": "PASS",
+  "git_diff_check": "PASS",
+  "original_package": {
+    "status": "PASS",
+    "checked_files": 76,
+    "package_manifest_sha256": "832e6cb387af2b0525b55cd076c5a0eb7ad87dd697c42e67b81f194ea580fa65"
+  },
+  "source_tree_sha256": "bad623089a16471e570ad7abb8e3f53a98edad50e20b6c0a604462266ec24862",
+  "production_files": [
+    "src/sr_f1/freeze.py",
+    "src/sr_f1/runtime.py",
+    "src/sr_f1/orchestration.py",
+    "scripts/sr_f1/submit_matrix.py"
+  ],
+  "actual_gpu_validation": "PENDING",
+  "science_training_started": false,
+  "test_sealed": true
+}

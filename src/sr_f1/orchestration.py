@@ -12,6 +12,7 @@ import json
 import os
 import re
 import shlex
+from decimal import Decimal
 from pathlib import Path
 
 from mm_dev.orchestration import (
@@ -43,6 +44,7 @@ PERMISSION_PATH = "manifests/ALLOCATION_PERMISSION.json"
 TEACHER_QOS = "soujanya-poria-startfund-2026-03"
 QOS_CAPACITY_MODE = "TEACHER_QOS_SCHEDULER_ONLY"
 ENGINE_MEMORY_REPAIR_ID = "SR_F1_1_ENGINE_MEMORY_20261010"
+ENGINE_STORAGE_REPAIR_ID = "SR_F1_1_ENGINE_STORAGE_20261010"
 
 
 def worker_lease(root, task_id):
@@ -562,6 +564,11 @@ class Scheduler:
 
     def _release(self, task_id, attempt):
         try:
+            if (
+                self.registration["tasks"][task_id]["gpus"]
+                and (self.root / "ENGINE_STORAGE_REPAIR.json").exists()
+            ):
+                self._verify_gpu_host_memory(attempt)
             receipt = self.backend.release(attempt["job_id"])
             attempt["release_receipt"] = receipt
             require(receipt["returncode"] == 0, "RELEASE_RESULT_UNKNOWN")
@@ -570,6 +577,61 @@ class Scheduler:
         except Exception as exc:
             attempt["status"] = self.state["tasks"][task_id]["status"] = "UNKNOWN"
             self._save("RELEASE_UNKNOWN", task_id=task_id, error=repr(exc))
+
+    def _verify_gpu_host_memory(self, attempt):
+        repair = self._engine_storage_repair()
+        permission = self.registration["permission"]
+        detail = self.backend._run(["scontrol", "show", "job", attempt["job_id"], "--oneliner"])
+        relative = (
+            f"orchestration/observations/host_memory/{attempt['attempt_id']}/"
+            f"{self.sequence + 1:08d}.json"
+        )
+        atomic_json(self.root / relative, detail, exclusive=True)
+        attempt["host_memory_observation"] = {
+            "path": relative,
+            "sha256": file_hash(self.root / relative),
+        }
+        require(detail["returncode"] == 0, "GPU_HOST_MEMORY_SCHEDULER_DETAIL_UNKNOWN")
+        fields = dict(re.findall(r"(?:^|\s)([A-Za-z][A-Za-z0-9_]*)=(\S*)", detail["stdout"]))
+        require(
+            fields.get("JobId") == attempt["job_id"]
+            and fields.get("JobName") == attempt["job_name"]
+            and fields.get("Comment") == attempt["comment"]
+            and fields.get("UserId", "").split("(")[0] == permission["owner"]
+            and fields.get("Account") == permission["account"]
+            and fields.get("QOS") == permission["qos"] == TEACHER_QOS
+            and fields.get("JobState") == "PENDING"
+            and fields.get("Reason") == "JobHeldUser",
+            "GPU_HOST_MEMORY_ALLOCATION_IDENTITY_MISMATCH",
+        )
+        require(
+            fields.get("Features") == repair["gpu_worker_constraint"],
+            "GPU_HOST_MEMORY_CONSTRAINT_MISMATCH",
+        )
+        requested = fields.get("ReqTRES", "")
+        tres = dict(item.split("=", 1) for item in requested.split(",") if "=" in item)
+        require(
+            gpu_count(requested) == 1 and tres.get("gres/gpu:pro6000") == "1",
+            "GPU_HOST_MEMORY_GPU_REQUEST_MISMATCH",
+        )
+        memory = re.fullmatch(r"([0-9]+(?:\.[0-9]+)?)([KMGT]?)", tres.get("mem", ""))
+        require(memory, "GPU_HOST_MEMORY_REQUEST_UNKNOWN")
+        value, unit = memory.groups()
+        # Slurm's unsuffixed memory values are MiB; suffixed units are binary.
+        gib = (
+            Decimal(value)
+            * {
+                "K": Decimal(1) / (1024 * 1024),
+                "": Decimal(1) / 1024,
+                "M": Decimal(1) / 1024,
+                "G": Decimal(1),
+                "T": Decimal(1024),
+            }[unit]
+        )
+        require(
+            gib >= repair["minimum_gpu_host_memory_gb"],
+            "GPU_HOST_MEMORY_BELOW_AUTHENTICATED_MINIMUM",
+        )
 
     def _observe(self, task_id):
         task = self.state["tasks"][task_id]
@@ -773,10 +835,16 @@ class Scheduler:
                     "REPAIR_RESUME_AUTHORIZATION_CHANGED",
                 )
             elif task_id == "ENGINE" and not task.get("resume_checkpoint"):
-                repair_resume = self.state.get("engine_memory_repair_resume")
+                storage_resume = self.state.get("engine_storage_repair_resume")
+                repair_resume = storage_resume or self.state.get("engine_memory_repair_resume")
                 require(repair_resume, "RESUME_CHECKPOINT_OR_EXPLICIT_REPAIR_REQUIRED")
                 require(not repair_resume.get("consumed_by_attempt_id"), "REPAIR_ALREADY_CONSUMED")
-                verified, _ = self._verify_repaired_engine(expected_status="RETRYABLE")
+                verify_repair = (
+                    self._verify_repaired_engine_storage
+                    if storage_resume
+                    else self._verify_repaired_engine
+                )
+                verified, _ = verify_repair(expected_status="RETRYABLE")
                 require(
                     all(repair_resume.get(key) == value for key, value in verified.items()),
                     "ENGINE_REPAIR_RESUME_AUTHORIZATION_CHANGED",
@@ -788,8 +856,12 @@ class Scheduler:
                 )
         if not self._capacity_available(task_id):
             return False
-        worker_memory_gb = 64
-        if spec["gpus"] and (self.root / "ENGINE_MEMORY_REPAIR.json").exists():
+        worker_memory_gb, worker_constraint = 64, None
+        if spec["gpus"] and (self.root / "ENGINE_STORAGE_REPAIR.json").exists():
+            storage_repair = self._engine_storage_repair()
+            worker_memory_gb = storage_repair["minimum_gpu_host_memory_gb"]
+            worker_constraint = storage_repair["gpu_worker_constraint"]
+        elif spec["gpus"] and (self.root / "ENGINE_MEMORY_REPAIR.json").exists():
             worker_memory_gb = self._engine_memory_repair()["gpu_worker_host_memory_gb"]
         attempt_id = f"{task_id}_attempt{len(task['attempts']):04d}"
         registration_hash = digest(self.registration)
@@ -864,7 +936,6 @@ class Scheduler:
             "--no-requeue",
             "--nodes=1",
             "--cpus-per-task=4",
-            f"--mem={worker_memory_gb}G",
             "--parsable",
             "--account",
             permission["account"],
@@ -880,8 +951,12 @@ class Scheduler:
             "--output",
             str(self.folder / "attempts" / (attempt_id + "_%j.log")),
         ]
+        if worker_constraint is None:
+            command.append(f"--mem={worker_memory_gb}G")
         if spec["gpus"]:
             command += ["--gres", permission["gres"]]
+            if worker_constraint:
+                command.append("--constraint=" + worker_constraint)
         if permission.get("partition"):
             command += ["--partition", permission["partition"]]
         command.append(str(script_path))
@@ -1339,6 +1414,160 @@ class Scheduler:
             self.state["tasks"]["ENGINE"]["status"] = "RETRYABLE"
             self._phase()
             self._save("EXPLICIT_REPAIRED_ENGINE_RESUME", authorization=authorization)
+            return copy.deepcopy(authorization)
+
+    def _engine_storage_repair(self):
+        from .freeze import verify_engine_storage_repair
+
+        repair = verify_engine_storage_repair(self.root)
+        require(
+            repair["repair_id"] == ENGINE_STORAGE_REPAIR_ID
+            and repair["original_execution_freeze_sha256"]
+            == self.registration["freeze_sha256"]
+            == file_hash(self.root / "EXECUTION_FREEZE.json")
+            and repair["repair_sha256"] == file_hash(self.root / "ENGINE_STORAGE_REPAIR.json")
+            and re.fullmatch(r"[0-9a-f]{40}", repair["source_commit"])
+            and repair["gpu_worker_constraint"] == "highmem",
+            "ENGINE_STORAGE_REPAIR_IDENTITY_MISMATCH",
+        )
+        minimum = repair["minimum_gpu_host_memory_gb"]
+        require(type(minimum) is int and minimum > 0, "INVALID_REPAIRED_GPU_HOST_MEMORY_MINIMUM")
+        return repair
+
+    def _verify_repaired_engine_storage(self, *, expected_status):
+        root, task = self.root, self.state["tasks"]["ENGINE"]
+        require(not (root / "STOP").exists(), "STOP_PREVENTS_TECHNICAL_REPAIR_RESUME")
+        require(task["status"] == expected_status, "ENGINE_NOT_STORAGE_REPAIR_ELIGIBLE")
+        require(len(task["attempts"]) == 2, "ENGINE_STORAGE_REPAIR_REQUIRES_TWO_PRIOR_ATTEMPTS")
+        failed, cancelled = task["attempts"]
+        require(
+            failed["attempt_id"] == "ENGINE_attempt0000"
+            and failed["status"] == "FAILED"
+            and failed.get("accounting", {}).get("terminal_state") == "FAILED"
+            and failed["accounting"].get("exit_code") == "1:0"
+            and cancelled["attempt_id"] == "ENGINE_attempt0001"
+            and cancelled["status"] == "CANCELLED"
+            and cancelled.get("accounting", {}).get("terminal_state") == "CANCELLED"
+            and cancelled["accounting"].get("gpu_seconds") == 0,
+            "ENGINE_STORAGE_REPAIR_PRIOR_TERMINAL_STATES_NOT_AUTHENTICATED",
+        )
+        memory_authorization = self.state.get("engine_memory_repair_resume", {})
+        require(
+            memory_authorization.get("consumed_by_attempt_id") == cancelled["attempt_id"]
+            and memory_authorization.get("original_attempt_sha256") == digest(failed)
+            and memory_authorization.get("registration_hash") == digest(self.registration),
+            "ENGINE_STORAGE_REPAIR_MEMORY_AUTHORIZATION_CHANGED",
+        )
+        require(
+            self.state["tasks"]["COMMON_START"]["status"] == "COMPLETE"
+            and all(
+                item["status"] == "WAITING" and not item["attempts"]
+                for key, item in self.state["tasks"].items()
+                if key not in {"COMMON_START", "ENGINE"}
+            ),
+            "ENGINE_STORAGE_REPAIR_FORBIDDEN_AFTER_DOWNSTREAM_WORK",
+        )
+        require(not task.get("resume_checkpoint"), "REPAIR_CANNOT_REPLACE_FULL_STATE_CONTINUATION")
+        for relative in (
+            "ENGINE_PROBABILITY_GRADIENT_RESUME.json",
+            "orchestration/completions/ENGINE.json",
+            "orchestration/checkpoints/ENGINE_attempt0000.json",
+            "orchestration/checkpoints/ENGINE_attempt0001.json",
+            "orchestration/failures/ENGINE_attempt0001.json",
+        ):
+            require(
+                not contained(root, relative).exists(),
+                "ENGINE_STORAGE_REPAIR_FORBIDDEN_WORKER_PROGRESS:" + relative,
+            )
+        for path in (root / "orchestration/attempts").glob("ENGINE_attempt*"):
+            require(
+                re.match(r"ENGINE_attempt000[01][._]", path.name),
+                "ENGINE_STORAGE_REPAIR_FUTURE_ATTEMPT_EXISTS",
+            )
+        for ledger in (root / "accounting").glob("*.jsonl"):
+            for line in ledger.read_text().splitlines():
+                row = json.loads(line)
+                require(
+                    not (row.get("kind") == "physical_optimizer_updates" and row.get("count", 0)),
+                    "ENGINE_STORAGE_REPAIR_FORBIDDEN_PRIOR_OPTIMIZER_UPDATE",
+                )
+        # This authenticates the preserved step-0 checkpoint, 128 raw records,
+        # and positive evidence that the cancelled retry never started a worker.
+        repair = self._engine_storage_repair()
+        observed_attempts = {}
+        for attempt in task["attempts"]:
+            prior = attempt["observation"]
+            require(
+                file_hash(contained(root, prior["path"])) == prior["sha256"],
+                "ORIGINAL_ENGINE_SCHEDULER_OBSERVATION_CHANGED",
+            )
+            prior_observation = read_json(contained(root, prior["path"]))
+            observed = self.backend.observe(attempt, self.registration["permission"])
+            for evidence in (prior_observation, observed):
+                require(not evidence["queue"], "ORIGINAL_ENGINE_ALLOCATION_STILL_ACTIVE")
+                require(
+                    summarize_accounting(
+                        evidence["accounting"], attempt, self.registration["permission"], 1
+                    )
+                    == attempt["accounting"],
+                    "ORIGINAL_ENGINE_TERMINAL_ACCOUNTING_CHANGED",
+                )
+                if attempt is cancelled:
+                    require(
+                        all(int(row["ElapsedRaw"]) == 0 for row in evidence["accounting"]),
+                        "CANCELLED_ENGINE_RETRY_HAS_ELAPSED_RUNTIME",
+                    )
+            observed_attempts[attempt["attempt_id"]] = observed
+        return {
+            **{
+                key: repair[key]
+                for key in (
+                    "repair_id",
+                    "repair_sha256",
+                    "source_commit",
+                    "original_execution_freeze_sha256",
+                    "gpu_worker_constraint",
+                    "minimum_gpu_host_memory_gb",
+                )
+            },
+            "registration_hash": digest(self.registration),
+            "failed_attempt_id": failed["attempt_id"],
+            "cancelled_attempt_id": cancelled["attempt_id"],
+            "original_attempts_sha256": [digest(attempt) for attempt in task["attempts"]],
+            "original_blocker": task["blocker"],
+            "memory_authorization_sha256": digest(memory_authorization),
+            "permitted_next_attempt_id": "ENGINE_attempt0002",
+        }, observed_attempts
+
+    def resume_repaired_engine_storage(self):
+        """Authorize one retry after a positively unstarted allocation cancellation."""
+        with (
+            process_lease(self.root.parent / ".sr_f1_project_controller.lock"),
+            process_lease(self.folder / "controller.lock"),
+            worker_lease(self.root, "ENGINE"),
+        ):
+            self._load()
+            require(
+                not self.state.get("engine_storage_repair_resume"),
+                "ENGINE_STORAGE_REPAIR_ALREADY_AUTHORIZED",
+            )
+            authorization, observation = self._verify_repaired_engine_storage(
+                expected_status="BLOCKED"
+            )
+            relative = (
+                f"orchestration/observations/engine_storage_repair/{self.sequence + 1:08d}.json"
+            )
+            atomic_json(self.root / relative, observation, exclusive=True)
+            authorization.update(
+                authorized_at=now(),
+                reason="AUTHENTICATED_UNSTARTED_ENGINE_HOST_MEMORY_ALLOCATION_REPAIR",
+                scheduler_observation={"path": relative, "sha256": file_hash(self.root / relative)},
+                consumed_by_attempt_id=None,
+            )
+            self.state["engine_storage_repair_resume"] = authorization
+            self.state["tasks"]["ENGINE"]["status"] = "RETRYABLE"
+            self._phase()
+            self._save("EXPLICIT_REPAIRED_ENGINE_STORAGE_RESUME", authorization=authorization)
             return copy.deepcopy(authorization)
 
     def tick(self):

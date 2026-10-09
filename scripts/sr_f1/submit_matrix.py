@@ -78,6 +78,11 @@ def main():
         action="store_true",
         help="One-shot authenticated ENGINE memory repair transition; submits no jobs",
     )
+    parser.add_argument(
+        "--resume-repaired-engine-storage",
+        action="store_true",
+        help="One-shot authenticated ENGINE host-memory/storage repair; submits no jobs",
+    )
     parser.add_argument("--poll-seconds", type=int, default=30)
     parser.add_argument(
         "--controller-requeue-on-lease",
@@ -85,11 +90,18 @@ def main():
         help="Continue this CPU controller JobID on USR1/TERM; requires Slurm --requeue",
     )
     args = parser.parse_args()
-    if (args.resume_repaired_common_start or args.resume_repaired_engine) and (
+    repaired_resumes = sum(
+        (
+            args.resume_repaired_common_start,
+            args.resume_repaired_engine,
+            args.resume_repaired_engine_storage,
+        )
+    )
+    if repaired_resumes and (
         args.watch
         or args.resume_stopped
         or args.controller_requeue_on_lease
-        or (args.resume_repaired_common_start and args.resume_repaired_engine)
+        or repaired_resumes > 1
     ):
         parser.error("A repaired resume is one-shot and cannot combine with watch/another resume")
     if not 5 <= args.poll_seconds <= 60:
@@ -124,6 +136,12 @@ def main():
                 return 0
             if args.resume_repaired_engine:
                 print(json.dumps(scheduler.resume_repaired_engine(), sort_keys=True), flush=True)
+                return 0
+            if args.resume_repaired_engine_storage:
+                print(
+                    json.dumps(scheduler.resume_repaired_engine_storage(), sort_keys=True),
+                    flush=True,
+                )
                 return 0
             if args.resume_stopped:
                 scheduler.resume_stopped()

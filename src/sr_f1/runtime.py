@@ -11,6 +11,8 @@ import copy
 import hashlib
 import math
 import os
+import tempfile
+import threading
 import time
 from pathlib import Path
 from types import SimpleNamespace
@@ -57,8 +59,145 @@ TARGET_PIXELS = 786432
 PLAN_ID = "SR-F1-20261009"
 
 
+class _DiskActivation:
+    """One saved-tensor reference; retain_graph keeps this reference alive."""
+
+    def __init__(self, store, offset, size, sha256):
+        self.store, self.offset, self.size, self.sha256 = store, offset, size, sha256
+        store.references += 1
+
+    def __del__(self):
+        store = getattr(self, "store", None)
+        if store is not None:
+            store.release()
+
+
+class _ActivationSpillFile:
+    """Private append-only scratch, shared by this forward's saved disk tensors."""
+
+    chunk_bytes = 32 << 20
+    flush_bytes = 64 << 20
+
+    def __init__(self, output_root, statistics):
+        if output_root is None:
+            raise PermissionError("Activation spill requires an explicit runtime output_root")
+        root = Path(output_root).resolve(strict=True)
+        directory = root
+        for component in ("technical_scratch", "activation_offload"):
+            directory = directory / component
+            if directory.is_symlink():
+                raise PermissionError("Activation scratch cannot follow a symlink")
+            directory.mkdir(mode=0o700, exist_ok=True)
+        self.fd, filename = tempfile.mkstemp(prefix=f"{os.getpid()}-", suffix=".bin", dir=directory)
+        self.path, self.statistics = Path(filename), statistics
+        self.offset = self.unflushed_bytes = self.references = 0
+        self.finished = self.closed = False
+        self.lock = threading.RLock()
+        statistics.update(spill_file_created=True, spill_path=str(self.path))
+
+    def _drop_cache(self, offset, size):
+        if hasattr(os, "posix_fadvise") and hasattr(os, "POSIX_FADV_DONTNEED"):
+            os.posix_fadvise(self.fd, offset, size, os.POSIX_FADV_DONTNEED)
+
+    def _flush(self):
+        if self.unflushed_bytes:
+            getattr(os, "fdatasync", os.fsync)(self.fd)
+            self._drop_cache(0, 0)
+            self.unflushed_bytes = 0
+
+    def append(self, flat):
+        """Write exact dtype bytes in bounded chunks; no pickle or numeric conversion."""
+        import torch
+
+        with self.lock:
+            if self.closed or self.finished:
+                raise RuntimeError("Activation spill append after forward completion")
+            begin, size = self.offset, flat.numel() * flat.element_size()
+            digest = hashlib.sha256()
+            data = flat.view(torch.uint8)
+            try:
+                os.lseek(self.fd, self.offset, os.SEEK_SET)
+                for start in range(0, size, self.chunk_bytes):
+                    chunk = data[start : start + self.chunk_bytes].cpu()
+                    view = memoryview(chunk.numpy())
+                    if os.write(self.fd, view) != len(view):
+                        raise OSError("Short activation spill write")
+                    digest.update(view)
+                    self.offset += len(view)
+                    self.unflushed_bytes += len(view)
+                    if self.unflushed_bytes >= self.flush_bytes:
+                        self._flush()
+                record = _DiskActivation(self, begin, size, digest.hexdigest())
+                self.statistics["disk_storage_bytes"] += size
+                self.statistics["disk_saved_tensors"] += 1
+                return record
+            except BaseException:
+                self.abort()
+                raise
+
+    def restore(self, record, metadata):
+        import torch
+
+        with self.lock:
+            if self.closed:
+                raise RuntimeError("Activation spill was closed before its graph was released")
+            try:
+                storage = torch.empty(
+                    metadata["elements"], dtype=metadata["dtype"], device=metadata["device"]
+                )
+                data, digest = storage.view(torch.uint8), hashlib.sha256()
+                os.lseek(self.fd, record.offset, os.SEEK_SET)
+                for start in range(0, record.size, self.chunk_bytes):
+                    size = min(self.chunk_bytes, record.size - start)
+                    buffer = bytearray(size)
+                    if os.readv(self.fd, [buffer]) != size:
+                        raise OSError("Short activation spill read")
+                    digest.update(buffer)
+                    data[start : start + size].copy_(torch.frombuffer(buffer, dtype=torch.uint8))
+                if digest.hexdigest() != record.sha256:
+                    raise OSError("Activation spill checksum mismatch")
+                self._drop_cache(record.offset, record.size)
+                self.statistics["disk_read_bytes"] += record.size
+                return storage
+            except BaseException:
+                self.abort()
+                raise
+
+    def finish_forward(self):
+        with self.lock:
+            if self.closed:
+                return
+            try:
+                self._flush()
+                self.finished = True
+                if not self.references:
+                    self._close()
+            except BaseException:
+                self.abort()
+                raise
+
+    def release(self):
+        with self.lock:
+            self.references -= 1
+            if self.finished and not self.references and not self.closed:
+                self._close()
+
+    def _close(self):
+        if self.closed:
+            return
+        os.close(self.fd)
+        self.closed = True
+        self.path.unlink()
+        self.statistics["spill_file_cleaned"] = True
+
+    def abort(self):
+        with self.lock:
+            self.statistics["spill_aborted"] = True
+            self._close()
+
+
 class SavedActivationOffload:
-    """Store autograd's saved activations on CPU without changing its graph.
+    """Bound CPU activation storage and spill excess exact bytes to run-local disk.
 
     Native CUDA forward/backward kernels and the differentiable recurrent cache
     are unchanged. Parameter-storage views stay resident: copying every saved
@@ -67,14 +206,18 @@ class SavedActivationOffload:
     does not detach any forward value, cache state, or gradient edge.
     """
 
-    policy = "saved_activation_cpu_parameter_storage_resident_v1"
+    policy = "saved_activation_cpu48g_lossless_disk_parameter_resident_v2"
+    default_cpu_budget_bytes = 48 << 30
 
-    def __init__(self, model):
+    def __init__(self, model, *, output_root=None, cpu_budget_bytes=default_cpu_budget_bytes):
         import torch
 
+        if type(cpu_budget_bytes) is not int or cpu_budget_bytes < 0:
+            raise ValueError("Activation CPU budget must be a nonnegative integer")
+        self.output_root, self.cpu_budget_bytes = output_root, cpu_budget_bytes
         self.parameter_storages = {self._storage_key(parameter) for parameter in model.parameters()}
-        self.copy_hooks = torch.autograd.graph.save_on_cpu(pin_memory=False)
         self.hooks = torch.autograd.graph.saved_tensors_hooks(self.pack, self.unpack)
+        self.store = None
         self.statistics = dict(
             policy=self.policy,
             pin_memory=False,
@@ -85,6 +228,15 @@ class SavedActivationOffload:
             resident_parameter_view_bytes=0,
             unpacked_activation_tensors=0,
             unpacked_activation_bytes=0,
+            cpu_budget_bytes=cpu_budget_bytes,
+            cpu_storage_bytes=0,
+            disk_storage_bytes=0,
+            disk_saved_tensors=0,
+            disk_read_bytes=0,
+            spill_file_created=False,
+            spill_file_cleaned=False,
+            spill_aborted=False,
+            io_chunk_bytes=_ActivationSpillFile.chunk_bytes,
         )
 
     @staticmethod
@@ -93,6 +245,8 @@ class SavedActivationOffload:
         return tensor.device, storage.data_ptr(), storage.nbytes()
 
     def pack(self, tensor):
+        import torch
+
         size = tensor.numel() * tensor.element_size()
         if self._storage_key(tensor) in self.parameter_storages:
             self.statistics["resident_parameter_views"] += 1
@@ -101,33 +255,73 @@ class SavedActivationOffload:
             # an explicit check for the resident views, which are not snapshots.
             saved = tensor.detach()
             return "parameter", saved, saved._version
-        device, saved = self.copy_hooks.pack_hook(tensor.detach())
-        if tensor.device.type == "cpu":
-            # Exercise actual snapshot semantics in CPU regression tests too.
-            saved = saved.clone()
+        if tensor.layout != torch.strided or tensor.is_conj() or tensor.is_neg():
+            raise PermissionError("Activation offload requires ordinary strided tensor storage")
+        shape, stride = tuple(tensor.shape), tuple(tensor.stride())
+        if any(step < 0 for step in stride):
+            raise PermissionError("Negative-stride activation storage is unsupported")
+        elements = (
+            0
+            if not tensor.numel()
+            else 1
+            + sum((dimension - 1) * step for dimension, step in zip(shape, stride, strict=True))
+        )
+        metadata = dict(
+            device=tensor.device, dtype=tensor.dtype, shape=shape, stride=stride, elements=elements
+        )
+        flat = torch.as_strided(tensor.detach(), (elements,), (1,), tensor.storage_offset())
+        storage_bytes = elements * tensor.element_size()
+        if self.statistics["cpu_storage_bytes"] + storage_bytes <= self.cpu_budget_bytes:
+            saved = flat.to(device="cpu", copy=True)
+            self.statistics["cpu_storage_bytes"] += storage_bytes
+            packed = "activation", metadata, saved
+        else:
+            if self.store is None:
+                self.store = _ActivationSpillFile(self.output_root, self.statistics)
+            packed = "disk_activation", metadata, self.store.append(flat)
         self.statistics["saved_activation_tensors"] += 1
         self.statistics["saved_activation_bytes"] += size
         self.statistics["largest_saved_activation_bytes"] = max(
             self.statistics["largest_saved_activation_bytes"], size
         )
-        return "activation", device, saved
+        return packed
 
     def unpack(self, packed):
         kind, first, second = packed
         if kind == "parameter":
             if first._version != second:
+                self.abort()
                 raise RuntimeError("Resident parameter changed before activation-offload backward")
             return first
-        self.statistics["unpacked_activation_tensors"] += 1
-        self.statistics["unpacked_activation_bytes"] += second.numel() * second.element_size()
-        return self.copy_hooks.unpack_hook((first, second))
+        try:
+            saved = (
+                second.store.restore(second, first)
+                if kind == "disk_activation"
+                else second.to(first["device"])
+            )
+            result = saved.as_strided(first["shape"], first["stride"])
+            self.statistics["unpacked_activation_tensors"] += 1
+            self.statistics["unpacked_activation_bytes"] += result.numel() * result.element_size()
+            return result
+        except BaseException:
+            self.abort()
+            raise
 
     def __enter__(self):
         self.hooks.__enter__()
         return self
 
     def __exit__(self, *args):
-        return self.hooks.__exit__(*args)
+        self.hooks.__exit__(*args)
+        if self.store is not None:
+            if args[0] is not None:
+                self.store.abort()
+            else:
+                self.store.finish_forward()
+
+    def abort(self):
+        if self.store is not None:
+            self.store.abort()
 
 
 def generation_recipe(*, max_new_tokens=768, do_sample=True):
@@ -156,7 +350,11 @@ class SRRuntime(QwenRuntime):
         attention_backend="eager",
         account=None,
         protocol_amendment=None,
+        output_root=None,
     ):
+        self.output_root = (
+            Path(output_root).resolve(strict=True) if output_root is not None else None
+        )
         amended = amendment_enabled(protocol_amendment)
         self.protocol_amendment = copy.deepcopy(protocol_amendment)
         if dtype != "bfloat16" or attention_backend != "eager":
@@ -636,7 +834,19 @@ class SRRuntime(QwenRuntime):
             completed_model_forward_calls=0,
         )
         complete = False
-        offload = SavedActivationOffload(self.model) if grad else None
+        offload = (
+            SavedActivationOffload(
+                self.model,
+                output_root=getattr(self, "output_root", None),
+                cpu_budget_bytes=getattr(
+                    self,
+                    "activation_cpu_budget_bytes",
+                    SavedActivationOffload.default_cpu_budget_bytes,
+                ),
+            )
+            if grad
+            else None
+        )
         try:
             with (
                 cache_compatible_autograd(self.model),
@@ -689,6 +899,8 @@ class SRRuntime(QwenRuntime):
             # One durable accounting row per sequence, including failed forwards.
             # The sequence was reserved before execution; these are actual calls,
             # with no GPU-hour or token-budget acceptance threshold.
+            if not complete and offload is not None:
+                offload.abort()
             self.reserve(
                 "cached_training_model_forward_calls",
                 calls["prefill_model_forward_calls"] + calls["decode_model_forward_calls"],
@@ -767,6 +979,7 @@ def load_runtime(plan, root, *, state_id=None, step=96, account=None):
         identity["model_path"],
         account=account,
         protocol_amendment=plan.get("protocol_amendment"),
+        output_root=root,
     )
     runtime.training_learning_rate = plan["training"]["lr"]
     runtime.verify_identity(identity)

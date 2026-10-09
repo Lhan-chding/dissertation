@@ -45,6 +45,15 @@ ENGINE_MEMORY_ALLOWED_FILES = frozenset(
         "scripts/sr_f1/submit_matrix.py",
     }
 )
+ENGINE_STORAGE_REPAIR_ID = "SR_F1_1_ENGINE_STORAGE_20261010"
+ENGINE_STORAGE_ALLOWED_FILES = frozenset(
+    {
+        "src/sr_f1/freeze.py",
+        "src/sr_f1/runtime.py",
+        "src/sr_f1/orchestration.py",
+        "scripts/sr_f1/submit_matrix.py",
+    }
+)
 
 
 def _required(value, expected, message):
@@ -200,6 +209,22 @@ def verify_qos_scope_repair(root, actual_source=None):
 
 
 def verify_engine_memory_repair(root, actual_source=None):
+    """Authenticate the original memory repair through a later bounded-storage repair."""
+    if (Path(root) / "ENGINE_STORAGE_REPAIR.json").exists():
+        storage = verify_engine_storage_repair(root, actual_source=actual_source)
+        return {
+            "repair_id": ENGINE_MEMORY_REPAIR_ID,
+            "repair_sha256": file_hash(Path(root) / "ENGINE_MEMORY_REPAIR.json"),
+            "source_commit": storage["source_commit"],
+            "original_execution_freeze_sha256": storage["original_execution_freeze_sha256"],
+            "previous_qos_repair_sha256": file_hash(Path(root) / "QOS_SCOPE_REPAIR.json"),
+            "gpu_worker_host_memory_gb": storage["minimum_gpu_host_memory_gb"],
+            "engine_storage_repair_sha256": storage["repair_sha256"],
+        }
+    return _verify_original_engine_memory_repair(root, actual_source=actual_source)
+
+
+def _verify_original_engine_memory_repair(root, actual_source=None):
     """Bind activation storage and step-zero recovery to preserved failure evidence.
 
     Only historical copies are permanent identity inputs. Current STATE/LATEST
@@ -320,6 +345,121 @@ def verify_engine_memory_repair(root, actual_source=None):
         "original_execution_freeze_sha256": expected["original_execution_freeze_sha256"],
         "previous_qos_repair_sha256": expected["previous_qos_repair_sha256"],
         "gpu_worker_host_memory_gb": expected["gpu_worker_host_memory_gb"],
+    }
+
+
+def verify_engine_storage_repair(root, actual_source=None):
+    """Bind bounded exact storage and supported Slurm resources to unstarted history."""
+    from .prepare import source_identity
+
+    root = Path(root).resolve(strict=True)
+    repair_path = root / "ENGINE_STORAGE_REPAIR.json"
+    repair = read_json(repair_path)
+    saved_source = bounded_path(root, "code_before_engine_storage_20261010")
+    before = read_json(saved_source / "SOURCE_DEPLOYMENT.json")
+    _required(
+        _preserved_source_files(saved_source, include_amendments=True),
+        before.get("source_file_hashes"),
+        "Pre-storage source changed",
+    )
+    parent = _verify_original_engine_memory_repair(root, actual_source=before)
+    expected = {
+        "repair_id": ENGINE_STORAGE_REPAIR_ID,
+        "status": "AUTHORIZED_TECHNICAL_STORAGE_REPAIR",
+        "plan_id": PLAN_ID,
+        "run_root": str(root),
+        "original_execution_freeze_sha256": parent["original_execution_freeze_sha256"],
+        "previous_engine_memory_repair_sha256": parent["repair_sha256"],
+        "previous_source_commit": before["source_commit"],
+        "previous_source_tree_sha256": before["source_tree_sha256"],
+        "preserved_source_relative_path": saved_source.name,
+        "scientific_protocol_unchanged": True,
+        "gpu_worker_constraint": "highmem",
+        "minimum_gpu_host_memory_gb": 80,
+        "cpu_activation_budget_bytes": 48 * 1024**3,
+        "activation_storage": "BOUNDED_CPU_EXACT_DTYPE_DISK_SPILL",
+        "superseded_unstarted_attempt_id": "ENGINE_attempt0001",
+        "superseded_unstarted_job_id": "196139",
+    }
+    for key, value in expected.items():
+        _required(repair.get(key), value, "ENGINE storage repair differs: " + key)
+    if not repair.get("authorized_user_message") or not repair.get("authorized_at"):
+        raise PermissionError("Storage repair lacks authorization provenance")
+    prefix = "technical_incidents/host_memory_20261010/"
+    required = {
+        prefix + n
+        for n in ("EVIDENCE_MANIFEST.json", "TERMINAL_JOBS.json", "HOST_STATE_REVIEW.json")
+    }
+    artifacts = _checked_source_files(repair.get("historical_artifact_hashes"), "Storage history")
+    if not required.issubset(artifacts) or any(not n.startswith(prefix) for n in artifacts):
+        raise PermissionError("Storage history inventory is missing or unbounded")
+    for name, expected_hash in artifacts.items():
+        _required(file_hash(bounded_path(root, name)), expected_hash, "Storage history changed")
+    manifest = read_json(root / (prefix + "EVIDENCE_MANIFEST.json"))
+    _required(manifest.get("status"), "BYTE_VERIFIED_PRESERVED", "Storage preservation missing")
+    if not manifest.get("files"):
+        raise PermissionError("Storage preservation inventory empty")
+    for name, entry in manifest["files"].items():
+        p = bounded_path(root / (prefix + "evidence"), name)
+        _required(file_hash(p), entry["sha256"], "Preserved storage artifact changed")
+        _required(p.stat().st_size, entry["bytes"], "Preserved storage artifact size changed")
+    terminal = read_json(root / (prefix + "TERMINAL_JOBS.json"))
+    for key in ("controller_terminal", "gpu_terminal", "gpu_never_started"):
+        _required(terminal.get(key), True, "Unstarted storage replacement is not terminal")
+    review = read_json(root / (prefix + "HOST_STATE_REVIEW.json"))
+    for key, value in {
+        "status": "PASS_UNCONSUMED_ZERO_UPDATE_STATE",
+        "committed_logical_step": 0,
+        "physical_optimizer_updates": 0,
+        "raw_rollouts": 128,
+        "staged_artifact_hashes_unchanged": True,
+        "recovery_activation_exists": False,
+        "recovery_process_exists": False,
+        "physical_process_files": 0,
+        "superseded_gpu_job_id": "196139",
+        "superseded_gpu_elapsed_seconds": 0,
+        "science_attempts": 0,
+        "test_sealed": True,
+    }.items():
+        _required(review.get(key), value, "Invalid unstarted state review: " + key)
+    original_recovery = read_json(root / "ENGINE_MEMORY_REPAIR.json")["zero_update_recovery"]
+    _required(
+        review.get("staged_artifact_hashes"),
+        original_recovery["artifact_hashes"],
+        "Storage retry does not preserve original step-zero state and raw records",
+    )
+    for name, expected_hash in original_recovery["artifact_hashes"].items():
+        _required(
+            manifest["files"].get(name, {}).get("sha256"),
+            expected_hash,
+            "Storage history does not match authenticated recovery bytes",
+        )
+    actual = source_identity() if actual_source is None else actual_source
+    previous_files = _checked_source_files(before.get("source_file_hashes"), "Pre-storage")
+    current_files = _checked_source_files(actual.get("source_file_hashes"), "Storage actual")
+    if actual.get("source_dirty_files"):
+        raise PermissionError("Storage repair requires committed source")
+    _required(actual.get("source_tree_sha256"), object_hash(current_files), "Storage tree invalid")
+    changed = sorted(
+        k
+        for k in previous_files.keys() | current_files.keys()
+        if previous_files.get(k) != current_files.get(k)
+    )
+    _required(
+        set(changed), ENGINE_STORAGE_ALLOWED_FILES, "Storage repair changed scientific source"
+    )
+    _required(repair.get("changed_files"), changed, "Storage repair file inventory differs")
+    for key in ("source_commit", "source_tree_sha256", "source_file_hashes"):
+        _required(repair.get(key), actual.get(key), "Storage source identity differs: " + key)
+    if not re.fullmatch(r"[0-9a-f]{40}", actual.get("source_commit") or ""):
+        raise PermissionError("Storage repair source commit missing")
+    return {
+        "repair_id": ENGINE_STORAGE_REPAIR_ID,
+        "repair_sha256": file_hash(repair_path),
+        "source_commit": actual["source_commit"],
+        "original_execution_freeze_sha256": expected["original_execution_freeze_sha256"],
+        "gpu_worker_constraint": expected["gpu_worker_constraint"],
+        "minimum_gpu_host_memory_gb": expected["minimum_gpu_host_memory_gb"],
     }
 
 

@@ -1,4 +1,8 @@
-"""Exact CPU offload checks; actual 9B CUDA ENGINE qualification is separate."""
+"""Exact CPU/disk offload checks; actual 9B CUDA ENGINE qualification is separate."""
+
+import gc
+import os
+from pathlib import Path
 
 import pytest
 import torch
@@ -11,7 +15,7 @@ from sr_f1.training import sequence_objective
 
 
 @pytest.fixture
-def hybrid_runtime():
+def hybrid_runtime(tmp_path):
     previous_threads = torch.get_num_threads()
     torch.set_num_threads(1)
     torch.manual_seed(71010)
@@ -64,6 +68,7 @@ def hybrid_runtime():
     config._attn_implementation = "eager"
     runtime = SRRuntime.__new__(SRRuntime)
     runtime.torch, runtime.device, runtime.image_calls = torch, "cpu", 0
+    runtime.output_root = tmp_path
     runtime.model = get_peft_model(
         transformers.Qwen3_5ForConditionalGeneration(config),
         LoraConfig(r=2, lora_alpha=4, lora_dropout=0, target_modules=["q_proj", "v_proj"]),
@@ -93,10 +98,12 @@ def hybrid_runtime():
 
 @pytest.mark.parametrize("dtype", [torch.float32, torch.bfloat16])
 @pytest.mark.parametrize("prompt_padding", [0, 64])
+@pytest.mark.parametrize("cpu_budget", [48 << 30, 1024])
 def test_offload_keeps_exact_logprobs_and_dual_backward_lora_gradients(
-    hybrid_runtime, dtype, prompt_padding
+    hybrid_runtime, dtype, prompt_padding, cpu_budget
 ):
     runtime, prepared = hybrid_runtime
+    runtime.activation_cpu_budget_bytes = cpu_budget
     runtime.model.to(dtype=dtype)
     if prompt_padding:
         inputs = prepared["inputs"]
@@ -124,6 +131,9 @@ def test_offload_keeps_exact_logprobs_and_dual_backward_lora_gradients(
         policy_grads = torch.autograd.grad(
             objective["policy"] / 128, parameters, retain_graph=True, allow_unused=False
         )
+        if result.get("activation_offload", {}).get("spill_file_created"):
+            assert Path(result["activation_offload"]["spill_path"]).is_file()
+            assert not result["activation_offload"]["spill_file_cleaned"]
         (objective["loss"] / 128).backward()
         return result, policy_grads, [p.grad.detach().clone() for p in parameters]
 
@@ -147,6 +157,13 @@ def test_offload_keeps_exact_logprobs_and_dual_backward_lora_gradients(
     assert evidence["resident_parameter_views"] > 0
     assert evidence["unpacked_activation_tensors"] > evidence["saved_activation_tensors"]
     assert evidence["unpacked_activation_bytes"] > evidence["saved_activation_bytes"]
+    assert evidence["cpu_storage_bytes"] <= cpu_budget
+    if cpu_budget == 1024:
+        assert evidence["disk_saved_tensors"] > 0 and evidence["disk_storage_bytes"] > 0
+        assert evidence["disk_read_bytes"] > evidence["disk_storage_bytes"]
+        assert evidence["spill_file_cleaned"] and not evidence["spill_aborted"]
+        assert not Path(evidence["spill_path"]).exists()
+        assert not list(runtime.output_root.rglob("*.bin"))
     rows = [args[2] for args in runtime.events if args[0] == "cached_training_model_forward_calls"]
     assert (
         rows[-1]["activation_offload"]["saved_activation_bytes"]
@@ -227,6 +244,7 @@ def test_no_grad_reference_path_does_not_offload(hybrid_runtime):
 
 def test_partial_forward_failure_retains_offload_accounting(hybrid_runtime, monkeypatch):
     runtime, prepared = hybrid_runtime
+    runtime.activation_cpu_budget_bytes = 0
     original = runtime.model.forward
     count = 0
 
@@ -244,3 +262,133 @@ def test_partial_forward_failure_retains_offload_accounting(hybrid_runtime, monk
     assert final["status"] == "TECHNICAL_FAILED"
     assert final["scored_completion_tokens"] == 1
     assert final["activation_offload"]["saved_activation_bytes"] > 0
+    assert final["activation_offload"]["spill_file_cleaned"]
+    assert final["activation_offload"]["spill_aborted"]
+    assert not list(runtime.output_root.rglob("*.bin"))
+
+
+@pytest.mark.parametrize("dtype", [torch.float32, torch.bfloat16])
+@pytest.mark.parametrize("layout", ["transpose", "sliced", "zero_stride", "overlap", "scalar"])
+def test_disk_roundtrip_preserves_exact_layout_bits_and_last_reference_cleanup(
+    tmp_path, monkeypatch, dtype, layout
+):
+    from sr_f1.runtime import _ActivationSpillFile
+
+    monkeypatch.setattr(_ActivationSpillFile, "chunk_bytes", 7)
+    monkeypatch.setattr(_ActivationSpillFile, "flush_bytes", 11)
+    cache_advice = []
+    monkeypatch.setattr(os, "POSIX_FADV_DONTNEED", 4, raising=False)
+    monkeypatch.setattr(os, "posix_fadvise", lambda *args: cache_advice.append(args), raising=False)
+    source = torch.arange(35, dtype=dtype).reshape(5, 7)
+    value = {
+        "transpose": source.T,
+        "sliced": source[::2, 1::3],
+        "zero_stride": source[0].expand(9, 7),
+        "overlap": source.flatten().unfold(0, 3, 1),
+        "scalar": source[2, 3],
+    }[layout]
+    rng = torch.get_rng_state().clone()
+    offload = SavedActivationOffload(torch.nn.Identity(), output_root=tmp_path, cpu_budget_bytes=0)
+    with offload:
+        packed = offload.pack(value)
+    assert packed[0] == "disk_activation"
+    path = Path(offload.statistics["spill_path"])
+    assert path.is_file() and len(list(path.parent.glob("*.bin"))) == 1
+    for _ in range(2):
+        restored = offload.unpack(packed)
+        assert torch.equal(restored, value)
+        assert restored.shape == value.shape and restored.stride() == value.stride()
+        assert restored.dtype == value.dtype and restored.device == value.device
+    assert torch.equal(torch.get_rng_state(), rng)
+    assert offload.statistics["cpu_storage_bytes"] == 0
+    assert offload.statistics["disk_read_bytes"] == 2 * offload.statistics["disk_storage_bytes"]
+    assert len(cache_advice) >= 3
+    del packed
+    gc.collect()
+    assert not path.exists() and offload.statistics["spill_file_cleaned"]
+
+
+def test_cpu_budget_counts_storage_span_including_strided_holes(tmp_path):
+    source = torch.arange(32, dtype=torch.float32)
+    value = source[::8]
+    # Four logical floats reference a span of 25 floats, not 16 bytes.
+    offload = SavedActivationOffload(torch.nn.Identity(), output_root=tmp_path, cpu_budget_bytes=32)
+    with offload:
+        packed = offload.pack(value)
+    assert packed[0] == "disk_activation"
+    assert offload.statistics["disk_storage_bytes"] == 100
+    assert offload.statistics["cpu_storage_bytes"] == 0
+    assert torch.equal(offload.unpack(packed), value)
+    del packed
+    assert offload.statistics["spill_file_cleaned"]
+
+
+@pytest.mark.parametrize("failure", ["short_write", "disk_full", "short_read", "corrupt"])
+def test_disk_errors_fail_closed_and_cleanup_only_private_spill(tmp_path, monkeypatch, failure):
+    unrelated = tmp_path / "keep.bin"
+    unrelated.write_bytes(b"keep")
+    offload = SavedActivationOffload(torch.nn.Identity(), output_root=tmp_path, cpu_budget_bytes=0)
+    value = torch.arange(16, dtype=torch.bfloat16)
+    if failure in {"short_write", "disk_full"}:
+        if failure == "short_write":
+            monkeypatch.setattr(os, "write", lambda fd, value: len(value) - 1)
+        else:
+
+            def full(*args):
+                raise OSError(28, "No space left on device")
+
+            monkeypatch.setattr(os, "write", full)
+        with pytest.raises(OSError), offload:
+            offload.pack(value)
+    else:
+        with offload:
+            packed = offload.pack(value)
+        if failure == "short_read":
+            os.ftruncate(offload.store.fd, 1)
+        else:
+            os.lseek(offload.store.fd, 0, os.SEEK_SET)
+            os.write(offload.store.fd, b"\x01\x02")
+        with pytest.raises(OSError, match=r"Short|checksum"):
+            offload.unpack(packed)
+    assert offload.statistics["spill_aborted"]
+    assert offload.statistics["spill_file_cleaned"]
+    assert not list((tmp_path / "technical_scratch/activation_offload").glob("*.bin"))
+    assert unrelated.read_bytes() == b"keep"
+
+
+def test_spill_requires_run_root_and_rejects_scratch_symlink(tmp_path):
+    offload = SavedActivationOffload(torch.nn.Identity(), cpu_budget_bytes=0)
+    with pytest.raises(PermissionError, match="output_root"), offload:
+        offload.pack(torch.ones(2))
+    (tmp_path / "outside").mkdir()
+    (tmp_path / "technical_scratch").symlink_to(tmp_path / "outside", target_is_directory=True)
+    offload = SavedActivationOffload(torch.nn.Identity(), output_root=tmp_path, cpu_budget_bytes=0)
+    with pytest.raises(PermissionError, match="symlink"), offload:
+        offload.pack(torch.ones(2))
+    assert not list((tmp_path / "outside").iterdir())
+
+
+def test_abandoned_graph_releases_its_only_spill_file(tmp_path):
+    offload = SavedActivationOffload(torch.nn.Identity(), output_root=tmp_path, cpu_budget_bytes=0)
+    value = torch.ones(8, requires_grad=True)
+    with offload:
+        output = value.square().tanh().sum()
+    path = Path(offload.statistics["spill_path"])
+    assert path.exists()
+    del output
+    gc.collect()
+    assert not path.exists() and offload.statistics["spill_file_cleaned"]
+
+
+def test_failed_restore_allocation_aborts_private_spill(tmp_path, monkeypatch):
+    offload = SavedActivationOffload(torch.nn.Identity(), output_root=tmp_path, cpu_budget_bytes=0)
+    with offload:
+        packed = offload.pack(torch.ones(8))
+
+    def exhausted(*args, **kwargs):
+        raise RuntimeError("simulated restore allocation failure")
+
+    monkeypatch.setattr(torch, "empty", exhausted)
+    with pytest.raises(RuntimeError, match="restore allocation"):
+        offload.unpack(packed)
+    assert offload.statistics["spill_aborted"] and offload.statistics["spill_file_cleaned"]
