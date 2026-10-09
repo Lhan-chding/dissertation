@@ -1,0 +1,13 @@
+{
+  "status": "VERIFIED",
+  "all_declared_hashes_match": true,
+  "crc_read_to_eof": true,
+  "exact_file_set": true,
+  "file_count": 1629,
+  "uncompressed_bytes": 96305900,
+  "archive_filename": "MM_CORE_PRO_REVIEW_20261009.zip",
+  "archive_sha256": "062566ef554f8ab6d5d8833098f9a5276207d307eddbb93e7db675a4dce6077b",
+  "declared_exclusions": 67,
+  "exclusions_include_unexported_checkpoint_weights": true,
+  "server_checkpoint_verification": false
+}

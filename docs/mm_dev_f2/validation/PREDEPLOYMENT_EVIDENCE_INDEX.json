@@ -1,0 +1,49 @@
+{
+  "status": "CPU_VALIDATION_ONLY_GPU_PENDING",
+  "files": [
+    {
+      "path": "ALLOCATION_PERMISSION.json",
+      "sha256": "26a0561a5c6fda4cebfd01f7f84da8d8d6216a70519f0447a7cae52e84954982"
+    },
+    {
+      "path": "VISUAL_REVIEW.json",
+      "sha256": "0e95fce2cf505e6c50005a82042ff8970358054bc37fff582d4298d4c438cdaa"
+    },
+    {
+      "path": "LIVE_MODEL_IDENTITY_20261009.json",
+      "sha256": "3dea12d75f259913785ad2b795be664fe7f29266730dbc4458bd0fc9afb409fa"
+    },
+    {
+      "path": "INDEPENDENT_CONTRACT_REVIEW.json",
+      "sha256": "e12d66b763ca1544f0eb4169a7a786883818169e422caa3d1ed8be00c0825a79"
+    },
+    {
+      "path": "INDEPENDENT_TRAINER_REVIEW.json",
+      "sha256": "3829ee7b6439fcd96151f3e0619a0661b900e7bf016e027173cf93b59514c1a2"
+    },
+    {
+      "path": "FINAL_INDEPENDENT_TRAINER_REVIEW.json",
+      "sha256": "3e96fbb867a7b56dd47ec00208b05716d551b8a8aaaeee0fc1aab9395f402a98"
+    },
+    {
+      "path": "INDEPENDENT_EQUAL_WEIGHT_CHECK.json",
+      "sha256": "71bfc30aea87f422b9f03a84ec47e5a8a6338579fdeb1764a8bd083205fa5c82"
+    },
+    {
+      "path": "INDEPENDENT_STREAM_SEED_CHECKS.json",
+      "sha256": "7c0c9d4830b5c0bad8937a7c47bed305ddf6f781edee74ca3d95e4f90c9713a7"
+    },
+    {
+      "path": "VISUAL_REVIEW_ENGINE_PREP.json",
+      "sha256": "45a96dd706f77e2d3a43eda8ddb8106c7c05d130e174c643cdc767114754ca4e"
+    },
+    {
+      "path": "ENGINE_RELEASE_CHECKLIST_zh.md",
+      "sha256": "bb95c3d4543f76ff0870e2ea74adf6859dd6a265a172e70a9dded42b75865b07"
+    }
+  ],
+  "notes": [
+    "Historical trainer review source hashes are time-specific; the later independent checkpoint comparator is additionally tested in FINAL_LOCAL_CHECKS.",
+    "Original dispatched Markdown includes six intentional two-space hard breaks; original bytes preserved. New implementation scoped diff whitespace check passes."
+  ]
+}

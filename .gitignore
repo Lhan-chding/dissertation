@@ -64,3 +64,6 @@ configs/paths.yaml
 /artifacts/mm_core_f1_*/
 /artifacts/mm_core_nonzero_*/
 /artifacts/mm_core_pro_review_*/
+
+# MM-DEV private rendered data, runtime evidence, and release bundles
+/artifacts/mm_dev_f2*/

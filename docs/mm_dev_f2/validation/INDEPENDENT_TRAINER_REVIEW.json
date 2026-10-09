@@ -1,0 +1,78 @@
+{
+  "status": "CPU_TRAINER_REVIEW_COMPLETE_REAL_F2_ENGINE_REQUIRED",
+  "created_at": "2026-10-09T04:39:42.312736+00:00",
+  "scope": "Independent read-only code review of F2 native runtime, training, ENGINE and selected regression tests; no remote calls, registered GPU jobs, 9B model loads or scientific experiments.",
+  "unresolved_review_blockers": [],
+  "source_sha256": {
+    "src/mm_dev/runtime.py": "b95499134d988044485fff3a3b89e426c7c1feb0464e578d3fbc7f0ac69f2e95",
+    "src/mm_dev/training.py": "ca8ef973a86b9314837f4961f4b173f36bb83f4b7b9ad4ff826596fecf123fc9",
+    "src/mm_dev/engine.py": "f926bb22249eb62fad25a82a17fd509952c687e109a17e05befbb2eca583dbef",
+    "scripts/mm_dev/run_train_path.py": "8ae453a497af2a0c3a8af64fe4e4e03b7aeed6de744659c4266107625a1e44d5",
+    "scripts/mm_dev/run_engine_f2.py": "b2d5a64563f79cf8286f8805f6e866873c1dfc271ef4432e4685f3f73dbc4521",
+    "tests/mm_dev/test_training.py": "49f405cc81e444fa8281b158e3812030a0014bb74a47e27e71eb802126fc5fe9"
+  },
+  "validation": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python -m pytest -p no:cacheprovider tests/mm_dev/test_training.py tests/mm_dev/test_common.py tests/mm_dev/test_orchestration.py -q",
+    "result": "102 passed in 9.82s",
+    "ruff": "PASS for runtime.py, training.py, engine.py, run_train_path.py, run_engine_f2.py, test_training.py, common.py, test_common.py",
+    "git_diff_check": "PASS for currently tracked changes",
+    "independent_equal_sequence_weight": "One 31-token active sequence plus 191 one-token zero-advantage sequences; Adam moment implies exactly 1/192 sequence gradient within max absolute 5.820766091346741e-11.",
+    "native_architecture_fixture": "Randomly initialized tiny hybrid Qwen3.5 with real synthetic visual tensor, native generation output logits and teacher-forcing probabilities; CPU only, max_new_tokens=3 fixture. This is not the registered 9B model or a production GPU ENGINE result.",
+    "engine_chain_fixture": "1536 actual tiny CPU sampling records and 8 updates test evidence coverage/state/reward/token/seed/metrics binding. Fixture PIDs are synthetic; real-process property is tested separately by the OS signal test and must be proved on the registered ENGINE.",
+    "os_signal_fixture": "Actual parent process SIGUSR1 forwarding to a real child, which exits 75 after receiving it."
+  },
+  "confirmed_contract_behaviors": [
+    "All nine attainable exact constant Fraction reward groups produce strictly zero advantages; immutable design reference preserved.",
+    "All 192 sequence means remain equally weighted including zero-advantage groups; EOS included and prompt/image/pad excluded by inherited teacher-forcing boundary.",
+    "Old selected-token probabilities come from actual generation raw logits, and processed logits equality guards unregistered transforms.",
+    "Separate isolated policy and total-gradient diagnostics prevent KL/momentum changes from being called natural policy learning evidence.",
+    "Reference switch copies values in place and restores current values without changing optimizer Parameter identities.",
+    "Committed checkpoint state contains parameters, Adam, scheduler, reference, RNG, stream, sampling identity, cursor and bound diagnostics/token path.",
+    "Partial valid raw records are reused only for matching question/slot/sample/seed/policy/config; technical-invalid actual records are retained and rejected.",
+    "Checkpoint-to-metrics interruption recovery and pinned lease anchors preserve committed evidence through rolling cleanup."
+  ],
+  "review_findings_resolved_in_code": [
+    {
+      "id": "F2-RUNTIME-001",
+      "finding": "ENGINE summary had literal counts/PASS fields without raw/checkpoint evidence coverage",
+      "resolution": "Now derives 1536 successful trace slots and 8 updates, rechecks raw IDs/seeds/config/logprobs/text/rewards/advantages, exact token path, all step0-4 checkpoint/metrics identities and bound evidence file hashes; total physical cost includes interruptions separately."
+    },
+    {
+      "id": "F2-RUNTIME-002",
+      "finding": "Post-generation validation failure could lose actual raw tokens",
+      "resolution": "Callback persists TECHNICAL_INVALID raw with actual values and error information before raising; collector prohibits reuse."
+    },
+    {
+      "id": "F2-RUNTIME-003",
+      "finding": "Collector could silently overwrite actual sampler seed/config hash with expected identity",
+      "resolution": "Collector checks actual seed/config/qid, preserves mismatching actual values plus expected_identity, saves invalid evidence and rejects it."
+    },
+    {
+      "id": "F2-RUNTIME-004",
+      "finding": "Standalone stress entry accepted status-only natural comparison",
+      "resolution": "Stress and comparison reuse verify current freeze, fixed trace sizes, artifact hashes and all natural constant/zero-policy diagnostics before loading the model."
+    },
+    {
+      "id": "F2-RUNTIME-005",
+      "finding": "Batch-only USR1 signal reached ENGINE parent but not child",
+      "resolution": "Parent signal handling covers initialization and uses Popen forwarding to the current child; durable checkpoint anchors and resumable exit handling preserve lease recovery."
+    },
+    {
+      "id": "F2-RUNTIME-006",
+      "finding": "COMMON adapter write could leave an uncommitted partial final directory",
+      "resolution": "Staging plus atomic rename; an existing uncommitted adapter is accepted only when fixed initialization file hashes match, without overwriting it."
+    },
+    {
+      "id": "F2-RUNTIME-007",
+      "finding": "Actual CUDA/driver/device identity was absent",
+      "resolution": "One visible actual RTX PRO 6000 is verified and recorded with UUID/name/memory/compute capability/driver/PCI/hostname; changed-hardware unfinished comparison tracks are preserved and paired traces rerun under identical registered seeds/recipe."
+    }
+  ],
+  "remaining_acceptance_boundaries": [
+    "Actual Qwen3.5-9B BF16/FP32 native visual ENGINE and registered probability tolerances are untested by this reviewer at this point.",
+    "Future real ENGINE needs three actual fresh process identities and independent CPU tensor/NumPy equality on its own trusted checkpoint files; hashes and tiny CPU fixtures do not substitute for that evidence.",
+    "generated_tokens post-callback ledger can be a lower bound across crash boundaries; final known generated token totals must be independently recounted from every retained raw record, with unknown inflight attempts kept separately and never refunded.",
+    "All 34 scientific paths, 5 probes and 35 endpoint identities remain required before scientific analysis/release; this code review authorizes no additional arms or research stage."
+  ],
+  "code_changes_by_reviewer": "Only previously delegated common.py allocation functions and associated tests. The runtime/training/ENGINE fixes were implemented by their owning worker. No commit/push by reviewer; parent integrates."
+}

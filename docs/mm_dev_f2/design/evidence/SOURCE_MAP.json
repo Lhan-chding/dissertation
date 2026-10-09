@@ -1,0 +1,38 @@
+[
+  {
+    "label": "E01",
+    "original_archive_path": "START_HERE_FOR_GPT_PRO_zh.md",
+    "local_file": "evidence/E01_START_HERE_FOR_GPT_PRO_zh.md",
+    "sha256": "d6e9674ce0e85d97e7e38853a1618f53c398481d004204443741b9b0a07e0e89"
+  },
+  {
+    "label": "E02",
+    "original_archive_path": "audit/report/MEASUREMENT_FINDINGS_zh.md",
+    "local_file": "evidence/E02_MEASUREMENT_FINDINGS_zh.md",
+    "sha256": "f6c806ecacdc78091756b179caff4b0ff77e5d3a299c0e81132754d7aca0cd34"
+  },
+  {
+    "label": "E03",
+    "original_archive_path": "documents/mm_core_f1/NONZERO_RECOVERY_RESULT_20261009_zh.md",
+    "local_file": "evidence/E03_NONZERO_RECOVERY_RESULT_20261009_zh.md",
+    "sha256": "7567ebf451ce9f63f85b96d4236c2cbc5e3b0d1bb0a298399e49512fcf900169"
+  },
+  {
+    "label": "E04",
+    "original_archive_path": "documents/mm_core_f1/USER_AMENDMENT_20261008_zh.md",
+    "local_file": "evidence/E04_USER_AMENDMENT_20261008_zh.md",
+    "sha256": "6018882bd359b0a6f559d2a5a4c7b47af96e11aa61e1e9bbda88cf0ca96a7892"
+  },
+  {
+    "label": "E05",
+    "original_archive_path": "audit/manifests/COMMON_START.json",
+    "local_file": "evidence/E05_COMMON_START.json",
+    "sha256": "9caa9767bcaa9db59a3c5956cfe6f42af963e810cd14efa56e930e1d741cc054"
+  },
+  {
+    "label": "E06",
+    "original_archive_path": "audit/manifests/PROCESSOR_ENVIRONMENT_LOCK.json",
+    "local_file": "evidence/E06_PROCESSOR_ENVIRONMENT_LOCK.json",
+    "sha256": "b56d83150882cbf8036a1080f76bcf90e8bb3a558b5f1da9ad7d41fa3f5776c8"
+  }
+]

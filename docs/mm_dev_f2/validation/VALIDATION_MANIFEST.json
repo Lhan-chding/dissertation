@@ -1,0 +1,92 @@
+{
+  "status": "PREDEPLOYMENT_CPU_VALIDATION_PASS",
+  "real_9B_cuda_engine": "NOT_YET_EXECUTED",
+  "scientific_completion": "NOT_YET_EXECUTED",
+  "counts": {
+    "cpu_tests_passed": 696,
+    "cpu_subtests_passed": 163,
+    "original_reference_tests_passed": 66
+  },
+  "files": [
+    {
+      "path": "ALLOCATION_PERMISSION.json",
+      "bytes": 1006,
+      "sha256": "26a0561a5c6fda4cebfd01f7f84da8d8d6216a70519f0447a7cae52e84954982"
+    },
+    {
+      "path": "ENGINE_RELEASE_CHECKLIST_zh.md",
+      "bytes": 9352,
+      "sha256": "bb95c3d4543f76ff0870e2ea74adf6859dd6a265a172e70a9dded42b75865b07"
+    },
+    {
+      "path": "FINAL_EXECUTABLE_SOURCE_HASHES.json",
+      "bytes": 3497,
+      "sha256": "bdc3daea8fe72f38f124652cbd10339e0ef1d4bce030b9c972976a58d599b08e"
+    },
+    {
+      "path": "FINAL_INDEPENDENT_TRAINER_REVIEW.json",
+      "bytes": 9246,
+      "sha256": "3e96fbb867a7b56dd47ec00208b05716d551b8a8aaaeee0fc1aab9395f402a98"
+    },
+    {
+      "path": "FINAL_LOCAL_CHECKS.json",
+      "bytes": 1016,
+      "sha256": "49c18178cf9482fbd5976d66c049cf0b2f36181e331344c940ff8584a9eae554"
+    },
+    {
+      "path": "FINAL_PYTEST.log",
+      "bytes": 834,
+      "sha256": "8f114c43a2b3e4e19b0b2e39c43ad260c0bae22d296b6ff2fc635f96abd37c27"
+    },
+    {
+      "path": "FINAL_RUFF_CHECK.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "FINAL_RUFF_FORMAT.log",
+      "bytes": 27,
+      "sha256": "b986f72e5fee819de817a2ad854b3a4e9213a918167065625b92daa2002369f0"
+    },
+    {
+      "path": "INDEPENDENT_CONTRACT_REVIEW.json",
+      "bytes": 3975,
+      "sha256": "e12d66b763ca1544f0eb4169a7a786883818169e422caa3d1ed8be00c0825a79"
+    },
+    {
+      "path": "INDEPENDENT_EQUAL_WEIGHT_CHECK.json",
+      "bytes": 560,
+      "sha256": "71bfc30aea87f422b9f03a84ec47e5a8a6338579fdeb1764a8bd083205fa5c82"
+    },
+    {
+      "path": "INDEPENDENT_STREAM_SEED_CHECKS.json",
+      "bytes": 3922,
+      "sha256": "7c0c9d4830b5c0bad8937a7c47bed305ddf6f781edee74ca3d95e4f90c9713a7"
+    },
+    {
+      "path": "INDEPENDENT_TRAINER_REVIEW.json",
+      "bytes": 7003,
+      "sha256": "3829ee7b6439fcd96151f3e0619a0661b900e7bf016e027173cf93b59514c1a2"
+    },
+    {
+      "path": "LIVE_MODEL_IDENTITY_20261009.json",
+      "bytes": 2492,
+      "sha256": "3dea12d75f259913785ad2b795be664fe7f29266730dbc4458bd0fc9afb409fa"
+    },
+    {
+      "path": "PREDEPLOYMENT_EVIDENCE_INDEX.json",
+      "bytes": 1853,
+      "sha256": "13fc0b2519fec146e9e623223fd05d02b5489a2f638f7214b6c69cc22253d84b"
+    },
+    {
+      "path": "VISUAL_REVIEW.json",
+      "bytes": 2115,
+      "sha256": "0e95fce2cf505e6c50005a82042ff8970358054bc37fff582d4298d4c438cdaa"
+    },
+    {
+      "path": "VISUAL_REVIEW_ENGINE_PREP.json",
+      "bytes": 15937,
+      "sha256": "45a96dd706f77e2d3a43eda8ddb8106c7c05d130e174c643cdc767114754ca4e"
+    }
+  ]
+}

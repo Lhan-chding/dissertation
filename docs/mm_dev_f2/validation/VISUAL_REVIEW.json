@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "plan_id": "MM-DEV-F2-QWEN35-9B-20261009",
+  "data_materialization_sha256": "27239335111d3beaede035f10903cc9e92d91535a7bd73dc35f49a65bc3e80bb",
+  "model_outcomes_available": false,
+  "reviewed_contact_sheets": {
+    "data/qa/original_engine_f2_first_last.png": "d5940ce62bb5eec377688a567079fbfa02f6cd16cdc0a164a635b30f42da886e",
+    "data/qa/original_prep_first_last.png": "b7587885c17108286ae7cf7e55dad1fa64344f20f3c2fb0b63055aafb0714d9e",
+    "data/qa/original_continue_first_last.png": "12527b6ab6fd16d039c265b24313b44908b906734f5714e1a4c66a104e6993e2",
+    "data/qa/original_probe_first_last.png": "309b095e12825705b4afc7151ddc9705dc093f6a62412cceee3baf2c5ca7ad65",
+    "data/qa/original_dev_eval_first_last.png": "e3b06428ac66c9c329d158176e25c85ca4679d04451b63891d2ccf6b8360f4d9",
+    "data/qa/processed_engine_f2_first_last.png": "d1468499ea4c010e9f0d57113af4754d0c11443906849d40d6cf6446305fb081",
+    "data/qa/processed_prep_first_last.png": "8645a48fa3f7e2eb850a31d47d55630ae42c81137ef82f3a368cc182ed5258c4",
+    "data/qa/processed_continue_first_last.png": "4022e343f477f6ec52d320989bcb61bd810e5dc0088c10e0883f82379385a01c",
+    "data/qa/processed_probe_first_last.png": "972e2e11b3a7337f3256a1cec29e0e88a6455df52af41ecb8440c01728edd2d6",
+    "data/qa/processed_dev_eval_first_last.png": "6c1c2d5f67a08645fec864d03f28285bed8cfcbb0b62ff9799c0a11ec4576455"
+  },
+  "full_resolution_selection": "all five pools first/last registered root, both chart types, Vhigh Dhigh; 20 original and 20 processed PNGs",
+  "review_evidence": {
+    "transfer/PRIMARY_VISUAL_REVIEW.json": "b6041cd68e3fecb878fc8102f873a66b7c6fb9b0b35805dd6a37b8659c33d54d",
+    "transfer/VISUAL_REVIEW_ENGINE_PREP.json": "45a96dd706f77e2d3a43eda8ddb8106c7c05d130e174c643cdc767114754ca4e"
+  },
+  "reviewed_full_resolution_count": 40,
+  "contact_sheet_samples": 160,
+  "observations": [
+    "No clipping or processor degradation observed in reviewed charts.",
+    "Natural close/overlapping series retained; no model outcomes used to change any source or image."
+  ],
+  "verified_at": "2026-10-09T04:47:07.966494+00:00"
+}

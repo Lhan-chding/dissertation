@@ -1,0 +1,19 @@
+{
+  "common_lora_initialization": 6836382373189252249,
+  "preparation_master_seeds": [
+    3509815867821782651,
+    2808912230178417534
+  ],
+  "future_master_seeds": [
+    691346289789482254,
+    5685518181638526340
+  ],
+  "source_master_seed": 2059609038722156316,
+  "engine_master_seed": 8932404210382745746,
+  "bootstrap_seed": 4311636612181726188,
+  "definition": "int.from_bytes(SHA256(UTF8 canonical JSON [PLAN_ID, namespace, *parts])[:8], big) & (2^63-1)",
+  "canonical_json": "ensure_ascii=False, sort_keys=True, separators=(comma,colon)",
+  "rollout_seed": "seed(rollout, phase, repeat, question_id, within_question_sample_index); excludes action/state/worker/job IDs",
+  "evaluation_seed": "seed(evaluation, panel, question_id, sample_index); shared across states/endpoints",
+  "request_id": "digest([PLAN_ID,phase,run_id,logical_step,slot,sample_index,checkpoint_hash])"
+}

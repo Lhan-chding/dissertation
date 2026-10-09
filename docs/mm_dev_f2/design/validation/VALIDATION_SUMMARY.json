@@ -1,0 +1,23 @@
+{
+  "plan_id": "MM-DEV-F2-QWEN35-9B-20261009",
+  "status": "LOCAL_REFERENCE_VALIDATION_PASS",
+  "source_archive_pass": true,
+  "independent_raw_response_recount": 1536,
+  "raw_scoring_mismatches": 0,
+  "cpu_tests_run": 66,
+  "cpu_tests_passed": 66,
+  "new_numeric_sources": 584,
+  "new_root_families": 292,
+  "fixed_schedules": 9,
+  "scientific_training_runs": 34,
+  "scientific_logical_updates": 1088,
+  "scientific_planned_completions": 669696,
+  "no_gpu_runtime_cutoff": true,
+  "new_model_calls": 0,
+  "new_images_rendered": 0,
+  "new_scientific_trainings_executed": 0,
+  "server_jobs_changed": 0,
+  "server_checkpoint_bodies_verified": false,
+  "production_trainer_implemented_by_this_package": false,
+  "note": "Local tests and static manifests do not certify GPU execution; Codex1 must implement and pass the explicit F2 engineering gate."
+}

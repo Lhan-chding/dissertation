@@ -1,0 +1,13 @@
+{
+  "status": "CPU_EQUAL_SEQUENCE_WEIGHT_VERIFIED",
+  "model": "tiny local torch fixture; no model download/GPU",
+  "effective_sequences": 192,
+  "completion_tokens": 222,
+  "one_active_sequence_tokens": 31,
+  "other_zero_advantage_sequences": 191,
+  "expected_policy_weight": 0.005208333333333333,
+  "actual_adam_first_moment_matches_1_over_192_gradient": true,
+  "max_abs_gradient_error": 5.820766091346741e-11,
+  "policy_gradient_norm": 0.0043986563221215524,
+  "source_training_sha256": "2c90e97c3dbce1114cff2caf2c3e7d149a5e5b22ac994be0894bda14aae27533"
+}

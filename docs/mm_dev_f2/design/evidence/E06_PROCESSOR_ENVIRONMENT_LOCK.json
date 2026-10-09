@@ -1,0 +1,82 @@
+{
+  "cpu_threads": 2,
+  "cuda_context_initialized": false,
+  "linear_kernel_identity": {
+    "all_fast_kernels_available": false,
+    "hub_kernels_enabled": false,
+    "hub_kernels_environment": "YES",
+    "optional_package_versions": {
+      "causal-conv1d": null,
+      "fla-core": null,
+      "flash-linear-attention": null,
+      "kernels": null,
+      "mamba-ssm": null,
+      "triton": "3.7.1"
+    },
+    "selected_callables": {
+      "causal_conv1d_fn": null,
+      "causal_conv1d_update": {
+        "module": "transformers.models.qwen3_5.modeling_qwen3_5",
+        "qualified_name": "torch_causal_conv1d_update",
+        "source_sha256": "0e2cd8dc50885b2701d26b116c585eedcdc62a24080ec34345af55b963126ded"
+      },
+      "chunk_gated_delta_rule": {
+        "module": "transformers.models.qwen3_5.modeling_qwen3_5",
+        "qualified_name": "torch_chunk_gated_delta_rule",
+        "source_sha256": "0e2cd8dc50885b2701d26b116c585eedcdc62a24080ec34345af55b963126ded"
+      },
+      "forward": {
+        "module": "transformers.integrations.accelerate",
+        "qualified_name": "force_accelerate_hooks.<locals>.decorator.<locals>.wrapped",
+        "source_sha256": "cf009d9c5db85a6a73a03e2152f7156f4100b0b75b187db7b2d3fee74b95ff1b"
+      },
+      "norm_class": {
+        "module": "transformers.models.qwen3_5.modeling_qwen3_5",
+        "qualified_name": "Qwen3_5RMSNormGated",
+        "source_sha256": "0e2cd8dc50885b2701d26b116c585eedcdc62a24080ec34345af55b963126ded"
+      },
+      "recurrent_gated_delta_rule": {
+        "module": "transformers.models.qwen3_5.modeling_qwen3_5",
+        "qualified_name": "torch_recurrent_gated_delta_rule",
+        "source_sha256": "0e2cd8dc50885b2701d26b116c585eedcdc62a24080ec34345af55b963126ded"
+      }
+    },
+    "unfused_prefill_activation": {
+      "module": "torch.nn.functional",
+      "qualified_name": "silu",
+      "source_sha256": "990a8b717645fa603b0dd2957b7b3ed68c5fb937fa205048c096ac8bb532510e"
+    },
+    "unfused_prefill_conv": {
+      "module": "torch.nn.modules.conv",
+      "qualified_name": "Conv1d.forward",
+      "source_sha256": "960644e52167a16ba8700badde44ebb53921dc38b1c90e379fc8a4870303fdc0"
+    }
+  },
+  "linear_kernel_identity_hash": "d621a45171656f0fc33bcf8cc85c2bf2b3a0d7bc02eee3c68e11dac05b946b29",
+  "model_weights_loaded": false,
+  "new_model_calls": 0,
+  "packages": {
+    "Pillow": "12.3.0",
+    "accelerate": "1.14.0",
+    "numpy": "2.5.2",
+    "peft": "0.19.1",
+    "safetensors": "0.8.0",
+    "tokenizers": "0.22.2",
+    "torch": "2.13.0+cu130",
+    "torchvision": "0.28.0+cu130",
+    "transformers": "5.14.1",
+    "trl": "NOT_INSTALLED"
+  },
+  "platform": "Linux-6.8.0-142-generic-x86_64-with-glibc2.39",
+  "preflight_code_sha256": "92497fb432374f698f6a1e3306eca20b20198001d6df0dc1be4ab573a356bb51",
+  "processor_class": "transformers.models.qwen2_vl.image_processing_qwen2_vl.Qwen2VLImageProcessor",
+  "processor_geometry": {
+    "merge_size": 2,
+    "patch_size": 16,
+    "temporal_patch_size": 2
+  },
+  "processor_preprocess_source_sha256": "81522940a5e5e25f6b33cf20cf27296339289862eb0144aea638d6e35ad618c4",
+  "python": "3.12.14",
+  "torch_cuda_build": "13.0",
+  "vl_runtime_code_sha256": "32cb4d1684d0fa58112119dcad97d778ec6858f950441324177b639f16edacd4"
+}

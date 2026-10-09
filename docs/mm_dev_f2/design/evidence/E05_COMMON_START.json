@@ -1,0 +1,9 @@
+{
+  "adapter_path": null,
+  "base_report_hash": "d3e9342c9140f24af6724aea62c13fa332a2996ea30e6b5e7e6521b558a31ac1",
+  "model_hash": "921fb7dbfce93fbcf3ab0ccc4fe63bdc41269e7b6ce8f8d6fc315c042fee5511",
+  "pre_freeze_hash": "92a6a3ee30da2562c861ccd0b59ca16d3690e56e5f5473ddc46eef28d27ecd2a",
+  "source": "verified_base_format_pass",
+  "status": "VERIFIED",
+  "untouched_base": true
+}

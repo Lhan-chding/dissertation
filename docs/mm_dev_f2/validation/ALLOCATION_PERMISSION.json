@@ -1,0 +1,21 @@
+{
+  "plan_id": "MM-DEV-F2-QWEN35-9B-20261009",
+  "authorized": true,
+  "human_authorization": "2026-10-09 user: 完整执行吧",
+  "run_root": "/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009",
+  "owner": "varun024",
+  "account": "rose",
+  "qos": "override-limits-but-killable",
+  "partition": "cluster02",
+  "gres": "gpu:pro6000:1",
+  "gpus_per_worker": 1,
+  "max_gpus_concurrent": 5,
+  "verified_at": "2026-10-09T04:42:35.030863+00:00",
+  "evidence_path": "transfer/ALLOCATION_PERMISSION_EVIDENCE_20261009.json",
+  "evidence_sha256": "5c2ad41b101ac29fc66125180b074fe4bdc2ed31abcfaa8d6b4f0c0f6372bde0",
+  "gpu_hours_policy": "ACCOUNTING_ONLY",
+  "max_allocated_gpu_hours": null,
+  "max_wallclock_hours_for_study": null,
+  "lease_note": "Cluster max per allocation 3 days; resume identical science state under a new allocation without a cumulative stop gate.",
+  "qos_selection_reason": "This permitted QoS has five free submission slots. Other studies on rose and soujanya are preserved."
+}

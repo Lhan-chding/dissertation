@@ -1,0 +1,77 @@
+{
+  "status": "CPU_CONTRACT_VERIFIED_WITH_REFERENCE_NUMERIC_EDGE_CASE",
+  "created_at": "2026-10-09T04:23:39.977353+00:00",
+  "plan_id": "MM-DEV-F2-QWEN35-9B-20261009",
+  "scope": "Read-only original document/config/reference audit and authorized CPU allocation-gate regression only.",
+  "gpu_jobs_submitted": 0,
+  "model_calls": 0,
+  "server_checkpoint_loads": 0,
+  "engine_gate_passed": false,
+  "scientific_release_ready": false,
+  "identity": {
+    "plan_sha256": "2e20d757d32493cde1f27184b40e15b7077df594a8c95ae0e4ad2705df5515bb",
+    "bundle_manifest_sha256": "c45a10fd8745c93f9d732eec34e98e6d7c74692baf19b82e1f9a650e71e292a1",
+    "main_plan_sha256": "bb90d91f033793bbef623cc5d77170269e372001777efb077d06b3933464c330"
+  },
+  "verification": {
+    "bundle_files_verified": 36,
+    "reference_cpu_tests_passed": 66,
+    "rebuilt_manifest_files_byte_equal": 13,
+    "rebuilt_plan_json_byte_equal": true,
+    "rebuilt_evidence_files_byte_equal": 7,
+    "historical_recount_byte_equal": true,
+    "numeric_sources": 584,
+    "roots": 292,
+    "schedule_streams": 9,
+    "unique_rollout_seed_identities_audited": 29952,
+    "unintended_seed_collisions": 0,
+    "common_allocation_cpu_tests_passed": 50,
+    "combined_common_orchestration_cpu_tests_passed": 66,
+    "ruff_scoped_files": "PASS"
+  },
+  "reference_findings": [
+    {
+      "id": "F2-REFERENCE-001",
+      "severity": "required production regression; target failure not demonstrated",
+      "source": "reference/plan_contract.py:64-69",
+      "finding": "Exact constant 5/6 rewards produce eight nonzero 1.110223012299205e-08 advantages on Python 3.9.6 because constant detection occurs after floating-point centering.",
+      "target_python": "3.12.14",
+      "target_result": "All nine attainable constants returned exact zeros.",
+      "reference_test_gap": "Original 66 tests do not cover all attainable non-binary constant rewards.",
+      "required_resolution": "Keep design bytes unchanged. Production exact Fraction all-equal check before float normalization plus nine constant regressions."
+    }
+  ],
+  "no_scientific_contract_quantity_conflict_found": true,
+  "implementation_notes": [
+    "F2 qid uses -dl/-dh/-vl/-vh; old generator naming cannot replace registered streams.",
+    "F2 canonical compact JSON seed differs from old MM-CORE derive_seed; preserve intentional action/state pairing and model-specific request identity.",
+    "Continuation reference/utility anchor is each exact prepared starting state, never universal base/S0.",
+    "Actual sampler old logprobs and 192 equal sequence weights require real production-engine evidence; original CPU reference tests cannot certify these.",
+    "Release must bind complete expected evidence and counts, not status-only markers."
+  ],
+  "allocation_implementation": {
+    "owned_changes": [
+      "src/mm_dev/common.py::verify_live_allocation",
+      "src/mm_dev/common.py::require_allocation",
+      "tests/mm_dev/test_common.py allocation tests"
+    ],
+    "checks": [
+      "actual generic and typed Pro6000 allocation exactly one",
+      "single node",
+      "Requeue=0 and Restarts=0",
+      "immutable registration digest and permission/freeze binding",
+      "worker task/attempt/hash binding",
+      "unique job/task/attempt including unresolved duplicate task",
+      "immutable intent permits legitimate pre-sbatch null job id",
+      "live name/comment and allocation projection equal immutable intent"
+    ],
+    "coordination": "orchestration worker confirmed projection job_name/comment and sbatch --nodes=1 --no-requeue",
+    "commit_and_push": "delegated to parent integration; not performed by reviewer"
+  },
+  "limitations": [
+    "No actual F2 GPU ENGINE evidence exists in this review.",
+    "No scientific path, PROBE or DEV_EVAL completion is inferred.",
+    "Historical server-only checkpoint claims are taken only as identified prior evidence, not reloaded here."
+  ],
+  "checklist": "ENGINE_RELEASE_CHECKLIST_zh.md"
+}

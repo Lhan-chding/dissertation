@@ -1,0 +1,44 @@
+{
+  "checked_at": "2026-10-09T04:50:57.642447+00:00",
+  "results": [
+    {
+      "command": [
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/ruff",
+        "check",
+        "--no-cache",
+        "src/mm_dev",
+        "scripts/mm_dev",
+        "tests/mm_dev"
+      ],
+      "exit_code": 0,
+      "log": "FINAL_RUFF_CHECK.log"
+    },
+    {
+      "command": [
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/ruff",
+        "format",
+        "--check",
+        "--no-cache",
+        "src/mm_dev",
+        "scripts/mm_dev",
+        "tests/mm_dev"
+      ],
+      "exit_code": 0,
+      "log": "FINAL_RUFF_FORMAT.log"
+    },
+    {
+      "command": [
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python",
+        "-m",
+        "pytest",
+        "--import-mode=importlib",
+        "tests/mm_core",
+        "tests/mm_dev",
+        "-q"
+      ],
+      "exit_code": 0,
+      "log": "FINAL_PYTEST.log"
+    }
+  ],
+  "scope": "CPU tests, not actual CUDA qualification"
+}

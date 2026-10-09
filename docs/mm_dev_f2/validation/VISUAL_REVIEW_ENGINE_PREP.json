@@ -1,0 +1,294 @@
+{
+  "status": "PASS_SCOPED_VISUAL_REVIEW",
+  "created_at": "2026-10-09T04:45:37.549244+00:00",
+  "plan_id": "MM-DEV-F2-QWEN35-9B-20261009",
+  "review_method": "Assistant actually inspected the 8 processed PNG files and their 8 original PNG counterparts via view_image at full available resolution; independent Pillow read verified dimensions and decoded RGB equality. No experimental model inference.",
+  "scope": {
+    "pools": [
+      "ENGINE_F2",
+      "PREP"
+    ],
+    "roots": {
+      "ENGINE_F2": [
+        0,
+        3
+      ],
+      "PREP": [
+        0,
+        31
+      ]
+    },
+    "conditions": [
+      "Vhigh",
+      "Dhigh"
+    ],
+    "charts": [
+      "grouped_bar",
+      "line"
+    ],
+    "processed_images_viewed": 8,
+    "original_images_viewed": 8
+  },
+  "binding": {
+    "selection_path": "/Users/louis/.codex/worktrees/mm-dev-f2-20261009/dissertation-ntu/artifacts/mm_dev_f2_processor_review_20261009/FULL_RESOLUTION_SELECTION.json",
+    "selection_sha256": "2b7fb4f2d757f9cfba4581973dfcec5e572a254b36e7f9149c90b00bd1570056",
+    "materialization_receipt_path": "/Users/louis/.codex/worktrees/mm-dev-f2-20261009/dissertation-ntu/artifacts/mm_dev_f2_processor_review_20261009/DATA_MATERIALIZATION.json",
+    "materialization_receipt_sha256": "27239335111d3beaede035f10903cc9e92d91535a7bd73dc35f49a65bc3e80bb"
+  },
+  "all_pairs_size": [
+    896,
+    672
+  ],
+  "all_pairs_rgb_pixel_equal": true,
+  "summary_zh": "所查看8对图片的轴、类别、图例、单位、网格和目标位置完整；未观察到裁切、处理引入的模糊或目标歧义。自然相邻/重合标记如各图记录所列，均已存在于原图，全部保留。",
+  "images": [
+    {
+      "name": "mmdev-f2-engine_f2-r0000-dh-vh-grouped_bar.png",
+      "size": [
+        896,
+        672
+      ],
+      "original_size": [
+        896,
+        672
+      ],
+      "processed_sha256": "8c1feeea52529a06258866a70a7f2dc4745b30055bd8f83dfc931834151103cc",
+      "original_sha256": "69c552fcac1598293ac8663a6e76e51c215844db0615ec7378e1ea938d689da2",
+      "rgb_pixel_sha256": "413e1a4f318481e6aca21cb3e1d02b474520d514af31b713b1acd470f4c2906d",
+      "rgb_pixel_equal": true,
+      "pool": "ENGINE_F2",
+      "root_index": 0,
+      "V": "high",
+      "D": "high",
+      "chart_type": "grouped_bar",
+      "processed_path": "/Users/louis/.codex/worktrees/mm-dev-f2-20261009/dissertation-ntu/artifacts/mm_dev_f2_processor_review_20261009/full_resolution/mmdev-f2-engine_f2-r0000-dh-vh-grouped_bar.png",
+      "original_path": "/Users/louis/.codex/worktrees/mm-dev-f2-20261009/dissertation-ntu/artifacts/mm_dev_f2_local_20261009/data/images/mmdev-f2-engine_f2-r0000-dh-vh-grouped_bar.png",
+      "actually_viewed_processed_with_view_image": true,
+      "actually_viewed_original_with_view_image": true,
+      "observed_axes_and_labels": "Y轴0–100与每10单位主标签、细整数网格可见；Cedar/Birch/Maple/Oak/Pine/Willow六类名称完整；Amber/Teal/Violet/Coral图例完整；标题、count/1 unit说明及底部说明可读。",
+      "cropping_or_missing_content_observed": false,
+      "processed_specific_degradation_observed": false,
+      "registered_target_positions_distinguishable": true,
+      "visual_observation_zh": "完整四系列分组条形；Cedar蓝/橙柱高度接近但横向分离清楚，目标蓝色Amber柱在Cedar/Maple/Pine均可辨。",
+      "status": "PASS_SCOPED_VISUAL_REVIEW"
+    },
+    {
+      "name": "mmdev-f2-engine_f2-r0000-dh-vh-line.png",
+      "size": [
+        896,
+        672
+      ],
+      "original_size": [
+        896,
+        672
+      ],
+      "processed_sha256": "42c10b2299ffd3368bffb71171da834c4dc35857e721c0045415162d7983f2a6",
+      "original_sha256": "0f1ff42f35608b7364a606adfa9430e3a1b0f09c458d75c4fb908317c4c37e2a",
+      "rgb_pixel_sha256": "03336a2dcef639dfcb7f5a7fe87ad20134a1d624bd8a199ed87080260b130c67",
+      "rgb_pixel_equal": true,
+      "pool": "ENGINE_F2",
+      "root_index": 0,
+      "V": "high",
+      "D": "high",
+      "chart_type": "line",
+      "processed_path": "/Users/louis/.codex/worktrees/mm-dev-f2-20261009/dissertation-ntu/artifacts/mm_dev_f2_processor_review_20261009/full_resolution/mmdev-f2-engine_f2-r0000-dh-vh-line.png",
+      "original_path": "/Users/louis/.codex/worktrees/mm-dev-f2-20261009/dissertation-ntu/artifacts/mm_dev_f2_local_20261009/data/images/mmdev-f2-engine_f2-r0000-dh-vh-line.png",
+      "actually_viewed_processed_with_view_image": true,
+      "actually_viewed_original_with_view_image": true,
+      "observed_axes_and_labels": "Y轴0–100与每10单位主标签、细整数网格可见；Cedar/Birch/Maple/Oak/Pine/Willow六类名称完整；Amber/Teal/Violet/Coral图例完整；标题、count/1 unit说明及底部说明可读。",
+      "cropping_or_missing_content_observed": false,
+      "processed_specific_degradation_observed": false,
+      "registered_target_positions_distinguishable": true,
+      "visual_observation_zh": "Cedar蓝圆与橙方相邻约一个整数网格；白色轮廓与形状仍可区分。目标蓝色在Maple/Pine独立可见。交叉折线没有掩盖轴标签。",
+      "status": "PASS_SCOPED_VISUAL_REVIEW"
+    },
+    {
+      "name": "mmdev-f2-engine_f2-r0003-dh-vh-grouped_bar.png",
+      "size": [
+        896,
+        672
+      ],
+      "original_size": [
+        896,
+        672
+      ],
+      "processed_sha256": "17f7f684018e9c02bdb616c987b5cb2a1a2dc3f0d6e9ef251908bcdff055f90f",
+      "original_sha256": "aaddeef9c5a5aabe6b5d4b093884613d51a34ce68e44bf59fbd9c122a449ed29",
+      "rgb_pixel_sha256": "973130fd7cc0e39b4b93a13e3000f7e33f2c3961c50722e3c7dfa103288f165f",
+      "rgb_pixel_equal": true,
+      "pool": "ENGINE_F2",
+      "root_index": 3,
+      "V": "high",
+      "D": "high",
+      "chart_type": "grouped_bar",
+      "processed_path": "/Users/louis/.codex/worktrees/mm-dev-f2-20261009/dissertation-ntu/artifacts/mm_dev_f2_processor_review_20261009/full_resolution/mmdev-f2-engine_f2-r0003-dh-vh-grouped_bar.png",
+      "original_path": "/Users/louis/.codex/worktrees/mm-dev-f2-20261009/dissertation-ntu/artifacts/mm_dev_f2_local_20261009/data/images/mmdev-f2-engine_f2-r0003-dh-vh-grouped_bar.png",
+      "actually_viewed_processed_with_view_image": true,
+      "actually_viewed_original_with_view_image": true,
+      "observed_axes_and_labels": "Y轴0–100与每10单位主标签、细整数网格可见；Cedar/Birch/Maple/Oak/Pine/Willow六类名称完整；Amber/Teal/Violet/Coral图例完整；标题、count/1 unit说明及底部说明可读。",
+      "cropping_or_missing_content_observed": false,
+      "processed_specific_degradation_observed": false,
+      "registered_target_positions_distinguishable": true,
+      "visual_observation_zh": "全部24柱可辨；高柱低柱均处于轴框内，目标蓝色三位置清楚，低值紫/青柱不触底裁切。",
+      "status": "PASS_SCOPED_VISUAL_REVIEW"
+    },
+    {
+      "name": "mmdev-f2-engine_f2-r0003-dh-vh-line.png",
+      "size": [
+        896,
+        672
+      ],
+      "original_size": [
+        896,
+        672
+      ],
+      "processed_sha256": "e6994eaf23891b4ce87336ff8e5cb1de512c23937c76a089eb28672101104ea7",
+      "original_sha256": "6d8573b5eafd202b0c82a471577c930160af2e874a003729f6b152d55bb1ed52",
+      "rgb_pixel_sha256": "5b777458f9e6209689533cc3c6dffaf8aa754c9e8ff6276866d32da6b070aa74",
+      "rgb_pixel_equal": true,
+      "pool": "ENGINE_F2",
+      "root_index": 3,
+      "V": "high",
+      "D": "high",
+      "chart_type": "line",
+      "processed_path": "/Users/louis/.codex/worktrees/mm-dev-f2-20261009/dissertation-ntu/artifacts/mm_dev_f2_processor_review_20261009/full_resolution/mmdev-f2-engine_f2-r0003-dh-vh-line.png",
+      "original_path": "/Users/louis/.codex/worktrees/mm-dev-f2-20261009/dissertation-ntu/artifacts/mm_dev_f2_local_20261009/data/images/mmdev-f2-engine_f2-r0003-dh-vh-line.png",
+      "actually_viewed_processed_with_view_image": true,
+      "actually_viewed_original_with_view_image": true,
+      "observed_axes_and_labels": "Y轴0–100与每10单位主标签、细整数网格可见；Cedar/Birch/Maple/Oak/Pine/Willow六类名称完整；Amber/Teal/Violet/Coral图例完整；标题、count/1 unit说明及底部说明可读。",
+      "cropping_or_missing_content_observed": false,
+      "processed_specific_degradation_observed": false,
+      "registered_target_positions_distinguishable": true,
+      "visual_observation_zh": "Maple橙/紫点重合或相邻，目标蓝色点在较低位置清楚。Pine蓝/橙/青点较近但各标记可辨；没有处理新增遮挡。",
+      "status": "PASS_SCOPED_VISUAL_REVIEW"
+    },
+    {
+      "name": "mmdev-f2-prep-r0000-dh-vh-grouped_bar.png",
+      "size": [
+        896,
+        672
+      ],
+      "original_size": [
+        896,
+        672
+      ],
+      "processed_sha256": "b57ce48bc86918db978ab78a6fed53998760157e2a90de3cb780064f9134e90e",
+      "original_sha256": "fb84b819e8a9258a18b1e746bd12f17686161131acfde74199ffa203c8161ded",
+      "rgb_pixel_sha256": "ed01614ed063f6bd9476b0f452dcde77091d672524cbc0e342384178b9ca1f46",
+      "rgb_pixel_equal": true,
+      "pool": "PREP",
+      "root_index": 0,
+      "V": "high",
+      "D": "high",
+      "chart_type": "grouped_bar",
+      "processed_path": "/Users/louis/.codex/worktrees/mm-dev-f2-20261009/dissertation-ntu/artifacts/mm_dev_f2_processor_review_20261009/full_resolution/mmdev-f2-prep-r0000-dh-vh-grouped_bar.png",
+      "original_path": "/Users/louis/.codex/worktrees/mm-dev-f2-20261009/dissertation-ntu/artifacts/mm_dev_f2_local_20261009/data/images/mmdev-f2-prep-r0000-dh-vh-grouped_bar.png",
+      "actually_viewed_processed_with_view_image": true,
+      "actually_viewed_original_with_view_image": true,
+      "observed_axes_and_labels": "Y轴0–100与每10单位主标签、细整数网格可见；Cedar/Birch/Maple/Oak/Pine/Willow六类名称完整；Amber/Teal/Violet/Coral图例完整；标题、count/1 unit说明及底部说明可读。",
+      "cropping_or_missing_content_observed": false,
+      "processed_specific_degradation_observed": false,
+      "registered_target_positions_distinguishable": true,
+      "visual_observation_zh": "条形四组颜色和六类别全部清楚；Cedar蓝/紫、Pine蓝/青高度接近但条形分列，目标蓝色柱可读。",
+      "status": "PASS_SCOPED_VISUAL_REVIEW"
+    },
+    {
+      "name": "mmdev-f2-prep-r0000-dh-vh-line.png",
+      "size": [
+        896,
+        672
+      ],
+      "original_size": [
+        896,
+        672
+      ],
+      "processed_sha256": "e8d2e216ce596e51e10f42eb5bf62205a428191e5a05ae877be64dd10dd3a25f",
+      "original_sha256": "20a3e00d45c5172970c8aa5fa8f62d9c92400e0952c5cc2d2f4f85b5a0c35b3e",
+      "rgb_pixel_sha256": "7fe67cea2187394f1ee37036f76aa2ed21ac09749d55bf0858bd36d22964ef11",
+      "rgb_pixel_equal": true,
+      "pool": "PREP",
+      "root_index": 0,
+      "V": "high",
+      "D": "high",
+      "chart_type": "line",
+      "processed_path": "/Users/louis/.codex/worktrees/mm-dev-f2-20261009/dissertation-ntu/artifacts/mm_dev_f2_processor_review_20261009/full_resolution/mmdev-f2-prep-r0000-dh-vh-line.png",
+      "original_path": "/Users/louis/.codex/worktrees/mm-dev-f2-20261009/dissertation-ntu/artifacts/mm_dev_f2_local_20261009/data/images/mmdev-f2-prep-r0000-dh-vh-line.png",
+      "actually_viewed_processed_with_view_image": true,
+      "actually_viewed_original_with_view_image": true,
+      "observed_axes_and_labels": "Y轴0–100与每10单位主标签、细整数网格可见；Cedar/Birch/Maple/Oak/Pine/Willow六类名称完整；Amber/Teal/Violet/Coral图例完整；标题、count/1 unit说明及底部说明可读。",
+      "cropping_or_missing_content_observed": false,
+      "processed_specific_degradation_observed": false,
+      "registered_target_positions_distinguishable": true,
+      "visual_observation_zh": "Cedar蓝圆/紫三角、Pine蓝圆/青菱形相邻约一个整数网格，完整分辨率可区分。Maple蓝色目标最低点清楚。",
+      "status": "PASS_SCOPED_VISUAL_REVIEW"
+    },
+    {
+      "name": "mmdev-f2-prep-r0031-dh-vh-grouped_bar.png",
+      "size": [
+        896,
+        672
+      ],
+      "original_size": [
+        896,
+        672
+      ],
+      "processed_sha256": "d5494bfbc44e0b5f2ea50465f476a2542faff8f43147331174f31866af13e59f",
+      "original_sha256": "b8f45dc7711f8ed826e3a3358c0e623c422703566da9636e30a2e5b0dc67b77b",
+      "rgb_pixel_sha256": "a625d047f227381a0e2fb6ea66aa007c645c6f28f9c1e3d78706eabff692a31b",
+      "rgb_pixel_equal": true,
+      "pool": "PREP",
+      "root_index": 31,
+      "V": "high",
+      "D": "high",
+      "chart_type": "grouped_bar",
+      "processed_path": "/Users/louis/.codex/worktrees/mm-dev-f2-20261009/dissertation-ntu/artifacts/mm_dev_f2_processor_review_20261009/full_resolution/mmdev-f2-prep-r0031-dh-vh-grouped_bar.png",
+      "original_path": "/Users/louis/.codex/worktrees/mm-dev-f2-20261009/dissertation-ntu/artifacts/mm_dev_f2_local_20261009/data/images/mmdev-f2-prep-r0031-dh-vh-grouped_bar.png",
+      "actually_viewed_processed_with_view_image": true,
+      "actually_viewed_original_with_view_image": true,
+      "observed_axes_and_labels": "Y轴0–100与每10单位主标签、细整数网格可见；Cedar/Birch/Maple/Oak/Pine/Willow六类名称完整；Amber/Teal/Violet/Coral图例完整；标题、count/1 unit说明及底部说明可读。",
+      "cropping_or_missing_content_observed": false,
+      "processed_specific_degradation_observed": false,
+      "registered_target_positions_distinguishable": true,
+      "visual_observation_zh": "Oak蓝橙柱同高但横向分开；Cedar/Maple/Pine的目标蓝柱边界完整，图例和全部轴标签完整。",
+      "status": "PASS_SCOPED_VISUAL_REVIEW"
+    },
+    {
+      "name": "mmdev-f2-prep-r0031-dh-vh-line.png",
+      "size": [
+        896,
+        672
+      ],
+      "original_size": [
+        896,
+        672
+      ],
+      "processed_sha256": "9dbb6f7b8133ee7d9a2e050a4536cecfd95b29cafaebbf332c872fdbdb4fbc7c",
+      "original_sha256": "6adf1e806e767c0d0803b86c598800f0dd5b1b6913923dbe8aec026a759f6a23",
+      "rgb_pixel_sha256": "35071758c40fb73a47a4690aca3a5c76ebce33df2dc82c12a90f7d4d11ac1b30",
+      "rgb_pixel_equal": true,
+      "pool": "PREP",
+      "root_index": 31,
+      "V": "high",
+      "D": "high",
+      "chart_type": "line",
+      "processed_path": "/Users/louis/.codex/worktrees/mm-dev-f2-20261009/dissertation-ntu/artifacts/mm_dev_f2_processor_review_20261009/full_resolution/mmdev-f2-prep-r0031-dh-vh-line.png",
+      "original_path": "/Users/louis/.codex/worktrees/mm-dev-f2-20261009/dissertation-ntu/artifacts/mm_dev_f2_local_20261009/data/images/mmdev-f2-prep-r0031-dh-vh-line.png",
+      "actually_viewed_processed_with_view_image": true,
+      "actually_viewed_original_with_view_image": true,
+      "observed_axes_and_labels": "Y轴0–100与每10单位主标签、细整数网格可见；Cedar/Birch/Maple/Oak/Pine/Willow六类名称完整；Amber/Teal/Violet/Coral图例完整；标题、count/1 unit说明及底部说明可读。",
+      "cropping_or_missing_content_observed": false,
+      "processed_specific_degradation_observed": false,
+      "registered_target_positions_distinguishable": true,
+      "visual_observation_zh": "Oak蓝橙点重合，属非目标类别且原图同样如此；Cedar蓝/紫相邻、Maple橙/紫相邻，但Cedar/Maple/Pine的目标蓝点可辨。保留该图，未据视觉拥挤改题或排除。",
+      "status": "PASS_SCOPED_VISUAL_REVIEW"
+    }
+  ],
+  "images_modified_or_excluded": 0,
+  "experimental_model_calls": 0,
+  "training_updates": 0,
+  "limits": [
+    "Only the stated 8 sample pairs were visually reviewed; this is not a visual certification of every image in 2336.",
+    "CONTINUE, PROBE and DEV_EVAL review belongs to the parent agent and is outside this receipt.",
+    "No model-answer quality, experimental outcome or scientific release is inferred."
+  ]
+}
