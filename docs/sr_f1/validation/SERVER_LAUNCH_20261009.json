@@ -1,0 +1,89 @@
+{
+  "checked_at": "2026-10-09T11:07:51.194550+00:00",
+  "run_root": "/projects/_ssd/varunssd/louis-ssvc/sr_f1_20261009",
+  "source_commit": "c3001259acfb2347180bf9f9d62227c3997a3e40",
+  "queue": {
+    "returncode": 0,
+    "stdout": "195415|srf1-6e5d1d89e034-COMMON_START_attempt0000|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-12|0:45\n195409|srf1-controller|RUNNING|override-limits-but-killable|N/A|cpu-2|2:06\n",
+    "stderr": ""
+  },
+  "accounting": {
+    "returncode": 0,
+    "stdout": "195389|CANCELLED by 295800338|00:00:00|0:0\n195408|COMPLETED|00:06:10|0:0\n195408.batch|COMPLETED|00:06:10|0:0\n195408.extern|COMPLETED|00:06:10|0:0\n195409|RUNNING|00:02:06|0:0\n195409.batch|RUNNING|00:02:06|0:0\n195409.extern|RUNNING|00:02:06|0:0\n",
+    "stderr": ""
+  },
+  "EXECUTION_FREEZE.json": {
+    "status": "FROZEN",
+    "source_commit": "c3001259acfb2347180bf9f9d62227c3997a3e40",
+    "source_tree_sha256": "8ee738c603765c65f867c3bd87162a8fef2db38d033a2dcee81b13d72229bc3d",
+    "server_utc_time": "2026-10-09T11:05:11.489046+00:00",
+    "model_revision_verified": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+    "common_start_status": "PENDING_GPU_FORMAT_AND_ENGINE",
+    "sha256": "b84d6d1ad26761cb07e3db706be0b8ca2b4e4a8d436473b0ad3e964a81f463f9"
+  },
+  "PROCESSOR_PREFLIGHT.json": {
+    "status": "PASS",
+    "processor_status": "ACTUAL_CPU_PROCESSOR_VERIFIED",
+    "question_count": 4800,
+    "chart_image_count": 2890,
+    "blank_image_verified": true,
+    "no_crop_pixel_reconstruction_verified": true,
+    "model_calls": 0,
+    "model_weights_loaded": false,
+    "sha256": "6748da50b98741690f5ca60ec0c22f0c79872139f1784ab59ed55e9b826b3fec"
+  },
+  "MODEL_ENVIRONMENT_IDENTITY.json": {
+    "status": "ACTUAL_CPU_VERIFIED",
+    "model_revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+    "model_weights_hash": "921fb7dbfce93fbcf3ab0ccc4fe63bdc41269e7b6ce8f8d6fc315c042fee5511",
+    "model_weights_loaded": false,
+    "model_calls": 0,
+    "sha256": "63da6ff65e2fb19aeb083ead497eb9b73aa216b7c1b0b0f0e34b6195d89a50a7"
+  },
+  "external/chartqa/IDENTITY.json": {
+    "status": "AVAILABLE_VERIFIED",
+    "question_count": 2500,
+    "dataset_revision": "af8b6f5c08c95085271561c2a3f9d15f2b5a9031",
+    "manifest_sha256": "ded2f16aae000a9856104accd28e8bd0061b53aa04aba1aefbd04a0d1be42df4",
+    "sha256": "27bf8fdb14749a7ef0091d6f15979dada6bc94dcaa5f3bcfc572ae674065ef94"
+  },
+  "orchestration/STATE.json": {
+    "phase": "S1_VERIFIED",
+    "test_sealed": true,
+    "technical_blockers": [],
+    "technical_failed_runs": [],
+    "capacity": {
+      "max_submit_jobs_per_user": 5,
+      "project_reserved_gpus": 0,
+      "status": "AVAILABLE",
+      "submission_slots_used": 0
+    },
+    "sha256": "24640cd0f20e689aa9e0e8f48cfaed97bd214c5a2aa6aaf940242a0a7d0698f7",
+    "tasks": {
+      "COMMON_START": {
+        "status": "ACTIVE",
+        "job_ids": [
+          "195415"
+        ],
+        "blocker": null
+      }
+    }
+  },
+  "preflight_log_tail": [
+    "  \"model_calls\": 0,",
+    "  \"model_weights_loaded\": false",
+    "}",
+    "{\"author_repository_revision\":\"044eabfc306abfe9340c5741f0093aefc5973d06\",\"dataset\":\"ahmed-masry/ChartQA\",\"dataset_revision\":\"af8b6f5c08c95085271561c2a3f9d15f2b5a9031\",\"manifest_sha256\":\"ded2f16aae000a9856104accd28e8bd0061b53aa04aba1aefbd04a0d1be42df4\",\"pretrained_contamination_excluded\":false,\"question_count\":2500,\"status\":\"AVAILABLE_VERIFIED\",\"subset_counts\":{\"augmented\":1250,\"human\":1250},\"tables_or_annotations_as_input\":false,\"unique_image_count\":1509}",
+    "{\"status\": \"FROZEN\", \"root\": \"/projects/_ssd/varunssd/louis-ssvc/sr_f1_20261009\"}",
+    "{",
+    "  \"status\": \"PASS\",",
+    "  \"freeze_status\": \"FROZEN\",",
+    "  \"gpu_engine_required\": false",
+    "}"
+  ],
+  "controller_log_tail": [
+    "{\"capacity\": {\"max_submit_jobs_per_user\": 5, \"project_reserved_gpus\": 0, \"status\": \"AVAILABLE\", \"submission_slots_used\": 0}, \"phase\": \"S1_VERIFIED\", \"technical_blockers\": [], \"technical_failed_runs\": [], \"test_sealed\": true}",
+    "{\"capacity\": {\"max_submit_jobs_per_user\": 5, \"project_reserved_gpus\": 0, \"status\": \"AVAILABLE\", \"submission_slots_used\": 0}, \"phase\": \"S1_VERIFIED\", \"technical_blockers\": [], \"technical_failed_runs\": [], \"test_sealed\": true}",
+    "{\"capacity\": {\"max_submit_jobs_per_user\": 5, \"project_reserved_gpus\": 0, \"status\": \"AVAILABLE\", \"submission_slots_used\": 0}, \"phase\": \"S1_VERIFIED\", \"technical_blockers\": [], \"technical_failed_runs\": [], \"test_sealed\": true}"
+  ]
+}

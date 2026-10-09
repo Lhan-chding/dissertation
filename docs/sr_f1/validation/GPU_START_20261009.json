@@ -1,0 +1,25 @@
+{
+  "time": "2026-10-09T11:09:49.384120+00:00",
+  "COMMON_ZERO_LORA.json": {
+    "status": "VERIFIED",
+    "zero_output_exact": true,
+    "initialization_seed": 2026100901,
+    "model_id": "SRF1_COMMON_ZERO"
+  },
+  "format_raw_file_count": 2,
+  "actual_attempt_accounting": {
+    "extra_forward_sequences": 2,
+    "completion_attempts": 3,
+    "generated_tokens": 476
+  },
+  "state": {
+    "phase": "S1_VERIFIED",
+    "test_sealed": true,
+    "technical_blockers": [],
+    "technical_failed_runs": []
+  },
+  "active_tasks": {
+    "COMMON_START": "ACTIVE"
+  },
+  "log_tail": "[transformers] The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d\n\nLoading weights:   0%|          | 0/760 [00:00<?, ?it/s]\nLoading weights:  46%|\u2588\u2588\u2588\u2588\u258b     | 352/760 [00:00<00:00, 3510.01it/s]\nLoading weights:  93%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258e| 704/760 [00:00<00:00, 2377.55it/s]\nLoading weights: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 760/760 [00:00<00:00, 2457.27it/s]\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n"
+}

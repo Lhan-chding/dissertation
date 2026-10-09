@@ -1,0 +1,207 @@
+{
+  "status": "PASS",
+  "processor_status": "ACTUAL_CPU_PROCESSOR_VERIFIED",
+  "question_count": 4800,
+  "chart_image_count": 2890,
+  "blank_image_verified": true,
+  "no_crop_pixel_reconstruction_verified": true,
+  "isolation": {
+    "checks": {
+      "image_pixels_change": true,
+      "image_tensor_changes": true,
+      "path_not_in_prompt": true,
+      "qid_not_in_prompt": true,
+      "question_pixels_invariant": true,
+      "question_tensor_changes": true,
+      "sidecar_tensor_invariant": true
+    },
+    "hashes": {
+      "base": "6a00a84bea8eed30cd3eedb8f84f01bfccba77c74584b58a5cd1f2745f1407d3",
+      "blank_image": "c02b23ea51a2efa30d5e9b77c9c47f95717b582e75cead3b861eb3acdeeaf99d",
+      "question": "479471cd897280882c468595d93019e32e8a51e0cc23d10a15faaddeb5025dd1",
+      "sidecar": "6a00a84bea8eed30cd3eedb8f84f01bfccba77c74584b58a5cd1f2745f1407d3"
+    },
+    "status": "PASS"
+  },
+  "readability": {
+    "labels": [
+      {
+        "font_size": 18,
+        "height_pixels": 13,
+        "text": "0"
+      },
+      {
+        "font_size": 18,
+        "height_pixels": 13,
+        "text": "10"
+      },
+      {
+        "font_size": 18,
+        "height_pixels": 13,
+        "text": "20"
+      },
+      {
+        "font_size": 18,
+        "height_pixels": 13,
+        "text": "30"
+      },
+      {
+        "font_size": 18,
+        "height_pixels": 13,
+        "text": "40"
+      },
+      {
+        "font_size": 18,
+        "height_pixels": 13,
+        "text": "50"
+      },
+      {
+        "font_size": 18,
+        "height_pixels": 13,
+        "text": "60"
+      },
+      {
+        "font_size": 18,
+        "height_pixels": 13,
+        "text": "70"
+      },
+      {
+        "font_size": 18,
+        "height_pixels": 13,
+        "text": "80"
+      },
+      {
+        "font_size": 18,
+        "height_pixels": 13,
+        "text": "90"
+      },
+      {
+        "font_size": 18,
+        "height_pixels": 13,
+        "text": "100"
+      },
+      {
+        "font_size": 18,
+        "height_pixels": 14,
+        "text": "Unit: count"
+      },
+      {
+        "font_size": 18,
+        "height_pixels": 18,
+        "text": "Category order: January, February, March, April"
+      },
+      {
+        "font_size": 22,
+        "height_pixels": 22,
+        "text": "Alpha"
+      },
+      {
+        "font_size": 22,
+        "height_pixels": 16,
+        "text": "Beta"
+      },
+      {
+        "font_size": 22,
+        "height_pixels": 16,
+        "text": "Gamma"
+      },
+      {
+        "font_size": 22,
+        "height_pixels": 21,
+        "text": "January"
+      },
+      {
+        "font_size": 22,
+        "height_pixels": 22,
+        "text": "February"
+      },
+      {
+        "font_size": 22,
+        "height_pixels": 17,
+        "text": "March"
+      },
+      {
+        "font_size": 22,
+        "height_pixels": 22,
+        "text": "April"
+      },
+      {
+        "font_size": 27,
+        "height_pixels": 27,
+        "text": "Quarterly quantities"
+      }
+    ],
+    "minimum_label_height_pixels": 13
+  },
+  "model_calls": 0,
+  "model_weights_loaded": false,
+  "cuda_context_initialized": false,
+  "processor_preflight_sha256": "6748da50b98741690f5ca60ec0c22f0c79872139f1784ab59ed55e9b826b3fec",
+  "execution_freeze_sha256": "b84d6d1ad26761cb07e3db706be0b8ca2b4e4a8d436473b0ad3e964a81f463f9",
+  "qa_contact_sheets": [
+    {
+      "path": "qa/contact_000.png",
+      "sha256": "45dcb54e53968b08f25323bd0460d874a0a3314713309d4a0cec16e6a9029425"
+    },
+    {
+      "path": "qa/contact_001.png",
+      "sha256": "8070a49cecd9cf4daf5303f9a25f2440dea423bb39a0b1173ba7e4728d8dee80"
+    },
+    {
+      "path": "qa/contact_002.png",
+      "sha256": "6bae772d92d0f16523f62bb6ca01a06c0e5f6ccce6f3bb384ab6e042c2f0755e"
+    },
+    {
+      "path": "qa/contact_003.png",
+      "sha256": "e220767cbaf58f4a9c413efd54e94709ef18d4249ca889cc120dbd0afcb762eb"
+    },
+    {
+      "path": "qa/contact_004.png",
+      "sha256": "6532862e1cc155b6a255ffae72dfcf1ab25a56584bfc3208a2f74d518b63cf14"
+    },
+    {
+      "path": "qa/contact_005.png",
+      "sha256": "af90ca3b9d7c8091852a8753d972adb9466282a191d1cabab5c116039a814749"
+    },
+    {
+      "path": "qa/contact_006.png",
+      "sha256": "1a48651b53ec51e6a4d356e666fa383209c0f1dd6b556ca60b272258b4d6e4e8"
+    },
+    {
+      "path": "qa/contact_007.png",
+      "sha256": "03c7d3b2b01bb1cd4258dd78e86ae73aab040dbcc43a88b412f1435d8720b109"
+    },
+    {
+      "path": "qa/contact_008.png",
+      "sha256": "363427790bf74b99b78231e3f98a37074859b4dfb051f5c441726485536acd34"
+    },
+    {
+      "path": "qa/contact_009.png",
+      "sha256": "99c98e033ac5427ae789cf4d559f8f1fa263910bc3bb04d629f721c4c0b81b35"
+    },
+    {
+      "path": "qa/contact_010.png",
+      "sha256": "2296ec4d17e30ecae2e899cb65476eec6aa2345ada399c93bea3688567addc32"
+    },
+    {
+      "path": "qa/contact_011.png",
+      "sha256": "ac3a52db1f4490caa1e0391be5ae46f202a195d7611058f05d43ba59ef2dd01d"
+    },
+    {
+      "path": "qa/contact_012.png",
+      "sha256": "0a1752dc282347763fa399694cd15f12f28539cc6b1a0c1b08e8fcf62a46a0ff"
+    },
+    {
+      "path": "qa/contact_013.png",
+      "sha256": "38332c5e1d844aa47ac94b5536873855139f931b4c78d62dd20ee6e477c965df"
+    }
+  ],
+  "visually_inspected_contact_sheets": [
+    "qa/contact_000.png",
+    "qa/contact_006.png",
+    "qa/contact_011.png",
+    "qa/contact_013.png"
+  ],
+  "visual_observation": "Inspected ENGINE/TRAIN/ID/composition/render sample contact sheets. Legends, axes, category labels and title are visible; no clipping observed. Native reconstruction and all 4800 routes independently passed numeric gates; visual review is sampling only.",
+  "checked_at": "2026-10-09T11:07:50.422285+00:00"
+}
