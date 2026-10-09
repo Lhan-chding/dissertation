@@ -363,6 +363,66 @@ class SlurmBackend:
     def release(self, job_id):
         return self._run(["scontrol", "release", str(job_id)])
 
+    def submission_capacity(self, permission):
+        """Count every submitted job for this user/QoS, including CPU controllers."""
+        limits = self._run(
+            [
+                "sacctmgr",
+                "--noheader",
+                "--parsable2",
+                "show",
+                "qos",
+                "where",
+                "name=" + permission["qos"],
+                "format=Name%256,MaxSubmitJobsPU",
+            ]
+        )
+        # Expand pending arrays so a compressed array cannot be mistaken for one slot.
+        # Do not filter by account, study name, dependency, held state, or GPU request.
+        queue = self._run(
+            [
+                "squeue",
+                "--noheader",
+                "--array",
+                "--states=all",
+                "--user",
+                permission["owner"],
+                "--format=%i|%u|%q|%T",
+            ]
+        )
+        receipts = {"sacctmgr": limits, "squeue": queue}
+        if limits["returncode"] != 0 or queue["returncode"] != 0:
+            raise RuntimeError("SLURM_CAPACITY_QUERY_FAILED:" + json.dumps(receipts))
+        rows = [line.split("|") for line in limits["stdout"].splitlines() if line.strip()]
+        for values in rows:
+            if len(values) == 3 and values[-1] == "":
+                values.pop()
+        require(
+            len(rows) == 1 and len(rows[0]) == 2 and rows[0][0].strip() == permission["qos"],
+            "INVALID_QOS_CAPACITY_ROW",
+        )
+        limit = rows[0][1].strip()
+        require(
+            limit in {"", "UNLIMITED"} or re.fullmatch(r"[0-9]+", limit), "INVALID_QOS_SUBMIT_LIMIT"
+        )
+        maximum = None if limit in {"", "UNLIMITED"} else int(limit)
+        job_ids = []
+        for line in queue["stdout"].splitlines():
+            values = [value.strip() for value in line.split("|")]
+            require(len(values) == 4 and all(values), "INVALID_CAPACITY_QUEUE_ROW")
+            job_id, owner, qos, _state = values
+            require(owner == permission["owner"], "CAPACITY_QUEUE_OWNER_MISMATCH")
+            if qos == permission["qos"]:
+                require(job_id not in job_ids, "DUPLICATE_CAPACITY_QUEUE_JOB")
+                job_ids.append(job_id)
+        return {
+            "owner": permission["owner"],
+            "qos": permission["qos"],
+            "max_submit_jobs_per_user": maximum,
+            "queued_job_ids": job_ids,
+            "receipts": receipts,
+        }
+
     def observe(self, attempt, permission):
         queue = self._run(
             ["squeue", "--noheader", "--user", permission["owner"], "--format=%i|%j|%u|%T|%k|%r"]
@@ -792,11 +852,65 @@ class Scheduler:
             attempt["status"] = task_state["status"] = "UNKNOWN"
             self._save("OBSERVATION_UNKNOWN", task_id=task_id, error=repr(exc))
 
+    def _submission_slot_available(self, task_id):
+        permission = self.registration["permission"]
+        evidence = {"time": now(), "task_id": task_id}
+        try:
+            capacity = self.backend.submission_capacity(permission)
+            evidence["observation"] = capacity
+            maximum, queued = capacity["max_submit_jobs_per_user"], capacity["queued_job_ids"]
+            require(
+                capacity["owner"] == permission["owner"]
+                and capacity["qos"] == permission["qos"]
+                and (maximum is None or (type(maximum) is int and maximum >= 0))
+                and isinstance(queued, list)
+                and all(isinstance(j, str) and j for j in queued)
+                and len(queued) == len(set(queued)),
+                "INVALID_SUBMISSION_CAPACITY",
+            )
+            # A just-submitted or ambiguous job may not appear in squeue yet. Preserve
+            # its slot until positive accounting, without double-counting visible IDs.
+            reserved = [
+                attempt["attempt_id"]
+                for task in self.state["tasks"].values()
+                for attempt in task["attempts"]
+                if "accounting" not in attempt and attempt.get("job_id") not in queued
+            ]
+            used = len(queued) + len(reserved)
+            available = maximum is None or used < maximum
+            summary = {
+                "status": "AVAILABLE" if available else "WAITING",
+                "owner": permission["owner"],
+                "qos": permission["qos"],
+                "max_submit_jobs_per_user": maximum,
+                "queued_jobs": len(queued),
+                "reserved_attempt_ids": reserved,
+                "available_slots": None if maximum is None else max(0, maximum - used),
+            }
+        except Exception as exc:
+            available = False
+            summary = {"status": "UNKNOWN", "error": repr(exc)}
+        evidence["summary"] = summary
+        relative = f"observations/capacity/{self.sequence + 1:08d}.json"
+        atomic_json(self.folder / relative, evidence, exclusive=True)
+        self.state["submission_capacity"] = {
+            **summary,
+            "time": evidence["time"],
+            "observation": {
+                "path": "orchestration/" + relative,
+                "sha256": file_hash(self.folder / relative),
+            },
+        }
+        self._save("SUBMISSION_CAPACITY_" + summary["status"], task_id=task_id)
+        return available
+
     def _submit(self, task_id):
         task_state, task = self.state["tasks"][task_id], self.registration["tasks"][task_id]
         require(task_state["status"] in {"WAITING", "RETRYABLE"}, "DUPLICATE_SUBMISSION_GUARD")
         if task_id != "ENGINE_F2":
             self.verify_execution(self.plan, self.root, require_engine=True)
+        if not self._submission_slot_available(task_id):
+            return False
         attempt_id = f"{task_id}_attempt{len(task_state['attempts']):04d}"
         registration_hash = digest(self.registration)
         prefix = registration_hash[:12]
@@ -899,6 +1013,7 @@ class Scheduler:
         except Exception as exc:
             attempt["status"] = task_state["status"] = "UNKNOWN"
             self._save("SUBMISSION_UNKNOWN_NO_RETRY", task_id=task_id, error=repr(exc))
+        return True
 
     def _phase(self):
         tasks = self.state["tasks"]
@@ -1026,7 +1141,10 @@ class Scheduler:
                     continue
                 if task["phase"] in {"ANALYZE", "RELEASE"}:
                     self._final_gpu_accounting()
-                self._submit(task_id)
+                if not self._submit(task_id):
+                    # Every task uses the same registered QoS; defer until the next
+                    # fresh observation, keeping the scientific task state unchanged.
+                    break
             self._phase()
             self._save("TICK_FINISHED")
             return copy.deepcopy(self.state)

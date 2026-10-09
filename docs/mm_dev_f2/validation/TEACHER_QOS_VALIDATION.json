@@ -1,0 +1,64 @@
+{
+  "checked_at": "2026-10-09T05:37:54.947579+00:00",
+  "scope": "Teacher QoS capacity handling and CPU successor reservation; scientific plan/model/data/recipe unchanged",
+  "full_regression": {
+    "passed": 706,
+    "subtests_passed": 175,
+    "seconds": 142.16
+  },
+  "ruff_check": "PASS",
+  "ruff_format_check": "PASS",
+  "ruff_files": 36,
+  "source_files": 35,
+  "changed_frozen_source_files": [
+    "src/mm_dev/orchestration.py"
+  ],
+  "source_hashes": {
+    "src/mm_core/__init__.py": "696a58cb29a087f10fb285e957c0e36ac1ade28d3b435669c63c094d6e8a5aed",
+    "src/mm_core/allocations.py": "5e2965398caa03d507ae570c39e9c97d5de4b2683a971c13853e4821f5a4b8dd",
+    "src/mm_core/contracts.py": "1e3fe2d9c7a36256a38099721669470882bc56f454dc10868349c55fbdadb965",
+    "src/mm_core/execution.py": "53237171ecc2d31188d53c13080755d8d26e753b048265bab8b582fa935592cc",
+    "src/mm_core/generator.py": "fd188556668a165498032544fd90316c515e04b449fa44f80b509f8dc505984d",
+    "src/mm_core/inventory.py": "73e74f94e663d0e5c10c0c321d7bebd0052ccd16c7a48cfbc2daf77a0a47f85f",
+    "src/mm_core/nonzero_recovery.py": "e0b719e414fbf3ddeaa67eb65f99a8ba417a89b57bb86e57dd32c4641d993cbc",
+    "src/mm_core/release.py": "34a6b7422395be6a11b4671eff36237acc1f570cfac9509652e5f24954c3fed0",
+    "src/mm_core/runner.py": "263aa122d544c6e08c8b9a2f0b326e4525e6d88d7d563c9c5b360401f02b9b1f",
+    "src/mm_core/scoring.py": "d7b14f9669660199b7306eb8652e17c9d30a426186fba66e7972c69a111cf409",
+    "src/mm_core/training.py": "43b027fb35710411d28a0309bd926c2b23172de4ae5fe7022dc2c66fb8377af2",
+    "src/mm_core/vl_runtime.py": "32cb4d1684d0fa58112119dcad97d778ec6858f950441324177b639f16edacd4",
+    "src/mm_dev/__init__.py": "9f24078f8b9ea1a32cc0b0d0936025c5b8287d883ac7bbe42972286ddd3b551a",
+    "src/mm_dev/analysis.py": "b161106e1803696078d452a3a2f4a5626197af829a7efec225a47025420ca3ec",
+    "src/mm_dev/checkpoint_recount.py": "62b54a5b5a7b5fc8b9062cfb1a2975e9f36889e67ed3f9d9c72260ca203ee1bd",
+    "src/mm_dev/common.py": "9b2bcd6c7ead13d38b7d038e259dabe431b568927d68dc0e298381af469e7fb7",
+    "src/mm_dev/contract.py": "e2e095f70b3fe09c6d6321419ba66afa1f1a08d087462d589371ee029a24525b",
+    "src/mm_dev/data.py": "a2b868031251dbb4719618fe822be5dcad219a50421db5c117a14a49de2ce3fa",
+    "src/mm_dev/engine.py": "2e5e3415fe02dd0584c88d32cc34ace1ab5f18cab22b6d997ee68aec24a4cbb9",
+    "src/mm_dev/evaluation.py": "107763b04c321b4da88a5de39b1f5cd8b6e941df7cd3a105f13a5fbc8ce29ee1",
+    "src/mm_dev/freeze.py": "b6c505d2d5d867889fce2378d8493b57c7245275ade3fd012856fe721fcfe9d5",
+    "src/mm_dev/orchestration.py": "821ef28a5c038465c967d1c7e927a6c66c7c77353245caad1ae124fee2fff6a2",
+    "src/mm_dev/release.py": "ae8f690b68e1e8a7f0b3db018b6f056d93459cedde23636037a22c923df10d17",
+    "src/mm_dev/runtime.py": "4e110ad0c7c809b6e156406025d65c69f1007e3a5cd4b6c0c55303bcaaa5c357",
+    "src/mm_dev/training.py": "ca8ef973a86b9314837f4961f4b173f36bb83f4b7b9ad4ff826596fecf123fc9",
+    "scripts/mm_dev/materialize_data.py": "b3044920488e582b64f7a92a96ef6e98ed258358af920e929834fc70b6b43080",
+    "scripts/mm_dev/run_engine_f2.py": "b2d5a64563f79cf8286f8805f6e866873c1dfc271ef4432e4685f3f73dbc4521",
+    "scripts/mm_dev/run_eval.py": "179f9efaaa437f0a277c97be4038c4992f5dcb0320f6f474e7bc41db210772ab",
+    "scripts/mm_dev/run_probe.py": "ae46d01879522c2e035e0baea254100d21a7c2aa335d8eaf1686460e168ac8df",
+    "scripts/mm_dev/run_train_path.py": "8ae453a497af2a0c3a8af64fe4e4e03b7aeed6de744659c4266107625a1e44d5",
+    "scripts/mm_dev/score_and_analyze.py": "599a4bdaee3c782cf7faacc8c597f7897a8aef718f0489f6278afc1f7923e9a6",
+    "scripts/mm_dev/submit_matrix.py": "0a137e54aaba872de9a6d5828504a1a36a6385b01bf655ff078802f63c232bc3",
+    "scripts/mm_dev/validate_freeze.py": "cea9d7406580dcf5b2f7dd4e42cce4b9101a801bd013bd1c3ae331b27eeba431",
+    "scripts/mm_dev/verify_engine_checkpoints.py": "fb8f6643ec828c95747c7be396011c90fa0e0bbcad163967bcea8b69d8f88557",
+    "scripts/mm_dev/verify_release.py": "900826c71ba7162bdad97bbac638c72fca5c65d0a906979dd25c5fe90a111805"
+  },
+  "old_queue_archive": {
+    "sha256": "c1dc663c775f977e75fdb06a43efc698f63a4da012150d9009ab6f9692821f63",
+    "files_read_to_eof": 195,
+    "safe_unique_paths": "PASS",
+    "cancelled_jobs": [
+      "194700",
+      "194701"
+    ],
+    "controller_completed": "194699",
+    "old_gpu_seconds": 0
+  }
+}

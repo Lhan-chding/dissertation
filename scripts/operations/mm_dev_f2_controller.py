@@ -17,8 +17,8 @@ import sys
 import threading
 from pathlib import Path
 
-ROOT = Path("/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009")
-CODE = ROOT / "code_c65b406204e0"
+ROOT = Path("/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos")
+CODE = ROOT / "code"
 PYTHON = "/projects/varunssd/louis-ssvc/envs/ssvc-py312/bin/python"
 
 
@@ -27,6 +27,22 @@ def should_finish(state, live):
         bool(state.get("technical_blockers"))
         and not any(t["status"] in live for t in state["tasks"].values())
     )
+
+
+def wait_for_successor_slot(backend, permission, stop, report):
+    """Reserve the next CPU lease before science can consume its submission slot."""
+    while not stop.is_set():
+        try:
+            capacity = backend.submission_capacity(permission)
+            maximum = capacity["max_submit_jobs_per_user"]
+            if maximum is None or len(capacity["queued_job_ids"]) < maximum:
+                report({"status": "SUCCESSOR_SLOT_AVAILABLE", "capacity": capacity})
+                return True
+            report({"status": "WAITING_FOR_SUCCESSOR_SLOT", "capacity": capacity})
+        except Exception as error:
+            report({"status": "SUCCESSOR_CAPACITY_UNKNOWN", "error": repr(error)})
+        stop.wait(30)
+    return False
 
 
 def main():
@@ -55,7 +71,11 @@ def main():
         measurement_shards=1,
     )
     with process_lease(ROOT / "orchestration/controller_process.lock"):
-        state = scheduler.tick()
+        # Loading verifies the journal and immutable registration without submitting
+        # science. A fresh successor must take its slot before the first tick.
+        with process_lease(scheduler.folder / "controller.lock"):
+            scheduler._load()
+        state = scheduler.state
         if should_finish(state, LIVE):
             print(
                 json.dumps(
@@ -68,6 +88,13 @@ def main():
                 flush=True,
             )
             return 0 if state["phase"] == "RELEASED" else 2
+        if not wait_for_successor_slot(
+            scheduler.backend,
+            scheduler.registration["permission"],
+            stop,
+            lambda receipt: print(json.dumps(receipt), flush=True),
+        ):
+            return 0
         command = [
             "sbatch",
             "--parsable",
@@ -106,7 +133,7 @@ def main():
         if not re.fullmatch(r"[0-9]+", successor):
             raise RuntimeError("Unknown successor submission; do not resubmit blindly")
         print(json.dumps({"controller_job": job_id, "successor_job": successor}), flush=True)
-        while not stop.wait(30):
+        while not stop.is_set():
             state = scheduler.tick()
             print(
                 json.dumps(
@@ -121,6 +148,7 @@ def main():
             )
             if should_finish(state, LIVE):
                 return 0 if state["phase"] == "RELEASED" else 2
+            stop.wait(30)
         print(
             json.dumps(
                 {"controller_job": job_id, "status": "LEASE_HANDOFF", "successor_job": successor}

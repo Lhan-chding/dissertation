@@ -42,6 +42,28 @@ class SimulatedSlurm:
         self.ambiguous_next = False
         self.query_outage = False
         self.maximum_live_gpus = 0
+        self.submit_limit = 5
+        self.external_jobs = 0
+        self.capacity_outage = False
+        self.hide_queued_jobs = False
+
+    def submission_capacity(self, permission):
+        if self.capacity_outage:
+            raise TimeoutError("capacity query unavailable")
+        jobs = [str(9000 + index) for index in range(self.external_jobs)]
+        if not self.hide_queued_jobs:
+            jobs += [
+                job["job_id"]
+                for job in self.jobs.values()
+                if job["state"] in {"PENDING", "RUNNING"}
+            ]
+        return {
+            "owner": permission["owner"],
+            "qos": permission["qos"],
+            "max_submit_jobs_per_user": self.submit_limit,
+            "queued_job_ids": jobs,
+            "receipts": {"simulated": True},
+        }
 
     def submit(self, command):
         row = json.loads((self.root / "orchestration/journal.jsonl").read_text().splitlines()[-1])
@@ -478,6 +500,164 @@ class OrchestrationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "DUPLICATE_SUBMISSION_GUARD"):
             self.scheduler._submit("ENGINE_F2")
         self.assertEqual(self.backend.submissions, ["ENGINE_F2"])
+
+    def test_full_qos_capacity_defers_without_attempt_then_resumes_after_restart(self):
+        # Two controllers plus three unrelated jobs consume all five submitted slots.
+        self.backend.external_jobs = 5
+        state = self.scheduler.tick()
+        self.assertEqual(state["tasks"]["ENGINE_F2"], {"status": "WAITING", "attempts": []})
+        self.assertEqual(state["technical_blockers"], [])
+        self.assertEqual(state["submission_capacity"]["status"], "WAITING")
+        self.assertEqual(state["submission_capacity"]["available_slots"], 0)
+        self.assertEqual(self.backend.submissions, [])
+        self.assertFalse((self.root / "orchestration/attempts").exists())
+        receipt = read_json(self.root / state["submission_capacity"]["observation"]["path"])
+        self.assertEqual(len(receipt["observation"]["queued_job_ids"]), 5)
+        self.backend.external_jobs = 4
+        state = self.new_scheduler().tick()
+        self.assertEqual(state["tasks"]["ENGINE_F2"]["status"], "REGISTERED")
+        self.assertEqual(self.backend.submissions, ["ENGINE_F2"])
+
+    def test_controller_and_unrelated_jobs_reduce_same_tick_gpu_submissions(self):
+        self.scheduler.tick()
+        self.finish("ENGINE_F2")
+        self.backend.external_jobs = 3
+        state = self.scheduler.tick()
+        self.assertEqual(len(self.backend.submissions), 3)  # Engine plus two new workers.
+        self.assertEqual(state["submission_capacity"]["queued_jobs"], 5)
+        self.assertEqual(state["submission_capacity"]["status"], "WAITING")
+        self.assertEqual(state["technical_blockers"], [])
+        self.assertEqual(state["tasks"]["prep_A_1"]["status"], "WAITING")
+
+    def test_capacity_query_failure_preserves_waiting_and_recovers(self):
+        self.backend.capacity_outage = True
+        state = self.scheduler.tick()
+        self.assertEqual(state["tasks"]["ENGINE_F2"]["status"], "WAITING")
+        self.assertEqual(state["submission_capacity"]["status"], "UNKNOWN")
+        self.assertEqual(state["technical_blockers"], [])
+        self.assertEqual(self.backend.submissions, [])
+        self.backend.capacity_outage = False
+        self.scheduler.tick()
+        self.assertEqual(self.backend.submissions, ["ENGINE_F2"])
+
+    def test_missing_queue_rows_do_not_free_unaccounted_submission_slots(self):
+        self.scheduler.tick()
+        self.finish("ENGINE_F2")
+        self.backend.external_jobs = 3
+        self.backend.hide_queued_jobs = True
+        state = self.scheduler.tick()
+        self.assertEqual(len(self.backend.submissions), 3)
+        capacity = state["submission_capacity"]
+        self.assertEqual(capacity["queued_jobs"], 3)
+        self.assertEqual(len(capacity["reserved_attempt_ids"]), 2)
+        self.assertEqual(capacity["available_slots"], 0)
+
+    def test_full_capacity_preserves_retryable_task_until_slot_frees(self):
+        self.scheduler.tick()
+        self.finish("ENGINE_F2")
+        self.backend.external_jobs = 3
+        self.scheduler.tick()
+        self.finish("prep_A_0", terminal="TIMEOUT", marker=False, checkpoint=True)
+        self.backend.external_jobs = 4
+        state = self.scheduler.tick()
+        self.assertEqual(state["tasks"]["prep_A_0"]["status"], "RETRYABLE")
+        self.assertEqual(self.backend.submissions.count("prep_A_0"), 1)
+        self.backend.external_jobs = 3
+        self.scheduler.tick()
+        self.assertEqual(self.backend.submissions.count("prep_A_0"), 2)
+
+    def test_capacity_backend_counts_cpu_dependencies_and_expanded_arrays_across_accounts(self):
+        permission = {"owner": "alice", "qos": "teacher"}
+        backend = SlurmBackend()
+        with patch.object(
+            backend,
+            "_run",
+            side_effect=[
+                {"returncode": 0, "stdout": "teacher|5\n", "stderr": ""},
+                {
+                    "returncode": 0,
+                    "stdout": (
+                        "1|alice|teacher|RUNNING\n2|alice|teacher|PENDING\n"
+                        "3_1|alice|teacher|PENDING\n3_2|alice|teacher|PENDING\n"
+                        "4|alice|other|RUNNING\n"
+                    ),
+                    "stderr": "",
+                },
+            ],
+        ) as commands:
+            capacity = backend.submission_capacity(permission)
+        self.assertEqual(capacity["queued_job_ids"], ["1", "2", "3_1", "3_2"])
+        self.assertEqual(capacity["max_submit_jobs_per_user"], 5)
+        queue_command = commands.call_args_list[1].args[0]
+        self.assertIn("--array", queue_command)
+        self.assertNotIn("--account", queue_command)
+
+    def test_capacity_backend_zero_unlimited_and_invalid_limits(self):
+        permission = {"owner": "alice", "qos": "teacher"}
+        backend = SlurmBackend()
+        for value, expected in [("0", 0), ("", None), ("UNLIMITED", None)]:
+            with (
+                self.subTest(limit=value),
+                patch.object(
+                    backend,
+                    "_run",
+                    side_effect=[
+                        {"returncode": 0, "stdout": f"teacher|{value}|\n", "stderr": ""},
+                        {"returncode": 0, "stdout": "", "stderr": ""},
+                    ],
+                ),
+            ):
+                self.assertEqual(
+                    backend.submission_capacity(permission)["max_submit_jobs_per_user"], expected
+                )
+        for output in ["", "other|5\n", "teacher|bad\n", "teacher|5\nteacher|5\n"]:
+            with (
+                self.subTest(output=output),
+                patch.object(
+                    backend,
+                    "_run",
+                    side_effect=[
+                        {"returncode": 0, "stdout": output, "stderr": ""},
+                        {"returncode": 0, "stdout": "", "stderr": ""},
+                    ],
+                ),
+                self.assertRaises(ValueError),
+            ):
+                backend.submission_capacity(permission)
+
+    def test_capacity_backend_query_failure_and_malformed_queue_fail_closed(self):
+        permission = {"owner": "alice", "qos": "teacher"}
+        backend = SlurmBackend()
+        for failed in [0, 1]:
+            receipts = [
+                {"returncode": 0, "stdout": "teacher|5\n", "stderr": ""},
+                {"returncode": 0, "stdout": "", "stderr": ""},
+            ]
+            receipts[failed]["returncode"] = 1
+            with (
+                self.subTest(failed=failed),
+                patch.object(backend, "_run", side_effect=receipts),
+                self.assertRaisesRegex(RuntimeError, "SLURM_CAPACITY_QUERY_FAILED"),
+            ):
+                backend.submission_capacity(permission)
+        for output in [
+            "garbled",
+            "1|bob|teacher|PENDING\n",
+            "1|alice|teacher|PENDING\n1|alice|teacher|PENDING\n",
+        ]:
+            with (
+                self.subTest(output=output),
+                patch.object(
+                    backend,
+                    "_run",
+                    side_effect=[
+                        {"returncode": 0, "stdout": "teacher|5\n", "stderr": ""},
+                        {"returncode": 0, "stdout": output, "stderr": ""},
+                    ],
+                ),
+                self.assertRaises(ValueError),
+            ):
+                backend.submission_capacity(permission)
 
     def test_backend_parses_real_column_order_blank_comment_and_skips_job_steps(self):
         self.scheduler.tick()

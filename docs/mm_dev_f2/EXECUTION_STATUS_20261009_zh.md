@@ -1,16 +1,18 @@
 # MM-DEV F2 执行状态（未完成）
 
-证据时间：2026-10-09T04:59:47.657115+00:00。这是启动状态记录，不是实验结果或最终交付。
+旧链终态证据时间：2026-10-09T05:33:21.164762+00:00。用户要求改用老师 QoS，
+原排队链已停止；新根正在重新核验冻结。这不是实验结果或最终交付。
 
 - 完整合同已获用户“完整执行吧”授权；固定的 77 个调度任务已登记。
-- 科学阶段仍为 `F2_FROZEN`。ENGINE 作业 **194700** 是 `PENDING / Priority`；
-  控制状态里的 `ACTIVE` 包括已登记的排队作业，不能解释成 GPU 已运行。
-- CPU 控制器 **194699** 在 cpu-2 运行，后继 **194701** 以 afterany 依赖排队。
-  控制器会在工程验收通过后推进固定矩阵，技术异常会保留证据并阻断相应任务。
+- 科学阶段尚未进入 ENGINE。旧 ENGINE **194700** 已 `CANCELLED`，
+  `ElapsedRaw=0`、无 `AllocTRES`，此前没有 GPU 结果或模型生成。
+- 旧 CPU 控制器 **194699** 已经信号正常退出：`COMPLETED 0:0`，2068秒；
+  后继 **194701** 已 `CANCELLED`，`ElapsedRaw=0`。三者均已离开队列。
 - 76 个后续任务尚未执行。真实 9B GRPO 非零/恢复验收、34 条科学训练、5 个 PROBE、
   35 个 DEV_EVAL、完整分析、独立复算和汇报 ZIP 均未完成。
-- 本任务未观测到技术 blocker。当前 GPU 未获分配，记账未知项保留；不能把摘要中的
-  `known_actual_gpu_seconds=0` 当作整个实验最终费用。
+- 旧排队尝试 GPU 秒数已核实为0；这不是整个实验最终费用。
+- 原冻结和原调度链完整保留。4692个数据/QA/材料化与视觉复核文件逐项比对旧冻结
+  SHA256后复制到新根；没有重新生成数据，也没有改动科学配方。
 
 ## 已完成的验证
 
@@ -28,15 +30,17 @@ scheduler、reference与RNG逐元素复算；真实GPU产物尚不存在。
 
 ## 身份与操作入口
 
-- 服务器运行根：`/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009`
+- 当前服务器运行根：`/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos`
+- 原服务器根：`/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009`，完整保留。
 - SSH别名：`eee-cluster`
-- 科学部署：运行根下 `code_c65b406204e0`
-- 科学代码commit：`c65b406204e052aa35b2c0e9915c8470d5bfb413`
-- 运维控制器commit：`8ee5e66169d75613650e907feda7ef739efdfdf1`
-- Git分支：`codex/mm-dev-f2-20261009`，两次commit均已push并核验远端SHA。
+- 新部署位置：当前根下 `code`，新冻结将记录实际已提交的代码SHA。
+- 原科学代码commit：`c65b406204e052aa35b2c0e9915c8470d5bfb413`。
+- 原运维控制器commit：`8ee5e66169d75613650e907feda7ef739efdfdf1`。
+- Git分支：`codex/mm-dev-f2-20261009`。
 - 模型：Qwen/Qwen3.5-9B，revision `c202236235762e1c871ad0ccb60c8ee5ba337b9a`
-- GPU许可：account rose，已允许的 `override-limits-but-killable` QoS，单worker一张
+- GPU许可：account rose，用户指定的 `soujanya-poria-startfund-2026-03` QoS，单worker一张
   Pro6000，本计划最多五张并行。GPU小时仅记账，无累计GPU/研究墙钟门槛。
+- 该QoS的MaxSubmitJobsPU=5，CPU控制器和依赖后继均占槽；满额时等待，不换QoS。
 - 集群覆盖内存请求：首个GPU请求实际为4 CPU/33 GiB主机内存/1 Pro6000；
   CPU控制器为2 CPU/6 GiB。后续实际分配继续以Slurm证据为准。
 
