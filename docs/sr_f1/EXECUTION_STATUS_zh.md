@@ -1,10 +1,16 @@
 # SR-F1 当前执行状态
 
-## 主机内存修复（本地完成、服务器复核待执行）
+## 当前：修复完成，ENGINE等待资源（2026-10-10 04:13:42 新加坡时间）
 
-当前按集群实际配额修复，详见 [主机内存与暂存说明](ENGINE_STORAGE_REPAIR_zh.md)。此前显存修复服务器196130已完成417项测试及6子测试；随后请求384GiB的GPU196139被集群改为33GiB。仅取消本项目196138控制器和从未启动的196139，原128条回答及完整step0均保持，恢复进程授权未消费，未进行任何优化器更新。
+实时快照 `2026-10-09T20:13:42.294334+00:00`：CPU控制器 **196155 RUNNING**；新GPU **196156（ENGINE_attempt0002）PENDING / Resources**。释放前真实 `scontrol` 核验为老师QoS `soujanya-poria-startfund-2026-03`、单张PRO6000、`highmem`、**90GiB主机内存**；已解除提交时的hold，等待原生资源调度。当前technical_blockers为空，历史blocker保留而不代表新attempt失败。详见 [恢复与实际资源回执](validation/SR_F1_1_ENGINE_STORAGE_RECOVERY_20261010.json)。
 
-新实现使用highmem单GPU（老师QoS）、CPU激活保存48GiB上限和原dtype无损磁盘暂存，释放前检查实际ReqTRES至少80GiB。完整本地验证490项测试及6子测试通过；测试记录见 [本地核验](validation/SR_F1_1_ENGINE_STORAGE_LOCAL_CHECKS_20261010.json)。本节此时尚待新源码部署、CPU复核和GPU实际验收。格式确认仍为500/512 PASS_95；科学训练未启动，TEST继续封存。
+此次处理两个技术问题：ENGINE196085在首条序列梯度forward中CUDA OOM，优化器更新0；第一次修复请求384GiB主机内存被集群强制改成33GiB，因此取消尚未启动的196139（ElapsedRaw=0、Start=None）和对应控制器196138。新实现限制CPU保存激活为48GiB、超额使用原dtype/布局无损磁盘暂存，并在每次释放GPU作业前核验highmem及实际ReqTRES至少80GiB。见 [显存故障记录](ENGINE_MEMORY_REPAIR_zh.md) 与 [集群内存/暂存修复](ENGINE_STORAGE_REPAIR_zh.md)。
+
+部署源码 **56e256893a2cb9b4984ecca2c91bbbf79eec3cbd** 已提交推送核实，157项部署文件逐项哈希一致。服务器复核196141 `COMPLETED / 0:0`：490项测试、6项子测试、冻结/修订链预检及一次性恢复授权通过；实际运行目录文件系统验证196154 `COMPLETED / 0:0`：FP32/BF16强制落盘、两次反向梯度逐位一致、校验和临时文件清理通过。下载的验证日志、回执和原冻结/修订文件逐项哈希一致。
+
+原失败日志、原源码、原始128条回答、完整step0及所有旧冻结均保留；原128条回答哈希未变，GPU层的step0一次性复用尚未消费。当前物理优化器更新0，科学attempt0，TEST继续封存。格式确认仍为500/512、PASS_95。**真实9B GPU修复后ENGINE验收尚未执行**，仍须连续4步对独立2+2通过才能进入下游科学训练，不能以CPU通过或已排队宣布完成。每30分钟监控保持ACTIVE；排队不当作训练失败，不重复提交，无关作业修改数为0。
+
+以下保留此前阶段快照；当前状态以上述时间点回执为准。
 
 ## ENGINE 显存修复历史（2026-10-10）
 
