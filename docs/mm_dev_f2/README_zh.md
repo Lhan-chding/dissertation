@@ -1,5 +1,9 @@
 # MM-DEV F2 执行记录与入口
 
+**本次实验已由用户于 2026-10-09 取消，并要求删除结果。禁止按下面的历史命令恢复。**
+最新清理状态见 [执行状态](EXECUTION_STATUS_20261009_zh.md)。以下实施说明保留作代码历史，
+不是继续运行的授权；文中提及的结果路径可能已按用户要求删除。
+
 本目录实现用户于 2026-10-09 明确授权的完整 MM-DEV F2。
 原始合同见 [CODEX1_MM_DEV_FINAL_PLAN_zh.md](design/CODEX1_MM_DEV_FINAL_PLAN_zh.md)，
 授权范围见 [EXECUTION_AUTHORIZATION_20261009_zh.md](EXECUTION_AUTHORIZATION_20261009_zh.md)。
