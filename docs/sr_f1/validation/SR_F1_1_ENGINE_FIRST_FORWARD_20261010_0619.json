@@ -1,0 +1,190 @@
+{
+  "status": "FIRST_GRADIENT_FORWARD_COMPLETE_BACKWARD_READ_ACTIVITY",
+  "observed_at": "2026-10-09T22:19:16.794104+00:00",
+  "run_root": "/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010",
+  "controller_job_id": "196225",
+  "gpu_job_id": "196227",
+  "attempt_id": "ENGINE_attempt0003",
+  "source_commit": "b48a638128bfeb6fc41201341df4902b3f2e660a",
+  "source_verified": true,
+  "original_128_preserved_hashes_unchanged": true,
+  "freeze_and_repair": {
+    "EXECUTION_FREEZE.json": {
+      "sha256": "c7cf051d3aa6fb45889324e64b08d31a008137668aff2382283e4e19f99ff2b8",
+      "status": "FROZEN"
+    },
+    "AMENDMENT.json": {
+      "sha256": "7a50aff34d56b3809bae2842761efd34adaf30728ed51e4d149c67a620903e67",
+      "status": "REGISTERED_BEFORE_GENERATION"
+    },
+    "ENGINE_IO_REPAIR.json": {
+      "sha256": "ebd17dda5860c292c2529895ab6d5816c04cee8e32c4c3f86230033438b82df0",
+      "status": "AUTHORIZED_TECHNICAL_IO_REPAIR"
+    }
+  },
+  "first_gradient_forward": {
+    "attempt_id": "ENGINE_attempt0003",
+    "count": 259,
+    "kind": "cached_training_model_forward_calls",
+    "metadata": {
+      "activation_offload": {
+        "capacity_check_count": 1172,
+        "capacity_observations": [
+          {
+            "check_index": 1,
+            "effective_available_bytes": 4419743865194,
+            "effective_quota_used_bytes": 580256134806,
+            "quota_max_bytes": 5000000000000,
+            "quota_root": "/projects/_hdd/varunhdd",
+            "quota_used_bytes": 580256134806,
+            "requested_window_bytes": 67108864,
+            "safety_reserve_bytes": 10737418240,
+            "spill_written_bytes": 0,
+            "statvfs_available_bytes": 211498349625344,
+            "time_ns": 1791582308991589306
+          },
+          {
+            "check_index": 1172,
+            "effective_available_bytes": 4344477861114,
+            "effective_quota_used_bytes": 655522138886,
+            "quota_max_bytes": 5000000000000,
+            "quota_root": "/projects/_hdd/varunhdd",
+            "quota_used_bytes": 655287499674,
+            "requested_window_bytes": 67108864,
+            "safety_reserve_bytes": 10737418240,
+            "spill_written_bytes": 75266004080,
+            "statvfs_available_bytes": 211395253633024,
+            "time_ns": 1791582918998839333
+          }
+        ],
+        "cpu_budget_bytes": 51539607552,
+        "cpu_storage_bytes": 51539607550,
+        "disk_read_bytes": 0,
+        "disk_saved_tensors": 321018,
+        "disk_storage_bytes": 75277728928,
+        "io_chunk_bytes": 33554432,
+        "largest_saved_activation_bytes": 66977856,
+        "minimum_available_bytes": 4344477861114,
+        "pin_memory": false,
+        "policy": "saved_activation_cpu48g_lossless_disk_parameter_resident_v2",
+        "resident_parameter_view_bytes": 3751029784320,
+        "resident_parameter_views": 76146,
+        "saved_activation_bytes": 98889328496,
+        "saved_activation_tensors": 338954,
+        "spill_aborted": false,
+        "spill_file_cleaned": false,
+        "spill_file_created": true,
+        "spill_path": "/projects/_hdd/varunhdd/louis-ssvc/sr_f11_20261010_activation_offload/2074288-59uy4egw.bin",
+        "unpacked_activation_bytes": 0,
+        "unpacked_activation_tensors": 0
+      },
+      "completed_model_forward_calls": 259,
+      "decode_input_tokens": 258,
+      "decode_model_forward_calls": 258,
+      "engine_mode": "natural",
+      "engine_segment": "continuous",
+      "prefill_input_tokens": 1023,
+      "prefill_model_forward_calls": 1,
+      "purpose": "training_gradient",
+      "requested_completion_tokens": 259,
+      "scored_completion_tokens": 259,
+      "status": "COMPLETE",
+      "vision_forward_calls": 1
+    },
+    "pid": 2074288,
+    "plan_id": "SR-F1-20261009",
+    "task_id": "ENGINE",
+    "time_ns": 1791582919218486687
+  },
+  "raw_count_by_track": {
+    "engineering/engine/natural/continuous/rollouts": 128
+  },
+  "steps": {
+    "engineering/engine/natural/continuous/checkpoints/LATEST.json": 0
+  },
+  "physical_optimizer_updates": 0,
+  "science_attempts": 0,
+  "test_sealed": true,
+  "technical_blockers": [],
+  "external_io_failures": {},
+  "resources": {
+    "time": "2026-10-09T22:18:22.328436+00:00",
+    "quota": {
+      "/projects/_ssd/varunssd": {
+        "limit": 750000000000,
+        "used": 694103805610,
+        "remaining": 55896194390
+      },
+      "/projects/_hdd/varunhdd": {
+        "limit": 5000000000000,
+        "used": 655534433660,
+        "remaining": 4344465566340
+      }
+    },
+    "scratch": [
+      {
+        "name": "2074288-59uy4egw.bin",
+        "bytes": 75277728928,
+        "mtime_ns": 1791582919033312810
+      }
+    ],
+    "failure_receipts": [],
+    "live_gpu": {
+      "returncode": 0,
+      "stdout": "JobId=196227 JobName=srf1-9ef274c9fc6a-ENGINE_attempt0003 UserId=varun024(295800338) GroupId=varun024(295800338) MCS_label=N/A Priority=101 Nice=0 Account=rose QOS=soujanya-poria-startfund-2026-03 JobState=RUNNING Reason=None Dependency=(null) Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=00:45:21 TimeLimit=3-00:00:00 TimeMin=N/A SubmitTime=2026-10-09T21:33:01 EligibleTime=2026-10-09T21:33:01 AccrueTime=2026-10-09T21:33:01 StartTime=2026-10-09T21:33:01 EndTime=2026-10-12T21:33:01 Deadline=N/A PreemptEligibleTime=2026-10-09T21:33:01 PreemptTime=None SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-09T21:33:01 Scheduler=Main Partition=cluster02 AllocNode:Sid=cpu-2:1823320 ReqNodeList=(null) ExcNodeList=(null) NodeList=gpu-pro6000-10 BatchHost=gpu-pro6000-10 NumNodes=1 NumCPUs=4 NumTasks=1 CPUs/Task=4 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=4,mem=90G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1 AllocTRES=cpu=4,mem=90G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1 Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=4 MinMemoryNode=90G MinTmpDiskNode=0 Features=highmem DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null) Command=/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010/orchestration/attempts/ENGINE_attempt0003.sh WorkDir=/home/varun024 Comment=srf1:9ef274c9fc6a:ENGINE_attempt0003  StdErr=/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010/orchestration/attempts/ENGINE_attempt0003_196227.log StdIn=/dev/null StdOut=/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010/orchestration/attempts/ENGINE_attempt0003_196227.log Power= TresPerNode=gres/gpu:pro6000:1 TresPerTask=cpu:4 \n",
+      "stderr": ""
+    },
+    "sstat": {
+      "returncode": 0,
+      "stdout": "196227.batch|213503982334-14:25:51|||\n",
+      "stderr": ""
+    }
+  },
+  "process_observations": {
+    "first": {
+      "time": "2026-10-09T22:19:11.793667+00:00",
+      "cmdline": "/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12 -m sr_f1.engine --root /projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010 --plan /projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010/engineering/ENGINE_CONFIG.json --mode natural --segment continuous ",
+      "status": "Name:\tpython3.12\nUmask:\t0002\nState:\tS (sleeping)\nTgid:\t2074288\nNgid:\t0\nPid:\t2074288\nPPid:\t2044627\nTracerPid:\t0\nUid:\t295800338\t295800338\t295800338\t295800338\nGid:\t295800338\t295800338\t295800338\t295800338\nFDSize:\t64\nGroups:\t295800016 295800160 295800338 \nNStgid:\t2074288\nNSpid:\t2074288\nNSpgid:\t2044627\nNSsid:\t2044452\nKthread:\t0\nVmPeak:\t92888424 kB\nVmSize:\t92822888 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t53868468 kB\nVmRSS:\t53868468 kB\nRssAnon:\t53533056 kB\nRssFile:\t  314092 kB\nRssShmem:\t   21320 kB\nVmData:\t54615416 kB\nVmStk:\t     232 kB\nVmExe:\t    2420 kB\nVmLib:\t 2165972 kB\nVmPTE:\t  108032 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t15\nSigQ:\t0/3093269\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000001001000\nSigCgt:\t0000000100004202\nCapInh:\t0000000000000000\nCapPrm:\t0000000000000000\nCapEff:\t0000000000000000\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tthread vulnerable\nSpeculationIndirectBranch:\tconditional enabled\nCpus_allowed:\t00000000,00000000,0000c000,00000300\nCpus_allowed_list:\t8-9,46-47\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000003\nMems_allowed_list:\t0-1\nvoluntary_ctxt_switches:\t386851\nnonvoluntary_ctxt_switches:\t13820\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+      "stat": "2074288 (python3.12) S 2044627 2044627 2044452 0 -1 4194304 31337422 11308 186 3 108548 10385 0 4 20 0 15 0 74525679 95050637312 13466124 96636764160 103700472635392 103700475109533 140732680088384 0 0 0 0 16781312 16898 0 0 0 17 46 0 0 0 0 0 103700476525264 103700478506736 103701124673536 140732680090470 140732680090735 140732680090735 140732680093622 0\n",
+      "io": "rchar: 104246926570\nwchar: 75290658448\nsyscr: 383088\nsyscw: 321620\nread_bytes: 2470187008\nwrite_bytes: 75296518144\ncancelled_write_bytes: 0\n",
+      "wchan": "futex_wait_queue",
+      "cgroup": "0::/system.slice/gpu-pro6000-10_slurmstepd.scope/job_196227/step_batch/user/task_0\n"
+    },
+    "second": {
+      "time": "2026-10-09T22:19:16.794104+00:00",
+      "cmdline": "/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12 -m sr_f1.engine --root /projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010 --plan /projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010/engineering/ENGINE_CONFIG.json --mode natural --segment continuous ",
+      "status": "Name:\tpython3.12\nUmask:\t0002\nState:\tS (sleeping)\nTgid:\t2074288\nNgid:\t0\nPid:\t2074288\nPPid:\t2044627\nTracerPid:\t0\nUid:\t295800338\t295800338\t295800338\t295800338\nGid:\t295800338\t295800338\t295800338\t295800338\nFDSize:\t64\nGroups:\t295800016 295800160 295800338 \nNStgid:\t2074288\nNSpid:\t2074288\nNSpgid:\t2044627\nNSsid:\t2044452\nKthread:\t0\nVmPeak:\t92888424 kB\nVmSize:\t92822888 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t53868468 kB\nVmRSS:\t53868468 kB\nRssAnon:\t53533056 kB\nRssFile:\t  314092 kB\nRssShmem:\t   21320 kB\nVmData:\t54615416 kB\nVmStk:\t     232 kB\nVmExe:\t    2420 kB\nVmLib:\t 2165972 kB\nVmPTE:\t  108032 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t15\nSigQ:\t0/3093269\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000001001000\nSigCgt:\t0000000100004202\nCapInh:\t0000000000000000\nCapPrm:\t0000000000000000\nCapEff:\t0000000000000000\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tthread vulnerable\nSpeculationIndirectBranch:\tconditional enabled\nCpus_allowed:\t00000000,00000000,0000c000,00000300\nCpus_allowed_list:\t8-9,46-47\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000003\nMems_allowed_list:\t0-1\nvoluntary_ctxt_switches:\t386851\nnonvoluntary_ctxt_switches:\t13820\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+      "stat": "2074288 (python3.12) S 2044627 2044627 2044452 0 -1 4194304 31338138 11308 186 3 108562 10392 0 4 20 0 15 0 74525679 95050637312 13466124 96636764160 103700472635392 103700475109533 140732680088384 0 0 0 0 16781312 16898 0 0 0 17 46 0 0 0 0 0 103700476525264 103700478506736 103701124673536 140732680090470 140732680090735 140732680090735 140732680093622 0\n",
+      "io": "rchar: 104398417718\nwchar: 75290658448\nsyscr: 383697\nsyscw: 321620\nread_bytes: 2470187008\nwrite_bytes: 75296518144\ncancelled_write_bytes: 0\n",
+      "wchan": "futex_wait_queue",
+      "cgroup": "0::/system.slice/gpu-pro6000-10_slurmstepd.scope/job_196227/step_batch/user/task_0\n"
+    }
+  },
+  "process_io_delta_over_five_seconds": {
+    "rchar": 151491148,
+    "wchar": 0,
+    "syscr": 609,
+    "syscw": 0,
+    "read_bytes": 0,
+    "write_bytes": 0,
+    "cancelled_write_bytes": 0
+  },
+  "limits": [
+    "ENGINE continuous 4 versus independent 2+2 not yet accepted",
+    "No completed backward receipt or optimizer update at this observation",
+    "Forward-time activation statistics precede backward; zero unpack counters and spill_file_cleaned=false do not establish failed backward or leaked storage",
+    "Slurm sstat supplied an invalid-looking AveCPU value and blank memory/I/O values; not used to infer progress",
+    "Direct node SSH was unavailable; read-only process inspection used srun within existing job 196227 allocation"
+  ],
+  "actions": {
+    "training_code_changes": 0,
+    "job_resubmissions": 0,
+    "job_cancellations": 0,
+    "unrelated_jobs_modified": 0
+  },
+  "raw_snapshot_sha256": {
+    "heartbeat_2217.json": "ed72bc73810ef39c468b38a1d786a2768dfb50170be237a8c2e79d67aebb6a2a",
+    "heartbeat_2217_resources.json": "4f047c2fab082b8a94e0716abd20e4532004225a3da02f14d72bd31fa8768ca2",
+    "heartbeat_2217_process_srun.json": "e3a6d22f105c45d3ecf48148eb571856cfeb36038ec4f4bc4b92947995abda49"
+  }
+}

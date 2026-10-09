@@ -1,5 +1,15 @@
 # SR-F1 当前执行状态
 
+## 当前：首条梯度前向完成，反向读取仍在推进（2026-10-10 06:19:16 新加坡时间）
+
+实时核验：控制器196225、GPU196227（ENGINE_attempt0003）仍为RUNNING，老师QoS、单PRO6000、highmem及90GiB身份相符。首批128条回答已保存；首条259-token梯度前向于21:55:19Z完整完成，越过原第249次forward显存失败位置。该前向按原dtype保存48GiB CPU激活，并在独立HDD暂存75,277,728,928字节；当前配额剩余约4.34TB，无新的外部I/O错误回执。
+
+22:19:11至22:19:16Z，通过既有Slurm作业分配只读核查worker PID2074288：运行根、continuous段和作业cgroup一致，5秒内读取计数增加151,491,148字节、读取调用增加609次，RSS为53,868,468KiB、swap为0。结合前向完成后的代码路径，反向阶段仍有读取活动；尚无反向完成回执或首个优化器更新。前向落盘的offload计数是在backward之前取得，不能将其中unpacked=0或cleaned=false解读为反向失败或暂存泄漏。
+
+部署源码和旧128条保留记录的哈希再次核验通过，technical_blockers为空。完整检查点仍为step0、优化器更新0、科学attempt0、TEST封存。ENGINE连续4步对独立2+2尚未通过；本轮无代码修复、取消或重提作业，无关作业修改数为0。见 [实时证据回执](validation/SR_F1_1_ENGINE_FIRST_FORWARD_20261010_0619.json)。
+
+以下为此前阶段快照，保留原记录。
+
 ## 当前：I/O修复部署完成，ENGINE重新运行（2026-10-10 05:34:52 新加坡时间）
 
 实时快照`2026-10-09T21:34:52.346289Z`：CPU控制器 **196225 RUNNING**，GPU **196227（ENGINE_attempt0003）RUNNING**，节点`gpu-pro6000-10`，老师QoS `soujanya-poria-startfund-2026-03`、单PRO6000、highmem、90GiB。释放前实际资源和作业身份核查通过，technical_blockers为空。旧中断natural路径已整体归档，新ENGINE从公共起点重新完成原连续4步与独立2+2；旧一次性step0复用标记完整保留且没有重置。详见 [恢复回执](validation/SR_F1_1_ENGINE_IO_RECOVERY_20261010.json)。
