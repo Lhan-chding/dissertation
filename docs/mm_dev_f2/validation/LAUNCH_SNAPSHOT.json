@@ -1,0 +1,136 @@
+{
+  "at": "2026-10-09T04:59:47.657115+00:00",
+  "phase": "F2_FROZEN",
+  "task_status_counts": {
+    "WAITING": 76,
+    "ACTIVE": 1
+  },
+  "technical_blockers": [],
+  "engine": {
+    "attempts": [
+      {
+        "attempt_id": "ENGINE_F2_attempt0000",
+        "command": [
+          "sbatch",
+          "--hold",
+          "--no-requeue",
+          "--nodes=1",
+          "--cpus-per-task=4",
+          "--mem=64G",
+          "--parsable",
+          "--account",
+          "rose",
+          "--qos",
+          "override-limits-but-killable",
+          "--job-name",
+          "mmdev-1f793b570f4c-ENGINE_F2_attempt0000",
+          "--comment",
+          "mmdev:1f793b570f4c:ENGINE_F2_attempt0000",
+          "--time",
+          "720",
+          "--signal=B:USR1@600",
+          "--output",
+          "/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009/orchestration/attempts/ENGINE_F2_attempt0000_%j.log",
+          "--gres",
+          "gpu:pro6000:1",
+          "--partition",
+          "cluster02",
+          "/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009/orchestration/attempts/ENGINE_F2_attempt0000.sh"
+        ],
+        "comment": "mmdev:1f793b570f4c:ENGINE_F2_attempt0000",
+        "created_at": "2026-10-09T04:57:04.260216+00:00",
+        "job_id": "194700",
+        "job_name": "mmdev-1f793b570f4c-ENGINE_F2_attempt0000",
+        "manifest_path": "orchestration/attempts/ENGINE_F2_attempt0000.json",
+        "observation": {
+          "path": "orchestration/observations/ENGINE_F2_attempt0000/00000014.json",
+          "sha256": "6fbe01269a26f06ffe59133a11037fcfb12e0c1f751dff9847c3681613df75e6"
+        },
+        "release_receipt": {
+          "command": [
+            "scontrol",
+            "release",
+            "194700"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "",
+          "time": "2026-10-09T04:57:04.291945+00:00"
+        },
+        "released": true,
+        "status": "ACTIVE",
+        "submission_receipt": {
+          "command": [
+            "sbatch",
+            "--hold",
+            "--no-requeue",
+            "--nodes=1",
+            "--cpus-per-task=4",
+            "--mem=64G",
+            "--parsable",
+            "--account",
+            "rose",
+            "--qos",
+            "override-limits-but-killable",
+            "--job-name",
+            "mmdev-1f793b570f4c-ENGINE_F2_attempt0000",
+            "--comment",
+            "mmdev:1f793b570f4c:ENGINE_F2_attempt0000",
+            "--time",
+            "720",
+            "--signal=B:USR1@600",
+            "--output",
+            "/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009/orchestration/attempts/ENGINE_F2_attempt0000_%j.log",
+            "--gres",
+            "gpu:pro6000:1",
+            "--partition",
+            "cluster02",
+            "/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009/orchestration/attempts/ENGINE_F2_attempt0000.sh"
+          ],
+          "returncode": 0,
+          "stderr": "sbatch: slurm_job_submit: enforced 4 CPUs for 1 task and 33792 MiB mem/node for 1 GPU(s) (model=pro6000)\nsbatch: slurm_job_submit: you requested 4 CPUs/node and 65536 MiB mem/node\n",
+          "stdout": "194700\n",
+          "time": "2026-10-09T04:57:04.280930+00:00"
+        }
+      }
+    ],
+    "status": "ACTIVE"
+  },
+  "accounting": {
+    "known_actual_gpu_seconds": 0,
+    "max_allocated_gpu_hours": null,
+    "max_wallclock_hours_for_study": null,
+    "policy": "ACCOUNTING_ONLY",
+    "unresolved_attempt_ids": [
+      "ENGINE_F2_attempt0000"
+    ]
+  },
+  "freeze_sha256": "d19d8f99398b4fcf4295ad3156cf94186744a4d010b2f321dc55951c16fcaed9",
+  "source_commit": "c65b406204e052aa35b2c0e9915c8470d5bfb413",
+  "commands": {
+    "queue": {
+      "args": [
+        "squeue",
+        "-j",
+        "194699,194700,194701",
+        "-o",
+        "%i|%j|%q|%T|%M|%R"
+      ],
+      "returncode": 0,
+      "stdout": "JOBID|NAME|QOS|STATE|TIME|NODELIST(REASON)\n194701|mmdev-f2-controller|soujanya-poria-startfund-2026-03|PENDING|0:00|(Dependency)\n194700|mmdev-1f793b570f4c-ENGINE_F2_attempt0000|override-limits-but-killable|PENDING|0:00|(Priority)\n194699|mmdev-f2-controller|soujanya-poria-startfund-2026-03|RUNNING|2:44|cpu-2\n",
+      "stderr": ""
+    },
+    "engine_allocation": {
+      "args": [
+        "scontrol",
+        "show",
+        "job",
+        "194700",
+        "-o"
+      ],
+      "returncode": 0,
+      "stdout": "JobId=194700 JobName=mmdev-1f793b570f4c-ENGINE_F2_attempt0000 UserId=varun024(295800338) GroupId=varun024(295800338) MCS_label=N/A Priority=1 Nice=0 Account=rose QOS=override-limits-but-killable JobState=PENDING Reason=Priority Dependency=(null) Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=00:00:00 TimeLimit=12:00:00 TimeMin=N/A SubmitTime=2026-10-09T04:57:04 EligibleTime=2026-10-09T04:57:06 AccrueTime=2026-10-09T04:57:06 StartTime=2026-10-09T16:55:28 EndTime=2026-10-10T04:55:28 Deadline=N/A SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-09T04:59:37 Scheduler=Main Partition=cluster02 AllocNode:Sid=cpu-2:2384309 ReqNodeList=(null) ExcNodeList=(null) NodeList= SchedNodeList=gpu-pro6000-5 NumNodes=1-1 NumCPUs=4 NumTasks=1 CPUs/Task=4 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=4,mem=33G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1 AllocTRES=(null) Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=4 MinMemoryNode=33G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null) Command=/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009/orchestration/attempts/ENGINE_F2_attempt0000.sh WorkDir=/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009 Comment=mmdev:1f793b570f4c:ENGINE_F2_attempt0000  StdErr=/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009/orchestration/attempts/ENGINE_F2_attempt0000_194700.log StdIn=/dev/null StdOut=/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009/orchestration/attempts/ENGINE_F2_attempt0000_194700.log Power= TresPerNode=gres/gpu:pro6000:1 TresPerTask=cpu:4 \n",
+      "stderr": ""
+    }
+  }
+}
