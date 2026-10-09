@@ -1,0 +1,69 @@
+{
+  "checked_at_utc": "2026-10-09T16:05:52.315885+00:00",
+  "status": "CONFIRMATION_GATE_NOT_MET_RECORDS_VERIFIED",
+  "run_root": "/projects/_ssd/varunssd/louis-ssvc/sr_f1_20261009",
+  "read_only": true,
+  "model_calls": 0,
+  "checks": {
+    "all_32_questions_and_256_slots": true,
+    "record_hash": true,
+    "slot_seed_input_policy": true,
+    "generation_complete_no_technical_errors": true,
+    "model_identity_is_published_bridge": true,
+    "actual_adapter_identity_is_bridge": true,
+    "frozen_sampler": true,
+    "frozen_native_input_route": true,
+    "visual_encoder_ran": true,
+    "complete_finite_actual_sampling_logprobs": true,
+    "stop_and_limit_coherent": true,
+    "coverage_receipt_independently_reproduced": true,
+    "bridge_is_16_updates": true,
+    "original_before_unchanged": true,
+    "original_freeze_unchanged": true,
+    "all_downstream_waiting": true,
+    "test_sealed": true
+  },
+  "errors": [],
+  "counts": {
+    "responses": 256,
+    "covered": 100,
+    "truncated": 17,
+    "finish_reasons": {
+      "eos": 239,
+      "length": 17
+    },
+    "format_failure_types": {
+      "whole_json_invalid": 155,
+      "covered": 100,
+      "evidence_not_scorable": 1
+    }
+  },
+  "coverage": 0.390625,
+  "required_coverage": 0.95,
+  "upper_bound_if_all_truncations_covered": 0.45703125,
+  "bridge_model_id": "SRF1_FORMAT_BRIDGED",
+  "bridge_parameter_hash": "b6b9bb8e78313e7391bd96dbd371046fd75cac400bd9dfb3714d69cd8e284887",
+  "bridge_identity_sha256": "37948e3b5ae30c4fea7a6ed3b8ae33a022d0b0d164e224dca3c94cb0699f07a9",
+  "confirm_coverage_sha256": "f85e8077b1092ecaab833ad37da90b839e93f512a12b82730cd159863ce30b72",
+  "raw_record_manifest_sha256": "c25b574d4337f9ac9e13bd5c8f8bb9d1e8cf95b761974cd6022590b5dc0c3d73",
+  "source_commit": "e61e9de86e6954c94c751b6383b53da68718185b",
+  "original_freeze_sha256": "b84d6d1ad26761cb07e3db706be0b8ca2b4e4a8d436473b0ad3e964a81f463f9",
+  "after_retest_records_at_check": 89,
+  "final_protocol_receipt_published": false,
+  "bridge_repeat_forbidden": true,
+  "engine_and_science_not_started": true,
+  "slurm_observed_at_utc": "2026-10-09T16:03:41.944823+00:00",
+  "registered_jobs_observed": {
+    "controller": {
+      "job_id": "195677",
+      "state": "RUNNING"
+    },
+    "worker": {
+      "job_id": "195679",
+      "state": "RUNNING",
+      "node": "gpu-pro6000-12"
+    }
+  },
+  "network_recovered": true,
+  "scope_note": "Completed FORMAT_CONFIRM only. The mandatory same-question FORMAT retest is still running; the final PROTOCOL_BLOCKED receipt has not yet been published. No new bridge, ENGINE, science or test evaluation is authorized by this failure."
+}
