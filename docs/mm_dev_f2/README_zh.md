@@ -7,8 +7,10 @@
 `src/mm_core/` 作为冻结依赖复用，未改变旧实验。
 
 服务器规范运行根为
-`/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos`。
-不带 `_teacherqos` 的旧根保留原冻结、被取消的排队记录及迁移回执。
+`/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos_cachefix`。
+不带 `_cachefix` 的老师QoS旧根保留概率一致性失败的完整现场；最初不带
+`_teacherqos` 的旧根保留被取消的排队记录及迁移回执。
+技术事件及费用边界见 [PROBABILITY_GATE_INCIDENT_20261009_zh.md](PROBABILITY_GATE_INCIDENT_20261009_zh.md)。
 本地独立工作树为
 `/Users/louis/.codex/worktrees/mm-dev-f2-20261009/dissertation-ntu`。
 
@@ -60,7 +62,7 @@ account `rose`。当前该 QoS 每用户最多提交五个作业，CPU 控制器
 
 ```bash
 PY=/projects/varunssd/louis-ssvc/envs/ssvc-py312/bin/python
-RUN=/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos
+RUN=/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos_cachefix
 "$PY" "$CODE/scripts/mm_dev/submit_matrix.py" \
   --plan "$CODE/docs/mm_dev_f2/design/config/MM_DEV_F2.json" \
   --run-root "$RUN" --code-root "$CODE" --python "$PY" \
@@ -90,6 +92,10 @@ checkpoint 缺省项。不得把轻量结果包称为包含完整权重的重训
 
 ## 已发生的技术事件
 
+- ENGINE194796在第一步192条回答生成后、optimizer更新前，因最大概率误差
+  0.5841>0.05失败。修复F2训练teacher forcing缓存路径，保留完整历史梯度；
+  阈值、科学配方和原内核不改，PROBE与`mm_core`不变。当前使用独立修复根重新
+  冻结并验收。原失败GPU468秒和诊断成本必须与修复根费用分别列入最终报告。
 - 用户指定老师 QoS 后，旧 ENGINE 194700 与控制器后继 194701 均在未启动时取消，
   两者 ElapsedRaw=0 且无 AllocTRES。旧 CPU 控制器 194699 经租约信号正常退出
   （COMPLETED 0:0）。旧根未产生 GPU 结果；4692 个数据/QA/材料化与视觉复核文件

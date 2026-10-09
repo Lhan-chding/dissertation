@@ -136,6 +136,66 @@ def reference_parameters(model, reference):
             raise RuntimeError("Reference switch replaced optimizer parameters")
 
 
+def functional_training_cache(config):
+    """Native cache values with functional state ownership for full-history gradients.
+
+    The native recurrent/conv kernels are unchanged. Their inference cache uses
+    in-place replacement, which would overwrite states saved by autograd.
+    """
+    import torch
+    from transformers.cache_utils import DynamicCache, DynamicLayer, LinearAttentionLayer
+
+    class FunctionalLinearLayer(LinearAttentionLayer):
+        def update_conv_state(self, conv_states, state_idx=0, conv_kernel_size=None, **kwargs):
+            if not self.is_conv_states_initialized[state_idx]:
+                self.dtype, self.device = conv_states.dtype, conv_states.device
+                self.conv_kernel_size[state_idx] = (
+                    conv_states.shape[-1] if conv_kernel_size is None else conv_kernel_size
+                )
+                self.is_conv_states_initialized[state_idx] = True
+            if self.has_previous_state[state_idx]:
+                full = torch.cat([self.conv_states[state_idx], conv_states], dim=-1)
+            else:
+                full = conv_states
+                self.has_previous_state[state_idx] = True
+                if full.shape[-1] < self.conv_kernel_size[state_idx]:
+                    full = torch.nn.functional.pad(
+                        full, (self.conv_kernel_size[state_idx] - full.shape[-1], 0)
+                    )
+            self.conv_states[state_idx] = full[..., -self.conv_kernel_size[state_idx] :].clone()
+            return full
+
+        def update_recurrent_state(self, recurrent_states, state_idx=0, **kwargs):
+            self.is_recurrent_states_initialized[state_idx] = True
+            self.recurrent_states[state_idx] = recurrent_states
+            return recurrent_states
+
+    cache = DynamicCache(config=config)
+    for index, layer in enumerate(cache.layers):
+        if type(layer) is LinearAttentionLayer:
+            cache.layers[index] = FunctionalLinearLayer(number_of_states=layer.number_of_states)
+        elif type(layer) is not DynamicLayer:
+            raise PermissionError("Training cache requires the frozen full/linear hybrid layout")
+    return cache
+
+
+@contextlib.contextmanager
+def cache_compatible_autograd(model):
+    """Do not let checkpoint wrappers drop/mutate a live recurrent history."""
+    checkpointing = [
+        (module, module.gradient_checkpointing)
+        for module in model.modules()
+        if hasattr(module, "gradient_checkpointing")
+    ]
+    try:
+        for module, _enabled in checkpointing:
+            module.gradient_checkpointing = False
+        yield
+    finally:
+        for module, enabled in checkpointing:
+            module.gradient_checkpointing = enabled
+
+
 class F2Runtime(QwenRuntime):
     """Two explicit sampling channels; training records actual generation logits."""
 
@@ -256,6 +316,105 @@ class F2Runtime(QwenRuntime):
     def reference_forward(self, prepared, tokens, reference):
         with reference_parameters(self.model, reference):
             return self.sequence_forward(prepared, tokens, purpose="training_reference", grad=False)
+
+    def sequence_forward(self, prepared, tokens, *, purpose, grad=False):
+        if purpose not in {"training_reference", "training_gradient"}:
+            return super().sequence_forward(prepared, tokens, purpose=purpose, grad=grad)
+        return self.cached_training_forward(prepared, tokens, purpose=purpose, grad=grad)
+
+    def cached_training_forward(self, prepared, tokens, *, purpose, grad=False):
+        """Teacher-force saved tokens through the sampler's native cached path.
+
+        All prefix states retain their computation graph. Only cache containers
+        change ownership; no kernel, precision, token, or sampling setting changes.
+        Measurement/PROBE teacher forcing continues to use the audited core path.
+        """
+        torch = self.torch
+        if not tokens:
+            raise ValueError("Cannot score empty completion")
+        if self.model.training:
+            raise PermissionError("Training policy forward must retain eval/dropout-zero mode")
+        self.reserve("extra_forward_sequences", 1, purpose=purpose, completion_tokens=len(tokens))
+        kwargs = dict(prepared["inputs"])
+        input_ids = kwargs.pop("input_ids")
+        if input_ids.shape[0] != 1:
+            raise PermissionError("F2 teacher forcing requires one complete sequence")
+        if kwargs.get("mm_token_type_ids") is None:
+            raise RuntimeError("Teacher forcing requires original native multimodal token types")
+        base = self.model.get_base_model() if hasattr(self.model, "get_base_model") else self.model
+        cache = functional_training_cache(base.config)
+        kwargs.update(past_key_values=cache, use_cache=True, logits_to_keep=1)
+        kwargs["position_ids"] = base._prepare_position_ids_for_generation(input_ids, kwargs)
+        before = self.image_calls
+        selected, entropies = [], []
+        calls = dict(
+            prefill_model_forward_calls=0,
+            decode_model_forward_calls=0,
+            prefill_input_tokens=0,
+            decode_input_tokens=0,
+            completed_model_forward_calls=0,
+        )
+        complete = False
+        try:
+            with (
+                cache_compatible_autograd(self.model),
+                torch.enable_grad() if grad else torch.no_grad(),
+            ):
+                for index, token in enumerate(tokens):
+                    # Native one-token conv updates write their input cache in place.
+                    # Clone without detach so older graph nodes own unchanged storage.
+                    for layer in cache.layers:
+                        for state_idx, state in getattr(layer, "conv_states", {}).items():
+                            if state is not None:
+                                layer.conv_states[state_idx] = state.clone()
+                    model_inputs = base.prepare_inputs_for_generation(
+                        input_ids,
+                        next_sequence_length=None if index == 0 else 1,
+                        is_first_iteration=index == 0,
+                        **kwargs,
+                    )
+                    phase = "prefill" if index == 0 else "decode"
+                    calls[phase + "_model_forward_calls"] += 1
+                    calls[phase + "_input_tokens"] += model_inputs["input_ids"].numel()
+                    output = self.model(**model_inputs, return_dict=True)
+                    calls["completed_model_forward_calls"] += 1
+                    if (
+                        output.past_key_values is not cache
+                        or cache.get_seq_length() != input_ids.shape[1]
+                    ):
+                        raise RuntimeError("Native teacher-forcing cache was dropped or misaligned")
+                    logp = output.logits[0, -1].float().log_softmax(-1)
+                    selected.append(logp[token])
+                    if not grad:
+                        entropies.append(-(logp.exp() * logp).sum())
+                    kwargs = base._update_model_kwargs_for_generation(
+                        output, kwargs, is_encoder_decoder=False
+                    )
+                    input_ids = torch.cat([input_ids, input_ids.new_tensor([[token]])], dim=1)
+            if self.image_calls <= before:
+                raise RuntimeError("Forward did not call visual encoder")
+            result = dict(
+                logprobs=torch.stack(selected),
+                entropy=None if grad else torch.stack(entropies),
+                vision_forward_calls=self.image_calls - before,
+                cached_model_forward_calls=len(tokens),
+            )
+            complete = True
+            return result
+        finally:
+            # One durable accounting row per sequence, including failed forwards.
+            # The sequence was reserved before execution; these are actual calls,
+            # with no GPU-hour or token-budget acceptance threshold.
+            self.reserve(
+                "cached_training_model_forward_calls",
+                calls["prefill_model_forward_calls"] + calls["decode_model_forward_calls"],
+                purpose=purpose,
+                **calls,
+                requested_completion_tokens=len(tokens),
+                scored_completion_tokens=len(selected),
+                vision_forward_calls=self.image_calls - before,
+                status="COMPLETE" if complete else "TECHNICAL_FAILED",
+            )
 
 
 def actual_cuda_identity():

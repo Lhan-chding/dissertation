@@ -580,6 +580,8 @@ class OrchestrationTests(unittest.TestCase):
                         "1|alice|teacher|RUNNING\n2|alice|teacher|PENDING\n"
                         "3_1|alice|teacher|PENDING\n3_2|alice|teacher|PENDING\n"
                         "4|alice|other|RUNNING\n"
+                        "5|alice|teacher|COMPLETED\n6|alice|teacher|FAILED\n"
+                        "7|alice|teacher|CANCELLED\n8|alice|teacher|TIMEOUT\n"
                     ),
                     "stderr": "",
                 },

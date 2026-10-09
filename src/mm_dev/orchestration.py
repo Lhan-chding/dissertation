@@ -410,9 +410,11 @@ class SlurmBackend:
         for line in queue["stdout"].splitlines():
             values = [value.strip() for value in line.split("|")]
             require(len(values) == 4 and all(values), "INVALID_CAPACITY_QUEUE_ROW")
-            job_id, owner, qos, _state = values
+            job_id, owner, qos, state = values
             require(owner == permission["owner"], "CAPACITY_QUEUE_OWNER_MISMATCH")
-            if qos == permission["qos"]:
+            # Slurm can retain terminal jobs in its short-lived squeue cache.
+            # Those no longer consume MaxSubmitJobsPU, even with --states=all.
+            if qos == permission["qos"] and state.split()[0].rstrip("+") not in TERMINAL:
                 require(job_id not in job_ids, "DUPLICATE_CAPACITY_QUEUE_JOB")
                 job_ids.append(job_id)
         return {

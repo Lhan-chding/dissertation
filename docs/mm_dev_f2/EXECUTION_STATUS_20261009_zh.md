@@ -1,14 +1,16 @@
 # MM-DEV F2 执行状态（未完成）
 
-最新运行证据时间：2026-10-09T05:41:32.427929+00:00。用户指定的老师 QoS 已生效，
-原排队链已停止，新 ENGINE 已实际运行。这不是实验结果或最终交付。
+最新终态核验：2026-10-09 13:57（新加坡时间）。老师QoS已生效，但ENGINE194796
+发生概率一致性技术失败，未提交参数更新。修复版正准备独立冻结和重新验收。
+详细原因和失败证据见 [PROBABILITY_GATE_INCIDENT_20261009_zh.md](PROBABILITY_GATE_INCIDENT_20261009_zh.md)。
 
 - 完整合同已获用户“完整执行吧”授权；固定的 77 个调度任务已登记。
-- 新 ENGINE **194796** 已在 `gpu-pro6000-2` 上 `RUNNING`，实际分配一张 Pro6000、
-  4 CPU、33 GiB 主机内存。Slurm 明确记录 account `rose`、QoS
-  `soujanya-poria-startfund-2026-03`。Qwen3.5-9B 的760项权重已加载。
-- 新 CPU 控制器 **194794** 正常运行；后继 **194795** 为 `PENDING / Dependency`。
-  固定77任务已登记，ENGINE为`ACTIVE`，76个后续任务等待，未发现技术blocker。
+- ENGINE **194796**：`FAILED 1:0`，GPU468秒，13:48:17结束。已保存192条回答、
+  4957token、0次更新。平均概率差0.002979≤0.005，最大0.584116>0.05。
+  Slurm确认account `rose`、QoS `soujanya-poria-startfund-2026-03`。
+- CPU控制器 **194794** 与后继 **194795** 均按技术阻断退出（Slurm `FAILED 2:0`）；
+  没有残留的原ENGINE控制链。76个后续科学任务均等待。
+- 诊断 **194828** 仅强制回放192条已存答案，尚需读取实际结果。
 - 旧 ENGINE **194700** 已 `CANCELLED`，
   `ElapsedRaw=0`、无 `AllocTRES`，此前没有 GPU 结果或模型生成。
 - 旧 CPU 控制器 **194699** 已经信号正常退出：`COMPLETED 0:0`，2068秒；
@@ -25,8 +27,9 @@
 固定10张接触表（原图和处理图各80样本）及20对全分辨率图片已实际复核。
 原始来源、图像、处理张量、token/路由、模型13文件、依赖环境均核验。
 
-本次修改后完整回归 **706 tests + 175 subtests PASS**，耗时142.16秒；
-Ruff检查和格式检查36文件通过。核心ENGINE包含独立CPU进程的step2/4张量、Adam、
+概率路径修复后完整回归 **719 tests + 175 subtests PASS**，耗时141.13秒；
+Ruff检查和格式检查38文件通过，独立只读审阅未发现阻断缺陷。
+核心ENGINE包含独立CPU进程的step2/4张量、Adam、
 scheduler、reference与RNG逐元素复算；真实9B ENGINE门禁尚未通过。
 
 原服务器CPU冻结任务 **194681**：`COMPLETED 0:0`，32秒；
@@ -42,10 +45,11 @@ scheduler、reference与RNG逐元素复算；真实9B ENGINE门禁尚未通过�
 
 ## 身份与操作入口
 
-- 当前服务器运行根：`/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos`
+- 当前修复运行根：`/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos_cachefix`
+- 失败运行根：`/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos`。
 - 原服务器根：`/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009`，完整保留。
 - SSH别名：`eee-cluster`
-- 新部署位置：当前根下 `code`，运行代码commit
+- 原老师QoS部署：失败根下 `code`，运行代码commit
   `3557e66748cf2e8778d0e389a2c2fe0446ad7e86`，已push并核验远端SHA。
 - 原科学代码commit：`c65b406204e052aa35b2c0e9915c8470d5bfb413`。
 - 原运维控制器commit：`8ee5e66169d75613650e907feda7ef739efdfdf1`。
@@ -54,8 +58,8 @@ scheduler、reference与RNG逐元素复算；真实9B ENGINE门禁尚未通过�
 - GPU许可：account rose，用户指定的 `soujanya-poria-startfund-2026-03` QoS，单worker一张
   Pro6000，本计划最多五张并行。GPU小时仅记账，无累计GPU/研究墙钟门槛。
 - 该QoS的MaxSubmitJobsPU=5，CPU控制器和依赖后继均占槽；满额时等待，不换QoS。
-- 容量查询保守计入`squeue --states=all`短暂保留的已终止行，因此实际空槽可能稍晚
-  才放行；这些行从Slurm缓存移除后下一tick自动推进，不改变科学任务或GPU小时规则。
+- 修复版容量查询剔除Slurm缓存保留的明确终态行，仍保留未知/活动作业名额；
+  不改变科学任务或GPU小时规则。
 - 集群覆盖内存请求：首个GPU请求实际为4 CPU/33 GiB主机内存/1 Pro6000；
   CPU控制器为2 CPU/6 GiB。后续实际分配继续以Slurm证据为准。
 

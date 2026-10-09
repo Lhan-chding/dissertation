@@ -17,7 +17,7 @@ import sys
 import threading
 from pathlib import Path
 
-ROOT = Path("/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos")
+ROOT = Path("/projects/_ssd/varunssd/louis-ssvc/mm_dev_f2_qwen35_20261009_teacherqos_cachefix")
 CODE = ROOT / "code"
 PYTHON = "/projects/varunssd/louis-ssvc/envs/ssvc-py312/bin/python"
 
