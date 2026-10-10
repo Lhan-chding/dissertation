@@ -391,6 +391,7 @@ class SavedActivationOffload:
         quota_root=None,
         gpu_devices=(),
         gpu_budget_bytes=default_gpu_budget_bytes,
+        local_compute_storage=False,
     ):
         import torch
 
@@ -399,11 +400,21 @@ class SavedActivationOffload:
         if type(gpu_budget_bytes) is not int or gpu_budget_bytes <= 0:
             raise ValueError("Activation GPU budget must be a positive integer")
         gpu_devices = tuple(gpu_devices)
-        if gpu_devices and (
-            any(type(index) is not int for index in gpu_devices)
-            or gpu_devices != tuple(range(1, len(gpu_devices) + 1))
-            or len(gpu_devices) > 4
-            or torch.cuda.device_count() != len(gpu_devices) + 1
+        if local_compute_storage and (
+            gpu_devices != (0,)
+            or not torch.cuda.is_available()
+            or next(model.parameters()).device != torch.device("cuda:0")
+        ):
+            raise PermissionError("Local activation storage requires the replica compute GPU")
+        if (
+            gpu_devices
+            and not local_compute_storage
+            and (
+                any(type(index) is not int for index in gpu_devices)
+                or gpu_devices != tuple(range(1, len(gpu_devices) + 1))
+                or len(gpu_devices) > 4
+                or torch.cuda.device_count() != len(gpu_devices) + 1
+            )
         ):
             raise PermissionError("Activation GPUs must be the allocated auxiliary CUDA devices")
         self.gpu_devices, self.gpu_budget_bytes = gpu_devices, gpu_budget_bytes
@@ -413,7 +424,13 @@ class SavedActivationOffload:
         self.hooks = torch.autograd.graph.saved_tensors_hooks(self.pack, self.unpack)
         self.store = None
         self.statistics = dict(
-            policy=self.gpu_policy if gpu_devices else self.policy,
+            policy=(
+                "local_compute_gpu48g_cpu48g_lossless_disk_v1"
+                if local_compute_storage
+                else self.gpu_policy
+                if gpu_devices
+                else self.policy
+            ),
             pin_memory=False,
             saved_activation_tensors=0,
             saved_activation_bytes=0,
@@ -1101,6 +1118,7 @@ class SRRuntime(QwenRuntime):
                     SavedActivationOffload.default_cpu_budget_bytes,
                 ),
                 gpu_devices=getattr(self, "activation_gpu_devices", ()),
+                local_compute_storage=getattr(self, "activation_local_compute_storage", False),
                 gpu_budget_bytes=getattr(
                     self,
                     "activation_gpu_budget_bytes",
@@ -1110,11 +1128,19 @@ class SRRuntime(QwenRuntime):
             if grad
             else None
         )
+        from .recompute import gated_delta_recompute
+
+        recompute = (
+            gated_delta_recompute(self.model, expected_linear_count=24)
+            if grad and getattr(self, "compute_recompute_enabled", False)
+            else contextlib.nullcontext()
+        )
         try:
             with (
                 cache_compatible_autograd(self.model),
                 torch.enable_grad() if grad else torch.no_grad(),
                 offload if offload is not None else contextlib.nullcontext(),
+                recompute as recompute_statistics,
             ):
                 for index, token in enumerate(tokens):
                     # Native one-token conv updates write their input cache in place.
@@ -1155,7 +1181,13 @@ class SRRuntime(QwenRuntime):
                 vision_forward_calls=self.image_calls - before,
                 cached_model_forward_calls=len(tokens),
                 activation_offload=offload.statistics if offload is not None else None,
+                activation_recompute=recompute_statistics,
             )
+            if grad:
+                self.last_gradient_execution = {
+                    "activation_offload": result["activation_offload"],
+                    "activation_recompute": result["activation_recompute"],
+                }
             complete = True
             return result
         finally:
@@ -1346,7 +1378,138 @@ def actual_srf1_cuda_identity(repair=None):
     }
 
 
-def load_runtime(plan, root, *, state_id=None, step=96, account=None):
+def actual_compute_cuda_identity(repair):
+    """Bind every replica device to this allocation without treating it as storage."""
+    import torch
+
+    count = repair.get("gpu_count")
+    if (
+        type(count) is not int
+        or not 2 <= count <= 5
+        or repair.get("compute_device_indices") != list(range(count))
+        or torch.cuda.device_count() != count
+        or not re.fullmatch(r"[0-9a-f]{64}", repair.get("repair_sha256") or "")
+    ):
+        raise PermissionError("Compute replicas differ from authenticated allocation")
+    result = subprocess.run(
+        ["nvidia-smi", "--query-gpu=name,uuid,driver_version", "--format=csv,noheader,nounits"],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    rows = [
+        dict(zip(("name", "uuid", "driver_version"), [v.strip() for v in row], strict=True))
+        for row in csv.reader(result.stdout.splitlines())
+        if row
+    ]
+
+    def normalize(value):
+        return str(value).lower().removeprefix("gpu-").replace("-", "")
+
+    devices = []
+    for index in range(count):
+        prop = torch.cuda.get_device_properties(index)
+        uuid = str(getattr(prop, "uuid", ""))
+        matches = [row for row in rows if normalize(row["uuid"]) == normalize(uuid)]
+        if not uuid or "RTX PRO 6000" not in prop.name.upper() or len(matches) != 1:
+            raise PermissionError("Compute replica GPU identity cannot be verified")
+        devices.append(
+            dict(
+                index=index,
+                role="sequence_compute",
+                cuda_uuid=uuid,
+                cuda_name=prop.name,
+                cuda_total_memory_bytes=prop.total_memory,
+                compute_capability=[prop.major, prop.minor],
+                **matches[0],
+            )
+        )
+    if len({normalize(d["cuda_uuid"]) for d in devices}) != count:
+        raise PermissionError("Compute replicas must use distinct physical GPUs")
+    return dict(
+        **devices[0],
+        cuda_visible_device_count=count,
+        cuda_runtime=torch.version.cuda,
+        hostname=socket.gethostname(),
+        cuda_visible_devices=os.environ.get("CUDA_VISIBLE_DEVICES"),
+        compute_devices=devices,
+        engine_compute_parallel_repair_sha256=repair["repair_sha256"],
+    )
+
+
+def configure_compute_execution(runtime, repair):
+    """The receipt authenticates memory placement and recomputation separately from math."""
+    from .recompute import POLICY
+
+    expected = dict(
+        recompute_policy=POLICY,
+        activation_storage="LOCAL_GPU48G_CPU48G_EXACT_EXTERNAL_DISK",
+        gpu_activation_budget_bytes=48 << 30,
+        cpu_activation_budget_bytes=48 << 30,
+    )
+    if any(repair.get(key) != value for key, value in expected.items()):
+        raise PermissionError("Compute activation policy differs from authenticated repair")
+    runtime.compute_recompute_enabled = True
+    runtime.activation_gpu_devices = (0,)
+    runtime.activation_local_compute_storage = True
+    runtime.activation_gpu_budget_bytes = expected["gpu_activation_budget_bytes"]
+    runtime.activation_cpu_budget_bytes = expected["cpu_activation_budget_bytes"]
+    runtime.compute_parallel_identity = dict(
+        policy="independent_sequence_replicas_ordered_gradient_v1",
+        gpu_count=repair["gpu_count"],
+        repair_sha256=repair["repair_sha256"],
+        **expected,
+    )
+    runtime.identity["compute_parallel"] = runtime.compute_parallel_identity
+
+
+def load_compute_replica(plan, root, rank, visibility, account=None):
+    """Spawn-only loader: CUDA visibility is selected before the first CUDA call."""
+    import torch
+
+    from .freeze import verify_engine_compute_parallel_repair
+    from .training import configure_scientific_training
+
+    if torch.cuda.is_initialized():
+        raise PermissionError("Replica CUDA visibility must be set before initialization")
+    repair = verify_engine_compute_parallel_repair(root)
+    if type(rank) is not int or not 1 <= rank < repair["gpu_count"]:
+        raise PermissionError("Replica rank is outside its authenticated allocation")
+    if not isinstance(visibility, str) or not re.fullmatch(r"GPU-[0-9a-fA-F-]+", visibility):
+        raise PermissionError("Replica requires one positively identified GPU UUID")
+    os.environ["CUDA_VISIBLE_DEVICES"] = visibility
+    account = account or {}
+    task_id = os.environ.get("SR_F1_TASK_ID")
+    if account.get("task_id", task_id) != task_id:
+        raise PermissionError("Replica accounting task identity differs")
+    writer = runtime_account(root, task_id)
+    context = {key: account[key] for key in ("engine_mode", "engine_segment") if key in account}
+    runtime = load_runtime(
+        plan,
+        root,
+        state_id="SRF1_COMMON_START",
+        step=0,
+        account=lambda kind, count, metadata: writer(
+            kind, count, {**metadata, **context, "compute_rank": rank}
+        ),
+        _compute_replica=True,
+    )
+    actual = str(runtime.identity["hardware"].get("cuda_uuid", ""))
+
+    def normalize(value):
+        return value.lower().removeprefix("gpu-").replace("-", "")
+
+    if normalize(actual) != normalize(visibility):
+        raise PermissionError("Replica is running on a different physical GPU")
+    optimizer, scheduler, _ = configure_scientific_training(runtime)
+    if optimizer.state:
+        raise PermissionError("Fresh replica preparation allocated optimizer moments")
+    del optimizer, scheduler
+    runtime.identity["compute_rank"] = rank
+    return runtime
+
+
+def load_runtime(plan, root, *, state_id=None, step=96, account=None, _compute_replica=False):
     from peft import PeftModel
 
     root = Path(root)
@@ -1356,7 +1519,7 @@ def load_runtime(plan, root, *, state_id=None, step=96, account=None):
         or identity.get("model_weights_hash") != plan["model"]["prior_composite_weight_hash"]
     ):
         raise PermissionError("SR-F1 requires the exact original untrained 9B snapshot")
-    scratch, multigpu = {}, None
+    scratch, multigpu, compute = {}, None, None
     if (root / "ENGINE_IO_REPAIR.json").exists():
         from .freeze import verify_engine_io_repair
 
@@ -1374,8 +1537,20 @@ def load_runtime(plan, root, *, state_id=None, step=96, account=None):
             raise PermissionError("Auxiliary GPU runtime requires its registered task identity")
         if task["operation"] in {"engine", "train"}:
             multigpu = repair
+    if (root / "ENGINE_COMPUTE_PARALLEL_REPAIR.json").exists():
+        from .freeze import verify_engine_compute_parallel_repair
+
+        repair = verify_engine_compute_parallel_repair(root)
+        if task["operation"] in {"engine", "train"}:
+            compute, multigpu = repair, None
+    if _compute_replica and compute is None:
+        raise PermissionError("Replica requires a registered compute task and repair")
     determinism = configure_audited_backend()
-    hardware = actual_srf1_cuda_identity(multigpu)
+    hardware = (
+        actual_compute_cuda_identity(compute)
+        if compute and not _compute_replica
+        else actual_srf1_cuda_identity(multigpu)
+    )
     runtime = SRRuntime(
         identity["model_path"],
         account=account,
@@ -1387,6 +1562,8 @@ def load_runtime(plan, root, *, state_id=None, step=96, account=None):
         runtime.activation_gpu_devices = tuple(multigpu["storage_device_indices"])
         runtime.activation_gpu_budget_bytes = multigpu["gpu_activation_budget_bytes"]
         runtime.activation_cpu_budget_bytes = multigpu["cpu_activation_budget_bytes"]
+    if compute is not None:
+        configure_compute_execution(runtime, compute)
     runtime.training_learning_rate = plan["training"]["lr"]
     runtime.verify_identity(identity)
     runtime.identity.update(
@@ -1401,6 +1578,20 @@ def load_runtime(plan, root, *, state_id=None, step=96, account=None):
         )
         runtime.adapter_path = str(bounded_path(root, entry["adapter_path"]))
         runtime.identity.update(entry)
+    if compute is not None and not _compute_replica:
+        runtime.compute_parallel_config = dict(
+            ready_timeout=600,
+            task_timeout=7200,
+            worker_configs=[
+                dict(
+                    plan=plan,
+                    root=str(root),
+                    visibility=device["uuid"],
+                    account=dict(task_id=os.environ["SR_F1_TASK_ID"]),
+                )
+                for device in hardware["compute_devices"][1:]
+            ],
+        )
     return runtime
 
 

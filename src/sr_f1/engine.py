@@ -118,6 +118,8 @@ def _run_segment(plan, root, *, mode, segment, boundary):
             kind, count, {**metadata, "engine_mode": mode, "engine_segment": segment}
         ),
     )
+    for config in getattr(runtime, "compute_parallel_config", {}).get("worker_configs", []):
+        config["account"].update(engine_mode=mode, engine_segment=segment)
     result = execute_path(
         runtime,
         root,
@@ -524,10 +526,70 @@ def _claim_zero_update_recovery_process(root, mode, segment):
     return claim
 
 
+def _previous_compute_mode(root, mode):
+    """Identify traces from an earlier compute revision, even if fully complete."""
+    root = Path(root)
+    repair = root / "ENGINE_COMPUTE_PARALLEL_REPAIR.json"
+    directory = root / "engineering/engine" / mode
+    if not repair.exists() or not directory.exists() or not any(directory.iterdir()):
+        return None
+    current = file_hash(repair)
+    observed = {}
+    for track in ("continuous", "split"):
+        path = directory / track / "RUN_MANIFEST.json"
+        if not (directory / track).exists():
+            continue
+        observed[track] = (
+            read_json(path)
+            .get("run_identity", {})
+            .get("training_identity", {})
+            .get("compute_parallel", {})
+            .get("repair_sha256")
+            if path.exists()
+            else None
+        )
+    complete_requires_both = (directory / "COMPARISON.json").exists()
+    if (
+        not observed
+        or any(value != current for value in observed.values())
+        or (complete_requires_both and set(observed) != {"continuous", "split"})
+    ):
+        return dict(current_compute_repair_sha256=current, prior_track_compute_revisions=observed)
+    return None
+
+
+def _preserve_previous_compute_mode(root, mode):
+    """A new compute implementation must repeat the entire independent 4 vs 2+2."""
+    import time
+
+    evidence = _previous_compute_mode(root, mode)
+    if evidence is None:
+        return None
+    root = Path(root)
+    directory = root / "engineering/engine" / mode
+    archived = root / "engineering/engine_interrupted" / f"{mode}-{time.time_ns()}"
+    archived.parent.mkdir(parents=True, exist_ok=True)
+    os.rename(directory, archived)
+    atomic_json(
+        archived / "COMPUTE_REPAIR_RESTART_PRESERVED.json",
+        dict(
+            **evidence,
+            reason="Previous compute revision cannot certify the current compute implementation",
+            repeat_scope="entire_engine_mode",
+            no_scientific_adapter_inherited=True,
+        ),
+        exclusive=True,
+    )
+    return archived
+
+
 def _preserve_interrupted_mode(root, mode):
     """Retain an interrupted physical trace before repeating its registered trial."""
     import time
 
+    previous_compute = _preserve_previous_compute_mode(root, mode)
+    if previous_compute is not None:
+        return previous_compute
     if _activate_zero_update_recovery(root, mode):
         return None
     directory = Path(root) / "engineering/engine" / mode
@@ -564,10 +626,29 @@ def _run_engine(plan, root, lease):
     gate = root / "ENGINE_PROBABILITY_GRADIENT_RESUME.json"
     if gate.exists():
         result = read_json(gate)
+        if (root / "ENGINE_COMPUTE_PARALLEL_REPAIR.json").exists():
+            for mode in ("natural", "stress"):
+                if mode == "stress" and result.get("stress") is None:
+                    continue
+                directory = root / "engineering/engine" / mode
+                if (
+                    not all(
+                        (directory / track / "RUN_MANIFEST.json").exists()
+                        for track in ("continuous", "split")
+                    )
+                    or _previous_compute_mode(root, mode) is not None
+                ):
+                    raise PermissionError(
+                        "Existing ENGINE gate belongs to a previous compute revision"
+                    )
         for relative, expected in result["artifact_hashes"].items():
             if file_hash(bounded_path(root, relative)) != expected:
                 raise PermissionError("ENGINE gate evidence changed")
         return dict(status="COMPLETE", artifacts=[str(gate.relative_to(root))], metadata=result)
+    # This check precedes COMPARISON reuse: a fully completed old implementation
+    # is still not acceptance evidence for the new compute implementation.
+    for mode in ("natural", "stress"):
+        _preserve_previous_compute_mode(root, mode)
     engine_schedule(root)
     config_path = root / "engineering/ENGINE_CONFIG.json"
     if config_path.exists():

@@ -128,6 +128,11 @@ def configure_scientific_training(runtime):
             "protocol_amendment": runtime.protocol_amendment,
         }
         validate_learning_rate_state(runtime, optimizer.state_dict(), scheduler.state_dict())
+    parallel_identity = getattr(runtime, "compute_parallel_identity", None)
+    if getattr(runtime, "compute_parallel_config", None) is not None:
+        if not isinstance(parallel_identity, dict) or not parallel_identity:
+            raise PermissionError("Parallel training requires immutable compute topology identity")
+        identity = {**identity, "compute_parallel": dict(parallel_identity)}
     return optimizer, scheduler, identity
 
 
@@ -326,44 +331,108 @@ def update(
     probability_summaries = {
         key: dict(sum=0.0, minimum=None, maximum=None) for key in ("old", "reference", "current")
     }
-    for example_index, example in enumerate(examples):
-        if boundary and boundary["requested"]:
+    manager = getattr(runtime, "compute_parallel_manager", None)
+    if manager is not None:
+        total_accum = [None for _ in parameters]
+        processed = 0
+        try:
+            for result in manager.iter_gradients(
+                reference, examples, stress=stress, boundary=boundary
+            ):
+                if boundary and boundary["requested"]:
+                    raise LeaseEnding("PREEMPTION_DURING_UNCOMMITTED_GRADIENT")
+                if len(result["policy_gradients"]) != len(parameters) or len(
+                    result["total_gradients"]
+                ) != len(parameters):
+                    raise PermissionError("Parallel gradient parameter count differs")
+                for index, (parameter, policy, total) in enumerate(
+                    zip(
+                        parameters,
+                        result["policy_gradients"],
+                        result["total_gradients"],
+                        strict=True,
+                    )
+                ):
+                    for gradient in (policy, total):
+                        if gradient.shape != parameter.shape or gradient.dtype != parameter.dtype:
+                            raise PermissionError("Parallel gradient shape or dtype differs")
+                        if not bool(torch.isfinite(gradient).all()):
+                            raise FloatingPointError("Nonfinite parallel sequence gradient")
+                    pg_accum[index].add_(policy.to(parameter.device))
+                    total = total.to(parameter.device)
+                    if total_accum[index] is None:
+                        total_accum[index] = total.clone()
+                    else:
+                        total_accum[index].add_(total)
+                for key, value in result["totals"].items():
+                    totals[key] += value
+                probability_differences.extend(result["differences"])
+                difference_sum += result["difference_sum"]
+                difference_max = max(difference_max, result["difference_max"])
+                token_count += result["token_count"]
+                for key, value in result["probability_summaries"].items():
+                    summary = probability_summaries[key]
+                    summary["sum"] += value["sum"]
+                    low, high = value["minimum"], value["maximum"]
+                    summary["minimum"] = (
+                        low if summary["minimum"] is None else min(summary["minimum"], low)
+                    )
+                    summary["maximum"] = (
+                        high if summary["maximum"] is None else max(summary["maximum"], high)
+                    )
+                processed += 1
+            if processed != 128:
+                raise PermissionError("Parallel update did not return all 128 sequences")
+            for parameter, gradient in zip(parameters, total_accum, strict=True):
+                parameter.grad = gradient
+        except BaseException:
             optimizer.zero_grad(set_to_none=True)
-            raise LeaseEnding("PREEMPTION_DURING_UNCOMMITTED_GRADIENT")
-        record, row, coefficient = example["record"], example["row"], example["advantage"]
-        prepared = runtime.prepare(row, example["root"])
-        reference_values = runtime.reference_forward(prepared, record["tokens"], reference)
-        ref = reference_values["logprobs"].detach()
-        current = runtime.sequence_forward(
-            prepared, record["tokens"], purpose="training_gradient", grad=True
-        )["logprobs"]
-        old = torch.tensor(record["old_logprobs"], dtype=torch.float32, device=current.device)
-        for key, value in (("old", old), ("reference", ref), ("current", current.detach())):
-            summary = probability_summaries[key]
-            summary["sum"] += float(value.sum())
-            low, high = float(value.min()), float(value.max())
-            summary["minimum"] = low if summary["minimum"] is None else min(summary["minimum"], low)
-            summary["maximum"] = (
-                high if summary["maximum"] is None else max(summary["maximum"], high)
+            manager.close(abort=True)
+            raise
+    else:
+        for example_index, example in enumerate(examples):
+            if boundary and boundary["requested"]:
+                optimizer.zero_grad(set_to_none=True)
+                raise LeaseEnding("PREEMPTION_DURING_UNCOMMITTED_GRADIENT")
+            record, row, coefficient = example["record"], example["row"], example["advantage"]
+            prepared = runtime.prepare(row, example["root"])
+            reference_values = runtime.reference_forward(prepared, record["tokens"], reference)
+            ref = reference_values["logprobs"].detach()
+            current = runtime.sequence_forward(
+                prepared, record["tokens"], purpose="training_gradient", grad=True
+            )["logprobs"]
+            old = torch.tensor(record["old_logprobs"], dtype=torch.float32, device=current.device)
+            for key, value in (("old", old), ("reference", ref), ("current", current.detach())):
+                summary = probability_summaries[key]
+                summary["sum"] += float(value.sum())
+                low, high = float(value.min()), float(value.max())
+                summary["minimum"] = (
+                    low if summary["minimum"] is None else min(summary["minimum"], low)
+                )
+                summary["maximum"] = (
+                    high if summary["maximum"] is None else max(summary["maximum"], high)
+                )
+            difference = (current.detach().float() - old).abs()
+            probability_differences.extend(difference.cpu().tolist())
+            difference_sum += float(difference.sum())
+            difference_max = max(difference_max, float(difference.max()))
+            token_count += len(record["tokens"])
+            objective = sequence_objective(
+                current,
+                old,
+                ref,
+                (1.0 if example_index % 2 == 0 else -1.0) if stress else coefficient,
             )
-        difference = (current.detach().float() - old).abs()
-        probability_differences.extend(difference.cpu().tolist())
-        difference_sum += float(difference.sum())
-        difference_max = max(difference_max, float(difference.max()))
-        token_count += len(record["tokens"])
-        objective = sequence_objective(
-            current, old, ref, (1.0 if example_index % 2 == 0 else -1.0) if stress else coefficient
-        )
-        pg = torch.autograd.grad(
-            objective["policy"] / 128, parameters, retain_graph=True, allow_unused=False
-        )
-        for accumulated, gradient in zip(pg_accum, pg, strict=True):
-            if not bool(torch.isfinite(gradient).all()):
-                raise FloatingPointError("Nonfinite isolated policy gradient")
-            accumulated.add_(gradient.detach())
-        (objective["loss"] / 128).backward()
-        for key in ("loss", "policy", "kl", "clip_fraction"):
-            totals[key] += float(objective[key].detach()) / 128
+            pg = torch.autograd.grad(
+                objective["policy"] / 128, parameters, retain_graph=True, allow_unused=False
+            )
+            for accumulated, gradient in zip(pg_accum, pg, strict=True):
+                if not bool(torch.isfinite(gradient).all()):
+                    raise FloatingPointError("Nonfinite isolated policy gradient")
+                accumulated.add_(gradient.detach())
+            (objective["loss"] / 128).backward()
+            for key in ("loss", "policy", "kl", "clip_fraction"):
+                totals[key] += float(objective[key].detach()) / 128
     if boundary and boundary["requested"]:
         optimizer.zero_grad(set_to_none=True)
         raise LeaseEnding("PREEMPTION_DURING_UNCOMMITTED_GRADIENT")
@@ -544,6 +613,44 @@ def execute_path(
     boundary=None,
     on_milestone=None,
 ):
+    """Own persistent replica lifetime for exactly this restored training segment."""
+    try:
+        return _execute_path(
+            runtime,
+            root,
+            directory,
+            run,
+            schedule,
+            questions,
+            tasks,
+            stop_step=stop_step,
+            engine=engine,
+            stress=stress,
+            boundary=boundary,
+            on_milestone=on_milestone,
+        )
+    finally:
+        manager = getattr(runtime, "compute_parallel_manager", None)
+        if manager is not None:
+            manager.close()
+            del runtime.compute_parallel_manager
+
+
+def _execute_path(
+    runtime,
+    root,
+    directory,
+    run,
+    schedule,
+    questions,
+    tasks,
+    *,
+    stop_step=None,
+    engine=False,
+    stress=False,
+    boundary=None,
+    on_milestone=None,
+):
     """Execute only the frozen input stream; independent groups fill one final batch."""
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=True)
@@ -599,6 +706,12 @@ def execute_path(
             sampling_hash=sampling_hash,
         )
         commit_checkpoint(checkpoint_dir, state)
+    parallel_config = getattr(runtime, "compute_parallel_config", None)
+    if parallel_config is not None and getattr(runtime, "compute_parallel_manager", None) is None:
+        from .compute_workers import ComputeParallelManager, unchanged_gradient_rng
+
+        with unchanged_gradient_rng():
+            runtime.compute_parallel_manager = ComputeParallelManager(runtime, **parallel_config)
     start_step = state["committed_logical_step"]
     process = dict(
         pid=os.getpid(),

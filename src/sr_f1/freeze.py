@@ -95,6 +95,359 @@ BASELINE_PARALLEL_ALLOWED_FILES = BASELINE_PARALLEL_REQUIRED_FILES | {
 }
 
 
+ENGINE_COMPUTE_PARALLEL_REPAIR_ID = "SR_F1_1_ENGINE_COMPUTE_PARALLEL_20261010"
+ENGINE_COMPUTE_PARALLEL_REQUIRED_FILES = frozenset(
+    {
+        "src/sr_f1/freeze.py",
+        "src/sr_f1/orchestration.py",
+        "src/sr_f1/training.py",
+        "src/sr_f1/runtime.py",
+        "src/sr_f1/compute_parallel.py",
+        "src/sr_f1/compute_workers.py",
+        "src/sr_f1/recompute.py",
+        "src/sr_f1/engine.py",
+        "scripts/sr_f1/run_worker.py",
+        "scripts/sr_f1/submit_matrix.py",
+        "src/sr_f1/baseline_parallel.py",
+        "scripts/sr_f1/baseline_handoff.py",
+    }
+)
+ENGINE_COMPUTE_PARALLEL_ALLOWED_FILES = ENGINE_COMPUTE_PARALLEL_REQUIRED_FILES | {
+    "scripts/sr_f1/validate_compute_parallel.py",
+    "scripts/sr_f1/validate_compute_parallel_9b.py",
+    "scripts/sr_f1/compute_parallel_maintenance.py",
+    "scripts/sr_f1/validate_baseline_parallel.py",
+}
+COMPUTE_PARALLEL_PREFIX = "technical_incidents/compute_parallel_20261010/"
+
+
+def _compute_parallel_source_context(root):
+    root = Path(root).resolve(strict=True)
+    declared = root / "code_before_engine_compute_parallel_20261010"
+    if declared.is_symlink():
+        raise PermissionError("Pre-compute source must be a real directory")
+    saved = bounded_path(root, declared.name)
+    before = read_json(saved / "SOURCE_DEPLOYMENT.json")
+    _required(
+        _preserved_source_files(saved, include_amendments=True),
+        before.get("source_file_hashes"),
+        "Pre-compute source changed",
+    )
+    parent = _verify_original_engine_multigpu_repair(root, actual_source=before)
+    return root, saved, before, parent
+
+
+def build_engine_compute_parallel_repair(
+    root, *, actual_source, gpu_count, authorized_at, authorized_user_message
+):
+    root, saved, before, parent = _compute_parallel_source_context(root)
+    if type(gpu_count) is not int or not 2 <= gpu_count <= 5:
+        raise PermissionError("Compute GPU count must be from two through five")
+    names = [
+        "PRESERVATION.json",
+        "TERMINAL_JOBS.json",
+        "CPU_STATE_REVIEW.json",
+        "RECOVERY_REVIEW.json",
+        "GPU_PROBE.json",
+    ]
+    previous, current = before["source_file_hashes"], actual_source["source_file_hashes"]
+    return {
+        "schema_version": 1,
+        "repair_id": ENGINE_COMPUTE_PARALLEL_REPAIR_ID,
+        "status": "AUTHORIZED_TECHNICAL_COMPUTE_PARALLEL_REPAIR",
+        "plan_id": PLAN_ID,
+        "run_root": str(root),
+        "original_execution_freeze_sha256": file_hash(root / "EXECUTION_FREEZE.json"),
+        "previous_engine_multigpu_repair_sha256": parent["repair_sha256"],
+        "previous_source_commit": before["source_commit"],
+        "previous_source_tree_sha256": before["source_tree_sha256"],
+        "preserved_source_relative_path": saved.name,
+        "previous_worker_source_sha256": previous["scripts/sr_f1/run_worker.py"],
+        "registration_sha256": file_hash(root / "orchestration/REGISTRATION.json"),
+        "scientific_protocol_unchanged": True,
+        "original_once_consumed_preserved": True,
+        "engine_restart_mode": "FULL_REGISTERED_CONTINUOUS4_SPLIT2_PLUS2",
+        "gradient_reduction": "ORIGINAL_SEQUENCE_ORDER",
+        "gpu_count": gpu_count,
+        "recompute_policy": "native_pure_delta_rule_nonreentrant_recompute_v1",
+        "activation_storage": "LOCAL_GPU48G_CPU48G_EXACT_EXTERNAL_DISK",
+        "gpu_activation_budget_bytes": 48 * 1024**3,
+        "cpu_activation_budget_bytes": 48 * 1024**3,
+        **{
+            key: parent[key]
+            for key in ("activation_spill_directory", "quota_root", "quota_reserve_bytes")
+        },
+        "compute_device_indices": list(range(gpu_count)),
+        "qos": "soujanya-poria-startfund-2026-03",
+        "gpu_worker_constraint": "highmem",
+        "cpus_per_gpu": 4,
+        "minimum_gpu_host_memory_gb_per_gpu": 80,
+        "resource_operations": ["engine", "train", "baseline"],
+        "baseline_partition_mode": "STABLE_SLOT_INDEX_MODULO",
+        "baseline_slot_count": 6784,
+        "baseline_requires_engine_acceptance": True,
+        "authorized_at": authorized_at,
+        "authorized_user_message": authorized_user_message,
+        **actual_source,
+        "worker_source_sha256": current["scripts/sr_f1/run_worker.py"],
+        "changed_files": sorted(
+            n for n in previous.keys() | current.keys() if previous.get(n) != current.get(n)
+        ),
+        "historical_artifact_hashes": {
+            COMPUTE_PARALLEL_PREFIX + n: file_hash(root / (COMPUTE_PARALLEL_PREFIX + n))
+            for n in names
+        },
+    }
+
+
+def verify_engine_compute_parallel_repair(root, actual_source=None):
+    """Authenticate new compute and baseline capabilities without reinterpreting old attempts."""
+    from .prepare import source_identity
+
+    root, _saved, before, parent = _compute_parallel_source_context(root)
+    if (root / "BASELINE_PARALLEL_REPAIR.json").exists():
+        raise PermissionError("Compute revision cannot replace an activated baseline source")
+    path = root / "ENGINE_COMPUTE_PARALLEL_REPAIR.json"
+    repair = read_json(path)
+    count = repair.get("gpu_count")
+    if type(count) is not int or not 2 <= count <= 5:
+        raise PermissionError("Compute GPU count must be from two through five")
+    actual = source_identity() if actual_source is None else actual_source
+    expected = build_engine_compute_parallel_repair(
+        root,
+        actual_source=actual,
+        gpu_count=count,
+        authorized_at=repair.get("authorized_at"),
+        authorized_user_message=repair.get("authorized_user_message"),
+    )
+    _required(repair, expected, "Compute repair/source/history identity differs")
+    if not repair["authorized_at"] or not repair["authorized_user_message"]:
+        raise PermissionError("Compute repair lacks user authorization")
+    previous = _checked_source_files(before.get("source_file_hashes"), "Pre-compute")
+    current = _checked_source_files(actual.get("source_file_hashes"), "Compute")
+    changed = set(repair["changed_files"])
+    if (
+        not ENGINE_COMPUTE_PARALLEL_REQUIRED_FILES.issubset(changed)
+        or not changed.issubset(ENGINE_COMPUTE_PARALLEL_ALLOWED_FILES)
+        or set(previous) - set(current)
+    ):
+        raise PermissionError("Compute repair changed unapproved source or omitted implementation")
+    _required(actual.get("source_dirty_files"), [], "Compute source must be committed")
+    _required(actual.get("source_tree_sha256"), object_hash(current), "Compute tree invalid")
+    if not re.fullmatch(r"[0-9a-f]{40}", actual.get("source_commit", "")):
+        raise PermissionError("Compute source commit missing")
+    prefix = root / COMPUTE_PARALLEL_PREFIX
+    preservation = read_json(prefix / "PRESERVATION.json")
+    entries = preservation.get("artifact_hashes", {})
+    if not entries:
+        raise PermissionError("Compute preservation empty")
+    hashes = _checked_source_files(
+        {n: v.get("sha256") for n, v in entries.items()}, "Compute evidence"
+    )
+    total = 0
+    for name, checksum in hashes.items():
+        preserved = bounded_path(prefix / "evidence", name)
+        if (prefix / "evidence" / name).is_symlink():
+            raise PermissionError("Compute evidence symlink")
+        _required(file_hash(preserved), checksum, "Compute evidence changed")
+        _required(
+            preserved.stat().st_size, entries[name].get("bytes"), "Compute evidence size changed"
+        )
+        total += preserved.stat().st_size
+    _required(preservation.get("files"), len(hashes), "Compute preservation count changed")
+    _required(preservation.get("bytes"), total, "Compute preservation bytes changed")
+    mandatory = {
+        "orchestration/STATE.json",
+        "orchestration/REGISTRATION.json",
+        "orchestration/journal.jsonl",
+        "accounting/ENGINE.jsonl",
+        "technical_incidents/baseline_parallel_20261010/HANDOFF_AUTHORIZATION.json",
+        "technical_incidents/baseline_parallel_20261010/HANDOFF_SUBMISSION.json",
+        "technical_incidents/engine_memory_20261010/ZERO_UPDATE_REUSE_ACTIVATED.json",
+        "technical_incidents/engine_memory_20261010/ZERO_UPDATE_REUSE_PROCESS.json",
+    }
+    track = "engineering/engine/natural/continuous"
+    mandatory |= {track + "/RUN_MANIFEST.json", track + "/checkpoints/LATEST.json"}
+    if not mandatory.issubset(hashes):
+        raise PermissionError("Compute preservation lacks history/checkpoint/handoff")
+    _required(
+        hashes["orchestration/REGISTRATION.json"],
+        repair["registration_sha256"],
+        "Compute registration changed",
+    )
+    state = read_json(prefix / "evidence/orchestration/STATE.json")
+    if state.get("test_sealed") is not True or any(
+        t.get("attempts")
+        for n, t in state.get("tasks", {}).items()
+        if n not in {"COMMON_START", "ENGINE"}
+    ):
+        raise PermissionError("Compute repair requires sealed pre-science history")
+    attempts = state["tasks"]["ENGINE"]["attempts"]
+    maintained = attempts[-1]
+    terminal = read_json(prefix / "TERMINAL_JOBS.json")
+    for key, value in {
+        "controller_terminal": True,
+        "gpu_terminal": True,
+        "controller_queue_empty": True,
+        "gpu_queue_empty": True,
+        "gpu_job_id": str(maintained["job_id"]),
+    }.items():
+        _required(terminal.get(key), value, "Compute maintenance not terminal: " + key)
+    for key in ("controller_terminal_state", "gpu_terminal_state"):
+        if terminal.get(key) not in {
+            "CANCELLED",
+            "COMPLETED",
+            "FAILED",
+            "TIMEOUT",
+            "PREEMPTED",
+            "OUT_OF_MEMORY",
+            "NODE_FAIL",
+        }:
+            raise PermissionError("Compute maintenance terminal state unknown")
+    handoff = read_json(
+        prefix / "evidence/technical_incidents/baseline_parallel_20261010/HANDOFF_SUBMISSION.json"
+    )
+    if handoff.get("returncode") != 0 or not re.fullmatch(
+        r"[0-9]+(?:;[^\s;]+)?", handoff.get("stdout", "").strip()
+    ):
+        raise PermissionError("Superseded baseline handoff job ID unknown")
+    _required(
+        terminal.get("controller_job_id"),
+        handoff["stdout"].strip().split(";")[0],
+        "Wrong baseline handoff controller terminated",
+    )
+    for name in ("ZERO_UPDATE_REUSE_ACTIVATED.json", "ZERO_UPDATE_REUSE_PROCESS.json"):
+        relative = "technical_incidents/engine_memory_20261010/" + name
+        _required(file_hash(root / relative), hashes[relative], "Consumed recovery marker changed")
+    old_auth = read_json(
+        prefix
+        / "evidence/technical_incidents/baseline_parallel_20261010/HANDOFF_AUTHORIZATION.json"
+    )
+    candidate = root / "code_baseline_parallel_candidate_20261010"
+    if candidate.is_symlink():
+        raise PermissionError("Superseded candidate cannot be a symlink")
+    _required(
+        file_hash(candidate / "SOURCE_DEPLOYMENT.json"),
+        old_auth.get("candidate_source_deployment_sha256"),
+        "Superseded candidate identity changed",
+    )
+    candidate_source = read_json(candidate / "SOURCE_DEPLOYMENT.json")
+    _required(
+        _preserved_source_files(candidate, include_amendments=True),
+        candidate_source.get("source_file_hashes"),
+        "Superseded candidate source changed",
+    )
+    latest = read_json(prefix / "evidence" / track / "checkpoints/LATEST.json")
+    step = latest.get("step")
+    if type(step) is not int or not 0 <= step <= 4:
+        raise PermissionError("Compute maintenance checkpoint step invalid")
+    commit_name = track + f"/checkpoints/commit-{step:02d}.json"
+    if commit_name not in hashes:
+        raise PermissionError("Compute checkpoint commit missing")
+    _required(
+        latest, read_json(prefix / "evidence" / commit_name), "Compute checkpoint commit differs"
+    )
+    checkpoint = bounded_path(prefix / "evidence" / track / "checkpoints", latest.get("path", ""))
+    _required(
+        hashes.get(str(checkpoint.relative_to(prefix / "evidence"))),
+        latest.get("sha256"),
+        "Compute checkpoint not preserved",
+    )
+    if not re.fullmatch(r"[0-9a-f]{64}", latest.get("state_hash", "")):
+        raise PermissionError("Compute checkpoint full state hash missing")
+    raw_names = {name for name in hashes if name.startswith(track + "/rollouts/")}
+    completed_raw = {
+        track + f"/rollouts/{n:02d}-{slot:02d}-{sample}.json"
+        for n in range(1, step + 1)
+        for slot in range(16)
+        for sample in range(8)
+    }
+    if not completed_raw.issubset(raw_names):
+        raise PermissionError("Compute preserved completed-step raw slots incomplete")
+    review = read_json(prefix / "CPU_STATE_REVIEW.json")
+    for key, value in {
+        "status": "PASS_PRESERVED_FULL_STATE",
+        "committed_logical_step": step,
+        "checkpoint_state_hash": latest["state_hash"],
+        "checkpoint_file_sha256": latest["sha256"],
+        "raw_record_hashes_verified": True,
+        "optimizer_state_verified": True,
+        "rng_state_verified": True,
+        "learning_rate": 1e-4,
+        "controller_identity_verified": True,
+        "journal_integrity": True,
+    }.items():
+        _required(review.get(key), value, "Compute CPU state review differs: " + key)
+    recovery = read_json(prefix / "RECOVERY_REVIEW.json")
+    for key, value in {
+        "status": "PASS_FULL_ENGINE_RESTART",
+        "science_attempts": 0,
+        "test_sealed": True,
+        "full_engine_restart": True,
+        "no_partial_gradient_reuse": True,
+        "no_old_once_reuse": True,
+        "old_handoff_superseded": True,
+        "old_candidate_preserved": True,
+    }.items():
+        _required(recovery.get(key), value, "Compute recovery differs: " + key)
+    probe = read_json(prefix / "GPU_PROBE.json")
+    for key, value in {
+        "status": "PASS",
+        "numerical_equivalence": True,
+        "exact_ordered_gradient_accumulation": True,
+        "actual_compute_gpu_count": count,
+    }.items():
+        _required(probe.get(key), value, "Compute CUDA probe differs: " + key)
+    numerical = {
+        n
+        for n in current
+        if n
+        in {
+            "src/sr_f1/runtime.py",
+            "src/sr_f1/training.py",
+            "src/sr_f1/compute_parallel.py",
+            "src/sr_f1/compute_workers.py",
+            "src/sr_f1/recompute.py",
+        }
+    }
+    _required(
+        probe.get("source_file_hashes"),
+        {n: current[n] for n in sorted(numerical)},
+        "Compute CUDA probe source differs",
+    )
+    real_binding = probe.get("real_model_probe", {})
+    real_name = COMPUTE_PARALLEL_PREFIX + "REAL_MODEL_PROBE.json"
+    _required(set(real_binding), {"path", "sha256"}, "Real-model probe binding missing")
+    _required(real_binding.get("path"), real_name, "Real-model probe path changed")
+    real_path = bounded_path(root, real_name)
+    _required(file_hash(real_path), real_binding.get("sha256"), "Real-model probe bytes changed")
+    real_probe = read_json(real_path)
+    for key, value in {
+        "status": "PASS",
+        "numerical_equivalence": True,
+        "all_four_actual_compute": True,
+        "actual_compute_gpu_count": count,
+    }.items():
+        _required(real_probe.get(key), value, "Real-model probe acceptance differs: " + key)
+    _required(
+        real_probe.get("source_hashes"),
+        {n: current[n] for n in sorted(numerical)},
+        "Real-model probe source differs",
+    )
+    _required(
+        real_probe.get("synthetic_768_smoke", {}).get("status"),
+        "PASS",
+        "Real-model 768-token memory probe not passed",
+    )
+    return {
+        **repair,
+        "repair_sha256": file_hash(path),
+        "engine_multigpu_repair": parent,
+        "maintained_attempt_id": maintained["attempt_id"],
+        "maintained_job_id": str(maintained["job_id"]),
+    }
+
+
 def _required(value, expected, message):
     if value != expected:
         raise PermissionError(message)
@@ -768,6 +1121,10 @@ def _verify_original_engine_io_repair(root, actual_source=None):
 
 def verify_engine_multigpu_repair(root, actual_source=None):
     """Keep existing ENGINE attempt resource and worker identities immutable."""
+    if (Path(root) / "ENGINE_COMPUTE_PARALLEL_REPAIR.json").exists():
+        return verify_engine_compute_parallel_repair(root, actual_source=actual_source)[
+            "engine_multigpu_repair"
+        ]
     if (Path(root) / "BASELINE_PARALLEL_REPAIR.json").exists():
         latest = verify_baseline_parallel_repair(root, actual_source=actual_source)
         return latest["engine_multigpu_repair"]
@@ -1451,6 +1808,8 @@ def _verify_execution_source(root, original_source, actual_source=None):
     actual = source_identity() if actual_source is None else actual_source
     files = _checked_source_files(actual.get("source_file_hashes"), "Actual")
     _required(actual.get("source_tree_sha256"), object_hash(files), "Actual source hash is invalid")
+    if (Path(root) / "ENGINE_COMPUTE_PARALLEL_REPAIR.json").exists():
+        return verify_engine_compute_parallel_repair(root, actual_source=actual)
     if (Path(root) / "BASELINE_PARALLEL_REPAIR.json").exists():
         return verify_baseline_parallel_repair(root, actual_source=actual)
     if original_source.get("source_tree_sha256") == actual.get("source_tree_sha256"):
@@ -1745,6 +2104,13 @@ def verify_execution(plan, root, require_engine=False):
     _required(identity.get("processor_target_pixels"), 786432, "Native pixel budget changed")
     if require_engine:
         verify_engine_receipt(root)
+    if (root / "ENGINE_COMPUTE_PARALLEL_REPAIR.json").exists():
+        compute = verify_engine_compute_parallel_repair(root)
+        return {
+            **freeze,
+            "engine_compute_parallel_repair": compute,
+            "engine_multigpu_repair": compute["engine_multigpu_repair"],
+        }
     if (root / "BASELINE_PARALLEL_REPAIR.json").exists():
         baseline = verify_baseline_parallel_repair(root)
         return {

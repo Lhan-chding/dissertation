@@ -50,6 +50,27 @@ ENGINE_IO_REPAIR_ID = "SR_F1_1_ENGINE_IO_20261010"
 ENGINE_MULTIGPU_REPAIR_ID = "SR_F1_1_ENGINE_MULTIGPU_20261010"
 BASELINE_PARALLEL_REPAIR_ID = "SR_F1_1_BASELINE_PARALLEL_20261010"
 BASELINE_ALLOCATION_PATH = "BASELINE_PARALLEL_ALLOCATION.json"
+ENGINE_COMPUTE_PARALLEL_REPAIR_ID = "SR_F1_1_ENGINE_COMPUTE_PARALLEL_20261010"
+
+
+def compute_parallel_repair(root):
+    from .freeze import verify_engine_compute_parallel_repair
+
+    repair = verify_engine_compute_parallel_repair(root)
+    require(
+        repair["repair_id"] == ENGINE_COMPUTE_PARALLEL_REPAIR_ID
+        and repair["repair_sha256"]
+        == file_hash(Path(root) / "ENGINE_COMPUTE_PARALLEL_REPAIR.json"),
+        "COMPUTE_PARALLEL_REPAIR_IDENTITY_MISMATCH",
+    )
+    return repair
+
+
+def has_baseline_parallel_repair(root):
+    return any(
+        (Path(root) / name).exists()
+        for name in ("BASELINE_PARALLEL_REPAIR.json", "ENGINE_COMPUTE_PARALLEL_REPAIR.json")
+    )
 
 
 def baseline_parallel_repair(root):
@@ -57,6 +78,17 @@ def baseline_parallel_repair(root):
     from .freeze import verify_baseline_parallel_repair
 
     root = Path(root)
+    if (root / "ENGINE_COMPUTE_PARALLEL_REPAIR.json").exists():
+        compute = compute_parallel_repair(root)
+        return {
+            **compute,
+            "repair_id": BASELINE_PARALLEL_REPAIR_ID,
+            "certification": "ENGINE_COMPUTE_PARALLEL_REPAIR",
+            "max_gpu_count": 5,
+            "resource_operations": ["baseline"],
+            "partition_mode": "STABLE_SLOT_INDEX_MODULO",
+            "baseline_slot_count": 6784,
+        }
     repair = verify_baseline_parallel_repair(root)
     require(
         repair["repair_id"] == BASELINE_PARALLEL_REPAIR_ID
@@ -156,7 +188,7 @@ def multigpu_repair(root):
 
 def resource_override(root, registration, task_id):
     """Resources for a new attempt; old attempts retain their actual single GPU cost."""
-    if task_id == "BASELINE" and (Path(root) / "BASELINE_PARALLEL_REPAIR.json").exists():
+    if task_id == "BASELINE" and has_baseline_parallel_repair(root):
         allocation = baseline_parallel_allocation(root, registration)
         if allocation is None:
             return None
@@ -178,7 +210,11 @@ def resource_override(root, registration, task_id):
         "operation"
     ] not in {"engine", "train"}:
         return None
-    repair = multigpu_repair(root)
+    repair = (
+        compute_parallel_repair(root)
+        if (Path(root) / "ENGINE_COMPUTE_PARALLEL_REPAIR.json").exists()
+        else multigpu_repair(root)
+    )
     require(registration["permission"]["qos"] == TEACHER_QOS, "MULTIGPU_REQUIRES_TEACHER_QOS")
     count = repair["gpu_count"]
     return {
@@ -198,7 +234,26 @@ def attempt_gpu_count(root, registration, task_id, attempt):
     override = attempt.get("resource_override")
     if override is None:
         return registration["tasks"][task_id]["gpus"]
-    require(override == resource_override(root, registration, task_id), "ATTEMPT_RESOURCES_CHANGED")
+    expected = resource_override(root, registration, task_id)
+    if override.get("repair_id") == ENGINE_MULTIGPU_REPAIR_ID:
+        repair = multigpu_repair(root)
+        count = repair["gpu_count"]
+        expected = {
+            "repair_id": repair["repair_id"],
+            "repair_sha256": repair["repair_sha256"],
+            "gpus": count,
+            "gres": f"gpu:pro6000:{count}",
+            "nodes": 1,
+            "cpus_per_task": count * repair["cpus_per_gpu"],
+            "minimum_host_memory_gb": count * repair["minimum_gpu_host_memory_gb_per_gpu"],
+            "constraint": repair["gpu_worker_constraint"],
+            "worker_source_sha256": repair["worker_source_sha256"],
+        }
+        require(
+            registration["tasks"][task_id]["operation"] in {"engine", "train"},
+            "HISTORICAL_OVERRIDE_OPERATION_CHANGED",
+        )
+    require(override == expected, "ATTEMPT_RESOURCES_CHANGED")
     return override["gpus"]
 
 
@@ -667,7 +722,7 @@ class Scheduler:
         if (self.root / "ENGINE_MULTIGPU_REPAIR.json").exists():
             repair = multigpu_repair(self.root)
             current_worker = repair["worker_source_sha256"]
-            if (self.root / "BASELINE_PARALLEL_REPAIR.json").exists():
+            if has_baseline_parallel_repair(self.root):
                 baseline_repair = baseline_parallel_repair(self.root)
                 require(
                     baseline_repair["previous_worker_source_sha256"] == current_worker,
@@ -1078,9 +1133,7 @@ class Scheduler:
         root = self.folder.parent
         permission = self.registration["permission"]
         evidence = {"time": now(), "task_id": task_id}
-        baseline_parallel = (
-            task_id == "BASELINE" and (root / "BASELINE_PARALLEL_REPAIR.json").exists()
-        )
+        baseline_parallel = task_id == "BASELINE" and has_baseline_parallel_repair(root)
         try:
             capacity = self.backend.submission_capacity(permission)
             project = self.backend.project_capacity(permission)
@@ -1190,9 +1243,7 @@ class Scheduler:
         self.verify_execution(
             self.plan, self.root, require_engine=spec["phase"] in {"S3", "S4", "S5", "S6"}
         )
-        baseline_parallel = (
-            task_id == "BASELINE" and (self.root / "BASELINE_PARALLEL_REPAIR.json").exists()
-        )
+        baseline_parallel = task_id == "BASELINE" and has_baseline_parallel_repair(self.root)
         if baseline_parallel:
             require(self._dependencies_ready(spec), "BASELINE_ENGINE_DEPENDENCY_NOT_COMPLETE")
         repair_resume = None
@@ -1207,18 +1258,22 @@ class Scheduler:
                     "REPAIR_RESUME_AUTHORIZATION_CHANGED",
                 )
             elif task_id == "ENGINE" and not task.get("resume_checkpoint"):
+                compute_resume = self.state.get("engine_compute_parallel_repair_resume")
                 multigpu_resume = self.state.get("engine_multigpu_repair_resume")
                 io_resume = self.state.get("engine_io_repair_resume")
                 storage_resume = self.state.get("engine_storage_repair_resume")
                 repair_resume = (
-                    multigpu_resume
+                    compute_resume
+                    or multigpu_resume
                     or io_resume
                     or storage_resume
                     or self.state.get("engine_memory_repair_resume")
                 )
                 require(repair_resume, "RESUME_CHECKPOINT_OR_EXPLICIT_REPAIR_REQUIRED")
                 require(not repair_resume.get("consumed_by_attempt_id"), "REPAIR_ALREADY_CONSUMED")
-                if multigpu_resume:
+                if compute_resume:
+                    verify_repair = self._verify_repaired_engine_compute_parallel
+                elif multigpu_resume:
                     verify_repair = self._verify_repaired_engine_multigpu
                 elif io_resume:
                     verify_repair = self._verify_repaired_engine_io
@@ -2341,6 +2396,134 @@ class Scheduler:
             self.state["tasks"]["ENGINE"]["status"] = "RETRYABLE"
             self._phase()
             self._save("EXPLICIT_REPAIRED_ENGINE_MULTIGPU_RESUME", authorization=authorization)
+            return copy.deepcopy(authorization)
+
+    def _verify_repaired_engine_compute_parallel(self, *, expected_status):
+        """Preserve completed updates as maintenance cost; qualify a fresh complete trace."""
+        root, task = self.root, self.state["tasks"]["ENGINE"]
+        repair = compute_parallel_repair(root)
+        statuses = {expected_status} if isinstance(expected_status, str) else set(expected_status)
+        require(
+            not (root / "STOP").exists() and task["status"] in statuses,
+            "ENGINE_NOT_COMPUTE_REPAIR_ELIGIBLE",
+        )
+        require(
+            task["attempts"]
+            and task["attempts"][-1]["attempt_id"] == repair["maintained_attempt_id"]
+            and task["attempts"][-1]["job_id"] == repair["maintained_job_id"],
+            "COMPUTE_MAINTENANCE_ALLOCATION_MISMATCH",
+        )
+        require(
+            self.state["test_sealed"] is True
+            and self.state["tasks"]["COMMON_START"]["status"] == "COMPLETE"
+            and all(
+                t["status"] == "WAITING" and not t["attempts"]
+                for k, t in self.state["tasks"].items()
+                if k not in {"COMMON_START", "ENGINE"}
+            ),
+            "COMPUTE_REPAIR_FORBIDDEN_AFTER_DOWNSTREAM_WORK",
+        )
+        require(
+            not (root / "ENGINE_PROBABILITY_GRADIENT_RESUME.json").exists()
+            and not (self.folder / "completions/ENGINE.json").exists(),
+            "COMPUTE_REPAIR_ENGINE_ALREADY_COMPLETE",
+        )
+        observations = {}
+        for attempt in task["attempts"]:
+            require(
+                attempt.get("accounting") and attempt["status"] in TERMINAL,
+                "COMPUTE_PRIOR_ATTEMPT_NOT_TERMINAL",
+            )
+            prior = attempt["observation"]
+            require(
+                file_hash(contained(root, prior["path"])) == prior["sha256"],
+                "COMPUTE_PRIOR_OBSERVATION_CHANGED",
+            )
+            observed = self.backend.observe(attempt, self.registration["permission"])
+            for evidence in (read_json(contained(root, prior["path"])), observed):
+                require(not evidence["queue"], "COMPUTE_PRIOR_ALLOCATION_STILL_ACTIVE")
+                require(
+                    summarize_accounting(
+                        evidence["accounting"],
+                        attempt,
+                        self.registration["permission"],
+                        attempt_gpu_count(root, self.registration, "ENGINE", attempt),
+                    )
+                    == attempt["accounting"],
+                    "COMPUTE_PRIOR_ACCOUNTING_CHANGED",
+                )
+            observations[attempt["attempt_id"]] = observed
+        checkpoint_path = f"orchestration/checkpoints/{task['attempts'][-1]['attempt_id']}.json"
+        checkpoint_hash = None
+        if (root / checkpoint_path).exists():
+            require(
+                self._marker_valid("ENGINE", task["attempts"][-1], checkpoint=True),
+                "COMPUTE_MAINTENANCE_CHECKPOINT_INVALID",
+            )
+            require(
+                read_json(root / checkpoint_path)["metadata"].get("restart_engine_track_required")
+                is True,
+                "COMPUTE_FULL_ENGINE_RESTART_REQUIRED",
+            )
+            checkpoint_hash = file_hash(root / checkpoint_path)
+        authorizations = {
+            k: digest(v)
+            for k, v in self.state.items()
+            if k.endswith("_repair_resume") and k != "engine_compute_parallel_repair_resume"
+        }
+        return {
+            **{
+                k: repair[k]
+                for k in (
+                    "repair_id",
+                    "repair_sha256",
+                    "source_commit",
+                    "original_execution_freeze_sha256",
+                    "maintained_attempt_id",
+                    "maintained_job_id",
+                    "gpu_count",
+                )
+            },
+            "registration_hash": digest(self.registration),
+            "original_attempts_sha256": [digest(a) for a in task["attempts"]],
+            "prior_authorizations_sha256": authorizations,
+            "maintenance_checkpoint_path": checkpoint_path if checkpoint_hash else None,
+            "maintenance_checkpoint_sha256": checkpoint_hash,
+            "permitted_next_attempt_id": f"ENGINE_attempt{len(task['attempts']):04d}",
+        }, observations
+
+    def resume_repaired_engine_compute_parallel(self):
+        with (
+            process_lease(self.root.parent / ".sr_f1_project_controller.lock"),
+            process_lease(self.folder / "controller.lock"),
+            worker_lease(self.root, "ENGINE"),
+        ):
+            self._load()
+            require(
+                not self.state.get("engine_compute_parallel_repair_resume"),
+                "ENGINE_COMPUTE_REPAIR_ALREADY_AUTHORIZED",
+            )
+            authorization, observations = self._verify_repaired_engine_compute_parallel(
+                expected_status={"BLOCKED", "RETRYABLE"}
+            )
+            relative = (
+                "orchestration/observations/engine_compute_parallel_repair/"
+                f"{self.sequence + 1:08d}.json"
+            )
+            atomic_json(self.root / relative, observations, exclusive=True)
+            authorization.update(
+                authorized_at=now(),
+                reason="AUTHORIZED_EXACT_PARALLEL_COMPUTE_MAINTENANCE",
+                scheduler_observation={"path": relative, "sha256": file_hash(self.root / relative)},
+                consumed_by_attempt_id=None,
+            )
+            self.state["engine_compute_parallel_repair_resume"] = authorization
+            self.state["tasks"]["ENGINE"].pop("resume_checkpoint", None)
+            self.state["tasks"]["ENGINE"]["status"] = "RETRYABLE"
+            self._phase()
+            self._save(
+                "EXPLICIT_REPAIRED_ENGINE_COMPUTE_PARALLEL_RESUME", authorization=authorization
+            )
             return copy.deepcopy(authorization)
 
     def tick(self):

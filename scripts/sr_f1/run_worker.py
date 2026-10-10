@@ -23,10 +23,12 @@ from sr_f1.orchestration import (
     baseline_parallel_repair,
     checkpoint_task,
     complete_task,
+    compute_parallel_repair,
     digest,
     fail_task,
     file_hash,
     gpu_count,
+    has_baseline_parallel_repair,
     multigpu_repair,
     read_json,
     require,
@@ -34,6 +36,17 @@ from sr_f1.orchestration import (
     verify_multigpu_resources,
     worker_lease,
 )
+
+
+def current_worker_repair(root):
+    """Authenticate the newest worker revision; never fall back after a failed check."""
+    if (root / "ENGINE_COMPUTE_PARALLEL_REPAIR.json").exists():
+        return compute_parallel_repair(root)
+    if (root / "BASELINE_PARALLEL_REPAIR.json").exists():
+        return baseline_parallel_repair(root)
+    if (root / "ENGINE_MULTIGPU_REPAIR.json").exists():
+        return multigpu_repair(root)
+    return None
 
 
 def validate_allocation(root, task_id, *, backend=None):
@@ -64,12 +77,8 @@ def validate_allocation(root, task_id, *, backend=None):
         "WORKER_ATTEMPT_RESOURCE_IDENTITY_MISMATCH",
     )
     expected_gpus = attempt_gpu_count(root, registration, task_id, manifest)
-    if (root / "ENGINE_MULTIGPU_REPAIR.json").exists():
-        repair = (
-            baseline_parallel_repair(root)
-            if (root / "BASELINE_PARALLEL_REPAIR.json").exists()
-            else multigpu_repair(root)
-        )
+    repair = current_worker_repair(root)
+    if repair is not None:
         require(
             file_hash(Path(__file__)) == repair["worker_source_sha256"],
             "LIVE_WORKER_SOURCE_REVISION_CHANGED",
@@ -125,7 +134,7 @@ def dispatch(plan, root, spec):
 
         return train_path(plan, root, spec["run_id"])
     if operation == "evaluate":
-        if spec["stage"] == "baseline" and (root / "BASELINE_PARALLEL_REPAIR.json").exists():
+        if spec["stage"] == "baseline" and has_baseline_parallel_repair(root):
             from sr_f1.baseline_parallel import run_parallel_baseline
             from sr_f1.orchestration import baseline_parallel_allocation
 
