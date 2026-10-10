@@ -65,6 +65,20 @@ ENGINE_IO_ALLOWED_FILES = frozenset(
     }
 )
 
+ENGINE_MULTIGPU_REPAIR_ID = "SR_F1_1_ENGINE_MULTIGPU_20261010"
+ENGINE_MULTIGPU_REQUIRED_FILES = frozenset(
+    {
+        "src/sr_f1/freeze.py",
+        "src/sr_f1/runtime.py",
+        "src/sr_f1/orchestration.py",
+        "scripts/sr_f1/submit_matrix.py",
+        "scripts/sr_f1/run_worker.py",
+    }
+)
+ENGINE_MULTIGPU_ALLOWED_FILES = ENGINE_MULTIGPU_REQUIRED_FILES | {
+    "scripts/sr_f1/validate_multigpu.py",
+}
+
 
 def _required(value, expected, message):
     if value != expected:
@@ -490,6 +504,35 @@ def _verify_original_engine_storage_repair(root, actual_source=None):
 
 
 def verify_engine_io_repair(root, actual_source=None):
+    """Keep the original I/O receipt's identity through later GPU storage repair."""
+    if (Path(root) / "ENGINE_MULTIGPU_REPAIR.json").exists():
+        multi = verify_engine_multigpu_repair(root, actual_source=actual_source)
+        original = read_json(Path(root) / "ENGINE_IO_REPAIR.json")
+        return {
+            "repair_id": ENGINE_IO_REPAIR_ID,
+            "repair_sha256": file_hash(Path(root) / "ENGINE_IO_REPAIR.json"),
+            "source_commit": multi["source_commit"],
+            **{
+                key: original[key]
+                for key in (
+                    "original_execution_freeze_sha256",
+                    "previous_engine_storage_repair_sha256",
+                    "failed_attempt_id",
+                    "failed_job_id",
+                    "gpu_worker_constraint",
+                    "minimum_gpu_host_memory_gb",
+                    "activation_spill_directory",
+                    "quota_root",
+                    "quota_reserve_bytes",
+                    "cpu_activation_budget_bytes",
+                )
+            },
+            "engine_multigpu_repair_sha256": multi["repair_sha256"],
+        }
+    return _verify_original_engine_io_repair(root, actual_source=actual_source)
+
+
+def _verify_original_engine_io_repair(root, actual_source=None):
     """Authenticate external derived storage and an interrupted ENGINE restart.
 
     Original receipts, recovery bytes and consumed markers remain immutable.
@@ -705,6 +748,279 @@ def verify_engine_io_repair(root, actual_source=None):
                 "cpu_activation_budget_bytes",
             )
         },
+    }
+
+
+def verify_engine_multigpu_repair(root, actual_source=None):
+    """Verify a fixed GPU activation-storage override and complete ENGINE restart.
+
+    The original single-card registration and every prior receipt remain intact.
+    This only authenticates resources and technical source; ENGINE still certifies
+    its entire fresh four-step versus two-plus-two trace before science starts.
+    """
+    from .prepare import source_identity
+
+    root = Path(root).resolve(strict=True)
+    repair_path = root / "ENGINE_MULTIGPU_REPAIR.json"
+    repair = read_json(repair_path)
+    declared_source = root / "code_before_engine_multigpu_20261010"
+    if declared_source.is_symlink():
+        raise PermissionError("Pre-multiGPU source snapshot must be a real directory")
+    saved_source = bounded_path(root, declared_source.name)
+    before = read_json(saved_source / "SOURCE_DEPLOYMENT.json")
+    _required(
+        _preserved_source_files(saved_source, include_amendments=True),
+        before.get("source_file_hashes"),
+        "Pre-multiGPU source changed",
+    )
+    parent = _verify_original_engine_io_repair(root, actual_source=before)
+    count = repair.get("gpu_count")
+    if type(count) is not int or not 2 <= count <= 5:
+        raise PermissionError("MultiGPU count must be an immutable integer from two through five")
+    registration_path = root / "orchestration/REGISTRATION.json"
+    registration = read_json(registration_path)
+    worker_name = "scripts/sr_f1/run_worker.py"
+    previous_worker = before["source_file_hashes"].get(worker_name)
+    if not isinstance(previous_worker, str) or not re.fullmatch(r"[0-9a-f]{64}", previous_worker):
+        raise PermissionError("MultiGPU source lacks the prior worker identity")
+    _required(
+        registration.get("freeze_sha256"),
+        parent["original_execution_freeze_sha256"],
+        "MultiGPU registration belongs to another freeze",
+    )
+    _required(
+        registration.get("source_hashes", {}).get(worker_name),
+        previous_worker,
+        "MultiGPU registration does not preserve the original worker source",
+    )
+    _required(
+        registration.get("permission", {}).get("qos"),
+        "soujanya-poria-startfund-2026-03",
+        "MultiGPU teacher QoS changed",
+    )
+    expected = {
+        "repair_id": ENGINE_MULTIGPU_REPAIR_ID,
+        "status": "AUTHORIZED_TECHNICAL_MULTIGPU_REPAIR",
+        "plan_id": PLAN_ID,
+        "run_root": str(root),
+        "original_execution_freeze_sha256": parent["original_execution_freeze_sha256"],
+        "previous_engine_io_repair_sha256": parent["repair_sha256"],
+        "previous_source_commit": before["source_commit"],
+        "previous_source_tree_sha256": before["source_tree_sha256"],
+        "preserved_source_relative_path": saved_source.name,
+        "registration_sha256": file_hash(registration_path),
+        "previous_worker_source_sha256": previous_worker,
+        "scientific_protocol_unchanged": True,
+        "original_once_consumed_preserved": True,
+        "engine_restart_mode": "FULL_REGISTERED_CONTINUOUS4_SPLIT2_PLUS2",
+        "maintained_attempt_id": "ENGINE_attempt0003",
+        "maintained_job_id": "196227",
+        "gpu_count": count,
+        "compute_device_index": 0,
+        "storage_device_indices": list(range(1, count)),
+        "gpu_activation_budget_bytes": 80 * 1024**3,
+        "cpu_activation_budget_bytes": parent["cpu_activation_budget_bytes"],
+        "activation_storage": "AUXILIARY_GPU_THEN_BOUNDED_CPU_EXACT_EXTERNAL_DISK",
+        "gpu_worker_constraint": "highmem",
+        "minimum_gpu_host_memory_gb_per_gpu": 80,
+        "minimum_gpu_host_memory_gb": 80 * count,
+        "cpus_per_gpu": 4,
+        "qos": "soujanya-poria-startfund-2026-03",
+        "resource_operations": ["engine", "train"],
+        **{
+            key: parent[key]
+            for key in (
+                "activation_spill_directory",
+                "quota_root",
+                "quota_reserve_bytes",
+            )
+        },
+    }
+    for key, value in expected.items():
+        _required(repair.get(key), value, "ENGINE multiGPU repair differs: " + key)
+    if not repair.get("authorized_user_message") or not repair.get("authorized_at"):
+        raise PermissionError("MultiGPU repair lacks user authorization provenance")
+    prefix = "technical_incidents/multigpu_20261010/"
+    required = {
+        prefix + name
+        for name in (
+            "PRESERVATION.json",
+            "TERMINAL_JOBS.json",
+            "CPU_STATE_REVIEW.json",
+            "RECOVERY_REVIEW.json",
+        )
+    }
+    artifacts = _checked_source_files(repair.get("historical_artifact_hashes"), "MultiGPU history")
+    if not required.issubset(artifacts) or any(not name.startswith(prefix) for name in artifacts):
+        raise PermissionError("MultiGPU history inventory is missing or unbounded")
+    for name, expected_hash in artifacts.items():
+        _required(file_hash(bounded_path(root, name)), expected_hash, "MultiGPU history changed")
+    preservation = read_json(root / (prefix + "PRESERVATION.json"))
+    files = preservation.get("artifact_hashes")
+    if not isinstance(files, dict) or not files:
+        raise PermissionError("MultiGPU preservation inventory empty")
+    hashes = _checked_source_files(
+        {
+            name: entry.get("sha256") if isinstance(entry, dict) else None
+            for name, entry in files.items()
+        },
+        "MultiGPU preserved",
+    )
+    _required(preservation.get("files"), len(hashes), "MultiGPU preservation file count differs")
+    evidence = root / (prefix + "evidence")
+    preserved_bytes = 0
+    for name, expected_hash in hashes.items():
+        declared = evidence / name
+        if declared.is_symlink():
+            raise PermissionError("Preserved multiGPU artifact is a symlink")
+        saved = bounded_path(evidence, name)
+        _required(file_hash(saved), expected_hash, "Preserved multiGPU artifact changed")
+        size = files[name].get("bytes")
+        if type(size) is not int or size < 0:
+            raise PermissionError("Preserved multiGPU artifact size invalid")
+        _required(saved.stat().st_size, size, "Preserved multiGPU artifact size changed")
+        preserved_bytes += size
+    _required(
+        preservation.get("bytes"), preserved_bytes, "MultiGPU preservation byte count differs"
+    )
+    terminal = read_json(root / (prefix + "TERMINAL_JOBS.json"))
+    for key, value in {
+        "controller_terminal": True,
+        "gpu_terminal": True,
+        "controller_job_id": "196225",
+        "gpu_job_id": expected["maintained_job_id"],
+        "controller_terminal_state": "CANCELLED",
+        "gpu_terminal_state": "CANCELLED",
+    }.items():
+        _required(terminal.get(key), value, "MultiGPU maintenance allocations not terminal: " + key)
+    mandatory = {"orchestration/STATE.json", "orchestration/REGISTRATION.json"}
+    track = "engineering/engine/natural/continuous"
+    mandatory |= {
+        track + "/" + name
+        for name in (
+            "RUN_MANIFEST.json",
+            "checkpoints/LATEST.json",
+            "checkpoints/commit-00.json",
+        )
+    }
+    if not mandatory.issubset(hashes):
+        raise PermissionError("MultiGPU preservation lacks complete state identities")
+    _required(
+        hashes["orchestration/REGISTRATION.json"],
+        expected["registration_sha256"],
+        "MultiGPU history registration changed",
+    )
+    state = read_json(evidence / "orchestration/STATE.json")
+    if state.get("test_sealed") is not True or any(
+        task.get("attempts")
+        for name, task in state.get("tasks", {}).items()
+        if name not in {"COMMON_START", "ENGINE"}
+    ):
+        raise PermissionError("MultiGPU repair does not preserve sealed pre-science history")
+    attempts = state.get("tasks", {}).get("ENGINE", {}).get("attempts", [])
+    if not any(
+        attempt.get("attempt_id") == expected["maintained_attempt_id"]
+        and str(attempt.get("job_id")) == expected["maintained_job_id"]
+        for attempt in attempts
+    ):
+        raise PermissionError("MultiGPU history lacks the maintained ENGINE allocation")
+    latest = read_json(evidence / track / "checkpoints/LATEST.json")
+    _required(
+        latest,
+        read_json(evidence / track / "checkpoints/commit-00.json"),
+        "MultiGPU preserved checkpoint commit differs",
+    )
+    _required(latest.get("step"), 0, "MultiGPU maintenance requires preserved committed step zero")
+    checkpoint = bounded_path(evidence / track / "checkpoints", latest.get("path", ""))
+    checkpoint_name = str(checkpoint.relative_to(evidence))
+    _required(
+        hashes.get(checkpoint_name),
+        latest.get("sha256"),
+        "MultiGPU checkpoint bytes are not authenticated",
+    )
+    if checkpoint_name not in hashes or not re.fullmatch(
+        r"[0-9a-f]{64}", latest.get("state_hash", "")
+    ):
+        raise PermissionError("MultiGPU full checkpoint identity missing")
+    raw_names = {f"01-{slot:02d}-{index}.json" for slot in range(16) for index in range(8)}
+    raw_hashes = {
+        Path(name).name: sha
+        for name, sha in hashes.items()
+        if name.startswith(track + "/rollouts/")
+    }
+    _required(set(raw_hashes), raw_names, "MultiGPU current raw sample slots are incomplete")
+    if any(track + "/rollouts/" + name not in hashes for name in raw_names):
+        raise PermissionError("MultiGPU current raw sample paths differ")
+    review = read_json(root / (prefix + "CPU_STATE_REVIEW.json"))
+    for key, value in {
+        "status": "PASS_ZERO_UPDATE_FULL_STATE",
+        "committed_logical_step": 0,
+        "physical_optimizer_updates": 0,
+        "optimizer_empty": True,
+        "raw_rollouts": 128,
+        "raw_record_hashes_verified": True,
+        "learning_rate": 1e-4,
+        "checkpoint_state_hash": latest["state_hash"],
+        "checkpoint_file_sha256": latest["sha256"],
+        "raw_file_hashes": raw_hashes,
+        "source_commit": before["source_commit"],
+    }.items():
+        _required(review.get(key), value, "Invalid multiGPU full-state review: " + key)
+    recovery = read_json(root / (prefix + "RECOVERY_REVIEW.json"))
+    for key, value in {
+        "status": "PASS_INTERRUPTED_ENGINE_RESTART",
+        "science_attempts": 0,
+        "test_sealed": True,
+        "once_activation_consumed": True,
+        "once_process_consumed": True,
+        "journal_integrity": True,
+        "original_artifact_hashes_unchanged": True,
+        "full_engine_restart": True,
+        "no_partial_gradient_reuse": True,
+        "no_old_once_reuse": True,
+    }.items():
+        _required(recovery.get(key), value, "Invalid multiGPU recovery review: " + key)
+    old_prefix = "technical_incidents/engine_memory_20261010/"
+    for name in ("ZERO_UPDATE_REUSE_ACTIVATED.json", "ZERO_UPDATE_REUSE_PROCESS.json"):
+        relative = old_prefix + name
+        if relative not in hashes:
+            raise PermissionError("MultiGPU history lacks consumed recovery markers")
+        _required(
+            file_hash(bounded_path(root, relative)),
+            hashes[relative],
+            "MultiGPU consumed marker changed",
+        )
+    actual = source_identity() if actual_source is None else actual_source
+    previous_files = _checked_source_files(before.get("source_file_hashes"), "Pre-multiGPU")
+    current_files = _checked_source_files(actual.get("source_file_hashes"), "MultiGPU actual")
+    _required(actual.get("source_dirty_files"), [], "MultiGPU repair requires committed source")
+    _required(actual.get("source_tree_sha256"), object_hash(current_files), "MultiGPU tree invalid")
+    changed = sorted(
+        name
+        for name in previous_files.keys() | current_files.keys()
+        if previous_files.get(name) != current_files.get(name)
+    )
+    if not ENGINE_MULTIGPU_REQUIRED_FILES.issubset(changed) or not set(changed).issubset(
+        ENGINE_MULTIGPU_ALLOWED_FILES
+    ):
+        raise PermissionError("MultiGPU repair changed scientific source or omitted required files")
+    if set(previous_files) - set(current_files):
+        raise PermissionError("MultiGPU repair cannot remove frozen source files")
+    _required(repair.get("changed_files"), changed, "MultiGPU repair file inventory differs")
+    _required(
+        repair.get("worker_source_sha256"),
+        current_files[worker_name],
+        "MultiGPU current worker revision differs",
+    )
+    for key in ("source_commit", "source_tree_sha256", "source_file_hashes"):
+        _required(repair.get(key), actual.get(key), "MultiGPU source identity differs: " + key)
+    if not re.fullmatch(r"[0-9a-f]{40}", actual.get("source_commit") or ""):
+        raise PermissionError("MultiGPU repair source commit missing")
+    return {
+        **expected,
+        "repair_sha256": file_hash(repair_path),
+        "source_commit": actual["source_commit"],
+        "worker_source_sha256": current_files[worker_name],
     }
 
 
@@ -1130,6 +1446,8 @@ def verify_execution(plan, root, require_engine=False):
     _required(identity.get("processor_target_pixels"), 786432, "Native pixel budget changed")
     if require_engine:
         verify_engine_receipt(root)
+    if (root / "ENGINE_MULTIGPU_REPAIR.json").exists():
+        return {**freeze, "engine_multigpu_repair": verify_engine_multigpu_repair(root)}
     return freeze
 
 

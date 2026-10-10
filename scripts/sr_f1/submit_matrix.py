@@ -90,6 +90,11 @@ def main():
     )
     parser.add_argument("--poll-seconds", type=int, default=30)
     parser.add_argument(
+        "--resume-repaired-engine-multigpu",
+        action="store_true",
+        help="One-shot authenticated ENGINE performance maintenance; submits no jobs",
+    )
+    parser.add_argument(
         "--controller-requeue-on-lease",
         action="store_true",
         help="Continue this CPU controller JobID on USR1/TERM; requires Slurm --requeue",
@@ -101,6 +106,7 @@ def main():
             args.resume_repaired_engine,
             args.resume_repaired_engine_storage,
             args.resume_repaired_engine_io,
+            args.resume_repaired_engine_multigpu,
         )
     )
     if repaired_resumes and (
@@ -151,6 +157,12 @@ def main():
                 return 0
             if args.resume_repaired_engine_io:
                 print(json.dumps(scheduler.resume_repaired_engine_io(), sort_keys=True), flush=True)
+                return 0
+            if args.resume_repaired_engine_multigpu:
+                print(
+                    json.dumps(scheduler.resume_repaired_engine_multigpu(), sort_keys=True),
+                    flush=True,
+                )
                 return 0
             if args.resume_stopped:
                 scheduler.resume_stopped()

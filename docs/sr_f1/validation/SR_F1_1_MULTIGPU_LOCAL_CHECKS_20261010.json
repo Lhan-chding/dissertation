@@ -1,0 +1,15 @@
+{
+  "time": "2026-10-10T03:06:40.184410+00:00",
+  "status": "PASS_LOCAL_CPU_REGRESSION_NOT_REAL_CUDA_ENGINE",
+  "pytest_summary": "742 passed, 4 skipped, 6 subtests passed in 27.59s",
+  "pytest_log_sha256": "5902a8d84936bdd2c70c3a57bcc440e1066eeda458b5076205c30fb2955547f8",
+  "cuda_skips": 4,
+  "ruff": "PASS",
+  "ruff_format": "53 files already formatted",
+  "shell_syntax": "PASS controller.sbatch",
+  "package_original_files_verified": 76,
+  "scientific_protocol_changed": false,
+  "deployment_status": "NOT_YET_DEPLOYED",
+  "planned_engine_and_train_gpus": 4,
+  "teacher_qos_gpu_reservations_maximum": 5
+}

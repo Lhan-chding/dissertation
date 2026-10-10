@@ -8,10 +8,14 @@ from __future__ import annotations
 
 import contextlib
 import copy
+import csv
 import errno
 import hashlib
 import math
 import os
+import re
+import socket
+import subprocess
 import sys
 import tempfile
 import threading
@@ -341,6 +345,27 @@ class _ActivationSpillFile:
                 _activation_failure_receipt(self.path.parent, error, self.statistics)
 
 
+class _GPUActivation:
+    """A saved snapshot lives until the last retained autograd graph releases it."""
+
+    def __init__(self, tensor, statistics, device_statistics):
+        self.tensor = tensor
+        self.statistics, self.device_statistics = statistics, device_statistics
+        self.size = tensor.numel() * tensor.element_size()
+        device_statistics["live_bytes"] += self.size
+        device_statistics["peak_live_bytes"] = max(
+            device_statistics["peak_live_bytes"], device_statistics["live_bytes"]
+        )
+
+    def __del__(self):
+        # Dropping the tensor returns the allocation to PyTorch's reusable cache;
+        # do not run empty_cache or synchronize once per tiny saved activation.
+        self.tensor = None
+        self.device_statistics["live_bytes"] -= self.size
+        self.device_statistics["released_tensors"] += 1
+        self.statistics["gpu_released_bytes"] += self.size
+
+
 class SavedActivationOffload:
     """Bound CPU activation storage and spill exact bytes to authenticated scratch.
 
@@ -352,7 +377,9 @@ class SavedActivationOffload:
     """
 
     policy = "saved_activation_cpu48g_lossless_disk_parameter_resident_v2"
+    gpu_policy = "saved_activation_auxgpu80g_cpu48g_lossless_disk_parameter_resident_v3"
     default_cpu_budget_bytes = 48 << 30
+    default_gpu_budget_bytes = 80 << 30
 
     def __init__(
         self,
@@ -362,18 +389,31 @@ class SavedActivationOffload:
         cpu_budget_bytes=default_cpu_budget_bytes,
         spill_directory=None,
         quota_root=None,
+        gpu_devices=(),
+        gpu_budget_bytes=default_gpu_budget_bytes,
     ):
         import torch
 
         if type(cpu_budget_bytes) is not int or cpu_budget_bytes < 0:
             raise ValueError("Activation CPU budget must be a nonnegative integer")
+        if type(gpu_budget_bytes) is not int or gpu_budget_bytes <= 0:
+            raise ValueError("Activation GPU budget must be a positive integer")
+        gpu_devices = tuple(gpu_devices)
+        if gpu_devices and (
+            any(type(index) is not int for index in gpu_devices)
+            or gpu_devices != tuple(range(1, len(gpu_devices) + 1))
+            or len(gpu_devices) > 4
+            or torch.cuda.device_count() != len(gpu_devices) + 1
+        ):
+            raise PermissionError("Activation GPUs must be the allocated auxiliary CUDA devices")
+        self.gpu_devices, self.gpu_budget_bytes = gpu_devices, gpu_budget_bytes
         self.output_root, self.cpu_budget_bytes = output_root, cpu_budget_bytes
         self.spill_directory, self.quota_root = spill_directory, quota_root
         self.parameter_storages = {self._storage_key(parameter) for parameter in model.parameters()}
         self.hooks = torch.autograd.graph.saved_tensors_hooks(self.pack, self.unpack)
         self.store = None
         self.statistics = dict(
-            policy=self.policy,
+            policy=self.gpu_policy if gpu_devices else self.policy,
             pin_memory=False,
             saved_activation_tensors=0,
             saved_activation_bytes=0,
@@ -384,6 +424,22 @@ class SavedActivationOffload:
             unpacked_activation_bytes=0,
             cpu_budget_bytes=cpu_budget_bytes,
             cpu_storage_bytes=0,
+            gpu_storage_bytes=0,
+            gpu_saved_tensors=0,
+            gpu_read_bytes=0,
+            gpu_released_bytes=0,
+            gpu_devices={
+                str(index): dict(
+                    budget_bytes=gpu_budget_bytes,
+                    storage_bytes=0,
+                    saved_tensors=0,
+                    read_bytes=0,
+                    live_bytes=0,
+                    peak_live_bytes=0,
+                    released_tensors=0,
+                )
+                for index in gpu_devices
+            },
             disk_storage_bytes=0,
             disk_saved_tensors=0,
             disk_read_bytes=0,
@@ -428,7 +484,33 @@ class SavedActivationOffload:
         )
         flat = torch.as_strided(tensor.detach(), (elements,), (1,), tensor.storage_offset())
         storage_bytes = elements * tensor.element_size()
-        if self.statistics["cpu_storage_bytes"] + storage_bytes <= self.cpu_budget_bytes:
+        packed = None
+        # Stable least-stored placement exercises the allocated auxiliary cards
+        # without asynchronous streams or any change to compute/RNG ordering.
+        for index in sorted(
+            self.gpu_devices,
+            key=lambda device: self.statistics["gpu_devices"][str(device)]["storage_bytes"],
+        ):
+            device_statistics = self.statistics["gpu_devices"][str(index)]
+            if device_statistics["storage_bytes"] + storage_bytes > self.gpu_budget_bytes:
+                continue
+            # Synchronous copy preserves the exact storage span, including holes
+            # in noncontiguous views. Only this hook snapshot moves; the model's
+            # values and full recurrent graph remain on the original device.
+            saved = flat.to(device=f"cuda:{index}", copy=True, non_blocking=False)
+            packed = (
+                "gpu_activation",
+                metadata,
+                _GPUActivation(saved, self.statistics, device_statistics),
+            )
+            device_statistics["storage_bytes"] += storage_bytes
+            device_statistics["saved_tensors"] += 1
+            self.statistics["gpu_storage_bytes"] += storage_bytes
+            self.statistics["gpu_saved_tensors"] += 1
+            break
+        if packed is not None:
+            pass
+        elif self.statistics["cpu_storage_bytes"] + storage_bytes <= self.cpu_budget_bytes:
             saved = flat.to(device="cpu", copy=True)
             self.statistics["cpu_storage_bytes"] += storage_bytes
             packed = "activation", metadata, saved
@@ -459,11 +541,14 @@ class SavedActivationOffload:
                 raise error
             return first
         try:
-            saved = (
-                second.store.restore(second, first)
-                if kind == "disk_activation"
-                else second.to(first["device"])
-            )
+            if kind == "disk_activation":
+                saved = second.store.restore(second, first)
+            elif kind == "gpu_activation":
+                saved = second.tensor.to(first["device"], copy=True, non_blocking=False)
+                self.statistics["gpu_read_bytes"] += second.size
+                second.device_statistics["read_bytes"] += second.size
+            else:
+                saved = second.to(first["device"])
             result = saved.as_strided(first["shape"], first["stride"])
             self.statistics["unpacked_activation_tensors"] += 1
             self.statistics["unpacked_activation_bytes"] += result.numel() * result.element_size()
@@ -487,6 +572,8 @@ class SavedActivationOffload:
     def abort(self, error=None):
         if self.store is not None:
             self.store.abort(error)
+        elif error is not None and self.gpu_devices:
+            _activation_failure_receipt(self.spill_directory, error, self.statistics)
 
 
 def generation_recipe(*, max_new_tokens=768, do_sample=True):
@@ -1013,6 +1100,12 @@ class SRRuntime(QwenRuntime):
                     "activation_cpu_budget_bytes",
                     SavedActivationOffload.default_cpu_budget_bytes,
                 ),
+                gpu_devices=getattr(self, "activation_gpu_devices", ()),
+                gpu_budget_bytes=getattr(
+                    self,
+                    "activation_gpu_budget_bytes",
+                    SavedActivationOffload.default_gpu_budget_bytes,
+                ),
             )
             if grad
             else None
@@ -1158,6 +1251,101 @@ def verified_adapter(root, model_id, step=96):
     return entry
 
 
+def actual_srf1_cuda_identity(repair=None):
+    """Inspect an authenticated compute GPU plus exact auxiliary-storage GPUs.
+
+    The shared F2 single-device contract is deliberately left unchanged. The
+    caller obtains repair only from verify_engine_multigpu_repair, never a raw
+    JSON read. Dynamic free-memory observations are checks, not stable identity.
+    """
+    if repair is None:
+        return actual_cuda_identity()
+    import torch
+
+    count = repair.get("gpu_count")
+    if (
+        type(count) is not int
+        or not 2 <= count <= 5
+        or type(repair.get("compute_device_index")) is not int
+        or repair.get("compute_device_index") != 0
+        or repair.get("storage_device_indices") != list(range(1, count))
+        or any(type(index) is not int for index in repair.get("storage_device_indices", []))
+        or repair.get("gpu_activation_budget_bytes") != 80 << 30
+        or repair.get("cpu_activation_budget_bytes") != 48 << 30
+        or repair.get("activation_storage") != "AUXILIARY_GPU_THEN_BOUNDED_CPU_EXACT_EXTERNAL_DISK"
+        or not re.fullmatch(r"[0-9a-f]{64}", repair.get("repair_sha256") or "")
+        or torch.cuda.device_count() != count
+    ):
+        raise PermissionError("SR-F1 auxiliary GPU allocation differs from authenticated repair")
+    query = subprocess.run(
+        [
+            "nvidia-smi",
+            "--query-gpu=name,uuid,pci.bus_id,driver_version,memory.total",
+            "--format=csv,noheader,nounits",
+        ],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    devices = [
+        dict(
+            zip(
+                ("name", "uuid", "pci_bus_id", "driver_version", "memory_mib"),
+                (part.strip() for part in row),
+                strict=True,
+            )
+        )
+        for row in csv.reader(query.stdout.splitlines())
+        if row
+    ]
+
+    def normalize(value):
+        return value.lower().removeprefix("gpu-").replace("-", "")
+
+    observed = []
+    for index in range(count):
+        properties = torch.cuda.get_device_properties(index)
+        uuid = str(getattr(properties, "uuid", ""))
+        matches = [device for device in devices if normalize(device["uuid"]) == normalize(uuid)]
+        if (
+            "RTX PRO 6000" not in properties.name.upper()
+            or not uuid
+            or len(matches) != 1
+            or matches[0]["name"] != properties.name
+        ):
+            raise PermissionError("Allocated SR-F1 CUDA/driver GPU identity differs")
+        if index and (
+            torch.cuda.mem_get_info(index)[0] < repair["gpu_activation_budget_bytes"] + (4 << 30)
+        ):
+            raise PermissionError("Auxiliary GPU has insufficient memory for authenticated budget")
+        observed.append(
+            dict(
+                index=index,
+                role="compute" if index == 0 else "saved_activation_storage",
+                cuda_name=properties.name,
+                cuda_total_memory_bytes=properties.total_memory,
+                cuda_uuid=uuid,
+                compute_capability=[properties.major, properties.minor],
+                **matches[0],
+            )
+        )
+    if len({normalize(device["cuda_uuid"]) for device in observed}) != count:
+        raise PermissionError("Auxiliary GPU allocation contains duplicate devices")
+    return {
+        **{key: value for key, value in observed[0].items() if key not in {"index", "role"}},
+        "cuda_visible_device_count": count,
+        "cuda_runtime": torch.version.cuda,
+        "hostname": socket.gethostname(),
+        "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
+        "compute_device_index": 0,
+        "auxiliary_storage_devices": observed[1:],
+        "peer_access_from_compute": [
+            bool(torch.cuda.can_device_access_peer(0, index)) for index in range(1, count)
+        ],
+        "engine_multigpu_repair_sha256": repair["repair_sha256"],
+    }
+
+
 def load_runtime(plan, root, *, state_id=None, step=96, account=None):
     from peft import PeftModel
 
@@ -1168,7 +1356,7 @@ def load_runtime(plan, root, *, state_id=None, step=96, account=None):
         or identity.get("model_weights_hash") != plan["model"]["prior_composite_weight_hash"]
     ):
         raise PermissionError("SR-F1 requires the exact original untrained 9B snapshot")
-    scratch = {}
+    scratch, multigpu = {}, None
     if (root / "ENGINE_IO_REPAIR.json").exists():
         from .freeze import verify_engine_io_repair
 
@@ -1176,8 +1364,18 @@ def load_runtime(plan, root, *, state_id=None, step=96, account=None):
         scratch = dict(
             spill_directory=repair["activation_spill_directory"], quota_root=repair["quota_root"]
         )
+    if (root / "ENGINE_MULTIGPU_REPAIR.json").exists():
+        from .freeze import verify_engine_multigpu_repair
+
+        repair = verify_engine_multigpu_repair(root)
+        task_id = os.environ.get("SR_F1_TASK_ID")
+        task = read_json(root / "orchestration/REGISTRATION.json").get("tasks", {}).get(task_id)
+        if not task or task.get("operation") not in {"engine", "train", "common_start", "evaluate"}:
+            raise PermissionError("Auxiliary GPU runtime requires its registered task identity")
+        if task["operation"] in {"engine", "train"}:
+            multigpu = repair
     determinism = configure_audited_backend()
-    hardware = actual_cuda_identity()
+    hardware = actual_srf1_cuda_identity(multigpu)
     runtime = SRRuntime(
         identity["model_path"],
         account=account,
@@ -1185,6 +1383,10 @@ def load_runtime(plan, root, *, state_id=None, step=96, account=None):
         output_root=root,
         **scratch,
     )
+    if multigpu is not None:
+        runtime.activation_gpu_devices = tuple(multigpu["storage_device_indices"])
+        runtime.activation_gpu_budget_bytes = multigpu["gpu_activation_budget_bytes"]
+        runtime.activation_cpu_budget_bytes = multigpu["cpu_activation_budget_bytes"]
     runtime.training_learning_rate = plan["training"]["lr"]
     runtime.verify_identity(identity)
     runtime.identity.update(

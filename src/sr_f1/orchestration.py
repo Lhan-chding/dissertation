@@ -43,9 +43,112 @@ SEEDS = (71001, 71002, 71003)
 PERMISSION_PATH = "manifests/ALLOCATION_PERMISSION.json"
 TEACHER_QOS = "soujanya-poria-startfund-2026-03"
 QOS_CAPACITY_MODE = "TEACHER_QOS_SCHEDULER_ONLY"
+MULTIGPU_CAPACITY_MODE = "TEACHER_QOS_PHYSICAL_GPU_RESERVATIONS"
 ENGINE_MEMORY_REPAIR_ID = "SR_F1_1_ENGINE_MEMORY_20261010"
 ENGINE_STORAGE_REPAIR_ID = "SR_F1_1_ENGINE_STORAGE_20261010"
 ENGINE_IO_REPAIR_ID = "SR_F1_1_ENGINE_IO_20261010"
+ENGINE_MULTIGPU_REPAIR_ID = "SR_F1_1_ENGINE_MULTIGPU_20261010"
+
+
+def multigpu_repair(root):
+    """Authenticate an additive resource/worker revision, never rewrite registration."""
+    from .freeze import verify_engine_multigpu_repair
+
+    root = Path(root)
+    repair = verify_engine_multigpu_repair(root)
+    require(
+        repair["repair_id"] == ENGINE_MULTIGPU_REPAIR_ID
+        and repair["repair_sha256"] == file_hash(root / "ENGINE_MULTIGPU_REPAIR.json")
+        and repair["original_execution_freeze_sha256"] == file_hash(root / "EXECUTION_FREEZE.json")
+        and re.fullmatch(r"[0-9a-f]{40}", repair["source_commit"])
+        and repair["gpu_worker_constraint"] == "highmem",
+        "ENGINE_MULTIGPU_REPAIR_IDENTITY_MISMATCH",
+    )
+    require(
+        type(repair["gpu_count"]) is int
+        and 2 <= repair["gpu_count"] <= 5
+        and repair["cpus_per_gpu"] == 4
+        and type(repair["minimum_gpu_host_memory_gb_per_gpu"]) is int
+        and repair["minimum_gpu_host_memory_gb_per_gpu"] >= 80,
+        "INVALID_MULTIGPU_RESOURCE_POLICY",
+    )
+    for field in ("worker_source_sha256", "previous_worker_source_sha256"):
+        require(re.fullmatch(r"[0-9a-f]{64}", repair.get(field, "")), "INVALID_WORKER_REVISION")
+    return repair
+
+
+def resource_override(root, registration, task_id):
+    """Resources for a new attempt; old attempts retain their actual single GPU cost."""
+    if not (Path(root) / "ENGINE_MULTIGPU_REPAIR.json").exists() or registration["tasks"][task_id][
+        "operation"
+    ] not in {"engine", "train"}:
+        return None
+    repair = multigpu_repair(root)
+    require(registration["permission"]["qos"] == TEACHER_QOS, "MULTIGPU_REQUIRES_TEACHER_QOS")
+    count = repair["gpu_count"]
+    return {
+        "repair_id": repair["repair_id"],
+        "repair_sha256": repair["repair_sha256"],
+        "gpus": count,
+        "gres": f"gpu:pro6000:{count}",
+        "nodes": 1,
+        "cpus_per_task": count * repair["cpus_per_gpu"],
+        "minimum_host_memory_gb": count * repair["minimum_gpu_host_memory_gb_per_gpu"],
+        "constraint": repair["gpu_worker_constraint"],
+        "worker_source_sha256": repair["worker_source_sha256"],
+    }
+
+
+def attempt_gpu_count(root, registration, task_id, attempt):
+    override = attempt.get("resource_override")
+    if override is None:
+        return registration["tasks"][task_id]["gpus"]
+    require(override == resource_override(root, registration, task_id), "ATTEMPT_RESOURCES_CHANGED")
+    return override["gpus"]
+
+
+def memory_gib(tres):
+    fields = dict(item.split("=", 1) for item in tres.split(",") if "=" in item)
+    memory = re.fullmatch(r"([0-9]+(?:\.[0-9]+)?)([KMGT]?)", fields.get("mem", ""))
+    require(memory, "GPU_HOST_MEMORY_REQUEST_UNKNOWN")
+    value, unit = memory.groups()
+    return (
+        Decimal(value)
+        * {
+            "K": Decimal(1) / (1024 * 1024),
+            "": Decimal(1) / 1024,
+            "M": Decimal(1) / 1024,
+            "G": Decimal(1),
+            "T": Decimal(1024),
+        }[unit]
+    )
+
+
+def verify_multigpu_resources(fields, override, *, allocated=False):
+    """Check Slurm's actual request/allocation before release or model loading."""
+    require(fields.get("NumNodes") == str(override["nodes"]), "MULTIGPU_SINGLE_NODE_REQUIRED")
+    require(fields.get("Features") == override["constraint"], "MULTIGPU_CONSTRAINT_MISMATCH")
+    for key in ("ReqTRES", "AllocTRES") if allocated else ("ReqTRES",):
+        tres = fields.get(key, "")
+        values = dict(item.split("=", 1) for item in tres.split(",") if "=" in item)
+        require(
+            gpu_count(tres) == override["gpus"]
+            and values.get("gres/gpu:pro6000") == str(override["gpus"])
+            and all(
+                name == "gres/gpu:pro6000" or value == "0"
+                for name, value in values.items()
+                if name.startswith("gres/gpu:")
+            ),
+            "MULTIGPU_GPU_ALLOCATION_MISMATCH",
+        )
+        require(
+            values.get("cpu", "").isdigit() and int(values["cpu"]) >= override["cpus_per_task"],
+            "MULTIGPU_CPU_ALLOCATION_BELOW_MINIMUM",
+        )
+        require(
+            memory_gib(tres) >= override["minimum_host_memory_gb"],
+            "MULTIGPU_HOST_MEMORY_BELOW_MINIMUM",
+        )
 
 
 def worker_lease(root, task_id):
@@ -295,6 +398,63 @@ def gpu_count(tres):
 class SlurmBackend(BaseSlurmBackend):
     def project_capacity(self, permission):
         run_root = permission.get("run_root")
+        if run_root and (Path(run_root) / "ENGINE_MULTIGPU_REPAIR.json").exists():
+            repair = multigpu_repair(run_root)
+            require(permission["qos"] == TEACHER_QOS, "MULTIGPU_REQUIRES_TEACHER_QOS")
+            receipt = self._run(
+                [
+                    "squeue",
+                    "--noheader",
+                    "--array",
+                    "--user",
+                    permission["owner"],
+                    "--states=all",
+                    "--format=%i|%u|%q|%T",
+                ]
+            )
+            require(receipt["returncode"] == 0, "TEACHER_GPU_QUEUE_UNKNOWN")
+            jobs = []
+            for line in receipt["stdout"].splitlines():
+                fields = [value.strip() for value in line.split("|")]
+                require(
+                    len(fields) == 4 and fields[1] == permission["owner"],
+                    "INVALID_TEACHER_GPU_QUEUE_ROW",
+                )
+                job_id, _, qos, state = fields
+                if qos != TEACHER_QOS or state.split()[0].rstrip("+") in TERMINAL:
+                    continue
+                require(re.fullmatch(r"[0-9]+(?:_[0-9]+)?", job_id), "UNEXPANDED_TEACHER_JOB_ID")
+                detail = self._run(["scontrol", "show", "job", job_id, "--oneliner"])
+                require(detail["returncode"] == 0, "TEACHER_GPU_JOB_DETAIL_UNKNOWN")
+                actual = dict(
+                    re.findall(r"(?:^|\s)([A-Za-z][A-Za-z0-9_]*)=(\S*)", detail["stdout"])
+                )
+                require(
+                    actual.get("JobId") == job_id
+                    and actual.get("UserId", "").split("(")[0] == permission["owner"]
+                    and actual.get("QOS") == TEACHER_QOS
+                    and "ReqTRES" in actual
+                    and "AllocTRES" in actual,
+                    "TEACHER_GPU_JOB_IDENTITY_MISMATCH",
+                )
+                jobs.append(
+                    {
+                        "job_id": job_id,
+                        "state": state,
+                        "gpus": max(gpu_count(actual["ReqTRES"]), gpu_count(actual["AllocTRES"])),
+                        "receipt": detail,
+                    }
+                )
+            require(len({row["job_id"] for row in jobs}) == len(jobs), "DUPLICATE_TEACHER_GPU_JOB")
+            return {
+                "owner": permission["owner"],
+                "qos": TEACHER_QOS,
+                "jobs": jobs,
+                "capacity_mode": MULTIGPU_CAPACITY_MODE,
+                "repair_sha256": repair["repair_sha256"],
+                "maximum_reserved_gpus": 5,
+                "receipt": receipt,
+            }
         if run_root and (Path(run_root) / "QOS_SCOPE_REPAIR.json").exists():
             from .freeze import verify_qos_scope_repair
 
@@ -401,6 +561,13 @@ class Scheduler:
         matrix_path = self.root / "manifests/RUN_MATRIX.json"
         tasks = tasks_for(read_json(matrix_path))
         script = self.code_root / "scripts/sr_f1/run_worker.py"
+        worker_hash = file_hash(script)
+        if (self.root / "ENGINE_MULTIGPU_REPAIR.json").exists():
+            repair = multigpu_repair(self.root)
+            require(worker_hash == repair["worker_source_sha256"], "REVISED_WORKER_SOURCE_CHANGED")
+            # Registration remains the original immutable historical contract.
+            # The additive repair independently authenticates today's worker.
+            worker_hash = repair["previous_worker_source_sha256"]
         return {
             "schema_version": 1,
             "plan_id": PLAN_ID,
@@ -416,7 +583,7 @@ class Scheduler:
             "python": str(self.python),
             "lease_minutes": self.lease_minutes,
             "engine_lease_minutes": self.engine_lease_minutes,
-            "source_hashes": {"scripts/sr_f1/run_worker.py": file_hash(script)},
+            "source_hashes": {"scripts/sr_f1/run_worker.py": worker_hash},
         }
 
     def _load(self):
@@ -509,7 +676,12 @@ class Scheduler:
                         "qos": permission["qos"],
                         "job_name": attempt["job_name"],
                         "comment": attempt["comment"],
-                        "gpus": self.registration["tasks"][task_id]["gpus"],
+                        "gpus": attempt_gpu_count(self.root, self.registration, task_id, attempt),
+                        **(
+                            {"resource_override": attempt["resource_override"]}
+                            if attempt.get("resource_override") is not None
+                            else {}
+                        ),
                         "status": attempt["status"],
                         "attempt_manifest_path": attempt["manifest_path"],
                         "actual_gpu_seconds": attempt.get("accounting", {}).get("gpu_seconds"),
@@ -567,6 +739,47 @@ class Scheduler:
         try:
             if (
                 self.registration["tasks"][task_id]["gpus"]
+                and (self.root / "ENGINE_MULTIGPU_REPAIR.json").exists()
+            ):
+                project = self.backend.project_capacity(self.registration["permission"])
+                require(
+                    project.get("capacity_mode") == MULTIGPU_CAPACITY_MODE
+                    and project.get("qos") == TEACHER_QOS
+                    and project.get("maximum_reserved_gpus") == 5,
+                    "TEACHER_GPU_RELEASE_CAPACITY_UNKNOWN",
+                )
+                jobs = {row["job_id"]: row["gpus"] for row in project["jobs"]}
+                require(
+                    len(jobs) == len(project["jobs"]) and attempt["job_id"] in jobs,
+                    "TEACHER_GPU_HELD_JOB_NOT_VISIBLE",
+                )
+                reserved = sum(jobs.values()) + sum(
+                    attempt_gpu_count(self.root, self.registration, key, reserved_attempt)
+                    for key, task in self.state["tasks"].items()
+                    for reserved_attempt in task["attempts"]
+                    if "accounting" not in reserved_attempt
+                    and reserved_attempt.get("job_id") not in jobs
+                )
+                relative = (
+                    f"orchestration/observations/multigpu_release/{attempt['attempt_id']}/"
+                    f"{self.sequence + 1:08d}.json"
+                )
+                atomic_json(self.root / relative, project, exclusive=True)
+                attempt["teacher_gpu_release_observation"] = {
+                    "path": relative,
+                    "sha256": file_hash(self.root / relative),
+                }
+                if reserved > 5:
+                    attempt["release_waiting_for_teacher_gpu_capacity"] = True
+                    self._save(
+                        "ALLOCATION_HELD_WAITING_TEACHER_GPU_CAPACITY",
+                        task_id=task_id,
+                        teacher_qos_reserved_gpus=reserved,
+                    )
+                    return
+                attempt.pop("release_waiting_for_teacher_gpu_capacity", None)
+            if (
+                self.registration["tasks"][task_id]["gpus"]
                 and (self.root / "ENGINE_STORAGE_REPAIR.json").exists()
             ):
                 self._verify_gpu_host_memory(attempt)
@@ -610,6 +823,12 @@ class Scheduler:
             "GPU_HOST_MEMORY_CONSTRAINT_MISMATCH",
         )
         requested = fields.get("ReqTRES", "")
+        override = attempt.get("resource_override")
+        if override is not None:
+            task_id = attempt["attempt_id"].rsplit("_attempt", 1)[0]
+            attempt_gpu_count(self.root, self.registration, task_id, attempt)
+            verify_multigpu_resources(fields, override)
+            return
         tres = dict(item.split("=", 1) for item in requested.split(",") if "=" in item)
         require(
             gpu_count(requested) == 1 and tres.get("gres/gpu:pro6000") == "1",
@@ -673,7 +892,7 @@ class Scheduler:
                 observation["accounting"],
                 attempt,
                 self.registration["permission"],
-                self.registration["tasks"][task_id]["gpus"],
+                attempt_gpu_count(self.root, self.registration, task_id, attempt),
             )
             attempt["accounting"] = accounting
             with worker_lease(self.root, task_id):
@@ -778,19 +997,30 @@ class Scheduler:
                 attempt.get("job_id") not in queued for _, attempt in reservations
             )
             gpu_used = sum(jobs.values()) + sum(
-                self.registration["tasks"][key]["gpus"]
+                attempt_gpu_count(self.folder.parent, self.registration, key, attempt)
                 for key, attempt in reservations
                 if attempt.get("job_id") not in jobs
             )
             mode = project.get("capacity_mode")
-            require(mode in {None, QOS_CAPACITY_MODE}, "UNKNOWN_CAPACITY_MODE")
-            if mode == QOS_CAPACITY_MODE:
+            require(
+                mode in {None, QOS_CAPACITY_MODE, MULTIGPU_CAPACITY_MODE}, "UNKNOWN_CAPACITY_MODE"
+            )
+            if mode in {QOS_CAPACITY_MODE, MULTIGPU_CAPACITY_MODE}:
                 require(
                     project.get("qos") == permission["qos"] == TEACHER_QOS
                     and re.fullmatch(r"[0-9a-f]{64}", project.get("repair_sha256", "")),
                     "UNVERIFIED_QOS_CAPACITY_MODE",
                 )
                 available = maximum is None or submit_used < maximum
+                if mode == MULTIGPU_CAPACITY_MODE:
+                    require(project.get("maximum_reserved_gpus") == 5, "TEACHER_GPU_LIMIT_CHANGED")
+                    override = resource_override(self.folder.parent, self.registration, task_id)
+                    requested_gpus = (
+                        override["gpus"]
+                        if override is not None
+                        else self.registration["tasks"][task_id]["gpus"]
+                    )
+                    available = available and gpu_used + requested_gpus <= 5
             else:
                 available = (
                     maximum is None or submit_used < maximum
@@ -802,6 +1032,12 @@ class Scheduler:
             }
             if mode:
                 summary.update(capacity_mode=mode, qos=project["qos"])
+                if mode == MULTIGPU_CAPACITY_MODE:
+                    summary.update(
+                        teacher_qos_reserved_gpus=gpu_used,
+                        requested_gpus=requested_gpus,
+                        maximum_reserved_gpus=5,
+                    )
             else:
                 summary["project_reserved_gpus"] = gpu_used
         except Exception as exc:
@@ -836,14 +1072,20 @@ class Scheduler:
                     "REPAIR_RESUME_AUTHORIZATION_CHANGED",
                 )
             elif task_id == "ENGINE" and not task.get("resume_checkpoint"):
+                multigpu_resume = self.state.get("engine_multigpu_repair_resume")
                 io_resume = self.state.get("engine_io_repair_resume")
                 storage_resume = self.state.get("engine_storage_repair_resume")
                 repair_resume = (
-                    io_resume or storage_resume or self.state.get("engine_memory_repair_resume")
+                    multigpu_resume
+                    or io_resume
+                    or storage_resume
+                    or self.state.get("engine_memory_repair_resume")
                 )
                 require(repair_resume, "RESUME_CHECKPOINT_OR_EXPLICIT_REPAIR_REQUIRED")
                 require(not repair_resume.get("consumed_by_attempt_id"), "REPAIR_ALREADY_CONSUMED")
-                if io_resume:
+                if multigpu_resume:
+                    verify_repair = self._verify_repaired_engine_multigpu
+                elif io_resume:
                     verify_repair = self._verify_repaired_engine_io
                 elif storage_resume:
                     verify_repair = self._verify_repaired_engine_storage
@@ -861,6 +1103,7 @@ class Scheduler:
                 )
         if not self._capacity_available(task_id):
             return False
+        override = resource_override(self.root, self.registration, task_id)
         worker_memory_gb, worker_constraint = 64, None
         if spec["gpus"] and (self.root / "ENGINE_STORAGE_REPAIR.json").exists():
             storage_repair = self._engine_storage_repair()
@@ -880,6 +1123,10 @@ class Scheduler:
             "comment": f"srf1:{prefix}:{attempt_id}",
             "manifest_path": f"orchestration/attempts/{attempt_id}.json",
         }
+        if override is not None:
+            attempt["resource_override"] = override
+            worker_memory_gb = override["minimum_host_memory_gb"]
+            worker_constraint = override["constraint"]
         if repair_resume is not None:
             require(
                 attempt_id == repair_resume["permitted_next_attempt_id"],
@@ -893,6 +1140,7 @@ class Scheduler:
                     "review_sha256",
                     "source_commit",
                     "failed_attempt_id",
+                    "maintained_attempt_id",
                 )
                 if key in repair_resume
             }
@@ -940,7 +1188,7 @@ class Scheduler:
             "--hold",
             "--no-requeue",
             "--nodes=1",
-            "--cpus-per-task=4",
+            f"--cpus-per-task={override['cpus_per_task'] if override is not None else 4}",
             "--parsable",
             "--account",
             permission["account"],
@@ -959,7 +1207,7 @@ class Scheduler:
         if worker_constraint is None:
             command.append(f"--mem={worker_memory_gb}G")
         if spec["gpus"]:
-            command += ["--gres", permission["gres"]]
+            command += ["--gres", override["gres"] if override is not None else permission["gres"]]
             if worker_constraint:
                 command.append("--constraint=" + worker_constraint)
         if permission.get("partition"):
@@ -1763,6 +2011,184 @@ class Scheduler:
             self.state["tasks"]["ENGINE"]["status"] = "RETRYABLE"
             self._phase()
             self._save("EXPLICIT_REPAIRED_ENGINE_IO_RESUME", authorization=authorization)
+            return copy.deepcopy(authorization)
+
+    def _verify_repaired_engine_multigpu(self, *, expected_status):
+        """Authenticate a deliberate performance-maintenance restart, not a failed trial."""
+        root, task = self.root, self.state["tasks"]["ENGINE"]
+        require(not (root / "STOP").exists(), "STOP_PREVENTS_TECHNICAL_REPAIR_RESUME")
+        statuses = {expected_status} if isinstance(expected_status, str) else set(expected_status)
+        require(task["status"] in statuses, "ENGINE_NOT_MULTIGPU_REPAIR_ELIGIBLE")
+        require(len(task["attempts"]) == 4, "MULTIGPU_REPAIR_REQUIRES_FOUR_PRIOR_ATTEMPTS")
+        original, unstarted, io_failed, maintained = task["attempts"]
+        require(
+            [item["attempt_id"] for item in task["attempts"]]
+            == [f"ENGINE_attempt{i:04d}" for i in range(4)]
+            and [item["status"] for item in task["attempts"]]
+            == ["FAILED", "CANCELLED", "FAILED", "CANCELLED"]
+            and original.get("accounting", {}).get("exit_code") == "1:0"
+            and unstarted.get("accounting", {}).get("gpu_seconds") == 0
+            and io_failed.get("accounting", {}).get("exit_code") == "120:0"
+            and maintained.get("accounting", {}).get("terminal_state") == "CANCELLED"
+            and maintained["accounting"].get("gpu_seconds", 0) > 0,
+            "MULTIGPU_PRIOR_TERMINAL_STATES_NOT_AUTHENTICATED",
+        )
+        authorizations = {
+            name: self.state.get(name + "_repair_resume", {})
+            for name in ("engine_memory", "engine_storage", "engine_io")
+        }
+        memory, storage, io = authorizations.values()
+        require(
+            memory.get("consumed_by_attempt_id") == unstarted["attempt_id"]
+            and memory.get("original_attempt_sha256") == digest(original)
+            and storage.get("consumed_by_attempt_id") == io_failed["attempt_id"]
+            and storage.get("original_attempts_sha256") == [digest(original), digest(unstarted)]
+            and storage.get("memory_authorization_sha256") == digest(memory)
+            and io.get("consumed_by_attempt_id") == maintained["attempt_id"]
+            and io.get("original_attempts_sha256")
+            == [digest(item) for item in task["attempts"][:3]]
+            and io.get("memory_authorization_sha256") == digest(memory)
+            and io.get("storage_authorization_sha256") == digest(storage)
+            and all(
+                value.get("registration_hash") == digest(self.registration)
+                for value in authorizations.values()
+            ),
+            "MULTIGPU_PRIOR_AUTHORIZATION_CHANGED",
+        )
+        require(
+            self.state["test_sealed"] is True
+            and self.state["tasks"]["COMMON_START"]["status"] == "COMPLETE"
+            and all(
+                item["status"] == "WAITING" and not item["attempts"]
+                for key, item in self.state["tasks"].items()
+                if key not in {"COMMON_START", "ENGINE"}
+            ),
+            "MULTIGPU_REPAIR_FORBIDDEN_AFTER_DOWNSTREAM_WORK",
+        )
+        checkpoint_path = f"orchestration/checkpoints/{maintained['attempt_id']}.json"
+        checkpoint_hash = None
+        if contained(root, checkpoint_path).exists():
+            require(
+                self._marker_valid("ENGINE", maintained, checkpoint=True),
+                "MULTIGPU_MAINTENANCE_CHECKPOINT_INVALID",
+            )
+            checkpoint = read_json(contained(root, checkpoint_path))
+            require(
+                checkpoint["metadata"].get("restart_engine_track_required") is True,
+                "MULTIGPU_MAINTENANCE_MUST_RESTART_ENTIRE_ENGINE",
+            )
+            require(
+                task.get("resume_checkpoint") in {None, checkpoint_path},
+                "MULTIGPU_MAINTENANCE_CHECKPOINT_MISMATCH",
+            )
+            checkpoint_hash = file_hash(contained(root, checkpoint_path))
+        else:
+            require(
+                not task.get("resume_checkpoint"), "REPAIR_CANNOT_REPLACE_FULL_STATE_CONTINUATION"
+            )
+        for relative in (
+            "ENGINE_PROBABILITY_GRADIENT_RESUME.json",
+            "orchestration/completions/ENGINE.json",
+            *(
+                f"orchestration/checkpoints/{item['attempt_id']}.json"
+                for item in task["attempts"][:3]
+            ),
+        ):
+            require(
+                not contained(root, relative).exists(),
+                "MULTIGPU_REPAIR_FORBIDDEN_COMPLETION_OR_CONTINUATION:" + relative,
+            )
+        for path in (root / "orchestration/attempts").glob("ENGINE_attempt*"):
+            require(
+                re.match(r"ENGINE_attempt000[0123][._]", path.name),
+                "MULTIGPU_REPAIR_FUTURE_ATTEMPT_EXISTS",
+            )
+        for ledger in (root / "accounting").glob("*.jsonl"):
+            for line in ledger.read_text().splitlines():
+                row = json.loads(line)
+                require(
+                    not (row.get("kind") == "physical_optimizer_updates" and row.get("count", 0)),
+                    "MULTIGPU_REPAIR_FORBIDDEN_PRIOR_OPTIMIZER_UPDATE",
+                )
+        repair = multigpu_repair(root)
+        require(
+            repair["maintained_attempt_id"] == maintained["attempt_id"]
+            and repair["maintained_job_id"] == maintained["job_id"],
+            "MULTIGPU_MAINTENANCE_ALLOCATION_MISMATCH",
+        )
+        observations = {}
+        for attempt in task["attempts"]:
+            prior = attempt["observation"]
+            require(
+                file_hash(contained(root, prior["path"])) == prior["sha256"],
+                "MULTIGPU_PRIOR_SCHEDULER_OBSERVATION_CHANGED",
+            )
+            observed = self.backend.observe(attempt, self.registration["permission"])
+            for evidence in (read_json(contained(root, prior["path"])), observed):
+                require(not evidence["queue"], "MULTIGPU_PRIOR_ALLOCATION_STILL_ACTIVE")
+                require(
+                    summarize_accounting(
+                        evidence["accounting"], attempt, self.registration["permission"], 1
+                    )
+                    == attempt["accounting"],
+                    "MULTIGPU_PRIOR_ACCOUNTING_CHANGED",
+                )
+            observations[attempt["attempt_id"]] = observed
+        return {
+            **{
+                key: repair[key]
+                for key in (
+                    "repair_id",
+                    "repair_sha256",
+                    "source_commit",
+                    "original_execution_freeze_sha256",
+                    "maintained_attempt_id",
+                    "maintained_job_id",
+                    "gpu_count",
+                )
+            },
+            "registration_hash": digest(self.registration),
+            "original_attempts_sha256": [digest(item) for item in task["attempts"]],
+            "prior_authorizations_sha256": {
+                key: digest(value) for key, value in authorizations.items()
+            },
+            "original_blocker": task.get("blocker"),
+            "maintenance_checkpoint_path": checkpoint_path if checkpoint_hash else None,
+            "maintenance_checkpoint_sha256": checkpoint_hash,
+            "permitted_next_attempt_id": "ENGINE_attempt0004",
+        }, observations
+
+    def resume_repaired_engine_multigpu(self):
+        with (
+            process_lease(self.root.parent / ".sr_f1_project_controller.lock"),
+            process_lease(self.folder / "controller.lock"),
+            worker_lease(self.root, "ENGINE"),
+        ):
+            self._load()
+            require(
+                not self.state.get("engine_multigpu_repair_resume"),
+                "ENGINE_MULTIGPU_REPAIR_ALREADY_AUTHORIZED",
+            )
+            authorization, observation = self._verify_repaired_engine_multigpu(
+                expected_status={"BLOCKED", "RETRYABLE"}
+            )
+            relative = (
+                f"orchestration/observations/engine_multigpu_repair/{self.sequence + 1:08d}.json"
+            )
+            atomic_json(self.root / relative, observation, exclusive=True)
+            authorization.update(
+                authorized_at=now(),
+                reason="AUTHORIZED_PERFORMANCE_MAINTENANCE_MULTIGPU_STORAGE",
+                scheduler_observation={"path": relative, "sha256": file_hash(self.root / relative)},
+                consumed_by_attempt_id=None,
+            )
+            self.state["engine_multigpu_repair_resume"] = authorization
+            # A graceful maintenance marker remains immutable evidence. Its
+            # partial trial is archived by ENGINE rather than spliced into 4 steps.
+            self.state["tasks"]["ENGINE"].pop("resume_checkpoint", None)
+            self.state["tasks"]["ENGINE"]["status"] = "RETRYABLE"
+            self._phase()
+            self._save("EXPLICIT_REPAIRED_ENGINE_MULTIGPU_RESUME", authorization=authorization)
             return copy.deepcopy(authorization)
 
     def tick(self):

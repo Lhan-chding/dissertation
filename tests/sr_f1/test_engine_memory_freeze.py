@@ -28,6 +28,7 @@ def memory_case(tmp_path):
     original.update(
         {
             "src/sr_f1/training.py": "unchanged training",
+            "scripts/sr_f1/run_worker.py": "unchanged worker",
             "docs/sr_f1/amendments/v1/AMENDMENT.md": "unchanged protocol",
         }
     )

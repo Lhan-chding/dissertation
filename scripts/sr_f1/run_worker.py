@@ -15,16 +15,22 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
 from sr_f1.orchestration import (
     PLAN_ID,
     SCIENCE_TERMINAL,
+    TEACHER_QOS,
     SlurmBackend,
     _worker_identity,
     atomic_json,
+    attempt_gpu_count,
     checkpoint_task,
     complete_task,
+    digest,
     fail_task,
     file_hash,
     gpu_count,
+    multigpu_repair,
     read_json,
     require,
+    resource_override,
+    verify_multigpu_resources,
     worker_lease,
 )
 
@@ -47,6 +53,26 @@ def validate_allocation(root, task_id, *, backend=None):
     # previously bound controller observation was lost over SSH.
     backend = backend or SlurmBackend()
     bound = matches[0]
+    manifest = read_json(root / bound["attempt_manifest_path"])
+    require(
+        manifest["attempt_id"] == attempt_id
+        and manifest["task_id"] == task_id
+        and manifest["registration_hash"] == digest(registration)
+        and bound["gpus"] == attempt_gpu_count(root, registration, task_id, manifest)
+        and manifest.get("resource_override") == bound.get("resource_override"),
+        "WORKER_ATTEMPT_RESOURCE_IDENTITY_MISMATCH",
+    )
+    expected_gpus = attempt_gpu_count(root, registration, task_id, manifest)
+    if (root / "ENGINE_MULTIGPU_REPAIR.json").exists():
+        repair = multigpu_repair(root)
+        require(
+            file_hash(Path(__file__)) == repair["worker_source_sha256"],
+            "LIVE_WORKER_SOURCE_REVISION_CHANGED",
+        )
+        require(
+            manifest.get("resource_override") == resource_override(root, registration, task_id),
+            "LIVE_WORKER_RESOURCE_REVISION_MISSING",
+        )
     observation = backend._run(["scontrol", "show", "job", bound["job_id"], "--oneliner"])
     require(observation["returncode"] == 0, "LIVE_WORKER_ALLOCATION_UNKNOWN")
     fields = dict(re.findall(r"(?:^|\s)([A-Za-z][A-Za-z0-9_]*)=(\S*)", observation["stdout"]))
@@ -60,14 +86,17 @@ def validate_allocation(root, task_id, *, backend=None):
         and fields.get("QOS") == permission["qos"]
         and fields.get("JobState") == "RUNNING"
         and "AllocTRES" in fields
-        and gpu_count(fields["AllocTRES"]) == registration["tasks"][task_id]["gpus"],
+        and gpu_count(fields["AllocTRES"]) == expected_gpus,
         "LIVE_WORKER_IDENTITY_MISMATCH",
     )
     if registration["tasks"][task_id]["gpus"]:
         require(
-            "gres/gpu:pro6000=1" in fields["AllocTRES"].split(","),
+            f"gres/gpu:pro6000={expected_gpus}" in fields["AllocTRES"].split(","),
             "LIVE_WORKER_GPU_TYPE_MISMATCH",
         )
+    if manifest.get("resource_override") is not None:
+        require(fields.get("QOS") == TEACHER_QOS, "MULTIGPU_REQUIRES_TEACHER_QOS")
+        verify_multigpu_resources(fields, manifest["resource_override"], allocated=True)
     atomic_json(
         root / f"orchestration/worker_starts/{attempt_id}.json", observation, exclusive=True
     )

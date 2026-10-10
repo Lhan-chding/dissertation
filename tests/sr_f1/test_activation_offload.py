@@ -325,6 +325,329 @@ def test_cpu_budget_counts_storage_span_including_strided_holes(tmp_path):
     assert offload.statistics["spill_file_cleaned"]
 
 
+@pytest.fixture
+def simulated_gpu_copies(monkeypatch):
+    """CPU tests of tier accounting; real CUDA parity is checked separately."""
+    original = torch.Tensor.to
+    destinations = []
+    monkeypatch.setattr(torch.cuda, "device_count", lambda: 3)
+
+    def copied(tensor, *args, **kwargs):
+        device = kwargs.get("device", args[0] if args else None)
+        if str(device).startswith("cuda:"):
+            destinations.append(str(device))
+            if args:
+                args = ("cpu", *args[1:])
+            else:
+                kwargs["device"] = "cpu"
+        return original(tensor, *args, **kwargs)
+
+    monkeypatch.setattr(torch.Tensor, "to", copied)
+    return destinations
+
+
+def test_auxiliary_gpu_then_cpu_then_disk_budget_and_double_read(tmp_path, simulated_gpu_copies):
+    offload = SavedActivationOffload(
+        torch.nn.Identity(),
+        output_root=tmp_path,
+        gpu_devices=(1, 2),
+        gpu_budget_bytes=16,
+        cpu_budget_bytes=16,
+    )
+    value = torch.arange(4, dtype=torch.float32)
+    with offload:
+        records = [offload.pack(value) for _ in range(4)]
+    assert [record[0] for record in records] == [
+        "gpu_activation",
+        "gpu_activation",
+        "activation",
+        "disk_activation",
+    ]
+    assert simulated_gpu_copies == ["cuda:1", "cuda:2"]
+    for _ in range(2):
+        for record in records:
+            assert torch.equal(offload.unpack(record), value)
+    del record
+    stats = offload.statistics
+    assert stats["gpu_storage_bytes"] == stats["gpu_read_bytes"] / 2 == 32
+    assert stats["cpu_storage_bytes"] == stats["disk_storage_bytes"] == 16
+    assert [s["live_bytes"] for s in stats["gpu_devices"].values()] == [16, 16]
+    records.clear()
+    gc.collect()
+    assert stats["gpu_released_bytes"] == 32
+    assert all(
+        s["live_bytes"] == 0 and s["released_tensors"] == 1 for s in stats["gpu_devices"].values()
+    )
+    assert stats["spill_file_cleaned"]
+
+
+def test_auxiliary_gpu_placement_uses_least_stored_bytes_deterministically(simulated_gpu_copies):
+    offload = SavedActivationOffload(torch.nn.Identity(), gpu_devices=(1, 2))
+    with offload:
+        records = [offload.pack(torch.ones(size)) for size in (8, 4, 4, 8, 4)]
+    # Ties preserve the authenticated device order; tensor count is not byte load.
+    assert simulated_gpu_copies == ["cuda:1", "cuda:2", "cuda:2", "cuda:1", "cuda:2"]
+    devices = offload.statistics["gpu_devices"]
+    assert devices["1"]["storage_bytes"] == 64
+    assert devices["2"]["storage_bytes"] == 48
+    records.clear()
+    assert all(device["live_bytes"] == 0 for device in devices.values())
+
+
+@pytest.mark.parametrize("dtype", [torch.float32, torch.bfloat16])
+@pytest.mark.parametrize("layout", ["transpose", "sliced", "zero_stride", "overlap", "scalar"])
+def test_auxiliary_gpu_snapshot_preserves_exact_strided_bits(dtype, layout, simulated_gpu_copies):
+    source = torch.arange(35, dtype=dtype).reshape(5, 7)
+    value = {
+        "transpose": source.T,
+        "sliced": source[::2, 1::3],
+        "zero_stride": source[0].expand(9, 7),
+        "overlap": source.flatten().unfold(0, 3, 1),
+        "scalar": source[2, 3],
+    }[layout]
+    rng = torch.get_rng_state().clone()
+    offload = SavedActivationOffload(torch.nn.Identity(), gpu_devices=(1, 2))
+    with offload:
+        packed = offload.pack(value)
+    assert packed[0] == "gpu_activation"
+    for _ in range(2):
+        result = offload.unpack(packed)
+        assert result.dtype == value.dtype and result.device == value.device
+        assert result.shape == value.shape and result.stride() == value.stride()
+        assert torch.equal(result, value)
+    assert torch.equal(torch.get_rng_state(), rng)
+    del packed
+    assert offload.statistics["gpu_devices"]["1"]["live_bytes"] == 0
+
+
+def test_auxiliary_gpu_copy_failure_is_not_hidden(tmp_path, simulated_gpu_copies, monkeypatch):
+    original = torch.Tensor.to
+    offload = SavedActivationOffload(torch.nn.Identity(), output_root=tmp_path, gpu_devices=(1, 2))
+
+    def fail_gpu(tensor, *args, **kwargs):
+        if str(kwargs.get("device", "")).startswith("cuda:"):
+            raise torch.cuda.OutOfMemoryError("simulated auxiliary GPU allocation failure")
+        return original(tensor, *args, **kwargs)
+
+    monkeypatch.setattr(torch.Tensor, "to", fail_gpu)
+    with pytest.raises(torch.cuda.OutOfMemoryError, match="auxiliary GPU"), offload:
+        offload.pack(torch.ones(8))
+    assert offload.statistics["gpu_storage_bytes"] == 0
+    assert offload.statistics["cpu_storage_bytes"] == 0
+    assert not offload.statistics["spill_file_created"]
+
+
+def test_auxiliary_gpu_backward_error_is_preserved_without_disk(
+    tmp_path, simulated_gpu_copies, monkeypatch
+):
+    offload = SavedActivationOffload(
+        torch.nn.Identity(), output_root=tmp_path, spill_directory=tmp_path, gpu_devices=(1, 2)
+    )
+    with offload:
+        packed = offload.pack(torch.ones(8))
+
+    def fail_copy(*args, **kwargs):
+        raise RuntimeError("auxiliary return-copy failed")
+
+    monkeypatch.setattr(torch.Tensor, "to", fail_copy)
+    with pytest.raises(RuntimeError, match="return-copy failed"):
+        offload.unpack(packed)
+    receipts = list(tmp_path.glob("failure-*.json"))
+    assert len(receipts) == 1
+    failure = json.loads(receipts[0].read_text())
+    assert failure["error"] == "auxiliary return-copy failed"
+    assert failure["activation_offload"]["gpu_storage_bytes"] == 32
+    assert failure["activation_offload"]["gpu_read_bytes"] == 0
+    assert not failure["activation_offload"]["spill_file_created"]
+
+
+def test_auxiliary_policy_retains_parameter_view_and_version_guard(simulated_gpu_copies):
+    model = torch.nn.Linear(3, 2, bias=False)
+    offload = SavedActivationOffload(model, gpu_devices=(1, 2))
+    packed = offload.pack(model.weight.T)
+    assert packed[0] == "parameter"
+    assert packed[1].untyped_storage().data_ptr() == model.weight.untyped_storage().data_ptr()
+    assert offload.statistics["gpu_storage_bytes"] == 0
+    assert not simulated_gpu_copies
+    with torch.no_grad():
+        model.weight.add_(1)
+    with pytest.raises(RuntimeError, match="parameter changed"):
+        offload.unpack(packed)
+
+
+@pytest.mark.parametrize("devices", [(0,), (2,), (1, 1), (1, 2, 3), (True, 2)])
+def test_auxiliary_gpu_indices_fail_closed(devices, simulated_gpu_copies):
+    with pytest.raises(PermissionError, match="allocated auxiliary"):
+        SavedActivationOffload(torch.nn.Identity(), gpu_devices=devices)
+
+
+def test_single_gpu_identity_keeps_legacy_guard(monkeypatch):
+    from sr_f1 import runtime as module
+
+    sentinel = object()
+    monkeypatch.setattr(module, "actual_cuda_identity", lambda: sentinel)
+    assert module.actual_srf1_cuda_identity() is sentinel
+
+
+@pytest.fixture
+def simulated_multigpu_identity(monkeypatch):
+    from sr_f1 import runtime as module
+
+    name = "NVIDIA RTX PRO 6000 Blackwell Server Edition"
+    monkeypatch.setattr(torch.cuda, "device_count", lambda: 4)
+    monkeypatch.setattr(
+        torch.cuda,
+        "get_device_properties",
+        lambda index: SimpleNamespace(
+            name=name,
+            uuid=f"GPU-{index + 1:032x}",
+            total_memory=95 << 30,
+            major=12,
+            minor=0,
+        ),
+    )
+    monkeypatch.setattr(torch.cuda, "mem_get_info", lambda index: (94 << 30, 95 << 30))
+    monkeypatch.setattr(torch.cuda, "can_device_access_peer", lambda source, target: True)
+    monkeypatch.setattr(
+        module.subprocess,
+        "run",
+        lambda *args, **kwargs: SimpleNamespace(
+            stdout="\n".join(
+                f"{name},GPU-{index + 1:032x},00000000:{index:02d}:00.0,590.00,97280"
+                for index in range(4)
+            )
+        ),
+    )
+    return dict(
+        gpu_count=4,
+        compute_device_index=0,
+        storage_device_indices=[1, 2, 3],
+        gpu_activation_budget_bytes=80 << 30,
+        cpu_activation_budget_bytes=48 << 30,
+        activation_storage="AUXILIARY_GPU_THEN_BOUNDED_CPU_EXACT_EXTERNAL_DISK",
+        repair_sha256="1" * 64,
+    )
+
+
+def test_authenticated_multigpu_identity_records_compute_storage_roles(simulated_multigpu_identity):
+    from sr_f1.runtime import actual_srf1_cuda_identity
+
+    result = actual_srf1_cuda_identity(simulated_multigpu_identity)
+    assert result["cuda_visible_device_count"] == 4
+    assert result["compute_device_index"] == 0
+    assert result["cuda_uuid"] == "GPU-" + f"{1:032x}"
+    assert [device["index"] for device in result["auxiliary_storage_devices"]] == [1, 2, 3]
+    assert all(
+        device["role"] == "saved_activation_storage"
+        for device in result["auxiliary_storage_devices"]
+    )
+    assert result["peer_access_from_compute"] == [True] * 3
+
+
+@pytest.mark.parametrize(
+    "key,value",
+    [
+        ("gpu_count", 3),
+        ("gpu_count", True),
+        ("gpu_count", 6),
+        ("compute_device_index", 1),
+        ("compute_device_index", False),
+        ("storage_device_indices", [0, 1, 2]),
+        ("storage_device_indices", [True, 2, 3]),
+        ("gpu_activation_budget_bytes", 81 << 30),
+        ("cpu_activation_budget_bytes", 64 << 30),
+        ("activation_storage", "UNAUTHENTICATED"),
+        ("repair_sha256", "bad"),
+    ],
+)
+def test_multigpu_identity_rejects_changed_authorization(simulated_multigpu_identity, key, value):
+    from sr_f1.runtime import actual_srf1_cuda_identity
+
+    with pytest.raises(PermissionError, match="authenticated repair"):
+        actual_srf1_cuda_identity({**simulated_multigpu_identity, key: value})
+
+
+@pytest.mark.parametrize("problem", ["name", "uuid", "memory"])
+def test_multigpu_identity_rejects_unavailable_or_wrong_hardware(
+    simulated_multigpu_identity, monkeypatch, problem
+):
+    from sr_f1.runtime import actual_srf1_cuda_identity
+
+    original = torch.cuda.get_device_properties
+    if problem == "memory":
+        monkeypatch.setattr(torch.cuda, "mem_get_info", lambda index: (81 << 30, 95 << 30))
+    else:
+
+        def changed(index):
+            properties = original(index)
+            if index == 1:
+                setattr(properties, problem, "WRONG")
+            return properties
+
+        monkeypatch.setattr(torch.cuda, "get_device_properties", changed)
+    with pytest.raises(PermissionError):
+        actual_srf1_cuda_identity(simulated_multigpu_identity)
+
+
+@pytest.mark.skipif(
+    torch.cuda.device_count() < 2, reason="requires allocated real auxiliary CUDA GPU"
+)
+@pytest.mark.parametrize("dtype", [torch.float32, torch.bfloat16])
+@pytest.mark.parametrize("gpu_budget,cpu_budget", [(80 << 30, 48 << 30), (256, 512)])
+def test_real_multigpu_exact_hybrid_double_backward_and_release(
+    hybrid_runtime, dtype, gpu_budget, cpu_budget
+):
+    runtime, prepared = hybrid_runtime
+    runtime.device = "cuda:0"
+    runtime.model.to(device=runtime.device, dtype=dtype)
+    prepared["inputs"] = {
+        key: value.to(runtime.device) for key, value in prepared["inputs"].items()
+    }
+    for parameter in runtime.model.parameters():
+        if parameter.requires_grad:
+            parameter.data = parameter.data.float()
+    runtime.activation_gpu_devices = tuple(range(1, torch.cuda.device_count()))
+    runtime.activation_gpu_budget_bytes = gpu_budget
+    runtime.activation_cpu_budget_bytes = cpu_budget
+    parameters = [p for p in runtime.model.parameters() if p.requires_grad]
+    rng = [state.clone() for state in torch.cuda.get_rng_state_all()]
+
+    def measure(forward):
+        runtime.model.zero_grad(set_to_none=True)
+        result = forward(prepared, [6, 7, 8, 9, 2], purpose="real_gpu_storage_fixture", grad=True)
+        values = result["logprobs"]
+        objective = sequence_objective(values, values.detach(), values.detach() + 0.03, -1.0)
+        policy = torch.autograd.grad(objective["policy"] / 128, parameters, retain_graph=True)
+        (objective["loss"] / 128).backward()
+        return result, policy, [p.grad.clone() for p in parameters]
+
+    baseline, baseline_policy, baseline_total = measure(
+        lambda *args, **kwargs: F2Runtime.cached_training_forward(runtime, *args, **kwargs)
+    )
+    offloaded, policy, total = measure(runtime.cached_training_forward)
+    assert torch.equal(baseline["logprobs"], offloaded["logprobs"])
+    assert all(
+        torch.equal(actual, expected)
+        for actual, expected in zip(policy, baseline_policy, strict=True)
+    )
+    assert all(
+        torch.equal(actual, expected)
+        for actual, expected in zip(total, baseline_total, strict=True)
+    )
+    assert all(
+        torch.equal(actual, expected)
+        for actual, expected in zip(torch.cuda.get_rng_state_all(), rng, strict=True)
+    )
+    stats = offloaded["activation_offload"]
+    assert stats["gpu_storage_bytes"] > 0
+    assert stats["gpu_read_bytes"] > stats["gpu_storage_bytes"]
+    assert stats["gpu_released_bytes"] == stats["gpu_storage_bytes"]
+    assert all(device["live_bytes"] == 0 for device in stats["gpu_devices"].values())
+    if gpu_budget == 256:
+        assert stats["cpu_storage_bytes"] > 0 and stats["disk_storage_bytes"] > 0
+        assert stats["spill_file_cleaned"]
+
+
 @pytest.mark.parametrize("failure", ["short_write", "disk_full", "short_read", "corrupt"])
 def test_disk_errors_fail_closed_and_cleanup_only_private_spill(tmp_path, monkeypatch, failure):
     unrelated = tmp_path / "keep.bin"
