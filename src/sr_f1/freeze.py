@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.metadata
+import json
 import platform
 import re
 from pathlib import Path
@@ -77,6 +78,20 @@ ENGINE_MULTIGPU_REQUIRED_FILES = frozenset(
 )
 ENGINE_MULTIGPU_ALLOWED_FILES = ENGINE_MULTIGPU_REQUIRED_FILES | {
     "scripts/sr_f1/validate_multigpu.py",
+}
+
+BASELINE_PARALLEL_REPAIR_ID = "SR_F1_1_BASELINE_PARALLEL_20261010"
+BASELINE_PARALLEL_REQUIRED_FILES = frozenset(
+    {
+        "src/sr_f1/freeze.py",
+        "src/sr_f1/orchestration.py",
+        "src/sr_f1/baseline_parallel.py",
+        "scripts/sr_f1/run_worker.py",
+        "scripts/sr_f1/baseline_handoff.py",
+    }
+)
+BASELINE_PARALLEL_ALLOWED_FILES = BASELINE_PARALLEL_REQUIRED_FILES | {
+    "scripts/sr_f1/validate_baseline_parallel.py",
 }
 
 
@@ -752,6 +767,14 @@ def _verify_original_engine_io_repair(root, actual_source=None):
 
 
 def verify_engine_multigpu_repair(root, actual_source=None):
+    """Keep existing ENGINE attempt resource and worker identities immutable."""
+    if (Path(root) / "BASELINE_PARALLEL_REPAIR.json").exists():
+        latest = verify_baseline_parallel_repair(root, actual_source=actual_source)
+        return latest["engine_multigpu_repair"]
+    return _verify_original_engine_multigpu_repair(root, actual_source=actual_source)
+
+
+def _verify_original_engine_multigpu_repair(root, actual_source=None):
     """Verify a fixed GPU activation-storage override and complete ENGINE restart.
 
     The original single-card registration and every prior receipt remain intact.
@@ -1024,6 +1047,280 @@ def verify_engine_multigpu_repair(root, actual_source=None):
     }
 
 
+def _baseline_parallel_history_names():
+    prefix = "technical_incidents/baseline_parallel_20261010/activation/"
+    return [
+        prefix + "TERMINAL_JOBS.json",
+        *[
+            prefix + "evidence/orchestration/" + name
+            for name in (
+                "STATE.json",
+                "journal.jsonl",
+                "REGISTRATION.json",
+                "completions/ENGINE.json",
+            )
+        ],
+    ]
+
+
+def _baseline_parallel_source_context(root):
+    declared = root / "code_before_baseline_parallel_20261010"
+    if declared.is_symlink():
+        raise PermissionError("Pre-baseline source snapshot must be a real directory")
+    saved = bounded_path(root, declared.name)
+    before = read_json(saved / "SOURCE_DEPLOYMENT.json")
+    _required(
+        _preserved_source_files(saved, include_amendments=True),
+        before.get("source_file_hashes"),
+        "Pre-baseline source changed",
+    )
+    parent = _verify_original_engine_multigpu_repair(root, actual_source=before)
+    expected = {
+        "repair_id": BASELINE_PARALLEL_REPAIR_ID,
+        "status": "AUTHORIZED_TECHNICAL_BASELINE_PARALLEL_REPAIR",
+        "plan_id": PLAN_ID,
+        "run_root": str(root),
+        "original_execution_freeze_sha256": parent["original_execution_freeze_sha256"],
+        "previous_engine_multigpu_repair_sha256": parent["repair_sha256"],
+        "previous_source_commit": before["source_commit"],
+        "previous_source_tree_sha256": before["source_tree_sha256"],
+        "preserved_source_relative_path": saved.name,
+        "registration_sha256": file_hash(root / "orchestration/REGISTRATION.json"),
+        "previous_worker_source_sha256": before["source_file_hashes"][
+            "scripts/sr_f1/run_worker.py"
+        ],
+        "scientific_protocol_unchanged": True,
+        "qos": "soujanya-poria-startfund-2026-03",
+        "max_gpu_count": 5,
+        "resource_operations": ["baseline"],
+        "partition_mode": "STABLE_SLOT_INDEX_MODULO",
+        "baseline_slot_count": 6784,
+    }
+    return before, parent, expected
+
+
+def build_baseline_parallel_repair(root, *, actual_source, authorized_at, authorized_user_message):
+    """Construct the append-only receipt; callers must verify after exclusive write.
+
+    This does not grant prospective permission to change an active ENGINE. The
+    verifier requires the preserved, successful ENGINE handoff before execution.
+    """
+    root = Path(root).resolve(strict=True)
+    before, _, expected = _baseline_parallel_source_context(root)
+    previous = _checked_source_files(before.get("source_file_hashes"), "Pre-baseline")
+    current = _checked_source_files(actual_source.get("source_file_hashes"), "Baseline actual")
+    return {
+        **expected,
+        **{
+            key: actual_source.get(key)
+            for key in (
+                "source_commit",
+                "source_tree_sha256",
+                "source_file_hashes",
+                "source_dirty_files",
+            )
+        },
+        "worker_source_sha256": current.get("scripts/sr_f1/run_worker.py"),
+        "authorized_at": authorized_at,
+        "authorized_user_message": authorized_user_message,
+        "changed_files": sorted(
+            name
+            for name in previous.keys() | current.keys()
+            if previous.get(name) != current.get(name)
+        ),
+        "historical_artifact_hashes": {
+            name: file_hash(bounded_path(root, name)) for name in _baseline_parallel_history_names()
+        },
+    }
+
+
+def _verify_baseline_parallel_handoff(root, repair):
+    from mm_dev.orchestration import digest
+
+    prefix = "technical_incidents/baseline_parallel_20261010/activation/"
+    expected_names = set(_baseline_parallel_history_names())
+    artifacts = _checked_source_files(repair.get("historical_artifact_hashes"), "Baseline handoff")
+    if not expected_names.issubset(artifacts) or any(
+        not name.startswith(prefix) for name in artifacts
+    ):
+        raise PermissionError("Baseline handoff history is missing or unbounded")
+    for relative, expected_hash in artifacts.items():
+        path = root / relative
+        if path.is_symlink():
+            raise PermissionError("Baseline handoff evidence is a symlink")
+        _required(
+            file_hash(bounded_path(root, relative)),
+            expected_hash,
+            "Baseline handoff evidence changed",
+        )
+    evidence = root / prefix / "evidence"
+    registration = read_json(root / "orchestration/REGISTRATION.json")
+    for relative in ("orchestration/REGISTRATION.json", "orchestration/completions/ENGINE.json"):
+        _required(
+            file_hash(evidence / relative),
+            file_hash(root / relative),
+            "Baseline handoff identity changed",
+        )
+    registration_hash = digest(registration)
+    journal_path = evidence / "orchestration/journal.jsonl"
+    journal = journal_path.read_bytes()
+    with (root / "orchestration/journal.jsonl").open("rb") as stream:
+        _required(
+            stream.read(len(journal)),
+            journal,
+            "Baseline handoff is not the preserved journal prefix",
+        )
+    sequence, previous, state = 0, None, None
+    for line in journal.splitlines(keepends=True):
+        if not line.endswith(b"\n"):
+            raise PermissionError("Baseline handoff journal is truncated")
+        row = json.loads(line)
+        recorded = row.pop("sha256")
+        if (
+            recorded != digest(row)
+            or row.get("previous") != previous
+            or row.get("sequence") != sequence + 1
+            or row.get("registration_hash") != registration_hash
+        ):
+            raise PermissionError("Baseline handoff journal identity or chain changed")
+        sequence, previous, state = row["sequence"], recorded, row.get("state")
+    snapshot = read_json(evidence / "orchestration/STATE.json")
+    if state is None or state != snapshot:
+        raise PermissionError("Baseline handoff state does not match its journal")
+    tasks = snapshot.get("tasks", {})
+    if (
+        snapshot.get("test_sealed") is not True
+        or tasks.get("COMMON_START", {}).get("status") != "COMPLETE"
+        or tasks.get("ENGINE", {}).get("status") != "COMPLETE"
+        or any(
+            task.get("attempts")
+            for name, task in tasks.items()
+            if name not in {"COMMON_START", "ENGINE"}
+        )
+        or set(tasks) != set(registration.get("tasks", {}))
+        or "BASELINE" not in tasks
+    ):
+        raise PermissionError(
+            "Baseline handoff requires successful ENGINE before any downstream attempt"
+        )
+    attempts = tasks["ENGINE"].get("attempts", [])
+    if not attempts:
+        raise PermissionError("Baseline handoff lacks a completed ENGINE allocation")
+    attempt = attempts[-1]
+    accounting = attempt.get("accounting", {})
+    if (
+        attempt.get("status") != "COMPLETED"
+        or accounting.get("terminal_state") != "COMPLETED"
+        or accounting.get("exit_code") != "0:0"
+    ):
+        raise PermissionError("Baseline handoff ENGINE allocation has not completed successfully")
+    marker_path = root / "orchestration/completions/ENGINE.json"
+    marker = read_json(marker_path)
+    for key, value in {
+        "plan_id": PLAN_ID,
+        "task_id": "ENGINE",
+        "status": "COMPLETE",
+        "attempt_id": attempt.get("attempt_id"),
+        "registration_hash": registration_hash,
+    }.items():
+        _required(marker.get(key), value, "Baseline ENGINE completion identity differs: " + key)
+    _required(
+        tasks["ENGINE"].get("completion_marker_sha256"),
+        file_hash(marker_path),
+        "Baseline ENGINE completion is not journal authenticated",
+    )
+    descriptors = marker.get("artifacts", {})
+    if "ENGINE_PROBABILITY_GRADIENT_RESUME.json" not in descriptors:
+        raise PermissionError("Baseline ENGINE completion omits the actual acceptance receipt")
+    for relative, descriptor in descriptors.items():
+        path = bounded_path(root, relative)
+        if not isinstance(descriptor, dict):
+            raise PermissionError("Baseline ENGINE artifact descriptor is invalid")
+        _required(
+            file_hash(path), descriptor.get("sha256"), "Baseline ENGINE completion artifact changed"
+        )
+        _required(
+            path.stat().st_size,
+            descriptor.get("bytes"),
+            "Baseline ENGINE completion artifact size changed",
+        )
+    engine = verify_engine_receipt(root)
+    terminal = read_json(root / prefix / "TERMINAL_JOBS.json")
+    for key, value in {
+        "engine_job_id": str(attempt.get("job_id")),
+        "engine_terminal": True,
+        "engine_terminal_state": "COMPLETED",
+        "engine_exit_code": "0:0",
+        "engine_queue_empty": True,
+        "controller_terminal": True,
+        "controller_queue_empty": True,
+    }.items():
+        _required(terminal.get(key), value, "Baseline handoff allocation is not terminal: " + key)
+    if (
+        terminal.get("controller_terminal_state")
+        not in {"COMPLETED", "FAILED", "CANCELLED", "TIMEOUT"}
+        or not re.fullmatch(r"[0-9]+", terminal.get("controller_job_id", ""))
+        or not re.fullmatch(r"[0-9]+", str(attempt.get("job_id", "")))
+        or terminal["controller_job_id"] == str(attempt["job_id"])
+    ):
+        raise PermissionError("Baseline handoff lacks the old controller terminal identity")
+    return {
+        "engine_receipt_sha256": file_hash(root / "ENGINE_PROBABILITY_GRADIENT_RESUME.json"),
+        "engine_status": engine["status"],
+        "engine_attempt_id": attempt["attempt_id"],
+        "engine_job_id": str(attempt["job_id"]),
+        "handoff_journal_sha256": file_hash(journal_path),
+        "handoff_journal_sequence": sequence,
+    }
+
+
+def verify_baseline_parallel_repair(root, actual_source=None):
+    """Authenticate baseline-only parallelism after the complete ENGINE boundary."""
+    from .prepare import source_identity
+
+    root = Path(root).resolve(strict=True)
+    path = root / "BASELINE_PARALLEL_REPAIR.json"
+    repair = read_json(path)
+    before, parent, expected = _baseline_parallel_source_context(root)
+    for key, value in expected.items():
+        _required(repair.get(key), value, "Baseline parallel repair differs: " + key)
+    if not repair.get("authorized_at") or not repair.get("authorized_user_message"):
+        raise PermissionError("Baseline parallel repair lacks user authorization provenance")
+    history = _verify_baseline_parallel_handoff(root, repair)
+    actual = source_identity() if actual_source is None else actual_source
+    previous = _checked_source_files(before.get("source_file_hashes"), "Pre-baseline")
+    current = _checked_source_files(actual.get("source_file_hashes"), "Baseline actual")
+    _required(actual.get("source_dirty_files"), [], "Baseline repair requires committed source")
+    _required(repair.get("source_dirty_files"), [], "Baseline repair source is dirty")
+    _required(
+        actual.get("source_tree_sha256"), object_hash(current), "Baseline source tree invalid"
+    )
+    changed = sorted(
+        name for name in previous.keys() | current.keys() if previous.get(name) != current.get(name)
+    )
+    if (
+        not BASELINE_PARALLEL_REQUIRED_FILES.issubset(changed)
+        or not set(changed).issubset(BASELINE_PARALLEL_ALLOWED_FILES)
+        or set(previous) - set(current)
+    ):
+        raise PermissionError("Baseline repair changed scientific source or omitted required files")
+    _required(repair.get("changed_files"), changed, "Baseline repair source inventory differs")
+    worker = current["scripts/sr_f1/run_worker.py"]
+    _required(repair.get("worker_source_sha256"), worker, "Baseline worker revision differs")
+    for key in ("source_commit", "source_tree_sha256", "source_file_hashes"):
+        _required(repair.get(key), actual.get(key), "Baseline source identity differs: " + key)
+    if not re.fullmatch(r"[0-9a-f]{40}", actual.get("source_commit") or ""):
+        raise PermissionError("Baseline repair source commit missing")
+    return {
+        **expected,
+        **history,
+        "repair_sha256": file_hash(path),
+        "source_commit": actual["source_commit"],
+        "worker_source_sha256": worker,
+        "engine_multigpu_repair": parent,
+    }
+
+
 def verify_technical_repair(root, actual_source=None):
     """Authenticate the one scoped source amendment without rewriting the freeze.
 
@@ -1154,6 +1451,8 @@ def _verify_execution_source(root, original_source, actual_source=None):
     actual = source_identity() if actual_source is None else actual_source
     files = _checked_source_files(actual.get("source_file_hashes"), "Actual")
     _required(actual.get("source_tree_sha256"), object_hash(files), "Actual source hash is invalid")
+    if (Path(root) / "BASELINE_PARALLEL_REPAIR.json").exists():
+        return verify_baseline_parallel_repair(root, actual_source=actual)
     if original_source.get("source_tree_sha256") == actual.get("source_tree_sha256"):
         _required(original_source.get("source_file_hashes"), files, "Original source files differ")
         return None
@@ -1446,6 +1745,13 @@ def verify_execution(plan, root, require_engine=False):
     _required(identity.get("processor_target_pixels"), 786432, "Native pixel budget changed")
     if require_engine:
         verify_engine_receipt(root)
+    if (root / "BASELINE_PARALLEL_REPAIR.json").exists():
+        baseline = verify_baseline_parallel_repair(root)
+        return {
+            **freeze,
+            "baseline_parallel_repair": baseline,
+            "engine_multigpu_repair": baseline["engine_multigpu_repair"],
+        }
     if (root / "ENGINE_MULTIGPU_REPAIR.json").exists():
         return {**freeze, "engine_multigpu_repair": verify_engine_multigpu_repair(root)}
     return freeze

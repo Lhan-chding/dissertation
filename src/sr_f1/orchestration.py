@@ -48,6 +48,83 @@ ENGINE_MEMORY_REPAIR_ID = "SR_F1_1_ENGINE_MEMORY_20261010"
 ENGINE_STORAGE_REPAIR_ID = "SR_F1_1_ENGINE_STORAGE_20261010"
 ENGINE_IO_REPAIR_ID = "SR_F1_1_ENGINE_IO_20261010"
 ENGINE_MULTIGPU_REPAIR_ID = "SR_F1_1_ENGINE_MULTIGPU_20261010"
+BASELINE_PARALLEL_REPAIR_ID = "SR_F1_1_BASELINE_PARALLEL_20261010"
+BASELINE_ALLOCATION_PATH = "BASELINE_PARALLEL_ALLOCATION.json"
+
+
+def baseline_parallel_repair(root):
+    """Authenticate the downstream-only worker revision independently of ENGINE resources."""
+    from .freeze import verify_baseline_parallel_repair
+
+    root = Path(root)
+    repair = verify_baseline_parallel_repair(root)
+    require(
+        repair["repair_id"] == BASELINE_PARALLEL_REPAIR_ID
+        and repair["repair_sha256"] == file_hash(root / "BASELINE_PARALLEL_REPAIR.json")
+        and re.fullmatch(r"[0-9a-f]{40}", repair.get("source_commit", "")),
+        "BASELINE_PARALLEL_REPAIR_IDENTITY_MISMATCH",
+    )
+    for field in ("worker_source_sha256", "previous_worker_source_sha256"):
+        require(re.fullmatch(r"[0-9a-f]{64}", repair.get(field, "")), "INVALID_WORKER_REVISION")
+    return repair
+
+
+def baseline_parallel_allocation(root, registration):
+    """A baseline allocation is chosen once; queue changes never reinterpret old attempts."""
+    root = Path(root)
+    path = root / BASELINE_ALLOCATION_PATH
+    if not path.exists():
+        return None
+    require(not path.is_symlink(), "BASELINE_ALLOCATION_SYMLINK")
+    repair = baseline_parallel_repair(root)
+    allocation = read_json(path)
+    expected = {
+        "schema_version": 1,
+        "repair_id": BASELINE_PARALLEL_REPAIR_ID,
+        "repair_sha256": repair["repair_sha256"],
+        "registration_hash": digest(registration),
+        "task_id": "BASELINE",
+        "allocation_policy": "MAX_AVAILABLE_TEACHER_QOS_UP_TO_5",
+    }
+    require(
+        set(allocation) == set(expected) | {"gpus", "created_at", "capacity_observation"}
+        and all(allocation.get(key) == value for key, value in expected.items())
+        and type(allocation.get("gpus")) is int
+        and 1 <= allocation["gpus"] <= 5
+        and isinstance(allocation.get("created_at"), str)
+        and re.fullmatch(r"\d{4}-\d{2}-\d{2}T[^\s]+(?:Z|\+00:00)", allocation["created_at"]),
+        "BASELINE_ALLOCATION_IDENTITY_MISMATCH",
+    )
+    observation = allocation["capacity_observation"]
+    require(
+        isinstance(observation, dict)
+        and set(observation) == {"path", "sha256"}
+        and isinstance(observation["path"], str)
+        and re.fullmatch(
+            r"orchestration/observations/capacity/[0-9]{8,}\.json", observation["path"]
+        )
+        and re.fullmatch(r"[0-9a-f]{64}", observation.get("sha256", "")),
+        "BASELINE_CAPACITY_OBSERVATION_INVALID",
+    )
+    evidence_path = contained(root, observation["path"])
+    require(
+        file_hash(evidence_path) == observation["sha256"], "BASELINE_CAPACITY_OBSERVATION_CHANGED"
+    )
+    evidence = read_json(evidence_path)
+    summary = evidence["summary"]
+    require(
+        evidence["task_id"] == "BASELINE"
+        and summary["status"] == "AVAILABLE"
+        and summary.get("capacity_mode") == MULTIGPU_CAPACITY_MODE
+        and summary.get("qos") == registration["permission"]["qos"] == TEACHER_QOS
+        and summary.get("maximum_reserved_gpus") == 5
+        and type(summary.get("teacher_qos_reserved_gpus")) is int
+        and summary["teacher_qos_reserved_gpus"] >= 0
+        and summary.get("requested_gpus") == allocation["gpus"]
+        and allocation["gpus"] + summary["teacher_qos_reserved_gpus"] == 5,
+        "BASELINE_ALLOCATION_NOT_MAXIMUM_AUTHENTICATED_CAPACITY",
+    )
+    return allocation
 
 
 def multigpu_repair(root):
@@ -79,6 +156,24 @@ def multigpu_repair(root):
 
 def resource_override(root, registration, task_id):
     """Resources for a new attempt; old attempts retain their actual single GPU cost."""
+    if task_id == "BASELINE" and (Path(root) / "BASELINE_PARALLEL_REPAIR.json").exists():
+        allocation = baseline_parallel_allocation(root, registration)
+        if allocation is None:
+            return None
+        repair = baseline_parallel_repair(root)
+        count = allocation["gpus"]
+        return {
+            "repair_id": repair["repair_id"],
+            "repair_sha256": repair["repair_sha256"],
+            "allocation_sha256": file_hash(Path(root) / BASELINE_ALLOCATION_PATH),
+            "gpus": count,
+            "gres": f"gpu:pro6000:{count}",
+            "nodes": 1,
+            "cpus_per_task": count * 4,
+            "minimum_host_memory_gb": count * 80,
+            "constraint": "highmem",
+            "worker_source_sha256": repair["worker_source_sha256"],
+        }
     if not (Path(root) / "ENGINE_MULTIGPU_REPAIR.json").exists() or registration["tasks"][task_id][
         "operation"
     ] not in {"engine", "train"}:
@@ -571,7 +666,15 @@ class Scheduler:
         worker_hash = file_hash(script)
         if (self.root / "ENGINE_MULTIGPU_REPAIR.json").exists():
             repair = multigpu_repair(self.root)
-            require(worker_hash == repair["worker_source_sha256"], "REVISED_WORKER_SOURCE_CHANGED")
+            current_worker = repair["worker_source_sha256"]
+            if (self.root / "BASELINE_PARALLEL_REPAIR.json").exists():
+                baseline_repair = baseline_parallel_repair(self.root)
+                require(
+                    baseline_repair["previous_worker_source_sha256"] == current_worker,
+                    "BASELINE_PREVIOUS_WORKER_REVISION_CHANGED",
+                )
+                current_worker = baseline_repair["worker_source_sha256"]
+            require(worker_hash == current_worker, "REVISED_WORKER_SOURCE_CHANGED")
             # Registration remains the original immutable historical contract.
             # The additive repair independently authenticates today's worker.
             worker_hash = repair["previous_worker_source_sha256"]
@@ -972,8 +1075,12 @@ class Scheduler:
         task["blocker"] = reason
 
     def _capacity_available(self, task_id):
+        root = self.folder.parent
         permission = self.registration["permission"]
         evidence = {"time": now(), "task_id": task_id}
+        baseline_parallel = (
+            task_id == "BASELINE" and (root / "BASELINE_PARALLEL_REPAIR.json").exists()
+        )
         try:
             capacity = self.backend.submission_capacity(permission)
             project = self.backend.project_capacity(permission)
@@ -1004,7 +1111,7 @@ class Scheduler:
                 attempt.get("job_id") not in queued for _, attempt in reservations
             )
             gpu_used = sum(jobs.values()) + sum(
-                attempt_gpu_count(self.folder.parent, self.registration, key, attempt)
+                attempt_gpu_count(root, self.registration, key, attempt)
                 for key, attempt in reservations
                 if attempt.get("job_id") not in jobs
             )
@@ -1012,6 +1119,9 @@ class Scheduler:
             require(
                 mode in {None, QOS_CAPACITY_MODE, MULTIGPU_CAPACITY_MODE}, "UNKNOWN_CAPACITY_MODE"
             )
+            if baseline_parallel:
+                baseline_parallel_repair(root)
+                require(mode == MULTIGPU_CAPACITY_MODE, "BASELINE_TEACHER_CAPACITY_REQUIRED")
             if mode in {QOS_CAPACITY_MODE, MULTIGPU_CAPACITY_MODE}:
                 require(
                     project.get("qos") == permission["qos"] == TEACHER_QOS
@@ -1021,12 +1131,20 @@ class Scheduler:
                 available = maximum is None or submit_used < maximum
                 if mode == MULTIGPU_CAPACITY_MODE:
                     require(project.get("maximum_reserved_gpus") == 5, "TEACHER_GPU_LIMIT_CHANGED")
-                    override = resource_override(self.folder.parent, self.registration, task_id)
+                    override = resource_override(root, self.registration, task_id)
                     requested_gpus = (
                         override["gpus"]
                         if override is not None
                         else self.registration["tasks"][task_id]["gpus"]
                     )
+                    if baseline_parallel and override is None:
+                        require(
+                            not self.state["tasks"][task_id]["attempts"],
+                            "BASELINE_EXISTING_ATTEMPT_WITHOUT_ALLOCATION",
+                        )
+                        requested_gpus = max(0, 5 - gpu_used)
+                    if baseline_parallel:
+                        available = available and requested_gpus > 0
                     available = available and gpu_used + requested_gpus <= 5
             else:
                 available = (
@@ -1050,11 +1168,16 @@ class Scheduler:
         except Exception as exc:
             available, summary = False, {"status": "UNKNOWN", "error": repr(exc)}
         evidence["summary"] = summary
+        observation_path = self.folder / f"observations/capacity/{self.sequence + 1:08d}.json"
         atomic_json(
-            self.folder / f"observations/capacity/{self.sequence + 1:08d}.json",
+            observation_path,
             evidence,
             exclusive=True,
         )
+        self._last_capacity_observation = {
+            "path": str(observation_path.relative_to(root)),
+            "sha256": file_hash(observation_path),
+        }
         self.state["capacity"] = summary
         self._save("CAPACITY_" + summary["status"], task_id=task_id)
         return available
@@ -1067,6 +1190,11 @@ class Scheduler:
         self.verify_execution(
             self.plan, self.root, require_engine=spec["phase"] in {"S3", "S4", "S5", "S6"}
         )
+        baseline_parallel = (
+            task_id == "BASELINE" and (self.root / "BASELINE_PARALLEL_REPAIR.json").exists()
+        )
+        if baseline_parallel:
+            require(self._dependencies_ready(spec), "BASELINE_ENGINE_DEPENDENCY_NOT_COMPLETE")
         repair_resume = None
         if task["status"] == "RETRYABLE":
             if task_id == "COMMON_START" and not task.get("resume_checkpoint"):
@@ -1110,6 +1238,23 @@ class Scheduler:
                 )
         if not self._capacity_available(task_id):
             return False
+        if baseline_parallel and baseline_parallel_allocation(self.root, self.registration) is None:
+            require(not task["attempts"], "BASELINE_EXISTING_ATTEMPT_WITHOUT_ALLOCATION")
+            repair = baseline_parallel_repair(self.root)
+            allocation = {
+                "schema_version": 1,
+                "repair_id": BASELINE_PARALLEL_REPAIR_ID,
+                "repair_sha256": repair["repair_sha256"],
+                "registration_hash": digest(self.registration),
+                "task_id": "BASELINE",
+                "allocation_policy": "MAX_AVAILABLE_TEACHER_QOS_UP_TO_5",
+                "gpus": self.state["capacity"]["requested_gpus"],
+                "created_at": now(),
+                "capacity_observation": self._last_capacity_observation,
+            }
+            atomic_json(self.root / BASELINE_ALLOCATION_PATH, allocation, exclusive=True)
+            baseline_parallel_allocation(self.root, self.registration)
+            self._save("BASELINE_PARALLEL_ALLOCATION_FIXED", allocation=allocation)
         override = resource_override(self.root, self.registration, task_id)
         worker_memory_gb, worker_constraint = 64, None
         if spec["gpus"] and (self.root / "ENGINE_STORAGE_REPAIR.json").exists():

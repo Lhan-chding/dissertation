@@ -20,6 +20,7 @@ from sr_f1.orchestration import (
     _worker_identity,
     atomic_json,
     attempt_gpu_count,
+    baseline_parallel_repair,
     checkpoint_task,
     complete_task,
     digest,
@@ -64,7 +65,11 @@ def validate_allocation(root, task_id, *, backend=None):
     )
     expected_gpus = attempt_gpu_count(root, registration, task_id, manifest)
     if (root / "ENGINE_MULTIGPU_REPAIR.json").exists():
-        repair = multigpu_repair(root)
+        repair = (
+            baseline_parallel_repair(root)
+            if (root / "BASELINE_PARALLEL_REPAIR.json").exists()
+            else multigpu_repair(root)
+        )
         require(
             file_hash(Path(__file__)) == repair["worker_source_sha256"],
             "LIVE_WORKER_SOURCE_REVISION_CHANGED",
@@ -120,6 +125,18 @@ def dispatch(plan, root, spec):
 
         return train_path(plan, root, spec["run_id"])
     if operation == "evaluate":
+        if spec["stage"] == "baseline" and (root / "BASELINE_PARALLEL_REPAIR.json").exists():
+            from sr_f1.baseline_parallel import run_parallel_baseline
+            from sr_f1.orchestration import baseline_parallel_allocation
+
+            require(
+                spec["model_id"] == "SRF1_COMMON_START",
+                "PARALLEL_BASELINE_REQUIRES_COMMON_START",
+            )
+            registration, _ = _worker_identity(root, "BASELINE")
+            allocation = baseline_parallel_allocation(root, registration)
+            require(allocation is not None, "PARALLEL_BASELINE_ALLOCATION_MISSING")
+            return run_parallel_baseline(plan, root, allocation["gpus"])
         if spec["stage"] == "final":
             matrix = read_json(root / "RUN_MATRIX_FINAL.json")
             require(
