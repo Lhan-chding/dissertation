@@ -1,0 +1,166 @@
+{
+  "observed_at_utc": "2026-10-10T04:11:03.676967+00:00",
+  "status": "REAL_9B_SEQUENCE_SPEED_MEASURED_ENGINE_NOT_YET_ACCEPTED",
+  "controller_job": 196501,
+  "gpu_job": 196508,
+  "attempt": "ENGINE_attempt0004",
+  "gpus": 4,
+  "teacher_qos": "soujanya-poria-startfund-2026-03",
+  "source_commit": "22735a2def1ee1ed79d69f603e580c67e301c5dd",
+  "ledger_sha256_at_snapshot": "09acb95de1059f32ac4d814fbdbd5694a8e66d9581aced8a408c8183eb343d2f",
+  "measurement": "Difference between consecutive training_reference start timestamps; includes reference, gradient forward and both backward passes by the strict serial loop. Last unfinished sequence excluded.",
+  "paired_first_three_metadata_match": true,
+  "paired_first_three_speedup": 92.27418321406687,
+  "sequence_series": {
+    "ENGINE_attempt0003": {
+      "reference_start_times_ns": [
+        1791582295216051473,
+        1791587894243913984,
+        1791593644331965814,
+        1791598160654008889
+      ],
+      "tokens": [
+        259,
+        259,
+        187,
+        259
+      ],
+      "completed_sequence_durations_seconds": [
+        5599.027862511,
+        5750.08805183,
+        4516.322043075
+      ],
+      "completed_sequence_count": 3,
+      "mean_seconds": 5288.479319138667
+    },
+    "ENGINE_attempt0004": {
+      "reference_start_times_ns": [
+        1791604021045612165,
+        1791604084345646465,
+        1791604146131615139,
+        1791604192983606139,
+        1791604255502997258,
+        1791604317898023224,
+        1791604380470892028,
+        1791604427602104388,
+        1791604490905556651,
+        1791604554117466261,
+        1791604601760617614,
+        1791604664454977670,
+        1791604726806557743,
+        1791604790287961060,
+        1791604853291252018,
+        1791604915884436056,
+        1791604978855555542,
+        1791605042001998535,
+        1791605089597054682,
+        1791605152625178961,
+        1791605215782187434,
+        1791605278986489119,
+        1791605342375023919,
+        1791605390105041910,
+        1791605452747626997
+      ],
+      "tokens": [
+        259,
+        259,
+        187,
+        259,
+        259,
+        259,
+        187,
+        259,
+        259,
+        187,
+        259,
+        259,
+        259,
+        259,
+        259,
+        259,
+        260,
+        187,
+        260,
+        259,
+        259,
+        260,
+        188,
+        260,
+        261
+      ],
+      "completed_sequence_durations_seconds": [
+        63.3000343,
+        61.785968674,
+        46.851991,
+        62.519391119,
+        62.395025966,
+        62.572868804,
+        47.13121236,
+        63.303452263,
+        63.21190961,
+        47.643151353,
+        62.694360056,
+        62.351580073,
+        63.481403317,
+        63.003290958,
+        62.593184038,
+        62.971119486,
+        63.146442993,
+        47.595056147,
+        63.028124279,
+        63.157008473,
+        63.204301685,
+        63.3885348,
+        47.730017991,
+        62.642585087
+      ],
+      "completed_sequence_count": 24,
+      "mean_seconds": 59.654250618
+    }
+  },
+  "sampling": {
+    "current": {
+      "count": 128,
+      "total_seconds": 609.2547179718968,
+      "mean_seconds": 4.759802484155443,
+      "mean_tokens": 205.8359375
+    },
+    "old": {
+      "count": 128,
+      "total_seconds": 625.6937115649926,
+      "mean_seconds": 4.888232121601504,
+      "mean_tokens": 205.8359375
+    }
+  },
+  "current_gradient_forwards_all_auxgpu_no_cpu_or_disk": true,
+  "current_gradient_forward_count": 24,
+  "optimizer_updates": 0,
+  "science_attempts": 0,
+  "eta": {
+    "kind": "CONDITIONAL_ROUGH_EXTRAPOLATION_NOT_DEADLINE",
+    "natural_engine_total_physical_updates": 8,
+    "sequences_per_update": 128,
+    "natural_engine_remaining_hours_range": [
+      15,
+      20
+    ],
+    "flat_first_24_rate_remaining_hours": 17.755287123278688,
+    "baseline_after_engine_slots": 6784,
+    "baseline_current_single_gpu_generation_hours": 8.969583347919592,
+    "formal_training_remaining_hours_rough_range": [
+      24,
+      32
+    ],
+    "excluded": "queue delay, further failures, changed answer lengths, and additional stress ENGINE if its frozen trigger fires; no end-to-end completed update timing yet"
+  },
+  "evidence_files": {
+    "timing_raw.json": {
+      "relative_path": "artifacts/sr_f1_amendment_20261010/engine_multigpu/monitoring/20261010T041103Z_timing/timing_raw.json",
+      "sha256": "8608ae8668b3e0537d982094f8ca17dcaed149be3acead55503dc268ec00c6be"
+    },
+    "monitor.json": {
+      "relative_path": "artifacts/sr_f1_amendment_20261010/engine_multigpu/monitoring/20261010T041103Z_timing/monitor.json",
+      "sha256": "897827ea07cd169b7d3b33ddb2f05ba6e52dbd57ebd68b391ae8ab4dafe081bd"
+    }
+  }
+}
