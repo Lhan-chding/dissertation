@@ -1,0 +1,93 @@
+{
+  "at": "2026-10-10T09:51:30.534164+00:00",
+  "source_commit": "6cd2e60ac2f67f22bcf5d55163f4705dcf8e6345",
+  "source_files_verified": 458,
+  "reused_raw_files_verified": 4,
+  "reused_raw_records": 32,
+  "applied": {
+    "authorization_sha256": "a95e0e3b7c3ff1764924e4d27f89f373eaf53ac1fbc68ce7c1c2c71e461a947a",
+    "preserved_directory": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/technical_incidents/source_repair_r0001",
+    "preserved_task_files_sha256": "527a997ef10871d3112fedb915106b3044cd2953ca5cee636ad66ac5351fd744",
+    "preserved_technical_files_sha256": "351a11250290f3a4fdd4305b475c0c24f3d242fcad7e2ffb2f38a925c7788bf7",
+    "reused_records": 32,
+    "revision_id": "r0001",
+    "status": "APPLIED_ONCE_REUSE_32_NO_BASELINE_RESTART"
+  },
+  "cpu_validation": {
+    "cpu_tests_passed": true,
+    "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+    "status": "PASS"
+  },
+  "orchestration": {
+    "at": "2026-10-10T09:51:05.901100+00:00",
+    "experiment_complete": false,
+    "failures": [],
+    "scientific_complete": 0,
+    "scientific_total": 12,
+    "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+    "stage": "TECHNICAL_AND_BASELINE",
+    "tasks": {
+      "BASELINE_0": {
+        "job_id": "196826",
+        "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+        "status": "RUNNING",
+        "task_id": "BASELINE_0"
+      },
+      "BASELINE_1": {
+        "job_id": "196827",
+        "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+        "status": "RUNNING",
+        "task_id": "BASELINE_1"
+      },
+      "BASELINE_2": {
+        "job_id": "196828",
+        "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+        "status": "RUNNING",
+        "task_id": "BASELINE_2"
+      },
+      "TECHNICAL": {
+        "job_id": "196877",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "TECHNICAL"
+      }
+    },
+    "teacher_gpu_usage": 5,
+    "unknown_submissions": [],
+    "version": "SR-F1.2-20261010"
+  },
+  "endpoint": {
+    "at": "2026-10-10T09:51:05.640490+00:00",
+    "endpoints_complete": 0,
+    "endpoints_total": 13,
+    "experiment_delivered": false,
+    "failures": [],
+    "report_pending": true,
+    "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+    "stage": "WAITING_FOR_ALL_MAIN_TERMINAL",
+    "tasks": {},
+    "teacher_gpu_usage": 5,
+    "unknown_submissions": [],
+    "version": "SR-F1.2-20261010"
+  },
+  "baseline": [
+    {
+      "shard": "shard000",
+      "groups": 182,
+      "records": 1456
+    },
+    {
+      "shard": "shard001",
+      "groups": 170,
+      "records": 1360
+    },
+    {
+      "shard": "shard002",
+      "groups": 139,
+      "records": 1112
+    }
+  ],
+  "baseline_total": 3928,
+  "accounting": "196823|COMPLETED|0:0|2026-10-10T09:21:32|2026-10-10T09:21:59|2026-10-10T09:22:56\n196826|RUNNING|0:0|2026-10-10T09:25:00|2026-10-10T09:25:01|Unknown\n196827|RUNNING|0:0|2026-10-10T09:25:00|2026-10-10T09:27:18|Unknown\n196828|RUNNING|0:0|2026-10-10T09:25:01|2026-10-10T09:31:30|Unknown\n196847|FAILED|1:0|2026-10-10T09:41:55|2026-10-10T09:42:03|2026-10-10T09:43:24\n196869|COMPLETED|0:0|2026-10-10T09:48:10|2026-10-10T09:48:34|2026-10-10T09:49:55\n196875|RUNNING|0:0|2026-10-10T09:49:55|2026-10-10T09:50:05|Unknown\n196876|RUNNING|0:0|2026-10-10T09:49:55|2026-10-10T09:50:05|Unknown\n196877|RUNNING|0:0|2026-10-10T09:50:05|2026-10-10T09:50:50|Unknown\n",
+  "queue": "195718|sp-c123-120-150k|PENDING|rose|N/A|(Dependency)\n195717|sp-c123-80-120k|PENDING|rose|N/A|(Dependency)\n195716|sp-c123-40-80k|PENDING|rose|N/A|(Dependency)\n196877|srf12-TECHNICAL|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-11\n196828|srf12-BASELINE_2|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-7\n196827|srf12-BASELINE_1|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-7\n196826|srf12-BASELINE_0|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-7\n196568|hgadapter30s1|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-2\n195715|sp-c123-0-40k|RUNNING|rose|N/A|gpu-6000ada-1\n196875|srf12-controller-r0001b|RUNNING|override-limits-but-killable|N/A|cpu-2\n196876|srf12-endpoint-r0001b|RUNNING|override-limits-but-killable|N/A|cpu-2\n"
+}
