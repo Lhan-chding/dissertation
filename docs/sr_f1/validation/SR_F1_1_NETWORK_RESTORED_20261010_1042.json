@@ -1,0 +1,549 @@
+{
+  "status": "CONNECTIVITY_RESTORED_ENGINE_CONTINUED",
+  "observed_at": "2026-10-10T02:42:00.116882+00:00",
+  "run_root": "/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010",
+  "controller_job_id": "196225",
+  "gpu_job_id": "196227",
+  "source_commit": "b48a638128bfeb6fc41201341df4902b3f2e660a",
+  "source_verified": true,
+  "original_128_preserved_hashes_unchanged": true,
+  "scientific_attempts": 0,
+  "physical_optimizer_updates": 0,
+  "test_sealed": true,
+  "raw_count": 128,
+  "complete_gradient_forwards": 4,
+  "prior_sequences_both_backward_returns_inferred": 3,
+  "inference_basis": "Verified deployed src/sr_f1/training.py loop only starts next reference forward after policy autograd.grad(retain_graph=True), finite-gradient checks and total-loss backward returned. Four sequential reference/gradient pairs from same current-attempt PID establish at least three completed sequence pairs. This is not four optimizer updates or completed ENGINE acceptance.",
+  "process_io_delta_over_five_seconds": {
+    "rchar": 39433818,
+    "wchar": 0,
+    "syscr": 165,
+    "syscw": 0,
+    "read_bytes": 0,
+    "write_bytes": 0,
+    "cancelled_write_bytes": 0
+  },
+  "technical_blockers": [],
+  "external_io_failures": {},
+  "source_and_freeze": {
+    "EXECUTION_FREEZE.json": {
+      "sha256": "c7cf051d3aa6fb45889324e64b08d31a008137668aff2382283e4e19f99ff2b8",
+      "status": "FROZEN"
+    },
+    "AMENDMENT.json": {
+      "sha256": "7a50aff34d56b3809bae2842761efd34adaf30728ed51e4d149c67a620903e67",
+      "status": "REGISTERED_BEFORE_GENERATION"
+    },
+    "ENGINE_IO_REPAIR.json": {
+      "sha256": "ebd17dda5860c292c2529895ab6d5816c04cee8e32c4c3f86230033438b82df0",
+      "status": "AUTHORIZED_TECHNICAL_IO_REPAIR"
+    },
+    "FORMAT_AND_BRIDGE_RECEIPT.json": {
+      "sha256": "9ecadd8efdca77bf27d4a7ff0e8d73fb634a06e08b04e13b8177f823c9494943",
+      "status": "COMPLETE"
+    }
+  },
+  "live_evidence": {
+    "time": "2026-10-10T02:41:53.583662+00:00",
+    "attempt_id": "ENGINE_attempt0003",
+    "job_id": "196227",
+    "forwards": [
+      {
+        "attempt_id": "ENGINE_attempt0003",
+        "count": 259,
+        "kind": "cached_training_model_forward_calls",
+        "metadata": {
+          "activation_offload": null,
+          "completed_model_forward_calls": 259,
+          "decode_input_tokens": 258,
+          "decode_model_forward_calls": 258,
+          "engine_mode": "natural",
+          "engine_segment": "continuous",
+          "prefill_input_tokens": 1023,
+          "prefill_model_forward_calls": 1,
+          "purpose": "training_reference",
+          "requested_completion_tokens": 259,
+          "scored_completion_tokens": 259,
+          "status": "COMPLETE",
+          "vision_forward_calls": 1
+        },
+        "pid": 2074288,
+        "plan_id": "SR-F1-20261009",
+        "task_id": "ENGINE",
+        "time_ns": 1791582301343102697
+      },
+      {
+        "attempt_id": "ENGINE_attempt0003",
+        "count": 259,
+        "kind": "cached_training_model_forward_calls",
+        "metadata": {
+          "activation_offload": {
+            "capacity_check_count": 1172,
+            "capacity_observations": [
+              {
+                "check_index": 1,
+                "effective_available_bytes": 4419743865194,
+                "effective_quota_used_bytes": 580256134806,
+                "quota_max_bytes": 5000000000000,
+                "quota_root": "/projects/_hdd/varunhdd",
+                "quota_used_bytes": 580256134806,
+                "requested_window_bytes": 67108864,
+                "safety_reserve_bytes": 10737418240,
+                "spill_written_bytes": 0,
+                "statvfs_available_bytes": 211498349625344,
+                "time_ns": 1791582308991589306
+              },
+              {
+                "check_index": 1172,
+                "effective_available_bytes": 4344477861114,
+                "effective_quota_used_bytes": 655522138886,
+                "quota_max_bytes": 5000000000000,
+                "quota_root": "/projects/_hdd/varunhdd",
+                "quota_used_bytes": 655287499674,
+                "requested_window_bytes": 67108864,
+                "safety_reserve_bytes": 10737418240,
+                "spill_written_bytes": 75266004080,
+                "statvfs_available_bytes": 211395253633024,
+                "time_ns": 1791582918998839333
+              }
+            ],
+            "cpu_budget_bytes": 51539607552,
+            "cpu_storage_bytes": 51539607550,
+            "disk_read_bytes": 0,
+            "disk_saved_tensors": 321018,
+            "disk_storage_bytes": 75277728928,
+            "io_chunk_bytes": 33554432,
+            "largest_saved_activation_bytes": 66977856,
+            "minimum_available_bytes": 4344477861114,
+            "pin_memory": false,
+            "policy": "saved_activation_cpu48g_lossless_disk_parameter_resident_v2",
+            "resident_parameter_view_bytes": 3751029784320,
+            "resident_parameter_views": 76146,
+            "saved_activation_bytes": 98889328496,
+            "saved_activation_tensors": 338954,
+            "spill_aborted": false,
+            "spill_file_cleaned": false,
+            "spill_file_created": true,
+            "spill_path": "/projects/_hdd/varunhdd/louis-ssvc/sr_f11_20261010_activation_offload/2074288-59uy4egw.bin",
+            "unpacked_activation_bytes": 0,
+            "unpacked_activation_tensors": 0
+          },
+          "completed_model_forward_calls": 259,
+          "decode_input_tokens": 258,
+          "decode_model_forward_calls": 258,
+          "engine_mode": "natural",
+          "engine_segment": "continuous",
+          "prefill_input_tokens": 1023,
+          "prefill_model_forward_calls": 1,
+          "purpose": "training_gradient",
+          "requested_completion_tokens": 259,
+          "scored_completion_tokens": 259,
+          "status": "COMPLETE",
+          "vision_forward_calls": 1
+        },
+        "pid": 2074288,
+        "plan_id": "SR-F1-20261009",
+        "task_id": "ENGINE",
+        "time_ns": 1791582919218486687
+      },
+      {
+        "attempt_id": "ENGINE_attempt0003",
+        "count": 259,
+        "kind": "cached_training_model_forward_calls",
+        "metadata": {
+          "activation_offload": null,
+          "completed_model_forward_calls": 259,
+          "decode_input_tokens": 258,
+          "decode_model_forward_calls": 258,
+          "engine_mode": "natural",
+          "engine_segment": "continuous",
+          "prefill_input_tokens": 1023,
+          "prefill_model_forward_calls": 1,
+          "purpose": "training_reference",
+          "requested_completion_tokens": 259,
+          "scored_completion_tokens": 259,
+          "status": "COMPLETE",
+          "vision_forward_calls": 1
+        },
+        "pid": 2074288,
+        "plan_id": "SR-F1-20261009",
+        "task_id": "ENGINE",
+        "time_ns": 1791587900492330889
+      },
+      {
+        "attempt_id": "ENGINE_attempt0003",
+        "count": 259,
+        "kind": "cached_training_model_forward_calls",
+        "metadata": {
+          "activation_offload": {
+            "capacity_check_count": 1172,
+            "capacity_observations": [
+              {
+                "check_index": 1,
+                "effective_available_bytes": 4419742237919,
+                "effective_quota_used_bytes": 580257762081,
+                "quota_max_bytes": 5000000000000,
+                "quota_root": "/projects/_hdd/varunhdd",
+                "quota_used_bytes": 580257762081,
+                "requested_window_bytes": 67108864,
+                "safety_reserve_bytes": 10737418240,
+                "spill_written_bytes": 0,
+                "statvfs_available_bytes": 211178324230144,
+                "time_ns": 1791587905958424803
+              },
+              {
+                "check_index": 1172,
+                "effective_available_bytes": 4344476233839,
+                "effective_quota_used_bytes": 655523766161,
+                "quota_max_bytes": 5000000000000,
+                "quota_root": "/projects/_hdd/varunhdd",
+                "quota_used_bytes": 653528582998,
+                "requested_window_bytes": 67108864,
+                "safety_reserve_bytes": 10737418240,
+                "spill_written_bytes": 75266004080,
+                "statvfs_available_bytes": 211224847450112,
+                "time_ns": 1791588504685566308
+              }
+            ],
+            "cpu_budget_bytes": 51539607552,
+            "cpu_storage_bytes": 51539607550,
+            "disk_read_bytes": 0,
+            "disk_saved_tensors": 321018,
+            "disk_storage_bytes": 75277728928,
+            "io_chunk_bytes": 33554432,
+            "largest_saved_activation_bytes": 66977856,
+            "minimum_available_bytes": 4344476233839,
+            "pin_memory": false,
+            "policy": "saved_activation_cpu48g_lossless_disk_parameter_resident_v2",
+            "resident_parameter_view_bytes": 3751029784320,
+            "resident_parameter_views": 76146,
+            "saved_activation_bytes": 98889328496,
+            "saved_activation_tensors": 338954,
+            "spill_aborted": false,
+            "spill_file_cleaned": false,
+            "spill_file_created": true,
+            "spill_path": "/projects/_hdd/varunhdd/louis-ssvc/sr_f11_20261010_activation_offload/2074288-q49xerhc.bin",
+            "unpacked_activation_bytes": 0,
+            "unpacked_activation_tensors": 0
+          },
+          "completed_model_forward_calls": 259,
+          "decode_input_tokens": 258,
+          "decode_model_forward_calls": 258,
+          "engine_mode": "natural",
+          "engine_segment": "continuous",
+          "prefill_input_tokens": 1023,
+          "prefill_model_forward_calls": 1,
+          "purpose": "training_gradient",
+          "requested_completion_tokens": 259,
+          "scored_completion_tokens": 259,
+          "status": "COMPLETE",
+          "vision_forward_calls": 1
+        },
+        "pid": 2074288,
+        "plan_id": "SR-F1-20261009",
+        "task_id": "ENGINE",
+        "time_ns": 1791588504878429835
+      },
+      {
+        "attempt_id": "ENGINE_attempt0003",
+        "count": 187,
+        "kind": "cached_training_model_forward_calls",
+        "metadata": {
+          "activation_offload": null,
+          "completed_model_forward_calls": 187,
+          "decode_input_tokens": 186,
+          "decode_model_forward_calls": 186,
+          "engine_mode": "natural",
+          "engine_segment": "continuous",
+          "prefill_input_tokens": 1023,
+          "prefill_model_forward_calls": 1,
+          "purpose": "training_reference",
+          "requested_completion_tokens": 187,
+          "scored_completion_tokens": 187,
+          "status": "COMPLETE",
+          "vision_forward_calls": 1
+        },
+        "pid": 2074288,
+        "plan_id": "SR-F1-20261009",
+        "task_id": "ENGINE",
+        "time_ns": 1791593648920093223
+      },
+      {
+        "attempt_id": "ENGINE_attempt0003",
+        "count": 187,
+        "kind": "cached_training_model_forward_calls",
+        "metadata": {
+          "activation_offload": {
+            "capacity_check_count": 819,
+            "capacity_observations": [
+              {
+                "check_index": 1,
+                "effective_available_bytes": 4402616681778,
+                "effective_quota_used_bytes": 597383318222,
+                "quota_max_bytes": 5000000000000,
+                "quota_root": "/projects/_hdd/varunhdd",
+                "quota_used_bytes": 597383318222,
+                "requested_window_bytes": 67108864,
+                "safety_reserve_bytes": 10737418240,
+                "spill_written_bytes": 0,
+                "statvfs_available_bytes": 211164164259840,
+                "time_ns": 1791593656861644676
+              },
+              {
+                "check_index": 819,
+                "effective_available_bytes": 4349718106332,
+                "effective_quota_used_bytes": 650281893668,
+                "quota_max_bytes": 5000000000000,
+                "quota_root": "/projects/_hdd/varunhdd",
+                "quota_used_bytes": 648586902944,
+                "requested_window_bytes": 67108864,
+                "safety_reserve_bytes": 10737418240,
+                "spill_written_bytes": 52898575446,
+                "statvfs_available_bytes": 211148896993280,
+                "time_ns": 1791594075283913600
+              }
+            ],
+            "cpu_budget_bytes": 51539607552,
+            "cpu_storage_bytes": 51539607550,
+            "disk_read_bytes": 0,
+            "disk_saved_tensors": 229506,
+            "disk_storage_bytes": 52964838640,
+            "io_chunk_bytes": 33554432,
+            "largest_saved_activation_bytes": 66977856,
+            "minimum_available_bytes": 4349718106332,
+            "pin_memory": false,
+            "policy": "saved_activation_cpu48g_lossless_disk_parameter_resident_v2",
+            "resident_parameter_view_bytes": 2708272469760,
+            "resident_parameter_views": 54978,
+            "saved_activation_bytes": 76601207792,
+            "saved_activation_tensors": 247442,
+            "spill_aborted": false,
+            "spill_file_cleaned": false,
+            "spill_file_created": true,
+            "spill_path": "/projects/_hdd/varunhdd/louis-ssvc/sr_f11_20261010_activation_offload/2074288-g_rzp6jp.bin",
+            "unpacked_activation_bytes": 0,
+            "unpacked_activation_tensors": 0
+          },
+          "completed_model_forward_calls": 187,
+          "decode_input_tokens": 186,
+          "decode_model_forward_calls": 186,
+          "engine_mode": "natural",
+          "engine_segment": "continuous",
+          "prefill_input_tokens": 1023,
+          "prefill_model_forward_calls": 1,
+          "purpose": "training_gradient",
+          "requested_completion_tokens": 187,
+          "scored_completion_tokens": 187,
+          "status": "COMPLETE",
+          "vision_forward_calls": 1
+        },
+        "pid": 2074288,
+        "plan_id": "SR-F1-20261009",
+        "task_id": "ENGINE",
+        "time_ns": 1791594076184314310
+      },
+      {
+        "attempt_id": "ENGINE_attempt0003",
+        "count": 259,
+        "kind": "cached_training_model_forward_calls",
+        "metadata": {
+          "activation_offload": null,
+          "completed_model_forward_calls": 259,
+          "decode_input_tokens": 258,
+          "decode_model_forward_calls": 258,
+          "engine_mode": "natural",
+          "engine_segment": "continuous",
+          "prefill_input_tokens": 1023,
+          "prefill_model_forward_calls": 1,
+          "purpose": "training_reference",
+          "requested_completion_tokens": 259,
+          "scored_completion_tokens": 259,
+          "status": "COMPLETE",
+          "vision_forward_calls": 1
+        },
+        "pid": 2074288,
+        "plan_id": "SR-F1-20261009",
+        "task_id": "ENGINE",
+        "time_ns": 1791598167150202584
+      },
+      {
+        "attempt_id": "ENGINE_attempt0003",
+        "count": 259,
+        "kind": "cached_training_model_forward_calls",
+        "metadata": {
+          "activation_offload": {
+            "capacity_check_count": 1172,
+            "capacity_observations": [
+              {
+                "check_index": 1,
+                "effective_available_bytes": 4402615346238,
+                "effective_quota_used_bytes": 597384653762,
+                "quota_max_bytes": 5000000000000,
+                "quota_root": "/projects/_hdd/varunhdd",
+                "quota_used_bytes": 597384653762,
+                "requested_window_bytes": 67108864,
+                "safety_reserve_bytes": 10737418240,
+                "spill_written_bytes": 0,
+                "statvfs_available_bytes": 211074657812480,
+                "time_ns": 1791598212285731536
+              },
+              {
+                "check_index": 1172,
+                "effective_available_bytes": 4327349342158,
+                "effective_quota_used_bytes": 672650657842,
+                "quota_max_bytes": 5000000000000,
+                "quota_root": "/projects/_hdd/varunhdd",
+                "quota_used_bytes": 672400405649,
+                "requested_window_bytes": 67108864,
+                "safety_reserve_bytes": 10737418240,
+                "spill_written_bytes": 75266004080,
+                "statvfs_available_bytes": 210956093227008,
+                "time_ns": 1791598959869579790
+              }
+            ],
+            "cpu_budget_bytes": 51539607552,
+            "cpu_storage_bytes": 51539607550,
+            "disk_read_bytes": 0,
+            "disk_saved_tensors": 321018,
+            "disk_storage_bytes": 75277728928,
+            "io_chunk_bytes": 33554432,
+            "largest_saved_activation_bytes": 66977856,
+            "minimum_available_bytes": 4327349342158,
+            "pin_memory": false,
+            "policy": "saved_activation_cpu48g_lossless_disk_parameter_resident_v2",
+            "resident_parameter_view_bytes": 3751029784320,
+            "resident_parameter_views": 76146,
+            "saved_activation_bytes": 98889328496,
+            "saved_activation_tensors": 338954,
+            "spill_aborted": false,
+            "spill_file_cleaned": false,
+            "spill_file_created": true,
+            "spill_path": "/projects/_hdd/varunhdd/louis-ssvc/sr_f11_20261010_activation_offload/2074288-s92bx_cx.bin",
+            "unpacked_activation_bytes": 0,
+            "unpacked_activation_tensors": 0
+          },
+          "completed_model_forward_calls": 259,
+          "decode_input_tokens": 258,
+          "decode_model_forward_calls": 258,
+          "engine_mode": "natural",
+          "engine_segment": "continuous",
+          "prefill_input_tokens": 1023,
+          "prefill_model_forward_calls": 1,
+          "purpose": "training_gradient",
+          "requested_completion_tokens": 259,
+          "scored_completion_tokens": 259,
+          "status": "COMPLETE",
+          "vision_forward_calls": 1
+        },
+        "pid": 2074288,
+        "plan_id": "SR-F1-20261009",
+        "task_id": "ENGINE",
+        "time_ns": 1791598960042467771
+      }
+    ],
+    "gradients_completed": 4,
+    "raw_count": 128,
+    "spill_lifecycle": [
+      {
+        "path": "/projects/_hdd/varunhdd/louis-ssvc/sr_f11_20261010_activation_offload/2074288-59uy4egw.bin",
+        "exists_now": false,
+        "forward_complete_ns": 1791582919218486687
+      },
+      {
+        "path": "/projects/_hdd/varunhdd/louis-ssvc/sr_f11_20261010_activation_offload/2074288-q49xerhc.bin",
+        "exists_now": false,
+        "forward_complete_ns": 1791588504878429835
+      },
+      {
+        "path": "/projects/_hdd/varunhdd/louis-ssvc/sr_f11_20261010_activation_offload/2074288-g_rzp6jp.bin",
+        "exists_now": false,
+        "forward_complete_ns": 1791594076184314310
+      },
+      {
+        "path": "/projects/_hdd/varunhdd/louis-ssvc/sr_f11_20261010_activation_offload/2074288-s92bx_cx.bin",
+        "exists_now": true,
+        "forward_complete_ns": 1791598960042467771
+      }
+    ],
+    "quota": {
+      "/projects/_ssd/varunssd": {
+        "limit": 750000000000,
+        "used": 694120067395,
+        "remaining": 55879932605
+      },
+      "/projects/_hdd/varunhdd": {
+        "limit": 5000000000000,
+        "used": 672662908859,
+        "remaining": 4327337091141
+      }
+    },
+    "latest_checkpoints": {
+      "engineering/engine/natural/continuous/checkpoints/LATEST.json": {
+        "field_hashes": {
+          "committed_logical_step": "669b4c24c93570eb1df6701e382789cb22aeb1d5b23911779997f87e898dcb5c",
+          "cursor": "42b79492e7be67423204d5fdc8b8ae37e830937c5988080e31a80cf350d0386e",
+          "diagnostics_hash": "99bf08d8dc95c6aeb2d65ed7025a39215e31b4c92fccc2b5ed130b640db2cd7d",
+          "input_stream_hash": "9d4ef9e0ee0f19ebb136cde2ed6591d82ef79b87a696049d3d7e01895ef4dce1",
+          "optimizer": "290d4aa73e5be103c6082092fa3a5d2e353a5f955b2aa2efb5bbab256d45d80f",
+          "parameters": "2a11c71fa0bdee21cc69123fa50810253be71e4e69d0fc243a7e5beeb89687b2",
+          "plan_id": "fa1734904f131851c9716d75654095c1a15365959b7697e50c6c4727c221df36",
+          "reference": "2a11c71fa0bdee21cc69123fa50810253be71e4e69d0fc243a7e5beeb89687b2",
+          "reference_hash": "d92c5e81e1db8c8c8c2ebf3efe6fe1f47242ac86c790981e174145717a31ded8",
+          "rng": "ce6b49e0f28ae5a2ca88d4009b4e58fc2c55b6b8deececb5de531ed895a20953",
+          "run_identity": "65fb858ce4b83a25569d4eea1dc8ac374a5c53d822fadd739984145f4e90376c",
+          "sampling_hash": "a0102d8e2ab24bcfe9a45d60ef16ff2fa891d3c11e6edbd113b98e1d1b1cdfc3",
+          "scheduler": "eac924bfdaa1aadc04d25bc79d13d1433ffd12b28f21c4a9a37841e7c8ffcc23",
+          "token_path_hash": "99bf08d8dc95c6aeb2d65ed7025a39215e31b4c92fccc2b5ed130b640db2cd7d"
+        },
+        "path": "step-00-6ebf19f2a38638988671ac8591de83d770753f42de25c51dfcac3940ee192c33.pt",
+        "sha256": "0642ca038a0e99b1bdda1276b28f9f8a2eca06184f7072142d3d8b3eb2b21632",
+        "state_hash": "6ebf19f2a38638988671ac8591de83d770753f42de25c51dfcac3940ee192c33",
+        "step": 0
+      }
+    },
+    "job_details": {
+      "returncode": 0,
+      "stdout": "JobId=196227 JobName=srf1-9ef274c9fc6a-ENGINE_attempt0003 UserId=varun024(295800338) GroupId=varun024(295800338) MCS_label=N/A Priority=101 Nice=0 Account=rose QOS=soujanya-poria-startfund-2026-03 JobState=RUNNING Reason=None Dependency=(null) Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=05:08:52 TimeLimit=3-00:00:00 TimeMin=N/A SubmitTime=2026-10-09T21:33:01 EligibleTime=2026-10-09T21:33:01 AccrueTime=2026-10-09T21:33:01 StartTime=2026-10-09T21:33:01 EndTime=2026-10-12T21:33:01 Deadline=N/A PreemptEligibleTime=2026-10-09T21:33:01 PreemptTime=None SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-09T21:33:01 Scheduler=Main Partition=cluster02 AllocNode:Sid=cpu-2:1823320 ReqNodeList=(null) ExcNodeList=(null) NodeList=gpu-pro6000-10 BatchHost=gpu-pro6000-10 NumNodes=1 NumCPUs=4 NumTasks=1 CPUs/Task=4 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=4,mem=90G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1 AllocTRES=cpu=4,mem=90G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1 Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=4 MinMemoryNode=90G MinTmpDiskNode=0 Features=highmem DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null) Command=/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010/orchestration/attempts/ENGINE_attempt0003.sh WorkDir=/home/varun024 Comment=srf1:9ef274c9fc6a:ENGINE_attempt0003  StdErr=/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010/orchestration/attempts/ENGINE_attempt0003_196227.log StdIn=/dev/null StdOut=/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010/orchestration/attempts/ENGINE_attempt0003_196227.log Power= TresPerNode=gres/gpu:pro6000:1 TresPerTask=cpu:4 \n",
+      "stderr": ""
+    },
+    "worker_pid": 2074288,
+    "process_probe": {
+      "returncode": 0,
+      "stdout": "{\"first\": {\"time\": \"2026-10-10T02:41:55.116455+00:00\", \"cmdline\": \"/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12 -m sr_f1.engine --root /projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010 --plan /projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010/engineering/ENGINE_CONFIG.json --mode natural --segment continuous \", \"cgroup\": \"0::/system.slice/gpu-pro6000-10_slurmstepd.scope/job_196227/step_batch/user/task_0\\n\", \"status\": \"Name:\\tpython3.12\\nUmask:\\t0002\\nState:\\tS (sleeping)\\nTgid:\\t2074288\\nNgid:\\t2116266\\nPid:\\t2074288\\nPPid:\\t2044627\\nTracerPid:\\t0\\nUid:\\t295800338\\t295800338\\t295800338\\t295800338\\nGid:\\t295800338\\t295800338\\t295800338\\t295800338\\nFDSize:\\t64\\nGroups:\\t295800016 295800160 295800338 \\nNStgid:\\t2074288\\nNSpid:\\t2074288\\nNSpgid:\\t2044627\\nNSsid:\\t2044452\\nKthread:\\t0\\nVmPeak:\\t104318208 kB\\nVmSize:\\t104318208 kB\\nVmLck:\\t       0 kB\\nVmPin:\\t       0 kB\\nVmHWM:\\t65362616 kB\\nVmRSS:\\t65362616 kB\\nRssAnon:\\t65027308 kB\\nRssFile:\\t  313988 kB\\nRssShmem:\\t   21320 kB\\nVmData:\\t66110736 kB\\nVmStk:\\t     232 kB\\nVmExe:\\t    2420 kB\\nVmLib:\\t 2165972 kB\\nVmPTE:\\t  130688 kB\\nVmSwap:\\t       0 kB\\nHugetlbPages:\\t       0 kB\\nCoreDumping:\\t0\\nTHP_enabled:\\t1\\nuntag_mask:\\t0xffffffffffffffff\\nThreads:\\t15\\nSigQ:\\t0/3093269\\nSigPnd:\\t0000000000000000\\nShdPnd:\\t0000000000000000\\nSigBlk:\\t0000000000000000\\nSigIgn:\\t0000000001001000\\nSigCgt:\\t0000000100004202\\nCapInh:\\t0000000000000000\\nCapPrm:\\t0000000000000000\\nCapEff:\\t0000000000000000\\nCapBnd:\\t000001ffffffffff\\nCapAmb:\\t0000000000000000\\nNoNewPrivs:\\t0\\nSeccomp:\\t0\\nSeccomp_filters:\\t0\\nSpeculation_Store_Bypass:\\tthread vulnerable\\nSpeculationIndirectBranch:\\tconditional enabled\\nCpus_allowed:\\t00000000,00000000,0000c000,00000300\\nCpus_allowed_list:\\t8-9,46-47\\nMems_allowed:\\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000003\\nMems_allowed_list:\\t0-1\\nvoluntary_ctxt_switches:\\t1374159\\nnonvoluntary_ctxt_switches:\\t52941\\nx86_Thread_features:\\t\\nx86_Thread_features_locked:\\t\\n\", \"io\": \"rchar: 504131850996\\nwchar: 278810965361\\nsyscr: 2097043\\nsyscw: 1193174\\nread_bytes: 9121153024\\nwrite_bytes: 278829776896\\ncancelled_write_bytes: 0\\n\", \"stat\": \"2074288 (python3.12) S 2044627 2044627 2044452 0 -1 4194304 131652491 11308 186 3 261096 41649 0 4 20 0 15 0 74525679 106821844992 16339762 96636764160 103700472635392 103700475109533 140732680088384 0 0 0 0 16781312 16898 0 0 0 17 46 0 0 0 0 0 103700476525264 103700478506736 103701124673536 140732680090470 140732680090735 140732680090735 140732680093622 0\\n\"}, \"second\": {\"time\": \"2026-10-10T02:42:00.116882+00:00\", \"cmdline\": \"/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12 -m sr_f1.engine --root /projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010 --plan /projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010/engineering/ENGINE_CONFIG.json --mode natural --segment continuous \", \"cgroup\": \"0::/system.slice/gpu-pro6000-10_slurmstepd.scope/job_196227/step_batch/user/task_0\\n\", \"status\": \"Name:\\tpython3.12\\nUmask:\\t0002\\nState:\\tS (sleeping)\\nTgid:\\t2074288\\nNgid:\\t2116266\\nPid:\\t2074288\\nPPid:\\t2044627\\nTracerPid:\\t0\\nUid:\\t295800338\\t295800338\\t295800338\\t295800338\\nGid:\\t295800338\\t295800338\\t295800338\\t295800338\\nFDSize:\\t64\\nGroups:\\t295800016 295800160 295800338 \\nNStgid:\\t2074288\\nNSpid:\\t2074288\\nNSpgid:\\t2044627\\nNSsid:\\t2044452\\nKthread:\\t0\\nVmPeak:\\t104318208 kB\\nVmSize:\\t104318208 kB\\nVmLck:\\t       0 kB\\nVmPin:\\t       0 kB\\nVmHWM:\\t65362616 kB\\nVmRSS:\\t65362616 kB\\nRssAnon:\\t65027308 kB\\nRssFile:\\t  313988 kB\\nRssShmem:\\t   21320 kB\\nVmData:\\t66110736 kB\\nVmStk:\\t     232 kB\\nVmExe:\\t    2420 kB\\nVmLib:\\t 2165972 kB\\nVmPTE:\\t  130688 kB\\nVmSwap:\\t       0 kB\\nHugetlbPages:\\t       0 kB\\nCoreDumping:\\t0\\nTHP_enabled:\\t1\\nuntag_mask:\\t0xffffffffffffffff\\nThreads:\\t15\\nSigQ:\\t0/3093269\\nSigPnd:\\t0000000000000000\\nShdPnd:\\t0000000000000000\\nSigBlk:\\t0000000000000000\\nSigIgn:\\t0000000001001000\\nSigCgt:\\t0000000100004202\\nCapInh:\\t0000000000000000\\nCapPrm:\\t0000000000000000\\nCapEff:\\t0000000000000000\\nCapBnd:\\t000001ffffffffff\\nCapAmb:\\t0000000000000000\\nNoNewPrivs:\\t0\\nSeccomp:\\t0\\nSeccomp_filters:\\t0\\nSpeculation_Store_Bypass:\\tthread vulnerable\\nSpeculationIndirectBranch:\\tconditional enabled\\nCpus_allowed:\\t00000000,00000000,0000c000,00000300\\nCpus_allowed_list:\\t8-9,46-47\\nMems_allowed:\\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000003\\nMems_allowed_list:\\t0-1\\nvoluntary_ctxt_switches:\\t1374159\\nnonvoluntary_ctxt_switches:\\t52941\\nx86_Thread_features:\\t\\nx86_Thread_features_locked:\\t\\n\", \"io\": \"rchar: 504171284814\\nwchar: 278810965361\\nsyscr: 2097208\\nsyscw: 1193174\\nread_bytes: 9121153024\\nwrite_bytes: 278829776896\\ncancelled_write_bytes: 0\\n\", \"stat\": \"2074288 (python3.12) S 2044627 2044627 2044452 0 -1 4194304 131652546 11308 186 3 261101 41652 0 4 20 0 15 0 74525679 106821844992 16339762 96636764160 103700472635392 103700475109533 140732680088384 0 0 0 0 16781312 16898 0 0 0 17 46 0 0 0 0 0 103700476525264 103700478506736 103701124673536 140732680090470 140732680090735 140732680090735 140732680093622 0\\n\"}}\n",
+      "stderr": ""
+    }
+  },
+  "probe_parsed": {
+    "first": {
+      "time": "2026-10-10T02:41:55.116455+00:00",
+      "cmdline": "/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12 -m sr_f1.engine --root /projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010 --plan /projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010/engineering/ENGINE_CONFIG.json --mode natural --segment continuous ",
+      "cgroup": "0::/system.slice/gpu-pro6000-10_slurmstepd.scope/job_196227/step_batch/user/task_0\n",
+      "status": "Name:\tpython3.12\nUmask:\t0002\nState:\tS (sleeping)\nTgid:\t2074288\nNgid:\t2116266\nPid:\t2074288\nPPid:\t2044627\nTracerPid:\t0\nUid:\t295800338\t295800338\t295800338\t295800338\nGid:\t295800338\t295800338\t295800338\t295800338\nFDSize:\t64\nGroups:\t295800016 295800160 295800338 \nNStgid:\t2074288\nNSpid:\t2074288\nNSpgid:\t2044627\nNSsid:\t2044452\nKthread:\t0\nVmPeak:\t104318208 kB\nVmSize:\t104318208 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t65362616 kB\nVmRSS:\t65362616 kB\nRssAnon:\t65027308 kB\nRssFile:\t  313988 kB\nRssShmem:\t   21320 kB\nVmData:\t66110736 kB\nVmStk:\t     232 kB\nVmExe:\t    2420 kB\nVmLib:\t 2165972 kB\nVmPTE:\t  130688 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t15\nSigQ:\t0/3093269\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000001001000\nSigCgt:\t0000000100004202\nCapInh:\t0000000000000000\nCapPrm:\t0000000000000000\nCapEff:\t0000000000000000\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tthread vulnerable\nSpeculationIndirectBranch:\tconditional enabled\nCpus_allowed:\t00000000,00000000,0000c000,00000300\nCpus_allowed_list:\t8-9,46-47\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000003\nMems_allowed_list:\t0-1\nvoluntary_ctxt_switches:\t1374159\nnonvoluntary_ctxt_switches:\t52941\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+      "io": "rchar: 504131850996\nwchar: 278810965361\nsyscr: 2097043\nsyscw: 1193174\nread_bytes: 9121153024\nwrite_bytes: 278829776896\ncancelled_write_bytes: 0\n",
+      "stat": "2074288 (python3.12) S 2044627 2044627 2044452 0 -1 4194304 131652491 11308 186 3 261096 41649 0 4 20 0 15 0 74525679 106821844992 16339762 96636764160 103700472635392 103700475109533 140732680088384 0 0 0 0 16781312 16898 0 0 0 17 46 0 0 0 0 0 103700476525264 103700478506736 103701124673536 140732680090470 140732680090735 140732680090735 140732680093622 0\n"
+    },
+    "second": {
+      "time": "2026-10-10T02:42:00.116882+00:00",
+      "cmdline": "/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12 -m sr_f1.engine --root /projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010 --plan /projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010/engineering/ENGINE_CONFIG.json --mode natural --segment continuous ",
+      "cgroup": "0::/system.slice/gpu-pro6000-10_slurmstepd.scope/job_196227/step_batch/user/task_0\n",
+      "status": "Name:\tpython3.12\nUmask:\t0002\nState:\tS (sleeping)\nTgid:\t2074288\nNgid:\t2116266\nPid:\t2074288\nPPid:\t2044627\nTracerPid:\t0\nUid:\t295800338\t295800338\t295800338\t295800338\nGid:\t295800338\t295800338\t295800338\t295800338\nFDSize:\t64\nGroups:\t295800016 295800160 295800338 \nNStgid:\t2074288\nNSpid:\t2074288\nNSpgid:\t2044627\nNSsid:\t2044452\nKthread:\t0\nVmPeak:\t104318208 kB\nVmSize:\t104318208 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t65362616 kB\nVmRSS:\t65362616 kB\nRssAnon:\t65027308 kB\nRssFile:\t  313988 kB\nRssShmem:\t   21320 kB\nVmData:\t66110736 kB\nVmStk:\t     232 kB\nVmExe:\t    2420 kB\nVmLib:\t 2165972 kB\nVmPTE:\t  130688 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t15\nSigQ:\t0/3093269\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000001001000\nSigCgt:\t0000000100004202\nCapInh:\t0000000000000000\nCapPrm:\t0000000000000000\nCapEff:\t0000000000000000\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tthread vulnerable\nSpeculationIndirectBranch:\tconditional enabled\nCpus_allowed:\t00000000,00000000,0000c000,00000300\nCpus_allowed_list:\t8-9,46-47\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000003\nMems_allowed_list:\t0-1\nvoluntary_ctxt_switches:\t1374159\nnonvoluntary_ctxt_switches:\t52941\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+      "io": "rchar: 504171284814\nwchar: 278810965361\nsyscr: 2097208\nsyscw: 1193174\nread_bytes: 9121153024\nwrite_bytes: 278829776896\ncancelled_write_bytes: 0\n",
+      "stat": "2074288 (python3.12) S 2044627 2044627 2044452 0 -1 4194304 131652546 11308 186 3 261101 41652 0 4 20 0 15 0 74525679 106821844992 16339762 96636764160 103700472635392 103700475109533 140732680088384 0 0 0 0 16781312 16898 0 0 0 17 46 0 0 0 0 0 103700476525264 103700478506736 103701124673536 140732680090470 140732680090735 140732680090735 140732680093622 0\n"
+    }
+  },
+  "raw_snapshot_sha256": {
+    "network_restored_20261010_024102.json": "88e1c1fbabcf4d87660452e924b52c174826cada4decb869ae3923b5713d501c",
+    "network_restored_detail_20261010_0241.json": "ab0917012653210dd1d5de32b46fb82e57d4f4e74a4b8dd0aafc4b015f66480d"
+  },
+  "actions": {
+    "code_changes": 0,
+    "job_submissions": 0,
+    "job_cancellations": 0,
+    "unrelated_jobs_modified": 0
+  },
+  "limits": [
+    "ENGINE continuous 4 versus independent 2+2 still not accepted",
+    "Full committed state remains step0; partial accumulated gradients are not an optimizer update",
+    "No current technical failure inferred from storage throughput or elapsed time"
+  ]
+}
