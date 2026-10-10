@@ -1,0 +1,234 @@
+{
+  "time": "2026-10-10T03:35:39.482354+00:00",
+  "status": "FOUR_GPU_ENGINE_RUNNING_NOT_YET_QUALIFIED",
+  "controller_job": "196501",
+  "gpu_job": "196508",
+  "attempt_id": "ENGINE_attempt0004",
+  "node": "gpu-pro6000-10",
+  "actual_gpus": 4,
+  "actual_host_memory_gib": 360,
+  "actual_cpus": 16,
+  "qos": "soujanya-poria-startfund-2026-03",
+  "teacher_qos_gpus_in_use": 5,
+  "unrelated_teacher_gpu_job": "196002",
+  "source_commit": "22735a2def1ee1ed79d69f603e580c67e301c5dd",
+  "source_tree_sha256": "51925089ed6c4a3aa55047aeee9b6d94a5d344150cfc340c554585a1fabe5edc",
+  "source_files_verified": true,
+  "deployment_files": 163,
+  "engine_multigpu_repair_sha256": "fdf036fc9836aa9de7b48d8978b03bb39926ac43cef113ed2b254329b61a21fd",
+  "original_freeze_sha256": "c7cf051d3aa6fb45889324e64b08d31a008137668aff2382283e4e19f99ff2b8",
+  "local_tests": 747,
+  "server_tests": 747,
+  "subtests": 16,
+  "cuda_skipped_in_cpu_suite": 4,
+  "synthetic_cuda_probe": {
+    "job_id": "196459",
+    "status": "PASS",
+    "gpus": 3,
+    "qualification": "SYNTHETIC_CUDA_ACTIVATION_STORAGE_ONLY",
+    "sha256": "bb1a86b7864aa0b1c3b0261643a86f7b872cf465eed36054e7559614c5c82c5e"
+  },
+  "preserved": {
+    "files": 934,
+    "bytes": 40655282,
+    "raw_rollouts": 128,
+    "checkpoint_step": 0,
+    "science_attempts": 0,
+    "all_hashes_verified": true
+  },
+  "old_original_128_hashes_unchanged": true,
+  "real_9b_engine_qualified": false,
+  "measured_real_9b_speedup": null,
+  "science_attempts": 0,
+  "optimizer_updates": 0,
+  "test_sealed": true,
+  "technical_blockers": [],
+  "allocation_check": {
+    "command": [
+      "scontrol",
+      "show",
+      "job",
+      "196508",
+      "--oneliner"
+    ],
+    "returncode": 0,
+    "stdout": "JobId=196508 JobName=srf1-9ef274c9fc6a-ENGINE_attempt0004 UserId=varun024(295800338) GroupId=varun024(295800338) MCS_label=N/A Priority=101 Nice=0 Account=rose QOS=soujanya-poria-startfund-2026-03 JobState=RUNNING Reason=None Dependency=(null) Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=00:00:06 TimeLimit=3-00:00:00 TimeMin=N/A SubmitTime=2026-10-10T03:34:34 EligibleTime=2026-10-10T03:34:38 AccrueTime=2026-10-10T03:34:38 StartTime=2026-10-10T03:35:35 EndTime=2026-10-13T03:35:35 Deadline=N/A PreemptEligibleTime=2026-10-10T03:35:35 PreemptTime=None SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-10T03:35:35 Scheduler=Backfill Partition=cluster02 AllocNode:Sid=cpu-2:2005096 ReqNodeList=(null) ExcNodeList=(null) NodeList=gpu-pro6000-10 BatchHost=gpu-pro6000-10 NumNodes=1 NumCPUs=16 NumTasks=1 CPUs/Task=16 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=16,mem=360G,node=1,billing=32,gres/gpu=4,gres/gpu:pro6000=4 AllocTRES=cpu=16,mem=360G,node=1,billing=32,gres/gpu=4,gres/gpu:pro6000=4 Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=16 MinMemoryNode=360G MinTmpDiskNode=0 Features=highmem DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null) Command=/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010/orchestration/attempts/ENGINE_attempt0004.sh WorkDir=/home/varun024 Comment=srf1:9ef274c9fc6a:ENGINE_attempt0004  StdErr=/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010/orchestration/attempts/ENGINE_attempt0004_196508.log StdIn=/dev/null StdOut=/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010/orchestration/attempts/ENGINE_attempt0004_196508.log Power= TresPerNode=gres/gpu:pro6000:4 TresPerTask=cpu:16 \n",
+    "stderr": ""
+  },
+  "release": {
+    "attempt_id": "ENGINE_attempt0004",
+    "command": [
+      "sbatch",
+      "--hold",
+      "--no-requeue",
+      "--nodes=1",
+      "--cpus-per-task=16",
+      "--parsable",
+      "--account",
+      "rose",
+      "--qos",
+      "soujanya-poria-startfund-2026-03",
+      "--job-name",
+      "srf1-9ef274c9fc6a-ENGINE_attempt0004",
+      "--comment",
+      "srf1:9ef274c9fc6a:ENGINE_attempt0004",
+      "--time",
+      "4320",
+      "--signal=B:USR1@600",
+      "--output",
+      "/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010/orchestration/attempts/ENGINE_attempt0004_%j.log",
+      "--gres",
+      "gpu:pro6000:4",
+      "--constraint=highmem",
+      "--partition",
+      "cluster02",
+      "/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010/orchestration/attempts/ENGINE_attempt0004.sh"
+    ],
+    "comment": "srf1:9ef274c9fc6a:ENGINE_attempt0004",
+    "created_at": "2026-10-10T03:34:34.322192+00:00",
+    "host_memory_observation": {
+      "path": "orchestration/observations/host_memory/ENGINE_attempt0004/00001526.json",
+      "sha256": "ae5e0083dc214019446e976adb05c6063de8019f6d9f1842c7252c7a8fee6480"
+    },
+    "job_id": "196508",
+    "job_name": "srf1-9ef274c9fc6a-ENGINE_attempt0004",
+    "manifest_path": "orchestration/attempts/ENGINE_attempt0004.json",
+    "observation": {
+      "path": "orchestration/observations/ENGINE_attempt0004/00001528.json",
+      "sha256": "108ae02603da6206efb6532112a021a5107b37af64cdefe5ea854bcce0b5c9c4"
+    },
+    "release_receipt": {
+      "command": [
+        "scontrol",
+        "release",
+        "196508"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "",
+      "time": "2026-10-10T03:34:35.618642+00:00"
+    },
+    "released": true,
+    "resource_override": {
+      "constraint": "highmem",
+      "cpus_per_task": 16,
+      "gpus": 4,
+      "gres": "gpu:pro6000:4",
+      "minimum_host_memory_gb": 320,
+      "nodes": 1,
+      "repair_id": "SR_F1_1_ENGINE_MULTIGPU_20261010",
+      "repair_sha256": "fdf036fc9836aa9de7b48d8978b03bb39926ac43cef113ed2b254329b61a21fd",
+      "worker_source_sha256": "e9f3ce43f8e6308a8e8d111a933b2ac026a8ef018339c2efe982c9c7a40e71f4"
+    },
+    "status": "ACTIVE",
+    "submission_receipt": {
+      "command": [
+        "sbatch",
+        "--hold",
+        "--no-requeue",
+        "--nodes=1",
+        "--cpus-per-task=16",
+        "--parsable",
+        "--account",
+        "rose",
+        "--qos",
+        "soujanya-poria-startfund-2026-03",
+        "--job-name",
+        "srf1-9ef274c9fc6a-ENGINE_attempt0004",
+        "--comment",
+        "srf1:9ef274c9fc6a:ENGINE_attempt0004",
+        "--time",
+        "4320",
+        "--signal=B:USR1@600",
+        "--output",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010/orchestration/attempts/ENGINE_attempt0004_%j.log",
+        "--gres",
+        "gpu:pro6000:4",
+        "--constraint=highmem",
+        "--partition",
+        "cluster02",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010/orchestration/attempts/ENGINE_attempt0004.sh"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "196508\n",
+      "time": "2026-10-10T03:34:34.346797+00:00"
+    },
+    "teacher_gpu_release_observation": {
+      "path": "orchestration/observations/multigpu_release/ENGINE_attempt0004/00001526.json",
+      "sha256": "ec4c8f1c2ee7892ce5cfeb0474953d1e59fe54d5cd6cff0e16dca305a1299640"
+    },
+    "technical_repair_resume": {
+      "maintained_attempt_id": "ENGINE_attempt0003",
+      "repair_id": "SR_F1_1_ENGINE_MULTIGPU_20261010",
+      "repair_sha256": "fdf036fc9836aa9de7b48d8978b03bb39926ac43cef113ed2b254329b61a21fd",
+      "source_commit": "22735a2def1ee1ed79d69f603e580c67e301c5dd"
+    }
+  },
+  "validation_complete": {
+    "time": "2026-10-10T03:33:35.398896+00:00",
+    "status": "PASS",
+    "server_tests": 747,
+    "server_subtests": 16,
+    "accounting": {
+      "command": [
+        "sacct",
+        "-j",
+        "196225,196227,196475",
+        "--format=JobID,State,ExitCode",
+        "-n",
+        "-P"
+      ],
+      "returncode": 0,
+      "stdout": "196225|CANCELLED by 295800338|0:0\n196225.batch|FAILED|1:0\n196225.extern|COMPLETED|0:0\n196227|CANCELLED by 295800338|0:0\n196227.batch|CANCELLED|0:9\n196227.extern|COMPLETED|0:0\n196227.0|COMPLETED|0:0\n196227.1|COMPLETED|0:0\n196475|COMPLETED|0:0\n196475.batch|COMPLETED|0:0\n196475.extern|COMPLETED|0:0\n",
+      "stderr": "",
+      "time": "2026-10-10T03:33:35.389467+00:00"
+    },
+    "queue_before_restart": {
+      "command": [
+        "squeue",
+        "--noheader",
+        "--user",
+        "varun024",
+        "--format=%i|%j|%T|%q"
+      ],
+      "returncode": 0,
+      "stdout": "195718|sp-c123-120-150k|PENDING|rose\n195717|sp-c123-80-120k|PENDING|rose\n195716|sp-c123-40-80k|PENDING|rose\n196002|hgadapter30s1|RUNNING|soujanya-poria-startfund-2026-03\n195715|sp-c123-0-40k|RUNNING|rose\n196499|srf11-mgpu-resume-recovered|RUNNING|override-limits-but-killable\n",
+      "stderr": "",
+      "time": "2026-10-10T03:33:35.398875+00:00"
+    },
+    "artifact_hashes": {
+      "technical_incidents/multigpu_20261010/CANDIDATE_SERVER_TESTS_V2.log": "913998b942066632fe531113ec76c60991d39b6d687636316ad5e59f5a73722b",
+      "technical_incidents/multigpu_20261010/PREFLIGHT.log": "c53b98ffeaca33a8190a572107c2d18a5fa1df5b2ceaf221ecebf67f94677eb4",
+      "technical_incidents/multigpu_20261010/MULTIGPU_VERIFY.log": "0f0098ed4fbd63bd0e5ba114a5a9690ef98feced67dbe3c6551f32b4db212ef6",
+      "technical_incidents/multigpu_20261010/RESUME_AUTHORIZATION.log": "aee985d711ddbe81574868fd020920ea551826ada08d0e4370c2fd702da61fef",
+      "technical_incidents/multigpu_20261010/GPU_PROBE.json": "bb1a86b7864aa0b1c3b0261643a86f7b872cf465eed36054e7559614c5c82c5e",
+      "technical_incidents/multigpu_20261010/RECOVERY_REVIEW.json": "210cd41b55730c6544a563a5744f8530d75f4e0e2515770d310857d7fff4b4de",
+      "technical_incidents/multigpu_20261010/CPU_STATE_REVIEW.json": "80c17571349037f6bc05e523269b94e7ba00d2c8c56b590e3476ee5291d92e76",
+      "technical_incidents/multigpu_20261010/TERMINAL_JOBS.json": "bca29604867d8916355bfaaf4d4d30cda4088e6ce58844271fa1058d45defd68",
+      "technical_incidents/multigpu_20261010/PRESERVATION.json": "f3561092b103c9b89121f2215b4533b65d92aa0206267bd02a889e7d45bf5fea",
+      "EXECUTION_FREEZE.json": "c7cf051d3aa6fb45889324e64b08d31a008137668aff2382283e4e19f99ff2b8",
+      "AMENDMENT.json": "7a50aff34d56b3809bae2842761efd34adaf30728ed51e4d149c67a620903e67",
+      "QOS_SCOPE_REPAIR.json": "7d6af82c0e355c0097e21e644284299d4b2943d59ce87eeb98af468983226b31",
+      "ENGINE_MULTIGPU_REPAIR.json": "fdf036fc9836aa9de7b48d8978b03bb39926ac43cef113ed2b254329b61a21fd"
+    },
+    "registration_unchanged": true,
+    "old_raw_rollouts_preserved": 128,
+    "consumed_gpu_reuse_not_reset": true,
+    "optimizer_updates_before_restart": 0,
+    "engine_gpu_count": 4,
+    "real_9b_engine_qualified": false,
+    "unrelated_jobs_modified": 0
+  },
+  "static_receipts": {
+    "files": 87,
+    "path": "artifacts/sr_f1_amendment_20261010/engine_multigpu/server_receipts_20261010T0335.tar.gz",
+    "sha256": "9b8df0a817de85ac70524cb52bbdf2804365e1581c5f463a61432c481077d0d1",
+    "gzip_crc_and_tar_members_verified": true
+  },
+  "full_snapshot": {
+    "path": "artifacts/sr_f1_amendment_20261010/engine_multigpu/four_gpu_running_20261010T033539.json",
+    "sha256": "4565f6cc800e02bc2eda09efecb345e3565b376f95c359e2c1422b8543740a3e"
+  },
+  "unrelated_jobs_modified": 0
+}
