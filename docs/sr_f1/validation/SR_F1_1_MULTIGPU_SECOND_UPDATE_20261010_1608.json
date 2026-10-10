@@ -1,0 +1,83 @@
+{
+  "status": "SECOND_ENGINE_UPDATE_FULL_STATE_AUDITED_ENGINE_ACCEPTANCE_PENDING",
+  "checked_at_utc": "2026-10-10T08:08:43.584350+00:00",
+  "engine_job": "196508",
+  "handoff_job": "196654",
+  "cpu_read_only_audit_step": "196654.0",
+  "cpu_audit_accounting": "196654.0|COMPLETED|0:0|00:00:01|cpu=1,mem=2G,node=1\n",
+  "committed_engine_updates": 2,
+  "required_natural_engine_updates": 8,
+  "current_update_sequences_started_at_progress_snapshot": 19,
+  "prior_double_backward_completed_lower_bound": 18,
+  "second_update_event_utc": "2026-10-10T07:39:44.235777+00:00",
+  "second_update_interval_seconds": 7397.452022399,
+  "gradient_forward_status_counts": {
+    "COMPLETE": 274
+  },
+  "cpu_fallback_forward_count": 0,
+  "disk_fallback_forward_count": 0,
+  "teacher_qos_gpu_total": 5,
+  "engine_accepted": false,
+  "baseline_attempts": 0,
+  "science_attempts": 0,
+  "test_sealed": true,
+  "training_job_mutations": 0,
+  "production_code_changes": 0,
+  "audit": {
+    "status": "PASS_SECOND_UPDATE_FULL_STATE",
+    "time": "2026-10-10T08:08:43.584350+00:00",
+    "job_id": "196654",
+    "step_id": "0",
+    "checkpoint": {
+      "field_hashes": {
+        "committed_logical_step": "cbe0b0618736b2cbebe43f4918d9b7c490ccc60c5f0544fbcf21ff69fa813e1e",
+        "cursor": "550e948e28f0f2a3b3dfb6a085364d7452debd4248643b2934b1e1e0586c19ea",
+        "diagnostics_hash": "992cea059723c87abfaa3abdd5dd2a47bfdbed6fcdb09e6e0081572fdab5ec7a",
+        "input_stream_hash": "9d4ef9e0ee0f19ebb136cde2ed6591d82ef79b87a696049d3d7e01895ef4dce1",
+        "optimizer": "3ba5e77dab8aace55f8a05df969d05f5e19a37380f62bf8833070a78c0a39563",
+        "parameters": "270dd8e0095245a87d8495bc90929c48f34dfe61e51feb4b4552644f7e2a793e",
+        "plan_id": "fa1734904f131851c9716d75654095c1a15365959b7697e50c6c4727c221df36",
+        "reference": "2a11c71fa0bdee21cc69123fa50810253be71e4e69d0fc243a7e5beeb89687b2",
+        "reference_hash": "d92c5e81e1db8c8c8c2ebf3efe6fe1f47242ac86c790981e174145717a31ded8",
+        "rng": "a91c19c9a3f2ef2420c50a1fabc097780de598aea79be42672780e9353686bc9",
+        "run_identity": "65fb858ce4b83a25569d4eea1dc8ac374a5c53d822fadd739984145f4e90376c",
+        "sampling_hash": "a0102d8e2ab24bcfe9a45d60ef16ff2fa891d3c11e6edbd113b98e1d1b1cdfc3",
+        "scheduler": "a89edab0a347e8ffb0d4f743a716f7879012a69d31f16d70636b4f3c155c96a4",
+        "token_path_hash": "9fa0e03629f210c2e662e8cef9bf3f28007afad67eb8c21468d4a36350ff4a36"
+      },
+      "path": "step-02-1e76b3800c3157f4ea36eacfb2354110223f5bf8ae1093aed38505fd1266f6f6.pt",
+      "sha256": "e3bc06140c0396a4f127388804d2c629bc5f0217c36873a9c261a7d6719fcc23",
+      "state_hash": "1e76b3800c3157f4ea36eacfb2354110223f5bf8ae1093aed38505fd1266f6f6",
+      "step": 2
+    },
+    "state_fields_verified": 14,
+    "cuda_rng_states": 4,
+    "raw_rollouts_verified": 128,
+    "probability_max_abs_difference": 0.0,
+    "probability_mean_abs_difference": 0.0,
+    "probability_tokens": 27184,
+    "policy_gradient_norm": 0.02817030136558189,
+    "parameter_max_absolute_delta": 0.00010013443534262478,
+    "format_failures": {
+      "denominator": 128,
+      "format_failure_rate": 0.046875,
+      "numerator": 6,
+      "reasons": {
+        "invalid_json": 3,
+        "scored": 3
+      },
+      "unit": "generated_sequence"
+    },
+    "learning_rate": 0.0001,
+    "model_calls": 0,
+    "cuda_initialized": false,
+    "engine_accepted": false
+  },
+  "evidence_folder": "artifacts/sr_f1_amendment_20261010/baseline_parallel/heartbeat_20261010T0806",
+  "evidence_sha256": {
+    "monitor.json": "163bd62093f955577c826e65bf3f514c87ab768d10dfedd48a6b90476f289691",
+    "progress.json": "0838493360d431248f970416df02ff3c7b6eb99bdc3db57a6b910e76dc2ed820",
+    "step2_audit.json": "e5600fc9b08f94e2a64b4a45dd595011bfbd1efd7fc46c98e465f8ce8fefebf6",
+    "audit_accounting.txt": "9589d17280c4a95056f1d88588623ad01572ce9ab6d4468725d4c0a6342f6c1a"
+  }
+}
