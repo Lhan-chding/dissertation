@@ -1,0 +1,2724 @@
+{
+  "at": "2026-10-10T15:05:32.075614+00:00",
+  "receipts": {
+    "PROBE.json": {
+      "status": "PASS",
+      "synthetic_only": true,
+      "production_commit_restore": true,
+      "adam_scheduler_cursor_rng": true,
+      "tamper_rejected": true,
+      "endpoint_escape_rejected": true,
+      "temporary_probe_cleaned": true
+    },
+    "CPU_SUBMISSION.json": {
+      "returncode": 0,
+      "stdout": "197229\n",
+      "stderr": "sbatch: slurm_job_submit: enforced 2 CPUs for 1 task and 6144 MiB mem/node for 0 GPU(s) (model=none)\nsbatch: slurm_job_submit: you requested 2 CPUs/node and 4096 MiB mem/node\n"
+    },
+    "SOURCE.json": {
+      "commit": "c39e4c62f063eb5ef54c26f92b04c476ea8adb16",
+      "files": {
+        "prepare.py": "92d419f702d536422640c3f157f39865b4f4a380fb1172f9009173817bdfa06a",
+        "test_checkpoint_directory_link.py": "1f0ca8a85f84a95574608df1f286071c5dc81c2b265a2056f083097e9c673acd"
+      }
+    },
+    "CPU_INTENT.json": {
+      "args": [
+        "sbatch",
+        "--parsable",
+        "--account=rose",
+        "--partition=cluster02",
+        "--qos=override-limits-but-killable",
+        "--cpus-per-task=2",
+        "--mem=4G",
+        "--time=10",
+        "--job-name=srf12-checkpoint-storage",
+        "--output=/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/checkpoint_storage_20261010/prepare-%j.log",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/checkpoint_storage_20261010/prepare.sbatch"
+      ],
+      "script_sha256": "8a61776ae4615d91ba52e46a83c1132785a5c74a1729f4b5e86393e876a958ac"
+    },
+    "INTENT.json": {
+      "at": "2026-10-10T15:04:39.621412+00:00",
+      "job_id": "197229",
+      "script_sha256": "92d419f702d536422640c3f157f39865b4f4a380fb1172f9009173817bdfa06a",
+      "source_files_verified": 458,
+      "frozen_file_sha256": {
+        "SCIENCE_FREEZE.json": "c926f431d9976108e7bbbdbbd63d037bf2246f61d37db28a1f53ef6f1ac4dd48",
+        "AMENDMENT.json": "1c79ec11f6dbab9b3c5b2dc4c5bf7c40c34c0007ecb6531c1b9899a1b8343827",
+        "config/SR_F1_2_FROZEN.json": "16c20d23cd424307b26700f7b5a6086dbf44de7106358d102ba8c7bd3fa07cda",
+        "source_r0001b.json": "7ee26b646ecbcf2e78e3a5dcf071620cdf2d2322aa1ddc5fb17835f53a04c047"
+      },
+      "ssd_quota": {
+        "limits": [
+          {
+            "path": "/projects/_ssd/varunssd",
+            "limit": 750000000000,
+            "used": 714646559731,
+            "remaining": 35353440269,
+            "statvfs_free": 213289703309312
+          }
+        ],
+        "remaining": 35353440269,
+        "statvfs_free": 213289703309312
+      },
+      "hdd_quota": {
+        "limits": [
+          {
+            "path": "/projects/_hdd/varunhdd",
+            "limit": 5000000000000,
+            "used": 623616135173,
+            "remaining": 4376383864827,
+            "statvfs_free": 210790787317760
+          }
+        ],
+        "remaining": 4376383864827,
+        "statvfs_free": 210790787317760
+      },
+      "before": {
+        "state": {
+          "at": "2026-10-10T15:04:01.568505+00:00",
+          "experiment_complete": false,
+          "failures": [],
+          "scientific_complete": 0,
+          "scientific_total": 12,
+          "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+          "stage": "MAIN_TRAINING",
+          "tasks": {
+            "BASELINE_0": {
+              "job_id": "196826",
+              "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+              "status": "COMPLETE",
+              "task_id": "BASELINE_0"
+            },
+            "BASELINE_1": {
+              "job_id": "196827",
+              "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+              "status": "COMPLETE",
+              "task_id": "BASELINE_1"
+            },
+            "BASELINE_2": {
+              "job_id": "196828",
+              "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+              "status": "COMPLETE",
+              "task_id": "BASELINE_2"
+            },
+            "SRF1_2_A_s71001": {
+              "job_id": "196939",
+              "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+              "status": "RUNNING",
+              "task_id": "SRF1_2_A_s71001"
+            },
+            "SRF1_2_DEC_s71001": {
+              "job_id": "196942",
+              "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+              "status": "RUNNING",
+              "task_id": "SRF1_2_DEC_s71001"
+            },
+            "SRF1_2_GATE_s71001": {
+              "job_id": "196941",
+              "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+              "status": "RUNNING",
+              "task_id": "SRF1_2_GATE_s71001"
+            },
+            "SRF1_2_J_s71001": {
+              "job_id": "196940",
+              "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+              "status": "RUNNING",
+              "task_id": "SRF1_2_J_s71001"
+            },
+            "TECHNICAL": {
+              "job_id": "196877",
+              "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+              "status": "COMPLETE",
+              "task_id": "TECHNICAL"
+            }
+          },
+          "teacher_gpu_usage": 4,
+          "unknown_submissions": [],
+          "version": "SR-F1.2-20261010"
+        },
+        "queue": "195718|sp-c123-120-150k|PENDING|rose|N/A\n195717|sp-c123-80-120k|PENDING|rose|N/A\n195716|sp-c123-40-80k|PENDING|rose|N/A\n196942|srf12-SRF1_2_DEC_s71001|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1\n196940|srf12-SRF1_2_J_s71001|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1\n196941|srf12-SRF1_2_GATE_s71001|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1\n196939|srf12-SRF1_2_A_s71001|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1\n195715|sp-c123-0-40k|RUNNING|rose|N/A\n197229|srf12-checkpoint-storage|RUNNING|override-limits-but-killable|N/A\n196875|srf12-controller-r0001b|RUNNING|override-limits-but-killable|N/A\n196876|srf12-endpoint-r0001b|RUNNING|override-limits-but-killable|N/A\n"
+      },
+      "mappings": {
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_A_s71002/checkpoints": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_A_s71002",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_J_s71002/checkpoints": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_J_s71002",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_GATE_s71002/checkpoints": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_GATE_s71002",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_DEC_s71002/checkpoints": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_DEC_s71002",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_A_s71003/checkpoints": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_A_s71003",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_J_s71003/checkpoints": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_J_s71003",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_GATE_s71003/checkpoints": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_GATE_s71003",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_DEC_s71003/checkpoints": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_DEC_s71003"
+      }
+    },
+    "APPLIED.json": {
+      "status": "PREPARED_EMPTY_FUTURE_CHECKPOINTS",
+      "at": "2026-10-10T15:04:41.290632+00:00",
+      "mappings": {
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_A_s71002/checkpoints": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_A_s71002",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_J_s71002/checkpoints": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_J_s71002",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_GATE_s71002/checkpoints": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_GATE_s71002",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_DEC_s71002/checkpoints": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_DEC_s71002",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_A_s71003/checkpoints": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_A_s71003",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_J_s71003/checkpoints": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_J_s71003",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_GATE_s71003/checkpoints": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_GATE_s71003",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_DEC_s71003/checkpoints": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_DEC_s71003"
+      },
+      "current_seed_untouched": true,
+      "scientific_files_moved": 0,
+      "source_changed": false,
+      "frozen_file_sha256": {
+        "SCIENCE_FREEZE.json": "c926f431d9976108e7bbbdbbd63d037bf2246f61d37db28a1f53ef6f1ac4dd48",
+        "AMENDMENT.json": "1c79ec11f6dbab9b3c5b2dc4c5bf7c40c34c0007ecb6531c1b9899a1b8343827",
+        "config/SR_F1_2_FROZEN.json": "16c20d23cd424307b26700f7b5a6086dbf44de7106358d102ba8c7bd3fa07cda",
+        "source_r0001b.json": "7ee26b646ecbcf2e78e3a5dcf071620cdf2d2322aa1ddc5fb17835f53a04c047"
+      },
+      "probe": {
+        "status": "PASS",
+        "synthetic_only": true,
+        "production_commit_restore": true,
+        "adam_scheduler_cursor_rng": true,
+        "tamper_rejected": true,
+        "endpoint_escape_rejected": true,
+        "temporary_probe_cleaned": true
+      },
+      "monitor_requirement": "Explicitly traverse mapped targets; generic rglob may omit symlinks."
+    }
+  },
+  "log": "....................................................................     [100%]\n68 passed in 4.41s\nFUTURE_CHECKPOINT_STORAGE_PREPARED 8\n",
+  "state": {
+    "at": "2026-10-10T15:05:01.711957+00:00",
+    "experiment_complete": false,
+    "failures": [],
+    "scientific_complete": 0,
+    "scientific_total": 12,
+    "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+    "stage": "MAIN_TRAINING",
+    "tasks": {
+      "BASELINE_0": {
+        "job_id": "196826",
+        "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+        "status": "COMPLETE",
+        "task_id": "BASELINE_0"
+      },
+      "BASELINE_1": {
+        "job_id": "196827",
+        "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+        "status": "COMPLETE",
+        "task_id": "BASELINE_1"
+      },
+      "BASELINE_2": {
+        "job_id": "196828",
+        "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+        "status": "COMPLETE",
+        "task_id": "BASELINE_2"
+      },
+      "SRF1_2_A_s71001": {
+        "job_id": "196939",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "SRF1_2_A_s71001"
+      },
+      "SRF1_2_DEC_s71001": {
+        "job_id": "196942",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "SRF1_2_DEC_s71001"
+      },
+      "SRF1_2_GATE_s71001": {
+        "job_id": "196941",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "SRF1_2_GATE_s71001"
+      },
+      "SRF1_2_J_s71001": {
+        "job_id": "196940",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "SRF1_2_J_s71001"
+      },
+      "TECHNICAL": {
+        "job_id": "196877",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "COMPLETE",
+        "task_id": "TECHNICAL"
+      }
+    },
+    "teacher_gpu_usage": 4,
+    "unknown_submissions": [],
+    "version": "SR-F1.2-20261010"
+  },
+  "endpoint": {
+    "at": "2026-10-10T15:04:49.268395+00:00",
+    "endpoints_complete": 0,
+    "endpoints_total": 13,
+    "experiment_delivered": false,
+    "failures": [],
+    "report_pending": true,
+    "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+    "stage": "WAITING_FOR_ALL_MAIN_TERMINAL",
+    "tasks": {},
+    "teacher_gpu_usage": 4,
+    "unknown_submissions": [],
+    "version": "SR-F1.2-20261010"
+  },
+  "runs": {
+    "SRF1_2_A_s71001": {
+      "job_id": "196939",
+      "updates": 35,
+      "checkpoint": {
+        "field_hashes": {
+          "committed_logical_step": "df2d35083108f9b2ce8b27047314c746441aef52766ca3a738c330f0e3ccde42",
+          "cursor": "1f1a69a41ef1d2a7bc2711e941de22ddf57ec67750947ca58c678d83f099e53a",
+          "diagnostics_hash": "009e6053b534c985c43209b63236c21f4fbdca627abad79634eef5012c6fa822",
+          "input_stream_hash": "7879c125ef4c11baf80b14f24071e150d42b93d1039fc72db2e1001965e83a98",
+          "optimizer": "116e960c53f680227684165517838f91d1a162002f1a151e7fb66992be98b07a",
+          "parameters": "6746d5c5c1bedfc307ee22ead56f4d28bf96bc2ec27f809f88f210ea493e5066",
+          "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+          "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+          "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+          "rng": "6cfebfafcd8d2d97cd02ec4eb3e85ecda056631daa73eadb6104d66a5757b97c",
+          "run_identity": "f3ceefc34e3f33aa350d7173bb6b560427162997f437f3fa021af3a6574c503b",
+          "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+          "scheduler": "ec572e4e9d1ecec8ac21481661c9d2bef81123a957cbae6a47644662b2fbd0a7",
+          "token_path_hash": "d6e44f2590ae6d205d899a84dfde94b2fb3982b240fe4240ccdeed9a380b83d0",
+          "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+        },
+        "path": "step-32-465c7c689f2cde9b8d92a4477bb170ba4a6bb2cc8c531b8815ea00411a5be414.pt",
+        "sha256": "bceb6e5b49d36d41f027d61801a96ea00ff030e735cd21a35b2f856004281d1d",
+        "state_hash": "465c7c689f2cde9b8d92a4477bb170ba4a6bb2cc8c531b8815ea00411a5be414",
+        "step": 32
+      },
+      "all_finite": true,
+      "fit32": {
+        "count": 128,
+        "records_sha256": "325527a266f0179749e267ec58efa9a19aea87a1a86f8017ec9ad5b1c11ef82a",
+        "status": "COMPLETE"
+      }
+    },
+    "SRF1_2_DEC_s71001": {
+      "job_id": "196942",
+      "updates": 35,
+      "checkpoint": {
+        "field_hashes": {
+          "committed_logical_step": "df2d35083108f9b2ce8b27047314c746441aef52766ca3a738c330f0e3ccde42",
+          "cursor": "1f1a69a41ef1d2a7bc2711e941de22ddf57ec67750947ca58c678d83f099e53a",
+          "diagnostics_hash": "3b676f6b7d9b833b3e0a8ad6cb172623b5bfd783094190e1193e2988555b48b3",
+          "input_stream_hash": "7879c125ef4c11baf80b14f24071e150d42b93d1039fc72db2e1001965e83a98",
+          "optimizer": "a44bd97b56e8bf4e1fbe59c135f9015d64848858c45748b7f22fc19ebc236283",
+          "parameters": "6b04ad2d1a4350c39865d675dd763b415ff1670e5f31afc65dc145214a820406",
+          "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+          "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+          "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+          "rng": "6cfebfafcd8d2d97cd02ec4eb3e85ecda056631daa73eadb6104d66a5757b97c",
+          "run_identity": "ea984842c5a7e5fcf7c61ae94416ed907ecfd5f9231bcfde6cab5ba172a8b58e",
+          "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+          "scheduler": "ec572e4e9d1ecec8ac21481661c9d2bef81123a957cbae6a47644662b2fbd0a7",
+          "token_path_hash": "2d8ee1c54297808a629e4c169607fdd19bcb9f4bb09528f67962639f6953d975",
+          "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+        },
+        "path": "step-32-515045a5f11b536001b700eff886a72f48a0ced431ecc8e3ec7166eb23ac32e3.pt",
+        "sha256": "0309efe978db3767edcb716fdbdff9c8e3209da7a66c29a4d76f218e952f990c",
+        "state_hash": "515045a5f11b536001b700eff886a72f48a0ced431ecc8e3ec7166eb23ac32e3",
+        "step": 32
+      },
+      "all_finite": true,
+      "fit32": {
+        "count": 128,
+        "records_sha256": "80920fbeb02475d9b1297b5c9db14da1dfe2cf1863df9d131516cdc1d7e711d8",
+        "status": "COMPLETE"
+      }
+    },
+    "SRF1_2_GATE_s71001": {
+      "job_id": "196941",
+      "updates": 40,
+      "checkpoint": {
+        "field_hashes": {
+          "committed_logical_step": "b1ae2842d2b68e57a55856a60dc2337e009f99d3bea8e9a9ca0cb0f47751a2cd",
+          "cursor": "98b01e3a3277cc21e2816e383eb64bd73d7832d62535fd22f577fcb3b64d5acb",
+          "diagnostics_hash": "f0d7b861b9b2a4d96b1267362a3576840b38f05661e8d48090c8bec8e28a4bd8",
+          "input_stream_hash": "7879c125ef4c11baf80b14f24071e150d42b93d1039fc72db2e1001965e83a98",
+          "optimizer": "ee17a110029660341a85c09ac472921caf3a07618281d200e8476f77045b8f48",
+          "parameters": "74ebb79e6e2dd4a6ab6d5403636c9e80b7286efa641bb09a5e1918b75b5c5030",
+          "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+          "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+          "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+          "rng": "6cfebfafcd8d2d97cd02ec4eb3e85ecda056631daa73eadb6104d66a5757b97c",
+          "run_identity": "b146e4fb4ded4b575be4eb1c16999b053c3a5b5139206c1ee56c46ecb713fc3f",
+          "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+          "scheduler": "fbd02c17379f2706a2319e0b388cc4efb083166fcbfd23977f8037efe3dd03c9",
+          "token_path_hash": "591276831a5afe9b8ac1cb33da456eb2168f282bfafba9b40f707d112ab1c342",
+          "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+        },
+        "path": "step-40-babecba10d845c341cd153fbf23fc91e632f6f10f073f49861ccbcc384deeaaf.pt",
+        "sha256": "9dc0a32e8e053927b7a9a8146137513250d8392dedb1e4461f167f3288f8c69d",
+        "state_hash": "babecba10d845c341cd153fbf23fc91e632f6f10f073f49861ccbcc384deeaaf",
+        "step": 40
+      },
+      "all_finite": true,
+      "fit32": {
+        "count": 128,
+        "records_sha256": "91ea99d5de21d0737adfc45a1aa28973ed112b2526dd135e9b32b0c958c9aac9",
+        "status": "COMPLETE"
+      }
+    },
+    "SRF1_2_J_s71001": {
+      "job_id": "196940",
+      "updates": 39,
+      "checkpoint": {
+        "field_hashes": {
+          "committed_logical_step": "df2d35083108f9b2ce8b27047314c746441aef52766ca3a738c330f0e3ccde42",
+          "cursor": "1f1a69a41ef1d2a7bc2711e941de22ddf57ec67750947ca58c678d83f099e53a",
+          "diagnostics_hash": "4b3df14533cbfb2ecb060277b2242068424fc4b56d66825d6e8c67894be5c9f7",
+          "input_stream_hash": "7879c125ef4c11baf80b14f24071e150d42b93d1039fc72db2e1001965e83a98",
+          "optimizer": "6e62a830424e421c210a2da2295bcdb7a5fc54a8e66285dc5c1633973931ac64",
+          "parameters": "1a4d94d293cbd6b7e4ac756932020ab97a17dab194b156a30209a3b4ad786d56",
+          "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+          "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+          "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+          "rng": "6cfebfafcd8d2d97cd02ec4eb3e85ecda056631daa73eadb6104d66a5757b97c",
+          "run_identity": "0baf755569eb62f24723e389468097cd15a2baa667a54def3037c316b48e7017",
+          "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+          "scheduler": "ec572e4e9d1ecec8ac21481661c9d2bef81123a957cbae6a47644662b2fbd0a7",
+          "token_path_hash": "732b1eb0daa0190332b7873a7ae43da4f5e472d2dee23ee22c7373c6d4bc3088",
+          "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+        },
+        "path": "step-32-e74edb71ffd53d773d5af2233828240b4859849b48845d402ba8b998fdf1e02d.pt",
+        "sha256": "9c11f44bbfd748c98e613e5a652163f17e30fb6f2358ae62fa26cb2a9ed0718a",
+        "state_hash": "e74edb71ffd53d773d5af2233828240b4859849b48845d402ba8b998fdf1e02d",
+        "step": 32
+      },
+      "all_finite": true,
+      "fit32": {
+        "count": 128,
+        "records_sha256": "cf19f1b90276d701d93353580e97a8ffa73cad9a19d32d9ccffad9ad3570bf22",
+        "status": "COMPLETE"
+      }
+    }
+  },
+  "queue": "195718|sp-c123-120-150k|PENDING|rose|N/A|(Dependency)\n195717|sp-c123-80-120k|PENDING|rose|N/A|(Dependency)\n195716|sp-c123-40-80k|PENDING|rose|N/A|(Dependency)\n196942|srf12-SRF1_2_DEC_s71001|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-1\n196940|srf12-SRF1_2_J_s71001|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-9\n196941|srf12-SRF1_2_GATE_s71001|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-9\n196939|srf12-SRF1_2_A_s71001|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-2\n195715|sp-c123-0-40k|RUNNING|rose|N/A|gpu-6000ada-1\n196875|srf12-controller-r0001b|RUNNING|override-limits-but-killable|N/A|cpu-2\n196876|srf12-endpoint-r0001b|RUNNING|override-limits-but-killable|N/A|cpu-2\n",
+  "accounting": "197229|COMPLETED|0:0|2026-10-10T15:04:15|2026-10-10T15:04:33|2026-10-10T15:04:41\n",
+  "eight_empty_links_verified": true,
+  "frozen_hashes_verified": true,
+  "uploaded_files_verified": true,
+  "monitor_at_1457": {
+    "at": "2026-10-10T14:57:44.208436+00:00",
+    "source_files_verified": 458,
+    "state": {
+      "at": "2026-10-10T14:57:00.516133+00:00",
+      "experiment_complete": false,
+      "failures": [],
+      "scientific_complete": 0,
+      "scientific_total": 12,
+      "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+      "stage": "MAIN_TRAINING",
+      "tasks": {
+        "BASELINE_0": {
+          "job_id": "196826",
+          "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+          "status": "COMPLETE",
+          "task_id": "BASELINE_0"
+        },
+        "BASELINE_1": {
+          "job_id": "196827",
+          "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+          "status": "COMPLETE",
+          "task_id": "BASELINE_1"
+        },
+        "BASELINE_2": {
+          "job_id": "196828",
+          "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+          "status": "COMPLETE",
+          "task_id": "BASELINE_2"
+        },
+        "SRF1_2_A_s71001": {
+          "job_id": "196939",
+          "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+          "status": "RUNNING",
+          "task_id": "SRF1_2_A_s71001"
+        },
+        "SRF1_2_DEC_s71001": {
+          "job_id": "196942",
+          "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+          "status": "RUNNING",
+          "task_id": "SRF1_2_DEC_s71001"
+        },
+        "SRF1_2_GATE_s71001": {
+          "job_id": "196941",
+          "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+          "status": "RUNNING",
+          "task_id": "SRF1_2_GATE_s71001"
+        },
+        "SRF1_2_J_s71001": {
+          "job_id": "196940",
+          "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+          "status": "RUNNING",
+          "task_id": "SRF1_2_J_s71001"
+        },
+        "TECHNICAL": {
+          "job_id": "196877",
+          "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+          "status": "COMPLETE",
+          "task_id": "TECHNICAL"
+        }
+      },
+      "teacher_gpu_usage": 4,
+      "unknown_submissions": [],
+      "version": "SR-F1.2-20261010"
+    },
+    "endpoint": {
+      "at": "2026-10-10T14:56:48.221559+00:00",
+      "endpoints_complete": 0,
+      "endpoints_total": 13,
+      "experiment_delivered": false,
+      "failures": [],
+      "report_pending": true,
+      "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+      "stage": "WAITING_FOR_ALL_MAIN_TERMINAL",
+      "tasks": {},
+      "teacher_gpu_usage": 4,
+      "unknown_submissions": [],
+      "version": "SR-F1.2-20261010"
+    },
+    "runs": {
+      "SRF1_2_A_s71001": {
+        "job_id": "196939",
+        "updates": 34,
+        "latest_checkpoint": {
+          "field_hashes": {
+            "committed_logical_step": "df2d35083108f9b2ce8b27047314c746441aef52766ca3a738c330f0e3ccde42",
+            "cursor": "1f1a69a41ef1d2a7bc2711e941de22ddf57ec67750947ca58c678d83f099e53a",
+            "diagnostics_hash": "009e6053b534c985c43209b63236c21f4fbdca627abad79634eef5012c6fa822",
+            "input_stream_hash": "7879c125ef4c11baf80b14f24071e150d42b93d1039fc72db2e1001965e83a98",
+            "optimizer": "116e960c53f680227684165517838f91d1a162002f1a151e7fb66992be98b07a",
+            "parameters": "6746d5c5c1bedfc307ee22ead56f4d28bf96bc2ec27f809f88f210ea493e5066",
+            "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+            "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+            "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+            "rng": "6cfebfafcd8d2d97cd02ec4eb3e85ecda056631daa73eadb6104d66a5757b97c",
+            "run_identity": "f3ceefc34e3f33aa350d7173bb6b560427162997f437f3fa021af3a6574c503b",
+            "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+            "scheduler": "ec572e4e9d1ecec8ac21481661c9d2bef81123a957cbae6a47644662b2fbd0a7",
+            "token_path_hash": "d6e44f2590ae6d205d899a84dfde94b2fb3982b240fe4240ccdeed9a380b83d0",
+            "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+          },
+          "path": "step-32-465c7c689f2cde9b8d92a4477bb170ba4a6bb2cc8c531b8815ea00411a5be414.pt",
+          "sha256": "bceb6e5b49d36d41f027d61801a96ea00ff030e735cd21a35b2f856004281d1d",
+          "state_hash": "465c7c689f2cde9b8d92a4477bb170ba4a6bb2cc8c531b8815ea00411a5be414",
+          "step": 32
+        },
+        "checkpoint_bytes_verified": true,
+        "raw_count": 4392,
+        "all_finite": true,
+        "max_sampler_mean": 0.0014027789002284408,
+        "max_tis_fraction": 3.986604860983789e-05,
+        "mean_step_seconds": 366.3532693570288,
+        "last_step": {
+          "adam_nonzero_moments": true,
+          "arm": "A",
+          "backward_calls": 128,
+          "clip_fraction": 0.0,
+          "finite": true,
+          "format_failure_rate": 0.0,
+          "kl": 0.00855947645732158,
+          "loss": 0.00014627440128833769,
+          "microbatch_size": 1,
+          "optimizer_updates": 1,
+          "parameter_max_absolute_change": 4.5979511924088e-05,
+          "parameters_changed": true,
+          "peak_allocated_bytes": 49943969792,
+          "policy": -2.4914974346756935e-05,
+          "raw_records_sha256": "3e759fb1b397eb77f10368cde6d46b77fb06263aeb876c8bc70720908767ff8f",
+          "reward_advantage_audit": {
+            "arm": "A",
+            "branches": [],
+            "final_advantage": [
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                -2.645751231064593,
+                0.3779644615806561,
+                0.3779644615806561,
+                0.3779644615806561,
+                0.3779644615806561,
+                0.3779644615806561,
+                0.3779644615806561,
+                0.3779644615806561
+              ]
+            ],
+            "group_size": 8,
+            "prompt_count": 16,
+            "scalar_reward": [
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                0.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ]
+            ],
+            "std_convention": "population"
+          },
+          "sampler_train_max_absolute_difference": 0.6487656831741333,
+          "sampler_train_mean_absolute_difference": 0.0001952941092895344,
+          "sampler_train_p99_absolute_difference": 7.35087669454515e-05,
+          "sampling_seconds": 176.72450526198372,
+          "sequence_count": 128,
+          "step": 34,
+          "step_seconds": 361.2988460198976,
+          "tis_cap": 2.0,
+          "tis_truncated_fraction": 0.0,
+          "token_count": 26919,
+          "total_gradient_norm": 0.019830167293548584,
+          "training_seconds": 184.50963813695125
+        },
+        "fit": {
+          "32": {
+            "complete": {
+              "count": 128,
+              "records_sha256": "325527a266f0179749e267ec58efa9a19aea87a1a86f8017ec9ad5b1c11ef82a",
+              "status": "COMPLETE"
+            },
+            "slots_verified": 128,
+            "adapter_files_verified": 3
+          }
+        }
+      },
+      "SRF1_2_DEC_s71001": {
+        "job_id": "196942",
+        "updates": 34,
+        "latest_checkpoint": {
+          "field_hashes": {
+            "committed_logical_step": "df2d35083108f9b2ce8b27047314c746441aef52766ca3a738c330f0e3ccde42",
+            "cursor": "1f1a69a41ef1d2a7bc2711e941de22ddf57ec67750947ca58c678d83f099e53a",
+            "diagnostics_hash": "3b676f6b7d9b833b3e0a8ad6cb172623b5bfd783094190e1193e2988555b48b3",
+            "input_stream_hash": "7879c125ef4c11baf80b14f24071e150d42b93d1039fc72db2e1001965e83a98",
+            "optimizer": "a44bd97b56e8bf4e1fbe59c135f9015d64848858c45748b7f22fc19ebc236283",
+            "parameters": "6b04ad2d1a4350c39865d675dd763b415ff1670e5f31afc65dc145214a820406",
+            "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+            "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+            "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+            "rng": "6cfebfafcd8d2d97cd02ec4eb3e85ecda056631daa73eadb6104d66a5757b97c",
+            "run_identity": "ea984842c5a7e5fcf7c61ae94416ed907ecfd5f9231bcfde6cab5ba172a8b58e",
+            "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+            "scheduler": "ec572e4e9d1ecec8ac21481661c9d2bef81123a957cbae6a47644662b2fbd0a7",
+            "token_path_hash": "2d8ee1c54297808a629e4c169607fdd19bcb9f4bb09528f67962639f6953d975",
+            "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+          },
+          "path": "step-32-515045a5f11b536001b700eff886a72f48a0ced431ecc8e3ec7166eb23ac32e3.pt",
+          "sha256": "0309efe978db3767edcb716fdbdff9c8e3209da7a66c29a4d76f218e952f990c",
+          "state_hash": "515045a5f11b536001b700eff886a72f48a0ced431ecc8e3ec7166eb23ac32e3",
+          "step": 32
+        },
+        "checkpoint_bytes_verified": true,
+        "raw_count": 4480,
+        "all_finite": true,
+        "max_sampler_mean": 0.001706165843643248,
+        "max_tis_fraction": 7.704160088906065e-05,
+        "mean_step_seconds": 350.13956928196336,
+        "last_step": {
+          "adam_nonzero_moments": true,
+          "arm": "DEC",
+          "backward_calls": 128,
+          "clip_fraction": 0.0,
+          "finite": true,
+          "format_failure_rate": 0.0,
+          "kl": 0.0047470790432271315,
+          "loss": 0.00012926950267910797,
+          "microbatch_size": 1,
+          "optimizer_updates": 1,
+          "parameter_max_absolute_change": 6.166752427816391e-05,
+          "parameters_changed": true,
+          "peak_allocated_bytes": 49943268352,
+          "policy": 3.431551158428192e-05,
+          "raw_records_sha256": "24582a969104ee688e99adb46a19d8a8f84bcaaa51ce97b0687045f109d16697",
+          "reward_advantage_audit": {
+            "arm": "DEC",
+            "branches": [],
+            "component_std": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.4841229182759271,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.4841229182759271,
+                0.0,
+                0.0
+              ]
+            ],
+            "component_weights": [
+              1.0,
+              0.5,
+              0.5
+            ],
+            "final_advantage": [
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.1908901680529316,
+                2.1908901680529316,
+                -3.6514836134215525,
+                -3.6514836134215525,
+                2.1908901680529316,
+                2.1908901680529316,
+                -3.6514836134215525,
+                2.1908901680529316
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                -3.6514836134215525,
+                -3.6514836134215525,
+                2.1908901680529316,
+                -3.6514836134215525,
+                2.1908901680529316,
+                2.1908901680529316,
+                2.1908901680529316,
+                2.1908901680529316
+              ]
+            ],
+            "group_size": 8,
+            "normalised_components": [
+              [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                [
+                  0.7745966532414836,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.7745966532414836,
+                  0.0,
+                  0.0
+                ],
+                [
+                  -1.2909944220691394,
+                  0.0,
+                  0.0
+                ],
+                [
+                  -1.2909944220691394,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.7745966532414836,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.7745966532414836,
+                  0.0,
+                  0.0
+                ],
+                [
+                  -1.2909944220691394,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.7745966532414836,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                [
+                  -1.2909944220691394,
+                  0.0,
+                  0.0
+                ],
+                [
+                  -1.2909944220691394,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.7745966532414836,
+                  0.0,
+                  0.0
+                ],
+                [
+                  -1.2909944220691394,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.7745966532414836,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.7745966532414836,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.7745966532414836,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.7745966532414836,
+                  0.0,
+                  0.0
+                ]
+              ]
+            ],
+            "pre_batch_advantage": [
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.7745966532414836,
+                0.7745966532414836,
+                -1.2909944220691394,
+                -1.2909944220691394,
+                0.7745966532414836,
+                0.7745966532414836,
+                -1.2909944220691394,
+                0.7745966532414836
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                -1.2909944220691394,
+                -1.2909944220691394,
+                0.7745966532414836,
+                -1.2909944220691394,
+                0.7745966532414836,
+                0.7745966532414836,
+                0.7745966532414836,
+                0.7745966532414836
+              ]
+            ],
+            "pre_batch_mean": 0.0,
+            "pre_batch_std": 0.35355338329030644,
+            "prompt_count": 16,
+            "scalar_reward": null,
+            "std_convention": "population"
+          },
+          "sampler_train_max_absolute_difference": 0.6142656803131104,
+          "sampler_train_mean_absolute_difference": 0.00013995137123856694,
+          "sampler_train_p99_absolute_difference": 7.441369962180033e-05,
+          "sampling_seconds": 169.48715265002102,
+          "sequence_count": 128,
+          "step": 34,
+          "step_seconds": 356.73821412282996,
+          "tis_cap": 2.0,
+          "tis_truncated_fraction": 0.0,
+          "token_count": 27453,
+          "total_gradient_norm": 0.12015561014413834,
+          "training_seconds": 187.1926408961881
+        },
+        "fit": {
+          "32": {
+            "complete": {
+              "count": 128,
+              "records_sha256": "80920fbeb02475d9b1297b5c9db14da1dfe2cf1863df9d131516cdc1d7e711d8",
+              "status": "COMPLETE"
+            },
+            "slots_verified": 128,
+            "adapter_files_verified": 3
+          }
+        }
+      },
+      "SRF1_2_GATE_s71001": {
+        "job_id": "196941",
+        "updates": 38,
+        "latest_checkpoint": {
+          "field_hashes": {
+            "committed_logical_step": "df2d35083108f9b2ce8b27047314c746441aef52766ca3a738c330f0e3ccde42",
+            "cursor": "1f1a69a41ef1d2a7bc2711e941de22ddf57ec67750947ca58c678d83f099e53a",
+            "diagnostics_hash": "7044a14be6637fc2fc883e079fc8a428c1cee5b7375370f0a171175e6a47f169",
+            "input_stream_hash": "7879c125ef4c11baf80b14f24071e150d42b93d1039fc72db2e1001965e83a98",
+            "optimizer": "4a16809c78dcfa4feafb2c86a7cd84f8a555c19afb1d9e36aa37cf54ad42516d",
+            "parameters": "d68ac1353c9f141fc125e6215d11bdcacd4cb5527df6afddd41f502ae09fd3a1",
+            "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+            "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+            "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+            "rng": "6cfebfafcd8d2d97cd02ec4eb3e85ecda056631daa73eadb6104d66a5757b97c",
+            "run_identity": "b146e4fb4ded4b575be4eb1c16999b053c3a5b5139206c1ee56c46ecb713fc3f",
+            "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+            "scheduler": "ec572e4e9d1ecec8ac21481661c9d2bef81123a957cbae6a47644662b2fbd0a7",
+            "token_path_hash": "c10b1d8955d3e5285de80a5c2589b791c50106596ab2d04a479da581b662b16c",
+            "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+          },
+          "path": "step-32-3bcb796816a55ec3338a6955c28bfa8e923d437c82ff85010edc451b10590903.pt",
+          "sha256": "b652d77b1b396583338a1692e4caff81c3b89d9e8483568e83bded65e02ad793",
+          "state_hash": "3bcb796816a55ec3338a6955c28bfa8e923d437c82ff85010edc451b10590903",
+          "step": 32
+        },
+        "checkpoint_bytes_verified": true,
+        "raw_count": 4992,
+        "all_finite": true,
+        "max_sampler_mean": 0.0016528344713151455,
+        "max_tis_fraction": 4.340654413681477e-05,
+        "mean_step_seconds": 315.0156231261085,
+        "last_step": {
+          "adam_nonzero_moments": true,
+          "arm": "GATE",
+          "backward_calls": 128,
+          "clip_fraction": 0.0,
+          "finite": true,
+          "format_failure_rate": 0.0,
+          "kl": 0.014875080456704382,
+          "loss": 0.0003403915862563167,
+          "microbatch_size": 1,
+          "optimizer_updates": 1,
+          "parameter_max_absolute_change": 5.25033101439476e-05,
+          "parameters_changed": true,
+          "peak_allocated_bytes": 49943268352,
+          "policy": 4.289322532713413e-05,
+          "raw_records_sha256": "7d420aa465950a99b899fc77c56a11259b6db3a2374c5bfcfb442c5b4c6fbb87",
+          "reward_advantage_audit": {
+            "arm": "GATE",
+            "branches": [
+              "all_joint_correct",
+              "all_joint_correct",
+              "target_J_refined",
+              "all_joint_correct",
+              "target_J_refined",
+              "target_J_refined",
+              "all_joint_correct",
+              "all_joint_correct",
+              "no_semantic_contrast",
+              "all_joint_correct",
+              "all_joint_correct",
+              "all_joint_correct",
+              "all_joint_correct",
+              "all_joint_correct",
+              "all_joint_correct",
+              "target_J_refined"
+            ],
+            "final_advantage": [
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.5773502558562927,
+                -1.7320507675688783,
+                0.5773502558562927,
+                0.5773502558562927,
+                0.5773502558562927,
+                0.5773502558562927,
+                0.5773502558562927,
+                -1.7320507675688783
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.3779644615806561,
+                0.3779644615806561,
+                0.3779644615806561,
+                0.3779644615806561,
+                0.3779644615806561,
+                0.3779644615806561,
+                -2.645751231064593,
+                0.3779644615806561
+              ],
+              [
+                -0.3779644615806561,
+                -0.3779644615806561,
+                -0.3779644615806561,
+                -0.3779644615806561,
+                -0.3779644615806561,
+                -0.3779644615806561,
+                -0.3779644615806561,
+                2.645751231064593
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.3779644615806561,
+                0.3779644615806561,
+                0.3779644615806561,
+                0.3779644615806561,
+                0.3779644615806561,
+                0.3779644615806561,
+                -2.645751231064593,
+                0.3779644615806561
+              ]
+            ],
+            "group_size": 8,
+            "prompt_count": 16,
+            "scalar_reward": null,
+            "std_convention": "population"
+          },
+          "sampler_train_max_absolute_difference": 0.49701404571533203,
+          "sampler_train_mean_absolute_difference": 0.0003934029664378613,
+          "sampler_train_p99_absolute_difference": 0.0010199095122516155,
+          "sampling_seconds": 152.23592261096928,
+          "sequence_count": 128,
+          "step": 38,
+          "step_seconds": 319.5729084990453,
+          "tis_cap": 2.0,
+          "tis_truncated_fraction": 0.0,
+          "token_count": 26348,
+          "total_gradient_norm": 0.06596618890762329,
+          "training_seconds": 167.28973395598587
+        },
+        "fit": {
+          "32": {
+            "complete": {
+              "count": 128,
+              "records_sha256": "91ea99d5de21d0737adfc45a1aa28973ed112b2526dd135e9b32b0c958c9aac9",
+              "status": "COMPLETE"
+            },
+            "slots_verified": 128,
+            "adapter_files_verified": 3
+          }
+        }
+      },
+      "SRF1_2_J_s71001": {
+        "job_id": "196940",
+        "updates": 37,
+        "latest_checkpoint": {
+          "field_hashes": {
+            "committed_logical_step": "df2d35083108f9b2ce8b27047314c746441aef52766ca3a738c330f0e3ccde42",
+            "cursor": "1f1a69a41ef1d2a7bc2711e941de22ddf57ec67750947ca58c678d83f099e53a",
+            "diagnostics_hash": "4b3df14533cbfb2ecb060277b2242068424fc4b56d66825d6e8c67894be5c9f7",
+            "input_stream_hash": "7879c125ef4c11baf80b14f24071e150d42b93d1039fc72db2e1001965e83a98",
+            "optimizer": "6e62a830424e421c210a2da2295bcdb7a5fc54a8e66285dc5c1633973931ac64",
+            "parameters": "1a4d94d293cbd6b7e4ac756932020ab97a17dab194b156a30209a3b4ad786d56",
+            "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+            "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+            "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+            "rng": "6cfebfafcd8d2d97cd02ec4eb3e85ecda056631daa73eadb6104d66a5757b97c",
+            "run_identity": "0baf755569eb62f24723e389468097cd15a2baa667a54def3037c316b48e7017",
+            "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+            "scheduler": "ec572e4e9d1ecec8ac21481661c9d2bef81123a957cbae6a47644662b2fbd0a7",
+            "token_path_hash": "732b1eb0daa0190332b7873a7ae43da4f5e472d2dee23ee22c7373c6d4bc3088",
+            "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+          },
+          "path": "step-32-e74edb71ffd53d773d5af2233828240b4859849b48845d402ba8b998fdf1e02d.pt",
+          "sha256": "9c11f44bbfd748c98e613e5a652163f17e30fb6f2358ae62fa26cb2a9ed0718a",
+          "state_hash": "e74edb71ffd53d773d5af2233828240b4859849b48845d402ba8b998fdf1e02d",
+          "step": 32
+        },
+        "checkpoint_bytes_verified": true,
+        "raw_count": 4864,
+        "all_finite": true,
+        "max_sampler_mean": 0.0017086106818169355,
+        "max_tis_fraction": 0.0001259022974409163,
+        "mean_step_seconds": 322.31203644741265,
+        "last_step": {
+          "adam_nonzero_moments": true,
+          "arm": "J",
+          "backward_calls": 128,
+          "clip_fraction": 0.0,
+          "finite": true,
+          "format_failure_rate": 0.0,
+          "kl": 0.016058370001701405,
+          "loss": 0.00021888624100085963,
+          "microbatch_size": 1,
+          "optimizer_updates": 1,
+          "parameter_max_absolute_change": 5.372241139411926e-05,
+          "parameters_changed": true,
+          "peak_allocated_bytes": 49977114112,
+          "policy": -0.00010228925384581089,
+          "raw_records_sha256": "c0572ca3ddc539d4107d25544be943ade28c31ca12182c657f2dab9857d47158",
+          "reward_advantage_audit": {
+            "arm": "J",
+            "branches": [],
+            "final_advantage": [
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                -2.645751231064593,
+                0.3779644615806561,
+                0.3779644615806561,
+                0.3779644615806561,
+                0.3779644615806561,
+                0.3779644615806561,
+                0.3779644615806561,
+                0.3779644615806561
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.7745966532414836,
+                0.7745966532414836,
+                0.7745966532414836,
+                -1.2909944220691394,
+                -1.2909944220691394,
+                0.7745966532414836,
+                -1.2909944220691394,
+                0.7745966532414836
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "group_size": 8,
+            "prompt_count": 16,
+            "scalar_reward": [
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                0.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                0.0,
+                0.0,
+                1.0,
+                0.0,
+                1.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ]
+            ],
+            "std_convention": "population"
+          },
+          "sampler_train_max_absolute_difference": 1.1116541624069214,
+          "sampler_train_mean_absolute_difference": 0.0002758798946160823,
+          "sampler_train_p99_absolute_difference": 5.3143354307394475e-05,
+          "sampling_seconds": 158.4596321589779,
+          "sequence_count": 128,
+          "step": 37,
+          "step_seconds": 331.2544894090388,
+          "tis_cap": 2.0,
+          "tis_truncated_fraction": 0.0,
+          "token_count": 27489,
+          "total_gradient_norm": 0.057973794639110565,
+          "training_seconds": 172.74312538199592
+        },
+        "fit": {
+          "32": {
+            "complete": {
+              "count": 128,
+              "records_sha256": "cf19f1b90276d701d93353580e97a8ffa73cad9a19d32d9ccffad9ad3570bf22",
+              "status": "COMPLETE"
+            },
+            "slots_verified": 128,
+            "adapter_files_verified": 3
+          }
+        }
+      }
+    },
+    "queue": "195718|sp-c123-120-150k|PENDING|rose|N/A|(Dependency)\n195717|sp-c123-80-120k|PENDING|rose|N/A|(Dependency)\n195716|sp-c123-40-80k|PENDING|rose|N/A|(Dependency)\n196942|srf12-SRF1_2_DEC_s71001|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-1\n196940|srf12-SRF1_2_J_s71001|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-9\n196941|srf12-SRF1_2_GATE_s71001|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-9\n196939|srf12-SRF1_2_A_s71001|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-2\n195715|sp-c123-0-40k|RUNNING|rose|N/A|gpu-6000ada-1\n196875|srf12-controller-r0001b|RUNNING|override-limits-but-killable|N/A|cpu-2\n196876|srf12-endpoint-r0001b|RUNNING|override-limits-but-killable|N/A|cpu-2\n",
+    "accounting": "196826|COMPLETED|0:0\n196827|COMPLETED|0:0\n196828|COMPLETED|0:0\n196877|COMPLETED|0:0\n196939|RUNNING|0:0\n196940|RUNNING|0:0\n196941|RUNNING|0:0\n196942|RUNNING|0:0\n"
+  }
+}
