@@ -383,3 +383,45 @@ def test_worker_checks_real_slurm_teacher_qos_and_single_gpu(monkeypatch):
     state["gpus"] = 4
     with pytest.raises(PermissionError):
         verify_worker_allocation()
+
+
+def test_preflight_failure_preserves_measured_numbers_and_each_retry(monkeypatch, tmp_path):
+    from sr_f12.runner import preflight, read_json
+
+    def failing(plan, root, *, diagnostics):
+        write_once(
+            diagnostics / "ZERO_LORA.json", dict(answer_count=32, maximum_logprob_difference=0)
+        )
+        write_once(
+            diagnostics / "MICROBATCH_SELECTION.json",
+            dict(
+                microbatch_size=2,
+                attempts=[
+                    dict(microbatch_size=4, status="CUDA_OOM"),
+                    dict(microbatch_size=2, status="PASS"),
+                ],
+            ),
+        )
+        write_once(
+            diagnostics / "BATCH_SINGLE_COMPARISON.json",
+            dict(answer_count=16, mean_absolute_difference=0.003, maximum_absolute_difference=0.08),
+        )
+        write_once(
+            diagnostics / "SAMPLER_TRAIN_COMPARISON.json",
+            dict(sampler_train_mean_absolute_difference=0.004, tis_truncated_fraction=0),
+        )
+        raise RuntimeError("Batch/single teacher-forcing exceeds registered thresholds")
+
+    monkeypatch.setattr("sr_f12.runner._preflight_impl", failing)
+    for _ in range(2):
+        with pytest.raises(RuntimeError, match="registered thresholds"):
+            preflight(build_config(), tmp_path)
+    failures = sorted((tmp_path / "technical/preflight/diagnostics").glob("*/FAILURE.json"))
+    assert len(failures) == 2
+    saved = read_json(failures[0])
+    assert saved["status"] == "FAIL" and saved["exception_type"] == "RuntimeError"
+    assert saved["measurements"]["ZERO_LORA"]["answer_count"] == 32
+    assert saved["measurements"]["MICROBATCH_SELECTION"]["microbatch_size"] == 2
+    assert saved["measurements"]["BATCH_SINGLE_COMPARISON"]["maximum_absolute_difference"] == 0.08
+    assert saved["measurements"]["SAMPLER_TRAIN_COMPARISON"]["tis_truncated_fraction"] == 0
+    assert not (tmp_path / "technical/preflight/PREFLIGHT.json").exists()

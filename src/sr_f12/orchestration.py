@@ -268,10 +268,22 @@ class Controller:
             gpu_limit=5,
             main_matrix=scientific_matrix(),
         )
-        save_json(self.directory / "CONFIG.json", self.config, exclusive=True)
+        from .source_revision import resolve_source_revision
+
+        revision = (
+            resolve_source_revision(self.root, source_commit)
+            if (self.root / "AMENDMENT.json").exists()
+            else None
+        )
+        config_path = self.directory / "CONFIG.json"
+        if revision and revision["revision_id"]:
+            self.config["source_revision"] = revision
+            config_path = self.directory / "revisions" / revision["revision_id"] / "CONFIG.json"
+        save_json(config_path, self.config, exclusive=True)
 
     def identity(self):
         from .evaluation import verify_source_manifest
+        from .source_revision import resolve_source_revision
 
         if (self.root / "STOP").exists():
             raise PermissionError("Experiment STOP exists")
@@ -280,10 +292,13 @@ class Controller:
             raise PermissionError("Source manifest commit differs")
         source_hash = verify_source_manifest(self.source_manifest, self.code)
         registration = read_json(self.root / "AMENDMENT.json")
-        if (
-            registration.get("amendment_id") != AMENDMENT_ID
-            or registration.get("source_commit") != self.source_commit
+        revision = resolve_source_revision(self.root, self.source_commit)
+        if revision["revision_id"] and (
+            revision["source_manifest_sha256"] != source_hash
+            or Path(revision["code_root"]).resolve(strict=True) != self.code
         ):
+            raise PermissionError("Active source revision deployment identity differs")
+        if registration.get("amendment_id") != AMENDMENT_ID:
             raise PermissionError("Independent SR-F1.2 source registration differs")
         plan = validate_config(self.root / "config/SR_F1_2.json")
         if registration.get("config_sha256") != object_hash(plan):

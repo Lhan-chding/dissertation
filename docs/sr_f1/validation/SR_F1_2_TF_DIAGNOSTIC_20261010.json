@@ -1,0 +1,61 @@
+{
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+  "operation": "NO_GENERATION_NO_OPTIMIZER_UPDATE",
+  "optimizer_state_count": 0,
+  "records_count": 16,
+  "records_hash": "d9ee5f0b72d6013667dcb5b1dae4035dd7153d41f676aa3dd00970cdb1c0b6c9",
+  "seconds": 23.558914460008964,
+  "status": "COMPLETE",
+  "microbatches": [
+    {
+      "maximum": 0.0,
+      "mean": 0.0,
+      "microbatch_size": 1,
+      "p99": 0.0,
+      "peak_allocated_bytes": 20586127872,
+      "sampler_maximum": 0.6168882846832275,
+      "sampler_mean": 0.001352767227217555,
+      "sampler_p99": 0.03193766623735428,
+      "seconds": 5.95791763602756,
+      "status": "COMPLETE",
+      "tis_clipped_fraction": 0.0,
+      "token_count": 3677
+    },
+    {
+      "maximum": 0.32559704780578613,
+      "mean": 0.001128185773268342,
+      "microbatch_size": 2,
+      "p99": 0.02649150788784027,
+      "peak_allocated_bytes": 20702430720,
+      "sampler_maximum": 0.33559393882751465,
+      "sampler_mean": 0.0009869580389931798,
+      "sampler_p99": 0.01574110984802246,
+      "seconds": 5.465710732038133,
+      "status": "COMPLETE",
+      "tis_clipped_fraction": 0.0,
+      "token_count": 3677
+    },
+    {
+      "maximum": 0.18969941139221191,
+      "mean": 0.0009206253453157842,
+      "microbatch_size": 4,
+      "p99": 0.02649502456188202,
+      "peak_allocated_bytes": 20927970304,
+      "sampler_maximum": 0.5215156078338623,
+      "sampler_mean": 0.0009897873969748616,
+      "sampler_p99": 0.015099875628948212,
+      "seconds": 5.403079820913263,
+      "status": "COMPLETE",
+      "tis_clipped_fraction": 0.0,
+      "token_count": 3677
+    }
+  ],
+  "job_id": "196834",
+  "slurm_state": "COMPLETED",
+  "exit_code": "0:0",
+  "thresholds": {
+    "batch_single_mean": 0.002,
+    "batch_single_max": 0.05,
+    "sampler_train_mean": 0.01
+  }
+}

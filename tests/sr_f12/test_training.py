@@ -357,3 +357,63 @@ def test_checkpoint_refuses_nonfinite_adam_moments():
             sampling_hash="p",
             microbatch_size=4,
         )
+
+
+def test_microbatch_numeric_failures_use_next_registered_size_and_preserve_numbers():
+    from sr_f12.training import MicrobatchNumericalMismatch
+
+    calls = []
+    observed = {4: dict(mean=0.0009206, maximum=0.189699), 2: dict(mean=0.001128, maximum=0.325597)}
+
+    def probe(size, checkpointing):
+        calls.append((size, checkpointing))
+        if size > 1:
+            raise MicrobatchNumericalMismatch("batch/single maximum failed", observed[size])
+        return dict(
+            batch_single=dict(mean_absolute_difference=0, maximum_absolute_difference=0),
+            sampler_training=dict(
+                sampler_train_mean_absolute_difference=0.00135277, tis_truncated_fraction=0
+            ),
+        )
+
+    result = select_microbatch(probe)
+    assert calls == [(4, False), (2, False), (1, False)]
+    assert result["microbatch_size"] == 1 and not result["gradient_checkpointing"]
+    assert [x["status"] for x in result["attempts"]] == ["NUMERICAL_FAIL", "NUMERICAL_FAIL", "PASS"]
+    assert result["attempts"][0]["diagnostics"] == observed[4]
+    assert result["attempts"][1]["diagnostics"] == observed[2]
+
+
+def test_microbatch_one_numerical_failure_stops_without_checkpointing():
+    from sr_f12.training import MicrobatchNumericalMismatch
+
+    calls = []
+
+    def probe(size, checkpointing):
+        calls.append((size, checkpointing))
+        if size == 4:
+            raise torch.cuda.OutOfMemoryError("memory")
+        raise MicrobatchNumericalMismatch("alignment", dict(maximum=0.1))
+
+    with pytest.raises(MicrobatchNumericalMismatch, match="Single-sequence"):
+        select_microbatch(probe)
+    assert calls == [(4, False), (2, False), (1, False)]
+
+
+def test_microbatch_checkpointing_only_after_one_sequence_actual_oom():
+    from sr_f12.training import MicrobatchNumericalMismatch
+
+    calls = []
+
+    def probe(size, checkpointing):
+        calls.append((size, checkpointing))
+        if size > 1:
+            raise MicrobatchNumericalMismatch("alignment", dict(maximum=0.1))
+        if not checkpointing:
+            raise torch.cuda.OutOfMemoryError("actual one-sequence OOM")
+        return dict(memory_fit=True, numerical_fit=True)
+
+    result = select_microbatch(probe)
+    assert calls == [(4, False), (2, False), (1, False), (1, True)]
+    assert result["microbatch_size"] == 1 and result["gradient_checkpointing"]
+    assert result["attempts"][-2]["status"] == "CUDA_OOM"

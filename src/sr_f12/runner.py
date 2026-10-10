@@ -515,6 +515,37 @@ def run_train_fit(runtime, root, directory, model_id, step):
 
 
 def preflight(plan, root):
+    """Preserve each actual measurement before applying numerical acceptance gates."""
+    directory = Path(root) / "technical/preflight/diagnostics" / f"{time.time_ns()}-{os.getpid()}"
+    directory.mkdir(parents=True, exist_ok=False)
+    write_once(
+        directory / "ATTEMPT.json",
+        dict(
+            config_sha256=digest(plan),
+            pid=os.getpid(),
+            job_id=os.environ.get("SLURM_JOB_ID"),
+            scientific=False,
+        ),
+    )
+    try:
+        result = _preflight_impl(plan, root, diagnostics=directory)
+    except BaseException as exc:
+        measurements = {p.stem: read_json(p) for p in sorted(directory.glob("*.json"))}
+        write_once(
+            directory / "FAILURE.json",
+            dict(
+                status="FAIL",
+                reason=str(exc),
+                exception_type=type(exc).__name__,
+                measurements=measurements,
+            ),
+        )
+        raise
+    write_once(directory / "COMPLETE.json", dict(status="PASS", receipt_sha256=digest(result)))
+    return result
+
+
+def _preflight_impl(plan, root, *, diagnostics):
     """Real CUDA baseline, padding, sampler and memory checks; no Adam update."""
     import gc
 
@@ -522,6 +553,7 @@ def preflight(plan, root):
 
     from .runtime import common_zero_check
     from .training import (
+        MicrobatchNumericalMismatch,
         enforce_probability_gate,
         probability_diagnostics,
         select_microbatch,
@@ -547,7 +579,9 @@ def preflight(plan, root):
             state_hash(trainable_state(runtime.model)),
         )
     ]
+    write_once(diagnostics / "MODULES.json", modules)
     zero = common_zero_check(runtime, records)
+    write_once(diagnostics / "ZERO_LORA.json", zero)
     if zero["status"] != "PASS" or zero["maximum_logprob_difference"] != 0:
         raise RuntimeError("Zero LoRA differs from base")
     reference = trainable_state(runtime.model)
@@ -608,41 +642,104 @@ def preflight(plan, root):
         gc.collect()
         return evidence
 
-    selection = select_microbatch(probe)
+    def numerical_probe(size, checkpointing):
+        differences, sampler_differences, clipped = [], [], []
+        per_row = []
+        for offset in range(0, 16, size):
+            batch = records[offset : offset + size]
+            batched = runtime.batch_sequence_forward(
+                batch, purpose="batch_single_check", grad=False
+            )
+            for record, current in zip(batch, batched, strict=True):
+                single = runtime.batch_sequence_forward(
+                    [record], purpose="batch_single_reference", grad=False
+                )[0]
+                if current.shape != single.shape:
+                    raise RuntimeError("Batched token positions do not align with single row")
+                row_difference = (current - single).float().abs().cpu()
+                differences.extend(row_difference.tolist())
+                per_row.append(
+                    dict(
+                        qid=record["qid"],
+                        group_row_index=record["group_row_index"],
+                        token_count=len(record["tokens"]),
+                        batch_size=len(batch),
+                        batch_max_tokens=max(len(r["tokens"]) for r in batch),
+                        mean_absolute_difference=float(row_difference.mean()),
+                        maximum_absolute_difference=float(row_difference.max()),
+                    )
+                )
+                delta = current.float().cpu() - torch.tensor(record["sampler_logprobs"])
+                sampler_differences.append(delta.abs())
+                clipped.append(delta > math.log(2))
+        comparison = dict(
+            answer_count=16,
+            token_count=len(differences),
+            mean_absolute_difference=sum(differences) / len(differences),
+            maximum_absolute_difference=max(differences),
+            per_row=per_row,
+        )
+        sampler = probability_diagnostics(sampler_differences, clipped)
+        write_once(diagnostics / f"BATCH_SINGLE_{size}_{int(checkpointing)}.json", comparison)
+        write_once(diagnostics / f"SAMPLER_TRAIN_{size}_{int(checkpointing)}.json", sampler)
+        if (
+            comparison["mean_absolute_difference"] > 0.002
+            or comparison["maximum_absolute_difference"] > 0.05
+        ):
+            raise MicrobatchNumericalMismatch(
+                "Batch/single teacher-forcing exceeds registered thresholds",
+                dict(batch_single=comparison, sampler_training=sampler),
+            )
+        enforce_probability_gate(sampler)
+        return comparison, sampler
+
+    def observed_probe(size, checkpointing):
+        path = diagnostics / f"MICROBATCH_{size}_{int(checkpointing)}.json"
+        try:
+            evidence = probe(size, checkpointing)
+            comparison, sampler = numerical_probe(size, checkpointing)
+            evidence.update(batch_single=comparison, sampler_training=sampler)
+        except BaseException as exc:
+            write_once(
+                path,
+                dict(
+                    status="FAIL",
+                    microbatch_size=size,
+                    gradient_checkpointing=checkpointing,
+                    exception_type=type(exc).__name__,
+                    reason=str(exc),
+                    peak_allocated_bytes=torch.cuda.max_memory_allocated(),
+                    numerical_diagnostics=(
+                        exc.args[1]
+                        if isinstance(exc, MicrobatchNumericalMismatch)
+                        else getattr(exc, "diagnostics", None)
+                    ),
+                ),
+            )
+            raise
+        write_once(
+            path,
+            dict(
+                status="PASS",
+                microbatch_size=size,
+                gradient_checkpointing=checkpointing,
+                evidence=evidence,
+            ),
+        )
+        return evidence
+
+    selection = select_microbatch(observed_probe)
+    write_once(diagnostics / "MICROBATCH_SELECTION.json", selection)
     if state_hash(reference) != state_hash(trainable_state(runtime.model)):
         raise RuntimeError("Memory probe changed parameters")
     # These checks do not require RNG identity between generate calls, but deterministic
     # teacher forcing must not consume random numbers when all dropout is disabled.
     if state_hash(original_rng) != state_hash(capture_rng()):
         raise RuntimeError("Deterministic training forward consumed RNG")
-    differences, sampler_differences, clipped = [], [], []
-    size = selection["microbatch_size"]
-    for offset in range(0, 16, size):
-        batch = records[offset : offset + size]
-        batched = runtime.batch_sequence_forward(batch, purpose="batch_single_check", grad=False)
-        for record, current in zip(batch, batched, strict=True):
-            single = runtime.batch_sequence_forward(
-                [record], purpose="batch_single_reference", grad=False
-            )[0]
-            if current.shape != single.shape:
-                raise RuntimeError("Batched token positions do not align with single row")
-            differences.extend((current - single).float().abs().cpu().tolist())
-            delta = current.float().cpu() - torch.tensor(record["sampler_logprobs"])
-            sampler_differences.append(delta.abs())
-            clipped.append(delta > math.log(2))
-    comparison = dict(
-        answer_count=16,
-        token_count=len(differences),
-        mean_absolute_difference=sum(differences) / len(differences),
-        maximum_absolute_difference=max(differences),
-    )
-    if (
-        comparison["mean_absolute_difference"] > 0.002
-        or comparison["maximum_absolute_difference"] > 0.05
-    ):
-        raise RuntimeError("Batch/single teacher-forcing exceeds registered thresholds")
-    sampler = probability_diagnostics(sampler_differences, clipped)
-    enforce_probability_gate(sampler)
+    comparison = selection["attempts"][-1]["evidence"]["batch_single"]
+    sampler = selection["attempts"][-1]["evidence"]["sampler_training"]
+    write_once(diagnostics / "BATCH_SINGLE_COMPARISON.json", comparison)
+    write_once(diagnostics / "SAMPLER_TRAIN_COMPARISON.json", sampler)
     # Exercise the actual answer-only path and retain row-specific stop metadata.
     answer_records = runtime.generate_group(
         inputs[rows[0]["qid"]], root, seeds=rows[0]["rollout_seeds"], protocol="answer_only"

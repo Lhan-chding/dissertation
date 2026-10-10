@@ -49,6 +49,10 @@ class ProbabilityMismatch(RuntimeError):
         self.diagnostics = diagnostics
 
 
+class MicrobatchNumericalMismatch(RuntimeError):
+    """A measured batch/single failure; args are (message, actual diagnostics)."""
+
+
 def sequence_objective(current, sampler, reference, coefficient, *, kl_coefficient=0.02):
     """Token mean with detached train-old and detached cap-2 importance weights."""
     import torch
@@ -276,7 +280,9 @@ def select_microbatch(probe):
     """Technical-only selection; probe must not perform an optimizer update.
 
     probe(microbatch_size, gradient_checkpointing) tests a representative batch.
-    Numerical/protocol failures propagate immediately; only CUDA OOM falls back.
+    Only CUDA OOM or a measured batch/single mismatch can select a smaller
+    registered microbatch. A one-sequence numerical failure always stops; only
+    a one-sequence OOM permits the final checkpointing fallback.
     Freeze the returned choice for every scientific arm before training.
     """
     import gc
@@ -287,6 +293,21 @@ def select_microbatch(probe):
     for size, checkpointing in ((4, False), (2, False), (1, False), (1, True)):
         try:
             evidence = probe(size, checkpointing)
+        except MicrobatchNumericalMismatch as exc:
+            attempts.append(
+                dict(
+                    microbatch_size=size,
+                    gradient_checkpointing=checkpointing,
+                    status="NUMERICAL_FAIL",
+                    message=str(exc),
+                    diagnostics=exc.args[1],
+                )
+            )
+            if size == 1:
+                raise MicrobatchNumericalMismatch(
+                    "Single-sequence numerical gate failed; no smaller registered choice", attempts
+                ) from exc
+            continue
         except torch.cuda.OutOfMemoryError as exc:
             attempts.append(
                 dict(
