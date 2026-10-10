@@ -1,5 +1,18 @@
 # SR-F1 当前执行状态
 
+## 当前：并行基线已准备，CPU交接器自动等待ENGINE（2026-10-10 14:30 新加坡时间）
+
+用户要求的后续基线多卡并行已实现并部署到独立候选目录，源码 `7312847f88ddfaf9f6e2a44f12cd63ef636fd1a2` 已提交推送，171个部署文件逐项校验。首次基线提交根据老师QoS真实余量申请最多5张卡，各卡独立模型/进程处理互不重复的原槽位；原6,784条预算、seed、公共起点、采样和TEST封存不变。全部分片和精确覆盖验证通过后才放行原科学训练矩阵。
+
+本地与服务器均885项测试、21项子测试通过，4个CUDA用例跳过；服务器CPU196652为COMPLETED0:0。新CPU交接器 **196654 RUNNING**，连续日志为 `WAITING_FOR_ENGINE_ACCEPTANCE`。旧CPU196501已按授权取消、确认终态并从队列消失。GPU **196508（ENGINE_attempt0004）** 保持原四卡作业运行，生产源码仍22735a2且哈希通过；没有重启ENGINE或修改无关作业。教师QoS当前本实验4卡加无关196568的1卡，合计5卡。
+
+14:30:47核验：ENGINE完整检查点索引step1、continuous原回答256条，基线WAITING/attempt0/原回答0、科学attempt0，technical_blockers为空。ENGINE尚未完成4对2+2验收，基线尚未测得实际吞吐或加速倍数。
+
+CPU交接器仅观察旧ENGINE；完整验收、完成标记及Slurm COMPLETED0:0且退出队列后，才保存旧源码、追加基线技术修订并自动切换到新调度器。原注册、冻结、修订链和历史资源身份保持。半小时监控已更新为新控制器及并行分片核验；优先使用服务器 `technical_incidents/baseline_parallel_20261010/srf11_baseline_monitor.py`，不要将旧控制器正常取消判为故障。
+
+见[基线并行实现与门禁](BASELINE_PARALLEL_REPAIR_zh.md)、[部署及等待状态证据](validation/SR_F1_1_BASELINE_PARALLEL_ARMED_20261010_1430.json)和[操作脚本](validation/baseline_ops/README_zh.md)。以下保留此前快照。
+
+
 ## 当前：四卡首个真实更新及完整状态核验通过（2026-10-10 13:50 新加坡时间）
 
 控制器196501、GPU196508（ENGINE_attempt0004）继续正常运行；教师QoS仍为本实验4卡加无关作业196568的1卡，无关作业未修改。13:36:26记录首个optimizer事件，第1步检查点与更新指标随后提交；13:46:53快照已有第二批126/128条原回答。科学attempt仍0、TEST封存、无新增技术错误；这是ENGINE的第1/8次真实更新，尚未完成连续4步与独立2+2验收。

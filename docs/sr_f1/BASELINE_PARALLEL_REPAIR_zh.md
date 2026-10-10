@@ -20,4 +20,6 @@
 
 ## 验证与部署记录
 
-此文档描述待部署实现；实时验证、CPU作业号、交接控制器号和源码哈希在完成后追加。CPU测试不能代替真实GPU基线测量或ENGINE验收，不提前报告加速倍数。
+2026-10-10 14:30:47新加坡时间：候选7312847已提交推送，171个文件逐项核验。本地/服务器885项测试和21项子测试通过，4个CUDA用例跳过；CPU196652 COMPLETED0:0。新CPU交接器196654已运行并连续记录WAITING_FOR_ENGINE_ACCEPTANCE；旧CPU196501终态CANCELLED且队列消失。GPU196508仍运行原ENGINE，生产22735a2源码哈希保持，当前step1/原回答256条。基线attempt0/原回答0，科学attempt0，TEST封存。
+
+24份服务器文件已下载并校验，冻结与注册哈希保持。实际源码切换及BASELINE_PARALLEL_REPAIR回执须等ENGINE完整通过后生成，不能提前写成已激活。CPU测试不能代替真实GPU基线测量或ENGINE验收，尚无基线实测加速倍数。见[部署核验](validation/SR_F1_1_BASELINE_PARALLEL_ARMED_20261010_1430.json)。

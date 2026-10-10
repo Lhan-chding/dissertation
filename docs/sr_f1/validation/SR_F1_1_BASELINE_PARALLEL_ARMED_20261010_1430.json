@@ -1,0 +1,167 @@
+{
+  "status": "VERIFIED_PARALLEL_BASELINE_PREPARED_AND_CPU_HANDOFF_WAITING",
+  "checked_at": "2026-10-10T06:30:47.878249+00:00",
+  "run_root": "/projects/_ssd/varunssd/louis-ssvc/sr_f11_20261010",
+  "candidate_source_commit": "7312847f88ddfaf9f6e2a44f12cd63ef636fd1a2",
+  "production_source_commit": "22735a2def1ee1ed79d69f603e580c67e301c5dd",
+  "production_source_files_verified": true,
+  "deployment_files": 171,
+  "local_tests": {
+    "passed": 885,
+    "skipped_cuda": 4,
+    "subtests_passed": 21
+  },
+  "server_tests": {
+    "cpu_job_id": "196652",
+    "tests_passed": 885,
+    "skipped": 4,
+    "subtests_passed": 21
+  },
+  "new_cpu_controller_job_id": "196654",
+  "old_cpu_controller_job_id": "196501",
+  "old_cpu_terminal": {
+    "accounting": [
+      {
+        "Account": "rose",
+        "AllocTRES": "cpu=1,mem=3G,node=1",
+        "Comment": "",
+        "ExitCode": "0:0",
+        "JobIDRaw": "196501",
+        "JobName": "srf11-controller-multigpu",
+        "QOS": "override-limits-but-killable",
+        "State": "CANCELLED by 295800338",
+        "User": "varun024"
+      }
+    ],
+    "job_id": "196501",
+    "queue": [],
+    "receipts": {
+      "accounting": {
+        "command": [
+          "sacct",
+          "--allocations",
+          "--noheader",
+          "--parsable2",
+          "--jobs=196501",
+          "--format=JobIDRaw,JobName,State,User,Account,QOS,AllocTRES,ExitCode,Comment"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "196501|srf11-controller-multigpu|CANCELLED by 295800338|varun024|rose|override-limits-but-killable|cpu=1,mem=3G,node=1|0:0|\n",
+        "time": "2026-10-10T06:28:19.769416+00:00"
+      },
+      "queue": {
+        "command": [
+          "squeue",
+          "--noheader",
+          "--user=varun024",
+          "--format=%i|%T"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "195718|PENDING\n195717|PENDING\n195716|PENDING\n196568|RUNNING\n196508|RUNNING\n195715|RUNNING\n196654|RUNNING\n",
+        "time": "2026-10-10T06:28:19.560298+00:00"
+      }
+    }
+  },
+  "handoff_log_tail": [
+    "{\"time\": \"2026-10-10T06:29:17.878923+00:00\", \"status\": \"WAITING_FOR_ENGINE_ACCEPTANCE\", \"engine_status\": \"ACTIVE\"}",
+    "{\"time\": \"2026-10-10T06:30:02.172882+00:00\", \"status\": \"WAITING_FOR_ENGINE_ACCEPTANCE\", \"engine_status\": \"ACTIVE\"}",
+    "{\"time\": \"2026-10-10T06:30:46.331248+00:00\", \"status\": \"WAITING_FOR_ENGINE_ACCEPTANCE\", \"engine_status\": \"ACTIVE\"}"
+  ],
+  "engine": {
+    "job_id": "196508",
+    "status": "ACTIVE",
+    "committed_logical_step": 1,
+    "raw_records": 256,
+    "acceptance_exists": false,
+    "gpus": 4
+  },
+  "baseline": {
+    "status": "WAITING",
+    "attempts": 0,
+    "latest": null
+  },
+  "baseline_raw_shards": [],
+  "scientific_attempts": 0,
+  "test_sealed": true,
+  "technical_blockers": [],
+  "qos": "soujanya-poria-startfund-2026-03",
+  "maximum_teacher_qos_reserved_gpus": 5,
+  "unrelated_teacher_qos_gpu_job": "196568",
+  "unrelated_jobs_modified": 0,
+  "source_activation_requires": "ENGINE_COMPLETED_0_0_QUEUE_EMPTY_FULL_4_VS_2_PLUS_2_RECEIPT",
+  "baseline_total_slots": 6784,
+  "baseline_pools": {
+    "MONITOR": 4096,
+    "MONITOR_DIAGNOSTIC_ONLY": 2560,
+    "TRAIN_FIT": 128
+  },
+  "freeze_sha256": "c7cf051d3aa6fb45889324e64b08d31a008137668aff2382283e4e19f99ff2b8",
+  "registration_sha256": "9ef274c9fc6a238f1dcc3c8de742dd9a4488e3c936004d3932c521a5c6028301",
+  "baseline_repair_activated": false,
+  "queue": {
+    "command": [
+      "squeue",
+      "--noheader",
+      "--user=varun024",
+      "--format=%i|%j|%T|%q|%R|%M|%b"
+    ],
+    "returncode": 0,
+    "stdout": "195718|sp-c123-120-150k|PENDING|rose|(Dependency)|0:00|N/A\n195717|sp-c123-80-120k|PENDING|rose|(Dependency)|0:00|N/A\n195716|sp-c123-40-80k|PENDING|rose|(Dependency)|0:00|N/A\n196568|hgadapter30s1|RUNNING|soujanya-poria-startfund-2026-03|gpu-pro6000-2|1:51:55|gres/gpu:pro6000:1\n196508|srf1-9ef274c9fc6a-ENGINE_attempt0004|RUNNING|soujanya-poria-startfund-2026-03|gpu-pro6000-10|2:55:12|gres/gpu:pro6000:4\n195715|sp-c123-0-40k|RUNNING|rose|gpu-6000ada-1|15:15:16|N/A\n196654|srf11-baseline-handoff|RUNNING|override-limits-but-killable|cpu-2|3:13|N/A\n",
+    "stderr": ""
+  },
+  "accounting": {
+    "command": [
+      "sacct",
+      "-X",
+      "-j",
+      "196508,196654",
+      "--format=JobIDRaw,JobName,State,ExitCode,AllocTRES",
+      "-n",
+      "-P"
+    ],
+    "returncode": 0,
+    "stdout": "196508|srf1-9ef274c9fc6a-ENGINE_attempt0004|RUNNING|0:0|billing=32,cpu=16,gres/gpu:pro6000=4,gres/gpu=4,mem=360G,node=1\n196654|srf11-baseline-handoff|RUNNING|0:0|cpu=1,mem=3G,node=1\n",
+    "stderr": ""
+  },
+  "downloaded_static_files_verified": 24,
+  "downloaded_file_sha256": {
+    "CANDIDATE_CPU_SUBMISSION.json": "bdb78a734dbb857da84d03b35c639bac06b62a7b1600f2354ff8d525f156f4a7",
+    "CANDIDATE_CPU_SUBMISSION_INTENT.json": "66ad36510d62981591d0e62e738bb7ea25229ebc07dd227f526f9fd7ee8107c1",
+    "CANDIDATE_SERVER_TESTS.log": "0ae78c44656eea541aeb35e465426f025119ce273a65ae8e63f248e282bcb001",
+    "CANDIDATE_SOURCE_CHECK.json": "4c8d77a68318c0111c1d33f767adddb169375cbc00e77c54b1c8097a6ad5583c",
+    "CANDIDATE_VALIDATION.json": "5634600a710140bcd3f6f033738dcf5cba3db1004f7d59316a137d5393a611ce",
+    "CPU_CANCEL_INTENT.json": "49e917b8e90197e494e716734c1f4be4fcdaf4830d0a8f084996099a668e1e88",
+    "CPU_CANCEL_RESULT.json": "b85008e250227b0f960ceee9a1a444aa8a6e9c2c39d8937564a2faca33fa1a9e",
+    "CPU_IDENTITY_BEFORE_ARMING.json": "33cdd785db11f54c30a5efc43c82884cbf4c39b07b3d9452d2fb5d1a6b640175",
+    "CPU_TERMINAL.json": "ca171e2df596f05f35dc23329681deabea65952c8e301f922fd7b687968332d5",
+    "HANDOFF_AUTHORIZATION.json": "fa4e23dcab10f552abeba0c9bcf8de8203f94c43269fc04bfa1840498ce8a9a9",
+    "HANDOFF_RELEASE.json": "38fe37b9e5acef41f2fa0d81201cc2adf688d4f14702a3ec67362a4c71dfd419",
+    "HANDOFF_RELEASE_PREFLIGHT.json": "17fe747ccc1b41fd81ec740f5928c43ba76193ab47c3c9f08b97567da1223ca0",
+    "HANDOFF_SUBMISSION.json": "949dd5833c8c25d00568ca19025990ee80c69a4886633d53cbd3cc462c5e64b2",
+    "HANDOFF_SUBMISSION_INTENT.json": "f602a53c80ee7b1a991122762ac71fe6ee2faa7fd4b2e94ccc1e14e354fe6df9",
+    "STAGING_VERIFIED.json": "a6937b8e5cc6f362b7e447d59685b1c51c772d49ab782a14631a7b3081eceb66",
+    "arm_handoff.py": "94b9d778c2c60cb96d81f8250d28b78bfb6dc08df5bbda0cba55757034ecfede",
+    "baseline_handoff.py": "add8fd010e0cc4875e2e6556a74fed81b2a1099aee2a16fd50195f567c731549",
+    "candidate_cpu.sbatch": "2a87e8bd153e262a35f7a2975aca85d38390e7b60538d84be3c9ea62abce8301",
+    "candidate_cpu_196652.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "handoff.sbatch": "40e9f5e90780a04730e03202e58cf29dc9f1d60092c0321761316ec44fa7d5cd",
+    "handoff_196654.log": "d37cec0a4ceaa691cb6b5aa2df0f78f0f4c0ba0135bda32f40604cc5db9c81ec",
+    "inventory.json": "7576215c1dedbca9dbcd4ee8af5f92575646fe1844c688e9400ff74d47271a07",
+    "srf11_baseline_monitor.py": "afec6144ee391b4688007c9ba99675df9155267a2087e807820363252ef5f7b5",
+    "stage_candidate.py": "7eee2015effb4f7dbe68c948a7d386d4d69830e9cb813201b2539cb4048efe3e"
+  },
+  "local_evidence_paths": {
+    "monitor_waiting.json": "artifacts/sr_f1_amendment_20261010/baseline_parallel/monitor_waiting.json",
+    "server_receipts_encoded.json": "artifacts/sr_f1_amendment_20261010/baseline_parallel/server_receipts_encoded.json",
+    "LOCAL_TESTS.log": "artifacts/sr_f1_amendment_20261010/baseline_parallel/LOCAL_TESTS.log"
+  },
+  "local_evidence_sha256": {
+    "monitor_waiting.json": "cc069eed33f9cb9d0f5c1c9c57fde4155fd1e25ce6cad72209c6cbf2579b67f0",
+    "server_receipts_encoded.json": "07eb272d80817653815089bc4e4fa6bb9f077d517924e5123b8bfe35ec97466a",
+    "LOCAL_TESTS.log": "b105686f3b092094ac0a9741b4ecb7a0b46643d5ba4ad8285571d43384fc0d4d"
+  },
+  "actual_baseline_gpu_speedup_measured": false,
+  "all_downstream_attempts": 0
+}
