@@ -1,0 +1,90 @@
+{
+  "status": "FIRST_REAL_UPDATE_COMMITTED_AND_FULL_STATE_AUDITED_ENGINE_PENDING",
+  "observed_at_utc": "2026-10-10T05:46:53.883881+00:00",
+  "cpu_audited_at_utc": "2026-10-10T05:50:30.493697+00:00",
+  "controller_job": 196501,
+  "gpu_job": 196508,
+  "attempt": "ENGINE_attempt0004",
+  "cpu_audit_job": 196623,
+  "cpu_audit_accounting": {
+    "returncode": 0,
+    "stdout": "196623|COMPLETED|0:0|00:00:01|cpu=2,mem=6G,node=1\n196623.batch|COMPLETED|0:0|00:00:01|cpu=2,mem=6G,node=1\n196623.extern|COMPLETED|0:0|00:00:01|cpu=2,mem=6G,node=1\n",
+    "stderr": ""
+  },
+  "source_commit": "22735a2def1ee1ed79d69f603e580c67e301c5dd",
+  "first_optimizer_update_event_utc": "2026-10-10T05:36:26.783755+00:00",
+  "first_update_seconds_from_first_sampling_attempt": 7183.42699182,
+  "first_update_seconds_from_first_reference": 6565.73814227,
+  "timer_boundary": "Optimizer event is reserved immediately before optimizer.step; checkpoint commit and bound metrics independently prove successful return. Timing excludes model initialization and small checkpoint publication overhead.",
+  "all_128_gradient_forwards_auxgpu_only": true,
+  "cpu_checkpoint_audit": {
+    "adam_nonzero_moment_pairs": 16,
+    "adam_states": 32,
+    "checkpoint": {
+      "field_hashes": {
+        "committed_logical_step": "b47e22133c67168abb78cea1e14c4ed42df157dbb6b84980c9b1574697add07a",
+        "cursor": "f8fd9edf325b4778324e548d621ca13f6e226c9fa1e10531cfdbfc8a2caecaf5",
+        "diagnostics_hash": "ac9349270cc4c1352f196010ab450b355fc2f601d6cfc4c46745025812a4fb68",
+        "input_stream_hash": "9d4ef9e0ee0f19ebb136cde2ed6591d82ef79b87a696049d3d7e01895ef4dce1",
+        "optimizer": "91f42512d2b9edeaca5b1936a1b8bf7f89d7fe28e87096f88e3c7e94e281f727",
+        "parameters": "33c1b1d1634e5323062e8230f9fb5ed8bc224e0ca7a94cabde8088e585904d90",
+        "plan_id": "fa1734904f131851c9716d75654095c1a15365959b7697e50c6c4727c221df36",
+        "reference": "2a11c71fa0bdee21cc69123fa50810253be71e4e69d0fc243a7e5beeb89687b2",
+        "reference_hash": "d92c5e81e1db8c8c8c2ebf3efe6fe1f47242ac86c790981e174145717a31ded8",
+        "rng": "a91c19c9a3f2ef2420c50a1fabc097780de598aea79be42672780e9353686bc9",
+        "run_identity": "65fb858ce4b83a25569d4eea1dc8ac374a5c53d822fadd739984145f4e90376c",
+        "sampling_hash": "a0102d8e2ab24bcfe9a45d60ef16ff2fa891d3c11e6edbd113b98e1d1b1cdfc3",
+        "scheduler": "f3928c435126eef6e6a90348e684c4738391d0db94592569f8d63bb5d28c96d9",
+        "token_path_hash": "48c2b4ea9ff7c658054f2d8ca64a4755d1151fe6ffed233cfb062a76c07ce23a"
+      },
+      "path": "step-01-4a678c4ca357f62858192240885291dadb7d8d5d95d5c2155165c94e3ed5bfa8.pt",
+      "sha256": "17c9a4e8a427fd90bd4764fbd42f859a8bd2b4f0c7b719f665513d8693cb0374",
+      "state_hash": "4a678c4ca357f62858192240885291dadb7d8d5d95d5c2155165c94e3ed5bfa8",
+      "step": 1
+    },
+    "cuda_initialized": false,
+    "cuda_rng_states": 4,
+    "engine_accepted": false,
+    "format_failures": {
+      "denominator": 128,
+      "format_failure_rate": 0.0546875,
+      "numerator": 7,
+      "reasons": {
+        "invalid_json": 2,
+        "scored": 3,
+        "trailing_after_close": 2
+      },
+      "unit": "generated_sequence"
+    },
+    "job_id": "196623",
+    "learning_rate": 0.0001,
+    "metrics_adam_nonzero_moments": false,
+    "model_calls": 0,
+    "natural_nonconstant_groups": 16,
+    "parameter_max_absolute_delta": 9.999969915952533e-05,
+    "policy_gradient_norm": 0.03897620677529817,
+    "probability_max_abs_difference": 0.0,
+    "probability_mean_abs_difference": 0.0,
+    "probability_tokens": 26347,
+    "raw_rollouts_verified": 128,
+    "science_started": false,
+    "source_commit": "22735a2def1ee1ed79d69f603e580c67e301c5dd",
+    "state_fields_verified": 14,
+    "status": "PASS_FIRST_UPDATE_FULL_STATE",
+    "time": "2026-10-10T05:50:30.493697+00:00",
+    "token_path_hash": "5f0423d37e588245c31dc2b6d96d6e3bc579fec937eb91047718883d56810552"
+  },
+  "raw_records_at_monitor_snapshot": 254,
+  "second_batch_raw_at_snapshot": 126,
+  "scientific_attempts": 0,
+  "test_sealed": true,
+  "natural_engine_required_physical_updates": 8,
+  "conditional_seven_updates_hours_at_first_step_rate": 13.967774706316666,
+  "eta_limit": "Extrapolates the first full update only; later length/cost changes and technical errors can alter runtime. Baseline remains required after ENGINE.",
+  "artifact_hashes": {
+    "artifacts/sr_f1_amendment_20261010/engine_multigpu/first_update_20261010T0550/monitor.json": "12e4029da12a29e8d9e31f0600b5ff4335d91433adcb3e9888f5f1bfd4cf022c",
+    "artifacts/sr_f1_amendment_20261010/engine_multigpu/first_update_20261010T0550/first_update.json": "d0ae721d59e9d0c338688c08b0f2e9bd8229b4d7803d9452e74efe2bc1082893",
+    "artifacts/sr_f1_amendment_20261010/engine_multigpu/first_update_20261010T0550/cpu_audit.json": "9338acb74a5a415dda04e63b27f5c153835281cc069158c7c74174e78cb745fe"
+  },
+  "audit_script_sha256": "c4aac14a07bd5561fce85899c50ced67717f3c0dadb3464f6375f9d7b9b674b6"
+}
