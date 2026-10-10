@@ -1,0 +1,43 @@
+{
+  "time": "2026-10-10T03:29:19.535760+00:00",
+  "status": "SYNTHETIC_CUDA_PASS_WAITING_OLD_GPU_TERMINAL",
+  "candidate_source_commit": "22735a2def1ee1ed79d69f603e580c67e301c5dd",
+  "candidate_files": 163,
+  "local_tests": 747,
+  "server_tests": 747,
+  "subtests": 16,
+  "cuda_skipped_in_cpu_suite": 4,
+  "gpu_probe_job": "196459",
+  "gpu_probe_status": "PASS",
+  "gpu_probe_sha256": "bb1a86b7864aa0b1c3b0261643a86f7b872cf465eed36054e7559614c5c82c5e",
+  "gpu_probe_scope": "SYNTHETIC_CUDA_ACTIVATION_STORAGE_ONLY",
+  "real_9b_engine_qualified": false,
+  "maintenance_job": "196468",
+  "queue": {
+    "command": [
+      "squeue",
+      "--noheader",
+      "--user",
+      "varun024",
+      "--format=%i|%j|%T|%q|%R|%M|%m|%b"
+    ],
+    "returncode": 0,
+    "stdout": "196227|srf1-9ef274c9fc6a-ENGINE_attempt0003|COMPLETING|soujanya-poria-startfund-2026-03|gpu-pro6000-10|5:52:04|90G|gres/gpu:pro6000:1\n195718|sp-c123-120-150k|PENDING|rose|(Dependency)|0:00|256G|N/A\n195717|sp-c123-80-120k|PENDING|rose|(Dependency)|0:00|256G|N/A\n195716|sp-c123-40-80k|PENDING|rose|(Dependency)|0:00|256G|N/A\n196002|hgadapter30s1|RUNNING|soujanya-poria-startfund-2026-03|gpu-pro6000-3|10:28:42|33G|gres/gpu:pro6000:1\n195715|sp-c123-0-40k|RUNNING|rose|gpu-6000ada-1|12:13:48|256G|N/A\n196468|srf11-mgpu-v2-maintenance|RUNNING|override-limits-but-killable|cpu-2|4:16|6G|N/A\n",
+    "stderr": ""
+  },
+  "current_source_commit": "b48a638128bfeb6fc41201341df4902b3f2e660a",
+  "current_source_files_verified": true,
+  "current_engine_steps": {
+    "engineering/engine/natural/continuous/checkpoints/LATEST.json": 0
+  },
+  "physical_optimizer_updates": 0,
+  "science_attempts": 0,
+  "test_sealed": true,
+  "original_raw_128_preserved": true,
+  "freeze_sha256": "c7cf051d3aa6fb45889324e64b08d31a008137668aff2382283e4e19f99ff2b8",
+  "full_snapshot_relative_path": "artifacts/sr_f1_amendment_20261010/engine_multigpu/maintenance_20261010T032919.json",
+  "full_snapshot_sha256": "f4f3f89012e2c081bc6f58ce85e8ff51452c1ab6ebc006056b3fce98dad8d8c1",
+  "target_gpus": 4,
+  "teacher_qos_total_limit": 5,
+  "unrelated_jobs_modified": 0
+}
