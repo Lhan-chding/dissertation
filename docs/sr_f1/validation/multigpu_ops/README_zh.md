@@ -7,3 +7,5 @@
 候选 v2 CPU 作业为 196464。维护链只在该 CPU 检查和 GPU 探针均成功后执行：保存当前记录；核实身份后取消本项目 196225/196227；等待终态；保存冻结、源码、原回答和完整 step0；CPU 审计；追加多卡技术修订并激活已校验源码；再次预检；登记一次性恢复；启动正常控制器。非本项目作业不修改。
 
 新的 ENGINE 请求 4 张 PRO6000（计算卡 0、辅助激活存储卡 1–3），highmem、每卡至少 80 GiB 主机内存，并使用教师 QoS。每次释放前核对实际配置和该用户教师 QoS 的总卡数不超过 5；其他 QoS 不计入此上限。原科学合同和 TEST 门禁不变。
+
+Initial autochain submission was rejected with `Job dependency problem` and no job ID; original records are retained. The v2 chain verifies completed dependencies through sacct and omits them from the Slurm dependency list; active dependencies retain afterok. Four focused operational checks passed.

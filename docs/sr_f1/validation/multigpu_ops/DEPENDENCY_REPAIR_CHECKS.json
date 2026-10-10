@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "tests_run": 4,
+  "completed_dependencies_verified_and_omitted": true,
+  "live_dependencies_retained": true,
+  "unknown_and_failed_dependencies_rejected": true,
+  "submission_held_until_receipt": true,
+  "original_rejected_submission_preserved": true
+}
