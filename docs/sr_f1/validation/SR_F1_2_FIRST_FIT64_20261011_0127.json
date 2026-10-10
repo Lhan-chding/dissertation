@@ -1,0 +1,311 @@
+{
+  "at": "2026-10-10T17:27:23.183178+00:00",
+  "source_verified": 458,
+  "frozen_hashes_verified": true,
+  "mapped_checkpoints": {
+    "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_A_s71002/checkpoints": {
+      "target": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_A_s71002",
+      "files": 0
+    },
+    "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_J_s71002/checkpoints": {
+      "target": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_J_s71002",
+      "files": 0
+    },
+    "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_GATE_s71002/checkpoints": {
+      "target": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_GATE_s71002",
+      "files": 0
+    },
+    "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_DEC_s71002/checkpoints": {
+      "target": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_DEC_s71002",
+      "files": 0
+    },
+    "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_A_s71003/checkpoints": {
+      "target": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_A_s71003",
+      "files": 0
+    },
+    "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_J_s71003/checkpoints": {
+      "target": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_J_s71003",
+      "files": 0
+    },
+    "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_GATE_s71003/checkpoints": {
+      "target": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_GATE_s71003",
+      "files": 0
+    },
+    "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_DEC_s71003/checkpoints": {
+      "target": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_DEC_s71003",
+      "files": 0
+    }
+  },
+  "state": {
+    "at": "2026-10-10T17:26:23.325945+00:00",
+    "experiment_complete": false,
+    "failures": [],
+    "scientific_complete": 0,
+    "scientific_total": 12,
+    "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+    "stage": "MAIN_TRAINING",
+    "tasks": {
+      "BASELINE_0": {
+        "job_id": "196826",
+        "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+        "status": "COMPLETE",
+        "task_id": "BASELINE_0"
+      },
+      "BASELINE_1": {
+        "job_id": "196827",
+        "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+        "status": "COMPLETE",
+        "task_id": "BASELINE_1"
+      },
+      "BASELINE_2": {
+        "job_id": "196828",
+        "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+        "status": "COMPLETE",
+        "task_id": "BASELINE_2"
+      },
+      "SRF1_2_A_s71001": {
+        "job_id": "196939",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "SRF1_2_A_s71001"
+      },
+      "SRF1_2_DEC_s71001": {
+        "job_id": "196942",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "SRF1_2_DEC_s71001"
+      },
+      "SRF1_2_GATE_s71001": {
+        "job_id": "196941",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "SRF1_2_GATE_s71001"
+      },
+      "SRF1_2_J_s71001": {
+        "job_id": "196940",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "SRF1_2_J_s71001"
+      },
+      "TECHNICAL": {
+        "job_id": "196877",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "COMPLETE",
+        "task_id": "TECHNICAL"
+      }
+    },
+    "teacher_gpu_usage": 4,
+    "unknown_submissions": [],
+    "version": "SR-F1.2-20261010"
+  },
+  "endpoint": {
+    "at": "2026-10-10T17:27:08.398143+00:00",
+    "endpoints_complete": 0,
+    "endpoints_total": 13,
+    "experiment_delivered": false,
+    "failures": [],
+    "report_pending": true,
+    "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+    "stage": "WAITING_FOR_ALL_MAIN_TERMINAL",
+    "tasks": {},
+    "teacher_gpu_usage": 4,
+    "unknown_submissions": [],
+    "version": "SR-F1.2-20261010"
+  },
+  "runs": {
+    "SRF1_2_A_s71001": {
+      "job_id": "196939",
+      "updates": 57,
+      "checkpoint_step": 56,
+      "checkpoint": {
+        "field_hashes": {
+          "committed_logical_step": "49228bc0b1fee0af7a62f33105b60e8c918ac1e7db9487f901fefa1ffdd805dd",
+          "cursor": "e5061a8527320f7349e53eaadab9d84c352a76a1b1306c3bcf206283d51a852e",
+          "diagnostics_hash": "b375e2fff6e5902fd756aa0101b9d4c6b38983bf8051e2283d81ffb96f5a60bc",
+          "input_stream_hash": "7879c125ef4c11baf80b14f24071e150d42b93d1039fc72db2e1001965e83a98",
+          "optimizer": "96abc1989b54966654f336b6036a92a9498712d7279c4853c0a7f395e30a7233",
+          "parameters": "82d9c7ec9b9420f961f742683eee70f6f94d2a87d7e404fd5a432d2f4e4bd5a6",
+          "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+          "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+          "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+          "rng": "6cfebfafcd8d2d97cd02ec4eb3e85ecda056631daa73eadb6104d66a5757b97c",
+          "run_identity": "f3ceefc34e3f33aa350d7173bb6b560427162997f437f3fa021af3a6574c503b",
+          "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+          "scheduler": "41a2e2a35cb3633f74f4a5a9e99020e52c75eba83160ae7e8b17fdaad2dfa140",
+          "token_path_hash": "a904e94d148fdebab0e443304eaaf802f6c9142ee2b98ecd6de0b0083c330632",
+          "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+        },
+        "path": "step-56-f1eb1c57c155aa0e49941255be21156824d1fe688d4a36fe26d58c3e312eaf6a.pt",
+        "sha256": "0aae8a4056ae569ea8e840b4c17450f37d5fb8e85f7fe3ddf784dddd8768dac7",
+        "state_hash": "f1eb1c57c155aa0e49941255be21156824d1fe688d4a36fe26d58c3e312eaf6a",
+        "step": 56
+      },
+      "checkpoint_bytes_verified": true,
+      "all_finite": true,
+      "sampler_mean_max": 0.0014027789002284408,
+      "tis_fraction_max": 0.00011687704682117328,
+      "mean_step_seconds": 370.49318626017737,
+      "raw_records": 7424,
+      "fit": {
+        "32": {
+          "count": 128,
+          "records_sha256": "325527a266f0179749e267ec58efa9a19aea87a1a86f8017ec9ad5b1c11ef82a",
+          "status": "COMPLETE"
+        }
+      },
+      "log_tail": "/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n"
+    },
+    "SRF1_2_DEC_s71001": {
+      "job_id": "196942",
+      "updates": 59,
+      "checkpoint_step": 56,
+      "checkpoint": {
+        "field_hashes": {
+          "committed_logical_step": "49228bc0b1fee0af7a62f33105b60e8c918ac1e7db9487f901fefa1ffdd805dd",
+          "cursor": "e5061a8527320f7349e53eaadab9d84c352a76a1b1306c3bcf206283d51a852e",
+          "diagnostics_hash": "0226a29717c7a2d539314a57250793d4a7dddefa15d36771b1b39fa582618ba3",
+          "input_stream_hash": "7879c125ef4c11baf80b14f24071e150d42b93d1039fc72db2e1001965e83a98",
+          "optimizer": "c8ae1248e598f2afd9f74135fa3d1c4852b5dcd75bea36f58c1a70402c129607",
+          "parameters": "41cf3a03eff684f8d9be102186a559a6ddd4df1568df96b75325e49467df1cbc",
+          "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+          "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+          "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+          "rng": "6cfebfafcd8d2d97cd02ec4eb3e85ecda056631daa73eadb6104d66a5757b97c",
+          "run_identity": "ea984842c5a7e5fcf7c61ae94416ed907ecfd5f9231bcfde6cab5ba172a8b58e",
+          "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+          "scheduler": "41a2e2a35cb3633f74f4a5a9e99020e52c75eba83160ae7e8b17fdaad2dfa140",
+          "token_path_hash": "6c246d0ff0bae5447d976bc7ceda6eabe3acdea9563542ab081f7d18f8c48be5",
+          "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+        },
+        "path": "step-56-3e2ebb1708d333e65cc931060dcd0be301a3162a86214a14a4065ce4ce812a26.pt",
+        "sha256": "d3709e4de8cadaa2452943bb19a9277f9a59fb123b597c1293bd9365f61cef63",
+        "state_hash": "3e2ebb1708d333e65cc931060dcd0be301a3162a86214a14a4065ce4ce812a26",
+        "step": 56
+      },
+      "checkpoint_bytes_verified": true,
+      "all_finite": true,
+      "sampler_mean_max": 0.001706165843643248,
+      "tis_fraction_max": 0.00011290929978713393,
+      "mean_step_seconds": 353.8502344202716,
+      "raw_records": 7680,
+      "fit": {
+        "32": {
+          "count": 128,
+          "records_sha256": "80920fbeb02475d9b1297b5c9db14da1dfe2cf1863df9d131516cdc1d7e711d8",
+          "status": "COMPLETE"
+        }
+      },
+      "log_tail": "/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n"
+    },
+    "SRF1_2_GATE_s71001": {
+      "job_id": "196941",
+      "updates": 65,
+      "checkpoint_step": 64,
+      "checkpoint": {
+        "field_hashes": {
+          "committed_logical_step": "8dd7876c3b4435f83d10fd6d74937f3b7c80214bbb9643c3908c2b8d23a60355",
+          "cursor": "69e7cb5d83af4a388fd265c8a979973bd5de08ddacc4b9afd3856dbfc738c065",
+          "diagnostics_hash": "00f6d0af83ff58881b33fff420a09028f09d69d83dac3021e5df5fa0eb33a212",
+          "input_stream_hash": "7879c125ef4c11baf80b14f24071e150d42b93d1039fc72db2e1001965e83a98",
+          "optimizer": "39751ff780f252eb48eb373a2016d97ea2c343f9abf81bf9d27686546efe00d4",
+          "parameters": "41cf69eee0839327a18a464f859b7c16ab43f7032f1a0f8beeb8daae39366604",
+          "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+          "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+          "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+          "rng": "6cfebfafcd8d2d97cd02ec4eb3e85ecda056631daa73eadb6104d66a5757b97c",
+          "run_identity": "b146e4fb4ded4b575be4eb1c16999b053c3a5b5139206c1ee56c46ecb713fc3f",
+          "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+          "scheduler": "814130a42c7829009b69cd9f6bdca2fc9b1f552837344ef2f7b07c8a9dc11f20",
+          "token_path_hash": "fafe53489c4233a66b44f45c9a920050e7ee76db5aaff4cf3977d767bd89c300",
+          "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+        },
+        "path": "step-64-e8a3da062e7db047b892a43cfc37e448b35410eaf0ec36cf447e4e5dfff6c93d.pt",
+        "sha256": "6d69eac17fa1dad89909b5ceab7fb3d2ad30479dbc6b5c5df9b804e483ba0c5d",
+        "state_hash": "e8a3da062e7db047b892a43cfc37e448b35410eaf0ec36cf447e4e5dfff6c93d",
+        "step": 64
+      },
+      "checkpoint_bytes_verified": true,
+      "all_finite": true,
+      "sampler_mean_max": 0.0016528344713151455,
+      "tis_fraction_max": 0.00011204063048353419,
+      "mean_step_seconds": 317.7883643941363,
+      "raw_records": 8448,
+      "fit": {
+        "64": {
+          "count": 128,
+          "records_sha256": "4c67fe960aaffc0d6a5144e27596f5aefb7e372c3f3ad0f4848f39e4be718904",
+          "status": "COMPLETE"
+        },
+        "32": {
+          "count": 128,
+          "records_sha256": "91ea99d5de21d0737adfc45a1aa28973ed112b2526dd135e9b32b0c958c9aac9",
+          "status": "COMPLETE"
+        }
+      },
+      "log_tail": "/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n"
+    },
+    "SRF1_2_J_s71001": {
+      "job_id": "196940",
+      "updates": 64,
+      "checkpoint_step": 64,
+      "checkpoint": {
+        "field_hashes": {
+          "committed_logical_step": "8dd7876c3b4435f83d10fd6d74937f3b7c80214bbb9643c3908c2b8d23a60355",
+          "cursor": "69e7cb5d83af4a388fd265c8a979973bd5de08ddacc4b9afd3856dbfc738c065",
+          "diagnostics_hash": "9acc28c58d877818acc29e3f76bf0be22f01b34d2096eb1de7f459a8d8ca395c",
+          "input_stream_hash": "7879c125ef4c11baf80b14f24071e150d42b93d1039fc72db2e1001965e83a98",
+          "optimizer": "b2673ed82717e04c79e35725c3dc8c59da8ef78a457bf996e6bc13c1cbbda487",
+          "parameters": "69ea00102f9280255dc6146aa7d0db4eeb537709e62ed6b59ecb9f040f3b56a8",
+          "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+          "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+          "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+          "rng": "6cfebfafcd8d2d97cd02ec4eb3e85ecda056631daa73eadb6104d66a5757b97c",
+          "run_identity": "0baf755569eb62f24723e389468097cd15a2baa667a54def3037c316b48e7017",
+          "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+          "scheduler": "814130a42c7829009b69cd9f6bdca2fc9b1f552837344ef2f7b07c8a9dc11f20",
+          "token_path_hash": "ae229ec2b7412c65bc37d2369a90d22f4c8ae44a6df14d7e7cd35f2319892073",
+          "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+        },
+        "path": "step-64-de2ab85f31378676e4abbf088e4a5d7bc47569eff7c67f11b4d86741076ac3ba.pt",
+        "sha256": "95dd68ff33076947867c159a9e08f454ebd3b120699d08a276b6aedb7b980afe",
+        "state_hash": "de2ab85f31378676e4abbf088e4a5d7bc47569eff7c67f11b4d86741076ac3ba",
+        "step": 64
+      },
+      "checkpoint_bytes_verified": true,
+      "all_finite": true,
+      "sampler_mean_max": 0.0017086106818169355,
+      "tis_fraction_max": 0.0001259022974409163,
+      "mean_step_seconds": 324.0037951778013,
+      "raw_records": 8320,
+      "fit": {
+        "64": {
+          "count": 128,
+          "records_sha256": "065321c6459b2892455e369673e418491f121edd080435c79f100e536b428378",
+          "status": "COMPLETE"
+        },
+        "32": {
+          "count": 128,
+          "records_sha256": "cf19f1b90276d701d93353580e97a8ffa73cad9a19d32d9ccffad9ad3570bf22",
+          "status": "COMPLETE"
+        }
+      },
+      "log_tail": "/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n"
+    }
+  },
+  "quota": {
+    "/projects/_ssd/varunssd": {
+      "cap": 750000000000,
+      "used": 720700693291,
+      "remaining": 29299306709
+    },
+    "/projects/_hdd/varunhdd": {
+      "cap": 5000000000000,
+      "used": 625269464875,
+      "remaining": 4374730535125
+    }
+  },
+  "technical_and_freeze_bindings_verified": true,
+  "queue": "195718|sp-c123-120-150k|PENDING|rose|N/A|(Dependency)\n195717|sp-c123-80-120k|PENDING|rose|N/A|(Dependency)\n195716|sp-c123-40-80k|PENDING|rose|N/A|(Dependency)\n196942|srf12-SRF1_2_DEC_s71001|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-1\n196940|srf12-SRF1_2_J_s71001|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-9\n196941|srf12-SRF1_2_GATE_s71001|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-9\n196939|srf12-SRF1_2_A_s71001|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-2\n195715|sp-c123-0-40k|RUNNING|rose|N/A|gpu-6000ada-1\n196875|srf12-controller-r0001b|RUNNING|override-limits-but-killable|N/A|cpu-2\n196876|srf12-endpoint-r0001b|RUNNING|override-limits-but-killable|N/A|cpu-2\n",
+  "accounting": "196826|COMPLETED|0:0\n196827|COMPLETED|0:0\n196828|COMPLETED|0:0\n196877|COMPLETED|0:0\n196939|RUNNING|0:0\n196940|RUNNING|0:0\n196941|RUNNING|0:0\n196942|RUNNING|0:0\n",
+  "audit_scope": "Read-only source/freeze and file-byte checks, registered FIT slot/group/aggregate checks; checkpoint serialized full state not reloaded. No TEST access."
+}
