@@ -126,11 +126,18 @@ def memory_gib(tres):
 
 def verify_multigpu_resources(fields, override, *, allocated=False):
     """Check Slurm's actual request/allocation before release or model loading."""
-    require(fields.get("NumNodes") == str(override["nodes"]), "MULTIGPU_SINGLE_NODE_REQUIRED")
+    require(override["nodes"] == 1, "MULTIGPU_SINGLE_NODE_REQUIRED")
+    allowed_nodes = {"1"}
+    # Held requests can report the exact min/max range before node assignment.
+    # Running allocations must report the actual single node, never a range.
+    if not allocated and fields.get("JobState") == "PENDING":
+        allowed_nodes.add("1-1")
+    require(fields.get("NumNodes") in allowed_nodes, "MULTIGPU_SINGLE_NODE_REQUIRED")
     require(fields.get("Features") == override["constraint"], "MULTIGPU_CONSTRAINT_MISMATCH")
     for key in ("ReqTRES", "AllocTRES") if allocated else ("ReqTRES",):
         tres = fields.get(key, "")
         values = dict(item.split("=", 1) for item in tres.split(",") if "=" in item)
+        require(values.get("node") == "1", "MULTIGPU_TRES_SINGLE_NODE_REQUIRED")
         require(
             gpu_count(tres) == override["gpus"]
             and values.get("gres/gpu:pro6000") == str(override["gpus"])

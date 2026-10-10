@@ -1,0 +1,13 @@
+{
+  "time": "2026-10-10T03:16:21.527772+00:00",
+  "status": "PASS_LOCAL_REGRESSION_SLURM_SINGLE_NODE_RANGE",
+  "pytest_summary": "747 passed, 4 skipped, 16 subtests passed in 27.75s",
+  "pytest_log_sha256": "ab5721edb1f41c920a64c9211558c7a83072e9d06c221d1a9c4e7d668951a7c8",
+  "ruff": "PASS",
+  "format": "PASS",
+  "real_scheduler_evidence_job": "196459",
+  "observed_pending_NumNodes": "1-1",
+  "resource_request_verified": "cpu=12,mem=270G,node=1,gres/gpu=3,gres/gpu:pro6000=3",
+  "running_node_requirement": "1",
+  "gpu_probe_status": "SUBMITTED_RELEASED_NOT_YET_QUALIFIED"
+}

@@ -18,6 +18,7 @@ from sr_f1.orchestration import (
     file_hash,
     read_json,
     resource_override,
+    verify_multigpu_resources,
 )
 
 REPO = Path(__file__).resolve().parents[2]
@@ -128,7 +129,10 @@ class MultiGPURecoveryTests(unittest.TestCase):
             job_id = command[3]
             job = self.backend.jobs[job_id]
             count = job["gpus"]
-            tres = f"cpu={4 * count},mem={90 * count}G,gres/gpu={count},gres/gpu:pro6000={count}"
+            tres = (
+                f"cpu={4 * count},mem={90 * count}G,node=1,"
+                f"gres/gpu={count},gres/gpu:pro6000={count}"
+            )
             fields = {
                 "JobId": job_id,
                 "JobName": job["name"],
@@ -252,7 +256,7 @@ class MultiGPURecoveryTests(unittest.TestCase):
 
     def test_insufficient_actual_resources_stay_held(self):
         self.authorize()
-        self.resource_edits["ReqTRES"] = "cpu=16,mem=90G,gres/gpu=4,gres/gpu:pro6000=4"
+        self.resource_edits["ReqTRES"] = "cpu=16,mem=90G,node=1,gres/gpu=4,gres/gpu:pro6000=4"
         self.scheduler.tick()
         attempt = self.scheduler.state["tasks"]["ENGINE"]["attempts"][-1]
         self.assertNotIn("released", attempt)
@@ -339,7 +343,7 @@ class MultiGPURecoveryTests(unittest.TestCase):
         attempt = self.scheduler.state["tasks"]["ENGINE"]["attempts"][-1]
         self.assertNotIn("released", attempt)
         self.resource_edits["QOS"] = TEACHER_QOS
-        self.resource_edits["ReqTRES"] = "cpu=16,mem=360G,gres/gpu=4,gres/gpu:h100=4"
+        self.resource_edits["ReqTRES"] = "cpu=16,mem=360G,node=1,gres/gpu=4,gres/gpu:h100=4"
         self.scheduler.tick()
         self.assertNotIn("released", attempt)
 
@@ -361,7 +365,7 @@ class MultiGPURecoveryTests(unittest.TestCase):
                 "engine",
             )
         (self.root / f"orchestration/worker_starts/{attempt['attempt_id']}.json").unlink()
-        self.resource_edits["AllocTRES"] = "cpu=16,mem=90G,gres/gpu=4,gres/gpu:pro6000=4"
+        self.resource_edits["AllocTRES"] = "cpu=16,mem=90G,node=1,gres/gpu=4,gres/gpu:pro6000=4"
         with (
             patch.dict(os.environ, environment),
             self.assertRaisesRegex(ValueError, "HOST_MEMORY_BELOW"),
@@ -433,6 +437,66 @@ class MultiGPUQueueTests(unittest.TestCase):
             self.assertEqual(sum(row["gpus"] for row in result["jobs"]), 5)
             self.assertEqual([row["job_id"] for row in result["jobs"]], ["10", "11_2"])
             self.assertEqual(backend._run.call_count, 3)
+
+
+class MultiGPUNodeRangeTests(unittest.TestCase):
+    def setUp(self):
+        self.override = {
+            "nodes": 1,
+            "gpus": 3,
+            "cpus_per_task": 12,
+            "minimum_host_memory_gb": 240,
+            "constraint": "highmem",
+        }
+        # Real held-job representation observed for validation job 196459.
+        self.fields = {
+            "JobState": "PENDING",
+            "Reason": "JobHeldUser",
+            "NumNodes": "1-1",
+            "Features": "highmem",
+            "ReqTRES": "cpu=12,mem=270G,node=1,billing=12,gres/gpu=3,gres/gpu:pro6000=3",
+            "AllocTRES": "",
+        }
+
+    def test_held_exact_single_node_request_range_is_accepted(self):
+        verify_multigpu_resources(self.fields, self.override)
+
+    def test_multi_node_or_variable_range_is_rejected(self):
+        for nodes in ("2-2", "1-2", "2", "0-1"):
+            with self.subTest(nodes=nodes), self.assertRaisesRegex(ValueError, "SINGLE_NODE"):
+                verify_multigpu_resources({**self.fields, "NumNodes": nodes}, self.override)
+
+    def test_running_or_allocated_range_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "SINGLE_NODE"):
+            verify_multigpu_resources({**self.fields, "JobState": "RUNNING"}, self.override)
+        with self.assertRaisesRegex(ValueError, "SINGLE_NODE"):
+            verify_multigpu_resources(self.fields, self.override, allocated=True)
+
+    def test_actual_single_node_requires_both_tres_node_counts(self):
+        fields = {
+            **self.fields,
+            "JobState": "RUNNING",
+            "NumNodes": "1",
+            "AllocTRES": self.fields["ReqTRES"],
+        }
+        verify_multigpu_resources(fields, self.override, allocated=True)
+        for key in ("ReqTRES", "AllocTRES"):
+            for count in ("2", "1-1", ""):
+                with (
+                    self.subTest(key=key, count=count),
+                    self.assertRaisesRegex(ValueError, "TRES_SINGLE_NODE"),
+                ):
+                    modified = fields[key].replace("node=1", "node=" + count)
+                    verify_multigpu_resources(
+                        {**fields, key: modified}, self.override, allocated=True
+                    )
+
+    def test_held_range_still_requires_tres_single_node(self):
+        with self.assertRaisesRegex(ValueError, "TRES_SINGLE_NODE"):
+            verify_multigpu_resources(
+                {**self.fields, "ReqTRES": self.fields["ReqTRES"].replace("node=1,", "")},
+                self.override,
+            )
 
 
 if __name__ == "__main__":
