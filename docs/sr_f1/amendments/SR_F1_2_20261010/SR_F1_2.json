@@ -1,0 +1,345 @@
+{
+  "version": "SR-F1.2-20261010",
+  "scope": "measurement_and_fixed_feedback_trial",
+  "automatic_next_phase": false,
+  "model": {
+    "id": "Qwen/Qwen3.5-9B",
+    "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+    "prior_composite_weight_hash": "921fb7dbfce93fbcf3ab0ccc4fe63bdc41269e7b6ce8f8d6fc315c042fee5511",
+    "snapshot_hint": "/projects/varunssd/louis-ssvc/cache/huggingface/hub/models--Qwen--Qwen3.5-9B/snapshots/c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+    "use_f2_trained_checkpoint": false,
+    "enable_thinking": false,
+    "base_dtype": "bfloat16",
+    "adapter_dtype": "float32",
+    "attention_backend": "eager_native",
+    "lora": {
+      "r": 8,
+      "alpha": 16,
+      "dropout": 0,
+      "layers": "all_language_decoder_layers",
+      "targets": "all_language_decoder_linear_layers",
+      "init_seed": 2026100901,
+      "excluded": [
+        "visual",
+        "merger",
+        "projector",
+        "lm_head",
+        "embedding"
+      ],
+      "actual_module_names_receipt_required": true
+    }
+  },
+  "resources": {
+    "cumulative_gpu_hours_limit": null,
+    "research_wallclock_limit": null,
+    "max_workers_across_active_project_runs": 5,
+    "stop_on_elapsed_time": false,
+    "respect_scheduler_lease": true,
+    "gpu_qos": "soujanya-poria-startfund-2026-03",
+    "gpu_per_training_path": 1,
+    "max_teacher_qos_gpus": 5,
+    "count_pending_and_unknown": true,
+    "count_other_qos": false,
+    "touch_unrelated_jobs": false,
+    "seed_first_waves": true
+  },
+  "data": {
+    "pool_root_counts": {
+      "ENGINE": 8,
+      "FORMAT": 16,
+      "FORMAT_CONFIRM": 16,
+      "BRIDGE": 8,
+      "TRAIN": 96,
+      "MONITOR": 32,
+      "TEST_ID": 128,
+      "TEST_COMPOSITION": 64,
+      "TEST_LANGUAGE": 64,
+      "TEST_RENDER": 64
+    },
+    "synthetic_canvas": [
+      1024,
+      768
+    ],
+    "synthetic_processor_target_pixels": 786432,
+    "min_processed_pixels_per_count": 3,
+    "min_processed_label_height_pixels": 9,
+    "families": [
+      "CROSS",
+      "THRESHOLD",
+      "TOPK",
+      "INTERVAL"
+    ],
+    "charts": [
+      "grouped_bar",
+      "line"
+    ],
+    "teacher_calls_in_main_run": 0,
+    "model_result_based_item_selection": false
+  },
+  "training": {
+    "arms": [
+      "A",
+      "J",
+      "GATE",
+      "DEC"
+    ],
+    "seeds": [
+      71001,
+      71002,
+      71003
+    ],
+    "updates": 96,
+    "prompts_per_update": 16,
+    "samples_per_prompt": 8,
+    "gradient_microbatch_sequences": 4,
+    "accumulation_sequences": 128,
+    "checkpoint_steps": [
+      0,
+      32,
+      64,
+      96
+    ],
+    "recovery_checkpoint_every": 8,
+    "epochs_per_rollout": 1,
+    "temperature": 1,
+    "top_p": 1,
+    "top_k": 0,
+    "max_new_tokens": 768,
+    "lr": 5e-05,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "adam_eps": 1e-08,
+    "weight_decay": 0,
+    "clip_grad_norm": 1,
+    "kl_beta": 0.02,
+    "ratio_clip": 0.2,
+    "schedule": "constant",
+    "warmup_steps": 0,
+    "fresh_optimizer_per_run": true,
+    "sequence_equal_completion_mean": true,
+    "filter_constant_reward_groups": false,
+    "optional_arms": [],
+    "gradient_checkpointing": false,
+    "training_forward": "full_sequence_right_padded_teacher_forcing",
+    "old_logprob": "stop_gradient_current_training_logprob",
+    "tis_cap": 2.0,
+    "backward_passes_per_microbatch": 1,
+    "sampler_mismatch_mean_abs_max": 0.01,
+    "sampler_mismatch_truncation_investigate_above": 0.01,
+    "generation_batch_size": 8,
+    "generation_seed": "registered_first_seed_per_group",
+    "sampler_logprobs_field": "sampler_logprobs",
+    "train_logprobs_storage": "statistics_only_except_pilot_step1",
+    "pure_policy_gradient_norm": false
+  },
+  "reward": {
+    "std_correction": 0,
+    "std_epsilon": 1e-08,
+    "partial_beta": 0.5,
+    "partial_h": "E*(1+p_read)/2",
+    "dec_components": [
+      "J",
+      "E",
+      "E*p_read"
+    ],
+    "dec_weights": [
+      1,
+      0.5,
+      0.5
+    ],
+    "dec_full_batch_normalisation": true,
+    "gate_kappa": 0.25,
+    "gate_final_renormalisation": false,
+    "trainer_must_accept_final_advantage": true
+  },
+  "format_bridge": {
+    "initial_panel": "FORMAT:v0",
+    "confirmation_panel": "FORMAT_CONFIRM:v0",
+    "samples_per_prompt": 8,
+    "required_field_coverage": 0.95,
+    "uses_identity_only_not_gold_accuracy": true,
+    "max_episodes": 0,
+    "updates": 16,
+    "batch_sequences": 8,
+    "data_pool": "BRIDGE",
+    "learning_rate": 1e-05,
+    "common_to_all_arms": true,
+    "enabled": false
+  },
+  "evaluation": {
+    "main_samples_per_prompt": 4,
+    "temperature": 1,
+    "top_p": 1,
+    "top_k": 0,
+    "evidence_max_new_tokens": 768,
+    "plain_max_new_tokens": 128,
+    "monitor_samples_per_prompt": 8,
+    "train_fit_samples": 4,
+    "train_fit_prompts": 32,
+    "protocols": [
+      "evidence_answer",
+      "answer_only"
+    ],
+    "publish_only_after_all_runs_terminal": true,
+    "no_checkpoint_selection": true,
+    "answer_only_samples_per_prompt": 2,
+    "answer_only_max_new_tokens": 768,
+    "shift_protocols": [
+      "evidence_answer"
+    ],
+    "monitor_only_at_baseline": true,
+    "train_fit_steps": [
+      32,
+      64,
+      96
+    ],
+    "baseline_train_fit_samples": 128,
+    "baseline_measurement_samples": 6656,
+    "endpoint_monitor_samples": 0,
+    "baseline_measurement_test_access": false,
+    "test_summary_after_main_paths": 12,
+    "within_question_batching": true,
+    "cross_question_batching": false,
+    "publication_table_samples": 235892,
+    "complete_registered_samples": 238964
+  },
+  "diagnostic_views": {
+    "pool": "MONITOR",
+    "variant": "v0",
+    "views": [
+      "keys_hint",
+      "gold_values",
+      "text_values",
+      "neutral_hint",
+      "blank_image"
+    ],
+    "K": 8,
+    "baseline_and_final_models_only": true,
+    "never_enter_rl_loss": true,
+    "baseline_K": 8,
+    "endpoint_K": 4
+  },
+  "external_evaluation": {
+    "dataset": "ChartQA",
+    "source": "author_repository_or_author_huggingface",
+    "expected_test_questions": 2500,
+    "protocol": "plain_answer",
+    "do_sample": false,
+    "max_new_tokens": 128,
+    "gold_tables_as_model_input": false,
+    "availability_failure_may_not_change_main_experiment": true
+  },
+  "statistics": {
+    "primary_panel": "TEST_ID",
+    "primary_metric": "J_full_evidence_protocol",
+    "primary_step": 96,
+    "primary_contrasts": [
+      [
+        "J",
+        "A"
+      ],
+      [
+        "GATE",
+        "J"
+      ],
+      [
+        "GATE",
+        "DEC"
+      ],
+      [
+        "DEC",
+        "J"
+      ]
+    ],
+    "root_bootstrap_replicates": 5000,
+    "root_bootstrap_seed": 812901,
+    "stratify_roots_by_family": true,
+    "pointwise_CI": 0.95,
+    "primary_bonferroni_CI": 0.9875,
+    "seed_repetitions": 3,
+    "practical_reference_pp": 2,
+    "practical_reference_is_pass_gate": false,
+    "test_gold_used_for_training_choices": false,
+    "optional_secondary_contrasts": [
+      [
+        "PART",
+        "J"
+      ],
+      [
+        "GATE",
+        "PART"
+      ]
+    ],
+    "preregister_semantic_predictions_before_science": true
+  },
+  "protocol_amendment": {
+    "id": "SR-F1.2-20261010",
+    "applies_to": [
+      "evidence_answer",
+      "answer_only"
+    ],
+    "assistant_prefill": "{",
+    "assistant_prefill_token_ids": [
+      90
+    ],
+    "stopping": "first_balanced_top_level_json_object",
+    "score_prefill": true,
+    "reject_nonwhitespace_suffix": true,
+    "include_balancing_token_in_trajectory": true,
+    "append_synthetic_eos": false,
+    "common_start": "SRF1_2_COMMON_ZERO",
+    "format_samples_per_prompt": 8,
+    "confirmation_samples_per_prompt": 16,
+    "confirmation_questions": 32,
+    "confirmation_samples": 512,
+    "minimum_covered_samples": 461,
+    "standard_covered_samples": 487,
+    "required_field_coverage": 0.9,
+    "nominal_field_coverage": 0.95,
+    "report_format_failure_per_arm_and_round": true,
+    "below_minimum_action": "STOP_PENDING_SECOND_AMENDMENT",
+    "allow_original_bridge": false,
+    "learning_rate_option": "registered_pilot_rule",
+    "engine_learning_rate": 5e-05
+  },
+  "technical_check": {
+    "replaces": "ENGINE",
+    "receipt": "TECHNICAL_CHECK_SR_F1_2.json",
+    "pilot_arm": "GATE",
+    "pilot_pool": "ENGINE",
+    "pilot_updates": 8,
+    "non_scientific_seed_required": true,
+    "pilot_initial_lr": 5e-05,
+    "maximum_lr_adjustments": 1,
+    "instability_lr": 2e-05,
+    "insufficient_movement_lr": 0.0001,
+    "stability_format_steps": [
+      5,
+      6,
+      7,
+      8
+    ],
+    "stability_format_failure_max": 0.2,
+    "final_token_kl_max": 0.05,
+    "movement_mean_abs_logprob_min": 0.01,
+    "zero_lora_comparisons": 32,
+    "zero_lora_max_logprob_difference": 0.0,
+    "batch_single_comparisons": 16,
+    "batch_single_mean_abs_difference_max": 0.002,
+    "batch_single_max_abs_difference_max": 0.05,
+    "recovery_after_update": 4,
+    "require_committed_state_hashes": true,
+    "require_resampled_bitwise_identity": false,
+    "optional_fast_kernels_only_above_seconds": 900,
+    "optional_fast_kernels_selected": false
+  },
+  "history_policy": {
+    "user_direct_override": "delete old experiment results; do not preserve old outputs",
+    "supersedes_document_retention_clause": true,
+    "old_results_used_as_new_baseline": false,
+    "old_models_or_optimizer_state_used": false,
+    "new_run_results_retained": true
+  }
+}
