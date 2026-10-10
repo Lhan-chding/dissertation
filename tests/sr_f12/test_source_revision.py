@@ -2,6 +2,7 @@
 
 import json
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -335,3 +336,134 @@ def test_only_exact_side_effect_free_numerical_exception_is_allowed(tmp_path):
     )
     with pytest.raises(PermissionError, match="unexpected behavior"):
         training_identity(tmp_path)
+
+
+def purged_controller_fixture(repair):
+    import shlex
+    from types import SimpleNamespace
+
+    root, args, _, _ = repair
+    config_path = root / "orchestration/CONFIG.json"
+    config = json.loads(config_path.read_text())
+    model = root / "model"
+    model.mkdir()
+    entry = Path(config["code_root"]) / "scripts/sr_f12/controller.py"
+    entry.parent.mkdir(parents=True)
+    entry.write_text("original controller entry")
+    config.update(python=str(Path(sys.executable).resolve()), model_path=str(model))
+    save_json(config_path, config)
+    directory = root / "deployment"
+    script = directory / "controller.sbatch"
+    directory.mkdir()
+    command = [
+        config["python"],
+        str(entry),
+        "--run-root",
+        str(root),
+        "--model-path",
+        str(model),
+        "--source-manifest",
+        config["source_manifest"],
+        "--source-commit",
+        config["source_commit"],
+        "--python",
+        config["python"],
+    ]
+    script.write_text("#!/bin/bash\nset -euo pipefail\nexec " + shlex.join(command) + "\n")
+    submit = [
+        "sbatch",
+        "--hold",
+        "--parsable",
+        "--account=rose",
+        "--qos=cpu",
+        "--job-name=srf12-controller",
+        str(script),
+    ]
+    observation = (
+        "JobId=824 UserId=alice(1) Account=rose QOS=cpu JobName=srf12-controller "
+        "JobState=PENDING Reason=JobHeldUser Command=" + str(script) + " WorkDir=" + str(root)
+    )
+    save_json(
+        directory / "CONTROLLER_INTENT.json",
+        dict(args=submit, source_commit=config["source_commit"]),
+    )
+    save_json(directory / "CONTROLLER_SUBMISSION.json", dict(returncode=0, stdout="824\n"))
+    save_json(
+        directory / "CONTROLLER_RELEASE_INTENT.json", dict(job_id="824", observation=observation)
+    )
+    save_json(directory / "CONTROLLER_RELEASE.json", dict(job_id="824", returncode=0))
+    args["slurm"].show = lambda job: (_ for _ in ()).throw(
+        RuntimeError("Job identity unavailable: Invalid job id specified")
+    )
+    account = (
+        "824|FAILED|2:0|alice|srf12-controller|rose|cpu|"
+        + str(root)
+        + "|"
+        + shlex.join(submit)
+        + "|\n"
+    )
+    args["slurm"].run = lambda argv: SimpleNamespace(returncode=0, stdout=account, stderr="")
+    return root, args, config, script, account
+
+
+def test_purged_controller_uses_exact_accounting_and_immutable_receipts(repair):
+    from sr_f12.source_revision import retired_controller_identity
+
+    root, args, config, _, _ = purged_controller_fixture(repair)
+    fields, evidence = retired_controller_identity(
+        root, "824", config, args["slurm"].terminals["824"], slurm=args["slurm"], user="alice"
+    )
+    assert fields["JobId"] == "824"
+    assert evidence["method"] == "PURGED_SCONTROL_ACCOUNTING_AND_DEPLOYMENT_RECEIPTS"
+    assert len(evidence["receipts"]) == 4
+
+
+def test_network_error_never_uses_purged_job_fallback(repair):
+    from sr_f12.source_revision import retired_controller_identity
+
+    root, args, config, _, _ = purged_controller_fixture(repair)
+    args["slurm"].show = lambda job: (_ for _ in ()).throw(RuntimeError("Connection timed out"))
+    with pytest.raises(RuntimeError, match="timed out"):
+        retired_controller_identity(
+            root, "824", config, args["slurm"].terminals["824"], slurm=args["slurm"], user="alice"
+        )
+
+
+def test_purged_controller_rejects_different_actual_submit_line(repair):
+    from types import SimpleNamespace
+
+    from sr_f12.source_revision import retired_controller_identity
+
+    root, args, config, _, account = purged_controller_fixture(repair)
+    args["slurm"].run = lambda argv: SimpleNamespace(
+        returncode=0, stdout=account.replace("--account=rose", "--account=other"), stderr=""
+    )
+    with pytest.raises(PermissionError, match="submission/terminal"):
+        retired_controller_identity(
+            root, "824", config, args["slurm"].terminals["824"], slurm=args["slurm"], user="alice"
+        )
+
+
+def test_purged_controller_rejects_changed_script_run_root(repair):
+    from sr_f12.source_revision import retired_controller_identity
+
+    root, args, config, script, _ = purged_controller_fixture(repair)
+    script.write_text(script.read_text().replace("--run-root " + str(root), "--run-root /tmp"))
+    with pytest.raises(PermissionError, match="original configuration"):
+        retired_controller_identity(
+            root, "824", config, args["slurm"].terminals["824"], slurm=args["slurm"], user="alice"
+        )
+
+
+def test_purged_controller_rejects_wrong_owner(repair):
+    from sr_f12.source_revision import retired_controller_identity
+
+    root, args, config, _, _ = purged_controller_fixture(repair)
+    path = root / "deployment/CONTROLLER_RELEASE_INTENT.json"
+    receipt = json.loads(path.read_text())
+    receipt["observation"] = receipt["observation"].replace("alice(1)", "bob(2)")
+    save_json(path, receipt)
+    with pytest.raises(PermissionError, match="owner/allocation"):
+        retired_controller_identity(
+            root, "824", config, args["slurm"].terminals["824"], slurm=args["slurm"], user="alice"
+        )

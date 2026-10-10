@@ -11,11 +11,12 @@ import ast
 import getpass
 import os
 import re
+import shlex
 import shutil
 import tempfile
 from pathlib import Path
 
-from .orchestration import Slurm, controller_lease, file_hash, read_json, save_json
+from .orchestration import Slurm, controller_lease, file_hash, read_json, save_json, slurm_fields
 from .protocol import AMENDMENT_ID, TEACHER_QOS, object_hash
 
 ALLOWED_IMPLEMENTATION_CHANGES = frozenset(
@@ -222,6 +223,154 @@ def _raw32(root):
     return dict(files=manifest, records=32, policy_hash=next(iter(policies)))
 
 
+def retired_controller_identity(root, job_id, config, terminal, *, slurm, user):
+    """Use archived submission identity only for an explicitly purged Slurm job."""
+    root = Path(root).resolve(strict=True)
+    job_id = str(job_id)
+    if (
+        not terminal
+        or terminal.get("job_id") != job_id
+        or terminal.get("user") != user
+        or terminal.get("account") != "rose"
+        or terminal.get("state") not in ("FAILED", "CANCELLED", "COMPLETED", "TIMEOUT")
+    ):
+        raise PermissionError("Retired controller lacks authenticated terminal accounting")
+    try:
+        fields = slurm.show(job_id)
+        return fields, dict(method="LIVE_SCONTROL", fields=fields)
+    except RuntimeError as error:
+        if not re.search(r"Invalid\s+job\s+id", str(error), re.IGNORECASE):
+            raise
+        show_error = str(error)
+    matches = []
+    for path in (root / "deployment").glob("**/CONTROLLER_SUBMISSION.json"):
+        if path.is_symlink() or not path.resolve(strict=True).is_relative_to(root):
+            raise PermissionError("Controller submission receipt escapes experiment")
+        submitted = read_json(path)
+        if submitted.get("returncode") == 0 and re.fullmatch(
+            re.escape(job_id) + r"(?:;[A-Za-z0-9_.-]+)?\s*", submitted.get("stdout", "")
+        ):
+            matches.append(path)
+    if len(matches) != 1:
+        raise PermissionError("Purged controller lacks a unique successful submission receipt")
+    directory = matches[0].parent
+    intent = read_json(directory / "CONTROLLER_INTENT.json")
+    release_intent = read_json(directory / "CONTROLLER_RELEASE_INTENT.json")
+    release = read_json(directory / "CONTROLLER_RELEASE.json")
+    if (
+        intent.get("source_commit") != config["source_commit"]
+        or release_intent.get("job_id") != job_id
+        or release.get("job_id") != job_id
+        or release.get("returncode") != 0
+    ):
+        raise PermissionError("Purged controller submission/release/source identity differs")
+    observation = release_intent.get("observation")
+    fields = slurm_fields(observation) if isinstance(observation, str) else observation
+    if not isinstance(fields, dict):
+        raise PermissionError("Purged controller release observation is malformed")
+    if (
+        fields.get("JobId") != job_id
+        or fields.get("UserId", "").split("(")[0] != user
+        or fields.get("Account") != "rose"
+        or fields.get("JobName") != terminal["name"]
+        or fields.get("QOS") != terminal["qos"]
+        or fields.get("JobState") != "PENDING"
+        or fields.get("Reason") != "JobHeldUser"
+    ):
+        raise PermissionError("Purged controller recorded owner/allocation identity differs")
+    args = intent.get("args")
+    command = Path(fields.get("Command", "")).resolve(strict=True)
+    if (
+        not isinstance(args, list)
+        or not args
+        or args[0] != "sbatch"
+        or args[-1] != str(command)
+        or not command.is_relative_to(root)
+    ):
+        raise PermissionError("Purged controller submit command is outside experiment")
+    account = slurm.run(
+        [
+            "sacct",
+            "-X",
+            "-n",
+            "-P",
+            "-j",
+            job_id,
+            "--format=JobIDRaw,State,ExitCode,User,JobName,Account,QOS,WorkDir,SubmitLine",
+        ]
+    )
+    if account.returncode:
+        raise RuntimeError("Purged controller extended accounting unavailable: " + account.stderr)
+    rows = [line.split("|", 8) for line in account.stdout.splitlines() if line.strip()]
+    rows = [row for row in rows if row[0] == job_id]
+    if len(rows) != 1 or len(rows[0]) != 9:
+        raise PermissionError("Purged controller extended accounting identity missing")
+    row = rows[0]
+    actual = dict(
+        job_id=row[0],
+        state=row[1].split()[0].rstrip("+"),
+        exit_code=row[2],
+        user=row[3],
+        name=row[4],
+        account=row[5],
+        qos=row[6],
+    )
+    submit_line = row[8].removesuffix("|")
+    if actual != terminal or shlex.split(submit_line) != args:
+        raise PermissionError("Purged controller actual submission/terminal accounting differs")
+    if fields.get("WorkDir") and row[7] != fields["WorkDir"]:
+        raise PermissionError("Purged controller accounting work directory differs")
+    script_lines = [
+        line.strip()
+        for line in command.read_text().splitlines()
+        if line.strip().startswith("exec ")
+    ]
+    if len(script_lines) != 1:
+        raise PermissionError("Purged controller script lacks unique registered exec")
+    expected = [
+        config["python"],
+        str(Path(config["code_root"]) / "scripts/sr_f12/controller.py"),
+        "--run-root",
+        str(root),
+        "--model-path",
+        config["model_path"],
+        "--source-manifest",
+        config["source_manifest"],
+        "--source-commit",
+        config["source_commit"],
+        "--python",
+        config["python"],
+    ]
+    actual_command = shlex.split(script_lines[0])[1:]
+    if len(actual_command) == len(expected):
+        # Slurm submission may retain the venv symlink; CONFIG stores canonical paths.
+        for index in (0, 1, 3, 5, 7, 11):
+            actual_command[index] = str(Path(actual_command[index]).resolve(strict=True))
+            expected[index] = str(Path(expected[index]).resolve(strict=True))
+    if actual_command != expected:
+        raise PermissionError(
+            "Purged controller current script differs from original configuration"
+        )
+    return fields, dict(
+        method="PURGED_SCONTROL_ACCOUNTING_AND_DEPLOYMENT_RECEIPTS",
+        show_error=show_error,
+        accounting=actual,
+        work_dir=row[7],
+        submit_line=submit_line,
+        script_sha256=file_hash(command),
+        config_sha256=object_hash(config),
+        receipts={
+            name: file_hash(directory / name)
+            for name in (
+                "CONTROLLER_INTENT.json",
+                "CONTROLLER_SUBMISSION.json",
+                "CONTROLLER_RELEASE_INTENT.json",
+                "CONTROLLER_RELEASE.json",
+            )
+        },
+    )
+
+
 def prepare_technical_repair(
     root,
     *,
@@ -342,7 +491,9 @@ def prepare_technical_repair(
                 ).items()
             ):
                 raise PermissionError("Failed technical job identity differs")
-            controller_fields = slurm.show(str(controller_job_id))
+            controller_fields, controller_identity = retired_controller_identity(
+                root, controller_job_id, config, controller_terminal, slurm=slurm, user=user
+            )
             command = Path(controller_fields.get("Command", "")).resolve(strict=True)
             if (
                 not controller_terminal
@@ -398,6 +549,7 @@ def prepare_technical_repair(
                 training_after=training_after,
                 terminal=terminal,
                 controller_terminal=controller_terminal,
+                controller_identity=controller_identity,
                 baseline_attempts=baseline,
                 reuse_preflight=reuse,
                 task_files=_tree_manifest(task),
