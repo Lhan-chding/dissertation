@@ -13,3 +13,5 @@
 放分门禁仍要求全部12训练真实终态、完整状态验收，以及全部13评价真实终态/覆盖/哈希通过。release_scores首先调用原全矩阵门禁，再把早期单模型模型路径/冻结/配置与最终全矩阵逐项关联。不会提前输出指标、排名、样例或选择性删样。最终EVALUATIONS_COMPLETE_REPORT_PENDING仍需中文报告与证据交付。
 
 部署使用deployment/early_sealed_20261011不可变SOURCE/AUTHORIZATION、CPU验证、旧评价CPU停止、新评价CPU提交释放回执。不得覆盖、重复部署或恢复旧评价等待器。生产6cd2、458文件、主CPU198167和GPU训练保持。后续jobid从实时endpoint STATE/tasks发现。
+
+部署结果（2026-10-11 17:05新加坡）：源码872224f65b26ecacd727f6e66dae84410d5d56f0及466文件逐项通过，原458文件和冻结保持。本地/服务器234测试通过；CPU198235真实SSD与HDD模型状态门禁通过。旧评价196876有意取消并终态/锁验收后，新CPU198239 RUNNING、WAITING_FOR_TRAINING_PRIORITY，主CPU198167及五训练GPU不变，尚无评价GPU提交或TEST内容读取。回执见validation/SR_F1_2_EARLY_SEALED_20261011_1705.json；执行脚本以f12_ops/early_sealed_20261011_{prepare,cutover}_executed.py.txt逐字存档，严禁重跑。

@@ -1,0 +1,1010 @@
+{
+  "at": "2026-10-11T09:05:34.541642+00:00",
+  "main": {
+    "at": "2026-10-11T09:05:06.254441+00:00",
+    "experiment_complete": false,
+    "failures": [],
+    "scheduler_job_id": "198167",
+    "scheduling_authorization": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/rolling_schedule_20261011/AUTHORIZATION.json",
+    "scheduling_policy": "REGISTERED_MATRIX_ROLLING_CAPACITY",
+    "scientific_complete": 6,
+    "scientific_total": 12,
+    "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+    "stage": "MAIN_TRAINING",
+    "tasks": {
+      "BASELINE_0": {
+        "job_id": "196826",
+        "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+        "status": "COMPLETE",
+        "task_id": "BASELINE_0"
+      },
+      "BASELINE_1": {
+        "job_id": "196827",
+        "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+        "status": "COMPLETE",
+        "task_id": "BASELINE_1"
+      },
+      "BASELINE_2": {
+        "job_id": "196828",
+        "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+        "status": "COMPLETE",
+        "task_id": "BASELINE_2"
+      },
+      "SRF1_2_A_s71001": {
+        "job_id": "196939",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "COMPLETE",
+        "task_id": "SRF1_2_A_s71001"
+      },
+      "SRF1_2_A_s71002": {
+        "job_id": "197596",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "COMPLETE",
+        "task_id": "SRF1_2_A_s71002"
+      },
+      "SRF1_2_A_s71003": {
+        "job_id": "198168",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "SRF1_2_A_s71003"
+      },
+      "SRF1_2_DEC_s71001": {
+        "job_id": "196942",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "COMPLETE",
+        "task_id": "SRF1_2_DEC_s71001"
+      },
+      "SRF1_2_DEC_s71002": {
+        "job_id": "197649",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "SRF1_2_DEC_s71002"
+      },
+      "SRF1_2_GATE_s71001": {
+        "job_id": "196941",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "COMPLETE",
+        "task_id": "SRF1_2_GATE_s71001"
+      },
+      "SRF1_2_GATE_s71002": {
+        "job_id": "197598",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "COMPLETE",
+        "task_id": "SRF1_2_GATE_s71002"
+      },
+      "SRF1_2_GATE_s71003": {
+        "job_id": "198170",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "SRF1_2_GATE_s71003"
+      },
+      "SRF1_2_J_s71001": {
+        "job_id": "196940",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "COMPLETE",
+        "task_id": "SRF1_2_J_s71001"
+      },
+      "SRF1_2_J_s71002": {
+        "job_id": "197597",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "SRF1_2_J_s71002"
+      },
+      "SRF1_2_J_s71003": {
+        "job_id": "198169",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "SRF1_2_J_s71003"
+      },
+      "TECHNICAL": {
+        "job_id": "196877",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "COMPLETE",
+        "task_id": "TECHNICAL"
+      }
+    },
+    "teacher_gpu_usage": 5,
+    "unknown_submissions": [],
+    "version": "SR-F1.2-20261010"
+  },
+  "endpoint": {
+    "at": "2026-10-11T09:05:08.105432+00:00",
+    "endpoints_complete": 0,
+    "endpoints_total": 13,
+    "experiment_delivered": false,
+    "failures": [],
+    "report_pending": true,
+    "scheduler_job_id": "198239",
+    "scores_sealed": true,
+    "source_sha256": "cd08628f898f7d814a245a15ed02b7d6ce66cfba69f930bb01a60c8587879da5",
+    "stage": "WAITING_FOR_TRAINING_PRIORITY",
+    "tasks": {},
+    "teacher_gpu_usage": 5,
+    "unknown_submissions": [],
+    "version": "SR-F1.2-20261010"
+  },
+  "registration": {
+    "authorized_at": "2026-10-11T09:02:19.328535+00:00",
+    "code_root": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/early_sealed_20261011/code",
+    "endpoint_config_sha256": "afa82ca55587c7ae71432c98bfd18ae024419b7b139673d0ec91dd397b56e8a1",
+    "frozen_files": {
+      "SCIENCE_FREEZE.json": "c926f431d9976108e7bbbdbbd63d037bf2246f61d37db28a1f53ef6f1ac4dd48",
+      "SEMANTIC_PREDICTIONS.json": "33288aac7a9427ec17286efd11bbf8d6d7108a87be35fd6a068da1866c3cbe5e",
+      "TECHNICAL_CHECK_SR_F1_2.json": "11f3ca34f22e435df190da895ebec5f8163937dd87a6d3ab2815efcfea70a88d",
+      "config/SR_F1_2_FROZEN.json": "16c20d23cd424307b26700f7b5a6086dbf44de7106358d102ba8c7bd3fa07cda"
+    },
+    "policy": "TRAINING_PRIORITY_SEALED_UNTIL_ALL_MAIN_COMPLETE",
+    "root": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010",
+    "source_commit": "872224f65b26ecacd727f6e66dae84410d5d56f0",
+    "source_manifest": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/early_sealed_20261011/SOURCE_MANIFEST.json",
+    "source_manifest_sha256": "cd08628f898f7d814a245a15ed02b7d6ce66cfba69f930bb01a60c8587879da5",
+    "status": "AUTHORIZED_EARLY_SEALED_GENERATION",
+    "training_code_root": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/code_repair_r0001b",
+    "training_source_commit": "6cd2e60ac2f67f22bcf5d55163f4705dcf8e6345",
+    "training_source_manifest": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/source_r0001b.json",
+    "training_source_manifest_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+    "user": "varun024",
+    "user_instruction": "已完成模型在有空余卡时提前评价，结果先封存不看；保持实验可比性，不拖慢剩余训练，训练优先并行。",
+    "version": "SR-F1.2-20261010"
+  },
+  "source_verified": 466,
+  "production_source_verified": 458,
+  "receipts": {
+    "VALIDATION_RELEASE_INTENT.json": {
+      "fields": {
+        "Account": "rose",
+        "AccrueTime": "Unknown",
+        "AllocTRES": "(null)",
+        "BatchFlag": "1",
+        "Command": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/early_sealed_20261011/validate.sbatch",
+        "Contiguous": "0",
+        "CoreSpec": "*",
+        "Deadline": "N/A",
+        "DelayBoot": "00:00:00",
+        "Dependency": "(null)",
+        "EligibleTime": "Unknown",
+        "EndTime": "Unknown",
+        "ExcNodeList": "(null)",
+        "ExitCode": "0:0",
+        "Features": "cpu_ok",
+        "GroupId": "varun024(295800338)",
+        "JobId": "198235",
+        "JobName": "srf12-early-validation",
+        "JobState": "PENDING",
+        "LastSchedEval": "2026-10-11T09:02:19",
+        "Licenses": "(null)",
+        "MCS_label": "N/A",
+        "MinCPUsNode": "2",
+        "MinMemoryNode": "6G",
+        "MinTmpDiskNode": "0",
+        "Network": "(null)",
+        "Nice": "0",
+        "NodeList": "",
+        "NumCPUs": "2",
+        "NumNodes": "1",
+        "NumTasks": "1",
+        "OverSubscribe": "OK",
+        "Partition": "cluster02",
+        "Power": "",
+        "Priority": "0",
+        "QOS": "override-limits-but-killable",
+        "Reason": "JobHeldUser",
+        "Reboot": "0",
+        "ReqNodeList": "(null)",
+        "ReqTRES": "cpu=2,mem=6G,node=1",
+        "Requeue": "1",
+        "Restarts": "0",
+        "RunTime": "00:00:00",
+        "Scheduler": "Main",
+        "SecsPreSuspend": "0",
+        "StartTime": "Unknown",
+        "StdErr": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/early_sealed_20261011/validation-198235.log",
+        "StdIn": "/dev/null",
+        "StdOut": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/early_sealed_20261011/validation-198235.log",
+        "SubmitTime": "2026-10-11T09:02:19",
+        "SuspendTime": "None",
+        "TimeLimit": "00:30:00",
+        "TimeMin": "N/A",
+        "TresPerTask": "cpu:2",
+        "UserId": "varun024(295800338)",
+        "WorkDir": "/home/varun024"
+      },
+      "job_id": "198235"
+    },
+    "ENDPOINT_RELEASE_INTENT.json": {
+      "at": "2026-10-11T09:04:57.761978+00:00",
+      "fields": {
+        "Account": "rose",
+        "AccrueTime": "Unknown",
+        "AllocTRES": "(null)",
+        "BatchFlag": "1",
+        "Command": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/early_sealed_20261011/endpoint.sbatch",
+        "Contiguous": "0",
+        "CoreSpec": "*",
+        "Deadline": "N/A",
+        "DelayBoot": "00:00:00",
+        "Dependency": "(null)",
+        "EligibleTime": "Unknown",
+        "EndTime": "Unknown",
+        "ExcNodeList": "(null)",
+        "ExitCode": "0:0",
+        "Features": "cpu_ok",
+        "GroupId": "varun024(295800338)",
+        "JobId": "198239",
+        "JobName": "srf12-early-endpoint",
+        "JobState": "PENDING",
+        "LastSchedEval": "2026-10-11T09:04:53",
+        "Licenses": "(null)",
+        "MCS_label": "N/A",
+        "MinCPUsNode": "2",
+        "MinMemoryNode": "6G",
+        "MinTmpDiskNode": "0",
+        "Network": "(null)",
+        "Nice": "0",
+        "NodeList": "",
+        "NumCPUs": "2",
+        "NumNodes": "1",
+        "NumTasks": "1",
+        "OverSubscribe": "OK",
+        "Partition": "cluster02",
+        "Power": "",
+        "Priority": "0",
+        "QOS": "override-limits-but-killable",
+        "Reason": "JobHeldUser",
+        "Reboot": "0",
+        "ReqNodeList": "(null)",
+        "ReqTRES": "cpu=2,mem=6G,node=1",
+        "Requeue": "1",
+        "Restarts": "0",
+        "RunTime": "00:00:00",
+        "Scheduler": "Main",
+        "SecsPreSuspend": "0",
+        "StartTime": "Unknown",
+        "StdErr": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/early_sealed_20261011/endpoint-198239.log",
+        "StdIn": "/dev/null",
+        "StdOut": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/early_sealed_20261011/endpoint-198239.log",
+        "SubmitTime": "2026-10-11T09:04:53",
+        "SuspendTime": "None",
+        "TimeLimit": "3-00:00:00",
+        "TimeMin": "N/A",
+        "TresPerTask": "cpu:2",
+        "UserId": "varun024(295800338)",
+        "WorkDir": "/home/varun024"
+      },
+      "job_id": "198239"
+    },
+    "ENDPOINT_RELEASE.json": {
+      "at": "2026-10-11T09:04:57.769571+00:00",
+      "job_id": "198239",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    "VALIDATION_RELEASE.json": {
+      "job_id": "198235",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    "PRE_CUTOVER.json": {
+      "at": "2026-10-11T09:04:53.193489+00:00",
+      "endpoint_state": {
+        "at": "2026-10-11T09:04:20.544860+00:00",
+        "endpoints_complete": 0,
+        "endpoints_total": 13,
+        "experiment_delivered": false,
+        "failures": [],
+        "report_pending": true,
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "stage": "WAITING_FOR_ALL_MAIN_TERMINAL",
+        "tasks": {},
+        "teacher_gpu_usage": 5,
+        "unknown_submissions": [],
+        "version": "SR-F1.2-20261010"
+      },
+      "main_state": {
+        "at": "2026-10-11T09:04:06.017376+00:00",
+        "experiment_complete": false,
+        "failures": [],
+        "scheduler_job_id": "198167",
+        "scheduling_authorization": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/rolling_schedule_20261011/AUTHORIZATION.json",
+        "scheduling_policy": "REGISTERED_MATRIX_ROLLING_CAPACITY",
+        "scientific_complete": 6,
+        "scientific_total": 12,
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "stage": "MAIN_TRAINING",
+        "tasks": {
+          "BASELINE_0": {
+            "job_id": "196826",
+            "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+            "status": "COMPLETE",
+            "task_id": "BASELINE_0"
+          },
+          "BASELINE_1": {
+            "job_id": "196827",
+            "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+            "status": "COMPLETE",
+            "task_id": "BASELINE_1"
+          },
+          "BASELINE_2": {
+            "job_id": "196828",
+            "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+            "status": "COMPLETE",
+            "task_id": "BASELINE_2"
+          },
+          "SRF1_2_A_s71001": {
+            "job_id": "196939",
+            "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+            "status": "COMPLETE",
+            "task_id": "SRF1_2_A_s71001"
+          },
+          "SRF1_2_A_s71002": {
+            "job_id": "197596",
+            "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+            "status": "COMPLETE",
+            "task_id": "SRF1_2_A_s71002"
+          },
+          "SRF1_2_A_s71003": {
+            "job_id": "198168",
+            "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+            "status": "RUNNING",
+            "task_id": "SRF1_2_A_s71003"
+          },
+          "SRF1_2_DEC_s71001": {
+            "job_id": "196942",
+            "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+            "status": "COMPLETE",
+            "task_id": "SRF1_2_DEC_s71001"
+          },
+          "SRF1_2_DEC_s71002": {
+            "job_id": "197649",
+            "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+            "status": "RUNNING",
+            "task_id": "SRF1_2_DEC_s71002"
+          },
+          "SRF1_2_GATE_s71001": {
+            "job_id": "196941",
+            "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+            "status": "COMPLETE",
+            "task_id": "SRF1_2_GATE_s71001"
+          },
+          "SRF1_2_GATE_s71002": {
+            "job_id": "197598",
+            "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+            "status": "COMPLETE",
+            "task_id": "SRF1_2_GATE_s71002"
+          },
+          "SRF1_2_GATE_s71003": {
+            "job_id": "198170",
+            "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+            "status": "RUNNING",
+            "task_id": "SRF1_2_GATE_s71003"
+          },
+          "SRF1_2_J_s71001": {
+            "job_id": "196940",
+            "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+            "status": "COMPLETE",
+            "task_id": "SRF1_2_J_s71001"
+          },
+          "SRF1_2_J_s71002": {
+            "job_id": "197597",
+            "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+            "status": "RUNNING",
+            "task_id": "SRF1_2_J_s71002"
+          },
+          "SRF1_2_J_s71003": {
+            "job_id": "198169",
+            "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+            "status": "RUNNING",
+            "task_id": "SRF1_2_J_s71003"
+          },
+          "TECHNICAL": {
+            "job_id": "196877",
+            "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+            "status": "COMPLETE",
+            "task_id": "TECHNICAL"
+          }
+        },
+        "teacher_gpu_usage": 5,
+        "unknown_submissions": [],
+        "version": "SR-F1.2-20261010"
+      },
+      "new_endpoint": {
+        "Account": "rose",
+        "AccrueTime": "Unknown",
+        "AllocTRES": "(null)",
+        "BatchFlag": "1",
+        "Command": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/early_sealed_20261011/endpoint.sbatch",
+        "Contiguous": "0",
+        "CoreSpec": "*",
+        "Deadline": "N/A",
+        "DelayBoot": "00:00:00",
+        "Dependency": "(null)",
+        "EligibleTime": "Unknown",
+        "EndTime": "Unknown",
+        "ExcNodeList": "(null)",
+        "ExitCode": "0:0",
+        "Features": "cpu_ok",
+        "GroupId": "varun024(295800338)",
+        "JobId": "198239",
+        "JobName": "srf12-early-endpoint",
+        "JobState": "PENDING",
+        "LastSchedEval": "2026-10-11T09:04:53",
+        "Licenses": "(null)",
+        "MCS_label": "N/A",
+        "MinCPUsNode": "2",
+        "MinMemoryNode": "6G",
+        "MinTmpDiskNode": "0",
+        "Network": "(null)",
+        "Nice": "0",
+        "NodeList": "",
+        "NumCPUs": "2",
+        "NumNodes": "1",
+        "NumTasks": "1",
+        "OverSubscribe": "OK",
+        "Partition": "cluster02",
+        "Power": "",
+        "Priority": "0",
+        "QOS": "override-limits-but-killable",
+        "Reason": "JobHeldUser",
+        "Reboot": "0",
+        "ReqNodeList": "(null)",
+        "ReqTRES": "cpu=2,mem=6G,node=1",
+        "Requeue": "1",
+        "Restarts": "0",
+        "RunTime": "00:00:00",
+        "Scheduler": "Main",
+        "SecsPreSuspend": "0",
+        "StartTime": "Unknown",
+        "StdErr": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/early_sealed_20261011/endpoint-198239.log",
+        "StdIn": "/dev/null",
+        "StdOut": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/early_sealed_20261011/endpoint-198239.log",
+        "SubmitTime": "2026-10-11T09:04:53",
+        "SuspendTime": "None",
+        "TimeLimit": "3-00:00:00",
+        "TimeMin": "N/A",
+        "TresPerTask": "cpu:2",
+        "UserId": "varun024(295800338)",
+        "WorkDir": "/home/varun024"
+      },
+      "old_endpoint": {
+        "Account": "rose",
+        "AccrueTime": "2026-10-10T09:49:55",
+        "AllocTRES": "cpu=2,mem=6G,node=1",
+        "BatchFlag": "1",
+        "BatchHost": "cpu-2",
+        "Command": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/r0001b/endpoint.sbatch",
+        "Contiguous": "0",
+        "CoreSpec": "*",
+        "Deadline": "N/A",
+        "DelayBoot": "00:00:00",
+        "Dependency": "(null)",
+        "EligibleTime": "2026-10-10T09:49:55",
+        "EndTime": "2026-10-13T09:50:05",
+        "ExcNodeList": "(null)",
+        "ExitCode": "0:0",
+        "Features": "cpu_ok",
+        "GroupId": "varun024(295800338)",
+        "JobId": "196876",
+        "JobName": "srf12-endpoint-r0001b",
+        "JobState": "RUNNING",
+        "LastSchedEval": "2026-10-10T09:50:05",
+        "Licenses": "(null)",
+        "MCS_label": "N/A",
+        "MinCPUsNode": "2",
+        "MinMemoryNode": "6G",
+        "MinTmpDiskNode": "0",
+        "Network": "(null)",
+        "Nice": "0",
+        "NodeList": "cpu-2",
+        "NumCPUs": "2",
+        "NumNodes": "1",
+        "NumTasks": "1",
+        "OverSubscribe": "OK",
+        "Partition": "cluster02",
+        "Power": "",
+        "PreemptEligibleTime": "2026-10-10T09:50:05",
+        "PreemptTime": "None",
+        "Priority": "1",
+        "QOS": "override-limits-but-killable",
+        "Reason": "None",
+        "Reboot": "0",
+        "ReqNodeList": "(null)",
+        "ReqTRES": "cpu=2,mem=6G,node=1",
+        "Requeue": "1",
+        "Restarts": "0",
+        "RunTime": "23:14:48",
+        "Scheduler": "Backfill",
+        "SecsPreSuspend": "0",
+        "StartTime": "2026-10-10T09:50:05",
+        "StdErr": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/r0001b/endpoint-196876.log",
+        "StdIn": "/dev/null",
+        "StdOut": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/r0001b/endpoint-196876.log",
+        "SubmitTime": "2026-10-10T09:49:55",
+        "SuspendTime": "None",
+        "TimeLimit": "3-00:00:00",
+        "TimeMin": "N/A",
+        "TresPerTask": "cpu:2",
+        "UserId": "varun024(295800338)",
+        "WorkDir": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/code_repair_r0001b"
+      }
+    },
+    "STOP_OLD_RESULT.json": {
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    "SOURCE.json": {
+      "commit": "872224f65b26ecacd727f6e66dae84410d5d56f0",
+      "files": 466,
+      "production_source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+      "source_manifest_sha256": "cd08628f898f7d814a245a15ed02b7d6ce66cfba69f930bb01a60c8587879da5"
+    },
+    "OLD_TERMINAL.json": {
+      "at": "2026-10-11T09:04:57.594440+00:00",
+      "queue_absent": true,
+      "terminal": {
+        "account": "rose",
+        "exit_code": "0:0",
+        "job_id": "196876",
+        "name": "srf12-endpoint-r0001b",
+        "qos": "override-limits-but-killable",
+        "state": "CANCELLED",
+        "user": "varun024"
+      }
+    },
+    "CUTOVER_VERIFIED.json": {
+      "at": "2026-10-11T09:04:57.747532+00:00",
+      "gpu_jobs_unchanged": true,
+      "main_controller_unchanged": "198167",
+      "new_endpoint": "198239",
+      "old_endpoint": "196876",
+      "old_lease_released": true
+    },
+    "AUTHORIZATION.json": {
+      "authorized_at": "2026-10-11T09:02:19.328535+00:00",
+      "code_root": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/early_sealed_20261011/code",
+      "endpoint_config_sha256": "afa82ca55587c7ae71432c98bfd18ae024419b7b139673d0ec91dd397b56e8a1",
+      "frozen_files": {
+        "SCIENCE_FREEZE.json": "c926f431d9976108e7bbbdbbd63d037bf2246f61d37db28a1f53ef6f1ac4dd48",
+        "SEMANTIC_PREDICTIONS.json": "33288aac7a9427ec17286efd11bbf8d6d7108a87be35fd6a068da1866c3cbe5e",
+        "TECHNICAL_CHECK_SR_F1_2.json": "11f3ca34f22e435df190da895ebec5f8163937dd87a6d3ab2815efcfea70a88d",
+        "config/SR_F1_2_FROZEN.json": "16c20d23cd424307b26700f7b5a6086dbf44de7106358d102ba8c7bd3fa07cda"
+      },
+      "policy": "TRAINING_PRIORITY_SEALED_UNTIL_ALL_MAIN_COMPLETE",
+      "root": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010",
+      "source_commit": "872224f65b26ecacd727f6e66dae84410d5d56f0",
+      "source_manifest": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/early_sealed_20261011/SOURCE_MANIFEST.json",
+      "source_manifest_sha256": "cd08628f898f7d814a245a15ed02b7d6ce66cfba69f930bb01a60c8587879da5",
+      "status": "AUTHORIZED_EARLY_SEALED_GENERATION",
+      "training_code_root": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/code_repair_r0001b",
+      "training_source_commit": "6cd2e60ac2f67f22bcf5d55163f4705dcf8e6345",
+      "training_source_manifest": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/source_r0001b.json",
+      "training_source_manifest_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+      "user": "varun024",
+      "user_instruction": "已完成模型在有空余卡时提前评价，结果先封存不看；保持实验可比性，不拖慢剩余训练，训练优先并行。",
+      "version": "SR-F1.2-20261010"
+    },
+    "ENDPOINT_SUBMISSION.json": {
+      "returncode": 0,
+      "stderr": "sbatch: slurm_job_submit: enforced 2 CPUs for 1 task and 6144 MiB mem/node for 0 GPU(s) (model=none)\nsbatch: slurm_job_submit: you requested 2 CPUs/node and 12288 MiB mem/node\n",
+      "stdout": "198239\n"
+    },
+    "STOP_OLD_INTENT.json": {
+      "at": "2026-10-11T09:04:53.202976+00:00",
+      "fields": {
+        "Account": "rose",
+        "AccrueTime": "2026-10-10T09:49:55",
+        "AllocTRES": "cpu=2,mem=6G,node=1",
+        "BatchFlag": "1",
+        "BatchHost": "cpu-2",
+        "Command": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/r0001b/endpoint.sbatch",
+        "Contiguous": "0",
+        "CoreSpec": "*",
+        "Deadline": "N/A",
+        "DelayBoot": "00:00:00",
+        "Dependency": "(null)",
+        "EligibleTime": "2026-10-10T09:49:55",
+        "EndTime": "2026-10-13T09:50:05",
+        "ExcNodeList": "(null)",
+        "ExitCode": "0:0",
+        "Features": "cpu_ok",
+        "GroupId": "varun024(295800338)",
+        "JobId": "196876",
+        "JobName": "srf12-endpoint-r0001b",
+        "JobState": "RUNNING",
+        "LastSchedEval": "2026-10-10T09:50:05",
+        "Licenses": "(null)",
+        "MCS_label": "N/A",
+        "MinCPUsNode": "2",
+        "MinMemoryNode": "6G",
+        "MinTmpDiskNode": "0",
+        "Network": "(null)",
+        "Nice": "0",
+        "NodeList": "cpu-2",
+        "NumCPUs": "2",
+        "NumNodes": "1",
+        "NumTasks": "1",
+        "OverSubscribe": "OK",
+        "Partition": "cluster02",
+        "Power": "",
+        "PreemptEligibleTime": "2026-10-10T09:50:05",
+        "PreemptTime": "None",
+        "Priority": "1",
+        "QOS": "override-limits-but-killable",
+        "Reason": "None",
+        "Reboot": "0",
+        "ReqNodeList": "(null)",
+        "ReqTRES": "cpu=2,mem=6G,node=1",
+        "Requeue": "1",
+        "Restarts": "0",
+        "RunTime": "23:14:48",
+        "Scheduler": "Backfill",
+        "SecsPreSuspend": "0",
+        "StartTime": "2026-10-10T09:50:05",
+        "StdErr": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/r0001b/endpoint-196876.log",
+        "StdIn": "/dev/null",
+        "StdOut": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/r0001b/endpoint-196876.log",
+        "SubmitTime": "2026-10-10T09:49:55",
+        "SuspendTime": "None",
+        "TimeLimit": "3-00:00:00",
+        "TimeMin": "N/A",
+        "TresPerTask": "cpu:2",
+        "UserId": "varun024(295800338)",
+        "WorkDir": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/code_repair_r0001b"
+      },
+      "job_id": "196876"
+    },
+    "VALIDATION.json": {
+      "at": "2026-10-11T09:02:36.068312+00:00",
+      "pytest": {
+        "returncode": 0,
+        "stdout": "........................................................................ [ 30%]\n........................................................................ [ 61%]\n........................................................................ [ 92%]\n..................                                                       [100%]\n234 passed in 25.67s\n",
+        "stderr": ""
+      },
+      "real_model_acceptance": {
+        "SRF1_2_GATE_s71001": {
+          "status": "MODEL_TERMINAL_AND_STATE_VERIFIED_SEALED",
+          "model_id": "SRF1_2_GATE_s71001",
+          "implementation_sha256": "a02012f5d0228a43b906e5d6d1adeafb3a04c05fc192cf473a46fd919a3b3cc7",
+          "training_source_commit": "6cd2e60ac2f67f22bcf5d55163f4705dcf8e6345",
+          "terminal": {
+            "job_id": "196941",
+            "state": "COMPLETED",
+            "exit_code": "0:0",
+            "user": "varun024",
+            "account": "rose",
+            "qos": "soujanya-poria-startfund-2026-03",
+            "name": "srf12-SRF1_2_GATE_s71001"
+          },
+          "intent_sha256": "484e6c02b22ac768893cf070df6da9e1b8eea646f7c1dd0968912ff379b9de01",
+          "completion_receipt_sha256": "d4b68353e19f08818d5eca4ae20a02a06bf8467db91040bf5366a886b8682ebf",
+          "model_completion": {
+            "status": "SELECTED_MAIN_PATHS_VERIFIED",
+            "science_freeze_sha256": "7ab385e4bd0c9414bc0b9f26cd6331b956a064165d31b2478c5802eeadf28f6f",
+            "config_sha256": "6df843ac8e6ae4eff30765a437a00f7a2617e012e0fb8bf1db635340cecfa5ce",
+            "paths": [
+              {
+                "model_id": "SRF1_2_GATE_s71001",
+                "complete_sha256": "977b19eb41a56d4e57bf41e170696c18df08e31b3a393ffab906dcd6d4934bc7",
+                "checkpoint_sha256": "e6aa181c99ffe3df7461dd669d4affb55ad0d3ece57c19e6217a6626f1c999d1",
+                "adapter_identity_sha256": "d828cbf82fd3c2747d578456b7c48d2502a3dd36da5e05ed762fc7d566768edd"
+              }
+            ]
+          },
+          "model_completion_sha256": "28031b55867292b035f9add47660baa8d592fa29a90343ae47fe26a7f98f2a9c"
+        },
+        "SRF1_2_A_s71002": {
+          "status": "MODEL_TERMINAL_AND_STATE_VERIFIED_SEALED",
+          "model_id": "SRF1_2_A_s71002",
+          "implementation_sha256": "a02012f5d0228a43b906e5d6d1adeafb3a04c05fc192cf473a46fd919a3b3cc7",
+          "training_source_commit": "6cd2e60ac2f67f22bcf5d55163f4705dcf8e6345",
+          "terminal": {
+            "job_id": "197596",
+            "state": "COMPLETED",
+            "exit_code": "0:0",
+            "user": "varun024",
+            "account": "rose",
+            "qos": "soujanya-poria-startfund-2026-03",
+            "name": "srf12-SRF1_2_A_s71002"
+          },
+          "intent_sha256": "f9c47936c80eabde2ab802342f1dd8f576eb7477698338a0cc88e9abd81fcfe0",
+          "completion_receipt_sha256": "86b7d6082480b83cbac37bf7e26eb64223152bc77404d29f3cebd6c467960755",
+          "model_completion": {
+            "status": "SELECTED_MAIN_PATHS_VERIFIED",
+            "science_freeze_sha256": "7ab385e4bd0c9414bc0b9f26cd6331b956a064165d31b2478c5802eeadf28f6f",
+            "config_sha256": "6df843ac8e6ae4eff30765a437a00f7a2617e012e0fb8bf1db635340cecfa5ce",
+            "paths": [
+              {
+                "model_id": "SRF1_2_A_s71002",
+                "complete_sha256": "76db19103ddd89ccd0c1944081ffb6c55940db81c421803e9d77e7fa9c69b447",
+                "checkpoint_sha256": "fca15b7cd2730e846ce1b17e9011ec96f47df1941c9737190422c9c96f846ed2",
+                "adapter_identity_sha256": "884da2721819a7f6436d75e92eaeb71e9e5a52faa8b762bdfde924f795b5b4aa"
+              }
+            ]
+          },
+          "model_completion_sha256": "673f87faf0d06cc0f6df91d1ae321ca2130400b8de878f5f913a194c31469088"
+        }
+      },
+      "new_controller_source_hash": "cd08628f898f7d814a245a15ed02b7d6ce66cfba69f930bb01a60c8587879da5",
+      "training_priority_nodes": null,
+      "test_input_read": false,
+      "gpu_jobs_submitted": 0,
+      "status": "PASS"
+    },
+    "VALIDATION_SUBMISSION.json": {
+      "returncode": 0,
+      "stderr": "sbatch: slurm_job_submit: enforced 2 CPUs for 1 task and 6144 MiB mem/node for 0 GPU(s) (model=none)\nsbatch: slurm_job_submit: you requested 2 CPUs/node and 12288 MiB mem/node\n",
+      "stdout": "198235\n"
+    },
+    "VALIDATION_INTENT.json": {
+      "args": [
+        "sbatch",
+        "--hold",
+        "--parsable",
+        "--account=rose",
+        "--partition=cluster02",
+        "--qos=override-limits-but-killable",
+        "--cpus-per-task=2",
+        "--mem=12G",
+        "--time=30",
+        "--job-name=srf12-early-validation",
+        "--output=/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/early_sealed_20261011/validation-%j.log",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/early_sealed_20261011/validate.sbatch"
+      ],
+      "at": "2026-10-11T09:02:19.524925+00:00",
+      "script_sha256": "0de2618aee00296ab4b498de2b826ae191117f0db838ac87920cceb802801753"
+    },
+    "ENDPOINT_INTENT.json": {
+      "args": [
+        "sbatch",
+        "--hold",
+        "--parsable",
+        "--account=rose",
+        "--partition=cluster02",
+        "--qos=override-limits-but-killable",
+        "--cpus-per-task=2",
+        "--mem=12G",
+        "--time=4320",
+        "--job-name=srf12-early-endpoint",
+        "--output=/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/early_sealed_20261011/endpoint-%j.log",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/early_sealed_20261011/endpoint.sbatch"
+      ],
+      "at": "2026-10-11T09:04:53.164688+00:00",
+      "command": [
+        "/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/early_sealed_20261011/code/scripts/sr_f12/early_endpoint_controller.py",
+        "--run-root",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010",
+        "--model-path",
+        "/projects/_ssd/varunssd/louis-ssvc/cache/huggingface/hub/models--Qwen--Qwen3.5-9B/snapshots/c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+        "--source-manifest",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/early_sealed_20261011/SOURCE_MANIFEST.json",
+        "--source-commit",
+        "872224f65b26ecacd727f6e66dae84410d5d56f0",
+        "--python",
+        "/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12"
+      ],
+      "script_sha256": "72d0500b7000d848eb4d51e1df7379d958d43c7c3a43989e61a9a4ddff617dac"
+    },
+    "VALIDATION_VERIFIED.json": {
+      "at": "2026-10-11T09:04:53.153896+00:00",
+      "job_id": "198235",
+      "result": {
+        "at": "2026-10-11T09:02:36.068312+00:00",
+        "gpu_jobs_submitted": 0,
+        "new_controller_source_hash": "cd08628f898f7d814a245a15ed02b7d6ce66cfba69f930bb01a60c8587879da5",
+        "pytest": {
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "........................................................................ [ 30%]\n........................................................................ [ 61%]\n........................................................................ [ 92%]\n..................                                                       [100%]\n234 passed in 25.67s\n"
+        },
+        "real_model_acceptance": {
+          "SRF1_2_A_s71002": {
+            "completion_receipt_sha256": "86b7d6082480b83cbac37bf7e26eb64223152bc77404d29f3cebd6c467960755",
+            "implementation_sha256": "a02012f5d0228a43b906e5d6d1adeafb3a04c05fc192cf473a46fd919a3b3cc7",
+            "intent_sha256": "f9c47936c80eabde2ab802342f1dd8f576eb7477698338a0cc88e9abd81fcfe0",
+            "model_completion": {
+              "config_sha256": "6df843ac8e6ae4eff30765a437a00f7a2617e012e0fb8bf1db635340cecfa5ce",
+              "paths": [
+                {
+                  "adapter_identity_sha256": "884da2721819a7f6436d75e92eaeb71e9e5a52faa8b762bdfde924f795b5b4aa",
+                  "checkpoint_sha256": "fca15b7cd2730e846ce1b17e9011ec96f47df1941c9737190422c9c96f846ed2",
+                  "complete_sha256": "76db19103ddd89ccd0c1944081ffb6c55940db81c421803e9d77e7fa9c69b447",
+                  "model_id": "SRF1_2_A_s71002"
+                }
+              ],
+              "science_freeze_sha256": "7ab385e4bd0c9414bc0b9f26cd6331b956a064165d31b2478c5802eeadf28f6f",
+              "status": "SELECTED_MAIN_PATHS_VERIFIED"
+            },
+            "model_completion_sha256": "673f87faf0d06cc0f6df91d1ae321ca2130400b8de878f5f913a194c31469088",
+            "model_id": "SRF1_2_A_s71002",
+            "status": "MODEL_TERMINAL_AND_STATE_VERIFIED_SEALED",
+            "terminal": {
+              "account": "rose",
+              "exit_code": "0:0",
+              "job_id": "197596",
+              "name": "srf12-SRF1_2_A_s71002",
+              "qos": "soujanya-poria-startfund-2026-03",
+              "state": "COMPLETED",
+              "user": "varun024"
+            },
+            "training_source_commit": "6cd2e60ac2f67f22bcf5d55163f4705dcf8e6345"
+          },
+          "SRF1_2_GATE_s71001": {
+            "completion_receipt_sha256": "d4b68353e19f08818d5eca4ae20a02a06bf8467db91040bf5366a886b8682ebf",
+            "implementation_sha256": "a02012f5d0228a43b906e5d6d1adeafb3a04c05fc192cf473a46fd919a3b3cc7",
+            "intent_sha256": "484e6c02b22ac768893cf070df6da9e1b8eea646f7c1dd0968912ff379b9de01",
+            "model_completion": {
+              "config_sha256": "6df843ac8e6ae4eff30765a437a00f7a2617e012e0fb8bf1db635340cecfa5ce",
+              "paths": [
+                {
+                  "adapter_identity_sha256": "d828cbf82fd3c2747d578456b7c48d2502a3dd36da5e05ed762fc7d566768edd",
+                  "checkpoint_sha256": "e6aa181c99ffe3df7461dd669d4affb55ad0d3ece57c19e6217a6626f1c999d1",
+                  "complete_sha256": "977b19eb41a56d4e57bf41e170696c18df08e31b3a393ffab906dcd6d4934bc7",
+                  "model_id": "SRF1_2_GATE_s71001"
+                }
+              ],
+              "science_freeze_sha256": "7ab385e4bd0c9414bc0b9f26cd6331b956a064165d31b2478c5802eeadf28f6f",
+              "status": "SELECTED_MAIN_PATHS_VERIFIED"
+            },
+            "model_completion_sha256": "28031b55867292b035f9add47660baa8d592fa29a90343ae47fe26a7f98f2a9c",
+            "model_id": "SRF1_2_GATE_s71001",
+            "status": "MODEL_TERMINAL_AND_STATE_VERIFIED_SEALED",
+            "terminal": {
+              "account": "rose",
+              "exit_code": "0:0",
+              "job_id": "196941",
+              "name": "srf12-SRF1_2_GATE_s71001",
+              "qos": "soujanya-poria-startfund-2026-03",
+              "state": "COMPLETED",
+              "user": "varun024"
+            },
+            "training_source_commit": "6cd2e60ac2f67f22bcf5d55163f4705dcf8e6345"
+          }
+        },
+        "status": "PASS",
+        "test_input_read": false,
+        "training_priority_nodes": null
+      },
+      "terminal": {
+        "account": "rose",
+        "exit_code": "0:0",
+        "job_id": "198235",
+        "name": "srf12-early-validation",
+        "qos": "override-limits-but-killable",
+        "state": "COMPLETED",
+        "user": "varun024"
+      }
+    }
+  },
+  "model_acceptances": {
+    "SRF1_2_A_s71002.json": {
+      "completion_receipt_sha256": "86b7d6082480b83cbac37bf7e26eb64223152bc77404d29f3cebd6c467960755",
+      "implementation_sha256": "a02012f5d0228a43b906e5d6d1adeafb3a04c05fc192cf473a46fd919a3b3cc7",
+      "intent_sha256": "f9c47936c80eabde2ab802342f1dd8f576eb7477698338a0cc88e9abd81fcfe0",
+      "model_completion": {
+        "config_sha256": "6df843ac8e6ae4eff30765a437a00f7a2617e012e0fb8bf1db635340cecfa5ce",
+        "paths": [
+          {
+            "adapter_identity_sha256": "884da2721819a7f6436d75e92eaeb71e9e5a52faa8b762bdfde924f795b5b4aa",
+            "checkpoint_sha256": "fca15b7cd2730e846ce1b17e9011ec96f47df1941c9737190422c9c96f846ed2",
+            "complete_sha256": "76db19103ddd89ccd0c1944081ffb6c55940db81c421803e9d77e7fa9c69b447",
+            "model_id": "SRF1_2_A_s71002"
+          }
+        ],
+        "science_freeze_sha256": "7ab385e4bd0c9414bc0b9f26cd6331b956a064165d31b2478c5802eeadf28f6f",
+        "status": "SELECTED_MAIN_PATHS_VERIFIED"
+      },
+      "model_completion_sha256": "673f87faf0d06cc0f6df91d1ae321ca2130400b8de878f5f913a194c31469088",
+      "model_id": "SRF1_2_A_s71002",
+      "status": "MODEL_TERMINAL_AND_STATE_VERIFIED_SEALED",
+      "terminal": {
+        "account": "rose",
+        "exit_code": "0:0",
+        "job_id": "197596",
+        "name": "srf12-SRF1_2_A_s71002",
+        "qos": "soujanya-poria-startfund-2026-03",
+        "state": "COMPLETED",
+        "user": "varun024"
+      },
+      "training_source_commit": "6cd2e60ac2f67f22bcf5d55163f4705dcf8e6345"
+    },
+    "SRF1_2_GATE_s71001.json": {
+      "completion_receipt_sha256": "d4b68353e19f08818d5eca4ae20a02a06bf8467db91040bf5366a886b8682ebf",
+      "implementation_sha256": "a02012f5d0228a43b906e5d6d1adeafb3a04c05fc192cf473a46fd919a3b3cc7",
+      "intent_sha256": "484e6c02b22ac768893cf070df6da9e1b8eea646f7c1dd0968912ff379b9de01",
+      "model_completion": {
+        "config_sha256": "6df843ac8e6ae4eff30765a437a00f7a2617e012e0fb8bf1db635340cecfa5ce",
+        "paths": [
+          {
+            "adapter_identity_sha256": "d828cbf82fd3c2747d578456b7c48d2502a3dd36da5e05ed762fc7d566768edd",
+            "checkpoint_sha256": "e6aa181c99ffe3df7461dd669d4affb55ad0d3ece57c19e6217a6626f1c999d1",
+            "complete_sha256": "977b19eb41a56d4e57bf41e170696c18df08e31b3a393ffab906dcd6d4934bc7",
+            "model_id": "SRF1_2_GATE_s71001"
+          }
+        ],
+        "science_freeze_sha256": "7ab385e4bd0c9414bc0b9f26cd6331b956a064165d31b2478c5802eeadf28f6f",
+        "status": "SELECTED_MAIN_PATHS_VERIFIED"
+      },
+      "model_completion_sha256": "28031b55867292b035f9add47660baa8d592fa29a90343ae47fe26a7f98f2a9c",
+      "model_id": "SRF1_2_GATE_s71001",
+      "status": "MODEL_TERMINAL_AND_STATE_VERIFIED_SEALED",
+      "terminal": {
+        "account": "rose",
+        "exit_code": "0:0",
+        "job_id": "196941",
+        "name": "srf12-SRF1_2_GATE_s71001",
+        "qos": "soujanya-poria-startfund-2026-03",
+        "state": "COMPLETED",
+        "user": "varun024"
+      },
+      "training_source_commit": "6cd2e60ac2f67f22bcf5d55163f4705dcf8e6345"
+    }
+  },
+  "gpu_progress": {
+    "SRF1_2_A_s71001": {
+      "job_id": "196939",
+      "updates": 96
+    },
+    "SRF1_2_A_s71002": {
+      "job_id": "197596",
+      "updates": 96
+    },
+    "SRF1_2_A_s71003": {
+      "job_id": "198168",
+      "updates": 7
+    },
+    "SRF1_2_DEC_s71001": {
+      "job_id": "196942",
+      "updates": 96
+    },
+    "SRF1_2_DEC_s71002": {
+      "job_id": "197649",
+      "updates": 85
+    },
+    "SRF1_2_GATE_s71001": {
+      "job_id": "196941",
+      "updates": 96
+    },
+    "SRF1_2_GATE_s71002": {
+      "job_id": "197598",
+      "updates": 96
+    },
+    "SRF1_2_GATE_s71003": {
+      "job_id": "198170",
+      "updates": 7
+    },
+    "SRF1_2_J_s71001": {
+      "job_id": "196940",
+      "updates": 96
+    },
+    "SRF1_2_J_s71002": {
+      "job_id": "197597",
+      "updates": 81
+    },
+    "SRF1_2_J_s71003": {
+      "job_id": "198169",
+      "updates": 7
+    }
+  },
+  "storage": {
+    "/projects/_ssd/varunssd": {
+      "cap": 750000000000,
+      "used": 707181865436,
+      "remaining": 42818134564
+    },
+    "/projects/_hdd/varunhdd": {
+      "cap": 5000000000000,
+      "used": 650099612579,
+      "remaining": 4349900387421
+    }
+  },
+  "queue": "198169|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-7\n198170|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-7\n198168|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-7\n197649|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-2\n197597|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-11\n198239|RUNNING|override-limits-but-killable|N/A|cpu-2\n198167|RUNNING|override-limits-but-killable|N/A|cpu-2\n",
+  "accounting": "196826|srf12-BASELINE_0|COMPLETED|0:0|2026-10-10T09:25:00|2026-10-10T09:25:01|2026-10-10T10:03:51\n196827|srf12-BASELINE_1|COMPLETED|0:0|2026-10-10T09:25:00|2026-10-10T09:27:18|2026-10-10T10:05:06\n196828|srf12-BASELINE_2|COMPLETED|0:0|2026-10-10T09:25:01|2026-10-10T09:31:30|2026-10-10T10:10:07\n196876|srf12-endpoint-r0001b|CANCELLED by 295800338|0:0|2026-10-10T09:49:55|2026-10-10T09:50:05|2026-10-11T09:04:53\n196877|srf12-TECHNICAL|COMPLETED|0:0|2026-10-10T09:50:05|2026-10-10T09:50:50|2026-10-10T11:03:42\n196939|srf12-SRF1_2_A_s71001|COMPLETED|0:0|2026-10-10T11:04:22|2026-10-10T11:22:38|2026-10-10T21:35:09\n196940|srf12-SRF1_2_J_s71001|COMPLETED|0:0|2026-10-10T11:04:23|2026-10-10T11:29:04|2026-10-10T20:22:43\n196941|srf12-SRF1_2_GATE_s71001|COMPLETED|0:0|2026-10-10T11:04:23|2026-10-10T11:29:04|2026-10-10T20:15:20\n196942|srf12-SRF1_2_DEC_s71001|COMPLETED|0:0|2026-10-10T11:04:23|2026-10-10T11:29:09|2026-10-10T21:13:15\n197596|srf12-SRF1_2_A_s71002|COMPLETED|0:0|2026-10-10T21:36:05|2026-10-10T21:36:07|2026-10-11T07:55:13\n197597|srf12-SRF1_2_J_s71002|RUNNING|0:0|2026-10-10T21:36:05|2026-10-10T21:36:09|Unknown\n197598|srf12-SRF1_2_GATE_s71002|COMPLETED|0:0|2026-10-10T21:36:05|2026-10-10T21:36:11|2026-10-11T07:21:38\n197649|srf12-SRF1_2_DEC_s71002|RUNNING|0:0|2026-10-11T00:24:38|2026-10-11T00:24:41|Unknown\n198167|srf12-controller-rolling|RUNNING|0:0|2026-10-11T08:20:43|2026-10-11T08:20:48|Unknown\n198168|srf12-SRF1_2_A_s71003|RUNNING|0:0|2026-10-11T08:20:49|2026-10-11T08:20:50|Unknown\n198169|srf12-SRF1_2_J_s71003|RUNNING|0:0|2026-10-11T08:20:49|2026-10-11T08:25:41|Unknown\n198170|srf12-SRF1_2_GATE_s71003|RUNNING|0:0|2026-10-11T08:20:49|2026-10-11T08:25:41|Unknown\n198235|srf12-early-validation|COMPLETED|0:0|2026-10-11T09:02:19|2026-10-11T09:02:35|2026-10-11T09:03:43\n198239|srf12-early-endpoint|RUNNING|0:0|2026-10-11T09:04:53|2026-10-11T09:05:06|Unknown\n",
+  "endpoint_lock_held": true,
+  "hdd_mappings_verified": true,
+  "released_evaluation_exists": false,
+  "sealed_eval_metadata_files": 0,
+  "endpoint_log": "{\"at\": \"2026-10-11T09:05:08.105432+00:00\", \"endpoints_complete\": 0, \"endpoints_total\": 13, \"experiment_delivered\": false, \"failures\": [], \"report_pending\": true, \"scheduler_job_id\": \"198239\", \"scores_sealed\": true, \"source_sha256\": \"cd08628f898f7d814a245a15ed02b7d6ce66cfba69f930bb01a60c8587879da5\", \"stage\": \"WAITING_FOR_TRAINING_PRIORITY\", \"tasks\": {}, \"teacher_gpu_usage\": 5, \"unknown_submissions\": [], \"version\": \"SR-F1.2-20261010\"}\n"
+}

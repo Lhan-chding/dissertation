@@ -1,0 +1,60 @@
+from pathlib import Path
+import json,tarfile,hashlib,sys,shlex,subprocess
+r=Path('/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010');d=r/'deployment/early_sealed_20261011';py='/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12'
+assert not d.exists(), 'Already prepared; inspect receipts, never replay'
+d.mkdir(parents=True)
+with tarfile.open(r/'early_source_20261011.tar') as t:
+ for m in t.getmembers():
+  assert m.isfile() and not Path(m.name).is_absolute() and '..' not in Path(m.name).parts
+  p=d/m.name;p.parent.mkdir(parents=True,exist_ok=True)
+  with p.open('xb') as f:f.write(t.extractfile(m).read())
+c=d/'code';sys.path.insert(0,str(c/'src'))
+from sr_f12.evaluation import verify_source_manifest
+from sr_f12.orchestration import save_json,read_json,file_hash,Slurm,now
+from sr_f12.early_authorization import POLICY,FROZEN_FILES,verify_early_implementation
+from sr_f12.protocol import AMENDMENT_ID
+manifest=d/'SOURCE_MANIFEST.json';m=read_json(manifest);newhash=verify_source_manifest(manifest,c)
+oldmanifest=r/'source_r0001b.json';oldcode=r/'code_repair_r0001b';oldhash=verify_source_manifest(oldmanifest,oldcode)
+assert m['git_commit']=='872224f65b26ecacd727f6e66dae84410d5d56f0'
+reg=dict(status='AUTHORIZED_EARLY_SEALED_GENERATION',policy=POLICY,version=AMENDMENT_ID,user='varun024',root=str(r),code_root=str(c),source_manifest=str(manifest),source_commit=m['git_commit'],source_manifest_sha256=newhash,training_source_commit=read_json(oldmanifest)['git_commit'],training_code_root=str(oldcode),training_source_manifest=str(oldmanifest),training_source_manifest_sha256=oldhash,frozen_files={n:file_hash(r/n) for n in FROZEN_FILES},endpoint_config_sha256=file_hash(r/'endpoint_orchestration/CONFIG.json'),user_instruction='已完成模型在有空余卡时提前评价，结果先封存不看；保持实验可比性，不拖慢剩余训练，训练优先并行。',authorized_at=now())
+save_json(r/'EARLY_ENDPOINT_IMPLEMENTATION.json',reg,exclusive=True)
+save_json(d/'AUTHORIZATION.json',reg,exclusive=True)
+save_json(d/'SOURCE.json',dict(commit=m['git_commit'],files=len(m['files']),source_manifest_sha256=newhash,production_source_sha256=oldhash),exclusive=True)
+verify_early_implementation(r,c,manifest,m['git_commit'])
+validation='''from pathlib import Path
+import json,subprocess,traceback,datetime
+r=Path(RUNROOT);d=Path(DEPLOY);c=d/'code';out={"at":datetime.datetime.now(datetime.timezone.utc).isoformat()}
+try:
+ p=subprocess.run([PYTHON,'-m','pytest',str(c/'tests/sr_f12'),'-q'],capture_output=True,text=True)
+ out['pytest']=dict(returncode=p.returncode,stdout=p.stdout,stderr=p.stderr)
+ assert p.returncode==0 and '234 passed' in p.stdout
+ from sr_f12.early_authorization import create_model_acceptance,verify_generation_authorization
+ from sr_f12.early_endpoint_orchestration import EarlyEndpointController
+ out['real_model_acceptance']={}
+ for model in ['SRF1_2_GATE_s71001','SRF1_2_A_s71002']:
+  accepted=create_model_acceptance(r,model)
+  assert accepted==verify_generation_authorization(r,model)
+  out['real_model_acceptance'][model]=accepted
+ cfg=json.loads((r/'endpoint_orchestration/CONFIG.json').read_text());source=json.loads((d/'SOURCE_MANIFEST.json').read_text())
+ ctrl=EarlyEndpointController(r,c,cfg['model_path'],d/'SOURCE_MANIFEST.json',source['git_commit'],python=PYTHON)
+ out['new_controller_source_hash']=ctrl.identity()
+ out['training_priority_nodes']=ctrl.training_priority(ctrl.slurm.queue(ctrl.user))
+ out['test_input_read']=False;out['gpu_jobs_submitted']=0;out['status']='PASS'
+except Exception as e:
+ out['status']='FAIL';out['error']=repr(e);out['traceback']=traceback.format_exc()
+with (d/'VALIDATION.json').open('x') as f:json.dump(out,f,indent=2)
+print(json.dumps({k:v for k,v in out.items() if k not in ['real_model_acceptance']},sort_keys=True))
+raise SystemExit(0 if out['status']=='PASS' else 1)
+'''
+validation=validation.replace('RUNROOT',repr(str(r))).replace('DEPLOY',repr(str(d))).replace('PYTHON',repr(py))
+with (d/'validate.py').open('x') as f:f.write(validation)
+script=d/'validate.sbatch'
+with script.open('x') as f:f.write('#!/bin/bash\nset -euo pipefail\nexport PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1\nexport PYTHONPATH='+str(c/'src')+'\ncd '+str(c)+'\nexec '+shlex.join([py,str(d/'validate.py')])+'\n')
+s=Slurm();args=['sbatch','--hold','--parsable','--account=rose','--partition=cluster02','--qos=override-limits-but-killable','--cpus-per-task=2','--mem=12G','--time=30','--job-name=srf12-early-validation','--output='+str(d/'validation-%j.log'),str(script)]
+save_json(d/'VALIDATION_INTENT.json',dict(args=args,script_sha256=file_hash(script),at=now()),exclusive=True)
+p=s.run(args);save_json(d/'VALIDATION_SUBMISSION.json',dict(returncode=p.returncode,stdout=p.stdout,stderr=p.stderr),exclusive=True);assert p.returncode==0
+job=p.stdout.strip().split(';')[0];assert job.isdigit();fields=s.show(job)
+assert fields['Command']==str(script) and fields['JobState']=='PENDING' and fields['Reason']=='JobHeldUser' and fields['UserId'].split('(')[0]=='varun024' and fields['QOS']=='override-limits-but-killable' and 'gres/gpu' not in fields['ReqTRES']
+save_json(d/'VALIDATION_RELEASE_INTENT.json',dict(job_id=job,fields=fields),exclusive=True)
+p=s.run(['scontrol','release',job]);save_json(d/'VALIDATION_RELEASE.json',dict(job_id=job,returncode=p.returncode,stdout=p.stdout,stderr=p.stderr),exclusive=True);assert p.returncode==0
+print('VALIDATION_JOB',job)

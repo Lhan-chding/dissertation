@@ -1,0 +1,50 @@
+from pathlib import Path
+import sys,shlex,time
+r=Path('/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010');d=r/'deployment/early_sealed_20261011';c=d/'code';py='/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12'
+sys.path.insert(0,str(c/'src'))
+from sr_f12.orchestration import Slurm,read_json,save_json,file_hash,now,controller_lease
+from sr_f12.early_authorization import verify_early_implementation
+s=Slurm();v=read_json(d/'VALIDATION.json');assert v['status']=='PASS' and v['pytest']['returncode']==0 and '234 passed' in v['pytest']['stdout'] and not v['test_input_read'] and v['gpu_jobs_submitted']==0
+vj=read_json(d/'VALIDATION_SUBMISSION.json')['stdout'].strip();vt=s.terminal(vj)
+assert vt and vt['state']=='COMPLETED' and vt['exit_code']=='0:0' and vt['name']=='srf12-early-validation' and vt['user']=='varun024' and vj not in s.queue('varun024')
+reg=read_json(r/'EARLY_ENDPOINT_IMPLEMENTATION.json');verify_early_implementation(r,c,d/'SOURCE_MANIFEST.json',reg['source_commit'])
+old='196876';fields=s.show(old);oldscript=r/'deployment/r0001b/endpoint.sbatch'
+assert fields['Command']==str(oldscript) and fields['UserId'].split('(')[0]=='varun024' and fields['JobName']=='srf12-endpoint-r0001b' and fields['JobState']=='RUNNING' and fields['QOS']=='override-limits-but-killable' and 'gres/gpu' not in fields['ReqTRES']
+assert read_json(r/'deployment/r0001b/ENDPOINT_SUBMISSION.json')['stdout'].strip()==old
+endpoint=read_json(r/'endpoint_orchestration/STATE.json');main=read_json(r/'orchestration/STATE.json')
+assert endpoint['stage']=='WAITING_FOR_ALL_MAIN_TERMINAL' and not endpoint['tasks'] and not endpoint['failures'] and not endpoint['unknown_submissions']
+assert not list((r/'endpoint_orchestration/tasks').glob('*/INTENT.json'))
+assert not main['failures'] and not main['unknown_submissions'] and main['scheduler_job_id']=='198167'
+save_json(d/'VALIDATION_VERIFIED.json',dict(job_id=vj,terminal=vt,result=v,at=now()),exclusive=True)
+model=read_json(r/'MODEL_ENVIRONMENT_IDENTITY.json')['model_path']
+command=[py,str(c/'scripts/sr_f12/early_endpoint_controller.py'),'--run-root',str(r),'--model-path',model,'--source-manifest',str(d/'SOURCE_MANIFEST.json'),'--source-commit',reg['source_commit'],'--python',py]
+script=d/'endpoint.sbatch'
+with script.open('x') as f:f.write('#!/bin/bash\nset -euo pipefail\nexport CUDA_VISIBLE_DEVICES=""\nexport PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1\nexport PYTHONPATH='+str(c/'src')+'\ncd '+str(c)+'\nexec '+shlex.join(command)+'\n')
+args=['sbatch','--hold','--parsable','--account=rose','--partition=cluster02','--qos=override-limits-but-killable','--cpus-per-task=2','--mem=12G','--time=4320','--job-name=srf12-early-endpoint','--output='+str(d/'endpoint-%j.log'),str(script)]
+assert not (d/'ENDPOINT_INTENT.json').exists()
+save_json(d/'ENDPOINT_INTENT.json',dict(args=args,command=command,script_sha256=file_hash(script),at=now()),exclusive=True)
+p=s.run(args);save_json(d/'ENDPOINT_SUBMISSION.json',dict(returncode=p.returncode,stdout=p.stdout,stderr=p.stderr),exclusive=True);assert p.returncode==0
+job=p.stdout.strip().split(';')[0];assert job.isdigit();nf=s.show(job)
+assert nf['Command']==str(script) and nf['JobName']=='srf12-early-endpoint' and nf['UserId'].split('(')[0]=='varun024' and nf['JobState']=='PENDING' and nf['Reason']=='JobHeldUser' and nf['QOS']=='override-limits-but-killable' and 'gres/gpu' not in nf['ReqTRES']
+save_json(d/'PRE_CUTOVER.json',dict(at=now(),old_endpoint=fields,new_endpoint=nf,main_state=main,endpoint_state=endpoint),exclusive=True)
+fields=s.show(old);assert fields['Command']==str(oldscript) and fields['JobState']=='RUNNING'
+assert not list((r/'endpoint_orchestration/tasks').glob('*/INTENT.json'))
+save_json(d/'STOP_OLD_INTENT.json',dict(job_id=old,fields=fields,at=now()),exclusive=True)
+p=s.run(['scancel',old]);save_json(d/'STOP_OLD_RESULT.json',dict(returncode=p.returncode,stdout=p.stdout,stderr=p.stderr),exclusive=True);assert p.returncode==0
+print('STOPPED_OLD_ENDPOINT',old,'NEW_HELD',job,flush=True)
+for _ in range(12):
+ q=s.queue('varun024');terminal=s.terminal(old)
+ if old not in q and terminal and terminal['state']=='CANCELLED':break
+ time.sleep(4)
+else:raise RuntimeError('Old endpoint not terminal; new held')
+assert terminal['user']=='varun024' and terminal['name']=='srf12-endpoint-r0001b' and terminal['qos']=='override-limits-but-killable'
+save_json(d/'OLD_TERMINAL.json',dict(terminal=terminal,queue_absent=True,at=now()),exclusive=True)
+with controller_lease(r/'endpoint_orchestration'):
+ assert not list((r/'endpoint_orchestration/tasks').glob('*/INTENT.json'))
+ verify_early_implementation(r,c,d/'SOURCE_MANIFEST.json',reg['source_commit'])
+ save_json(d/'CUTOVER_VERIFIED.json',dict(old_endpoint=old,new_endpoint=job,old_lease_released=True,main_controller_unchanged='198167',gpu_jobs_unchanged=True,at=now()),exclusive=True)
+assert file_hash(script)==read_json(d/'ENDPOINT_INTENT.json')['script_sha256']
+f=s.show(job);assert f['JobState']=='PENDING' and f['Reason']=='JobHeldUser' and f['Command']==str(script)
+save_json(d/'ENDPOINT_RELEASE_INTENT.json',dict(job_id=job,fields=f,at=now()),exclusive=True)
+p=s.run(['scontrol','release',job]);save_json(d/'ENDPOINT_RELEASE.json',dict(job_id=job,returncode=p.returncode,stdout=p.stdout,stderr=p.stderr,at=now()),exclusive=True);assert p.returncode==0
+print('EARLY_ENDPOINT_RELEASED',job)
