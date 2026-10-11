@@ -1,5 +1,19 @@
 # SR-F1 当前执行状态
 
+## 最新：已授权跨种子滚动调度，第三种子提前启动（2026-10-11 16:24 新加坡时间）
+
+用户直接要求空闲卡提前跑第三种子，取代旧整波等待屏障。各科学路径独立载入共同基座、预登记初始化/数据与rollout seeds、独立Adam/RNG，不依赖其他seed结果；仅改变启动时刻。已提交推送独立调度覆盖源码820597094b2c0b1fc11fd6bf416be6ce7e2a47e0，生产6cd2及458文件、科学冻结、学习率/奖励/96步预算及最终TEST门禁保持。
+
+本地69测试通过；普通CPU198166等待9秒后COMPLETED0:0，服务器69测试通过。仅停止身份核验后的旧主CPU196875，已核实CANCELLED0:0、离队及释放唯一锁；新普通CPU198167于08:20:48Z启动，08:24Z实核RUNNING且主锁被持有。旧CPU的有意取消不是训练故障，禁止恢复旧调度器。GPU训练与端点CPU196876均未停止。
+
+08:24:29Z实核：第三seed A198168已RUNNING（08:20:50Z启动），RUN_MANIFEST/进程身份及实际rollout另存回执；第三J198169等待Resources、GATE198170等待Priority。第二J197597及DEC197649继续RUNNING；目前三GPU运行、两GPU排队，教师运行加排队提交额度5/5，物理GPU预留5/5。第三DEC尚未提交，由同一控制器在下一额度释放后自动补交。科学完成6/12，failures/unknown均空，端点仍WAITING_FOR_ALL_MAIN_TERMINAL，TEST未放行。
+
+部署回执在服务器deployment/rolling_schedule_20261011，SOURCE/AUTHORIZATION/VALIDATION/CONTROLLER/STOP_OLD/CUTOVER链均已消费，不得覆盖或重跑。后续只读审计复核458源码、科学/技术绑定、八条HDD链接目标、已存在最新checkpoint字节SHA及完整FIT槽位/组hash/adapter字节；本轮未重新加载序列化Adam完整状态。SSD与HDD的真实Ceph余量分别为43.21GB、4.351TB（详见INTEGRITY.json）。第三A已落盘16组128条训练样本，组hash通过。30分钟监控已更新跨种子授权、新CPU及旧CPU正常终态，保持仅实质变化通知。
+
+最终队列更新（2026-10-11T08:27:42.425342+00:00）：第三种子A198168/J198169/GATE198170全部实际RUNNING，三者分别单卡，加上第二种子J197597/DEC197649，五GPU均实际运行。原08:24的两个PENDING已结束，科学设置与提交身份保持；第三DEC仍由下一空闲额度自动接续。详见FINAL_QUEUE.json。
+
+证据：[部署、启动和完整性实核](validation/SR_F1_2_ROLLING_SCHEDULING_20261011_1624/DEPLOYMENT.json)；[调度设计及验证](SR_F1_2_ROLLING_SCHEDULING_zh.md)。以下条目均为历史快照，旧波次等待不再适用。
+
 ## 最新：第二种子A完成，科学路径已完成6/12（2026-10-11 15:58 新加坡时间）
 
 07:58Z起只读实核：第二种子A197596已COMPLETED0:0并离开队列，96/96；登记HDD目标中的step96检查点字节SHA及step32/64/96 TRAIN_FIT槽位、逐组/聚合hash和adapter文件hash通过。GATE第二种子亦已完成，主控制器记录6/12科学路径完成。本轮未独立重载序列化Adam等完整状态；最终验收门禁保持。

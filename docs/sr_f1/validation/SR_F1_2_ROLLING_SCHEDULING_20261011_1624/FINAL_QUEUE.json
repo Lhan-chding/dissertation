@@ -1,0 +1,242 @@
+{
+  "at": "2026-10-11T08:27:42.425342+00:00",
+  "state": {
+    "at": "2026-10-11T08:26:51.529648+00:00",
+    "experiment_complete": false,
+    "failures": [],
+    "scheduler_job_id": "198167",
+    "scheduling_authorization": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/rolling_schedule_20261011/AUTHORIZATION.json",
+    "scheduling_policy": "REGISTERED_MATRIX_ROLLING_CAPACITY",
+    "scientific_complete": 6,
+    "scientific_total": 12,
+    "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+    "stage": "MAIN_TRAINING",
+    "tasks": {
+      "BASELINE_0": {
+        "job_id": "196826",
+        "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+        "status": "COMPLETE",
+        "task_id": "BASELINE_0"
+      },
+      "BASELINE_1": {
+        "job_id": "196827",
+        "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+        "status": "COMPLETE",
+        "task_id": "BASELINE_1"
+      },
+      "BASELINE_2": {
+        "job_id": "196828",
+        "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+        "status": "COMPLETE",
+        "task_id": "BASELINE_2"
+      },
+      "SRF1_2_A_s71001": {
+        "job_id": "196939",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "COMPLETE",
+        "task_id": "SRF1_2_A_s71001"
+      },
+      "SRF1_2_A_s71002": {
+        "job_id": "197596",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "COMPLETE",
+        "task_id": "SRF1_2_A_s71002"
+      },
+      "SRF1_2_A_s71003": {
+        "job_id": "198168",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "SRF1_2_A_s71003"
+      },
+      "SRF1_2_DEC_s71001": {
+        "job_id": "196942",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "COMPLETE",
+        "task_id": "SRF1_2_DEC_s71001"
+      },
+      "SRF1_2_DEC_s71002": {
+        "job_id": "197649",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "SRF1_2_DEC_s71002"
+      },
+      "SRF1_2_GATE_s71001": {
+        "job_id": "196941",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "COMPLETE",
+        "task_id": "SRF1_2_GATE_s71001"
+      },
+      "SRF1_2_GATE_s71002": {
+        "job_id": "197598",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "COMPLETE",
+        "task_id": "SRF1_2_GATE_s71002"
+      },
+      "SRF1_2_GATE_s71003": {
+        "job_id": "198170",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "SRF1_2_GATE_s71003"
+      },
+      "SRF1_2_J_s71001": {
+        "job_id": "196940",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "COMPLETE",
+        "task_id": "SRF1_2_J_s71001"
+      },
+      "SRF1_2_J_s71002": {
+        "job_id": "197597",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "SRF1_2_J_s71002"
+      },
+      "SRF1_2_J_s71003": {
+        "job_id": "198169",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "SRF1_2_J_s71003"
+      },
+      "TECHNICAL": {
+        "job_id": "196877",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "COMPLETE",
+        "task_id": "TECHNICAL"
+      }
+    },
+    "teacher_gpu_usage": 5,
+    "unknown_submissions": [],
+    "version": "SR-F1.2-20261010"
+  },
+  "queue": "198169|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-7\n198170|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-7\n198168|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-7\n197649|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-2\n197597|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-11\n198167|RUNNING|override-limits-but-killable|N/A|cpu-2\n196876|RUNNING|override-limits-but-killable|N/A|cpu-2\n",
+  "new_jobs": {
+    "SRF1_2_A_s71003": {
+      "state": {
+        "job_id": "198168",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "SRF1_2_A_s71003"
+      },
+      "manifest_identity": {
+        "arm": "A",
+        "seed": 71003,
+        "model_id": "SRF1_2_A_s71003",
+        "updates": 96,
+        "gpu_count": 1,
+        "qos": "soujanya-poria-startfund-2026-03",
+        "config_sha256": "6df843ac8e6ae4eff30765a437a00f7a2617e012e0fb8bf1db635340cecfa5ce",
+        "reference_hash": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3"
+      },
+      "processes": {
+        "PROCESS-1791706905098083526-2082376.json": {
+          "checkpoint_field_hashes": {
+            "cursor": "42b79492e7be67423204d5fdc8b8ae37e830937c5988080e31a80cf350d0386e",
+            "optimizer": "3723bc3eae445100818fb3ce55612c45765b291a7101f5b0efa6af0ccd09743f",
+            "parameters": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+            "rng": "785d69dc073dd2d348f40c767490bd2b745c4b3156be89e331571a168dc7b558",
+            "scheduler": "6fe564fcde75945091fee28f22d3718ba4a05d6c24bf5623f49ac1fc1e6b9d83"
+          },
+          "initial_step": 0,
+          "job_id": "198168",
+          "pid": 2082376,
+          "restored_field_hashes": {
+            "cursor": "42b79492e7be67423204d5fdc8b8ae37e830937c5988080e31a80cf350d0386e",
+            "optimizer": "3723bc3eae445100818fb3ce55612c45765b291a7101f5b0efa6af0ccd09743f",
+            "parameters": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+            "rng": "785d69dc073dd2d348f40c767490bd2b745c4b3156be89e331571a168dc7b558",
+            "scheduler": "6fe564fcde75945091fee28f22d3718ba4a05d6c24bf5623f49ac1fc1e6b9d83"
+          },
+          "time_ns": 1791706905098083526
+        }
+      },
+      "rollout_groups": 16,
+      "updates": 1,
+      "scontrol": "JobId=198168 JobName=srf12-SRF1_2_A_s71003\n   UserId=varun024(295800338) GroupId=varun024(295800338) MCS_label=N/A\n   Priority=101 Nice=0 Account=rose QOS=soujanya-poria-startfund-2026-03\n   JobState=RUNNING Reason=None Dependency=(null)\n   Requeue=1 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   DerivedExitCode=0:0\n   RunTime=00:06:52 TimeLimit=3-00:00:00 TimeMin=N/A\n   SubmitTime=2026-10-11T08:20:49 EligibleTime=2026-10-11T08:20:50\n   AccrueTime=2026-10-11T08:20:50\n   StartTime=2026-10-11T08:20:50 EndTime=2026-10-14T08:20:50 Deadline=N/A\n   PreemptEligibleTime=2026-10-11T08:20:50 PreemptTime=None\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-11T08:20:50 Scheduler=Main\n   Partition=cluster02 AllocNode:Sid=cpu-2:3154845\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=gpu-pro6000-7\n   BatchHost=gpu-pro6000-7\n   NumNodes=1 NumCPUs=4 NumTasks=1 CPUs/Task=4 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=4,mem=90G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1\n   AllocTRES=cpu=4,mem=90G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   JOB_GRES=gpu:pro6000:1\n     Nodes=gpu-pro6000-7 CPU_IDs=0-3 Mem=92160 GRES=gpu:pro6000:1(IDX:0)\n   MinCPUsNode=4 MinMemoryNode=90G MinTmpDiskNode=0\n   Features=highmem DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null)\n   Command=/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/orchestration/tasks/SRF1_2_A_s71003/run.sbatch\n   WorkDir=/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/code_repair_r0001b\n   Comment=srf12-2d72991807dfd98c8eb9 \n   StdErr=/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/orchestration/tasks/SRF1_2_A_s71003/slurm-198168.log\n   StdIn=/dev/null\n   StdOut=/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/orchestration/tasks/SRF1_2_A_s71003/slurm-198168.log\n   Power=\n   TresPerNode=gres/gpu:pro6000:1\n   TresPerTask=cpu:4\n   \n\n"
+    },
+    "SRF1_2_J_s71003": {
+      "state": {
+        "job_id": "198169",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "SRF1_2_J_s71003"
+      },
+      "manifest_identity": {
+        "arm": "J",
+        "seed": 71003,
+        "model_id": "SRF1_2_J_s71003",
+        "updates": 96,
+        "gpu_count": 1,
+        "qos": "soujanya-poria-startfund-2026-03",
+        "config_sha256": "6df843ac8e6ae4eff30765a437a00f7a2617e012e0fb8bf1db635340cecfa5ce",
+        "reference_hash": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3"
+      },
+      "processes": {
+        "PROCESS-1791707166411881173-2083168.json": {
+          "checkpoint_field_hashes": {
+            "cursor": "42b79492e7be67423204d5fdc8b8ae37e830937c5988080e31a80cf350d0386e",
+            "optimizer": "3723bc3eae445100818fb3ce55612c45765b291a7101f5b0efa6af0ccd09743f",
+            "parameters": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+            "rng": "785d69dc073dd2d348f40c767490bd2b745c4b3156be89e331571a168dc7b558",
+            "scheduler": "6fe564fcde75945091fee28f22d3718ba4a05d6c24bf5623f49ac1fc1e6b9d83"
+          },
+          "initial_step": 0,
+          "job_id": "198169",
+          "pid": 2083168,
+          "restored_field_hashes": {
+            "cursor": "42b79492e7be67423204d5fdc8b8ae37e830937c5988080e31a80cf350d0386e",
+            "optimizer": "3723bc3eae445100818fb3ce55612c45765b291a7101f5b0efa6af0ccd09743f",
+            "parameters": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+            "rng": "785d69dc073dd2d348f40c767490bd2b745c4b3156be89e331571a168dc7b558",
+            "scheduler": "6fe564fcde75945091fee28f22d3718ba4a05d6c24bf5623f49ac1fc1e6b9d83"
+          },
+          "time_ns": 1791707166411881173
+        }
+      },
+      "rollout_groups": 8,
+      "updates": 0,
+      "scontrol": "JobId=198169 JobName=srf12-SRF1_2_J_s71003\n   UserId=varun024(295800338) GroupId=varun024(295800338) MCS_label=N/A\n   Priority=101 Nice=0 Account=rose QOS=soujanya-poria-startfund-2026-03\n   JobState=RUNNING Reason=None Dependency=(null)\n   Requeue=1 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   DerivedExitCode=0:0\n   RunTime=00:02:01 TimeLimit=3-00:00:00 TimeMin=N/A\n   SubmitTime=2026-10-11T08:20:49 EligibleTime=2026-10-11T08:20:50\n   AccrueTime=2026-10-11T08:20:50\n   StartTime=2026-10-11T08:25:41 EndTime=2026-10-14T08:25:41 Deadline=N/A\n   PreemptEligibleTime=2026-10-11T08:25:41 PreemptTime=None\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-11T08:25:41 Scheduler=Main\n   Partition=cluster02 AllocNode:Sid=cpu-2:3154845\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=gpu-pro6000-7\n   BatchHost=gpu-pro6000-7\n   NumNodes=1 NumCPUs=4 NumTasks=1 CPUs/Task=4 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=4,mem=90G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1\n   AllocTRES=cpu=4,mem=90G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   JOB_GRES=gpu:pro6000:1\n     Nodes=gpu-pro6000-7 CPU_IDs=4-7 Mem=92160 GRES=gpu:pro6000:1(IDX:1)\n   MinCPUsNode=4 MinMemoryNode=90G MinTmpDiskNode=0\n   Features=highmem DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null)\n   Command=/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/orchestration/tasks/SRF1_2_J_s71003/run.sbatch\n   WorkDir=/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/code_repair_r0001b\n   Comment=srf12-9b014059b7c751c7a73f \n   StdErr=/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/orchestration/tasks/SRF1_2_J_s71003/slurm-198169.log\n   StdIn=/dev/null\n   StdOut=/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/orchestration/tasks/SRF1_2_J_s71003/slurm-198169.log\n   Power=\n   TresPerNode=gres/gpu:pro6000:1\n   TresPerTask=cpu:4\n   \n\n"
+    },
+    "SRF1_2_GATE_s71003": {
+      "state": {
+        "job_id": "198170",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "SRF1_2_GATE_s71003"
+      },
+      "manifest_identity": {
+        "arm": "GATE",
+        "seed": 71003,
+        "model_id": "SRF1_2_GATE_s71003",
+        "updates": 96,
+        "gpu_count": 1,
+        "qos": "soujanya-poria-startfund-2026-03",
+        "config_sha256": "6df843ac8e6ae4eff30765a437a00f7a2617e012e0fb8bf1db635340cecfa5ce",
+        "reference_hash": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3"
+      },
+      "processes": {
+        "PROCESS-1791707166813505091-2083167.json": {
+          "checkpoint_field_hashes": {
+            "cursor": "42b79492e7be67423204d5fdc8b8ae37e830937c5988080e31a80cf350d0386e",
+            "optimizer": "3723bc3eae445100818fb3ce55612c45765b291a7101f5b0efa6af0ccd09743f",
+            "parameters": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+            "rng": "785d69dc073dd2d348f40c767490bd2b745c4b3156be89e331571a168dc7b558",
+            "scheduler": "6fe564fcde75945091fee28f22d3718ba4a05d6c24bf5623f49ac1fc1e6b9d83"
+          },
+          "initial_step": 0,
+          "job_id": "198170",
+          "pid": 2083167,
+          "restored_field_hashes": {
+            "cursor": "42b79492e7be67423204d5fdc8b8ae37e830937c5988080e31a80cf350d0386e",
+            "optimizer": "3723bc3eae445100818fb3ce55612c45765b291a7101f5b0efa6af0ccd09743f",
+            "parameters": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+            "rng": "785d69dc073dd2d348f40c767490bd2b745c4b3156be89e331571a168dc7b558",
+            "scheduler": "6fe564fcde75945091fee28f22d3718ba4a05d6c24bf5623f49ac1fc1e6b9d83"
+          },
+          "time_ns": 1791707166813505091
+        }
+      },
+      "rollout_groups": 8,
+      "updates": 0,
+      "scontrol": "JobId=198170 JobName=srf12-SRF1_2_GATE_s71003\n   UserId=varun024(295800338) GroupId=varun024(295800338) MCS_label=N/A\n   Priority=101 Nice=0 Account=rose QOS=soujanya-poria-startfund-2026-03\n   JobState=RUNNING Reason=None Dependency=(null)\n   Requeue=1 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   DerivedExitCode=0:0\n   RunTime=00:02:01 TimeLimit=3-00:00:00 TimeMin=N/A\n   SubmitTime=2026-10-11T08:20:49 EligibleTime=2026-10-11T08:20:50\n   AccrueTime=2026-10-11T08:20:50\n   StartTime=2026-10-11T08:25:41 EndTime=2026-10-14T08:25:41 Deadline=N/A\n   PreemptEligibleTime=2026-10-11T08:25:41 PreemptTime=None\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-11T08:25:41 Scheduler=Main\n   Partition=cluster02 AllocNode:Sid=cpu-2:3154845\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=gpu-pro6000-7\n   BatchHost=gpu-pro6000-7\n   NumNodes=1 NumCPUs=4 NumTasks=1 CPUs/Task=4 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=4,mem=90G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1\n   AllocTRES=cpu=4,mem=90G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   JOB_GRES=gpu:pro6000:1\n     Nodes=gpu-pro6000-7 CPU_IDs=8-11 Mem=92160 GRES=gpu:pro6000:1(IDX:2)\n   MinCPUsNode=4 MinMemoryNode=90G MinTmpDiskNode=0\n   Features=highmem DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null)\n   Command=/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/orchestration/tasks/SRF1_2_GATE_s71003/run.sbatch\n   WorkDir=/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/code_repair_r0001b\n   Comment=srf12-ce493e9176d38201bce0 \n   StdErr=/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/orchestration/tasks/SRF1_2_GATE_s71003/slurm-198170.log\n   StdIn=/dev/null\n   StdOut=/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/orchestration/tasks/SRF1_2_GATE_s71003/slurm-198170.log\n   Power=\n   TresPerNode=gres/gpu:pro6000:1\n   TresPerTask=cpu:4\n   \n\n"
+    }
+  }
+}

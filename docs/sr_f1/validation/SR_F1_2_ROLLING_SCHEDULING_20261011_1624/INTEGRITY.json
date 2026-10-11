@@ -1,0 +1,598 @@
+{
+  "at": "2026-10-11T08:24:03.020099+00:00",
+  "source_verified": 458,
+  "frozen_hashes_verified": true,
+  "mapped_checkpoints": {
+    "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_A_s71002/checkpoints": {
+      "target": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_A_s71002",
+      "files": 27
+    },
+    "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_J_s71002/checkpoints": {
+      "target": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_J_s71002",
+      "files": 21
+    },
+    "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_GATE_s71002/checkpoints": {
+      "target": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_GATE_s71002",
+      "files": 27
+    },
+    "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_DEC_s71002/checkpoints": {
+      "target": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_DEC_s71002",
+      "files": 21
+    },
+    "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_A_s71003/checkpoints": {
+      "target": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_A_s71003",
+      "files": 3
+    },
+    "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_J_s71003/checkpoints": {
+      "target": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_J_s71003",
+      "files": 0
+    },
+    "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_GATE_s71003/checkpoints": {
+      "target": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_GATE_s71003",
+      "files": 0
+    },
+    "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_DEC_s71003/checkpoints": {
+      "target": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_DEC_s71003",
+      "files": 0
+    }
+  },
+  "state": {
+    "at": "2026-10-11T08:23:50.751228+00:00",
+    "experiment_complete": false,
+    "failures": [],
+    "scheduler_job_id": "198167",
+    "scheduling_authorization": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/deployment/rolling_schedule_20261011/AUTHORIZATION.json",
+    "scheduling_policy": "REGISTERED_MATRIX_ROLLING_CAPACITY",
+    "scientific_complete": 6,
+    "scientific_total": 12,
+    "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+    "stage": "MAIN_TRAINING",
+    "tasks": {
+      "BASELINE_0": {
+        "job_id": "196826",
+        "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+        "status": "COMPLETE",
+        "task_id": "BASELINE_0"
+      },
+      "BASELINE_1": {
+        "job_id": "196827",
+        "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+        "status": "COMPLETE",
+        "task_id": "BASELINE_1"
+      },
+      "BASELINE_2": {
+        "job_id": "196828",
+        "source_sha256": "8e8443e352417ffc05d0bb2e6e396b6705b6e87ffc250f9bccf1284274df8d07",
+        "status": "COMPLETE",
+        "task_id": "BASELINE_2"
+      },
+      "SRF1_2_A_s71001": {
+        "job_id": "196939",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "COMPLETE",
+        "task_id": "SRF1_2_A_s71001"
+      },
+      "SRF1_2_A_s71002": {
+        "job_id": "197596",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "COMPLETE",
+        "task_id": "SRF1_2_A_s71002"
+      },
+      "SRF1_2_A_s71003": {
+        "job_id": "198168",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "SRF1_2_A_s71003"
+      },
+      "SRF1_2_DEC_s71001": {
+        "job_id": "196942",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "COMPLETE",
+        "task_id": "SRF1_2_DEC_s71001"
+      },
+      "SRF1_2_DEC_s71002": {
+        "job_id": "197649",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "SRF1_2_DEC_s71002"
+      },
+      "SRF1_2_GATE_s71001": {
+        "job_id": "196941",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "COMPLETE",
+        "task_id": "SRF1_2_GATE_s71001"
+      },
+      "SRF1_2_GATE_s71002": {
+        "job_id": "197598",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "COMPLETE",
+        "task_id": "SRF1_2_GATE_s71002"
+      },
+      "SRF1_2_GATE_s71003": {
+        "job_id": "198170",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "PENDING",
+        "task_id": "SRF1_2_GATE_s71003"
+      },
+      "SRF1_2_J_s71001": {
+        "job_id": "196940",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "COMPLETE",
+        "task_id": "SRF1_2_J_s71001"
+      },
+      "SRF1_2_J_s71002": {
+        "job_id": "197597",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "RUNNING",
+        "task_id": "SRF1_2_J_s71002"
+      },
+      "SRF1_2_J_s71003": {
+        "job_id": "198169",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "PENDING",
+        "task_id": "SRF1_2_J_s71003"
+      },
+      "TECHNICAL": {
+        "job_id": "196877",
+        "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+        "status": "COMPLETE",
+        "task_id": "TECHNICAL"
+      }
+    },
+    "teacher_gpu_usage": 5,
+    "unknown_submissions": [],
+    "version": "SR-F1.2-20261010"
+  },
+  "endpoint": {
+    "at": "2026-10-11T08:23:14.805563+00:00",
+    "endpoints_complete": 0,
+    "endpoints_total": 13,
+    "experiment_delivered": false,
+    "failures": [],
+    "report_pending": true,
+    "source_sha256": "56b52551f420765e3a7859351b99f75c35602c1dddb6ab60dd9ba566fd2bb337",
+    "stage": "WAITING_FOR_ALL_MAIN_TERMINAL",
+    "tasks": {},
+    "teacher_gpu_usage": 5,
+    "unknown_submissions": [],
+    "version": "SR-F1.2-20261010"
+  },
+  "runs": {
+    "SRF1_2_A_s71001": {
+      "job_id": "196939",
+      "updates": 96,
+      "checkpoint_step": 96,
+      "checkpoint": {
+        "field_hashes": {
+          "committed_logical_step": "b07bd093a5f79d4a356357cc202c0bac28b26efd843c0c60735c8f241acb46a1",
+          "cursor": "0c36c554680b4180fab9363622d52f285c946bd992cd1861cf8eaf5ae0f575ae",
+          "diagnostics_hash": "e52ec431115b8173bb69ae03894cad912c332b7973b5b1e749121cf8b7451dd1",
+          "input_stream_hash": "7879c125ef4c11baf80b14f24071e150d42b93d1039fc72db2e1001965e83a98",
+          "optimizer": "088d8e821860a7813364ca21985822325169d7c779f31573e45df2ef8f90a303",
+          "parameters": "dcc8ebb703155db9c1db8fab39020ac7ebd765ba1f68d692834af364ab18bb8e",
+          "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+          "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+          "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+          "rng": "6cfebfafcd8d2d97cd02ec4eb3e85ecda056631daa73eadb6104d66a5757b97c",
+          "run_identity": "f3ceefc34e3f33aa350d7173bb6b560427162997f437f3fa021af3a6574c503b",
+          "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+          "scheduler": "f4e633c075d12dcf6dcd802e3d8a88a5c992fb7edebe28e509be19e532ecb3f6",
+          "token_path_hash": "ccb751f0ef83cd89cff66b9f338ab8c51b4be2ed459aed2b49f0a153f5ca9633",
+          "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+        },
+        "path": "step-96-50b7a505c07cf47f89d1cbb9981d23ce420eaf67fe0755ab6ed9e56196aeaaf8.pt",
+        "sha256": "9cc2cfd71f96c9647c5b1c7c8b2b0eb3b838edb9c4bbd6bc6697ff024b29885e",
+        "state_hash": "50b7a505c07cf47f89d1cbb9981d23ce420eaf67fe0755ab6ed9e56196aeaaf8",
+        "step": 96
+      },
+      "checkpoint_bytes_verified": true,
+      "all_finite": true,
+      "sampler_mean_max": 0.0014027789002284408,
+      "tis_fraction_max": 0.00011687704682117328,
+      "mean_step_seconds": 371.9122268296099,
+      "raw_records": 12288,
+      "fit": {
+        "64": {
+          "count": 128,
+          "records_sha256": "9aedd7a2ff21783fcb9f1b89742ec241918cc0cdfe7e5475aeb5e392cdab273b",
+          "status": "COMPLETE"
+        },
+        "32": {
+          "count": 128,
+          "records_sha256": "325527a266f0179749e267ec58efa9a19aea87a1a86f8017ec9ad5b1c11ef82a",
+          "status": "COMPLETE"
+        },
+        "96": {
+          "count": 128,
+          "records_sha256": "4e8cab3abadfb212ecf3aac057d2a48ea137cf147667980822d833fd06623495",
+          "status": "COMPLETE"
+        }
+      },
+      "log_tail": "ed_logical_step\": \"b07bd093a5f79d4a356357cc202c0bac28b26efd843c0c60735c8f241acb46a1\", \"cursor\": \"0c36c554680b4180fab9363622d52f285c946bd992cd1861cf8eaf5ae0f575ae\", \"diagnostics_hash\": \"e52ec431115b8173bb69ae03894cad912c332b7973b5b1e749121cf8b7451dd1\", \"input_stream_hash\": \"7879c125ef4c11baf80b14f24071e150d42b93d1039fc72db2e1001965e83a98\", \"optimizer\": \"088d8e821860a7813364ca21985822325169d7c779f31573e45df2ef8f90a303\", \"parameters\": \"dcc8ebb703155db9c1db8fab39020ac7ebd765ba1f68d692834af364ab18bb8e\", \"plan_id\": \"d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca\", \"reference\": \"432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3\", \"reference_hash\": \"89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10\", \"rng\": \"6cfebfafcd8d2d97cd02ec4eb3e85ecda056631daa73eadb6104d66a5757b97c\", \"run_identity\": \"f3ceefc34e3f33aa350d7173bb6b560427162997f437f3fa021af3a6574c503b\", \"sampling_hash\": \"2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122\", \"scheduler\": \"f4e633c075d12dcf6dcd802e3d8a88a5c992fb7edebe28e509be19e532ecb3f6\", \"token_path_hash\": \"ccb751f0ef83cd89cff66b9f338ab8c51b4be2ed459aed2b49f0a153f5ca9633\", \"training_recipe\": \"c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062\"}, \"path\": \"step-96-50b7a505c07cf47f89d1cbb9981d23ce420eaf67fe0755ab6ed9e56196aeaaf8.pt\", \"sha256\": \"9cc2cfd71f96c9647c5b1c7c8b2b0eb3b838edb9c4bbd6bc6697ff024b29885e\", \"state_hash\": \"50b7a505c07cf47f89d1cbb9981d23ce420eaf67fe0755ab6ed9e56196aeaaf8\", \"step\": 96}, \"model_id\": \"SRF1_2_A_s71001\", \"status\": \"COMPLETE\", \"step\": 96, \"technical_only\": false}\n"
+    },
+    "SRF1_2_A_s71002": {
+      "job_id": "197596",
+      "updates": 96,
+      "checkpoint_step": 96,
+      "checkpoint": {
+        "field_hashes": {
+          "committed_logical_step": "b07bd093a5f79d4a356357cc202c0bac28b26efd843c0c60735c8f241acb46a1",
+          "cursor": "0c36c554680b4180fab9363622d52f285c946bd992cd1861cf8eaf5ae0f575ae",
+          "diagnostics_hash": "c683fa862214a3afe90a4f42bc713b260dbac577b9afc442f933339574c2d3ce",
+          "input_stream_hash": "d2a3a18da8824a1bfeb2e57ca2a7d05fd3af10f50621a689accaa06687a36594",
+          "optimizer": "32e7bd5025864e8cf98cfd0a22a6c276f0aa066d5a73a63db3ab38ec0c875052",
+          "parameters": "d7cb3188e8a72dd9506f7c2db29c67bf868ec56cb44cc9e7fa0df190924219bf",
+          "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+          "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+          "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+          "rng": "94d84700b03c8b069adb35ff3d8d6dce682cc4cfd500e5a43c9a32d0f3cbb24c",
+          "run_identity": "6c55137b680fa8b5b19b7b1ce8a4ee89411d2183fc879ace785d1fb5cae877a8",
+          "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+          "scheduler": "f4e633c075d12dcf6dcd802e3d8a88a5c992fb7edebe28e509be19e532ecb3f6",
+          "token_path_hash": "40b13b16c61efa2c68069e5b1a055dbe4b0dae5dea6e543739f788cc539f1e85",
+          "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+        },
+        "path": "step-96-5eaee7bbe49333cfbd44dc6f1b16871f725b33585856719c53fea71c543c052d.pt",
+        "sha256": "fca15b7cd2730e846ce1b17e9011ec96f47df1941c9737190422c9c96f846ed2",
+        "state_hash": "5eaee7bbe49333cfbd44dc6f1b16871f725b33585856719c53fea71c543c052d",
+        "step": 96
+      },
+      "checkpoint_bytes_verified": true,
+      "all_finite": true,
+      "sampler_mean_max": 0.0012583979405462742,
+      "tis_fraction_max": 0.00014418050704989582,
+      "mean_step_seconds": 375.76517099752283,
+      "raw_records": 12288,
+      "fit": {
+        "64": {
+          "count": 128,
+          "records_sha256": "4bb6455cc81b9471ffb50bcd710b3a5a823224661614ed746a3780224c554351",
+          "status": "COMPLETE"
+        },
+        "32": {
+          "count": 128,
+          "records_sha256": "d8d0f460535b96e021e37fb1e7864e3b53c764dd39ee49bfe759c7e217c3e6ec",
+          "status": "COMPLETE"
+        },
+        "96": {
+          "count": 128,
+          "records_sha256": "281a38f5f93eae163f35502e0e6fc902c52c5c3e439d6c0bd41cc16fd855462c",
+          "status": "COMPLETE"
+        }
+      },
+      "log_tail": "ed_logical_step\": \"b07bd093a5f79d4a356357cc202c0bac28b26efd843c0c60735c8f241acb46a1\", \"cursor\": \"0c36c554680b4180fab9363622d52f285c946bd992cd1861cf8eaf5ae0f575ae\", \"diagnostics_hash\": \"c683fa862214a3afe90a4f42bc713b260dbac577b9afc442f933339574c2d3ce\", \"input_stream_hash\": \"d2a3a18da8824a1bfeb2e57ca2a7d05fd3af10f50621a689accaa06687a36594\", \"optimizer\": \"32e7bd5025864e8cf98cfd0a22a6c276f0aa066d5a73a63db3ab38ec0c875052\", \"parameters\": \"d7cb3188e8a72dd9506f7c2db29c67bf868ec56cb44cc9e7fa0df190924219bf\", \"plan_id\": \"d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca\", \"reference\": \"432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3\", \"reference_hash\": \"89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10\", \"rng\": \"94d84700b03c8b069adb35ff3d8d6dce682cc4cfd500e5a43c9a32d0f3cbb24c\", \"run_identity\": \"6c55137b680fa8b5b19b7b1ce8a4ee89411d2183fc879ace785d1fb5cae877a8\", \"sampling_hash\": \"2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122\", \"scheduler\": \"f4e633c075d12dcf6dcd802e3d8a88a5c992fb7edebe28e509be19e532ecb3f6\", \"token_path_hash\": \"40b13b16c61efa2c68069e5b1a055dbe4b0dae5dea6e543739f788cc539f1e85\", \"training_recipe\": \"c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062\"}, \"path\": \"step-96-5eaee7bbe49333cfbd44dc6f1b16871f725b33585856719c53fea71c543c052d.pt\", \"sha256\": \"fca15b7cd2730e846ce1b17e9011ec96f47df1941c9737190422c9c96f846ed2\", \"state_hash\": \"5eaee7bbe49333cfbd44dc6f1b16871f725b33585856719c53fea71c543c052d\", \"step\": 96}, \"model_id\": \"SRF1_2_A_s71002\", \"status\": \"COMPLETE\", \"step\": 96, \"technical_only\": false}\n"
+    },
+    "SRF1_2_A_s71003": {
+      "job_id": "198168",
+      "updates": 0,
+      "status": "RUNNING"
+    },
+    "SRF1_2_DEC_s71001": {
+      "job_id": "196942",
+      "updates": 96,
+      "checkpoint_step": 96,
+      "checkpoint": {
+        "field_hashes": {
+          "committed_logical_step": "b07bd093a5f79d4a356357cc202c0bac28b26efd843c0c60735c8f241acb46a1",
+          "cursor": "0c36c554680b4180fab9363622d52f285c946bd992cd1861cf8eaf5ae0f575ae",
+          "diagnostics_hash": "594854c3199aff673d3acd843059824765f360f63b8e7c5307d8e276a9ae28ed",
+          "input_stream_hash": "7879c125ef4c11baf80b14f24071e150d42b93d1039fc72db2e1001965e83a98",
+          "optimizer": "92748afb1a3312df206783d6df5493a6f2deb988a37234e1cf40f7add90512b2",
+          "parameters": "48563f79ab4f49471ed4485bf5d7ceaeb9a6411018fc5557b7877c19de85223c",
+          "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+          "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+          "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+          "rng": "6cfebfafcd8d2d97cd02ec4eb3e85ecda056631daa73eadb6104d66a5757b97c",
+          "run_identity": "ea984842c5a7e5fcf7c61ae94416ed907ecfd5f9231bcfde6cab5ba172a8b58e",
+          "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+          "scheduler": "f4e633c075d12dcf6dcd802e3d8a88a5c992fb7edebe28e509be19e532ecb3f6",
+          "token_path_hash": "70b94d965ffeac4780f422556f34e39da439ec808802f57992bc649a8d70a47f",
+          "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+        },
+        "path": "step-96-a89e863c28ad17ff93d628efaf54cf30b215bcb30bf7e7356c9968570c2c160b.pt",
+        "sha256": "618e095d8cf617edf7fd39c481e26b0ab1c5da83b473d12985ed56455ed719a0",
+        "state_hash": "a89e863c28ad17ff93d628efaf54cf30b215bcb30bf7e7356c9968570c2c160b",
+        "step": 96
+      },
+      "checkpoint_bytes_verified": true,
+      "all_finite": true,
+      "sampler_mean_max": 0.001706165843643248,
+      "tis_fraction_max": 0.00011290929978713393,
+      "mean_step_seconds": 354.65092430331424,
+      "raw_records": 12288,
+      "fit": {
+        "64": {
+          "count": 128,
+          "records_sha256": "4aa55017a4b6e0ddfa69c592a8c4d180697d0e2788e966adbfbb5b7f43c12b8c",
+          "status": "COMPLETE"
+        },
+        "32": {
+          "count": 128,
+          "records_sha256": "80920fbeb02475d9b1297b5c9db14da1dfe2cf1863df9d131516cdc1d7e711d8",
+          "status": "COMPLETE"
+        },
+        "96": {
+          "count": 128,
+          "records_sha256": "7ca9c119524482fce436fa6fd50f66efb53daf2865eb670d8710d0905d31b215",
+          "status": "COMPLETE"
+        }
+      },
+      "log_tail": "_logical_step\": \"b07bd093a5f79d4a356357cc202c0bac28b26efd843c0c60735c8f241acb46a1\", \"cursor\": \"0c36c554680b4180fab9363622d52f285c946bd992cd1861cf8eaf5ae0f575ae\", \"diagnostics_hash\": \"594854c3199aff673d3acd843059824765f360f63b8e7c5307d8e276a9ae28ed\", \"input_stream_hash\": \"7879c125ef4c11baf80b14f24071e150d42b93d1039fc72db2e1001965e83a98\", \"optimizer\": \"92748afb1a3312df206783d6df5493a6f2deb988a37234e1cf40f7add90512b2\", \"parameters\": \"48563f79ab4f49471ed4485bf5d7ceaeb9a6411018fc5557b7877c19de85223c\", \"plan_id\": \"d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca\", \"reference\": \"432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3\", \"reference_hash\": \"89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10\", \"rng\": \"6cfebfafcd8d2d97cd02ec4eb3e85ecda056631daa73eadb6104d66a5757b97c\", \"run_identity\": \"ea984842c5a7e5fcf7c61ae94416ed907ecfd5f9231bcfde6cab5ba172a8b58e\", \"sampling_hash\": \"2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122\", \"scheduler\": \"f4e633c075d12dcf6dcd802e3d8a88a5c992fb7edebe28e509be19e532ecb3f6\", \"token_path_hash\": \"70b94d965ffeac4780f422556f34e39da439ec808802f57992bc649a8d70a47f\", \"training_recipe\": \"c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062\"}, \"path\": \"step-96-a89e863c28ad17ff93d628efaf54cf30b215bcb30bf7e7356c9968570c2c160b.pt\", \"sha256\": \"618e095d8cf617edf7fd39c481e26b0ab1c5da83b473d12985ed56455ed719a0\", \"state_hash\": \"a89e863c28ad17ff93d628efaf54cf30b215bcb30bf7e7356c9968570c2c160b\", \"step\": 96}, \"model_id\": \"SRF1_2_DEC_s71001\", \"status\": \"COMPLETE\", \"step\": 96, \"technical_only\": false}\n"
+    },
+    "SRF1_2_DEC_s71002": {
+      "job_id": "197649",
+      "updates": 78,
+      "checkpoint_step": 72,
+      "checkpoint": {
+        "field_hashes": {
+          "committed_logical_step": "e420ee80e5187391a9633b36a0c3ac001825a627362c80247d995efd2ac8c00f",
+          "cursor": "34f340cc6961ec67b562caf30a0256dbdf28b0a2296d0ff10fe16c7246ebd8f6",
+          "diagnostics_hash": "75ccc5b4e8be18adf037019cef56e42779c22e0d5bf8ec055324d0d4eb22bc59",
+          "input_stream_hash": "d2a3a18da8824a1bfeb2e57ca2a7d05fd3af10f50621a689accaa06687a36594",
+          "optimizer": "aa19654275367641bb39ddf64e7f7120dd87c301980f7131a3ba91741fb5efe6",
+          "parameters": "ebafc2220f53093bcf6d4e421f5977ed4e2a0b45fd1a025345aa7ac99958a660",
+          "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+          "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+          "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+          "rng": "94d84700b03c8b069adb35ff3d8d6dce682cc4cfd500e5a43c9a32d0f3cbb24c",
+          "run_identity": "5f3f23699b185973e604f3ed86f38e92ef69d7d24b8825216c72906307b9201f",
+          "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+          "scheduler": "2e93c6544a2ee11e554c8f9ad8ea9f301b4f916c877ec8a416f9e4fd806c0d65",
+          "token_path_hash": "cb101321ad4c638be81432d5cb4a5f73e86c54793867177d0507357571f32a3e",
+          "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+        },
+        "path": "step-72-8b04bb8b984a81c0034fcef5a60659e3087309e587dc9590996572686d1d98f7.pt",
+        "sha256": "ac5825bd7892ba973f792ad3ae4fbbfe23bd15c1d8941290181c902319510a44",
+        "state_hash": "8b04bb8b984a81c0034fcef5a60659e3087309e587dc9590996572686d1d98f7",
+        "step": 72
+      },
+      "checkpoint_bytes_verified": true,
+      "all_finite": true,
+      "sampler_mean_max": 0.0012583979405462742,
+      "tis_fraction_max": 0.00018488388741388917,
+      "mean_step_seconds": 357.10022603007906,
+      "raw_records": 10112,
+      "fit": {
+        "64": {
+          "count": 128,
+          "records_sha256": "bb9a8a21d7a9e057a2cf02346e3034ef57b28d4b7dbca8e845833cdd6079b1b2",
+          "status": "COMPLETE"
+        },
+        "32": {
+          "count": 128,
+          "records_sha256": "b2142f3d44bca48eb239d0ffa8ce3b43720eb02bf021feb9c3133a8deecc8c73",
+          "status": "COMPLETE"
+        }
+      },
+      "log_tail": "/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n"
+    },
+    "SRF1_2_GATE_s71001": {
+      "job_id": "196941",
+      "updates": 96,
+      "checkpoint_step": 96,
+      "checkpoint": {
+        "field_hashes": {
+          "committed_logical_step": "b07bd093a5f79d4a356357cc202c0bac28b26efd843c0c60735c8f241acb46a1",
+          "cursor": "0c36c554680b4180fab9363622d52f285c946bd992cd1861cf8eaf5ae0f575ae",
+          "diagnostics_hash": "64b3ccf548d9c35bfac485aa9a68d5c3dde5c2f26864e457326ab8088ef96d9d",
+          "input_stream_hash": "7879c125ef4c11baf80b14f24071e150d42b93d1039fc72db2e1001965e83a98",
+          "optimizer": "c3c53f90b4993b4b85fb9d7ce933941da24ea590e04f0027898bed98b8620cee",
+          "parameters": "55bd08a06f9afa70182ed8a0e19c93c5c7b4818a15db20094336ad26e83c7321",
+          "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+          "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+          "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+          "rng": "6cfebfafcd8d2d97cd02ec4eb3e85ecda056631daa73eadb6104d66a5757b97c",
+          "run_identity": "b146e4fb4ded4b575be4eb1c16999b053c3a5b5139206c1ee56c46ecb713fc3f",
+          "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+          "scheduler": "f4e633c075d12dcf6dcd802e3d8a88a5c992fb7edebe28e509be19e532ecb3f6",
+          "token_path_hash": "a7075d39918d594d9089fea174be3ae13c028226543418589de4bb235899095a",
+          "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+        },
+        "path": "step-96-cde2217030037d6fa177eca90fd065157c89a1d6e29387330457494c1a62835c.pt",
+        "sha256": "e6aa181c99ffe3df7461dd669d4affb55ad0d3ece57c19e6217a6626f1c999d1",
+        "state_hash": "cde2217030037d6fa177eca90fd065157c89a1d6e29387330457494c1a62835c",
+        "step": 96
+      },
+      "checkpoint_bytes_verified": true,
+      "all_finite": true,
+      "sampler_mean_max": 0.0016528344713151455,
+      "tis_fraction_max": 0.00011204063048353419,
+      "mean_step_seconds": 319.5255876970744,
+      "raw_records": 12288,
+      "fit": {
+        "64": {
+          "count": 128,
+          "records_sha256": "4c67fe960aaffc0d6a5144e27596f5aefb7e372c3f3ad0f4848f39e4be718904",
+          "status": "COMPLETE"
+        },
+        "32": {
+          "count": 128,
+          "records_sha256": "91ea99d5de21d0737adfc45a1aa28973ed112b2526dd135e9b32b0c958c9aac9",
+          "status": "COMPLETE"
+        },
+        "96": {
+          "count": 128,
+          "records_sha256": "62f61842ef9911607f829178e5d719f7c65cd918f3eae692b65a554cd7224ac1",
+          "status": "COMPLETE"
+        }
+      },
+      "log_tail": "logical_step\": \"b07bd093a5f79d4a356357cc202c0bac28b26efd843c0c60735c8f241acb46a1\", \"cursor\": \"0c36c554680b4180fab9363622d52f285c946bd992cd1861cf8eaf5ae0f575ae\", \"diagnostics_hash\": \"64b3ccf548d9c35bfac485aa9a68d5c3dde5c2f26864e457326ab8088ef96d9d\", \"input_stream_hash\": \"7879c125ef4c11baf80b14f24071e150d42b93d1039fc72db2e1001965e83a98\", \"optimizer\": \"c3c53f90b4993b4b85fb9d7ce933941da24ea590e04f0027898bed98b8620cee\", \"parameters\": \"55bd08a06f9afa70182ed8a0e19c93c5c7b4818a15db20094336ad26e83c7321\", \"plan_id\": \"d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca\", \"reference\": \"432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3\", \"reference_hash\": \"89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10\", \"rng\": \"6cfebfafcd8d2d97cd02ec4eb3e85ecda056631daa73eadb6104d66a5757b97c\", \"run_identity\": \"b146e4fb4ded4b575be4eb1c16999b053c3a5b5139206c1ee56c46ecb713fc3f\", \"sampling_hash\": \"2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122\", \"scheduler\": \"f4e633c075d12dcf6dcd802e3d8a88a5c992fb7edebe28e509be19e532ecb3f6\", \"token_path_hash\": \"a7075d39918d594d9089fea174be3ae13c028226543418589de4bb235899095a\", \"training_recipe\": \"c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062\"}, \"path\": \"step-96-cde2217030037d6fa177eca90fd065157c89a1d6e29387330457494c1a62835c.pt\", \"sha256\": \"e6aa181c99ffe3df7461dd669d4affb55ad0d3ece57c19e6217a6626f1c999d1\", \"state_hash\": \"cde2217030037d6fa177eca90fd065157c89a1d6e29387330457494c1a62835c\", \"step\": 96}, \"model_id\": \"SRF1_2_GATE_s71001\", \"status\": \"COMPLETE\", \"step\": 96, \"technical_only\": false}\n"
+    },
+    "SRF1_2_GATE_s71002": {
+      "job_id": "197598",
+      "updates": 96,
+      "checkpoint_step": 96,
+      "checkpoint": {
+        "field_hashes": {
+          "committed_logical_step": "b07bd093a5f79d4a356357cc202c0bac28b26efd843c0c60735c8f241acb46a1",
+          "cursor": "0c36c554680b4180fab9363622d52f285c946bd992cd1861cf8eaf5ae0f575ae",
+          "diagnostics_hash": "2828ff8cc276ea7943de08490986d14642f4cf5ea3ba71ff1e1a36490ab1dc65",
+          "input_stream_hash": "d2a3a18da8824a1bfeb2e57ca2a7d05fd3af10f50621a689accaa06687a36594",
+          "optimizer": "e4e99f805880a91f1b609e72bce4048cdf94ffa9883f1e02d83116af676b6ce6",
+          "parameters": "6bb3cd8b40d85af7752c1c7d8340c0b696c07176b124071780a9f354076a1bfe",
+          "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+          "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+          "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+          "rng": "94d84700b03c8b069adb35ff3d8d6dce682cc4cfd500e5a43c9a32d0f3cbb24c",
+          "run_identity": "53746bcdcf30dec239087aadfd64cc605486abcbe6d36214067c819c4b20b1ba",
+          "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+          "scheduler": "f4e633c075d12dcf6dcd802e3d8a88a5c992fb7edebe28e509be19e532ecb3f6",
+          "token_path_hash": "f9599ef20eedcef5320e94b289916b916dc76780331ac9c00f3f2afaf1cb0dc5",
+          "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+        },
+        "path": "step-96-0fc294ea2dfd7af3ab73c9e9d2a73ae4e7d66947cf86e21a6ee57d078d44727d.pt",
+        "sha256": "44444b7e068cb56ae045cb7c56a75285f211fb3a69ab7ff43b8ce23a1a9c4fd7",
+        "state_hash": "0fc294ea2dfd7af3ab73c9e9d2a73ae4e7d66947cf86e21a6ee57d078d44727d",
+        "step": 96
+      },
+      "checkpoint_bytes_verified": true,
+      "all_finite": true,
+      "sampler_mean_max": 0.0012955665588378906,
+      "tis_fraction_max": 0.00011107819591416046,
+      "mean_step_seconds": 355.4125557793547,
+      "raw_records": 12288,
+      "fit": {
+        "64": {
+          "count": 128,
+          "records_sha256": "2a7ac2035872f81aaac8ccf5515663f4875c37feac170862e13a83f5397aac6a",
+          "status": "COMPLETE"
+        },
+        "32": {
+          "count": 128,
+          "records_sha256": "1d1317f5e9ee1b3f46ec26b161ecb3fa75bbde20352e108bc732855a29f918e8",
+          "status": "COMPLETE"
+        },
+        "96": {
+          "count": 128,
+          "records_sha256": "98646e9698cffcbf821e6c94e5c93a452734b88b662335d92fd43fe3a239183d",
+          "status": "COMPLETE"
+        }
+      },
+      "log_tail": "logical_step\": \"b07bd093a5f79d4a356357cc202c0bac28b26efd843c0c60735c8f241acb46a1\", \"cursor\": \"0c36c554680b4180fab9363622d52f285c946bd992cd1861cf8eaf5ae0f575ae\", \"diagnostics_hash\": \"2828ff8cc276ea7943de08490986d14642f4cf5ea3ba71ff1e1a36490ab1dc65\", \"input_stream_hash\": \"d2a3a18da8824a1bfeb2e57ca2a7d05fd3af10f50621a689accaa06687a36594\", \"optimizer\": \"e4e99f805880a91f1b609e72bce4048cdf94ffa9883f1e02d83116af676b6ce6\", \"parameters\": \"6bb3cd8b40d85af7752c1c7d8340c0b696c07176b124071780a9f354076a1bfe\", \"plan_id\": \"d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca\", \"reference\": \"432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3\", \"reference_hash\": \"89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10\", \"rng\": \"94d84700b03c8b069adb35ff3d8d6dce682cc4cfd500e5a43c9a32d0f3cbb24c\", \"run_identity\": \"53746bcdcf30dec239087aadfd64cc605486abcbe6d36214067c819c4b20b1ba\", \"sampling_hash\": \"2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122\", \"scheduler\": \"f4e633c075d12dcf6dcd802e3d8a88a5c992fb7edebe28e509be19e532ecb3f6\", \"token_path_hash\": \"f9599ef20eedcef5320e94b289916b916dc76780331ac9c00f3f2afaf1cb0dc5\", \"training_recipe\": \"c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062\"}, \"path\": \"step-96-0fc294ea2dfd7af3ab73c9e9d2a73ae4e7d66947cf86e21a6ee57d078d44727d.pt\", \"sha256\": \"44444b7e068cb56ae045cb7c56a75285f211fb3a69ab7ff43b8ce23a1a9c4fd7\", \"state_hash\": \"0fc294ea2dfd7af3ab73c9e9d2a73ae4e7d66947cf86e21a6ee57d078d44727d\", \"step\": 96}, \"model_id\": \"SRF1_2_GATE_s71002\", \"status\": \"COMPLETE\", \"step\": 96, \"technical_only\": false}\n"
+    },
+    "SRF1_2_GATE_s71003": {
+      "job_id": "198170",
+      "updates": 0,
+      "status": "PENDING"
+    },
+    "SRF1_2_J_s71001": {
+      "job_id": "196940",
+      "updates": 96,
+      "checkpoint_step": 96,
+      "checkpoint": {
+        "field_hashes": {
+          "committed_logical_step": "b07bd093a5f79d4a356357cc202c0bac28b26efd843c0c60735c8f241acb46a1",
+          "cursor": "0c36c554680b4180fab9363622d52f285c946bd992cd1861cf8eaf5ae0f575ae",
+          "diagnostics_hash": "286ee4eabab0e6aad2e4bffda72110c9c7e4ac693a7c324d455130ae2f6296d5",
+          "input_stream_hash": "7879c125ef4c11baf80b14f24071e150d42b93d1039fc72db2e1001965e83a98",
+          "optimizer": "89f9f87c55651b59f3f43ac2eeb457cff63c5f466aa61d7b1fd233e86a963e32",
+          "parameters": "54ca8f830fc03f6c5d161f4ede11174baf6ea992983f02910a24224bc1a94cd8",
+          "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+          "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+          "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+          "rng": "6cfebfafcd8d2d97cd02ec4eb3e85ecda056631daa73eadb6104d66a5757b97c",
+          "run_identity": "0baf755569eb62f24723e389468097cd15a2baa667a54def3037c316b48e7017",
+          "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+          "scheduler": "f4e633c075d12dcf6dcd802e3d8a88a5c992fb7edebe28e509be19e532ecb3f6",
+          "token_path_hash": "a94d64cdd200c8cd9a9c340c1054edb2f0aa75ceb8acaea02f97ac77de075e5e",
+          "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+        },
+        "path": "step-96-44cee2a56ff47e88abf139e59c73881f88751640576d91637983cb49f73c9c7f.pt",
+        "sha256": "1a7ec9c03d5ebe88abbbd74395b617855aace543167e831857fdd3606eecbb81",
+        "state_hash": "44cee2a56ff47e88abf139e59c73881f88751640576d91637983cb49f73c9c7f",
+        "step": 96
+      },
+      "checkpoint_bytes_verified": true,
+      "all_finite": true,
+      "sampler_mean_max": 0.0017086106818169355,
+      "tis_fraction_max": 0.0001259022974409163,
+      "mean_step_seconds": 324.0952221396304,
+      "raw_records": 12288,
+      "fit": {
+        "64": {
+          "count": 128,
+          "records_sha256": "065321c6459b2892455e369673e418491f121edd080435c79f100e536b428378",
+          "status": "COMPLETE"
+        },
+        "32": {
+          "count": 128,
+          "records_sha256": "cf19f1b90276d701d93353580e97a8ffa73cad9a19d32d9ccffad9ad3570bf22",
+          "status": "COMPLETE"
+        },
+        "96": {
+          "count": 128,
+          "records_sha256": "bb82e4f2a62ca4202fe587cc0a461f01eb3ccc5b2cc4010333b92a107dc3e71b",
+          "status": "COMPLETE"
+        }
+      },
+      "log_tail": "ed_logical_step\": \"b07bd093a5f79d4a356357cc202c0bac28b26efd843c0c60735c8f241acb46a1\", \"cursor\": \"0c36c554680b4180fab9363622d52f285c946bd992cd1861cf8eaf5ae0f575ae\", \"diagnostics_hash\": \"286ee4eabab0e6aad2e4bffda72110c9c7e4ac693a7c324d455130ae2f6296d5\", \"input_stream_hash\": \"7879c125ef4c11baf80b14f24071e150d42b93d1039fc72db2e1001965e83a98\", \"optimizer\": \"89f9f87c55651b59f3f43ac2eeb457cff63c5f466aa61d7b1fd233e86a963e32\", \"parameters\": \"54ca8f830fc03f6c5d161f4ede11174baf6ea992983f02910a24224bc1a94cd8\", \"plan_id\": \"d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca\", \"reference\": \"432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3\", \"reference_hash\": \"89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10\", \"rng\": \"6cfebfafcd8d2d97cd02ec4eb3e85ecda056631daa73eadb6104d66a5757b97c\", \"run_identity\": \"0baf755569eb62f24723e389468097cd15a2baa667a54def3037c316b48e7017\", \"sampling_hash\": \"2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122\", \"scheduler\": \"f4e633c075d12dcf6dcd802e3d8a88a5c992fb7edebe28e509be19e532ecb3f6\", \"token_path_hash\": \"a94d64cdd200c8cd9a9c340c1054edb2f0aa75ceb8acaea02f97ac77de075e5e\", \"training_recipe\": \"c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062\"}, \"path\": \"step-96-44cee2a56ff47e88abf139e59c73881f88751640576d91637983cb49f73c9c7f.pt\", \"sha256\": \"1a7ec9c03d5ebe88abbbd74395b617855aace543167e831857fdd3606eecbb81\", \"state_hash\": \"44cee2a56ff47e88abf139e59c73881f88751640576d91637983cb49f73c9c7f\", \"step\": 96}, \"model_id\": \"SRF1_2_J_s71001\", \"status\": \"COMPLETE\", \"step\": 96, \"technical_only\": false}\n"
+    },
+    "SRF1_2_J_s71002": {
+      "job_id": "197597",
+      "updates": 76,
+      "checkpoint_step": 72,
+      "checkpoint": {
+        "field_hashes": {
+          "committed_logical_step": "e420ee80e5187391a9633b36a0c3ac001825a627362c80247d995efd2ac8c00f",
+          "cursor": "34f340cc6961ec67b562caf30a0256dbdf28b0a2296d0ff10fe16c7246ebd8f6",
+          "diagnostics_hash": "b731c84d06b55d17333e45430b80d736160e8ad27685332ce7cd382d434eb378",
+          "input_stream_hash": "d2a3a18da8824a1bfeb2e57ca2a7d05fd3af10f50621a689accaa06687a36594",
+          "optimizer": "93105535cee79a4ec53b9f60abef23d2c1b901ece2cda6ee6d72ea3f52d59816",
+          "parameters": "62285ada7d852860a3f869edc589aefd3f658c7bf50aae9d36eed2659a280674",
+          "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+          "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+          "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+          "rng": "94d84700b03c8b069adb35ff3d8d6dce682cc4cfd500e5a43c9a32d0f3cbb24c",
+          "run_identity": "b62525d09e46bd49566cf75a69410b04f907d9fde95a01914812b10f54469cb9",
+          "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+          "scheduler": "2e93c6544a2ee11e554c8f9ad8ea9f301b4f916c877ec8a416f9e4fd806c0d65",
+          "token_path_hash": "3f6ded64702ad33e7fff9b17689b973f0ccc44d66fd935239d9db364e8b6f44f",
+          "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+        },
+        "path": "step-72-4c15b8fa2e697a36d3037187f3be0b80b08a3cda34039fad026eacc0ea660dae.pt",
+        "sha256": "d3afca6edbb0d5e3dfa7b15b67f4669f270f612f03ae920bdc640afaf51185b7",
+        "state_hash": "4c15b8fa2e697a36d3037187f3be0b80b08a3cda34039fad026eacc0ea660dae",
+        "step": 72
+      },
+      "checkpoint_bytes_verified": true,
+      "all_finite": true,
+      "sampler_mean_max": 0.0012583979405462742,
+      "tis_fraction_max": 7.476635801140219e-05,
+      "mean_step_seconds": 495.04592438078924,
+      "raw_records": 9856,
+      "fit": {
+        "64": {
+          "count": 128,
+          "records_sha256": "57c258f358f927ce41e16072ed507f2548dff0fca623b692cb2278cd8a8825e5",
+          "status": "COMPLETE"
+        },
+        "32": {
+          "count": 128,
+          "records_sha256": "f6bba5ff6cbde7507399458198d5fbb405c789f8cb7964e5665f869d747e9e3d",
+          "status": "COMPLETE"
+        }
+      },
+      "log_tail": "/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n"
+    },
+    "SRF1_2_J_s71003": {
+      "job_id": "198169",
+      "updates": 0,
+      "status": "PENDING"
+    }
+  },
+  "quota": {
+    "/projects/_ssd/varunssd": {
+      "cap": 750000000000,
+      "used": 706787236323,
+      "remaining": 43212763677
+    },
+    "/projects/_hdd/varunhdd": {
+      "cap": 5000000000000,
+      "used": 649404725796,
+      "remaining": 4350595274204
+    }
+  },
+  "technical_and_freeze_bindings_verified": true,
+  "queue": "198169|srf12-SRF1_2_J_s71003|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-7\n198170|srf12-SRF1_2_GATE_s71003|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-7\n198168|srf12-SRF1_2_A_s71003|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-7\n197649|srf12-SRF1_2_DEC_s71002|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-2\n197597|srf12-SRF1_2_J_s71002|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1|gpu-pro6000-11\n198167|srf12-controller-rolling|RUNNING|override-limits-but-killable|N/A|cpu-2\n196876|srf12-endpoint-r0001b|RUNNING|override-limits-but-killable|N/A|cpu-2\n",
+  "accounting": "196826|COMPLETED|0:0\n196827|COMPLETED|0:0\n196828|COMPLETED|0:0\n196877|COMPLETED|0:0\n196939|COMPLETED|0:0\n196940|COMPLETED|0:0\n196941|COMPLETED|0:0\n196942|COMPLETED|0:0\n197596|COMPLETED|0:0\n197597|RUNNING|0:0\n197598|COMPLETED|0:0\n197649|RUNNING|0:0\n198168|RUNNING|0:0\n198169|RUNNING|0:0\n198170|RUNNING|0:0\n"
+}

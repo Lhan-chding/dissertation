@@ -11,3 +11,9 @@
 部署目录：`deployment/rolling_schedule_20261011`，保存独立SOURCE/AUTHORIZATION、CPU验证、旧CPU停止及新CPU提交/释放回执；不得重复执行已消费的操作。
 
 本地验证：调度/端点/协议69项通过，新增回归覆盖跨波填满容量、第五提交限制、重复tick、最后槽位接续、未知/失败/队列错误、孤立INTENT、终点边界、覆盖程序及冻结文件篡改拒绝。服务器验证与实际jobid另记执行回执和EXECUTION_STATUS。
+
+部署已完成（2026-10-11 16:24新加坡）：普通CPU198166的69项测试通过且COMPLETED0:0；旧主CPU196875经精确身份检查后有意取消、终态及唯一锁释放核验通过，新主CPU198167实际RUNNING。第三A198168已实际启动，J198169/GATE198170排队，DEC按下一可用额度补交；第二J/DEC及端点CPU均未停止。教师提交额度和GPU预留均5/5，实际3GPU运行、2GPU排队。回执见validation/SR_F1_2_ROLLING_SCHEDULING_20261011_1624。
+
+执行操作脚本逐字留存在validation/f12_ops/rolling_schedule_20261011_{prepare,cutover}_executed.py.txt，仅用于审计，严禁重跑。首次准备调用曾误用缺少numpy的系统Python，在导入阶段退出、没有写回执或提交作业；改用原生产Python后完成验证和部署。
+
+最终队列更新（2026-10-11T08:27:42.425342+00:00）：第三种子A198168/J198169/GATE198170全部实际RUNNING，三者分别单卡，加上第二种子J197597/DEC197649，五GPU均实际运行。原08:24的两个PENDING已结束，科学设置与提交身份保持；第三DEC仍由下一空闲额度自动接续。详见FINAL_QUEUE.json。

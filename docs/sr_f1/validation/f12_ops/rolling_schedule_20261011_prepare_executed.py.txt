@@ -1,0 +1,25 @@
+from pathlib import Path
+import sys,json,subprocess,shlex
+r=Path('/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010');c=r/'code_repair_r0001b';d=r/'deployment/rolling_schedule_20261011';ops=d/'ops';py='/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12'
+sys.path.insert(0,str(c/'src'))
+from sr_f12.orchestration import save_json,file_hash,Slurm,now
+from sr_f12.evaluation import verify_source_manifest
+files={'scripts/sr_f12/rolling_controller.py':'24a4f14501e26873da1afb267bc9f8d7f70ed27f6a90e6cc36973e7c2d1b194c','tests/sr_f12/test_orchestration.py':'26e7ea5ecc5ce0724d2bb477024b0c1f7c4b00b0a135a7bbdac172bdc91f42c3'}
+assert all(file_hash(ops/n)==h for n,h in files.items())
+source=verify_source_manifest(r/'source_r0001b.json',c)
+save_json(d/'SOURCE.json',dict(commit='820597094b2c0b1fc11fd6bf416be6ce7e2a47e0',files=files,production_source_sha256=source),exclusive=True)
+frozen=['SCIENCE_FREEZE.json','config/SR_F1_2_FROZEN.json','TECHNICAL_CHECK_SR_F1_2.json','SEMANTIC_PREDICTIONS.json']
+save_json(d/'AUTHORIZATION.json',dict(policy='REGISTERED_MATRIX_ROLLING_CAPACITY',run_root=str(r),production_source_sha256=source,overlay_sha256=files['scripts/sr_f12/rolling_controller.py'],max_submit_pu=5,gpu_limit=5,frozen_file_sha256={n:file_hash(r/n) for n in frozen},authorized_at=now(),user_instruction='现在A和GATE都跑完了，为什么不直接用空出来的卡跑第三个种子？如果不影响实验可比性，就提前并行跑起来，别让卡闲着。',old_controller_job_id='196875',scientific_settings_unchanged=True),exclusive=True)
+cmd=[py,'-m','pytest',str(ops/'tests/sr_f12/test_orchestration.py'),*[str(c/'tests/sr_f12'/n) for n in ['test_endpoint_orchestration.py','test_endpoint.py','test_protocol.py']],'-q']
+validation='import subprocess,json,pathlib\np=subprocess.run('+repr(cmd)+',text=True,capture_output=True)\nwith pathlib.Path('+repr(str(d/'VALIDATION.json'))+').open("x") as f:json.dump(dict(returncode=p.returncode,stdout=p.stdout,stderr=p.stderr),f,indent=2)\nprint(p.stdout);print(p.stderr)\nraise SystemExit(p.returncode)\n'
+(d/'validate.py').write_text(validation)
+script=d/'validate.sbatch';script.write_text('#!/bin/bash\nset -euo pipefail\nexport PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1\nexport PYTHONPATH='+str(c/'src')+'\ncd '+str(ops)+'\nexec '+shlex.join([py,str(d/'validate.py')])+'\n')
+s=Slurm();args=['sbatch','--hold','--parsable','--account=rose','--partition=cluster02','--qos=override-limits-but-killable','--cpus-per-task=2','--mem=12G','--time=10','--job-name=srf12-rolling-validation','--output='+str(d/'validation-%j.log'),str(script)]
+assert not (d/'VALIDATION_INTENT.json').exists()
+save_json(d/'VALIDATION_INTENT.json',dict(args=args,script_sha256=file_hash(script),at=now()),exclusive=True)
+p=s.run(args);save_json(d/'VALIDATION_SUBMISSION.json',dict(returncode=p.returncode,stdout=p.stdout,stderr=p.stderr),exclusive=True);assert p.returncode==0,p.stderr
+job=p.stdout.strip().split(';')[0];assert job.isdigit();f=s.show(job)
+assert f['Command']==str(script) and f['UserId'].split('(')[0]=='varun024' and f['QOS']=='override-limits-but-killable' and f['JobState']=='PENDING' and f['Reason']=='JobHeldUser' and 'gres/gpu' not in f['ReqTRES']
+save_json(d/'VALIDATION_RELEASE_INTENT.json',dict(job_id=job,fields=f),exclusive=True)
+p=s.run(['scontrol','release',job]);save_json(d/'VALIDATION_RELEASE.json',dict(job_id=job,returncode=p.returncode,stdout=p.stdout,stderr=p.stderr),exclusive=True);assert p.returncode==0
+print('VALIDATION_JOB',job)
