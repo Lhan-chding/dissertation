@@ -1,0 +1,15 @@
+# SR-F1.2 完成模型提前评价、训练优先与结果封存
+
+2026-10-11用户直接授权：已完成模型可利用空余卡提前评价，结果先封存不看；保持实验可比性，不抢剩余训练资源。此授权替代此前将“生成TEST”和“放开评分”共同绑定全12训练终态的工程门禁，不改AMENDMENT、科学冻结或训练生产源。
+
+评价与训练按模型独立。提前评价只加载某条路径最终step96 adapter，不回流训练或选择模型。输入、slots、采样seed、协议、生成上限、模型与13模型227700条矩阵保持；不新增实验或重采样。BASELINE仍等全12训练验收后生成评价，已完成科学模型可提前。
+
+新实现使用独立源码清单与EARLY_ENDPOINT_IMPLEMENTATION.json，并保留旧ENDPOINT_IMPLEMENTATION及endpoint CONFIG。每个模型的model_acceptance记录真实Slurm COMPLETED0:0、离队、提交脚本身份、原训练源、完整step96 checkpoint/Adam/adapter与FIT32/64/96。提交、释放、worker读TEST前各自核验；早期回执用generation_authorization_sha256，不冒充MAIN_ACCEPTANCE。生成所有面板score_non_test=False，只持久化原始输出、身份/覆盖/哈希。监控只读技术状态和计数，不读回答或评分。sealed为协议封存目录，不声称加密隔离。
+
+训练优先规则：必须全部12科学路径已有唯一有效任务，各为实时RUNNING或真实成功终态，且无待提交、PENDING、HELD、失败、未知，才能使用余量提交评价。原rolling主控制器此时已无未提交key，现有INTENT不重提，因此无需修改或重启主CPU。评价唯一控制锁保证只有一个评价提交者；切换前须核实旧评价CPU终态与锁释放。提交及释放都重新计入训练、评价及未知预留，同时限制五物理GPU和教师MaxSubmitPU五作业。下一个空位优先让第三种子DEC运行。
+
+评价提交排除当时所有活跃训练节点，释放前再次核验节点排除，防止CPU/内存同节点竞争；监控需留意Slurm迁移/重排队与训练吞吐。共享文件系统和网络仍可能有争用，不保证绝对零降速；发现实质训练降速需保存证据后优先保护训练，不能静默重采样。CPU控制器使用普通QoS。
+
+放分门禁仍要求全部12训练真实终态、完整状态验收，以及全部13评价真实终态/覆盖/哈希通过。release_scores首先调用原全矩阵门禁，再把早期单模型模型路径/冻结/配置与最终全矩阵逐项关联。不会提前输出指标、排名、样例或选择性删样。最终EVALUATIONS_COMPLETE_REPORT_PENDING仍需中文报告与证据交付。
+
+部署使用deployment/early_sealed_20261011不可变SOURCE/AUTHORIZATION、CPU验证、旧评价CPU停止、新评价CPU提交释放回执。不得覆盖、重复部署或恢复旧评价等待器。生产6cd2、458文件、主CPU198167和GPU训练保持。后续jobid从实时endpoint STATE/tasks发现。

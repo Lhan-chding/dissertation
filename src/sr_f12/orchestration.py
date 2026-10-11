@@ -371,6 +371,10 @@ class Controller:
             ]
         raise PermissionError("Unregistered task")
 
+    def submission_options(self, key):
+        """Optional placement constraints for independently registered controllers."""
+        return []
+
     def submit(self, key, queue):
         """An intent exists before sbatch; any ambiguous result is never retried."""
         directory = self.task_dir(key)
@@ -421,6 +425,7 @@ class Controller:
             "--job-name=" + intent["job_name"],
             "--comment=" + intent["comment"],
             "--output=" + str(directory / "slurm-%j.log"),
+            *self.submission_options(key),
             str(script),
         ]
         intent["sbatch"] = args

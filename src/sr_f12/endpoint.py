@@ -44,7 +44,7 @@ def bounded_file(directory, relative):
     return path
 
 
-def verify_main_completion(root, *, state_loader=None):
+def verify_main_completion(root, *, state_loader=None, model_ids=None):
     """Authenticate actual final state and adapters, not just COMPLETE file existence."""
     from .runner import validate_technical_receipt
     from .training import CHECKPOINT_FIELDS, PLAN_ID
@@ -70,8 +70,19 @@ def verify_main_completion(root, *, state_loader=None):
         def state_loader(path):
             return torch.load(path, map_location="cpu", weights_only=False)
 
+    matrix = scientific_matrix()
+    if model_ids is not None:
+        if (
+            not isinstance(model_ids, (list, tuple))
+            or not model_ids
+            or any(not isinstance(model, str) for model in model_ids)
+            or len(set(model_ids)) != len(model_ids)
+            or not set(model_ids).issubset({run["model_id"] for run in matrix})
+        ):
+            raise PermissionError("Invalid unique registered model selection")
+        matrix = [run for run in matrix if run["model_id"] in model_ids]
     paths = []
-    for run in scientific_matrix():
+    for run in matrix:
         directory = root / "runs" / run["model_id"]
         manifest = read_json(directory / "RUN_MANIFEST.json")
         done = read_json(directory / "COMPLETE.json")
@@ -149,7 +160,11 @@ def verify_main_completion(root, *, state_loader=None):
         )
         del state
     return dict(
-        status="ALL_TWELVE_MAIN_PATHS_VERIFIED",
+        status=(
+            "ALL_TWELVE_MAIN_PATHS_VERIFIED"
+            if model_ids is None
+            else "SELECTED_MAIN_PATHS_VERIFIED"
+        ),
         science_freeze_sha256=object_hash(freeze),
         config_sha256=object_hash(plan),
         paths=paths,
@@ -333,18 +348,32 @@ def read_completed_panel(directory):
     return rows
 
 
-def run_endpoint(root, model_id, *, source_manifest, code_root, model_path):
+def run_endpoint(root, model_id, *, source_manifest, code_root, model_path, early_sealed=False):
     """One GPU per endpoint; scheduler may run independent models on free teacher-QoS cards."""
     root = Path(root).resolve(strict=True)
     if (root / "STOP").exists():
         raise PermissionError("STOP requested")
     source_hash = verify_source_manifest(source_manifest, code_root)
-    release = verify_endpoint_authorization(root)
+    if early_sealed:
+        from .early_authorization import (
+            verify_early_implementation,
+            verify_generation_authorization,
+        )
+
+        source_commit = read_json(source_manifest)["git_commit"]
+        verify_early_implementation(root, code_root, source_manifest, source_commit)
+        release = verify_generation_authorization(root, model_id)
+    else:
+        release = verify_endpoint_authorization(root)
     matrix = {r["model_id"] for r in scientific_matrix()}
     if model_id not in matrix | {BASELINE}:
         raise PermissionError("Unregistered main endpoint model")
     directory = root / "sealed/evaluation" / model_id
-    durable_json(directory / "RELEASE_AUTHORIZATION.json", release)
+    durable_json(
+        directory
+        / ("GENERATION_AUTHORIZATION.json" if early_sealed else "RELEASE_AUTHORIZATION.json"),
+        release,
+    )
     identity = read_json(root / "MODEL_ENVIRONMENT_IDENTITY.json")
     if Path(model_path).resolve(strict=True) != Path(identity["model_path"]).resolve(strict=True):
         raise PermissionError("Endpoint base path differs")
@@ -387,7 +416,7 @@ def run_endpoint(root, model_id, *, source_manifest, code_root, model_path):
         != adapter_identity["policy_hash"]
     ):
         raise PermissionError("Actually loaded endpoint adapter differs from final state")
-    # Input acquisition is deliberately after the complete-matrix gate.
+    # Input acquisition follows the appropriate verified generation gate; scoring stays sealed.
     tasks = {r["qid"]: r for r in read_jsonl(root / "manifests/TASKS_GOLD_AUDIT_ONLY.jsonl")}
     inputs = {r["qid"]: r for r in read_jsonl(root / "manifests/MODEL_INPUTS.jsonl")}
     diagnostics = {
@@ -448,10 +477,16 @@ def run_endpoint(root, model_id, *, source_manifest, code_root, model_path):
         model_id=model_id,
         records=expected,
         source_sha256=source_hash,
-        main_completion_sha256=object_hash(release),
         panels=results,
         aggregate_scores_released=False,
     )
+    if early_sealed:
+        receipt.update(
+            generation_authorization_sha256=object_hash(release),
+            generation_gate="MODEL_TERMINAL_SEALED",
+        )
+    else:
+        receipt["main_completion_sha256"] = object_hash(release)
     durable_json(directory / "COMPLETE.json", receipt)
     return receipt
 
@@ -464,9 +499,25 @@ def release_scores(root, model_id):
         raise PermissionError("Unregistered endpoint model")
     source = root / "sealed/evaluation" / model_id
     complete = read_json(source / "COMPLETE.json")
-    if complete.get("status") != "COMPLETE" or complete.get(
-        "main_completion_sha256"
-    ) != object_hash(authorization):
+    if complete.get("status") != "COMPLETE":
+        raise PermissionError("Evaluation is incomplete")
+    if complete.get("generation_gate") == "MODEL_TERMINAL_SEALED":
+        from .early_authorization import verify_generation_authorization
+
+        generation = verify_generation_authorization(root, model_id)
+        selected = generation["model_completion"]
+        expected_paths = [row for row in authorization["paths"] if row["model_id"] == model_id]
+        if (
+            complete.get("generation_authorization_sha256") != object_hash(generation)
+            or read_json(source / "GENERATION_AUTHORIZATION.json") != generation
+            or selected["paths"] != expected_paths
+            or len(expected_paths) != 1
+            or selected["science_freeze_sha256"] != authorization["science_freeze_sha256"]
+            or selected["config_sha256"] != authorization["config_sha256"]
+            or "main_completion_sha256" in complete
+        ):
+            raise PermissionError("Early generation differs from final matrix authorization")
+    elif complete.get("main_completion_sha256") != object_hash(authorization):
         raise PermissionError("Evaluation was not bound to the complete main matrix")
     tasks = {r["qid"]: r for r in read_jsonl(root / "manifests/TASKS_GOLD_AUDIT_ONLY.jsonl")}
     chart = {r["qid"]: r for r in load_verified_manifest(root)}
