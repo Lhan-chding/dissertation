@@ -56,7 +56,7 @@ class FakeSlurm:
         if args[0] == "sbatch":
             if self.fail_submit:
                 return SimpleNamespace(returncode=1, stdout="", stderr="ambiguous transport")
-            job = str(100 + len(self.jobs))
+            job = str(99 + sum(call[0] == "sbatch" for call in self.calls))
             options = dict(
                 arg[2:].split("=", 1) for arg in args if arg.startswith("--") and "=" in arg
             )
@@ -249,6 +249,141 @@ def test_science_waits_previous_wave(controller, monkeypatch):
     assert all(key.endswith("s71001") for key in science)
     result = controller.tick()
     assert not any(key.endswith("s71002") for key in result["tasks"])
+
+
+@pytest.fixture
+def rolling(controller, monkeypatch):
+    import importlib.util
+    from pathlib import Path
+    from sr_f12.protocol import scientific_matrix
+
+    path = Path(__file__).resolve().parents[2] / "scripts/sr_f12/rolling_controller.py"
+    spec = importlib.util.spec_from_file_location("rolling_overlay", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    controller.__class__ = module.RollingController
+    controller.authorization = controller.root / "AUTHORIZATION.json"
+    for key in ("TECHNICAL", "BASELINE_0", "BASELINE_1", "BASELINE_2"):
+        save_json(controller.task_dir(key) / "STATE.json", dict(task_id=key, status="COMPLETE"))
+    for run in scientific_matrix():
+        if run["seed"] == 71003:
+            continue
+        key = run["model_id"]
+        status = "RUNNING" if run["seed"] == 71002 and run["arm"] in ("J", "DEC") else "COMPLETE"
+        row = dict(task_id=key, status=status)
+        if status == "RUNNING":
+            job = "900" if run["arm"] == "J" else "901"
+            row["job_id"] = job
+            controller.slurm.jobs[job] = dict(QOS=TEACHER_QOS, ReqTRES="gres/gpu=1")
+        save_json(controller.task_dir(key) / "STATE.json", row)
+    monkeypatch.setattr(controller, "refresh", lambda queue: None)
+    monkeypatch.setattr(controller, "freeze", lambda: {})
+    return controller
+
+
+def test_rolling_fills_three_free_slots_without_waiting_for_second_seed(rolling):
+    result = rolling.tick()
+    third = [k for k in result["tasks"] if k.endswith("s71003")]
+    assert third == ["SRF1_2_A_s71003", "SRF1_2_GATE_s71003", "SRF1_2_J_s71003"]
+    submissions = [call for call in rolling.slurm.calls if call[0] == "sbatch"]
+    assert [next(a for a in call if a.startswith("--job-name=")) for call in submissions] == [
+        "--job-name=srf12-SRF1_2_A_s71003", "--job-name=srf12-SRF1_2_J_s71003",
+        "--job-name=srf12-SRF1_2_GATE_s71003",
+    ]
+    assert result["teacher_gpu_usage"] == 5
+    assert rolling.command(third[0]) == Controller.command(rolling, third[0])
+    calls = len(rolling.slurm.calls)
+    rolling.tick()
+    assert len(rolling.slurm.calls) == calls
+
+
+def test_rolling_fills_final_slot_after_capacity_frees(rolling):
+    rolling.tick()
+    rolling.slurm.jobs.pop("900")
+    key = "SRF1_2_J_s71002"
+    save_json(rolling.task_dir(key) / "STATE.json", dict(task_id=key, status="COMPLETE", job_id="900"))
+    result = rolling.tick()
+    assert result["tasks"]["SRF1_2_DEC_s71003"]["status"] == "SUBMITTED"
+    assert result["teacher_gpu_usage"] == 5
+
+
+def test_rolling_counts_teacher_cpu_jobs_against_submit_limit(rolling):
+    rolling.slurm.jobs["999"] = dict(QOS=TEACHER_QOS, ReqTRES="cpu=2")
+    result = rolling.tick()
+    assert len([k for k in result["tasks"] if k.endswith("s71003")]) == 2
+    assert result["teacher_gpu_usage"] == 4
+    assert rolling.slurm.jobs["999"] == dict(QOS=TEACHER_QOS, ReqTRES="cpu=2")
+
+
+def test_rolling_ambiguous_submission_blocks_later_paths_and_retry(rolling):
+    rolling.slurm.fail_submit = True
+    result = rolling.tick()
+    assert result["stage"] == "BLOCKED_UNKNOWN_SUBMISSION"
+    assert len(rolling.slurm.calls) == 1
+    rolling.tick()
+    assert len(rolling.slurm.calls) == 1
+
+
+def test_rolling_failure_blocks_all_new_submissions(rolling):
+    key = "SRF1_2_J_s71002"
+    save_json(rolling.task_dir(key) / "STATE.json", dict(task_id=key, status="FAILED", job_id="900"))
+    assert rolling.tick()["stage"] == "BLOCKED_TECHNICAL_FAILURE"
+    assert rolling.slurm.calls == []
+
+
+def test_rolling_queue_error_never_submits(rolling, monkeypatch):
+    def unavailable(user):
+        raise RuntimeError("SSH or queue unavailable")
+    monkeypatch.setattr(rolling.slurm, "queue", unavailable)
+    with pytest.raises(RuntimeError, match="unavailable"):
+        rolling.tick()
+    assert rolling.slurm.calls == []
+
+
+def test_rolling_all_complete_keeps_endpoint_boundary(rolling):
+    from sr_f12.protocol import scientific_matrix
+    for run in scientific_matrix():
+        key = run["model_id"]
+        save_json(rolling.task_dir(key) / "STATE.json", dict(task_id=key, status="COMPLETE"))
+    result = rolling.tick()
+    assert result["stage"] == "BLOCKED_ENDPOINT_EVALUATION_NOT_CONFIGURED"
+    assert result["scientific_complete"] == 12
+    assert rolling.slurm.calls == []
+
+
+def test_rolling_orphan_intent_blocks_other_paths(rolling):
+    key = "SRF1_2_A_s71003"
+    save_json(rolling.task_dir(key) / "INTENT.json", dict(task_id=key, source_sha256="b" * 64))
+    assert rolling.tick()["stage"] == "BLOCKED_UNKNOWN_SUBMISSION"
+    assert rolling.slurm.calls == []
+
+
+def test_rolling_authorization_binds_overlay_and_frozen_files(rolling, monkeypatch):
+    from sr_f12.orchestration import file_hash
+    from pathlib import Path
+    monkeypatch.delattr(rolling, "identity")
+    monkeypatch.setattr(Controller, "identity", lambda self: "b" * 64)
+    names = ("SCIENCE_FREEZE.json", "config/SR_F1_2_FROZEN.json",
+             "TECHNICAL_CHECK_SR_F1_2.json", "SEMANTIC_PREDICTIONS.json")
+    for name in names:
+        path = rolling.root / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("{}")
+    frozen = rolling.root / names[0]
+    overlay = Path(__file__).resolve().parents[2] / "scripts/sr_f12/rolling_controller.py"
+    auth = dict(policy="REGISTERED_MATRIX_ROLLING_CAPACITY", run_root=str(rolling.root),
+                production_source_sha256="b" * 64, overlay_sha256=file_hash(overlay),
+                max_submit_pu=5, frozen_file_sha256={n: file_hash(rolling.root / n) for n in names})
+    save_json(rolling.authorization, auth)
+    assert rolling.identity() == "b" * 64
+    frozen.write_text('{"changed":true}')
+    with pytest.raises(PermissionError, match="Frozen scheduling dependency"):
+        rolling.identity()
+    frozen.write_text("{}")
+    auth["overlay_sha256"] = "c" * 64
+    save_json(rolling.authorization, auth)
+    with pytest.raises(PermissionError, match="authorization"):
+        rolling.identity()
 
 
 def test_orphan_intent_reserves_and_blocks_duplicate(controller):
