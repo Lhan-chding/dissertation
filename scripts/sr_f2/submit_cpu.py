@@ -3,6 +3,7 @@
 
 Repeated invocations only observe or release the existing, authenticated held job.
 The preflight job never submits its controller; that is a separate explicit call.
+Both CPU kinds request the verified cpu-2 allocation of four CPUs and 12 GiB.
 """
 
 from __future__ import annotations
@@ -154,15 +155,18 @@ def verify_cpu_allocation(fields, intent, user, *, held=False):
     expected = dict(JobId=intent["job_id"], JobName=intent["job_name"],
                     Account="rose", Partition="cluster02", QOS=CPU_QOS,
                     Command=intent["script"], Comment=intent["comment"],
-                    ReqNodeList=CPU_NODE, NumCPUs="4", NumNodes="1")
+                    ReqNodeList=CPU_NODE, NumCPUs="4")
     for key, value in expected.items():
         if fields.get(key) != value:
             raise PermissionError("CPU allocation identity differs: " + key)
+    # Pending scontrol output may render the fixed one-node request as a range.
+    if fields.get("NumNodes") not in ("1", "1-1"):
+        raise PermissionError("CPU allocation identity differs: NumNodes")
     if fields.get("UserId", "").split("(")[0] != user:
         raise PermissionError("CPU allocation owner differs")
     tres = fields.get("ReqTRES", "")
-    if gpu_count(tres) != 0 or memory_gib(tres) != 24:
-        raise PermissionError("CPU allocation must have no GPU and exactly 24 GiB")
+    if gpu_count(tres) != 0 or memory_gib(tres) != 12:
+        raise PermissionError("CPU allocation must have no GPU and exactly 12 GiB")
     expected_time = "04:00:00" if intent["kind"] == "preflight" else "3-00:00:00"
     if fields.get("TimeLimit") != expected_time:
         raise PermissionError("CPU job time limit differs")
@@ -313,7 +317,7 @@ class CpuSubmitter:
                           comment="srf2-cpu-" + token)
             args = ["sbatch", "--hold", "--parsable", "--account=rose", "--partition=cluster02",
                     "--qos=" + CPU_QOS, "--nodelist=" + CPU_NODE, "--nodes=1", "--ntasks=1",
-                    "--cpus-per-task=4", "--mem=24G",
+                    "--cpus-per-task=4", "--mem=12G",
                     "--time=" + ("04:00:00" if self.kind == "preflight" else "3-00:00:00"),
                     "--job-name=" + intent["job_name"], "--comment=" + intent["comment"],
                     "--output=" + str(self.directory / "slurm-%j.log"), str(script)]

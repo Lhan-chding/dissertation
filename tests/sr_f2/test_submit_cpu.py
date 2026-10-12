@@ -17,7 +17,7 @@ def fields(intent, job="100", *, user="alice"):
     return dict(JobId=job, JobName=intent["job_name"], Account="rose", Partition="cluster02",
                 QOS=cpu.CPU_QOS, Command=intent["script"], Comment=intent["comment"],
                 ReqNodeList="cpu-2", NumCPUs="4", NumNodes="1", UserId=user + "(1)",
-                ReqTRES="cpu=4,mem=24G",
+                ReqTRES="cpu=4,mem=12G",
                 TimeLimit="04:00:00" if intent["kind"] == "preflight" else "3-00:00:00",
                 JobState="PENDING", Reason="JobHeldUser")
 
@@ -131,7 +131,7 @@ def test_cpu_submission_is_held_bound_and_released_once(submitter):
     args = submitter.slurm.calls[0]
     assert args[:3] == ["sbatch", "--hold", "--parsable"]
     for option in ("--qos=" + cpu.CPU_QOS, "--nodelist=cpu-2", "--cpus-per-task=4",
-                   "--mem=24G", "--time=04:00:00"):
+                   "--mem=12G", "--time=04:00:00"):
         assert option in args
     assert not any("gres" in arg or "soujanya" in arg for arg in args)
     assert submitter.slurm.calls[1] == ["scontrol", "release", "100"]
@@ -160,14 +160,30 @@ def test_preflight_command_order_and_runtime_environment(submitter):
 
 @pytest.mark.parametrize("key,value", [("UserId", "bob(2)"), ("QOS", "teacher"),
     ("Command", "/other/script"), ("Comment", "unrelated"), ("ReqNodeList", "gpu-1"),
-    ("NumCPUs", "8"), ("ReqTRES", "cpu=4,mem=24G,gres/gpu=1"),
-    ("ReqTRES", "cpu=4,mem=25G"), ("TimeLimit", "03:00:00")])
+    ("NumCPUs", "8"), ("ReqTRES", "cpu=4,mem=12G,gres/gpu=1"),
+    ("ReqTRES", "cpu=4,mem=11G"), ("ReqTRES", "cpu=4,mem=13G"),
+    ("ReqTRES", "cpu=4,mem=24G"), ("TimeLimit", "03:00:00")])
 def test_cpu_exact_allocation_mismatch_cannot_release(key, value):
     intent = dict(kind="preflight", job_id="100", job_name="name", script="/script", comment="id")
     row = fields(intent)
     cpu.verify_cpu_allocation(row, intent, "alice", held=True)
     with pytest.raises(PermissionError):
         cpu.verify_cpu_allocation(dict(row, **{key: value}), intent, "alice", held=True)
+
+
+@pytest.mark.parametrize("nodes", ["1", "1-1"])
+def test_cpu_fixed_one_node_accepts_slurm_scalar_and_range(nodes):
+    intent = dict(kind="preflight", job_id="100", job_name="name", script="/script", comment="id")
+    row = dict(fields(intent), NumNodes=nodes)
+    cpu.verify_cpu_allocation(row, intent, "alice", held=True)
+
+
+@pytest.mark.parametrize("nodes", [None, "", "0", "2", "1-2", "2-2", "0-1", "1-", "1-1,2"])
+def test_cpu_one_node_guard_rejects_multiple_or_unknown_node_counts(nodes):
+    intent = dict(kind="preflight", job_id="100", job_name="name", script="/script", comment="id")
+    row = dict(fields(intent), NumNodes=nodes)
+    with pytest.raises(PermissionError, match="NumNodes"):
+        cpu.verify_cpu_allocation(row, intent, "alice", held=True)
 
 
 def test_unknown_cpu_submission_never_resubmits(submitter):
@@ -233,6 +249,7 @@ def test_controller_requires_preflight_slurm_and_artifacts(submitter):
     assert controller.submit()["status"] == "SUBMITTED"
     args = [row for row in submitter.slurm.calls if row[0] == "sbatch"][-1]
     assert "--time=3-00:00:00" in args
+    assert "--mem=12G" in args
     assert cpu.read_json(controller.directory / "INTENT.json")["commands"] == [[
         submitter.python, str(submitter.code / "scripts/sr_f2/controller.py"),
         "--root", str(submitter.root), "--python", submitter.python,
