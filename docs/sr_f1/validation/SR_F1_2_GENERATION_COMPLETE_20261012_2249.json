@@ -1,0 +1,63 @@
+{
+  "observed_at": "2026-10-12T14:49:05.943811+00:00",
+  "root": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010",
+  "endpoint_state": {
+    "at": "2026-10-12T14:40:39.437593+00:00",
+    "endpoints_complete": 12,
+    "endpoints_total": 13,
+    "experiment_delivered": false,
+    "failures": [],
+    "report_pending": true,
+    "scheduler_job_id": "198239",
+    "scores_sealed": true,
+    "source_sha256": "cd08628f898f7d814a245a15ed02b7d6ce66cfba69f930bb01a60c8587879da5",
+    "stage": "SEALED_EVALUATION_TRAINING_PRIORITY",
+    "teacher_gpu_usage": 1,
+    "unknown_submissions": [],
+    "version": "SR-F1.2-20261010"
+  },
+  "jobs": {
+    "EVAL_SRF1_2_A_s71001": "198444",
+    "EVAL_SRF1_2_A_s71002": "198886",
+    "EVAL_SRF1_2_A_s71003": "199054",
+    "EVAL_SRF1_2_COMMON_ZERO": "199814",
+    "EVAL_SRF1_2_DEC_s71001": "198842",
+    "EVAL_SRF1_2_DEC_s71002": "199036",
+    "EVAL_SRF1_2_DEC_s71003": "199803",
+    "EVAL_SRF1_2_GATE_s71001": "198836",
+    "EVAL_SRF1_2_GATE_s71002": "199035",
+    "EVAL_SRF1_2_GATE_s71003": "199634",
+    "EVAL_SRF1_2_J_s71001": "198799",
+    "EVAL_SRF1_2_J_s71002": "199027",
+    "EVAL_SRF1_2_J_s71003": "199140"
+  },
+  "sealed_answers_or_scores_read": false,
+  "queue": {
+    "returncode": 0,
+    "stdout": "198239|RUNNING|N/A|cpu-2|override-limits-but-killable|None\n",
+    "stderr": ""
+  },
+  "accounting": {
+    "returncode": 0,
+    "stdout": "198239|RUNNING|0:0|2026-10-11T09:05:06|Unknown|1-05:44:00\n198444|COMPLETED|0:0|2026-10-11T11:13:50|2026-10-11T18:24:12|07:10:22\n198799|COMPLETED|0:0|2026-10-11T16:16:21|2026-10-12T00:16:20|07:59:59\n198836|COMPLETED|0:0|2026-10-11T17:06:17|2026-10-12T00:10:28|07:04:11\n198842|COMPLETED|0:0|2026-10-11T17:10:09|2026-10-12T01:01:20|07:51:11\n198886|COMPLETED|0:0|2026-10-11T18:25:24|2026-10-12T02:07:12|07:41:48\n199027|COMPLETED|0:0|2026-10-11T23:39:12|2026-10-12T06:53:26|07:14:14\n199035|COMPLETED|0:0|2026-10-12T00:11:40|2026-10-12T08:09:31|07:57:51\n199036|COMPLETED|0:0|2026-10-12T00:17:46|2026-10-12T08:12:17|07:54:31\n199054|COMPLETED|0:0|2026-10-12T01:02:07|2026-10-12T08:59:52|07:57:45\n199140|COMPLETED|0:0|2026-10-12T02:08:51|2026-10-12T09:11:57|07:03:06\n199634|COMPLETED|0:0|2026-10-12T06:55:17|2026-10-12T12:35:39|05:40:22\n199803|COMPLETED|0:0|2026-10-12T08:11:10|2026-10-12T14:41:11|06:30:01\n199814|COMPLETED|0:0|2026-10-12T08:58:15|2026-10-12T14:06:46|05:08:31\n",
+    "stderr": ""
+  },
+  "endpoint_orchestration/COMPLETE.json": {
+    "exists": false
+  },
+  "endpoint_orchestration/MAIN_ACCEPTANCE.json": {
+    "exists": true,
+    "status": "ALL_TWELVE_TERMINAL_AND_STATE_VERIFIED"
+  },
+  "release_files_present_count": 9,
+  "quota": {
+    "/projects/_ssd/varunssd": {
+      "ceph.quota.max_bytes": 750000000000,
+      "ceph.dir.rbytes": 723559850639
+    },
+    "/projects/_hdd/varunhdd": {
+      "ceph.quota.max_bytes": 5000000000000,
+      "ceph.dir.rbytes": 683612124198
+    }
+  }
+}
