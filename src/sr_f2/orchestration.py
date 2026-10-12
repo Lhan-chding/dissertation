@@ -35,7 +35,7 @@ from sr_f12.protocol import BASELINE, TEACHER_QOS, object_hash
 
 GPU_LIMIT = 8
 SUBMIT_LIMIT = 5
-POOL_GPUS = 4
+POOL_GPUS = 2
 FINAL_STATES = frozenset({"COMPLETE", "FAILED"})
 UNKNOWN_STATES = frozenset({"SUBMISSION_UNKNOWN", "RELEASE_UNKNOWN", "ACCOUNTING_UNKNOWN"})
 KINDS = frozenset({"history", "diagnostic", "pilot", "train", "endpoint"})
@@ -76,7 +76,7 @@ def task_id(task):
 
 
 def pool_specs():
-    """Two persistent four-GPU allocations draw from one global ready queue."""
+    """Four persistent two-GPU allocations draw from one global ready queue."""
     matrix_hash = object_hash(global_task_matrix())
     return [
         dict(
@@ -85,7 +85,7 @@ def pool_specs():
             queue="global",
             task_matrix_sha256=matrix_hash,
         )
-        for index in (1, 2)
+        for index in range(1, GPU_LIMIT // POOL_GPUS + 1)
     ]
 
 
@@ -260,6 +260,14 @@ class GlobalQueue:
                 for row in states.values()
             ):
                 raise PermissionError("A physical GPU already owns an unfinished task")
+            if (
+                sum(
+                    row["pool_id"] == pool_id and row["status"] in {"CLAIMED", "RUNNING"}
+                    for row in states.values()
+                )
+                >= POOL_GPUS
+            ):
+                raise PermissionError("Pool already owns its full physical GPU allocation")
             snapshot = self._snapshot(states)
             if snapshot["stage"] == "FAILED":
                 raise RuntimeError("Global queue stopped after a technical failure")
@@ -446,7 +454,7 @@ def verify_allocation(fields, intent, user, *, held=False):
         or gpu_count(tres) != count
         or not re.search(rf"(?:^|,)gres/gpu:pro6000={count}(?:,|$)", tres)
     ):
-        raise PermissionError("Expected four physical PRO6000 GPUs per pool")
+        raise PermissionError("Expected two physical PRO6000 GPUs per pool")
     if memory_gib(tres) < 80 * count:
         raise PermissionError("Actual pool memory is below 80 GiB per worker")
     if "highmem" not in fields.get("Features", "").split("&"):
@@ -598,10 +606,10 @@ class Controller:
             "--qos=" + TEACHER_QOS,
             "--nodes=1",
             "--ntasks=1",
-            "--gres=gpu:pro6000:4",
+            f"--gres=gpu:pro6000:{POOL_GPUS}",
             "--constraint=highmem",
-            "--cpus-per-task=16",
-            "--mem=360G",
+            f"--cpus-per-task={4 * POOL_GPUS}",
+            f"--mem={90 * POOL_GPUS}G",
             "--time=4320",
             "--job-name=" + intent["job_name"],
             "--comment=" + intent["comment"],
@@ -1049,12 +1057,12 @@ def visible_devices(value, count):
         or len(set(devices)) != count
         or any(not re.fullmatch(r"(?:[0-9]+|GPU-[A-Za-z0-9-]+)", device) for device in devices)
     ):
-        raise PermissionError("Pool needs exactly four distinct allocated CUDA devices")
+        raise PermissionError(f"Pool needs exactly {count} distinct allocated CUDA devices")
     return devices
 
 
 def run_pool(root, plan_path, *, poll_seconds=1, popen=subprocess.Popen):
-    """Keep four physical slots busy from the shared queue until all 53 tasks finish."""
+    """Keep two physical slots busy from the shared queue until all 53 tasks finish."""
     import json
 
     from .protocol import verify_registration

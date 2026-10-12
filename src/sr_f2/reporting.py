@@ -81,6 +81,11 @@ def _contained(root, relative):
     return path
 
 
+def pool_layout(specs):
+    counts = Counter(spec["gpu_count"] for spec in specs)
+    return " + ".join(f"{count} x {size} GPU" for size, count in sorted(counts.items()))
+
+
 def verify_release_gate(root, *, slurm=None):
     """Fresh queue/accounting and exact global task ownership checks, every call."""
     from .orchestration import global_task_matrix, verify_pool_task_ownership
@@ -105,10 +110,11 @@ def verify_release_gate(root, *, slurm=None):
         "Dynamic orchestration pool/global task registration differs",
     )
     require(
-        len(specs) == 2
+        len(specs) > 0
+        and len({spec["pool_id"] for spec in specs}) == len(specs)
         and len(task_matrix) == 53
         and len({(task["kind"], task["model_id"]) for task in task_matrix}) == 53,
-        "Two resident pools and53 unique registered tasks are required",
+        "All registered resident pools and53 unique registered tasks are required",
     )
     require(
         set(status.get("pools", {})) == {spec["pool_id"] for spec in specs},
@@ -205,7 +211,10 @@ def verify_release_gate(root, *, slurm=None):
         tasks=all_tasks,
         live_queue_and_accounting_verified=True,
         new_endpoint_records=183600,
-        scheduling="two4GPU resident pools; shared53-task readiness queue; no seed-wave barrier",
+        scheduling=(
+            f"{pool_layout(specs)} resident pools; shared53-task readiness queue; "
+            "no seed-wave barrier"
+        ),
         technical_completion_is_not_scientific_confirmation=True,
     )
 
@@ -1149,7 +1158,7 @@ def render_report(results):
         "",
         "已核验全部 GPU 作业离开队列且 sacct 为 COMPLETED / 0:0; 全部冻结任务和原始组通过校验。",
         "新终点183,600条; 旧终点227,700条按v1/v2并列; 诊断34,944条; 新旧轨迹各79,872条。",
-        "按用户授权采用两个4GPU常驻池与共享53任务队列; 无整波等待。"
+        f"按用户授权采用{pool_layout(pool_specs())}常驻池与共享53任务队列; 无整波等待。"
         "数据、模型、奖励、种子和训练步数保持冻结定义。",
         "FREE/LIST使用用户确认的512题、v0/v3、K2。旧正式成绩未改写; "
         "所有种子、不利结果及技术记录保留。",

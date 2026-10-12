@@ -59,12 +59,10 @@ def release_root(tmp_path, monkeypatch):
     )
     specs = [
         dict(
-            pool_id=f"GPU_POOL_{index}",
-            gpu_count=4,
-            queue="global",
+            spec,
             task_matrix_sha256=object_hash(matrix),
         )
-        for index in (1, 2)
+        for spec in reporting.pool_specs()
     ]
     monkeypatch.setattr(reporting, "pool_specs", lambda: specs)
     monkeypatch.setattr(orchestration, "global_task_matrix", lambda: matrix, raising=False)
@@ -88,7 +86,7 @@ def release_root(tmp_path, monkeypatch):
         state = dict(
             status="COMPLETE",
             pool_id=spec["pool_id"],
-            gpu_count=4,
+            gpu_count=spec["gpu_count"],
             job_id=job,
             registration_sha256=registration_hash,
         )
@@ -103,7 +101,7 @@ def release_root(tmp_path, monkeypatch):
         complete = dict(
             status="COMPLETE",
             plan_sha256=object_hash(plan),
-            tasks=[verify_task(tmp_path, t, registration_hash) for t in matrix[i::2]],
+            tasks=[verify_task(tmp_path, t, registration_hash) for t in matrix[i :: len(specs)]],
         )
         for name, value in [
             ("STATE", state),
@@ -132,8 +130,12 @@ def test_release_requires_all_live_terminal_allocations_and_53_tasks(release_roo
     root, slurm = release_root
     result = verify_release_gate(root, slurm=slurm)
     assert result["status"] == "AUTHORIZED_AFTER_ALL_GPU_TASKS_VERIFIED"
-    assert len(result["pools"]) == 2 and len(result["tasks"]) == 53
-    assert len(slurm.calls) == 3
+    specs = reporting.pool_specs()
+    assert len(specs) == 4 and all(spec["gpu_count"] == 2 for spec in specs)
+    assert len(result["pools"]) == len(specs) and len(result["tasks"]) == 53
+    assert len(slurm.calls) == len(specs) + 1
+    assert {pool["job_id"] for pool in result["pools"]} == set(slurm.calls[1:])
+    assert result["scheduling"].startswith("4 x 2 GPU resident pools")
     assert result["live_queue_and_accounting_verified"] is True
 
 
@@ -436,6 +438,7 @@ def test_renderer_uses_c4_noninferiority_status_not_superiority():
     assert "NONINFERIORITY_CONFIRMED" in line and "| MET |" in line
     assert "SOURCE_REFERENCES_ONLY" in text and "事后whitespace_stripped" in text
     assert "80.00%/90.00%" in text and "60.00%/70.00%" in text
+    assert "4 x 2 GPU常驻池" in text
 
 
 def test_final_completion_blocks_source_only_or_unresolved122(tmp_path, monkeypatch):
@@ -500,3 +503,36 @@ def test_dynamic_pool_task_union_must_be_exact53(release_root, problem):
     write(second, receipt)
     with pytest.raises(PermissionError, match=r"union|duplicated"):
         verify_release_gate(root, slurm=slurm)
+
+
+@pytest.mark.parametrize("problem", ["queued", "accounting_missing", "status_missing"])
+def test_last_registered_pool_cannot_be_omitted_from_release_checks(release_root, problem):
+    root, slurm = release_root
+    last_pool = reporting.pool_specs()[-1]["pool_id"]
+    path = root / "orchestration/STATUS.json"
+    status = json.loads(path.read_text())
+    job = status["pools"][last_pool]["job_id"]
+    if problem == "queued":
+        slurm.jobs[job] = {"JobState": "COMPLETING"}
+    elif problem == "accounting_missing":
+        del slurm.accounting[job]
+    else:
+        del status["pools"][last_pool]
+        write(path, status)
+    with pytest.raises(PermissionError, match=r"squeue|sacct|omits"):
+        verify_release_gate(root, slurm=slurm)
+
+
+def test_early_pool_release_does_not_claim_global_completion(release_root):
+    root, slurm = release_root
+    first_pool = reporting.pool_specs()[0]["pool_id"]
+    path = root / "orchestration/pools" / first_pool / "COMPLETE.json"
+    complete = json.loads(path.read_text())
+    complete.update(
+        global_completed_tasks=29,
+        completion_reason="NO_UNCLAIMED_TASKS_AND_NO_OWN_ACTIVE",
+    )
+    write(path, complete)
+    result = verify_release_gate(root, slurm=slurm)
+    assert len(result["tasks"]) == 53
+    assert len(result["pools"]) == len(reporting.pool_specs())

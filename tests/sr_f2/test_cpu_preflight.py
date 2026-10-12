@@ -102,10 +102,11 @@ def test_changed_acceptance_is_rejected_and_every_file_preserved(accepted, tmp_p
     assert (root / "CPU_ACCEPTANCE.json").exists()
 
 
-def test_registered_scheduling_uses_two_persistent_pools_without_seed_waves():
+def test_registered_scheduling_uses_four_two_gpu_pools_without_seed_waves():
     resources = build_config()["resources"]
-    assert resources["scheduling"] == "two_persistent_pools_shared_dependency_queue"
+    assert resources["scheduling"] == "persistent_pools_shared_dependency_queue"
     assert resources["seed_first_waves"] is False
     assert resources["max_workers_across_active_project_runs"] == 8
-    assert resources["gpus_per_packed_job"] == 4
+    assert resources["gpus_per_packed_job"] == 2
+    assert resources["persistent_pool_count"] == 4
     assert resources["workers_per_gpu"] == 1

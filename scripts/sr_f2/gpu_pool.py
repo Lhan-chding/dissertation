@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Keep one bound four-GPU pool active on the shared registered ready queue."""
+"""Keep one bound two-GPU pool active on the shared registered ready queue."""
 
 import argparse
 import sys

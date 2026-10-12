@@ -18,7 +18,7 @@ Old outputs and their official scores are read-only inputs.
    Registration binds source, configuration and evidence hashes before GPU work.
 4. Use the same CPU submitter with `--kind controller` after registration. The
    controller runs historical evaluations, ENGINE recovery pilots, the fixed
-   twelve-path training matrix and sealed endpoints. Two persistent four-GPU
+   twelve-path training matrix and sealed endpoints. Four persistent two-GPU
    pools share a task queue. Each free GPU immediately takes a task whose
    dependencies are complete; endpoints depend on their own completed training
    path, and there is no slowest-branch seed-wave barrier. Each worker runs one

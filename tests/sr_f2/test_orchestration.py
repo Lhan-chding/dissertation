@@ -24,7 +24,7 @@ from sr_f2.orchestration import (
 )
 
 
-def fields(intent, *, job="100", user="alice", count=4):
+def fields(intent, *, job="100", user="alice", count=2):
     return dict(
         JobId=job,
         UserId=user + "(1)",
@@ -37,7 +37,7 @@ def fields(intent, *, job="100", user="alice", count=4):
         Features="highmem",
         JobState="PENDING",
         Reason="JobHeldUser",
-        ReqTRES=f"cpu=16,mem=360G,gres/gpu={count},gres/gpu:pro6000={count}",
+        ReqTRES=f"cpu={4 * count},mem={90 * count}G,gres/gpu={count},gres/gpu:pro6000={count}",
     )
 
 
@@ -106,7 +106,7 @@ def mark_complete(controller, *keys):
     for key in keys:
         save_json(
             controller.pool_dir(key) / "STATE.json",
-            dict(pool_id=key, gpu_count=4, status="COMPLETE"),
+            dict(pool_id=key, gpu_count=2, status="COMPLETE"),
         )
 
 
@@ -117,10 +117,10 @@ def test_capacity_counts_all_teacher_users_pending_and_unknown():
         "3": dict(QOS="other", ReqTRES="gres/gpu=16", UserId="alice(1)"),
     }
     states = [
-        dict(status="SUBMISSION_UNKNOWN", gpu_count=4),
-        dict(status="COMPLETE", job_id="9", gpu_count=4),
+        dict(status="SUBMISSION_UNKNOWN", gpu_count=2),
+        dict(status="COMPLETE", job_id="9", gpu_count=2),
     ]
-    assert teacher_usage(queue, states, "alice") == dict(gpus=8, submitted=2)
+    assert teacher_usage(queue, states, "alice") == dict(gpus=6, submitted=2)
     states[0]["job_id"] = "1"
     assert teacher_usage(queue, states, "alice") == dict(gpus=4, submitted=1)
 
@@ -141,7 +141,7 @@ def test_missing_capacity_or_owner_fails_closed(row):
 def test_submit_held_verify_release_and_no_duplicate(controller):
     assert controller.submit("GPU_POOL_1", {})
     assert controller.slurm.calls[0][:3] == ["sbatch", "--hold", "--parsable"]
-    for option in ("--gres=gpu:pro6000:4", "--cpus-per-task=16", "--mem=360G"):
+    for option in ("--gres=gpu:pro6000:2", "--cpus-per-task=8", "--mem=180G"):
         assert option in controller.slurm.calls[0]
     assert controller.slurm.calls[1][:2] == ["scontrol", "release"]
     assert controller.pool_state("GPU_POOL_1")["status"] == "SUBMITTED"
@@ -152,19 +152,28 @@ def test_submit_held_verify_release_and_no_duplicate(controller):
     assert "scripts/sr_f2/gpu_pool.py" in script
 
 
-def test_two_four_gpu_history_pools_fill_eight_gpus(controller):
+def test_four_two_gpu_history_pools_fill_eight_gpus(controller):
     result = controller.tick()
-    assert set(result["pools"]) == {"GPU_POOL_1", "GPU_POOL_2"}
-    assert result["teacher_usage"] == dict(gpus=8, submitted=2)
+    assert set(result["pools"]) == {f"GPU_POOL_{i}" for i in range(1, 5)}
+    assert result["teacher_usage"] == dict(gpus=8, submitted=4)
     assert result["stage"] == "HISTORY_WITH_BACKFILL"
     assert not result["experiment_complete"]
+
+
+def test_exactly_two_free_teacher_gpus_can_start_one_pool(controller):
+    controller.slurm.jobs["999"] = dict(QOS=TEACHER_QOS, UserId="bob(2)", ReqTRES="gres/gpu=6")
+    result = controller.tick()
+    assert result["teacher_usage"] == dict(gpus=8, submitted=1)
+    assert set(result["pools"]) == {"GPU_POOL_1"}
+    assert "--gres=gpu:pro6000:2" in controller.slurm.calls[0]
 
 
 def test_foreign_teacher_gpu_allocations_count_without_mutation(controller):
     controller.slurm.jobs["999"] = dict(QOS=TEACHER_QOS, UserId="bob(2)", ReqTRES="gres/gpu=5")
     result = controller.tick()
-    assert result["teacher_usage"] == dict(gpus=5, submitted=0)
-    assert controller.slurm.calls == []
+    assert result["teacher_usage"] == dict(gpus=7, submitted=1)
+    assert "999" in controller.slurm.jobs
+    assert len(controller.slurm.calls) == 2
 
 
 def test_five_teacher_cpu_jobs_exhaust_user_submission_limit(controller):
@@ -181,24 +190,24 @@ def test_five_teacher_cpu_jobs_exhaust_user_submission_limit(controller):
         ("QOS", "other"),
         ("UserId", "bob(2)"),
         ("ReqTRES", "mem=360G,gres/gpu=4,gres/gpu:a100=4"),
-        ("ReqTRES", "mem=300G,gres/gpu:pro6000=4"),
+        ("ReqTRES", "mem=150G,gres/gpu:pro6000=2"),
         ("JobState", "RUNNING"),
         ("Comment", "foreign"),
     ],
 )
 def test_wrong_allocation_stays_held(key, value):
-    intent = dict(job_name="name", comment="bound", script="/run/script", job_id="100", gpu_count=4)
+    intent = dict(job_name="name", comment="bound", script="/run/script", job_id="100", gpu_count=2)
     valid = fields(intent)
     verify_allocation(valid, intent, "alice", held=True)
     with pytest.raises(PermissionError):
         verify_allocation(dict(valid, **{key: value}), intent, "alice", held=True)
 
 
-def test_unknown_submission_consumes_four_gpus_and_never_retries(controller):
+def test_unknown_submission_consumes_two_gpus_and_never_retries(controller):
     controller.slurm.fail_submit = True
     result = controller.tick()
     assert result["stage"] == "BLOCKED_UNKNOWN_SUBMISSION"
-    assert result["teacher_usage"] == dict(gpus=4, submitted=1)
+    assert result["teacher_usage"] == dict(gpus=2, submitted=1)
     assert len(controller.slurm.calls) == 1
     controller.tick()
     assert len(controller.slurm.calls) == 1
@@ -207,10 +216,10 @@ def test_unknown_submission_consumes_four_gpus_and_never_retries(controller):
 def test_orphan_intent_reserves_capacity_and_does_not_retry(controller):
     save_json(
         controller.pool_dir("GPU_POOL_1") / "INTENT.json",
-        dict(pool_id="GPU_POOL_1", gpu_count=4, comment="never observed"),
+        dict(pool_id="GPU_POOL_1", gpu_count=2, comment="never observed"),
     )
     assert controller.tick()["stage"] == "BLOCKED_UNKNOWN_SUBMISSION"
-    assert teacher_usage({}, controller.attempts(), "alice")["gpus"] == 4
+    assert teacher_usage({}, controller.attempts(), "alice")["gpus"] == 2
     assert controller.slurm.calls == []
 
 
@@ -309,10 +318,10 @@ def test_worker_artifact_cannot_escape_run_root(tmp_path):
         verify_task(root, task, "a")
 
 
-@pytest.mark.parametrize("value", ["0,1,2", "0,0,1,2", "0,1,2,3,4", "", "MIG-a,1,2,3"])
-def test_visible_devices_requires_four_physical_distinct_allocations(value):
+@pytest.mark.parametrize("value", ["0", "0,0", "0,1,2", "", "MIG-a,1"])
+def test_visible_devices_requires_two_physical_distinct_allocations(value):
     with pytest.raises(PermissionError):
-        visible_devices(value, 4)
+        visible_devices(value, 2)
 
 
 def test_gpu_pool_refuses_wrong_slurm_binding(controller, monkeypatch):
@@ -476,10 +485,10 @@ def test_raw_group_verification_rejects_changed_bytes_and_unfinished_groups(tmp_
         scheduler.verify_evaluation_groups(tmp_path, receipt, "model", 4, step=8)
 
 
-def test_matrix_has_53_work_units_and_only_two_persistent_pools():
+def test_matrix_has_53_work_units_and_four_two_gpu_persistent_pools():
     pools = pool_specs()
-    assert [p["pool_id"] for p in pools] == ["GPU_POOL_1", "GPU_POOL_2"]
-    assert all(p["gpu_count"] == 4 and p["queue"] == "global" for p in pools)
+    assert [p["pool_id"] for p in pools] == [f"GPU_POOL_{i}" for i in range(1, 5)]
+    assert all(p["gpu_count"] == 2 and p["queue"] == "global" for p in pools)
     tasks = scheduler.global_task_matrix()
     assert len(tasks) == len({scheduler.task_id(t) for t in tasks}) == 53
     assert {kind: sum(t["kind"] == kind for t in tasks) for kind in scheduler.KINDS} == dict(
@@ -571,8 +580,8 @@ def test_science_gates_require_complete_history_pilots_and_cpu_receipts(controll
 def test_fast_slot_rolls_to_next_seed_without_waiting_for_slow_seed_peer(controller):
     queue = finish_before_science(controller)
     first = []
-    for device in ("0", "1", "2", "3"):
-        claim, _ = queue.claim("GPU_POOL_1", device, "100")
+    for i, device in enumerate(("0", "1", "2", "3")):
+        claim, _ = queue.claim(f"GPU_POOL_{1 + i // 2}", device, str(100 + i // 2))
         first.append(claim)
     assert all(c["task"]["model_id"].endswith("s71001") for c in first)
     finish_claim(queue, first[0])
@@ -591,16 +600,15 @@ def test_global_claim_lock_prevents_cross_pool_duplicates(controller):
     from concurrent.futures import ThreadPoolExecutor
 
     queue = queue_for(controller)
-    assignments = [
-        ("GPU_POOL_1" if i < 4 else "GPU_POOL_2", str(i), "100" if i < 4 else "101")
-        for i in range(8)
-    ]
+    assignments = [(f"GPU_POOL_{1 + i // 2}", str(i), str(100 + i // 2)) for i in range(8)]
     with ThreadPoolExecutor(max_workers=8) as workers:
         claims = list(workers.map(lambda args: queue.claim(*args)[0], assignments))
     assert len({scheduler.task_id(c["task"]) for c in claims}) == 8
     assert all(c["task"]["kind"] == "history" for c in claims)
     with pytest.raises(PermissionError, match="already owns"):
         queue.claim("GPU_POOL_1", "0", "100")
+    with pytest.raises(PermissionError, match="full physical"):
+        queue.claim("GPU_POOL_1", "unused-third-device", "100")
 
 
 def test_failed_or_orphan_claim_never_retries(controller):
@@ -613,7 +621,7 @@ def test_failed_or_orphan_claim_never_retries(controller):
         queue.transition(claim, pid=123)
 
 
-def test_endpoint_seal_needs_all53_tasks_and_both_pool_terminal_states(controller):
+def test_endpoint_seal_needs_all53_tasks_and_all_four_pool_terminal_states(controller):
     queue = finish_before_science(controller)
     while True:
         claim, snapshot = queue.claim("GPU_POOL_1", "0", "100")
@@ -625,7 +633,7 @@ def test_endpoint_seal_needs_all53_tasks_and_both_pool_terminal_states(controlle
     # One resident allocation remains unsubmitted: task artifacts alone are insufficient.
     result = controller.tick()
     assert not result["endpoint_seal_release_ready"]
-    mark_complete(controller, "GPU_POOL_2")
+    mark_complete(controller, "GPU_POOL_2", "GPU_POOL_3", "GPU_POOL_4")
     result = controller.tick()
     assert result["all_gpu_tasks_complete"] and result["endpoint_seal_release_ready"]
     assert result["stage"] == "ALL_GPU_TASKS_COMPLETE_REPORT_PENDING"
@@ -634,7 +642,7 @@ def test_endpoint_seal_needs_all53_tasks_and_both_pool_terminal_states(controlle
 def test_gpu_pool_dynamic_queue_reuses_single_visible_slots_until_all53(controller, monkeypatch):
     controller.submit("GPU_POOL_1", {})
     monkeypatch.setenv("SLURM_JOB_ID", "100")
-    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "4,5,6,7")
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "4,5")
     launched = []
     monkeypatch.setattr(
         scheduler,
@@ -654,7 +662,7 @@ def test_gpu_pool_dynamic_queue_reuses_single_visible_slots_until_all53(controll
         popen=popen,
     )
     assert result["status"] == "COMPLETE" and len(result["tasks"]) == 53
-    assert len(launched) == 53 and {d for _, d in launched} == {"4", "5", "6", "7"}
+    assert len(launched) == 53 and {d for _, d in launched} == {"4", "5"}
     assert all(command[2:4] == ["--root", str(controller.root)] for command, _ in launched)
     assert scheduler.verify_pool_task_ownership(controller.root, "GPU_POOL_1", result["tasks"])
     with pytest.raises(PermissionError, match="already recorded"):
@@ -688,7 +696,7 @@ def test_empty_pool_releases_when_all_remaining_work_is_claimed_by_other_pool(
     queue.transition(tail, pid=54321)
     assert queue.snapshot()["unclaimed"] == 0
     monkeypatch.setenv("SLURM_JOB_ID", "100")
-    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "4,5,6,7")
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "4,5")
 
     def no_launch(*args, **kwargs):
         raise AssertionError("An empty pool must not launch or wait for another pool's tail")

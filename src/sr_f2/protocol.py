@@ -32,9 +32,10 @@ def build_config(*, c4_rule="noninferiority", protocol_variants=("v0", "v3")):
         max_teacher_qos_submitted_jobs_per_user=5,
         max_workers_across_active_project_runs=8,
         workers_per_gpu=1,
-        gpus_per_packed_job=4,
+        gpus_per_packed_job=2,
+        persistent_pool_count=4,
         seed_first_waves=False,
-        scheduling="two_persistent_pools_shared_dependency_queue",
+        scheduling="persistent_pools_shared_dependency_queue",
         immediate_per_model_endpoint=True,
         teacher_gpu_limit_scope="all_users_actual_pending_and_unknown",
     )
