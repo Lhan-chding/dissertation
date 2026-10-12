@@ -239,3 +239,45 @@ def test_stored_format_error_is_preserved_even_when_raw_answer_is_correct():
     result = score_record_v2(record, dict(world=WORLD, query=query))
     assert result["reason"] == "trailing_after_close"
     assert result["L_answer"] == result["L_json"] == result["J6"] == 0
+
+
+@pytest.mark.parametrize(
+    "value,expected",
+    [
+        ("50+21", "expression_string"),
+        ("1 / 2", "expression_string"),
+        ("(59 + (-16) + 5)/3", "expression_string"),
+        ("(59 + (\u221216) + 5)\u00f73", "expression_string"),
+        ("3\u00d724-1", "expression_string"),
+        ("NaN", "nonfinite_string"),
+        ("nan", "nonfinite_string"),
+        ("+INF", "nonfinite_string"),
+        ("-Infinity", "nonfinite_string"),
+        (" NaN", "whitespace_string"),
+        ("50+21 ", "whitespace_string"),
+        ("+.5", "other_string"),
+        ("12.5 counts", "other_string"),
+        ("float('inf')", "other_string"),
+    ],
+)
+def test_blind_expression_nonfinite_strata_never_change_answer_acceptance(value, expected):
+    query = _reference.base_query("TOPK")
+    raw = json.dumps({"answer": value})
+    classified = classify_answer_syntax(raw)
+    assert classified["answer_syntax"] == expected
+    assert classified["v1_parseable"] == classified["v2_parseable"] == 0
+    assert score_v2(raw, WORLD, query)["L_answer"] == 0
+    assert score(raw, WORLD, query)["L_answer"] == 0
+
+
+@pytest.mark.parametrize(
+    "value,expected",
+    [
+        ("71", "integer_string"),
+        ("71/1", "fraction_string"),
+        ("71.0", "decimal_string"),
+        ("7.1e1", "exponent_string"),
+    ],
+)
+def test_blind_expression_subclassification_preserves_numeric_grammar_priority(value, expected):
+    assert classify_answer_syntax(json.dumps({"answer": value}))["answer_syntax"] == expected

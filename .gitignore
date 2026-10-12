@@ -70,4 +70,11 @@ configs/paths.yaml
 
 # SR-F1 private runtime payloads and externally downloaded data
 /artifacts/sr_f1*/
+/artifacts/sr_f2*/
+# SR-F2 original plan, private clarifications and live experiment receipts
+/docs/sr_f2/CLAUDE_SR_F2_PLAN_zh.md
+/docs/sr_f2/DECISIONS.json
+/docs/sr_f2/CHARTQA_122_USER_CLARIFICATION.json
+/docs/sr_f2/EXECUTION_STATUS_zh.md
+/docs/sr_f2/START_HERE_zh.md
 /.local/

@@ -18,11 +18,15 @@ from sr_f1.contract import (
 )
 
 VERSION = "SR-F2-scorer-v2"
+SYNTAX_CLASSIFIER_VERSION = "SR-F2-blind-syntax-v2"
 DECIMAL_STRING_PATTERN = r"-?[0-9]+\.[0-9]+"
 _DECIMAL_STRING = re.compile(DECIMAL_STRING_PATTERN)
 _INTEGER_STRING = re.compile(r"-?\d+")
 _FRACTION_STRING = re.compile(r"-?\d+/[1-9]\d*")
 _EXPONENT_STRING = re.compile(r"[+-]?(?:[0-9]+\.?[0-9]*|\.[0-9]+)[eE][+-]?[0-9]+")
+_NONFINITE_STRING = re.compile(r"[+-]?(?:nan|inf|infinity)", flags=re.IGNORECASE | re.ASCII)
+_EXPRESSION_CHARACTERS = re.compile(r"[0-9.\s+*/()\u2212\u00d7\u00f7-]+")
+_EXPRESSION_STRUCTURE = re.compile(r"[()]|(?<=[0-9.)])\s*[+*/\u2212\u00d7\u00f7-]")
 _PROTOCOLS = {"evidence_answer", "answer_only", "free", "list"}
 
 
@@ -102,12 +106,25 @@ def _answer_kind(value):
             return "exponent_string"
         if value != value.strip():
             return "whitespace_string"
+        if _NONFINITE_STRING.fullmatch(value):
+            return "nonfinite_string"
+        if (
+            _EXPRESSION_CHARACTERS.fullmatch(value)
+            and re.search(r"[0-9]", value)
+            and _EXPRESSION_STRUCTURE.search(value)
+        ):
+            return "expression_string"
         return "other_string"
     return "array" if isinstance(value, list) else "object"
 
 
 def classify_answer_syntax(text, protocol="evidence_answer"):
-    """Blind syntax strata, including parseability under each frozen grammar."""
+    """Blind syntax strata, including parseability under each frozen grammar.
+
+    Expression/nonfinite labels describe otherwise rejected strings; they never
+    evaluate an expression or expand the scorer's accepted answer language.
+    Numeric grammars and leading/trailing whitespace retain their own strata.
+    """
     protocol = _protocol(protocol)
     result = dict(L_json=0, answer_syntax="invalid_json", v1_parseable=0, v2_parseable=0)
     try:
