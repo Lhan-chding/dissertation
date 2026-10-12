@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-12T15:03:54.975369+00:00",
+  "status": "PASS",
+  "queue": "",
+  "accounting": "200452|COMPLETED|0:0|2026-10-12T14:57:38|2026-10-12T15:00:26|00:02:48|override-limits-but-killable|cpu=4,mem=12G,node=1\n200456|COMPLETED|0:0|2026-10-12T15:00:39|2026-10-12T15:01:38|00:00:59|override-limits-but-killable|cpu=4,mem=12G,node=1\n200457|COMPLETED|0:0|2026-10-12T15:01:40|2026-10-12T15:01:45|00:00:05|override-limits-but-killable|cpu=4,mem=12G,node=1\n",
+  "scripts": {
+    "audit_final_readonly.py": "c79375227252d486f9db644fac05387b7b346253595b9a291057994e7216284d",
+    "audit_structure_readonly.py": "43281c50e8f00e6f06dcd9e9a780c7db5cdb3ac5ecbb921dcdbb45bc712ba09f",
+    "audit_chartqa_sensitivity.py": "376d5a8c2fb680ae0eb403f53fbed39097786f03022d5a054206526c49057538"
+  },
+  "logs": {
+    "structure-200456.out": "",
+    "chartqa-200457.out": "",
+    "slurm-200452.out": "SRF1_2_COMMON_ZERO PASS 16452\nSRF1_2_A_s71001 PASS 17604\nSRF1_2_J_s71001 PASS 17604\nSRF1_2_GATE_s71001 PASS 17604\nSRF1_2_DEC_s71001 PASS 17604\nSRF1_2_A_s71002 PASS 17604\nSRF1_2_J_s71002 PASS 17604\nSRF1_2_GATE_s71002 PASS 17604\nSRF1_2_DEC_s71002 PASS 17604\nSRF1_2_A_s71003 PASS 17604\nSRF1_2_J_s71003 PASS 17604\nSRF1_2_GATE_s71003 PASS 17604\nSRF1_2_DEC_s71003 PASS 17604\n"
+  }
+}

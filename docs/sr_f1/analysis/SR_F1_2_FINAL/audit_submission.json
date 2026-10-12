@@ -1,0 +1,17 @@
+{
+  "job_id": "200452",
+  "partition": "cluster02",
+  "qos": "override-limits-but-killable",
+  "cpus": 4,
+  "memory_gib": 12,
+  "gpus": 0,
+  "remote_directory": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_final_audit_20261012_2310",
+  "scientific_files_modified": false,
+  "initial_submission_rejected_before_job_creation": {
+    "requested_partition": "cpu",
+    "error": "Invalid partition name specified",
+    "requested_memory_gib": 24,
+    "scheduler_enforced_memory_gib": 12,
+    "retry_basis": "Explicit rejection without job ID; project prior CPU configuration and sinfo confirmed cluster02 and 12G"
+  }
+}

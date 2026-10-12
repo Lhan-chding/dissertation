@@ -1,0 +1,158 @@
+[
+  {
+    "contrast": "J-A",
+    "effect_pp": 17.529296875,
+    "seed_effects_pp": [
+      16.32080078125,
+      17.83447265625,
+      18.4326171875
+    ],
+    "CI95_pp": [
+      15.913899739583332,
+      19.112141927083332
+    ],
+    "CI98_75_pp": [
+      15.493494669596352,
+      19.534327189127605
+    ],
+    "bootstrap_replicates": 5000,
+    "bootstrap_seed": 812901,
+    "multiplicity": "Bonferroni family of 4; each two-sided CI=98.75%",
+    "primary_contrasts": [
+      [
+        "J",
+        "A"
+      ],
+      [
+        "GATE",
+        "J"
+      ],
+      [
+        "GATE",
+        "DEC"
+      ],
+      [
+        "DEC",
+        "J"
+      ]
+    ],
+    "scope": "root measurement uncertainty conditional on three realised training seeds"
+  },
+  {
+    "contrast": "GATE-J",
+    "effect_pp": 3.3203125,
+    "seed_effects_pp": [
+      3.38134765625,
+      4.1015625,
+      2.47802734375
+    ],
+    "CI95_pp": [
+      2.2054036458333335,
+      4.541015625
+    ],
+    "CI98_75_pp": [
+      1.9256337483723958,
+      4.876759847005211
+    ],
+    "bootstrap_replicates": 5000,
+    "bootstrap_seed": 812901,
+    "multiplicity": "Bonferroni family of 4; each two-sided CI=98.75%",
+    "primary_contrasts": [
+      [
+        "J",
+        "A"
+      ],
+      [
+        "GATE",
+        "J"
+      ],
+      [
+        "GATE",
+        "DEC"
+      ],
+      [
+        "DEC",
+        "J"
+      ]
+    ],
+    "scope": "root measurement uncertainty conditional on three realised training seeds"
+  },
+  {
+    "contrast": "GATE-DEC",
+    "effect_pp": 0.7893880208333334,
+    "seed_effects_pp": [
+      -1.57470703125,
+      4.99267578125,
+      -1.0498046875
+    ],
+    "CI95_pp": [
+      -0.54931640625,
+      2.1566772460937487
+    ],
+    "CI98_75_pp": [
+      -1.0081227620442712,
+      2.5746917724609393
+    ],
+    "bootstrap_replicates": 5000,
+    "bootstrap_seed": 812901,
+    "multiplicity": "Bonferroni family of 4; each two-sided CI=98.75%",
+    "primary_contrasts": [
+      [
+        "J",
+        "A"
+      ],
+      [
+        "GATE",
+        "J"
+      ],
+      [
+        "GATE",
+        "DEC"
+      ],
+      [
+        "DEC",
+        "J"
+      ]
+    ],
+    "scope": "root measurement uncertainty conditional on three realised training seeds"
+  },
+  {
+    "contrast": "DEC-J",
+    "effect_pp": 2.530924479166667,
+    "seed_effects_pp": [
+      4.9560546875,
+      -0.89111328125,
+      3.52783203125
+    ],
+    "CI95_pp": [
+      0.8055623372395835,
+      4.35791015625
+    ],
+    "CI98_75_pp": [
+      0.3549957275390625,
+      4.815826416015634
+    ],
+    "bootstrap_replicates": 5000,
+    "bootstrap_seed": 812901,
+    "multiplicity": "Bonferroni family of 4; each two-sided CI=98.75%",
+    "primary_contrasts": [
+      [
+        "J",
+        "A"
+      ],
+      [
+        "GATE",
+        "J"
+      ],
+      [
+        "GATE",
+        "DEC"
+      ],
+      [
+        "DEC",
+        "J"
+      ]
+    ],
+    "scope": "root measurement uncertainty conditional on three realised training seeds"
+  }
+]

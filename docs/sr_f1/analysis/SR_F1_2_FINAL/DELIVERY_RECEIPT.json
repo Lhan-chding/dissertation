@@ -1,0 +1,34 @@
+{
+  "status": "REPORT_AND_VERIFIABLE_EVIDENCE_READY",
+  "package": {
+    "status": "VERIFIED_ZIP_CRC_AND_ALL_SHA256",
+    "zip": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/sr-f1-20261009/artifacts/sr_f12_final_20261012/SR_F1_2_FINAL_EVIDENCE_20261012.zip",
+    "bytes": 51673934,
+    "sha256": "60638938342f28a3cbca934da67cbf0f653197d4b12198aa9e8dd13a1a943d8c",
+    "content_files": 2394,
+    "zip_entries": 2395,
+    "uncompressed_bytes": 780184173,
+    "unique_safe_paths": true,
+    "all_entries_read_to_eof": true,
+    "scope": "Offline released-score analysis and audit evidence; excludes weights/full checkpoints/full raw answers"
+  },
+  "report": "docs/sr_f1/analysis/SR_F1_2_FINAL/FINAL_REPORT_zh.md",
+  "readme": "docs/sr_f1/analysis/SR_F1_2_FINAL/START_HERE_zh.md",
+  "scientific_generation_complete": true,
+  "unified_release_complete": true,
+  "posthoc_scoring_sensitivity_label": "POST_HOC_WHITESPACE_SENSITIVITY",
+  "formal_scores_unchanged": true,
+  "source_experiment_files_unchanged": true,
+  "automation": {
+    "id": "sr-f1-30",
+    "state": "deleted",
+    "reason": "training, evaluation, release and report work completed"
+  },
+  "large_server_only_categories": [
+    "model weights",
+    "images",
+    "full raw answer trajectories",
+    "full training checkpoints including eight HDD paths"
+  ],
+  "git_scope": "analysis scripts, Chinese report, compact audit/statistical artifacts, execution status; large evidence archive remains local"
+}

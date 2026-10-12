@@ -1,0 +1,335 @@
+{
+  "status": "ALL_TRAINING_AND_EVALUATION_TERMINAL_VERIFIED",
+  "training": [
+    "196939",
+    "196940",
+    "196941",
+    "196942",
+    "197596",
+    "197597",
+    "197598",
+    "197649",
+    "198168",
+    "198169",
+    "198170",
+    "198356"
+  ],
+  "evaluation": [
+    "198444",
+    "198886",
+    "199054",
+    "199814",
+    "198842",
+    "199036",
+    "199803",
+    "198836",
+    "199035",
+    "199634",
+    "198799",
+    "199027",
+    "199140"
+  ],
+  "slurm_accounting": "196939|COMPLETED|0:0|2026-10-10T11:22:38|2026-10-10T21:35:09|10:12:31|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n196940|COMPLETED|0:0|2026-10-10T11:29:04|2026-10-10T20:22:43|08:53:39|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n196941|COMPLETED|0:0|2026-10-10T11:29:04|2026-10-10T20:15:20|08:46:16|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n196942|COMPLETED|0:0|2026-10-10T11:29:09|2026-10-10T21:13:15|09:44:06|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n197596|COMPLETED|0:0|2026-10-10T21:36:07|2026-10-11T07:55:13|10:19:06|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n197597|COMPLETED|0:0|2026-10-10T21:36:09|2026-10-11T11:12:38|13:36:29|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n197598|COMPLETED|0:0|2026-10-10T21:36:11|2026-10-11T07:21:38|09:45:27|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n197649|COMPLETED|0:0|2026-10-11T00:24:41|2026-10-11T10:13:40|09:48:59|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n198168|COMPLETED|0:0|2026-10-11T08:20:50|2026-10-11T17:08:50|08:48:00|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n198169|COMPLETED|0:0|2026-10-11T08:25:41|2026-10-11T17:05:11|08:39:30|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n198170|COMPLETED|0:0|2026-10-11T08:25:41|2026-10-11T16:15:35|07:49:54|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n198239|COMPLETED|0:0|2026-10-11T09:05:06|2026-10-12T14:51:42|1-05:46:36|override-limits-but-killable|cpu=2,mem=6G,node=1\n198356|COMPLETED|0:0|2026-10-11T10:27:45|2026-10-11T23:37:38|13:09:53|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n198444|COMPLETED|0:0|2026-10-11T11:13:50|2026-10-11T18:24:12|07:10:22|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n198799|COMPLETED|0:0|2026-10-11T16:16:21|2026-10-12T00:16:20|07:59:59|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n198836|COMPLETED|0:0|2026-10-11T17:06:17|2026-10-12T00:10:28|07:04:11|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n198842|COMPLETED|0:0|2026-10-11T17:10:09|2026-10-12T01:01:20|07:51:11|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n198886|COMPLETED|0:0|2026-10-11T18:25:24|2026-10-12T02:07:12|07:41:48|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n199027|COMPLETED|0:0|2026-10-11T23:39:12|2026-10-12T06:53:26|07:14:14|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n199035|COMPLETED|0:0|2026-10-12T00:11:40|2026-10-12T08:09:31|07:57:51|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n199036|COMPLETED|0:0|2026-10-12T00:17:46|2026-10-12T08:12:17|07:54:31|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n199054|COMPLETED|0:0|2026-10-12T01:02:07|2026-10-12T08:59:52|07:57:45|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n199140|COMPLETED|0:0|2026-10-12T02:08:51|2026-10-12T09:11:57|07:03:06|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n199634|COMPLETED|0:0|2026-10-12T06:55:17|2026-10-12T12:35:39|05:40:22|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n199803|COMPLETED|0:0|2026-10-12T08:11:10|2026-10-12T14:41:11|06:30:01|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n199814|COMPLETED|0:0|2026-10-12T08:58:15|2026-10-12T14:06:46|05:08:31|soujanya-poria-startfund-2026-03|billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1\n",
+  "queue_at_audit": "",
+  "training_paths": [
+    {
+      "adapter_identity_sha256": "32a78bf6daa48f8b7940b3fcc2f7c187b56050fd846eaafee0258e9cf07fceb5",
+      "checkpoint_sha256": "9cc2cfd71f96c9647c5b1c7c8b2b0eb3b838edb9c4bbd6bc6697ff024b29885e",
+      "complete_sha256": "9034398ec7a478afced38070eaa148d696e340a6de3a9c58b7d15c74037fabd2",
+      "model_id": "SRF1_2_A_s71001"
+    },
+    {
+      "adapter_identity_sha256": "966987666c55687c4812c99f4df590067cd4c127fa93009bb4d55fbe0fb3b981",
+      "checkpoint_sha256": "1a7ec9c03d5ebe88abbbd74395b617855aace543167e831857fdd3606eecbb81",
+      "complete_sha256": "665bf3f9389b3c964bb853b5369965c9ca6ae3eee2fc3131c08c4186de9c4a96",
+      "model_id": "SRF1_2_J_s71001"
+    },
+    {
+      "adapter_identity_sha256": "d828cbf82fd3c2747d578456b7c48d2502a3dd36da5e05ed762fc7d566768edd",
+      "checkpoint_sha256": "e6aa181c99ffe3df7461dd669d4affb55ad0d3ece57c19e6217a6626f1c999d1",
+      "complete_sha256": "977b19eb41a56d4e57bf41e170696c18df08e31b3a393ffab906dcd6d4934bc7",
+      "model_id": "SRF1_2_GATE_s71001"
+    },
+    {
+      "adapter_identity_sha256": "0b519c9696340c30bc02d5188ef4433b7fbbb10e408878100133bd38477d760b",
+      "checkpoint_sha256": "618e095d8cf617edf7fd39c481e26b0ab1c5da83b473d12985ed56455ed719a0",
+      "complete_sha256": "21b302116f7be29d9a0f4d7c4cf86c049d5e004e039e060492a3984539c9d8ba",
+      "model_id": "SRF1_2_DEC_s71001"
+    },
+    {
+      "adapter_identity_sha256": "884da2721819a7f6436d75e92eaeb71e9e5a52faa8b762bdfde924f795b5b4aa",
+      "checkpoint_sha256": "fca15b7cd2730e846ce1b17e9011ec96f47df1941c9737190422c9c96f846ed2",
+      "complete_sha256": "76db19103ddd89ccd0c1944081ffb6c55940db81c421803e9d77e7fa9c69b447",
+      "model_id": "SRF1_2_A_s71002"
+    },
+    {
+      "adapter_identity_sha256": "cb2a01731d622429ee856d99ee37c9a58d0ec6e4ab29c1be999907782d62ce8c",
+      "checkpoint_sha256": "96741c42ba4ead4341ef5706c7d6dfa43aea71569fb3de087795d6d9f9613d9d",
+      "complete_sha256": "6c434ca212edf0dc952df27af8ea992f29934d3f59c12bd6564249174ccacc82",
+      "model_id": "SRF1_2_J_s71002"
+    },
+    {
+      "adapter_identity_sha256": "7350b77da44674cefdafd757775d26a1fcddbe8d0ffbd25965249d438fe4dba6",
+      "checkpoint_sha256": "44444b7e068cb56ae045cb7c56a75285f211fb3a69ab7ff43b8ce23a1a9c4fd7",
+      "complete_sha256": "01551acc7babcb04c824bc7653a2536835f9b1c3d29afdf351fd67edf41f311d",
+      "model_id": "SRF1_2_GATE_s71002"
+    },
+    {
+      "adapter_identity_sha256": "a1df772de9729accaf288e5989bf3ce4f65b8a8c4d501dc29a24e39e5082db9f",
+      "checkpoint_sha256": "b72643b9a7bee6816fb76dbc8dd68f6822b418ed12a53827eac7f94717c6ee84",
+      "complete_sha256": "c035423a36bfbe9ab2ecd811431152db05e0833d3a0d75b7b530b8988134a602",
+      "model_id": "SRF1_2_DEC_s71002"
+    },
+    {
+      "adapter_identity_sha256": "13fee52523ad4c003775da29cd5de097492a6761877aa454126d1827d2105c23",
+      "checkpoint_sha256": "64f81c65d50e0cf4bc972bf9942b707ce6351990603b00f97964b7ecddebb26b",
+      "complete_sha256": "911db952d3d41ffd79b18ffba8ed45f6b6f5ca82d19e5ba94a7a5af2cbecad33",
+      "model_id": "SRF1_2_A_s71003"
+    },
+    {
+      "adapter_identity_sha256": "b34dbe4ae80527ef1cadc544fa0e8874617d79c269b65653c342efe6be77b08b",
+      "checkpoint_sha256": "f420a03f6716920984d04e97b5d830965d079f7c7a5eb3797b6427f36feee0b1",
+      "complete_sha256": "adf21a65d0a762e40308ae1498f68f1b95280cd4ebd9592e7cdd2bf8c68bd3d7",
+      "model_id": "SRF1_2_J_s71003"
+    },
+    {
+      "adapter_identity_sha256": "a69777d98559cb935e323b5c0f27f5f28aa4f0d8b91a79f86c39f6b83cf2e787",
+      "checkpoint_sha256": "0d0f9fb4f9f1f688e6eec3c5a962b3324d4207c69db31b033be73e73229a3908",
+      "complete_sha256": "297e22d436bb0665d160e1e9cb5f6f9d51a6ec6ed9197f4ed98ab1ea9313f9fc",
+      "model_id": "SRF1_2_GATE_s71003"
+    },
+    {
+      "adapter_identity_sha256": "c0da11f881539a7e609bbc0abd6079f12f3df1bc1a128d31d46e5e138bbff29c",
+      "checkpoint_sha256": "ca513ea33723a2a92b88576ba1e754f20859cbcc792e8631b0ec6e16d94526a0",
+      "complete_sha256": "181507bfe4aeea929159317622b5d9e15372c70ad00a7308d18b08fc8092f5d5",
+      "model_id": "SRF1_2_DEC_s71003"
+    }
+  ],
+  "hdd_mappings": [
+    {
+      "commits": 13,
+      "latest": {
+        "field_hashes": {
+          "committed_logical_step": "b07bd093a5f79d4a356357cc202c0bac28b26efd843c0c60735c8f241acb46a1",
+          "cursor": "0c36c554680b4180fab9363622d52f285c946bd992cd1861cf8eaf5ae0f575ae",
+          "diagnostics_hash": "c683fa862214a3afe90a4f42bc713b260dbac577b9afc442f933339574c2d3ce",
+          "input_stream_hash": "d2a3a18da8824a1bfeb2e57ca2a7d05fd3af10f50621a689accaa06687a36594",
+          "optimizer": "32e7bd5025864e8cf98cfd0a22a6c276f0aa066d5a73a63db3ab38ec0c875052",
+          "parameters": "d7cb3188e8a72dd9506f7c2db29c67bf868ec56cb44cc9e7fa0df190924219bf",
+          "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+          "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+          "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+          "rng": "94d84700b03c8b069adb35ff3d8d6dce682cc4cfd500e5a43c9a32d0f3cbb24c",
+          "run_identity": "6c55137b680fa8b5b19b7b1ce8a4ee89411d2183fc879ace785d1fb5cae877a8",
+          "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+          "scheduler": "f4e633c075d12dcf6dcd802e3d8a88a5c992fb7edebe28e509be19e532ecb3f6",
+          "token_path_hash": "40b13b16c61efa2c68069e5b1a055dbe4b0dae5dea6e543739f788cc539f1e85",
+          "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+        },
+        "path": "step-96-5eaee7bbe49333cfbd44dc6f1b16871f725b33585856719c53fea71c543c052d.pt",
+        "sha256": "fca15b7cd2730e846ce1b17e9011ec96f47df1941c9737190422c9c96f846ed2",
+        "state_hash": "5eaee7bbe49333cfbd44dc6f1b16871f725b33585856719c53fea71c543c052d",
+        "step": 96
+      },
+      "source": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_A_s71002/checkpoints",
+      "target": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_A_s71002"
+    },
+    {
+      "commits": 13,
+      "latest": {
+        "field_hashes": {
+          "committed_logical_step": "b07bd093a5f79d4a356357cc202c0bac28b26efd843c0c60735c8f241acb46a1",
+          "cursor": "0c36c554680b4180fab9363622d52f285c946bd992cd1861cf8eaf5ae0f575ae",
+          "diagnostics_hash": "8e2f5d99068adefd8995f7ee171844402a23a9880f5843f2d75c784cd49680e3",
+          "input_stream_hash": "d2a3a18da8824a1bfeb2e57ca2a7d05fd3af10f50621a689accaa06687a36594",
+          "optimizer": "45e4cb7aa9766aa15313e0fa314db934dac7935becff0655503cc9ef7e530b0d",
+          "parameters": "ac21364d055fedd713fc37bbeced17b8083bccbcaa305571b0ce21b3386916bb",
+          "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+          "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+          "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+          "rng": "94d84700b03c8b069adb35ff3d8d6dce682cc4cfd500e5a43c9a32d0f3cbb24c",
+          "run_identity": "b62525d09e46bd49566cf75a69410b04f907d9fde95a01914812b10f54469cb9",
+          "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+          "scheduler": "f4e633c075d12dcf6dcd802e3d8a88a5c992fb7edebe28e509be19e532ecb3f6",
+          "token_path_hash": "aa20e90bfd8801021510ecb1acea735f92808ed7d731e4636cea35daefc00d9c",
+          "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+        },
+        "path": "step-96-7e510f247ad54438171574ca535a9c86029da3c348bad96d9e97795b0cee75e3.pt",
+        "sha256": "96741c42ba4ead4341ef5706c7d6dfa43aea71569fb3de087795d6d9f9613d9d",
+        "state_hash": "7e510f247ad54438171574ca535a9c86029da3c348bad96d9e97795b0cee75e3",
+        "step": 96
+      },
+      "source": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_J_s71002/checkpoints",
+      "target": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_J_s71002"
+    },
+    {
+      "commits": 13,
+      "latest": {
+        "field_hashes": {
+          "committed_logical_step": "b07bd093a5f79d4a356357cc202c0bac28b26efd843c0c60735c8f241acb46a1",
+          "cursor": "0c36c554680b4180fab9363622d52f285c946bd992cd1861cf8eaf5ae0f575ae",
+          "diagnostics_hash": "2828ff8cc276ea7943de08490986d14642f4cf5ea3ba71ff1e1a36490ab1dc65",
+          "input_stream_hash": "d2a3a18da8824a1bfeb2e57ca2a7d05fd3af10f50621a689accaa06687a36594",
+          "optimizer": "e4e99f805880a91f1b609e72bce4048cdf94ffa9883f1e02d83116af676b6ce6",
+          "parameters": "6bb3cd8b40d85af7752c1c7d8340c0b696c07176b124071780a9f354076a1bfe",
+          "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+          "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+          "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+          "rng": "94d84700b03c8b069adb35ff3d8d6dce682cc4cfd500e5a43c9a32d0f3cbb24c",
+          "run_identity": "53746bcdcf30dec239087aadfd64cc605486abcbe6d36214067c819c4b20b1ba",
+          "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+          "scheduler": "f4e633c075d12dcf6dcd802e3d8a88a5c992fb7edebe28e509be19e532ecb3f6",
+          "token_path_hash": "f9599ef20eedcef5320e94b289916b916dc76780331ac9c00f3f2afaf1cb0dc5",
+          "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+        },
+        "path": "step-96-0fc294ea2dfd7af3ab73c9e9d2a73ae4e7d66947cf86e21a6ee57d078d44727d.pt",
+        "sha256": "44444b7e068cb56ae045cb7c56a75285f211fb3a69ab7ff43b8ce23a1a9c4fd7",
+        "state_hash": "0fc294ea2dfd7af3ab73c9e9d2a73ae4e7d66947cf86e21a6ee57d078d44727d",
+        "step": 96
+      },
+      "source": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_GATE_s71002/checkpoints",
+      "target": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_GATE_s71002"
+    },
+    {
+      "commits": 13,
+      "latest": {
+        "field_hashes": {
+          "committed_logical_step": "b07bd093a5f79d4a356357cc202c0bac28b26efd843c0c60735c8f241acb46a1",
+          "cursor": "0c36c554680b4180fab9363622d52f285c946bd992cd1861cf8eaf5ae0f575ae",
+          "diagnostics_hash": "ec3b39c0a5d50e5bbe5ab6284bd1c5b5a72f89484890b639e8451a9c3e5f97a7",
+          "input_stream_hash": "d2a3a18da8824a1bfeb2e57ca2a7d05fd3af10f50621a689accaa06687a36594",
+          "optimizer": "ec59264564beae2e8e1f6d2de8bc9dce4392b4094370d209c86b10957a9c77d2",
+          "parameters": "103d2e0ebd743241cfd6f7395a23477708471bdabb55ca29e676d4a6630e0d8f",
+          "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+          "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+          "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+          "rng": "94d84700b03c8b069adb35ff3d8d6dce682cc4cfd500e5a43c9a32d0f3cbb24c",
+          "run_identity": "5f3f23699b185973e604f3ed86f38e92ef69d7d24b8825216c72906307b9201f",
+          "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+          "scheduler": "f4e633c075d12dcf6dcd802e3d8a88a5c992fb7edebe28e509be19e532ecb3f6",
+          "token_path_hash": "5c8525647e4ea9bc79f22a57756d507a6373e44c2e7eb0e33ad0e6d2baf037e0",
+          "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+        },
+        "path": "step-96-98c00d667e56cb9ff62a50fb171882fe8e68d606491820e0dd2b0d11bd7ef811.pt",
+        "sha256": "b72643b9a7bee6816fb76dbc8dd68f6822b418ed12a53827eac7f94717c6ee84",
+        "state_hash": "98c00d667e56cb9ff62a50fb171882fe8e68d606491820e0dd2b0d11bd7ef811",
+        "step": 96
+      },
+      "source": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_DEC_s71002/checkpoints",
+      "target": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_DEC_s71002"
+    },
+    {
+      "commits": 13,
+      "latest": {
+        "field_hashes": {
+          "committed_logical_step": "b07bd093a5f79d4a356357cc202c0bac28b26efd843c0c60735c8f241acb46a1",
+          "cursor": "0c36c554680b4180fab9363622d52f285c946bd992cd1861cf8eaf5ae0f575ae",
+          "diagnostics_hash": "05514773c66ef3630558491ef37c4d0add5e374a46bc9870c63328803903331c",
+          "input_stream_hash": "a11427f57b16e26ca6d0a4722245eac6ae74353878351f737440ae9719a20754",
+          "optimizer": "0b6dc93803f0057e3b7dd4275a44ceca584e8c01164f2f8d66be2a1fe0ebc6c7",
+          "parameters": "85b0aee2d71bdbea8b3cc1ea5d8d686579347ede3a0bd492dde88bc36bf20373",
+          "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+          "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+          "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+          "rng": "785d69dc073dd2d348f40c767490bd2b745c4b3156be89e331571a168dc7b558",
+          "run_identity": "f5d724d13e8c24be8c93f4c8a696987b6372990ebccaab289f9a959ce1902174",
+          "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+          "scheduler": "f4e633c075d12dcf6dcd802e3d8a88a5c992fb7edebe28e509be19e532ecb3f6",
+          "token_path_hash": "77ca38093957e0b3231e62f74ac0cb7e03e3b359ef47dc31044b9947fc906c53",
+          "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+        },
+        "path": "step-96-a00f225bb23cd7b91a5936b4b6a217f69f546d494799e946f6055dfc517aa970.pt",
+        "sha256": "64f81c65d50e0cf4bc972bf9942b707ce6351990603b00f97964b7ecddebb26b",
+        "state_hash": "a00f225bb23cd7b91a5936b4b6a217f69f546d494799e946f6055dfc517aa970",
+        "step": 96
+      },
+      "source": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_A_s71003/checkpoints",
+      "target": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_A_s71003"
+    },
+    {
+      "commits": 13,
+      "latest": {
+        "field_hashes": {
+          "committed_logical_step": "b07bd093a5f79d4a356357cc202c0bac28b26efd843c0c60735c8f241acb46a1",
+          "cursor": "0c36c554680b4180fab9363622d52f285c946bd992cd1861cf8eaf5ae0f575ae",
+          "diagnostics_hash": "750e2a4132b891d7202ec583feed03db02598fb962c7f689c7badfddab5711da",
+          "input_stream_hash": "a11427f57b16e26ca6d0a4722245eac6ae74353878351f737440ae9719a20754",
+          "optimizer": "b2ce21e1b84beac3a203096032aee3954bf16f4e36cc0db285f843ea325228f2",
+          "parameters": "cf998c831f98ff3f22263cd26a8ed60544419503389fa0dd256ebd99e56dc2bc",
+          "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+          "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+          "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+          "rng": "785d69dc073dd2d348f40c767490bd2b745c4b3156be89e331571a168dc7b558",
+          "run_identity": "d31b1ca0523c6dd7e8550e501a0758af66128809e2f40055abc0136448319849",
+          "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+          "scheduler": "f4e633c075d12dcf6dcd802e3d8a88a5c992fb7edebe28e509be19e532ecb3f6",
+          "token_path_hash": "a91f84e395d09bbc14f3ade362693e7281d119ab38ee81b79752033d773c8496",
+          "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+        },
+        "path": "step-96-8cbe101618d374b3508812a038415c23603df7a78a083bce401e427747ea8f13.pt",
+        "sha256": "f420a03f6716920984d04e97b5d830965d079f7c7a5eb3797b6427f36feee0b1",
+        "state_hash": "8cbe101618d374b3508812a038415c23603df7a78a083bce401e427747ea8f13",
+        "step": 96
+      },
+      "source": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_J_s71003/checkpoints",
+      "target": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_J_s71003"
+    },
+    {
+      "commits": 13,
+      "latest": {
+        "field_hashes": {
+          "committed_logical_step": "b07bd093a5f79d4a356357cc202c0bac28b26efd843c0c60735c8f241acb46a1",
+          "cursor": "0c36c554680b4180fab9363622d52f285c946bd992cd1861cf8eaf5ae0f575ae",
+          "diagnostics_hash": "021297831b6ab1a454dfb7dd53f3b8219bc3e595b7710b79f6a4d754058c69c1",
+          "input_stream_hash": "a11427f57b16e26ca6d0a4722245eac6ae74353878351f737440ae9719a20754",
+          "optimizer": "f0ccccb6581254cbd734a0caf277a6aba8e080b12b0ea25bc94c4bb2c807ea2b",
+          "parameters": "5351a749df265afbc182dafe9e776291598eb08c262adff936dd1ae81e075c51",
+          "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+          "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+          "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+          "rng": "785d69dc073dd2d348f40c767490bd2b745c4b3156be89e331571a168dc7b558",
+          "run_identity": "2e1f629c48718295c5653aeafbcb88e958cc5b99881039d74a69b7278bb94520",
+          "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+          "scheduler": "f4e633c075d12dcf6dcd802e3d8a88a5c992fb7edebe28e509be19e532ecb3f6",
+          "token_path_hash": "b140943a2fe2f29dd59712e832f1e685305df2e3b2426ee06fa4c9a95b701cb8",
+          "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+        },
+        "path": "step-96-36ea456c9540d7a71b7644ffc02dc37dd1ca05b62a5d0cd35f228f1e3995a6a3.pt",
+        "sha256": "0d0f9fb4f9f1f688e6eec3c5a962b3324d4207c69db31b033be73e73229a3908",
+        "state_hash": "36ea456c9540d7a71b7644ffc02dc37dd1ca05b62a5d0cd35f228f1e3995a6a3",
+        "step": 96
+      },
+      "source": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_GATE_s71003/checkpoints",
+      "target": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_GATE_s71003"
+    },
+    {
+      "commits": 13,
+      "latest": {
+        "field_hashes": {
+          "committed_logical_step": "b07bd093a5f79d4a356357cc202c0bac28b26efd843c0c60735c8f241acb46a1",
+          "cursor": "0c36c554680b4180fab9363622d52f285c946bd992cd1861cf8eaf5ae0f575ae",
+          "diagnostics_hash": "66689d5b0e3059d07a85a2c971c50d71caefc71d74e8ca2fa10a1884932b2922",
+          "input_stream_hash": "a11427f57b16e26ca6d0a4722245eac6ae74353878351f737440ae9719a20754",
+          "optimizer": "7cb1df6f36e07bcea5286e8794a2422007eaa08fe2ba378ec6ca93c79d55bedc",
+          "parameters": "751e68a3d89cbc7066cd10808aca6cf0ae24180f8860eea460e53c2c26da4855",
+          "plan_id": "d4a94c84899501d4cdcc0698734130d0f51e11fc67efc87bf8c48813c7f8edca",
+          "reference": "432f0556f40cbb2918331bf2101f05e72ecd253031faed10d46621c312fcf1e3",
+          "reference_hash": "89abbb593e52a27c794abd548fa4b0e0dce741cdea5922610743ea6e0f606d10",
+          "rng": "785d69dc073dd2d348f40c767490bd2b745c4b3156be89e331571a168dc7b558",
+          "run_identity": "ef8c0cfd06e1bf18ccdd25cbae1dcc83bc12bc82c37c2f382920db19f7c88a80",
+          "sampling_hash": "2f6c1c44e40e888e6f764393a240ec5f454cbb9c78f36c0c62c525ab37144122",
+          "scheduler": "f4e633c075d12dcf6dcd802e3d8a88a5c992fb7edebe28e509be19e532ecb3f6",
+          "token_path_hash": "7b4da8e12ca7f089045fcaf6ae57b8bcabba3862596d4c854b10f2879644d755",
+          "training_recipe": "c2f4f57e89317928bf63d0236de3c01939b43af3aeed924960a97b58b97ec062"
+        },
+        "path": "step-96-00083a0ce91ee47bfac0a04559e18fcd639d7da778fcef7c9d8ad875719349c4.pt",
+        "sha256": "ca513ea33723a2a92b88576ba1e754f20859cbcc792e8631b0ec6e16d94526a0",
+        "state_hash": "00083a0ce91ee47bfac0a04559e18fcd639d7da778fcef7c9d8ad875719349c4",
+        "step": 96
+      },
+      "source": "/projects/_ssd/varunssd/louis-ssvc/sr_f12_20261010/runs/SRF1_2_DEC_s71003/checkpoints",
+      "target": "/projects/_hdd/varunhdd/louis-ssvc/sr_f12_20261010_checkpoints/SRF1_2_DEC_s71003"
+    }
+  ],
+  "immutable_server_completion_status": "EVALUATIONS_COMPLETE_REPORT_PENDING"
+}

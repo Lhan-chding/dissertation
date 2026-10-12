@@ -1,0 +1,1006 @@
+{
+  "accounting_counters": {
+    "completion_attempts": 387484,
+    "extra_forward_sequences": 297402,
+    "generated_tokens": 61282993
+  },
+  "accounting_files": [
+    {
+      "counts": {
+        "completion_attempts": 12672,
+        "extra_forward_sequences": 24576,
+        "generated_tokens": 2669689
+      },
+      "events": 38880,
+      "job_ids": [
+        "196939"
+      ],
+      "task": "SRF1_2_A_s71001"
+    },
+    {
+      "counts": {
+        "completion_attempts": 12672,
+        "extra_forward_sequences": 24576,
+        "generated_tokens": 2765804
+      },
+      "events": 38880,
+      "job_ids": [
+        "197596"
+      ],
+      "task": "SRF1_2_A_s71002"
+    },
+    {
+      "counts": {
+        "completion_attempts": 12672,
+        "extra_forward_sequences": 24576,
+        "generated_tokens": 2347989
+      },
+      "events": 38880,
+      "job_ids": [
+        "198168"
+      ],
+      "task": "SRF1_2_A_s71003"
+    },
+    {
+      "counts": {
+        "completion_attempts": 12672,
+        "extra_forward_sequences": 24576,
+        "generated_tokens": 2589094
+      },
+      "events": 38880,
+      "job_ids": [
+        "196942"
+      ],
+      "task": "SRF1_2_DEC_s71001"
+    },
+    {
+      "counts": {
+        "completion_attempts": 12672,
+        "extra_forward_sequences": 24576,
+        "generated_tokens": 2705295
+      },
+      "events": 38880,
+      "job_ids": [
+        "197649"
+      ],
+      "task": "SRF1_2_DEC_s71002"
+    },
+    {
+      "counts": {
+        "completion_attempts": 12672,
+        "extra_forward_sequences": 24576,
+        "generated_tokens": 2459530
+      },
+      "events": 38880,
+      "job_ids": [
+        "198356"
+      ],
+      "task": "SRF1_2_DEC_s71003"
+    },
+    {
+      "counts": {
+        "completion_attempts": 12672,
+        "extra_forward_sequences": 24576,
+        "generated_tokens": 2580571
+      },
+      "events": 38880,
+      "job_ids": [
+        "196941"
+      ],
+      "task": "SRF1_2_GATE_s71001"
+    },
+    {
+      "counts": {
+        "completion_attempts": 12672,
+        "extra_forward_sequences": 24576,
+        "generated_tokens": 2704180
+      },
+      "events": 38880,
+      "job_ids": [
+        "197598"
+      ],
+      "task": "SRF1_2_GATE_s71002"
+    },
+    {
+      "counts": {
+        "completion_attempts": 12672,
+        "extra_forward_sequences": 24576,
+        "generated_tokens": 1983397
+      },
+      "events": 38880,
+      "job_ids": [
+        "198170"
+      ],
+      "task": "SRF1_2_GATE_s71003"
+    },
+    {
+      "counts": {
+        "completion_attempts": 12672,
+        "extra_forward_sequences": 24576,
+        "generated_tokens": 2589535
+      },
+      "events": 38880,
+      "job_ids": [
+        "196940"
+      ],
+      "task": "SRF1_2_J_s71001"
+    },
+    {
+      "counts": {
+        "completion_attempts": 12672,
+        "extra_forward_sequences": 24576,
+        "generated_tokens": 2710797
+      },
+      "events": 38880,
+      "job_ids": [
+        "197597"
+      ],
+      "task": "SRF1_2_J_s71002"
+    },
+    {
+      "counts": {
+        "completion_attempts": 12672,
+        "extra_forward_sequences": 24576,
+        "generated_tokens": 2465570
+      },
+      "events": 38880,
+      "job_ids": [
+        "198169"
+      ],
+      "task": "SRF1_2_J_s71003"
+    },
+    {
+      "counts": {
+        "completion_attempts": 1024,
+        "extra_forward_sequences": 2176,
+        "generated_tokens": 219535
+      },
+      "events": 3328,
+      "job_ids": [
+        "196877"
+      ],
+      "task": "SRF1_2_TECHNICAL_R0"
+    },
+    {
+      "counts": {
+        "completion_attempts": 2224,
+        "generated_tokens": 450140
+      },
+      "events": 2502,
+      "job_ids": [
+        "196826"
+      ],
+      "task": "baseline-shard000"
+    },
+    {
+      "counts": {
+        "completion_attempts": 2216,
+        "generated_tokens": 449883
+      },
+      "events": 2493,
+      "job_ids": [
+        "196827"
+      ],
+      "task": "baseline-shard001"
+    },
+    {
+      "counts": {
+        "completion_attempts": 2216,
+        "generated_tokens": 453246
+      },
+      "events": 2493,
+      "job_ids": [
+        "196828"
+      ],
+      "task": "baseline-shard002"
+    },
+    {
+      "counts": {
+        "completion_attempts": 17604,
+        "generated_tokens": 2213215
+      },
+      "events": 24904,
+      "job_ids": [
+        "198444"
+      ],
+      "task": "endpoint-SRF1_2_A_s71001"
+    },
+    {
+      "counts": {
+        "completion_attempts": 17604,
+        "generated_tokens": 2401339
+      },
+      "events": 24904,
+      "job_ids": [
+        "198886"
+      ],
+      "task": "endpoint-SRF1_2_A_s71002"
+    },
+    {
+      "counts": {
+        "completion_attempts": 17604,
+        "generated_tokens": 2146589
+      },
+      "events": 24904,
+      "job_ids": [
+        "199054"
+      ],
+      "task": "endpoint-SRF1_2_A_s71003"
+    },
+    {
+      "counts": {
+        "completion_attempts": 16452,
+        "generated_tokens": 2134959
+      },
+      "events": 23464,
+      "job_ids": [
+        "199814"
+      ],
+      "task": "endpoint-SRF1_2_COMMON_ZERO"
+    },
+    {
+      "counts": {
+        "completion_attempts": 17604,
+        "generated_tokens": 2411618
+      },
+      "events": 24904,
+      "job_ids": [
+        "198842"
+      ],
+      "task": "endpoint-SRF1_2_DEC_s71001"
+    },
+    {
+      "counts": {
+        "completion_attempts": 17604,
+        "generated_tokens": 2409885
+      },
+      "events": 24904,
+      "job_ids": [
+        "199036"
+      ],
+      "task": "endpoint-SRF1_2_DEC_s71002"
+    },
+    {
+      "counts": {
+        "completion_attempts": 17604,
+        "generated_tokens": 1846037
+      },
+      "events": 24904,
+      "job_ids": [
+        "199803"
+      ],
+      "task": "endpoint-SRF1_2_DEC_s71003"
+    },
+    {
+      "counts": {
+        "completion_attempts": 17604,
+        "generated_tokens": 2393142
+      },
+      "events": 24904,
+      "job_ids": [
+        "198836"
+      ],
+      "task": "endpoint-SRF1_2_GATE_s71001"
+    },
+    {
+      "counts": {
+        "completion_attempts": 17604,
+        "generated_tokens": 2414457
+      },
+      "events": 24904,
+      "job_ids": [
+        "199035"
+      ],
+      "task": "endpoint-SRF1_2_GATE_s71002"
+    },
+    {
+      "counts": {
+        "completion_attempts": 17604,
+        "generated_tokens": 1774780
+      },
+      "events": 24904,
+      "job_ids": [
+        "199634"
+      ],
+      "task": "endpoint-SRF1_2_GATE_s71003"
+    },
+    {
+      "counts": {
+        "completion_attempts": 17604,
+        "generated_tokens": 2354528
+      },
+      "events": 24904,
+      "job_ids": [
+        "198799"
+      ],
+      "task": "endpoint-SRF1_2_J_s71001"
+    },
+    {
+      "counts": {
+        "completion_attempts": 17604,
+        "generated_tokens": 2400563
+      },
+      "events": 24904,
+      "job_ids": [
+        "199027"
+      ],
+      "task": "endpoint-SRF1_2_J_s71002"
+    },
+    {
+      "counts": {
+        "completion_attempts": 17604,
+        "generated_tokens": 2230096
+      },
+      "events": 24904,
+      "job_ids": [
+        "199140"
+      ],
+      "task": "endpoint-SRF1_2_J_s71003"
+    },
+    {
+      "counts": {
+        "completion_attempts": 40,
+        "extra_forward_sequences": 250,
+        "generated_tokens": 7530
+      },
+      "events": 263,
+      "job_ids": [
+        "196825",
+        "196877"
+      ],
+      "task": "technical"
+    },
+    {
+      "counts": {
+        "extra_forward_sequences": 64
+      },
+      "events": 44,
+      "job_ids": [
+        "196834"
+      ],
+      "task": "technical_tf_readonly_diagnostic"
+    }
+  ],
+  "allocated_job_wall_span_hours": 53.26972222222222,
+  "gpu_hours_by_category": {
+    "baseline_initial": 1.9208333333333334,
+    "endpoint_evaluation": 93.23111111111112,
+    "scientific_training": 119.5638888888889,
+    "technical_and_diagnostic": 1.2275,
+    "technical_failure": 0.03833333333333333
+  },
+  "job_count": 31,
+  "jobs": [
+    {
+      "accounting_tasks": [
+        "technical"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "technical_failure",
+      "elapsed_seconds": 138,
+      "end_utc": "2026-10-10T09:27:18",
+      "exit_code": "1:0",
+      "gpu_count": 1,
+      "gpu_hours": 0.03833333333333333,
+      "job_id": "196825",
+      "job_name": "srf12-TECHNICAL",
+      "nodes": "gpu-pro6000-7",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 0.0,
+      "start_utc": "2026-10-10T09:25:00",
+      "state": "FAILED",
+      "submit_utc": "2026-10-10T09:25:00"
+    },
+    {
+      "accounting_tasks": [
+        "baseline-shard000"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "baseline_initial",
+      "elapsed_seconds": 2330,
+      "end_utc": "2026-10-10T10:03:51",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 0.6472222222222223,
+      "job_id": "196826",
+      "job_name": "srf12-BASELINE_0",
+      "nodes": "gpu-pro6000-7",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 1.0,
+      "start_utc": "2026-10-10T09:25:01",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-10T09:25:00"
+    },
+    {
+      "accounting_tasks": [
+        "baseline-shard001"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "baseline_initial",
+      "elapsed_seconds": 2268,
+      "end_utc": "2026-10-10T10:05:06",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 0.63,
+      "job_id": "196827",
+      "job_name": "srf12-BASELINE_1",
+      "nodes": "gpu-pro6000-7",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 138.0,
+      "start_utc": "2026-10-10T09:27:18",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-10T09:25:00"
+    },
+    {
+      "accounting_tasks": [
+        "baseline-shard002"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "baseline_initial",
+      "elapsed_seconds": 2317,
+      "end_utc": "2026-10-10T10:10:07",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 0.6436111111111111,
+      "job_id": "196828",
+      "job_name": "srf12-BASELINE_2",
+      "nodes": "gpu-pro6000-7",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 389.0,
+      "start_utc": "2026-10-10T09:31:30",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-10T09:25:01"
+    },
+    {
+      "accounting_tasks": [
+        "technical_tf_readonly_diagnostic"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "technical_and_diagnostic",
+      "elapsed_seconds": 47,
+      "end_utc": "2026-10-10T09:34:05",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 0.013055555555555556,
+      "job_id": "196834",
+      "job_name": "srf12-tf-diagnostic",
+      "nodes": "gpu-pro6000-7",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 48.0,
+      "start_utc": "2026-10-10T09:33:18",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-10T09:32:30"
+    },
+    {
+      "accounting_tasks": [
+        "SRF1_2_TECHNICAL_R0",
+        "technical"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "technical_and_diagnostic",
+      "elapsed_seconds": 4372,
+      "end_utc": "2026-10-10T11:03:42",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 1.2144444444444444,
+      "job_id": "196877",
+      "job_name": "srf12-TECHNICAL",
+      "nodes": "gpu-pro6000-11",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 45.0,
+      "start_utc": "2026-10-10T09:50:50",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-10T09:50:05"
+    },
+    {
+      "accounting_tasks": [
+        "SRF1_2_A_s71001"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "scientific_training",
+      "elapsed_seconds": 36751,
+      "end_utc": "2026-10-10T21:35:09",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 10.20861111111111,
+      "job_id": "196939",
+      "job_name": "srf12-SRF1_2_A_s71001",
+      "nodes": "gpu-pro6000-2",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 1096.0,
+      "start_utc": "2026-10-10T11:22:38",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-10T11:04:22"
+    },
+    {
+      "accounting_tasks": [
+        "SRF1_2_J_s71001"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "scientific_training",
+      "elapsed_seconds": 32019,
+      "end_utc": "2026-10-10T20:22:43",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 8.894166666666667,
+      "job_id": "196940",
+      "job_name": "srf12-SRF1_2_J_s71001",
+      "nodes": "gpu-pro6000-9",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 1481.0,
+      "start_utc": "2026-10-10T11:29:04",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-10T11:04:23"
+    },
+    {
+      "accounting_tasks": [
+        "SRF1_2_GATE_s71001"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "scientific_training",
+      "elapsed_seconds": 31576,
+      "end_utc": "2026-10-10T20:15:20",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 8.77111111111111,
+      "job_id": "196941",
+      "job_name": "srf12-SRF1_2_GATE_s71001",
+      "nodes": "gpu-pro6000-9",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 1481.0,
+      "start_utc": "2026-10-10T11:29:04",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-10T11:04:23"
+    },
+    {
+      "accounting_tasks": [
+        "SRF1_2_DEC_s71001"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "scientific_training",
+      "elapsed_seconds": 35046,
+      "end_utc": "2026-10-10T21:13:15",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 9.735,
+      "job_id": "196942",
+      "job_name": "srf12-SRF1_2_DEC_s71001",
+      "nodes": "gpu-pro6000-1",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 1486.0,
+      "start_utc": "2026-10-10T11:29:09",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-10T11:04:23"
+    },
+    {
+      "accounting_tasks": [
+        "SRF1_2_A_s71002"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "scientific_training",
+      "elapsed_seconds": 37146,
+      "end_utc": "2026-10-11T07:55:13",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 10.318333333333333,
+      "job_id": "197596",
+      "job_name": "srf12-SRF1_2_A_s71002",
+      "nodes": "gpu-pro6000-1",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 2.0,
+      "start_utc": "2026-10-10T21:36:07",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-10T21:36:05"
+    },
+    {
+      "accounting_tasks": [
+        "SRF1_2_J_s71002"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "scientific_training",
+      "elapsed_seconds": 48989,
+      "end_utc": "2026-10-11T11:12:38",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 13.608055555555556,
+      "job_id": "197597",
+      "job_name": "srf12-SRF1_2_J_s71002",
+      "nodes": "gpu-pro6000-11",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 4.0,
+      "start_utc": "2026-10-10T21:36:09",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-10T21:36:05"
+    },
+    {
+      "accounting_tasks": [
+        "SRF1_2_GATE_s71002"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "scientific_training",
+      "elapsed_seconds": 35127,
+      "end_utc": "2026-10-11T07:21:38",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 9.7575,
+      "job_id": "197598",
+      "job_name": "srf12-SRF1_2_GATE_s71002",
+      "nodes": "gpu-pro6000-2",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 6.0,
+      "start_utc": "2026-10-10T21:36:11",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-10T21:36:05"
+    },
+    {
+      "accounting_tasks": [
+        "SRF1_2_DEC_s71002"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "scientific_training",
+      "elapsed_seconds": 35339,
+      "end_utc": "2026-10-11T10:13:40",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 9.81638888888889,
+      "job_id": "197649",
+      "job_name": "srf12-SRF1_2_DEC_s71002",
+      "nodes": "gpu-pro6000-2",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 3.0,
+      "start_utc": "2026-10-11T00:24:41",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-11T00:24:38"
+    },
+    {
+      "accounting_tasks": [
+        "SRF1_2_A_s71003"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "scientific_training",
+      "elapsed_seconds": 31680,
+      "end_utc": "2026-10-11T17:08:50",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 8.8,
+      "job_id": "198168",
+      "job_name": "srf12-SRF1_2_A_s71003",
+      "nodes": "gpu-pro6000-7",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 1.0,
+      "start_utc": "2026-10-11T08:20:50",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-11T08:20:49"
+    },
+    {
+      "accounting_tasks": [
+        "SRF1_2_J_s71003"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "scientific_training",
+      "elapsed_seconds": 31170,
+      "end_utc": "2026-10-11T17:05:11",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 8.658333333333333,
+      "job_id": "198169",
+      "job_name": "srf12-SRF1_2_J_s71003",
+      "nodes": "gpu-pro6000-7",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 292.0,
+      "start_utc": "2026-10-11T08:25:41",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-11T08:20:49"
+    },
+    {
+      "accounting_tasks": [
+        "SRF1_2_GATE_s71003"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "scientific_training",
+      "elapsed_seconds": 28194,
+      "end_utc": "2026-10-11T16:15:35",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 7.831666666666667,
+      "job_id": "198170",
+      "job_name": "srf12-SRF1_2_GATE_s71003",
+      "nodes": "gpu-pro6000-7",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 292.0,
+      "start_utc": "2026-10-11T08:25:41",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-11T08:20:49"
+    },
+    {
+      "accounting_tasks": [
+        "SRF1_2_DEC_s71003"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "scientific_training",
+      "elapsed_seconds": 47393,
+      "end_utc": "2026-10-11T23:37:38",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 13.164722222222222,
+      "job_id": "198356",
+      "job_name": "srf12-SRF1_2_DEC_s71003",
+      "nodes": "gpu-pro6000-11",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 798.0,
+      "start_utc": "2026-10-11T10:27:45",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-11T10:14:27"
+    },
+    {
+      "accounting_tasks": [
+        "endpoint-SRF1_2_A_s71001"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "endpoint_evaluation",
+      "elapsed_seconds": 25822,
+      "end_utc": "2026-10-11T18:24:12",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 7.172777777777778,
+      "job_id": "198444",
+      "job_name": "srf12-EVAL_SRF1_2_A_s71001",
+      "nodes": "gpu-pro6000-8",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 5.0,
+      "start_utc": "2026-10-11T11:13:50",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-11T11:13:45"
+    },
+    {
+      "accounting_tasks": [
+        "endpoint-SRF1_2_J_s71001"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "endpoint_evaluation",
+      "elapsed_seconds": 28799,
+      "end_utc": "2026-10-12T00:16:20",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 7.999722222222222,
+      "job_id": "198799",
+      "job_name": "srf12-EVAL_SRF1_2_J_s71001",
+      "nodes": "gpu-pro6000-2",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 3.0,
+      "start_utc": "2026-10-11T16:16:21",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-11T16:16:18"
+    },
+    {
+      "accounting_tasks": [
+        "endpoint-SRF1_2_GATE_s71001"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "endpoint_evaluation",
+      "elapsed_seconds": 25451,
+      "end_utc": "2026-10-12T00:10:28",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 7.0697222222222225,
+      "job_id": "198836",
+      "job_name": "srf12-EVAL_SRF1_2_GATE_s71001",
+      "nodes": "gpu-pro6000-8",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 3.0,
+      "start_utc": "2026-10-11T17:06:17",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-11T17:06:14"
+    },
+    {
+      "accounting_tasks": [
+        "endpoint-SRF1_2_DEC_s71001"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "endpoint_evaluation",
+      "elapsed_seconds": 28271,
+      "end_utc": "2026-10-12T01:01:20",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 7.853055555555556,
+      "job_id": "198842",
+      "job_name": "srf12-EVAL_SRF1_2_DEC_s71001",
+      "nodes": "gpu-pro6000-2",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 4.0,
+      "start_utc": "2026-10-11T17:10:09",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-11T17:10:05"
+    },
+    {
+      "accounting_tasks": [
+        "endpoint-SRF1_2_A_s71002"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "endpoint_evaluation",
+      "elapsed_seconds": 27708,
+      "end_utc": "2026-10-12T02:07:12",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 7.696666666666666,
+      "job_id": "198886",
+      "job_name": "srf12-EVAL_SRF1_2_A_s71002",
+      "nodes": "gpu-pro6000-7",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 3.0,
+      "start_utc": "2026-10-11T18:25:24",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-11T18:25:21"
+    },
+    {
+      "accounting_tasks": [
+        "endpoint-SRF1_2_J_s71002"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "endpoint_evaluation",
+      "elapsed_seconds": 26054,
+      "end_utc": "2026-10-12T06:53:26",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 7.237222222222222,
+      "job_id": "199027",
+      "job_name": "srf12-EVAL_SRF1_2_J_s71002",
+      "nodes": "gpu-pro6000-8",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 5.0,
+      "start_utc": "2026-10-11T23:39:12",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-11T23:39:07"
+    },
+    {
+      "accounting_tasks": [
+        "endpoint-SRF1_2_GATE_s71002"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "endpoint_evaluation",
+      "elapsed_seconds": 28671,
+      "end_utc": "2026-10-12T08:09:31",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 7.964166666666666,
+      "job_id": "199035",
+      "job_name": "srf12-EVAL_SRF1_2_GATE_s71002",
+      "nodes": "gpu-pro6000-2",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 3.0,
+      "start_utc": "2026-10-12T00:11:40",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-12T00:11:37"
+    },
+    {
+      "accounting_tasks": [
+        "endpoint-SRF1_2_DEC_s71002"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "endpoint_evaluation",
+      "elapsed_seconds": 28471,
+      "end_utc": "2026-10-12T08:12:17",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 7.908611111111111,
+      "job_id": "199036",
+      "job_name": "srf12-EVAL_SRF1_2_DEC_s71002",
+      "nodes": "gpu-pro6000-2",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 4.0,
+      "start_utc": "2026-10-12T00:17:46",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-12T00:17:42"
+    },
+    {
+      "accounting_tasks": [
+        "endpoint-SRF1_2_A_s71003"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "endpoint_evaluation",
+      "elapsed_seconds": 28665,
+      "end_utc": "2026-10-12T08:59:52",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 7.9625,
+      "job_id": "199054",
+      "job_name": "srf12-EVAL_SRF1_2_A_s71003",
+      "nodes": "gpu-pro6000-2",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 5.0,
+      "start_utc": "2026-10-12T01:02:07",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-12T01:02:02"
+    },
+    {
+      "accounting_tasks": [
+        "endpoint-SRF1_2_J_s71003"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "endpoint_evaluation",
+      "elapsed_seconds": 25386,
+      "end_utc": "2026-10-12T09:11:57",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 7.051666666666667,
+      "job_id": "199140",
+      "job_name": "srf12-EVAL_SRF1_2_J_s71003",
+      "nodes": "gpu-pro6000-8",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 5.0,
+      "start_utc": "2026-10-12T02:08:51",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-12T02:08:46"
+    },
+    {
+      "accounting_tasks": [
+        "endpoint-SRF1_2_GATE_s71003"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "endpoint_evaluation",
+      "elapsed_seconds": 20422,
+      "end_utc": "2026-10-12T12:35:39",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 5.672777777777778,
+      "job_id": "199634",
+      "job_name": "srf12-EVAL_SRF1_2_GATE_s71003",
+      "nodes": "gpu-pro6000-7",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 27.0,
+      "start_utc": "2026-10-12T06:55:17",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-12T06:54:50"
+    },
+    {
+      "accounting_tasks": [
+        "endpoint-SRF1_2_DEC_s71003"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "endpoint_evaluation",
+      "elapsed_seconds": 23401,
+      "end_utc": "2026-10-12T14:41:11",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 6.500277777777778,
+      "job_id": "199803",
+      "job_name": "srf12-EVAL_SRF1_2_DEC_s71003",
+      "nodes": "gpu-pro6000-2",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 25.0,
+      "start_utc": "2026-10-12T08:11:10",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-12T08:10:45"
+    },
+    {
+      "accounting_tasks": [
+        "endpoint-SRF1_2_COMMON_ZERO"
+      ],
+      "alloc_tres": "billing=8,cpu=4,gres/gpu:pro6000=1,gres/gpu=1,mem=90G,node=1",
+      "category": "endpoint_evaluation",
+      "elapsed_seconds": 18511,
+      "end_utc": "2026-10-12T14:06:46",
+      "exit_code": "0:0",
+      "gpu_count": 1,
+      "gpu_hours": 5.141944444444444,
+      "job_id": "199814",
+      "job_name": "srf12-EVAL_SRF1_2_COMMON_ZERO",
+      "nodes": "gpu-pro6000-8",
+      "qos": "soujanya-poria-startfund-2026-03",
+      "queue_seconds": 2655.0,
+      "start_utc": "2026-10-12T08:58:15",
+      "state": "COMPLETED",
+      "submit_utc": "2026-10-12T08:14:00"
+    }
+  ],
+  "limitations": [
+    "GPU hours are allocation time, not GPU active utilization or energy.",
+    "CPU maintenance/controller jobs and user-side work are outside GPU cost.",
+    "Prior SR-F1/SR-F1.1 experiments are excluded; no unrelated user jobs inspected.",
+    "Counters are retained SR-F1.2 accounting events, not a full Transformer-forward count."
+  ],
+  "source": "TZ=UTC sacct -X; explicit 31 project job IDs only",
+  "source_file_sha256": "11f6fe865440c4844b3c01d92dcf50180f8235e2bca8e12119765c29edb5b10f",
+  "status": "COMPLETE_FOR_ACCOUNTED_SR_F1_2_GPU_JOBS",
+  "total_gpu_hours": 215.98166666666668
+}

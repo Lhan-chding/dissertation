@@ -1,0 +1,184 @@
+{
+  "status": "INDEPENDENT_RELEASED_ANALYSIS_VERIFIED",
+  "production_analysis_imported": false,
+  "models": 13,
+  "records": 227700,
+  "input_files": [
+    {
+      "file": "released/evaluation/SRF1_2_COMMON_ZERO.json",
+      "sha256": "6315bbb19d87c293aa742bfdd4cf8e6d5ac42637050494556fdfd63656d6bbab",
+      "records": 16452
+    },
+    {
+      "file": "released/evaluation/SRF1_2_A_s71001.json",
+      "sha256": "1b83b6c836b3317c42ba115a47425c22f0ec595b47963a100b15bfa9cfc251a1",
+      "records": 17604
+    },
+    {
+      "file": "released/evaluation/SRF1_2_J_s71001.json",
+      "sha256": "5cbf7330cd97d212785bc0dfc5450eb1371e4ff34a47fe61545f453ef85fe7c0",
+      "records": 17604
+    },
+    {
+      "file": "released/evaluation/SRF1_2_GATE_s71001.json",
+      "sha256": "c0e4c5f7086f215afd0b60ab4c96ec6ba2f62cb5b1b7ad83ad93221d3fb6ecc6",
+      "records": 17604
+    },
+    {
+      "file": "released/evaluation/SRF1_2_DEC_s71001.json",
+      "sha256": "09215392a0bfb5e9ffe8fd657e418eea3249c068a4d29e5402d503f62634bb10",
+      "records": 17604
+    },
+    {
+      "file": "released/evaluation/SRF1_2_A_s71002.json",
+      "sha256": "f244be33cb5cdac76d6fbefbf39b63f0ecb95a8a0f26847a17659cfd83668110",
+      "records": 17604
+    },
+    {
+      "file": "released/evaluation/SRF1_2_J_s71002.json",
+      "sha256": "6e6d87102824fdee08896f93f35af81e606a978f226b9998fd0538a7099db757",
+      "records": 17604
+    },
+    {
+      "file": "released/evaluation/SRF1_2_GATE_s71002.json",
+      "sha256": "e3377250a97735a2f260d07852b164815faab9fe4969abd514612071fb54758c",
+      "records": 17604
+    },
+    {
+      "file": "released/evaluation/SRF1_2_DEC_s71002.json",
+      "sha256": "69320d9d8f12d34fb972af848629f9e53baa7deb26e24c04e1816c40b87aaf42",
+      "records": 17604
+    },
+    {
+      "file": "released/evaluation/SRF1_2_A_s71003.json",
+      "sha256": "0fd94267968812b4fb185e9865369858b49beb9cb90f8516b5547eff11513be7",
+      "records": 17604
+    },
+    {
+      "file": "released/evaluation/SRF1_2_J_s71003.json",
+      "sha256": "2f1bea35af87fce730feeac1508774d135fe01216914a28f45c6d49a8f7aedd9",
+      "records": 17604
+    },
+    {
+      "file": "released/evaluation/SRF1_2_GATE_s71003.json",
+      "sha256": "a54fabf3fe5b4ecf84113102cc197e733748637464d6b33af0b7dee397415d64",
+      "records": 17604
+    },
+    {
+      "file": "released/evaluation/SRF1_2_DEC_s71003.json",
+      "sha256": "07cbd5a163da2edf3757ef7245686f4a6abac2e183c8ab188a7f8f4e0a27624b",
+      "records": 17604
+    }
+  ],
+  "absolute_panels": 139,
+  "absolute_metrics_verified": 1337,
+  "conditional_denominators_verified": true,
+  "test_id": {
+    "roots_per_model": 128,
+    "questions_per_root": 16,
+    "draws_per_question": 4,
+    "roots_per_family": 32
+  },
+  "shift_panels": {
+    "matched_models": 13,
+    "records_per_model": 512,
+    "roots_per_model": 64
+  },
+  "primary": [
+    {
+      "contrast": "J-A",
+      "effect_pp": 17.529296875,
+      "seed_effects_pp": [
+        16.32080078125,
+        17.83447265625,
+        18.4326171875
+      ],
+      "CI95_pp": [
+        15.913899739583332,
+        19.112141927083332
+      ],
+      "CI98_75_pp": [
+        15.493494669596354,
+        19.534327189127605
+      ]
+    },
+    {
+      "contrast": "GATE-J",
+      "effect_pp": 3.3203125,
+      "seed_effects_pp": [
+        3.38134765625,
+        4.1015625,
+        2.47802734375
+      ],
+      "CI95_pp": [
+        2.2054036458333335,
+        4.541015625
+      ],
+      "CI98_75_pp": [
+        1.925633748372396,
+        4.876759847005211
+      ]
+    },
+    {
+      "contrast": "GATE-DEC",
+      "effect_pp": 0.7893880208333334,
+      "seed_effects_pp": [
+        -1.57470703125,
+        4.99267578125,
+        -1.0498046875
+      ],
+      "CI95_pp": [
+        -0.54931640625,
+        2.1566772460937487
+      ],
+      "CI98_75_pp": [
+        -1.008122762044271,
+        2.574691772460939
+      ]
+    },
+    {
+      "contrast": "DEC-J",
+      "effect_pp": 2.5309244791666665,
+      "seed_effects_pp": [
+        4.9560546875,
+        -0.89111328125,
+        3.52783203125
+      ],
+      "CI95_pp": [
+        0.8055623372395834,
+        4.35791015625
+      ],
+      "CI98_75_pp": [
+        0.35499572753906256,
+        4.815826416015635
+      ]
+    }
+  ],
+  "bootstrap_replicates": 5000,
+  "bootstrap_seed": 812901,
+  "chartqa": {
+    "questions_per_model": 2500,
+    "images": 1509,
+    "human": 1250,
+    "augmented": 1250,
+    "verified_contrast": "GATE-BASELINE",
+    "metric": "relaxed_accuracy",
+    "split": "all",
+    "effect_pp": -4.079999999999999,
+    "CI95_pp": [
+      -4.843651767721561,
+      -3.3360452907605187
+    ]
+  },
+  "tolerance_absolute": 1e-12,
+  "analysis_sha256": "385041772cb2245c03b14af95526f1435c8ba98672824eaa3c59ed527ab37e2e",
+  "primary_sha256": "0835c67ac25654a93cca19399b13ac6010ee1eb15a2d216c9bcbaf91243340e9",
+  "limitations": [
+    "CI conditions on the three realised seeds; no training-seed population inference.",
+    "Conditional A failure given P uses raw-draw support, not balanced-family weighting.",
+    "This verifies frozen released scores, not the post-hoc ChartQA whitespace sensitivity."
+  ],
+  "verification_command": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python docs/sr_f1/analysis/SR_F1_2_FINAL/independent_verify.py artifacts/sr_f12_final_20261012/evidence docs/sr_f1/analysis/SR_F1_2_FINAL docs/sr_f1/analysis/SR_F1_2_FINAL/INDEPENDENT_ANALYSIS_REVIEW.json",
+  "verifier_sha256": "929b0969356b649c3161e20ce9f831624bf7ed7c1e8faf65f86f4079673f3065",
+  "numpy_version": "2.5.2"
+}

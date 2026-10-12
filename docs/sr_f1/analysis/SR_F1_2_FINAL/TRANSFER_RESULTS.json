@@ -1,0 +1,1226 @@
+[
+  {
+    "pool": "TEST_ID",
+    "protocol": "answer_only",
+    "metric": "A",
+    "contrast": "J-A",
+    "effect_pp": -1.318359375,
+    "seed_effects_pp": [
+      -2.587890625,
+      -1.4404296875,
+      0.0732421875
+    ],
+    "CI95_pp": [
+      -2.1972656250000004,
+      -0.48014322916666685
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_ID",
+    "protocol": "answer_only",
+    "metric": "A",
+    "contrast": "GATE-J",
+    "effect_pp": -0.8626302083333334,
+    "seed_effects_pp": [
+      -0.4150390625,
+      -0.7080078125,
+      -1.46484375
+    ],
+    "CI95_pp": [
+      -1.6031901041666667,
+      -0.16255696614583623
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_ID",
+    "protocol": "answer_only",
+    "metric": "A",
+    "contrast": "GATE-DEC",
+    "effect_pp": -3.1819661458333335,
+    "seed_effects_pp": [
+      -5.56640625,
+      -2.5390625,
+      -1.4404296875
+    ],
+    "CI95_pp": [
+      -4.500325520833334,
+      -1.9531249999999996
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_ID",
+    "protocol": "answer_only",
+    "metric": "A",
+    "contrast": "DEC-J",
+    "effect_pp": 2.3193359375,
+    "seed_effects_pp": [
+      5.1513671875,
+      1.8310546875,
+      -0.0244140625
+    ],
+    "CI95_pp": [
+      1.2288411458333335,
+      3.4423828125
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_ID",
+    "protocol": "answer_only",
+    "metric": "A",
+    "contrast": "A-BASELINE",
+    "effect_pp": 7.698567708333333,
+    "seed_effects_pp": [
+      8.4228515625,
+      7.958984375,
+      6.7138671875
+    ],
+    "CI95_pp": [
+      6.144205729166667,
+      9.285685221354164
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_ID",
+    "protocol": "answer_only",
+    "metric": "A",
+    "contrast": "J-BASELINE",
+    "effect_pp": 6.380208333333333,
+    "seed_effects_pp": [
+      5.8349609375,
+      6.5185546875,
+      6.787109375
+    ],
+    "CI95_pp": [
+      4.915364583333333,
+      7.902018229166666
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_ID",
+    "protocol": "answer_only",
+    "metric": "A",
+    "contrast": "GATE-BASELINE",
+    "effect_pp": 5.517578125,
+    "seed_effects_pp": [
+      5.419921875,
+      5.810546875,
+      5.322265625
+    ],
+    "CI95_pp": [
+      4.117838541666667,
+      6.93379720052083
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_ID",
+    "protocol": "answer_only",
+    "metric": "A",
+    "contrast": "DEC-BASELINE",
+    "effect_pp": 8.699544270833332,
+    "seed_effects_pp": [
+      10.986328125,
+      8.349609375,
+      6.7626953125
+    ],
+    "CI95_pp": [
+      6.908976236979167,
+      10.57149251302083
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_ID",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "J-A",
+    "effect_pp": -3.69873046875,
+    "seed_effects_pp": [
+      -5.2734375,
+      -2.08740234375,
+      -3.7353515625
+    ],
+    "CI95_pp": [
+      -5.18402099609375,
+      -2.290649414062503
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_ID",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "GATE-J",
+    "effect_pp": 2.978515625,
+    "seed_effects_pp": [
+      3.35693359375,
+      3.1494140625,
+      2.42919921875
+    ],
+    "CI95_pp": [
+      1.8879191080729167,
+      4.203287760416666
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_ID",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "GATE-DEC",
+    "effect_pp": 0.9724934895833334,
+    "seed_effects_pp": [
+      -1.220703125,
+      5.2490234375,
+      -1.11083984375
+    ],
+    "CI95_pp": [
+      -0.3337605794270832,
+      2.356058756510415
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_ID",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "DEC-J",
+    "effect_pp": 2.006022135416667,
+    "seed_effects_pp": [
+      4.57763671875,
+      -2.099609375,
+      3.5400390625
+    ],
+    "CI95_pp": [
+      0.2847290039062499,
+      3.8167317708333335
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_ID",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "A-BASELINE",
+    "effect_pp": 43.55061848958333,
+    "seed_effects_pp": [
+      44.15283203125,
+      43.7255859375,
+      42.7734375
+    ],
+    "CI95_pp": [
+      40.29520670572916,
+      46.757507324218736
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_ID",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "J-BASELINE",
+    "effect_pp": 39.85188802083333,
+    "seed_effects_pp": [
+      38.87939453125,
+      41.63818359375,
+      39.0380859375
+    ],
+    "CI95_pp": [
+      36.954345703125,
+      42.806193033854164
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_ID",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "GATE-BASELINE",
+    "effect_pp": 42.83040364583333,
+    "seed_effects_pp": [
+      42.236328125,
+      44.78759765625,
+      41.46728515625
+    ],
+    "CI95_pp": [
+      39.99420166015625,
+      45.768229166666664
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_ID",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "DEC-BASELINE",
+    "effect_pp": 41.85791015625,
+    "seed_effects_pp": [
+      43.45703125,
+      39.53857421875,
+      42.578125
+    ],
+    "CI95_pp": [
+      38.87125651041667,
+      44.82442220052082
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_ID",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "J-A",
+    "effect_pp": 17.529296875,
+    "seed_effects_pp": [
+      16.32080078125,
+      17.83447265625,
+      18.4326171875
+    ],
+    "CI95_pp": [
+      15.913899739583332,
+      19.112141927083332
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_ID",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "GATE-J",
+    "effect_pp": 3.3203125,
+    "seed_effects_pp": [
+      3.38134765625,
+      4.1015625,
+      2.47802734375
+    ],
+    "CI95_pp": [
+      2.2054036458333335,
+      4.541015625
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_ID",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "GATE-DEC",
+    "effect_pp": 0.7893880208333334,
+    "seed_effects_pp": [
+      -1.57470703125,
+      4.99267578125,
+      -1.0498046875
+    ],
+    "CI95_pp": [
+      -0.54931640625,
+      2.1566772460937487
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_ID",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "DEC-J",
+    "effect_pp": 2.530924479166667,
+    "seed_effects_pp": [
+      4.9560546875,
+      -0.89111328125,
+      3.52783203125
+    ],
+    "CI95_pp": [
+      0.8055623372395835,
+      4.35791015625
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_ID",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "A-BASELINE",
+    "effect_pp": 38.17138671875,
+    "seed_effects_pp": [
+      38.43994140625,
+      39.12353515625,
+      36.95068359375
+    ],
+    "CI95_pp": [
+      35.46142578125,
+      40.82865397135416
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_ID",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "J-BASELINE",
+    "effect_pp": 55.70068359375,
+    "seed_effects_pp": [
+      54.7607421875,
+      56.9580078125,
+      55.38330078125
+    ],
+    "CI95_pp": [
+      52.86865234375,
+      58.5205078125
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_ID",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "GATE-BASELINE",
+    "effect_pp": 59.02099609375,
+    "seed_effects_pp": [
+      58.14208984375,
+      61.0595703125,
+      57.861328125
+    ],
+    "CI95_pp": [
+      56.376139322916664,
+      61.70257568359374
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_ID",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "DEC-BASELINE",
+    "effect_pp": 58.231608072916664,
+    "seed_effects_pp": [
+      59.716796875,
+      56.06689453125,
+      58.9111328125
+    ],
+    "CI95_pp": [
+      55.399576822916664,
+      61.116841634114586
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_COMPOSITION",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "J-A",
+    "effect_pp": -7.356770833333333,
+    "seed_effects_pp": [
+      -8.0078125,
+      -5.2734375,
+      -8.7890625
+    ],
+    "CI95_pp": [
+      -11.783854166666666,
+      -3.25358072916669
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_COMPOSITION",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "GATE-J",
+    "effect_pp": -5.013020833333334,
+    "seed_effects_pp": [
+      -10.546875,
+      -0.1953125,
+      -4.296875
+    ],
+    "CI95_pp": [
+      -8.919270833333332,
+      -1.2369791666666665
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_COMPOSITION",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "GATE-DEC",
+    "effect_pp": -14.127604166666666,
+    "seed_effects_pp": [
+      -17.96875,
+      -6.640625,
+      -17.7734375
+    ],
+    "CI95_pp": [
+      -21.419270833333336,
+      -7.096354166666666
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_COMPOSITION",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "DEC-J",
+    "effect_pp": 9.114583333333332,
+    "seed_effects_pp": [
+      7.421875,
+      6.4453125,
+      13.4765625
+    ],
+    "CI95_pp": [
+      2.8645833333333335,
+      15.755208333333332
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_COMPOSITION",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "A-BASELINE",
+    "effect_pp": 38.41145833333333,
+    "seed_effects_pp": [
+      45.3125,
+      32.2265625,
+      37.6953125
+    ],
+    "CI95_pp": [
+      32.8125,
+      43.9453125
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_COMPOSITION",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "J-BASELINE",
+    "effect_pp": 31.0546875,
+    "seed_effects_pp": [
+      37.3046875,
+      26.953125,
+      28.90625
+    ],
+    "CI95_pp": [
+      25.065104166666664,
+      37.36979166666667
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_COMPOSITION",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "GATE-BASELINE",
+    "effect_pp": 26.041666666666668,
+    "seed_effects_pp": [
+      26.7578125,
+      26.7578125,
+      24.609375
+    ],
+    "CI95_pp": [
+      19.661458333333336,
+      32.356770833333336
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_COMPOSITION",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "DEC-BASELINE",
+    "effect_pp": 40.16927083333333,
+    "seed_effects_pp": [
+      44.7265625,
+      33.3984375,
+      42.3828125
+    ],
+    "CI95_pp": [
+      34.44010416666667,
+      46.158854166666664
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_COMPOSITION",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "J-A",
+    "effect_pp": 13.346354166666666,
+    "seed_effects_pp": [
+      18.1640625,
+      7.03125,
+      14.84375
+    ],
+    "CI95_pp": [
+      8.398437500000002,
+      18.033854166666668
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_COMPOSITION",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "GATE-J",
+    "effect_pp": -4.4921875,
+    "seed_effects_pp": [
+      -11.1328125,
+      1.171875,
+      -3.515625
+    ],
+    "CI95_pp": [
+      -8.463541666666666,
+      -0.7161458333333334
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_COMPOSITION",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "GATE-DEC",
+    "effect_pp": -14.192708333333334,
+    "seed_effects_pp": [
+      -18.5546875,
+      -6.4453125,
+      -17.578125
+    ],
+    "CI95_pp": [
+      -21.484374999999996,
+      -7.161458333333334
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_COMPOSITION",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "DEC-J",
+    "effect_pp": 9.700520833333332,
+    "seed_effects_pp": [
+      7.421875,
+      7.6171875,
+      14.0625
+    ],
+    "CI95_pp": [
+      3.4505208333333344,
+      16.080729166666668
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_COMPOSITION",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "A-BASELINE",
+    "effect_pp": 21.614583333333336,
+    "seed_effects_pp": [
+      23.828125,
+      23.2421875,
+      17.7734375
+    ],
+    "CI95_pp": [
+      15.690104166666666,
+      27.54069010416665
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_COMPOSITION",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "J-BASELINE",
+    "effect_pp": 34.9609375,
+    "seed_effects_pp": [
+      41.9921875,
+      30.2734375,
+      32.6171875
+    ],
+    "CI95_pp": [
+      28.515625,
+      41.341145833333336
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_COMPOSITION",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "GATE-BASELINE",
+    "effect_pp": 30.46875,
+    "seed_effects_pp": [
+      30.859375,
+      31.4453125,
+      29.1015625
+    ],
+    "CI95_pp": [
+      24.0234375,
+      36.979166666666664
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_COMPOSITION",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "DEC-BASELINE",
+    "effect_pp": 44.66145833333333,
+    "seed_effects_pp": [
+      49.4140625,
+      37.890625,
+      46.6796875
+    ],
+    "CI95_pp": [
+      38.671875,
+      50.325520833333336
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_LANGUAGE",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "J-A",
+    "effect_pp": -5.794270833333334,
+    "seed_effects_pp": [
+      -10.9375,
+      -3.7109375,
+      -2.734375
+    ],
+    "CI95_pp": [
+      -9.700520833333332,
+      -2.213541666666667
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_LANGUAGE",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "GATE-J",
+    "effect_pp": 4.557291666666666,
+    "seed_effects_pp": [
+      14.0625,
+      3.515625,
+      -3.90625
+    ],
+    "CI95_pp": [
+      1.2369791666666665,
+      8.072916666666666
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_LANGUAGE",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "GATE-DEC",
+    "effect_pp": -2.34375,
+    "seed_effects_pp": [
+      -2.34375,
+      4.296875,
+      -8.984375
+    ],
+    "CI95_pp": [
+      -4.6875,
+      -0.13020833333333331
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_LANGUAGE",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "DEC-J",
+    "effect_pp": 6.901041666666667,
+    "seed_effects_pp": [
+      16.40625,
+      -0.78125,
+      5.078125
+    ],
+    "CI95_pp": [
+      3.6458333333333344,
+      10.416666666666668
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_LANGUAGE",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "A-BASELINE",
+    "effect_pp": 45.05208333333333,
+    "seed_effects_pp": [
+      43.75,
+      47.265625,
+      44.140625
+    ],
+    "CI95_pp": [
+      39.2578125,
+      50.5859375
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_LANGUAGE",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "J-BASELINE",
+    "effect_pp": 39.2578125,
+    "seed_effects_pp": [
+      32.8125,
+      43.5546875,
+      41.40625
+    ],
+    "CI95_pp": [
+      34.2431640625,
+      44.205729166666664
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_LANGUAGE",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "GATE-BASELINE",
+    "effect_pp": 43.81510416666667,
+    "seed_effects_pp": [
+      46.875,
+      47.0703125,
+      37.5
+    ],
+    "CI95_pp": [
+      38.41145833333333,
+      49.09016927083331
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_LANGUAGE",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "DEC-BASELINE",
+    "effect_pp": 46.15885416666667,
+    "seed_effects_pp": [
+      49.21875,
+      42.7734375,
+      46.484375
+    ],
+    "CI95_pp": [
+      40.559895833333336,
+      51.5625
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_LANGUAGE",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "J-A",
+    "effect_pp": 15.885416666666666,
+    "seed_effects_pp": [
+      10.3515625,
+      18.1640625,
+      19.140625
+    ],
+    "CI95_pp": [
+      10.675455729166664,
+      20.833333333333332
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_LANGUAGE",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "GATE-J",
+    "effect_pp": 4.8828125,
+    "seed_effects_pp": [
+      14.6484375,
+      3.7109375,
+      -3.7109375
+    ],
+    "CI95_pp": [
+      1.5625,
+      8.333333333333334
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_LANGUAGE",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "GATE-DEC",
+    "effect_pp": -2.473958333333333,
+    "seed_effects_pp": [
+      -2.9296875,
+      4.1015625,
+      -8.59375
+    ],
+    "CI95_pp": [
+      -4.8828125,
+      -0.06510416666666696
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_LANGUAGE",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "DEC-J",
+    "effect_pp": 7.356770833333333,
+    "seed_effects_pp": [
+      17.578125,
+      -0.390625,
+      4.8828125
+    ],
+    "CI95_pp": [
+      3.90625,
+      10.9375
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_LANGUAGE",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "A-BASELINE",
+    "effect_pp": 44.46614583333333,
+    "seed_effects_pp": [
+      43.1640625,
+      46.2890625,
+      43.9453125
+    ],
+    "CI95_pp": [
+      37.955729166666664,
+      50.716145833333336
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_LANGUAGE",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "J-BASELINE",
+    "effect_pp": 60.3515625,
+    "seed_effects_pp": [
+      53.515625,
+      64.453125,
+      63.0859375
+    ],
+    "CI95_pp": [
+      55.078125,
+      65.49479166666666
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_LANGUAGE",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "GATE-BASELINE",
+    "effect_pp": 65.234375,
+    "seed_effects_pp": [
+      68.1640625,
+      68.1640625,
+      59.375
+    ],
+    "CI95_pp": [
+      59.9609375,
+      70.5078125
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_LANGUAGE",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "DEC-BASELINE",
+    "effect_pp": 67.70833333333334,
+    "seed_effects_pp": [
+      71.09375,
+      64.0625,
+      67.96875
+    ],
+    "CI95_pp": [
+      62.239583333333336,
+      73.046875
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_RENDER",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "J-A",
+    "effect_pp": -1.171875,
+    "seed_effects_pp": [
+      -1.171875,
+      0.0,
+      -2.34375
+    ],
+    "CI95_pp": [
+      -4.101562499999999,
+      1.5625000000000004
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_RENDER",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "GATE-J",
+    "effect_pp": 3.3203125,
+    "seed_effects_pp": [
+      7.03125,
+      1.7578125,
+      1.171875
+    ],
+    "CI95_pp": [
+      1.2369791666666665,
+      5.533854166666666
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_RENDER",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "GATE-DEC",
+    "effect_pp": -0.06510416666666666,
+    "seed_effects_pp": [
+      -1.953125,
+      2.1484375,
+      -0.390625
+    ],
+    "CI95_pp": [
+      -1.4322916666666665,
+      1.3020833333333333
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_RENDER",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "DEC-J",
+    "effect_pp": 3.3854166666666665,
+    "seed_effects_pp": [
+      8.984375,
+      -0.390625,
+      1.5625
+    ],
+    "CI95_pp": [
+      0.9765624999999997,
+      5.989583333333333
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_RENDER",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "A-BASELINE",
+    "effect_pp": 36.39322916666667,
+    "seed_effects_pp": [
+      33.984375,
+      37.890625,
+      37.3046875
+    ],
+    "CI95_pp": [
+      29.817708333333336,
+      42.77343749999999
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_RENDER",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "J-BASELINE",
+    "effect_pp": 35.22135416666667,
+    "seed_effects_pp": [
+      32.8125,
+      37.890625,
+      34.9609375
+    ],
+    "CI95_pp": [
+      28.841145833333336,
+      41.40625
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_RENDER",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "GATE-BASELINE",
+    "effect_pp": 38.54166666666667,
+    "seed_effects_pp": [
+      39.84375,
+      39.6484375,
+      36.1328125
+    ],
+    "CI95_pp": [
+      32.6171875,
+      44.3359375
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_RENDER",
+    "protocol": "evidence_answer",
+    "metric": "A",
+    "contrast": "DEC-BASELINE",
+    "effect_pp": 38.60677083333333,
+    "seed_effects_pp": [
+      41.796875,
+      37.5,
+      36.5234375
+    ],
+    "CI95_pp": [
+      32.486979166666664,
+      44.66145833333333
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_RENDER",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "J-A",
+    "effect_pp": 22.916666666666664,
+    "seed_effects_pp": [
+      21.875,
+      23.2421875,
+      23.6328125
+    ],
+    "CI95_pp": [
+      18.815104166666664,
+      27.1484375
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_RENDER",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "GATE-J",
+    "effect_pp": 3.3203125,
+    "seed_effects_pp": [
+      7.6171875,
+      2.5390625,
+      -0.1953125
+    ],
+    "CI95_pp": [
+      1.3020833333333333,
+      5.46875
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_RENDER",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "GATE-DEC",
+    "effect_pp": 0.1953125,
+    "seed_effects_pp": [
+      -1.953125,
+      3.7109375,
+      -1.171875
+    ],
+    "CI95_pp": [
+      -1.3671875,
+      1.8229166666666667
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_RENDER",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "DEC-J",
+    "effect_pp": 3.125,
+    "seed_effects_pp": [
+      9.5703125,
+      -1.171875,
+      0.9765625
+    ],
+    "CI95_pp": [
+      0.3906249999999999,
+      5.989583333333333
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_RENDER",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "A-BASELINE",
+    "effect_pp": 35.7421875,
+    "seed_effects_pp": [
+      34.1796875,
+      37.3046875,
+      35.7421875
+    ],
+    "CI95_pp": [
+      29.946289062499996,
+      41.40625
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_RENDER",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "J-BASELINE",
+    "effect_pp": 58.658854166666664,
+    "seed_effects_pp": [
+      56.0546875,
+      60.546875,
+      59.375
+    ],
+    "CI95_pp": [
+      53.1884765625,
+      64.453125
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_RENDER",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "GATE-BASELINE",
+    "effect_pp": 61.979166666666664,
+    "seed_effects_pp": [
+      63.671875,
+      63.0859375,
+      59.1796875
+    ],
+    "CI95_pp": [
+      57.029622395833336,
+      67.1875
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  },
+  {
+    "pool": "TEST_RENDER",
+    "protocol": "evidence_answer",
+    "metric": "J",
+    "contrast": "DEC-BASELINE",
+    "effect_pp": 61.783854166666664,
+    "seed_effects_pp": [
+      65.625,
+      59.375,
+      60.3515625
+    ],
+    "CI95_pp": [
+      56.380208333333336,
+      67.3828125
+    ],
+    "scope": "secondary, unadjusted paired family-stratified root CI; conditional on three realised seeds"
+  }
+]

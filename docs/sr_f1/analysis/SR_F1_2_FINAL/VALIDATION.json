@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "checks": [
+    "13 released model identities, release object hashes, per-record hashes and all-matrix authorization",
+    "Independent CPU audit: 227700 endpoint and 6656 baseline rows rescored, zero mismatches",
+    "Independent CPU audit: 12 full training states and 458/466 source files, four frozen hashes, eight HDD mappings",
+    "Independent statistical implementation: four primary effects and corrected CIs, 139 panels 1337 metrics, GATE ChartQA image-cluster CI",
+    "1152 step logs, all 288 DEC batch advantages recomputed, 384 GATE mechanism groups",
+    "Companion diagnostics: fixed32 MONITOR blocks, four arms, 34944 structural root rows, all conditional denominators",
+    "pytest --import-mode=importlib tests/sr_f12/test_analysis.py tests/sr_f1/test_analysis.py: 13 passed",
+    "Report contains all four contrasts, three seeds, failed predictions, transfer/retention limits and post-hoc scoring sensitivity",
+    "Pinned deployed source offline reproduction: all five result JSON objects and long CSV identical",
+    "All final analysis scripts py_compile and scoped git diff --check passed"
+  ],
+  "resolved_check_issues": [
+    "Initial combined pytest collection used duplicate test_analysis basename; rerun with importlib mode passed",
+    "Local older Python tar extractall did not support filter argument; only regular files with unique safe relative paths were extracted after explicit validation",
+    "Staged diff exposed generated CSV CRLF and SVG trailing spaces; serializers normalized to LF/no trailing spaces, CSV parsed values and all JSON unchanged"
+  ],
+  "server_submission_issue": "First audit CPU partition request rejected with no job; validated cluster02 partition used subsequently, audit CPUs 200452/200456/200457 all COMPLETED0:0",
+  "omitted": [
+    "No new sampling, training, checkpoint move or frozen-score modification",
+    "No claim of an independently invented semantic scorer; exact registered scorer reused"
+  ]
+}

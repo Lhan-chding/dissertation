@@ -1,0 +1,81 @@
+[
+  {
+    "hypothesis": "P1",
+    "status": "ESTIMATED",
+    "contrast": "J-A",
+    "positive_families": [
+      "THRESHOLD"
+    ],
+    "negative_families": [
+      "CROSS",
+      "TOPK"
+    ],
+    "effect_pp": -9.529622395833332,
+    "CI95_pp": [
+      -12.492065429687502,
+      -6.575520833333334
+    ],
+    "predicted_direction": "positive",
+    "point_estimate_matches_direction": false,
+    "family_effects_pp": {
+      "CROSS": -2.3925781250000004,
+      "INTERVAL": 2.4251302083333335,
+      "THRESHOLD": 16.2109375,
+      "TOPK": 53.873697916666664
+    },
+    "scope": "secondary directional prediction; root uncertainty conditional on realised seeds"
+  },
+  {
+    "hypothesis": "P2",
+    "status": "ESTIMATED",
+    "contrast": "GATE-J",
+    "positive_families": [
+      "INTERVAL"
+    ],
+    "negative_families": [
+      "CROSS",
+      "THRESHOLD"
+    ],
+    "effect_pp": 1.7089843749999996,
+    "CI95_pp": [
+      -1.5869140625,
+      5.460611979166666
+    ],
+    "predicted_direction": "positive",
+    "point_estimate_matches_direction": true,
+    "family_effects_pp": {
+      "CROSS": 5.338541666666667,
+      "INTERVAL": 4.39453125,
+      "THRESHOLD": 0.03255208333333333,
+      "TOPK": 3.515625
+    },
+    "scope": "secondary directional prediction; root uncertainty conditional on realised seeds"
+  },
+  {
+    "hypothesis": "P3",
+    "status": "ESTIMATED",
+    "contrast": "GATE-J",
+    "positive_families": [
+      "CROSS",
+      "INTERVAL"
+    ],
+    "negative_families": [
+      "THRESHOLD",
+      "TOPK"
+    ],
+    "effect_pp": 3.092447916666667,
+    "CI95_pp": [
+      0.7973225911458335,
+      5.4931640625
+    ],
+    "predicted_direction": "negative",
+    "point_estimate_matches_direction": false,
+    "family_effects_pp": {
+      "CROSS": 5.338541666666667,
+      "INTERVAL": 4.39453125,
+      "THRESHOLD": 0.03255208333333333,
+      "TOPK": 3.515625
+    },
+    "scope": "secondary directional prediction; root uncertainty conditional on realised seeds"
+  }
+]
