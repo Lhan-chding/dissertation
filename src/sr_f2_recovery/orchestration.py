@@ -605,7 +605,7 @@ class Controller:
             script=str(script),
             script_sha256=file_hash(script),
             command=command,
-            job_name="srf2r-" + pool,
+            job_name="srf2r-" + pool + "-LH",
             user=self.user,
             comment="srf2r-" + object_hash([str(r.path), pool, r.sha256])[:20],
             at=now(),

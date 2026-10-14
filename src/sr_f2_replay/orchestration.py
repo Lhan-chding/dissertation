@@ -596,7 +596,7 @@ class Controller:
             script=str(script),
             script_sha256=file_hash(script),
             command=command,
-            job_name="srf2replay-" + pool,
+            job_name="srf2replay-" + pool + "-LH",
             comment="srf2replay-" + object_hash([str(p.path), pool, p.sha256])[:20],
             at=now(),
         )

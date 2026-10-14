@@ -28,6 +28,13 @@ Old outputs and their official scores are read-only inputs.
    successful Slurm accounting before releasing new scores and the final report.
    Training, endpoint and delivery completion remain distinct states.
 
+New Slurm job names use the `-LH` ownership suffix, including CPU, GPU pool,
+recovery and replay submissions. Any manually submitted dispatcher should use the
+same suffix. Names are stored in the submission intent and verified against Slurm.
+Existing intents and immutable deployed runs retain their recorded names,
+including later submissions by an already deployed dispatcher. Apply the naming
+change when deploying a new source snapshot.
+
 All commands take an explicit independent `--root`. Submission receipts are
 written before release, ambiguous submission outcomes fail closed, and raw
 technical failures are retained. A stopped or failed run is not an invitation to

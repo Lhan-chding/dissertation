@@ -594,7 +594,7 @@ class Controller:
             command=command,
             plan_sha256=object_hash(plan),
             gpu_count=POOL_GPUS,
-            job_name="srf2-" + key,
+            job_name="srf2-" + key + "-LH",
             comment="srf2-" + object_hash([str(self.root), key, registration_hash])[:20],
         )
         args = [

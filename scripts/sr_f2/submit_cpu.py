@@ -313,7 +313,7 @@ class CpuSubmitter:
                           python=self.python, source_manifest=str(self.manifest), user=self.user,
                           source_manifest_sha256=source_hash, script=str(script),
                           script_sha256=file_hash(script), commands=commands, created=now(),
-                          job_name="srf2-cpu-" + self.kind,
+                          job_name="srf2-cpu-" + self.kind + "-LH",
                           comment="srf2-cpu-" + token)
             args = ["sbatch", "--hold", "--parsable", "--account=rose", "--partition=cluster02",
                     "--qos=" + CPU_QOS, "--nodelist=" + CPU_NODE, "--nodes=1", "--ntasks=1",
