@@ -304,6 +304,21 @@ class RecoveryQueue:
     def __init__(self, recovery):
         self.recovery = recovery
         self.directory = recovery.directory / "queue"
+        # The immutable audit can contain thousands of per-task raw-file hashes.
+        # Compute its entry digests once rather than serializing it each queue poll.
+        self.entry_hashes = {key: object_hash(row) for key, row in self.recovery.allowed.items()}
+
+    def _lineage(self, key):
+        pointer = dict(
+            audit_path=str(self.recovery.audit_path),
+            audit_sha256=self.recovery.plan["audit_sha256"],
+            task_id=key,
+            audit_entry_sha256=self.entry_hashes[key],
+        )
+        original_claim = self.recovery.allowed[key].get("original_claim")
+        if original_claim is not None:
+            pointer["original_claim"] = original_claim
+        return pointer
 
     def states(self):
         result = {}
@@ -320,7 +335,8 @@ class RecoveryQueue:
                 raise PermissionError("Non-allowlisted task has a recovery attempt")
             if (
                 claim.get("plan_sha256") != self.recovery.sha256
-                or (claim.get("audit_entry_sha256") != object_hash(self.recovery.allowed[key]))
+                or claim.get("audit_entry_sha256") != self.entry_hashes[key]
+                or claim.get("original_lineage") != self._lineage(key)
                 or row.get("claim_sha256") != object_hash(claim)
                 or any(
                     row.get(k) != claim.get(k)
@@ -431,15 +447,16 @@ class RecoveryQueue:
                 return None, snapshot
             task = snapshot["ready"][0]
             key = task_id(task)
-            self.recovery.task_prelaunch(key)
+            # Reserve only compact immutable metadata while holding the queue lock.
+            # Large baseline hashes are checked once, outside this shared lease.
             claim = dict(
                 task=task,
                 pool_id=pool_id,
                 device=device,
                 job_id=str(job),
                 plan_sha256=self.recovery.sha256,
-                audit_entry_sha256=object_hash(self.recovery.allowed[key]),
-                original_lineage=self.recovery.allowed[key],
+                audit_entry_sha256=self.entry_hashes[key],
+                original_lineage=self._lineage(key),
                 at=now(),
                 claim_id=object_hash([task, pool_id, device, str(job), time.time_ns()]),
             )
@@ -774,9 +791,13 @@ def run_pool(recovery, pool_id, *, slurm=None, poll_seconds=1, popen=subprocess.
                 if claim is None:
                     record_slot(device, "IDLE", reason=snapshot["idle_reason"])
                     continue
-                r.verify()
                 task = claim["task"]
-                r.task_prelaunch(task_id(task))
+                try:
+                    r.verify()
+                    r.task_prelaunch(task_id(task))
+                except BaseException as error:
+                    queue.transition(claim, error=repr(error))
+                    raise
                 attempt = path / "workers" / task_id(task)
                 attempt.mkdir(parents=True, exist_ok=False)
                 command = [

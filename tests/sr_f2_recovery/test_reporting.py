@@ -68,6 +68,7 @@ def complete(tmp_path, monkeypatch):
         code=code,
         extension=extension,
         path=directory / "PLAN.json",
+        audit_path=directory / "AUDIT.json",
         plan=plan,
         sha256="recovery-plan",
         allowed=audit,
@@ -220,6 +221,12 @@ def complete(tmp_path, monkeypatch):
                 claim_id=key,
                 plan_sha256=recovery.sha256,
                 audit_entry_sha256=object_hash(audit[key]),
+                original_lineage=dict(
+                    audit_path=str(recovery.audit_path),
+                    audit_sha256=plan["audit_sha256"],
+                    task_id=key,
+                    audit_entry_sha256=object_hash(audit[key]),
+                ),
             )
             base = directory / "queue/tasks" / key
             worker = directory / "pools" / pool_id / "workers" / key

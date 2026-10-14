@@ -1,6 +1,7 @@
 """Fake Slurm tests: no test submits work or reads scientific scores."""
 
 import sys
+from contextlib import contextmanager
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -417,15 +418,86 @@ def test_mutable_guards_checked_only_for_task_before_launch(experiment):
         r.task_prelaunch(key)
 
 
-def test_never_attempted_absence_guard_detects_external_writer(experiment):
+def test_large_audit_evidence_is_referenced_not_copied_into_queue(experiment, monkeypatch):
     r, _ = experiment
-    key = recovery.task_id(next(t for t in r.matrix if t["kind"] == "train"))
-    r.allowed[key]["absent_prelaunch_paths"] = ["unexpected-output"]
+    task = next(t for t in r.matrix if t["kind"] == "train")
+    key = recovery.task_id(task)
+    r.allowed[key]["mutable_prelaunch_files"] = [
+        dict(path=f"runs/model/rollouts/group-{index:06d}.json", sha256="a" * 64)
+        for index in range(10000)
+    ]
+    r.allowed[key]["original_claim"] = dict(path="original/CLAIM.json", sha256="b" * 64)
     reseal(r)
-    (r.root / "unexpected-output").mkdir()
-    with pytest.raises(PermissionError, match="now exists"):
-        recovery.RecoveryQueue(r).claim("RECOVERY_POOL_1", "0", "101")
-    assert not list((r.directory / "queue/tasks").glob("*/CLAIM.json"))
+    monkeypatch.setattr(r, "task_prelaunch", lambda key: None)
+    q = recovery.RecoveryQueue(r)
+    claim, _ = q.claim("RECOVERY_POOL_1", "0", "101")
+    path = q.directory / "tasks" / key
+    for name in ("CLAIM.json", "STATE.json"):
+        assert (path / name).stat().st_size < 2500
+        assert "mutable_prelaunch_files" not in (path / name).read_text()
+    assert claim["original_lineage"] == dict(
+        audit_path=str(r.audit_path),
+        audit_sha256=r.plan["audit_sha256"],
+        task_id=key,
+        audit_entry_sha256=recovery.object_hash(r.allowed[key]),
+        original_claim=r.allowed[key]["original_claim"],
+    )
+    # Polling validates the compact claim without rehashing the large audit entry.
+    original_hash = recovery.object_hash
+
+    def no_large_audit_hash(value):
+        assert value is not r.allowed[key]
+        return original_hash(value)
+
+    monkeypatch.setattr(recovery, "object_hash", no_large_audit_hash)
+    assert q.snapshot()["active"] == 1
+
+
+@pytest.mark.parametrize("guard", ["absent", "changed_hash"])
+def test_prelaunch_guard_failure_records_failed_claim_without_starting_worker(
+    experiment, monkeypatch, guard
+):
+    r, c = experiment
+    task = next(t for t in r.matrix if t["kind"] == "train")
+    key = recovery.task_id(task)
+    only_remaining(r, task)
+    baseline = r.root / "baseline.json"
+    if guard == "absent":
+        r.allowed[key]["absent_prelaunch_paths"] = [baseline.name]
+    else:
+        baseline.write_text("original")
+        r.allowed[key]["mutable_prelaunch_files"] = [
+            dict(path=baseline.name, sha256=recovery.file_hash(baseline))
+        ]
+    reseal(r)
+    c.submit_once()
+    pool = "RECOVERY_POOL_1"
+    state = recovery.read_json(c.pool_dir(pool) / "STATE.json")
+    monkeypatch.setenv("SLURM_JOB_ID", state["job_id"])
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "4,5")
+    baseline.write_text("changed after audit")
+
+    def never_spawn(*args, **kwargs):
+        pytest.fail("Failed baseline guard must never spawn a worker")
+
+    with pytest.raises(PermissionError, match=r"now exists|changed since"):
+        recovery.run_pool(r, pool, slurm=c.slurm, poll_seconds=0, popen=never_spawn)
+    q = recovery.RecoveryQueue(r)
+    assert q.states()[key]["status"] == "FAILED"
+    assert q.snapshot()["failed"]
+    assert (r.directory / "STOP.json").exists()
+    assert not (c.pool_dir(pool) / "workers" / key / "LAUNCH_INTENT.json").exists()
+
+
+def test_claim_does_not_hash_task_baseline_inside_shared_lease(experiment, monkeypatch):
+    r, _ = experiment
+
+    def forbidden(*args):
+        pytest.fail("claim must only reserve compact metadata")
+
+    monkeypatch.setattr(r, "task_prelaunch", forbidden)
+    claim, _ = recovery.RecoveryQueue(r).claim("RECOVERY_POOL_1", "0", "101")
+    assert claim["status"] == "CLAIMED"
 
 
 def test_pool_runs_original_worker_one_visible_gpu_and_verifies_completion(experiment, monkeypatch):
@@ -437,7 +509,27 @@ def test_pool_runs_original_worker_one_visible_gpu_and_verifies_completion(exper
     state = recovery.read_json(c.pool_dir(pool) / "STATE.json")
     monkeypatch.setenv("SLURM_JOB_ID", state["job_id"])
     monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "4,5")
-    calls, verified = [], []
+    calls, verified, prelaunch_checks = [], [], []
+    lease_depth = 0
+    original_lease, original_prelaunch = recovery.queue_lease, r.task_prelaunch
+
+    @contextmanager
+    def observed_lease(directory):
+        nonlocal lease_depth
+        with original_lease(directory):
+            lease_depth += 1
+            try:
+                yield
+            finally:
+                lease_depth -= 1
+
+    def check_outside_lock(key):
+        assert lease_depth == 0
+        prelaunch_checks.append(key)
+        original_prelaunch(key)
+
+    monkeypatch.setattr(recovery, "queue_lease", observed_lease)
+    monkeypatch.setattr(r, "task_prelaunch", check_outside_lock)
 
     class Process:
         pid = 77
@@ -457,6 +549,7 @@ def test_pool_runs_original_worker_one_visible_gpu_and_verifies_completion(exper
     result = recovery.run_pool(r, pool, slurm=c.slurm, poll_seconds=0, popen=popen)
     assert result["all_tasks_complete"]
     assert len(calls) == 1 and verified == [task]
+    assert prelaunch_checks == [recovery.task_id(task)]
     command, kwargs = calls[0]
     assert command[1] == str(r.code / "scripts/sr_f2/run_worker.py")
     assert kwargs["env"]["CUDA_VISIBLE_DEVICES"] == "4"
