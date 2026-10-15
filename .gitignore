@@ -78,3 +78,7 @@ configs/paths.yaml
 /docs/sr_f2/EXECUTION_STATUS_zh.md
 /docs/sr_f2/START_HERE_zh.md
 /.local/
+
+# SR-F3-CE private plans, rendered inputs, model outputs and execution receipts
+/artifacts/sr_f3_ce*/
+/docs/sr_f3_ce/EXECUTION_STATUS_zh.md
