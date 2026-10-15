@@ -12,7 +12,7 @@
 
 推进条件是实际完成身份，绝不读取得分来选择路径。真实 P0 和 4 个 ENGINE 全部通过后，还须验证 `external/revisions/typed_v1/PUBLICATION.json`、两位独立审核者的完整原文、qid/input identity 覆盖、原始规则与视觉证据文件、图像、原始选择与模型输入字节、registry 与确定性 reconciliation。参见 [TYPED_AUDIT.md](TYPED_AUDIT.md)。没有发布完成标记时等待；已有完成标记但文件缺失、身份或证据不符时失败关闭。不能将单方 reviewer receipt 或单纯行数当作双审通过。
 
-满足这些条件后，dispatcher 只调用现有 `freeze_science` 一次。固定顺序随后由冻结的 `Controller.tick` 执行：12 条训练全部结束 → 15 个模型固定 endpoint evaluation → release。一个训练或模型结果不会改变其他路径的执行。freeze intent、最终 freeze 和所有 ENGINE 原回执均保留；存在未完成的 freeze intent 时不自动再生成一次。
+满足这些条件后，dispatcher 先封存前瞻观测 `AMENDMENT.json`，再只调用现有 `freeze_science` 一次。扩展保持原科学实现，并为未来任务显式增加真实 image encoder、prefill/decode 观测；完整源、CPU 验证、旧 ENGINE 与新冻结身份链见 [OBSERVABILITY_EXECUTION.md](OBSERVABILITY_EXECUTION.md)。固定顺序随后由明确安装的 `InstrumentedController.tick` 执行：12 条训练全部结束 → 15 个模型固定 endpoint evaluation → release。一个训练或模型结果不会改变其他路径的执行。freeze intent、最终 freeze 和所有 ENGINE 原回执均保留；存在未完成的 freeze intent 时不自动再生成一次。
 
 全部 33 个登记任务真实完成后，才在当前 CPU allocation 内运行同一运维 source manifest 绑定的 `build_delivery.py`。数值 release 完成仅标为 `NUMERICAL_RELEASE_COMPLETE`；只有 builder 成功并且 ZIP 哈希、大小、完整检查回执和所有登记任务覆盖均正确，driver 才写 `DONE`。
 
@@ -26,7 +26,9 @@ finalize_external_types.py
 build_delivery.py
 ```
 
-发布 typed audit 时，finalizer 的 `--auxiliary-code-commit` 必须是这同一 commit。不要将这些辅助脚本覆盖到 `ROOT/code`。部署完成后检查传输文件的 SHA256 与相应 Git blob 导出的字节一致，再登记运维身份。
+已经发布的 typed audit 保留原准备 commit `4146e156ffa9a476b360daeb67503703faca138f` 和原 `finalize_external_types.py`，SHA256 必须为 `1a75df6bf5fa1c0ef22a23ee7fd766a8e22f5a1c6c1fe7d579c4ab6135106aaf`。新 dispatcher 明确验证这个旧身份，不要求重发布双盲结果。不要将辅助脚本覆盖到 `ROOT/code`。部署完成后检查传输文件的 SHA256 与相应 Git blob 导出的字节一致，再登记运维身份。
+
+先将观测扩展的已提交源、测试、文档及真实 CPU 验证回执部署到 `ROOT/native/observability/<40位扩展commit>/`，按观测执行文档生成 `SOURCE_MANIFEST.json`。没有扩展 manifest 或未通过 CPU 验证不能登记新 driver；运行时只能使用该明确绑定的版本。
 
 以下是服务器入口；`OP_COMMIT` 必须替换为真实完整 commit。登记和提交只做小型身份、源码与队列检查。数据、checkpoint、双审和交付的完整验证在获配的 CPU job 中执行。
 
@@ -35,20 +37,22 @@ RUN=/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_20261016
 PYTHON=/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12
 OP_COMMIT=REPLACE_WITH_VERIFIED_40_CHARACTER_OPERATION_COMMIT
 OPS="$RUN/operations/$OP_COMMIT"
+EXT_COMMIT=REPLACE_WITH_VERIFIED_40_CHARACTER_EXTENSION_COMMIT
+EXT_MANIFEST="$RUN/native/observability/$EXT_COMMIT/SOURCE_MANIFEST.json"
 
 "$PYTHON" "$OPS/dispatch_registered.py" --mode register \
   --root "$RUN" --python "$PYTHON" --user "$(id -un)" \
-  --operation-commit "$OP_COMMIT"
+  --operation-commit "$OP_COMMIT" --extension-manifest "$EXT_MANIFEST"
 
 "$PYTHON" "$OPS/dispatch_registered.py" --mode submit \
   --identity "$OPS/OPERATION_IDENTITY.json" --sequence 1
 ```
 
-登记生成不可变 `OPERATION_SOURCES.json` 和 `OPERATION_IDENTITY.json`，绑定三个运维脚本、原科学 source manifest、`RUN_IDENTITY.json`、原调度配置、canonical root/Python 与 CPU allocation policy。启动时在导入之前核验冻结科学文件，核验真实 `scontrol` 字段、Slurm 保存的 batch script、release 回执及实际零 GPU allocation。不要从 login 节点手动执行 `--mode run` 或后台启动长轮询。
+登记生成不可变 `OPERATION_SOURCES.json` 和 `OPERATION_IDENTITY.json`，绑定三个运维脚本、原科学 source manifest、`RUN_IDENTITY.json`、原调度配置、canonical root/Python、CPU allocation policy、明确观测 manifest 路径/哈希及旧 typed 准备身份。启动时在导入之前核验冻结科学文件及观测源码/CPU 证据，安装 CPU 调度扩展但不安装模型 hooks，再核验真实 `scontrol` 字段、Slurm 保存的 batch script、release 回执及实际零 GPU allocation。不要从 login 节点手动执行 `--mode run` 或后台启动长轮询。
 
 提交顺序严格为持久化 INTENT → `sbatch --hold` → 核验实际 account/QoS/partition/CPU/memory/lease/name/comment/script → 重新查询容量 → 持久化 RELEASE_INTENT → release → 保存回执。新 CPU 提交同时使用原 `orchestration/SUBMIT.lock` 和运维序号锁；运行中的 dispatcher 使用全 run 的独占 `DRIVER.lock`。
 
-后续科研提交仅由这个 dispatcher 执行。不要同时启动原 `--kind controller` 或手动运行原 `Controller.tick/submit/resume`：已冻结的原调度器不知道运维目录中的未知 CPU intent。共享提交锁防止同一时刻提交，但不授权多个长期调度入口。其他项目和用户的任务继续保留，不取消、不改名。
+后续科研提交仅由这个 dispatcher 及其明确绑定的观测扩展执行。不要同时启动原 `--kind controller` 或手动运行原 `Controller.tick/submit/resume`：原调度器既不知道运维目录中的未知 CPU intent，也不认证新的真实 wrapper 命令。共享提交锁防止同一时刻提交，但不授权多个长期调度入口。其他项目和用户的任务继续保留，不取消、不改名。
 
 ## 轮询与故障
 
@@ -57,7 +61,7 @@ OPS="$RUN/operations/$OP_COMMIT"
 完整验证期间新出现的终态保留到下一轮，不能通过更新轮询指纹将它漏掉。Slurm 队列消失但 accounting 尚无可信终态时，仍是未知状态；不会把任务重新提交。
 
 - `SUBMISSION_UNKNOWN`、`RELEASE_UNKNOWN`、`ACCOUNTING_UNKNOWN`、仍 held 的不完整提交，以及非 TIMEOUT 的失败，写 `END.json` 的 `FAILED` 后停止 dispatcher。它不取消现有 worker，不覆盖失败，不自动重试未知提交。
-- 仅对实际终态为 `TIMEOUT` 的单 GPU science train/eval，且 ENGINE、既有科学 freeze、typed audit 与 source identity 均有效时，调用冻结的 `Controller.resume`。checkpoint、完整已提交 raw chain、采样缓存、同种子 partial replay 授权都由原 CPU verifier 核验。任何 verifier 失败继续阻塞，不重新采样来掩盖问题。
+- 仅对实际终态为 `TIMEOUT` 的单 GPU science train/eval，且 ENGINE、既有科学 freeze、typed audit 与完整观测静态链均有效时，调用扩展的 `Controller.resume`，保留原恢复语义及真实 wrapper 命令。checkpoint、完整已提交 raw chain、采样缓存、同种子 partial replay 授权都由原 CPU verifier 核验。任何 verifier 失败继续阻塞，不重新采样来掩盖问题。
 - ENGINE 的预算有严格上限，不自动恢复。多 GPU pooled worker、PREEMPTED、普通异常也不由这个辅助工具自动恢复。
 - 若失败的 job 已有任务 COMPLETE receipt，进入 receipt-only reconciliation，停止而不重跑；原件和失败终态一起保留。
 - CPU 端恢复后每个旧 attempt 与新 attempt 的关系保留在原调度目录和 driver `recoveries/`；运行器自己保存 partial 原文与额外技术采样账本。
@@ -82,7 +86,7 @@ OPS="$RUN/operations/$OP_COMMIT"
 
 ## 状态与验证
 
-每个 `operations/dispatcher/attempts/NNNN/` 保留 INTENT、STATE、真实 allocation、脚本、submit/release 输出、STARTED、QUEUE_SNAPSHOT、PROGRESS、恢复/交付回执与 END。`DONE` 必须伴随 `DELIVERY_VERIFIED.json` 及输出 ZIP 的 `.verification.json`。`HANDOFF_REQUIRED`、`FAILED`、`WAIT_TYPED_REVIEW` 或 `NUMERICAL_RELEASE_COMPLETE` 均不是最终科学交付完成。
+每个 `operations/dispatcher/attempts/NNNN/` 保留 INTENT、STATE、真实 allocation、脚本、submit/release 输出、STARTED、QUEUE_SNAPSHOT、PROGRESS、恢复/交付回执与 END。`DONE` 必须伴随 `DELIVERY_VERIFIED.json` 及输出 ZIP 的 `.verification.json`，其中 observability_extension 必须与本 driver 的 manifest、amendment、CPU 证据和真实观察源逐项相同。`HANDOFF_REQUIRED`、`FAILED`、`WAIT_TYPED_REVIEW` 或 `NUMERICAL_RELEASE_COMPLETE` 均不是最终科学交付完成。
 
 本地无 GPU 验证命令：
 

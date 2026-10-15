@@ -4,10 +4,11 @@ import copy
 import gzip
 import importlib.util
 import json
+import py_compile
 import struct
 import zipfile
 from pathlib import Path
-from types import SimpleNamespace
+from types import ModuleType, SimpleNamespace
 
 import pytest
 
@@ -917,3 +918,520 @@ def test_training_signal_index_retains_repeated_attempt_and_requires_fixed_gradi
     )
     with pytest.raises(PermissionError, match="gradient diagnostic"):
         delivery.training_signal_index(tmp_path, [run])
+
+
+def extension_fixture(root, monkeypatch):
+    write(root / "RUN_IDENTITY.json", dict(experiment_id=delivery.EXPERIMENT, code_commit="7" * 40))
+    write(root / "deployment/SOURCE_MANIFEST.json", dict(files=[]))
+    directory = root / "native/observability" / ("a" * 40)
+    directory.mkdir(parents=True)
+    module_name = "fixture_orchestration_" + delivery.digest(str(root))[:12]
+    orchestration = ModuleType(module_name)
+    orchestration.Controller, orchestration.calls = type("OriginalController", (), {}), []
+    monkeypatch.setitem(delivery.sys.modules, module_name, orchestration)
+    launcher = (
+        f"import {module_name} as original\n"
+        "original.calls.append('IMPORT')\n"
+        "class InstrumentedController: pass\n"
+        "def verify_extension(root, manifest_path, science=False):\n"
+        "    original.calls.append(('VERIFY', science))\n"
+        "    return {'scope': 'CPU_FIXTURE_ONLY'}\n"
+        "def install(root, manifest_path):\n"
+        "    original.calls.append('INSTALL')\n"
+        "    original.Controller = InstrumentedController\n"
+        "    return InstrumentedController\n"
+    )
+    (directory / "instrumented_execution.py").write_text(launcher)
+    (directory / "observe_runtime.py").write_text("# CPU fixture observer, no model calls\n")
+    write(
+        directory / "CPU_VALIDATION.json",
+        dict(
+            status="PASS",
+            scope="CPU_TOY_TRANSPARENCY_AND_ORCHESTRATION",
+            tests_passed=2,
+            gpu_validation_performed=False,
+            new_model_generations=0,
+            new_optimizer_steps=0,
+            source_sha256={
+                name: delivery.sha_file(directory / name)
+                for name in ("instrumented_execution.py", "observe_runtime.py")
+            },
+        ),
+    )
+    write(directory / "AMENDMENT.json", dict(scope="CPU_FIXTURE_ONLY"))
+
+    def record(name):
+        return dict(
+            path=name,
+            sha256=delivery.sha_file(directory / name),
+            bytes=(directory / name).stat().st_size,
+        )
+
+    manifest = dict(
+        schema_version=1,
+        experiment_id=delivery.EXPERIMENT,
+        status="FROZEN_OBSERVABILITY_EXTENSION",
+        extension_commit="a" * 40,
+        base_code_commit="7" * 40,
+        run_identity_sha256=delivery.sha_file(root / "RUN_IDENTITY.json"),
+        base_source_manifest_sha256=delivery.sha_file(root / "deployment/SOURCE_MANIFEST.json"),
+        sources=[record(name) for name in ("instrumented_execution.py", "observe_runtime.py")],
+        cpu_validation=record("CPU_VALIDATION.json"),
+    )
+    write(directory / "SOURCE_MANIFEST.json", manifest)
+    write(
+        root / "EXECUTION_FREEZE.json",
+        dict(
+            engineering_files={
+                str((directory / name).relative_to(root)): delivery.sha_file(directory / name)
+                for name in ("SOURCE_MANIFEST.json", "CPU_VALIDATION.json", "AMENDMENT.json")
+            }
+        ),
+    )
+    api = SimpleNamespace(
+        orchestration=orchestration, protocol=SimpleNamespace(verify_run=lambda *a, **k: None)
+    )
+    return directory / "SOURCE_MANIFEST.json", api
+
+
+@pytest.mark.parametrize("suffix", [".pyc", ".pyo"])
+def test_frozen_package_bytecode_is_rejected_before_any_scientific_import(
+    tmp_path, monkeypatch, suffix
+):
+    path = tmp_path / "code/src/sr_f3_ce/protocol.py"
+    path.parent.mkdir(parents=True)
+    original = b"# authenticated CPU fixture source only\n"
+    path.write_bytes(original)
+    write(tmp_path / "RUN_IDENTITY.json", dict(experiment_id=delivery.EXPERIMENT))
+    write(
+        tmp_path / "deployment/SOURCE_MANIFEST.json",
+        dict(
+            files=[
+                dict(
+                    path="src/sr_f3_ce/protocol.py",
+                    bytes=len(original),
+                    sha256=delivery.sha_file(path),
+                )
+            ]
+        ),
+    )
+    path.write_text("raise RuntimeError('UNBOUND_PACKAGE_CACHE_EXECUTED')\n")
+    cache = (
+        Path(importlib.util.cache_from_source(str(path)))
+        if suffix == ".pyc"
+        else path.with_suffix(suffix)
+    )
+    py_compile.compile(
+        str(path),
+        cfile=str(cache),
+        doraise=True,
+        invalidation_mode=py_compile.PycInvalidationMode.UNCHECKED_HASH,
+    )
+    path.write_bytes(original)
+    cache_hash = delivery.sha_file(cache)
+    monkeypatch.setattr(delivery.sys, "dont_write_bytecode", False)
+
+    def forbidden_import(*args, **kwargs):
+        pytest.fail("Scientific import ran before the frozen bytecode guard")
+
+    monkeypatch.setattr(delivery.importlib, "import_module", forbidden_import)
+    with pytest.raises(PermissionError, match="unbound Python bytecode"):
+        delivery.load_frozen_api(tmp_path)
+    assert delivery.sys.dont_write_bytecode is True
+    assert delivery.sha_file(cache) == cache_hash
+    assert path.read_bytes() == original
+
+
+def test_extension_import_uses_unique_freeze_binding_then_installs_real_controller(
+    tmp_path, monkeypatch
+):
+    manifest, api = extension_fixture(tmp_path, monkeypatch)
+    extension = delivery.load_observability_extension(tmp_path, api, manifest)
+    assert api.orchestration.calls == ["IMPORT", ("VERIFY", True), "INSTALL"]
+    assert api.orchestration.Controller is extension.controller
+    assert extension.identity["manifest_sha256"] == delivery.sha_file(manifest)
+    api.observability = extension
+    api.orchestration.Controller = type("ReplacedController", (), {})
+    with pytest.raises(PermissionError, match="replaced"):
+        delivery.require_final_release(tmp_path, api)
+
+
+def test_extension_ignores_unchecked_hash_pyc_and_preserves_module_identity(tmp_path, monkeypatch):
+    manifest, api = extension_fixture(tmp_path, monkeypatch)
+    launcher = manifest.with_name("instrumented_execution.py")
+    original = launcher.read_bytes()
+    launcher.write_text("raise RuntimeError('UNBOUND_PYC_EXECUTED')\n")
+    cache = Path(
+        py_compile.compile(
+            str(launcher),
+            invalidation_mode=py_compile.PycInvalidationMode.UNCHECKED_HASH,
+            doraise=True,
+        )
+    )
+    launcher.write_bytes(original)
+    assert struct.unpack("<I", cache.read_bytes()[4:8])[0] == 1
+    monkeypatch.setattr(delivery.sys, "dont_write_bytecode", True)
+    # Confirm this fixture is a real unchecked cache: the standard loader would use it.
+    spec = importlib.util.spec_from_file_location("unsafe_cpu_fixture_only", launcher)
+    with pytest.raises(RuntimeError, match="UNBOUND_PYC_EXECUTED"):
+        spec.loader.exec_module(importlib.util.module_from_spec(spec))
+    extension = delivery.load_observability_extension(tmp_path, api, manifest)
+    assert api.orchestration.calls == ["IMPORT", ("VERIFY", True), "INSTALL"]
+    assert extension.module.__file__ == str(launcher)
+    assert extension.module.__spec__.origin == str(launcher)
+    assert delivery.sys.modules[extension.module.__name__] is extension.module
+
+
+@pytest.mark.parametrize("replacement_point", ["before_buffer_read", "after_buffer_read"])
+def test_extension_executes_only_the_same_buffer_it_hashes(
+    tmp_path, monkeypatch, replacement_point
+):
+    manifest, api = extension_fixture(tmp_path, monkeypatch)
+    launcher = manifest.with_name("instrumented_execution.py")
+    original_read, reads = Path.read_bytes, []
+    replacement = b"raise RuntimeError('REPLACED_SOURCE_EXECUTED')\n"
+
+    def racing_read(path):
+        if path != launcher:
+            return original_read(path)
+        reads.append(path)
+        if replacement_point == "before_buffer_read":
+            path.write_bytes(replacement)
+        value = original_read(path)
+        if replacement_point == "after_buffer_read":
+            path.write_bytes(replacement)
+        return value
+
+    monkeypatch.setattr(Path, "read_bytes", racing_read)
+    if replacement_point == "before_buffer_read":
+        with pytest.raises(PermissionError, match="launcher changed before import"):
+            delivery.load_observability_extension(tmp_path, api, manifest)
+        assert api.orchestration.calls == []
+    else:
+        # The fixture verifier records calls only; real verify_extension additionally
+        # rejects the changed on-disk source after this authenticated buffer executes.
+        extension = delivery.load_observability_extension(tmp_path, api, manifest)
+        assert api.orchestration.calls == ["IMPORT", ("VERIFY", True), "INSTALL"]
+        assert api.orchestration.Controller is extension.controller
+    assert reads == [launcher]
+    assert original_read(launcher) == replacement
+
+
+@pytest.mark.parametrize("mutation", ["unbound", "observer_bytes", "ambiguous", "explicit_other"])
+def test_unbound_ambiguous_or_changed_extension_is_rejected_before_python_import(
+    tmp_path, monkeypatch, mutation
+):
+    manifest, api = extension_fixture(tmp_path, monkeypatch)
+    freeze = delivery.read(tmp_path / "EXECUTION_FREEZE.json")
+    supplied = None
+    if mutation == "unbound":
+        del freeze["engineering_files"][
+            str(manifest.with_name("AMENDMENT.json").relative_to(tmp_path))
+        ]
+        write(tmp_path / "EXECUTION_FREEZE.json", freeze)
+    elif mutation == "observer_bytes":
+        manifest.with_name("observe_runtime.py").write_text("# changed source\n")
+    elif mutation == "ambiguous":
+        freeze["engineering_files"][
+            "native/observability/" + "b" * 40 + "/SOURCE_MANIFEST.json"
+        ] = "x"
+        write(tmp_path / "EXECUTION_FREEZE.json", freeze)
+    else:
+        supplied = tmp_path / "arbitrary.json"
+        write(supplied, {})
+    with pytest.raises(PermissionError):
+        delivery.load_observability_extension(tmp_path, api, supplied)
+    assert api.orchestration.calls == []
+
+
+def observation_event(scope, event, *, parent=None, kind="generation", outcome="RETURNED"):
+    row = dict(
+        schema_version=1,
+        experiment_id=delivery.EXPERIMENT,
+        installation_id="obs-1",
+        runtime_id="r1",
+        scope_id=scope,
+        parent_scope_id=parent,
+        kind=kind,
+        purpose="fixture",
+        protocol="structured",
+        pid=42,
+        time_unix_ns=100 if event == "SCOPE_BEGIN" else 200,
+        event=event,
+    )
+    if event == "SCOPE_END":
+        counts = dict(
+            entered=1,
+            returned=int(outcome == "RETURNED"),
+            raised=0,
+            unresolved=0,
+            checkpoint_early_stop=int(outcome == "CHECKPOINT_EARLY_STOP"),
+            input_batch_items=1,
+            input_sequence_slots=2,
+            input_element_slots=2,
+            image_items=0,
+            image_shape_unknown_calls=0,
+            shape_unknown_calls=0,
+            host_inclusive_ns=50,
+            host_exclusive_ns=40,
+        )
+        row.update(
+            outcome=outcome,
+            original_call_returned=outcome == "RETURNED",
+            exception_type=None,
+            host_scope_elapsed_ns=100,
+            coverage_status="COMPLETE",
+            coverage_issues=[],
+            visual_expected=True,
+            model_stages={"prefill": counts},
+            visual_stages={"prefill": dict(counts, image_items=1, image_shape_unknown_calls=0)},
+            model_hook_layers={"ignored_nested_base": dict(entered=99)},
+        )
+    return row
+
+
+def write_events(path, rows):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(b"".join(delivery.encoded(row) + b"\n" for row in rows))
+
+
+def test_nested_observation_hooks_count_once_and_scope_host_times_are_not_added(tmp_path):
+    path = tmp_path / "events.jsonl"
+    write_events(
+        path,
+        [
+            observation_event("outer", "SCOPE_BEGIN"),
+            observation_event("inner", "SCOPE_BEGIN", parent="outer", kind="teacher_forcing"),
+            observation_event("inner", "SCOPE_END", parent="outer", kind="teacher_forcing"),
+            observation_event("outer", "SCOPE_END"),
+        ],
+    )
+    summary = delivery.summarize_observation_events(path)
+    assert summary["status"] == "COMPLETE_RECORDED_SCOPES"
+    categories = summary["by_kind_purpose_protocol"]
+    assert sum(row["model_stages"]["prefill"]["entered"] for row in categories) == 2
+    assert sum(row["visual_stages"]["prefill"]["entered"] for row in categories) == 2
+    assert all(
+        row["scope_host_elapsed_ns"] == {"minimum": 100, "maximum": 100} for row in categories
+    )
+    assert "not GPU kernel" in summary["timing_scope"]
+
+
+def test_checkpoint_early_stop_is_recorded_control_flow_not_false_scientific_failure(tmp_path):
+    path = tmp_path / "events.jsonl"
+    write_events(
+        path,
+        [
+            observation_event("s", "SCOPE_BEGIN", kind="unscoped_model_forward"),
+            observation_event(
+                "s", "SCOPE_END", kind="unscoped_model_forward", outcome="CHECKPOINT_EARLY_STOP"
+            ),
+        ],
+    )
+    summary = delivery.summarize_observation_events(path)
+    assert summary["status"] == "COMPLETE_RECORDED_SCOPES"
+    assert summary["by_kind_purpose_protocol"][0]["outcomes"] == {"CHECKPOINT_EARLY_STOP": 1}
+
+
+def test_unclosed_and_truncated_observation_scope_remains_unknown(tmp_path):
+    path = tmp_path / "events.jsonl"
+    write_events(path, [observation_event("s", "SCOPE_BEGIN")])
+    with path.open("ab") as stream:
+        stream.write(b'{"event":"SCOPE_END"')
+    summary = delivery.summarize_observation_events(path)
+    assert summary["status"] == "UNKNOWN" and summary["ended_scopes"] == 0
+    assert set(summary["coverage_issues"]) == {"TRUNCATED_FINAL_EVENT", "SCOPES_WITHOUT_END"}
+
+
+@pytest.mark.parametrize("problem", ["unmatched_end", "wrong_counter", "changed_identity"])
+def test_corrupted_observation_pair_or_counters_is_rejected(tmp_path, problem):
+    rows = [observation_event("s", "SCOPE_BEGIN"), observation_event("s", "SCOPE_END")]
+    if problem == "unmatched_end":
+        rows.pop(0)
+    elif problem == "wrong_counter":
+        rows[1]["model_stages"]["prefill"]["entered"] = 2
+    else:
+        rows[1]["runtime_id"] = "different-runtime"
+    path = tmp_path / "events.jsonl"
+    write_events(path, rows)
+    with pytest.raises(PermissionError):
+        delivery.summarize_observation_events(path)
+
+
+def observation_attempt_fixture(root):
+    identity = dict(
+        manifest_sha256="a" * 64, amendment_sha256="b" * 64, observer_source_sha256="c" * 64
+    )
+    write(root / "RUN_IDENTITY.json", {})
+    write(root / "EXECUTION_FREEZE.json", {})
+    job_key, task_id = "physical-attempt-1", "train--CPU_FIXTURE_ONLY"
+    job = root / "orchestration/jobs" / job_key
+    write(
+        job / "INTENT.json",
+        dict(
+            key=job_key,
+            task_ids=[task_id],
+            claim_id="claim-1",
+            extension_manifest_sha256=identity["manifest_sha256"],
+            amendment_sha256=identity["amendment_sha256"],
+        ),
+    )
+    write(
+        job / "STATE.json", dict(job_id="123", intent_sha256=delivery.sha_file(job / "INTENT.json"))
+    )
+    binding = dict(
+        experiment_id=delivery.EXPERIMENT,
+        run_identity_sha256=delivery.sha_file(root / "RUN_IDENTITY.json"),
+        execution_freeze_sha256=delivery.sha_file(root / "EXECUTION_FREEZE.json"),
+        extension_manifest_sha256=identity["manifest_sha256"],
+        amendment_sha256=identity["amendment_sha256"],
+        job_key=job_key,
+        task_id=task_id,
+        job_id="123",
+        claim_id="claim-1",
+    )
+    attempt = root / "accounting/observability" / job_key / task_id
+    write(
+        attempt / "INSTALLATION.json",
+        dict(
+            schema_version=1,
+            status="INSTALLED",
+            execution_binding=binding,
+            observer=dict(
+                installation_id="obs-1",
+                old_engine_observed=False,
+                observer_source_sha256=identity["observer_source_sha256"],
+            ),
+        ),
+    )
+    write_events(
+        attempt / "events.jsonl",
+        [
+            dict(observation_event("s", event), execution_binding=binding)
+            for event in ("SCOPE_BEGIN", "SCOPE_END")
+        ],
+    )
+    write(root / "tasks" / task_id / "COMPLETE.json", {"scope": "CPU_FIXTURE_ONLY"})
+    write(
+        attempt / "FINAL.json",
+        dict(
+            schema_version=1,
+            status="COMPLETE",
+            execution_binding=binding,
+            installation_sha256=delivery.sha_file(attempt / "INSTALLATION.json"),
+            events=dict(
+                path=str((attempt / "events.jsonl").relative_to(root)),
+                sha256=delivery.sha_file(attempt / "events.jsonl"),
+                bytes=(attempt / "events.jsonl").stat().st_size,
+                rows=2,
+                scope_begin=1,
+                scope_end=1,
+            ),
+            observer_snapshot=dict(
+                schema_version=1,
+                installation_id="obs-1",
+                sealed=True,
+                events_written={"SCOPE_BEGIN": 1, "SCOPE_END": 1},
+                observer_overhead_ns={"emit": 1},
+                active_scopes=[],
+                write_errors=[],
+                final_receipt_write_cost="UNKNOWN_NOT_MEASURED_BY_OBSERVER",
+            ),
+            task_receipt_sha256=delivery.sha_file(root / "tasks" / task_id / "COMPLETE.json"),
+        ),
+    )
+    return identity, task_id, attempt
+
+
+def test_final_observation_receipt_binds_actual_job_events_and_preserves_raw(tmp_path):
+    identity, task_id, attempt = observation_attempt_fixture(tmp_path)
+    summary = delivery.observability_costs(tmp_path, identity, [task_id])
+    assert summary["status"] == "COMPLETE_RECORDED_ATTEMPTS"
+    assert summary["old_engine"].startswith("UNKNOWN")
+    assert summary["attempts"][0]["observer_overhead_ns"] == {"emit": 1}
+    originals, _ = delivery.original_inventory(tmp_path, {}, set(), {})
+    for name in ("events.jsonl", "INSTALLATION.json", "FINAL.json"):
+        assert "evidence/" + str((attempt / name).relative_to(tmp_path)) in originals
+    final = delivery.read(attempt / "FINAL.json")
+    final["events"]["rows"] = 3
+    write(attempt / "FINAL.json", final)
+    with pytest.raises(PermissionError, match="Final observation receipt"):
+        delivery.observability_costs(tmp_path, identity, [task_id])
+
+
+def test_missing_observation_final_is_unknown_and_cannot_certify_required_task(tmp_path):
+    identity, task_id, attempt = observation_attempt_fixture(tmp_path)
+    (attempt / "FINAL.json").unlink()
+    summary = delivery.observability_costs(tmp_path, identity)
+    assert summary["status"] == "UNKNOWN"
+    assert summary["attempts"][0]["missing_or_incomplete_final"] is True
+    with pytest.raises(PermissionError, match="lack their verified observation"):
+        delivery.observability_costs(tmp_path, identity, [task_id])
+
+
+def test_unsealed_observer_snapshot_cannot_certify_required_task(tmp_path):
+    identity, task_id, attempt = observation_attempt_fixture(tmp_path)
+    final = delivery.read(attempt / "FINAL.json")
+    final["observer_snapshot"]["sealed"] = False
+    write(attempt / "FINAL.json", final)
+    with pytest.raises(PermissionError, match="Final observation receipt"):
+        delivery.observability_costs(tmp_path, identity, [task_id])
+
+
+def test_complete_scope_cannot_replace_absent_hook_measurements_with_zero(tmp_path):
+    rows = [observation_event("s", "SCOPE_BEGIN"), observation_event("s", "SCOPE_END")]
+    rows[1]["model_stages"] = {}
+    path = tmp_path / "events.jsonl"
+    write_events(path, rows)
+    with pytest.raises(PermissionError, match="missing model/visual hooks"):
+        delivery.summarize_observation_events(path)
+
+
+def test_actual_cpu_observer_event_schema_integrates_with_delivery_summary(tmp_path):
+    import torch
+
+    source = Path(__file__).resolve().parents[2] / "scripts/sr_f3_ce/observe_runtime.py"
+    spec = importlib.util.spec_from_file_location("delivery_actual_observer_fixture", source)
+    observer = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(observer)
+
+    class TinyModel(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.embedding, self.visual = torch.nn.Embedding(8, 2), torch.nn.Identity()
+
+        def forward(self, input_ids, pixel_values=None):
+            return self.embedding(input_ids) + self.visual(pixel_values)[:, None, :]
+
+    class TinyRuntime:
+        def __init__(self):
+            self.model = TinyModel()
+
+        def _visual_module(self):
+            return self.model.visual
+
+        def generate_group(self, values, protocol="structured"):
+            self.model(**values)
+            return self.model(**dict(values, input_ids=values["input_ids"][:, :1]))
+
+        def _native_forward(self, values, purpose="training_policy", grad=True):
+            return self.model(**values)
+
+    events = []
+    observer.install(TinyRuntime, events.append)
+    try:
+        runtime = TinyRuntime()
+        inputs = dict(input_ids=torch.tensor([[1, 2, 3]]), pixel_values=torch.ones(1, 2))
+        runtime.generate_group(inputs)
+        runtime._native_forward(inputs).sum().backward()
+        assert observer.snapshot(TinyRuntime)["active_scopes"] == []
+        assert observer.seal(TinyRuntime)["sealed"] is True
+    finally:
+        observer.uninstall(TinyRuntime)
+    path = tmp_path / "events.jsonl"
+    write_events(path, events)
+    summary = delivery.summarize_observation_events(path)
+    assert summary["status"] == "COMPLETE_RECORDED_SCOPES"
+    categories = summary["by_kind_purpose_protocol"]
+    for axis in ("model_stages", "visual_stages"):
+        assert sum(stats["entered"] for row in categories for stats in row[axis].values()) == 3

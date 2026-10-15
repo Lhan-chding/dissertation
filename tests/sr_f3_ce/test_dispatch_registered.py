@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 import importlib.util
 import json
+import py_compile
 import shutil
 import sys
 from pathlib import Path
@@ -27,12 +28,16 @@ def helper():
 
 @pytest.fixture
 def registered(helper, tmp_path, monkeypatch):
+    checkout = Path(__file__).resolve().parents[2]
     root = tmp_path / "run"
     operation = root / "operations" / ("a" * 40)
     operation.mkdir(parents=True)
     shutil.copyfile(helper.__file__, operation / "dispatch_registered.py")
     for name in helper.HELPERS[1:]:
         (operation / name).write_text("# synthetic operational source fixture\n")
+    original_preparer = root / "operations" / helper.TYPED_COMMIT / "finalize_external_types.py"
+    original_preparer.parent.mkdir()
+    shutil.copyfile(checkout / "scripts/sr_f3_ce/finalize_external_types.py", original_preparer)
     monkeypatch.setattr(helper, "__file__", str(operation / "dispatch_registered.py"))
     python = str(Path(sys.executable).resolve())
     helper.save(
@@ -49,7 +54,48 @@ def registered(helper, tmp_path, monkeypatch):
             cpu_policy=dict(partition="cluster02", qos=helper.QOS, cpu_node="cpu-2"),
         ),
     )
-    path = helper.register(root, python, "alice", "a" * 40)
+    extension = root / "native/observability" / ("b" * 40)
+    extension.mkdir(parents=True)
+    for name in ("instrumented_execution.py", "observe_runtime.py"):
+        shutil.copyfile(checkout / "scripts/sr_f3_ce" / name, extension / name)
+    sources = [
+        dict(
+            path=name, sha256=helper.sha(extension / name), bytes=(extension / name).stat().st_size
+        )
+        for name in ("instrumented_execution.py", "observe_runtime.py")
+    ]
+    helper.save(
+        extension / "CPU_VALIDATION.json",
+        dict(
+            status="PASS",
+            scope="CPU_TOY_TRANSPARENCY_AND_ORCHESTRATION",
+            tests_passed=1,
+            gpu_validation_performed=False,
+            new_model_generations=0,
+            new_optimizer_steps=0,
+            source_sha256={row["path"]: row["sha256"] for row in sources},
+        ),
+    )
+    helper.save(
+        extension / "SOURCE_MANIFEST.json",
+        dict(
+            schema_version=1,
+            experiment_id=helper.EXPERIMENT,
+            status="FROZEN_OBSERVABILITY_EXTENSION",
+            extension_commit="b" * 40,
+            base_code_commit=helper.FROZEN_COMMIT,
+            run_identity_sha256=helper.sha(root / "RUN_IDENTITY.json"),
+            base_source_manifest_sha256=helper.sha(root / "deployment/SOURCE_MANIFEST.json"),
+            sources=sources,
+            executed_sources=["instrumented_execution.py", "observe_runtime.py"],
+            cpu_validation=dict(
+                path="CPU_VALIDATION.json",
+                sha256=helper.sha(extension / "CPU_VALIDATION.json"),
+                bytes=(extension / "CPU_VALIDATION.json").stat().st_size,
+            ),
+        ),
+    )
+    path = helper.register(root, python, "alice", "a" * 40, extension / "SOURCE_MANIFEST.json")
     value = helper.identity(path)
     value["identity_path"] = str(path)
     return value
@@ -158,23 +204,43 @@ def api_fixture(helper, registered, *, completed=()):
         slurm=FakeSlurm(),
         controller=FakeController(completed),
         freezes=[],
+        amendments=[],
+        lifecycle=[],
     )
 
     def freeze(run):
+        api.lifecycle.append("freeze")
         api.freezes.append(str(run))
         helper.save(root / "EXECUTION_FREEZE.json", {"fixture_science": True})
 
     api.bootstrap = SimpleNamespace(freeze_science=freeze)
+
+    def seal(run, manifest, *, typed_verified):
+        assert not (root / "EXECUTION_FREEZE.json").exists()
+        api.lifecycle.append("amendment")
+        api.amendments.append(dict(manifest=str(manifest), typed=typed_verified))
+
+    def verify(run, manifest, *, science=False):
+        api.lifecycle.append("extension_verify" if science else "static_verify")
+        return dict(
+            manifest_path=str(manifest),
+            manifest_sha256=registered["extension_manifest_sha256"],
+            extension_commit="b" * 40,
+            base_code_commit=helper.FROZEN_COMMIT,
+            observer_source_sha256=helper.sha(Path(manifest).with_name("observe_runtime.py")),
+            amendment_sha256="d" * 64,
+            cpu_validation_sha256=helper.sha(Path(manifest).with_name("CPU_VALIDATION.json")),
+        )
+
+    api.extension = SimpleNamespace(seal_amendment=seal, verify_extension=verify)
     return api
 
 
 def typed_stub(helper, registered):
     return dict(
         status="VERIFIED_TYPED_V1",
-        auxiliary_code_commit=registered["operation_commit"],
-        preparation_script_sha256=helper.sha(
-            Path(registered["identity_path"]).parent / "finalize_external_types.py"
-        ),
+        auxiliary_code_commit=helper.TYPED_COMMIT,
+        preparation_script_sha256=helper.TYPED_SCRIPT_SHA,
     )
 
 
@@ -234,6 +300,8 @@ def test_stable_snapshot_does_not_rehash_and_new_publication_freezes_once(helper
         assert driver.poll() == "UNCHANGED"
     assert api.controller.status_calls == calls
     assert len(api.freezes) == api.controller.tick_calls == 1
+    assert len(api.amendments) == 1
+    assert api.lifecycle[:3] == ["amendment", "freeze", "extension_verify"]
     api.slurm.rows["other"] = dict(QOS=helper.QOS, UserId="bob(2)", ReqTRES="cpu=1,gres/gpu=1")
     assert driver.poll() == "DISPATCHING_FIXED_TASKS"
     assert len(api.freezes) == 1 and api.controller.tick_calls == 2
@@ -590,11 +658,9 @@ def make_typed_fixture(helper, registered):
         reviewer_ids=["A", "B"],
         review_files={},
         reviewer_evidence_manifests={},
-        auxiliary_code_commit=registered["operation_commit"],
+        auxiliary_code_commit=helper.TYPED_COMMIT,
         auxiliary_commit_identity_supplied_by_operator=True,
-        preparation_script_sha256=helper.sha(
-            Path(registered["identity_path"]).parent / "finalize_external_types.py"
-        ),
+        preparation_script_sha256=helper.TYPED_SCRIPT_SHA,
     )
     for label in ("A", "B"):
         rows = [
@@ -813,6 +879,9 @@ def test_delivery_requires_exact_success_checks_hashes_and_registered_coverage(h
             run_identity_sha256=registered["run_identity_sha256"],
             scientific_source_manifest_sha256=registered["source_manifest_sha256"],
             helper_manifest_sha256=helper.sha(manifest),
+            observability_extension=api.extension.verify_extension(
+                root, registered["extension_manifest_path"], science=True
+            ),
             archive=dict(
                 path=str(output), sha256=helper.sha(output), bytes=output.stat().st_size, entries=1
             ),
@@ -843,6 +912,9 @@ def test_delivery_requires_exact_success_checks_hashes_and_registered_coverage(h
                 records=229500,
             ),
         )
+        receipt["observability_extension"]["manifest_path"] = str(
+            Path(registered["extension_manifest_path"]).relative_to(root)
+        )
         helper.save(Path(str(output) + ".verification.json"), receipt)
         return SimpleNamespace(returncode=0, stdout="fixture only", stderr="")
 
@@ -851,6 +923,10 @@ def test_delivery_requires_exact_success_checks_hashes_and_registered_coverage(h
     )
     assert driver.act() == "DONE"
     assert len(calls) == 1 and "--helper-manifest" in calls[0]
+    assert (
+        calls[0][calls[0].index("--extension-manifest") + 1]
+        == registered["extension_manifest_path"]
+    )
     assert (driver.directory / "DELIVERY_VERIFIED.json").exists()
     assert api.controller.tick_calls == 0
 
@@ -877,3 +953,114 @@ def test_running_driver_persists_unknown_failure_and_exits(helper, registered, m
         helper.run(registered, api, 1)
     end = helper.read(helper.attempts_root(registered) / "0001/END.json")
     assert end["status"] == "FAILED" and not api.controller.resumes
+
+
+def test_operation_binds_extension_manifest_and_rejects_changed_source_before_import(
+    helper, registered
+):
+    manifest = Path(registered["extension_manifest_path"])
+    assert registered["extension_manifest_sha256"] == helper.sha(manifest)
+    manifest.with_name("observe_runtime.py").write_text("raise AssertionError('must not import')")
+    with pytest.raises(PermissionError, match="before import"):
+        helper.identity(registered["identity_path"])
+
+
+def test_new_operations_retain_the_exact_previously_published_typed_preparer(helper, registered):
+    api = api_fixture(helper, registered)
+    driver = make_driver(helper, registered, api)
+    assert registered["operation_commit"] != helper.TYPED_COMMIT
+    driver.check_typed_source(typed_stub(helper, registered))
+    changed = dict(
+        typed_stub(helper, registered), auxiliary_code_commit=registered["operation_commit"]
+    )
+    with pytest.raises(PermissionError, match="retained published preparer"):
+        driver.check_typed_source(changed)
+
+
+def test_bad_observation_freeze_blocks_resume_before_any_submission(helper, registered):
+    api = api_fixture(helper, registered, completed=helper.ENGINES)
+    add_failed_attempt(helper, registered, api)
+    helper.save(Path(registered["root"]) / "EXECUTION_FREEZE.json", {"fixture": True})
+
+    def reject(*args, **kwargs):
+        raise PermissionError("missing observation static chain")
+
+    api.extension.verify_extension = reject
+    with pytest.raises(PermissionError, match="observation static chain"):
+        make_driver(
+            helper, registered, api, typed=lambda *args: typed_stub(helper, registered)
+        ).act()
+    assert not api.controller.resumes and api.controller.tick_calls == 0
+
+
+def test_amendment_failure_cannot_fall_through_to_freeze_or_science(helper, registered):
+    api = api_fixture(helper, registered, completed=helper.ENGINES)
+
+    def reject(*args, **kwargs):
+        raise PermissionError("CPU evidence does not bind this observer")
+
+    api.extension.seal_amendment = reject
+    with pytest.raises(PermissionError, match="CPU evidence"):
+        make_driver(
+            helper, registered, api, typed=lambda *args: typed_stub(helper, registered)
+        ).act()
+    assert not api.freezes and api.controller.tick_calls == 0
+
+
+def test_dispatch_loader_ignores_unmanifested_unchecked_hash_pyc(helper, registered, tmp_path):
+    manifest = Path(registered["extension_manifest_path"])
+    source = manifest.with_name("instrumented_execution.py")
+    marker = tmp_path / "unregistered-dispatch-cache-executed"
+    payload = tmp_path / "bad_cache.py"
+    payload.write_text(f"open({str(marker)!r}, 'w').write('unregistered')\n")
+    cached = Path(importlib.util.cache_from_source(str(source)))
+    cached.parent.mkdir()
+    py_compile.compile(
+        str(payload),
+        cfile=str(cached),
+        dfile=str(source),
+        invalidation_mode=py_compile.PycInvalidationMode.UNCHECKED_HASH,
+    )
+    helper._EXTENSIONS.clear()
+    loaded = helper.load_extension(
+        Path(registered["root"]), manifest, expected_sha=registered["extension_manifest_sha256"]
+    )
+    assert callable(loaded.install) and not marker.exists()
+
+
+def test_dispatch_loader_rechecks_executable_bytes_after_inventory_scan(
+    helper, registered, monkeypatch, tmp_path
+):
+    manifest = Path(registered["extension_manifest_path"])
+    source = manifest.with_name("instrumented_execution.py")
+    marker = tmp_path / "unregistered-dispatch-source-executed"
+    original = helper.sha
+
+    def sha(path):
+        value = original(path)
+        if Path(path) == manifest.with_name("CPU_VALIDATION.json"):
+            source.write_text(f"open({str(marker)!r}, 'w').write('unregistered')\n")
+        return value
+
+    helper._EXTENSIONS.clear()
+    monkeypatch.setattr(helper, "sha", sha)
+    with pytest.raises(PermissionError, match="verified-byte import"):
+        helper.load_extension(
+            Path(registered["root"]), manifest, expected_sha=registered["extension_manifest_sha256"]
+        )
+    assert not marker.exists()
+
+
+def test_dispatcher_rejects_base_package_cache_before_any_scientific_import(
+    helper, registered, monkeypatch
+):
+    code = Path(registered["code_root"])
+    code.mkdir()
+    (code / "injected.pyc").write_bytes(b"unmanifested scientific cache")
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("Scientific imports must not run with an unbound cache")
+
+    monkeypatch.setattr(helper.importlib, "import_module", forbidden)
+    with pytest.raises(PermissionError, match="scientific bytecode"):
+        helper.load_science(registered)

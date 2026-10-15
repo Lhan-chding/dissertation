@@ -13,6 +13,7 @@ import argparse
 import fcntl
 import hashlib
 import importlib
+import importlib.util
 import json
 import os
 import re
@@ -31,6 +32,9 @@ QOS = "soujanya-poria-startfund-2026-03"
 ENGINES = {"p0", "engine--b0", "engine--b1", "engine--b2", "engine--resume"}
 REVISION = "external/revisions/typed_v1"
 HELPERS = ("dispatch_registered.py", "finalize_external_types.py", "build_delivery.py")
+TYPED_COMMIT = "4146e156ffa9a476b360daeb67503703faca138f"
+TYPED_SCRIPT_SHA = "1a75df6bf5fa1c0ef22a23ee7fd766a8e22f5a1c6c1fe7d579c4ab6135106aaf"
+_EXTENSIONS = {}
 
 
 def read(path):
@@ -106,7 +110,66 @@ def lock(path):
             fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
 
 
-def register(root, python, user, operation_commit):
+def load_extension(root, manifest_path, *, expected_sha=None):
+    """Verify the complete explicit source inventory before executing its launcher."""
+    root = Path(root).resolve(strict=True)
+    path = Path(manifest_path).resolve(strict=True)
+    manifest_bytes = path.read_bytes()
+    manifest_sha = hashlib.sha256(manifest_bytes).hexdigest()
+    if expected_sha is not None and manifest_sha != expected_sha:
+        raise PermissionError("Operation-bound extension manifest changed before import")
+    manifest = json.loads(manifest_bytes)
+    commit = manifest.get("extension_commit", "")
+    if not re.fullmatch(r"[a-f0-9]{40}", commit) or (
+        path != root / "native/observability" / commit / "SOURCE_MANIFEST.json"
+        or manifest.get("status") != "FROZEN_OBSERVABILITY_EXTENSION"
+        or manifest.get("base_code_commit") != FROZEN_COMMIT
+        or manifest.get("run_identity_sha256") != sha(root / "RUN_IDENTITY.json")
+        or manifest.get("base_source_manifest_sha256")
+        != sha(root / "deployment/SOURCE_MANIFEST.json")
+        or manifest.get("executed_sources") != ["instrumented_execution.py", "observe_runtime.py"]
+    ):
+        raise PermissionError("Explicit observability deployment identity differs")
+    records = manifest.get("sources", [])
+    names = {row["path"] for row in records}
+    if len(names) != len(records) or not set(manifest["executed_sources"]) <= names:
+        raise PermissionError("Observation extension source inventory is incomplete")
+    cpu = manifest.get("cpu_validation", {})
+    if cpu.get("path") != "CPU_VALIDATION.json":
+        raise PermissionError("Observation extension CPU validation is missing")
+    for row in [*records, cpu]:
+        source = bounded(path.parent, row["path"])
+        if (
+            not source.is_file()
+            or source.stat().st_size != row["bytes"]
+            or sha(source) != row["sha256"]
+        ):
+            raise PermissionError(
+                "Observation extension source or CPU evidence changed before import"
+            )
+    key = (str(path), manifest_sha)
+    if key not in _EXTENSIONS:
+        entry = path.parent / "instrumented_execution.py"
+        record = next(row for row in records if row["path"] == "instrumented_execution.py")
+        body = entry.read_bytes()
+        if len(body) != record["bytes"] or hashlib.sha256(body).hexdigest() != record["sha256"]:
+            raise PermissionError("Observation launcher changed before verified-byte import")
+        spec = importlib.util.spec_from_file_location("srf3ce_observability_" + key[1], entry)
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = module
+        try:
+            exec(compile(body, str(entry), "exec"), module.__dict__)
+        except BaseException:
+            sys.modules.pop(spec.name, None)
+            raise
+        _EXTENSIONS[key] = module
+    module = _EXTENSIONS[key]
+    if module.verify_extension(root, path)["manifest_sha256"] != manifest_sha:
+        raise PermissionError("Extension manifest changed during verified import")
+    return module
+
+
+def register(root, python, user, operation_commit, extension_manifest):
     root, script = Path(root).resolve(strict=True), Path(__file__).resolve(strict=True)
     if not re.fullmatch(r"[a-f0-9]{40}", operation_commit) or (
         script.parent != root / "operations" / operation_commit
@@ -117,6 +180,12 @@ def register(root, python, user, operation_commit):
         raise PermissionError("Frozen scientific commit and single-GPU configuration required")
     if config.get("cpu_policy") != dict(partition="cluster02", qos=QOS, cpu_node="cpu-2"):
         raise PermissionError("Only the verified teacher CPU policy is authorized")
+    extension_manifest = Path(extension_manifest).resolve(strict=True)
+    extension = load_extension(root, extension_manifest)
+    extension_identity = extension.verify_extension(root, extension_manifest)
+    typed_script = root / "operations" / TYPED_COMMIT / "finalize_external_types.py"
+    if sha(typed_script) != TYPED_SCRIPT_SHA:
+        raise PermissionError("The already-published typed preparer source must be retained")
     sources_path = script.parent / "OPERATION_SOURCES.json"
     save(
         sources_path,
@@ -141,6 +210,10 @@ def register(root, python, user, operation_commit):
         operation_sources_sha256=sha(sources_path),
         config_sha256=sha(root / "orchestration/CONFIG.json"),
         dispatcher_sha256=sha(script),
+        extension_manifest_path=str(extension_manifest),
+        extension_manifest_sha256=extension_identity["manifest_sha256"],
+        typed_preparer_commit=TYPED_COMMIT,
+        typed_preparer_sha256=TYPED_SCRIPT_SHA,
         python=str(Path(python).resolve(strict=True)),
         user=user,
         account="rose",
@@ -171,6 +244,9 @@ def identity(path):
         frozen_code_commit=FROZEN_COMMIT,
         code_root=str(root / "code"),
         dispatcher_sha256=sha(script),
+        extension_manifest_sha256=sha(value["extension_manifest_path"]),
+        typed_preparer_commit=TYPED_COMMIT,
+        typed_preparer_sha256=TYPED_SCRIPT_SHA,
         run_identity_sha256=sha(root / "RUN_IDENTITY.json"),
         source_manifest_sha256=sha(root / "deployment/SOURCE_MANIFEST.json"),
         operation_sources_sha256=sha(script.parent / "OPERATION_SOURCES.json"),
@@ -222,11 +298,19 @@ def identity(path):
         )
     ):
         raise PermissionError("Dispatcher cannot alter registered scheduler configuration")
+    load_extension(
+        root, value["extension_manifest_path"], expected_sha=value["extension_manifest_sha256"]
+    )
+    if sha(root / "operations" / TYPED_COMMIT / "finalize_external_types.py") != TYPED_SCRIPT_SHA:
+        raise PermissionError("Previously published typed preparer source changed")
     return value
 
 
 def load_science(value):
     code = Path(value["code_root"]).resolve(strict=True)
+    sys.dont_write_bytecode = True
+    if any(path.is_file() and path.suffix in {".pyc", ".pyo"} for path in code.rglob("*")):
+        raise PermissionError("Unbound scientific bytecode cache must not be imported")
     manifest = read(Path(value["root"]) / "deployment/SOURCE_MANIFEST.json")
     records = manifest["files"]
     if not records or len({row["path"] for row in records}) != len(records):
@@ -243,7 +327,15 @@ def load_science(value):
         if Path(module.__file__).resolve() != code / "src/sr_f3_ce" / (name + ".py"):
             raise PermissionError("Dispatcher imported a different scientific source")
         modules[name] = module
-    c = modules["orchestration"].Controller(
+    extension = load_extension(
+        Path(value["root"]),
+        value["extension_manifest_path"],
+        expected_sha=value["extension_manifest_sha256"],
+    )
+    controller_class = extension.install(value["root"], value["extension_manifest_path"])
+    if modules["orchestration"].Controller is not controller_class:
+        raise PermissionError("The explicit future science Controller was not installed")
+    c = controller_class(
         value["root"],
         value["code_root"],
         python=value["python"],
@@ -253,7 +345,7 @@ def load_science(value):
         cpu_qos=QOS,
         cpu_node="cpu-2",
     )
-    return SimpleNamespace(**modules, controller=c, slurm=c.slurm)
+    return SimpleNamespace(**modules, controller=c, slurm=c.slurm, extension=extension)
 
 
 def _lines(path):
@@ -664,6 +756,7 @@ class Driver:
                 "Science recovery requires completed ENGINE and its existing freeze"
             )
         self.require_typed()
+        self.require_extension()
         # Validate all cheap blockers before starting any independent recovery.
         for state in blockers:
             result = self.api.controller.resume(state["key"])
@@ -701,6 +794,9 @@ class Driver:
             if intent_path.exists():
                 raise RuntimeError("A previous scientific freeze attempt needs reconciliation")
             save(intent_path, dict(typed=verified), immutable=True)
+            self.api.extension.seal_amendment(
+                self.root, self.value["extension_manifest_path"], typed_verified=verified
+            )
             self.api.bootstrap.freeze_science(self.root)
             save(
                 self.directory.parent.parent / "FREEZE_RECEIPT.json",
@@ -709,6 +805,7 @@ class Driver:
             )
         else:
             self.require_typed()
+        self.require_extension()
         if status["all_complete"]:
             return self.deliver()
         status = self.api.controller.tick()
@@ -731,13 +828,25 @@ class Driver:
             self.typed_receipt = verified
 
     def check_typed_source(self, verified):
-        source = Path(self.value["identity_path"]).parent / "finalize_external_types.py"
-        if verified.get("auxiliary_code_commit") != self.value["operation_commit"] or (
-            verified.get("preparation_script_sha256") != sha(source)
+        source = self.root / "operations" / TYPED_COMMIT / "finalize_external_types.py"
+        if verified.get("auxiliary_code_commit") != TYPED_COMMIT or (
+            verified.get("preparation_script_sha256") != TYPED_SCRIPT_SHA
+            or sha(source) != TYPED_SCRIPT_SHA
         ):
-            raise PermissionError("Typed audit did not use this committed operational source")
+            raise PermissionError(
+                "Typed audit differs from the explicitly retained published preparer"
+            )
+
+    def require_extension(self):
+        checked = self.api.extension.verify_extension(
+            self.root, self.value["extension_manifest_path"], science=True
+        )
+        if checked["manifest_sha256"] != self.value["extension_manifest_sha256"]:
+            raise PermissionError("Operation identity names another observability extension")
+        return checked
 
     def deliver(self):
+        extension = self.require_extension()
         operation = Path(self.value["identity_path"]).parent
         output = self.root / "delivery/SR_F3_CE_20261016.zip"
         manifest = operation / "OPERATION_SOURCES.json"
@@ -750,6 +859,8 @@ class Driver:
             str(output),
             "--helper-manifest",
             str(manifest),
+            "--extension-manifest",
+            self.value["extension_manifest_path"],
         ]
         save(
             self.directory / "DELIVERY_INTENT.json",
@@ -766,12 +877,28 @@ class Driver:
             raise RuntimeError("NUMERICAL_RELEASE_COMPLETE; DELIVERY_REQUIRED: builder failed")
         receipt_path = Path(str(output) + ".verification.json")
         receipt = read(receipt_path)
+        observed_identity = {
+            key: extension[key]
+            for key in (
+                "manifest_path",
+                "manifest_sha256",
+                "extension_commit",
+                "base_code_commit",
+                "observer_source_sha256",
+                "amendment_sha256",
+                "cpu_validation_sha256",
+            )
+        }
+        observed_identity["manifest_path"] = str(
+            Path(extension["manifest_path"]).relative_to(self.root)
+        )
         required = dict(
             schema_version=1,
             status="VERIFIED_DELIVERY",
             run_identity_sha256=self.value["run_identity_sha256"],
             scientific_source_manifest_sha256=self.value["source_manifest_sha256"],
             helper_manifest_sha256=sha(manifest),
+            observability_extension=observed_identity,
         )
         if any(receipt.get(k) != v for k, v in required.items()):
             raise PermissionError("Delivery receipt identity differs")
@@ -1080,13 +1207,22 @@ def main():
     parser.add_argument("--python")
     parser.add_argument("--user")
     parser.add_argument("--operation-commit")
+    parser.add_argument("--extension-manifest", type=Path)
     parser.add_argument("--sequence", type=int)
     parser.add_argument("--previous", type=int)
     args = parser.parse_args()
     if args.mode == "register":
-        if not all((args.root, args.python, args.user, args.operation_commit)):
-            parser.error("register requires root, python, user and operation-commit")
-        result = str(register(args.root, args.python, args.user, args.operation_commit))
+        if not all(
+            (args.root, args.python, args.user, args.operation_commit, args.extension_manifest)
+        ):
+            parser.error(
+                "register requires root, python, user, operation-commit and extension-manifest"
+            )
+        result = str(
+            register(
+                args.root, args.python, args.user, args.operation_commit, args.extension_manifest
+            )
+        )
     else:
         if args.identity is None or args.sequence is None:
             parser.error("submit/run requires identity and sequence")

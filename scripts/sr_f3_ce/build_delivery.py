@@ -13,6 +13,7 @@ import argparse
 import gzip
 import hashlib
 import importlib
+import importlib.util
 import io
 import itertools
 import json
@@ -138,9 +139,15 @@ def check_file(path, record):
         fail("Original artifact changed: " + str(path))
 
 
-def load_frozen_api(root):
+def load_frozen_api(root, *, extension_manifest=None):
     """Authenticate every deployed source before importing that exact source tree."""
     root = Path(root).resolve(strict=True)
+    sys.dont_write_bytecode = True
+    # This guards existing caches in the frozen tree; ordinary package imports remain.
+    # Do not delete caches or claim to authenticate arbitrary third-party/native imports.
+    for path in sorted((root / "code").rglob("*")):
+        if path.is_file() and path.suffix.lower() in {".pyc", ".pyo"}:
+            fail("Frozen source tree contains unbound Python bytecode: " + str(path))
     identity = read(root / "RUN_IDENTITY.json")
     if identity.get("experiment_id") != EXPERIMENT:
         fail("Wrong experiment")
@@ -177,12 +184,113 @@ def load_frozen_api(root):
     }
     if any(not Path(m.__file__).resolve().is_relative_to(code) for m in modules.values()):
         fail("Scientific imports did not come from root/code/src")
-    return SimpleNamespace(**modules)
+    api = SimpleNamespace(**modules)
+    api.observability = load_observability_extension(root, api, extension_manifest)
+    return api
+
+
+def load_observability_extension(root, api, manifest_path=None):
+    """Authenticate the unique freeze-bound extension before executing its loader."""
+    api.protocol.verify_run(root, science=True)
+    identity, freeze = read(root / "RUN_IDENTITY.json"), read(root / "EXECUTION_FREEZE.json")
+    bound = freeze.get("engineering_files", {})
+    matches = [
+        name
+        for name in bound
+        if re.fullmatch(r"native/observability/[0-9a-f]{40}/SOURCE_MANIFEST\.json", name)
+    ]
+    if len(matches) != 1:
+        fail("Scientific freeze must bind exactly one canonical observability extension")
+    selected = bounded(root, matches[0])
+    if manifest_path is not None and Path(manifest_path).resolve(strict=True) != selected:
+        fail("Requested observability extension differs from the unique scientific freeze")
+    directory = selected.parent
+    for filename in ("SOURCE_MANIFEST.json", "CPU_VALIDATION.json", "AMENDMENT.json"):
+        path = bounded(root, str((directory / filename).relative_to(root)))
+        if bound.get(str(path.relative_to(root))) != sha_file(path):
+            fail("Observability manifest/CPU validation/amendment is not directly freeze-bound")
+    manifest = read(selected)
+    if (
+        manifest.get("schema_version") != 1
+        or manifest.get("experiment_id") != EXPERIMENT
+        or manifest.get("status") != "FROZEN_OBSERVABILITY_EXTENSION"
+        or manifest.get("extension_commit") != directory.name
+        or manifest.get("base_code_commit") != identity["code_commit"]
+        or manifest.get("run_identity_sha256") != sha_file(root / "RUN_IDENTITY.json")
+        or manifest.get("base_source_manifest_sha256")
+        != sha_file(root / "deployment/SOURCE_MANIFEST.json")
+    ):
+        fail("Observability extension identity differs from the frozen scientific source")
+    sources = {}
+    for row in manifest.get("sources", []):
+        name = safe_name(row["path"])
+        if name in sources:
+            fail("Duplicate observability source identity")
+        path = bounded(directory, name)
+        check_file(path, row)
+        sources[name] = (path, row)
+    if not sources.keys() >= {"instrumented_execution.py", "observe_runtime.py"}:
+        fail("Observability extension lacks its authenticated launcher/observer source")
+    cpu = manifest.get("cpu_validation", {})
+    if cpu.get("path") != "CPU_VALIDATION.json":
+        fail("Observability CPU validation path differs")
+    check_file(directory / "CPU_VALIDATION.json", cpu)
+    validation = read(directory / "CPU_VALIDATION.json")
+    if (
+        validation.get("status") != "PASS"
+        or validation.get("scope") != "CPU_TOY_TRANSPARENCY_AND_ORCHESTRATION"
+        or type(validation.get("tests_passed")) is not int
+        or validation["tests_passed"] <= 0
+        or validation.get("gpu_validation_performed") is not False
+        or type(validation.get("new_model_generations")) is not int
+        or validation["new_model_generations"] != 0
+        or type(validation.get("new_optimizer_steps")) is not int
+        or validation["new_optimizer_steps"] != 0
+        or validation.get("source_sha256")
+        != {name: row["sha256"] for name, (_, row) in sources.items()}
+    ):
+        fail("Observability validation must preserve its actual CPU-only evidence boundary")
+    path, expected = sources["instrumented_execution.py"]
+    source = path.read_bytes()
+    if len(source) != expected["bytes"] or hashlib.sha256(source).hexdigest() != expected["sha256"]:
+        fail("Observability launcher changed before import")
+    name = "srf3_delivery_observability_" + digest([str(path), expected["sha256"]])
+    module = importlib.util.module_from_spec(importlib.util.spec_from_file_location(name, path))
+    sys.modules[name] = module
+    # Execute this validated buffer. A loader may reread the path or use an unbound .pyc,
+    # including an unchecked-hash cache even when sys.dont_write_bytecode is true.
+    exec(compile(source, str(path), "exec"), module.__dict__)
+    module.verify_extension(root, selected, science=True)
+    controller = module.install(root, selected)
+    if (
+        api.orchestration.Controller is not controller
+        or controller.__name__ != "InstrumentedController"
+    ):
+        fail("Verified observability Controller was not installed for real terminal validation")
+    return SimpleNamespace(
+        module=module,
+        manifest_path=selected,
+        controller=controller,
+        identity=dict(
+            manifest_path=matches[0],
+            manifest_sha256=sha_file(selected),
+            extension_commit=manifest["extension_commit"],
+            base_code_commit=manifest["base_code_commit"],
+            observer_source_sha256=sources["observe_runtime.py"][1]["sha256"],
+            amendment_sha256=sha_file(directory / "AMENDMENT.json"),
+            cpu_validation_sha256=sha_file(directory / "CPU_VALIDATION.json"),
+        ),
+    )
 
 
 def require_final_release(root, api):
     """No TEST content is opened before Controller's full terminal/receipt checks."""
     api.protocol.verify_run(root, science=True)
+    if getattr(api, "observability", None) is not None:
+        extension = api.observability
+        extension.module.verify_extension(root, extension.manifest_path, science=True)
+        if api.orchestration.Controller is not extension.controller:
+            fail("Observability Controller was replaced before task terminal verification")
     completed = api.endpoint_runner._completed(root)
     required = set(api.orchestration.TASKS)
     missing = required - completed
@@ -670,6 +778,11 @@ def render_report(
         "完整未解析类型和双审原件见 "
         "[UNRESOLVED_TYPES.jsonl.gz](UNRESOLVED_TYPES.jsonl.gz) 与 evidence/external。\n",
         "## 实际成本、重放与技术失败\n",
+        "前瞻观测按每个物理 worker attempt 保留 BEGIN/END、安装身份和 FINAL 回执。"
+        "实际 hook 计数只归当前最内层 runtime scope，model_hook_layers 不重复加入模型阶段计数。"
+        "父 scope 墙钟不与子 scope 累加，视觉时间与模型阶段时间为重叠轴，不能相加；"
+        "这些是主机回调时间，不是 GPU kernel 时间。缺 END、FINAL 或覆盖不完整的尝试标 UNKNOWN；"
+        "旧 ENGINE 没有回补观测或重跑，其缺失阶段成本仍未知。\n",
         "```json\n" + json.dumps(costs, ensure_ascii=False, indent=2) + "\n```\n",
         "UNKNOWN 表示账本未记录或无法无歧义汇总；没有据配置、申请时长或重复行推算 GPU 小时。"
         "失败尝试和重算仍保留，不能以成功样本成本替代实际成本。\n",
@@ -1127,7 +1240,320 @@ def scheduler_costs(root, *, execute=subprocess.run):
     ), raw
 
 
-def cost_summary(root):
+def summarize_observation_events(path, *, execution_binding=None, installation_id=None):
+    """Summarize actual innermost-scope hooks; never sum parent scope wall times."""
+    pending, seen, categories, issues = {}, set(), {}, []
+    identity_keys = (
+        "installation_id",
+        "runtime_id",
+        "scope_id",
+        "parent_scope_id",
+        "kind",
+        "purpose",
+        "protocol",
+        "pid",
+    )
+    stat_keys = {
+        "entered",
+        "returned",
+        "raised",
+        "unresolved",
+        "checkpoint_early_stop",
+        "input_batch_items",
+        "input_sequence_slots",
+        "input_element_slots",
+        "shape_unknown_calls",
+        "host_inclusive_ns",
+        "host_exclusive_ns",
+        "image_items",
+        "image_shape_unknown_calls",
+    }
+    parsed, ended = 0, 0
+    with path.open(encoding="utf-8") as stream:
+        for line in stream:
+            try:
+                row = loads(line)
+            except json.JSONDecodeError:
+                if line.endswith("\n") or stream.read(1):
+                    fail("Malformed observation event before file end")
+                issues.append("TRUNCATED_FINAL_EVENT")
+                break
+            if (
+                row.get("schema_version") != 1
+                or row.get("event") not in {"SCOPE_BEGIN", "SCOPE_END"}
+                or any(key not in row for key in identity_keys)
+                or any(
+                    not isinstance(row[key], str) or not row[key]
+                    for key in ("installation_id", "runtime_id", "scope_id")
+                )
+                or (
+                    row["parent_scope_id"] is not None
+                    and (not isinstance(row["parent_scope_id"], str) or not row["parent_scope_id"])
+                )
+                or type(row.get("time_unix_ns")) is not int
+                or row["time_unix_ns"] < 0
+                or type(row["pid"]) is not int
+                or row["pid"] <= 0
+            ):
+                fail("Observation event schema or physical identity differs")
+            if execution_binding is not None and row.get("execution_binding") != execution_binding:
+                fail("Observation event differs from its physical execution binding")
+            if installation_id is not None and row["installation_id"] != installation_id:
+                fail("Observation event differs from its installed observer identity")
+            parsed += 1
+            key = tuple(row[k] for k in ("installation_id", "runtime_id", "scope_id"))
+            if row["event"] == "SCOPE_BEGIN":
+                if key in seen:
+                    fail("Duplicate observation scope BEGIN")
+                if row["parent_scope_id"] is not None and not any(
+                    parent["installation_id"] == row["installation_id"]
+                    and parent["scope_id"] == row["parent_scope_id"]
+                    for parent in pending.values()
+                ):
+                    fail("Observation nested scope lacks its active parent BEGIN")
+                seen.add(key)
+                pending[key] = row
+                continue
+            begin = pending.pop(key, None)
+            if begin is None or any(begin[k] != row[k] for k in identity_keys):
+                fail("Observation END lacks its exact physical BEGIN identity")
+            elapsed = row.get("host_scope_elapsed_ns")
+            if (
+                row.get("outcome")
+                not in {"RETURNED", "RAISED", "INTERRUPTED", "CHECKPOINT_EARLY_STOP"}
+                or type(elapsed) is not int
+                or elapsed < 0
+                or row["time_unix_ns"] < begin["time_unix_ns"]
+                or row.get("coverage_status") not in {"COMPLETE", "UNKNOWN"}
+                or not isinstance(row.get("coverage_issues"), list)
+            ):
+                fail("Observation END outcome/coverage/timing schema differs")
+            ended += 1
+            category_key = encoded([row["kind"], row["purpose"], row["protocol"]]).decode()
+            category = categories.setdefault(
+                category_key,
+                dict(
+                    kind=row["kind"],
+                    purpose=row["purpose"],
+                    protocol=row["protocol"],
+                    ended_scopes=0,
+                    outcomes=Counter(),
+                    scope_host_elapsed_ns=dict(minimum=elapsed, maximum=elapsed),
+                    model_stages={},
+                    visual_stages={},
+                    unknown_coverage_scopes=0,
+                ),
+            )
+            category["ended_scopes"] += 1
+            category["outcomes"][row["outcome"]] += 1
+            for limit, function in (("minimum", min), ("maximum", max)):
+                category["scope_host_elapsed_ns"][limit] = function(
+                    category["scope_host_elapsed_ns"][limit], elapsed
+                )
+            if row["coverage_status"] == "UNKNOWN":
+                category["unknown_coverage_scopes"] += 1
+                issues.append("SCOPE_COVERAGE_UNKNOWN:" + row["scope_id"])
+            for axis in ("model_stages", "visual_stages"):
+                stages = row.get(axis)
+                if not isinstance(stages, dict):
+                    fail("Observation model/visual stage counters missing")
+                for stage, stats in stages.items():
+                    if (
+                        not isinstance(stats, dict)
+                        or stats.keys() != stat_keys
+                        or any(type(value) is not int or value < 0 for value in stats.values())
+                    ):
+                        fail("Observation stage counters must be known nonnegative integers")
+                    if stats["host_exclusive_ns"] > stats["host_inclusive_ns"]:
+                        fail("Exclusive host hook timing exceeds its inclusive interval")
+                    if stats.get("entered", 0) != sum(
+                        stats.get(name, 0)
+                        for name in ("returned", "raised", "unresolved", "checkpoint_early_stop")
+                    ):
+                        fail("Observation entered/returned/failure counter conservation differs")
+                    if stats.get("unresolved", 0):
+                        issues.append(
+                            "UNRESOLVED_HOOK:" + row["scope_id"] + ":" + axis + ":" + stage
+                        )
+                    aggregate = category[axis].setdefault(stage, Counter())
+                    aggregate.update(stats)
+            model_calls = sum(stats["entered"] for stats in row["model_stages"].values())
+            visual_calls = sum(stats["entered"] for stats in row["visual_stages"].values())
+            if (
+                row["coverage_status"] == "COMPLETE"
+                and row["outcome"] == "RETURNED"
+                and row["kind"] in {"generation", "teacher_forcing"}
+                and (not model_calls or (row.get("visual_expected") is True and not visual_calls))
+            ):
+                fail("Complete observed scope cannot replace missing model/visual hooks with zero")
+    if pending:
+        issues.append("SCOPES_WITHOUT_END")
+    return dict(
+        status="UNKNOWN" if issues else "COMPLETE_RECORDED_SCOPES",
+        parsed_events=parsed,
+        begun_scopes=len(seen),
+        ended_scopes=ended,
+        incomplete_scopes=[{k: value[k] for k in identity_keys} for value in pending.values()],
+        coverage_issues=issues,
+        by_kind_purpose_protocol=list(categories.values()),
+        count_attribution=(
+            "hooks belong only to their innermost runtime scope; model_hook_layers not added"
+        ),
+        timing_scope=(
+            "host callback timings, not GPU kernel time; parent scope wall times are not summed; "
+            "model/visual axes overlap and must not be added"
+        ),
+        shape_scope=(
+            "input/image slot counters cover known shapes only; unknown-shape counts retained"
+        ),
+    )
+
+
+def observability_costs(root, identity, required_tasks=()):
+    directory = root / "accounting/observability"
+    attempts, complete_tasks = [], set()
+    for attempt in sorted(directory.glob("*/*")):
+        if not attempt.is_dir():
+            continue
+        if identity is None:
+            fail("Observed costs require the explicitly verified frozen extension")
+        job_key, task_id = attempt.parent.name, attempt.name
+        job = root / "orchestration/jobs" / job_key
+        intent, state = read(job / "INTENT.json"), read(job / "STATE.json")
+        binding = dict(
+            experiment_id=EXPERIMENT,
+            run_identity_sha256=sha_file(root / "RUN_IDENTITY.json"),
+            execution_freeze_sha256=sha_file(root / "EXECUTION_FREEZE.json"),
+            extension_manifest_sha256=identity["manifest_sha256"],
+            amendment_sha256=identity["amendment_sha256"],
+            job_key=job_key,
+            job_id=state["job_id"],
+            task_id=task_id,
+            claim_id=intent["claim_id"],
+        )
+        if (
+            state.get("intent_sha256") != sha_file(job / "INTENT.json")
+            or intent.get("key") != job_key
+            or task_id not in intent["task_ids"]
+            or intent.get("extension_manifest_sha256") != identity["manifest_sha256"]
+            or intent.get("amendment_sha256") != identity["amendment_sha256"]
+            or task_id == "p0"
+            or task_id.startswith("engine--")
+            or (required_tasks and task_id not in required_tasks)
+        ):
+            fail("Observation attempt is not a registered prospective execution")
+        installed, final_path, events_path = (
+            attempt / name for name in ("INSTALLATION.json", "FINAL.json", "events.jsonl")
+        )
+        raw_sources = {
+            path: dict(
+                path="evidence/" + str(path.relative_to(root)),
+                sha256=sha_file(path),
+                bytes=path.stat().st_size,
+            )
+            for path in (installed, final_path, events_path)
+            if path.is_file()
+        }
+        observer = None
+        if installed.is_file():
+            installation = read(installed)
+            observer = installation.get("observer", {})
+            if (
+                installation.get("schema_version") != 1
+                or installation.get("status") != "INSTALLED"
+                or installation.get("execution_binding") != binding
+                or observer.get("observer_source_sha256") != identity["observer_source_sha256"]
+                or observer.get("old_engine_observed") is not False
+                or not observer.get("installation_id")
+            ):
+                fail("Observer installation identity differs from authenticated source/job")
+        summary = (
+            summarize_observation_events(
+                events_path,
+                execution_binding=binding,
+                installation_id=observer["installation_id"] if observer else None,
+            )
+            if events_path.is_file()
+            else dict(status="UNKNOWN", coverage_issues=["MISSING_EVENTS"])
+        )
+        result = dict(
+            job_key=job_key,
+            task_id=task_id,
+            job_id=state["job_id"],
+            scope="physical worker attempt",
+            observation_summary=summary,
+            events_path="evidence/" + str(events_path.relative_to(root)),
+            status="UNKNOWN",
+            missing_or_incomplete_final=True,
+            raw_sources=list(raw_sources.values()),
+        )
+        if final_path.is_file():
+            final = read(final_path)
+            event_record, snapshot = final.get("events", {}), final.get("observer_snapshot", {})
+            if (
+                observer is None
+                or summary["status"] != "COMPLETE_RECORDED_SCOPES"
+                or final.get("schema_version") != 1
+                or final.get("status") != "COMPLETE"
+                or final.get("execution_binding") != binding
+                or final.get("installation_sha256") != sha_file(installed)
+                or event_record.get("path") != str(events_path.relative_to(root))
+                or event_record.get("rows") != summary["parsed_events"]
+                or event_record.get("scope_begin") != summary["begun_scopes"]
+                or event_record.get("scope_end") != summary["ended_scopes"]
+                or snapshot.get("installation_id") != observer["installation_id"]
+                or snapshot.get("schema_version") != 1
+                or snapshot.get("sealed") is not True
+                or snapshot.get("active_scopes") != []
+                or snapshot.get("write_errors") != []
+                or snapshot.get("events_written", {}).get("SCOPE_BEGIN", 0)
+                != summary["begun_scopes"]
+                or snapshot.get("events_written", {}).get("SCOPE_END", 0) != summary["ended_scopes"]
+                or final.get("task_receipt_sha256")
+                != sha_file(root / "tasks" / task_id / "COMPLETE.json")
+            ):
+                fail("Final observation receipt does not certify its actual event stream/task")
+            check_file(events_path, event_record)
+            overhead = snapshot.get("observer_overhead_ns")
+            if not isinstance(overhead, dict) or any(
+                type(value) is not int or value < 0 for value in overhead.values()
+            ):
+                fail("Final observer overhead counters are invalid")
+            result.update(
+                status="COMPLETE_RECORDED_ATTEMPT",
+                missing_or_incomplete_final=False,
+                observer_overhead_ns=overhead,
+                final_receipt_write_cost=snapshot.get("final_receipt_write_cost", "UNKNOWN"),
+                final_path="evidence/" + str(final_path.relative_to(root)),
+                final_sha256=sha_file(final_path),
+            )
+            complete_tasks.add(task_id)
+        current_paths = {path for path in (installed, final_path, events_path) if path.is_file()}
+        if set(raw_sources) != current_paths:
+            fail("Observation attempt file set changed during delivery validation")
+        for path, record in raw_sources.items():
+            check_file(path, record)
+        attempts.append(result)
+    if set(required_tasks) - complete_tasks:
+        fail("Successful future tasks lack their verified observation completion receipts")
+    return dict(
+        status=(
+            "COMPLETE_RECORDED_ATTEMPTS"
+            if attempts and all(row["status"] == "COMPLETE_RECORDED_ATTEMPT" for row in attempts)
+            else "UNKNOWN"
+        ),
+        attempts=attempts,
+        completed_task_ids=sorted(complete_tasks),
+        old_engine="UNKNOWN: no retrospective hooks, timing reconstruction or engine replay",
+        scope="prospective worker hooks only; unfinished attempts remain UNKNOWN",
+        units="nanoseconds of host observation, never GPU kernel time",
+        nonadditivity=(
+            "parent scope times, model/visual axes and model_hook_layers must not be added"
+        ),
+    )
+
+
+def cost_summary(root, *, observation_identity=None, observation_task_ids=()):
     counts, per_task, forward_purposes = Counter(), defaultdict(Counter), defaultdict(Counter)
     for path in sorted((root / "accounting").glob("*.jsonl")):
         with path.open(encoding="utf-8") as stream:
@@ -1195,9 +1621,13 @@ def cost_summary(root):
             ),
         ),
         active_dispatcher_and_delivery_cpu_cost="UNKNOWN: active process has no final accounting",
+        prospective_observations=observability_costs(
+            root, observation_identity, observation_task_ids
+        ),
         image_encoding_time="UNKNOWN",
         image_encoder_call_count=(
-            "UNKNOWN: frozen runtime did not persist actual encoder-call counters"
+            "UNKNOWN for the whole experiment; prospective per-attempt hook counts "
+            "are reported separately"
         ),
         prefill_time="UNKNOWN",
         decode_time="UNKNOWN",
@@ -1573,6 +2003,11 @@ def verify_bound_archive(path, *, json_values, jsonl_values, sources, originals)
 
 def verify_cost_snapshot(root, snapshot, raw, current):
     """Recompute archived accounting without replacing its historical query time."""
+    for attempt in snapshot.get("prospective_observations", {}).get("attempts", []):
+        for record in attempt["raw_sources"]:
+            if not record["path"].startswith("evidence/accounting/observability/"):
+                fail("Observation cost source is outside its explicit ledger")
+            check_file(bounded(root, record["path"].removeprefix("evidence/")), record)
     dynamic = {"scheduler", "gpu_hours", "queue_seconds", "total_wall_seconds"}
     if {k: v for k, v in snapshot.items() if k not in dynamic} != {
         k: v for k, v in current.items() if k not in dynamic
@@ -1904,6 +2339,8 @@ def _external_receipt(output, checked, provenance, coverage):
         coverage=coverage,
         checks=checked["checks"],
     )
+    if "observability_extension" in provenance:
+        receipt["observability_extension"] = provenance["observability_extension"]
     _publish_bytes(Path(str(output) + ".verification.json"), encoded(receipt) + b"\n")
     _publish_bytes(
         Path(str(output) + ".sha256"), f"{receipt['archive']['sha256']}  {output.name}\n".encode()
@@ -1911,8 +2348,12 @@ def _external_receipt(output, checked, provenance, coverage):
     return receipt
 
 
-def _build(root, output, *, helper_manifest=None):
-    api = load_frozen_api(root)
+def _build(root, output, *, helper_manifest=None, extension_manifest=None):
+    api = (
+        load_frozen_api(root)
+        if extension_manifest is None
+        else load_frozen_api(root, extension_manifest=extension_manifest)
+    )
     receipts = require_final_release(root, api)
     helpers, helper_receipt = helper_sources(helper_manifest)
     provenance = dict(
@@ -1928,6 +2369,8 @@ def _build(root, output, *, helper_manifest=None):
             task: sha_file(root / "tasks" / task / "COMPLETE.json") for task in receipts
         },
     )
+    if getattr(api, "observability", None) is not None:
+        provenance["observability_extension"] = api.observability.identity
     dataset, store = api.runner.dataset_and_store(root)
     external_tasks, external_stores, panels, external_scorer = api.endpoint_runner._external(root)
     image_map = verify_images_and_types(root, api, dataset, store, external_tasks, external_stores)
@@ -2000,7 +2443,16 @@ def _build(root, output, *, helper_manifest=None):
     )
     prior = historical_status(root)
     signals = training_signal_index(root, dataset.runs)
-    costs, scheduler_cost_raw = cost_summary(root)
+    extension = getattr(api, "observability", None)
+    costs, scheduler_cost_raw = cost_summary(
+        root,
+        observation_identity=extension.identity if extension else None,
+        observation_task_ids=tuple(
+            task for task in receipts if task != "p0" and not task.startswith("engine--")
+        )
+        if extension
+        else (),
+    )
     report = render_report(
         analysis,
         external,
@@ -2182,14 +2634,16 @@ def _build(root, output, *, helper_manifest=None):
         writer.archive.close()
 
 
-def build(root, output, *, helper_manifest=None):
+def build(root, output, *, helper_manifest=None, extension_manifest=None):
     root, output = Path(root).resolve(strict=True), Path(output).resolve()
     if output.suffix != ".zip" or (
         output.is_relative_to(root) and not output.is_relative_to(root / "delivery")
     ):
         fail("Use a new .zip output outside sources, or below runroot/delivery")
     try:
-        return _build(root, output, helper_manifest=helper_manifest)
+        return _build(
+            root, output, helper_manifest=helper_manifest, extension_manifest=extension_manifest
+        )
     except BaseException as exc:
         output.parent.mkdir(parents=True, exist_ok=True)
         _publish_bytes(
@@ -2219,8 +2673,18 @@ def main(argv=None):
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--helper-manifest", type=Path)
+    parser.add_argument(
+        "--extension-manifest",
+        type=Path,
+        help="Must equal the unique extension manifest bound by the scientific freeze",
+    )
     args = parser.parse_args(argv)
-    result = build(args.root, args.output, helper_manifest=args.helper_manifest)
+    result = build(
+        args.root,
+        args.output,
+        helper_manifest=args.helper_manifest,
+        extension_manifest=args.extension_manifest,
+    )
     print(json.dumps(result, ensure_ascii=False))
 
 
