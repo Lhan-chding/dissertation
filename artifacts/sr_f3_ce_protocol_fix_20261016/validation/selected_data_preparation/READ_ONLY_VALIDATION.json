@@ -1,0 +1,118 @@
+{
+  "status": "READ_ONLY_CPU_EQUIVALENCE_PASS",
+  "selection_made": false,
+  "scientific_code_commit": "652e52d530520a276b6420ff0f4ee479dcde6db1",
+  "source_hashes": {
+    "src/sr_f3_ce/data.py": "ee369db6122a68231d338bfc0ee8fb7a9f6122f11159710945f3cb72156d8cf3",
+    "src/sr_f3_ce/rendering.py": "a1504554ed43de02f5e07ab98ac24127043a637c037faeb3e9c060a2b297542d",
+    "src/sr_f3_ce/preflight.py": "36129d288ec4ebc1cfdac270922ba87a4b0880d891892f3c177e973d48f0d11a",
+    "src/sr_f3_ce/prior_export.py": "f853ecfa949f25f9caf229a5f83b97d1bec58f60d380ba17362170ce4b713602",
+    "src/sr_f3_ce/protocol_revision.py": "640ec509894a47920b46143748cd19062479f223a7cf472641427c0b4371b7d6",
+    "src/sr_f3_ce/prompts.py": "5a5882b1b12c251579a045fd8045a810f36f3e3c24af104cdcde9c102725cfc1",
+    "src/sr_f3_ce/bootstrap.py": "48f39dc856b2600aaf81176023e1a3beab662e19a418d7f42d50ef47541a84a2",
+    "scripts/sr_f3_ce/prepare_data.py": "a7bbc32f6481b3007fd1f703f8dd27826cc54eb095dc889377092f661a3b49ea",
+    "scripts/sr_f3_ce/audit_parents.py": "f126e9352edb2446c61dedb82a2f5206fb12725078528e0c0a1985b55ed3a8b8",
+    "scripts/sr_f3_ce/export_prior.py": "f696c22162632807bca4a350655bf8f391df7326ff99f9bd331c700ff72293f6"
+  },
+  "old_run_identity_sha256": "3667107b1bb90a90ffa1401067f3d222e513eb2de842648d5dd59d7c3ff8a489",
+  "old_parent_audit_sha256": "0a4cf94a5983fb2998964f7ddfee6e56ba02f2f71bc8773e8b9889e4f49fd41f",
+  "old_parent_audit_package_sha256": "0e75e71f5e746cdb33a6d3254447a8224325efac966c4b34e5fa24eab41747bb",
+  "old_prior_source_audit_sha256": "44e99235d9bd64588fad1d1986a404943c4ac1a93096a641cc409696f7058a5d",
+  "old_prior_raw_export_sha256": "af442c7913ce3bee0f7155c3002ff28515827d37e84c64feb8d594f58ede9f9d",
+  "old_prior_raw_status": "MISSING",
+  "old_prior_raw_counts": {
+    "COMPLETE": 108,
+    "MISSING": 1
+  },
+  "prior_raw_missing_items": [
+    {
+      "available_numeric_roots": 16,
+      "available_questions": 32,
+      "item": "V0-V4_requested_at_least_32_numeric_roots",
+      "reason": "All historical registered questions are exported. The old panel has 16 numeric roots rendered as 32 questions; no new samples are generated.",
+      "requested_minimum_roots": 32,
+      "root_ids": [
+        "test_composition-0003",
+        "test_composition-0007",
+        "test_composition-0011",
+        "test_composition-0015",
+        "test_composition-0019",
+        "test_composition-0023",
+        "test_composition-0027",
+        "test_composition-0031",
+        "test_composition-0035",
+        "test_composition-0039",
+        "test_composition-0043",
+        "test_composition-0047",
+        "test_composition-0051",
+        "test_composition-0055",
+        "test_composition-0059",
+        "test_composition-0063"
+      ],
+      "status": "MISSING"
+    }
+  ],
+  "local_image_routes_hashed": 4096,
+  "local_unique_image_sha256": 2400,
+  "data_reuse_receipt_files": 6,
+  "visual_contact_sheets": 8,
+  "parent_copy_entries": 27,
+  "parent_file_actual_bytes_verified": 24,
+  "prior_source_copy_entries": 489,
+  "prior_source_actual_bytes_verified": 487,
+  "candidates": {
+    "v2": {
+      "status": "READ_ONLY_CPU_EQUIVALENCE_PASS",
+      "selected": false,
+      "package_manifest_sha256": "0cc171f574760917b07a1863a32c2ca131f9cba9f3692d4d85689ab7ae52ed4b",
+      "expected_frozen_data_audit_sha256": "9715e784490bf81d21674390c3d3cc65990648f0077053403a96d9bd958b6caa",
+      "expected_frozen_data_audit_bytes": 14834,
+      "tasks_checked": 4096,
+      "model_input_routes_checked": 4096,
+      "render_inputs_equal": 4096,
+      "fixed_spotchecks_equal": 48,
+      "visual_reviews_bound_to_unchanged_images": 48,
+      "historical_world_audit_equal": true,
+      "historical_unique_worlds": 901,
+      "historical_overlap_count": 0,
+      "model_calls": 0,
+      "render_calls": 0
+    },
+    "c2": {
+      "status": "READ_ONLY_CPU_EQUIVALENCE_PASS",
+      "selected": false,
+      "package_manifest_sha256": "f4df7c226fbeeea3716f9b5b49c11818cbedbe3d191c7cdc442bc287186fd5b0",
+      "expected_frozen_data_audit_sha256": "aeb37e548e551cab09a14419f08e8b38310faae6c790ee1e18414afcd9aa613c",
+      "expected_frozen_data_audit_bytes": 14831,
+      "tasks_checked": 4096,
+      "model_input_routes_checked": 4096,
+      "render_inputs_equal": 4096,
+      "fixed_spotchecks_equal": 48,
+      "visual_reviews_bound_to_unchanged_images": 48,
+      "historical_world_audit_equal": true,
+      "historical_unique_worlds": 901,
+      "historical_overlap_count": 0,
+      "model_calls": 0,
+      "render_calls": 0
+    }
+  },
+  "source_font": {
+    "path": "/System/Library/Fonts/Supplemental/Arial.ttf",
+    "sha256": "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9",
+    "bytes_distributed": false
+  },
+  "renderer_sha256": "a1504554ed43de02f5e07ab98ac24127043a637c037faeb3e9c060a2b297542d",
+  "model_calls": 0,
+  "model_weights_loaded": false,
+  "gpu_calls": 0,
+  "server_commands": 0,
+  "new_render_calls": 0,
+  "code_modified": false,
+  "warnings": [
+    "Remote file availability and bytes have not been reverified in this preparation task.",
+    "The historical world and visual receipts retain original provenance; no new visual review is claimed.",
+    "Local snapshot intentionally omits parent adapter weight bytes and some historical source copies; metadata-only rows need live hash verification.",
+    "No selected root has been initialized; neither candidate has been selected."
+  ],
+  "preparation_incident": "First inventory attempt stopped before publishing JSON because local prior/released/AUTHORIZATION.json is omitted from the preparation snapshot. Resolved by checking the byte-identical original packaged authorization anchor; omitted payloads remain marked HASH_METADATA_ONLY."
+}

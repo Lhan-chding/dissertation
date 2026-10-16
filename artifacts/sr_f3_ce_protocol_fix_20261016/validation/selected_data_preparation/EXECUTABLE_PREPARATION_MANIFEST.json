@@ -1,0 +1,50 @@
+{
+  "status": "EXECUTABLE_ARTIFACT_PREPARATION_READY_NOT_EXECUTED",
+  "revision": "exact_code_tree_guard",
+  "utc": "2026-10-16T08:48:17.639553+00:00",
+  "scientific_code_commit": "652e52d530520a276b6420ff0f4ee479dcde6db1",
+  "original_preparation_manifest_sha256": "db5a892d3c5afd175b4634ad75a1d87d3da0bdabe1d8e26f7b23bbfb5a0cf375",
+  "original_preparation_manifest_unchanged": true,
+  "files": [
+    {
+      "path": "prepare_selected_data.py",
+      "sha256": "0d4bf63a9f5ca6c40e779ead0ff3973c2811839b01738ce43490db2c68938a16",
+      "bytes": 18890
+    },
+    {
+      "path": "verify_parent_prior.py",
+      "sha256": "7ffeae97b13561eb7084aabf5867f8a8cba1cd84642b5ccfd2fba6ade7a61736",
+      "bytes": 4665
+    },
+    {
+      "path": "EXECUTABLE_VALIDATION.json",
+      "sha256": "378a78ca3a682ddd75f54db812fc47cf4e274b79dbaab9798f7db08a8a319843",
+      "bytes": 5214
+    },
+    {
+      "path": "EXECUTABLE_USAGE_zh.md",
+      "sha256": "c5bc55c193e658f84cb3e24a56880df9315cb520257b8ef471f5aff2a9c6d69e",
+      "bytes": 4474
+    }
+  ],
+  "validation": {
+    "ast_scripts": 2,
+    "mocked_allocation_guard_cases": 14,
+    "synthetic_exact_tree_cases": 14,
+    "authenticated_context_rejects_extra_before_science_import": true,
+    "cli_help_pass": 2,
+    "cli_outside_slurm_refused": 2,
+    "ruff_check": "PASS",
+    "ruff_format": "PASS"
+  },
+  "superseded_execution_manifest": {
+    "path": "history_before_exact_code_tree_guard/EXECUTABLE_PREPARATION_MANIFEST.json",
+    "sha256": "b192d8e0c5c6550477ac857ae8501c0c1399f3bf82e3537af4c036df6b863fec"
+  },
+  "real_selected_root_execution": false,
+  "real_slurm_queries": 0,
+  "model_calls": 0,
+  "server_operations": 0,
+  "scientific_source_modified": false,
+  "git_modified_by_this_task": false
+}

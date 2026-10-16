@@ -1,0 +1,36 @@
+{
+  "evidence_origin": {
+    "actual_prior_passed": 687,
+    "existing_652_full_suite": {
+      "bytes": 761,
+      "path": "artifacts/sr_f3_ce_protocol_fix_20261016/deployment/LOCAL_CHECKS.json",
+      "sha256": "84b301b083ba341b677016f319e42bca028dc430f60fdf703ed008f02bdbf077"
+    },
+    "raw_output": {
+      "bytes": 831,
+      "path": "artifacts/sr_f3_ce_protocol_fix_20261016/deployment/LOCAL_TEST_OUTPUT.txt",
+      "sha256": "ef85381c9d0f07257ae508b2f395610409a29b153ef2f2048724c751c8fe6211"
+    },
+    "source_validation": {
+      "bytes": 7773,
+      "path": "artifacts/sr_f3_ce_protocol_fix_20261016/deployment/LOCAL_VALIDATION.json",
+      "sha256": "63644ca77c1db585a4f49c21d461a5f4a698dd9f75a66afb0c248c8194e4ee36"
+    },
+    "use_condition": "All source hashes equal the tested 652 archive; preserve original time/command/environment. Fill numeric tests_passed only after validating the actual original raw output or fresh CPU test result; this template is not a new GPU test."
+  },
+  "gpu_validation_performed": false,
+  "new_model_generations": 0,
+  "new_optimizer_steps": 0,
+  "scope": "CPU_TOY_TRANSPARENCY_AND_ORCHESTRATION",
+  "source_sha256": {
+    "docs/OBSERVABILITY.md": "5c40dceed6fbe3f73c700653d1de89258985542f15f92ba61fe2b7cfe819901c",
+    "docs/OBSERVABILITY_EXECUTION.md": "665c686cfa5ac404f380848583687b0a999a362286a8c5a66c7369087073568a",
+    "instrumented_execution.py": "0fa1234eafdc801e99e78d5c2cd3859bbc4f65c2dd0ef92375a369e4ae41d897",
+    "observe_runtime.py": "d5ed2cd1fde2742a10fe0e2033599b574e88d3df48b281ef0b8de122eeaf5a19",
+    "tests/test_dispatch_registered.py": "f8e3445ccef254b17eb92fe03d3ea4cab773285c2e7ec861379d30597d9ae05c",
+    "tests/test_instrumented_execution.py": "fe6cee7d5e2f2cbe0128162c33a946821a7d5ded8a4d198acb9aee4121285af8",
+    "tests/test_observability.py": "7461fd4659551c5eb71ff74759c20277b43568714f8f66f7a4bca86fa84a6454"
+  },
+  "status": "PASS",
+  "tests_passed": "<ACTUAL_POSITIVE_INTEGER_FROM_RETAINED_CPU_TEST_EVIDENCE>"
+}

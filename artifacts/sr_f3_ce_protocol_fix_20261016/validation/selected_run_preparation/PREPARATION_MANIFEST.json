@@ -1,0 +1,130 @@
+{
+  "created_at": "2026-10-16T08:54:12.218914+00:00",
+  "data_preparation_manifests": [
+    {
+      "bytes": 1171,
+      "path": "selected_data_preparation/PREPARATION_MANIFEST.json",
+      "sha256": "db5a892d3c5afd175b4634ad75a1d87d3da0bdabe1d8e26f7b23bbfb5a0cf375"
+    },
+    {
+      "bytes": 1748,
+      "path": "selected_data_preparation/EXECUTABLE_PREPARATION_MANIFEST.json",
+      "sha256": "878790450c7194832d72be9ea280af6e01c045db9e97ba959545e53f305becec"
+    }
+  ],
+  "entrypoints": {
+    "full_runbook": "SELECTED_RUN_DEPLOYMENT_zh.md",
+    "helper": "prepare_selected_run.py",
+    "initializer": "initialize_selected.sh",
+    "usage": "EXECUTABLE_USAGE_zh.md"
+  },
+  "execution_conditions": [
+    "Real complete verify_selection must return PROTOCOL_SELECTED on original ablation root",
+    "Original source manifest and all 2687 scientific code files must match 652 exact tree",
+    "Actual current CPU Slurm RUNNING allocation; account rose, frozen teacher QoS, cluster02/cpu-2, zero GPUs, -LH name",
+    "static must create a never-before-existing selected sibling; no partial overwrite or automatic retry",
+    "Data, parent, prior, native preparation and original 4146 typed publication use only existing audited APIs",
+    "Entire initialization job must reach actual COMPLETED/0:0 before new P0 submission",
+    "All new P0 plus four ENGINE jobs must complete before AMENDMENT/EXECUTION_FREEZE and science"
+  ],
+  "files": [
+    {
+      "bytes": 3358,
+      "path": "BOUND_FILES_POLICY.json",
+      "sha256": "3d1a12445e16118dba056e2172033db16adeabeb5a8d0bfa4f49682a48f16601"
+    },
+    {
+      "bytes": 1995,
+      "path": "CPU_VALIDATION.template.json",
+      "sha256": "4900729fb8f2a7873da105e538e7244733cc695a84f49e8ce55c8f9e89b04842"
+    },
+    {
+      "bytes": 3555,
+      "path": "EXECUTABLE_USAGE_zh.md",
+      "sha256": "0e084eb99f7e65c53008d5b638b6e2e3eb7102ea04363292929713bdf82680d8"
+    },
+    {
+      "bytes": 1247799,
+      "path": "EXTERNAL_COPY_ALLOWLIST.json",
+      "sha256": "04cd34a848e315f068be75d4351643d6f79bff357469f463c14d9726564c31ae"
+    },
+    {
+      "bytes": 3234,
+      "path": "EXTERNAL_READONLY_VALIDATION.json",
+      "sha256": "a0375a9a5827c004ec7d37371caee5f9017a13360aaefe6cdebecbd4e1005d97"
+    },
+    {
+      "bytes": 2244,
+      "path": "OBSERVABILITY_SOURCE_MANIFEST.template.json",
+      "sha256": "be72b6626859a01e83f21cf4fd6ac5ca766638ebe28661a98dc9653a08e59319"
+    },
+    {
+      "bytes": 4586,
+      "path": "OPERATIONS_SCHEMA.json",
+      "sha256": "87c3d351e041c9b7c6619042499e0419d6e2d9fd46e4c14a7deeb640594d6e11"
+    },
+    {
+      "bytes": 1967,
+      "path": "PREPARATION_VALIDATION.json",
+      "sha256": "2e0f584094ce7343f16315ce4fe17ce0fe21704203ff38711ce946240e741a66"
+    },
+    {
+      "bytes": 3208,
+      "path": "RUN_IDENTITY.template.json",
+      "sha256": "30158d7123c0a8835a4fac8a5279d4e24ed974c25c06556830fe14de493cdc16"
+    },
+    {
+      "bytes": 24369,
+      "path": "SELECTED_RUN_DEPLOYMENT_zh.md",
+      "sha256": "7bfb5feca6a388135980aeb6852d87c5860175e2d533aa5b0ab96090ad760ac5"
+    },
+    {
+      "bytes": 2047,
+      "path": "TYPE_REVIEW_REUSE_RECEIPT.template.json",
+      "sha256": "50713dc8af3541c0e62abb3d9fa55c1f590c9d503c38252949376d9406e6a20f"
+    },
+    {
+      "bytes": 2934,
+      "path": "initialize_selected.sh",
+      "sha256": "a1bc3ee1ac3e0a85ddcd9c3070305e814711f8ef7080ba8810bee15cba0d955d"
+    },
+    {
+      "bytes": 30761,
+      "path": "prepare_selected_run.py",
+      "sha256": "61371993842b662bee8d8c4cb2d224b2c2dcb3759dcea20749e2fc86849d7df4"
+    },
+    {
+      "bytes": 6937,
+      "path": "test_prepare_selected_run.py",
+      "sha256": "b25640ae1a51cfd84346574d36a020606329531a98a55eefcef51f275a5bc952"
+    },
+    {
+      "bytes": 11973,
+      "path": "verify_existing_external.py",
+      "sha256": "400beb1354d97506afa1948e13f1b5f1bc2cee53e24f6a59a2266c6ba714a6b4"
+    }
+  ],
+  "historical_evidence": {
+    "local_external_files_verified": 1785,
+    "new_human_review": false,
+    "original_blind_questions_validated": 2756,
+    "resolved": 85,
+    "unresolved": 2671
+  },
+  "new_model_calls": 0,
+  "protocol_selection_made_by_this_preparation": false,
+  "scientific_code_commit": "652e52d530520a276b6420ff0f4ee479dcde6db1",
+  "selected_root_created": false,
+  "server_operations": 0,
+  "source_code_modified": false,
+  "status": "PREPARATION_READY_NOT_SERVER_EXECUTED",
+  "verification": {
+    "bash_documentation_blocks": 9,
+    "external_readonly_validation": "EXTERNAL_READONLY_VALIDATION.json",
+    "local_cpu_tests": 18,
+    "python_heredocs_ast": 4,
+    "ruff": "PASS",
+    "ruff_format": "PASS",
+    "scope": "No full new-root server publication, GPU/native execution, or scientific completion is claimed."
+  }
+}

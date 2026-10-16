@@ -1,0 +1,49 @@
+{
+  "annotation_scope_sha256": "692d36a065543555179e63d0454ec438115fe00227c75932bf5d152578c3fa48",
+  "cpu_allocation_receipt": "<ACTUAL_PATH_AND_SHA256>",
+  "cpu_terminal_receipt": "<ACTUAL_COMPLETED_0_0_PATH_AND_SHA256>",
+  "experiment_id": "SR-F3-CE-20261016",
+  "input_equivalence_receipt": {
+    "path": "protocol_revision/EXTERNAL_INPUT_REUSE.json",
+    "sha256": "<ACTUAL_SHA256>"
+  },
+  "meaning": "The original two blind judgments and full original evidence are preserved. This run republishes those same judgments after exact visible-input equivalence checks; it does not claim a new independent human audit.",
+  "model_calls": 0,
+  "new_human_review": false,
+  "new_model_outputs": 0,
+  "new_publication": {
+    "path": "external/revisions/typed_v1/PUBLICATION.json",
+    "sha256": "<ACTUAL_SHA256>"
+  },
+  "new_root": "<CANONICAL_NEW_SELECTED_ROOT>",
+  "new_type_audit": {
+    "code_commit": "652e52d530520a276b6420ff0f4ee479dcde6db1",
+    "path": "external/revisions/typed_v1/TYPE_AUDIT_RECEIPT.json",
+    "sha256": "<ACTUAL_SHA256>"
+  },
+  "original_review_attestations_unchanged": true,
+  "original_review_files": {
+    "REVIEW_A.json": "ee2873e7677263a2c69c65c278f4ddc0b1714aa338028d890824d8b726ae18dd",
+    "REVIEW_B.json": "993525e489a2ce4db8ed05775d43a355bb741d23e2de495c829d9a9e662d1e20"
+  },
+  "original_review_limitations_preserved": true,
+  "original_review_root": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_20261016",
+  "original_type_audit_sha256": "965130c5484556b997706b1479d8717c29ce8202f43fa1993c8e42a3f5f14269",
+  "protocol_revision": "<EXACT_SELECTED_REVISION_v2_OR_c2>",
+  "protocol_selection_sha256": "<SHA256_OF_ORIGINAL_COMPLETE_SELECTION_BYTES>",
+  "run_identity_sha256": "<NEW_RUN_IDENTITY_SHA256>",
+  "schema_version": 1,
+  "status": "ORIGINAL_BLIND_REVIEW_REPUBLISHED_FOR_IDENTICAL_VISIBLE_INPUTS",
+  "summary": {
+    "CHARTQA": {
+      "resolved": 62,
+      "unresolved": 2438
+    },
+    "CHARTQAPRO": {
+      "resolved": 23,
+      "unresolved": 233
+    },
+    "resolved": 85,
+    "unresolved": 2671
+  }
+}

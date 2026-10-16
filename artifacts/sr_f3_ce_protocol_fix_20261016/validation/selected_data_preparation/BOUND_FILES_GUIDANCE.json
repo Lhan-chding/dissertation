@@ -1,0 +1,46 @@
+{
+  "scope": "Data/parents/prior entries only; revision_ops supplies plan/source/selection/native/external/ops binding",
+  "must_bind_by_current_bytes": [
+    "data/HISTORICAL_COVERAGE_CHAIN.json",
+    "data/HISTORICAL_WORLD_AUDIT.json",
+    "data/IMAGE_MANIFEST.jsonl",
+    "data/RENDER_AUDIT.json",
+    "data/SEMANTIC_RENDER_SPOTCHECK.json",
+    "data/VISUAL_SPOTCHECK_REVIEW.json",
+    "data/FROZEN_DATA_AUDIT.json",
+    "data/PREPARE_DATA_RECEIPT.json",
+    "data/PROTOCOL_REVISION_REUSE.json",
+    "parents/PARENT_AUDIT.json",
+    "prior/MODEL_ENVIRONMENT_IDENTITY.json"
+  ],
+  "recommended_small_provenance_bindings": [
+    "prior/SOURCE_AUDIT.json",
+    "prior/BASE_ENVIRONMENT_AUDIT.json",
+    "prior/HISTORICAL_IMAGES.json",
+    "prior/LEGACY_IMAGE_COPY.json",
+    "prior/RAW_EXPORT.json"
+  ],
+  "optional_bulk_inventory_bindings": [
+    "prior/raw/FILE_MANIFEST.json"
+  ],
+  "avoid_using_bulk_record_index_as_frequently_rehashed_run_bound_file": {
+    "path": "prior/raw/RECORD_INDEX.jsonl",
+    "bytes": 234915563,
+    "reason": "RAW_EXPORT already binds this index; per-task verify_run would rehash 234.9 MB repeatedly if added directly."
+  },
+  "copied_data_hashes": {
+    "data/HISTORICAL_WORLD_AUDIT.json": "38e0fd2db25325ea5213f23925223a3157e1bea1a6243068dd47eb74804b353d",
+    "data/HISTORICAL_COVERAGE_CHAIN.json": "eac594c462e60bdd4aa41ca406d8632ea88cbfe1d69400bd812680c03041c3da",
+    "data/IMAGE_MANIFEST.jsonl": "370908b04920df2780952844bdb591d7bd55b9ea0da14792f423595cc2b6e65c",
+    "data/RENDER_AUDIT.json": "ff581f93c2d7716a45ca49835103f18f4fa51028d6340187e9e084fb676b025e",
+    "data/SEMANTIC_RENDER_SPOTCHECK.json": "13b6d5645910c0bab0c618494967a7d8dfd927c791f7b9279d7c76fa290641d9",
+    "data/VISUAL_SPOTCHECK_REVIEW.json": "88b768260ae27e082d18bee5aaa342d18e404b4865adc79f4f2dbfe634e213f3"
+  },
+  "candidate_frozen_data_audit_sha256": {
+    "v2": "9715e784490bf81d21674390c3d3cc65990648f0077053403a96d9bd958b6caa",
+    "c2": "aeb37e548e551cab09a14419f08e8b38310faae6c790ee1e18414afcd9aa613c"
+  },
+  "parent_environment_identity_sha256": "256bb6b24510d9461e791e8ab0ae9508ca2f2a30c49937dc8a3c9919af6c3510",
+  "parents_new_receipt_condition": "Fresh audit must match old receipt except package_manifest_sha256, whose value must equal the selected candidate PACKAGE_SHA256 file hash.",
+  "prior_new_raw_receipt_condition": "Fresh export must match old receipt except parent_audit_sha256, whose value must equal the freshly generated new PARENT_AUDIT file hash. Preserve historical MISSING status and 108 COMPLETE/1 MISSING counts if unchanged."
+}

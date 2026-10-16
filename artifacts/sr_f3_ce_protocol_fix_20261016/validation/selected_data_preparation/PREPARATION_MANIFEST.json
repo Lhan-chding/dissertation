@@ -1,0 +1,38 @@
+{
+  "status": "READ_ONLY_PREPARATION_READY",
+  "utc": "2026-10-16T08:32:40.285933+00:00",
+  "executed_commands_in_steps": false,
+  "selection_made": false,
+  "server_operations": 0,
+  "model_calls": 0,
+  "source_code_modified": false,
+  "scientific_source_commit": "652e52d530520a276b6420ff0f4ee479dcde6db1",
+  "source_hashes_unchanged_during_preparation": true,
+  "documentation_validation": {
+    "bash_blocks_syntax_checked": 5,
+    "python_heredoc_blocks_ast_parsed": 2,
+    "allowlist_safe_unique_required_paths": 4102
+  },
+  "files": [
+    {
+      "path": "BOUND_FILES_GUIDANCE.json",
+      "bytes": 2572,
+      "sha256": "3ddae994d39a3bf054ae3cb1c19732344cc8db96f4b0a975525861935817cf2c"
+    },
+    {
+      "path": "COPY_ALLOWLIST.json",
+      "bytes": 1509953,
+      "sha256": "761cc753e5c3173511c73a7c245af381cac8956f92f67d5f5e07c4bd3dad2ca1"
+    },
+    {
+      "path": "READ_ONLY_VALIDATION.json",
+      "bytes": 5721,
+      "sha256": "008a5d8f9a8b126173dd92640d101b93abad36b5700355aec0f69cd1a8390fcd"
+    },
+    {
+      "path": "STEPS_zh.md",
+      "bytes": 18591,
+      "sha256": "286ed979780498a15189d67d4ee7a966563c4d070aab33df575621dbe7d1ba19"
+    }
+  ]
+}

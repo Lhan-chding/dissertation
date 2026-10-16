@@ -1,0 +1,76 @@
+{
+  "bulk_rehash_policy": "Use manifest/receipt hash chains; do not add 234.9 MB prior/raw/RECORD_INDEX.jsonl or 219.3 MB history archive to each frequent RUN_IDENTITY verification. bootstrap explicitly binds the history archive in EXECUTION_FREEZE.",
+  "data_guidance": {
+    "bytes": 2572,
+    "path": "artifacts/sr_f3_ce_protocol_fix_20261016/validation/selected_data_preparation/BOUND_FILES_GUIDANCE.json",
+    "sha256": "3ddae994d39a3bf054ae3cb1c19732344cc8db96f4b0a975525861935817cf2c"
+  },
+  "data_preparation_manifest": {
+    "bytes": 1171,
+    "path": "artifacts/sr_f3_ce_protocol_fix_20261016/validation/selected_data_preparation/PREPARATION_MANIFEST.json",
+    "sha256": "db5a892d3c5afd175b4634ad75a1d87d3da0bdabe1d8e26f7b23bbfb5a0cf375"
+  },
+  "do_not_bind_before_typed_publication": [
+    "external/PANELS.json"
+  ],
+  "expand_from_verified_receipts": [
+    "all new native/support_masks/*.json referenced by SUPPORT_MASK_RECEIPT",
+    "original REVIEW_A.json/REVIEW_B.json and reviewer_evidence manifests under protocol_revision/type_review_v1",
+    "new initialization CPU INTENT/ALLOCATION_VERIFIED/RELEASE/TERMINAL and exact executed command/script/output files; never include actively changing logs"
+  ],
+  "guard_required_paths": [
+    "deployment/SOURCE_MANIFEST.json",
+    "authorization/REQUEST.md",
+    "PROTOCOL_SELECTION.json"
+  ],
+  "hash_definition": "SHA256 of file bytes; distinct from canonical object hash",
+  "identity_immutable_after_creation": true,
+  "never_create_identity_hash_cycles": [
+    "RUN_IDENTITY.json",
+    "orchestration/CONFIG.json",
+    "external/revisions/typed_v1/TYPE_AUDIT_RECEIPT.json",
+    "external/revisions/typed_v1/PUBLICATION.json",
+    "external/TYPE_REVIEW_REUSE_RECEIPT.json",
+    "native/observability/<commit>/SOURCE_MANIFEST.json",
+    "native/observability/<commit>/AMENDMENT.json",
+    "operations/<commit>/OPERATION_IDENTITY.json",
+    "tasks/*/COMPLETE.json",
+    "EXECUTION_FREEZE.json"
+  ],
+  "post_identity_outputs_frozen_by_execution_freeze": [
+    "native observability SOURCE_MANIFEST/CPU_VALIDATION/AMENDMENT",
+    "new typed publication and explicit external/TYPE_REVIEW_REUSE_RECEIPT.json",
+    "new P0 and four ENGINE COMPLETE receipts"
+  ],
+  "proposed_stable_paths": [
+    "NATIVE_AUDIT_SOURCE.json",
+    "PROTOCOL_SELECTION.json",
+    "authorization/REQUEST.md",
+    "data/FROZEN_DATA_AUDIT.json",
+    "data/HISTORICAL_COVERAGE_CHAIN.json",
+    "data/HISTORICAL_WORLD_AUDIT.json",
+    "data/IMAGE_MANIFEST.jsonl",
+    "data/PREPARE_DATA_RECEIPT.json",
+    "data/PROTOCOL_REVISION_REUSE.json",
+    "data/RENDER_AUDIT.json",
+    "data/SEMANTIC_RENDER_SPOTCHECK.json",
+    "data/VISUAL_SPOTCHECK_REVIEW.json",
+    "deployment/INPUT_COPY_RECEIPT.json",
+    "deployment/LOCAL_CHECKS.json",
+    "deployment/LOCAL_TEST_OUTPUT.txt",
+    "deployment/LOCAL_VALIDATION.json",
+    "deployment/SOURCE_MANIFEST.json",
+    "native/PROCESSOR_RECEIPT.json",
+    "native/SUPPORT_MASK_RECEIPT.json",
+    "parents/PARENT_AUDIT.json",
+    "plan/PROTOCOL_REVISION.json",
+    "prior/BASE_ENVIRONMENT_AUDIT.json",
+    "prior/HISTORICAL_IMAGES.json",
+    "prior/LEGACY_IMAGE_COPY.json",
+    "prior/MODEL_ENVIRONMENT_IDENTITY.json",
+    "prior/RAW_EXPORT.json",
+    "prior/SOURCE_AUDIT.json",
+    "protocol_revision/EXTERNAL_INPUT_REUSE.json"
+  ],
+  "status": "PREPARATION_TEMPLATE_NOT_REGISTERED"
+}

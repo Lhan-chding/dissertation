@@ -1,0 +1,89 @@
+{
+  "annotation_scope_sha256": "692d36a065543555179e63d0454ec438115fe00227c75932bf5d152578c3fa48",
+  "annotation_set_function": "unchanged_4146_finalizer.annotation_set",
+  "chartqapro_history_byte_and_pixel_exclusion_verified": true,
+  "chartqapro_parquet": "SERVER_ONLY_REQUIRED_NOT_READ_OR_DOWNLOADED",
+  "checked_scientific_source_files": 2687,
+  "current_HEAD_documentation_and_added_dispatcher_not_substituted_into_scientific_archive": true,
+  "current_imported_src_and_finalizer_match_frozen_manifest": true,
+  "finalizer": {
+    "bytes": 28769,
+    "path": "scripts/sr_f3_ce/finalize_external_types.py",
+    "sha256": "1a75df6bf5fa1c0ef22a23ee7fd766a8e22f5a1c6c1fe7d579c4ab6135106aaf"
+  },
+  "full_new_run_publication_tested": false,
+  "history_receipt": {
+    "bytes": 1779264,
+    "path": "artifacts/sr_f3_ce_20261016/engine_gate_audit_20261016/preparation_snapshot/prior/HISTORICAL_IMAGES.json",
+    "sha256": "6a886c43e8770a691d3bcce4f647ed5345cc1a2c345d99878a37b0ac216ef1a3"
+  },
+  "local_external_input_files_verified": 1785,
+  "merged_summary": {
+    "CHARTQA": {
+      "questions": 2500,
+      "status_counts": {
+        "RESOLVED": 62,
+        "UNRESOLVED": 2438
+      },
+      "type_counts": {
+        "COUNT_INT": 20,
+        "UNRESOLVED": 2438,
+        "YEAR": 42
+      }
+    },
+    "CHARTQAPRO": {
+      "questions": 256,
+      "status_counts": {
+        "RESOLVED": 23,
+        "UNRESOLVED": 233
+      },
+      "type_counts": {
+        "COUNT_INT": 17,
+        "UNRESOLVED": 233,
+        "YEAR": 6
+      }
+    }
+  },
+  "new_human_review": false,
+  "new_model_calls": 0,
+  "new_run_created": false,
+  "original_review_evidence": {
+    "A": {
+      "bytes": 35935750,
+      "files": 36,
+      "manifest_sha256": "8640847851f2ec0d0de296e51620b11febcd1729b6f902fdcd625f4b88e56e0d"
+    },
+    "B": {
+      "bytes": 31493187,
+      "files": 55,
+      "manifest_sha256": "d119bc9875d4aafca758e5d1aa5df4f9d3fa2831b70605d959ac3857ef8c648e"
+    }
+  },
+  "original_review_files": {
+    "REVIEW_A.json": {
+      "bytes": 6934210,
+      "path": "artifacts/sr_f3_ce_20261016/engine_gate_audit_20261016/snapshot/external/revisions/typed_v1/REVIEW_A.json",
+      "sha256": "ee2873e7677263a2c69c65c278f4ddc0b1714aa338028d890824d8b726ae18dd"
+    },
+    "REVIEW_B.json": {
+      "bytes": 5079810,
+      "path": "artifacts/sr_f3_ce_20261016/engine_gate_audit_20261016/snapshot/external/revisions/typed_v1/REVIEW_B.json",
+      "sha256": "993525e489a2ce4db8ed05775d43a355bb741d23e2de495c829d9a9e662d1e20"
+    }
+  },
+  "pixel_identity_verified": true,
+  "protocol_selection_read": false,
+  "publication_limit": "New-root verify_run, exact v0 rebuild, Slurm allocation and 4146 --publish remain future checks",
+  "review_original_bytes_unchanged": true,
+  "scientific_commit": "652e52d530520a276b6420ff0f4ee479dcde6db1",
+  "source_archive_verified_exact": true,
+  "source_manifest": {
+    "bytes": 516461,
+    "path": "artifacts/sr_f3_ce_protocol_fix_20261016/deployment/SOURCE_MANIFEST.json",
+    "sha256": "dae3a506dda4fffee8da0e25a3e0881f4b45fa3259342c4160ecd0c09e03c9e0"
+  },
+  "status": "PASS_READONLY_EXISTING_EVIDENCE",
+  "unique_chartqa_image_files": 1509,
+  "unique_chartqapro_image_files": 256,
+  "visible_questions": 2756
+}

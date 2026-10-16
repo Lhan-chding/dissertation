@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "status": "LOCAL_CPU_VALIDATED",
+  "checked_at": "2026-10-16 08:51:10 UTC",
+  "scientific_source_commit": "652e52d530520a276b6420ff0f4ee479dcde6db1",
+  "audited_dispatcher_commit": "7551617b2c3fa6c958be87059119d78a604580f6",
+  "audited_dispatcher_sha256": "617e1809399ba86758883e132bc18657088ca10a788e3e7318214acb44d61fea",
+  "files": [
+    {
+      "path": "RUNBOOK.md",
+      "sha256": "bbc356301b8da74bd20d1d91650962c345293e6dcb99cc5e6d500ac4841946af",
+      "bytes": 4445
+    },
+    {
+      "path": "submit_selected_init.py",
+      "sha256": "a879bd07da624f27c6c71ac7fc2dbf2608c3d146f9b78f0157f096ccb2c615cc",
+      "bytes": 20140
+    },
+    {
+      "path": "test_submit_selected_init.py",
+      "sha256": "3e1c76ed50b80f20924f39f170798e7dd099d46922cdea61277e7e1bef6922e6",
+      "bytes": 15347
+    }
+  ],
+  "checks": {
+    "launcher_tests": 28,
+    "frozen_dispatcher_tests": 43,
+    "combined_passed": 71,
+    "combined_duration_seconds": 0.82,
+    "ruff_check": "PASS",
+    "ruff_format": "PASS"
+  },
+  "test_command": "PYTHONPATH=src PYTHONDONTWRITEBYTECODE=1 /Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python -m pytest -q -p no:cacheprovider artifacts/sr_f3_ce_protocol_fix_20261016/deployment/selected_cpu_launcher/test_submit_selected_init.py tests/sr_f3_ce/test_protocol_ablation_dispatch.py",
+  "boundaries": {
+    "server_calls": 0,
+    "real_slurm_calls": 0,
+    "model_calls": 0,
+    "gpu_calls": 0,
+    "scientific_source_changed": false,
+    "git_committed": false,
+    "git_pushed": false,
+    "proof_scope": "Local fake-Slurm and frozen resource/source guards; no claim that selected CPU preparation has run."
+  },
+  "compatibility": {
+    "actual_payload_shebang": "#!/usr/bin/env bash",
+    "fixed_execution": [
+      "/bin/bash",
+      "<registered immutable payload>"
+    ],
+    "cpu_job_name": "SRF3CE-SELECTED-INIT-LH",
+    "qos": "soujanya-poria-startfund-2026-03",
+    "fresh_selected_directory_created_by": "Registered payload static phase only",
+    "sequence_count": 1,
+    "automatic_retry": false
+  },
+  "coverage": [
+    "Complete successful frozen selection required",
+    "Exact committed dispatcher bytes checked before scientific import",
+    "Read-only explicit payload SHA, source and operation identity",
+    "No selected directory creation during register/submit",
+    "Real held fields and saved script match",
+    "CPU counts in per-user teacher MaxSubmit5",
+    "All teacher GPU reservations counted",
+    "Post-hold capacity race remains held",
+    "Unknown submit/release persist and cannot repeat",
+    "Login host cannot execute using copied job environment",
+    "Payload invoked once; failure and partial state preserved",
+    "Terminal receipt requires queue disappearance and actual matching accounting"
+  ]
+}

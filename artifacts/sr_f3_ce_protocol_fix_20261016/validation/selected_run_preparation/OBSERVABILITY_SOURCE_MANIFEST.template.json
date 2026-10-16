@@ -1,0 +1,62 @@
+{
+  "base_code_commit": "652e52d530520a276b6420ff0f4ee479dcde6db1",
+  "base_source_manifest_sha256": "dae3a506dda4fffee8da0e25a3e0881f4b45fa3259342c4160ecd0c09e03c9e0",
+  "cpu_validation": {
+    "bytes": "<ACTUAL_INT_BYTES>",
+    "path": "CPU_VALIDATION.json",
+    "sha256": "<ACTUAL_CPU_VALIDATION_FILE_SHA256>"
+  },
+  "executed_sources": [
+    "instrumented_execution.py",
+    "observe_runtime.py"
+  ],
+  "experiment_id": "SR-F3-CE-20261016",
+  "extension_commit": "652e52d530520a276b6420ff0f4ee479dcde6db1",
+  "protocol_source_guard": {
+    "ablation_root": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/ablation",
+    "code_commit": "652e52d530520a276b6420ff0f4ee479dcde6db1",
+    "protocol_revision": "<EXACT_SELECTED_REVISION_v2_OR_c2>",
+    "protocol_selection_sha256": "<SHA256_OF_ORIGINAL_COMPLETE_SELECTION_BYTES>",
+    "request_sha256": "83f3688707b09d69d84fb4f7ce3a9a7f2706b26c978176d97a6fb9637189c220"
+  },
+  "run_identity_sha256": "<ACTUAL_IMMUTABLE_NEW_RUN_IDENTITY_SHA256>",
+  "schema_version": 1,
+  "sources": [
+    {
+      "bytes": 52678,
+      "path": "instrumented_execution.py",
+      "sha256": "0fa1234eafdc801e99e78d5c2cd3859bbc4f65c2dd0ef92375a369e4ae41d897"
+    },
+    {
+      "bytes": 26859,
+      "path": "observe_runtime.py",
+      "sha256": "d5ed2cd1fde2742a10fe0e2033599b574e88d3df48b281ef0b8de122eeaf5a19"
+    },
+    {
+      "bytes": 28259,
+      "path": "tests/test_instrumented_execution.py",
+      "sha256": "fe6cee7d5e2f2cbe0128162c33a946821a7d5ded8a4d198acb9aee4121285af8"
+    },
+    {
+      "bytes": 47569,
+      "path": "tests/test_dispatch_registered.py",
+      "sha256": "f8e3445ccef254b17eb92fe03d3ea4cab773285c2e7ec861379d30597d9ae05c"
+    },
+    {
+      "bytes": 22096,
+      "path": "tests/test_observability.py",
+      "sha256": "7461fd4659551c5eb71ff74759c20277b43568714f8f66f7a4bca86fa84a6454"
+    },
+    {
+      "bytes": 12104,
+      "path": "docs/OBSERVABILITY.md",
+      "sha256": "5c40dceed6fbe3f73c700653d1de89258985542f15f92ba61fe2b7cfe819901c"
+    },
+    {
+      "bytes": 11446,
+      "path": "docs/OBSERVABILITY_EXECUTION.md",
+      "sha256": "665c686cfa5ac404f380848583687b0a999a362286a8c5a66c7369087073568a"
+    }
+  ],
+  "status": "FROZEN_OBSERVABILITY_EXTENSION"
+}

@@ -1,0 +1,51 @@
+{
+  "actual_qos": "soujanya-poria-startfund-2026-03",
+  "artifact_json_parsed": true,
+  "checks": [
+    {
+      "kind": "python_ast",
+      "path": "prepare_selected_run.py",
+      "status": "PASS"
+    },
+    {
+      "kind": "python_ast",
+      "path": "test_prepare_selected_run.py",
+      "status": "PASS"
+    },
+    {
+      "kind": "python_ast",
+      "path": "verify_existing_external.py",
+      "status": "PASS"
+    },
+    {
+      "kind": "bash_payload_syntax",
+      "path": "initialize_selected.sh",
+      "status": "PASS"
+    }
+  ],
+  "documentation_and_payload_python_heredocs": 4,
+  "documentation_shell_blocks": 9,
+  "earlier_preparation_fixture_errors_corrected": [
+    "source archive has code/ prefix; latest checkout documentation differs from 652; validation now uses exact frozen archive",
+    "initial candidate test assumed nonexistent selected_for_science top-level field; replaced with actual revision and unchanged package check",
+    "real Slurm QOS uses frozen TEACHER_QOS, not the logical word teacher"
+  ],
+  "git_commit_or_push_performed": false,
+  "model_calls": 0,
+  "pending": "Independent review and all future real CPU/ENGINE/accounting gates remain required.",
+  "pytest": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python -B -m pytest -q -p no:cacheprovider --basetemp <assigned artifact>/test_scratch_final <assigned artifact>/test_prepare_selected_run.py",
+    "exit_code": 0,
+    "output": ".................. [100%]\n18 passed in 0.19s\n",
+    "passed": 18,
+    "scope": "CPU local immutable-copy/path/source/native-revision/import fixtures; not a successful server initialization"
+  },
+  "science_or_engine_submitted": false,
+  "scientific_source_commit": "652e52d530520a276b6420ff0f4ee479dcde6db1",
+  "selected_root_created": false,
+  "selection_verified_locally": false,
+  "server_operations": 0,
+  "source_code_modified": false,
+  "status": "PASS_LOCAL_PREPARATION_VALIDATION",
+  "utc": "2026-10-16T08:53:24.001791+00:00"
+}

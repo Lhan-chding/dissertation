@@ -41,3 +41,20 @@
 接续只处理已经冻结的九个任务，读取初始人工提交账本并验证实际作业身份。每个新任务先 hold，核验真实 Slurm allocation 和保存的 batch script，确认共享 teacher QoS 容量后才 release。单实例锁与原入口共用 `ablation/submissions/SUBMIT.lock`。CPU 调度作业自身也占一个本用户 teacher 提交名额；GPU 实际分配、排队和未知预留另行计入五张卡的限制。
 
 提交或释放结果不明、真实失败、未登记的部分原文都会停止补交；队列已退出但 accounting 尚未可读时，仅保留额度并等待查询，不重新生成。只有九个任务均有真实 `COMPLETED/0:0`、完整完成回执与原文，才调用冻结代码生成选择回执。调度器到选型结束，不启动 SCIENCE；选定的新运行仍须完整重做 ENGINE、MONITOR 和恢复门禁。
+
+
+## 2026-10-16 实测消融与选型
+
+九项固定消融均已真实 `COMPLETED/0:0`；CPU 接续器 207281 亦正常结束。完整 2,304 条原文、576 个组及 REQUEST/pending 原件经服务器验证与本地逐成员哈希验证，独立冻结评分器复算无差异。
+
+| 变体 | b0 / 256 | b1 / 256 | b2 / 256 |
+|---|---:|---:|---:|
+| P1 原 v1 | 157 | 236 | 156 |
+| P2 v2 | 245 | 250 | 247 |
+| P3 C2 | 231 | 253 | 242 |
+
+按预先登记的 value_parseable ≥231 和 P2 优先规则，采用 v2，保留 `{` 预填。P1 b0/b2 复现失败；P1 全部 768 条 token、文本、随机种子及 sampler log probability 与旧原文精确一致。正确率、证书率、呈现率、完成率、work 和长度仅作描述，未参与选择；P3 首 evidence 由预填提供，不是自主生成结构的独立证明。
+
+不可变 `PROTOCOL_SELECTION.json` SHA256 为 `6bd7ddca72b5a7a941c59b85eaf7b18ec3de10e0d2a296b96e26af35124130d4`；完整消融归档 SHA256 为 `806ee061514a71478a4f0c3cf802ec1a435fcf0eaea04e3399d0d3dfef237388`，53,326,462 bytes。九项单卡 Slurm 实际累计 6,692 GPU 秒，包含加载与作业开销，不能称作纯 kernel 时间或文档估计的约20分钟。
+
+原 v1 STOP、原证据和不利结果保持不变。该选择只准许在独立 `selected_v2` 根重做初始化与工程门禁；不是 SCIENCE 完成或放行。科学源码仍固定 `652e52d530520a276b6420ff0f4ee479dcde6db1`。本次单次 CPU 初始化辅助源码及必要精确复制清单保存在 `artifacts/sr_f3_ce_protocol_fix_20261016/validation/selected_run_preparation/`、`validation/selected_data_preparation/` 和 `deployment/selected_cpu_launcher/`；其中模板及本地验证是准备证据，不是服务器成功回执。整个 CPU 初始化真实成功后才允许新 P0；新 P0、三个父块 ENGINE/MONITOR 与恢复 ENGINE 全部成功后，原科学调度器才能封存并推进固定12条训练路径。

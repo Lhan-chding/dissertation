@@ -1,0 +1,112 @@
+{
+  "ablation_tasks_added_to_science_matrix": false,
+  "driver_schedules_missing_engine": false,
+  "extension_commit": "652e52d530520a276b6420ff0f4ee479dcde6db1",
+  "extension_copy_map": {
+    "docs/sr_f3_ce/OBSERVABILITY.md": "docs/OBSERVABILITY.md",
+    "docs/sr_f3_ce/OBSERVABILITY_EXECUTION.md": "docs/OBSERVABILITY_EXECUTION.md",
+    "scripts/sr_f3_ce/instrumented_execution.py": "instrumented_execution.py",
+    "scripts/sr_f3_ce/observe_runtime.py": "observe_runtime.py",
+    "tests/sr_f3_ce/test_dispatch_registered.py": "tests/test_dispatch_registered.py",
+    "tests/sr_f3_ce/test_instrumented_execution.py": "tests/test_instrumented_execution.py",
+    "tests/sr_f3_ce/test_observability.py": "tests/test_observability.py"
+  },
+  "fixed_policy": {
+    "account": "rose",
+    "cpu_node": "cpu-2",
+    "cpus": 4,
+    "gpu_limit": 5,
+    "handoff_margin_seconds": 900,
+    "memory_gib": 12,
+    "partition": "cluster02",
+    "poll_seconds": 60,
+    "pool_size": 1,
+    "qos": "soujanya-poria-startfund-2026-03",
+    "submitted_limit": 5,
+    "time_limit": "3-00:00:00"
+  },
+  "helper_files": {
+    "build_delivery.py": {
+      "bytes": 132957,
+      "path": "scripts/sr_f3_ce/build_delivery.py",
+      "sha256": "1628c0aa984e565febdae8f3125ca4fab92f51df1290b00ec045178eaf380bb1"
+    },
+    "dispatch_registered.py": {
+      "bytes": 57521,
+      "path": "scripts/sr_f3_ce/dispatch_registered.py",
+      "sha256": "09c12d4da8370760fd49715d57f247586124a3c2a27b44727f5fce18309ff01b"
+    },
+    "finalize_external_types.py": {
+      "bytes": 28769,
+      "path": "scripts/sr_f3_ce/finalize_external_types.py",
+      "sha256": "1a75df6bf5fa1c0ef22a23ee7fd766a8e22f5a1c6c1fe7d579c4ab6135106aaf"
+    }
+  },
+  "operation_commit": "652e52d530520a276b6420ff0f4ee479dcde6db1",
+  "operation_identity_fields": [
+    "schema_version",
+    "experiment_id",
+    "operation_commit",
+    "root",
+    "code_root",
+    "frozen_code_commit",
+    "protocol_source_guard",
+    "run_identity_sha256",
+    "source_manifest_sha256",
+    "operation_sources_sha256",
+    "config_sha256",
+    "dispatcher_sha256",
+    "extension_manifest_path",
+    "extension_manifest_sha256",
+    "typed_preparer_commit",
+    "typed_preparer_sha256",
+    "python",
+    "user",
+    "account",
+    "qos",
+    "partition",
+    "cpu_node",
+    "cpus",
+    "memory_gib",
+    "time_limit",
+    "pool_size",
+    "gpu_limit",
+    "submitted_limit",
+    "poll_seconds",
+    "handoff_margin_seconds"
+  ],
+  "operation_sources": {
+    "experiment_id": "SR-F3-CE-20261016",
+    "files": {
+      "build_delivery.py": "1628c0aa984e565febdae8f3125ca4fab92f51df1290b00ec045178eaf380bb1",
+      "dispatch_registered.py": "09c12d4da8370760fd49715d57f247586124a3c2a27b44727f5fce18309ff01b",
+      "finalize_external_types.py": "1a75df6bf5fa1c0ef22a23ee7fd766a8e22f5a1c6c1fe7d579c4ab6135106aaf"
+    },
+    "operation_commit": "652e52d530520a276b6420ff0f4ee479dcde6db1",
+    "protocol_source_guard": {
+      "ablation_root": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/ablation",
+      "code_commit": "652e52d530520a276b6420ff0f4ee479dcde6db1",
+      "protocol_revision": "<EXACT_SELECTED_REVISION_v2_OR_c2>",
+      "protocol_selection_sha256": "<SHA256_OF_ORIGINAL_COMPLETE_SELECTION_BYTES>",
+      "request_sha256": "83f3688707b09d69d84fb4f7ce3a9a7f2706b26c978176d97a6fb9637189c220"
+    },
+    "schema_version": 1,
+    "scientific_code_commit": "652e52d530520a276b6420ff0f4ee479dcde6db1"
+  },
+  "ordered_entrypoints": [
+    "ablation.verify_selection read-only on original complete root",
+    "create fresh selected root and exact tested candidate plan/652 code",
+    "CPU data/parent/prior/external-v0/native initialization with actual terminal verification",
+    "write immutable RUN_IDENTITY; verify_run + verify_run_source_revision",
+    "unchanged 4146 finalizer validation then CPU --publish; write explicit review reuse receipt",
+    "frozen submit.py --kind p0 then four --kind engine submissions, real terminal success",
+    "deploy/verify extension static sources + CPU validation and source manifest",
+    "dispatch_registered --mode register",
+    "dispatch_registered --mode submit --sequence 1",
+    "driver verify_typed, seal_amendment, freeze_science, instrumented train/eval/release, build_delivery"
+  ],
+  "scientific_commit": "652e52d530520a276b6420ff0f4ee479dcde6db1",
+  "status": "PREPARATION_ONLY_REGISTER_FUNCTION_IS_AUTHORITY",
+  "typed_preparer_commit": "4146e156ffa9a476b360daeb67503703faca138f",
+  "typed_preparer_sha256": "1a75df6bf5fa1c0ef22a23ee7fd766a8e22f5a1c6c1fe7d579c4ab6135106aaf"
+}

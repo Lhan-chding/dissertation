@@ -1,0 +1,171 @@
+{
+  "status": "PASS",
+  "scope": "Syntax, CLI parsing, CPU allocation guards and exact code-tree authentication before imports; no actual selected-root execution",
+  "ast_parsed_scripts": 2,
+  "mocked_cpu_guard_cases": [
+    {
+      "case": "valid_mock_cpu",
+      "status": "PASS_WITH_MOCKED_SLURM_ONLY"
+    },
+    {
+      "case": "requested_gpu",
+      "status": "EXPECTED_REFUSAL",
+      "error": "Actual CPU/GPU allocation differs: ReqTRES"
+    },
+    {
+      "case": "allocated_gpu",
+      "status": "EXPECTED_REFUSAL",
+      "error": "Actual CPU/GPU allocation differs: AllocTRES"
+    },
+    {
+      "case": "missing_allocated_cpu",
+      "status": "EXPECTED_REFUSAL",
+      "error": "Actual CPU/GPU allocation differs: AllocTRES"
+    },
+    {
+      "case": "missing_requested_cpu",
+      "status": "EXPECTED_REFUSAL",
+      "error": "Actual CPU/GPU allocation differs: ReqTRES"
+    },
+    {
+      "case": "pending_job",
+      "status": "EXPECTED_REFUSAL",
+      "error": "Actual Slurm job identity/state/owner/name/account differs"
+    },
+    {
+      "case": "wrong_job_id",
+      "status": "EXPECTED_REFUSAL",
+      "error": "Actual Slurm job identity/state/owner/name/account differs"
+    },
+    {
+      "case": "wrong_owner",
+      "status": "EXPECTED_REFUSAL",
+      "error": "Actual Slurm job identity/state/owner/name/account differs"
+    },
+    {
+      "case": "wrong_suffix",
+      "status": "EXPECTED_REFUSAL",
+      "error": "Actual Slurm job identity/state/owner/name/account differs"
+    },
+    {
+      "case": "wrong_account",
+      "status": "EXPECTED_REFUSAL",
+      "error": "Actual Slurm job identity/state/owner/name/account differs"
+    },
+    {
+      "case": "login_host",
+      "status": "EXPECTED_REFUSAL",
+      "error": "This process is not on a node in the actual CPU allocation"
+    },
+    {
+      "case": "empty_nodes",
+      "status": "EXPECTED_REFUSAL",
+      "error": "Actual allocation nodes are unavailable"
+    },
+    {
+      "case": "no_job_environment",
+      "status": "EXPECTED_REFUSAL",
+      "error": "A real CPU Slurm allocation and empty CUDA view are required"
+    },
+    {
+      "case": "cuda_visible",
+      "status": "EXPECTED_REFUSAL",
+      "error": "A real CPU Slurm allocation and empty CUDA view are required"
+    }
+  ],
+  "synthetic_code_tree_cases": [
+    {
+      "case": "valid_exact_tree",
+      "status": "PASS_WITH_SYNTHETIC_FILES_ONLY"
+    },
+    {
+      "case": "duplicate_manifest_row",
+      "status": "EXPECTED_REFUSAL",
+      "error": "Duplicate scientific inventory path: src/good.py"
+    },
+    {
+      "case": "extra_python",
+      "status": "EXPECTED_REFUSAL",
+      "error": "Scientific code file set differs; missing=[]; extra=['src/rogue.py']"
+    },
+    {
+      "case": "extra_pyc",
+      "status": "EXPECTED_REFUSAL",
+      "error": "Bytecode is forbidden in scientific code: src/good.pyc"
+    },
+    {
+      "case": "extra_pyo",
+      "status": "EXPECTED_REFUSAL",
+      "error": "Bytecode is forbidden in scientific code: src/good.pyo"
+    },
+    {
+      "case": "manifest_listed_pyc",
+      "status": "EXPECTED_REFUSAL",
+      "error": "Bytecode is forbidden in scientific inventory"
+    },
+    {
+      "case": "internal_file_symlink",
+      "status": "EXPECTED_REFUSAL",
+      "error": "Symlink is forbidden in scientific code: src/alias.py"
+    },
+    {
+      "case": "internal_dir_symlink",
+      "status": "EXPECTED_REFUSAL",
+      "error": "Symlink is forbidden in scientific code: alias"
+    },
+    {
+      "case": "root_symlink",
+      "status": "EXPECTED_REFUSAL",
+      "error": "Scientific code root must be a real directory, not a symlink"
+    },
+    {
+      "case": "missing_file",
+      "status": "EXPECTED_REFUSAL",
+      "error": "Scientific code file set differs; missing=['src/good.py']; extra=[]"
+    },
+    {
+      "case": "modified_source",
+      "status": "EXPECTED_REFUSAL",
+      "error": "Scientific source changed: src/good.py"
+    },
+    {
+      "case": "noncanonical_manifest_path",
+      "status": "EXPECTED_REFUSAL",
+      "error": "Scientific inventory path is unsafe or noncanonical"
+    },
+    {
+      "case": "nonregular_fifo",
+      "status": "EXPECTED_REFUSAL",
+      "error": "Nonregular file is forbidden in scientific code: pipe"
+    },
+    {
+      "case": "authenticated_context_checks_before_science_import",
+      "status": "EXPECTED_REFUSAL",
+      "scientific_import_calls": 0
+    }
+  ],
+  "real_local_cli_checks": [
+    {
+      "script": "prepare_selected_data.py",
+      "help_returncode": 0,
+      "outside_slurm_returncode": 1,
+      "outside_slurm_refused_before_path_access": true
+    },
+    {
+      "script": "verify_parent_prior.py",
+      "help_returncode": 0,
+      "outside_slurm_returncode": 1,
+      "outside_slurm_refused_before_path_access": true
+    }
+  ],
+  "real_slurm_queries": 0,
+  "selected_root_copy_executed": false,
+  "parent_prior_audit_executed": false,
+  "model_calls": 0,
+  "server_calls": 0,
+  "original_preparation_manifest_unchanged": true,
+  "scripts": {
+    "prepare_selected_data.py": "0d4bf63a9f5ca6c40e779ead0ff3973c2811839b01738ce43490db2c68938a16",
+    "verify_parent_prior.py": "7ffeae97b13561eb7084aabf5867f8a8cba1cd84642b5ccfd2fba6ade7a61736"
+  }
+}
