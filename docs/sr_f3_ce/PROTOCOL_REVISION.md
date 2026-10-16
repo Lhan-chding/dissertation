@@ -33,3 +33,11 @@
 对旧 2,880 条原文独立复算重现了主结构化首键表，但并未确认用户文件的全部说明：549 条可解析回答均换行，其中首层恰好两空格为 530 条；诊断文本中含 `"series"` 字面量的是 true_table，不是 selected_operands；在相同 16 个诊断 qid 上，原基线 b0/b1/b2 的 series 首键为 18/0/17（各分母 64），不是主 64 题总体百分比。work 率须按注册 parseable 分母重新计算。完整核验见本次 artifact 的 `evidence_review/REVIEW_zh.md` 和机器回执。
 
 这些差异不改变选择规则。提示、预填与首键的关系仍是待验证机制，不能仅凭格式变化或一次技术门禁通过声称能力或科学结果改善。报告保留不利结果和全部技术事件，并从已有原文描述 work 随训练变化，不修改奖励。
+
+## 固定消融的调度接续
+
+科学代码冻结在 `652e52d530520a276b6420ff0f4ee479dcde6db1`。辅助入口 `scripts/sr_f3_ce/dispatch_protocol_ablation.py` 另行提交，部署到 `ROOT/operations/ablation_driver/<辅助 commit>/`，以独立 SOURCE_MANIFEST 和 OPERATION_IDENTITY 绑定；不得覆盖已经产生输出的 `ROOT/code` 或原 RUN_IDENTITY、ABLATION_MANIFEST。
+
+接续只处理已经冻结的九个任务，读取初始人工提交账本并验证实际作业身份。每个新任务先 hold，核验真实 Slurm allocation 和保存的 batch script，确认共享 teacher QoS 容量后才 release。单实例锁与原入口共用 `ablation/submissions/SUBMIT.lock`。CPU 调度作业自身也占一个本用户 teacher 提交名额；GPU 实际分配、排队和未知预留另行计入五张卡的限制。
+
+提交或释放结果不明、真实失败、未登记的部分原文都会停止补交；队列已退出但 accounting 尚未可读时，仅保留额度并等待查询，不重新生成。只有九个任务均有真实 `COMPLETED/0:0`、完整完成回执与原文，才调用冻结代码生成选择回执。调度器到选型结束，不启动 SCIENCE；选定的新运行仍须完整重做 ENGINE、MONITOR 和恢复门禁。
