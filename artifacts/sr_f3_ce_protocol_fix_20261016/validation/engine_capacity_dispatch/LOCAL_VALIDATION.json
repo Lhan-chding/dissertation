@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "status": "LOCAL_VALIDATION_PASS",
+  "recorded_utc": "2026-10-16 09:58:32 UTC",
+  "task": "Bounded ENGINE capacity dispatch before scientific freeze",
+  "base_auxiliary_commit": "617dd006185de93a2d20e476896c9fd9ad3fbda4",
+  "frozen_scientific_commit": "652e52d530520a276b6420ff0f4ee479dcde6db1",
+  "source_sha256": {
+    "scripts/sr_f3_ce/dispatch_registered.py": "be997834324f7a48ca8a314344ff161af9dcae3622ea092dae17d59c8bc9e955",
+    "tests/sr_f3_ce/test_dispatch_registered.py": "4e3d3e23523c1d8bd58aa193fef136076d9394b99b529cfe9f7c90542b27f1ca"
+  },
+  "checks": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python -m pytest -q -p no:cacheprovider tests/sr_f3_ce/test_dispatch_registered.py tests/sr_f3_ce/test_orchestration.py",
+      "exit_code": 0,
+      "captured_output_summary": "132 passed in 5.59s",
+      "scope": "CPU fixtures; real frozen Controller and task/allocation receipt validation with fake Slurm transport"
+    },
+    {
+      "command": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/ruff check --no-cache scripts/sr_f3_ce/dispatch_registered.py tests/sr_f3_ce/test_dispatch_registered.py",
+      "exit_code": 0,
+      "captured_output_summary": "All checks passed!"
+    },
+    {
+      "command": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/ruff format --no-cache --check scripts/sr_f3_ce/dispatch_registered.py tests/sr_f3_ce/test_dispatch_registered.py",
+      "exit_code": 0,
+      "captured_output_summary": "2 files already formatted"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "captured_output_summary": ""
+    },
+    {
+      "command": "git diff --name-only 652e52d530520a276b6420ff0f4ee479dcde6db1 -- src",
+      "exit_code": 0,
+      "captured_output_summary": ""
+    }
+  ],
+  "verified_boundaries": [
+    "Before any automatic ENGINE submission or FREEZE_INTENT, a unique COMPLETE P0 allocation must pass the original Controller.verify_job and current Slurm terminal accounting must equal its authenticated saved terminal.",
+    "LOCAL_P0 is refused before submission and after all four ENGINE jobs are complete.",
+    "Missing, failed, nonzero-exit or wrong-user live P0 accounting is refused before submission and before freeze.",
+    "An unfinished real P0 allocation and repeated unchanged polls do not submit ENGINE.",
+    "Only engine--b0, engine--b1, engine--b2 and engine--resume are eligible; existing claimed tasks are preserved.",
+    "The original held submit, actual allocation and script verification, fresh shared teacher GPU limit and own-user teacher submitted-job limit remain in force.",
+    "CPU dispatcher consumes one submitted slot; unrelated running and pending teacher jobs remain intact.",
+    "SUBMISSION_UNKNOWN, RELEASE_UNKNOWN, HELD, FAILED and a failure observed between submissions stop further ENGINE submissions.",
+    "All four actual ENGINE receipt/terminal chains must complete before typed validation, amendment and scientific freeze.",
+    "Existing train/eval-only TIMEOUT recovery and old v1 dispatch gates remain covered."
+  ],
+  "independent_review": {
+    "reviewer": "/root/runtime_masks",
+    "reported_status": "PASS_NO_UNRESOLVED_FINDING",
+    "target_suites": "132 passed in 5.05s",
+    "original_local_p0_regression": "1 passed in 0.09s; zero ENGINE intents and zero fake sbatch calls; PermissionError",
+    "evidence_directory": "/private/tmp/srf3-engine-capacity-review",
+    "preceding_failed_candidate_evidence_preserved": true
+  },
+  "limitations": [
+    "Local CPU and synthetic Slurm validation only; no real allocation, model execution or GPU validation performed by this agent.",
+    "No server operation, git commit or push performed by this agent; parent owns final review, auxiliary commit and new operations-directory deployment.",
+    "Frozen scientific src was not modified. Existing server operations directories are not updated in place."
+  ]
+}

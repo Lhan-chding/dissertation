@@ -58,3 +58,14 @@
 不可变 `PROTOCOL_SELECTION.json` SHA256 为 `6bd7ddca72b5a7a941c59b85eaf7b18ec3de10e0d2a296b96e26af35124130d4`；完整消融归档 SHA256 为 `806ee061514a71478a4f0c3cf802ec1a435fcf0eaea04e3399d0d3dfef237388`，53,326,462 bytes。九项单卡 Slurm 实际累计 6,692 GPU 秒，包含加载与作业开销，不能称作纯 kernel 时间或文档估计的约20分钟。
 
 原 v1 STOP、原证据和不利结果保持不变。该选择只准许在独立 `selected_v2` 根重做初始化与工程门禁；不是 SCIENCE 完成或放行。科学源码仍固定 `652e52d530520a276b6420ff0f4ee479dcde6db1`。本次单次 CPU 初始化辅助源码及必要精确复制清单保存在 `artifacts/sr_f3_ce_protocol_fix_20261016/validation/selected_run_preparation/`、`validation/selected_data_preparation/` 和 `deployment/selected_cpu_launcher/`；其中模板及本地验证是准备证据，不是服务器成功回执。整个 CPU 初始化真实成功后才允许新 P0；新 P0、三个父块 ENGINE/MONITOR 与恢复 ENGINE 全部成功后，原科学调度器才能封存并推进固定12条训练路径。
+
+
+## 选中根初始化与受限容量接续
+
+2026-10-16 UTC 的实际验收中，selected_v2 初始化作业 207359 为 `COMPLETED/0:0`，耗时 38:13；随后 P0 作业 207422 为 `COMPLETED/0:0`，耗时 37 秒。新 native 覆盖 816 个目标 mask、48 张图像与144条协议路由，未加载模型权重、初始化 CUDA 或生成新回答。新 RUN_IDENTITY 的 SHA256 为 `81dea1b8746f72509cb99a39b1498ddca8917227dbd98fbf1cdb8b84ff85ef05`。
+
+历史重新导出45,452个文件、64,944条记录，108 COMPLETE / 1 MISSING 保持原样；父模型 adapter 字节、历史 RECORD_INDEX 与原图身份均核对一致。2,756个外部输入在逐项身份等价后复用原盲审：85 resolved / 2,671 unresolved，明确 `new_human_review=false`。这不是新的人工审查，也不补齐原有缺失项。
+
+共享 teacher QoS 同时受五张 GPU 和本用户五个 submitted 作业限制。等待依赖的已提交 GPU 作业仍占额度，CPU 接续器也占一个提交名额。新辅助 dispatcher 在真实 P0 完成后，通过原冻结 `Controller.submit("engine")` 提交原四个 ENGINE 任务，每次都重新认证状态和容量；未提交的固定任务可在空位释放后继续提交。没有容量就等待，已认领、未知、held 或失败状态不能触发重复提交；失败 ENGINE 不能使用仅对训练/评价 TIMEOUT 开放的恢复规则。只有四个 ENGINE 的完整证据与真实终态都通过后，才允许原有 freeze 和 SCIENCE 路径。
+
+该调整只部署到新的 `operations/<辅助commit>/` 并单独绑定源码身份。已经执行的 `code/`、科学提交652、原操作目录、RUN_IDENTITY 和 native extension 保持其已登记字节。单个 CPU 接续器仍有72小时租期；若退出为 `HANDOFF_REQUIRED`，须按既有顺序登记下一次CPU租期，不能将它视为无限期自续。

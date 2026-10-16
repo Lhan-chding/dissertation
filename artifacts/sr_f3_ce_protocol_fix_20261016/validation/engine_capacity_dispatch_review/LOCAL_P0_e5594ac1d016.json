@@ -1,0 +1,28 @@
+{
+  "review": "LOCAL_P0_ONLY_REAL_CONTROLLER_FAKE_SLURM_BOUNDARY",
+  "source_sha256": "e5594ac1d0164507e238ea167120de507a3046ece2b6f5b10386e0ded52752c7",
+  "p0_before": [
+    "p0"
+  ],
+  "real_p0_allocations_before": 0,
+  "returned": "DISPATCHING_ENGINE",
+  "error": null,
+  "engine_intents": [
+    [
+      "engine--b2"
+    ],
+    [
+      "engine--resume"
+    ],
+    [
+      "engine--b1"
+    ],
+    [
+      "engine--b0"
+    ]
+  ],
+  "sbatch_calls": 4,
+  "science_freezes": 0,
+  "server_commands": 0,
+  "scientific_source_modified": false
+}

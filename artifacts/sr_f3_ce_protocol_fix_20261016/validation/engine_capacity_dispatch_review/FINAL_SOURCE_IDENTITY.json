@@ -1,0 +1,19 @@
+{
+  "baseline": "617dd00",
+  "files": {
+    "scripts/sr_f3_ce/dispatch_registered.py": {
+      "sha256": "be997834324f7a48ca8a314344ff161af9dcae3622ea092dae17d59c8bc9e955",
+      "bytes": 59749
+    },
+    "tests/sr_f3_ce/test_dispatch_registered.py": {
+      "sha256": "4e3d3e23523c1d8bd58aa193fef136076d9394b99b529cfe9f7c90542b27f1ca",
+      "bytes": 61068
+    },
+    "docs/sr_f3_ce/PROTOCOL_REVISION.md": {
+      "sha256": "8ae0c418730c03404c024b3d514f04772aa248c27ec615f4df158220b452cfe8",
+      "bytes": 10344
+    }
+  },
+  "review_scope": "operational helper and directly matching tests; necessary adjacent revision documentation",
+  "diff_sha256": "a523b5ea25a80d23bc69ea43b64303bc7f480c20ef8571f2b2a16b9bdccd5a14"
+}

@@ -1,0 +1,15 @@
+{
+  "review": "LOCAL_P0_ONLY_REAL_CONTROLLER_FAKE_SLURM_BOUNDARY",
+  "source_sha256": "be997834324f7a48ca8a314344ff161af9dcae3622ea092dae17d59c8bc9e955",
+  "p0_before": [
+    "p0"
+  ],
+  "real_p0_allocations_before": 0,
+  "returned": null,
+  "error": "PermissionError('Automatic ENGINE dispatch requires a real completed P0 allocation')",
+  "engine_intents": [],
+  "sbatch_calls": 0,
+  "science_freezes": 0,
+  "server_commands": 0,
+  "scientific_source_modified": false
+}

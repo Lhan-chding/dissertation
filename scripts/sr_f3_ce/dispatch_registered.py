@@ -825,6 +825,26 @@ class Driver:
                 raise RuntimeError("Recovery submission outcome is unresolved")
         return None
 
+    def require_slurm_p0(self, status):
+        candidates = []
+        for state in status["attempts"]:
+            if state["status"] != "COMPLETE":
+                continue
+            directory = self.root / "orchestration/jobs" / state["key"]
+            if read(directory / "INTENT.json").get("kind") == "p0":
+                candidates.append(state)
+        if len(candidates) != 1 or self.api.controller.verify_job(candidates[0]) != ["p0"]:
+            raise PermissionError(
+                "Automatic ENGINE dispatch requires a real completed P0 allocation"
+            )
+        state = candidates[0]
+        # The frozen controller also accepts LOCAL_P0 and saved terminal evidence.
+        # This operational entry requires the full allocation chain plus live accounting.
+        terminal = self.api.slurm.terminal(state["job_id"])
+        saved = self.root / "orchestration/jobs" / state["key"] / "TERMINAL.json"
+        if terminal is None or terminal != read(saved):
+            raise PermissionError("Completed P0 live accounting is missing or differs")
+
     def act(self):
         status = self.api.controller.status()
         if status["blocked"]:
@@ -836,8 +856,28 @@ class Driver:
                 raise RuntimeError("Recovery left an unresolved scheduler state")
         freeze = self.root / "EXECUTION_FREEZE.json"
         if not freeze.exists():
+            if "p0" in status["completed"]:
+                self.require_slurm_p0(status)
             if not set(status["completed"]) >= ENGINES:
-                return "WAIT_ENGINE"
+                submitted = False
+                if "p0" in status["completed"]:
+                    # The frozen controller owns task selection, fresh quota
+                    # checks, and the held/verified/released submission chain.
+                    for _ in range(len(ENGINES - {"p0"})):
+                        if not (ENGINES - {"p0"}).intersection(status["ready"]):
+                            break
+                        result = self.api.controller.submit("engine")
+                        if result is None:
+                            break
+                        if result.get("status") != "SUBMITTED":
+                            raise RuntimeError("ENGINE submission outcome is unresolved")
+                        submitted = True
+                        status = self.api.controller.status()
+                        if status["blocked"]:
+                            raise RuntimeError(
+                                "ENGINE submission left an unresolved scheduler state"
+                            )
+                return "DISPATCHING_ENGINE" if submitted else "WAIT_ENGINE"
             verified = self.typed(self.root, self.api.external)
             if verified is None:
                 return "WAIT_TYPED_REVIEW"

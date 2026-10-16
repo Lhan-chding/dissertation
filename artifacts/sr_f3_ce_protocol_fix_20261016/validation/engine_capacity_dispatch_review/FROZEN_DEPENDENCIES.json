@@ -1,0 +1,26 @@
+{
+  "src/sr_f3_ce/orchestration.py": {
+    "sha256": "36a9a711bf9fba53af56c19c378007a111399c39f964e0ca0302b8b8d89b2e23",
+    "bytes": 52247,
+    "matches_652": true,
+    "matches_617dd00": true
+  },
+  "src/sr_f3_ce/bootstrap.py": {
+    "sha256": "48f39dc856b2600aaf81176023e1a3beab662e19a418d7f42d50ef47541a84a2",
+    "bytes": 11645,
+    "matches_652": true,
+    "matches_617dd00": true
+  },
+  "scripts/sr_f3_ce/instrumented_execution.py": {
+    "sha256": "0fa1234eafdc801e99e78d5c2cd3859bbc4f65c2dd0ef92375a369e4ae41d897",
+    "bytes": 52678,
+    "matches_652": true,
+    "matches_617dd00": true
+  },
+  "scripts/sr_f3_ce/observe_runtime.py": {
+    "sha256": "d5ed2cd1fde2742a10fe0e2033599b574e88d3df48b281ef0b8de122eeaf5a19",
+    "bytes": 26859,
+    "matches_652": true,
+    "matches_617dd00": true
+  }
+}

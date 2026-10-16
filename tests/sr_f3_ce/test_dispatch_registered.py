@@ -113,6 +113,10 @@ class FakeSlurm:
             args = dict(part[2:].split("=", 1) for part in command[1:-1] if "=" in part)
             job = str(self.next_job)
             self.next_job += 1
+            gpu_count = int(args["gres"].rsplit(":", 1)[1]) if "gres" in args else 0
+            tres = f"cpu={args['cpus-per-task']},mem={args['mem']},node=1"
+            if gpu_count:
+                tres += f",gres/gpu={gpu_count},gres/gpu:pro6000={gpu_count}"
             self.rows[job] = dict(
                 JobId=job,
                 JobName=args["job-name"],
@@ -124,15 +128,16 @@ class FakeSlurm:
                 NumCPUs=args["cpus-per-task"],
                 UserId="alice(1)",
                 NumNodes="1",
-                ReqTRES="cpu=4,mem=12G,node=1",
-                ReqNodeList=args["nodelist"],
+                ReqTRES=tres,
+                ReqNodeList=args.get("nodelist", "(null)"),
+                Features="highmem" if gpu_count else "(null)",
                 JobState="PENDING",
                 Reason="JobHeldUser",
                 TimeLimit="3-00:00:00",
                 Requeue="0",
                 RunTime="00:00:00",
-                NodeList="cpu-2",
-                AllocTRES="cpu=4,mem=12G,node=1",
+                NodeList="gpu-node" if gpu_count else "cpu-2",
+                AllocTRES="(null)",
             )
             self.scripts[job] = Path(command[-1]).read_text()
             return SimpleNamespace(
@@ -141,7 +146,9 @@ class FakeSlurm:
                 stderr="",
             )
         if command[:2] == ["scontrol", "release"]:
-            self.rows[command[2]].update(JobState="RUNNING", Reason="None")
+            self.rows[command[2]].update(
+                JobState="RUNNING", Reason="None", AllocTRES=self.rows[command[2]]["ReqTRES"]
+            )
             return SimpleNamespace(returncode=0, stdout="", stderr="")
         raise AssertionError(command)
 
@@ -173,7 +180,7 @@ class FakeSlurm:
 class FakeController:
     def __init__(self, completed=()):
         self.result = dict(
-            completed=list(completed), blocked=False, all_complete=False, attempts=[]
+            completed=list(completed), ready=[], blocked=False, all_complete=False, attempts=[]
         )
         self.status_calls = self.tick_calls = 0
         self.resumes = []
@@ -188,6 +195,10 @@ class FakeController:
 
     def blocking_attempts(self, states):
         return [state for state in states if state["status"] in orchestration.BLOCKING]
+
+    def verify_job(self, state):
+        assert state["key"] == "fixture-p0" and state["status"] == "COMPLETE"
+        return ["p0"]
 
     def resume(self, key):
         self.resumes.append(key)
@@ -207,6 +218,23 @@ def api_fixture(helper, registered, *, completed=()):
         amendments=[],
         lifecycle=[],
     )
+    if "p0" in completed:
+        state = dict(key="fixture-p0", status="COMPLETE", gpu_count=0, qos=helper.QOS, job_id="1")
+        directory = root / "orchestration/jobs" / state["key"]
+        helper.save(directory / "INTENT.json", dict(kind="p0", task_ids=["p0"]))
+        helper.save(directory / "STATE.json", state)
+        terminal = dict(
+            job_id="1",
+            state="COMPLETED",
+            exit_code="0:0",
+            user="alice",
+            account="rose",
+            qos=helper.QOS,
+            name="SRF3CE-P0-LH",
+        )
+        helper.save(directory / "TERMINAL.json", terminal)
+        api.slurm.accounting["1"] = terminal
+        api.controller.result["attempts"] = [state]
 
     def freeze(run):
         api.lifecycle.append("freeze")
@@ -247,6 +275,343 @@ def typed_stub(helper, registered):
 def make_driver(helper, registered, api, **kwargs):
     directory = helper.attempts_root(registered) / "0001"
     return helper.Driver(registered, api, directory, **kwargs)
+
+
+@pytest.fixture
+def engine_api(helper, registered, monkeypatch):
+    """Use the unchanged Controller, its real receipts, and fake Slurm transport."""
+    root = Path(registered["root"])
+    code = root / "code"
+    scripts = code / "scripts/sr_f3_ce"
+    scripts.mkdir(parents=True)
+    for name in ("submit.py", "run_worker.py"):
+        (scripts / name).write_text("# synthetic worker, never executed\n")
+    # The general operational fixture has a minimal CONFIG. Replace it only in
+    # this scheduler integration fixture with the actual constructor's schema.
+    (root / "orchestration/CONFIG.json").unlink()
+    monkeypatch.setattr("sr_f3_ce.protocol.verify_run", lambda *args, **kwargs: ({}, {}))
+    api = api_fixture(helper, registered)
+    api.controller = orchestration.Controller(
+        root,
+        code,
+        python=registered["python"],
+        slurm=api.slurm,
+        user="alice",
+        pool_size=1,
+        cpu_qos=helper.QOS,
+    )
+    path = Path(__file__).with_name("test_orchestration.py")
+    spec = importlib.util.spec_from_file_location("engine_capacity_receipt_fixtures", path)
+    receipts = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(receipts)
+    api.finish = lambda state: receipts.complete_allocation(api.controller, state, monkeypatch)
+    api.local_p0 = lambda: receipts.complete_local_p0(api.controller)
+    return api
+
+
+def finish_p0(api):
+    state = api.controller.submit("p0")
+    result = api.finish(state)
+    assert "p0" in result["completed"] and not result["blocked"]
+    return state
+
+
+def finish_all_engines(api):
+    for _ in range(4):
+        state = api.controller.submit("engine")
+        assert state["status"] == "SUBMITTED"
+        api.finish(state)
+
+
+def engine_intents(helper, registered):
+    paths = (Path(registered["root"]) / "orchestration/jobs").glob("*/INTENT.json")
+    return [row for path in paths if (row := helper.read(path))["kind"] == "engine"]
+
+
+def cpu_queue_row(helper):
+    return dict(
+        QOS=helper.QOS,
+        UserId="alice(1)",
+        ReqTRES="cpu=4,mem=12G,node=1",
+        AllocTRES="cpu=4,mem=12G,node=1",
+        JobState="RUNNING",
+    )
+
+
+def test_real_p0_receipt_without_completed_allocation_cannot_dispatch_engine(
+    helper,
+    registered,
+    engine_api,
+):
+    api = engine_api
+    assert helper.read(Path(registered["root"]) / "RUN_IDENTITY.json")["code_commit"] == (
+        helper.FROZEN_COMMIT
+    )  # The legacy v1 waiting boundary remains valid.
+    state = api.controller.submit("p0")
+    helper.save(
+        orchestration.receipt_path(Path(registered["root"]), "p0"),
+        dict(status="PASS", job_id=state["job_id"]),
+    )
+    driver = make_driver(helper, registered, api)
+    assert driver.poll() == "WAIT_ENGINE"
+    assert driver.poll() == "UNCHANGED"
+    assert not engine_intents(helper, registered)
+    assert not api.amendments and not api.freezes
+    assert [call[0] for call in api.slurm.calls] == ["sbatch", "scontrol"]
+
+
+@pytest.mark.parametrize("all_engines_complete", [False, True])
+def test_local_p0_cannot_dispatch_or_start_freeze(
+    helper, registered, engine_api, all_engines_complete
+):
+    api = engine_api
+    api.local_p0()
+    if all_engines_complete:
+        # The unchanged controller intentionally permits this legacy local path.
+        finish_all_engines(api)
+    status = api.controller.status()
+    assert "p0" in status["completed"] and not status["blocked"]
+    if all_engines_complete:
+        assert set(status["completed"]) == helper.ENGINES
+    before = len(api.slurm.calls)
+    driver = make_driver(helper, registered, api)
+    with pytest.raises(PermissionError, match="real completed P0 allocation"):
+        driver.act()
+    assert len(api.slurm.calls) == before
+    assert not api.amendments and not api.freezes
+    assert not (driver.directory.parent.parent / "FREEZE_INTENT.json").exists()
+
+
+@pytest.mark.parametrize("all_engines_complete", [False, True])
+@pytest.mark.parametrize(
+    "change", [None, {"state": "FAILED"}, {"exit_code": "1:0"}, {"user": "mallory"}]
+)
+def test_p0_live_accounting_must_match_authenticated_completion_before_dispatch_or_freeze(
+    helper, registered, engine_api, all_engines_complete, change
+):
+    api = engine_api
+    p0 = finish_p0(api)
+    if all_engines_complete:
+        finish_all_engines(api)
+    if change is None:
+        del api.slurm.accounting[p0["job_id"]]
+    else:
+        api.slurm.accounting[p0["job_id"]] = dict(api.slurm.accounting[p0["job_id"]], **change)
+    # Saved receipts remain valid; the new operational guard must query accounting.
+    status = api.controller.status()
+    assert "p0" in status["completed"] and not status["blocked"]
+    before = len(api.slurm.calls)
+    driver = make_driver(helper, registered, api)
+    with pytest.raises(PermissionError, match="P0 live accounting"):
+        driver.act()
+    assert len(api.slurm.calls) == before
+    assert not api.amendments and not api.freezes
+    assert not (driver.directory.parent.parent / "FREEZE_INTENT.json").exists()
+
+
+def test_real_engine_dispatch_waits_for_capacity_then_fills_only_fixed_unclaimed_tasks(
+    helper,
+    registered,
+    engine_api,
+):
+    api = engine_api
+    finish_p0(api)
+    manual = api.controller.submit("engine")
+    assert helper.read(
+        Path(registered["root"]) / "orchestration/jobs" / manual["key"] / "INTENT.json"
+    )["task_ids"] == ["engine--b0"]
+    api.slurm.rows["cpu-dispatcher"] = cpu_queue_row(helper)
+    for index in range(3):
+        api.slurm.rows[f"unrelated-{index}"] = dict(
+            QOS=helper.QOS,
+            UserId="alice(1)",
+            ReqTRES="cpu=4,gres/gpu=1",
+            JobState="RUNNING" if index == 0 else "PENDING",
+            Reason="Dependency",
+        )
+    original = copy.deepcopy(api.slurm.rows)
+    calls_before = len(api.slurm.calls)
+
+    def forbidden(*args):
+        raise AssertionError("Typed/science cannot run while ENGINE is incomplete")
+
+    driver = make_driver(helper, registered, api, typed=forbidden)
+    assert driver.poll() == "WAIT_ENGINE"
+    assert len(api.slurm.calls) == calls_before
+    assert api.slurm.rows == original
+    api.slurm.rows.pop("unrelated-0")
+    assert driver.poll() == "DISPATCHING_ENGINE"
+    assert len(engine_intents(helper, registered)) == 2
+    assert orchestration.teacher_usage(
+        api.slurm.queue("alice"), api.controller.attempts(), "alice"
+    ) == dict(gpus=4, submitted=5)
+    assert driver.poll() == "WAIT_ENGINE"
+    assert driver.poll() == "UNCHANGED"
+    assert len(engine_intents(helper, registered)) == 2
+    api.slurm.rows.pop("unrelated-1")
+    api.slurm.rows.pop("unrelated-2")
+    assert driver.poll() == "DISPATCHING_ENGINE"
+    intents = engine_intents(helper, registered)
+    assert len(intents) == 4
+    assert {task for intent in intents for task in intent["task_ids"]} == (helper.ENGINES - {"p0"})
+    assert all(
+        len(intent["task_ids"]) == intent["gpu_count"] == 1 and intent["job_name"].endswith("-LH")
+        for intent in intents
+    )
+    for intent in intents:
+        job_dir = Path(intent["script"]).parent
+        assert (
+            helper.read(job_dir / "ALLOCATION_VERIFIED.json")["script_sha256"]
+            == (intent["script_sha256"])
+        )
+        assert helper.read(job_dir / "RELEASE.json")["returncode"] == 0
+    assert not api.amendments and not api.freezes
+    assert not (Path(registered["root"]) / "EXECUTION_FREEZE.json").exists()
+
+
+def test_real_engine_dispatch_respects_other_users_physical_gpu_reservations(
+    helper,
+    registered,
+    engine_api,
+):
+    api = engine_api
+    finish_p0(api)
+    api.slurm.rows["cpu-dispatcher"] = cpu_queue_row(helper)
+    api.slurm.rows["other-user"] = dict(
+        QOS=helper.QOS,
+        UserId="bob(2)",
+        ReqTRES="cpu=4,gres/gpu=5",
+        AllocTRES="cpu=4,gres/gpu=5",
+    )
+    assert make_driver(helper, registered, api).poll() == "WAIT_ENGINE"
+    assert not engine_intents(helper, registered)
+    assert not api.freezes
+
+
+def test_real_engine_sbatch_unknown_is_preserved_and_never_retried(
+    helper,
+    registered,
+    engine_api,
+):
+    api = engine_api
+    finish_p0(api)
+    api.slurm.ambiguous_submit = True
+    driver = make_driver(helper, registered, api)
+    with pytest.raises(RuntimeError, match="ENGINE submission outcome"):
+        driver.act()
+    attempts = api.controller.attempts()
+    assert [row["status"] for row in attempts if row["gpu_count"]] == ["SUBMISSION_UNKNOWN"]
+    calls = len(api.slurm.calls)
+    with pytest.raises(RuntimeError, match="non-recoverable"):
+        driver.act()
+    assert len(api.slurm.calls) == calls
+    assert not api.amendments and not api.freezes
+
+
+def test_real_engine_changed_slurm_script_stays_held_and_cannot_continue(
+    helper,
+    registered,
+    engine_api,
+):
+    api = engine_api
+    finish_p0(api)
+    api.slurm.alter_script = True
+    driver = make_driver(helper, registered, api)
+    with pytest.raises(PermissionError, match="stored batch script"):
+        driver.act()
+    assert [row["status"] for row in api.controller.attempts() if row["gpu_count"]] == ["HELD"]
+    calls = len(api.slurm.calls)
+    with pytest.raises(RuntimeError, match="non-recoverable"):
+        driver.act()
+    assert len(api.slurm.calls) == calls
+    assert not api.freezes
+
+
+@pytest.mark.parametrize(
+    "returned_status", ["SUBMISSION_UNKNOWN", "RELEASE_UNKNOWN", "HELD", "FAILED"]
+)
+def test_engine_submission_must_return_confirmed_submitted_before_next_task(
+    helper,
+    registered,
+    engine_api,
+    returned_status,
+):
+    api = engine_api
+    finish_p0(api)
+    submitted = []
+
+    def submit(kind):
+        submitted.append(kind)
+        return dict(status=returned_status)
+
+    api.controller.submit = submit
+    with pytest.raises(RuntimeError, match="ENGINE submission outcome"):
+        make_driver(helper, registered, api).act()
+    assert submitted == ["engine"]
+    assert not engine_intents(helper, registered) and not api.amendments and not api.freezes
+
+
+def test_engine_failure_observed_between_submissions_stops_without_retry(
+    helper,
+    registered,
+    engine_api,
+):
+    api = engine_api
+    finish_p0(api)
+    original_status = api.controller.status
+
+    def fail_new_engine():
+        for state in api.controller.attempts():
+            if state["gpu_count"] and state.get("job_id") in api.slurm.rows:
+                api.slurm.finish(state["job_id"], "FAILED")
+                break
+        return original_status()
+
+    api.controller.status = fail_new_engine
+    driver = make_driver(helper, registered, api)
+    with pytest.raises(RuntimeError, match="ENGINE submission left"):
+        driver.act()
+    assert len(engine_intents(helper, registered)) == 1
+    calls = len(api.slurm.calls)
+    with pytest.raises(RuntimeError, match="non-recoverable"):
+        driver.act()
+    assert len(api.slurm.calls) == calls
+    assert not api.amendments and not api.freezes
+
+
+def test_only_all_real_engine_completions_unlock_amendment_and_freeze(
+    helper,
+    registered,
+    engine_api,
+):
+    api = engine_api
+    finish_p0(api)
+    api.slurm.rows["cpu-dispatcher"] = cpu_queue_row(helper)
+    driver = make_driver(
+        helper, registered, api, typed=lambda *args: typed_stub(helper, registered)
+    )
+    assert driver.act() == "DISPATCHING_ENGINE"
+    states = [state for state in api.controller.attempts() if state["gpu_count"]]
+    assert len(states) == 4
+    for state in states[:-1]:
+        api.finish(state)
+        assert driver.act() == "WAIT_ENGINE"
+        assert not api.amendments and not api.freezes
+    api.finish(states[-1])
+    status = api.controller.status()
+    assert set(status["completed"]) == helper.ENGINES and not status["blocked"]
+    # Test only the engineering boundary, not a scientific training allocation.
+    ticks = []
+
+    def scientific_tick():
+        assert (Path(registered["root"]) / "EXECUTION_FREEZE.json").is_file()
+        ticks.append(True)
+        return dict(blocked=False, all_complete=False)
+
+    api.controller.tick = scientific_tick
+    assert driver.act() == "DISPATCHING_FIXED_TASKS"
+    assert len(api.amendments) == len(api.freezes) == len(ticks) == 1
+    assert api.lifecycle[:3] == ["amendment", "freeze", "extension_verify"]
 
 
 def test_identity_binds_scientific_config_and_all_operational_sources(helper, registered):

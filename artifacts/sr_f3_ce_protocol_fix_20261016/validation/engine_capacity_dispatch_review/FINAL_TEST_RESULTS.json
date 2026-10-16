@@ -1,0 +1,46 @@
+{
+  "source_sha256": {
+    "scripts/sr_f3_ce/dispatch_registered.py": "be997834324f7a48ca8a314344ff161af9dcae3622ea092dae17d59c8bc9e955",
+    "tests/sr_f3_ce/test_dispatch_registered.py": "4e3d3e23523c1d8bd58aa193fef136076d9394b99b529cfe9f7c90542b27f1ca"
+  },
+  "tests": [
+    {
+      "command": [
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=/private/tmp/srf3-engine-capacity-review/pytest_final",
+        "tests/sr_f3_ce/test_dispatch_registered.py",
+        "tests/sr_f3_ce/test_orchestration.py"
+      ],
+      "returncode": 0,
+      "log": "FINAL_TESTS.txt",
+      "log_sha256": "1ea4de76508a03c68430913d0b4bc935c001df79fa30c61cf18825f9a5c3ffdb",
+      "output": "........................................................................ [ 54%]\n............................................................             [100%]\n132 passed in 5.05s\n"
+    },
+    {
+      "command": [
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=/private/tmp/srf3-engine-capacity-review/pytest_boundary_fixed",
+        "/private/tmp/srf3-engine-capacity-review/test_independent_boundary.py"
+      ],
+      "returncode": 0,
+      "log": "INDEPENDENT_LOCAL_P0_FIXED.txt",
+      "log_sha256": "59907462a8d5fd93406cdf4c7d1eb2f7b7a96664ae85c4ec202693d419cd019e",
+      "output": ".                                                                        [100%]\n1 passed in 0.09s\n"
+    }
+  ],
+  "server_commands": 0,
+  "model_calls": 0,
+  "scientific_source_modified": false
+}
