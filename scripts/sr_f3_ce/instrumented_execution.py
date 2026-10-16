@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Explicit, manifest-bound observation launcher for the unchanged SR-F3-CE core.
+"""Explicit, manifest-bound observation launcher for the run-bound SR-F3-CE core.
 
-The old core verifies the scientific implementation. This extension separately
+The run-bound core verifies the scientific implementation. This extension separately
 verifies its own source, prospective amendment, real commands and observation
 receipts. It never presents an instrumented command as the old run_worker path.
 """
@@ -99,10 +99,55 @@ def _reject_bytecode(code):
         raise PermissionError("Unbound scientific bytecode cache must not be imported")
 
 
+def _source_revision(root):
+    """Keep v1 pinned; authenticate the exact adopted revision before importing it."""
+    root = Path(root).resolve(strict=True)
+    registration = _read(root / "RUN_IDENTITY.json")
+    config_path = root / "plan/config/SR_F3_CE.json"
+    config = _read(config_path) if config_path.is_file() else {}
+    revision = config.get("protocol_revision", "v1")
+    if revision == "v1":
+        if registration.get("code_commit") != BASE_COMMIT:
+            raise PermissionError(
+                "Original protocol identity changed: frozen scientific commit required"
+            )
+        return dict(code_commit=BASE_COMMIT, protocol_revision="v1")
+    if revision not in {"v2", "c2"}:
+        raise PermissionError("Unregistered protocol revision")
+    code = root / "code"
+    sys.dont_write_bytecode = True
+    if any(p.is_file() and p.suffix in {".pyc", ".pyo"} for p in code.rglob("*")):
+        raise PermissionError("Unbound scientific bytecode cache must not be imported")
+    manifest = _read(root / "deployment/SOURCE_MANIFEST.json")
+    rows = manifest.get("files", [])
+    if not rows or len({row["path"] for row in rows}) != len(rows):
+        raise PermissionError("Revised source inventory is empty or ambiguous")
+    for row in rows:
+        source = _bounded(code, row["path"])
+        if source.stat().st_size != row["bytes"] or _sha(source) != row["sha256"]:
+            raise PermissionError("Revised source changed before guard import")
+    if not sys.path or sys.path[0] != str(code / "src"):
+        sys.path.insert(0, str(code / "src"))
+    module = importlib.import_module("sr_f3_ce.protocol")
+    if Path(module.__file__).resolve() != code / "src/sr_f3_ce/protocol.py":
+        raise PermissionError("Protocol source guard was imported from another deployment")
+    checked = module.verify_run_source_revision(root, source_manifest=manifest)
+    if checked.get("protocol_revision") != revision or (
+        checked.get("code_commit") != registration.get("code_commit")
+    ):
+        raise PermissionError("Selected protocol/source guard differs from this run")
+    return checked
+
+
+def _revision_binding(checked):
+    return {} if checked["protocol_revision"] == "v1" else {"protocol_source_guard": checked}
+
+
 def verify_extension(root, manifest_path, *, science=False):
     """Validate static extension bytes; science additionally requires the full freeze chain."""
     root = Path(root).resolve(strict=True)
     _reject_bytecode(root / "code")
+    checked_source = _source_revision(root)
     manifest_path = Path(manifest_path).resolve(strict=True)
     manifest = _read(manifest_path)
     commit = manifest.get("extension_commit", "")
@@ -116,7 +161,8 @@ def verify_extension(root, manifest_path, *, science=False):
         schema_version=1,
         experiment_id=EXPERIMENT,
         status="FROZEN_OBSERVABILITY_EXTENSION",
-        base_code_commit=BASE_COMMIT,
+        base_code_commit=checked_source["code_commit"],
+        **_revision_binding(checked_source),
         run_identity_sha256=_sha(root / "RUN_IDENTITY.json"),
         base_source_manifest_sha256=_sha(root / "deployment/SOURCE_MANIFEST.json"),
     )
@@ -125,7 +171,7 @@ def verify_extension(root, manifest_path, *, science=False):
     registration = _read(root / "RUN_IDENTITY.json")
     if (
         registration.get("experiment_id") != EXPERIMENT
-        or registration.get("code_commit") != BASE_COMMIT
+        or registration.get("code_commit") != checked_source["code_commit"]
     ):
         raise PermissionError("Extension cannot replace the registered scientific source")
     sources = manifest.get("sources", [])
@@ -164,7 +210,8 @@ def verify_extension(root, manifest_path, *, science=False):
         manifest_path=str(manifest_path),
         manifest_sha256=_sha(manifest_path),
         extension_commit=commit,
-        base_code_commit=BASE_COMMIT,
+        base_code_commit=checked_source["code_commit"],
+        **_revision_binding(checked_source),
         observer_source_sha256=_sha(expected_directory / "observe_runtime.py"),
         run_identity_sha256=required["run_identity_sha256"],
         base_source_manifest_sha256=required["base_source_manifest_sha256"],
@@ -186,7 +233,8 @@ def verify_extension(root, manifest_path, *, science=False):
             extension_manifest_sha256=result["manifest_sha256"],
             run_identity_sha256=result["run_identity_sha256"],
             config_sha256=_sha(root / "orchestration/CONFIG.json"),
-            scientific_code_commit=BASE_COMMIT,
+            scientific_code_commit=checked_source["code_commit"],
+            **_revision_binding(checked_source),
             extension_commit=commit,
             scientific_matrix_changed=False,
             new_model_generations=0,
@@ -201,7 +249,7 @@ def verify_extension(root, manifest_path, *, science=False):
             task: _sha(root / "tasks" / task / "COMPLETE.json") for task in ENGINE_IDS
         }
         if amendment.get("engineering_receipts") != expected_engine:
-            raise PermissionError("Observation amendment changed old engineering evidence")
+            raise PermissionError("Observation amendment changed current run engineering evidence")
         if _CONTEXT is not None and amendment.get("scientific_matrix_sha256") != _digest(
             list(TASKS.values())
         ):
@@ -450,7 +498,7 @@ def _verify_intent(root, intent):
 
 
 def seal_amendment(root, manifest_path, *, typed_verified):
-    """Seal the prospective technical amendment only after old gates are terminal."""
+    """Seal the amendment after this run's engineering allocations are terminal."""
     controller_class = install(root, manifest_path)
     root = Path(root).resolve(strict=True)
     checked = verify_extension(root, manifest_path)
@@ -470,7 +518,7 @@ def seal_amendment(root, manifest_path, *, typed_verified):
     status = controller.status()
     if status["blocked"] or not set(status["completed"]) >= ENGINE_IDS:
         raise PermissionError(
-            "All original engineering allocations must have verified terminal success"
+            "All current run engineering allocations must have verified terminal success"
         )
     for state in controller.attempts():
         intent = _read(root / "orchestration/jobs" / state["key"] / "INTENT.json")
@@ -504,7 +552,12 @@ def seal_amendment(root, manifest_path, *, typed_verified):
         extension_manifest_sha256=checked["manifest_sha256"],
         run_identity_sha256=checked["run_identity_sha256"],
         config_sha256=_sha(root / "orchestration/CONFIG.json"),
-        scientific_code_commit=BASE_COMMIT,
+        scientific_code_commit=checked["base_code_commit"],
+        **(
+            {"protocol_source_guard": checked["protocol_source_guard"]}
+            if "protocol_source_guard" in checked
+            else {}
+        ),
         extension_commit=checked["extension_commit"],
         scientific_matrix_changed=False,
         new_model_generations=0,
@@ -1016,7 +1069,7 @@ def run_worker(root, task_id):
     context.api.protocol.verify_run(root, science=True)
     task = TASKS[task_id]
     if task["kind"] not in SCIENCE:
-        raise PermissionError("Observation wrapper must not replace old ENGINE/P0 execution")
+        raise PermissionError("Observation wrapper must not replace this run's ENGINE/P0 execution")
     bound = context.api.orchestration.worker_binding(root, task_id)
     key = os.environ["SRF3CE_JOB_KEY"]
     intent = _read(root / "orchestration/jobs" / key / "INTENT.json")

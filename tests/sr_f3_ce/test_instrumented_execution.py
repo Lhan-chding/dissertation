@@ -651,3 +651,43 @@ def test_existing_scientific_package_bytecode_is_rejected_before_import(setup):
     cached.write_bytes(b"unbound cache fixture")
     with pytest.raises(PermissionError, match="scientific bytecode"):
         setup.module.verify_extension(setup.root, setup.manifest)
+
+
+@pytest.mark.parametrize("revision", ["v2", "c2"])
+def test_selected_revision_extension_binds_complete_source_guard(setup, monkeypatch, revision):
+    e, root = setup.module, setup.root
+    guard = dict(
+        code_commit="c" * 40,
+        protocol_revision=revision,
+        protocol_selection_sha256="d" * 64,
+        request_sha256="e" * 64,
+        ablation_root=str(root.with_name("ablation")),
+    )
+    registration = e._read(root / "RUN_IDENTITY.json")
+    registration["code_commit"] = guard["code_commit"]
+    orchestration.save_json(root / "RUN_IDENTITY.json", registration)
+    manifest = e._read(setup.manifest)
+    manifest.update(
+        base_code_commit=guard["code_commit"],
+        protocol_source_guard=guard,
+        run_identity_sha256=e._sha(root / "RUN_IDENTITY.json"),
+    )
+    orchestration.save_json(setup.manifest, manifest)
+    monkeypatch.setattr(e, "_CONTEXT", None)
+    monkeypatch.setattr(e, "_source_revision", lambda _: guard)
+    checked = e.verify_extension(root, setup.manifest)
+    assert checked["base_code_commit"] == guard["code_commit"]
+    assert checked["protocol_source_guard"] == guard
+    manifest["protocol_source_guard"] = dict(guard, protocol_selection_sha256="0" * 64)
+    orchestration.save_json(setup.manifest, manifest)
+    with pytest.raises(PermissionError, match="source identity"):
+        e.verify_extension(root, setup.manifest)
+
+
+def test_legacy_extension_cannot_accept_new_scientific_commit(setup):
+    e, root = setup.module, setup.root
+    registration = e._read(root / "RUN_IDENTITY.json")
+    registration["code_commit"] = "c" * 40
+    orchestration.save_json(root / "RUN_IDENTITY.json", registration)
+    with pytest.raises(PermissionError, match="frozen scientific commit"):
+        e.verify_extension(root, setup.manifest)

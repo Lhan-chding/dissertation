@@ -12,7 +12,9 @@ from sr_f3_ce import endpoint_runner, recovery, runner
 from sr_f3_ce.checkpoint import checkpoint_state, commit_checkpoint
 from sr_f3_ce.evaluation import _slots, group_slots
 from sr_f3_ce.orchestration import TEACHER_QOS, artifact_record, validate_resume_verification
+from sr_f3_ce.prompts import prefill_for
 from sr_f3_ce.protocol import EXPERIMENT_ID, PARENTS, digest, file_hash, read_json, stable_seed
+from sr_f3_ce.protocol_revision import revision_config
 from sr_f3_ce.training import fresh_optimizer
 
 torch = pytest.importorskip("torch")
@@ -66,13 +68,18 @@ def previous(root, task_id=TASK, *, terminal="TIMEOUT"):
 
 
 @pytest.fixture
-def context(tmp_path, monkeypatch):
+def context(tmp_path, monkeypatch, request):
     root = tmp_path
+    revision = getattr(request, "param", "v1")
     write(root / "RUN_IDENTITY.json", dict(experiment_id=EXPERIMENT_ID))
     write(root / "EXECUTION_FREEZE.json", dict(status="FROZEN_BEFORE_SCIENCE"))
-    config = dict(generation=dict(temperature=1, max_new_tokens=1024))
+    config = dict(generation=dict(temperature=1, max_new_tokens=1024, prefill="{"))
+    if revision != "v1":
+        config = revision_config(config, revision)
     write(root / "plan/config/SR_F3_CE.json", config)
-    write(root / "native/SUPPORT_MASK_RECEIPT.json", dict(status="PASS"))
+    write(
+        root / "native/SUPPORT_MASK_RECEIPT.json", dict(status="PASS", protocol_revision=revision)
+    )
     runs = [
         dict(
             run_id=f"SRF3CE_{arm}_b{block}",
@@ -114,6 +121,8 @@ def context(tmp_path, monkeypatch):
     model_identity = dict(
         parent_id=PARENTS[0], base_model_weights_hash=digest("base"), model_id="base"
     )
+    if revision != "v1":
+        model_identity["protocol_revision"] = revision
     adapter = dict(
         model_id="base",
         step=None,
@@ -123,6 +132,10 @@ def context(tmp_path, monkeypatch):
         published_adapter_hash=None,
     )
     rows = [dict(model_id=PARENTS[0], model_identity=model_identity, adapter_identity=adapter)]
+    if revision != "v1":
+        rows[0].update(
+            protocol_revision=revision, assistant_prefill=prefill_for("structured", revision)
+        )
     raw = write(
         root / "engine/b0/groups/original.json", dict(records=rows, records_sha256=digest(rows))
     )
@@ -137,6 +150,13 @@ def context(tmp_path, monkeypatch):
         run_identity_sha256=file_hash(root / "RUN_IDENTITY.json"),
         reference_hash=parent["policy_hash"],
     )
+    sampling = config["generation"]
+    if revision != "v1":
+        binding = dict(
+            protocol_revision=revision, assistant_prefill=prefill_for("structured", revision)
+        )
+        identity.update(binding)
+        sampling = dict(sampling, **binding)
     sources = dict(
         run_identity=file_hash(root / "RUN_IDENTITY.json"),
         masks=file_hash(root / "native/SUPPORT_MASK_RECEIPT.json"),
@@ -146,7 +166,7 @@ def context(tmp_path, monkeypatch):
         run_identity=identity,
         reference=reference,
         stream_hash=digest(schedule),
-        sampling_hash=digest(config["generation"]),
+        sampling_hash=digest(sampling),
         source_hashes=sources,
         microbatch_size=4,
         step_statistics={},
@@ -193,6 +213,7 @@ def context(tmp_path, monkeypatch):
         state=state,
         config=config,
         parent=parent,
+        revision=revision,
     )
 
 
@@ -211,6 +232,12 @@ def group(context, *, step=1, slot=0, count=8, complete=False):
         input_hash=digest(source),
         task_hash=digest(c.tasks[qid]),
     )
+    binding = {
+        k: c.identity[k] for k in ("protocol_revision", "assistant_prefill") if k in c.identity
+    }
+    request.update(binding)
+    prefill = prefill_for("structured", c.revision)
+    generated = '], "answer":0}' if c.revision == "c2" else '"answer":0}'
     rows = [
         dict(
             model_input=source,
@@ -230,14 +257,17 @@ def group(context, *, step=1, slot=0, count=8, complete=False):
             technical_validation_errors=[],
             finish_reason="balanced",
             truncated=False,
-            assistant_prefill="{",
-            generated_text='"answer":0}',
-            full_text='{"answer":0}',
-            raw_text='{"answer":0}',
+            assistant_prefill=prefill,
+            generated_text=generated,
+            full_text=prefill + generated,
+            raw_text=prefill + generated,
             root=str(c.store.image_root),
         )
         for i in range(count)
     ]
+    if c.revision != "v1":
+        for row in rows:
+            row["protocol_revision"] = c.revision
     path = c.directory / "rollouts" / f"{step:02d}-{slot:02d}.json"
     write(path.with_suffix(".request.json"), request)
     if complete:
@@ -406,6 +436,7 @@ def test_unregistered_cache_and_frozen_parent_impersonation_block(context):
         recovery.verify_resume(c.root, TASK, KEY)
 
 
+@pytest.mark.parametrize("context", ["v1", "c2"], indirect=True)
 def test_endpoint_cache_recovery_uses_authenticated_parent_and_never_loads_scorer(
     context, monkeypatch
 ):
@@ -423,10 +454,12 @@ def test_endpoint_cache_recovery_uses_authenticated_parent_and_never_loads_score
         model_identity=stable,
         adapter_identity=adapter,
     )
+    if c.revision != "v1":
+        provenance["protocol_revision"] = c.revision
     write(destination / "MODEL_IDENTITY.json", provenance)
     qid = c.schedule[0]["rl_qids"][0]
     task = dict(c.tasks[qid], pool="TEST_ID", family="CROSS", root_id="root")
-    slots = _slots(model, [task], "structured", 4)
+    slots = _slots(model, [task], "structured", 4, revision=c.revision)
     grouped = group_slots(slots)[0]
     _, _, raw = group(c, count=2)
     rows = []
@@ -453,7 +486,12 @@ def test_endpoint_cache_recovery_uses_authenticated_parent_and_never_loads_score
         )
     path = destination / "TEST_ID/groups" / (grouped["group_id"] + ".pending.jsonl")
     pending(path, rows)
-    monkeypatch.setattr(recovery, "endpoint_slots", lambda *args, **kwargs: slots)
+
+    def endpoint_slots(*args, **kwargs):
+        assert kwargs["revision"] == c.revision
+        return slots
+
+    monkeypatch.setattr(recovery, "endpoint_slots", endpoint_slots)
     observed = []
 
     def external(root, *, load_scorer):
@@ -474,3 +512,61 @@ def test_endpoint_cache_recovery_uses_authenticated_parent_and_never_loads_score
     write(destination / "MODEL_IDENTITY.json", changed)
     with pytest.raises(PermissionError, match="model provenance"):
         recovery.verify_resume(c.root, task_id, KEY)
+
+
+@pytest.mark.parametrize("context", ["v2", "c2"], indirect=True)
+def test_revised_training_recovery_binds_actual_prefill_and_rejects_v1_rows(context):
+    c = context
+    path, request, rows = group(c, count=3)
+    assert request["protocol_revision"] == c.revision
+    assert request["assistant_prefill"] == prefill_for("structured", c.revision)
+    result = recovery.verify_resume(c.root, TASK, KEY)
+    verification = read_json(c.root / "recovery" / KEY / "VERIFICATION.json")
+    assert result["resume_kind"] == "checkpoint"
+    assert verification["protocol_revision"] == c.revision
+    # Matching seeds, model and root cannot authorize the older protocol's
+    # original trajectory, even if a caller changes its surrounding request.
+    rows[0].update(protocol_revision="v1", assistant_prefill="{")
+    pending(path.with_suffix(".pending.jsonl"), rows)
+    with pytest.raises((PermissionError, ValueError), match=r"slot|prefill"):
+        recovery.verify_resume(c.root, TASK, KEY)
+
+
+@pytest.mark.parametrize("context", ["c2"], indirect=True)
+@pytest.mark.parametrize("field,value", [("protocol_revision", "v1"), ("assistant_prefill", "{")])
+def test_revised_checkpoint_cannot_borrow_legacy_identity(context, monkeypatch, field, value):
+    c = context
+    state, marker = recovery.read_checkpoint(c.directory / "checkpoints")
+    state["run_identity"][field] = value
+    monkeypatch.setattr(recovery, "read_checkpoint", lambda *args, **kwargs: (state, marker))
+    with pytest.raises(PermissionError, match="frozen identity"):
+        recovery._checkpoint(
+            c.root, c.run, c.dataset, c.store, c.config, c.parent, recovery.Evidence(c.root, KEY)
+        )
+
+
+@pytest.mark.parametrize("context", ["c2"], indirect=True)
+def test_monitor_recovery_reconstructs_slots_from_selected_revision(context, monkeypatch):
+    c = context
+    monkeypatch.setattr(recovery, "_checkpoint", lambda *args, **kwargs: (c.state, {"step": 16}))
+    monkeypatch.setattr(recovery, "_training_cache", lambda *args: {})
+    seen = []
+
+    def slots(tasks, model_id, step, *, revision):
+        seen.append((model_id, step, revision))
+        return []
+
+    monkeypatch.setattr(recovery, "monitor_slots", slots)
+    monkeypatch.setattr(recovery, "_panel", lambda *args: {})
+    recovery._train(
+        c.root,
+        {"model_id": RUN, "task_id": TASK},
+        c.dataset,
+        c.store,
+        c.config,
+        c.parent,
+        c.model,
+        c.adapter,
+        recovery.Evidence(c.root, KEY),
+    )
+    assert seen == [(RUN, 16, "c2")]

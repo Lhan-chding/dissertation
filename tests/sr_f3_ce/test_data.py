@@ -159,8 +159,7 @@ def test_fixed_spotchecks_cover_queries_templates_boundary_styles_and_arity(data
     for family in ("CROSS", "THRESHOLD", "TOPK", "INTERVAL"):
         for variant in range(8):
             assert any(
-                f"{family}: frozen TRAIN_RL variant {variant}" in item["rules"]
-                for item in checks
+                f"{family}: frozen TRAIN_RL variant {variant}" in item["rules"] for item in checks
             )
 
 
@@ -190,8 +189,7 @@ def test_gold_sidecar_mutation_cannot_affect_model_inputs(tmp_path):
     qid = "ENGINE_CROSS_0000_line_v0"
     prompt = (
         "For categories where Alpha is strictly greater than Beta, "
-        "compute the sum of the Alpha values.\n"
-        + CONTRACT
+        "compute the sum of the Alpha values.\n" + CONTRACT
     )
     frozen = {
         qid: {
@@ -214,10 +212,7 @@ def test_gold_sidecar_mutation_cannot_affect_model_inputs(tmp_path):
         }
     }
     store = ModelInputStore(frozen, images, tmp_path)
-    before = {
-        p: store.model_input(qid, p)
-        for p in ("structured", "answer_only", "natural_work")
-    }
+    before = {p: store.model_input(qid, p) for p in ("structured", "answer_only", "natural_work")}
     sidecar = tmp_path / "TASKS_AUDIT_ONLY.jsonl"
     sidecar.write_text(
         json.dumps(
@@ -232,18 +227,11 @@ def test_gold_sidecar_mutation_cannot_affect_model_inputs(tmp_path):
         + "\n"
     )
     frozen[qid]["prompt"] = "Caller mutation must not alter store"
-    after = {
-        p: store.model_input(qid, p)
-        for p in ("structured", "answer_only", "natural_work")
-    }
+    after = {p: store.model_input(qid, p) for p in ("structured", "answer_only", "natural_work")}
     assert before == after
+    assert all(set(value) == {"prompt", "image_file", "image_sha256"} for value in after.values())
     assert all(
-        set(value) == {"prompt", "image_file", "image_sha256"}
-        for value in after.values()
-    )
-    assert all(
-        "SECRET" not in value["prompt"] and qid not in value["prompt"]
-        for value in after.values()
+        "SECRET" not in value["prompt"] and qid not in value["prompt"] for value in after.values()
     )
     image.write_bytes(b"tampered")
     with pytest.raises(ValueError, match="image changed"):
@@ -255,3 +243,123 @@ def test_model_image_path_cannot_escape_root(tmp_path):
         bounded_path(tmp_path, "../outside.png")
     with pytest.raises(ValueError):
         bounded_path(tmp_path, "/tmp/outside.png")
+
+
+@pytest.fixture(params=["v2", "c2"])
+def revised_plan(request):
+    path = PLAN.parents[1] / "sr_f3_ce_protocol_fix_20261016/candidates" / request.param / "plan"
+    if not path.is_dir():
+        pytest.skip("Private adopted revision candidates are not installed in this checkout")
+    return request.param, path
+
+
+def test_full_revised_dataset_preserves_truth_and_has_recomputed_teachers(dataset, revised_plan):
+    revision, plan = revised_plan
+    new = load_frozen_dataset(plan)
+    assert new.audit["protocol_revision"] == revision
+    assert len(new.tasks) == 4096
+    assert new.roots == dataset.roots
+    assert new.runs == dataset.runs
+    assert new.schedules == dataset.schedules
+    for qid, row in new.tasks.items():
+        original = dataset.tasks[qid]
+        assert {k: v for k, v in row.items() if k not in {"prompt", "teacher"}} == {
+            k: v for k, v in original.items() if k not in {"prompt", "teacher"}
+        }
+    assert new.audit["independent_answer_mismatches"] == []
+
+
+def test_revised_model_store_does_not_open_gold_sidecars(revised_plan, tmp_path, monkeypatch):
+    from sr_f3_ce import data
+
+    revision, plan = revised_plan
+    original_json, original_jsonl = data.read_json, data.read_jsonl
+    original_bytes = Path.read_bytes
+    reads = []
+
+    def observed(reader):
+        def read(path):
+            reads.append(str(path))
+            assert "AUDIT_ONLY" not in str(path)
+            return reader(path)
+
+        return read
+
+    monkeypatch.setattr(Path, "read_bytes", observed(original_bytes))
+    monkeypatch.setattr(data, "read_json", observed(original_json))
+    monkeypatch.setattr(data, "read_jsonl", observed(original_jsonl))
+    rows = original_jsonl(plan / "manifests/MODEL_INPUTS.jsonl")
+    image_bytes = b"test route only; no pixels or model calls"
+    images = tmp_path / "images"
+    images.mkdir()
+    qid = rows[0]["qid"]
+    (images / (qid + ".png")).write_bytes(image_bytes)
+    image_manifest = tmp_path / "IMAGE_MANIFEST.jsonl"
+    image_manifest.write_text(
+        "".join(
+            json.dumps(
+                {
+                    "qid": row["qid"],
+                    "image_file": "images/" + row["qid"] + ".png",
+                    "image_sha256": hashlib.sha256(image_bytes).hexdigest(),
+                }
+            )
+            + "\n"
+            for row in rows
+        )
+    )
+    store = ModelInputStore.from_files(
+        plan / "manifests/MODEL_INPUTS.jsonl", image_manifest, image_root=tmp_path
+    )
+    assert store.model_input(qid)["prompt"] == rows[0]["prompt"]
+    assert len(store._inputs) == 4096
+    assert not any("TASKS" in item or "ROOTS" in item for item in reads)
+    if revision == "v2":
+        assert any("revision_sources/v1/manifests/MODEL_INPUTS.jsonl" in item for item in reads)
+
+
+def test_revised_model_inputs_reject_unregistered_question_change(revised_plan, tmp_path):
+    import shutil
+
+    _, plan = revised_plan
+    for relative in (
+        "config/SR_F3_CE.json",
+        "revision_sources/REQUEST.md",
+        "revision_sources/v1/manifests/MODEL_INPUTS.jsonl",
+        "manifests/MODEL_INPUTS.jsonl",
+    ):
+        destination = tmp_path / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(plan / relative, destination)
+    path = tmp_path / "manifests/MODEL_INPUTS.jsonl"
+    lines = path.read_text().splitlines()
+    row = json.loads(lines[0])
+    row["prompt"] = "Unauthorized question change\n" + row["prompt"]
+    lines[0] = json.dumps(row)
+    path.write_text("\n".join(lines) + "\n")
+    with pytest.raises(ValueError, match="authorized prompt"):
+        ModelInputStore.from_files(
+            path, tmp_path / "UNREAD_IMAGE_MANIFEST.jsonl", image_root=tmp_path
+        )
+
+
+def test_input_authentication_hashes_the_exact_bytes_parsed(tmp_path, monkeypatch):
+    from sr_f3_ce import data
+
+    if not PLAN.exists():
+        pytest.skip("Private frozen user package is not installed")
+    valid = (PLAN / "manifests/MODEL_INPUTS.jsonl").read_bytes()
+    path = tmp_path / "MODEL_INPUTS.jsonl"
+    path.write_bytes(valid.replace(b"For categories", b"Wrong question", 1))
+    original = Path.read_bytes
+
+    def replace_after_read(self):
+        contents = original(self)
+        if self == path:
+            self.write_bytes(valid)
+        return contents
+
+    monkeypatch.setattr(Path, "read_bytes", replace_after_read)
+    with pytest.raises((ValueError, FileNotFoundError)):
+        data.ModelInputStore.from_files(path, tmp_path / "unused.jsonl", image_root=tmp_path)
+    assert hashlib.sha256(original(path)).hexdigest() == data.MODEL_INPUTS_SHA256

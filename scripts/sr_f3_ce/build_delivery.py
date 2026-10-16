@@ -185,6 +185,12 @@ def load_frozen_api(root, *, extension_manifest=None):
     if any(not Path(m.__file__).resolve().is_relative_to(code) for m in modules.values()):
         fail("Scientific imports did not come from root/code/src")
     api = SimpleNamespace(**modules)
+    config = read(root / "plan/config/SR_F3_CE.json")
+    revision = config.get("protocol_revision", "v1")
+    if revision != "v1":
+        api.protocol_source_guard = api.protocol.verify_run_source_revision(
+            root, source_manifest=manifest
+        )
     api.observability = load_observability_extension(root, api, extension_manifest)
     return api
 
@@ -276,6 +282,11 @@ def load_observability_extension(root, api, manifest_path=None):
             manifest_sha256=sha_file(selected),
             extension_commit=manifest["extension_commit"],
             base_code_commit=manifest["base_code_commit"],
+            **(
+                {"protocol_source_guard": manifest["protocol_source_guard"]}
+                if "protocol_source_guard" in manifest
+                else {}
+            ),
             observer_source_sha256=sources["observe_runtime.py"][1]["sha256"],
             amendment_sha256=sha_file(directory / "AMENDMENT.json"),
             cpu_validation_sha256=sha_file(directory / "CPU_VALIDATION.json"),
@@ -557,7 +568,15 @@ def _table(headers, rows):
 
 
 def render_report(
-    analysis, external, prefix, coverage, costs, prior, external_status, training_signals=None
+    analysis,
+    external,
+    prefix,
+    coverage,
+    costs,
+    prior,
+    external_status,
+    training_signals=None,
+    work_trajectory=None,
 ):
     """Render actual values, including every adverse block; never manufacture findings."""
     _validate_analysis(analysis)
@@ -585,6 +604,19 @@ def render_report(
         ),
         "## 三个主要对比：全部三个实际块在同表\n",
     ]
+    if coverage.get("protocol_revision", "v1") != "v1":
+        text.insert(
+            2,
+            (
+                "当前科学记录使用已冻结的 "
+                + coverage["protocol_revision"]
+                + " 协议及 indent=2 教师序列化。表中 ENGINE、恢复缓存、MONITOR 和训练/端点"
+                "均来自本次选择后的新运行；旧 v1 原文及提示消融独立保留，不计入这些分母。"
+                "选择只依三父块的 value_parseable 技术门槛，不依正确率或科学臂表现。"
+                "2,304 条消融和 3,904 条历史 v1 原文的保留链见 "
+                "[PROTOCOL_REVISION_RETENTION.json](PROTOCOL_REVISION_RETENTION.json)。\n"
+            ),
+        )
     rows = []
     for name in ("C1", "C2", "C3"):
         item = analysis["primary"][name]
@@ -774,6 +806,31 @@ def render_report(
             "PREFIX 与 EXEC 完整支持序列相同，GOLD 支持较短；实际 token 和梯度成本不相同。"
             "接受充分证据作为所有臂共有基础，EXEC 收益不能称为该基础的单独因果证明。\n",
         ]
+    if work_trajectory is not None:
+        text += [
+            "## work 字段随训练的描述统计\n",
+            "[全部逐步与 MONITOR 统计](WORK_OCCURRENCE_TRAJECTORY.json) "
+            "保留 768 个训练步及 51 个固定 MONITOR 面板。"
+            "分子是第一个严格 JSON 对象中存在小写顶层 work 键的回答；同时保留非空字符串计数。"
+            "全体回答率包含无效输出，可解析回答率仅使用 value_parseable=1 子集；"
+            "分母为零时 UNKNOWN。"
+            "这些统计不参与奖励、提示选择或训练路由。下表来自同一固定 MONITOR 池。\n",
+            _table(
+                ["模型", "块", "步", "全部回答", "work/全部 %", "可解析回答", "work/可解析 %"],
+                [
+                    [
+                        item["model_id"],
+                        item["block"],
+                        item["step"],
+                        item["summary"]["records"],
+                        _number(item["summary"]["work_fraction_all_records"], 100),
+                        item["summary"]["parseable_answers"],
+                        _number(item["summary"]["work_fraction_parseable_answers"], 100),
+                    ]
+                    for item in work_trajectory["monitor"]
+                ],
+            ),
+        ]
     text += [
         "完整未解析类型和双审原件见 "
         "[UNRESOLVED_TYPES.jsonl.gz](UNRESOLVED_TYPES.jsonl.gz) 与 evidence/external。\n",
@@ -782,7 +839,7 @@ def render_report(
         "实际 hook 计数只归当前最内层 runtime scope，model_hook_layers 不重复加入模型阶段计数。"
         "父 scope 墙钟不与子 scope 累加，视觉时间与模型阶段时间为重叠轴，不能相加；"
         "这些是主机回调时间，不是 GPU kernel 时间。缺 END、FINAL 或覆盖不完整的尝试标 UNKNOWN；"
-        "旧 ENGINE 没有回补观测或重跑，其缺失阶段成本仍未知。\n",
+        "本次 ENGINE 在观测扩展安装前完成，未回补观测，其缺失阶段成本仍未知。\n",
         "```json\n" + json.dumps(costs, ensure_ascii=False, indent=2) + "\n```\n",
         "UNKNOWN 表示账本未记录或无法无歧义汇总；没有据配置、申请时长或重复行推算 GPU 小时。"
         "失败尝试和重算仍保留，不能以成功样本成本替代实际成本。\n",
@@ -879,6 +936,102 @@ def collect_training(root, api, dataset, store):
     if len(groups) != 12 * 64 * 16 or len(supports) != 2304:
         fail("Training/support full coverage differs")
     return groups, supports
+
+
+def work_occurrence_trajectory(root, api, dataset, training, monitor):
+    """Recompute descriptive work rates from all already retained current-run raw."""
+    if not slot_revision_kwargs(root):
+        return None
+    models = {model["model_id"]: model for model in api.evaluation.endpoint_models()}
+    result = {}
+    for kind, entries, expected_panels, expected_rows in (
+        ("training", training, 12 * 64, 128),
+        ("monitor", monitor, 3 + 12 * 4, 512),
+    ):
+        panels = defaultdict(list)
+        paths = defaultdict(list)
+        for path, metadata, _ in entries:
+            original = read(path)
+            if kind == "training":
+                model_id, step = metadata["run_id"], int(path.name[:2])
+            else:
+                model_id = path.parents[2].name
+                step = int(path.parents[1].name.removeprefix("step-"))
+            if model_id not in models:
+                fail("Work trajectory contains an unregistered model")
+            key = (model_id, step)
+            for row in original["records"]:
+                if kind == "monitor":
+                    task = dataset.tasks[row["qid"]]
+                    score = api.contract.score(
+                        row["raw_text"],
+                        task["world"],
+                        task["query"],
+                        finish_reason=row["finish_reason"],
+                        protocol="structured",
+                    )
+                    row = dict(row, score=score)
+                panels[key].append(row)
+            paths[key].append(path)
+        if len(panels) != expected_panels:
+            fail("Work trajectory lacks complete fixed current-run panel coverage")
+        values = []
+        for (model_id, step), rows in sorted(panels.items()):
+            if len(rows) != expected_rows:
+                fail("Work trajectory denominator differs from fixed raw coverage")
+            model = models[model_id]
+            allowed = (
+                range(1, 65)
+                if kind == "training"
+                else ((0,) if model["arm"] == "PARENT" else (16, 32, 48, 64))
+            )
+            if step not in allowed or (kind == "training" and model["arm"] == "PARENT"):
+                fail("Work trajectory has an unregistered observation step")
+            summary = api.runner.work_occurrence(rows)
+            if kind == "monitor":
+                summary = dict(
+                    summary,
+                    scope="fixed checkpoint MONITOR raw; invalid text retained in denominator",
+                )
+            sources = [
+                dict(path="evidence/" + str(path.relative_to(root)), sha256=sha_file(path))
+                for path in paths[(model_id, step)]
+            ]
+            if kind == "training":
+                receipt_path = (
+                    root / "runs" / model_id / "work_occurrence" / f"step-{step:02d}.json"
+                )
+                receipt = read(receipt_path)
+                if (
+                    receipt.get("step") != step
+                    or receipt.get("summary") != summary
+                    or (receipt.get("raw_group_sha256") != [item["sha256"] for item in sources])
+                ):
+                    fail("Stored training work occurrence differs from its exact original rollouts")
+                sources.append(
+                    dict(
+                        path="evidence/" + str(receipt_path.relative_to(root)),
+                        sha256=sha_file(receipt_path),
+                    )
+                )
+            values.append(
+                dict(
+                    model_id=model_id,
+                    arm=model["arm"],
+                    block=model["block"],
+                    step=step,
+                    summary=summary,
+                    sources=sources,
+                )
+            )
+        result[kind] = values
+    return dict(
+        protocol_revision=slot_revision_kwargs(root)["revision"],
+        scope="descriptive existing raw only; no reward or selection changes",
+        new_model_calls=0,
+        training=result["training"],
+        monitor=result["monitor"],
+    )
 
 
 def training_signal_index(root, runs):
@@ -998,8 +1151,18 @@ def collect_panel(root, api, store, tasks, slots, directory, policy_hash):
     return results
 
 
+def slot_revision_kwargs(root):
+    """Reconstruct the selected generation identities, retaining legacy call shapes."""
+    path = Path(root) / "plan/config/SR_F3_CE.json"
+    revision = read(path).get("protocol_revision", "v1") if path.is_file() else "v1"
+    if revision not in {"v1", "v2", "c2"}:
+        fail("Unknown protocol revision while reconstructing delivery slots")
+    return {} if revision == "v1" else {"revision": revision}
+
+
 def collect_panels(root, api, dataset, store):
     monitor, engine = [], []
+    revision = slot_revision_kwargs(root)
     parents = {p["parent_id"]: p for p in read(root / "parents/PARENT_AUDIT.json")["parents"]}
     for model in api.evaluation.endpoint_models():
         for step in (0,) if model["arm"] == "PARENT" else (16, 32, 48, 64):
@@ -1021,11 +1184,11 @@ def collect_panels(root, api, dataset, store):
                 api,
                 store,
                 dataset.tasks,
-                api.evaluation.monitor_slots(dataset.tasks, mid, step),
+                api.evaluation.monitor_slots(dataset.tasks, mid, step, **revision),
                 directory,
                 policy,
             )
-    slots = api.evaluation.engine_slots(dataset.tasks)
+    slots = api.evaluation.engine_slots(dataset.tasks, **revision)
     for block, parent in enumerate(api.evaluation.PARENTS):
         engine += collect_panel(
             root,
@@ -1039,6 +1202,107 @@ def collect_panels(root, api, dataset, store):
     if sum(r[2] for r in monitor) != 26112 or sum(r[2] for r in engine) != 2880:
         fail("Complete MONITOR/ENGINE diagnostic coverage required")
     return monitor, engine
+
+
+def protocol_revision_retention(root, api):
+    """Verify separate original-v1 and ablation copies without adding science rows."""
+    revision = slot_revision_kwargs(root).get("revision", "v1")
+    if revision == "v1":
+        return None
+    guard = api.protocol.verify_run_source_revision(root)
+    if guard.get("protocol_revision") != revision:
+        fail("Retention source guard differs from selected protocol")
+    selection_path = root / "PROTOCOL_SELECTION.json"
+    selection = read(selection_path)
+    if sha_file(selection_path) != guard["protocol_selection_sha256"] or (
+        selection.get("outputs") != 2304 or len(selection.get("raw_evidence", [])) != 9
+    ):
+        fail("Selected protocol lacks exactly nine complete ablation cells")
+    archive_name = "SR_F3_CE_PROTOCOL_STOP_EVIDENCE_FULL_UNDER400MB_20261016.tar.xz"
+    history = root / "protocol_revision/history_v1"
+    archive, receipt_path = history / archive_name, history / (archive_name + ".verification.json")
+    frozen = dict(
+        bytes=219281700, sha256="d67af2a3a00f44713c3bcb62d526f90f12e392f5fa0fe2d1872f54a3e1184d60"
+    )
+    check_file(archive, frozen)
+    receipt = read(receipt_path)
+    if (
+        receipt.get("status") != "VERIFIED_FULL_LOSSLESS_REPACK_UNDER_400_DECIMAL_MB"
+        or any(receipt.get("archive", {}).get(k) != v for k, v in frozen.items())
+        or receipt.get("actual_unique_new_output_rows") != 3904
+        or receipt.get("file_contents_changed") != 0
+        or receipt.get("files_removed") != 0
+        or receipt.get("scientific_experiment_complete") is not False
+    ):
+        fail("Historical v1 archive receipt differs from original full preservation")
+    copied = root / "protocol_revision/ablation"
+    if sha_file(copied / "PROTOCOL_SELECTION.json") != sha_file(selection_path):
+        fail("Retained ablation selection differs from the adopted selection")
+    records = [selection["ablation_manifest"]]
+    seen, count = set(), 0
+    for cell in selection["raw_evidence"]:
+        if len(cell["raw_groups"]) != 64:
+            fail("Ablation copy must retain 64 groups for each variant/parent cell")
+        records.extend(
+            [
+                cell["complete"],
+                cell["terminal"],
+                *cell["raw_groups"],
+                *cell.get("raw_artifacts", []),
+            ]
+        )
+        if "allocation" in cell:
+            records.append(cell["allocation"])
+        completion = read(bounded(copied, cell["complete"]["path"]))
+        allocation = bounded(
+            copied, str(Path(cell["complete"]["path"]).with_name("ALLOCATION.json"))
+        )
+        if sha_file(allocation) != completion.get("allocation_sha256"):
+            fail("Retained ablation allocation differs from completed cell")
+        for raw in cell["raw_groups"]:
+            value = read(bounded(copied, raw["path"]))
+            rows = value.get("records", [])
+            if len(rows) != 4 or digest(rows) != value.get("records_sha256"):
+                fail("Retained ablation raw group coverage/hash differs")
+            for row in rows:
+                if not row.get("slot_id") or row["slot_id"] in seen:
+                    fail("Retained ablation has missing/duplicate raw identities")
+                seen.add(row["slot_id"])
+                count += 1
+    if count != 2304 or len({r["path"] for r in records}) != len(records):
+        fail("Retained ablation record or source inventory differs")
+    for record in records:
+        check_file(bounded(copied, record["path"]), record)
+    return dict(
+        protocol_revision=revision,
+        selection_sha256=sha_file(selection_path),
+        selection_path="evidence/PROTOCOL_SELECTION.json",
+        historical_v1=dict(
+            unique_records=3904,
+            archive_path="evidence/" + str(archive.relative_to(root)),
+            archive_sha256=frozen["sha256"],
+            archive_bytes=frozen["bytes"],
+            receipt_path="evidence/" + str(receipt_path.relative_to(root)),
+            receipt_sha256=sha_file(receipt_path),
+            scientific_experiment_complete=False,
+            scope="original stopped v1 record, unchanged historical decision label",
+        ),
+        prompt_ablation=dict(
+            unique_records=count,
+            cells=9,
+            groups=576,
+            original_root=guard["ablation_root"],
+            selected_revision=selection["selected_revision"],
+            counts=selection["counts"],
+            denominators=selection["denominators"],
+            descriptive_statistics=selection["descriptive_statistics"],
+            selection_uses_only="value_parseable",
+            artifact_root="evidence/protocol_revision/ablation",
+            source_files=records,
+        ),
+        included_in_current_science_or_engine_denominators=False,
+        extra_optimizer_steps=0,
+    )
 
 
 def historical_status(root):
@@ -1545,6 +1809,7 @@ def observability_costs(root, identity, required_tasks=()):
         attempts=attempts,
         completed_task_ids=sorted(complete_tasks),
         old_engine="UNKNOWN: no retrospective hooks, timing reconstruction or engine replay",
+        current_run_engine="UNKNOWN: engineering precedes this observation extension",
         scope="prospective worker hooks only; unfinished attempts remain UNKNOWN",
         units="nanoseconds of host observation, never GPU kernel time",
         nonadditivity=(
@@ -1905,6 +2170,22 @@ def verify_zip(path):
             )
             if any(coverage.get(k) != v for k, v in expected.items()):
                 fail("Delivered fixed matrix coverage differs")
+            if coverage.get("protocol_revision", "v1") != "v1":
+                if (
+                    coverage.get("protocol_revision") not in {"v2", "c2"}
+                    or coverage.get("protocol_ablation_records") != 2304
+                    or coverage.get("historical_v1_unique_records") != 3904
+                    or "PROTOCOL_REVISION_RETENTION.json" not in records
+                    or "WORK_OCCURRENCE_TRAJECTORY.json" not in records
+                ):
+                    fail("Revised delivery omits separate historical/ablation coverage")
+                retained = loads(archive.read("PROTOCOL_REVISION_RETENTION.json"))
+                if (
+                    retained.get("included_in_current_science_or_engine_denominators") is not False
+                    or retained.get("prompt_ablation", {}).get("unique_records") != 2304
+                    or retained.get("historical_v1", {}).get("unique_records") != 3904
+                ):
+                    fail("Historical or ablation data was substituted for current science")
             actual = {
                 "TRAINING_GROUPS.jsonl.gz": 98304,
                 "SUPPORT_MASKS.jsonl.gz": 2320,
@@ -2128,6 +2409,8 @@ def original_inventory(root, receipts, aggregate_paths, endpoint_map):
         "parent_audit_code",
         "native_audit_code",
         "native_audit_code_v2",
+        "authorization",
+        "protocol_revision",
     )
     paths = {p for p in root.glob("*.json") if p.is_file()}
     for directory in directories:
@@ -2369,13 +2652,17 @@ def _build(root, output, *, helper_manifest=None, extension_manifest=None):
             task: sha_file(root / "tasks" / task / "COMPLETE.json") for task in receipts
         },
     )
+    if getattr(api, "protocol_source_guard", None) is not None:
+        provenance["protocol_source_guard"] = api.protocol_source_guard
     if getattr(api, "observability", None) is not None:
         provenance["observability_extension"] = api.observability.identity
     dataset, store = api.runner.dataset_and_store(root)
     external_tasks, external_stores, panels, external_scorer = api.endpoint_runner._external(root)
     image_map = verify_images_and_types(root, api, dataset, store, external_tasks, external_stores)
     tasks = dict(dataset.tasks, **external_tasks)
-    slots = api.evaluation.endpoint_slots(dataset.tasks, dataset.runs, external_tasks)
+    slots = api.evaluation.endpoint_slots(
+        dataset.tasks, dataset.runs, external_tasks, **slot_revision_kwargs(root)
+    )
     coverage = verify_release_stream(
         root,
         api.endpoint_runner._raw_groups(root, slots),
@@ -2435,6 +2722,8 @@ def _build(root, output, *, helper_manifest=None, extension_manifest=None):
         engine_physical_updates=6,
         chartqapro=panels["CHARTQAPRO"],
         all_unique_raw_included=True,
+        protocol_revision=slot_revision_kwargs(root).get("revision", "v1"),
+        raw_scope="current selected run only; historical v1 and prompt ablation excluded",
     )
     analysis = _validate_analysis(read(root / "release/PRIMARY_ANALYSIS.json"))
     external, prefix = (
@@ -2442,7 +2731,11 @@ def _build(root, output, *, helper_manifest=None, extension_manifest=None):
         read(root / "release/PREFIX_DIAGNOSTICS.json"),
     )
     prior = historical_status(root)
+    revision_retention = protocol_revision_retention(root, api)
+    if revision_retention is not None:
+        coverage.update(protocol_ablation_records=2304, historical_v1_unique_records=3904)
     signals = training_signal_index(root, dataset.runs)
+    work_trajectory = work_occurrence_trajectory(root, api, dataset, training, monitor)
     extension = getattr(api, "observability", None)
     costs, scheduler_cost_raw = cost_summary(
         root,
@@ -2462,6 +2755,7 @@ def _build(root, output, *, helper_manifest=None, extension_manifest=None):
         prior,
         read(root / "release/RELEASE.json")["external_status"],
         signals,
+        work_trajectory,
     )
     collections = dict(
         zip(AGGREGATES, (training, supports, monitor, engine + engine_cached), strict=True)
@@ -2516,6 +2810,9 @@ def _build(root, output, *, helper_manifest=None, extension_manifest=None):
         "SERVER_ONLY.json": server_only,
         "TRAINING_SIGNAL_INDEX.json": signals,
     }
+    if revision_retention is not None:
+        json_values["PROTOCOL_REVISION_RETENTION.json"] = revision_retention
+        json_values["WORK_OCCURRENCE_TRAJECTORY.json"] = work_trajectory
     jsonl_values = {
         **{
             name: lambda entries=entries: wrapped_originals(root, entries)
@@ -2550,6 +2847,7 @@ def _build(root, output, *, helper_manifest=None, extension_manifest=None):
                 prior,
                 read(root / "release/RELEASE.json")["external_status"],
                 signals,
+                work_trajectory,
             )
             if archive.read("REPORT_ZH.md") != expected_report.encode():
                 fail("Chinese report differs from the actual released analysis and cost snapshot")
@@ -2567,6 +2865,9 @@ def _build(root, output, *, helper_manifest=None, extension_manifest=None):
         writer.add_json("HELPER_SOURCE_MANIFEST.json", helper_receipt)
         writer.add_json("TRAINING_SIGNAL_INDEX.json", signals)
         writer.add_json("SERVER_ONLY.json", server_only)
+        if revision_retention is not None:
+            writer.add_json("PROTOCOL_REVISION_RETENTION.json", revision_retention)
+            writer.add_json("WORK_OCCURRENCE_TRAJECTORY.json", work_trajectory)
         writer.add_json("COSTS.json", costs)
         writer.add_json("SCHEDULER_COST_RAW.json", scheduler_cost_raw)
         writer.add_json(

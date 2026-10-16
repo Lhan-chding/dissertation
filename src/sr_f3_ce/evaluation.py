@@ -14,9 +14,11 @@ import os
 from collections import Counter, defaultdict
 from pathlib import Path
 
-from sr_f12.evaluation import durable_json, group_slots, shard_lease
+from sr_f12.evaluation import durable_json, shard_lease
+from sr_f12.evaluation import group_slots as _legacy_group_slots
 
 from . import contract
+from .prompts import contract_for_revision, prefill_for
 
 EXPERIMENT_ID = "SR-F3-CE-20261016"
 ARMS = ("RL", "GOLD", "PREFIX", "EXEC")
@@ -90,9 +92,15 @@ def endpoint_models(run_matrix=None):
     ] + expected
 
 
-def generation_config(protocol):
+def _prefill(protocol, revision="v1"):
+    contract_for_revision(revision)
+    return prefill_for(protocol, revision) if protocol in PROTOCOLS else ""
+
+
+def generation_config(protocol, *, revision="v1"):
     if protocol not in (*PROTOCOLS, "chartqa_plain", "chartqapro_official"):
         raise ValueError("Unknown registered protocol")
+    _prefill(protocol, revision)
     return dict(
         do_sample=protocol in PROTOCOLS,
         temperature=1,
@@ -103,7 +111,8 @@ def generation_config(protocol):
     )
 
 
-def _slots(model, tasks, protocol, k, *, view=None, phase="ENDPOINT"):
+def _slots(model, tasks, protocol, k, *, view=None, phase="ENDPOINT", revision="v1"):
+    prefill = _prefill(protocol, revision)
     out = []
     for task in tasks:
         identity = [
@@ -137,15 +146,36 @@ def _slots(model, tasks, protocol, k, *, view=None, phase="ENDPOINT"):
                     samples_per_prompt=k,
                     sampling_seed=seed,
                     group_seed=seeds[0],
-                    slot_id=object_hash([*identity, draw]),
-                    generation=generation_config(protocol),
+                    slot_id=object_hash(
+                        [*identity, draw] if revision == "v1" else [*identity, revision, draw]
+                    ),
+                    protocol_revision=revision,
+                    assistant_prefill=prefill,
+                    generation=generation_config(protocol, revision=revision),
                     sealed=task["pool"] in SEALED_POOLS,
                 )
             )
     return out
 
 
-def engine_slots(tasks):
+def group_slots(slots):
+    """Bind revised groups to the protocol without changing sampling streams."""
+    groups = _legacy_group_slots(slots)
+    for group in groups:
+        rows = group["slots"]
+        revision = rows[0].get("protocol_revision", "v1")
+        if any(row.get("protocol_revision", "v1") != revision for row in rows):
+            raise PermissionError("Group mixes protocol revisions")
+        for row in rows:
+            expected = _prefill(row["protocol"], revision)
+            if row.get("assistant_prefill", expected) != expected:
+                raise PermissionError("Slot prefill differs from its protocol revision")
+        if revision != "v1":
+            group["group_id"] = object_hash([group["group_id"], revision])
+    return groups
+
+
+def engine_slots(tasks, *, revision="v1"):
     panel = _pool(tasks, "ENGINE")
     # The first four qids in each family are frozen before any inference. Each
     # is an existing ENGINE task; no outcome, answer, or score selects the panel.
@@ -153,15 +183,19 @@ def engine_slots(tasks):
     out = []
     for model in endpoint_models()[:3]:
         for protocol in PROTOCOLS:
-            out.extend(_slots(model, panel, protocol, 4, phase="ENGINE"))
+            out.extend(_slots(model, panel, protocol, 4, phase="ENGINE", revision=revision))
         for view in DIAGNOSTIC_VIEWS:
-            out.extend(_slots(model, diagnostic, "structured", 4, view=view, phase="ENGINE"))
+            out.extend(
+                _slots(
+                    model, diagnostic, "structured", 4, view=view, phase="ENGINE", revision=revision
+                )
+            )
     if len(out) != 2880:
         raise AssertionError("ENGINE registered count changed")
     return out
 
 
-def monitor_slots(tasks, model_id, step):
+def monitor_slots(tasks, model_id, step, *, revision="v1"):
     models = {r["model_id"]: r for r in endpoint_models()}
     if model_id not in models:
         raise ValueError("Unregistered monitor model")
@@ -169,20 +203,27 @@ def monitor_slots(tasks, model_id, step):
     allowed = (0,) if model["arm"] == "PARENT" else (16, 32, 48, 64)
     if step not in allowed:
         raise ValueError("Step 0 is shared once per parent; only fixed later panels are allowed")
-    return _slots(dict(model, step=step), _pool(tasks, "MONITOR"), "structured", 8, phase="MONITOR")
+    return _slots(
+        dict(model, step=step),
+        _pool(tasks, "MONITOR"),
+        "structured",
+        8,
+        phase="MONITOR",
+        revision=revision,
+    )
 
 
-def all_monitor_slots(tasks):
+def all_monitor_slots(tasks, *, revision="v1"):
     out = []
     for model in endpoint_models():
         for step in (0,) if model["arm"] == "PARENT" else (16, 32, 48, 64):
-            out.extend(monitor_slots(tasks, model["model_id"], step))
+            out.extend(monitor_slots(tasks, model["model_id"], step, revision=revision))
     if len(out) != 26112:
         raise AssertionError("MONITOR registered count changed")
     return out
 
 
-def endpoint_slots(tasks, run_matrix=None, external_tasks=(), *, model_id=None):
+def endpoint_slots(tasks, run_matrix=None, external_tasks=(), *, model_id=None, revision="v1"):
     pools = {p: _pool(tasks, p) for p in TEST_POOLS}
     canonical = [t for t in pools["TEST_ID"] if t["mode"] == "repair" and t["variant"] == 2]
     if len(canonical) != 256 or set(Counter(t["root_id"] for t in canonical).values()) != {2}:
@@ -205,12 +246,18 @@ def endpoint_slots(tasks, run_matrix=None, external_tasks=(), *, model_id=None):
         models = [m for m in models if m["model_id"] == model_id]
     for model in models:
         for panel in pools.values():
-            out.extend(_slots(model, panel, "structured", 4))
+            out.extend(_slots(model, panel, "structured", 4, revision=revision))
         for protocol in ("answer_only", "natural_work"):
-            out.extend(_slots(model, canonical, protocol, 4))
+            out.extend(_slots(model, canonical, protocol, 4, revision=revision))
         for pool, protocol in (("CHARTQA", "chartqa_plain"), ("CHARTQAPRO", "chartqapro_official")):
             out.extend(
-                _slots(model, sorted(external_pools[pool], key=lambda t: t["qid"]), protocol, 1)
+                _slots(
+                    model,
+                    sorted(external_pools[pool], key=lambda t: t["qid"]),
+                    protocol,
+                    1,
+                    revision=revision,
+                )
             )
     return out
 
@@ -343,7 +390,12 @@ def validate_record(
         raise ValueError("Unknown generation termination")
     if row.get("finish_reason") == "length" and len(tokens) != slot["generation"]["max_new_tokens"]:
         raise ValueError("Length stop precedes the registered cap")
-    prefill = "{" if slot["protocol"] in ("structured", "answer_only") else ""
+    revision = slot.get("protocol_revision", "v1")
+    prefill = _prefill(slot["protocol"], revision)
+    if "runtime_protocol_revision" in row and row["runtime_protocol_revision"] != revision:
+        raise PermissionError("Native completion protocol revision differs from slot")
+    if "runtime_assistant_prefill" in row and row["runtime_assistant_prefill"] != prefill:
+        raise PermissionError("Native completion prefill differs from slot")
     if row.get("assistant_prefill") != prefill or row.get("raw_text") != prefill + row.get(
         "generated_text", ""
     ):
@@ -707,6 +759,9 @@ def run_group(
     if len(checked) != 1 or checked[0]["group_id"] != group["group_id"]:
         raise ValueError("Group identity differs")
     first, count = slots[0], len(slots)
+    revision = first.get("protocol_revision", "v1")
+    if getattr(runtime, "protocol_revision", "v1") != revision:
+        raise PermissionError("Runtime protocol revision differs from evaluation slots")
     if score and first["sealed"] and not release_receipt:
         raise PermissionError("All new TEST scores, including parents, remain sealed")
     model, adapter = (
@@ -738,6 +793,8 @@ def run_group(
             row = dict(completion)
             for key in ("group_seed", "group_row_index", "group_size", "protocol", "seed"):
                 row["runtime_" + key] = completion.get(key)
+            row["runtime_protocol_revision"] = completion.get("protocol_revision", "v1")
+            row["runtime_assistant_prefill"] = completion.get("assistant_prefill")
             row.update(slots[index])
             row.update(
                 model_input=request,
@@ -985,7 +1042,9 @@ def summarize_scores(rows):
     )
 
 
-def evaluate_monitor(runtime, tasks, inputs, root, directory, *, model_id, step, source_sha256):
+def evaluate_monitor(
+    runtime, tasks, inputs, root, directory, *, model_id, step, source_sha256, revision="v1"
+):
     """Fixed 512-response monitor, restoring global RNG and model mode even on error.
 
     Evaluation seeds are slot identities, never taken from the training RNG. The
@@ -993,7 +1052,7 @@ def evaluate_monitor(runtime, tasks, inputs, root, directory, *, model_id, step,
     """
     from mm_core.training import capture_rng, restore_rng, state_hash, trainable_state
 
-    slots = monitor_slots(tasks, model_id, step)
+    slots = monitor_slots(tasks, model_id, step, revision=revision)
     groups = group_slots(slots)
     directory, root = Path(directory).resolve(), Path(root).resolve(strict=True)
     if not directory.is_relative_to(root):

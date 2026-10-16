@@ -21,8 +21,10 @@ from sr_f3_ce.evaluation import (
     sha_file,
     summarize_scores,
     validate_coverage,
+    validate_record,
     verify_panel_cache,
 )
+from sr_f3_ce.prompts import prefill_for
 
 PLAN = Path(__file__).resolve().parents[2] / "artifacts/sr_f3_ce_20261016/plan"
 
@@ -134,7 +136,8 @@ def test_natural_and_direct_are_independent_protocols(tasks):
 
 
 class FakeRuntime:
-    def __init__(self, fail_after=None):
+    def __init__(self, fail_after=None, *, revision="v1"):
+        self.protocol_revision = revision
         self.stable_model_identity = {"base": "fixed"}
         self.current_adapter_identity = {"adapter": "fixed"}
         self.calls = 0
@@ -142,14 +145,21 @@ class FakeRuntime:
 
     def generate_group(self, model_input, root, seeds, *, protocol, generation, on_completion):
         self.calls += 1
+        prefill = prefill_for(protocol, self.protocol_revision)
+        generated = (
+            '], "answer":0}'
+            if self.protocol_revision == "c2" and protocol == "structured"
+            else '"answer":0}'
+        )
         for index, seed in enumerate(seeds):
             if index == self.fail_after:
                 raise RuntimeError("simulated hardware failure")
             on_completion(
                 dict(
-                    generated_text='"answer":0}',
-                    raw_text='{"answer":0}',
-                    assistant_prefill="{",
+                    generated_text=generated,
+                    raw_text=prefill + generated,
+                    assistant_prefill=prefill,
+                    protocol_revision=self.protocol_revision,
                     tokens=[1],
                     raw_tokens=[1],
                     sampler_logprobs=[-0.1],
@@ -332,3 +342,71 @@ def test_interrupted_authorized_replay_requires_new_technical_decision(tmp_path,
             runtime, group, inputs, tasks, tmp_path, tmp_path / "endpoint", source_sha256=source
         )
     assert runtime.calls == 1 and pending.exists()
+
+
+def test_protocol_revisions_change_cache_identity_but_preserve_all_sampling_seeds(tasks):
+    old = engine_slots(tasks)
+    old_groups = group_slots(old)
+    assert len([s for s in old if s["protocol"] == "structured" and s["view"] is None]) == 768
+    for revision in ("v2", "c2"):
+        new = engine_slots(tasks, revision=revision)
+        assert len(new) == len(old)
+        for left, right in zip(old, new, strict=True):
+            assert left["sampling_seed"] == right["sampling_seed"]
+            assert left["group_seed"] == right["group_seed"]
+            assert left["generation"] == right["generation"]
+            assert left["slot_id"] != right["slot_id"]
+            assert right["assistant_prefill"] == prefill_for(right["protocol"], revision)
+        assert not {g["group_id"] for g in old_groups} & {g["group_id"] for g in group_slots(new)}
+        baseline = monitor_slots(tasks, "SRF2_J6_s71001", 0)
+        revised = monitor_slots(tasks, "SRF2_J6_s71001", 0, revision=revision)
+        assert [s["sampling_seed"] for s in baseline] == [s["sampling_seed"] for s in revised]
+        assert all(s["protocol_revision"] == revision for s in revised)
+
+
+def test_c2_original_cache_validates_native_prefill_and_blocks_legacy_runtime(tmp_path, tasks):
+    slots = engine_slots(tasks, revision="c2")[:4]
+    group = group_slots(slots)[0]
+    qid = slots[0]["qid"]
+    image = tmp_path / "image.png"
+    image.write_bytes(b"test image")
+    inputs = {
+        qid: dict(prompt=tasks[qid]["prompt"], image_file="image.png", image_sha256=sha_file(image))
+    }
+    runtime = FakeRuntime(revision="c2")
+    value = run_group(
+        runtime, group, inputs, tasks, tmp_path, tmp_path / "c2", source_sha256="source"
+    )
+    row = value["records"][0]
+    assert row["raw_text"] == '{\n  "evidence": [], "answer":0}'
+    assert row["runtime_assistant_prefill"] == slots[0]["assistant_prefill"]
+    assert row["runtime_protocol_revision"] == "c2"
+    arguments = dict(
+        input_hash=row["input_hash"],
+        model_identity=runtime.stable_model_identity,
+        adapter_identity=runtime.current_adapter_identity,
+        source_sha256="source",
+        index=0,
+        count=4,
+    )
+    validate_record(row, slots[0], **arguments)
+    for field, wrong in (
+        ("protocol_revision", "v1"),
+        ("assistant_prefill", "{"),
+        ("runtime_protocol_revision", "v1"),
+        ("runtime_assistant_prefill", "{"),
+    ):
+        with pytest.raises((PermissionError, ValueError)):
+            validate_record(dict(row, **{field: wrong}), slots[0], **arguments)
+    legacy = FakeRuntime()
+    with pytest.raises(PermissionError, match="revision"):
+        run_group(legacy, group, inputs, tasks, tmp_path, tmp_path / "c2", source_sha256="source")
+    assert legacy.calls == 0 and runtime.calls == 1
+
+
+def test_group_rejects_mixed_revision_or_context_even_when_seed_identity_matches(tasks):
+    slots = engine_slots(tasks)[:4]
+    with pytest.raises(PermissionError, match="mixes"):
+        group_slots([slots[0], dict(slots[1], protocol_revision="c2"), *slots[2:]])
+    with pytest.raises(PermissionError, match="prefill"):
+        group_slots([dict(slot, assistant_prefill='{"work":') for slot in slots])

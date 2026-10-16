@@ -9,13 +9,28 @@ from sr_f12.evaluation import durable_json
 from .protocol import ENGINE_TASKS, EXPERIMENT_ID, file_hash, now, read_json, verify_run
 
 
+def verify_native_receipt_revision(config, processor_receipt, mask_receipt):
+    from .protocol_revision import revision_from_config
+
+    revision = revision_from_config(config)
+    if (
+        processor_receipt.get("protocol_revision", "v1") != revision
+        or mask_receipt.get("protocol_revision", "v1") != revision
+        or (revision != "v1" and mask_receipt.get("serialization") != "indent_2")
+    ):
+        raise PermissionError(
+            "Native processor/mask receipt belongs to a different protocol revision"
+        )
+    return revision
+
+
 def execute_p0(root):
     from .native_audit import audit_native_inputs
     from .orchestration import write_task_receipt
     from .runner import dataset_and_store, immutable_files
 
     root = Path(root)
-    verify_run(root)
+    _, config = verify_run(root)
     dataset, store = dataset_and_store(root)
     if len(dataset.tasks) != 4096 or len(dataset.runs) != 12:
         raise PermissionError("Frozen dataset coverage changed")
@@ -95,6 +110,9 @@ def execute_p0(root):
         )
     else:
         receipt = audit_native_inputs(root)
+    verify_native_receipt_revision(
+        config, receipt, read_json(root / "native/SUPPORT_MASK_RECEIPT.json")
+    )
     if receipt["status"] != "PASS" or receipt["input_sidecar_negative_test"] != "PASS":
         raise PermissionError("Native processor/mask/input isolation gate failed")
     artifacts = immutable_files(root, root / "native")
@@ -189,6 +207,45 @@ def freeze_science(root):
             TEST="sealed fixed endpoint evaluation",
         ),
     )
+    if config.get("protocol_revision", "v1") != "v1":
+        from .protocol import verify_run_source_revision
+
+        revision = verify_run_source_revision(root)
+        history = (
+            root
+            / "protocol_revision/history_v1"
+            / "SR_F3_CE_PROTOCOL_STOP_EVIDENCE_FULL_UNDER400MB_20261016.tar.xz"
+        )
+        history_receipt = history.with_suffix(history.suffix + ".verification.json")
+        if (
+            history.stat().st_size != 219281700
+            or file_hash(history)
+            != "d67af2a3a00f44713c3bcb62d526f90f12e392f5fa0fe2d1872f54a3e1184d60"
+            or not history_receipt.is_file()
+        ):
+            raise PermissionError("The complete delivered v1 evidence must remain preserved")
+        value.update(
+            protocol_revision=revision["protocol_revision"],
+            protocol_revision_request_sha256=revision["request_sha256"],
+            protocol_selection_sha256=revision["protocol_selection_sha256"],
+            protocol_selection=read_json(root / "PROTOCOL_SELECTION.json"),
+            protocol_revision_diff=read_json(root / "plan/PROTOCOL_REVISION.json"),
+            prior_v1_records_preserved=dict(
+                archive=str(history.relative_to(root)),
+                sha256=file_hash(history),
+                bytes=history.stat().st_size,
+                unique_generations=3904,
+                verification_receipt_sha256=file_hash(history_receipt),
+            ),
+            selection_precedes_revised_engine=True,
+        )
+        for relative in (
+            "authorization/REQUEST.md",
+            "PROTOCOL_SELECTION.json",
+            str(history.relative_to(root)),
+            str(history_receipt.relative_to(root)),
+        ):
+            value["engineering_files"][relative] = file_hash(root / relative)
     durable_json(root / "EXECUTION_FREEZE.json", value)
     verify_run(root, science=True)
     return value

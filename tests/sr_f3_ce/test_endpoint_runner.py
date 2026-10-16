@@ -39,7 +39,9 @@ def test_final_checkpoint_load_exactly_and_does_not_select_intermediate(monkeypa
         model_id="SRF3CE_EXEC_b1", parent_id="SRF2_J6_s71002", block=1, arm="EXEC", step=64
     )
     layer = torch.nn.Linear(1, 1)
-    runtime = SimpleNamespace(model=layer, identity={}, adapter_path="parent")
+    runtime = SimpleNamespace(
+        model=layer, identity={}, adapter_path="parent", protocol_revision="v1"
+    )
     runtime.stable_model_identity = lambda: dict(runtime.identity)
     runtime.current_adapter_identity = lambda: dict(policy=state_hash(trainable_state(layer)))
     parameters = {k: torch.ones_like(v) for k, v in trainable_state(layer).items()}
@@ -66,7 +68,7 @@ def test_final_checkpoint_load_exactly_and_does_not_select_intermediate(monkeypa
         asked.append(step)
         return state, dict(step=step, sha256="checkpoint")
 
-    monkeypatch.setattr(runner, "load_runtime", lambda *args: (runtime, None, None))
+    monkeypatch.setattr(runner, "load_parent_runtime", lambda *args: runtime)
     monkeypatch.setattr(checkpoint, "read_checkpoint", read)
     export = tmp_path / "runs" / model["model_id"] / "adapters/step-64"
     export.mkdir(parents=True)
@@ -85,6 +87,10 @@ def test_final_checkpoint_load_exactly_and_does_not_select_intermediate(monkeypa
     assert provenance["policy_hash"] == state_hash(parameters)
     assert loaded.identity["model_id"] == model["model_id"]
     state["committed_logical_step"] = 48
+    with pytest.raises(PermissionError, match="checkpoint identity"):
+        endpoint_runner._load_endpoint_runtime(tmp_path, model, "eval--" + model["model_id"])
+    state["committed_logical_step"] = 64
+    runtime.protocol_revision = "c2"
     with pytest.raises(PermissionError, match="checkpoint identity"):
         endpoint_runner._load_endpoint_runtime(tmp_path, model, "eval--" + model["model_id"])
 
@@ -115,14 +121,15 @@ def test_release_delivered_raw_is_reopened_and_rescored(monkeypatch, tmp_path):
     raw = dict(
         slot,
         group_id=group["group_id"],
-        raw_text="invalid model answer",
+        raw_text="{invalid model answer",
         finish_reason="eos",
         generation_status="COMPLETE",
         tokens=[1],
-        decoded_prefix_views={str(n): "invalid model answer" for n in (128, 256, 512, 1024)},
+        decoded_prefix_views={str(n): "{invalid model answer" for n in (128, 256, 512, 1024)},
         technical_validation_errors=[],
     )
     monkeypatch.setattr(endpoint_runner, "_require_terminal", lambda root, evaluations=False: None)
+    monkeypatch.setattr(endpoint_runner, "_run_revision", lambda root: "v1")
     monkeypatch.setattr(
         runner,
         "dataset_and_store",
@@ -131,7 +138,7 @@ def test_release_delivered_raw_is_reopened_and_rescored(monkeypatch, tmp_path):
     panels = {"CHARTQAPRO": dict(status="UNAVAILABLE", image_count=0, reason="test fixture")}
     monkeypatch.setattr(endpoint_runner, "_external", lambda root: ({}, {}, panels, None))
     monkeypatch.setattr(endpoint_runner, "endpoint_models", lambda: [])
-    monkeypatch.setattr(endpoint_runner, "endpoint_slots", lambda *args: [slot])
+    monkeypatch.setattr(endpoint_runner, "endpoint_slots", lambda *args, **kwargs: [slot])
     monkeypatch.setattr(
         endpoint_runner, "_raw_groups", lambda *args: iter([(group, [raw], {"sha256": "rawfile"})])
     )
@@ -170,3 +177,31 @@ def test_immutable_release_file_never_overwrites(tmp_path):
     with pytest.raises(PermissionError):
         endpoint_runner._publish_file(temporary, final)
     assert final.read_bytes() == b"old" and temporary.read_bytes() == b"new"
+
+
+def test_c2_prefix_budget_uses_actual_context_without_counting_it_as_generated():
+    from sr_f3_ce.prompts import prefill_for
+
+    plan = Path(__file__).resolve().parents[2] / "artifacts/sr_f3_ce_20261016/plan"
+    task = json.loads((plan / "manifests/TASKS_AUDIT_ONLY.jsonl").read_text().splitlines()[0])
+    text = json.dumps(dict(evidence=task["certificate"], answer=task["answer"]), indent=2)
+    prefill = prefill_for("structured", "c2")
+    assert text.startswith(prefill)
+    row = dict(
+        pool="TEST_ID",
+        model_id="CPU_PREFIX_FIXTURE",
+        protocol="structured",
+        protocol_revision="c2",
+        assistant_prefill=prefill,
+        tokens=[1, 2, 3],
+        decoded_prefix_views={str(n): text for n in (128, 256, 512, 1024)},
+    )
+    accumulator = {}
+    endpoint_runner._prefix_update(accumulator, row, task)
+    panel = accumulator["CPU_PREFIX_FIXTURE:structured"]
+    assert panel["protocol_revision"] == "c2" and panel["assistant_prefill"] == prefill
+    assert panel["generated_tokens"] == 3 and panel["prefill_counted_in_generated_budget"] is False
+    assert all(x["value_correct"] == 1 for x in panel["budgets"].values())
+    bad = dict(row, decoded_prefix_views={str(n): '{"answer":0}' for n in (128, 256, 512, 1024)})
+    with pytest.raises(PermissionError, match="context prefill"):
+        endpoint_runner._prefix_update({}, bad, task)

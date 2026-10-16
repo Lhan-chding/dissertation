@@ -8,6 +8,7 @@ All teacher masks use offsets from the actual complete processor invocation.
 from __future__ import annotations
 
 import copy
+import hashlib
 import inspect
 import math
 import re
@@ -22,7 +23,15 @@ from sr_f1.json_protocol import AMENDMENT_ID, balanced_cut, decode_generated
 from sr_f1.runtime import SRRuntime
 from sr_f12.runtime import SRF12Runtime, _repeat_prompt, enable_gradient_checkpointing
 
-from .masks import MaskAlignmentError, field_masks, freeze_serialization, serialize_target
+from .masks import (
+    REVISED_SERIALIZATION,
+    SERIALIZATIONS,
+    MaskAlignmentError,
+    field_masks,
+    freeze_serialization,
+    serialize_target,
+)
+from .prompts import REVISIONS, prefill_for
 
 EXPERIMENT_ID = "SR-F3-CE-20261016"
 PROTOCOLS = ("structured", "answer_only", "natural_work", "chartqa_plain", "chartqapro_official")
@@ -39,6 +48,14 @@ __all__ = [
     "native_readability_measurements",
     "validate_model_input",
 ]
+
+
+def _prefill(protocol, revision):
+    if revision not in REVISIONS:
+        raise ValueError("Unregistered protocol revision")
+    if protocol in EXTERNAL:
+        return ""
+    return prefill_for(protocol, revision=revision)
 
 
 def generation_recipe(*, protocol="structured"):
@@ -92,8 +109,8 @@ def protocol_boundary(text, protocol):
     return None
 
 
-def decoded_protocol(generated_text, protocol):
-    prefill = "{" if protocol in PREFILLED else ""
+def decoded_protocol(generated_text, protocol, *, revision="v1"):
+    prefill = _prefill(protocol, revision)
     full = prefill + generated_text
     cut = protocol_boundary(full, protocol)
     if protocol in PREFILLED:
@@ -135,10 +152,10 @@ def decoded_protocol(generated_text, protocol):
     }
 
 
-def first_boundary_token(tokenizer, tokens, protocol):
+def first_boundary_token(tokenizer, tokens, protocol, *, revision="v1"):
+    prefill = _prefill(protocol, revision)
     if protocol in EXTERNAL:
         return None, None
-    prefill = "{" if protocol in PREFILLED else ""
     for count in range(1, len(tokens) + 1):
         text = prefill + decode_generated(tokenizer, tokens[:count])
         cut = protocol_boundary(text, protocol)
@@ -150,10 +167,11 @@ def first_boundary_token(tokenizer, tokens, protocol):
 class BatchedProtocolStop:
     """Per-row stopping flags with independently retained first token boundaries."""
 
-    def __init__(self, tokenizer, prompt_len, rows, protocol):
+    def __init__(self, tokenizer, prompt_len, rows, protocol, *, revision="v1"):
         if prompt_len <= 0 or rows <= 0 or protocol not in (*PREFILLED, "natural_work"):
             raise ValueError("Invalid registered stopping context")
         self.tokenizer, self.prompt_len, self.protocol = tokenizer, prompt_len, protocol
+        self.prefill = _prefill(protocol, revision)
         self.counts, self.cuts = [None] * rows, [None] * rows
 
     def __call__(self, input_ids, scores, **kwargs):
@@ -161,12 +179,11 @@ class BatchedProtocolStop:
 
         if input_ids.shape[0] != len(self.counts):
             raise PermissionError("Generation row count changed")
-        prefill = "{" if self.protocol in PREFILLED else ""
         for row in range(len(self.counts)):
             if self.counts[row] is None:
                 tokens = input_ids[row, self.prompt_len :].tolist()
                 cut = protocol_boundary(
-                    prefill + decode_generated(self.tokenizer, tokens), self.protocol
+                    self.prefill + decode_generated(self.tokenizer, tokens), self.protocol
                 )
                 if cut is not None:
                     self.counts[row], self.cuts[row] = len(tokens), cut
@@ -289,7 +306,12 @@ def native_readability_measurements(prepared, *, source_pixels_per_count, source
 
 
 class SRF3CERuntime(SRF12Runtime):
-    def __init__(self, *args, **kwargs):
+    # Also preserves the old __new__-based CPU fixture interface.
+    protocol_revision = "v1"
+
+    def __init__(self, *args, protocol_revision="v1", **kwargs):
+        _prefill("structured", protocol_revision)
+        self.protocol_revision = protocol_revision
         super().__init__(*args, **kwargs)
         self._set_recipe()
 
@@ -301,14 +323,21 @@ class SRF3CERuntime(SRF12Runtime):
             experiment_id=EXPERIMENT_ID,
             generation_config_expanded=self.generation_config.to_dict(),
             support_mask_source="actual_complete_native_processor_offsets",
+            protocol_revision=self.protocol_revision,
+            assistant_prefills={p: _prefill(p, self.protocol_revision) for p in PROTOCOLS},
+            teacher_serialization="json.dumps(indent=2)"
+            if self.protocol_revision != "v1"
+            else "legacy_uniform_token_alignment_freeze",
         )
 
     @classmethod
-    def processor_only(cls, model_path, *, protocol_amendment=None):
+    def processor_only(cls, model_path, *, protocol_amendment=None, protocol_revision="v1"):
+        _prefill("structured", protocol_revision)
         instance = super().processor_only(model_path, protocol_amendment={"id": AMENDMENT_ID})
         import torch
 
         instance.torch = torch
+        instance.protocol_revision = protocol_revision
         instance._set_recipe()
         return instance
 
@@ -316,6 +345,7 @@ class SRF3CERuntime(SRF12Runtime):
         safe = validate_model_input(model_input)
         if protocol not in PROTOCOLS:
             raise PermissionError("Unknown SR-F3-CE protocol")
+        prefill = _prefill(protocol, self.protocol_revision)
         # Reuse the previously validated native image/template/prefill routing.
         prepared = SRRuntime.prepare_text(
             self,
@@ -323,12 +353,15 @@ class SRF3CERuntime(SRF12Runtime):
             safe["image_file"],
             run_root,
             expected_hash=safe["image_sha256"],
-            protocol="evidence_answer" if protocol in PREFILLED else "plain_answer",
+            protocol="evidence_answer" if prefill == "{" else "plain_answer",
         )
+        if prefill and prefill != "{":
+            prepared = self._append_native_prefill(prepared, safe, run_root, prefill)
         prepared["routing"].update(
             protocol=protocol,
+            protocol_revision=self.protocol_revision,
             experiment_id=EXPERIMENT_ID,
-            assistant_prefill="{" if protocol in PREFILLED else "",
+            assistant_prefill=prefill,
             prefill_is_context_not_loss_target=True,
             stop_rule="first_balanced_json"
             if protocol in PREFILLED
@@ -336,6 +369,91 @@ class SRF3CERuntime(SRF12Runtime):
         )
         prepared["model_input"] = safe
         return prepared
+
+    def _processor_arguments(self, safe, run_root, chat):
+        kwargs = dict(text=[chat], padding=False, return_tensors="pt")
+        if safe["image_file"] is not None:
+            from PIL import Image
+
+            root = Path(run_root).resolve()
+            path = Path(safe["image_file"])
+            path = path.resolve() if path.is_absolute() else bounded_path(root, path)
+            if not path.is_relative_to(root) or file_hash(path) != safe["image_sha256"]:
+                raise PermissionError("Native image differs from frozen model input")
+            with Image.open(path) as image:
+                kwargs["images"] = [image.convert("RGB")]
+        return kwargs
+
+    def _append_native_prefill(self, prepared, safe, run_root, prefill):
+        """Process a complete registered context; never append hand-encoded IDs."""
+        chat = prepared["chat_text"] + prefill
+        inputs = self.processor(
+            **self._processor_arguments(safe, run_root, chat), return_offsets_mapping=True
+        )
+        if "offset_mapping" not in inputs:
+            raise MaskAlignmentError("Native prefill requires actual full-sequence offsets")
+        offsets = inputs.pop("offset_mapping")
+        offsets = offsets.tolist() if hasattr(offsets, "tolist") else offsets
+        ids, base = inputs["input_ids"], prepared["inputs"]["input_ids"]
+        base_count = base.shape[-1]
+        if (
+            ids.shape[0] != 1
+            or ids.shape[-1] <= base_count
+            or not self.torch.equal(ids[:, :base_count].cpu(), base.cpu())
+            or len(offsets) != 1
+            or len(offsets[0]) != ids.shape[-1]
+        ):
+            raise MaskAlignmentError("Registered prefill changed the native context boundary")
+        actual_prefill_ids = ids[0, base_count:].tolist()
+        actual_prefill_offsets = offsets[0][base_count:]
+        native_end = max(end for _, end in offsets[0])
+        native_start = native_end - len(prefill)
+        decoded = self.processor.tokenizer.decode(
+            actual_prefill_ids,
+            skip_special_tokens=False,
+            clean_up_tokenization_spaces=False,
+        )
+        if (
+            decoded != prefill
+            or actual_prefill_offsets[0][0] != native_start
+            or actual_prefill_offsets[-1][1] != native_end
+            or any(not native_start <= lo < hi <= native_end for lo, hi in actual_prefill_offsets)
+        ):
+            raise MaskAlignmentError("Native full-context IDs/offsets do not reproduce prefill")
+        for key in ("pixel_values", "image_grid_thw"):
+            if key in prepared["inputs"] and (
+                key not in inputs
+                or not self.torch.equal(prepared["inputs"][key].cpu(), inputs[key].cpu())
+            ):
+                raise PermissionError("Registered prefill changed native image tensors")
+        if "mm_token_type_ids" not in inputs:
+            if safe["image_file"] is not None:
+                raise RuntimeError("Native prefill lacks multimodal token types")
+            inputs["mm_token_type_ids"] = self.torch.zeros_like(ids)
+        mm_types = inputs["mm_token_type_ids"]
+        if (
+            mm_types.shape != ids.shape
+            or not self.torch.equal(
+                mm_types[:, :base_count].cpu(), prepared["inputs"]["mm_token_type_ids"].cpu()
+            )
+            or bool(mm_types[:, base_count:].any())
+        ):
+            raise PermissionError("Registered prefill changed native image token routing")
+        tensor_hashes = {
+            name: state_hash(value) for name, value in inputs.items() if hasattr(value, "detach")
+        }
+        routing = dict(prepared["routing"])
+        routing.update(
+            native_input_tensor_hashes=tensor_hashes,
+            input_tensor_hash=hash_json(tensor_hashes),
+            chat_text_sha256=hashlib.sha256(chat.encode()).hexdigest(),
+            input_ids_sha256=hash_json(ids.tolist()),
+            assistant_prefill_token_ids=actual_prefill_ids,
+            assistant_prefill_native_offsets=actual_prefill_offsets,
+            assistant_prefill_native_char_span=[native_start, native_end],
+            base_prompt_token_count=base_count,
+        )
+        return dict(inputs=inputs.to(self.device), routing=routing, chat_text=chat)
 
     def prepare(self, model_input, run_root, *, protocol="structured"):
         return self.prepare_input(model_input, run_root, protocol=protocol)
@@ -351,6 +469,7 @@ class SRF3CERuntime(SRF12Runtime):
             raise ValueError("Empty teacher-forcing microbatch")
         prepared, same_call = [], {}
         for record in records:
+            self._validate_record_revision(record)
             item = record.get("prepared")
             if item is None:
                 safe = validate_model_input(record["model_input"])
@@ -360,6 +479,11 @@ class SRF3CERuntime(SRF12Runtime):
                 if key not in same_call:
                     same_call[key] = self.prepare_input(safe, root, protocol=protocol)
                 item = same_call[key]
+            self._validate_prepared_revision(item)
+            if record.get("prompt_tensor_hash", item["routing"].get("input_tensor_hash")) != item[
+                "routing"
+            ].get("input_tensor_hash"):
+                raise PermissionError("Restored native prompt tensor identity changed")
             prepared.append(item)
         first = prepared[0]["inputs"]
         for item in prepared[1:]:
@@ -368,6 +492,21 @@ class SRF3CERuntime(SRF12Runtime):
             ):
                 raise PermissionError("Microbatch must have byte-identical same-question prompts")
         return prepared[0]
+
+    def _validate_record_revision(self, record):
+        if record.get("protocol_revision", "v1") != self.protocol_revision:
+            raise PermissionError("Record protocol revision differs from runtime")
+        expected = _prefill(record.get("protocol", "structured"), self.protocol_revision)
+        if record.get("assistant_prefill", expected) != expected:
+            raise PermissionError("Record assistant prefill differs from registered revision")
+
+    def _validate_prepared_revision(self, prepared):
+        route = prepared.get("routing", {})
+        if route.get("protocol_revision", "v1") != self.protocol_revision:
+            raise PermissionError("Prepared context protocol revision differs from runtime")
+        expected = _prefill(route.get("protocol", "structured"), self.protocol_revision)
+        if route.get("assistant_prefill", expected) != expected:
+            raise PermissionError("Prepared context assistant prefill differs from revision")
 
     def _native_forward(self, inputs, *, completion_start, lengths, purpose, grad):
         """One native full-sequence call with explicit per-row mRoPE and no cache."""
@@ -431,6 +570,7 @@ class SRF3CERuntime(SRF12Runtime):
             self.model.train(old_training)
 
     def _batch_forward(self, prepared, token_rows, *, purpose, grad):
+        self._validate_prepared_revision(prepared)
         torch = self.torch
         if not token_rows or any(not tokens or len(tokens) > 1024 for tokens in token_rows):
             raise ValueError("Each completion must contain 1..1024 actual generated tokens")
@@ -459,31 +599,30 @@ class SRF3CERuntime(SRF12Runtime):
             grad=grad,
         )
 
-    def prepare_support(self, model_input, run_root, target, arm, *, serialization="canonical"):
+    def _support_serializations(self):
+        return SERIALIZATIONS if self.protocol_revision == "v1" else (REVISED_SERIALIZATION,)
+
+    def prepare_support(self, model_input, run_root, target, arm, *, serialization=None):
         if arm not in ("GOLD", "PREFIX", "EXEC"):
             raise PermissionError("RL has no teacher support sequence")
+        if serialization is None:
+            serialization = self._support_serializations()[0]
+        if serialization not in self._support_serializations():
+            raise PermissionError("Support serialization differs from registered protocol revision")
         safe = validate_model_input(model_input)
         selected = serialize_target(target, serialization)
         if ("work" in selected["spans"]) is not (arm != "GOLD"):
             raise PermissionError("GOLD omits work; PREFIX and EXEC require the same work target")
         prepared = self.prepare_input(safe, run_root, protocol="structured")
-        if not prepared["chat_text"].endswith("{"):
+        prefill = _prefill("structured", self.protocol_revision)
+        if not prepared["chat_text"].endswith(prefill):
             raise PermissionError("Support prompt lacks its registered assistant prefill")
-        complete_chat = prepared["chat_text"][:-1] + selected["text"]
-        kwargs = dict(
-            text=[complete_chat], padding=False, return_tensors="pt", return_offsets_mapping=True
+        if not selected["text"].startswith(prefill):
+            raise MaskAlignmentError("Teacher does not begin with the registered context prefill")
+        complete_chat = prepared["chat_text"][: -len(prefill)] + selected["text"]
+        encoded = self.processor(
+            **self._processor_arguments(safe, run_root, complete_chat), return_offsets_mapping=True
         )
-        if safe["image_file"] is not None:
-            from PIL import Image
-
-            root = Path(run_root).resolve()
-            path = Path(safe["image_file"])
-            path = path.resolve() if path.is_absolute() else bounded_path(root, path)
-            if not path.is_relative_to(root) or file_hash(path) != safe["image_sha256"]:
-                raise PermissionError("Support image differs from frozen model input")
-            with Image.open(path) as image:
-                kwargs["images"] = [image.convert("RGB")]
-        encoded = self.processor(**kwargs)
         if "offset_mapping" not in encoded:
             raise MaskAlignmentError("Native processor must return actual full-sequence offsets")
         offsets = encoded.pop("offset_mapping")
@@ -497,7 +636,7 @@ class SRF3CERuntime(SRF12Runtime):
         # is the verified terminal suffix, ending at the final positive offset.
         native_end = max(end for _, end in offsets)
         target_start = native_end - len(selected["text"])
-        if target_start < len(prepared["chat_text"]) - 1:
+        if target_start < len(prepared["chat_text"]) - len(prefill):
             raise MaskAlignmentError("Native offsets do not cover the complete teacher suffix")
         if not offsets or offsets[-1][1] != native_end or offsets[-1][0] == offsets[-1][1]:
             raise MaskAlignmentError("Native processor appended a token beyond the teacher text")
@@ -512,13 +651,24 @@ class SRF3CERuntime(SRF12Runtime):
         if not decoded.endswith(selected["text"]):
             raise MaskAlignmentError("Full processor IDs do not reproduce exact teacher bytes")
         audit = field_masks(selected, offsets, target_start=target_start, token_ids=ids)
-        # The opening brace is context. A token spanning brace and evidence is
-        # retained as unsupervised evidence; no semantic supervision is dropped.
+        # Every prefill character is context. A token spanning its final delimiter
+        # and subsequent evidence stays unsupervised; its actual native IDs and
+        # offsets are retained instead of hand-splitting or separately encoding it.
+        prefill_end = target_start + len(prefill)
         completion_start = next(
-            (i for i, (_, end) in enumerate(offsets) if end > target_start + 1), None
+            (i for i, (_, end) in enumerate(offsets) if end > prefill_end), None
         )
         if completion_start is None or completion_start == 0:
             raise MaskAlignmentError("Invalid teacher completion token boundary")
+        prefill_token_indices = [
+            i
+            for i, (start, end) in enumerate(offsets)
+            if start < prefill_end and end > target_start
+        ]
+        if any(
+            audit[field][i] for field in ("answer_mask", "work_mask") for i in prefill_token_indices
+        ):
+            raise MaskAlignmentError("A registered prefill token cannot carry teacher loss")
         tokens = ids[completion_start:]
         answer, work = (
             audit["answer_mask"][completion_start:],
@@ -547,7 +697,16 @@ class SRF3CERuntime(SRF12Runtime):
             native_full_input_tensor_hash=hash_json(tensor_hashes),
             native_full_input_tensor_hashes=tensor_hashes,
             offset_coordinate_system="native_processor_expanded_chat_text",
-            assistant_prefill="{",
+            assistant_prefill=prefill,
+            protocol_revision=self.protocol_revision,
+            prefill_native_char_span=[target_start, prefill_end],
+            prefill_token_indices=prefill_token_indices,
+            prefill_token_ids=[ids[i] for i in prefill_token_indices],
+            prefill_cross_boundary_tokens=[
+                dict(token_index=i, token_id=ids[i], offset=list(offsets[i]), owner="context")
+                for i in prefill_token_indices
+                if offsets[i][1] > prefill_end
+            ],
             prefill_is_context_not_loss_target=True,
         )
         return dict(
@@ -556,6 +715,8 @@ class SRF3CERuntime(SRF12Runtime):
             root=str(run_root),
             arm=arm,
             protocol="structured",
+            protocol_revision=self.protocol_revision,
+            assistant_prefill=prefill,
             teacher_target=copy.deepcopy(target),
             serialized_teacher_target=selected,
             serialization=serialization,
@@ -574,7 +735,7 @@ class SRF3CERuntime(SRF12Runtime):
 
     def freeze_support_serialization(self, cases, run_root):
         """CPU/processor-only audit of every registered GOLD and shared traced target."""
-        return freeze_serialization(
+        receipt = freeze_serialization(
             [case["target"] for case in cases],
             lambda selected, index: self.prepare_support(
                 cases[index]["model_input"],
@@ -583,16 +744,24 @@ class SRF3CERuntime(SRF12Runtime):
                 cases[index]["arm"],
                 serialization=selected["serialization"],
             )["mask_audit"],
+            serializations=self._support_serializations(),
         )
+        receipt.update(
+            protocol_revision=self.protocol_revision,
+            assistant_prefill=_prefill("structured", self.protocol_revision),
+            serialization_candidates=list(self._support_serializations()),
+        )
+        return receipt
 
     def support_forward(self, record, *, purpose="training_support", grad=True):
+        self._validate_record_revision(record)
         if "full_inputs" not in record:
             rebuilt = self.prepare_support(
                 record["model_input"],
                 record.get("run_root", record.get("root")),
                 record["teacher_target"],
                 record["arm"],
-                serialization=record.get("serialization", "canonical"),
+                serialization=record.get("serialization"),
             )
             for key in ("tokens", "answer_mask", "work_mask", "mask_audit"):
                 if record.get(key) != rebuilt[key]:
@@ -676,7 +845,13 @@ class SRF3CERuntime(SRF12Runtime):
         if protocol not in EXTERNAL:
             from transformers import StoppingCriteriaList
 
-            stop = BatchedProtocolStop(self.processor.tokenizer, prompt_len, len(seeds), protocol)
+            stop = BatchedProtocolStop(
+                self.processor.tokenizer,
+                prompt_len,
+                len(seeds),
+                protocol,
+                revision=self.protocol_revision,
+            )
             kwargs["stopping_criteria"] = StoppingCriteriaList([stop])
         self.reserve("completion_attempts", len(seeds), group_seed=seeds[0], protocol=protocol)
         rng, before, started = capture_rng(), self.image_calls, time.perf_counter()
@@ -702,7 +877,10 @@ class SRF3CERuntime(SRF12Runtime):
             for index, seed in enumerate(seeds):
                 backend_tokens = result.sequences[index, prompt_len:].cpu().tolist()
                 boundary_n, boundary_char = first_boundary_token(
-                    self.processor.tokenizer, backend_tokens, protocol
+                    self.processor.tokenizer,
+                    backend_tokens,
+                    protocol,
+                    revision=self.protocol_revision,
                 )
                 eos_n = next(
                     (i + 1 for i, token in enumerate(backend_tokens) if token in self.eos_ids), None
@@ -740,7 +918,7 @@ class SRF3CERuntime(SRF12Runtime):
                 if prepared["routing"].get("image_token_count", 0) and self.image_calls <= before:
                     errors.append("NATIVE_VISUAL_ENCODER_NOT_CALLED")
                 text = decode_generated(self.processor.tokenizer, tokens)
-                prefill = "{" if protocol in PREFILLED else ""
+                prefill = _prefill(protocol, self.protocol_revision)
                 full_text = prefill + text
                 prefix_chars, prefix_stable, prefix_views = [], True, {}
                 for count in range(1, len(tokens) + 1):
@@ -760,6 +938,7 @@ class SRF3CERuntime(SRF12Runtime):
                     run_root=str(run_root),
                     root=str(run_root),
                     protocol=protocol,
+                    protocol_revision=self.protocol_revision,
                     tokens=tokens,
                     raw_tokens=tokens,
                     backend_sequence_tokens=backend_tokens,
@@ -795,7 +974,7 @@ class SRF3CERuntime(SRF12Runtime):
                     technical_validation_errors=errors,
                     adapter_identity=copy.deepcopy(adapter_identity),
                     model_identity=copy.deepcopy(model_identity),
-                    **decoded_protocol(text, protocol),
+                    **decoded_protocol(text, protocol, revision=self.protocol_revision),
                 )
                 if on_completion is not None:
                     on_completion(record)

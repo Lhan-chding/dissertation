@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -86,7 +87,115 @@ def validate_config(config):
         respect_scheduler_lease=True,
     ):
         raise PermissionError("Frozen resource boundary differs")
+    if "protocol_revision" in config:
+        from .protocol_revision import revision_from_config
+
+        revision_from_config(config)
     return config
+
+
+def verify_run_source_revision(root, source_manifest=None):
+    """Authenticate an adopted revision before an operations tool may use it.
+
+    Original operations remain pinned to the original scientific source. New
+    source is accepted only in a separate selected-revision root, with the
+    adopted request and independently verified ablation selection bound by the
+    run identity. This function does not authorize or submit work.
+    """
+    from .protocol_revision import REQUEST_SHA256, revision_from_config
+
+    root = Path(root).resolve(strict=True)
+    if (root / "STOP").exists():
+        raise PermissionError("This run has a STOP marker")
+    identity = read_json(root / "RUN_IDENTITY.json")
+    if (
+        identity.get("experiment_id") != EXPERIMENT_ID
+        or Path(identity.get("root", "")).resolve() != root
+    ):
+        raise PermissionError("Run identity/root mismatch")
+    manifest_path = root / "deployment/SOURCE_MANIFEST.json"
+    manifest = read_json(manifest_path)
+    if source_manifest is not None and source_manifest != manifest:
+        raise PermissionError("Provided source inventory differs from the run")
+    commit = identity.get("code_commit")
+    if (
+        not re.fullmatch(r"[a-f0-9]{40}", str(commit))
+        or manifest.get("code_commit") != commit
+        or identity.get("bound_files", {}).get("deployment/SOURCE_MANIFEST.json")
+        != file_hash(manifest_path)
+    ):
+        raise PermissionError("Scientific source commit/inventory binding differs")
+    config = read_json(root / "plan/config/SR_F3_CE.json")
+    revision = revision_from_config(config)
+    result = dict(
+        code_commit=commit,
+        protocol_revision=revision,
+        protocol_selection_sha256=None,
+        request_sha256=None,
+        ablation_root=None,
+    )
+    if revision == "v1":
+        if (
+            commit != "71483fbf31d57213fdc7e6f3c881848397b45329"
+            or identity.get("run_stage") == "PROTOCOL_ABLATION"
+        ):
+            raise PermissionError("Original scientific operations remain pinned to v1 source")
+        return result
+    if (
+        identity.get("run_stage") != "SELECTED_PROTOCOL_REVISION"
+        or identity.get("protocol_revision") != revision
+        or identity.get("protocol_revision_request_path") != "authorization/REQUEST.md"
+        or identity.get("protocol_selection_path") != "PROTOCOL_SELECTION.json"
+    ):
+        raise PermissionError("A distinct adopted and selected protocol run is required")
+    request_path = contained(root, "authorization/REQUEST.md")
+    selection_path = contained(root, "PROTOCOL_SELECTION.json")
+    bound = identity.get("bound_files", {})
+    if (
+        file_hash(request_path) != REQUEST_SHA256
+        or bound.get("authorization/REQUEST.md") != REQUEST_SHA256
+        or bound.get("PROTOCOL_SELECTION.json") != file_hash(selection_path)
+    ):
+        raise PermissionError("Protocol request/selection is not bound by the run")
+    selected = read_json(selection_path)
+    original_ablation = Path(identity.get("ablation_root", "")).resolve(strict=True)
+    if (
+        not Path(identity.get("ablation_root", "")).is_absolute()
+        or original_ablation == root
+        or original_ablation.is_relative_to(root)
+        or root.is_relative_to(original_ablation)
+        or selected.get("ablation_root") != str(original_ablation)
+    ):
+        raise PermissionError("Selected run must be separate from its fixed ablation root")
+    original_selection = original_ablation / "PROTOCOL_SELECTION.json"
+    if file_hash(original_selection) != file_hash(selection_path):
+        raise PermissionError("Copied protocol selection differs from its original")
+
+    from .ablation import verify_selection
+
+    verified = verify_selection(original_ablation)
+    if (
+        verified != selected
+        or selected.get("status") != "PROTOCOL_SELECTED"
+        or selected.get("selected_revision") != revision
+    ):
+        raise PermissionError("A complete successful parseability-only selection is required")
+    variant = {"v2": "P2", "c2": "P3"}[revision]
+    candidate = selected.get("candidate_identities", {}).get(variant, {})
+    if (
+        candidate.get("protocol_revision") != revision
+        or candidate.get("package_sha256") != file_hash(root / "plan/PACKAGE_SHA256.json")
+        or candidate.get("config_sha256") != file_hash(root / "plan/config/SR_F3_CE.json")
+        or candidate.get("model_inputs_sha256")
+        != file_hash(root / "plan/manifests/MODEL_INPUTS.jsonl")
+    ):
+        raise PermissionError("Selected run plan differs from the prospectively tested candidate")
+    result.update(
+        protocol_selection_sha256=file_hash(selection_path),
+        request_sha256=REQUEST_SHA256,
+        ablation_root=str(original_ablation),
+    )
+    return result
 
 
 def verify_package(plan_dir):
@@ -98,6 +207,10 @@ def verify_package(plan_dir):
         if file_hash(contained(plan_dir, relative)) != expected:
             raise PermissionError(f"Frozen package changed: {relative}")
     config = validate_config(read_json(plan_dir / "config/SR_F3_CE.json"))
+    if config.get("protocol_revision", "v1") != "v1":
+        from .protocol_revision import verify_revision_package
+
+        verify_revision_package(plan_dir)
     return dict(
         files=len(hashes),
         config=config,
@@ -128,6 +241,9 @@ def verify_run(root, *, science=False):
     if package["package_manifest_sha256"] != identity["package_manifest_sha256"]:
         raise PermissionError("Package identity differs")
     verify_source(root / "deployment/SOURCE_MANIFEST.json", root / "code")
+    revision_binding = None
+    if package["config"].get("protocol_revision", "v1") != "v1":
+        revision_binding = verify_run_source_revision(root)
     if science:
         freeze = read_json(root / "EXECUTION_FREEZE.json")
         if (
@@ -139,6 +255,13 @@ def verify_run(root, *, science=False):
         for relative, expected in freeze["engineering_files"].items():
             if file_hash(contained(root, relative)) != expected:
                 raise PermissionError("Engineering receipt changed after scientific freeze")
+        if revision_binding is not None and (
+            freeze.get("protocol_revision") != revision_binding["protocol_revision"]
+            or freeze.get("protocol_selection_sha256")
+            != revision_binding["protocol_selection_sha256"]
+            or freeze.get("protocol_revision_request_sha256") != revision_binding["request_sha256"]
+        ):
+            raise PermissionError("Scientific freeze omits the adopted protocol selection")
     return identity, package["config"]
 
 

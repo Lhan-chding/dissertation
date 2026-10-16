@@ -1,4 +1,5 @@
 import copy
+import json
 
 import pytest
 
@@ -158,3 +159,40 @@ def test_real_fast_tokenizer_offsets_include_full_prefix_and_gold_answer(teacher
     _, gold_spans = target_spans(gold_text)
     gold = tokenize_with_offsets(tokenizer, {"text": gold_text, "spans": gold_spans})
     assert not any(gold["work_mask"])
+
+
+@pytest.mark.parametrize("answer", ["98/3", None, 42])
+def test_prescribed_indent_two_recomputes_exact_fraction_null_and_newline_spans(teacher, answer):
+    obj = copy.deepcopy(teacher["object"])
+    obj["work"] = 'row one\nrow two; quote="answer"; 中文'
+    obj["answer"] = answer
+    text = json.dumps(obj, ensure_ascii=False, separators=(",", ":"))
+    _, spans = target_spans(text)
+    target = {"text": text, "spans": spans, "object": obj}
+    selected = serialize_target(target, "indent_2")
+    assert selected["text"] == json.dumps(obj, indent=2, ensure_ascii=False)
+    assert list(selected["object"]) == ["evidence", "work", "answer"]
+    work = selected["spans"]["work"]
+    answer_span = selected["spans"]["answer"]
+    assert selected["text"][slice(*work)] == json.dumps(obj["work"], ensure_ascii=False)
+    assert selected["text"][slice(*answer_span)] == (
+        '"answer": ' + json.dumps(answer, ensure_ascii=False) + "\n}"
+    )
+    assert selected["spans"] != target["spans"]
+    assert serialize_target(selected, "indent_2")["text"] == selected["text"]
+    assert target["text"] == text and target["spans"] == spans
+
+
+def test_prescribed_indent_two_alignment_failure_never_tries_another_serialization(teacher):
+    calls = []
+
+    def encode(target, index):
+        calls.append((target["serialization"], index))
+        raise MaskAlignmentError("actual tokenizer semantic boundary conflict")
+
+    with pytest.raises(MaskAlignmentError, match="Prescribed support serialization failed"):
+        freeze_serialization([teacher, teacher], encode, serializations=("indent_2",))
+    assert calls == [("indent_2", 0)]
+    for policy in ((), ("indent_2", "indent_2"), ("unknown",)):
+        with pytest.raises(ValueError, match="policy"):
+            freeze_serialization([teacher], encode, serializations=policy)

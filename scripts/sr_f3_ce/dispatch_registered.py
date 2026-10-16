@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Independent CPU dispatcher for the unchanged SR-F3-CE scientific deployment.
+"""Independent CPU dispatcher for the registered SR-F3-CE scientific deployment.
 
 This operational script is installed under ROOT/operations/COMMIT. It imports
 only ROOT/code/src, preserves pool_size=1, and never evaluates a model score.
@@ -110,9 +110,54 @@ def lock(path):
             fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
 
 
+def source_revision(root):
+    """Keep v1 pinned; authenticate the exact adopted revision before importing it."""
+    root = Path(root).resolve(strict=True)
+    registration = read(root / "RUN_IDENTITY.json")
+    config_path = root / "plan/config/SR_F3_CE.json"
+    config = read(config_path) if config_path.is_file() else {}
+    revision = config.get("protocol_revision", "v1")
+    if revision == "v1":
+        if registration.get("code_commit") != FROZEN_COMMIT:
+            raise PermissionError(
+                "Original protocol identity changed: frozen scientific commit required"
+            )
+        return dict(code_commit=FROZEN_COMMIT, protocol_revision="v1")
+    if revision not in {"v2", "c2"}:
+        raise PermissionError("Unregistered protocol revision")
+    code = root / "code"
+    sys.dont_write_bytecode = True
+    if any(p.is_file() and p.suffix in {".pyc", ".pyo"} for p in code.rglob("*")):
+        raise PermissionError("Unbound scientific bytecode cache must not be imported")
+    manifest = read(root / "deployment/SOURCE_MANIFEST.json")
+    rows = manifest.get("files", [])
+    if not rows or len({row["path"] for row in rows}) != len(rows):
+        raise PermissionError("Revised source inventory is empty or ambiguous")
+    for row in rows:
+        source = bounded(code, row["path"])
+        if source.stat().st_size != row["bytes"] or sha(source) != row["sha256"]:
+            raise PermissionError("Revised source changed before guard import")
+    if not sys.path or sys.path[0] != str(code / "src"):
+        sys.path.insert(0, str(code / "src"))
+    module = importlib.import_module("sr_f3_ce.protocol")
+    if Path(module.__file__).resolve() != code / "src/sr_f3_ce/protocol.py":
+        raise PermissionError("Protocol source guard was imported from another deployment")
+    checked = module.verify_run_source_revision(root, source_manifest=manifest)
+    if checked.get("protocol_revision") != revision or (
+        checked.get("code_commit") != registration.get("code_commit")
+    ):
+        raise PermissionError("Selected protocol/source guard differs from this run")
+    return checked
+
+
+def revision_binding(checked):
+    return {} if checked["protocol_revision"] == "v1" else {"protocol_source_guard": checked}
+
+
 def load_extension(root, manifest_path, *, expected_sha=None):
     """Verify the complete explicit source inventory before executing its launcher."""
     root = Path(root).resolve(strict=True)
+    checked_source = source_revision(root)
     path = Path(manifest_path).resolve(strict=True)
     manifest_bytes = path.read_bytes()
     manifest_sha = hashlib.sha256(manifest_bytes).hexdigest()
@@ -123,13 +168,15 @@ def load_extension(root, manifest_path, *, expected_sha=None):
     if not re.fullmatch(r"[a-f0-9]{40}", commit) or (
         path != root / "native/observability" / commit / "SOURCE_MANIFEST.json"
         or manifest.get("status") != "FROZEN_OBSERVABILITY_EXTENSION"
-        or manifest.get("base_code_commit") != FROZEN_COMMIT
+        or manifest.get("base_code_commit") != checked_source["code_commit"]
         or manifest.get("run_identity_sha256") != sha(root / "RUN_IDENTITY.json")
         or manifest.get("base_source_manifest_sha256")
         != sha(root / "deployment/SOURCE_MANIFEST.json")
         or manifest.get("executed_sources") != ["instrumented_execution.py", "observe_runtime.py"]
     ):
         raise PermissionError("Explicit observability deployment identity differs")
+    if any(manifest.get(k) != v for k, v in revision_binding(checked_source).items()):
+        raise PermissionError("Observability manifest omits the selected protocol/source guard")
     records = manifest.get("sources", [])
     names = {row["path"] for row in records}
     if len(names) != len(records) or not set(manifest["executed_sources"]) <= names:
@@ -176,7 +223,8 @@ def register(root, python, user, operation_commit, extension_manifest):
     ):
         raise PermissionError("Install this exact operation commit before registering")
     identity, config = read(root / "RUN_IDENTITY.json"), read(root / "orchestration/CONFIG.json")
-    if identity.get("code_commit") != FROZEN_COMMIT or config.get("pool_size") != 1:
+    checked_source = source_revision(root)
+    if identity.get("code_commit") != checked_source["code_commit"] or config.get("pool_size") != 1:
         raise PermissionError("Frozen scientific commit and single-GPU configuration required")
     if config.get("cpu_policy") != dict(partition="cluster02", qos=QOS, cpu_node="cpu-2"):
         raise PermissionError("Only the verified teacher CPU policy is authorized")
@@ -193,7 +241,8 @@ def register(root, python, user, operation_commit, extension_manifest):
             schema_version=1,
             experiment_id=EXPERIMENT,
             operation_commit=operation_commit,
-            scientific_code_commit=FROZEN_COMMIT,
+            scientific_code_commit=checked_source["code_commit"],
+            **revision_binding(checked_source),
             files={name: sha(script.parent / name) for name in HELPERS},
         ),
         immutable=True,
@@ -204,7 +253,8 @@ def register(root, python, user, operation_commit, extension_manifest):
         operation_commit=operation_commit,
         root=str(root),
         code_root=str(root / "code"),
-        frozen_code_commit=FROZEN_COMMIT,
+        frozen_code_commit=checked_source["code_commit"],
+        **revision_binding(checked_source),
         run_identity_sha256=sha(root / "RUN_IDENTITY.json"),
         source_manifest_sha256=sha(root / "deployment/SOURCE_MANIFEST.json"),
         operation_sources_sha256=sha(sources_path),
@@ -238,10 +288,12 @@ def identity(path):
     path = Path(path).resolve(strict=True)
     value, script = read(path), Path(__file__).resolve(strict=True)
     root = Path(value["root"]).resolve(strict=True)
+    checked_source = source_revision(root)
     expected = dict(
         schema_version=1,
         experiment_id=EXPERIMENT,
-        frozen_code_commit=FROZEN_COMMIT,
+        frozen_code_commit=checked_source["code_commit"],
+        **revision_binding(checked_source),
         code_root=str(root / "code"),
         dispatcher_sha256=sha(script),
         extension_manifest_sha256=sha(value["extension_manifest_path"]),
@@ -276,7 +328,8 @@ def identity(path):
         schema_version=1,
         experiment_id=EXPERIMENT,
         operation_commit=value["operation_commit"],
-        scientific_code_commit=FROZEN_COMMIT,
+        scientific_code_commit=checked_source["code_commit"],
+        **revision_binding(checked_source),
         files={name: sha(script.parent / name) for name in HELPERS},
     ):
         raise PermissionError("Auxiliary operation source changed")
@@ -286,7 +339,7 @@ def identity(path):
     )
     if (
         registration.get("experiment_id") != EXPERIMENT
-        or registration.get("code_commit") != FROZEN_COMMIT
+        or registration.get("code_commit") != checked_source["code_commit"]
     ):
         raise PermissionError("A different scientific experiment/source was supplied")
     if (
@@ -394,11 +447,12 @@ def verify_typed(root, external):
         or panels.get("typed_audit_receipt_sha256") != sha(audit_path)
     ):
         raise PermissionError("Typed publication/pointer identity differs")
+    checked_source = source_revision(root)
     required = dict(
         status="TWO_INDEPENDENT_REVIEW_PASSES_COMPLETED",
         experiment_id=EXPERIMENT,
         run_identity_sha256=sha(root / "RUN_IDENTITY.json"),
-        code_commit=FROZEN_COMMIT,
+        code_commit=checked_source["code_commit"],
         scientific_source_changed=False,
         model_calls=0,
         generation_budget_changed=False,
@@ -889,6 +943,8 @@ class Driver:
                 "cpu_validation_sha256",
             )
         }
+        if "protocol_source_guard" in extension:
+            observed_identity["protocol_source_guard"] = extension["protocol_source_guard"]
         observed_identity["manifest_path"] = str(
             Path(extension["manifest_path"]).relative_to(self.root)
         )

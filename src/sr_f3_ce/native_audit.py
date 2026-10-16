@@ -2,14 +2,16 @@
 
 from __future__ import annotations
 
+import hashlib
 import importlib
 from pathlib import Path
 
 from mm_core.training import state_hash
+from mm_core.vl_runtime import hash_json
 from sr_f12.evaluation import durable_json
 
 from .contract import support_target
-from .protocol import digest, file_hash, read_json
+from .protocol import PARENTS, digest, file_hash, read_json
 
 CANVAS = (1024, 768)
 TARGET_PIXELS = 786432
@@ -20,7 +22,15 @@ ENGINE_SUPPORT_EXAMPLES = 16
 def direct_source_identity():
     """Bind loaded F3 modules; inherited helpers are bound by the outer snapshot."""
     result = {}
-    for name in ("runtime", "masks", "data", "contract", "prompts", "native_audit"):
+    for name in (
+        "runtime",
+        "masks",
+        "data",
+        "contract",
+        "prompts",
+        "protocol_revision",
+        "native_audit",
+    ):
         module = importlib.import_module("sr_f3_ce." + name)
         path = Path(module.__file__).resolve(strict=True)
         result["src/sr_f3_ce/" + name + ".py"] = dict(
@@ -119,16 +129,27 @@ def audit_sidecar_independence(runtime, dataset, store, qid):
     )
 
 
-def audit_native_inputs(root):
+def audit_native_inputs(root, *, protocol_revision=None):
     import torch
 
+    from .prompts import prefill_for
+    from .protocol_revision import revision_from_config, serialize_teacher_target
     from .runner import dataset_and_store, engine_schedule
     from .runtime import SRF3CERuntime
 
     root = Path(root).resolve(strict=True)
+    config_path = root / "plan/config/SR_F3_CE.json"
+    configured_revision = revision_from_config(
+        read_json(config_path) if config_path.exists() else {}
+    )
+    if protocol_revision is not None and protocol_revision != configured_revision:
+        raise PermissionError("Native audit revision must match its frozen plan")
+    protocol_revision = configured_revision
     dataset, store = dataset_and_store(root)
     prior = read_json(root / "prior/MODEL_ENVIRONMENT_IDENTITY.json")
-    runtime = SRF3CERuntime.processor_only(prior["model_path"])
+    runtime = SRF3CERuntime.processor_only(prior["model_path"], protocol_revision=protocol_revision)
+    if runtime.identity.get("protocol_revision", "v1") != protocol_revision:
+        raise PermissionError("Native processor revision differs from frozen audit plan")
     if torch.cuda.is_initialized():
         raise RuntimeError("CPU audit must not initialize CUDA")
     for key in ("processor_hash", "tokenizer_hash", "chat_template_hash"):
@@ -201,6 +222,7 @@ def audit_native_inputs(root):
                 if task["teacher"]
                 else support_target(task["world"], task["query"], arm != "GOLD")
             )
+            target = serialize_teacher_target(target, protocol_revision)
             cases.append(dict(qid=qid, arm=arm, target=target, model_input=store.model_input(qid)))
     serialization = runtime.freeze_support_serialization(cases, store.image_root)
     serialized = serialization["serialization"]
@@ -229,6 +251,8 @@ def audit_native_inputs(root):
             arm=case["arm"],
             model_input=case["model_input"],
             original_target=case["target"],
+            protocol_revision=protocol_revision,
+            assistant_prefill=prefill_for("structured", protocol_revision),
         )
         path = root / "native/support_masks" / f"{case['qid']}-{case['arm']}.json"
         durable_json(path, metadata)
@@ -253,11 +277,13 @@ def audit_native_inputs(root):
         full_native_offsets=True,
         generated_model_outputs=0,
         native_processor_sha256=runtime.identity["processor_hash"],
+        protocol_revision=protocol_revision,
     )
     durable_json(root / "native/SUPPORT_MASK_RECEIPT.json", mask_receipt)
     sources = direct_source_identity()
     receipt = dict(
         status="PASS",
+        protocol_revision=protocol_revision,
         model_calls=0,
         weights_loaded=False,
         cuda_initialized=torch.cuda.is_initialized(),
@@ -276,4 +302,313 @@ def audit_native_inputs(root):
         mask_receipt_sha256=file_hash(root / "native/SUPPORT_MASK_RECEIPT.json"),
     )
     durable_json(root / "native/PROCESSOR_RECEIPT.json", receipt)
+    return receipt
+
+
+def _context_path(root, revision, output_path=None):
+    from .prompts import prefill_for
+
+    prefill_for("structured", revision)
+    expected = root / "native/protocol_contexts" / (revision + ".json")
+    output = Path(output_path) if output_path is not None else expected
+    output = output if output.is_absolute() else root / output
+    if output.resolve() != expected or expected.is_symlink():
+        raise PermissionError("Protocol context receipt must use its registered native path")
+    return expected
+
+
+def _verify_context_sources(root, recorded):
+    """Permit another deployment of identical code, retaining original CPU provenance."""
+    current = direct_source_identity()
+    if set(recorded) != set(current):
+        raise PermissionError("Protocol context direct-source inventory differs")
+    code = (root / "code").resolve(strict=True)
+    for relative, item in recorded.items():
+        path = (code / relative).resolve(strict=True)
+        if (
+            not path.is_relative_to(code)
+            or item.get("loaded_from") != str(path)
+            or item.get("sha256") != file_hash(path)
+            or item.get("bytes") != path.stat().st_size
+            or any(current[relative][key] != item[key] for key in ("sha256", "bytes"))
+        ):
+            raise PermissionError("Protocol context direct-source provenance differs: " + relative)
+
+
+def _context_registration(root, revision):
+    """Use original ENGINE slots and independent model-input stores, never teacher text."""
+    from .data import ModelInputStore
+    from .evaluation import engine_slots
+    from .prompts import prompt_for_revision
+    from .protocol_revision import verify_revision_package
+    from .runner import dataset_and_store
+
+    dataset, original = dataset_and_store(root)
+    slots = [
+        s
+        for s in engine_slots(dataset.tasks)
+        if s["protocol"] == "structured" and s["view"] is None
+    ]
+    panels = [
+        dict(
+            block=block,
+            parent_id=parent,
+            qids=sorted(
+                {s["qid"] for s in slots if s["block"] == block and s["parent_id"] == parent}
+            ),
+        )
+        for block, parent in enumerate(PARENTS)
+    ]
+    qids = sorted({s["qid"] for s in slots})
+    if len(slots) != 768 or len(qids) != 64 or any(panel["qids"] != qids for panel in panels):
+        raise PermissionError("Protocol contexts must cover the exact 64 by 3 ENGINE panel")
+    plan = root / "plan" if revision == "v1" else root / "candidates" / revision / "plan"
+    if revision != "v1":
+        verified = verify_revision_package(plan, source_plan_dir=root / "plan")
+        if verified["protocol_revision"] != revision:
+            raise PermissionError("Candidate package revision differs from requested context audit")
+    store = ModelInputStore.from_files(
+        plan / "manifests/MODEL_INPUTS.jsonl",
+        root / "data/IMAGE_MANIFEST.jsonl",
+        image_root=root / "data",
+    )
+    requests = {}
+    for qid in qids:
+        safe = store.model_input(qid)
+        expected = original.model_input(qid)
+        expected["prompt"] = prompt_for_revision(expected["prompt"], revision)
+        if safe != expected or safe["image_file"] is None:
+            raise PermissionError("Protocol context differs from registered ENGINE prompt/image")
+        requests[qid] = safe
+    files = {
+        root / "plan/PACKAGE_SHA256.json",
+        root / "plan/manifests/TASKS_AUDIT_ONLY.jsonl",
+        root / "data/IMAGE_MANIFEST.jsonl",
+        root / "prior/MODEL_ENVIRONMENT_IDENTITY.json",
+        plan / "PACKAGE_SHA256.json",
+        plan / "config/SR_F3_CE.json",
+        plan / "manifests/MODEL_INPUTS.jsonl",
+    }
+    if revision != "v1":
+        files.add(plan / "PROTOCOL_REVISION.json")
+    sources = {}
+    for path in sorted(files):
+        resolved = path.resolve(strict=True)
+        if not resolved.is_relative_to(root):
+            raise PermissionError("Protocol context source escapes its registered root")
+        sources[str(path.relative_to(root))] = dict(
+            sha256=file_hash(path), bytes=path.stat().st_size
+        )
+    return store, requests, panels, sources
+
+
+def _audit_protocol_context(runtime, safe, image_root):
+    """Audit complete actual processor IDs/offsets and their full native text round trip."""
+    from .prompts import prefill_for
+
+    prepared = runtime.prepare_input(safe, image_root, protocol="structured")
+    encoded = runtime.processor(
+        **runtime._processor_arguments(safe, image_root, prepared["chat_text"]),
+        return_offsets_mapping=True,
+    )
+    if "offset_mapping" not in encoded:
+        raise PermissionError("Complete native context offsets are required")
+    offsets = encoded.pop("offset_mapping")
+    offsets = offsets.tolist() if hasattr(offsets, "tolist") else offsets
+    if "mm_token_type_ids" not in encoded and safe["image_file"] is None:
+        encoded["mm_token_type_ids"] = runtime.torch.zeros_like(encoded["input_ids"])
+    if set(encoded) != set(prepared["inputs"]) or any(
+        not runtime.torch.equal(value.cpu(), prepared["inputs"][key].cpu())
+        for key, value in encoded.items()
+    ):
+        raise PermissionError("Offset-bearing native context changed model input tensors")
+    ids = encoded["input_ids"][0].tolist()
+    if len(offsets) != 1 or len(offsets[0]) != len(ids):
+        raise PermissionError("Native context offsets and input IDs differ")
+    offsets = [list(pair) for pair in offsets[0]]
+    route, tokenizer = prepared["routing"], runtime.processor.tokenizer
+    expanded = prepared["chat_text"]
+    if safe["image_file"] is not None:
+        if (
+            route.get("source_size") != list(CANVAS)
+            or route.get("processed_size") != list(CANVAS)
+            or route.get("processor_target_pixels") != TARGET_PIXELS
+        ):
+            raise PermissionError("Native protocol context changed fixed image geometry")
+        image_token = runtime.processor.image_token
+        if expanded.count(image_token) != 1 or route["image_token_count"] <= 0:
+            raise PermissionError("Expected one independently routed native image placeholder")
+        expanded = expanded.replace(image_token, image_token * route["image_token_count"])
+    text = tokenizer.decode(ids, skip_special_tokens=False, clean_up_tokenization_spaces=False)
+    whole = tokenizer(expanded, add_special_tokens=False, return_offsets_mapping=True)
+    if (
+        text != expanded
+        or whole["input_ids"] != ids
+        or [list(pair) for pair in whole["offset_mapping"]] != offsets
+    ):
+        raise PermissionError("Full native context tokenizer/text/offset identity differs")
+    prefill = prefill_for("structured", runtime.protocol_revision)
+    start = len(expanded) - len(prefill)
+    indices = [i for i, (lo, hi) in enumerate(offsets) if hi > start]
+    if (
+        not expanded.endswith(prefill)
+        or not indices
+        or offsets[indices[0]][0] != start
+        or offsets[-1][1] != len(expanded)
+        or tokenizer.decode(
+            [ids[i] for i in indices], skip_special_tokens=False, clean_up_tokenization_spaces=False
+        )
+        != prefill
+    ):
+        raise PermissionError("Registered prefill must be entirely present in native context")
+    tensor_hashes = {key: state_hash(value) for key, value in encoded.items()}
+    if hash_json(tensor_hashes) != route["input_tensor_hash"]:
+        raise PermissionError("Native context tensor identity differs from runtime routing")
+    return dict(
+        model_input=safe,
+        model_input_sha256=digest(safe),
+        assistant_prefill=prefill,
+        protocol_revision=runtime.protocol_revision,
+        chat_text=prepared["chat_text"],
+        chat_text_sha256=hashlib.sha256(prepared["chat_text"].encode()).hexdigest(),
+        native_expanded_chat_text=expanded,
+        native_expanded_chat_text_sha256=hashlib.sha256(expanded.encode()).hexdigest(),
+        input_ids=ids,
+        offsets=offsets,
+        offset_coordinate_system="native_processor_expanded_chat_text",
+        prompt_tensor_hash=route["input_tensor_hash"],
+        input_tensor_hashes=tensor_hashes,
+        prefill_token_indices=indices,
+        prefill_token_ids=[ids[i] for i in indices],
+        prefill_native_char_span=[start, len(expanded)],
+        prefill_is_context_not_loss_target=True,
+        routing=route,
+    )
+
+
+def audit_protocol_contexts(root, revision, output_path=None):
+    """Publish CPU-only native ENGINE contexts before any ablation outputs exist."""
+    import torch
+
+    from .prompts import prefill_for
+    from .runtime import SRF3CERuntime
+
+    root = Path(root).resolve(strict=True)
+    path = _context_path(root, revision, output_path)
+    if (root / "ABLATION_MANIFEST.json").exists() or (root / "ablation/raw").exists():
+        raise PermissionError("Context acceptance must precede frozen ablation and model outputs")
+    if torch.cuda.is_initialized():
+        raise RuntimeError("Protocol context audit must not initialize CUDA")
+    store, requests, panels, sources = _context_registration(root, revision)
+    prior = read_json(root / "prior/MODEL_ENVIRONMENT_IDENTITY.json")
+    direct = direct_source_identity()
+    _verify_context_sources(root, direct)
+    runtime = SRF3CERuntime.processor_only(prior["model_path"], protocol_revision=revision)
+    if runtime.identity.get("protocol_revision") != revision or hasattr(
+        runtime.model, "parameters"
+    ):
+        raise PermissionError("Only the exact revision processor without weights may be audited")
+    for key in ("processor_hash", "tokenizer_hash", "chat_template_hash"):
+        if runtime.identity[key] != prior[key]:
+            raise PermissionError("Native protocol context environment differs: " + key)
+    pixel_budget = processor_pixel_budget(runtime)
+    contexts = {
+        qid: _audit_protocol_context(runtime, safe, store.image_root)
+        for qid, safe in requests.items()
+    }
+    if (
+        torch.cuda.is_initialized()
+        or direct_source_identity() != direct
+        or any(file_hash(root / name) != item["sha256"] for name, item in sources.items())
+    ):
+        raise PermissionError("CPU protocol context sources or execution boundary changed")
+    receipt = dict(
+        schema_version=1,
+        status="PASS",
+        protocol="structured",
+        protocol_revision=revision,
+        assistant_prefill=prefill_for("structured", revision),
+        model_calls=0,
+        teacher_forward_calls=0,
+        generated_model_outputs=0,
+        weights_loaded=False,
+        cuda_initialized=False,
+        unique_contexts=len(contexts),
+        parent_panel_contexts=sum(len(panel["qids"]) for panel in panels),
+        parent_panels=panels,
+        contexts=contexts,
+        contexts_sha256=digest(contexts),
+        requests_sha256=digest(requests),
+        input_sources=sources,
+        native_processor_identity=runtime.identity,
+        native_pixel_budget=pixel_budget,
+        direct_source_files=direct,
+        prefill_is_context_not_loss_target=True,
+        claim="actual_CPU_native_input_and_full_sequence_offset_identity_only",
+    )
+    durable_json(path, receipt)
+    return verify_protocol_contexts(root, revision)
+
+
+def verify_protocol_contexts(root, revision):
+    """Read and authenticate a saved CPU context receipt without loading a processor."""
+    from .prompts import prefill_for
+
+    root = Path(root).resolve(strict=True)
+    receipt = read_json(_context_path(root, revision))
+    _store, requests, panels, sources = _context_registration(root, revision)
+    expected = dict(
+        schema_version=1,
+        status="PASS",
+        protocol="structured",
+        protocol_revision=revision,
+        assistant_prefill=prefill_for("structured", revision),
+        model_calls=0,
+        teacher_forward_calls=0,
+        generated_model_outputs=0,
+        weights_loaded=False,
+        cuda_initialized=False,
+        unique_contexts=64,
+        parent_panel_contexts=192,
+        parent_panels=panels,
+        input_sources=sources,
+        requests_sha256=digest(requests),
+        prefill_is_context_not_loss_target=True,
+        claim="actual_CPU_native_input_and_full_sequence_offset_identity_only",
+    )
+    if any(receipt.get(key) != value for key, value in expected.items()):
+        raise PermissionError("Native protocol context acceptance differs from registered inputs")
+    _verify_context_sources(root, receipt["direct_source_files"])
+    prior = read_json(root / "prior/MODEL_ENVIRONMENT_IDENTITY.json")
+    native = receipt["native_processor_identity"]
+    if native.get("protocol_revision") != revision or any(
+        native[key] != prior[key]
+        for key in ("processor_hash", "tokenizer_hash", "chat_template_hash")
+    ):
+        raise PermissionError("Native protocol context processor identity differs")
+    contexts = receipt["contexts"]
+    if set(contexts) != set(requests) or receipt["contexts_sha256"] != digest(contexts):
+        raise PermissionError("Native context inventory or content checksum differs")
+    for qid, row in contexts.items():
+        route = row["routing"]
+        if (
+            row["model_input"] != requests[qid]
+            or row["model_input_sha256"] != digest(requests[qid])
+            or row["protocol_revision"] != revision
+            or row["assistant_prefill"] != expected["assistant_prefill"]
+            or route["protocol_revision"] != revision
+            or route["assistant_prefill"] != expected["assistant_prefill"]
+            or row["prompt_tensor_hash"] != route["input_tensor_hash"]
+            or row["prompt_tensor_hash"] != hash_json(row["input_tensor_hashes"])
+            or route["input_ids_sha256"] != hash_json([row["input_ids"]])
+            or len(row["offsets"]) != len(row["input_ids"])
+            or not row["prefill_is_context_not_loss_target"]
+            or row["prefill_token_ids"]
+            != [row["input_ids"][i] for i in row["prefill_token_indices"]]
+            or row["chat_text_sha256"] != hashlib.sha256(row["chat_text"].encode()).hexdigest()
+            or row["native_expanded_chat_text_sha256"]
+            != hashlib.sha256(row["native_expanded_chat_text"].encode()).hexdigest()
+            or route["source_image_sha256"] != requests[qid]["image_sha256"]
+        ):
+            raise PermissionError("Native context prompt/prefill/image identity differs: " + qid)
     return receipt

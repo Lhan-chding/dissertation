@@ -34,6 +34,12 @@ def _read(path):
     return json.loads(Path(path).read_text())
 
 
+def _run_revision(root):
+    from .protocol_revision import revision_from_config
+
+    return revision_from_config(_read(Path(root) / "plan/config/SR_F3_CE.json"))
+
+
 def _lines(path):
     with Path(path).open() as stream:
         for line in stream:
@@ -184,10 +190,14 @@ def _load_endpoint_runtime(root, model, task_id):
     from sr_f1.runtime import copy_parameters
 
     from .checkpoint import read_checkpoint
-    from .runner import load_runtime
+    from .prompts import prefill_for
+    from .runner import load_parent_runtime
 
-    runtime, _, _ = load_runtime(root, model["parent_id"], task_id)
-    provenance = dict(model=model, policy_source="verified parent adapter")
+    runtime = load_parent_runtime(root, model["parent_id"], task_id)
+    revision = runtime.protocol_revision
+    provenance = dict(
+        model=model, policy_source="verified parent adapter", protocol_revision=revision
+    )
     if model["arm"] != "PARENT":
         directory = Path(root) / "runs" / model["model_id"]
         state, checkpoint = read_checkpoint(directory / "checkpoints", step=64)
@@ -201,6 +211,8 @@ def _load_endpoint_runtime(root, model, task_id):
             or identity.get("run_identity_sha256") != sha_file(Path(root) / "RUN_IDENTITY.json")
             or identity.get("updates") != 64
             or identity.get("future_seed") != 73101 + model["block"]
+            or identity.get("protocol_revision", "v1") != revision
+            or identity.get("assistant_prefill", "{") != prefill_for("structured", revision)
             or state["reference_hash"] != state_hash(trainable_state(runtime.model))
         ):
             raise PermissionError("Scientific final checkpoint identity differs")
@@ -247,10 +259,15 @@ def execute_endpoint(root, model_id):
         raise PermissionError("Unregistered endpoint")
     _require_terminal(root)
     dataset, store = dataset_and_store(root)
+    revision = _run_revision(root)
     external_tasks, external_stores, panels, _ = _external(root, load_scorer=False)
     tasks = dict(dataset.tasks, **external_tasks)
-    slots = endpoint_slots(dataset.tasks, dataset.runs, external_tasks, model_id=model_id)
+    slots = endpoint_slots(
+        dataset.tasks, dataset.runs, external_tasks, model_id=model_id, revision=revision
+    )
     runtime, provenance = _load_endpoint_runtime(root, models[model_id], "eval--" + model_id)
+    if runtime.protocol_revision != revision:
+        raise PermissionError("Endpoint runtime differs from the frozen protocol revision")
     destination = root / "sealed/endpoint" / model_id
     durable_json(destination / "MODEL_IDENTITY.json", provenance)
     all_manifests, counts = [], Counter()
@@ -498,22 +515,34 @@ def _prefix_update(accumulator, row, task):
     if row["pool"] not in TEST_POOLS:
         return
     from .contract import registered_completion
+    from .prompts import prefill_for
 
     prefixes = row.get("decoded_prefix_views")
     if not isinstance(prefixes, dict) or set(prefixes) != {"128", "256", "512", "1024"}:
         raise RuntimeError("Actual decoded token prefix views are required for budget diagnostics")
+    revision = row.get("protocol_revision", "v1")
+    prefill = prefill_for(row["protocol"], revision)
+    if row.get("assistant_prefill", prefill) != prefill or any(
+        not isinstance(text, str) or not text.startswith(prefill) for text in prefixes.values()
+    ):
+        raise PermissionError("Decoded budget prefixes differ from the recorded context prefill")
     key = row["model_id"] + ":" + row["protocol"]
     panel = accumulator.setdefault(
         key,
         dict(
             records=0,
             generated_tokens=0,
+            protocol_revision=revision,
+            assistant_prefill=prefill,
+            prefill_counted_in_generated_budget=False,
             budgets={
                 str(n): dict(value_correct=0, finish=0, presentation=0)
                 for n in (128, 256, 512, 1024)
             },
         ),
     )
+    if panel["protocol_revision"] != revision or panel["assistant_prefill"] != prefill:
+        raise PermissionError("Budget diagnostic panel mixes protocol revisions or prefills")
     panel["records"] += 1
     panel["generated_tokens"] += len(row["tokens"])
     for budget, prefix in prefixes.items():
@@ -537,9 +566,10 @@ def execute_release(root):
     root = Path(root).resolve(strict=True)
     _require_terminal(root, evaluations=True)
     dataset, _ = dataset_and_store(root)
+    revision = _run_revision(root)
     external_tasks, _, panels, external_scorer = _external(root)
     tasks = dict(dataset.tasks, **external_tasks)
-    slots = endpoint_slots(dataset.tasks, dataset.runs, external_tasks)
+    slots = endpoint_slots(dataset.tasks, dataset.runs, external_tasks, revision=revision)
     training = []
     for model in endpoint_models()[3:]:
         provenance = _read(root / "sealed/endpoint" / model["model_id"] / "MODEL_IDENTITY.json")

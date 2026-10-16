@@ -39,6 +39,34 @@ def _engine_root(root):
     return Path(root).resolve() / "engine/resume"
 
 
+def _protocol_identity(root):
+    """Bind every retained engineering artifact to this root and its frozen protocol."""
+    from .prompts import prefill_for
+    from .protocol_revision import revision_from_config
+
+    root = Path(root).resolve()
+    identity, config = root / "RUN_IDENTITY.json", root / "plan/config/SR_F3_CE.json"
+    revision = revision_from_config(read_json(config)) if config.is_file() else "v1"
+    return dict(
+        root=str(root),
+        run_identity_sha256=file_hash(identity) if identity.is_file() else None,
+        config_sha256=file_hash(config) if config.is_file() else None,
+        protocol_revision=revision,
+        assistant_prefill=prefill_for("structured", revision),
+    )
+
+
+def _verify_state_protocol(root, state):
+    identity = _protocol_identity(root)
+    if identity["run_identity_sha256"] is not None and (
+        state["run_identity"].get("run_identity_sha256") != identity["run_identity_sha256"]
+        or state["run_identity"].get("protocol_revision", "v1") != identity["protocol_revision"]
+        or state["run_identity"].get("assistant_prefill", "{") != identity["assistant_prefill"]
+    ):
+        raise PermissionError("ENGINE checkpoint belongs to another run or protocol revision")
+    return identity
+
+
 def _intent_rows(root):
     directory = _engine_root(root) / "optimizer_intents"
     paths = sorted(directory.glob("*.json"))
@@ -53,6 +81,8 @@ def _intent_rows(root):
             raise PermissionError("ENGINE Adam intents differ from continuous 4 plus replay 2")
         if row["arm"] != "EXEC" or row["microbatch_size"] not in (4, 2, 1):
             raise PermissionError("ENGINE Adam intent recipe changed")
+        if row.get("protocol_identity") != _protocol_identity(root):
+            raise PermissionError("ENGINE Adam intent belongs to another protocol run")
         rows.append(row)
     return rows
 
@@ -82,6 +112,7 @@ def reserve_engine_step(root, metadata):
             **binding,
             status="RESERVED_BEFORE_ADAM",
             unknown_outcome_counts_against_budget=True,
+            protocol_identity=_protocol_identity(root),
         )
         durable_json(directory / f"{ordinal + 1:02d}.json", receipt)
         return receipt
@@ -126,6 +157,9 @@ def _support_identity(root, support_records):
     receipt = read_json(Path(root) / "native/SUPPORT_MASK_RECEIPT.json")
     if receipt["status"] != "PASS":
         raise PermissionError("Native support mask gate is incomplete")
+    revision = _protocol_identity(root)["protocol_revision"]
+    if receipt.get("protocol_revision", "v1") != revision:
+        raise PermissionError("Native masks belong to another protocol revision")
     expected_files = {row["path"]: row["sha256"] for row in receipt["files"]}
     checked = []
     for record in support_records:
@@ -136,6 +170,10 @@ def _support_identity(root, support_records):
             if file_hash(path) != expected_files.get(relative):
                 raise PermissionError("Frozen native teacher audit changed")
             pair.append(read_json(path))
+        if record.get("protocol_revision", "v1") != revision or any(
+            row.get("protocol_revision", "v1") != revision for row in pair
+        ):
+            raise PermissionError("ENGINE support sequence revision differs from native masks")
         keys = ("tokens", "answer_mask", "work_mask", "serialized_teacher_target")
         if any(pair[0][key] != pair[1][key] or pair[1][key] != record[key] for key in keys):
             raise PermissionError("Actual ENGINE PREFIX/EXEC token/text/mask identity differs")
@@ -150,6 +188,13 @@ def verify_engine_probes(root, runtime, optimizer, scheduler, records, reference
     import torch
 
     directory = _engine_root(root) / "probes"
+    protocol_identity = _protocol_identity(root)
+    if getattr(runtime, "protocol_revision", "v1") != protocol_identity["protocol_revision"]:
+        raise PermissionError("ENGINE probe runtime uses another protocol revision")
+    protocol_identity["support_mask_receipt_sha256"] = file_hash(
+        Path(root) / "native/SUPPORT_MASK_RECEIPT.json"
+    )
+    mask_pairs = _support_identity(root, support_records)
     before = _live_state(runtime, optimizer, scheduler, reference)
     cache_hash = state_hash(
         [
@@ -171,6 +216,8 @@ def verify_engine_probes(root, runtime, optimizer, scheduler, records, reference
     complete = directory / "COMPLETE.json"
     if complete.exists():
         receipt = read_json(complete)
+        if receipt.get("protocol_identity") != protocol_identity:
+            raise PermissionError("Existing ENGINE probes belong to another protocol run")
         if receipt["initial_state_hash"] != before or receipt["cache_hash"] != cache_hash:
             raise PermissionError(
                 "Existing ENGINE probes belong to different weights or cached inputs"
@@ -181,7 +228,6 @@ def verify_engine_probes(root, runtime, optimizer, scheduler, records, reference
             if file_hash(Path(root) / artifact["path"]) != artifact["sha256"]:
                 raise PermissionError("ENGINE gradient probe artifact changed")
         return receipt
-    mask_pairs = _support_identity(root, support_records)
     artifacts, attempts, successful = [], [], {}
 
     def run(name, arm, size, zero=False):
@@ -273,6 +319,7 @@ def verify_engine_probes(root, runtime, optimizer, scheduler, records, reference
         if not actual_cuda
         else "FAIL",
         actual_cuda=actual_cuda,
+        protocol_identity=protocol_identity,
         initial_state_hash=before,
         cache_hash=cache_hash,
         selected_microbatch_size=selected,
@@ -283,6 +330,7 @@ def verify_engine_probes(root, runtime, optimizer, scheduler, records, reference
         microbatch_comparison_scope="AVAILABLE_GPU_MICROBATCHES"
         if comparisons
         else "ONLY_ONE_FEASIBLE",
+        gpu_cross_microbatch_equivalence_established=actual_cuda and bool(comparisons),
         ce_zero_equals_pure_rl_exact=zero_equal,
         nonzero_ce_gradient=nonzero,
         prefix_exec_mask_pairs=mask_pairs,
@@ -311,6 +359,9 @@ def record_engine_final_logprobs(root, runtime, segment):
         raise ValueError("Unknown ENGINE segment")
     directory = _engine_root(root) / segment
     state, _receipt = read_checkpoint(directory / "checkpoints", step=4)
+    protocol_identity = _verify_state_protocol(root, state)
+    if getattr(runtime, "protocol_revision", "v1") != protocol_identity["protocol_revision"]:
+        raise PermissionError("Final ENGINE runtime uses another protocol revision")
     if state_hash(trainable_state(runtime.model)) != state_hash(state["parameters"]):
         raise PermissionError("Final ENGINE runtime does not match checkpoint four")
     rows = []
@@ -322,6 +373,7 @@ def record_engine_final_logprobs(root, runtime, segment):
     identity = dict(
         policy_hash=state_hash(state["parameters"]),
         token_path_hash=digest([{key: row[key] for key in ("qid", "tokens")} for row in rows]),
+        protocol_identity=protocol_identity,
     )
     marker, tensors = directory / "FINAL_LOGPROBS.json", directory / "FINAL_LOGPROBS.pt"
     if marker.exists():
@@ -363,6 +415,7 @@ def _copy_step_two(root):
 
     base = _engine_root(root)
     state, receipt = read_checkpoint(base / "continuous/checkpoints", step=2)
+    _verify_state_protocol(root, state)
     target = base / "split/checkpoints"
     target.mkdir(parents=True, exist_ok=True)
     source = base / "continuous/checkpoints" / receipt["path"]
@@ -418,18 +471,28 @@ def _run_segment(root, segment):
         segment,
     ]
     launch, exited = base / f"{segment}.LAUNCH.json", base / f"{segment}.EXIT.json"
+    protocol_identity = _protocol_identity(root)
     if exited.exists():
         previous = read_json(exited)
         if previous["returncode"] != 0:
             raise RuntimeError(
                 "Prior ENGINE subprocess failed; retain and diagnose before recovery"
             )
-        if read_json(launch)["command"] != command:
-            raise PermissionError("ENGINE subprocess command changed")
+        previous_launch = read_json(launch)
+        if (
+            previous_launch["command"] != command
+            or previous_launch.get("protocol_identity") != protocol_identity
+        ):
+            raise PermissionError("ENGINE subprocess command or protocol identity changed")
         return
     if launch.exists():
         raise RuntimeError("ENGINE subprocess outcome is unknown; no blind replay is permitted")
-    durable_json(launch, dict(command=command, parent_pid=os.getpid(), at=now()))
+    durable_json(
+        launch,
+        dict(
+            command=command, parent_pid=os.getpid(), at=now(), protocol_identity=protocol_identity
+        ),
+    )
     with (base / f"{segment}.stdout.log").open("xb") as log:
         process = subprocess.Popen(
             command, stdout=log, stderr=subprocess.STDOUT, env=dict(os.environ)
@@ -454,6 +517,9 @@ def validate_engine_recovery(root):
         read_checkpoint(base / segment / "checkpoints", step=4)[0]
         for segment in ("continuous", "split")
     ]
+    identities = [_verify_state_protocol(root, state) for state in states]
+    if identities[0] != identities[1]:
+        raise PermissionError("ENGINE segments belong to different protocol roots")
     comparison = compare_recovery_states(*states)
     durable_json(base / "STATE_COMPARISON.json", comparison)
     if not comparison["all_logical_fields_exact"]:
@@ -509,6 +575,8 @@ def validate_engine_recovery(root):
         step, slot = divmod(index, 16)
         if group["identity"]["step"] != step + 1 or group["identity"]["slot"] != slot:
             raise PermissionError("ENGINE cached group has the wrong logical step/slot")
+        if group["identity"].get("protocol_revision", "v1") != identities[0]["protocol_revision"]:
+            raise PermissionError("ENGINE cached groups use another protocol revision")
         if any(row["qid"] != states[0]["used_task_qids"][index] for row in group["records"]):
             raise PermissionError("ENGINE cached qid differs from committed input history")
     chain = digest([])
@@ -526,6 +594,12 @@ def validate_engine_recovery(root):
     if sum(row["count"] for row in accounting if row["kind"] == "completion_attempts") != 512:
         raise PermissionError("Actual ENGINE generation accounting differs from 512 new responses")
     probes = read_json(base / "probes/COMPLETE.json")
+    expected_probe_identity = dict(
+        identities[0],
+        support_mask_receipt_sha256=file_hash(Path(root) / "native/SUPPORT_MASK_RECEIPT.json"),
+    )
+    if probes.get("protocol_identity") != expected_probe_identity:
+        raise PermissionError("ENGINE gradient probe identity differs from the selected run")
     if (
         probes["status"] != "PASS"
         or not probes["actual_cuda"]
@@ -574,6 +648,10 @@ def validate_engine_recovery(root):
         new_process_boundary=True,
         optimizer_intents=len(intents),
         sampled_cache_files=len(cache_paths),
+        protocol_revision=identities[0]["protocol_revision"],
+        microbatch_comparison_scope=probes["microbatch_comparison_scope"],
+        feasible_microbatches=probes["feasible_microbatches"],
+        gpu_cross_microbatch_equivalence_established=bool(probes["microbatch_comparisons"]),
     )
 
 

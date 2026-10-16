@@ -1435,3 +1435,246 @@ def test_actual_cpu_observer_event_schema_integrates_with_delivery_summary(tmp_p
     categories = summary["by_kind_purpose_protocol"]
     for axis in ("model_stages", "visual_stages"):
         assert sum(stats["entered"] for row in categories for stats in row[axis].values()) == 3
+
+
+@pytest.mark.parametrize(
+    "revision,expected", [("v1", {}), ("v2", {"revision": "v2"}), ("c2", {"revision": "c2"})]
+)
+def test_delivery_reconstructs_selected_slots_without_rewriting_v1(tmp_path, revision, expected):
+    write(tmp_path / "plan/config/SR_F3_CE.json", dict(protocol_revision=revision))
+    assert delivery.slot_revision_kwargs(tmp_path) == expected
+
+
+def test_delivery_rejects_unregistered_slot_revision(tmp_path):
+    write(tmp_path / "plan/config/SR_F3_CE.json", dict(protocol_revision="v3"))
+    with pytest.raises(PermissionError, match="Unknown protocol revision"):
+        delivery.slot_revision_kwargs(tmp_path)
+
+
+def revised_retention_fixture(root, monkeypatch):
+    write(root / "plan/config/SR_F3_CE.json", dict(protocol_revision="v2"))
+    directory = root / "protocol_revision/ablation"
+
+    def record(relative):
+        path = directory / relative
+        return dict(path=relative, bytes=path.stat().st_size, sha256=delivery.sha_file(path))
+
+    write(directory / "ABLATION_MANIFEST.json", {"cpu_fixture_only": True})
+    evidence = []
+    for cell in range(9):
+        relative = f"ablation/raw/cell-{cell}"
+        write(directory / relative / "ALLOCATION.json", {"job_id": str(cell)})
+        write(
+            directory / relative / "COMPLETE.json",
+            dict(allocation_sha256=delivery.sha_file(directory / relative / "ALLOCATION.json")),
+        )
+        write(directory / relative / "TERMINAL.json", {"state": "COMPLETED"})
+        groups = []
+        for group in range(64):
+            rows = [dict(slot_id=f"{cell}-{group}-{draw}") for draw in range(4)]
+            name = relative + f"/groups/{group}.json"
+            write(directory / name, dict(records=rows, records_sha256=delivery.digest(rows)))
+            groups.append(record(name))
+        evidence.append(
+            dict(
+                complete=record(relative + "/COMPLETE.json"),
+                terminal=record(relative + "/TERMINAL.json"),
+                raw_groups=groups,
+                allocation=record(relative + "/ALLOCATION.json"),
+            )
+        )
+    selection = dict(
+        outputs=2304,
+        raw_evidence=evidence,
+        ablation_manifest=record("ABLATION_MANIFEST.json"),
+        selected_revision="v2",
+        counts={},
+        denominators={},
+        descriptive_statistics={},
+    )
+    write(root / "PROTOCOL_SELECTION.json", selection)
+    write(directory / "PROTOCOL_SELECTION.json", selection)
+    name = "SR_F3_CE_PROTOCOL_STOP_EVIDENCE_FULL_UNDER400MB_20261016.tar.xz"
+    history = root / "protocol_revision/history_v1"
+    history.mkdir()
+    archive = history / name
+    archive.write_bytes(b"CPU fixture only, never a real archive")
+    frozen = dict(
+        bytes=219281700, sha256="d67af2a3a00f44713c3bcb62d526f90f12e392f5fa0fe2d1872f54a3e1184d60"
+    )
+    write(
+        history / (name + ".verification.json"),
+        dict(
+            status="VERIFIED_FULL_LOSSLESS_REPACK_UNDER_400_DECIMAL_MB",
+            archive=frozen,
+            actual_unique_new_output_rows=3904,
+            file_contents_changed=0,
+            files_removed=0,
+            scientific_experiment_complete=False,
+        ),
+    )
+    original_check = delivery.check_file
+    checks = []
+
+    def check(path, item):
+        if path == archive:
+            assert item == frozen
+            checks.append("fixed_original_archive_identity")
+        else:
+            original_check(path, item)
+
+    monkeypatch.setattr(delivery, "check_file", check)
+    guard = dict(
+        protocol_revision="v2",
+        protocol_selection_sha256=delivery.sha_file(root / "PROTOCOL_SELECTION.json"),
+        ablation_root=str(root.with_name("independent-ablation")),
+    )
+    api = SimpleNamespace(protocol=SimpleNamespace(verify_run_source_revision=lambda _: guard))
+    return api, selection, directory, checks
+
+
+def test_revision_history_and_ablation_are_retained_without_new_science_counts(
+    tmp_path, monkeypatch
+):
+    api, selection, _, checks = revised_retention_fixture(tmp_path, monkeypatch)
+    result = delivery.protocol_revision_retention(tmp_path, api)
+    assert result["prompt_ablation"]["unique_records"] == 2304
+    assert result["historical_v1"]["unique_records"] == 3904
+    assert result["included_in_current_science_or_engine_denominators"] is False
+    assert result["extra_optimizer_steps"] == 0
+    assert result["prompt_ablation"]["counts"] == selection["counts"]
+    assert checks == ["fixed_original_archive_identity"]
+
+
+@pytest.mark.parametrize("change", ["raw", "selection", "allocation"])
+def test_revision_retention_rejects_changed_copies(tmp_path, monkeypatch, change):
+    api, selection, directory, _ = revised_retention_fixture(tmp_path, monkeypatch)
+    if change == "selection":
+        write(directory / "PROTOCOL_SELECTION.json", dict(selection, selected_revision="c2"))
+    elif change == "allocation":
+        write(directory / "ablation/raw/cell-0/ALLOCATION.json", {"job_id": "unbound"})
+    else:
+        row = selection["raw_evidence"][0]["raw_groups"][0]
+        path = directory / row["path"]
+        value = delivery.read(path)
+        value["records"][0]["unbound_field"] = True
+        value["records_sha256"] = delivery.digest(value["records"])
+        write(path, value)
+    with pytest.raises(PermissionError, match=r"differs|changed"):
+        delivery.protocol_revision_retention(tmp_path, api)
+
+
+def test_revised_report_labels_historical_and_ablation_separate_from_new_engine():
+    coverage = dict(
+        training_paths=12,
+        logical_updates=768,
+        training_records=98304,
+        support_examples=2304,
+        monitor_records=26112,
+        engine_diagnostic_records=2880,
+        records=229500,
+        protocol_revision="c2",
+    )
+    report = delivery.render_report(
+        analysis_fixture(),
+        {"CHARTQAPRO": {}},
+        {"panels": {}},
+        coverage,
+        {"gpu_hours": "UNKNOWN"},
+        {"status": "MISSING"},
+        {"CHARTQAPRO": dict(status="UNAVAILABLE", reason="fixture")},
+    )
+    assert "c2 协议及 indent=2 教师序列化" in report
+    assert "不计入这些分母" in report
+    assert "PROTOCOL_REVISION_RETENTION.json" in report
+
+
+@pytest.fixture
+def complete_work_fixture(tmp_path):
+    from sr_f3_ce import evaluation, runner
+
+    root = tmp_path
+    write(root / "plan/config/SR_F3_CE.json", dict(protocol_revision="v2"))
+    base = [
+        dict(
+            full_text='{"answer":1,"work":"reason"}',
+            raw_text='{"answer":1,"work":"reason"}',
+            score=dict(value_parseable=1),
+            qid="q",
+            finish_reason="balanced",
+        ),
+        dict(
+            full_text='{"answer":1}',
+            raw_text='{"answer":1}',
+            score=dict(value_parseable=1),
+            qid="q",
+            finish_reason="balanced",
+        ),
+        dict(
+            full_text="invalid",
+            raw_text="invalid",
+            score=dict(value_parseable=0),
+            qid="q",
+            finish_reason="eos",
+        ),
+        dict(
+            full_text='{"work":""}',
+            raw_text='{"work":""}',
+            score=dict(value_parseable=0),
+            qid="q",
+            finish_reason="balanced",
+        ),
+    ]
+    training, monitor = [], []
+    for model in evaluation.endpoint_models():
+        mid = model["model_id"]
+        if model["arm"] != "PARENT":
+            for step in range(1, 65):
+                path = root / "runs" / mid / "rollouts" / f"{step:02d}-00.json"
+                rows = base * 32
+                write(path, dict(records=rows))
+                training.append((path, dict(run_id=mid), 128))
+                write(
+                    root / "runs" / mid / "work_occurrence" / f"step-{step:02d}.json",
+                    dict(
+                        step=step,
+                        summary=runner.work_occurrence(rows),
+                        raw_group_sha256=[delivery.sha_file(path)],
+                    ),
+                )
+        for step in (0,) if model["arm"] == "PARENT" else (16, 32, 48, 64):
+            path = root / "monitor" / mid / f"step-{step:02d}" / "groups" / "fixture.json"
+            write(path, dict(records=base * 128))
+            monitor.append((path, {}, 512))
+    api = SimpleNamespace(
+        evaluation=evaluation,
+        runner=runner,
+        contract=SimpleNamespace(
+            score=lambda text, *args, **kwargs: dict(value_parseable=int('"answer"' in text))
+        ),
+    )
+    dataset = SimpleNamespace(tasks={"q": dict(world={}, query={})})
+    return root, api, dataset, training, monitor
+
+
+def test_work_trajectory_keeps_invalid_rows_and_distinct_parseable_denominators(
+    complete_work_fixture,
+):
+    root, api, dataset, training, monitor = complete_work_fixture
+    result = delivery.work_occurrence_trajectory(root, api, dataset, training, monitor)
+    assert len(result["training"]) == 768 and len(result["monitor"]) == 51
+    assert result["new_model_calls"] == 0
+    for key in ("training", "monitor"):
+        summary = result[key][0]["summary"]
+        assert summary["work_fraction_all_records"] == 0.5
+        assert summary["work_fraction_parseable_answers"] == 0.5
+        assert summary["invalid_initial_objects"] == summary["records"] / 4
+        assert summary["work_key_present"] == summary["records"] / 2
+        assert summary["work_nonempty_string"] == summary["records"] / 4
+    assert "fixed checkpoint" in result["monitor"][0]["summary"]["scope"]
+    receipt = root / "runs" / result["training"][0]["model_id"] / "work_occurrence/step-01.json"
+    value = delivery.read(receipt)
+    value["summary"]["work_fraction_all_records"] = 1.0
+    write(receipt, value)
+    with pytest.raises(PermissionError, match="work occurrence differs"):
+        delivery.work_occurrence_trajectory(root, api, dataset, training, monitor)

@@ -30,6 +30,7 @@ from .orchestration import (
     verify_freeze,
     verify_task,
 )
+from .prompts import prefill_for
 from .protocol import (
     EXPERIMENT_ID,
     contained,
@@ -39,6 +40,7 @@ from .protocol import (
     stable_seed,
     verify_run,
 )
+from .protocol_revision import revision_from_config
 
 
 class Evidence:
@@ -141,7 +143,7 @@ def _previous(root, task_id, key, evidence):
     return task, state
 
 
-def _parent(root, parent_id, block, evidence):
+def _parent(root, parent_id, block, evidence, *, revision="v1"):
     """Obtain runtime identities from an ENGINE artifact already bound by the freeze."""
     audit = read_json(root / "parents/PARENT_AUDIT.json")
     parents = [p for p in audit["parents"] if p["parent_id"] == parent_id]
@@ -180,6 +182,13 @@ def _parent(root, parent_id, block, evidence):
         or Path(adapter["adapter_path"]).resolve() != contained(root, parent["adapter_path"])
     ):
         raise PermissionError("Frozen ENGINE parent/model provenance differs")
+    if model.get("protocol_revision", "v1") != revision or any(
+        item.get("protocol_revision", "v1") != revision
+        or item.get("assistant_prefill", "{")
+        != prefill_for(item.get("protocol", "structured"), revision)
+        for item in rows
+    ):
+        raise PermissionError("Frozen ENGINE provenance belongs to another protocol revision")
     evidence.bind(receipt_path(root, task_id))
     evidence.bind(root / "parents/PARENT_AUDIT.json")
     return parent, model, adapter
@@ -190,6 +199,7 @@ def _checkpoint(root, run, dataset, store, config, parent, evidence, *, step=Non
 
     directory = root / "runs" / run["run_id"]
     state, marker = read_checkpoint(directory / "checkpoints", step=step)
+    revision = revision_from_config(config)
     expected_identity = dict(
         run,
         stage="SCIENCE",
@@ -197,11 +207,20 @@ def _checkpoint(root, run, dataset, store, config, parent, evidence, *, step=Non
         run_identity_sha256=file_hash(root / "RUN_IDENTITY.json"),
         reference_hash=parent["policy_hash"],
     )
+    sampling = config["generation"]
+    # Missing revision is a legacy v1 checkpoint only. Revised checkpoints must
+    # bind both their explicit protocol and the actual context bytes.
+    if revision != "v1" or "protocol_revision" in state["run_identity"]:
+        binding = dict(
+            protocol_revision=revision, assistant_prefill=prefill_for("structured", revision)
+        )
+        expected_identity.update(binding)
+        sampling = dict(sampling, **binding)
     expected = dict(
         run_identity=expected_identity,
         reference_hash=parent["policy_hash"],
         input_stream_hash=digest(dataset.schedules[run["block"]]),
-        sampling_hash=digest(config["generation"]),
+        sampling_hash=digest(sampling),
         source_hashes=dict(
             run_identity=file_hash(root / "RUN_IDENTITY.json"),
             masks=file_hash(root / "native/SUPPORT_MASK_RECEIPT.json"),
@@ -247,6 +266,11 @@ def _training_rows(rows, request, model_input, model, adapter, source):
             group_seed=request["seeds"][0],
             sampling_seed=request["seeds"][index],
         )
+        if "protocol_revision" in request:
+            slot.update(
+                protocol_revision=request["protocol_revision"],
+                assistant_prefill=request["assistant_prefill"],
+            )
         normalized = dict(
             row,
             generation=slot["generation"],
@@ -258,6 +282,8 @@ def _training_rows(rows, request, model_input, model, adapter, source):
             runtime_group_size=row["group_size"],
             runtime_protocol=row["protocol"],
             runtime_seed=row["seed"],
+            runtime_protocol_revision=row.get("protocol_revision", "v1"),
+            runtime_assistant_prefill=row.get("assistant_prefill"),
         )
         validate_record(
             normalized,
@@ -307,6 +333,11 @@ def _training_cache(root, run, state, dataset, store, model, adapter, evidence):
             input_hash=digest(model_input),
             task_hash=digest(dataset.tasks[qid]),
         )
+        if "protocol_revision" in state["run_identity"]:
+            required.update(
+                protocol_revision=state["run_identity"]["protocol_revision"],
+                assistant_prefill=state["run_identity"]["assistant_prefill"],
+            )
         if (
             set(request) != {*required, "policy_hash"}
             or any(request.get(k) != v for k, v in required.items())
@@ -375,8 +406,11 @@ def _training_cache(root, run, state, dataset, store, model, adapter, evidence):
             raise PermissionError("Unregistered support cache")
         step, qid = allowed_support[path.name]
         value = read_json(path)
-        if step > committed + 8 or any(
-            value.get(k) != v for k, v in dict(step=step, qid=qid, arm=run["arm"]).items()
+        if (
+            step > committed + 8
+            or any(value.get(k) != v for k, v in dict(step=step, qid=qid, arm=run["arm"]).items())
+            or value.get("protocol_revision", "v1")
+            != state["run_identity"].get("protocol_revision", "v1")
         ):
             raise PermissionError("Support cache identity differs")
         evidence.bind(path)
@@ -429,7 +463,7 @@ def _train(root, task, dataset, store, config, parent, model, adapter, evidence)
         panel = _panel(
             root,
             path,
-            monitor_slots(dataset.tasks, run["run_id"], due),
+            monitor_slots(dataset.tasks, run["run_id"], due, revision=revision_from_config(config)),
             store,
             dataset.tasks,
             model,
@@ -480,6 +514,9 @@ def _eval(root, task, dataset, store, config, parent, model, adapter, evidence):
     provenance = read_json(destination / "MODEL_IDENTITY.json")
     policy = parent["policy_hash"]
     expected = dict(model=registered, policy_source="verified parent adapter")
+    revision = revision_from_config(config)
+    if revision != "v1" or "protocol_revision" in provenance:
+        expected["protocol_revision"] = revision
     if registered["arm"] != "PARENT":
         run = next(row for row in dataset.runs if row["run_id"] == registered["model_id"])
         state, marker = _checkpoint(root, run, dataset, store, config, parent, evidence, step=64)
@@ -525,7 +562,9 @@ def _eval(root, task, dataset, store, config, parent, model, adapter, evidence):
     evidence.bind(destination / "MODEL_IDENTITY.json")
     external_tasks, external_stores, _, _ = _external(root, load_scorer=False)
     tasks = dict(dataset.tasks, **external_tasks)
-    slots = endpoint_slots(dataset.tasks, dataset.runs, external_tasks, model_id=task["model_id"])
+    slots = endpoint_slots(
+        dataset.tasks, dataset.runs, external_tasks, model_id=task["model_id"], revision=revision
+    )
     pools = sorted({slot["pool"] for slot in slots})
     for path in destination.iterdir():
         if path.is_dir() and path.name not in pools:
@@ -561,7 +600,10 @@ def verify_resume(root, task_id, previous_job_key):
     model = next(
         row for row in endpoint_models(dataset.runs) if row["model_id"] == task["model_id"]
     )
-    parent, stable, adapter = _parent(root, model["parent_id"], model["block"], evidence)
+    revision = revision_from_config(config)
+    parent, stable, adapter = _parent(
+        root, model["parent_id"], model["block"], evidence, revision=revision
+    )
     details = (_train if task["kind"] == "train" else _eval)(
         root, task, dataset, store, config, parent, stable, adapter, evidence
     )
@@ -573,6 +615,7 @@ def verify_resume(root, task_id, previous_job_key):
         previous_job_id=previous["job_id"],
         run_identity_sha256=evidence.source,
         execution_freeze_sha256=freeze,
+        protocol_revision=revision,
         details=details,
         pending=evidence.pending,
         authorization=authorization,

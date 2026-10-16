@@ -72,17 +72,39 @@ def dataset_and_store(root):
     return dataset, store
 
 
-def load_runtime(root, parent_id, task_id):
+def _runtime_revision(root, parent_id, task_id, config, override, *, training):
+    from .protocol_revision import revision_from_config
+
+    revision = revision_from_config(config)
+    if task_id.startswith("ablation--"):
+        from .ablation import runtime_revision_for_task
+
+        if training or parent_id not in PARENTS:
+            raise PermissionError("Protocol ablation is zero-training on registered parents")
+        expected = runtime_revision_for_task(root, task_id)
+        if override != expected or not task_id.endswith(f"--b{PARENTS.index(parent_id)}"):
+            raise PermissionError("Protocol override differs from the frozen ablation task")
+        revision = expected
+    elif override is not None and override != revision:
+        raise PermissionError("Protocol override differs from the frozen run configuration")
+    return revision
+
+
+def _load_runtime(root, parent_id, task_id, *, protocol_revision=None, training):
     import torch
 
     from mm_core.execution import object_hash
     from mm_dev.runtime import actual_cuda_identity, configure_audited_backend
 
     from .runtime import SRF3CERuntime, configure_parent_training
-    from .training import fresh_optimizer
 
     root = Path(root)
-    verify_run(root)
+    _identity, config = verify_run(root)
+    if (_identity.get("run_stage") == "PROTOCOL_ABLATION") != task_id.startswith("ablation--"):
+        raise PermissionError("Runtime task differs from the zero-training ablation run stage")
+    revision = _runtime_revision(
+        root, parent_id, task_id, config, protocol_revision, training=training
+    )
     if parent_id not in PARENTS or not os.environ.get("SLURM_JOB_ID", "").isdigit():
         raise PermissionError("Registered parent and real Slurm GPU allocation required")
     if not torch.cuda.is_available() or torch.cuda.device_count() != 1:
@@ -104,6 +126,7 @@ def load_runtime(root, parent_id, task_id):
         adapter_path=str(adapter),
         output_root=root,
         account=accounting(root, task_id),
+        protocol_revision=revision,
     )
     # The new registered generation contract deliberately differs from SR-F2.
     # All base bytes, processor, kernel, library and adapter identities still use
@@ -125,12 +148,19 @@ def load_runtime(root, parent_id, task_id):
     )
     if state_hash(trainable_state(runtime.model)) != parent["policy_hash"]:
         raise PermissionError("Loaded parent tensors differ from the committed J6 endpoint")
-    optimizer, scheduler = fresh_optimizer(runtime.model)
+    if getattr(runtime, "protocol_revision", None) != revision:
+        raise PermissionError("Loaded runtime protocol revision differs from the frozen run")
+    optimizer = scheduler = None
+    if training:
+        from .training import fresh_optimizer
+
+        optimizer, scheduler = fresh_optimizer(runtime.model)
     runtime.identity.update(
         base_model_weights_hash=prior["model_weights_hash"],
         determinism=backend,
         hardware=hardware,
         parent_id=parent_id,
+        protocol_revision=revision,
     )
     durable_json(
         root / "runtime_identity" / f"{task_id}-{os.getpid()}.json",
@@ -140,10 +170,28 @@ def load_runtime(root, parent_id, task_id):
             identity=runtime.identity,
             modules=modules,
             parent=parent,
-            fresh_optimizer_state_entries=len(optimizer.state),
+            training_enabled=training,
+            optimizer_constructed=optimizer is not None,
+            scheduler_constructed=scheduler is not None,
+            fresh_optimizer_state_entries=len(optimizer.state) if optimizer is not None else None,
         ),
     )
     return runtime, optimizer, scheduler
+
+
+def load_parent_runtime(root, parent_id, task_id, *, protocol_revision=None, training=False):
+    """Load and authenticate parent tensors without constructing training state."""
+    if training is not False:
+        raise PermissionError("Parent-only loading never constructs an optimizer; use load_runtime")
+    runtime, _, _ = _load_runtime(
+        root, parent_id, task_id, protocol_revision=protocol_revision, training=False
+    )
+    return runtime
+
+
+def load_runtime(root, parent_id, task_id):
+    """Load the selected protocol and a fresh, registered AdamW/scheduler pair."""
+    return _load_runtime(root, parent_id, task_id, training=True)
 
 
 def evaluate_panel(runtime, root, store, tasks, slots, directory, *, score):
@@ -191,8 +239,15 @@ def monitor(runtime, root, store, tasks, model_id, step):
     from .evaluation import monitor_slots, summarize_scores
 
     path = Path(root) / "monitor" / model_id / f"step-{step:02d}"
+    revision = getattr(runtime, "protocol_revision", "v1")
     _, rows, coverage = evaluate_panel(
-        runtime, root, store, tasks, monitor_slots(tasks, model_id, step), path, score=True
+        runtime,
+        root,
+        store,
+        tasks,
+        monitor_slots(tasks, model_id, step, revision=revision),
+        path,
+        score=True,
     )
     result = dict(coverage, model_id=model_id, step=step, families=summarize_scores(rows))
     durable_json(path / "COMPLETE.json", result)
@@ -206,8 +261,11 @@ def execute_engine_panel(root, block):
     root = Path(root)
     parent_id, task_id = PARENTS[block], f"engine--b{block}"
     dataset, store = dataset_and_store(root)
-    runtime, _, _ = load_runtime(root, parent_id, task_id)
-    slots = [s for s in engine_slots(dataset.tasks) if s["model_id"] == parent_id]
+    runtime = load_parent_runtime(root, parent_id, task_id)
+    revision = runtime.protocol_revision
+    slots = [
+        s for s in engine_slots(dataset.tasks, revision=revision) if s["model_id"] == parent_id
+    ]
     directory = root / "engine" / f"b{block}"
     _, scores, coverage = evaluate_panel(
         runtime, root, store, dataset.tasks, slots, directory, score=True
@@ -224,13 +282,21 @@ def execute_engine_panel(root, block):
             fraction=parseable / 256,
             status="PASS" if parseable / 256 >= 0.9 else "PROTOCOL_FAILURE",
         )
-    durable_json(directory / "PROTOCOL_GATE.json", dict(parent_id=parent_id, protocols=gates))
+    durable_json(
+        directory / "PROTOCOL_GATE.json",
+        dict(parent_id=parent_id, protocol_revision=revision, protocols=gates),
+    )
     if any(g["status"] != "PASS" for g in gates.values()):
         raise RuntimeError(
             "ENGINE protocol parseability below 90%; diagnose interface before science"
         )
     monitor(runtime, root, store, dataset.tasks, parent_id, 0)
-    evidence = dict(parent_id=parent_id, diagnostic_rows=coverage["records"], protocol_gate="PASS")
+    evidence = dict(
+        parent_id=parent_id,
+        diagnostic_rows=coverage["records"],
+        protocol_gate="PASS",
+        protocol_revision=revision,
+    )
     artifacts = immutable_files(root, directory, root / "monitor" / parent_id / "step-00")
     return write_task_receipt(root, task_id, artifacts=artifacts, evidence=evidence)
 
@@ -262,9 +328,14 @@ def durable_training_group(
     runtime, root, store, task, directory, *, run_identity, step, slot, seeds
 ):
     from .contract import score
+    from .prompts import prefill_for
 
     root, directory = Path(root), Path(directory)
     qid = task["qid"]
+    revision = run_identity.get("protocol_revision", "v1")
+    prefill = prefill_for("structured", revision)
+    if getattr(runtime, "protocol_revision", "v1") != revision:
+        raise PermissionError("Training runtime and run identity use different protocols")
     model_input = store.model_input(qid)
     identity = dict(
         run_identity_sha256=digest(run_identity),
@@ -275,6 +346,8 @@ def durable_training_group(
         policy_hash=state_hash(trainable_state(runtime.model)),
         input_hash=digest(model_input),
         task_hash=digest(task),
+        protocol_revision=revision,
+        assistant_prefill=prefill,
     )
     path = directory / "rollouts" / f"{step:02d}-{slot:02d}.json"
     request = path.with_suffix(".request.json")
@@ -342,6 +415,8 @@ def durable_training_group(
             or row.get("group_seed") != seeds[0]
             or not row["tokens"]
             or len(row["tokens"]) != len(row["sampler_logprobs"])
+            or row.get("protocol_revision", "v1") != revision
+            or row.get("assistant_prefill") != prefill
         ):
             raise PermissionError("Rollout token/probability/slot alignment differs")
     return records, file_hash(path)
@@ -349,6 +424,8 @@ def durable_training_group(
 
 def _support(runtime, store, tasks, qids, arm, serialization, directory, step):
     from .contract import support_target
+
+    revision = getattr(runtime, "protocol_revision", "v1")
 
     records = []
     for qid in qids:
@@ -358,6 +435,12 @@ def _support(runtime, store, tasks, qids, arm, serialization, directory, step):
             if task["teacher"]
             else support_target(task["world"], task["query"], arm != "GOLD")
         )
+        if revision != "v1":
+            from .protocol_revision import serialize_teacher_target
+
+            if serialization != "indent_2":
+                raise PermissionError("Revised teachers require the frozen indent=2 serialization")
+            target = serialize_teacher_target(target, revision)
         record = runtime.prepare_support(
             store.model_input(qid), store.image_root, target, arm=arm, serialization=serialization
         )
@@ -371,18 +454,84 @@ def _support(runtime, store, tasks, qids, arm, serialization, directory, step):
             tokens=record["tokens"],
             answer_mask=record["answer_mask"],
             work_mask=record["work_mask"],
+            protocol_revision=revision,
         )
         durable_json(Path(directory) / "support" / f"{step:02d}-{qid}.json", audit)
         records.append(record)
     return records
 
 
+def work_occurrence(records):
+    """Describe existing raw strings only; this never changes rewards or training control."""
+    from .contract import first_object_end, loads
+
+    if not records:
+        raise ValueError("Work occurrence needs the complete existing rollout batch")
+    counts = Counter(records=len(records))
+    for row in records:
+        parseable = row.get("score", {}).get("value_parseable") == 1
+        counts["parseable_answers"] += parseable
+        text = row.get("full_text", row.get("raw_text"))
+        if not isinstance(text, str):
+            counts["missing_raw_text"] += 1
+            continue
+        try:
+            end = first_object_end(text)
+            if end is None:
+                raise ValueError("No complete initial object")
+            obj = loads(text[:end])
+            if not isinstance(obj, dict):
+                raise ValueError("Initial value is not an object")
+        except (ValueError, TypeError, RecursionError):
+            counts["invalid_initial_objects"] += 1
+            continue
+        counts["parsed_initial_objects"] += 1
+        present = "work" in obj
+        nonempty = isinstance(obj.get("work"), str) and bool(obj["work"])
+        counts["work_key_present"] += present
+        counts["work_nonempty_string"] += nonempty
+        counts["work_key_on_parseable_answers"] += present and parseable
+        counts["work_nonempty_on_parseable_answers"] += nonempty and parseable
+    fields = (
+        "records",
+        "parseable_answers",
+        "missing_raw_text",
+        "invalid_initial_objects",
+        "parsed_initial_objects",
+        "work_key_present",
+        "work_nonempty_string",
+        "work_key_on_parseable_answers",
+        "work_nonempty_on_parseable_answers",
+    )
+    return dict(
+        **{key: counts[key] for key in fields},
+        work_fraction_all_records=counts["work_key_present"] / len(records),
+        work_fraction_parseable_answers=(
+            counts["work_key_on_parseable_answers"] / counts["parseable_answers"]
+            if counts["parseable_answers"]
+            else None
+        ),
+        definition="Exact lowercase top-level work key in the first unique-key JSON object",
+        scope=(
+            "existing pre-update raw generations; invalid and missing text retained in denominator"
+        ),
+        changes_rewards=False,
+        changes_training_control=False,
+        new_model_calls=0,
+    )
+
+
 def execute_training_segment(root, *, run=None, engine=False, segment="continuous", stop_step=None):
     from .checkpoint import checkpoint_state, commit_checkpoint, load_checkpoint, read_checkpoint
+    from .prompts import prefill_for
+    from .protocol_revision import revision_from_config
     from .training import update
 
     root = Path(root)
     _registered, config = verify_run(root, science=not engine)
+    if _registered.get("run_stage") == "PROTOCOL_ABLATION":
+        raise PermissionError("Protocol ablation cannot execute ENGINE or scientific training")
+    revision = revision_from_config(config)
     dataset, store = dataset_and_store(root)
     if engine:
         run = dict(
@@ -416,8 +565,15 @@ def execute_training_segment(root, *, run=None, engine=False, segment="continuou
             experiment_id=EXPERIMENT_ID,
             run_identity_sha256=file_hash(root / "RUN_IDENTITY.json"),
             reference_hash=state_hash(reference),
+            protocol_revision=revision,
+            assistant_prefill=prefill_for("structured", revision),
         )
-        serialization = read_json(root / "native/SUPPORT_MASK_RECEIPT.json")["serialization"]
+        mask_receipt = read_json(root / "native/SUPPORT_MASK_RECEIPT.json")
+        serialization = mask_receipt["serialization"]
+        if mask_receipt.get("protocol_revision", "v1") != revision or (
+            revision != "v1" and serialization != "indent_2"
+        ):
+            raise PermissionError("Frozen support masks belong to another protocol revision")
         sources = dict(
             run_identity=file_hash(root / "RUN_IDENTITY.json"),
             masks=file_hash(root / "native/SUPPORT_MASK_RECEIPT.json"),
@@ -427,7 +583,13 @@ def execute_training_segment(root, *, run=None, engine=False, segment="continuou
             run_identity=identity,
             reference=reference,
             stream_hash=digest(schedule),
-            sampling_hash=digest(config["generation"]),
+            sampling_hash=digest(
+                dict(
+                    config["generation"],
+                    protocol_revision=revision,
+                    assistant_prefill=prefill_for("structured", revision),
+                )
+            ),
             source_hashes=sources,
         )
         checkpoints = directory / "checkpoints"
@@ -535,6 +697,17 @@ def execute_training_segment(root, *, run=None, engine=False, segment="continuou
                     directory / "UPDATE_INCIDENTS.jsonl", attempt
                 ),
             )
+            work = work_occurrence(groups)
+            metrics = dict(metrics, work_occurrence=work)
+            durable_json(
+                directory / "work_occurrence" / f"step-{step:02d}.json",
+                dict(
+                    run_identity_sha256=digest(identity),
+                    step=step,
+                    raw_group_sha256=group_hashes,
+                    summary=work,
+                ),
+            )
             mb = metrics["microbatch_size"]
             attempt = directory / "update_attempts" / f"{step:02d}-{time.time_ns()}.json"
             durable_json(attempt, dict(step=step, metrics=metrics))
@@ -624,6 +797,11 @@ def verify_committed_records(directory, state, schedule, tasks, store):
                 input_hash=digest(store.model_input(qid)),
                 task_hash=digest(tasks[qid]),
             )
+            if "protocol_revision" in identity:
+                expected.update(
+                    protocol_revision=identity["protocol_revision"],
+                    assistant_prefill=identity["assistant_prefill"],
+                )
             if (
                 saved["identity"] != request
                 or any(request.get(k) != v for k, v in expected.items())
@@ -642,6 +820,8 @@ def verify_committed_records(directory, state, schedule, tasks, store):
                     saved["qid"] != qid
                     or saved["step"] != item["step"]
                     or saved["arm"] != identity["arm"]
+                    or saved.get("protocol_revision", "v1")
+                    != identity.get("protocol_revision", "v1")
                 ):
                     raise PermissionError("Committed support identity changed")
                 support_hashes.append(file_hash(path))
@@ -679,7 +859,9 @@ def restore_monitor_boundary(runtime, root, store, tasks, run, step, checkpoints
 
         complete = read_json(receipt)
         coverage = read_json(path / "COVERAGE.json")
-        slots = monitor_slots(tasks, run["run_id"], due)
+        slots = monitor_slots(
+            tasks, run["run_id"], due, revision=getattr(runtime, "protocol_revision", "v1")
+        )
         expected_ids = [g["group_id"] for g in group_slots(slots)]
         if (
             coverage.get("records") != 512

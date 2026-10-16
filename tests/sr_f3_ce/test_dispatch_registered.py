@@ -1064,3 +1064,90 @@ def test_dispatcher_rejects_base_package_cache_before_any_scientific_import(
     monkeypatch.setattr(helper.importlib, "import_module", forbidden)
     with pytest.raises(PermissionError, match="scientific bytecode"):
         helper.load_science(registered)
+
+
+@pytest.mark.parametrize("revision", ["v2", "c2"])
+def test_revision_guard_runs_only_after_complete_source_authentication(
+    helper, tmp_path, monkeypatch, revision
+):
+    root = tmp_path / "selected"
+    source = root / "code/src/sr_f3_ce/protocol.py"
+    source.parent.mkdir(parents=True)
+    source.write_text("# authenticated source guard fixture, no model import\n")
+    helper.save(root / "RUN_IDENTITY.json", dict(code_commit="c" * 40))
+    helper.save(root / "plan/config/SR_F3_CE.json", dict(protocol_revision=revision))
+    manifest = dict(
+        code_commit="c" * 40,
+        files=[
+            dict(
+                path="src/sr_f3_ce/protocol.py",
+                bytes=source.stat().st_size,
+                sha256=helper.sha(source),
+            )
+        ],
+    )
+    helper.save(root / "deployment/SOURCE_MANIFEST.json", manifest)
+    checked = dict(
+        code_commit="c" * 40,
+        protocol_revision=revision,
+        protocol_selection_sha256="d" * 64,
+        request_sha256="e" * 64,
+        ablation_root="/separate/ablation",
+    )
+    calls = []
+
+    def guard(given_root, source_manifest):
+        calls.append((given_root, source_manifest))
+        return checked
+
+    module = SimpleNamespace(__file__=str(source), verify_run_source_revision=guard)
+    monkeypatch.setattr(helper.importlib, "import_module", lambda name: module)
+    assert helper.source_revision(root) == checked
+    assert calls == [(root.resolve(), manifest)]
+    assert helper.revision_binding(checked) == {"protocol_source_guard": checked}
+    calls.clear()
+    source.write_text("# corrupt source must not be imported\n")
+    with pytest.raises(PermissionError, match="before guard import"):
+        helper.source_revision(root)
+    assert calls == []
+
+
+def test_original_source_guard_cannot_adopt_new_commit_without_revision(helper, registered):
+    root = Path(registered["root"])
+    helper.save(root / "RUN_IDENTITY.json", dict(code_commit="f" * 40))
+    with pytest.raises(PermissionError, match="frozen scientific commit"):
+        helper.source_revision(root)
+
+
+def test_revised_guard_failure_cannot_be_replaced_by_valid_commit_metadata(
+    helper, tmp_path, monkeypatch
+):
+    root = tmp_path / "selected"
+    source = root / "code/src/sr_f3_ce/protocol.py"
+    source.parent.mkdir(parents=True)
+    source.write_text("# source with rejected selection\n")
+    helper.save(root / "RUN_IDENTITY.json", dict(code_commit="c" * 40))
+    helper.save(root / "plan/config/SR_F3_CE.json", dict(protocol_revision="v2"))
+    helper.save(
+        root / "deployment/SOURCE_MANIFEST.json",
+        dict(
+            files=[
+                dict(
+                    path="src/sr_f3_ce/protocol.py",
+                    bytes=source.stat().st_size,
+                    sha256=helper.sha(source),
+                )
+            ]
+        ),
+    )
+
+    def guard(*args, **kwargs):
+        raise PermissionError("Protocol request/selection is not bound by the run")
+
+    monkeypatch.setattr(
+        helper.importlib,
+        "import_module",
+        lambda name: SimpleNamespace(__file__=str(source), verify_run_source_revision=guard),
+    )
+    with pytest.raises(PermissionError, match="request/selection"):
+        helper.source_revision(root)

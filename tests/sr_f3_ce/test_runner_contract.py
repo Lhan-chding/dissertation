@@ -2,6 +2,7 @@
 
 import copy
 import json
+import sys
 from collections import Counter
 from contextlib import nullcontext
 from pathlib import Path
@@ -39,7 +40,8 @@ class InputStoreSpy:
 class SupportRuntimeSpy:
     """Exercises runner's actual calls and validates the native API target shape."""
 
-    def __init__(self):
+    def __init__(self, revision="v1"):
+        self.protocol_revision = revision
         self.calls = []
         self.model = object()
 
@@ -62,6 +64,191 @@ class SupportRuntimeSpy:
 def write_json(path, value):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, sort_keys=True) + "\n")
+
+
+@pytest.mark.parametrize("revision", ["v1", "v2", "c2"])
+def test_parent_loader_threads_frozen_revision_and_constructs_no_optimizer(
+    tmp_path, monkeypatch, revision
+):
+    """CPU constructor spies, not evidence of a CUDA run or a model generation."""
+    import torch
+
+    from mm_dev import runtime as inherited_runtime
+    from sr_f3_ce import runtime as native_runtime
+    from sr_f3_ce.protocol_revision import revision_config
+
+    config = {"generation": {"prefill": "{"}}
+    if revision != "v1":
+        config = revision_config(config, revision)
+    parent_id = runner.PARENTS[0]
+    model = torch.nn.Linear(1, 1)
+    policy_hash = runner.state_hash(runner.trainable_state(model))
+    adapter = tmp_path / "parents/adapter"
+    adapter.mkdir(parents=True)
+    (adapter / "adapter.bin").write_bytes(b"CPU constructor fixture")
+    write_json(
+        adapter / "IDENTITY.json",
+        {"files": {"adapter.bin": runner.file_hash(adapter / "adapter.bin")}},
+    )
+    write_json(adapter / "adapter_config.json", {})
+    prior = dict(
+        model_path="CPU_FIXTURE_NEVER_LOADED",
+        model_weights_hash="base",
+        processor_hash="processor",
+        tokenizer_hash="tokenizer",
+        chat_template_hash="template",
+    )
+    write_json(tmp_path / "prior/MODEL_ENVIRONMENT_IDENTITY.json", prior)
+    write_json(
+        tmp_path / "parents/PARENT_AUDIT.json",
+        dict(
+            status="PASS",
+            parents=[
+                dict(
+                    parent_id=parent_id,
+                    adapter_path="parents/adapter",
+                    policy_hash=policy_hash,
+                )
+            ],
+        ),
+    )
+    write_json(
+        tmp_path / "native/PROCESSOR_RECEIPT.json",
+        dict(
+            native_processor_identity=dict(
+                processor_hash="processor",
+                tokenizer_hash="tokenizer",
+                chat_template_hash="template",
+                generation_config_expanded={"CPU_FIXTURE": True},
+            )
+        ),
+    )
+    calls = []
+
+    class RuntimeSpy:
+        def __init__(self, *args, **kwargs):
+            calls.append(kwargs)
+            self.protocol_revision = kwargs["protocol_revision"]
+            self.model = model
+            self.identity = dict(prior)
+
+        def verify_identity(self, *args):
+            return None
+
+    monkeypatch.setattr(runner, "verify_run", lambda root: ({}, config))
+    monkeypatch.setenv("SLURM_JOB_ID", "123")
+    monkeypatch.setattr(torch.cuda, "is_available", lambda: True)
+    monkeypatch.setattr(torch.cuda, "device_count", lambda: 1)
+    monkeypatch.setattr(runner, "seed_all", lambda seed: None)
+    monkeypatch.setattr(
+        inherited_runtime, "configure_audited_backend", lambda: {"CPU_FIXTURE": True}
+    )
+    monkeypatch.setattr(inherited_runtime, "actual_cuda_identity", lambda: {"CPU_FIXTURE": True})
+    monkeypatch.setattr(native_runtime, "SRF3CERuntime", RuntimeSpy)
+    monkeypatch.setattr(
+        native_runtime, "configure_parent_training", lambda *a, **kw: {"CPU_FIXTURE": True}
+    )
+
+    def forbidden_optimizer(*args):
+        raise AssertionError("Parent-only loading must not construct Adam or scheduler")
+
+    monkeypatch.setattr(training, "fresh_optimizer", forbidden_optimizer)
+    result = runner.load_parent_runtime(tmp_path, parent_id, "engine--b0", training=False)
+    assert result.protocol_revision == revision == calls[0]["protocol_revision"]
+    receipt = json.loads(next((tmp_path / "runtime_identity").glob("*.json")).read_text())
+    assert receipt["training_enabled"] is False
+    assert receipt["optimizer_constructed"] is receipt["scheduler_constructed"] is False
+    assert receipt["fresh_optimizer_state_entries"] is None
+    with pytest.raises(PermissionError, match="Parent-only"):
+        runner.load_parent_runtime(tmp_path, parent_id, "engine--b0", training=True)
+
+
+def test_ablation_override_requires_authenticated_task_parent_and_zero_training(
+    tmp_path, monkeypatch
+):
+    calls = []
+
+    def expected(root, task):
+        calls.append(task)
+        if task != "ablation--P3--b2":
+            raise PermissionError("Unregistered ablation task")
+        return "c2"
+
+    monkeypatch.setitem(
+        sys.modules, "sr_f3_ce.ablation", SimpleNamespace(runtime_revision_for_task=expected)
+    )
+    assert (
+        runner._runtime_revision(
+            tmp_path,
+            runner.PARENTS[2],
+            "ablation--P3--b2",
+            {},
+            "c2",
+            training=False,
+        )
+        == "c2"
+    )
+    for parent, revision, training_enabled in [
+        (runner.PARENTS[0], "c2", False),
+        (runner.PARENTS[2], "v2", False),
+        (runner.PARENTS[2], "c2", True),
+    ]:
+        with pytest.raises(PermissionError):
+            runner._runtime_revision(
+                tmp_path, parent, "ablation--P3--b2", {}, revision, training=training_enabled
+            )
+    with pytest.raises(PermissionError, match="frozen run"):
+        runner._runtime_revision(
+            tmp_path, runner.PARENTS[0], "engine--b0", {}, "v2", training=False
+        )
+    assert (
+        runner._runtime_revision(
+            tmp_path, runner.PARENTS[0], "engine--b0", {}, "v1", training=False
+        )
+        == "v1"
+    )
+    assert calls[0] == "ablation--P3--b2"
+
+
+def test_ablation_run_stage_blocks_regular_runtime_and_training_before_loading(
+    tmp_path, monkeypatch
+):
+    monkeypatch.setattr(
+        runner, "verify_run", lambda *args, **kwargs: ({"run_stage": "PROTOCOL_ABLATION"}, {})
+    )
+    with pytest.raises(PermissionError, match="zero-training ablation run stage"):
+        runner.load_runtime(tmp_path, runner.PARENTS[0], "engine--resume")
+    with pytest.raises(PermissionError, match="cannot execute ENGINE"):
+        runner.execute_training_segment(tmp_path, engine=True)
+    assert list(tmp_path.iterdir()) == []
+    monkeypatch.setattr(runner, "verify_run", lambda *args, **kwargs: ({}, {}))
+    with pytest.raises(PermissionError, match="zero-training ablation run stage"):
+        runner.load_parent_runtime(
+            tmp_path, runner.PARENTS[0], "ablation--P1--b0", protocol_revision="v1"
+        )
+
+
+def test_work_occurrence_uses_raw_fields_preserves_invalid_denominator_and_scores():
+    texts = [
+        '{"evidence":[],"work":"reason","answer":1}',
+        '{"evidence":[],"work":"","answer":1}',
+        '{"evidence":[],"Work":"case mismatch","answer":1}',
+        '{"work":"first","work":"duplicate","answer":1}',
+        'junk {"work":"not at beginning","answer":1}',
+        '{"work":"missing answer"}',
+    ]
+    rows = [
+        dict(full_text=text, reward=0, score={"value_parseable": int(i < 3)})
+        for i, text in enumerate(texts)
+    ]
+    before = copy.deepcopy(rows)
+    summary = runner.work_occurrence(rows)
+    assert rows == before
+    assert summary["records"] == 6 and summary["invalid_initial_objects"] == 2
+    assert summary["work_key_present"] == 3 and summary["work_nonempty_string"] == 2
+    assert summary["work_fraction_all_records"] == 0.5
+    assert summary["work_fraction_parseable_answers"] == 2 / 3
+    assert summary["changes_rewards"] is summary["changes_training_control"] is False
 
 
 def committed_fixture(directory, schedule, tasks, store, identity, step):
@@ -136,10 +323,14 @@ def test_engine_schedule_consumes_all_and_only_64_fixed_engine_tasks(dataset):
 
 @pytest.mark.parametrize("arm", ["GOLD", "PREFIX", "EXEC"])
 @pytest.mark.parametrize("engineering", [False, True])
+@pytest.mark.parametrize("revision", ["v1", "v2", "c2"])
 def test_support_passes_full_target_dictionary_from_correct_pool(
-    dataset, tmp_path, arm, engineering
+    dataset, tmp_path, arm, engineering, revision
 ):
-    runtime = SupportRuntimeSpy()
+    from sr_f3_ce.protocol_revision import serialize_teacher_target
+
+    runtime = SupportRuntimeSpy(revision)
+    serialization = "canonical" if revision == "v1" else "indent_2"
     store = InputStoreSpy(tmp_path, dataset)
     item = runner.engine_schedule(dataset.tasks)[0] if engineering else dataset.schedules[0][0]
     records = runner._support(
@@ -148,7 +339,7 @@ def test_support_passes_full_target_dictionary_from_correct_pool(
         dataset.tasks,
         item["support_qids"],
         arm,
-        "canonical",
+        serialization,
         tmp_path,
         1,
     )
@@ -160,10 +351,19 @@ def test_support_passes_full_target_dictionary_from_correct_pool(
             if engineering
             else task["teacher"][arm]
         )
-        assert call == (expected, arm, "canonical")
+        expected = serialize_teacher_target(expected, revision)
+        assert call == (expected, arm, serialization)
         saved = json.loads((tmp_path / "support" / f"01-{qid}.json").read_text())
         assert saved["target"] == expected
         assert saved["qid"] == qid and saved["step"] == 1
+        assert saved["protocol_revision"] == revision
+    if revision != "v1":
+        calls = len(runtime.calls)
+        with pytest.raises(PermissionError, match="indent=2"):
+            runner._support(
+                runtime, store, dataset.tasks, item["support_qids"], arm, "canonical", tmp_path, 2
+            )
+        assert len(runtime.calls) == calls
 
 
 @pytest.mark.parametrize(

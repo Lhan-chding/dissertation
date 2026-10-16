@@ -17,11 +17,9 @@ from pathlib import Path
 from typing import Any
 
 from . import contract
-from .prompts import prompt_from_frozen, question_from_prompt
+from .prompts import prompt_for_revision, prompt_from_frozen, question_from_prompt
 
-PACKAGE_MANIFEST_SHA256 = (
-    "0e75e71f5e746cdb33a6d3254447a8224325efac966c4b34e5fa24eab41747bb"
-)
+PACKAGE_MANIFEST_SHA256 = "0e75e71f5e746cdb33a6d3254447a8224325efac966c4b34e5fa24eab41747bb"
 MODEL_INPUTS_SHA256 = "329f8490345f47a812de3921947695f63e6d793e83e8462adcfead72991f4f74"
 ROOT_COUNTS = {
     "ENGINE": 16,
@@ -88,21 +86,24 @@ def read_json(path: str | Path):
     )
 
 
-def read_jsonl(path: str | Path) -> list[dict]:
+def _parse_jsonl_bytes(contents: bytes, source: str | Path) -> list[dict]:
     rows = []
-    with Path(path).open() as stream:
-        for number, line in enumerate(stream, 1):
-            if not line.strip():
-                raise ValueError(f"Blank JSONL row at {path}:{number}")
-            row = json.loads(
-                line,
-                object_pairs_hook=contract._pairs,
-                parse_constant=lambda _: (_ for _ in ()).throw(ValueError("nonfinite")),
-            )
-            if not isinstance(row, dict):
-                raise ValueError(f"Expected object at {path}:{number}")
-            rows.append(row)
+    for number, line in enumerate(contents.decode("utf-8").splitlines(), 1):
+        if not line.strip():
+            raise ValueError(f"Blank JSONL row at {source}:{number}")
+        row = json.loads(
+            line,
+            object_pairs_hook=contract._pairs,
+            parse_constant=lambda _: (_ for _ in ()).throw(ValueError("nonfinite")),
+        )
+        if not isinstance(row, dict):
+            raise ValueError(f"Expected object at {source}:{number}")
+        rows.append(row)
     return rows
+
+
+def read_jsonl(path: str | Path) -> list[dict]:
+    return _parse_jsonl_bytes(Path(path).read_bytes(), path)
 
 
 def verify_package(plan_dir: str | Path, *, verify_all: bool = True) -> dict:
@@ -110,7 +111,10 @@ def verify_package(plan_dir: str | Path, *, verify_all: bool = True) -> dict:
     root = Path(plan_dir).resolve(strict=True)
     inventory_path = root / "PACKAGE_SHA256.json"
     if file_sha256(inventory_path) != PACKAGE_MANIFEST_SHA256:
-        raise ValueError("Uploaded package hash inventory differs from frozen identity")
+        from .protocol_revision import verify_revision_package
+
+        receipt = verify_revision_package(root)
+        return dict(receipt, status="PASS", read_only=True)
     inventory = read_json(inventory_path)
     checked = {}
     for name, expected in sorted(inventory.items()):
@@ -137,11 +141,7 @@ def independently_answer(world: dict, query: dict) -> Fraction | None:
     ]
     family = query["family"]
     if family == "CROSS":
-        rows = [
-            r
-            for r in rows
-            if r["a"] >= r["b"] + (query.get("comparator", "gt") == "gt")
-        ]
+        rows = [r for r in rows if r["a"] >= r["b"] + (query.get("comparator", "gt") == "gt")]
     elif family == "THRESHOLD":
         rows = [
             r
@@ -150,9 +150,7 @@ def independently_answer(world: dict, query: dict) -> Fraction | None:
         ]
     elif family == "TOPK":
         direction = -1 if query.get("direction", "largest") == "largest" else 1
-        rows = sorted(rows, key=lambda r: (direction * r["a"], r["position"]))[
-            : query.get("k", 2)
-        ]
+        rows = sorted(rows, key=lambda r: (direction * r["a"], r["position"]))[: query.get("k", 2)]
     elif family == "INTERVAL":
         lower = query["start"] + (not query.get("include_start", True))
         rows = [r for r in rows if lower <= r["position"] <= query["end"]]
@@ -167,13 +165,7 @@ def independently_answer(world: dict, query: dict) -> Fraction | None:
     if value not in ("Alpha", "Beta", "diff"):
         raise ValueError("Unknown operand")
     values = [
-        Fraction(
-            r["a"]
-            if value == "Alpha"
-            else r["b"]
-            if value == "Beta"
-            else r["a"] - r["b"]
-        )
+        Fraction(r["a"] if value == "Alpha" else r["b"] if value == "Beta" else r["a"] - r["b"])
         for r in rows
     ]
     operation = query["aggregate"]
@@ -225,7 +217,7 @@ def _index(rows: list[dict], key: str) -> dict[str, dict]:
     return result
 
 
-def validate_manifest_rows(roots, tasks, inputs, runs, schedules) -> dict:
+def validate_manifest_rows(roots, tasks, inputs, runs, schedules, *, revision="v1") -> dict:
     """Validate exact frozen cardinalities, stream pairing and truth contracts."""
     if len(roots) != 624 or len(tasks) != 4096 or set(tasks) != set(inputs):
         raise ValueError("Expected 624 roots and exactly 4096 paired tasks/inputs")
@@ -254,9 +246,7 @@ def validate_manifest_rows(roots, tasks, inputs, runs, schedules) -> dict:
             != ["January", "February", "March", "April", "May", "June"][:expected_n]
         ):
             raise ValueError("Registered category order changed")
-        expected_gamma = task["pool"] in ("TRAIN_RL", "TEST_ID") and task[
-            "variant"
-        ] in (4, 5)
+        expected_gamma = task["pool"] in ("TRAIN_RL", "TEST_ID") and task["variant"] in (4, 5)
         if set(world["series"]) != (
             {"Alpha", "Beta", "Gamma"} if expected_gamma else {"Alpha", "Beta"}
         ):
@@ -274,30 +264,27 @@ def validate_manifest_rows(roots, tasks, inputs, runs, schedules) -> dict:
         answer = None if task["answer"] is None else Fraction(task["answer"])
         if independently_answer(world, query) != answer:
             mismatch.append(qid)
-        candidate = contract.canonical(
-            {"evidence": task["certificate"], "answer": task["answer"]}
-        )
+        candidate = contract.canonical({"evidence": task["certificate"], "answer": task["answer"]})
         if contract.score(candidate, world, query)["J"] != 1:
-            raise ValueError(
-                "Frozen gold certificate does not satisfy the registered contract"
-            )
+            raise ValueError("Frozen gold certificate does not satisfy the registered contract")
         if task["pool"] == "SUPPORT":
             teacher = task["teacher"]
             if teacher["PREFIX"] != teacher["EXEC"]:
                 raise ValueError("PREFIX and EXEC teacher sequences differ")
             for arm in ("GOLD", "PREFIX", "EXEC"):
-                if teacher[arm] != contract.support_target(world, query, arm != "GOLD"):
-                    raise ValueError(
-                        "Frozen teacher text/spans differ from program trace"
-                    )
+                expected = contract.support_target(world, query, arm != "GOLD")
+                if revision != "v1":
+                    from .protocol_revision import serialize_teacher_target
+
+                    expected = serialize_teacher_target(expected, revision)
+                if teacher[arm] != expected:
+                    raise ValueError("Frozen teacher text/spans differ from program trace")
         elif task["teacher"] is not None:
             raise ValueError("Teachers outside SUPPORT pool")
         worlds[world_key(world)].add(task["root_id"])
     collisions = [sorted(values) for values in worlds.values() if len(values) > 1]
     if mismatch or collisions:
-        raise ValueError(
-            f"Independent answers/world identity failed: {mismatch}, {collisions}"
-        )
+        raise ValueError(f"Independent answers/world identity failed: {mismatch}, {collisions}")
     expected_pairs = {(block, arm) for block in range(3) for arm in ARMS}
     if len(runs) != 12 or {(r["block"], r["arm"]) for r in runs} != expected_pairs:
         raise ValueError("Expected the complete 3-block, 4-arm run matrix")
@@ -319,9 +306,7 @@ def validate_manifest_rows(roots, tasks, inputs, runs, schedules) -> dict:
     if set(schedules) != {0, 1, 2}:
         raise ValueError("Expected three fixed schedules")
     for schedule in schedules.values():
-        if len(schedule) != 64 or [row["step"] for row in schedule] != list(
-            range(1, 65)
-        ):
+        if len(schedule) != 64 or [row["step"] for row in schedule] != list(range(1, 65)):
             raise ValueError("Training update schedule changed")
         for key, pool, count in (
             ("rl_qids", "TRAIN_RL", 16),
@@ -336,9 +321,7 @@ def validate_manifest_rows(roots, tasks, inputs, runs, schedules) -> dict:
                 if len(step[key]) != count:
                     raise ValueError("Effective batch size changed")
                 selected = [tasks[qid] for qid in step[key]]
-                if Counter(t["family"] for t in selected) != {
-                    f: count // 4 for f in FAMILIES
-                }:
+                if Counter(t["family"] for t in selected) != {f: count // 4 for f in FAMILIES}:
                     raise ValueError("Per-step family balance changed")
                 if key == "rl_qids":
                     strata = Counter(
@@ -356,18 +339,14 @@ def validate_manifest_rows(roots, tasks, inputs, runs, schedules) -> dict:
                         for m in ("legacy", "repair")
                     }
                     if strata != expected:
-                        raise ValueError(
-                            "Per-step family/chart/old-repair strata changed"
-                        )
+                        raise ValueError("Per-step family/chart/old-repair strata changed")
     train = {
         contract.canonical(t["query"])
         for t in tasks.values()
         if t["pool"] in ("TRAIN_RL", "SUPPORT")
     }
     transfer = {
-        contract.canonical(t["query"])
-        for t in tasks.values()
-        if t["pool"] == "TEST_COMPOSITION"
+        contract.canonical(t["query"]) for t in tasks.values() if t["pool"] == "TEST_COMPOSITION"
     }
     if train & transfer:
         raise ValueError("Transfer AST entered a training pool")
@@ -395,8 +374,10 @@ def load_frozen_dataset(plan_dir: str | Path) -> FrozenDataset:
     inputs = _index(read_jsonl(manifests / "MODEL_INPUTS.jsonl"), "qid")
     runs = read_json(manifests / "RUN_MATRIX.json")
     schedules = {b: read_json(manifests / f"SCHEDULE_b{b}.json") for b in range(3)}
-    audit = validate_manifest_rows(roots, tasks, inputs, runs, schedules)
+    revision = package.get("revision", "v1")
+    audit = validate_manifest_rows(roots, tasks, inputs, runs, schedules, revision=revision)
     audit["package"] = package
+    audit["protocol_revision"] = revision
     return FrozenDataset(root, roots, tasks, inputs, runs, schedules, audit)
 
 
@@ -414,9 +395,7 @@ def compare_historical_worlds(tasks: dict[str, dict], paths: list[str | Path]) -
         path = Path(source).resolve(strict=True)
         rows = read_jsonl(path) if path.suffix == ".jsonl" else read_json(path)
         if not isinstance(rows, list) or not rows:
-            raise ValueError(
-                "Historical source must be a nonempty list/JSONL of world rows"
-            )
+            raise ValueError("Historical source must be a nonempty list/JSONL of world rows")
         source_keys = set()
         for row in rows:
             world = row.get("world", row)
@@ -450,9 +429,7 @@ def compare_historical_worlds(tasks: dict[str, dict], paths: list[str | Path]) -
                 "unique_alpha_beta_worlds": len(source_keys),
             }
         )
-    overlap = sorted(
-        qid for qid, task in tasks.items() if world_key(task["world"]) in historical
-    )
+    overlap = sorted(qid for qid, task in tasks.items() if world_key(task["world"]) in historical)
     return {
         "status": "PASS" if not overlap else "FAIL",
         "sources": sources,
@@ -475,9 +452,7 @@ class ModelInputStore:
         self._images = copy.deepcopy(images)
         self.image_root = Path(image_root).resolve(strict=True)
         if set(inputs) != set(images):
-            raise ValueError(
-                "Every frozen input requires exactly one rendered image mapping"
-            )
+            raise ValueError("Every frozen input requires exactly one rendered image mapping")
         for qid, row in inputs.items():
             if set(row) != INPUT_FIELDS or row["qid"] != qid:
                 raise ValueError("Unexpected model input schema")
@@ -490,10 +465,39 @@ class ModelInputStore:
 
     @classmethod
     def from_files(cls, inputs_path, image_manifest_path, *, image_root):
-        if file_sha256(inputs_path) != MODEL_INPUTS_SHA256:
-            raise ValueError("Frozen MODEL_INPUTS identity changed")
+        inputs_path = Path(inputs_path).resolve(strict=True)
+        input_bytes = inputs_path.read_bytes()
+        rows = _parse_jsonl_bytes(input_bytes, inputs_path)
+        if hashlib.sha256(input_bytes).hexdigest() != MODEL_INPUTS_SHA256:
+            # This route intentionally never opens task/root/gold sidecars.
+            # Authenticate the sole allowed prompt transformation directly
+            # against the original model-input bytes and adopted request.
+            from .protocol_revision import REQUEST_SHA256, revision_from_config
+
+            plan = inputs_path.parent.parent
+            if inputs_path != plan / "manifests/MODEL_INPUTS.jsonl":
+                raise ValueError("Revised MODEL_INPUTS must belong to its registered plan")
+            request = bounded_path(plan, "revision_sources/REQUEST.md")
+            original = bounded_path(plan, "revision_sources/v1/manifests/MODEL_INPUTS.jsonl")
+            request_bytes = request.read_bytes()
+            original_bytes = original.read_bytes()
+            if (
+                hashlib.sha256(request_bytes).hexdigest() != REQUEST_SHA256
+                or hashlib.sha256(original_bytes).hexdigest() != MODEL_INPUTS_SHA256
+            ):
+                raise ValueError("Revised model-input authority or original identity changed")
+            config = read_json(bounded_path(plan, "config/SR_F3_CE.json"))
+            revision = revision_from_config(config)
+            if revision not in {"v2", "c2"}:
+                raise ValueError("Frozen MODEL_INPUTS identity changed")
+            expected = [
+                dict(row, prompt=prompt_for_revision(row["prompt"], revision))
+                for row in _parse_jsonl_bytes(original_bytes, original)
+            ]
+            if rows != expected:
+                raise ValueError("Revised MODEL_INPUTS changed beyond the authorized prompt")
         return cls(
-            _index(read_jsonl(inputs_path), "qid"),
+            _index(rows, "qid"),
             _index(read_jsonl(image_manifest_path), "qid"),
             image_root,
         )

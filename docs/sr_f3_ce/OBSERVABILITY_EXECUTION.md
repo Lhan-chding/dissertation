@@ -66,3 +66,16 @@ TIMEOUT 仅沿原单 GPU science 精确恢复接口，通过原 CPU checkpoint/c
 最终 builder 从 freeze 唯一解析扩展 manifest，导入前验证全部静态源/CPU 链，安装同一 Controller 后核验全部任务与原件。成功外部回执新增 `observability_extension`，其 manifest_path 为 run 相对路径，其余绑定 manifest_sha256、extension_commit、base_code_commit、observer_source_sha256、amendment_sha256、cpu_validation_sha256。dispatcher 逐字段核验后才能 DONE。
 
 本地验证使用 `test_instrumented_execution.py`、`test_dispatch_registered.py` 和 `test_observability.py`，均无真实 GPU 或模型采样。这些测试不代替实际 CPU allocation、ENGINE 成功或最终科学交付证据。
+
+
+## 2026-10-16 已授权的协议修订运行
+
+以上固定 `71483fb...` 与“不重复 ENGINE”叙述描述原 v1 根。原 STOP 根、旧回执和旧原文保持不变。用户后续修复文件授权的 v2/C2 只能在独立新根执行；提示消融先在另一个独立根完成，不能添加到现有 33 个科学任务 ID 中。
+
+运维入口仍对 v1 强制原提交。v2/C2 先逐文件校验新根的 SOURCE_MANIFEST，禁止未绑定字节缓存，再调用该已验证源码中的 `protocol.verify_run_source_revision`。它要求 `RUN_IDENTITY.run_stage=SELECTED_PROTOCOL_REVISION`，请求文件 SHA256 为 `83f3688707b09d69d84fb4f7ce3a9a7f2706b26c978176d97a6fb9637189c220`，根内 PROTOCOL_SELECTION 与独立消融根的完整原始结果逐字节相同，并重新验证九个消融任务的原文、终态和固定选择规则。源码提交必须同时被本根 RUN_IDENTITY 与 SOURCE_MANIFEST 精确绑定。
+
+新版扩展 SOURCE_MANIFEST、AMENDMENT、OPERATION_SOURCES 和 OPERATION_IDENTITY 增加 `protocol_source_guard`，值为上述函数的完整返回对象（code_commit、protocol_revision、protocol_selection_sha256、request_sha256、ablation_root）。旧 v1 不新增该字段。观测扩展仍只在新根 P0/ENGINE 全部真实终态成功之后封存，之后用于 train/eval/release；“repeat_engine=false”指观测扩展自身不重复本根 ENGINE，不否定修复文件要求在新根重新生成 ENGINE/恢复/MONITOR。安装前未记录的阶段成本仍 UNKNOWN。
+
+最终 builder 按选定 revision 重建 ENGINE、MONITOR 和端点 slot/prefill 身份。原 v1 完整压缩包与回执保存在 `protocol_revision/history_v1/`；消融原件保存在 `protocol_revision/ablation/`，路径镜像其独立运行根。2,304 条消融和 3,904 条历史 v1 原文分别统计，绝不替代新根的 2,880 条 ENGINE 诊断、512 条恢复缓存或 26,112 条 MONITOR。新根可用原 4146 finalizer 对未改变的外部双审原件重新发布，并用明确的 TYPE_REVIEW_REUSE_RECEIPT 说明来源；这不构成新增人工审核或模型评估。
+
+`WORK_OCCURRENCE_TRAJECTORY.json` 从既有原文复算 768 个训练步的 work 出现率并核对训练回执，同时呈现 51 个固定 MONITOR 面板的全部回答与可解析回答两种分母；保留无效回答和非空 work 字符串计数，不改变奖励或路由。

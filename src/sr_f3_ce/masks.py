@@ -12,6 +12,7 @@ import json
 from collections.abc import Callable, Mapping, Sequence
 
 SERIALIZATIONS = ("canonical", "field_newlines_v1")
+REVISED_SERIALIZATION = "indent_2"
 
 
 class MaskAlignmentError(ValueError):
@@ -84,8 +85,8 @@ def target_spans(text):
 
 
 def serialize_target(target, serialization="canonical"):
-    """Validate original bytes, or apply one uniform, explicitly named fallback."""
-    if serialization not in SERIALIZATIONS:
+    """Validate source spans, then serialize once under a named corpus policy."""
+    if serialization not in (*SERIALIZATIONS, REVISED_SERIALIZATION):
         raise ValueError("Unknown support serialization")
     if not isinstance(target, Mapping) or not {"text", "spans"} <= set(target):
         raise ValueError("Teacher text and character spans are required")
@@ -94,6 +95,10 @@ def serialize_target(target, serialization="canonical"):
         raise ValueError("Teacher object/character spans differ from its text")
     if serialization == "canonical":
         text = target["text"]
+    elif serialization == REVISED_SERIALIZATION:
+        # This is the prescribed V2/C2 representation, never an alignment fallback.
+        # The strict decoder above has already rejected nonfinite JSON values.
+        text = json.dumps(obj, indent=2, ensure_ascii=False)
     else:
         text = "{" + ",\n".join(_canonical(k) + ":" + _canonical(v) for k, v in obj.items()) + "}"
     _, selected_spans = target_spans(text)
@@ -232,17 +237,25 @@ def tokenize_with_offsets(tokenizer, target, *, prefix=""):
     )
 
 
-def freeze_serialization(targets: Sequence, encode: Callable):
+def freeze_serialization(targets: Sequence, encode: Callable, *, serializations=SERIALIZATIONS):
     """Choose once across *all* targets; never fall back differently per arm/item.
 
     ``encode(serialized_target, index)`` must audit the complete native sequence
     and return a mask receipt. A failed canonical alignment is retained in the
-    freeze receipt. Failure of the uniform fallback is a technical blocker.
+    freeze receipt. A revised run passes only ``("indent_2",)``: its prescribed
+    representation must align or fail, without falling back to other bytes.
     """
     if not targets:
         raise ValueError("Cannot freeze an empty support corpus")
+    serializations = tuple(serializations)
+    if (
+        not serializations
+        or len(set(serializations)) != len(serializations)
+        or any(s not in (*SERIALIZATIONS, REVISED_SERIALIZATION) for s in serializations)
+    ):
+        raise ValueError("Invalid support serialization policy")
     failures = []
-    for serialization in SERIALIZATIONS:
+    for serialization in serializations:
         receipts = []
         for index, target in enumerate(targets):
             selected = serialize_target(target, serialization)
@@ -269,4 +282,9 @@ def freeze_serialization(targets: Sequence, encode: Callable):
                 "targets": receipts,
                 "selection_basis": "token_alignment_only_no_model_scores",
             }
-    raise MaskAlignmentError("Both uniform serializations failed: " + _canonical(failures))
+    message = (
+        "Both uniform serializations failed: "
+        if serializations == SERIALIZATIONS
+        else "Prescribed support serialization failed: "
+    )
+    raise MaskAlignmentError(message + _canonical(failures))
