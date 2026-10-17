@@ -1964,3 +1964,284 @@ def test_work_trajectory_keeps_invalid_rows_and_distinct_parseable_denominators(
     write(receipt, value)
     with pytest.raises(PermissionError, match="work occurrence differs"):
         delivery.work_occurrence_trajectory(root, api, dataset, training, monitor)
+
+
+def task_pool_delivery_fixture(root, monkeypatch):
+    """Operational wiring fixture only; it never claims actual scientific completion."""
+    manifest, api = extension_fixture(root, monkeypatch)
+    api.observability = delivery.load_observability_extension(root, api, manifest)
+    controller = api.orchestration.Controller
+
+    def legacy_verify(self, intent):
+        if intent["schema_version"] != 1:
+            raise PermissionError("legacy verifier refuses a multi-task allocation")
+        api.orchestration.calls.append(("LEGACY", intent["task_ids"]))
+        return set(intent["task_ids"])
+
+    controller.verify_job = legacy_verify
+    module_name = api.orchestration.__name__
+    operation = root / "operations" / ("b" * 40)
+    operation.mkdir(parents=True)
+    (operation / "build_delivery.py").write_text("# CPU fixture delivery builder binding\n")
+    (operation / "another_helper.py").write_text("# Full source inventory is bound\n")
+    (operation / "dispatch_registered.py").write_text(
+        "import json\n"
+        f"import {module_name} as original\n"
+        "def identity(path):\n"
+        "    original.calls.append('OPERATION_IDENTITY')\n"
+        "    value = json.loads(path.read_text())\n"
+        "    if value.get('authorization_changed'):\n"
+        "        raise PermissionError('operational authorization changed')\n"
+        "    return value\n"
+    )
+    (operation / "pooled_execution.py").write_text(
+        f"import {module_name} as original\n"
+        "def install(value, extension):\n"
+        "    original.calls.append('POOL_INSTALL')\n"
+        "    if extension.InstrumentedController is not original.Controller:\n"
+        "        raise PermissionError('wrong builder extension instance')\n"
+        "    legacy = original.Controller.verify_job\n"
+        "    def verify(self, intent):\n"
+        "        if intent['schema_version'] == 1:\n"
+        "            return legacy(self, intent)\n"
+        "        if intent['schema_version'] != 2 or not (\n"
+        "            1 <= len(intent['task_ids']) <= value['task_pool']['max_tasks_per_job']\n"
+        "        ):\n"
+        "            raise PermissionError('invalid CPU fixture pooled allocation')\n"
+        "        original.calls.append(('POOL', intent['task_ids']))\n"
+        "        return set(intent['task_ids'])\n"
+        "    original.Controller.verify_job = verify\n"
+        "    return {'scope': 'CPU_FIXTURE_ONLY'}\n"
+    )
+    source_manifest = operation / "OPERATION_SOURCES.json"
+    write(
+        source_manifest,
+        dict(
+            schema_version=1,
+            experiment_id=delivery.EXPERIMENT,
+            operation_commit=operation.name,
+            scientific_code_commit="7" * 40,
+            files={path.name: delivery.sha_file(path) for path in sorted(operation.glob("*.py"))},
+        ),
+    )
+    identity_path = operation / "OPERATION_IDENTITY.json"
+    write(
+        identity_path,
+        dict(
+            root=str(root),
+            operation_commit=operation.name,
+            operation_sources_sha256=delivery.sha_file(source_manifest),
+            dispatcher_sha256=delivery.sha_file(operation / "dispatch_registered.py"),
+            task_pool=dict(
+                authorization_path=str(operation / "POOL_AUTHORIZATION.json"),
+                authorization_sha256="c" * 64,
+                max_tasks_per_job=5,
+                scientific_settings_changed=False,
+            ),
+        ),
+    )
+    monkeypatch.setattr(delivery, "__file__", str(operation / "build_delivery.py"))
+    return identity_path, api, controller
+
+
+@pytest.mark.parametrize("task_count", [1, 2, 3, 4, 5])
+def test_delivery_pool_adapter_handles_mixed_history_on_a_fresh_controller(
+    tmp_path, monkeypatch, task_count
+):
+    identity_path, api, original_controller = task_pool_delivery_fixture(tmp_path, monkeypatch)
+    operation = delivery.load_task_pool_operation(tmp_path, api, identity_path)
+    assert api.orchestration.Controller is original_controller
+    assert api.observability.controller is original_controller
+    # The final endpoint gate creates its own Controller rather than reusing the dispatcher.
+    fresh = api.orchestration.Controller()
+    legacy = dict(schema_version=1, task_ids=["train--legacy-fixture"])
+    task_ids = [f"train--pool-fixture-{index}" for index in range(task_count)]
+    pooled = dict(schema_version=2, task_ids=task_ids)
+    assert fresh.verify_job(legacy) | fresh.verify_job(pooled) == {
+        "train--legacy-fixture",
+        *task_ids,
+    }
+    value = delivery.read(identity_path)
+    assert operation.identity == dict(
+        operation_identity_path=str(identity_path.relative_to(tmp_path)),
+        operation_identity_sha256=delivery.sha_file(identity_path),
+        operation_commit=identity_path.parent.name,
+        task_pool=value["task_pool"],
+    )
+    assert set(operation.helpers) == {
+        "build_delivery.py",
+        "dispatch_registered.py",
+        "pooled_execution.py",
+        "another_helper.py",
+    }
+    assert api.orchestration.calls[-4:] == [
+        "OPERATION_IDENTITY",
+        "POOL_INSTALL",
+        ("LEGACY", legacy["task_ids"]),
+        ("POOL", pooled["task_ids"]),
+    ]
+
+
+def test_builder_installs_pool_adapter_before_terminal_gate_and_never_implicitly(
+    tmp_path, monkeypatch
+):
+    identity_path, api, _ = task_pool_delivery_fixture(tmp_path, monkeypatch)
+    monkeypatch.setattr(delivery, "load_frozen_api", lambda _: api)
+    api.orchestration.TASKS = {"train--pool-fixture-a", "train--pool-fixture-b", "release"}
+
+    def completed(_):
+        return api.orchestration.Controller().verify_job(
+            dict(schema_version=2, task_ids=["train--pool-fixture-a", "train--pool-fixture-b"])
+        )
+
+    api.endpoint_runner = SimpleNamespace(_completed=completed)
+    with pytest.raises(PermissionError, match="legacy verifier refuses"):
+        delivery._build(tmp_path, tmp_path / "omitted-operation.zip")
+    with pytest.raises(PermissionError, match=r"sealed/incomplete.*release"):
+        delivery._build(
+            tmp_path, tmp_path / "registered-operation.zip", operation_identity=identity_path
+        )
+    assert not (tmp_path / "registered-operation.zip").exists()
+
+
+@pytest.mark.parametrize("mutation", ["source", "manifest", "authorization", "foreign_root"])
+def test_task_pool_builder_rejects_changed_full_operational_binding_before_install(
+    tmp_path, monkeypatch, mutation
+):
+    identity_path, api, _ = task_pool_delivery_fixture(tmp_path, monkeypatch)
+    options = {}
+    if mutation == "source":
+        (identity_path.parent / "another_helper.py").write_text("# Changed auxiliary bytes\n")
+    elif mutation == "manifest":
+        wrong_manifest = tmp_path / "different-manifest.json"
+        write(wrong_manifest, {})
+        options["helper_manifest"] = wrong_manifest
+    else:
+        value = delivery.read(identity_path)
+        if mutation == "authorization":
+            value["authorization_changed"] = True
+        else:
+            value["root"] = str(tmp_path / "different-run")
+        write(identity_path, value)
+    with pytest.raises(PermissionError):
+        delivery.load_task_pool_operation(tmp_path, api, identity_path, **options)
+    assert "POOL_INSTALL" not in api.orchestration.calls
+
+
+def test_task_pool_operation_uses_verified_source_buffers_not_unchecked_caches(
+    tmp_path, monkeypatch
+):
+    identity_path, api, _ = task_pool_delivery_fixture(tmp_path, monkeypatch)
+    cached = []
+    for name in ("dispatch_registered.py", "pooled_execution.py"):
+        path = identity_path.parent / name
+        source = path.read_bytes()
+        path.write_text("raise RuntimeError('UNBOUND_OPERATION_CACHE_EXECUTED')\n")
+        cache = Path(
+            py_compile.compile(
+                str(path),
+                doraise=True,
+                invalidation_mode=py_compile.PycInvalidationMode.UNCHECKED_HASH,
+            )
+        )
+        path.write_bytes(source)
+        cached.append((cache, delivery.sha_file(cache)))
+    delivery.load_task_pool_operation(tmp_path, api, identity_path)
+    assert "POOL_INSTALL" in api.orchestration.calls
+    assert all(delivery.sha_file(path) == sha for path, sha in cached)
+
+
+def test_delivery_receipt_carries_exact_task_pool_operation_binding(tmp_path):
+    output = tmp_path / "cpu-receipt-fixture.zip"
+    output.write_bytes(b"CPU fixture for receipt propagation, not an experiment archive")
+    operation = dict(
+        operation_identity_path="operations/fixture/OPERATION_IDENTITY.json",
+        operation_identity_sha256="a" * 64,
+        operation_commit="b" * 40,
+        task_pool={"max_tasks_per_job": 5, "scientific_settings_changed": False},
+    )
+    provenance = dict(
+        run_identity_sha256="r",
+        scientific_source_manifest_sha256="s",
+        helper_manifest_sha256="h",
+        task_pool_operation=operation,
+    )
+    result = delivery._external_receipt(
+        output,
+        dict(entries=1, checks={"raw_rescoring_chain": "PASS"}),
+        provenance,
+        {"scope": "CPU_FIXTURE_ONLY"},
+    )
+    assert result["task_pool_operation"] == operation
+    assert (
+        delivery.read(Path(str(output) + ".verification.json"))["task_pool_operation"] == operation
+    )
+
+
+def test_delivery_cli_forwards_explicit_operational_identity(tmp_path, monkeypatch, capsys):
+    calls = []
+    monkeypatch.setattr(
+        delivery, "build", lambda *args, **kwargs: calls.append((args, kwargs)) or {}
+    )
+    identity = tmp_path / "OPERATION_IDENTITY.json"
+    output = tmp_path / "delivery.zip"
+    delivery.main(
+        ["--root", str(tmp_path), "--output", str(output), "--operation-identity", str(identity)]
+    )
+    assert calls == [
+        (
+            (tmp_path, output),
+            dict(helper_manifest=None, extension_manifest=None, operation_identity=identity),
+        )
+    ]
+    assert capsys.readouterr().out.strip() == "{}"
+
+
+@pytest.mark.parametrize("task_count", [1, 2, 3, 4, 5])
+def test_dynamic_task_pool_costs_are_one_real_allocation(tmp_path, task_count):
+    stdout = scheduler_fixture(tmp_path).replace(
+        "cpu=8,gres/gpu=2,gres/gpu:pro6000=2",
+        f"cpu={4 * task_count},gres/gpu={task_count},gres/gpu:pro6000={task_count}",
+    )
+    directory = tmp_path / "orchestration/jobs/123"
+    intent = delivery.read(directory / "INTENT.json")
+    intent.update(
+        schema_version=2,
+        gpu_count=task_count,
+        task_ids=[f"train--fixture-{index}" for index in range(task_count)],
+    )
+    write(directory / "INTENT.json", intent)
+    state = delivery.read(directory / "STATE.json")
+    write(
+        directory / "STATE.json",
+        dict(state, intent_sha256=delivery.sha_file(directory / "INTENT.json")),
+    )
+    result, raw = delivery.scheduler_costs(
+        tmp_path, execute=lambda *a, **k: SimpleNamespace(returncode=0, stdout=stdout, stderr="")
+    )
+    assert raw["requested_job_ids"] == ["123", "124"]
+    pooled = [job for job in result["jobs"] if job["job_id"] == "123"]
+    assert len(pooled) == 1
+    assert pooled[0]["task_ids"] == intent["task_ids"]
+    assert pooled[0]["actual_allocated_gpus"] == task_count
+    assert pooled[0]["gpu_hours"] == task_count
+    assert result["totals"]["gpu_hours"] == task_count + 0.5
+
+
+def test_delivery_pool_adapter_cannot_replace_the_frozen_controller_class(tmp_path, monkeypatch):
+    identity_path, api, _ = task_pool_delivery_fixture(tmp_path, monkeypatch)
+    pool_source = identity_path.parent / "pooled_execution.py"
+    pool_source.write_text(
+        f"import {api.orchestration.__name__} as original\n"
+        "def install(value, extension):\n"
+        "    original.Controller = type('ReplacementController', (), {})\n"
+    )
+    manifest_path = identity_path.parent / "OPERATION_SOURCES.json"
+    manifest = delivery.read(manifest_path)
+    manifest["files"][pool_source.name] = delivery.sha_file(pool_source)
+    write(manifest_path, manifest)
+    identity = delivery.read(identity_path)
+    identity["operation_sources_sha256"] = delivery.sha_file(manifest_path)
+    write(identity_path, identity)
+    with pytest.raises(PermissionError, match="replaced the frozen observability Controller"):
+        delivery.load_task_pool_operation(tmp_path, api, identity_path)

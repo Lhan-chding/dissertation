@@ -113,3 +113,14 @@ TIMEOUT 仅沿原单 GPU science 精确恢复接口，通过原 CPU checkpoint/c
 只结束明确指定的旧 CPU 作业，保留全部原件并核实队列消失与终态 accounting。
 新的 `EFFICIENCY_AUTHORIZATION.json` 只允许该精确 CANCELLED 前驱交接，不授权科学作业重试。
 旧 CPU 没有 END 时保持缺失，不补造成功回执。旧失败和旧运维部署仍完整保留。
+
+
+## 固定任务池的独立运维适配（2026-10-17）
+
+已授权的 `pooled_execution.py` 只在独立 operation 目录执行。它保留原 InstrumentedController 类对象，向该对象安装显式 schema2 的 submit/verify/run 分支，并为原 native `_verify_intent` 增加 schema2 分支；schema1 的历史验证继续委托原实现。这样新建 Controller 的 endpoint_runner、原 worker 和最终 builder 读取同一份真实账本，不修改冻结源码或其清单。
+
+operation 注册接受 `--pool-authorization`。授权约定最多五个固定任务、每任务一张卡、原实验设置不变、无新增任务且完整保留历史。父作业和每个子进程均从该 operation identity 加载适配；每个子进程仍执行原 native worker 并写原 observer 记录。N卡作业用N GPU、4N CPU、90N GiB主存（N按实时额度取1至5），每个worker用4 CPU线程；CPU release仍0 GPU、4 CPU、12 GiB。设备必须来自本次真实 Slurm 分配且互异。
+
+新池的一个任务完成后仍保留独立完成原件，父进程逐个收集 EXIT；作业终态不成功时不把整池结账为 COMPLETE，也不自动重投任何成员。`POOL_HANDOFF_REQUIRED.json` 阻止把科学失败误当成 CPU 租期交接。未知提交或未知释放仍占用实际声明的全部GPU和一个提交名额。
+
+builder 的 `--operation-identity` 显式绑定新运维目录，独立核验 helper manifest 并在自己的原 native Controller 上安装相同适配；最终回执增加 `task_pool_operation`。dispatcher须核对该字段后才能声明最终交付成功。未提供池身份的旧builder不能接受schema2账本。

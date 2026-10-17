@@ -735,3 +735,35 @@ def test_cpu_efficiency_transition_rejects_active_unknown_or_changed_history(
             env.value, env.api, directory, intent, state, env.raw.queue("alice")
         )
     assert len(env.transport.submitted) == submitted
+
+
+@pytest.mark.parametrize("changed", ["authorization", "source"])
+def test_pool_binding_uses_small_checks_without_replaying_science(efficient_env, changed):
+    env = efficient_env
+    operation = Path(env.value["identity_path"]).parent
+    source = operation / "pooled_execution.py"
+    source.write_text("# synthetic bound pool source; no GPU code executed\n")
+    authorization = operation / "POOL_AUTHORIZATION.json"
+    env.helper.save(authorization, dict(scientific_settings_changed=False))
+    env.value["task_pool"] = dict(
+        authorization_path=str(authorization),
+        authorization_sha256=env.helper.sha(authorization),
+        max_tasks_per_job=5,
+        scientific_settings_changed=False,
+    )
+    sources_path = operation / "OPERATION_SOURCES.json"
+    sources = env.helper.read(sources_path)
+    sources["files"][source.name] = env.helper.sha(source)
+    env.helper.save(sources_path, sources)
+    env.value["operation_sources_sha256"] = env.helper.sha(sources_path)
+    env.helper.save(env.value["identity_path"], env.value)
+    efficiency = env.make_efficiency()
+    efficiency.start()
+    baseline = copy.deepcopy(env.counts)
+    for _ in range(5):
+        efficiency.check()
+    assert env.counts == baseline
+    (authorization if changed == "authorization" else source).write_text("changed\n")
+    with pytest.raises(PermissionError, match="bound file changed"):
+        efficiency.check()
+    assert env.counts == baseline

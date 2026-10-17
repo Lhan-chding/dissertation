@@ -61,7 +61,7 @@ class Efficiency:
             "typed_publication": root / "external/revisions/typed_v1/PUBLICATION.json",
             "typed_receipt": root / "external/revisions/typed_v1/TYPE_AUDIT_RECEIPT.json",
         }
-        for label in ("submission_repair", "dispatch_efficiency"):
+        for label in ("submission_repair", "dispatch_efficiency", "task_pool"):
             binding = self.value.get(label, {})
             if not isinstance(binding, dict):
                 raise PermissionError("Efficiency authorization binding is invalid: " + label)
@@ -73,6 +73,8 @@ class Efficiency:
                         "Efficiency authorization path/hash is incomplete: " + label
                     )
                 required[label + "_authorization"] = Path(binding["authorization_path"])
+        if "task_pool" in self.value:
+            required["task_pool_source"] = operation / "pooled_execution.py"
         optional = {
             "package_manifest": root / "plan/PACKAGE_SHA256.json",
             "model_inputs": root / "plan/manifests/MODEL_INPUTS.jsonl",
@@ -158,7 +160,7 @@ class Efficiency:
             self._files.update(
                 {label: self._binding(path, required=False) for label, path in optional.items()}
             )
-            for label in ("submission_repair", "dispatch_efficiency"):
+            for label in ("submission_repair", "dispatch_efficiency", "task_pool"):
                 bound = self._files.get(label + "_authorization")
                 if (
                     bound is not None
@@ -176,12 +178,19 @@ class Efficiency:
                 != (self._files["efficiency_source"]["sha256"])
             ):
                 raise PermissionError("Efficiency source is not bound by OPERATION_SOURCES")
+            if "task_pool" in self.value and (
+                sources.get("files", {}).get("pooled_execution.py")
+                != self._files["task_pool_source"]["sha256"]
+            ):
+                raise PermissionError("Task pool source is not bound by OPERATION_SOURCES")
             operation = self.io.read(required["operation_identity"])
             if operation.get("dispatch_efficiency") != authorization or (
                 operation.get("operation_sources_sha256")
                 != self._files["operation_sources"]["sha256"]
             ):
                 raise PermissionError("Efficiency operation authorization/source binding differs")
+            if operation.get("task_pool") != self.value.get("task_pool"):
+                raise PermissionError("Task pool authorization differs from the operation")
             for field, label in (
                 ("run_identity_sha256", "run_identity"),
                 ("config_sha256", "config"),

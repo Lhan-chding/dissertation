@@ -91,3 +91,20 @@
 原科学 submit、任务完成核验、恢复、端点评价和最终交付门禁仍保留；不增加实验臂、种子或采样。
 具体边界及 CPU 安全交接见 `OBSERVABILITY_EXECUTION.md` 的同日调度开销修订。
 提交额度和 GPU 额度仍分别计算，单任务每作业一张 GPU、pool_size=1；所有新作业名仍以 `-LH` 结尾。
+
+
+## 2026-10-17 固定任务按额度合并为多GPU作业的授权
+
+用户新增明确授权：“把多个固定实验任务放进同一个多GPU作业里并行跑，把剩余GPU额度用起来；保持冻结实验设置不变，保留历史记录，别重复提交，也别影响其他作业。”该授权允许独立运维入口把最多五个尚未认领的同阶段固定任务合并到一个真实 Slurm allocation；每个任务仍独占一张 GPU，使用原科学 worker、原种子、原训练批次、原采样与评价日程。没有数据并行、模型并行、共享 optimizer 或改变科学预算。
+
+新入口为 `operations/<新commit>/pooled_execution.py`，通过该版本的 OPERATION_SOURCES、OPERATION_IDENTITY.task_pool 和 POOL_AUTHORIZATION 显式绑定。冻结的 `orchestration/CONFIG.json` 仍为 pool_size=1；原 code/native/EXECUTION_FREEZE 和所有历史 intent/STATE/失败保持原件。新 execution_entry_schema=2 记载实际 operation 命令、实际成员及实际 GPU 数；历史 schema=1 继续使用原验证逻辑，不能伪装成旧单任务 intent。
+
+CPU 接续器仍占一个提交名额。提交前在共享租锁内认领成员，实际 sbatch 和 release 前再读取新鲜队列，分别核算最多5张实际/排队/未知 GPU 与本用户最多5个 teacher QoS 提交。新池选择至多 min(5, GPU余量, ready任务数) 个固定任务；没有提交名额则等待。已有 GPU 作业不中断，不取消其他项目的作业来制造余量。所有新作业名以 `-LH` 结尾。
+
+每个子进程只见一个不同的 CUDA_VISIBLE_DEVICES，保留独立 task、observer、EXIT 和 checkpoint。一个成员失败时，其余已启动成员可以写完自己的真实结果；父作业保留失败终态与全部子进程回执。任何新池的失败、TIMEOUT 或不明分配都不能触发整池自动重放。接续器写 POOL_HANDOFF_REQUIRED 并停止补交，等待有据可查的逐成员处理；这种交接不是 CPU 租期到期，不得仅登记下一CPU序号绕过。
+
+端点评价仍需全部12条训练路径完成，最终 release 仍需全部端点完成。新的训练、评价和 CPU release worker，以及独立 builder，都加载同一已绑定运维适配层；每个任务的原冻结产物与观测门禁不变。成本按一个真实 Slurm job 的实际分配 GPU 数与耗时计算，不把同一 allocation 重复算成两个作业。常规轮询继续只检查小型绑定与队列，不重新扫描模型、checkpoint 和历史科学大文件。
+
+CPU 合成测试只能证明调度与隔离行为；实际多GPU运行必须以真实allocation、父/子STARTED与独立CUDA设备回执确认，不能把运维部署成功称为多卡训练已经启动。
+
+用户随后明确纠正不能只支持双卡，因此任务池动态支持1至5张GPU；两卡仅是某次队列余量下的选择。未在队列中的已登记未知池也按真实1至5张卡完整占位，适配层不拆成虚假的单卡作业。实际集群 highmem PRO6000 节点中存在8卡节点，五卡请求可使用这些节点；额度不等于即时空闲物理卡，仍须服从Slurm实际分配。

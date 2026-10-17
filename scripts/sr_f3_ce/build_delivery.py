@@ -294,6 +294,80 @@ def load_observability_extension(root, api, manifest_path=None):
     )
 
 
+def _operation_module(path, expected):
+    """Execute the exact operation-source buffer checked against its retained manifest."""
+    body = path.read_bytes()
+    if hashlib.sha256(body).hexdigest() != expected:
+        fail("Task-pool operation source changed before import")
+    name = "srf3_delivery_operation_" + digest([str(path), expected])
+    module = importlib.util.module_from_spec(importlib.util.spec_from_file_location(name, path))
+    sys.modules[name] = module
+    try:
+        exec(compile(body, str(path), "exec"), module.__dict__)
+    except BaseException:
+        sys.modules.pop(name, None)
+        raise
+    return module
+
+
+def load_task_pool_operation(root, api, identity_path, *, helper_manifest=None):
+    """Install only the registered operational adapter, retaining the frozen Controller class."""
+    root = Path(root).resolve(strict=True)
+    path = Path(identity_path).resolve(strict=True)
+    value = read(path)
+    commit = value.get("operation_commit", "")
+    if not isinstance(commit, str) or not re.fullmatch(r"[a-f0-9]{40}", commit):
+        fail("Task-pool operation commit is not a registered source revision")
+    operation = root / "operations" / commit
+    if (
+        path != operation / "OPERATION_IDENTITY.json"
+        or value.get("root") != str(root)
+        or not isinstance(value.get("task_pool"), dict)
+        or getattr(api, "observability", None) is None
+    ):
+        fail("Task-pool operation identity must belong to this frozen run")
+    manifest = operation / "OPERATION_SOURCES.json"
+    if helper_manifest is not None and Path(helper_manifest).resolve(strict=True) != manifest:
+        fail("Task-pool identity and delivery helper manifest belong to different operations")
+    helpers, receipt = helper_sources(manifest)
+    sources = receipt["original_manifest"]
+    if (
+        sources.get("operation_commit") != commit
+        or sources.get("scientific_code_commit") != read(root / "RUN_IDENTITY.json")["code_commit"]
+        or value.get("operation_sources_sha256") != receipt["original_manifest_sha256"]
+        or value.get("dispatcher_sha256") != sources["files"].get("dispatch_registered.py")
+        or not sources["files"].keys() >= {"dispatch_registered.py", "pooled_execution.py"}
+    ):
+        fail("Task-pool operation does not bind its complete original source manifest")
+    identity_sha = sha_file(path)
+    helper = _operation_module(
+        helpers["dispatch_registered.py"], sources["files"]["dispatch_registered.py"]
+    )
+    checked = helper.identity(path)
+    if checked != value or sha_file(path) != identity_sha:
+        fail("Task-pool operation identity changed during verification")
+    checked = dict(checked, identity_path=str(path))
+    module = _operation_module(
+        helpers["pooled_execution.py"], sources["files"]["pooled_execution.py"]
+    )
+    controller = api.observability.controller
+    adapter = module.install(checked, api.observability.module)
+    if api.orchestration.Controller is not controller:
+        fail("Task-pool adapter replaced the frozen observability Controller class")
+    return SimpleNamespace(
+        module=module,
+        adapter=adapter,
+        helpers=helpers,
+        helper_receipt=receipt,
+        identity=dict(
+            operation_identity_path=str(path.relative_to(root)),
+            operation_identity_sha256=identity_sha,
+            operation_commit=commit,
+            task_pool=value["task_pool"],
+        ),
+    )
+
+
 def require_final_release(root, api):
     """No TEST content is opened before Controller's full terminal/receipt checks."""
     api.protocol.verify_run(root, science=True)
@@ -2863,6 +2937,8 @@ def _external_receipt(output, checked, provenance, coverage):
     )
     if "observability_extension" in provenance:
         receipt["observability_extension"] = provenance["observability_extension"]
+    if "task_pool_operation" in provenance:
+        receipt["task_pool_operation"] = provenance["task_pool_operation"]
     _publish_bytes(Path(str(output) + ".verification.json"), encoded(receipt) + b"\n")
     _publish_bytes(
         Path(str(output) + ".sha256"), f"{receipt['archive']['sha256']}  {output.name}\n".encode()
@@ -2870,14 +2946,22 @@ def _external_receipt(output, checked, provenance, coverage):
     return receipt
 
 
-def _build(root, output, *, helper_manifest=None, extension_manifest=None):
+def _build(root, output, *, helper_manifest=None, extension_manifest=None, operation_identity=None):
     api = (
         load_frozen_api(root)
         if extension_manifest is None
         else load_frozen_api(root, extension_manifest=extension_manifest)
     )
+    task_pool = None
+    if operation_identity is not None:
+        task_pool = load_task_pool_operation(
+            root, api, operation_identity, helper_manifest=helper_manifest
+        )
     receipts = require_final_release(root, api)
-    helpers, helper_receipt = helper_sources(helper_manifest)
+    if task_pool is None:
+        helpers, helper_receipt = helper_sources(helper_manifest)
+    else:
+        helpers, helper_receipt = task_pool.helpers, task_pool.helper_receipt
     provenance = dict(
         schema_version=1,
         experiment_id=EXPERIMENT,
@@ -2895,6 +2979,8 @@ def _build(root, output, *, helper_manifest=None, extension_manifest=None):
         provenance["protocol_source_guard"] = api.protocol_source_guard
     if getattr(api, "observability", None) is not None:
         provenance["observability_extension"] = api.observability.identity
+    if task_pool is not None:
+        provenance["task_pool_operation"] = task_pool.identity
     dataset, store = api.runner.dataset_and_store(root)
     external_tasks, external_stores, panels, external_scorer = api.endpoint_runner._external(root)
     image_map = verify_images_and_types(root, api, dataset, store, external_tasks, external_stores)
@@ -3174,7 +3260,7 @@ def _build(root, output, *, helper_manifest=None, extension_manifest=None):
         writer.archive.close()
 
 
-def build(root, output, *, helper_manifest=None, extension_manifest=None):
+def build(root, output, *, helper_manifest=None, extension_manifest=None, operation_identity=None):
     root, output = Path(root).resolve(strict=True), Path(output).resolve()
     if output.suffix != ".zip" or (
         output.is_relative_to(root) and not output.is_relative_to(root / "delivery")
@@ -3182,7 +3268,11 @@ def build(root, output, *, helper_manifest=None, extension_manifest=None):
         fail("Use a new .zip output outside sources, or below runroot/delivery")
     try:
         return _build(
-            root, output, helper_manifest=helper_manifest, extension_manifest=extension_manifest
+            root,
+            output,
+            helper_manifest=helper_manifest,
+            extension_manifest=extension_manifest,
+            operation_identity=operation_identity,
         )
     except BaseException as exc:
         output.parent.mkdir(parents=True, exist_ok=True)
@@ -3218,12 +3308,18 @@ def main(argv=None):
         type=Path,
         help="Must equal the unique extension manifest bound by the scientific freeze",
     )
+    parser.add_argument(
+        "--operation-identity",
+        type=Path,
+        help="Registered operation identity required to verify retained multi-task allocations",
+    )
     args = parser.parse_args(argv)
     result = build(
         args.root,
         args.output,
         helper_manifest=args.helper_manifest,
         extension_manifest=args.extension_manifest,
+        operation_identity=args.operation_identity,
     )
     print(json.dumps(result, ensure_ascii=False))
 

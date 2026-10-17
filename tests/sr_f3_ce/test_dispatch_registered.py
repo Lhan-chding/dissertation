@@ -1516,3 +1516,65 @@ def test_revised_guard_failure_cannot_be_replaced_by_valid_commit_metadata(
     )
     with pytest.raises(PermissionError, match="request/selection"):
         helper.source_revision(root)
+
+
+@pytest.mark.parametrize("terminal", ["TIMEOUT", "FAILED", "CANCELLED"])
+def test_pooled_failure_preserves_sibling_receipt_and_never_replays(helper, registered, terminal):
+    api = api_fixture(helper, registered, completed=helper.ENGINES)
+    key, task = add_failed_attempt(helper, registered, api, terminal=terminal)
+    root = Path(registered["root"])
+    path = root / "orchestration/jobs" / key
+    intent = helper.read(path / "INTENT.json")
+    sibling = "train--SRF3CE_GOLD_b0"
+    intent.update(execution_entry_schema=2, gpu_count=2, task_ids=[task, sibling])
+    helper.save(path / "INTENT.json", intent)
+    receipt = orchestration.receipt_path(root, sibling)
+    helper.save(receipt, dict(status="PASS", job_id="88"))
+    before = receipt.read_bytes()
+    driver = make_driver(helper, registered, api)
+    assert driver.act() == "HANDOFF_REQUIRED"
+    handoff = helper.read(driver.directory / "POOL_HANDOFF_REQUIRED.json")
+    assert handoff["reason"] == "POOLED_ALLOCATION_REQUIRES_MEMBER_RECONCILIATION"
+    assert handoff["completed_task_receipts"] == {sibling: helper.sha(receipt)}
+    assert handoff["resubmitted"] is False
+    assert receipt.read_bytes() == before
+    assert not api.controller.resumes and not api.slurm.calls
+    assert not (root / "STOP").exists()
+
+
+def test_pooled_failure_handoff_cannot_be_mistaken_for_cpu_lease_continuation(helper, registered):
+    api = api_fixture(helper, registered)
+    first = helper.submit_driver(registered, api, 1)
+    api.slurm.finish(first["job_id"])
+    previous = helper.attempts_root(registered) / "0001"
+    helper.save(previous / "END.json", dict(status="HANDOFF_REQUIRED"))
+    helper.save(previous / "POOL_HANDOFF_REQUIRED.json", dict(reason="member failure"))
+    before = list(api.slurm.calls)
+    with pytest.raises(PermissionError, match="member failure requires reconciliation"):
+        helper.submit_driver(registered, api, 2, 1)
+    assert api.slurm.calls == before
+    assert not (helper.attempts_root(registered) / "0002/INTENT.json").exists()
+
+
+def test_running_driver_ends_on_pool_handoff_instead_of_polling_or_resubmitting(
+    helper, registered, monkeypatch
+):
+    api = api_fixture(helper, registered)
+    state = helper.submit_driver(registered, api, 1)
+    monkeypatch.setenv("SLURM_JOB_ID", state["job_id"])
+    calls = []
+    monkeypatch.setattr(
+        helper.Driver, "poll", lambda self: calls.append("poll") or "HANDOFF_REQUIRED"
+    )
+    monkeypatch.setattr(helper.time, "sleep", lambda _: pytest.fail("must exit on pool handoff"))
+    assert helper.run(registered, api, 1) == "HANDOFF_REQUIRED"
+    assert calls == ["poll"]
+    end = helper.read(helper.attempts_root(registered) / "0001/END.json")
+    assert end["status"] == "HANDOFF_REQUIRED"
+
+
+def test_pool_source_checked_before_executing_import(helper, tmp_path):
+    source = tmp_path / "pooled_execution.py"
+    source.write_text("raise AssertionError('unverified pool source executed')\n")
+    with pytest.raises(PermissionError, match="before import"):
+        helper.load_pool_source(tmp_path, expected_sha="0" * 64)

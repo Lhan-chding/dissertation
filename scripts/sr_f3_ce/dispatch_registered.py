@@ -2,7 +2,9 @@
 """Independent CPU dispatcher for the registered SR-F3-CE scientific deployment.
 
 This operational script is installed under ROOT/operations/COMMIT. It imports
-only ROOT/code/src, preserves pool_size=1, and never evaluates a model score.
+only ROOT/code/src, preserves the frozen CONFIG, and never evaluates a model score.
+An explicitly bound operational adapter may pack up to five independent fixed
+tasks as capacity permits.
 Lease continuation is an explicit new numbered CPU allocation, not a science
 deadline or an automatic retry of an uncertain submission.
 """
@@ -37,10 +39,12 @@ HELPERS = (
     "build_delivery.py",
     "reconcile_submissions.py",
     "dispatch_efficiency.py",
+    "pooled_execution.py",
 )
 TYPED_COMMIT = "4146e156ffa9a476b360daeb67503703faca138f"
 TYPED_SCRIPT_SHA = "1a75df6bf5fa1c0ef22a23ee7fd766a8e22f5a1c6c1fe7d579c4ab6135106aaf"
 _EXTENSIONS = {}
+_POOL_SOURCES = {}
 
 
 def read(path):
@@ -235,6 +239,25 @@ def load_repair_source(operation, *, expected_sha=None):
     return module
 
 
+def load_pool_source(operation, *, expected_sha):
+    path = Path(operation).resolve(strict=True) / "pooled_execution.py"
+    body = path.read_bytes()
+    if hashlib.sha256(body).hexdigest() != expected_sha:
+        raise PermissionError("Pooled operation source changed before import")
+    key = (str(path), expected_sha)
+    if key not in _POOL_SOURCES:
+        spec = importlib.util.spec_from_file_location("srf3ce_pool_" + expected_sha, path)
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = module
+        try:
+            exec(compile(body, str(path), "exec"), module.__dict__)
+        except BaseException:
+            sys.modules.pop(spec.name, None)
+            raise
+        _POOL_SOURCES[key] = module
+    return _POOL_SOURCES[key]
+
+
 def check_efficiency_authorization(root, path):
     """Bind one explicitly requested operational replacement, never a science retry."""
     root = Path(root).resolve(strict=True)
@@ -316,6 +339,7 @@ def register(
     extension_manifest,
     repair_authorization=None,
     efficiency_authorization=None,
+    pool_authorization=None,
 ):
     root, script = Path(root).resolve(strict=True), Path(__file__).resolve(strict=True)
     if not re.fullmatch(r"[a-f0-9]{40}", operation_commit) or (
@@ -389,6 +413,11 @@ def register(
         value["dispatch_efficiency"] = check_efficiency_authorization(
             root, efficiency_authorization
         )
+    if pool_authorization is not None:
+        module = load_pool_source(
+            script.parent, expected_sha=read(sources_path)["files"]["pooled_execution.py"]
+        )
+        value["task_pool"] = module.check_authorization(root, pool_authorization)
     path = script.parent / "OPERATION_IDENTITY.json"
     save(path, value, immutable=True)
     return path
@@ -480,6 +509,15 @@ def identity(path):
         != value["dispatch_efficiency"]
     ):
         raise PermissionError("Efficiency authorization changed")
+    if "task_pool" in value:
+        module = load_pool_source(
+            script.parent, expected_sha=sources["files"]["pooled_execution.py"]
+        )
+        if (
+            module.check_authorization(root, value["task_pool"]["authorization_path"])
+            != value["task_pool"]
+        ):
+            raise PermissionError("Pooled operation authorization changed")
     return value
 
 
@@ -523,6 +561,13 @@ def load_science(value):
         cpu_node="cpu-2",
     )
     api = SimpleNamespace(**modules, controller=c, slurm=c.slurm, extension=extension)
+    if "task_pool" in value:
+        operation = Path(value["identity_path"]).parent
+        module = load_pool_source(
+            operation,
+            expected_sha=read(operation / "OPERATION_SOURCES.json")["files"]["pooled_execution.py"],
+        )
+        api.task_pool = module.install(value, extension)
     if "submission_repair" in value:
         operation = Path(value["identity_path"]).parent
         source = read(operation / "OPERATION_SOURCES.json")["files"]["reconcile_submissions.py"]
@@ -1039,8 +1084,8 @@ class Driver:
             self.require_typed()
             self.phase("SUBMIT_FIXED_TASK", kind=kind, teacher_usage=snapshot["teacher_usage"])
             began = time.monotonic()
-            # This is the original frozen submit, including ready/claim/complete
-            # verification. GuardedSlurm re-reads quota immediately before sbatch/release.
+            # Frozen ready/claim/complete gates remain in the bound operational
+            # submit. GuardedSlurm reads quota immediately before sbatch/release.
             result = self.api.controller.submit(kind)
             self.phase(
                 "SUBMIT_RETURNED", kind=kind, seconds=time.monotonic() - began, result=result
@@ -1071,6 +1116,29 @@ class Driver:
             intent = read(directory / "INTENT.json")
             terminal_path = directory / "TERMINAL.json"
             terminal = read(terminal_path) if terminal_path.exists() else {}
+            if intent.get("execution_entry_schema") == 2:
+                # A pool may already contain a successful sibling. Preserve its
+                # independent receipt; replaying the allocation would duplicate it.
+                evidence = dict(
+                    status="HANDOFF_REQUIRED",
+                    reason="POOLED_ALLOCATION_REQUIRES_MEMBER_RECONCILIATION",
+                    key=state["key"],
+                    state=state,
+                    terminal=terminal,
+                    intent_sha256=sha(directory / "INTENT.json"),
+                    task_ids=intent["task_ids"],
+                    completed_task_receipts={
+                        task: sha(receipt)
+                        for task in intent["task_ids"]
+                        if (
+                            receipt := self.api.orchestration.receipt_path(self.root, task)
+                        ).is_file()
+                    },
+                    resubmitted=False,
+                    at=time.time(),
+                )
+                save(self.directory / "POOL_HANDOFF_REQUIRED.json", evidence, immutable=True)
+                return "HANDOFF_REQUIRED"
             if (
                 state["status"] != "FAILED"
                 or terminal.get("state") != "TIMEOUT"
@@ -1245,6 +1313,8 @@ class Driver:
             "--extension-manifest",
             self.value["extension_manifest_path"],
         ]
+        if "task_pool" in self.value:
+            command += ["--operation-identity", self.value["identity_path"]]
         save(
             self.directory / "DELIVERY_INTENT.json",
             dict(status="NUMERICAL_RELEASE_COMPLETE", command=command),
@@ -1285,6 +1355,15 @@ class Driver:
             helper_manifest_sha256=sha(manifest),
             observability_extension=observed_identity,
         )
+        if "task_pool" in self.value:
+            required["task_pool_operation"] = dict(
+                operation_identity_path=str(
+                    Path(self.value["identity_path"]).relative_to(self.root)
+                ),
+                operation_identity_sha256=sha(self.value["identity_path"]),
+                operation_commit=self.value["operation_commit"],
+                task_pool=self.value["task_pool"],
+            )
         if any(receipt.get(k) != v for k, v in required.items()):
             raise PermissionError("Delivery receipt identity differs")
         archive = receipt["archive"]
@@ -1387,6 +1466,10 @@ def submit_driver(value, api, sequence, previous=None):
         queue = api.slurm.queue(value["user"])
         if previous is not None:
             prior = base / f"{previous:04d}"
+            if (prior / "POOL_HANDOFF_REQUIRED.json").exists():
+                raise PermissionError(
+                    "Pooled member failure requires reconciliation before continuation"
+                )
             old_intent, old_state = read(prior / "INTENT.json"), read(prior / "STATE.json")
             repair = getattr(api, "repair", None)
             repaired_terminal = None
@@ -1603,7 +1686,7 @@ def run(value, api, sequence):
                     result = "HANDOFF_REQUIRED"
                     break
                 result = driver.poll()
-                if result == "DONE":
+                if result in {"DONE", "HANDOFF_REQUIRED"}:
                     break
                 time.sleep(value["poll_seconds"])
             save(
@@ -1632,6 +1715,7 @@ def main():
     parser.add_argument("--extension-manifest", type=Path)
     parser.add_argument("--repair-authorization", type=Path)
     parser.add_argument("--efficiency-authorization", type=Path)
+    parser.add_argument("--pool-authorization", type=Path)
     parser.add_argument("--sequence", type=int)
     parser.add_argument("--previous", type=int)
     args = parser.parse_args()
@@ -1651,6 +1735,7 @@ def main():
                 args.extension_manifest,
                 args.repair_authorization,
                 args.efficiency_authorization,
+                args.pool_authorization,
             )
         )
     else:

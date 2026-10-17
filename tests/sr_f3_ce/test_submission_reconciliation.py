@@ -671,3 +671,321 @@ def test_later_global_blocker_prevents_retry_of_earlier_known_rejection(
     assert not journal(env, known_state["key"]).exists()
     assert not journal(env, blocked_state["key"]).exists()
     assert all(record.read_bytes() == body for record, body in before.items())
+
+
+@pytest.fixture
+def pooled_repair_env(repair_env, monkeypatch):
+    """Actual pool adapter, Repair and GuardedSlurm; only Slurm/models are fake."""
+    env = repair_env
+    operation = Path(env.value["identity_path"]).parent
+    source = operation / "pooled_execution.py"
+    shutil.copyfile(CHECKOUT / "scripts/sr_f3_ce/pooled_execution.py", source)
+    module = load_module(source, "repair_pool_fixture")
+    authorization = operation / "TASK_POOL_AUTHORIZATION.json"
+    env.helper.save(
+        authorization,
+        dict(
+            schema_version=module.SCHEMA,
+            scope=module.SCOPE,
+            max_tasks_per_job=5,
+            scientific_settings_changed=False,
+            preserve_history=True,
+            no_duplicate_tasks=True,
+            one_task_per_gpu=True,
+            user_request="Pack only fixed tasks without modifying science or prior records.",
+            run_identity_sha256=env.helper.sha(env.root / "RUN_IDENTITY.json"),
+            execution_freeze_sha256=env.helper.sha(env.root / "EXECUTION_FREEZE.json"),
+            config_sha256=env.helper.sha(env.root / "orchestration/CONFIG.json"),
+            extension_manifest_sha256=env.helper.sha(env.frozen.manifest),
+        ),
+    )
+    sources_path = operation / "OPERATION_SOURCES.json"
+    sources = env.helper.read(sources_path)
+    sources["files"]["pooled_execution.py"] = env.helper.sha(source)
+    env.helper.save(sources_path, sources)
+    env.value.update(
+        task_pool=module.check_authorization(env.root, authorization),
+        operation_sources_sha256=env.helper.sha(sources_path),
+    )
+    env.helper.save(
+        env.value["identity_path"],
+        {key: value for key, value in env.value.items() if key != "identity_path"},
+    )
+    # Pool installation extends only this process's reservation parser. Restore
+    # the imported scientific module function after this no-model fixture.
+    monkeypatch.setattr(orchestration, "teacher_usage", orchestration.teacher_usage)
+    env.pool = module.install(env.value, env.frozen.module)
+    env.api.task_pool = env.pool
+    return env
+
+
+def pool_headroom(env, gpu_count=2):
+    """Four allocations leave one submit slot and the requested GPU headroom."""
+    unrelated_queue(env, 4, gpus=0)
+    for index in range(5 - gpu_count):
+        row = env.raw.rows[str(9000 + index)]
+        row["ReqTRES"] = "cpu=4,gres/gpu=1"
+        if index % 2 == 0:
+            row.update(JobState="RUNNING", AllocTRES=row["ReqTRES"])
+
+
+def pool_rejection(env):
+    env.transport.responses.append(explicit_response(env))
+    state = env.api.controller.submit("train")
+    directory = env.root / "orchestration/jobs" / state["key"]
+    intent = env.helper.read(directory / "INTENT.json")
+    assert state["status"] == "SUBMISSION_UNKNOWN"
+    assert len(intent["task_ids"]) == state["gpu_count"] <= 5
+    return state, intent, directory
+
+
+@pytest.mark.parametrize("gpu_count", [1, 2, 3, 4, 5])
+def test_pool_initial_submission_counts_physical_gpus_and_one_allocation(
+    pooled_repair_env, gpu_count
+):
+    env = pooled_repair_env
+    pool_headroom(env, gpu_count)
+    frozen = {
+        name: (env.root / name).read_bytes()
+        for name in ("EXECUTION_FREEZE.json", "orchestration/CONFIG.json")
+    }
+    unrelated = copy.deepcopy(env.raw.rows)
+    state = env.api.controller.submit("train")
+    directory = env.root / "orchestration/jobs" / state["key"]
+    intent = env.helper.read(directory / "INTENT.json")
+    assert state["status"] == "SUBMITTED" and state["gpu_count"] == gpu_count
+    assert intent["execution_entry_schema"] == 2 and len(intent["task_ids"]) == gpu_count
+    assert len(env.transport.submitted) == 1
+    assert env.raw.calls.count(["scontrol", "release", state["job_id"]]) == 1
+    before = env.helper.read(journal(env, state["key"]) / "QUEUE_IMMEDIATELY_BEFORE_SUBMIT.json")
+    released = env.helper.read(directory / "QUEUE_IMMEDIATELY_BEFORE_RELEASE.json")
+    assert before["teacher_usage"] == released["teacher_usage"] == dict(gpus=5, submitted=5)
+    assert all(env.raw.rows[key] == value for key, value in unrelated.items())
+    assert all((env.root / name).read_bytes() == body for name, body in frozen.items())
+    assert env.repair.retry_pending() is None and len(env.transport.submitted) == 1
+
+
+@pytest.mark.parametrize("gpu_count", [2, 5])
+def test_pool_fresh_capacity_race_defers_then_retries_the_identical_claim(
+    pooled_repair_env, monkeypatch, gpu_count
+):
+    env = pooled_repair_env
+    pool_headroom(env, gpu_count)
+    original_verify = env.pool.verify_intent
+
+    def changed_queue(root, intent):
+        checked = original_verify(root, intent)
+        env.raw.rows["9999"] = dict(
+            env.raw.rows["9000"],
+            JobId="9999",
+            JobName="other-9999",
+            Comment="other-9999",
+            ReqTRES="cpu=4,gres/gpu=1",
+            AllocTRES="(null)",
+            JobState="PENDING",
+        )
+        return checked
+
+    with monkeypatch.context() as patch:
+        patch.setattr(env.pool, "verify_intent", changed_queue)
+        state = env.api.controller.submit("train")
+    assert state["status"] == "SUBMISSION_UNKNOWN" and not env.transport.submitted
+    directory = env.root / "orchestration/jobs" / state["key"]
+    before = {
+        name: (directory / name).read_bytes()
+        for name in ("INTENT.json", "SUBMISSION.json", "run.sbatch")
+    }
+    first = journal(env, state["key"])
+    assert env.helper.read(first / "RESULT.json")["sbatch_invoked"] is False
+    assert not (first / "MAY_HAVE_SUBMITTED.json").exists()
+    assert env.helper.read(first / "QUEUE_IMMEDIATELY_BEFORE_SUBMIT.json")["teacher_usage"] == dict(
+        gpus=6, submitted=6
+    )
+    del env.raw.rows["9999"]
+    assert env.repair.retry_pending() is None
+    assert len(env.transport.submitted) == 1
+    assert env.helper.read(directory / "STATE.json")["status"] == "SUBMITTED"
+    assert env.helper.read(journal(env, state["key"], 2) / "RESULT.json")["status"] == "ACCEPTED"
+    assert all((directory / name).read_bytes() == body for name, body in before.items())
+
+
+@pytest.mark.parametrize("gpu_count", [2, 3, 4, 5])
+def test_pool_unknown_outcome_reserves_every_gpu_and_is_never_retried(pooled_repair_env, gpu_count):
+    env = pooled_repair_env
+    pool_headroom(env, gpu_count)
+    env.transport.responses.append(
+        SimpleNamespace(returncode=1, stdout="", stderr="transport reply lost")
+    )
+    state = env.api.controller.submit("train")
+    assert state["status"] == "SUBMISSION_UNKNOWN" and state["gpu_count"] == gpu_count
+    effective = env.repair.effective_states()
+    usage = orchestration.teacher_usage(env.raw.queue("alice"), effective, "alice")
+    assert usage == dict(gpus=5, submitted=5)
+    retained = {p: p.read_bytes() for p in journal(env, state["key"]).iterdir() if p.is_file()}
+    with pytest.raises(RuntimeError, match="unknown or blocked; not retried"):
+        env.repair.retry_pending()
+    assert len(env.transport.submitted) == 1
+    assert not journal(env, state["key"], 2).exists()
+    assert all(path.read_bytes() == body for path, body in retained.items())
+
+
+def test_pool_positive_rejection_excludes_both_gpus_then_reuses_exact_claim(pooled_repair_env):
+    env = pooled_repair_env
+    pool_headroom(env)
+    state, intent, directory = pool_rejection(env)
+    before = {
+        name: (directory / name).read_bytes()
+        for name in ("INTENT.json", "SUBMISSION.json", "run.sbatch")
+    }
+    assert orchestration.teacher_usage(
+        env.raw.queue("alice"), env.repair.effective_states(), "alice"
+    ) == dict(gpus=3, submitted=4)
+    assert env.repair.retry_pending() is None
+    retried = env.helper.read(directory / "STATE.json")
+    assert retried["status"] == "SUBMITTED" and retried["key"] == state["key"]
+    assert env.helper.read(directory / "INTENT.json")["task_ids"] == intent["task_ids"]
+    assert len(env.transport.submitted) == 2
+    assert all((directory / name).read_bytes() == body for name, body in before.items())
+    assert env.repair.retry_pending() is None and len(env.transport.submitted) == 2
+
+
+@pytest.mark.parametrize("member", [0, 1, 2, 3, 4])
+@pytest.mark.parametrize("evidence", ["task", "training", "observer"])
+def test_pool_any_member_execution_evidence_blocks_whole_claim_retry(
+    pooled_repair_env, member, evidence
+):
+    env = pooled_repair_env
+    state, intent, _ = pool_rejection(env)
+    task = intent["task_ids"][member]
+    if evidence == "task":
+        path = env.root / "tasks" / task
+    elif evidence == "training":
+        path = env.root / "runs" / orchestration.TASKS[task]["model_id"]
+    else:
+        path = env.root / "accounting/observability" / state["key"] / task
+    path.mkdir(parents=True)
+    proof = path / "retained.json"
+    proof.write_text("retained original evidence")
+    with pytest.raises(PermissionError, match=r"evidence|output"):
+        env.repair.retry_pending()
+    assert proof.read_text() == "retained original evidence"
+    assert len(env.transport.submitted) == 1 and not journal(env, state["key"], 2).exists()
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        "unbound",
+        "legacy",
+        "schema_type",
+        "six",
+        "duplicate",
+        "mixed",
+        "gpu_count",
+        "operation",
+        "resume",
+    ],
+)
+def test_pool_repair_cannot_widen_legacy_or_unbound_claims(pooled_repair_env, change):
+    env = pooled_repair_env
+    state, intent, _ = pool_rejection(env)
+    intent = copy.deepcopy(intent)
+    if change == "unbound":
+        del env.value["task_pool"]
+    elif change == "legacy":
+        intent["execution_entry_schema"] = 1
+    elif change == "schema_type":
+        intent["execution_entry_schema"] = 2.0
+    elif change == "six":
+        intent["task_ids"] = [
+            key for key, task in orchestration.TASKS.items() if task["kind"] == "train"
+        ][:6]
+    elif change == "duplicate":
+        intent["task_ids"][1] = intent["task_ids"][0]
+    elif change == "mixed":
+        intent["task_ids"][1] = "release"
+    elif change == "gpu_count":
+        intent["gpu_count"] = 1
+    elif change == "operation":
+        intent["pool_operation_identity_sha256"] = "0" * 64
+    else:
+        intent["resume_of"] = "job-" + "1" * 16
+    with pytest.raises(PermissionError, match=r"bound fixed|one existing"):
+        env.repair._no_execution(intent, state)
+    assert len(env.transport.submitted) == 1
+
+
+def test_pool_repair_revalidates_bound_adapter_authorization(pooled_repair_env):
+    env = pooled_repair_env
+    state, _, _ = pool_rejection(env)
+    authorization = Path(env.value["task_pool"]["authorization_path"])
+    authorization.write_bytes(authorization.read_bytes() + b" \n")
+    with pytest.raises(PermissionError, match="authorization"):
+        env.repair.retry_pending()
+    assert len(env.transport.submitted) == 1 and not journal(env, state["key"], 2).exists()
+
+
+def test_pool_cpu_release_uses_zero_gpu_and_one_submission(pooled_repair_env, monkeypatch):
+    env = pooled_repair_env
+    # The pool's stage-barrier tests own readiness; exercise the registered CPU
+    # release entry through the actual Repair/GuardedSlurm integration here.
+    monkeypatch.setattr(env.api.controller, "ready_tasks", lambda: ["release"])
+    state = env.api.controller.submit("release")
+    intent = env.helper.read(env.root / "orchestration/jobs" / state["key"] / "INTENT.json")
+    assert state["status"] == "SUBMITTED" and intent["task_ids"] == ["release"]
+    assert intent["execution_entry_schema"] == 2 and intent["gpu_count"] == 0
+    assert len(env.transport.submitted) == 1
+
+
+def test_pool_waiting_rejection_classification_uses_only_small_bindings(
+    pooled_repair_env, monkeypatch
+):
+    env = pooled_repair_env
+    state, _, _ = pool_rejection(env)
+
+    def forbidden_full_verify(*args, **kwargs):
+        raise AssertionError("full verification belongs at the submission boundary")
+
+    monkeypatch.setattr(env.frozen.module, "_verify_intent", forbidden_full_verify)
+    monkeypatch.setattr(env.pool, "verify_intent", forbidden_full_verify)
+    assert all(row["key"] != state["key"] for row in env.repair.effective_states())
+    assert env.repair.known_rejections_only([row for _, row in env.helper.state_rows(env.root)])
+    with pytest.raises(AssertionError, match="submission boundary"):
+        env.repair.retry_pending()
+    assert len(env.transport.submitted) == 1
+
+
+@pytest.mark.parametrize("bad_count", [True, "5", 5.0, None, -1, 6])
+def test_pool_unknown_raw_state_gpu_count_must_be_an_exact_bounded_integer(
+    pooled_repair_env, bad_count
+):
+    env = pooled_repair_env
+    env.transport.responses.append(
+        SimpleNamespace(returncode=1, stdout="", stderr="transport reply lost")
+    )
+    state = env.api.controller.submit("train")
+    assert state["status"] == "SUBMISSION_UNKNOWN" and state["gpu_count"] == 5
+    directory = env.root / "orchestration/jobs" / state["key"]
+    env.helper.save(directory / "STATE.json", dict(state, gpu_count=bad_count))
+    with pytest.raises(PermissionError, match="ledger binding"):
+        env.repair.effective_states()
+    assert len(env.transport.submitted) == 1
+    assert not journal(env, state["key"], 2).exists()
+
+
+@pytest.mark.parametrize("unknown", [False, True])
+def test_full_pool_reservation_is_five_gpus_and_one_submission(pooled_repair_env, unknown):
+    env = pooled_repair_env
+    if unknown:
+        env.transport.responses.append(
+            SimpleNamespace(returncode=1, stdout="", stderr="transport reply lost")
+        )
+    state = env.api.controller.submit("train")
+    assert state["gpu_count"] == 5
+    if not unknown:
+        row = env.raw.rows[state["job_id"]]
+        row["AllocTRES"] = row["ReqTRES"]
+    assert orchestration.teacher_usage(
+        env.raw.queue("alice"), env.repair.effective_states(), "alice"
+    ) == dict(gpus=5, submitted=1)
+    assert len(env.transport.submitted) == 1

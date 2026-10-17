@@ -132,6 +132,14 @@ class Repair:
                     state.get(k) != intent.get(k)
                     for k in ("gpu_count", "qos", "run_identity_sha256")
                 )
+                or (
+                    intent.get("execution_entry_schema") == 2
+                    and (
+                        type(state.get("gpu_count")) is not int
+                        or type(intent.get("gpu_count")) is not int
+                        or not 0 <= state["gpu_count"] <= 5
+                    )
+                )
             ):
                 raise PermissionError("Reconciliation ledger binding differs")
         return rows
@@ -164,28 +172,69 @@ class Repair:
             raise PermissionError(
                 "An allocated/started or ambiguous attempt cannot reuse its claim"
             )
-        if (
-            intent.get("kind") not in {"train", "eval", "release"}
-            or len(intent.get("task_ids", [])) != 1
-        ):
+        pooled = intent.get("execution_entry_schema") == 2
+        tasks = intent.get("task_ids", [])
+        if pooled:
+            pool = getattr(self.api, "task_pool", None)
+            # The operations adapter owns schema 2; a field on an arbitrary
+            # intent cannot widen the original single-task repair contract.
+            registered = self.api.orchestration.TASKS
+            if (
+                pool is None
+                or type(intent.get("execution_entry_schema")) is not int
+                or not isinstance(self.value.get("task_pool"), dict)
+                or not self.value["task_pool"]
+                or intent.get("pool_operation_identity_path") != self.value["identity_path"]
+                or intent.get("pool_operation_identity_sha256")
+                != self.io.sha(self.value["identity_path"])
+                or intent.get("pool_authorization_sha256")
+                != self.value["task_pool"].get("authorization_sha256")
+                or type(intent.get("max_tasks_per_job")) is not int
+                or intent["max_tasks_per_job"] != 5
+                or intent.get("extension_manifest_path") != self.value["extension_manifest_path"]
+                or intent.get("extension_manifest_sha256")
+                != self.value["extension_manifest_sha256"]
+                or intent.get("kind") not in {"train", "eval", "release"}
+                or not isinstance(tasks, list)
+                or not 1 <= len(tasks) <= (1 if intent["kind"] == "release" else 5)
+                or any(not isinstance(task, str) or task not in registered for task in tasks)
+                or len(set(tasks)) != len(tasks)
+                or any(registered[task]["kind"] != intent["kind"] for task in tasks)
+                or type(intent.get("gpu_count")) is not int
+                or type(state.get("gpu_count")) is not int
+                or state["gpu_count"] != intent["gpu_count"]
+                or intent["gpu_count"] != (0 if intent["kind"] == "release" else len(tasks))
+                or "resume_of" in intent
+            ):
+                raise PermissionError("Pool repair requires bound fixed unstarted science tasks")
+        elif intent.get("kind") not in {"train", "eval", "release"} or len(tasks) != 1:
             raise PermissionError("Repair is restricted to one existing frozen science task")
         if intent["kind"] == "release" and (self.root / "release").exists():
             raise PermissionError("Release output exists for the rejected claim")
-        task = intent["task_ids"][0]
-        if (self.root / "tasks" / task).exists() or (
-            self.root / "accounting/observability" / state["key"]
-        ).exists():
+        if (self.root / "accounting/observability" / state["key"]).exists() or any(
+            (self.root / "tasks" / task).exists() for task in tasks
+        ):
             raise PermissionError("Task/observer evidence prevents an unstarted retry")
-        # A registered TIMEOUT successor may reuse existing checkpoint/cache outputs;
-        # it still has a new key, no allocation, and the original frozen resume verifier.
+        # Only the original single-task TIMEOUT successor can reuse outputs.
+        # Pooled allocation failures require an explicit handoff, never replay.
         if "resume_of" in intent:
             self.api.orchestration.runtime_resume_receipt(self.root, intent)
             return
-        model = self.api.orchestration.TASKS[task].get("model_id")
-        if model and intent["kind"] == "train" and (self.root / "runs" / model).exists():
-            raise PermissionError("Training output exists for the rejected claim")
-        if model and intent["kind"] == "eval" and (self.root / "sealed/endpoint" / model).exists():
-            raise PermissionError("Evaluation output exists for the rejected claim")
+        for task in tasks:
+            model = self.api.orchestration.TASKS[task].get("model_id")
+            if model and intent["kind"] == "train" and (self.root / "runs" / model).exists():
+                raise PermissionError("Training output exists for the rejected claim")
+            if (
+                model
+                and intent["kind"] == "eval"
+                and (self.root / "sealed/endpoint" / model).exists()
+            ):
+                raise PermissionError("Evaluation output exists for the rejected claim")
+        # Rejection classification also runs while waiting for capacity.
+        # Keep that path small; submit() and retry_pending() retain the full
+        # frozen intent/science verification at the submission boundary.
+        if pooled and pool.check() != self.value["task_pool"]:
+            raise PermissionError("Pool repair authorization differs from its operation")
 
     def rejection(self, intent, state):
         """Positive retained evidence only; absence from Slurm is never sufficient."""
