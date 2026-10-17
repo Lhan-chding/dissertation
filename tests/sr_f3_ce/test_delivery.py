@@ -1984,6 +1984,19 @@ def task_pool_delivery_fixture(root, monkeypatch):
     operation.mkdir(parents=True)
     (operation / "build_delivery.py").write_text("# CPU fixture delivery builder binding\n")
     (operation / "another_helper.py").write_text("# Full source inventory is bound\n")
+    (operation / "scheduler_capacity.py").write_text(
+        f"import {module_name} as original\n"
+        "class Capacity:\n"
+        "    def __init__(self, value):\n"
+        "        original.calls.append('CAPACITY_CONSTRUCTED_OFFLINE')\n"
+        "    def limits(self, *, fresh=False):\n"
+        "        raise AssertionError('historical verification queried live scheduler limits')\n"
+        "    def verify_snapshot(self, intent):\n"
+        "        snapshot = intent['capacity_snapshot']\n"
+        "        if snapshot.get('scope') != 'CPU_FIXTURE_ONLY':\n"
+        "            raise PermissionError('missing retained capacity snapshot')\n"
+        "        return snapshot['limits']\n"
+    )
     (operation / "dispatch_registered.py").write_text(
         "import json\n"
         f"import {module_name} as original\n"
@@ -1995,8 +2008,20 @@ def task_pool_delivery_fixture(root, monkeypatch):
         "    return value\n"
     )
     (operation / "pooled_execution.py").write_text(
+        "import hashlib, json\n"
+        "from pathlib import Path\n"
         f"import {module_name} as original\n"
-        "def install(value, extension):\n"
+        "def install(value, extension, capacity=None):\n"
+        "    if capacity is None:\n"
+        "        operation = Path(value['identity_path']).parent\n"
+        "        path = operation / 'scheduler_capacity.py'\n"
+        "        body = path.read_bytes()\n"
+        "        expected = json.loads((operation / 'OPERATION_SOURCES.json').read_text())\n"
+        "        if hashlib.sha256(body).hexdigest() != expected['files'][path.name]:\n"
+        "            raise PermissionError('capacity helper source changed')\n"
+        "        namespace = {'__file__': str(path)}\n"
+        "        exec(compile(body, str(path), 'exec'), namespace)\n"
+        "        capacity = namespace['Capacity'](value)\n"
         "    original.calls.append('POOL_INSTALL')\n"
         "    if extension.InstrumentedController is not original.Controller:\n"
         "        raise PermissionError('wrong builder extension instance')\n"
@@ -2004,8 +2029,9 @@ def task_pool_delivery_fixture(root, monkeypatch):
         "    def verify(self, intent):\n"
         "        if intent['schema_version'] == 1:\n"
         "            return legacy(self, intent)\n"
+        "        limits = capacity.verify_snapshot(intent)\n"
         "        if intent['schema_version'] != 2 or not (\n"
-        "            1 <= len(intent['task_ids']) <= value['task_pool']['max_tasks_per_job']\n"
+        "            1 <= len(intent['task_ids']) <= limits['gpu_limit']\n"
         "        ):\n"
         "            raise PermissionError('invalid CPU fixture pooled allocation')\n"
         "        original.calls.append(('POOL', intent['task_ids']))\n"
@@ -2035,7 +2061,7 @@ def task_pool_delivery_fixture(root, monkeypatch):
             task_pool=dict(
                 authorization_path=str(operation / "POOL_AUTHORIZATION.json"),
                 authorization_sha256="c" * 64,
-                max_tasks_per_job=5,
+                capacity_policy="LIVE_SLURM_QOS_AND_ASSOCIATION",
                 scientific_settings_changed=False,
             ),
         ),
@@ -2044,7 +2070,7 @@ def task_pool_delivery_fixture(root, monkeypatch):
     return identity_path, api, controller
 
 
-@pytest.mark.parametrize("task_count", [1, 2, 3, 4, 5])
+@pytest.mark.parametrize("task_count", [1, 2, 3, 4, 5, 8])
 def test_delivery_pool_adapter_handles_mixed_history_on_a_fresh_controller(
     tmp_path, monkeypatch, task_count
 ):
@@ -2056,7 +2082,11 @@ def test_delivery_pool_adapter_handles_mixed_history_on_a_fresh_controller(
     fresh = api.orchestration.Controller()
     legacy = dict(schema_version=1, task_ids=["train--legacy-fixture"])
     task_ids = [f"train--pool-fixture-{index}" for index in range(task_count)]
-    pooled = dict(schema_version=2, task_ids=task_ids)
+    pooled = dict(
+        schema_version=2,
+        task_ids=task_ids,
+        capacity_snapshot=dict(scope="CPU_FIXTURE_ONLY", limits=dict(gpu_limit=8)),
+    )
     assert fresh.verify_job(legacy) | fresh.verify_job(pooled) == {
         "train--legacy-fixture",
         *task_ids,
@@ -2073,9 +2103,11 @@ def test_delivery_pool_adapter_handles_mixed_history_on_a_fresh_controller(
         "dispatch_registered.py",
         "pooled_execution.py",
         "another_helper.py",
+        "scheduler_capacity.py",
     }
-    assert api.orchestration.calls[-4:] == [
+    assert api.orchestration.calls[-5:] == [
         "OPERATION_IDENTITY",
+        "CAPACITY_CONSTRUCTED_OFFLINE",
         "POOL_INSTALL",
         ("LEGACY", legacy["task_ids"]),
         ("POOL", pooled["task_ids"]),
@@ -2091,7 +2123,11 @@ def test_builder_installs_pool_adapter_before_terminal_gate_and_never_implicitly
 
     def completed(_):
         return api.orchestration.Controller().verify_job(
-            dict(schema_version=2, task_ids=["train--pool-fixture-a", "train--pool-fixture-b"])
+            dict(
+                schema_version=2,
+                task_ids=["train--pool-fixture-a", "train--pool-fixture-b"],
+                capacity_snapshot=dict(scope="CPU_FIXTURE_ONLY", limits=dict(gpu_limit=8)),
+            )
         )
 
     api.endpoint_runner = SimpleNamespace(_completed=completed)
@@ -2104,7 +2140,9 @@ def test_builder_installs_pool_adapter_before_terminal_gate_and_never_implicitly
     assert not (tmp_path / "registered-operation.zip").exists()
 
 
-@pytest.mark.parametrize("mutation", ["source", "manifest", "authorization", "foreign_root"])
+@pytest.mark.parametrize(
+    "mutation", ["source", "capacity_source", "manifest", "authorization", "foreign_root"]
+)
 def test_task_pool_builder_rejects_changed_full_operational_binding_before_install(
     tmp_path, monkeypatch, mutation
 ):
@@ -2112,6 +2150,8 @@ def test_task_pool_builder_rejects_changed_full_operational_binding_before_insta
     options = {}
     if mutation == "source":
         (identity_path.parent / "another_helper.py").write_text("# Changed auxiliary bytes\n")
+    elif mutation == "capacity_source":
+        (identity_path.parent / "scheduler_capacity.py").write_text("# Changed capacity bytes\n")
     elif mutation == "manifest":
         wrong_manifest = tmp_path / "different-manifest.json"
         write(wrong_manifest, {})
@@ -2133,7 +2173,7 @@ def test_task_pool_operation_uses_verified_source_buffers_not_unchecked_caches(
 ):
     identity_path, api, _ = task_pool_delivery_fixture(tmp_path, monkeypatch)
     cached = []
-    for name in ("dispatch_registered.py", "pooled_execution.py"):
+    for name in ("dispatch_registered.py", "pooled_execution.py", "scheduler_capacity.py"):
         path = identity_path.parent / name
         source = path.read_bytes()
         path.write_text("raise RuntimeError('UNBOUND_OPERATION_CACHE_EXECUTED')\n")
@@ -2158,7 +2198,10 @@ def test_delivery_receipt_carries_exact_task_pool_operation_binding(tmp_path):
         operation_identity_path="operations/fixture/OPERATION_IDENTITY.json",
         operation_identity_sha256="a" * 64,
         operation_commit="b" * 40,
-        task_pool={"max_tasks_per_job": 5, "scientific_settings_changed": False},
+        task_pool={
+            "capacity_policy": "LIVE_SLURM_QOS_AND_ASSOCIATION",
+            "scientific_settings_changed": False,
+        },
     )
     provenance = dict(
         run_identity_sha256="r",
@@ -2197,7 +2240,7 @@ def test_delivery_cli_forwards_explicit_operational_identity(tmp_path, monkeypat
     assert capsys.readouterr().out.strip() == "{}"
 
 
-@pytest.mark.parametrize("task_count", [1, 2, 3, 4, 5])
+@pytest.mark.parametrize("task_count", [1, 2, 3, 4, 5, 8])
 def test_dynamic_task_pool_costs_are_one_real_allocation(tmp_path, task_count):
     stdout = scheduler_fixture(tmp_path).replace(
         "cpu=8,gres/gpu=2,gres/gpu:pro6000=2",
@@ -2245,3 +2288,32 @@ def test_delivery_pool_adapter_cannot_replace_the_frozen_controller_class(tmp_pa
     write(identity_path, identity)
     with pytest.raises(PermissionError, match="replaced the frozen observability Controller"):
         delivery.load_task_pool_operation(tmp_path, api, identity_path)
+
+
+def test_delivery_historical_pool_uses_bound_capacity_snapshot_without_live_scheduler(
+    tmp_path, monkeypatch
+):
+    identity_path, api, original_controller = task_pool_delivery_fixture(tmp_path, monkeypatch)
+
+    def forbidden_query(*args, **kwargs):
+        pytest.fail("Historical task-pool verification must not query live scheduler capacity")
+
+    monkeypatch.setattr(delivery.subprocess, "run", forbidden_query)
+    operation = delivery.load_task_pool_operation(tmp_path, api, identity_path)
+    fresh = api.orchestration.Controller()
+    intent = dict(
+        schema_version=2,
+        task_ids=[f"eval--fixture-{index}" for index in range(8)],
+        capacity_snapshot=dict(scope="CPU_FIXTURE_ONLY", limits=dict(gpu_limit=8)),
+    )
+    assert fresh.verify_job(intent) == set(intent["task_ids"])
+    assert api.orchestration.Controller is original_controller
+    assert "scheduler_capacity.py" in operation.helpers
+    assert "CAPACITY_CONSTRUCTED_OFFLINE" in api.orchestration.calls
+    with pytest.raises(PermissionError, match="invalid CPU fixture pooled allocation"):
+        fresh.verify_job(
+            dict(
+                intent,
+                capacity_snapshot=dict(scope="CPU_FIXTURE_ONLY", limits=dict(gpu_limit=7)),
+            )
+        )

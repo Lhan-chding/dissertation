@@ -680,6 +680,8 @@ def pooled_repair_env(repair_env, monkeypatch):
     operation = Path(env.value["identity_path"]).parent
     source = operation / "pooled_execution.py"
     shutil.copyfile(CHECKOUT / "scripts/sr_f3_ce/pooled_execution.py", source)
+    capacity_source = operation / "scheduler_capacity.py"
+    shutil.copyfile(CHECKOUT / "scripts/sr_f3_ce/scheduler_capacity.py", capacity_source)
     module = load_module(source, "repair_pool_fixture")
     authorization = operation / "TASK_POOL_AUTHORIZATION.json"
     env.helper.save(
@@ -687,7 +689,7 @@ def pooled_repair_env(repair_env, monkeypatch):
         dict(
             schema_version=module.SCHEMA,
             scope=module.SCOPE,
-            max_tasks_per_job=5,
+            capacity_policy="LIVE_SLURM_QOS_AND_ASSOCIATION",
             scientific_settings_changed=False,
             preserve_history=True,
             no_duplicate_tasks=True,
@@ -702,6 +704,7 @@ def pooled_repair_env(repair_env, monkeypatch):
     sources_path = operation / "OPERATION_SOURCES.json"
     sources = env.helper.read(sources_path)
     sources["files"]["pooled_execution.py"] = env.helper.sha(source)
+    sources["files"]["scheduler_capacity.py"] = env.helper.sha(capacity_source)
     env.helper.save(sources_path, sources)
     env.value.update(
         task_pool=module.check_authorization(env.root, authorization),
@@ -716,15 +719,77 @@ def pooled_repair_env(repair_env, monkeypatch):
     monkeypatch.setattr(orchestration, "teacher_usage", orchestration.teacher_usage)
     env.pool = module.install(env.value, env.frozen.module)
     env.api.task_pool = env.pool
+    env.api.capacity = env.pool.capacity
+    env.scheduler = dict(
+        gpu_limit=8, submitted_limit=5, gpu_per_user_limit=None, node_gpus=8, node_state="mix"
+    )
+
+    def capacity_execute(command, **kwargs):
+        assert kwargs == dict(capture_output=True, text=True, timeout=20, check=False)
+        env.transport.events.append("capacity")
+        if command[:4] == ["sacctmgr", "-P", "show", "qos"]:
+            fields = [
+                "Name",
+                "GrpTRES",
+                "MaxTRESPU",
+                "MaxTRES",
+                "GrpJobs",
+                "GrpSubmit",
+                "MaxJobsPU",
+                "MaxSubmitPU",
+                "Flags",
+            ]
+            user_limit = env.scheduler["gpu_per_user_limit"]
+            values = [
+                env.helper.QOS,
+                f"gres/gpu:pro6000={env.scheduler['gpu_limit']},gres/gpu:a100=0",
+                "" if user_limit is None else f"gres/gpu:pro6000={user_limit}",
+                "",
+                "",
+                "",
+                "",
+                str(env.scheduler["submitted_limit"]),
+                "",
+            ]
+            stdout = "|".join(fields) + "\n" + "|".join(values) + "\n"
+        elif command[:4] == ["sacctmgr", "-P", "show", "assoc"]:
+            fields = [
+                "Cluster",
+                "Account",
+                "User",
+                "Partition",
+                "GrpTRES",
+                "MaxTRES",
+                "MaxTRESPerNode",
+                "GrpJobs",
+                "GrpSubmit",
+                "MaxJobs",
+                "MaxSubmit",
+            ]
+            values = ["cluster", "rose", "alice", "", "", "", "", "", "", "", ""]
+            stdout = "|".join(fields) + "\n" + "|".join(values) + "\n"
+        elif command[0] == "sinfo":
+            stdout = (
+                f"node1|gpu:pro6000:{env.scheduler['node_gpus']}|1000000|64|highmem|"
+                f"{env.scheduler['node_state']}\n"
+            )
+        else:
+            raise AssertionError("Unexpected capacity command: " + repr(command))
+        return SimpleNamespace(returncode=0, stdout=stdout, stderr="")
+
+    env.api.capacity.execute = capacity_execute
     return env
 
 
 def pool_headroom(env, gpu_count=2):
     """Four allocations leave one submit slot and the requested GPU headroom."""
     unrelated_queue(env, 4, gpus=0)
-    for index in range(5 - gpu_count):
+    capacity = env.api.capacity.limits()["gpu_limit"]
+    quotient, remainder = divmod(capacity - gpu_count, 4)
+    for index in range(4):
         row = env.raw.rows[str(9000 + index)]
-        row["ReqTRES"] = "cpu=4,gres/gpu=1"
+        count = quotient + int(index < remainder)
+        row["ReqTRES"] = f"cpu=4,gres/gpu={count}"
         if index % 2 == 0:
             row.update(JobState="RUNNING", AllocTRES=row["ReqTRES"])
 
@@ -735,11 +800,11 @@ def pool_rejection(env):
     directory = env.root / "orchestration/jobs" / state["key"]
     intent = env.helper.read(directory / "INTENT.json")
     assert state["status"] == "SUBMISSION_UNKNOWN"
-    assert len(intent["task_ids"]) == state["gpu_count"] <= 5
+    assert len(intent["task_ids"]) == state["gpu_count"] <= intent["max_tasks_per_job"]
     return state, intent, directory
 
 
-@pytest.mark.parametrize("gpu_count", [1, 2, 3, 4, 5])
+@pytest.mark.parametrize("gpu_count", range(1, 9))
 def test_pool_initial_submission_counts_physical_gpus_and_one_allocation(
     pooled_repair_env, gpu_count
 ):
@@ -759,13 +824,17 @@ def test_pool_initial_submission_counts_physical_gpus_and_one_allocation(
     assert env.raw.calls.count(["scontrol", "release", state["job_id"]]) == 1
     before = env.helper.read(journal(env, state["key"]) / "QUEUE_IMMEDIATELY_BEFORE_SUBMIT.json")
     released = env.helper.read(directory / "QUEUE_IMMEDIATELY_BEFORE_RELEASE.json")
-    assert before["teacher_usage"] == released["teacher_usage"] == dict(gpus=5, submitted=5)
+    assert (
+        before["teacher_usage"]
+        == released["teacher_usage"]
+        == dict(gpus=8, submitted=5, user_gpus=8)
+    )
     assert all(env.raw.rows[key] == value for key, value in unrelated.items())
     assert all((env.root / name).read_bytes() == body for name, body in frozen.items())
     assert env.repair.retry_pending() is None and len(env.transport.submitted) == 1
 
 
-@pytest.mark.parametrize("gpu_count", [2, 5])
+@pytest.mark.parametrize("gpu_count", [2, 5, 8])
 def test_pool_fresh_capacity_race_defers_then_retries_the_identical_claim(
     pooled_repair_env, monkeypatch, gpu_count
 ):
@@ -799,7 +868,7 @@ def test_pool_fresh_capacity_race_defers_then_retries_the_identical_claim(
     assert env.helper.read(first / "RESULT.json")["sbatch_invoked"] is False
     assert not (first / "MAY_HAVE_SUBMITTED.json").exists()
     assert env.helper.read(first / "QUEUE_IMMEDIATELY_BEFORE_SUBMIT.json")["teacher_usage"] == dict(
-        gpus=6, submitted=6
+        gpus=9, submitted=6, user_gpus=9
     )
     del env.raw.rows["9999"]
     assert env.repair.retry_pending() is None
@@ -809,7 +878,7 @@ def test_pool_fresh_capacity_race_defers_then_retries_the_identical_claim(
     assert all((directory / name).read_bytes() == body for name, body in before.items())
 
 
-@pytest.mark.parametrize("gpu_count", [2, 3, 4, 5])
+@pytest.mark.parametrize("gpu_count", range(2, 9))
 def test_pool_unknown_outcome_reserves_every_gpu_and_is_never_retried(pooled_repair_env, gpu_count):
     env = pooled_repair_env
     pool_headroom(env, gpu_count)
@@ -820,7 +889,7 @@ def test_pool_unknown_outcome_reserves_every_gpu_and_is_never_retried(pooled_rep
     assert state["status"] == "SUBMISSION_UNKNOWN" and state["gpu_count"] == gpu_count
     effective = env.repair.effective_states()
     usage = orchestration.teacher_usage(env.raw.queue("alice"), effective, "alice")
-    assert usage == dict(gpus=5, submitted=5)
+    assert usage == dict(gpus=8, submitted=5, user_gpus=8)
     retained = {p: p.read_bytes() for p in journal(env, state["key"]).iterdir() if p.is_file()}
     with pytest.raises(RuntimeError, match="unknown or blocked; not retried"):
         env.repair.retry_pending()
@@ -839,7 +908,7 @@ def test_pool_positive_rejection_excludes_both_gpus_then_reuses_exact_claim(pool
     }
     assert orchestration.teacher_usage(
         env.raw.queue("alice"), env.repair.effective_states(), "alice"
-    ) == dict(gpus=3, submitted=4)
+    ) == dict(gpus=6, submitted=4, user_gpus=6)
     assert env.repair.retry_pending() is None
     retried = env.helper.read(directory / "STATE.json")
     assert retried["status"] == "SUBMITTED" and retried["key"] == state["key"]
@@ -849,7 +918,7 @@ def test_pool_positive_rejection_excludes_both_gpus_then_reuses_exact_claim(pool
     assert env.repair.retry_pending() is None and len(env.transport.submitted) == 2
 
 
-@pytest.mark.parametrize("member", [0, 1, 2, 3, 4])
+@pytest.mark.parametrize("member", range(8))
 @pytest.mark.parametrize("evidence", ["task", "training", "observer"])
 def test_pool_any_member_execution_evidence_blocks_whole_claim_retry(
     pooled_repair_env, member, evidence
@@ -878,7 +947,7 @@ def test_pool_any_member_execution_evidence_blocks_whole_claim_retry(
         "unbound",
         "legacy",
         "schema_type",
-        "six",
+        "above_limit",
         "duplicate",
         "mixed",
         "gpu_count",
@@ -896,10 +965,10 @@ def test_pool_repair_cannot_widen_legacy_or_unbound_claims(pooled_repair_env, ch
         intent["execution_entry_schema"] = 1
     elif change == "schema_type":
         intent["execution_entry_schema"] = 2.0
-    elif change == "six":
+    elif change == "above_limit":
         intent["task_ids"] = [
             key for key, task in orchestration.TASKS.items() if task["kind"] == "train"
-        ][:6]
+        ][:9]
     elif change == "duplicate":
         intent["task_ids"][1] = intent["task_ids"][0]
     elif change == "mixed":
@@ -925,8 +994,13 @@ def test_pool_repair_revalidates_bound_adapter_authorization(pooled_repair_env):
     assert len(env.transport.submitted) == 1 and not journal(env, state["key"], 2).exists()
 
 
-def test_pool_cpu_release_uses_zero_gpu_and_one_submission(pooled_repair_env, monkeypatch):
+@pytest.mark.parametrize("eligible_gpu_node", [True, False])
+def test_pool_cpu_release_uses_zero_gpu_and_one_submission(
+    pooled_repair_env, monkeypatch, eligible_gpu_node
+):
     env = pooled_repair_env
+    if not eligible_gpu_node:
+        env.scheduler["node_state"] = "down"
     # The pool's stage-barrier tests own readiness; exercise the registered CPU
     # release entry through the actual Repair/GuardedSlurm integration here.
     monkeypatch.setattr(env.api.controller, "ready_tasks", lambda: ["release"])
@@ -934,6 +1008,7 @@ def test_pool_cpu_release_uses_zero_gpu_and_one_submission(pooled_repair_env, mo
     intent = env.helper.read(env.root / "orchestration/jobs" / state["key"] / "INTENT.json")
     assert state["status"] == "SUBMITTED" and intent["task_ids"] == ["release"]
     assert intent["execution_entry_schema"] == 2 and intent["gpu_count"] == 0
+    assert intent["max_tasks_per_job"] == (8 if eligible_gpu_node else 0)
     assert len(env.transport.submitted) == 1
 
 
@@ -955,7 +1030,7 @@ def test_pool_waiting_rejection_classification_uses_only_small_bindings(
     assert len(env.transport.submitted) == 1
 
 
-@pytest.mark.parametrize("bad_count", [True, "5", 5.0, None, -1, 6])
+@pytest.mark.parametrize("bad_count", [True, "8", 8.0, None, -1, 9])
 def test_pool_unknown_raw_state_gpu_count_must_be_an_exact_bounded_integer(
     pooled_repair_env, bad_count
 ):
@@ -964,7 +1039,7 @@ def test_pool_unknown_raw_state_gpu_count_must_be_an_exact_bounded_integer(
         SimpleNamespace(returncode=1, stdout="", stderr="transport reply lost")
     )
     state = env.api.controller.submit("train")
-    assert state["status"] == "SUBMISSION_UNKNOWN" and state["gpu_count"] == 5
+    assert state["status"] == "SUBMISSION_UNKNOWN" and state["gpu_count"] == 8
     directory = env.root / "orchestration/jobs" / state["key"]
     env.helper.save(directory / "STATE.json", dict(state, gpu_count=bad_count))
     with pytest.raises(PermissionError, match="ledger binding"):
@@ -974,18 +1049,144 @@ def test_pool_unknown_raw_state_gpu_count_must_be_an_exact_bounded_integer(
 
 
 @pytest.mark.parametrize("unknown", [False, True])
-def test_full_pool_reservation_is_five_gpus_and_one_submission(pooled_repair_env, unknown):
+def test_full_pool_reservation_is_eight_gpus_and_one_submission(pooled_repair_env, unknown):
     env = pooled_repair_env
     if unknown:
         env.transport.responses.append(
             SimpleNamespace(returncode=1, stdout="", stderr="transport reply lost")
         )
     state = env.api.controller.submit("train")
-    assert state["gpu_count"] == 5
+    assert state["gpu_count"] == 8
     if not unknown:
         row = env.raw.rows[state["job_id"]]
         row["AllocTRES"] = row["ReqTRES"]
     assert orchestration.teacher_usage(
         env.raw.queue("alice"), env.repair.effective_states(), "alice"
-    ) == dict(gpus=5, submitted=1)
+    ) == dict(gpus=8, submitted=1, user_gpus=8)
+    assert len(env.transport.submitted) == 1
+
+
+@pytest.mark.parametrize("changed_limit", ["gpu_limit", "node_gpus"])
+def test_pool_fresh_scheduler_limit_drop_defers_without_rewriting_original_claim(
+    pooled_repair_env, monkeypatch, changed_limit
+):
+    env = pooled_repair_env
+    original_verify = env.pool.verify_intent
+
+    def reduce_capacity_after_verification(root, intent):
+        checked = original_verify(root, intent)
+        env.scheduler[changed_limit] = 4
+        return checked
+
+    with monkeypatch.context() as patch:
+        patch.setattr(env.pool, "verify_intent", reduce_capacity_after_verification)
+        state = env.api.controller.submit("train")
+    assert state["status"] == "SUBMISSION_UNKNOWN" and state["gpu_count"] == 8
+    assert not env.transport.submitted
+    directory = env.root / "orchestration/jobs" / state["key"]
+    before = {
+        name: (directory / name).read_bytes()
+        for name in ("INTENT.json", "SUBMISSION.json", "run.sbatch")
+    }
+    intent = env.helper.read(directory / "INTENT.json")
+    boundary = env.helper.read(journal(env, state["key"]) / "QUEUE_IMMEDIATELY_BEFORE_SUBMIT.json")
+    assert intent["capacity_limits"]["gpu_limit"] == intent["max_tasks_per_job"] == 8
+    assert boundary["scheduler_capacity"]["gpu_limit"] == (4 if changed_limit == "gpu_limit" else 8)
+    assert boundary["scheduler_capacity"]["max_tasks_per_job"] == 4
+    assert boundary["teacher_usage"] == dict(gpus=8, submitted=1, user_gpus=8)
+    assert env.helper.read(journal(env, state["key"]) / "RESULT.json")["sbatch_invoked"] is False
+    observed_queries = env.transport.events.count("capacity")
+    assert all(row["key"] != state["key"] for row in env.repair.effective_states())
+    assert env.transport.events.count("capacity") == observed_queries
+    env.scheduler[changed_limit] = 8
+    assert env.repair.retry_pending() is None
+    assert len(env.transport.submitted) == 1
+    assert env.helper.read(directory / "STATE.json")["status"] == "SUBMITTED"
+    assert all((directory / name).read_bytes() == body for name, body in before.items())
+
+
+def test_pool_unknown_old_reservation_survives_a_current_limit_reduction(pooled_repair_env):
+    env = pooled_repair_env
+    env.transport.responses.append(
+        SimpleNamespace(returncode=1, stdout="", stderr="transport reply lost")
+    )
+    state = env.api.controller.submit("train")
+    directory = env.root / "orchestration/jobs" / state["key"]
+    before = (directory / "STATE.json").read_bytes()
+    env.scheduler["gpu_limit"] = 4
+    current_limits = env.api.capacity.limits(fresh=True)
+    observed_queries = env.transport.events.count("capacity")
+    effective = env.repair.effective_states()
+    usage = orchestration.teacher_usage(env.raw.queue("alice"), effective, "alice")
+    assert usage == dict(gpus=8, submitted=1, user_gpus=8)
+    assert env.api.capacity.headroom(usage, current_limits)["gpus"] == -4
+    assert env.transport.events.count("capacity") == observed_queries
+    with pytest.raises(RuntimeError, match="unknown or blocked; not retried"):
+        env.repair.retry_pending()
+    assert (directory / "STATE.json").read_bytes() == before
+    assert len(env.transport.submitted) == 1
+    assert not journal(env, state["key"], 2).exists()
+
+
+def test_pool_guard_observes_queue_after_fresh_scheduler_capacity_query(
+    pooled_repair_env, monkeypatch
+):
+    env = pooled_repair_env
+    state, _, _ = pool_rejection(env)
+    original_limits = env.api.capacity.limits
+    original_queue = env.raw.queue
+
+    def capacity_then_competitor(fresh=False):
+        limits = original_limits(fresh=fresh)
+        if fresh:
+            env.transport.events.append("capacity_ready")
+            unrelated_queue(env, 1, user="bob", gpus=1)
+        return limits
+
+    def queue_after_capacity(user):
+        env.transport.events.append("queue")
+        return original_queue(user)
+
+    monkeypatch.setattr(env.api.capacity, "limits", capacity_then_competitor)
+    monkeypatch.setattr(env.raw, "queue", queue_after_capacity)
+    assert env.repair.retry_pending() == "WAIT_CAPACITY_FOR_REJECTED_SUBMISSION"
+    assert len(env.transport.submitted) == 1
+    second = journal(env, state["key"], 2)
+    boundary = env.helper.read(second / "QUEUE_IMMEDIATELY_BEFORE_SUBMIT.json")
+    assert boundary["teacher_usage"] == dict(gpus=9, submitted=1, user_gpus=8)
+    assert boundary["scheduler_capacity"]["gpu_limit"] == 8
+    assert env.helper.read(second / "RESULT.json")["sbatch_invoked"] is False
+    assert not (second / "MAY_HAVE_SUBMITTED.json").exists()
+    events = env.transport.events
+    assert events[-2:] == ["capacity_ready", "queue"]
+
+
+@pytest.mark.parametrize("changed_limit", ["gpu_limit", "node_gpus"])
+def test_pool_release_guard_rechecks_current_limit_and_leaves_original_records(
+    pooled_repair_env, changed_limit
+):
+    env = pooled_repair_env
+    state = env.api.controller.submit("train")
+    directory = env.root / "orchestration/jobs" / state["key"]
+    before = {path: path.read_bytes() for path in directory.iterdir() if path.is_file()}
+    releases = env.raw.calls.count(["scontrol", "release", state["job_id"]])
+    env.scheduler[changed_limit] = 4
+    with pytest.raises(PermissionError, match="Fresh release capacity exceeded"):
+        env.repair.slurm.run(["scontrol", "release", state["job_id"]])
+    assert env.raw.calls.count(["scontrol", "release", state["job_id"]]) == releases
+    assert len(env.transport.submitted) == 1
+    assert all(path.read_bytes() == body for path, body in before.items())
+
+
+def test_pool_separates_group_gpu_usage_from_a_live_per_user_limit(pooled_repair_env):
+    env = pooled_repair_env
+    env.scheduler["gpu_per_user_limit"] = 3
+    unrelated_queue(env, 1, user="bob", gpus=5)
+    unrelated = copy.deepcopy(env.raw.rows)
+    state = env.api.controller.submit("train")
+    assert state["status"] == "SUBMITTED" and state["gpu_count"] == 3
+    boundary = env.helper.read(journal(env, state["key"]) / "QUEUE_IMMEDIATELY_BEFORE_SUBMIT.json")
+    assert boundary["teacher_usage"] == dict(gpus=8, submitted=1, user_gpus=3)
+    assert boundary["scheduler_capacity"]["gpu_per_user_limit"] == 3
+    assert all(env.raw.rows[key] == value for key, value in unrelated.items())
     assert len(env.transport.submitted) == 1

@@ -137,12 +137,31 @@ class Repair:
                     and (
                         type(state.get("gpu_count")) is not int
                         or type(intent.get("gpu_count")) is not int
-                        or not 0 <= state["gpu_count"] <= 5
+                        or type(intent.get("max_tasks_per_job")) is not int
+                        or intent["max_tasks_per_job"]
+                        < (0 if intent.get("kind") == "release" else 1)
+                        or not 0 <= state["gpu_count"] <= intent["max_tasks_per_job"]
                     )
                 )
             ):
                 raise PermissionError("Reconciliation ledger binding differs")
+            if intent.get("execution_entry_schema") == 2:
+                self._pool_capacity(intent)
         return rows
+
+    def _pool_capacity(self, intent):
+        """Validate a historical claim against its retained capacity, not today's."""
+        capacity = getattr(self.api, "capacity", None)
+        limits = intent.get("capacity_limits")
+        if (
+            capacity is None
+            or not isinstance(limits, dict)
+            or type(intent.get("max_tasks_per_job")) is not int
+            or intent["max_tasks_per_job"] < (0 if intent.get("kind") == "release" else 1)
+            or intent["max_tasks_per_job"] != limits.get("max_tasks_per_job")
+        ):
+            raise PermissionError("Pool repair requires bound scheduler capacity")
+        capacity.verify_snapshot(intent)
 
     def _attempts(self, key):
         base = self.base / key / "attempts"
@@ -190,13 +209,15 @@ class Repair:
                 or intent.get("pool_authorization_sha256")
                 != self.value["task_pool"].get("authorization_sha256")
                 or type(intent.get("max_tasks_per_job")) is not int
-                or intent["max_tasks_per_job"] != 5
+                or intent["max_tasks_per_job"] < (0 if intent.get("kind") == "release" else 1)
                 or intent.get("extension_manifest_path") != self.value["extension_manifest_path"]
                 or intent.get("extension_manifest_sha256")
                 != self.value["extension_manifest_sha256"]
                 or intent.get("kind") not in {"train", "eval", "release"}
                 or not isinstance(tasks, list)
-                or not 1 <= len(tasks) <= (1 if intent["kind"] == "release" else 5)
+                or not 1
+                <= len(tasks)
+                <= (1 if intent["kind"] == "release" else intent["max_tasks_per_job"])
                 or any(not isinstance(task, str) or task not in registered for task in tasks)
                 or len(set(tasks)) != len(tasks)
                 or any(registered[task]["kind"] != intent["kind"] for task in tasks)
@@ -207,6 +228,7 @@ class Repair:
                 or "resume_of" in intent
             ):
                 raise PermissionError("Pool repair requires bound fixed unstarted science tasks")
+            self._pool_capacity(intent)
         elif intent.get("kind") not in {"train", "eval", "release"} or len(tasks) != 1:
             raise PermissionError("Repair is restricted to one existing frozen science task")
         if intent["kind"] == "release" and (self.root / "release").exists():
@@ -554,6 +576,26 @@ class GuardedSlurm:
             )
         return script.parent, intent, state
 
+    def _fresh_capacity(self):
+        capacity = getattr(self.repair.api, "capacity", None)
+        if capacity is None:
+            if "task_pool" in self.repair.value:
+                raise PermissionError("Pool submission requires live scheduler capacity")
+            return None, None
+        return capacity, capacity.limits(fresh=True)
+
+    @staticmethod
+    def _within_capacity(usage, capacity, limits, gpu_count):
+        if capacity is None:
+            # Preserve the legacy operation's frozen allocation contract.
+            return usage["gpus"] <= 5 and usage["submitted"] <= 5
+        remaining = capacity.headroom(usage, limits)
+        return (
+            remaining["gpus"] >= 0
+            and remaining["submitted"] >= 0
+            and gpu_count <= limits["max_tasks_per_job"]
+        )
+
     def submit(self, args, *, evidence=None, accounting=None):
         r = self.repair
         directory, intent, state = self._candidate(args)
@@ -594,7 +636,9 @@ class GuardedSlurm:
                 ),
                 immutable=True,
             )
+        # Capacity may require scheduler queries; observe the queue afterwards.
         # No full source, task, or checkpoint hashing after this queue observation.
+        capacity, limits = self._fresh_capacity()
         queue = r.raw_slurm.queue(r.value["user"])
         if science and any(
             v.get("JobName") == intent["job_name"] or v.get("Comment") == intent["comment"]
@@ -605,10 +649,16 @@ class GuardedSlurm:
         target = journal if science else directory
         r.io.save(
             target / "QUEUE_IMMEDIATELY_BEFORE_SUBMIT.json",
-            dict(at=time.time(), jobs=queue, teacher_usage=usage, includes_candidate=True),
+            dict(
+                at=time.time(),
+                jobs=queue,
+                teacher_usage=usage,
+                includes_candidate=True,
+                **({"scheduler_capacity": limits} if limits is not None else {}),
+            ),
             immutable=True,
         )
-        if usage["gpus"] > 5 or usage["submitted"] > 5:
+        if not self._within_capacity(usage, capacity, limits, state["gpu_count"]):
             response = dict(returncode=75, stdout="", stderr=LOCAL_DEFERRED)
             if science:
                 r.io.save(
@@ -672,20 +722,31 @@ class GuardedSlurm:
     def release_guard(self, job):
         r = self.repair
         effective = r.effective_states()
+        capacity, limits = self._fresh_capacity()
         queue = r.raw_slurm.queue(r.value["user"])
         if job not in queue:
             raise RuntimeError("Held allocation disappeared before release")
         usage = r.api.orchestration.teacher_usage(queue, effective, r.value["user"])
-        if usage["gpus"] > 5 or usage["submitted"] > 5:
-            raise PermissionError("Fresh release capacity exceeded; allocation remains held")
         script = Path(queue[job]["Command"]).resolve(strict=True)
         if not (
             script.is_relative_to(r.root / "orchestration/jobs")
             or script.is_relative_to(r.root / "operations/dispatcher/attempts")
         ):
             raise PermissionError("Release is outside this registered run")
+        intent = _read(script.with_name("INTENT.json"))
+        gpu_count = intent.get("gpu_count") if intent.get("kind") else 0
+        if type(gpu_count) is not int or gpu_count < 0:
+            raise PermissionError("Release allocation has an invalid GPU count")
+        if not self._within_capacity(usage, capacity, limits, gpu_count):
+            raise PermissionError("Fresh release capacity exceeded; allocation remains held")
         r.io.save(
             script.with_name("QUEUE_IMMEDIATELY_BEFORE_RELEASE.json"),
-            dict(at=time.time(), job_id=job, jobs=queue, teacher_usage=usage),
+            dict(
+                at=time.time(),
+                job_id=job,
+                jobs=queue,
+                teacher_usage=usage,
+                **({"scheduler_capacity": limits} if limits is not None else {}),
+            ),
             immutable=True,
         )

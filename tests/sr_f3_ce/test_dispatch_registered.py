@@ -1578,3 +1578,77 @@ def test_pool_source_checked_before_executing_import(helper, tmp_path):
     source.write_text("raise AssertionError('unverified pool source executed')\n")
     with pytest.raises(PermissionError, match="before import"):
         helper.load_pool_source(tmp_path, expected_sha="0" * 64)
+
+
+class ActualCapacity:
+    def __init__(self, gpu=8, submitted=5):
+        self.gpu, self.submitted, self.fresh = gpu, submitted, []
+
+    def limits(self, fresh=False):
+        self.fresh.append(fresh)
+        return dict(
+            gpu_limit=self.gpu,
+            submitted_limit=self.submitted,
+            max_tasks_per_job=self.gpu,
+            gpu_per_user_limit=None,
+        )
+
+    def headroom(self, usage, limits=None):
+        limits = self.limits() if limits is None else limits
+        return dict(
+            gpus=limits["gpu_limit"] - usage["gpus"],
+            submitted=limits["submitted_limit"] - usage["submitted"],
+        )
+
+
+@pytest.mark.parametrize("occupied,available", [(5, True), (7, True), (8, False)])
+def test_live_capacity_driver_has_no_artificial_five_gpu_ceiling(
+    helper, registered, occupied, available
+):
+    api = api_fixture(helper, registered)
+    api.capacity = ActualCapacity()
+    api.slurm.rows["99"] = dict(QOS=helper.QOS, UserId="bob(2)", ReqTRES=f"gres/gpu={occupied}")
+    driver = make_driver(helper, registered, api)
+    snapshot = driver.snapshot()
+    assert snapshot["teacher_usage"]["gpus"] == occupied
+    assert driver.has_capacity(snapshot, "train") is available
+    assert driver.has_capacity(snapshot, "release")
+    evidence = helper.read(driver.directory / "QUEUE_SNAPSHOT.json")
+    assert evidence["capacity_limits"]["gpu_limit"] == 8
+
+
+def test_cpu_handoff_uses_actual_limits_and_preserves_frozen_configuration(helper, registered):
+    api = api_fixture(helper, registered)
+    api.capacity = ActualCapacity()
+    api.slurm.rows["99"] = dict(QOS=helper.QOS, UserId="alice(1)", ReqTRES="gres/gpu=7")
+    config = Path(registered["root"]) / "orchestration/CONFIG.json"
+    before = config.read_bytes()
+    state = helper.submit_driver(registered, api, 1)
+    assert state["status"] == "SUBMITTED"
+    assert api.capacity.fresh == [True, True]
+    assert config.read_bytes() == before
+    directory = helper.attempts_root(registered) / "0001"
+    assert helper.read(directory / "PRE_SUBMIT_CAPACITY.json")["limits"]["gpu_limit"] == 8
+    assert helper.read(directory / "PRE_RELEASE_CAPACITY.json")["usage"]["gpus"] == 7
+
+
+def test_real_cap_drop_blocks_cpu_submit_without_sbatch(helper, registered):
+    api = api_fixture(helper, registered)
+    api.capacity = ActualCapacity(gpu=6)
+    api.slurm.rows["99"] = dict(QOS=helper.QOS, UserId="alice(1)", ReqTRES="gres/gpu=7")
+    with pytest.raises(RuntimeError, match="live scheduler limits"):
+        helper.submit_driver(registered, api, 1)
+    assert not api.slurm.calls
+
+
+def test_authorized_pool_cannot_silently_use_legacy_capacity(helper, registered):
+    api = api_fixture(helper, registered)
+    registered["task_pool"] = dict(capacity_policy="LIVE_SLURM_QOS_AND_ASSOCIATION")
+    with pytest.raises(PermissionError, match="lacks live scheduler capacity"):
+        helper.capacity_limits(registered, api)
+
+
+def test_capacity_source_checked_before_execution(helper, tmp_path):
+    (tmp_path / "scheduler_capacity.py").write_text("raise AssertionError('not verified')")
+    with pytest.raises(PermissionError, match="before import"):
+        helper.load_capacity_source(tmp_path, expected_sha="0" * 64)

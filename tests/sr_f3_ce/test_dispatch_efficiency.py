@@ -737,7 +737,7 @@ def test_cpu_efficiency_transition_rejects_active_unknown_or_changed_history(
     assert len(env.transport.submitted) == submitted
 
 
-@pytest.mark.parametrize("changed", ["authorization", "source"])
+@pytest.mark.parametrize("changed", ["authorization", "source", "capacity_source"])
 def test_pool_binding_uses_small_checks_without_replaying_science(efficient_env, changed):
     env = efficient_env
     operation = Path(env.value["identity_path"]).parent
@@ -748,7 +748,7 @@ def test_pool_binding_uses_small_checks_without_replaying_science(efficient_env,
     env.value["task_pool"] = dict(
         authorization_path=str(authorization),
         authorization_sha256=env.helper.sha(authorization),
-        max_tasks_per_job=5,
+        capacity_policy="LIVE_SLURM_QOS_AND_ASSOCIATION",
         scientific_settings_changed=False,
     )
     sources_path = operation / "OPERATION_SOURCES.json"
@@ -763,7 +763,12 @@ def test_pool_binding_uses_small_checks_without_replaying_science(efficient_env,
     for _ in range(5):
         efficiency.check()
     assert env.counts == baseline
-    (authorization if changed == "authorization" else source).write_text("changed\n")
+    changed_path = {
+        "authorization": authorization,
+        "source": source,
+        "capacity_source": operation / "scheduler_capacity.py",
+    }[changed]
+    changed_path.write_text("changed\n")
     with pytest.raises(PermissionError, match="bound file changed"):
         efficiency.check()
     assert env.counts == baseline

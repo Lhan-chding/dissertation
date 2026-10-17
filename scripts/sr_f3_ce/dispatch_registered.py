@@ -3,8 +3,8 @@
 
 This operational script is installed under ROOT/operations/COMMIT. It imports
 only ROOT/code/src, preserves the frozen CONFIG, and never evaluates a model score.
-An explicitly bound operational adapter may pack up to five independent fixed
-tasks as capacity permits.
+An explicitly bound operational adapter packs independent fixed tasks according
+to the actual scheduler limits and eligible single-node capacity.
 Lease continuation is an explicit new numbered CPU allocation, not a science
 deadline or an automatic retry of an uncertain submission.
 """
@@ -40,6 +40,7 @@ HELPERS = (
     "reconcile_submissions.py",
     "dispatch_efficiency.py",
     "pooled_execution.py",
+    "scheduler_capacity.py",
 )
 TYPED_COMMIT = "4146e156ffa9a476b360daeb67503703faca138f"
 TYPED_SCRIPT_SHA = "1a75df6bf5fa1c0ef22a23ee7fd766a8e22f5a1c6c1fe7d579c4ab6135106aaf"
@@ -258,6 +259,36 @@ def load_pool_source(operation, *, expected_sha):
     return _POOL_SOURCES[key]
 
 
+def load_capacity_source(operation, *, expected_sha):
+    path = Path(operation).resolve(strict=True) / "scheduler_capacity.py"
+    body = path.read_bytes()
+    if hashlib.sha256(body).hexdigest() != expected_sha:
+        raise PermissionError("Scheduler capacity source changed before import")
+    spec = importlib.util.spec_from_file_location("srf3ce_capacity_" + expected_sha, path)
+    module = importlib.util.module_from_spec(spec)
+    exec(compile(body, str(path), "exec"), module.__dict__)
+    return module
+
+
+def capacity_limits(value, api, *, fresh=False):
+    capacity = getattr(api, "capacity", None)
+    if capacity is not None:
+        return capacity.limits(fresh=fresh)
+    if "task_pool" in value:
+        raise PermissionError("Authorized pooled operation lacks live scheduler capacity")
+    # Compatibility only for historical operational registrations without pooling.
+    return dict(gpu_limit=value["gpu_limit"], submitted_limit=value["submitted_limit"])
+
+
+def capacity_headroom(api, usage, limits):
+    if getattr(api, "capacity", None) is not None:
+        return api.capacity.headroom(usage, limits)
+    return dict(
+        gpus=limits["gpu_limit"] - usage["gpus"],
+        submitted=limits["submitted_limit"] - usage["submitted"],
+    )
+
+
 def check_efficiency_authorization(root, path):
     """Bind one explicitly requested operational replacement, never a science retry."""
     root = Path(root).resolve(strict=True)
@@ -418,6 +449,10 @@ def register(
             script.parent, expected_sha=read(sources_path)["files"]["pooled_execution.py"]
         )
         value["task_pool"] = module.check_authorization(root, pool_authorization)
+    if pool_authorization is not None:
+        value.pop("gpu_limit")
+        value.pop("submitted_limit")
+        value["capacity_policy"] = "LIVE_SLURM_QOS_AND_ASSOCIATION"
     path = script.parent / "OPERATION_IDENTITY.json"
     save(path, value, immutable=True)
     return path
@@ -455,6 +490,12 @@ def identity(path):
         poll_seconds=60,
         handoff_margin_seconds=900,
     )
+    if "task_pool" in value:
+        expected.pop("gpu_limit")
+        expected.pop("submitted_limit")
+        expected["capacity_policy"] = "LIVE_SLURM_QOS_AND_ASSOCIATION"
+        if "gpu_limit" in value or "submitted_limit" in value:
+            raise PermissionError("Live scheduler policy cannot carry an artificial fixed cap")
     if any(value.get(k) != v for k, v in expected.items()) or (
         not re.fullmatch(r"[a-f0-9]{40}", str(value.get("operation_commit", "")))
         or script.parent != root / "operations" / value["operation_commit"]
@@ -567,7 +608,14 @@ def load_science(value):
             operation,
             expected_sha=read(operation / "OPERATION_SOURCES.json")["files"]["pooled_execution.py"],
         )
-        api.task_pool = module.install(value, extension)
+        capacity_module = load_capacity_source(
+            operation,
+            expected_sha=read(operation / "OPERATION_SOURCES.json")["files"][
+                "scheduler_capacity.py"
+            ],
+        )
+        api.capacity = capacity_module.Capacity(value)
+        api.task_pool = module.install(value, extension, capacity=api.capacity)
     if "submission_repair" in value:
         operation = Path(value["identity_path"]).parent
         source = read(operation / "OPERATION_SOURCES.json")["files"]["reconcile_submissions.py"]
@@ -938,11 +986,13 @@ class Driver:
             repair.reconcile_completed()
         rows = state_rows(self.root)
         states = repair.effective_states(rows) if repair is not None else [s for _, s in rows]
+        limits = capacity_limits(self.value, self.api)
         queue = self.api.slurm.queue(self.value["user"])
         observed_at = time.time()
         usage = self.api.orchestration.teacher_usage(queue, states, self.value["user"])
-        if usage["gpus"] > 5 or usage["submitted"] > 5:
-            raise PermissionError("Actual teacher capacity exceeds the registered limit")
+        room = capacity_headroom(self.api, usage, limits)
+        if room["gpus"] < 0 or room["submitted"] < 0:
+            raise PermissionError("Actual teacher capacity exceeds the live scheduler limit")
         known = []
         for intent, state in rows:
             job = state.get("job_id")
@@ -970,12 +1020,28 @@ class Driver:
         typed_path = self.root / REVISION / "PUBLICATION.json"
         snapshot = dict(
             teacher_usage=usage,
+            capacity_limits={
+                key: limits[key]
+                for key in (
+                    "gpu_limit",
+                    "submitted_limit",
+                    "max_tasks_per_job",
+                    "gpu_per_user_limit",
+                )
+                if key in limits
+            },
             jobs=known,
             typed_publication_sha256=sha(typed_path) if typed_path.exists() else None,
         )
         save(
             self.directory / "QUEUE_SNAPSHOT.json",
-            dict(snapshot, queue=queue, at=time.time(), queue_observed_at=observed_at),
+            dict(
+                snapshot,
+                capacity_evidence=limits,
+                queue=queue,
+                at=time.time(),
+                queue_observed_at=observed_at,
+            ),
         )
         return snapshot
 
@@ -1009,10 +1075,12 @@ class Driver:
                 return kind
         return None
 
-    @staticmethod
-    def has_capacity(snapshot, kind):
-        usage = snapshot["teacher_usage"]
-        return usage["submitted"] < 5 and (kind == "release" or usage["gpus"] < 5)
+    def has_capacity(self, snapshot, kind):
+        limits = snapshot.get("capacity_limits") or capacity_limits(self.value, self.api)
+        room = capacity_headroom(self.api, snapshot["teacher_usage"], limits)
+        return room["submitted"] > 0 and (
+            kind == "release" or (room["gpus"] > 0 and limits.get("max_tasks_per_job", 1) > 0)
+        )
 
     def urgent_capacity(self, snapshot):
         kind = self.candidate_kind(snapshot)
@@ -1526,10 +1594,19 @@ def submit_driver(value, api, sequence, previous=None):
         science_states = (
             repair.effective_states(rows) if repair is not None else [s for _, s in rows]
         )
+        limits = capacity_limits(value, api, fresh=True)
         queue = api.slurm.queue(value["user"])
         usage = api.orchestration.teacher_usage(queue, science_states, value["user"])
-        if usage["gpus"] > 5 or usage["submitted"] >= 5:
-            raise RuntimeError("No teacher submission slot for a CPU dispatcher")
+        room = capacity_headroom(api, usage, limits)
+        if room["gpus"] < 0 or room["submitted"] <= 0:
+            raise RuntimeError(
+                "No teacher submission slot for a CPU dispatcher under live scheduler limits"
+            )
+        save(
+            directory / "PRE_SUBMIT_CAPACITY.json",
+            dict(limits=limits, queue=queue, usage=usage, queue_observed_at=time.time()),
+            immutable=True,
+        )
         directory.mkdir(parents=True, exist_ok=True)
         script = directory / "run.sbatch"
         command = [
@@ -1613,12 +1690,19 @@ def submit_driver(value, api, sequence, previous=None):
             != intent["script_sha256"]
         ):
             raise PermissionError("Slurm stored dispatcher script differs")
+        limits = capacity_limits(value, api, fresh=True)
         queue = api.slurm.queue(value["user"])
         rows = state_rows(Path(value["root"]))
         states = repair.effective_states(rows) if repair is not None else [s for _, s in rows]
         usage = api.orchestration.teacher_usage(queue, states, value["user"])
-        if usage["gpus"] > 5 or usage["submitted"] > 5:
-            raise PermissionError("CPU driver remains held because capacity changed")
+        room = capacity_headroom(api, usage, limits)
+        if room["gpus"] < 0 or room["submitted"] < 0:
+            raise PermissionError("CPU driver remains held because live scheduler capacity changed")
+        save(
+            directory / "PRE_RELEASE_CAPACITY.json",
+            dict(limits=limits, queue=queue, usage=usage, queue_observed_at=time.time()),
+            immutable=True,
+        )
         save(
             directory / "ALLOCATION_VERIFIED.json",
             dict(job_id=job, fields=fields, script_sha256=intent["script_sha256"]),

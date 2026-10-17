@@ -34,6 +34,8 @@ def pooled_env(tmp_path, monkeypatch):
     operation.mkdir(parents=True)
     source = operation / "pooled_execution.py"
     shutil.copyfile(CHECKOUT / "scripts/sr_f3_ce/pooled_execution.py", source)
+    capacity_source = operation / "scheduler_capacity.py"
+    shutil.copyfile(CHECKOUT / "scripts/sr_f3_ce/scheduler_capacity.py", capacity_source)
     module = load_module(source, "fixed_task_pool_fixture")
     authorization = operation / "TASK_POOL_AUTHORIZATION.json"
     orchestration.save_json(
@@ -41,7 +43,7 @@ def pooled_env(tmp_path, monkeypatch):
         dict(
             schema_version=1,
             scope=module.SCOPE,
-            max_tasks_per_job=5,
+            capacity_policy="LIVE_SLURM_QOS_AND_ASSOCIATION",
             scientific_settings_changed=False,
             preserve_history=True,
             no_duplicate_tasks=True,
@@ -54,7 +56,10 @@ def pooled_env(tmp_path, monkeypatch):
         ),
     )
     sources = operation / "OPERATION_SOURCES.json"
-    orchestration.save_json(sources, dict(files={source.name: e._sha(source)}))
+    orchestration.save_json(
+        sources,
+        dict(files={source.name: e._sha(source), capacity_source.name: e._sha(capacity_source)}),
+    )
     identity_path = operation / "OPERATION_IDENTITY.json"
     value = dict(
         root=str(root),
@@ -89,7 +94,7 @@ def pooled_env(tmp_path, monkeypatch):
     )
     monkeypatch.setattr(orchestration, "teacher_usage", orchestration.teacher_usage)
     pool = module.install(value, e)
-    return SimpleNamespace(
+    env = SimpleNamespace(
         frozen=frozen,
         root=root,
         module=module,
@@ -101,7 +106,61 @@ def pooled_env(tmp_path, monkeypatch):
         authorization=authorization,
         baseline=baseline,
         cls=cls,
+        scheduler=dict(gpu_limit=8, submitted_limit=5, gpu_per_user_limit=None, per_job=None),
     )
+    env.pool.capacity.execute = lambda command, **kwargs: scheduler_reply(env, command, **kwargs)
+    return env
+
+
+def scheduler_reply(env, command, **kwargs):
+    assert kwargs == dict(capture_output=True, text=True, timeout=20, check=False)
+    if command[:4] == ["sacctmgr", "-P", "show", "qos"]:
+        fields = [
+            "Name",
+            "GrpTRES",
+            "MaxTRESPU",
+            "MaxTRES",
+            "GrpJobs",
+            "GrpSubmit",
+            "MaxJobsPU",
+            "MaxSubmitPU",
+            "Flags",
+        ]
+        user_limit, per_job = env.scheduler["gpu_per_user_limit"], env.scheduler["per_job"]
+        group = env.scheduler["gpu_limit"]
+        values = [
+            orchestration.TEACHER_QOS,
+            "" if group is None else f"gres/gpu:pro6000={group}",
+            "" if user_limit is None else f"gres/gpu:pro6000={user_limit}",
+            "" if per_job is None else f"gres/gpu:pro6000={per_job}",
+            "",
+            "",
+            "",
+            str(env.scheduler["submitted_limit"]),
+            "",
+        ]
+        stdout = "|".join(fields) + "\n" + "|".join(values) + "\n"
+    elif command[:4] == ["sacctmgr", "-P", "show", "assoc"]:
+        fields = [
+            "Cluster",
+            "Account",
+            "User",
+            "Partition",
+            "GrpTRES",
+            "MaxTRES",
+            "MaxTRESPerNode",
+            "GrpJobs",
+            "GrpSubmit",
+            "MaxJobs",
+            "MaxSubmit",
+        ]
+        values = ["cluster", "rose", "alice", "", "", "", "", "", "", "", ""]
+        stdout = "|".join(fields) + "\n" + "|".join(values) + "\n"
+    elif command[0] == "sinfo":
+        stdout = "node1|gpu:pro6000:8|760832|64|highmem|mix\n"
+    else:
+        raise AssertionError("Unexpected capacity command: " + repr(command))
+    return SimpleNamespace(returncode=0, stdout=stdout, stderr="")
 
 
 def intent_for(env, state):
@@ -170,13 +229,13 @@ def foreign_queue(env, *, jobs=0, gpus=0, user="alice"):
         )
 
 
-@pytest.mark.parametrize("count", [1, 2, 3, 4, 5])
+@pytest.mark.parametrize("count", range(1, 9))
 def test_dynamic_tasks_one_allocation_distinct_devices_and_real_commands(
     pooled_env, monkeypatch, count
 ):
     env = pooled_env
-    if count < 5:
-        foreign_queue(env, jobs=1, gpus=5 - count, user="bob")
+    if count < 8:
+        foreign_queue(env, jobs=1, gpus=8 - count, user="bob")
     state = env.controller.submit("train")
     intent = intent_for(env, state)
     assert state["gpu_count"] == len(intent["task_ids"]) == count
@@ -228,16 +287,14 @@ def test_consecutive_submissions_do_not_repeat_claimed_tasks(pooled_env, monkeyp
     assert env.controller.submit("train") is None
     complete_pool(env, first, monkeypatch)
     second = env.controller.submit("train")
-    complete_pool(env, second, monkeypatch)
-    third = env.controller.submit("train")
-    assert [s["gpu_count"] for s in (first, second, third)] == [5, 5, 2]
-    task_lists = [intent_for(env, s)["task_ids"] for s in (first, second, third)]
+    assert [s["gpu_count"] for s in (first, second)] == [8, 4]
+    task_lists = [intent_for(env, s)["task_ids"] for s in (first, second)]
     assert len({task for tasks in task_lists for task in tasks}) == 12
-    # The final allocation has only two ready tasks even though five GPUs are free.
+    # Four ready tasks do not reserve the other four unused GPUs.
     assert env.controller.submit("train") is None
 
 
-@pytest.mark.parametrize("jobs,gpus,user", [(5, 0, "alice"), (1, 5, "bob")])
+@pytest.mark.parametrize("jobs,gpus,user", [(5, 0, "alice"), (1, 8, "bob")])
 def test_gpu_and_submission_caps_are_separate(pooled_env, jobs, gpus, user):
     env = pooled_env
     foreign_queue(env, jobs=jobs, gpus=gpus, user=user)
@@ -249,7 +306,7 @@ def test_gpu_and_submission_caps_are_separate(pooled_env, jobs, gpus, user):
 
 def test_one_remaining_gpu_shrinks_pool_without_changing_science(pooled_env):
     env = pooled_env
-    foreign_queue(env, jobs=1, gpus=4, user="bob")
+    foreign_queue(env, jobs=1, gpus=7, user="bob")
     state = env.controller.submit("train")
     assert state["gpu_count"] == len(intent_for(env, state)["task_ids"]) == 1
     assert intent_for(env, state)["execution_entry_schema"] == 2
@@ -277,8 +334,8 @@ def test_phase_barrier_blocks_eval_and_release(pooled_env):
 @pytest.mark.parametrize(
     "field,value",
     [
-        ("max_tasks_per_job", 3),
-        ("max_tasks_per_job", True),
+        ("capacity_policy", "FIXED_FIVE"),
+        ("capacity_policy", True),
         ("scientific_settings_changed", True),
         ("preserve_history", False),
         ("no_duplicate_tasks", False),
@@ -344,13 +401,13 @@ def test_runner_rejects_missing_duplicate_or_extra_devices(pooled_env, monkeypat
         env.pool.run_job(state["key"], popen=lambda *a, **kw: pytest.fail("must not launch"))
 
 
-@pytest.mark.parametrize("count", [2, 3, 4, 5])
+@pytest.mark.parametrize("count", range(2, 9))
 def test_child_failure_preserves_successful_siblings_and_reaps_out_of_order(
     pooled_env, monkeypatch, count
 ):
     env = pooled_env
-    if count < 5:
-        foreign_queue(env, jobs=1, gpus=5 - count, user="bob")
+    if count < 8:
+        foreign_queue(env, jobs=1, gpus=8 - count, user="bob")
     state = env.controller.submit("train")
     intent = intent_for(env, state)
     directory = env.root / "orchestration/jobs" / state["key"]
@@ -400,7 +457,7 @@ def test_parent_signal_targets_only_owned_process_groups(pooled_env, monkeypatch
     state = env.controller.submit("train")
     intent = intent_for(env, state)
     monkeypatch.setenv("SLURM_JOB_ID", state["job_id"])
-    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "1,2,3,4,5")
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "1,2,3,4,5,6,7,8")
     statuses, signals = {}, []
 
     def killpg(pid, signum):
@@ -421,7 +478,7 @@ def test_parent_signal_targets_only_owned_process_groups(pooled_env, monkeypatch
 
     with pytest.raises(RuntimeError, match="HANDOFF_REQUIRED"):
         env.pool.run_job(state["key"], popen=popen, sleep=lambda _: None)
-    assert signals == [(73001 + i, signal.SIGTERM) for i in range(5)]
+    assert signals == [(73001 + i, signal.SIGTERM) for i in range(8)]
     end = orchestration.read_json(env.root / "orchestration/jobs" / state["key"] / "POOL_END.json")
     assert set(end["exits"]) == set(intent["task_ids"]) and end["signals"] == [signal.SIGTERM]
 
@@ -443,7 +500,10 @@ def test_successful_pool_cannot_be_launched_twice(pooled_env, monkeypatch):
         env.pool.run_job(state["key"], popen=lambda *a, **kw: pytest.fail("duplicate launch"))
 
 
-def test_release_uses_pool_aware_cpu_worker_after_all_phases(pooled_env, monkeypatch):
+@pytest.mark.parametrize("zero_gpu_capacity", [False, True])
+def test_release_uses_pool_aware_cpu_worker_after_all_phases(
+    pooled_env, monkeypatch, zero_gpu_capacity
+):
     env = pooled_env
     # Complete actual frozen receipts/terminal checks through all stages with toy outputs.
     for kind, total in (("train", 12), ("eval", 15)):
@@ -453,6 +513,8 @@ def test_release_uses_pool_aware_cpu_worker_after_all_phases(pooled_env, monkeyp
             assert state is not None
             complete_pool(env, state, monkeypatch)
             done += len(intent_for(env, state)["task_ids"])
+    if zero_gpu_capacity:
+        env.scheduler["gpu_limit"] = 0
     state = env.controller.submit("release")
     intent = intent_for(env, state)
     assert intent["task_ids"] == ["release"] and state["gpu_count"] == 0
@@ -478,23 +540,30 @@ def test_dispatch_load_science_installs_pool_for_fresh_controller(pooled_env, mo
         )
     monkeypatch.setattr(helper, "load_extension", lambda *a, **kw: env.extension)
     monkeypatch.setattr(env.cls, "submit", env.pool.original_submit)
+    monkeypatch.setattr(env.cls, "release", env.pool.original_release)
     monkeypatch.setattr(env.cls, "verify_job", env.pool.original_verify_job)
     monkeypatch.setattr(env.cls, "prepare_resume", env.pool.original_prepare_resume)
     monkeypatch.delattr(env.cls, env.module._OWNER)
     monkeypatch.setattr(env.extension, "_verify_intent", env.pool.original_intent)
     monkeypatch.setattr(env.extension, "teacher_usage", env.pool.original_teacher_usage)
     monkeypatch.setattr(orchestration, "teacher_usage", env.pool.original_teacher_usage)
+    capacity = env.pool.capacity
+    monkeypatch.setattr(
+        helper,
+        "load_capacity_source",
+        lambda *a, **kw: SimpleNamespace(Capacity=lambda value: capacity),
+    )
     api = helper.load_science(env.value)
     assert api.task_pool is not env.pool
     assert type(api.controller) is env.cls and api.controller.pool_size == 1
     env.pool, env.controller = api.task_pool, api.controller
     state = api.controller.submit("train")
-    assert state["gpu_count"] == 5
+    assert state["gpu_count"] == 8
     complete_pool(env, state, monkeypatch)
     assert set(intent_for(env, state)["task_ids"]) <= endpoint_runner._completed(env.root)
 
 
-@pytest.mark.parametrize("count", [3, 4, 5])
+@pytest.mark.parametrize("count", range(3, 9))
 @pytest.mark.parametrize(
     "status", ["SUBMISSION_UNKNOWN", "HELD", "RELEASE_UNKNOWN", "ACCOUNTING_UNKNOWN"]
 )
@@ -502,8 +571,8 @@ def test_expanded_off_queue_reservations_count_fully_once_without_full_checks(
     pooled_env, monkeypatch, count, status
 ):
     env = pooled_env
-    if count < 5:
-        foreign_queue(env, jobs=1, gpus=5 - count, user="bob")
+    if count < 8:
+        foreign_queue(env, jobs=1, gpus=8 - count, user="bob")
     state = env.controller.submit("train")
     assert state["gpu_count"] == count
     env.slurm.rows.pop(state["job_id"])
@@ -515,8 +584,12 @@ def test_expanded_off_queue_reservations_count_fully_once_without_full_checks(
     monkeypatch.setattr(
         env.extension, "verify_extension", lambda *a, **kw: pytest.fail("heavy quota check")
     )
-    assert env.extension.teacher_usage(queue, [reserved], "alice") == dict(gpus=5, submitted=1)
-    assert orchestration.teacher_usage(queue, [reserved], "alice") == dict(gpus=5, submitted=1)
+    assert env.extension.teacher_usage(queue, [reserved], "alice") == dict(
+        gpus=8, submitted=1, user_gpus=count
+    )
+    assert orchestration.teacher_usage(queue, [reserved], "alice") == dict(
+        gpus=8, submitted=1, user_gpus=count
+    )
     assert env.module.quota_usage(
         env.root,
         env.value,
@@ -525,23 +598,25 @@ def test_expanded_off_queue_reservations_count_fully_once_without_full_checks(
         "alice",
         original=env.pool.original_teacher_usage,
         tasks=orchestration.TASKS,
-    ) == dict(gpus=5, submitted=1)
+    ) == dict(gpus=8, submitted=1, user_gpus=count)
     assert before == (queue, reserved)
 
 
-@pytest.mark.parametrize("count", [3, 4, 5])
+@pytest.mark.parametrize("count", range(3, 9))
 def test_live_expanded_allocations_use_real_queue_and_one_job_slot(pooled_env, count):
     env = pooled_env
-    if count < 5:
-        foreign_queue(env, jobs=1, gpus=5 - count, user="bob")
+    if count < 8:
+        foreign_queue(env, jobs=1, gpus=8 - count, user="bob")
     state = env.controller.submit("train")
     queue = env.slurm.queue("alice")
     # Actual and generic typed TRES are alternative representations, not extra GPUs.
     queue[state["job_id"]]["AllocTRES"] = queue[state["job_id"]]["ReqTRES"]
-    assert orchestration.teacher_usage(queue, [state], "alice") == dict(gpus=5, submitted=1)
+    assert orchestration.teacher_usage(queue, [state], "alice") == dict(
+        gpus=8, submitted=1, user_gpus=count
+    )
 
 
-@pytest.mark.parametrize("count", [True, "5", 5.0, None, -1, 6])
+@pytest.mark.parametrize("count", [True, "5", 5.0, None, -1, 9])
 def test_legacy_invalid_unknown_counts_remain_rejected(pooled_env, count):
     with pytest.raises(PermissionError):
         orchestration.teacher_usage(
@@ -604,3 +679,120 @@ def test_quota_alias_replacement_is_detected_at_boundary(pooled_env, monkeypatch
     monkeypatch.setattr(env.extension, "teacher_usage", lambda *args: dict(gpus=0, submitted=0))
     with pytest.raises(PermissionError, match="accounting adapter changed"):
         env.pool.check()
+
+
+def test_historical_capacity_remains_verifiable_after_live_limit_reduction(pooled_env, monkeypatch):
+    env = pooled_env
+    state = env.controller.submit("train")
+    intent = intent_for(env, state)
+    assert state["gpu_count"] == 8 and intent["capacity_limits"]["gpu_limit"] == 8
+    env.scheduler["gpu_limit"] = 3
+    assert env.pool.capacity.limits(fresh=True)["gpu_limit"] == 3
+    monkeypatch.setattr(
+        env.pool.capacity, "execute", lambda *a, **kw: pytest.fail("historical RPC")
+    )
+    env.pool.verify_intent(env.root, intent)
+    queue = env.slurm.queue("alice")
+    queue.pop(state["job_id"])
+    assert env.pool.teacher_usage(queue, [state], "alice") == dict(gpus=8, submitted=1, user_gpus=8)
+    complete_pool(env, state, monkeypatch)
+    assert set(intent["task_ids"]) <= endpoint_runner._completed(env.root)
+
+
+@pytest.mark.parametrize("field", ["gpu_limit", "per_job"])
+def test_fresh_lowered_policy_keeps_accepted_allocation_held(pooled_env, monkeypatch, field):
+    env = pooled_env
+    with monkeypatch.context() as patch:
+        patch.setattr(env.cls, "release", lambda *a: None)
+        state = env.controller.submit("train")
+    assert state["status"] == "HELD" and state["gpu_count"] == 8
+    env.scheduler[field] = 7
+    before = list(env.slurm.calls)
+    with pytest.raises(PermissionError, match="capacity exceeded"):
+        env.controller.release(state, intent_for(env, state))
+    assert env.slurm.calls == before
+    directory = env.root / "orchestration/jobs" / state["key"]
+    assert not (directory / "RELEASE_INTENT.json").exists()
+    assert orchestration.read_json(directory / "STATE.json")["status"] == "HELD"
+    assert (
+        orchestration.read_json(directory / "QUEUE_BEFORE_RELEASE.json")["capacity"][
+            "max_tasks_per_job"
+        ]
+        == 7
+    )
+
+
+def test_fresh_policy_reduction_blocks_new_submit_without_claim(pooled_env):
+    env = pooled_env
+    env.pool.capacity.limits(fresh=True)
+    foreign_queue(env, jobs=1, gpus=4, user="bob")
+    env.scheduler["gpu_limit"] = 4
+    calls = list(env.slurm.calls)
+    directories = sorted((env.root / "orchestration/jobs").iterdir())
+    assert env.controller.submit("train") is None
+    assert env.slurm.calls == calls
+    assert sorted((env.root / "orchestration/jobs").iterdir()) == directories
+
+
+@pytest.mark.parametrize("group,per_job,expected", [(None, None, 8), (8, 3, 3), (4, None, 4)])
+def test_actual_group_node_and_job_limits_define_pool_without_artificial_cap(
+    pooled_env, group, per_job, expected
+):
+    env = pooled_env
+    env.scheduler.update(gpu_limit=group, per_job=per_job)
+    state = env.controller.submit("train")
+    assert state["gpu_count"] == expected
+    intent = intent_for(env, state)
+    assert intent["max_tasks_per_job"] == expected
+    assert intent["capacity_limits"]["gpu_limit"] is group
+
+
+def test_per_user_limit_counts_own_usage_separately(pooled_env):
+    env = pooled_env
+    foreign_queue(env, jobs=1, gpus=2)
+    env.scheduler["gpu_per_user_limit"] = 3
+    state = env.controller.submit("train")
+    assert state["gpu_count"] == 1
+    assert env.pool.teacher_usage(env.slurm.queue("alice"), [state], "alice") == dict(
+        gpus=3, submitted=2, user_gpus=3
+    )
+
+
+def test_legacy_single_gpu_resume_uses_seventh_to_eighth_gpu_without_config_change(
+    pooled_env, monkeypatch
+):
+    env = pooled_env
+    state = env.pool.original_submit(env.controller, "train")
+    env.frozen.old_tests.expire_allocation(env.controller, state)
+    foreign_queue(env, jobs=1, gpus=7, user="bob")
+    config = (env.root / "orchestration/CONFIG.json").read_bytes()
+    original_limits = (env.extension.GPU_LIMIT, env.extension.SUBMIT_LIMIT)
+    resumed = env.controller.resume(state["key"], verifier=env.frozen.old_tests.resume_verifier)
+    assert resumed["status"] == "SUBMITTED" and resumed["gpu_count"] == 1
+    assert intent_for(env, resumed)["execution_entry_schema"] == 1
+    assert original_limits == (env.extension.GPU_LIMIT, env.extension.SUBMIT_LIMIT)
+    assert orchestration.GPU_LIMIT == 5 and orchestration.SUBMIT_LIMIT == 5
+    assert (env.root / "orchestration/CONFIG.json").read_bytes() == config
+    complete_new(env.frozen, resumed, monkeypatch)
+    assert set(intent_for(env, resumed)["task_ids"]) <= endpoint_runner._completed(env.root)
+    assert (env.root / "orchestration/CONFIG.json").read_bytes() == config
+
+
+def test_native_limit_aliases_restore_on_base_exception(pooled_env, monkeypatch):
+    env = pooled_env
+    state = env.pool.original_submit(env.controller, "train")
+    env.frozen.old_tests.expire_allocation(env.controller, state)
+    foreign_queue(env, jobs=1, gpus=7, user="bob")
+    before = (env.extension.GPU_LIMIT, env.extension.SUBMIT_LIMIT)
+    config = (env.root / "orchestration/CONFIG.json").read_bytes()
+
+    def interrupted(*args, **kwargs):
+        assert env.extension.GPU_LIMIT == 8 and orchestration.GPU_LIMIT == 5
+        raise KeyboardInterrupt("synthetic interrupted native resume")
+
+    monkeypatch.setattr(env.pool, "original_submit", interrupted)
+    with pytest.raises(KeyboardInterrupt, match="synthetic"):
+        env.controller.resume(state["key"], verifier=env.frozen.old_tests.resume_verifier)
+    assert before == (env.extension.GPU_LIMIT, env.extension.SUBMIT_LIMIT)
+    assert (env.root / "orchestration/CONFIG.json").read_bytes() == config
+    assert orchestration.GPU_LIMIT == 5

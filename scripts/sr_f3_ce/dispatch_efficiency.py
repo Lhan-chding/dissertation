@@ -75,6 +75,7 @@ class Efficiency:
                 required[label + "_authorization"] = Path(binding["authorization_path"])
         if "task_pool" in self.value:
             required["task_pool_source"] = operation / "pooled_execution.py"
+            required["capacity_source"] = operation / "scheduler_capacity.py"
         optional = {
             "package_manifest": root / "plan/PACKAGE_SHA256.json",
             "model_inputs": root / "plan/manifests/MODEL_INPUTS.jsonl",
@@ -183,6 +184,11 @@ class Efficiency:
                 != self._files["task_pool_source"]["sha256"]
             ):
                 raise PermissionError("Task pool source is not bound by OPERATION_SOURCES")
+            if "task_pool" in self.value and (
+                sources.get("files", {}).get("scheduler_capacity.py")
+                != self._files["capacity_source"]["sha256"]
+            ):
+                raise PermissionError("Capacity source is not bound by OPERATION_SOURCES")
             operation = self.io.read(required["operation_identity"])
             if operation.get("dispatch_efficiency") != authorization or (
                 operation.get("operation_sources_sha256")

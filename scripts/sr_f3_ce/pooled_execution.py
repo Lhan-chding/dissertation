@@ -27,7 +27,8 @@ from pathlib import Path
 SCHEMA = 1
 ENTRY_SCHEMA = 2
 SCOPE = "SRF3CE_FIXED_TASK_POOL"
-MAX_TASKS = 5
+CAPACITY_POLICY = "LIVE_SLURM_QOS_AND_ASSOCIATION"
+LIMIT_KEYS = ("gpu_limit", "submitted_limit", "max_tasks_per_job", "gpu_per_user_limit")
 _OWNER = "_srf3ce_task_pool_owner"
 
 
@@ -47,7 +48,7 @@ def check_authorization(root, path):
     expected = dict(
         schema_version=SCHEMA,
         scope=SCOPE,
-        max_tasks_per_job=MAX_TASKS,
+        capacity_policy=CAPACITY_POLICY,
         scientific_settings_changed=False,
         preserve_history=True,
         no_duplicate_tasks=True,
@@ -65,13 +66,34 @@ def check_authorization(root, path):
     return dict(
         authorization_path=str(path),
         authorization_sha256=_sha(path),
-        max_tasks_per_job=MAX_TASKS,
+        capacity_policy=CAPACITY_POLICY,
         scientific_settings_changed=False,
     )
 
 
-def quota_usage(root, value, queue, attempts, user, *, original, tasks):
-    """Extend only authenticated off-queue pool reservations to three through five GPUs.
+def load_capacity(value):
+    """Load the bound capacity parser without querying the scheduler."""
+    identity_path = Path(value["identity_path"]).resolve(strict=True)
+    operation = identity_path.parent
+    sources_path = operation / "OPERATION_SOURCES.json"
+    if value.get("operation_sources_sha256") != _sha(sources_path):
+        raise PermissionError("Capacity source manifest changed")
+    path = operation / "scheduler_capacity.py"
+    body = path.read_bytes()
+    digest = hashlib.sha256(body).hexdigest()
+    if _read(sources_path).get("files", {}).get(path.name) != digest:
+        raise PermissionError("Capacity parser is not bound by the operation identity")
+    name = "srf3ce_pool_capacity_" + digest
+    module = sys.modules.get(name)
+    if module is None:
+        module = importlib.util.module_from_spec(importlib.util.spec_from_file_location(name, path))
+        sys.modules[name] = module
+        exec(compile(body, str(path), "exec"), module.__dict__)
+    return module.Capacity(value)
+
+
+def quota_usage(root, value, queue, attempts, user, *, original, tasks, capacity=None):
+    """Count expanded reservations using their retained scheduler capacity evidence.
 
     Real queue rows and legacy reservation semantics stay with the frozen
     implementation. This helper reads only small immutable allocation/binding
@@ -84,7 +106,7 @@ def quota_usage(root, value, queue, attempts, user, *, original, tasks):
             legacy.append(state)
             continue
         count = state.get("gpu_count")
-        if type(count) is not int or count not in range(3, MAX_TASKS + 1):
+        if type(count) is not int or count <= 2:
             legacy.append(state)  # Preserve the original rejection of malformed counts.
             continue
         expanded.append(state)
@@ -105,6 +127,7 @@ def quota_usage(root, value, queue, attempts, user, *, original, tasks):
             or identity.get("run_identity_sha256") != value.get("run_identity_sha256")
         ):
             raise PermissionError("Expanded GPU reservation operation identity differs")
+        capacity = capacity or load_capacity(value)
         seen = set()
         for state in expanded:
             key = state.get("key", "")
@@ -114,6 +137,7 @@ def quota_usage(root, value, queue, attempts, user, *, original, tasks):
             path = root / "orchestration/jobs" / key / "INTENT.json"
             intent = _read(path)
             selected = intent.get("task_ids")
+            limits = capacity.verify_snapshot(intent)
             if (
                 type(intent.get("execution_entry_schema")) is not int
                 or intent["execution_entry_schema"] != ENTRY_SCHEMA
@@ -131,7 +155,8 @@ def quota_usage(root, value, queue, attempts, user, *, original, tasks):
                 or intent.get("pool_operation_identity_path") != str(identity_path)
                 or intent.get("pool_operation_identity_sha256") != identity_sha256
                 or intent.get("pool_authorization_sha256") != binding["authorization_sha256"]
-                or intent.get("max_tasks_per_job") != MAX_TASKS
+                or type(limits["max_tasks_per_job"]) is not int
+                or not 0 < len(selected) <= limits["max_tasks_per_job"]
                 or state.get("qos") != "soujanya-poria-startfund-2026-03"
                 or state.get("qos") != intent.get("qos")
                 or state.get("run_identity_sha256") != value.get("run_identity_sha256")
@@ -139,24 +164,33 @@ def quota_usage(root, value, queue, attempts, user, *, original, tasks):
             ):
                 raise PermissionError("Expanded GPU reservation differs from its bound pool intent")
     usage = original(queue, legacy, user)
+    own_queue = {
+        key: row for key, row in queue.items() if row.get("UserId", "").split("(")[0] == user
+    }
+    off_queue = [state for state in legacy if state.get("job_id") not in queue]
+    own = original(own_queue, [], user)["gpus"] + original({}, off_queue, user)["gpus"]
+    expanded_gpus = sum(state["gpu_count"] for state in expanded)
     return dict(
-        gpus=usage["gpus"] + sum(state["gpu_count"] for state in expanded),
+        gpus=usage["gpus"] + expanded_gpus,
         submitted=usage["submitted"] + len(expanded),
+        user_gpus=own + expanded_gpus,
     )
 
 
 class Pool:
-    def __init__(self, value, extension):
+    def __init__(self, value, extension, capacity=None):
         self.value, self.extension = copy.deepcopy(value), extension
         self.root = Path(value["root"]).resolve(strict=True)
         self.identity_path = Path(value["identity_path"]).resolve(strict=True)
         self.operation = self.identity_path.parent
         self.source = self.operation / "pooled_execution.py"
         self.identity_sha256 = _sha(self.identity_path)
+        self.capacity = capacity or load_capacity(value)
         self.context = extension._context(self.root)
         self.controller_class = self.context.controller
         self.original_intent = extension._verify_intent
         self.original_submit = self.controller_class.submit
+        self.original_release = self.controller_class.release
         self.original_verify_job = self.controller_class.verify_job
         self.original_prepare_resume = self.controller_class.prepare_resume
         self.original_teacher_usage = extension.teacher_usage
@@ -224,6 +258,7 @@ class Pool:
             user,
             original=self.original_teacher_usage,
             tasks=self.extension.TASKS,
+            capacity=self.capacity,
         )
 
     def command(self, mode, identifier, python):
@@ -253,6 +288,7 @@ class Pool:
         e = self.extension
         checked = e.verify_extension(self.root, self.context.manifest, science=True)
         config = _read(self.root / "orchestration/CONFIG.json")
+        limits = self.capacity.verify_snapshot(intent)
         tasks, kind = intent.get("task_ids"), intent.get("kind")
         if (
             not isinstance(tasks, list)
@@ -262,7 +298,11 @@ class Pool:
                 kind not in e.SCIENCE
                 or any(not isinstance(t, str) or t not in e.TASKS for t in tasks)
                 or any(e.TASKS[t]["kind"] != kind for t in tasks)
-                or (len(tasks) > MAX_TASKS if kind in {"train", "eval"} else len(tasks) != 1)
+                or (
+                    len(tasks) > limits["max_tasks_per_job"]
+                    if kind in {"train", "eval"}
+                    else len(tasks) != 1
+                )
                 or "resume_of" in intent
             )
         ):
@@ -284,7 +324,10 @@ class Pool:
             pool_operation_identity_path=str(self.identity_path),
             pool_operation_identity_sha256=self.identity_sha256,
             pool_authorization_sha256=binding["authorization_sha256"],
-            max_tasks_per_job=MAX_TASKS,
+            max_tasks_per_job=limits["max_tasks_per_job"],
+            capacity_limits={key: limits[key] for key in LIMIT_KEYS},
+            capacity_snapshot_path=limits["capacity_snapshot_path"],
+            capacity_snapshot_sha256=limits["capacity_snapshot_sha256"],
             gpu_count=gpu_count,
             cpus=4 * max(1, gpu_count),
             memory_gib=90 * gpu_count if gpu_count else 12,
@@ -335,15 +378,31 @@ class Pool:
             prior = _read(controller.directory / "jobs" / resume_key / "INTENT.json")
             if self.pooled(prior):
                 raise RuntimeError("HANDOFF_REQUIRED: pooled allocations cannot be replayed")
-            return self.original_submit(
-                controller, kind, resume_key=resume_key, resume_verifier=resume_verifier
-            )
+            self.check()
+            limits = self.capacity.limits(fresh=True)
+            queue = controller.slurm.queue(controller.user)
+            usage = self.teacher_usage(queue, controller.attempts(), controller.user)
+            room = self.capacity.headroom(usage, limits)
+            if room["gpus"] < 1 or room["submitted"] < 1 or limits["max_tasks_per_job"] < 1:
+                return None
+            # The retained native submit implementation captures these aliases.
+            # Its constructor still sees the unchanged core constants/CONFIG.
+            old_gpu, old_submit = e.GPU_LIMIT, e.SUBMIT_LIMIT
+            try:
+                e.GPU_LIMIT = usage["gpus"] + room["gpus"]
+                e.SUBMIT_LIMIT = usage["submitted"] + room["submitted"]
+                return self.original_submit(
+                    controller, kind, resume_key=resume_key, resume_verifier=resume_verifier
+                )
+            finally:
+                e.GPU_LIMIT, e.SUBMIT_LIMIT = old_gpu, old_submit
         self.check()
         if Path(controller.root) != self.root or controller.pool_size != 1:
             raise PermissionError("Task pool controller differs from the frozen single-task config")
         checked = e.verify_extension(self.root, self.context.manifest, science=True)
         with e.lease(controller.directory):
             identity = controller.identity()
+            limits = self.capacity.limits(fresh=True)
             queue = controller.slurm.queue(controller.user)
             controller.refresh(queue)
             attempts = controller.attempts()
@@ -351,10 +410,11 @@ class Pool:
                 raise RuntimeError("Unresolved or failed submission; no automatic retry")
             ready = [key for key in controller.ready_tasks() if e.TASKS[key]["kind"] == kind]
             usage = e.teacher_usage(queue, attempts, controller.user)
-            if not ready or usage["submitted"] >= e.SUBMIT_LIMIT:
+            room = self.capacity.headroom(usage, limits)
+            if not ready or room["submitted"] < 1 or room["gpus"] < 0:
                 return None
             count = (
-                min(MAX_TASKS, e.GPU_LIMIT - usage["gpus"], len(ready))
+                min(limits["max_tasks_per_job"], room["gpus"], len(ready))
                 if kind in {"train", "eval"}
                 else 0
             )
@@ -373,6 +433,7 @@ class Pool:
                     at=e.now(),
                     jobs=queue,
                     teacher_usage=usage,
+                    capacity=limits,
                 ),
                 exclusive=True,
             )
@@ -402,7 +463,10 @@ class Pool:
                 pool_operation_identity_path=str(self.identity_path),
                 pool_operation_identity_sha256=self.identity_sha256,
                 pool_authorization_sha256=binding["authorization_sha256"],
-                max_tasks_per_job=MAX_TASKS,
+                max_tasks_per_job=limits["max_tasks_per_job"],
+                capacity_limits={key: limits[key] for key in LIMIT_KEYS},
+                capacity_snapshot_path=limits["capacity_snapshot_path"],
+                capacity_snapshot_sha256=limits["capacity_snapshot_sha256"],
                 job_entry_command=self.command("job", key, controller.python),
                 worker_entry_commands={
                     t: self.command("worker", t, controller.python) for t in selected
@@ -475,6 +539,80 @@ class Pool:
         if self.pooled(intent):
             raise RuntimeError("HANDOFF_REQUIRED: preserve every pooled task before any recovery")
         return self.original_prepare_resume(controller, previous_key, attempts, queue, verifier)
+
+    def release(self, controller, state, intent):
+        """Keep frozen allocation/release checks, using the real scheduler policy."""
+        e = self.extension
+        if intent.get("kind") not in e.SCIENCE:
+            return self.original_release(controller, state, intent)
+        self.verify_intent(self.root, intent)
+        directory = controller.directory / "jobs" / state["key"]
+        if (directory / "RELEASE_INTENT.json").exists():
+            raise RuntimeError("Release already attempted; no automatic retry")
+        if controller.identity() != intent["run_identity_sha256"] or (
+            _sha(intent["script"]) != intent["script_sha256"]
+        ):
+            raise PermissionError("Submission source identity changed")
+        e.runtime_resume_receipt(self.root, intent)
+        fields = controller.slurm.show(state["job_id"])
+        e.verify_allocation(
+            fields, dict(intent, job_id=state["job_id"]), controller.user, held=True
+        )
+        actual_script = controller.slurm.batch_script(state["job_id"])
+        if hashlib.sha256(actual_script.encode()).hexdigest() != intent["script_sha256"]:
+            raise PermissionError("Slurm stored batch script differs")
+        attempts = controller.attempts()
+        capacity = self.capacity.limits(fresh=True)
+        release_queue = controller.slurm.queue(controller.user)
+        usage = e.teacher_usage(release_queue, attempts, controller.user)
+        e.save_json(
+            directory / "QUEUE_BEFORE_RELEASE.json",
+            dict(
+                at=e.now(),
+                jobs=release_queue,
+                teacher_usage=usage,
+                capacity=capacity,
+            ),
+            exclusive=True,
+        )
+        room = self.capacity.headroom(usage, capacity)
+        if (
+            room["gpus"] < 0
+            or room["submitted"] < 0
+            or intent["gpu_count"] > capacity["max_tasks_per_job"]
+        ):
+            raise PermissionError("Actual teacher QoS capacity exceeded; allocation stays held")
+        e.save_json(
+            directory / "ALLOCATION_VERIFIED.json",
+            dict(
+                job_id=state["job_id"],
+                fields=fields,
+                script_sha256=intent["script_sha256"],
+            ),
+            exclusive=True,
+        )
+        e.save_json(
+            directory / "RELEASE_INTENT.json",
+            dict(job_id=state["job_id"], at=e.now()),
+            exclusive=True,
+        )
+        state["status"] = "RELEASE_UNKNOWN"
+        e.save_json(directory / "STATE.json", state)
+        result = controller.slurm.run(["scontrol", "release", state["job_id"]])
+        e.save_json(
+            directory / "RELEASE.json",
+            dict(
+                job_id=state["job_id"],
+                returncode=result.returncode,
+                stdout=result.stdout,
+                stderr=result.stderr,
+                at=e.now(),
+            ),
+            exclusive=True,
+        )
+        if result.returncode == 0:
+            state["status"] = "SUBMITTED"
+        e.save_json(directory / "STATE.json", state)
 
     def verify_job(self, controller, state):
         e = self.extension
@@ -746,7 +884,7 @@ class Pool:
                 signal.signal(signum, previous)
 
 
-def install(value, extension):
+def install(value, extension, capacity=None):
     """Add operational methods while retaining the exact native class object."""
     cls = extension._context(value["root"]).controller
     previous = getattr(cls, _OWNER, None)
@@ -757,7 +895,7 @@ def install(value, extension):
             raise PermissionError("Another task pool operation is already installed")
         previous.check()
         return previous
-    pool = Pool(value, extension)
+    pool = Pool(value, extension, capacity)
 
     def submit(controller, kind, *, resume_key=None, resume_verifier=None):
         return pool.submit(controller, kind, resume_key=resume_key, resume_verifier=resume_verifier)
@@ -765,10 +903,14 @@ def install(value, extension):
     def verify_job(controller, state):
         return pool.verify_job(controller, state)
 
+    def release(controller, state, intent):
+        return pool.release(controller, state, intent)
+
     def prepare_resume(controller, previous_key, attempts, queue, verifier):
         return pool.prepare_resume(controller, previous_key, attempts, queue, verifier)
 
     cls.submit, cls.verify_job, cls.prepare_resume = submit, verify_job, prepare_resume
+    cls.release = release
     extension._verify_intent = pool.verify_intent
     extension.teacher_usage = pool.teacher_usage
     pool.context.api.orchestration.teacher_usage = pool.teacher_usage
