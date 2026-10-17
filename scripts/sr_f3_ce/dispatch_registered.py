@@ -36,6 +36,7 @@ HELPERS = (
     "finalize_external_types.py",
     "build_delivery.py",
     "reconcile_submissions.py",
+    "dispatch_efficiency.py",
 )
 TYPED_COMMIT = "4146e156ffa9a476b360daeb67503703faca138f"
 TYPED_SCRIPT_SHA = "1a75df6bf5fa1c0ef22a23ee7fd766a8e22f5a1c6c1fe7d579c4ab6135106aaf"
@@ -234,7 +235,88 @@ def load_repair_source(operation, *, expected_sha=None):
     return module
 
 
-def register(root, python, user, operation_commit, extension_manifest, repair_authorization=None):
+def check_efficiency_authorization(root, path):
+    """Bind one explicitly requested operational replacement, never a science retry."""
+    root = Path(root).resolve(strict=True)
+    path = Path(path).resolve(strict=True)
+    if not path.is_relative_to(root / "operations"):
+        raise PermissionError("Efficiency authorization must belong to this run")
+    authorization = read(path)
+    if (
+        authorization.get("schema_version") != 1
+        or authorization.get("scope") != "SRF3CE_DISPATCH_EFFICIENCY"
+        or authorization.get("scientific_settings_changed") is not False
+        or authorization.get("new_scientific_tasks") != 0
+        or not authorization.get("user_request")
+        or authorization.get("run_identity_sha256") != sha(root / "RUN_IDENTITY.json")
+        or authorization.get("execution_freeze_sha256") != sha(root / "EXECUTION_FREEZE.json")
+    ):
+        raise PermissionError("Efficiency authorization does not preserve this frozen run")
+    prior = authorization["predecessor"]
+    directory = root / "operations/dispatcher/attempts" / f"{prior['sequence']:04d}"
+    old_identity = bounded(root, prior["identity_path"])
+    if sha(old_identity) != prior["identity_sha256"] or read(old_identity).get("root") != str(root):
+        raise PermissionError("Efficiency predecessor operation differs")
+    intent, state = read(directory / "INTENT.json"), read(directory / "STATE.json")
+    if (
+        intent.get("operation_identity_sha256") != prior["identity_sha256"]
+        or state.get("job_id") != prior["job_id"]
+        or state.get("status") != "SUBMITTED"
+        or state.get("intent_sha256") != sha(directory / "INTENT.json")
+        or prior.get("intent_sha256") != sha(directory / "INTENT.json")
+        or prior.get("state_sha256") != sha(directory / "STATE.json")
+    ):
+        raise PermissionError("Efficiency predecessor submission differs")
+    end = directory / "END.json"
+    if prior.get("end_sha256") != (sha(end) if end.exists() else None):
+        raise PermissionError("Efficiency predecessor END history differs")
+    transition = bounded(root, authorization["transition_path"])
+    if sha(transition) != authorization["transition_sha256"]:
+        raise PermissionError("Efficiency transition record differs")
+    receipt = read(transition)
+    if (
+        receipt.get("status") != "OPERATOR_HANDOFF_CANCELLED"
+        or receipt.get("job_id") != prior["job_id"]
+        or receipt.get("orchestration_lease_held") is not True
+        or receipt.get("queue_absent") is not True
+        or receipt.get("cancel_returncode") != 0
+        or receipt.get("terminal") != authorization.get("terminal")
+        or authorization["terminal"].get("state") != "CANCELLED"
+        or authorization["terminal"].get("job_id") != prior["job_id"]
+    ):
+        raise PermissionError("Efficiency transition is not a fenced terminal handoff")
+    return dict(schema_version=1, authorization_path=str(path), authorization_sha256=sha(path))
+
+
+def verify_efficiency_predecessor(value, api, prior, intent, state, queue):
+    bound = value["dispatch_efficiency"]
+    root = Path(value["root"])
+    if check_efficiency_authorization(root, bound["authorization_path"]) != bound:
+        raise PermissionError("Efficiency authorization changed")
+    authorization = read(bound["authorization_path"])
+    predecessor = authorization["predecessor"]
+    if (
+        prior.name != f"{predecessor['sequence']:04d}"
+        or state.get("job_id") != predecessor["job_id"]
+        or state.get("job_id") in queue
+        or intent.get("operation_identity_sha256") != predecessor["identity_sha256"]
+    ):
+        raise PermissionError("Only the explicitly retired dispatcher may be replaced")
+    terminal = api.slurm.terminal(state["job_id"])
+    if terminal != authorization["terminal"]:
+        raise PermissionError("Retired dispatcher live accounting differs")
+    return terminal
+
+
+def register(
+    root,
+    python,
+    user,
+    operation_commit,
+    extension_manifest,
+    repair_authorization=None,
+    efficiency_authorization=None,
+):
     root, script = Path(root).resolve(strict=True), Path(__file__).resolve(strict=True)
     if not re.fullmatch(r"[a-f0-9]{40}", operation_commit) or (
         script.parent != root / "operations" / operation_commit
@@ -303,6 +385,10 @@ def register(root, python, user, operation_commit, extension_manifest, repair_au
             expected_sha=read(sources_path)["files"]["reconcile_submissions.py"],
         )
         value["submission_repair"] = module.check_authorization(root, repair_authorization)
+    if efficiency_authorization is not None:
+        value["dispatch_efficiency"] = check_efficiency_authorization(
+            root, efficiency_authorization
+        )
     path = script.parent / "OPERATION_IDENTITY.json"
     save(path, value, immutable=True)
     return path
@@ -389,6 +475,11 @@ def identity(path):
             != value["submission_repair"]
         ):
             raise PermissionError("Operational repair authorization changed")
+    if "dispatch_efficiency" in value and (
+        check_efficiency_authorization(root, value["dispatch_efficiency"]["authorization_path"])
+        != value["dispatch_efficiency"]
+    ):
+        raise PermissionError("Efficiency authorization changed")
     return value
 
 
@@ -438,6 +529,17 @@ def load_science(value):
         module = load_repair_source(operation, expected_sha=source)
         io = SimpleNamespace(read=read, save=save, sha=sha, state_rows=state_rows)
         api.repair = module.Repair(value, api, io)
+    if "dispatch_efficiency" in value:
+        operation = Path(value["identity_path"]).parent
+        path = operation / "dispatch_efficiency.py"
+        expected = read(operation / "OPERATION_SOURCES.json")["files"][path.name]
+        body = path.read_bytes()
+        if hashlib.sha256(body).hexdigest() != expected:
+            raise PermissionError("Efficiency source changed before import")
+        spec = importlib.util.spec_from_file_location("srf3ce_efficiency_" + expected, path)
+        module = importlib.util.module_from_spec(spec)
+        exec(compile(body, str(path), "exec"), module.__dict__)
+        api.efficiency = module.Efficiency(value, api, SimpleNamespace(read=read, sha=sha))
     return api
 
 
@@ -792,11 +894,12 @@ class Driver:
         rows = state_rows(self.root)
         states = repair.effective_states(rows) if repair is not None else [s for _, s in rows]
         queue = self.api.slurm.queue(self.value["user"])
+        observed_at = time.time()
         usage = self.api.orchestration.teacher_usage(queue, states, self.value["user"])
         if usage["gpus"] > 5 or usage["submitted"] > 5:
             raise PermissionError("Actual teacher capacity exceeds the registered limit")
         known = []
-        for _intent, state in rows:
+        for intent, state in rows:
             job = state.get("job_id")
             terminal = None
             if job and job not in queue:
@@ -810,6 +913,9 @@ class Driver:
                 dict(
                     key=state["key"],
                     job_id=job,
+                    status=state["status"],
+                    kind=intent["kind"],
+                    task_ids=intent.get("task_ids", []),
                     terminal=terminal,
                     unknown=state["status"]
                     if state["status"] in self.api.orchestration.UNKNOWN
@@ -822,8 +928,136 @@ class Driver:
             jobs=known,
             typed_publication_sha256=sha(typed_path) if typed_path.exists() else None,
         )
-        save(self.directory / "QUEUE_SNAPSHOT.json", dict(snapshot, queue=queue, at=time.time()))
+        save(
+            self.directory / "QUEUE_SNAPSHOT.json",
+            dict(snapshot, queue=queue, at=time.time(), queue_observed_at=observed_at),
+        )
         return snapshot
+
+    def phase(self, name, **details):
+        receipt = dict(phase=name, at=time.time(), **details)
+        save(self.directory / "phases" / f"{time.time_ns()}.json", receipt, immutable=True)
+        save(self.directory / "PHASE.json", receipt)
+
+    def candidate_kind(self, snapshot):
+        """Cheap scheduling hint only; the original submit() owns all task gates."""
+        claimed = {task for row in snapshot["jobs"] for task in row["task_ids"]}
+        done = {
+            task
+            for row in snapshot["jobs"]
+            if row["status"] == "COMPLETE"
+            for task in row["task_ids"]
+        }
+        tasks = self.api.orchestration.TASKS
+        engines = {key for key, row in tasks.items() if row["kind"] == "engine"}
+        trains = {key for key, row in tasks.items() if row["kind"] == "train"}
+        evaluations = {key for key, row in tasks.items() if row["kind"] == "eval"}
+        for key, task in tasks.items():
+            if key in claimed:
+                continue
+            kind = task["kind"]
+            if kind == "train" and engines <= done and "p0" in done:
+                return kind
+            if kind == "eval" and engines <= done and trains <= done:
+                return kind
+            if kind == "release" and engines <= done and trains <= done and evaluations <= done:
+                return kind
+        return None
+
+    @staticmethod
+    def has_capacity(snapshot, kind):
+        usage = snapshot["teacher_usage"]
+        return usage["submitted"] < 5 and (kind == "release" or usage["gpus"] < 5)
+
+    def urgent_capacity(self, snapshot):
+        kind = self.candidate_kind(snapshot)
+        if kind is None:
+            # A positively refused claim remains claimed until its registered repair succeeds.
+            kind = next((row["kind"] for row in snapshot["jobs"] if row["unknown"]), None)
+        return kind is not None and self.has_capacity(snapshot, kind)
+
+    def fast_science(self, snapshot=None):
+        """Observe capacity first; avoid status/tick's repeated full history scans."""
+        self.api.efficiency.check()
+        snapshot = self.snapshot() if snapshot is None else snapshot
+        repair = getattr(self.api, "repair", None)
+        submitted = False
+        for _ in range(len(self.api.orchestration.TASKS) + 1):
+            rows = state_rows(self.root)
+            states = [state for _, state in rows]
+            blockers = self.api.controller.blocking_attempts(states)
+            if blockers:
+                if repair is not None and repair.known_rejections_only(states):
+                    by_key = {state["key"]: intent for intent, state in rows}
+                    kind = by_key[blockers[0]["key"]]["kind"]
+                    if not self.has_capacity(snapshot, kind):
+                        return "WAIT_CAPACITY_FOR_REJECTED_SUBMISSION"
+                    self.phase("RETRY_EXPLICIT_REJECTION", kind=kind)
+                    waiting = repair.retry_pending()
+                    if waiting:
+                        return waiting
+                    snapshot = self.snapshot()
+                    continue
+                self.phase("VERIFY_RECOVERY")
+                status = self.api.controller.status()
+                if status["blocked"]:
+                    waiting = self.recover(status)
+                    if waiting:
+                        return waiting
+                snapshot = self.snapshot()
+                continue
+            # A newly terminal allocation must use the original verifier/recovery.
+            if any(
+                row["terminal"] and row["status"] not in {"COMPLETE", "FAILED"}
+                for row in snapshot["jobs"]
+            ):
+                self.phase("VERIFY_TERMINAL")
+                status = self.api.controller.status()
+                if status["blocked"]:
+                    waiting = self.recover(status)
+                    if waiting:
+                        return waiting
+                snapshot = self.snapshot()
+                continue
+            kind = self.candidate_kind(snapshot)
+            if kind is None:
+                done = {
+                    task
+                    for row in snapshot["jobs"]
+                    if row["status"] == "COMPLETE"
+                    for task in row["task_ids"]
+                }
+                if set(self.api.orchestration.TASKS) <= done:
+                    self.phase("VERIFY_FINAL_DELIVERY")
+                    status = self.api.controller.status()
+                    if not status["all_complete"] or status["blocked"]:
+                        raise RuntimeError("Final scientific verification is incomplete")
+                    return self.deliver()
+                return "DISPATCHING_FIXED_TASKS" if submitted else "WAIT_FIXED_TASKS"
+            if not self.has_capacity(snapshot, kind):
+                return "DISPATCHING_FIXED_TASKS" if submitted else "WAIT_CAPACITY"
+            self.require_typed()
+            self.phase("SUBMIT_FIXED_TASK", kind=kind, teacher_usage=snapshot["teacher_usage"])
+            began = time.monotonic()
+            # This is the original frozen submit, including ready/claim/complete
+            # verification. GuardedSlurm re-reads quota immediately before sbatch/release.
+            result = self.api.controller.submit(kind)
+            self.phase(
+                "SUBMIT_RETURNED", kind=kind, seconds=time.monotonic() - began, result=result
+            )
+            if result is None:
+                # A slot can change during verification. Do not acknowledge a
+                # headroom snapshot forever: poll() will retry even if unchanged.
+                return "WAIT_CAPACITY_RECHECK"
+            if result.get("status") != "SUBMITTED":
+                if repair is not None and repair.known_rejections_only(
+                    [state for _, state in state_rows(self.root)]
+                ):
+                    return "WAIT_CAPACITY_FOR_REJECTED_SUBMISSION"
+                raise RuntimeError("Submission outcome is unresolved; no duplicate submission")
+            submitted = True
+            snapshot = self.snapshot()
+        raise RuntimeError("Dispatcher made no stable progress through the fixed task matrix")
 
     def recover(self, status):
         repair = getattr(self.api, "repair", None)
@@ -891,6 +1125,11 @@ class Driver:
             raise PermissionError("Completed P0 live accounting is missing or differs")
 
     def act(self):
+        if (
+            getattr(self.api, "efficiency", None) is not None
+            and (self.root / "EXECUTION_FREEZE.json").exists()
+        ):
+            return self.fast_science()
         repair = getattr(self.api, "repair", None)
         if repair is not None:
             waiting = repair.retry_pending()
@@ -1104,9 +1343,13 @@ class Driver:
     def poll(self):
         snapshot = self.snapshot()
         signature = digest(snapshot)
-        if signature == self.signature:
+        fast = (
+            getattr(self.api, "efficiency", None) is not None
+            and (self.root / "EXECUTION_FREEZE.json").exists()
+        )
+        if signature == self.signature and not (fast and self.urgent_capacity(snapshot)):
             return "UNCHANGED"
-        result = self.act()
+        result = self.fast_science(snapshot) if fast else self.act()
         # Keep the observed pre-action state: a terminal transition during a slow
         # verification must trigger the next pass, not be silently acknowledged.
         self.signature = signature
@@ -1148,6 +1391,13 @@ def submit_driver(value, api, sequence, previous=None):
             repair = getattr(api, "repair", None)
             repaired_terminal = None
             if (
+                old_intent.get("operation_identity_sha256") != sha(value["identity_path"])
+                and "dispatch_efficiency" in value
+            ):
+                repaired_terminal = verify_efficiency_predecessor(
+                    value, api, prior, old_intent, old_state, queue
+                )
+            elif (
                 old_intent.get("operation_identity_sha256") != sha(value["identity_path"])
                 and repair is not None
             ):
@@ -1331,13 +1581,22 @@ def run(value, api, sequence):
                 dict(job_id=os.environ["SLURM_JOB_ID"], at=time.time()),
                 immutable=True,
             )
-            api.protocol.verify_run(Path(value["root"]))
+            efficiency = getattr(api, "efficiency", None)
+            if efficiency is not None:
+                driver.phase("STARTUP_VALIDATION")
+                save(directory / "EFFICIENCY_STARTED.json", efficiency.start(), immutable=True)
+                driver.phase("STARTUP_READY")
+            else:
+                api.protocol.verify_run(Path(value["root"]))
             while True:
                 if (Path(value["root"]) / "STOP").exists():
                     raise PermissionError("SR-F3-CE STOP exists")
-                current = identity(value["identity_path"])
-                if any(current.get(k) != v for k, v in value.items() if k != "identity_path"):
-                    raise PermissionError("Operation identity changed while running")
+                if efficiency is not None:
+                    efficiency.check()
+                else:
+                    current = identity(value["identity_path"])
+                    if any(current.get(k) != v for k, v in value.items() if k != "identity_path"):
+                        raise PermissionError("Operation identity changed while running")
                 fields = runtime_allocation(value, api, directory)
                 remaining = duration(fields["TimeLimit"]) - duration(fields["RunTime"])
                 if remaining <= value["handoff_margin_seconds"]:
@@ -1372,6 +1631,7 @@ def main():
     parser.add_argument("--operation-commit")
     parser.add_argument("--extension-manifest", type=Path)
     parser.add_argument("--repair-authorization", type=Path)
+    parser.add_argument("--efficiency-authorization", type=Path)
     parser.add_argument("--sequence", type=int)
     parser.add_argument("--previous", type=int)
     args = parser.parse_args()
@@ -1390,6 +1650,7 @@ def main():
                 args.operation_commit,
                 args.extension_manifest,
                 args.repair_authorization,
+                args.efficiency_authorization,
             )
         )
     else:

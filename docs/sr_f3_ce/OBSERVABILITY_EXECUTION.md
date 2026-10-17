@@ -86,3 +86,30 @@ TIMEOUT 仅沿原单 GPU science 精确恢复接口，通过原 CPU checkpoint/c
 2026-10-17 的明确用户授权及完整运维修复规则见 [PROTOCOL_REVISION.md](PROTOCOL_REVISION.md#2026-10-17-已授权的接续器与账本修复)。修复不替换本文件规定的 frozen InstrumentedController、job/worker 命令或观测方法。只有未分配的明确拒绝可沿原 INTENT/script/claim 在独立运维日志中重提；一旦得到真实 job_id，继续走原 held → allocation/script核验 → release → worker/observer → 完成回执链。已完成任务只做完整验证后的账本结清，既有失败或OOM不删除。
 
 紧邻 sbatch/release 的新容量守卫位于单独运维 Slurm 适配器。重试前的源码、回执及原生恢复验证仍使用冻结代码；它们结束后再取队列，避免哈希耗时使容量判断过期。队列竞态导致的明确QoS拒绝追加原件并等待容量变化；结果未知则停止补交。服务器SOURCE_MANIFEST、AMENDMENT和科学冻结身份不因这次运维修订改变。
+# 2026-10-17 接续器轮询开销修订
+
+用户授权查明长期不补交的原因、修复并利用空闲额度，同时明确要求省去多余哈希与身份检查。
+本次只新增独立的 CPU 运维版本；冻结科学源码、原观测扩展、训练设置和历史回执不变。
+
+复现原因是 `Driver.act → status → tick → status/submit/status` 反复扫描完整历史，
+而 `attempts` 对每项作业反复调用完整 `identity`。原身份验证还会重放历史协议验证。
+在满额的真实 Controller CPU fixture 中，一轮触发 3 次 status、96 次 identity、
+100 次 protocol.verify_run；其队列在耗时检查前读取，空位出现后仍可能按旧满额状态返回。
+
+新的 `dispatch_efficiency.py` 只在一个已冻结的 CPU Controller 实例上工作：
+
+- 每次 CPU 分配启动时执行原完整门禁；之后身份调用仅检查小型冻结配置及授权文件、路径和 STOP。
+  不再在日常轮询中重放历史协议或扫描全部科学负载；不替换 worker 或全局 Controller 类。
+- 先获取当前队列、有效预留与轻量任务账本。满额直接等待，有空位才调用原 `submit(kind)`。
+  固定矩阵提示仅用于减少无效工作，任务选择、认领、完整依赖核验仍由原 submit 执行。
+- 原 submit 因验证期间的旧队列返回 None 后，只要仍有可用额度，下轮即使签名相同也再次检查。
+  `GuardedSlurm` 仍在真正 sbatch/release 前重读队列；未知提交继续占位，明确未分配拒绝才可安全重提。
+- 新完成任务仍通过原 verifier 后结账，恢复和最终交付仍使用完整门禁。没有已完成科学结果缓存，
+  不将文件数当作优化更新数。CPU release 只要求提交名额，不要求空闲 GPU。
+- `EFFICIENCY_STARTED.json` 记录启动时耗时，`PHASE.json` 与独立 phase 回执标明当前慢操作，
+  `QUEUE_SNAPSHOT.json.queue_observed_at` 区分读队列时间和写回执时间。
+
+更换正在运行的 CPU 接续器时，必须先取得原 orchestration 租锁，确认不存在未确认的提交/放行，
+只结束明确指定的旧 CPU 作业，保留全部原件并核实队列消失与终态 accounting。
+新的 `EFFICIENCY_AUTHORIZATION.json` 只允许该精确 CANCELLED 前驱交接，不授权科学作业重试。
+旧 CPU 没有 END 时保持缺失，不补造成功回执。旧失败和旧运维部署仍完整保留。
