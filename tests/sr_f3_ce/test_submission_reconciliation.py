@@ -1190,3 +1190,159 @@ def test_pool_separates_group_gpu_usage_from_a_live_per_user_limit(pooled_repair
     assert boundary["scheduler_capacity"]["gpu_per_user_limit"] == 3
     assert all(env.raw.rows[key] == value for key, value in unrelated.items())
     assert len(env.transport.submitted) == 1
+
+
+@pytest.fixture
+def ordinary_dispatcher_guard(repair_env):
+    """Isolate guarded CPU writes; no science configuration or worker is changed."""
+    env = repair_env
+    env.value["dispatcher_qos"] = "rose"
+    env.repair.value["dispatcher_qos"] = "rose"
+    directory = env.helper.attempts_root(env.value) / "0002"
+    directory.mkdir()
+    script = directory / "run.sbatch"
+    script.write_text("#!/bin/bash\nexit 0\n")
+    intent = copy.deepcopy(env.helper.read(env.prior / "INTENT.json"))
+    intent.update(
+        qos="rose",
+        script=str(script),
+        script_sha256=env.helper.sha(script),
+        job_name="SRF3CE-DISPATCH-N0002-LH",
+        comment="ordinary-dispatcher",
+        operation_identity_sha256=env.helper.sha(env.value["identity_path"]),
+    )
+    replacements = {
+        "--qos=": "rose",
+        "--job-name=": intent["job_name"],
+        "--comment=": intent["comment"],
+    }
+    intent["sbatch"] = [
+        next(
+            (prefix + value for prefix, value in replacements.items() if item.startswith(prefix)),
+            item,
+        )
+        for item in intent["sbatch"][:-1]
+    ] + [str(script)]
+    env.helper.save(directory / "INTENT.json", intent)
+    scheduler = SimpleNamespace(limit=5, race=None)
+
+    def limits(qos, *, fresh):
+        assert qos == "rose" and fresh is True
+        env.transport.events.append("ordinary_capacity")
+        if scheduler.race is not None:
+            scheduler.race()
+        return dict(qos=qos, submitted_limit=scheduler.limit)
+
+    def headroom(queue, limits):
+        usage = sum(
+            row.get("QOS") == limits["qos"] and row.get("UserId", "").split("(")[0] == "alice"
+            for row in queue.values()
+        )
+        return dict(submitted=limits["submitted_limit"] - usage, usage=dict(submitted=usage))
+
+    env.api.capacity = SimpleNamespace(dispatcher_limits=limits, dispatcher_headroom=headroom)
+    env.cpu_directory, env.cpu_intent, env.cpu_scheduler = directory, intent, scheduler
+    return env
+
+
+def ordinary_queue(env, count):
+    for index in range(count):
+        job = str(8000 + index)
+        env.raw.rows[job] = dict(
+            JobId=job,
+            QOS="rose",
+            UserId="alice(1)",
+            JobState="RUNNING" if index == 0 else "PENDING",
+            ReqTRES="cpu=4,mem=12G",
+            JobName="other-" + job,
+            Comment=job,
+        )
+
+
+def test_ordinary_dispatcher_uses_own_slot_with_teacher_full(ordinary_dispatcher_guard):
+    env = ordinary_dispatcher_guard
+    unrelated_queue(env, 5)
+    ordinary_queue(env, 4)
+    response = env.repair.slurm.run(env.cpu_intent["sbatch"])
+    assert response.returncode == 0
+    job = response.stdout.strip()
+    assert env.raw.rows[job]["QOS"] == "rose"
+    env.repair.slurm.run(["scontrol", "release", job])
+    assert env.raw.rows[job]["JobState"] == "RUNNING"
+    for name in ("QUEUE_IMMEDIATELY_BEFORE_SUBMIT.json", "QUEUE_IMMEDIATELY_BEFORE_RELEASE.json"):
+        receipt = env.helper.read(env.cpu_directory / name)
+        assert receipt["dispatcher_capacity"]["qos"] == "rose"
+        assert "teacher_usage" not in receipt
+    assert len(env.transport.submitted) == 1
+    with pytest.raises(PermissionError, match="already has a live allocation"):
+        env.repair.slurm.run(env.cpu_intent["sbatch"])
+    assert len(env.transport.submitted) == 1
+
+
+def test_ordinary_dispatcher_capacity_race_does_not_invoke_sbatch(ordinary_dispatcher_guard):
+    env = ordinary_dispatcher_guard
+    ordinary_queue(env, 4)
+    env.cpu_scheduler.race = lambda: ordinary_queue(env, 5)
+    response = env.repair.slurm.run(env.cpu_intent["sbatch"])
+    assert response.returncode == 75 and response.stderr == env.module.LOCAL_DEFERRED
+    assert not env.transport.submitted
+    receipt = env.helper.read(env.cpu_directory / "QUEUE_IMMEDIATELY_BEFORE_SUBMIT.json")
+    assert receipt["submitted_after_candidate"] == -1
+
+
+def test_ordinary_dispatcher_release_rechecks_own_slot(ordinary_dispatcher_guard):
+    env = ordinary_dispatcher_guard
+    ordinary_queue(env, 4)
+    job = env.repair.slurm.run(env.cpu_intent["sbatch"]).stdout.strip()
+    env.cpu_scheduler.limit = 4
+    with pytest.raises(PermissionError, match="Fresh CPU release capacity exceeded"):
+        env.repair.slurm.run(["scontrol", "release", job])
+    assert env.raw.rows[job]["Reason"] == "JobHeldUser"
+    assert not (env.cpu_directory / "QUEUE_IMMEDIATELY_BEFORE_RELEASE.json").exists()
+    assert len(env.transport.submitted) == 1
+
+
+@pytest.mark.parametrize("field,value", [("qos", orchestration.TEACHER_QOS), ("gpu_count", 1)])
+def test_ordinary_dispatcher_guard_rejects_changed_request(ordinary_dispatcher_guard, field, value):
+    env = ordinary_dispatcher_guard
+    intent = copy.deepcopy(env.cpu_intent)
+    intent[field] = value
+    env.helper.save(env.cpu_directory / "INTENT.json", intent)
+    with pytest.raises(PermissionError, match="CPU dispatcher QoS or GPU request differs"):
+        env.repair.slurm.run(intent["sbatch"])
+    assert not env.transport.submitted
+
+
+def test_dispatcher_qos_does_not_change_science_submission_or_release(
+    pooled_repair_env, monkeypatch
+):
+    env = pooled_repair_env
+    env.value["dispatcher_qos"] = "rose"
+    env.repair.value["dispatcher_qos"] = "rose"
+
+    def unexpected(*args, **kwargs):
+        raise AssertionError("Science path must not request ordinary dispatcher capacity")
+
+    monkeypatch.setattr(env.api.capacity, "dispatcher_limits", unexpected)
+    state = env.api.controller.submit("train")
+    assert state["status"] == "SUBMITTED"
+    assert env.raw.rows[state["job_id"]]["QOS"] == env.helper.QOS
+    assert env.raw.rows[state["job_id"]]["JobState"] == "RUNNING"
+    directory = env.root / "orchestration/jobs" / state["key"]
+    intent = env.helper.read(directory / "INTENT.json")
+    assert intent["qos"] == env.helper.QOS
+    assert (
+        env.helper.read(journal(env, state["key"]) / "QUEUE_IMMEDIATELY_BEFORE_SUBMIT.json")[
+            "teacher_usage"
+        ]["gpus"]
+        > 0
+    )
+
+
+def test_ordinary_release_rejects_actual_wrong_qos(ordinary_dispatcher_guard):
+    env = ordinary_dispatcher_guard
+    job = env.repair.slurm.run(env.cpu_intent["sbatch"]).stdout.strip()
+    env.raw.rows[job]["QOS"] = env.helper.QOS
+    with pytest.raises(PermissionError, match="Held CPU dispatcher allocation differs"):
+        env.repair.slurm.run(["scontrol", "release", job])
+    assert env.raw.rows[job]["Reason"] == "JobHeldUser"

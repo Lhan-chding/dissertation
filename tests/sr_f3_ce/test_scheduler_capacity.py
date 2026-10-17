@@ -524,3 +524,194 @@ def test_readonly_snapshot_verification_does_not_modify_intent(capacity_env):
     original = copy.deepcopy(intent)
     env.instance.verify_snapshot(intent)
     assert intent == original
+
+
+def ordinary_dispatcher(env, *, qos_changes=None, assoc_changes=None):
+    qos_values = dict(Name="rose", MaxJobsPU="2")
+    qos_values.update(qos_changes or {})
+    env.scheduler.qos = qos_text(**qos_values)
+    changes = dict(QOS="rose," + QOS)
+    changes.update(assoc_changes or {})
+    env.scheduler.assoc = table(
+        (*ASSOC_FIELDS, "QOS"),
+        [
+            dict(
+                Cluster="eee",
+                Account="rose",
+                User="alice",
+                Partition="",
+                **changes,
+            )
+        ],
+    )
+    return env.instance.dispatcher_limits("rose")
+
+
+def cpu_queue(count, *, qos="rose", user="alice", account="rose", partition="cluster02"):
+    return {
+        str(i): dict(
+            UserId=user + "(1001)",
+            QOS=qos,
+            Account=account,
+            Partition=partition,
+            JobState="PENDING",
+            Gres="(null)",
+        )
+        for i in range(count)
+    }
+
+
+def test_dispatcher_ordinary_qos_independent_of_full_teacher_gpu_and_slots(capacity_env):
+    env = capacity_env
+    limits = ordinary_dispatcher(env)
+    queue = cpu_queue(5, qos=QOS)
+    for row in queue.values():
+        row["TresPerNode"] = "gres/gpu:pro6000:8"
+    room = env.instance.dispatcher_headroom(queue, limits)
+    assert room["submitted"] == 5
+    assert room["running_limits"]["user"] == 2
+    assert room["usage"]["association_submitted"] == [5]
+    assert not any(command[0][0] == "sinfo" for command in env.scheduler.commands)
+
+
+@pytest.mark.parametrize("count,expected", [(0, 5), (4, 1), (5, 0), (6, -1)])
+def test_dispatcher_submission_and_held_release_boundaries(capacity_env, count, expected):
+    limits = ordinary_dispatcher(capacity_env)
+    queue = cpu_queue(count)
+    for row in queue.values():
+        row["JobState"] = "PENDING"
+        row["Reason"] = "JobHeldUser"
+    assert capacity_env.instance.dispatcher_headroom(queue, limits)["submitted"] == expected
+    # sbatch is permitted only above zero; release includes its own held entry.
+    assert (expected > 0) == (count < 5)
+    assert (expected >= 0) == (count <= 5)
+
+
+def test_dispatcher_running_cap_does_not_forbid_queuing(capacity_env):
+    limits = ordinary_dispatcher(capacity_env)
+    queue = cpu_queue(2)
+    for row in queue.values():
+        row["JobState"] = "RUNNING"
+    assert capacity_env.instance.dispatcher_headroom(queue, limits)["submitted"] == 3
+
+
+def test_dispatcher_assoc_submission_counts_other_qos(capacity_env):
+    limits = ordinary_dispatcher(capacity_env, assoc_changes=dict(MaxSubmit="4"))
+    assert (
+        capacity_env.instance.dispatcher_headroom(cpu_queue(4, qos=QOS), limits)["submitted"] == 0
+    )
+
+
+def test_dispatcher_unknown_identity_and_state_conservatively_reserve(capacity_env):
+    limits = ordinary_dispatcher(capacity_env, assoc_changes=dict(MaxSubmit="3"))
+    queue = {"1": {}, "2": {"JobState": "UNKNOWN"}, "3": {"QOS": QOS}}
+    room = capacity_env.instance.dispatcher_headroom(queue, limits)
+    assert room["usage"]["qos_user_submitted"] == 2
+    assert room["usage"]["association_submitted"] == [3]
+    assert room["submitted"] == 0
+
+
+def test_dispatcher_group_limits_require_global_queue_and_count_other_users(capacity_env):
+    limits = ordinary_dispatcher(capacity_env, qos_changes=dict(GrpSubmit="2"))
+    queue = cpu_queue(2, user="bob")
+    with pytest.raises(PermissionError, match="complete queue"):
+        capacity_env.instance.dispatcher_headroom(queue, limits)
+    room = capacity_env.instance.dispatcher_headroom(queue, limits, queue_complete=True)
+    assert room["usage"]["qos_user_submitted"] == 0
+    assert room["submitted"] == 0
+
+
+def test_dispatcher_different_account_does_not_use_assoc_room(capacity_env):
+    limits = ordinary_dispatcher(capacity_env, assoc_changes=dict(MaxSubmit="1"))
+    room = capacity_env.instance.dispatcher_headroom(cpu_queue(3, qos=QOS, account="other"), limits)
+    assert room["submitted"] == 1
+
+
+def test_dispatcher_snapshots_are_fresh_immutable_and_preserve_raw(capacity_env):
+    limits = ordinary_dispatcher(capacity_env)
+    second = capacity_env.instance.dispatcher_limits("rose", fresh=False)
+    assert limits["capacity_snapshot_path"] != second["capacity_snapshot_path"]
+    assert len(capacity_env.scheduler.commands) == 4
+    record = json.loads(Path(limits["capacity_snapshot_path"]).read_text())
+    assert record["status"] == "PASS"
+    assert record["observations"][0]["stdout"] == capacity_env.scheduler.qos
+    assert record["observations"][1]["stdout"] == capacity_env.scheduler.assoc
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [dict(MaxSubmitPU="bad"), dict(MaxJobsPU="bad"), dict(Flags="Relative"), dict(GrpSubmit="bad")],
+)
+def test_dispatcher_malformed_fields_fail_closed_with_raw_evidence(capacity_env, changes):
+    with pytest.raises(PermissionError):
+        ordinary_dispatcher(capacity_env, qos_changes=changes)
+    paths = list((capacity_env.root / "operations/capacity/dispatcher_snapshots").glob("*.json"))
+    assert len(paths) == 1
+    record = json.loads(paths[0].read_text())
+    assert record["status"] == "FAILED"
+    assert record["observations"]
+
+
+@pytest.mark.parametrize(
+    "changes", [dict(QOS=QOS), dict(QOS="+rose"), dict(MaxSubmit="bad"), dict(MaxJobs="bad")]
+)
+def test_dispatcher_assoc_membership_and_limits_fail_closed(capacity_env, changes):
+    with pytest.raises(PermissionError):
+        ordinary_dispatcher(capacity_env, assoc_changes=changes)
+
+
+def test_dispatcher_unavailable_and_timeout_preserve_evidence(capacity_env):
+    env = capacity_env
+    env.scheduler.fail_at = 1
+    with pytest.raises(RuntimeError, match="unavailable"):
+        env.instance.dispatcher_limits()
+    env.scheduler.timeout_at = 2
+    with pytest.raises(subprocess.TimeoutExpired):
+        env.instance.dispatcher_limits()
+    records = [
+        json.loads(p.read_text())
+        for p in (env.root / "operations/capacity/dispatcher_snapshots").glob("*.json")
+    ]
+    assert len(records) == 2
+    assert all(record["status"] == "FAILED" for record in records)
+    assert any(record["observations"][0].get("timeout") for record in records)
+
+
+def test_dispatcher_unapproved_qos_and_malformed_queue_rejected(capacity_env):
+    with pytest.raises(PermissionError, match="Only ordinary rose"):
+        capacity_env.instance.dispatcher_limits(QOS)
+    limits = ordinary_dispatcher(capacity_env)
+    with pytest.raises(PermissionError, match="malformed"):
+        capacity_env.instance.dispatcher_headroom({"1": None}, limits)
+
+
+def test_dispatcher_fully_unbounded_submission_fails_explicitly_without_invented_cap(capacity_env):
+    limits = ordinary_dispatcher(capacity_env, qos_changes=dict(MaxSubmitPU=""))
+    with pytest.raises(PermissionError, match="no finite serializable bound"):
+        capacity_env.instance.dispatcher_headroom({}, limits)
+
+
+def test_dispatcher_missing_required_field_keeps_failure_evidence(capacity_env):
+    ordinary_dispatcher(capacity_env)
+    capacity_env.scheduler.assoc = table(
+        ASSOC_FIELDS,
+        [
+            dict(
+                Cluster="eee",
+                Account="rose",
+                User="alice",
+                Partition="",
+            )
+        ],
+    )
+    with pytest.raises(PermissionError, match="fields are missing"):
+        capacity_env.instance.dispatcher_limits()
+
+
+@pytest.mark.parametrize("unknown", ["UNKNOWN", "(null)", "N/A", None, ""])
+def test_dispatcher_unknown_identity_placeholders_reserve(capacity_env, unknown):
+    limits = ordinary_dispatcher(capacity_env, assoc_changes=dict(MaxSubmit="1"))
+    row = dict(UserId=unknown, QOS=unknown, Account=unknown, Partition=unknown)
+    room = capacity_env.instance.dispatcher_headroom({"123": row}, limits)
+    assert room["usage"]["qos_user_submitted"] == 1
+    assert room["submitted"] == 0

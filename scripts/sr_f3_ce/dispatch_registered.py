@@ -371,6 +371,7 @@ def register(
     repair_authorization=None,
     efficiency_authorization=None,
     pool_authorization=None,
+    dispatcher_qos=QOS,
 ):
     root, script = Path(root).resolve(strict=True), Path(__file__).resolve(strict=True)
     if not re.fullmatch(r"[a-f0-9]{40}", operation_commit) or (
@@ -453,6 +454,17 @@ def register(
         value.pop("gpu_limit")
         value.pop("submitted_limit")
         value["capacity_policy"] = "LIVE_SLURM_QOS_AND_ASSOCIATION"
+    if dispatcher_qos != QOS:
+        if (
+            dispatcher_qos != "rose"
+            or "task_pool" not in value
+            or "dispatch_efficiency" not in value
+        ):
+            raise PermissionError("Ordinary CPU QoS requires the bound operational handoff")
+        authorization = read(value["dispatch_efficiency"]["authorization_path"])
+        if authorization.get("dispatcher_qos") != dispatcher_qos:
+            raise PermissionError("CPU QoS change lacks explicit authorization")
+        value["dispatcher_qos"] = dispatcher_qos
     path = script.parent / "OPERATION_IDENTITY.json"
     save(path, value, immutable=True)
     return path
@@ -559,6 +571,18 @@ def identity(path):
             != value["task_pool"]
         ):
             raise PermissionError("Pooled operation authorization changed")
+    if "dispatcher_qos" in value:
+        if (
+            value["dispatcher_qos"] != "rose"
+            or "task_pool" not in value
+            or "dispatch_efficiency" not in value
+        ):
+            raise PermissionError("Unsupported dispatcher-only QoS")
+        if (
+            read(value["dispatch_efficiency"]["authorization_path"]).get("dispatcher_qos")
+            != value["dispatcher_qos"]
+        ):
+            raise PermissionError("Dispatcher QoS differs from its authorization")
     return value
 
 
@@ -936,7 +960,9 @@ def runtime_allocation(value, api, directory):
     intent, state = read(directory / "INTENT.json"), read(directory / "STATE.json")
     job = os.environ.get("SLURM_JOB_ID", "")
     if (
-        not job.isdigit()
+        intent.get("qos") != value.get("dispatcher_qos", QOS)
+        or intent.get("gpu_count") != 0
+        or not job.isdigit()
         or state.get("job_id") != job
         or state.get("status") != "SUBMITTED"
         or (
@@ -1511,6 +1537,20 @@ def attempts_root(value):
     return Path(value["root"]) / "operations/dispatcher/attempts"
 
 
+def dispatcher_limits(value, api):
+    if value.get("dispatcher_qos", QOS) == QOS:
+        return capacity_limits(value, api, fresh=True)
+    return api.capacity.dispatcher_limits(value["dispatcher_qos"])
+
+
+def dispatcher_headroom(value, api, queue, states, limits):
+    if value.get("dispatcher_qos", QOS) == QOS:
+        usage = api.orchestration.teacher_usage(queue, states, value["user"])
+        return usage, capacity_headroom(api, usage, limits)
+    room = api.capacity.dispatcher_headroom(queue, limits)
+    return room, dict(room, gpus=0)
+
+
 def submit_driver(value, api, sequence, previous=None):
     if (
         type(sequence) is not int
@@ -1564,7 +1604,11 @@ def submit_driver(value, api, sequence, previous=None):
                 raise RuntimeError("Predecessor is active or its submission is unknown")
             terminal = repaired_terminal or api.slurm.terminal(job)
             expected = dict(
-                job_id=job, user=value["user"], account="rose", qos=QOS, name=old_intent["job_name"]
+                job_id=job,
+                user=value["user"],
+                account="rose",
+                qos=old_intent["qos"],
+                name=old_intent["job_name"],
             )
             if (
                 not terminal
@@ -1594,13 +1638,12 @@ def submit_driver(value, api, sequence, previous=None):
         science_states = (
             repair.effective_states(rows) if repair is not None else [s for _, s in rows]
         )
-        limits = capacity_limits(value, api, fresh=True)
+        limits = dispatcher_limits(value, api)
         queue = api.slurm.queue(value["user"])
-        usage = api.orchestration.teacher_usage(queue, science_states, value["user"])
-        room = capacity_headroom(api, usage, limits)
+        usage, room = dispatcher_headroom(value, api, queue, science_states, limits)
         if room["gpus"] < 0 or room["submitted"] <= 0:
             raise RuntimeError(
-                "No teacher submission slot for a CPU dispatcher under live scheduler limits"
+                "No submission slot in the dispatcher QoS under live scheduler limits"
             )
         save(
             directory / "PRE_SUBMIT_CAPACITY.json",
@@ -1636,7 +1679,7 @@ def submit_driver(value, api, sequence, previous=None):
             cpus=4,
             memory_gib=12,
             account="rose",
-            qos=QOS,
+            qos=value.get("dispatcher_qos", QOS),
             partition="cluster02",
             cpu_node="cpu-2",
             job_name=f"SRF3CE-DISPATCH-N{sequence:04d}-LH",
@@ -1653,7 +1696,7 @@ def submit_driver(value, api, sequence, previous=None):
             "--open-mode=append",
             "--account=rose",
             "--partition=cluster02",
-            "--qos=" + QOS,
+            "--qos=" + intent["qos"],
             "--nodes=1",
             "--ntasks=1",
             "--cpus-per-task=4",
@@ -1690,12 +1733,11 @@ def submit_driver(value, api, sequence, previous=None):
             != intent["script_sha256"]
         ):
             raise PermissionError("Slurm stored dispatcher script differs")
-        limits = capacity_limits(value, api, fresh=True)
+        limits = dispatcher_limits(value, api)
         queue = api.slurm.queue(value["user"])
         rows = state_rows(Path(value["root"]))
         states = repair.effective_states(rows) if repair is not None else [s for _, s in rows]
-        usage = api.orchestration.teacher_usage(queue, states, value["user"])
-        room = capacity_headroom(api, usage, limits)
+        usage, room = dispatcher_headroom(value, api, queue, states, limits)
         if room["gpus"] < 0 or room["submitted"] < 0:
             raise PermissionError("CPU driver remains held because live scheduler capacity changed")
         save(
@@ -1800,6 +1842,7 @@ def main():
     parser.add_argument("--repair-authorization", type=Path)
     parser.add_argument("--efficiency-authorization", type=Path)
     parser.add_argument("--pool-authorization", type=Path)
+    parser.add_argument("--dispatcher-qos", choices=(QOS, "rose"), default=QOS)
     parser.add_argument("--sequence", type=int)
     parser.add_argument("--previous", type=int)
     args = parser.parse_args()
@@ -1820,6 +1863,7 @@ def main():
                 args.repair_authorization,
                 args.efficiency_authorization,
                 args.pool_authorization,
+                args.dispatcher_qos,
             )
         )
     else:

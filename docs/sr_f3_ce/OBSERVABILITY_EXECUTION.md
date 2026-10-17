@@ -134,3 +134,17 @@ builder 的 `--operation-identity` 显式绑定新运维目录，独立核验 he
 OPERATION_IDENTITY绑定 `LIVE_SLURM_QOS_AND_ASSOCIATION`，不记录人为固定GPU上限。
 每个新intent保留当次不可变容量快照；历史完成验证只读该快照，不因后来的额度下降改写历史。
 原CONFIG中的历史数值保持原件，运维适配覆盖提交、释放与旧单卡恢复入口的调度判断；核心科学常量不改。
+
+
+## CPU 接续器独立普通 QoS（2026-10-17）
+
+用户授权把 CPU 接续器迁出老师 QoS。独立 operation 的 `dispatcher_qos=rose`
+必须与本次 EFFICIENCY_AUTHORIZATION 中的显式字段一致；旧版本缺省仍使用老师 QoS。
+该字段只作用于 dispatcher 的提交、放行和租期接续，不改变 `qos` 科学任务字段、
+原 CONFIG.cpu_policy、训练/评价/最终交付的原科学入口。科学任务仍按老师 QoS 真实额度运行。
+
+CPU 提交及放行前先读取普通 QoS 与用户关联的实际限制，再读新鲜队列；
+普通 QoS 的本用户提交数与老师 QoS 分开统计，存在有限用户关联额度时跨 QoS 合计。
+运行作业上限只决定何时获配，不冒充提交上限。不能因老师 GPU/提交额度已满而阻塞普通 CPU。
+历史 CPU 的 terminal QoS 始终核对其原 INTENT；安全交接保留原回执与缺失 END，
+只退役指定旧 CPU，未知提交/释放不重投，不取消科学或其他作业。

@@ -349,7 +349,7 @@ class Repair:
             exit_code="1:0",
             user=self.value["user"],
             account="rose",
-            qos=self.value["qos"],
+            qos=old_intent["qos"],
             name=old_intent["job_name"],
         )
         if terminal != expected:
@@ -571,10 +571,49 @@ class GuardedSlurm:
         else:
             if intent.get("operation_identity_sha256") != r.io.sha(r.value["identity_path"]):
                 raise PermissionError("CPU operation identity differs")
+            dispatcher_qos = r.value.get("dispatcher_qos", r.value["qos"])
+            if intent.get("qos") != dispatcher_qos or intent.get("gpu_count") != 0:
+                raise PermissionError("CPU dispatcher QoS or GPU request differs")
             state = dict(
-                key="dispatcher", status="SUBMISSION_UNKNOWN", gpu_count=0, qos=r.value["qos"]
+                key="dispatcher", status="SUBMISSION_UNKNOWN", gpu_count=0, qos=dispatcher_qos
             )
         return script.parent, intent, state
+
+    def _ordinary_dispatcher(self, intent):
+        r = self.repair
+        return (
+            not intent.get("kind")
+            and r.value.get("dispatcher_qos", r.value["qos"]) != r.value["qos"]
+        )
+
+    def _dispatcher_boundary(self, intent, *, candidate, job=None):
+        """Count only CPU dispatcher capacity, retaining live evidence at each write."""
+        r = self.repair
+        qos = r.value.get("dispatcher_qos", r.value["qos"])
+        if (
+            intent.get("operation_identity_sha256") != r.io.sha(r.value["identity_path"])
+            or intent.get("qos") != qos
+            or intent.get("gpu_count") != 0
+        ):
+            raise PermissionError("CPU dispatcher operation or allocation differs")
+        capacity = getattr(r.api, "capacity", None)
+        if capacity is None:
+            raise PermissionError("Ordinary CPU dispatcher requires live scheduler capacity")
+        limits = capacity.dispatcher_limits(qos, fresh=True)
+        queue = r.raw_slurm.queue(r.value["user"])
+        if candidate and any(
+            row.get("JobName") == intent["job_name"] or row.get("Comment") == intent["comment"]
+            for row in queue.values()
+        ):
+            raise PermissionError("Candidate already has a live allocation")
+        if job is not None and (
+            job not in queue
+            or queue[job].get("QOS") != qos
+            or queue[job].get("Command") != intent["script"]
+        ):
+            raise PermissionError("Held CPU dispatcher allocation differs")
+        headroom = capacity.dispatcher_headroom(queue, limits)
+        return queue, limits, headroom, headroom["submitted"] >= (1 if candidate else 0)
 
     def _fresh_capacity(self):
         capacity = getattr(self.repair.api, "capacity", None)
@@ -599,6 +638,23 @@ class GuardedSlurm:
     def submit(self, args, *, evidence=None, accounting=None):
         r = self.repair
         directory, intent, state = self._candidate(args)
+        if self._ordinary_dispatcher(intent):
+            queue, limits, headroom, allowed = self._dispatcher_boundary(intent, candidate=True)
+            r.io.save(
+                directory / "QUEUE_IMMEDIATELY_BEFORE_SUBMIT.json",
+                dict(
+                    at=time.time(),
+                    jobs=queue,
+                    dispatcher_capacity=limits,
+                    dispatcher_headroom=headroom,
+                    includes_candidate=True,
+                    submitted_after_candidate=headroom["submitted"] - 1,
+                ),
+                immutable=True,
+            )
+            if not allowed:
+                return SimpleNamespace(returncode=75, stdout="", stderr=LOCAL_DEFERRED)
+            return r.raw_slurm.run(args)
         rows = r.rows()
         effective = r.effective_states(rows)
         science = bool(intent.get("kind"))
@@ -721,6 +777,32 @@ class GuardedSlurm:
 
     def release_guard(self, job):
         r = self.repair
+        if r.value.get("dispatcher_qos", r.value["qos"]) != r.value["qos"]:
+            fields = r.raw_slurm.show(job)
+            candidate_script = Path(fields["Command"]).resolve(strict=True)
+            if candidate_script.is_relative_to(r.root / "operations/dispatcher/attempts"):
+                intent = _read(candidate_script.with_name("INTENT.json"))
+                if intent.get("kind"):
+                    raise PermissionError("CPU dispatcher path contains a scientific intent")
+                queue, limits, headroom, allowed = self._dispatcher_boundary(
+                    intent, candidate=False, job=job
+                )
+                if not allowed:
+                    raise PermissionError(
+                        "Fresh CPU release capacity exceeded; allocation remains held"
+                    )
+                r.io.save(
+                    candidate_script.with_name("QUEUE_IMMEDIATELY_BEFORE_RELEASE.json"),
+                    dict(
+                        at=time.time(),
+                        job_id=job,
+                        jobs=queue,
+                        dispatcher_capacity=limits,
+                        dispatcher_headroom=headroom,
+                    ),
+                    immutable=True,
+                )
+                return
         effective = r.effective_states()
         capacity, limits = self._fresh_capacity()
         queue = r.raw_slurm.queue(r.value["user"])

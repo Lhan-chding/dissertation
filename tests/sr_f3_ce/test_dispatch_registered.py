@@ -916,7 +916,7 @@ def test_cpu_driver_counts_toward_five_teacher_submissions(helper, registered):
     api = api_fixture(helper, registered)
     for i in range(5):
         api.slurm.rows[str(i)] = dict(QOS=helper.QOS, UserId="alice(1)", ReqTRES="cpu=1")
-    with pytest.raises(RuntimeError, match="No teacher submission slot"):
+    with pytest.raises(RuntimeError, match="No submission slot in the dispatcher QoS"):
         helper.submit_driver(registered, api, 1)
     assert not api.slurm.calls
     api.slurm.rows.pop("4")
@@ -1652,3 +1652,69 @@ def test_capacity_source_checked_before_execution(helper, tmp_path):
     (tmp_path / "scheduler_capacity.py").write_text("raise AssertionError('not verified')")
     with pytest.raises(PermissionError, match="before import"):
         helper.load_capacity_source(tmp_path, expected_sha="0" * 64)
+
+
+class OrdinaryCPUCapacity:
+    def __init__(self, limit=5):
+        self.limit, self.queries = limit, []
+
+    def dispatcher_limits(self, qos):
+        assert qos == "rose"
+        self.queries.append(qos)
+        return {"qos": qos, "submitted_limit": self.limit}
+
+    def dispatcher_headroom(self, queue, limits):
+        count = sum(row.get("QOS") == "rose" for row in queue.values())
+        return {"submitted": limits["submitted_limit"] - count, "used": count}
+
+
+def test_ordinary_cpu_ignores_full_teacher_and_preserves_science_config(helper, registered):
+    registered["dispatcher_qos"] = "rose"
+    api = api_fixture(helper, registered)
+    api.capacity = OrdinaryCPUCapacity()
+    for i in range(5):
+        api.slurm.rows[str(i)] = dict(QOS=helper.QOS, UserId="alice(1)", ReqTRES="gres/gpu=2")
+    config = Path(registered["root"]) / "orchestration/CONFIG.json"
+    before = config.read_bytes()
+    state = helper.submit_driver(registered, api, 1)
+    directory = helper.attempts_root(registered) / "0001"
+    intent = helper.read(directory / "INTENT.json")
+    assert state["status"] == "SUBMITTED" and intent["qos"] == "rose"
+    assert "--qos=rose" in intent["sbatch"] and intent["gpu_count"] == 0
+    assert registered["qos"] == helper.QOS and config.read_bytes() == before
+    assert api.capacity.queries == ["rose", "rose"]
+    with pytest.raises(RuntimeError, match="already attempted"):
+        helper.submit_driver(registered, api, 1)
+    assert sum(cmd[0] == "sbatch" for cmd in api.slurm.calls) == 1
+
+
+def test_ordinary_cpu_full_rose_prevents_submission(helper, registered):
+    registered["dispatcher_qos"] = "rose"
+    api = api_fixture(helper, registered)
+    api.capacity = OrdinaryCPUCapacity(limit=0)
+    with pytest.raises(RuntimeError, match="dispatcher QoS"):
+        helper.submit_driver(registered, api, 1)
+    assert not api.slurm.calls
+
+
+def test_ordinary_cpu_lease_continuation_uses_retained_qos(helper, registered):
+    registered["dispatcher_qos"] = "rose"
+    api = api_fixture(helper, registered)
+    api.capacity = OrdinaryCPUCapacity()
+    first = helper.submit_driver(registered, api, 1)
+    api.slurm.finish(first["job_id"], state="TIMEOUT")
+    second = helper.submit_driver(registered, api, 2, 1)
+    assert second["status"] == "SUBMITTED"
+    assert helper.read(helper.attempts_root(registered) / "0001/TERMINAL.json")["qos"] == "rose"
+
+
+def test_cpu_qos_registration_requires_explicit_bound_authorization(helper, registered):
+    with pytest.raises(PermissionError, match="bound operational handoff"):
+        helper.register(
+            registered["root"],
+            registered["python"],
+            registered["user"],
+            registered["operation_commit"],
+            registered["extension_manifest_path"],
+            dispatcher_qos="rose",
+        )
