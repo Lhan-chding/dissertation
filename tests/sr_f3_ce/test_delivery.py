@@ -865,6 +865,292 @@ def test_costs_keep_probe_attempts_and_forward_counters_separate_without_double_
     assert "not summed" in costs["generation_seconds_limitation"]
 
 
+def submission_fixture(root, *, response=None):
+    write(root / "operations/fixture/OPERATION_IDENTITY.json", dict(scope="CPU fixture only"))
+    key = "job-" + "a" * 16
+    directory = root / "orchestration/jobs" / key
+    write(
+        directory / "INTENT.json",
+        dict(key=key, task_ids=["train--CPU_FIXTURE_ONLY"], sbatch=["sbatch", "--hold", "fixture"]),
+    )
+    write(
+        directory / "STATE.json",
+        dict(
+            key=key,
+            job_id="123",
+            status="COMPLETE",
+            intent_sha256=delivery.sha_file(directory / "INTENT.json"),
+        ),
+    )
+    response = response or dict(
+        returncode=1,
+        stdout="",
+        stderr="sbatch: error: QOSMaxSubmitJobPerUserLimit\n"
+        "sbatch: error: Batch job submission failed: Job violates accounting/QOS policy "
+        "(job submit limit, user's size and/or time limits)\n",
+    )
+    write(directory / "SUBMISSION.json", dict(response, at=1))
+    return directory, response
+
+
+def submission_attempt(root, directory, number, *, kind="RETRY", status="ACCEPTED", response=None):
+    attempt = (
+        root
+        / "operations/submission_reconciliation"
+        / directory.name
+        / "attempts"
+        / f"{number:04d}"
+    )
+    intent_sha = delivery.sha_file(directory / "INTENT.json")
+    write(
+        attempt / "BEFORE_STATE.raw.json",
+        dict(key=directory.name, status="SUBMISSION_UNKNOWN", intent_sha256=intent_sha),
+    )
+    write(
+        attempt / "INTENT.json",
+        dict(
+            submission_kind=kind,
+            job_key=directory.name,
+            original_intent_sha256=intent_sha,
+            original_submission_sha256=delivery.sha_file(directory / "SUBMISSION.json")
+            if kind == "RETRY"
+            else None,
+            operation_identity_sha256=delivery.sha_file(
+                root / "operations/fixture/OPERATION_IDENTITY.json"
+            ),
+            before_state_sha256=delivery.sha_file(attempt / "BEFORE_STATE.raw.json"),
+            command=delivery.read(directory / "INTENT.json")["sbatch"],
+        ),
+    )
+    response = response or dict(returncode=0, stdout="123;cluster\n", stderr="")
+    result = dict(
+        status=status,
+        submission_kind=kind,
+        sbatch_invoked=status != "LOCAL_CAPACITY_DEFERRED",
+        response=response,
+        at=2 + number,
+    )
+    if result["sbatch_invoked"]:
+        write(attempt / "MAY_HAVE_SUBMITTED.json", dict(at=2))
+    if status == "ACCEPTED":
+        result["job_id"] = "123"
+        write(attempt / "ACCEPTED.json", dict(job_id="123", original_intent_sha256=intent_sha))
+    write(attempt / "RESULT.json", result)
+    return attempt
+
+
+def test_submission_rejection_retry_history_survives_completed_mutable_state(tmp_path):
+    directory, response = submission_fixture(tmp_path)
+    original_bytes = (directory / "SUBMISSION.json").read_bytes()
+    attempt = submission_attempt(tmp_path, directory, 1)
+    result = delivery.submission_operations(tmp_path)
+    assert result["submission_rejections"] == 1
+    assert result["operational_retry_records"] == result["accepted_operation_records"] == 1
+    assert result["unknown_outcomes"] == result["allocation_failure_counts_added"] == 0
+    assert result["scientific_calls_added"] == 0
+    assert (directory / "SUBMISSION.json").read_bytes() == original_bytes
+    assert delivery.read(directory / "SUBMISSION.json")["stderr"] == response["stderr"]
+    included, _ = delivery.original_inventory(tmp_path, {}, set(), {})
+    assert "evidence/" + str((attempt / "BEFORE_STATE.raw.json").relative_to(tmp_path)) in included
+    for row in result["records"]:
+        for source in row["sources"]:
+            assert source["path"] in included
+            assert included[source["path"]][1]["sha256"] == source["sha256"]
+
+
+def test_initial_journal_and_original_submission_count_once_but_real_retry_counts_again(tmp_path):
+    directory, response = submission_fixture(tmp_path)
+    submission_attempt(
+        tmp_path, directory, 1, kind="INITIAL", status="EXPLICIT_QOS_REJECTION", response=response
+    )
+    submission_attempt(tmp_path, directory, 2, status="EXPLICIT_QOS_REJECTION", response=response)
+    result = delivery.submission_operations(tmp_path)
+    assert result["submission_rejections"] == 2
+    assert result["operational_retry_records"] == 1
+    assert len(result["records"]) == 2
+    assert set(result["original_initial_copies_not_counted_twice"]) == {directory.name}
+
+
+def test_cost_summary_and_chinese_report_distinguish_submission_controls_from_gpu_failures(
+    tmp_path, monkeypatch
+):
+    directory, _ = submission_fixture(tmp_path)
+    submission_attempt(tmp_path, directory, 1)
+    monkeypatch.setattr(
+        delivery, "scheduler_costs", lambda root: (dict(totals={"gpu_hours": 2}), {})
+    )
+    costs, _ = delivery.cost_summary(tmp_path)
+    assert costs["gpu_hours"] == 2 and costs["scheduler_failed_attempts"] == 0
+    assert costs["submission_operations"]["submission_rejections"] == 1
+    report = delivery.render_report(
+        analysis_fixture(),
+        {"CHARTQAPRO": {}},
+        {"panels": {}},
+        dict(
+            training_paths=12,
+            logical_updates=768,
+            training_records=98304,
+            support_examples=2304,
+            monitor_records=26112,
+            engine_diagnostic_records=2880,
+            records=229500,
+        ),
+        costs,
+        {"status": "MISSING"},
+        {"CHARTQAPRO": dict(status="UNAVAILABLE", reason="fixture")},
+    )
+    assert "明确未分配的提交拒绝 | 1" in report
+    assert "运维重试记录 | 1" in report
+    assert "不计作 GPU allocation 失败" in report
+    assert "不增加科学采样或参数更新" in report
+
+
+def test_local_capacity_deferral_is_not_an_invoked_or_failed_gpu_allocation(tmp_path):
+    response = dict(
+        returncode=75, stdout="", stderr="SRF3CE_LOCAL_CAPACITY_DEFERRED: sbatch was not invoked\n"
+    )
+    directory, _ = submission_fixture(tmp_path, response=response)
+    submission_attempt(
+        tmp_path, directory, 1, kind="INITIAL", status="LOCAL_CAPACITY_DEFERRED", response=response
+    )
+    result = delivery.submission_operations(tmp_path)
+    assert result["local_capacity_deferrals"] == 1
+    assert result["submission_rejections"] == result["allocation_failure_counts_added"] == 0
+    assert result["unknown_outcomes"] == 0
+    assert result["records"][0]["sbatch_invoked"] is False
+
+
+def test_missing_retry_result_remains_unknown_without_inventing_no_allocation(tmp_path):
+    directory, _ = submission_fixture(tmp_path)
+    attempt = submission_attempt(
+        tmp_path,
+        directory,
+        1,
+        status="UNKNOWN",
+        response=dict(returncode=1, stdout="", stderr="Transport timeout"),
+    )
+    (attempt / "RESULT.json").unlink()
+    result = delivery.submission_operations(tmp_path)
+    assert result["unknown_outcomes"] == 1 and result["submission_rejections"] == 1
+    assert result["records"][0]["sbatch_invoked"] == "UNKNOWN"
+    assert result["unknown_does_not_imply_no_allocation"] is True
+
+
+def test_initial_crash_before_original_submission_copy_still_keeps_possible_submission(tmp_path):
+    directory, _ = submission_fixture(tmp_path)
+    (directory / "SUBMISSION.json").unlink()
+    state = delivery.read(directory / "STATE.json")
+    state.pop("job_id")
+    write(directory / "STATE.json", dict(state, status="SUBMISSION_UNKNOWN"))
+    attempt = submission_attempt(tmp_path, directory, 1, kind="INITIAL", status="UNKNOWN")
+    (attempt / "RESULT.json").unlink()
+    result = delivery.submission_operations(tmp_path)
+    assert result["unknown_outcomes"] == 1
+    assert result["submission_rejections"] == result["local_capacity_deferrals"] == 0
+    assert result["records"][0]["sbatch_invoked"] == "UNKNOWN"
+    assert any(
+        source["path"].endswith("MAY_HAVE_SUBMITTED.json")
+        for source in result["records"][0]["sources"]
+    )
+
+
+@pytest.mark.parametrize("change", ["returncode", "stdout", "extra_error"])
+def test_only_the_exact_known_qos_rejection_is_reported_as_no_allocation(tmp_path, change):
+    directory, response = submission_fixture(tmp_path)
+    if change == "returncode":
+        response["returncode"] = 2
+    elif change == "stdout":
+        response["stdout"] = "123\n"
+    else:
+        response["stderr"] += "connection outcome unavailable\n"
+    write(directory / "SUBMISSION.json", response)
+    result = delivery.submission_operations(tmp_path)
+    assert result["unknown_outcomes"] == 1 and result["submission_rejections"] == 0
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        "response",
+        "before_state",
+        "original_submission",
+        "accepted_job",
+        "local_invocation",
+        "sequence_gap",
+        "initial_copy",
+        "operation_identity",
+        "before_allocation",
+    ],
+)
+def test_submission_operation_tampering_cannot_relabel_or_hide_originals(tmp_path, change):
+    directory, response = submission_fixture(tmp_path)
+    kind = "INITIAL" if change in {"local_invocation", "initial_copy"} else "RETRY"
+    status = (
+        "LOCAL_CAPACITY_DEFERRED"
+        if change == "local_invocation"
+        else "EXPLICIT_QOS_REJECTION"
+        if change in {"response", "initial_copy"}
+        else "ACCEPTED"
+    )
+    attempt = submission_attempt(
+        tmp_path,
+        directory,
+        1,
+        kind=kind,
+        status=status,
+        response=response if status != "ACCEPTED" else None,
+    )
+    if change == "response":
+        result = delivery.read(attempt / "RESULT.json")
+        result["response"]["stdout"] = "unexpected job id 123"
+        write(attempt / "RESULT.json", result)
+    elif change == "before_state":
+        write(attempt / "BEFORE_STATE.raw.json", {"status": "fabricated"})
+    elif change == "original_submission":
+        write(directory / "SUBMISSION.json", dict(response, stderr="changed original"))
+    elif change == "accepted_job":
+        write(attempt / "ACCEPTED.json", dict(job_id="999"))
+    elif change == "local_invocation":
+        write(attempt / "MAY_HAVE_SUBMITTED.json", dict(at=1))
+    elif change == "initial_copy":
+        write(directory / "SUBMISSION.json", dict(response, stderr="different call"))
+    elif change == "operation_identity":
+        write(tmp_path / "operations/fixture/OPERATION_IDENTITY.json", dict(scope="changed"))
+    elif change == "before_allocation":
+        before = delivery.read(attempt / "BEFORE_STATE.raw.json")
+        write(attempt / "BEFORE_STATE.raw.json", dict(before, job_id="99"))
+        intent = delivery.read(attempt / "INTENT.json")
+        write(
+            attempt / "INTENT.json",
+            dict(intent, before_state_sha256=delivery.sha_file(attempt / "BEFORE_STATE.raw.json")),
+        )
+    else:
+        attempt.rename(attempt.with_name("0002"))
+    with pytest.raises(PermissionError):
+        delivery.submission_operations(tmp_path)
+
+
+def test_delivery_helper_manifest_keeps_new_operational_source(tmp_path, monkeypatch):
+    builder, repair = tmp_path / "build_delivery.py", tmp_path / "submission_reconciliation.py"
+    builder.write_text("# CPU fixture builder source\n")
+    repair.write_text("# CPU fixture operational repair source\n")
+    manifest = tmp_path / "OPERATION_SOURCES.json"
+    write(
+        manifest,
+        dict(
+            schema_version=1,
+            experiment_id=delivery.EXPERIMENT,
+            files={path.name: delivery.sha_file(path) for path in (builder, repair)},
+        ),
+    )
+    monkeypatch.setattr(delivery, "__file__", str(builder))
+    sources, _ = delivery.helper_sources(manifest)
+    assert sources["submission_reconciliation.py"] == repair
+    repair.write_text("# changed after registration\n")
+    with pytest.raises(PermissionError, match="Auxiliary source differs"):
+        delivery.helper_sources(manifest)
+
+
 def test_training_signal_index_retains_repeated_attempt_and_requires_fixed_gradient_diagnostics(
     tmp_path,
 ):

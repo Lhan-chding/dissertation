@@ -831,6 +831,30 @@ def render_report(
                 ],
             ),
         ]
+    submission_operations = costs.get("submission_operations")
+    if submission_operations is not None:
+        text += [
+            "## 调度提交拒绝与运维接续\n",
+            "以下只统计保留的提交控制原件；明确未分配的 QoS 拒绝、本地容量延期、"
+            "已接受的运维尝试和未知结果分别列出。INITIAL 记录与原 SUBMISSION 回执"
+            "只计同一次调用，旧回执和每次重试原件均保留。"
+            "拒绝和本地延期不计作 GPU allocation 失败，也不增加科学采样或参数更新。"
+            "UNKNOWN 仍表示结果未知。实际 GPU 时间仍仅来自已认证的 Slurm allocation。\n",
+            _table(
+                ["保留事件", "数量"],
+                [
+                    ["明确未分配的提交拒绝", submission_operations["submission_rejections"]],
+                    [
+                        "本地容量延期（未调用 sbatch）",
+                        submission_operations["local_capacity_deferrals"],
+                    ],
+                    ["运维重试记录", submission_operations["operational_retry_records"]],
+                    ["结果未知", submission_operations["unknown_outcomes"]],
+                ],
+            ),
+            "逐次状态、绑定的原 INTENT、提交响应和原 STATE 备份的路径与 SHA-256 "
+            "见 [COSTS.json](COSTS.json) 的 submission_operations；原件位于 evidence。\n",
+        ]
     text += [
         "完整未解析类型和双审原件见 "
         "[UNRESOLVED_TYPES.jsonl.gz](UNRESOLVED_TYPES.jsonl.gz) 与 evidence/external。\n",
@@ -1818,6 +1842,220 @@ def observability_costs(root, identity, required_tasks=()):
     )
 
 
+def _submission_response(value):
+    if (
+        not isinstance(value, dict)
+        or type(value.get("returncode")) is not int
+        or any(not isinstance(value.get(key), str) for key in ("stdout", "stderr"))
+    ):
+        fail("Submission response does not preserve returncode/stdout/stderr")
+    return {key: value[key] for key in ("returncode", "stdout", "stderr")}
+
+
+def _submission_status(response):
+    if (
+        response["returncode"] == 1
+        and response["stdout"] == ""
+        and response["stderr"].strip()
+        == (
+            "sbatch: error: QOSMaxSubmitJobPerUserLimit\n"
+            "sbatch: error: Batch job submission failed: Job violates accounting/QOS policy "
+            "(job submit limit, user's size and/or time limits)"
+        )
+    ):
+        return "EXPLICIT_QOS_REJECTION"
+    if response["returncode"] == 0 and re.fullmatch(
+        r"([0-9]+)(?:;[A-Za-z0-9_.-]+)?\s*", response["stdout"]
+    ):
+        return "ACCEPTED"
+    return "UNKNOWN"
+
+
+def submission_operations(root):
+    """Retain control-plane incidents without inventing GPU or scientific work."""
+    root = Path(root).resolve(strict=True)
+    ledger = root / "operations/submission_reconciliation"
+    records, mirrored_initials = [], {}
+
+    def source(path):
+        relative = str(path.relative_to(root))
+        checked = bounded(root, relative)
+        return dict(
+            path="evidence/" + relative, sha256=sha_file(checked), bytes=checked.stat().st_size
+        )
+
+    def registration(key):
+        directory = root / "orchestration/jobs" / key
+        intent_path, state_path = directory / "INTENT.json", directory / "STATE.json"
+        intent, state = (
+            read(bounded(root, str(intent_path.relative_to(root)))),
+            read(bounded(root, str(state_path.relative_to(root)))),
+        )
+        if (
+            intent.get("key") != key
+            or state.get("key") != key
+            or (state.get("intent_sha256") != sha_file(intent_path))
+        ):
+            fail("Submission operation is not bound to its original registered intent")
+        return directory, intent, state
+
+    operation_identities = {}
+    for path in sorted((root / "operations").glob("*/OPERATION_IDENTITY.json")):
+        record = source(path)
+        operation_identities[record["sha256"]] = record
+    for job_directory in sorted(ledger.glob("*")):
+        if not job_directory.is_dir():
+            continue
+        key = job_directory.name
+        if not re.fullmatch(r"job-[a-f0-9]{16}", key):
+            fail("Submission reconciliation job key is invalid")
+        directory, original, state = registration(key)
+        attempts = sorted((job_directory / "attempts").glob("*"))
+        if any(not path.is_dir() for path in attempts) or [path.name for path in attempts] != [
+            f"{index:04d}" for index in range(1, len(attempts) + 1)
+        ]:
+            fail("Submission operation sequence has a gap or an unregistered entry")
+        for attempt in attempts:
+            intent_path = bounded(root, str((attempt / "INTENT.json").relative_to(root)))
+            intent = read(intent_path)
+            before = bounded(root, str((attempt / "BEFORE_STATE.raw.json").relative_to(root)))
+            before_state = read(before)
+            submission = directory / "SUBMISSION.json"
+            kind = intent.get("submission_kind")
+            if (
+                kind not in {"INITIAL", "RETRY"}
+                or intent.get("job_key") != key
+                or intent.get("original_intent_sha256") != sha_file(directory / "INTENT.json")
+                or intent.get("before_state_sha256") != sha_file(before)
+                or before_state.get("key") != key
+                or before_state.get("intent_sha256") != sha_file(directory / "INTENT.json")
+                or before_state.get("job_id") is not None
+                or intent.get("command") != original.get("sbatch")
+                or intent.get("operation_identity_sha256") not in operation_identities
+            ):
+                fail("Submission operation original intent/state/command binding differs")
+            if kind == "INITIAL":
+                if (
+                    key in mirrored_initials
+                    or attempt.name != "0001"
+                    or (intent.get("original_submission_sha256") is not None)
+                ):
+                    fail("Submission INITIAL is duplicated or bound to an older submission")
+            elif not submission.is_file() or (
+                intent.get("original_submission_sha256") != sha_file(submission)
+            ):
+                fail("Submission RETRY lost the original submission response")
+            result_path, may_have_submitted = (
+                attempt / "RESULT.json",
+                attempt / "MAY_HAVE_SUBMITTED.json",
+            )
+            result = read(result_path) if result_path.is_file() else {}
+            status = result.get("status", "UNKNOWN")
+            response = (
+                _submission_response(result["response"])
+                if result.get("response") is not None
+                else None
+            )
+            if result and (
+                status
+                not in {"LOCAL_CAPACITY_DEFERRED", "EXPLICIT_QOS_REJECTION", "ACCEPTED", "UNKNOWN"}
+                or result.get("submission_kind") != kind
+                or type(result.get("sbatch_invoked")) is not bool
+            ):
+                fail("Submission operation result status or invocation identity is invalid")
+            if result.get("sbatch_invoked") is True and not may_have_submitted.is_file():
+                fail("Invoked submission lacks the durable MAY_HAVE_SUBMITTED record")
+            if status == "LOCAL_CAPACITY_DEFERRED" and (
+                result.get("sbatch_invoked") is not False
+                or may_have_submitted.exists()
+                or response
+                != dict(
+                    returncode=75,
+                    stdout="",
+                    stderr="SRF3CE_LOCAL_CAPACITY_DEFERRED: sbatch was not invoked\n",
+                )
+            ):
+                fail("A local capacity deferral cannot represent a possibly invoked sbatch")
+            if status in {"EXPLICIT_QOS_REJECTION", "ACCEPTED"} and (
+                result.get("sbatch_invoked") is not True
+                or response is None
+                or _submission_status(response) != status
+            ):
+                fail("Submission outcome differs from the original scheduler response")
+            if status == "ACCEPTED":
+                accepted = read(attempt / "ACCEPTED.json")
+                job_id = response["stdout"].split(";", 1)[0].strip()
+                if (
+                    result.get("job_id") != job_id
+                    or accepted.get("job_id") != job_id
+                    or (state.get("job_id") != job_id)
+                    or accepted.get("original_intent_sha256") != sha_file(directory / "INTENT.json")
+                ):
+                    fail("Accepted submission operation differs from the actual registered job")
+            elif result.get("job_id") is not None:
+                fail("An unaccepted submission operation cannot claim an allocation ID")
+            if kind == "INITIAL":
+                if submission.is_file() and (
+                    response is None or _submission_response(read(submission)) != response
+                ):
+                    fail("INITIAL operation differs from its copied original SUBMISSION response")
+                mirrored_initials[key] = str(result_path.relative_to(root))
+            records.append(
+                dict(
+                    job_key=key,
+                    task_ids=original["task_ids"],
+                    submission_kind=kind,
+                    status=status,
+                    sbatch_invoked=result.get("sbatch_invoked", "UNKNOWN"),
+                    response=response,
+                    job_id=result.get("job_id"),
+                    sources=[source(directory / "INTENT.json"), source(directory / "STATE.json")]
+                    + [operation_identities[intent["operation_identity_sha256"]]]
+                    + ([source(submission)] if submission.is_file() else [])
+                    + [source(path) for path in sorted(attempt.glob("*.json"))],
+                )
+            )
+    for submission in sorted((root / "orchestration/jobs").glob("*/SUBMISSION.json")):
+        key = submission.parent.name
+        if key in mirrored_initials:
+            continue
+        response = _submission_response(read(submission))
+        status = _submission_status(response)
+        if status == "ACCEPTED":
+            # Ordinary successful submissions already have allocation accounting.
+            continue
+        directory, original, _state = registration(key)
+        records.append(
+            dict(
+                job_key=key,
+                task_ids=original["task_ids"],
+                submission_kind="ORIGINAL",
+                status=status,
+                sbatch_invoked=True,
+                response=response,
+                job_id=None,
+                sources=[
+                    source(directory / name)
+                    for name in ("INTENT.json", "STATE.json", "SUBMISSION.json")
+                ],
+            )
+        )
+    counts = Counter(row["status"] for row in records)
+    return dict(
+        scope="retained submission control events; excludes GPU allocations and scientific calls",
+        submission_rejections=counts["EXPLICIT_QOS_REJECTION"],
+        local_capacity_deferrals=counts["LOCAL_CAPACITY_DEFERRED"],
+        operational_retry_records=sum(row["submission_kind"] == "RETRY" for row in records),
+        accepted_operation_records=counts["ACCEPTED"],
+        unknown_outcomes=counts["UNKNOWN"],
+        allocation_failure_counts_added=0,
+        scientific_calls_added=0,
+        unknown_does_not_imply_no_allocation=True,
+        original_initial_copies_not_counted_twice=mirrored_initials,
+        records=records,
+    )
+
+
 def cost_summary(root, *, observation_identity=None, observation_task_ids=()):
     counts, per_task, forward_purposes = Counter(), defaultdict(Counter), defaultdict(Counter)
     for path in sorted((root / "accounting").glob("*.jsonl")):
@@ -1877,6 +2115,7 @@ def cost_summary(root, *, observation_identity=None, observation_task_ids=()):
         queue_seconds=scheduler.get("totals", {}).get("queue_seconds", "UNKNOWN"),
         total_wall_seconds=scheduler.get("totals", {}).get("total_wall_seconds", "UNKNOWN"),
         scheduler=scheduler,
+        submission_operations=submission_operations(root),
         independently_launched_cpu_preparation=dict(
             included_in_registered_attempt_totals=False,
             accounting_receipt=(

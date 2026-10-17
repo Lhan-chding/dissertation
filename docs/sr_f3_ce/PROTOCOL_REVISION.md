@@ -69,3 +69,18 @@
 共享 teacher QoS 同时受五张 GPU 和本用户五个 submitted 作业限制。等待依赖的已提交 GPU 作业仍占额度，CPU 接续器也占一个提交名额。新辅助 dispatcher 在真实 P0 完成后，通过原冻结 `Controller.submit("engine")` 提交原四个 ENGINE 任务，每次都重新认证状态和容量；未提交的固定任务可在空位释放后继续提交。没有容量就等待，已认领、未知、held 或失败状态不能触发重复提交；失败 ENGINE 不能使用仅对训练/评价 TIMEOUT 开放的恢复规则。只有四个 ENGINE 的完整证据与真实终态都通过后，才允许原有 freeze 和 SCIENCE 路径。
 
 该调整只部署到新的 `operations/<辅助commit>/` 并单独绑定源码身份。已经执行的 `code/`、科学提交652、原操作目录、RUN_IDENTITY 和 native extension 保持其已登记字节。单个 CPU 接续器仍有72小时租期；若退出为 `HANDOFF_REQUIRED`，须按既有顺序登记下一次CPU租期，不能将它视为无限期自续。
+
+
+## 2026-10-17 已授权的接续器与账本修复
+
+用户明确授权：“把接续器和账本阻塞修好，验证通过后继续剩下的实验，保持冻结的实验设置不变，保留历史记录，记得用好可用的GPU额度。”修复仅注册于新的 `operations/<commit>/`，不覆盖科学源码652、原运维6170、native观测扩展、EXECUTION_FREEZE、旧v1 STOP或已生成科学原文。
+
+独立 `reconcile_submissions.py` 由新 OPERATION_SOURCES 和 OPERATION_IDENTITY 绑定，并要求保留的 REPAIR_AUTHORIZATION 绑定原运行/执行冻结和失败CPU前任的原始记录。CPU接续仍使用 `operations/dispatcher/attempts/` 的下一个序号；跨运维版本只允许这个已明确授权、已核验不在队列且真实 `FAILED/1:0` 的前任。普通失败、未知提交及不明会计状态不会获得通用重试权限。
+
+已完成任务必须以真实 `COMPLETED/0:0`、原 allocation/脚本/进程、完整任务产物和观测回执经冻结 verifier 验证，才把可变 STATE 索引结为 COMPLETE；原 STATE 字节先保存为 `operations/submission_reconciliation/<key>/completion/BEFORE_STATE.raw.json`，另写不可覆盖的 RECONCILIATION。没有新模型调用或科学重采样。
+
+同 key 重提严格限于尚无 job_id、allocation、release、STARTED、worker/观测或任务输出，并有原始精确 `QOSMaxSubmitJobPerUserLimit` 拒绝回执，或新守卫明确未调用 sbatch 的本地容量等待。还要查询实时队列与 accounting，拒绝匹配到的实际分配。原 INTENT、脚本、claim 和首次 SUBMISSION 原件不改；每次尝试在 `operations/submission_reconciliation/<key>/attempts/NNNN/` 记录 BEFORE_STATE.raw、INTENT、紧前队列、MAY_HAVE_SUBMITTED、RESULT 和成功时的 ACCEPTED。发出sbatch前先持久化可能已发出的标记；超时、异常、缺少结果、已获配或释放结果未知均阻塞，不能再引用更早的拒绝回执重投。实际已获配的 TIMEOUT 恢复继续使用原冻结恢复接口与新 attempt key，不复用原分配。
+
+完整源码、任务和检查点验证之后，sbatch及release调用前再次读取实际队列，再用轻量账本核算。候选提交在可变STATE中已占一个预留，只计一次，投影达到5可以提交，超过5必须等待。实际/待分配/未知GPU总预留与本用户teacher提交数分别限制为5；CPU接续器占提交名额。明确未分配的拒绝可以从投影额度排除，原失败记录仍保留；真正未知的提交继续预留。固定任务仍每作业单卡、pool_size=1，按空出的提交及GPU额度补交，不能擅自修改科学矩阵或启用未验证的多卡执行。
+
+交付原科学任务门禁不变。新增运维摘要明确区分提交拒绝、本地未调用等待、实际接受和未知结果；INITIAL日志与原SUBMISSION按显式身份去重，拒绝不算GPU分配失败、零科学效果或新增科学采样。旧失败CPU租期、原拒绝、STATE原字节和所有重试记录随证据保留。

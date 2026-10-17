@@ -79,3 +79,10 @@ TIMEOUT 仅沿原单 GPU science 精确恢复接口，通过原 CPU checkpoint/c
 最终 builder 按选定 revision 重建 ENGINE、MONITOR 和端点 slot/prefill 身份。原 v1 完整压缩包与回执保存在 `protocol_revision/history_v1/`；消融原件保存在 `protocol_revision/ablation/`，路径镜像其独立运行根。2,304 条消融和 3,904 条历史 v1 原文分别统计，绝不替代新根的 2,880 条 ENGINE 诊断、512 条恢复缓存或 26,112 条 MONITOR。新根可用原 4146 finalizer 对未改变的外部双审原件重新发布，并用明确的 TYPE_REVIEW_REUSE_RECEIPT 说明来源；这不构成新增人工审核或模型评估。
 
 `WORK_OCCURRENCE_TRAJECTORY.json` 从既有原文复算 768 个训练步的 work 出现率并核对训练回执，同时呈现 51 个固定 MONITOR 面板的全部回答与可解析回答两种分母；保留无效回答和非空 work 字符串计数，不改变奖励或路由。
+
+
+## 已冻结科学运行的提交修复边界
+
+2026-10-17 的明确用户授权及完整运维修复规则见 [PROTOCOL_REVISION.md](PROTOCOL_REVISION.md#2026-10-17-已授权的接续器与账本修复)。修复不替换本文件规定的 frozen InstrumentedController、job/worker 命令或观测方法。只有未分配的明确拒绝可沿原 INTENT/script/claim 在独立运维日志中重提；一旦得到真实 job_id，继续走原 held → allocation/script核验 → release → worker/observer → 完成回执链。已完成任务只做完整验证后的账本结清，既有失败或OOM不删除。
+
+紧邻 sbatch/release 的新容量守卫位于单独运维 Slurm 适配器。重试前的源码、回执及原生恢复验证仍使用冻结代码；它们结束后再取队列，避免哈希耗时使容量判断过期。队列竞态导致的明确QoS拒绝追加原件并等待容量变化；结果未知则停止补交。服务器SOURCE_MANIFEST、AMENDMENT和科学冻结身份不因这次运维修订改变。

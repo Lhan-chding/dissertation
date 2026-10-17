@@ -31,7 +31,12 @@ FROZEN_COMMIT = "71483fbf31d57213fdc7e6f3c881848397b45329"
 QOS = "soujanya-poria-startfund-2026-03"
 ENGINES = {"p0", "engine--b0", "engine--b1", "engine--b2", "engine--resume"}
 REVISION = "external/revisions/typed_v1"
-HELPERS = ("dispatch_registered.py", "finalize_external_types.py", "build_delivery.py")
+HELPERS = (
+    "dispatch_registered.py",
+    "finalize_external_types.py",
+    "build_delivery.py",
+    "reconcile_submissions.py",
+)
 TYPED_COMMIT = "4146e156ffa9a476b360daeb67503703faca138f"
 TYPED_SCRIPT_SHA = "1a75df6bf5fa1c0ef22a23ee7fd766a8e22f5a1c6c1fe7d579c4ab6135106aaf"
 _EXTENSIONS = {}
@@ -216,7 +221,20 @@ def load_extension(root, manifest_path, *, expected_sha=None):
     return module
 
 
-def register(root, python, user, operation_commit, extension_manifest):
+def load_repair_source(operation, *, expected_sha=None):
+    path = Path(operation) / "reconcile_submissions.py"
+    body = path.read_bytes()
+    digest = hashlib.sha256(body).hexdigest()
+    if expected_sha is not None and digest != expected_sha:
+        raise PermissionError("Operational reconciliation source changed")
+    name = "srf3ce_submission_repair_" + digest
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    exec(compile(body, str(path), "exec"), module.__dict__)
+    return module
+
+
+def register(root, python, user, operation_commit, extension_manifest, repair_authorization=None):
     root, script = Path(root).resolve(strict=True), Path(__file__).resolve(strict=True)
     if not re.fullmatch(r"[a-f0-9]{40}", operation_commit) or (
         script.parent != root / "operations" / operation_commit
@@ -279,6 +297,12 @@ def register(root, python, user, operation_commit, extension_manifest):
         poll_seconds=60,
         handoff_margin_seconds=900,
     )
+    if repair_authorization is not None:
+        module = load_repair_source(
+            script.parent,
+            expected_sha=read(sources_path)["files"]["reconcile_submissions.py"],
+        )
+        value["submission_repair"] = module.check_authorization(root, repair_authorization)
     path = script.parent / "OPERATION_IDENTITY.json"
     save(path, value, immutable=True)
     return path
@@ -356,6 +380,15 @@ def identity(path):
     )
     if sha(root / "operations" / TYPED_COMMIT / "finalize_external_types.py") != TYPED_SCRIPT_SHA:
         raise PermissionError("Previously published typed preparer source changed")
+    if "submission_repair" in value:
+        module = load_repair_source(
+            script.parent, expected_sha=sources["files"]["reconcile_submissions.py"]
+        )
+        if (
+            module.check_authorization(root, value["submission_repair"]["authorization_path"])
+            != value["submission_repair"]
+        ):
+            raise PermissionError("Operational repair authorization changed")
     return value
 
 
@@ -398,7 +431,14 @@ def load_science(value):
         cpu_qos=QOS,
         cpu_node="cpu-2",
     )
-    return SimpleNamespace(**modules, controller=c, slurm=c.slurm, extension=extension)
+    api = SimpleNamespace(**modules, controller=c, slurm=c.slurm, extension=extension)
+    if "submission_repair" in value:
+        operation = Path(value["identity_path"]).parent
+        source = read(operation / "OPERATION_SOURCES.json")["files"]["reconcile_submissions.py"]
+        module = load_repair_source(operation, expected_sha=source)
+        io = SimpleNamespace(read=read, save=save, sha=sha, state_rows=state_rows)
+        api.repair = module.Repair(value, api, io)
+    return api
 
 
 def _lines(path):
@@ -746,11 +786,13 @@ class Driver:
         self.typed_receipt = None
 
     def snapshot(self):
-        queue = self.api.slurm.queue(self.value["user"])
+        repair = getattr(self.api, "repair", None)
+        if repair is not None:
+            repair.reconcile_completed()
         rows = state_rows(self.root)
-        usage = self.api.orchestration.teacher_usage(
-            queue, [state for _, state in rows], self.value["user"]
-        )
+        states = repair.effective_states(rows) if repair is not None else [s for _, s in rows]
+        queue = self.api.slurm.queue(self.value["user"])
+        usage = self.api.orchestration.teacher_usage(queue, states, self.value["user"])
         if usage["gpus"] > 5 or usage["submitted"] > 5:
             raise PermissionError("Actual teacher capacity exceeds the registered limit")
         known = []
@@ -784,6 +826,9 @@ class Driver:
         return snapshot
 
     def recover(self, status):
+        repair = getattr(self.api, "repair", None)
+        if repair is not None and repair.known_rejections_only(status["attempts"]):
+            return "WAIT_CAPACITY_FOR_REJECTED_SUBMISSION"
         blockers = self.api.controller.blocking_attempts(status["attempts"])
         if not blockers:
             raise RuntimeError("Blocked status has no authenticated recovery candidates")
@@ -846,6 +891,11 @@ class Driver:
             raise PermissionError("Completed P0 live accounting is missing or differs")
 
     def act(self):
+        repair = getattr(self.api, "repair", None)
+        if repair is not None:
+            waiting = repair.retry_pending()
+            if waiting:
+                return waiting
         status = self.api.controller.status()
         if status["blocked"]:
             waiting = self.recover(status)
@@ -1095,20 +1145,32 @@ def submit_driver(value, api, sequence, previous=None):
         if previous is not None:
             prior = base / f"{previous:04d}"
             old_intent, old_state = read(prior / "INTENT.json"), read(prior / "STATE.json")
-            if old_intent.get("operation_identity_sha256") != sha(value["identity_path"]) or (
+            repair = getattr(api, "repair", None)
+            repaired_terminal = None
+            if (
+                old_intent.get("operation_identity_sha256") != sha(value["identity_path"])
+                and repair is not None
+            ):
+                repaired_terminal = repair.verify_driver_predecessor(
+                    prior, old_intent, old_state, queue
+                )
+            elif old_intent.get("operation_identity_sha256") != sha(value["identity_path"]) or (
                 old_state.get("intent_sha256") != sha(prior / "INTENT.json")
             ):
                 raise PermissionError("Predecessor operation identity changed")
             job = old_state.get("job_id")
             if not job or job in queue or old_state.get("status") != "SUBMITTED":
                 raise RuntimeError("Predecessor is active or its submission is unknown")
-            terminal = api.slurm.terminal(job)
+            terminal = repaired_terminal or api.slurm.terminal(job)
             expected = dict(
                 job_id=job, user=value["user"], account="rose", qos=QOS, name=old_intent["job_name"]
             )
             if (
                 not terminal
-                or terminal.get("state") not in {"COMPLETED", "TIMEOUT"}
+                or (
+                    terminal.get("state") not in {"COMPLETED", "TIMEOUT"}
+                    and repaired_terminal is None
+                )
                 or any(terminal.get(k) != v for k, v in expected.items())
             ):
                 raise RuntimeError("Predecessor terminal identity requires reconciliation")
@@ -1126,7 +1188,12 @@ def submit_driver(value, api, sequence, previous=None):
             ):
                 raise PermissionError("A recorded driver failure requires reconciliation")
             save(prior / "TERMINAL.json", terminal, immutable=True)
-        science_states = [state for _, state in state_rows(Path(value["root"]))]
+        repair = getattr(api, "repair", None)
+        rows = state_rows(Path(value["root"]))
+        science_states = (
+            repair.effective_states(rows) if repair is not None else [s for _, s in rows]
+        )
+        queue = api.slurm.queue(value["user"])
         usage = api.orchestration.teacher_usage(queue, science_states, value["user"])
         if usage["gpus"] > 5 or usage["submitted"] >= 5:
             raise RuntimeError("No teacher submission slot for a CPU dispatcher")
@@ -1214,9 +1281,9 @@ def submit_driver(value, api, sequence, previous=None):
         ):
             raise PermissionError("Slurm stored dispatcher script differs")
         queue = api.slurm.queue(value["user"])
-        usage = api.orchestration.teacher_usage(
-            queue, [state for _, state in state_rows(Path(value["root"]))], value["user"]
-        )
+        rows = state_rows(Path(value["root"]))
+        states = repair.effective_states(rows) if repair is not None else [s for _, s in rows]
+        usage = api.orchestration.teacher_usage(queue, states, value["user"])
         if usage["gpus"] > 5 or usage["submitted"] > 5:
             raise PermissionError("CPU driver remains held because capacity changed")
         save(
@@ -1297,13 +1364,14 @@ def run(value, api, sequence):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--mode", choices=("register", "submit", "run"), required=True)
+    parser.add_argument("--mode", choices=("register", "reconcile", "submit", "run"), required=True)
     parser.add_argument("--identity", type=Path)
     parser.add_argument("--root", type=Path)
     parser.add_argument("--python")
     parser.add_argument("--user")
     parser.add_argument("--operation-commit")
     parser.add_argument("--extension-manifest", type=Path)
+    parser.add_argument("--repair-authorization", type=Path)
     parser.add_argument("--sequence", type=int)
     parser.add_argument("--previous", type=int)
     args = parser.parse_args()
@@ -1316,22 +1384,32 @@ def main():
             )
         result = str(
             register(
-                args.root, args.python, args.user, args.operation_commit, args.extension_manifest
+                args.root,
+                args.python,
+                args.user,
+                args.operation_commit,
+                args.extension_manifest,
+                args.repair_authorization,
             )
         )
     else:
-        if args.identity is None or args.sequence is None:
-            parser.error("submit/run requires identity and sequence")
+        if args.identity is None or (args.mode != "reconcile" and args.sequence is None):
+            parser.error("identity and (for submit/run) sequence are required")
         value = identity(args.identity)
         value["identity_path"] = str(args.identity.resolve(strict=True))
         # Full data/checkpoint validation belongs inside the allocated CPU job.
         # Submission checks only the small identity/config/source inventory.
         api = load_science(value)
-        result = (
-            submit_driver(value, api, args.sequence, args.previous)
-            if args.mode == "submit"
-            else run(value, api, args.sequence)
-        )
+        if args.mode == "reconcile":
+            if not hasattr(api, "repair"):
+                raise PermissionError("Explicit operational repair registration is required")
+            result = api.repair.prepare()
+        else:
+            result = (
+                submit_driver(value, api, args.sequence, args.previous)
+                if args.mode == "submit"
+                else run(value, api, args.sequence)
+            )
     print(json.dumps(dict(result=result), sort_keys=True))
 
 
