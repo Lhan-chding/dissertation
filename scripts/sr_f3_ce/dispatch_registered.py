@@ -1134,6 +1134,41 @@ class Driver:
     def has_capacity(self, snapshot, kind):
         limits = snapshot.get("capacity_limits") or capacity_limits(self.value, self.api)
         room = capacity_headroom(self.api, snapshot["teacher_usage"], limits)
+        split = self.value.get("task_pool", {}).get("pending_split")
+        if kind == "eval" and split is not None:
+            claimed = {task for row in snapshot["jobs"] for task in row["task_ids"]}
+            unknown_tasks = [
+                set(row["task_ids"])
+                for row in snapshot["jobs"]
+                if row.get("unknown") and row.get("kind") == "eval"
+            ]
+            group_tasks = [set(group["task_ids"]) for group in split["groups"]]
+            if any(tasks not in group_tasks for tasks in unknown_tasks):
+                raise PermissionError("Unknown endpoint claim differs from pending split groups")
+            remaining = []
+            for group in split["groups"]:
+                tasks = set(group["task_ids"])
+                overlap = tasks.intersection(claimed)
+                if overlap and overlap != tasks:
+                    raise PermissionError("Pending split group is partially claimed")
+                if not overlap or tasks in unknown_tasks:
+                    remaining.append(group)
+            if not remaining:
+                return False
+            # fast_science repairs blockers before claiming another group.
+            selected = (
+                next(
+                    group for group in split["groups"] if set(group["task_ids"]) == unknown_tasks[0]
+                )
+                if unknown_tasks
+                else remaining[0]
+            )
+            required = selected["gpu_count"]
+            return (
+                room["submitted"] > 0
+                and room["gpus"] >= required
+                and limits.get("max_tasks_per_job", 1) >= required
+            )
         return room["submitted"] > 0 and (
             kind == "release" or (room["gpus"] > 0 and limits.get("max_tasks_per_job", 1) > 0)
         )

@@ -1846,3 +1846,151 @@ def test_failed_cpu_handoff_rejects_unbound_or_different_failure(failed_split_dr
         env.helper.verify_efficiency_predecessor(
             env.value, env.api, p.directory, p.intent, p.state, {}
         )
+
+
+@pytest.mark.parametrize("room,maximum,expected", [(2, 8, False), (3, 8, True), (3, 2, False)])
+def test_split_capacity_waits_for_whole_remaining_group(
+    helper, registered, room, maximum, expected
+):
+    api = api_fixture(helper, registered)
+    api.capacity = ActualCapacity()
+    evaluations = [k for k, t in orchestration.TASKS.items() if t["kind"] == "eval"]
+    registered["task_pool"] = {
+        "pending_split": {
+            "groups": [
+                dict(gpu_count=4, task_ids=evaluations[:8]),
+                dict(gpu_count=3, task_ids=evaluations[8:]),
+            ]
+        }
+    }
+    snapshot = dict(
+        teacher_usage=dict(gpus=8 - room, submitted=2),
+        capacity_limits=dict(gpu_limit=8, submitted_limit=5, max_tasks_per_job=maximum),
+        jobs=[dict(task_ids=evaluations[:8], status="SUBMITTED")],
+    )
+    driver = make_driver(helper, registered, api)
+    assert driver.has_capacity(snapshot, "eval") is expected
+    snapshot["jobs"][0]["task_ids"] = evaluations[:7]
+    with pytest.raises(PermissionError, match="partially claimed"):
+        driver.has_capacity(snapshot, "eval")
+
+
+@pytest.mark.parametrize("room", [2, 3])
+def test_fast_split_wait_skips_expensive_submission_until_group_fits(helper, registered, room):
+    api = api_fixture(helper, registered)
+    api.capacity = ActualCapacity()
+    api.efficiency = SimpleNamespace(check=lambda: None)
+    evaluations = [k for k, t in orchestration.TASKS.items() if t["kind"] == "eval"]
+    prerequisites = [k for k, t in orchestration.TASKS.items() if t["kind"] in {"engine", "train"}]
+    registered["task_pool"] = {
+        "pending_split": {
+            "groups": [
+                dict(gpu_count=4, task_ids=evaluations[:8]),
+                dict(gpu_count=3, task_ids=evaluations[8:]),
+            ]
+        }
+    }
+    snapshot = dict(
+        teacher_usage=dict(gpus=8 - room, submitted=2),
+        capacity_limits=dict(gpu_limit=8, submitted_limit=5, max_tasks_per_job=8),
+        jobs=[
+            dict(task_ids=prerequisites, status="COMPLETE", terminal=None),
+            dict(task_ids=evaluations[:8], status="SUBMITTED", terminal=None),
+        ],
+    )
+    driver = make_driver(helper, registered, api)
+    events = []
+    driver.require_typed = lambda: events.append("typed")
+    driver.phase = lambda phase, **kw: events.append(phase)
+    api.controller.submit = lambda kind: events.append("submit")
+    assert driver.fast_science(snapshot) == (
+        "WAIT_CAPACITY" if room == 2 else "WAIT_CAPACITY_RECHECK"
+    )
+    assert events == (
+        [] if room == 2 else ["typed", "SUBMIT_FIXED_TASK", "submit", "SUBMIT_RETURNED"]
+    )
+    assert api.controller.status_calls == api.controller.tick_calls == 0
+
+
+@pytest.mark.parametrize("room", [2, 3])
+def test_claimed_rejected_split_group_uses_exact_group_capacity(helper, registered, room):
+    api = api_fixture(helper, registered)
+    api.capacity = ActualCapacity()
+    api.efficiency = SimpleNamespace(check=lambda: None)
+    evaluations = [k for k, t in orchestration.TASKS.items() if t["kind"] == "eval"]
+    registered["task_pool"] = {
+        "pending_split": {
+            "groups": [
+                dict(gpu_count=4, task_ids=evaluations[:8]),
+                dict(gpu_count=3, task_ids=evaluations[8:]),
+            ]
+        }
+    }
+    snapshot = dict(
+        teacher_usage=dict(gpus=8 - room, submitted=2),
+        capacity_limits=dict(gpu_limit=8, submitted_limit=5, max_tasks_per_job=8),
+        jobs=[
+            dict(
+                task_ids=evaluations[:8],
+                status="SUBMITTED",
+                kind="eval",
+                terminal=None,
+                unknown=None,
+            ),
+            dict(
+                task_ids=evaluations[8:],
+                status="SUBMISSION_UNKNOWN",
+                kind="eval",
+                terminal=None,
+                unknown="SUBMISSION_UNKNOWN",
+            ),
+        ],
+    )
+    directory = Path(registered["root"]) / "orchestration/jobs/job-abcdefabcdefabcd"
+    helper.save(directory / "INTENT.json", dict(kind="eval", task_ids=evaluations[8:]))
+    helper.save(directory / "STATE.json", dict(key=directory.name, status="SUBMISSION_UNKNOWN"))
+    retries = []
+    api.repair = SimpleNamespace(
+        known_rejections_only=lambda states: True,
+        retry_pending=lambda: retries.append("retry") or "WAIT_CAPACITY_FOR_REJECTED_SUBMISSION",
+    )
+    api.controller.submit = lambda kind: pytest.fail(
+        "Must repair the existing claim, never create a new one"
+    )
+    driver = make_driver(helper, registered, api)
+    assert driver.has_capacity(snapshot, "eval") is (room == 3)
+    assert driver.fast_science(snapshot) == "WAIT_CAPACITY_FOR_REJECTED_SUBMISSION"
+    assert retries == ([] if room == 2 else ["retry"])
+    snapshot["jobs"][1]["task_ids"] = evaluations[8:-1]
+    with pytest.raises(PermissionError, match="differs from pending split"):
+        driver.has_capacity(snapshot, "eval")
+
+
+def test_rejected_four_gpu_group_takes_priority_over_unclaimed_three(helper, registered):
+    api = api_fixture(helper, registered)
+    api.capacity = ActualCapacity()
+    evaluations = [k for k, t in orchestration.TASKS.items() if t["kind"] == "eval"]
+    registered["task_pool"] = {
+        "pending_split": {
+            "groups": [
+                dict(gpu_count=4, task_ids=evaluations[:8]),
+                dict(gpu_count=3, task_ids=evaluations[8:]),
+            ]
+        }
+    }
+    snapshot = dict(
+        teacher_usage=dict(gpus=5, submitted=2),
+        capacity_limits=dict(gpu_limit=8, submitted_limit=5, max_tasks_per_job=8),
+        jobs=[
+            dict(
+                task_ids=evaluations[:8],
+                status="SUBMISSION_UNKNOWN",
+                kind="eval",
+                unknown="SUBMISSION_UNKNOWN",
+            )
+        ],
+    )
+    driver = make_driver(helper, registered, api)
+    assert driver.has_capacity(snapshot, "eval") is False
+    snapshot["teacher_usage"]["gpus"] = 4
+    assert driver.has_capacity(snapshot, "eval") is True
