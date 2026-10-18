@@ -1346,3 +1346,51 @@ def test_ordinary_release_rejects_actual_wrong_qos(ordinary_dispatcher_guard):
     with pytest.raises(PermissionError, match="Held CPU dispatcher allocation differs"):
         env.repair.slurm.run(["scontrol", "release", job])
     assert env.raw.rows[job]["Reason"] == "JobHeldUser"
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        None,
+        "train",
+        "missing_flag",
+        "missing_authorization",
+        "zero_gpu",
+        "too_many",
+        "above_limit",
+        "duplicate",
+    ],
+)
+def test_rolling_rejection_keeps_member_queue_bounded_and_explicit(
+    pooled_repair_env, monkeypatch, change
+):
+    env = pooled_repair_env
+    pool_headroom(env, 2)
+    state, intent, _ = pool_rejection(env)
+    intent = copy.deepcopy(intent)
+    tasks = [key for key, task in orchestration.TASKS.items() if task["kind"] == "eval"]
+    intent.update(execution_entry_schema=3, rolling_endpoints=True, kind="eval", task_ids=tasks[:3])
+    env.value["task_pool"]["rolling_endpoints"] = True
+    # This unit exercises the lightweight classification boundary. The actual
+    # retry still invokes the adapter's complete intent verifier before sbatch.
+    monkeypatch.setattr(env.pool, "check", lambda: env.value["task_pool"])
+    if change == "train":
+        intent["kind"] = "train"
+    elif change == "missing_flag":
+        del intent["rolling_endpoints"]
+    elif change == "missing_authorization":
+        del env.value["task_pool"]["rolling_endpoints"]
+    elif change == "zero_gpu":
+        intent["gpu_count"] = state["gpu_count"] = 0
+    elif change == "too_many":
+        intent["task_ids"] = tasks[:7]
+    elif change == "above_limit":
+        intent["gpu_count"] = state["gpu_count"] = intent["max_tasks_per_job"] + 1
+    elif change == "duplicate":
+        intent["task_ids"][1] = intent["task_ids"][0]
+    if change is None:
+        env.repair._no_execution(intent, state)
+    else:
+        with pytest.raises(PermissionError, match="bound fixed"):
+            env.repair._no_execution(intent, state)
+    assert len(env.transport.submitted) == 1

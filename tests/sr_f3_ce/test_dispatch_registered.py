@@ -1519,14 +1519,17 @@ def test_revised_guard_failure_cannot_be_replaced_by_valid_commit_metadata(
 
 
 @pytest.mark.parametrize("terminal", ["TIMEOUT", "FAILED", "CANCELLED"])
-def test_pooled_failure_preserves_sibling_receipt_and_never_replays(helper, registered, terminal):
+@pytest.mark.parametrize("entry_schema", [2, 3])
+def test_pooled_failure_preserves_sibling_receipt_and_never_replays(
+    helper, registered, terminal, entry_schema
+):
     api = api_fixture(helper, registered, completed=helper.ENGINES)
     key, task = add_failed_attempt(helper, registered, api, terminal=terminal)
     root = Path(registered["root"])
     path = root / "orchestration/jobs" / key
     intent = helper.read(path / "INTENT.json")
     sibling = "train--SRF3CE_GOLD_b0"
-    intent.update(execution_entry_schema=2, gpu_count=2, task_ids=[task, sibling])
+    intent.update(execution_entry_schema=entry_schema, gpu_count=2, task_ids=[task, sibling])
     helper.save(path / "INTENT.json", intent)
     receipt = orchestration.receipt_path(root, sibling)
     helper.save(receipt, dict(status="PASS", job_id="88"))

@@ -133,7 +133,7 @@ class Repair:
                     for k in ("gpu_count", "qos", "run_identity_sha256")
                 )
                 or (
-                    intent.get("execution_entry_schema") == 2
+                    intent.get("execution_entry_schema") in {2, 3}
                     and (
                         type(state.get("gpu_count")) is not int
                         or type(intent.get("gpu_count")) is not int
@@ -145,7 +145,7 @@ class Repair:
                 )
             ):
                 raise PermissionError("Reconciliation ledger binding differs")
-            if intent.get("execution_entry_schema") == 2:
+            if intent.get("execution_entry_schema") in {2, 3}:
                 self._pool_capacity(intent)
         return rows
 
@@ -191,11 +191,12 @@ class Repair:
             raise PermissionError(
                 "An allocated/started or ambiguous attempt cannot reuse its claim"
             )
-        pooled = intent.get("execution_entry_schema") == 2
+        pooled = intent.get("execution_entry_schema") in {2, 3}
         tasks = intent.get("task_ids", [])
+        rolling = intent.get("execution_entry_schema") == 3
         if pooled:
             pool = getattr(self.api, "task_pool", None)
-            # The operations adapter owns schema 2; a field on an arbitrary
+            # The operations adapter owns pooled schemas; a field on an arbitrary
             # intent cannot widen the original single-task repair contract.
             registered = self.api.orchestration.TASKS
             if (
@@ -214,17 +215,35 @@ class Repair:
                 or intent.get("extension_manifest_sha256")
                 != self.value["extension_manifest_sha256"]
                 or intent.get("kind") not in {"train", "eval", "release"}
+                or (
+                    rolling
+                    and (
+                        intent.get("kind") != "eval"
+                        or intent.get("rolling_endpoints") is not True
+                        or self.value["task_pool"].get("rolling_endpoints") is not True
+                    )
+                )
                 or not isinstance(tasks, list)
                 or not 1
                 <= len(tasks)
-                <= (1 if intent["kind"] == "release" else intent["max_tasks_per_job"])
+                <= (
+                    3 * intent["max_tasks_per_job"]
+                    if rolling
+                    else (1 if intent["kind"] == "release" else intent["max_tasks_per_job"])
+                )
                 or any(not isinstance(task, str) or task not in registered for task in tasks)
                 or len(set(tasks)) != len(tasks)
                 or any(registered[task]["kind"] != intent["kind"] for task in tasks)
                 or type(intent.get("gpu_count")) is not int
                 or type(state.get("gpu_count")) is not int
                 or state["gpu_count"] != intent["gpu_count"]
-                or intent["gpu_count"] != (0 if intent["kind"] == "release" else len(tasks))
+                or (
+                    not 1 <= intent["gpu_count"] <= len(tasks) <= 3 * intent["gpu_count"]
+                    or intent["gpu_count"] > intent["max_tasks_per_job"]
+                    if rolling
+                    else intent["gpu_count"]
+                    != (0 if intent["kind"] == "release" else len(tasks))
+                )
                 or "resume_of" in intent
             ):
                 raise PermissionError("Pool repair requires bound fixed unstarted science tasks")

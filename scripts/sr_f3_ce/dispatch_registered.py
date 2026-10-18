@@ -1210,7 +1210,7 @@ class Driver:
             intent = read(directory / "INTENT.json")
             terminal_path = directory / "TERMINAL.json"
             terminal = read(terminal_path) if terminal_path.exists() else {}
-            if intent.get("execution_entry_schema") == 2:
+            if intent.get("execution_entry_schema") in {2, 3}:
                 # A pool may already contain a successful sibling. Preserve its
                 # independent receipt; replaying the allocation would duplicate it.
                 evidence = dict(

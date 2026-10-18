@@ -148,3 +148,9 @@ CPU 提交及放行前先读取普通 QoS 与用户关联的实际限制，再�
 运行作业上限只决定何时获配，不冒充提交上限。不能因老师 GPU/提交额度已满而阻塞普通 CPU。
 历史 CPU 的 terminal QoS 始终核对其原 INTENT；安全交接保留原回执与缺失 END，
 只退役指定旧 CPU，未知提交/释放不重投，不取消科学或其他作业。
+
+## 2026-10-18 滚动端点池运维回执
+
+授权的schema3端点池将固定任务成员数与真实GPU数分开记录；训练和CPU release继续schema2。单设备复用必须由前任成功EXIT及原任务/observer核验触发，每个任务只写一次LAUNCH。最终verify_job核对slot_index、设备、predecessor_task、有限数值时间戳以及退出不晚于后继启动；再走原冻结产物核验。提交/释放仍采集实时容量证据，未知分配始终占N卡和一个提交名额。
+
+新运维验证旧schema2时，从其不可变pool_operation_identity_path及OPERATION_SOURCES加载原Pool作为只读验证器，不安装第二个Controller，不替换科学源码。旧源码/身份发生变化则拒绝验收。CPU接续器仅在共享提交锁内交接，旧作业终态和原件保留；正在运行的科学作业不取消、不重投。

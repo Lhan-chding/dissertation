@@ -15,6 +15,7 @@ import copy
 import hashlib
 import importlib.util
 import json
+import math
 import os
 import re
 import signal
@@ -26,6 +27,8 @@ from pathlib import Path
 
 SCHEMA = 1
 ENTRY_SCHEMA = 2
+ROLLING_SCHEMA = 3
+MAX_QUEUED_PER_GPU = 3
 SCOPE = "SRF3CE_FIXED_TASK_POOL"
 CAPACITY_POLICY = "LIVE_SLURM_QOS_AND_ASSOCIATION"
 LIMIT_KEYS = ("gpu_limit", "submitted_limit", "max_tasks_per_job", "gpu_per_user_limit")
@@ -63,7 +66,13 @@ def check_authorization(root, path):
         raise PermissionError("Explicit task pool user authorization is required")
     if not re.fullmatch(r"[a-f0-9]{64}", str(value.get("extension_manifest_sha256", ""))):
         raise PermissionError("Task pool authorization must name the retained native extension")
+    extra = {}
+    if "rolling_endpoints" in value:
+        if value["rolling_endpoints"] is not True:
+            raise PermissionError("Rolling endpoint authorization must be explicit")
+        extra["rolling_endpoints"] = True
     return dict(
+        **extra,
         authorization_path=str(path),
         authorization_sha256=_sha(path),
         capacity_policy=CAPACITY_POLICY,
@@ -137,26 +146,75 @@ def quota_usage(root, value, queue, attempts, user, *, original, tasks, capacity
             path = root / "orchestration/jobs" / key / "INTENT.json"
             intent = _read(path)
             selected = intent.get("task_ids")
+            claim_identity_path, claim_identity_sha, claim_binding = (
+                identity_path,
+                identity_sha256,
+                binding,
+            )
+            if intent.get("pool_operation_identity_path") != str(identity_path):
+                # A finished job can disappear before accounting is readable.
+                # Keep its actual N-GPU reservation under its retained identity.
+                claim_identity_path = Path(intent.get("pool_operation_identity_path", "")).resolve(
+                    strict=True
+                )
+                old_commit = claim_identity_path.parent.name
+                if (
+                    not re.fullmatch(r"[a-f0-9]{40}", old_commit)
+                    or claim_identity_path
+                    != root / "operations" / old_commit / "OPERATION_IDENTITY.json"
+                ):
+                    raise PermissionError("Historical reservation operation path differs")
+                old = _read(claim_identity_path)
+                claim_identity_sha = _sha(claim_identity_path)
+                claim_binding = old.get("task_pool", {})
+                sources_path = claim_identity_path.parent / "OPERATION_SOURCES.json"
+                if (
+                    old.get("root") != str(root)
+                    or old.get("operation_commit") != old_commit
+                    or old.get("run_identity_sha256") != value.get("run_identity_sha256")
+                    or old.get("operation_sources_sha256") != _sha(sources_path)
+                    or check_authorization(root, claim_binding.get("authorization_path", ""))
+                    != claim_binding
+                    or _read(sources_path).get("files", {}).get("pooled_execution.py")
+                    != _sha(claim_identity_path.parent / "pooled_execution.py")
+                ):
+                    raise PermissionError("Historical reservation operation binding differs")
             limits = capacity.verify_snapshot(intent)
             if (
                 type(intent.get("execution_entry_schema")) is not int
-                or intent["execution_entry_schema"] != ENTRY_SCHEMA
+                or intent["execution_entry_schema"] not in {ENTRY_SCHEMA, ROLLING_SCHEMA}
                 or intent.get("key") != key
                 or state.get("intent_sha256") != _sha(path)
                 or not isinstance(selected, list)
                 or any(not isinstance(task, str) or task not in tasks for task in selected)
                 or len(selected) != len(set(selected))
-                or len(selected) != state["gpu_count"]
+                or (
+                    not (
+                        state["gpu_count"]
+                        <= len(selected)
+                        <= MAX_QUEUED_PER_GPU * state["gpu_count"]
+                    )
+                    if intent["execution_entry_schema"] == ROLLING_SCHEMA
+                    else len(selected) != state["gpu_count"]
+                )
                 or type(intent.get("gpu_count")) is not int
                 or intent["gpu_count"] != state["gpu_count"]
                 or intent.get("kind") not in {"train", "eval"}
                 or any(tasks[task]["kind"] != intent["kind"] for task in selected)
                 or intent.get("user") != user
-                or intent.get("pool_operation_identity_path") != str(identity_path)
-                or intent.get("pool_operation_identity_sha256") != identity_sha256
-                or intent.get("pool_authorization_sha256") != binding["authorization_sha256"]
+                or intent.get("pool_operation_identity_path") != str(claim_identity_path)
+                or intent.get("pool_operation_identity_sha256") != claim_identity_sha
+                or intent.get("pool_authorization_sha256") != claim_binding["authorization_sha256"]
                 or type(limits["max_tasks_per_job"]) is not int
-                or not 0 < len(selected) <= limits["max_tasks_per_job"]
+                or not 0 < state["gpu_count"] <= limits["max_tasks_per_job"]
+                or (
+                    intent["execution_entry_schema"] == ROLLING_SCHEMA
+                    and (
+                        intent.get("rolling_endpoints") is not True
+                        or claim_binding.get("rolling_endpoints") is not True
+                        or intent.get("kind") != "eval"
+                    )
+                )
                 or state.get("qos") != "soujanya-poria-startfund-2026-03"
                 or state.get("qos") != intent.get("qos")
                 or state.get("run_identity_sha256") != value.get("run_identity_sha256")
@@ -247,7 +305,7 @@ class Pool:
 
     @staticmethod
     def pooled(intent):
-        return intent.get("execution_entry_schema") == ENTRY_SCHEMA
+        return intent.get("execution_entry_schema") in {ENTRY_SCHEMA, ROLLING_SCHEMA}
 
     def teacher_usage(self, queue, attempts, user):
         return quota_usage(
@@ -273,23 +331,92 @@ class Pool:
             identifier,
         ]
 
-    def key(self, selected):
+    def key(self, selected, rolling=False):
         return (
             "job-"
-            + self.extension.object_hash(["task-pool-v1", self.identity_sha256, selected])[:16]
+            + self.extension.object_hash(
+                [
+                    "endpoint-rolling-v1" if rolling else "task-pool-v1",
+                    self.identity_sha256,
+                    selected,
+                ]
+            )[:16]
         )
+
+    def historical_pool(self, intent):
+        """Use retained operation code to validate its own immutable pooled receipts."""
+        path = Path(intent.get("pool_operation_identity_path", "")).resolve(strict=True)
+        if path == self.identity_path:
+            return None
+        commit = path.parent.name
+        if (
+            not re.fullmatch(r"[a-f0-9]{40}", commit)
+            or path != self.root / "operations" / commit / "OPERATION_IDENTITY.json"
+            or _sha(path) != intent.get("pool_operation_identity_sha256")
+        ):
+            raise PermissionError("Historical pooled operation binding differs")
+        value = _read(path)
+        sources_path = path.parent / "OPERATION_SOURCES.json"
+        if (
+            value.get("root") != str(self.root)
+            or value.get("operation_commit") != commit
+            or value.get("run_identity_sha256") != self.value["run_identity_sha256"]
+            or value.get("operation_sources_sha256") != _sha(sources_path)
+        ):
+            raise PermissionError("Historical pooled source manifest differs")
+        source = path.parent / "pooled_execution.py"
+        body = source.read_bytes()
+        digest = hashlib.sha256(body).hexdigest()
+        if _read(sources_path)["files"].get(source.name) != digest:
+            raise PermissionError("Historical pooled source changed")
+        cache = getattr(self, "_historical_pools", {})
+        if str(path) not in cache:
+            name = "srf3ce_historical_pool_" + digest
+            module = importlib.util.module_from_spec(
+                importlib.util.spec_from_file_location(name, source)
+            )
+            sys.modules[name] = module
+            exec(compile(body, str(source), "exec"), module.__dict__)
+            value["identity_path"] = str(path)
+            prior = module.Pool(value, self.extension)
+            # Delegation never installs another adapter or captures this wrapper
+            # as a historical fallback (which would recurse for schema1).
+            for attr in (
+                "original_intent",
+                "original_submit",
+                "original_release",
+                "original_verify_job",
+                "original_prepare_resume",
+                "original_teacher_usage",
+            ):
+                setattr(prior, attr, getattr(self, attr))
+            cache[str(path)] = prior
+            self._historical_pools = cache
+        return cache[str(path)]
 
     def verify_intent(self, root, intent):
         if not self.pooled(intent):
             return self.original_intent(root, intent)
         if Path(root).resolve(strict=True) != self.root:
             raise PermissionError("Task pool intent belongs to another run")
+        prior = self.historical_pool(intent)
+        if prior is not None:
+            return prior.verify_intent(root, intent)
         binding = self.check()
         e = self.extension
         checked = e.verify_extension(self.root, self.context.manifest, science=True)
         config = _read(self.root / "orchestration/CONFIG.json")
         limits = self.capacity.verify_snapshot(intent)
         tasks, kind = intent.get("task_ids"), intent.get("kind")
+        rolling = intent.get("execution_entry_schema") == ROLLING_SCHEMA
+        if rolling and (
+            kind != "eval"
+            or binding.get("rolling_endpoints") is not True
+            or intent.get("rolling_endpoints") is not True
+            or type(intent.get("gpu_count")) is not int
+            or not 1 <= intent["gpu_count"] <= limits["max_tasks_per_job"]
+        ):
+            raise PermissionError("Rolling endpoints require an authorized bounded GPU queue")
         if (
             not isinstance(tasks, list)
             or not tasks
@@ -299,7 +426,13 @@ class Pool:
                 or any(not isinstance(t, str) or t not in e.TASKS for t in tasks)
                 or any(e.TASKS[t]["kind"] != kind for t in tasks)
                 or (
-                    len(tasks) > limits["max_tasks_per_job"]
+                    (
+                        not intent["gpu_count"]
+                        <= len(tasks)
+                        <= MAX_QUEUED_PER_GPU * intent["gpu_count"]
+                        if rolling
+                        else len(tasks) > limits["max_tasks_per_job"]
+                    )
                     if kind in {"train", "eval"}
                     else len(tasks) != 1
                 )
@@ -307,10 +440,12 @@ class Pool:
             )
         ):
             raise PermissionError("Task pool requires distinct fixed tasks of one stage")
-        gpu_count = len(tasks) if kind in {"train", "eval"} else 0
-        key = self.key(tasks)
+        gpu_count = (
+            intent["gpu_count"] if rolling else (len(tasks) if kind in {"train", "eval"} else 0)
+        )
+        key = self.key(tasks, rolling)
         expected = dict(
-            execution_entry_schema=ENTRY_SCHEMA,
+            execution_entry_schema=ROLLING_SCHEMA if rolling else ENTRY_SCHEMA,
             key=key,
             root=str(self.root),
             code_root=str(self.root / "code"),
@@ -357,6 +492,10 @@ class Pool:
                 ]
             )[:24],
         )
+        if rolling:
+            expected["rolling_endpoints"] = True
+        elif "rolling_endpoints" in intent:
+            raise PermissionError("Legacy pool cannot declare rolling execution")
         if any(type(intent.get(k)) is not type(v) or intent[k] != v for k, v in expected.items()):
             raise PermissionError("Actual pooled entry/source/allocation identity differs")
         if Path(intent["script"]).read_text() != e._script_body(
@@ -420,8 +559,9 @@ class Pool:
             )
             if kind in {"train", "eval"} and count < 1:
                 return None
-            selected = ready[: count if count else 1]
-            key = self.key(selected)
+            rolling = kind == "eval" and self.value["task_pool"].get("rolling_endpoints") is True
+            selected = ready[: MAX_QUEUED_PER_GPU * count if rolling else (count if count else 1)]
+            key = self.key(selected, rolling)
             directory = controller.directory / "jobs" / key
             # A deterministic claim is never overwritten or issued a second time.
             if directory.exists():
@@ -455,7 +595,7 @@ class Pool:
                 partition="cluster02" if count else controller.cpu_policy["partition"],
                 qos=e.TEACHER_QOS if count else controller.cpu_policy["qos"],
                 cpu_node=None if count else controller.cpu_policy["cpu_node"],
-                execution_entry_schema=ENTRY_SCHEMA,
+                execution_entry_schema=ROLLING_SCHEMA if rolling else ENTRY_SCHEMA,
                 extension_manifest_path=self.context.manifest,
                 extension_manifest_sha256=checked["manifest_sha256"],
                 amendment_sha256=checked["amendment_sha256"],
@@ -472,6 +612,8 @@ class Pool:
                     t: self.command("worker", t, controller.python) for t in selected
                 },
             )
+            if rolling:
+                intent["rolling_endpoints"] = True
             intent["claim_id"] = e.object_hash(
                 [
                     identity,
@@ -620,6 +762,9 @@ class Pool:
         intent = _read(directory / "INTENT.json")
         if not self.pooled(intent):
             return self.original_verify_job(controller, state)
+        prior = self.historical_pool(intent)
+        if prior is not None:
+            return prior.verify_job(controller, state)
         self.verify_intent(self.root, intent)
         job = state.get("job_id")
         terminal = _read(directory / "TERMINAL.json")
@@ -661,24 +806,249 @@ class Pool:
             e.visible_devices(",".join(devices), intent["gpu_count"])
         elif devices:
             raise PermissionError("CPU release unexpectedly owns GPU devices")
+        rolling = intent.get("execution_entry_schema") == ROLLING_SCHEMA
+        if rolling:
+            self.verify_slot_chains(directory, intent, devices)
         for index, task in enumerate(intent["task_ids"]):
             launch, exited = (
                 _read(directory / (task + ".LAUNCH.json")),
                 _read(directory / (task + ".EXIT.json")),
             )
             if (
-                launch
+                not rolling
+                and launch
                 != dict(
                     command=intent["worker_entry_commands"][task],
                     claim_id=intent["claim_id"],
                     device=devices[index] if devices else "",
                 )
-                or exited.get("returncode") != 0
-            ):
+            ) or exited.get("returncode") != 0:
                 raise PermissionError("Pooled task process identity/exit differs")
             e.verify_task(self.root, task, binding=dict(job_id=job, claim_id=intent["claim_id"]))
             e.verify_observation_receipt(self.root, intent, task, job)
         return list(intent["task_ids"])
+
+    def verify_slot_chains(self, directory, intent, devices):
+        """Validate retained device reuse without pretending members ran together."""
+        chains = {index: [] for index in range(len(devices))}
+        for task in intent["task_ids"]:
+            launch = _read(directory / (task + ".LAUNCH.json"))
+            exited = _read(directory / (task + ".EXIT.json"))
+            slot = launch.get("slot_index")
+            if (
+                type(slot) is not int
+                or slot not in chains
+                or launch.get("device") != devices[slot]
+                or launch.get("command") != intent["worker_entry_commands"][task]
+                or launch.get("claim_id") != intent["claim_id"]
+                or set(launch)
+                != {
+                    "command",
+                    "device",
+                    "claim_id",
+                    "slot_index",
+                    "predecessor_task",
+                    "launched_at",
+                }
+                or exited.get("returncode") != 0
+            ):
+                raise PermissionError("Rolling task device/command/exit differs")
+            for value in (launch.get("launched_at"), exited.get("exited_at")):
+                if type(value) not in (int, float) or not math.isfinite(value):
+                    raise PermissionError("Rolling task timestamps are invalid")
+            if launch["launched_at"] > exited["exited_at"]:
+                raise PermissionError("Rolling task exit precedes launch")
+            chains[slot].append((task, launch, exited))
+        for members in chains.values():
+            if not members:
+                raise PermissionError("Rolling allocation has an unused GPU slot")
+            previous, previous_exit = None, None
+            for task, launch, exited in sorted(members, key=lambda row: row[1]["launched_at"]):
+                if launch["predecessor_task"] != previous or (
+                    previous_exit is not None and launch["launched_at"] < previous_exit
+                ):
+                    raise PermissionError("Rolling slot chain overlaps or forks")
+                previous, previous_exit = task, exited["exited_at"]
+
+    def run_rolling(self, directory, intent, job, devices, *, popen, sleep):
+        """Run the immutable endpoint claim on reusable exclusive GPU slots."""
+        e, root = self.extension, self.root
+        pending = list(intent["task_ids"])
+        children, exits, verified, failures = {}, {}, [], {}
+        slots, predecessors = {}, {i: None for i in range(len(devices))}
+        received, forwarded, handlers = [], set(), {}
+        signal_started = None
+
+        def receive(signum, _frame):
+            received.append(signum)
+
+        def forward(signum):
+            for task, child in children.items():
+                if task not in exits:
+                    with suppress(ProcessLookupError):
+                        os.killpg(child.pid, signum)
+
+        def reap():
+            # Observe every exit before assigning any vacant slot. A failure
+            # discovered beside a success must prevent subsequent launches.
+            for task, child in children.items():
+                if task not in exits:
+                    code = child.poll()
+                    if code is not None:
+                        exits[task] = code
+                        e.save_json(
+                            directory / (task + ".EXIT.json"),
+                            dict(returncode=code, exited_at=time.time()),
+                            exclusive=True,
+                        )
+                        if code:
+                            failures[task] = dict(returncode=code)
+            for task, code in exits.items():
+                if code or task in verified or task in failures:
+                    continue
+                try:
+                    e.verify_task(root, task, binding=dict(job_id=job, claim_id=intent["claim_id"]))
+                    e.verify_observation_receipt(root, intent, task, job)
+                    verified.append(task)
+                except Exception as error:
+                    failures[task] = dict(error=repr(error))
+                    e.save_json(
+                        directory / (task + ".VERIFICATION_FAILURE.json"),
+                        dict(error=repr(error), at=e.now()),
+                        exclusive=True,
+                    )
+
+        def launch(task, slot):
+            if (root / "STOP").exists() or (root / "STOP").is_symlink():
+                raise RuntimeError("STOP prevents rolling endpoint launch")
+            env = dict(os.environ, SRF3CE_JOB_KEY=intent["key"], SRF3CE_CLAIM_ID=intent["claim_id"])
+            env["CUDA_VISIBLE_DEVICES"] = devices[slot]
+            env.pop("SRF3CE_RESUME_RECEIPT", None)
+            env.pop("SRF3CE_PREVIOUS_JOB_KEY", None)
+            command = intent["worker_entry_commands"][task]
+            e.save_json(
+                directory / (task + ".LAUNCH.json"),
+                dict(
+                    command=command,
+                    device=devices[slot],
+                    claim_id=intent["claim_id"],
+                    slot_index=slot,
+                    predecessor_task=predecessors[slot],
+                    launched_at=time.time(),
+                ),
+                exclusive=True,
+            )
+            try:
+                children[task] = popen(command, env=env, start_new_session=True)
+            except BaseException as error:
+                e.save_json(
+                    directory / (task + ".LAUNCH_EXCEPTION.json"),
+                    dict(error=repr(error), at=e.now()),
+                    exclusive=True,
+                )
+                raise
+            slots[task] = slot
+            predecessors[slot] = task
+
+        try:
+            for signum in (signal.SIGTERM, signal.SIGINT):
+                handlers[signum] = signal.signal(signum, receive)
+            # Fill the first allocation once; all subsequent reuse requires an
+            # actual process exit and successful frozen task/observer validation.
+            for slot in range(len(devices)):
+                if received:
+                    raise RuntimeError("Termination before initial endpoint launch")
+                launch(pending.pop(0), slot)
+            while pending or len(exits) < len(children):
+                reap()
+                if (root / "STOP").exists() or (root / "STOP").is_symlink():
+                    failures.setdefault("STOP", dict(error="STOP prevents further launches"))
+                if received:
+                    if signal_started is None:
+                        signal_started = time.monotonic()
+                    for signum in received:
+                        if signum not in forwarded:
+                            forward(signum)
+                            forwarded.add(signum)
+                    if time.monotonic() - signal_started > 10 and signal.SIGKILL not in forwarded:
+                        forward(signal.SIGKILL)
+                        forwarded.add(signal.SIGKILL)
+                if not failures and not received:
+                    occupied = {slots[t] for t in children if t not in exits}
+                    for slot in range(len(devices)):
+                        if pending and slot not in occupied:
+                            # Signals may arrive while validating a completed child.
+                            if received:
+                                break
+                            launch(pending.pop(0), slot)
+                if len(exits) == len(children) and (not pending or failures or received):
+                    break
+                sleep(0.1)
+            reap()
+            if failures or received or pending:
+                raise RuntimeError("HANDOFF_REQUIRED: rolling endpoints stopped; no retries")
+            self.verify_slot_chains(directory, intent, devices)
+            e.save_json(
+                directory / "COMPLETE.json",
+                dict(
+                    status="COMPLETE",
+                    job_id=job,
+                    task_ids=intent["task_ids"],
+                    claim_id=intent["claim_id"],
+                ),
+                exclusive=True,
+            )
+            e.save_json(
+                directory / "POOL_END.json",
+                dict(
+                    status="COMPLETE", job_id=job, verified_tasks=verified, exits=exits, at=e.now()
+                ),
+                exclusive=True,
+            )
+            return _read(directory / "COMPLETE.json")
+        except BaseException as error:
+            # Ordinary member failure above lets already running siblings finish.
+            # Launcher/parent exceptions must not orphan owned subprocesses.
+            reap()
+            if len(exits) < len(children):
+                forward(signal.SIGTERM)
+                deadline = time.monotonic() + 10
+                while len(exits) < len(children) and time.monotonic() < deadline:
+                    reap()
+                    if len(exits) < len(children):
+                        sleep(0.1)
+                if len(exits) < len(children):
+                    forward(signal.SIGKILL)
+                    for task, child in children.items():
+                        if task not in exits:
+                            code = child.wait(timeout=5)
+                            exits[task] = code
+                            e.save_json(
+                                directory / (task + ".EXIT.json"),
+                                dict(returncode=code, exited_at=time.time()),
+                                exclusive=True,
+                            )
+            e.save_json(
+                directory / "POOL_END.json",
+                dict(
+                    status="HANDOFF_REQUIRED",
+                    job_id=job,
+                    error=repr(error),
+                    exits=exits,
+                    verified_tasks=verified,
+                    failures=failures,
+                    signals=received,
+                    unlaunched_tasks=[t for t in intent["task_ids"] if t not in children],
+                    new_submissions=0,
+                    automatic_retries=0,
+                    at=e.now(),
+                ),
+                exclusive=True,
+            )
+            raise
+        finally:
+            for signum, previous in handlers.items():
+                signal.signal(signum, previous)
 
     def run_job(self, job_key, *, popen=subprocess.Popen, sleep=time.sleep):
         e, root = self.extension, self.root
@@ -707,7 +1077,11 @@ class Pool:
         devices = (
             e.visible_devices(os.environ.get("CUDA_VISIBLE_DEVICES", ""), count) if count else []
         )
-        if count and count != len(intent["task_ids"]):
+        if (
+            count
+            and intent.get("execution_entry_schema") != ROLLING_SCHEMA
+            and count != len(intent["task_ids"])
+        ):
             raise PermissionError("Each pooled GPU requires exactly one fixed task")
         allocation = _read(directory / "ALLOCATION_VERIFIED.json")
         if allocation.get("job_id") != job or _sha(intent["script"]) != intent["script_sha256"]:
@@ -720,6 +1094,8 @@ class Pool:
             dict(job_id=job, devices=devices, at=e.now()),
             exclusive=True,
         )
+        if intent.get("execution_entry_schema") == ROLLING_SCHEMA:
+            return self.run_rolling(directory, intent, job, devices, popen=popen, sleep=sleep)
         children, exits, verified, failures = {}, {}, [], {}
         received, forwarded, handlers = [], set(), {}
 
