@@ -1394,3 +1394,29 @@ def test_rolling_rejection_keeps_member_queue_bounded_and_explicit(
         with pytest.raises(PermissionError, match="bound fixed"):
             env.repair._no_execution(intent, state)
     assert len(env.transport.submitted) == 1
+
+
+def test_repair_effective_states_filters_bound_superseded_rows(repair_env):
+    env = repair_env
+    rows = env.repair.rows()
+    assert rows
+    excluded = rows[0][1]["key"]
+    paths = list((env.root / "orchestration/jobs").glob("*/STATE.json"))
+    before = {p: p.read_bytes() for p in paths}
+    calls = []
+
+    def filtered(value):
+        calls.append(value)
+        return [(i, s) for i, s in value if s["key"] != excluded]
+
+    env.api.task_pool = SimpleNamespace(filter_rows=filtered)
+    assert all(s["key"] != excluded for _, s in env.repair.rows())
+    assert all(s["key"] != excluded for s in env.repair.effective_states(rows))
+    assert calls and all(p.read_bytes() == b for p, b in before.items())
+
+    def invalid(value):
+        raise PermissionError("Pending split receipt changed")
+
+    env.api.task_pool.filter_rows = invalid
+    with pytest.raises(PermissionError, match="receipt changed"):
+        env.repair.effective_states(rows)

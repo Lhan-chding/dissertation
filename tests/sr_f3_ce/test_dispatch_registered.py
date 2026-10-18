@@ -1721,3 +1721,128 @@ def test_cpu_qos_registration_requires_explicit_bound_authorization(helper, regi
             registered["extension_manifest_path"],
             dispatcher_qos="rose",
         )
+
+
+def test_dispatcher_active_rows_delegate_bound_split_filter_without_changing_history(
+    helper, registered
+):
+    api = api_fixture(helper, registered)
+    root = Path(registered["root"])
+    directory = root / "orchestration/jobs/job-deadbeefdeadbeef"
+    helper.save(directory / "INTENT.json", dict(kind="eval", gpu_count=7, qos=helper.QOS))
+    helper.save(
+        directory / "STATE.json",
+        dict(key=directory.name, status="SUBMITTED", job_id="211093", gpu_count=7, qos=helper.QOS),
+    )
+    before = (directory / "STATE.json").read_bytes()
+    seen = []
+
+    def filtered(rows):
+        seen.extend(rows)
+        return [(i, s) for i, s in rows if s["key"] != directory.name]
+
+    api.task_pool = SimpleNamespace(filter_rows=filtered)
+    snapshot = make_driver(helper, registered, api).snapshot()
+    assert seen and not snapshot["jobs"]
+    assert snapshot["teacher_usage"] == dict(gpus=0, submitted=0)
+    assert (directory / "STATE.json").read_bytes() == before
+
+    def invalid(rows):
+        raise PermissionError("Superseded pending ledger changed")
+
+    api.task_pool.filter_rows = invalid
+    with pytest.raises(PermissionError, match="ledger changed"):
+        make_driver(helper, registered, api).snapshot()
+
+
+@pytest.fixture
+def failed_split_driver(tmp_path, monkeypatch):
+    from test_dispatch_efficiency import retired_driver
+
+    env = retired_driver.__wrapped__(tmp_path, monkeypatch)
+    prior = env.retired
+    env.helper.save(
+        prior.directory / "END.json",
+        dict(
+            status="FAILED",
+            error="PermissionError('Actual teacher capacity exceeds the live scheduler limit')",
+        ),
+    )
+    terminal = dict(prior.terminal, state="FAILED", exit_code="1:0")
+    env.raw.accounting[prior.state["job_id"]] = terminal
+    receipt = env.helper.read(prior.transition)
+    receipt.update(status="OPERATOR_HANDOFF_FAILED", terminal=terminal)
+    receipt.pop("cancel_returncode")
+    env.helper.save(prior.transition, receipt)
+    auth = env.helper.read(prior.authorization)
+    auth.update(
+        terminal=terminal,
+        transition_sha256=env.helper.sha(prior.transition),
+        pending_split={"fixture": "validated split"},
+    )
+    auth["predecessor"]["end_sha256"] = env.helper.sha(prior.directory / "END.json")
+    env.helper.save(prior.authorization, auth)
+
+    def check_split(root, binding):
+        if binding != {"fixture": "validated split"}:
+            raise PermissionError("Pending split binding differs")
+
+    monkeypatch.setattr(
+        env.helper,
+        "load_pool_source",
+        lambda *a, **k: SimpleNamespace(check_pending_split=check_split),
+    )
+    env.value["task_pool"] = dict(pending_split=auth["pending_split"])
+    env.value["dispatch_efficiency"] = env.helper.check_efficiency_authorization(
+        env.root, prior.authorization
+    )
+    return env
+
+
+def test_exact_failed_cpu_handoff_is_bound_to_split_and_live_terminal(failed_split_driver):
+    env = failed_split_driver
+    p = env.retired
+    original = {f.name: f.read_bytes() for f in p.directory.iterdir() if f.is_file()}
+    terminal = env.helper.verify_efficiency_predecessor(
+        env.value, env.api, p.directory, p.intent, p.state, env.raw.queue("alice")
+    )
+    assert terminal["state"] == "FAILED" and terminal["exit_code"] == "1:0"
+    assert original == {f.name: f.read_bytes() for f in p.directory.iterdir() if f.is_file()}
+    env.raw.accounting[p.state["job_id"]] = dict(terminal, exit_code="2:0")
+    with pytest.raises(PermissionError, match="live accounting"):
+        env.helper.verify_efficiency_predecessor(
+            env.value, env.api, p.directory, p.intent, p.state, {}
+        )
+
+
+@pytest.mark.parametrize(
+    "mutation", ["end_error", "end_hash", "exit", "split", "operation_split", "lease"]
+)
+def test_failed_cpu_handoff_rejects_unbound_or_different_failure(failed_split_driver, mutation):
+    env = failed_split_driver
+    p = env.retired
+    auth = env.helper.read(p.authorization)
+    receipt = env.helper.read(p.transition)
+    if mutation in {"end_error", "end_hash"}:
+        env.helper.save(p.directory / "END.json", dict(status="FAILED", error="different failure"))
+        if mutation == "end_error":
+            auth["predecessor"]["end_sha256"] = env.helper.sha(p.directory / "END.json")
+    elif mutation == "exit":
+        auth["terminal"]["exit_code"] = "2:0"
+        receipt["terminal"] = auth["terminal"]
+    elif mutation == "split":
+        auth.pop("pending_split")
+    elif mutation == "operation_split":
+        env.value["task_pool"]["pending_split"] = {"fixture": "other split"}
+    else:
+        receipt["orchestration_lease_held"] = False
+    env.helper.save(p.transition, receipt)
+    auth["transition_sha256"] = env.helper.sha(p.transition)
+    env.helper.save(p.authorization, auth)
+    with pytest.raises(PermissionError):
+        env.value["dispatch_efficiency"] = env.helper.check_efficiency_authorization(
+            env.root, p.authorization
+        )
+        env.helper.verify_efficiency_predecessor(
+            env.value, env.api, p.directory, p.intent, p.state, {}
+        )

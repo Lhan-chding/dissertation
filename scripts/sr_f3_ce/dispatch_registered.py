@@ -328,14 +328,33 @@ def check_efficiency_authorization(root, path):
     if sha(transition) != authorization["transition_sha256"]:
         raise PermissionError("Efficiency transition record differs")
     receipt = read(transition)
+    cancelled = (
+        receipt.get("status") == "OPERATOR_HANDOFF_CANCELLED"
+        and receipt.get("cancel_returncode") == 0
+        and authorization["terminal"].get("state") == "CANCELLED"
+    )
+    failed = (
+        receipt.get("status") == "OPERATOR_HANDOFF_FAILED"
+        and authorization["terminal"].get("state") == "FAILED"
+        and authorization["terminal"].get("exit_code") == "1:0"
+        and end.exists()
+        and read(end).get("status") == "FAILED"
+        and read(end).get("error")
+        == "PermissionError('Actual teacher capacity exceeds the live scheduler limit')"
+    )
+    if failed:
+        operation = Path(__file__).resolve().parent
+        module = load_pool_source(
+            operation,
+            expected_sha=read(operation / "OPERATION_SOURCES.json")["files"]["pooled_execution.py"],
+        )
+        module.check_pending_split(root, authorization.get("pending_split"))
     if (
-        receipt.get("status") != "OPERATOR_HANDOFF_CANCELLED"
+        not (cancelled or failed)
         or receipt.get("job_id") != prior["job_id"]
         or receipt.get("orchestration_lease_held") is not True
         or receipt.get("queue_absent") is not True
-        or receipt.get("cancel_returncode") != 0
         or receipt.get("terminal") != authorization.get("terminal")
-        or authorization["terminal"].get("state") != "CANCELLED"
         or authorization["terminal"].get("job_id") != prior["job_id"]
     ):
         raise PermissionError("Efficiency transition is not a fenced terminal handoff")
@@ -349,6 +368,10 @@ def verify_efficiency_predecessor(value, api, prior, intent, state, queue):
         raise PermissionError("Efficiency authorization changed")
     authorization = read(bound["authorization_path"])
     predecessor = authorization["predecessor"]
+    if authorization["terminal"].get("state") == "FAILED" and (
+        authorization.get("pending_split") != value.get("task_pool", {}).get("pending_split")
+    ):
+        raise PermissionError("Failed dispatcher handoff requires this bound pending-pool split")
     if (
         prior.name != f"{predecessor['sequence']:04d}"
         or state.get("job_id") != predecessor["job_id"]
@@ -956,6 +979,13 @@ def state_rows(root):
     return rows
 
 
+def active_state_rows(root, api):
+    """Exclude only history authenticated by the bound pending-pool handoff."""
+    rows = state_rows(root)
+    pool = getattr(api, "task_pool", None)
+    return pool.filter_rows(rows) if pool is not None and hasattr(pool, "filter_rows") else rows
+
+
 def runtime_allocation(value, api, directory):
     intent, state = read(directory / "INTENT.json"), read(directory / "STATE.json")
     job = os.environ.get("SLURM_JOB_ID", "")
@@ -1010,7 +1040,7 @@ class Driver:
         repair = getattr(self.api, "repair", None)
         if repair is not None:
             repair.reconcile_completed()
-        rows = state_rows(self.root)
+        rows = active_state_rows(self.root, self.api)
         states = repair.effective_states(rows) if repair is not None else [s for _, s in rows]
         limits = capacity_limits(self.value, self.api)
         queue = self.api.slurm.queue(self.value["user"])
@@ -1122,7 +1152,7 @@ class Driver:
         repair = getattr(self.api, "repair", None)
         submitted = False
         for _ in range(len(self.api.orchestration.TASKS) + 1):
-            rows = state_rows(self.root)
+            rows = active_state_rows(self.root, self.api)
             states = [state for _, state in rows]
             blockers = self.api.controller.blocking_attempts(states)
             if blockers:
@@ -1190,7 +1220,7 @@ class Driver:
                 return "WAIT_CAPACITY_RECHECK"
             if result.get("status") != "SUBMITTED":
                 if repair is not None and repair.known_rejections_only(
-                    [state for _, state in state_rows(self.root)]
+                    [state for _, state in active_state_rows(self.root, self.api)]
                 ):
                     return "WAIT_CAPACITY_FOR_REJECTED_SUBMISSION"
                 raise RuntimeError("Submission outcome is unresolved; no duplicate submission")
@@ -1634,7 +1664,7 @@ def submit_driver(value, api, sequence, previous=None):
                 raise PermissionError("A recorded driver failure requires reconciliation")
             save(prior / "TERMINAL.json", terminal, immutable=True)
         repair = getattr(api, "repair", None)
-        rows = state_rows(Path(value["root"]))
+        rows = active_state_rows(Path(value["root"]), api)
         science_states = (
             repair.effective_states(rows) if repair is not None else [s for _, s in rows]
         )
@@ -1735,7 +1765,7 @@ def submit_driver(value, api, sequence, previous=None):
             raise PermissionError("Slurm stored dispatcher script differs")
         limits = dispatcher_limits(value, api)
         queue = api.slurm.queue(value["user"])
-        rows = state_rows(Path(value["root"]))
+        rows = active_state_rows(Path(value["root"]), api)
         states = repair.effective_states(rows) if repair is not None else [s for _, s in rows]
         usage, room = dispatcher_headroom(value, api, queue, states, limits)
         if room["gpus"] < 0 or room["submitted"] < 0:

@@ -122,6 +122,9 @@ class Repair:
 
     def rows(self):
         rows = self.io.state_rows(self.root)
+        pool = getattr(self.api, "task_pool", None)
+        if pool is not None and hasattr(pool, "filter_rows"):
+            rows = pool.filter_rows(rows)
         for intent, state in rows:
             directory = self.root / "orchestration/jobs" / state["key"]
             if not re.fullmatch(r"job-[a-f0-9]{16}", state["key"]) or (
@@ -241,8 +244,7 @@ class Repair:
                     not 1 <= intent["gpu_count"] <= len(tasks) <= 3 * intent["gpu_count"]
                     or intent["gpu_count"] > intent["max_tasks_per_job"]
                     if rolling
-                    else intent["gpu_count"]
-                    != (0 if intent["kind"] == "release" else len(tasks))
+                    else intent["gpu_count"] != (0 if intent["kind"] == "release" else len(tasks))
                 )
                 or "resume_of" in intent
             ):
@@ -344,11 +346,11 @@ class Repair:
         return None
 
     def effective_states(self, rows=None):
-        return [
-            state
-            for intent, state in (self.rows() if rows is None else rows)
-            if not self.rejection(intent, state)
-        ]
+        rows = self.rows() if rows is None else rows
+        pool = getattr(self.api, "task_pool", None)
+        if pool is not None and hasattr(pool, "filter_rows"):
+            rows = pool.filter_rows(rows)
+        return [state for intent, state in rows if not self.rejection(intent, state)]
 
     def verify_driver_predecessor(self, prior, old_intent, old_state, queue):
         bound = self.authorization["predecessor"]

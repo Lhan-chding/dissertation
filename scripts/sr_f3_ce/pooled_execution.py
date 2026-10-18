@@ -43,6 +43,106 @@ def _sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def check_pending_split(root, split):
+    """Validate retained evidence for exactly one never-started cancelled claim.
+
+    This is a view over immutable history, not a mutation of the predecessor's
+    ledger. Global endpoint outputs may subsequently belong to its replacements.
+    """
+    root = Path(root).resolve(strict=True)
+    if not isinstance(split, dict) or set(split) != {"receipt_path", "receipt_sha256", "groups"}:
+        raise PermissionError("Pending split binding differs")
+    path = Path(split["receipt_path"]).resolve(strict=True)
+    if not path.is_relative_to(root / "operations") or _sha(path) != split["receipt_sha256"]:
+        raise PermissionError("Pending split receipt changed or escaped retained operations")
+    receipt = _read(path)
+    expected = dict(
+        schema_version=1,
+        scope="SRF3CE_PENDING_POOL_SUPERSESSION",
+        root=str(root),
+        run_identity_sha256=_sha(root / "RUN_IDENTITY.json"),
+        queue_absent=True,
+        no_execution=True,
+        no_outputs=True,
+        preserve_history=True,
+        pre_cancel_pending_verified=True,
+        cancel_pending_only=True,
+    )
+    if any(type(receipt.get(k)) is not type(v) or receipt[k] != v for k, v in expected.items()):
+        raise PermissionError("Pending split cancellation evidence differs")
+    key, job = receipt.get("predecessor_key"), receipt.get("predecessor_job_id")
+    if not re.fullmatch(r"job-[a-f0-9]{16}", str(key)) or not re.fullmatch(r"[0-9]+", str(job)):
+        raise PermissionError("Pending split predecessor identity differs")
+    directory = root / "orchestration/jobs" / key
+    intent_path, state_path = directory / "INTENT.json", directory / "STATE.json"
+    if _sha(intent_path) != receipt.get("predecessor_intent_sha256") or _sha(
+        state_path
+    ) != receipt.get("predecessor_state_sha256"):
+        raise PermissionError("Superseded pending ledger changed")
+    intent, state = _read(intent_path), _read(state_path)
+    tasks = intent.get("task_ids")
+    if (
+        intent.get("key") != key
+        or state.get("key") != key
+        or state.get("job_id") != job
+        or state.get("status") not in {"SUBMITTED", "HELD"}
+        or state.get("intent_sha256") != _sha(intent_path)
+        or intent.get("execution_entry_schema") != ROLLING_SCHEMA
+        or intent.get("kind") != "eval"
+        or intent.get("rolling_endpoints") is not True
+        or intent.get("gpu_count") != 7
+        or not isinstance(tasks, list)
+        or len(tasks) != 15
+        or len(set(tasks)) != 15
+        or any(not isinstance(t, str) or not t.startswith("eval--") for t in tasks)
+        or receipt.get("task_ids") != tasks
+    ):
+        raise PermissionError("Only the bound unstarted seven-GPU endpoint claim may be split")
+    terminal_path = Path(receipt.get("terminal_path", "")).resolve(strict=True)
+    if not terminal_path.is_relative_to(root / "operations") or _sha(terminal_path) != receipt.get(
+        "terminal_sha256"
+    ):
+        raise PermissionError("Pending split terminal evidence changed")
+    terminal = _read(terminal_path)
+    expected_terminal = dict(
+        job_id=job,
+        state="CANCELLED",
+        exit_code="0:0",
+        user=intent["user"],
+        account="rose",
+        qos=intent["qos"],
+        name=intent["job_name"],
+        start="Unknown",
+        elapsed_raw=0,
+        alloc_tres="",
+    )
+    if receipt.get("terminal") != terminal or any(
+        type(terminal.get(k)) is not type(v) or terminal[k] != v
+        for k, v in expected_terminal.items()
+    ):
+        raise PermissionError("Pending split requires terminal cancellation without allocation")
+    forbidden = [directory / name for name in ("STARTED.json", "POOL_END.json", "COMPLETE.json")]
+    forbidden += [
+        directory / (t + suffix) for t in tasks for suffix in (".LAUNCH.json", ".EXIT.json")
+    ]
+    forbidden.append(root / "accounting/observability" / key)
+    if any(p.exists() or p.is_symlink() for p in forbidden):
+        raise PermissionError("Superseded pending job has execution evidence")
+    # A completion from the old job can never be accepted as a new claim's work.
+    for task in tasks:
+        completed = root / "tasks" / task / "COMPLETE.json"
+        if completed.exists() and _read(completed).get("job_id") == job:
+            raise PermissionError("Superseded pending job produced a task receipt")
+    expected_groups = [dict(gpu_count=4, task_ids=tasks[:8]), dict(gpu_count=3, task_ids=tasks[8:])]
+    if split.get("groups") != expected_groups or any(
+        type(g.get("gpu_count")) is not int for g in split["groups"]
+    ):
+        raise PermissionError(
+            "Pending split must preserve the exact disjoint four/three GPU groups"
+        )
+    return receipt
+
+
 def check_authorization(root, path):
     root, path = Path(root).resolve(strict=True), Path(path).resolve(strict=True)
     if not path.is_relative_to(root / "operations") or not path.is_file():
@@ -71,6 +171,11 @@ def check_authorization(root, path):
         if value["rolling_endpoints"] is not True:
             raise PermissionError("Rolling endpoint authorization must be explicit")
         extra["rolling_endpoints"] = True
+    if "pending_split" in value:
+        if value.get("rolling_endpoints") is not True:
+            raise PermissionError("Pending split requires rolling endpoint authorization")
+        check_pending_split(root, value["pending_split"])
+        extra["pending_split"] = copy.deepcopy(value["pending_split"])
     return dict(
         **extra,
         authorization_path=str(path),
@@ -247,6 +352,7 @@ class Pool:
         self.context = extension._context(self.root)
         self.controller_class = self.context.controller
         self.original_intent = extension._verify_intent
+        self.original_attempts = self.controller_class.attempts
         self.original_submit = self.controller_class.submit
         self.original_release = self.controller_class.release
         self.original_verify_job = self.controller_class.verify_job
@@ -302,6 +408,46 @@ class Pool:
         ):
             raise PermissionError("Task pool capacity accounting adapter changed")
         return binding
+
+    def filter_states(self, states):
+        """Hide only a receipt-bound superseded claim from active scheduling."""
+        binding = self.check()
+        split = binding.get("pending_split")
+        if split is None:
+            return states
+        receipt = check_pending_split(self.root, split)
+        return [s for s in states if s["key"] != receipt["predecessor_key"]]
+
+    def filter_rows(self, rows):
+        states = self.filter_states([state for _intent, state in rows])
+        active = {state["key"] for state in states}
+        return [(intent, state) for intent, state in rows if state["key"] in active]
+
+    def attempts(self, controller):
+        return self.filter_states(self.original_attempts(controller))
+
+    def select_split_group(self, ready, room, limits):
+        split = self.value["task_pool"].get("pending_split")
+        if split is None:
+            return None
+        check_pending_split(self.root, split)
+        ready_set = set(ready)
+        for group in split["groups"]:
+            tasks = group["task_ids"]
+            overlap = ready_set.intersection(tasks)
+            if not overlap:
+                continue
+            if overlap != set(tasks):
+                raise PermissionError("Pending split group is partially claimed")
+            if (
+                room["gpus"] < group["gpu_count"]
+                or limits["max_tasks_per_job"] < group["gpu_count"]
+            ):
+                return (0, [])
+            return group["gpu_count"], list(tasks)
+        if ready:
+            raise PermissionError("Ready endpoint tasks are outside the authorized split")
+        return (0, [])
 
     @staticmethod
     def pooled(intent):
@@ -443,6 +589,13 @@ class Pool:
         gpu_count = (
             intent["gpu_count"] if rolling else (len(tasks) if kind in {"train", "eval"} else 0)
         )
+        split = binding.get("pending_split")
+        if (
+            kind == "eval"
+            and split is not None
+            and (not rolling or dict(gpu_count=gpu_count, task_ids=tasks) not in split["groups"])
+        ):
+            raise PermissionError("Endpoint intent differs from its authorized split group")
         key = self.key(tasks, rolling)
         expected = dict(
             execution_entry_schema=ROLLING_SCHEMA if rolling else ENTRY_SCHEMA,
@@ -561,6 +714,10 @@ class Pool:
                 return None
             rolling = kind == "eval" and self.value["task_pool"].get("rolling_endpoints") is True
             selected = ready[: MAX_QUEUED_PER_GPU * count if rolling else (count if count else 1)]
+            if kind == "eval" and self.value["task_pool"].get("pending_split") is not None:
+                count, selected = self.select_split_group(ready, room, limits)
+                if not selected:
+                    return None
             key = self.key(selected, rolling)
             directory = controller.directory / "jobs" / key
             # A deterministic claim is never overwritten or issued a second time.
@@ -1287,6 +1444,12 @@ def install(value, extension, capacity=None):
 
     cls.submit, cls.verify_job, cls.prepare_resume = submit, verify_job, prepare_resume
     cls.release = release
+
+    def attempts(controller):
+        return pool.attempts(controller)
+
+    if value["task_pool"].get("pending_split") is not None:
+        cls.attempts = attempts
     extension._verify_intent = pool.verify_intent
     extension.teacher_usage = pool.teacher_usage
     pool.context.api.orchestration.teacher_usage = pool.teacher_usage
