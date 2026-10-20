@@ -163,3 +163,42 @@ CPU 提交及放行前先读取普通 QoS 与用户关联的实际限制，再�
 新运维授权绑定独立 supersession 回执及原 intent/state/terminal 哈希；只在有效任务视图中排除该精确前任。15项原端点按固定顺序拆成4卡8项、3卡7项两组，每组仍逐卡成功验收后连续补位。每组整体认领一次，按实时 QoS/关联/节点容量分别提交；不足一组资源时等待，不拆成额外任务或越过限制。新 worker、接续器及最终验收均验证同一绑定，旧训练与七卡池原件不改。
 
 实际提交和放行仍必须通过紧邻调用的新鲜容量守卫。此次已发生的 CPU 共享容量异常退出保留 FAILED 回执；只允许同时绑定本次已核验拆分、具体故障与真实终态的下一 CPU 租期交接，不扩展为任意失败自动重试。原超额报错规则保持不变。科学设置、冻结文件与其他作业不变。
+
+
+## 2026-10-20 原 CPU release 作业的节点例外
+
+用户明确授权在测试通过后，把仍未启动的原 release 作业 `215520`
+（`job-164520339dd44ae6`）从 `cpu-2` 迁至 `cpu-1`，保留科学设置、job_id、
+claim、原脚本及全部历史；如果已启动则停止迁移。此次只部署新的独立
+`operations/<commit>/migrate_cpu_node.py` 与 `cpu_dispatcher_pause.py`，
+不替换旧 operation、科学源码、原 CONFIG.cpu_policy 或原脚本中的 cpu-2。
+历史请求仍是 cpu-2，独立例外回执记载实际生效的 cpu-1，不能把两者描述成同一原始配置。
+
+`MIGRATION_AUTHORIZATION.json` 精确绑定原 INTENT、run.sbatch、ALLOCATION_VERIFIED、
+RELEASE_INTENT、RELEASE、CONFIG、EXECUTION_FREEZE、RUN_IDENTITY 和旧 OPERATION_IDENTITY
+九份原件的 SHA256，以及新提交、两个 helper 的源码哈希与用户原始授权。
+仅允许原作业 `scontrol hold` → 复核未启动 → `scontrol update JobId=215520 ReqNodeList=cpu-1`
+→ 验证资源/原脚本/原件 → `scontrol release`。不调用 sbatch、scancel 或 requeue。
+每个调用前后均追加不可覆盖回执；未知结果、已有失败尝试或身份变化不自动重试。
+运行/分配/STARTED/LAUNCH/observer/任务完成的任何证据都会阻止待启动迁移。
+
+旧接续器在每次轮询中非阻塞获取同一 SUBMIT.lock，不能让它与迁移争锁而异常退出。
+操作可通过 `srun --jobid=211333 --overlap --exact --nodes=1 --ntasks=1 --cpus-per-task=1`
+在原 CPU 分配内运行独立辅助步骤。监督器仅在 cpu-2 核对原 dispatcher 的 UID、
+完整 argv、SLURM_JOB_ID、可执行文件和 /proc startticks 后暂停该单一 Python 进程，
+再由受监督子进程非阻塞获取原 SUBMIT.lock。锁被占则停止操作并恢复进程。
+监督器最长暂停 120 秒；异常或超时先终止并回收迁移子进程及其子命令，再恢复原 PID。
+原 CPU 作业、原 dispatcher 源码和租期不变，PAUSED/RESUMED 等记录全部保留。
+
+迁移后的在途监控只用既有轻量队列/任务账本路径；不要手动调用旧 status/tick/refresh
+对 cpu-1 活跃作业进行原 cpu-2 分配验收。旧 worker、最终 builder 与完成结账仍沿原绑定
+执行。旧历史验收本身没有证明节点例外，因此旧 builder 的 PASS 或 dispatcher DONE
+只是最终交付的必要条件。
+
+完整交付还必须由新 helper 的 `--mode verify-final` 写出
+`delivery/FINAL_MIGRATION_VERIFIED.json`：核对真实 215520 在 cpu-1 的 COMPLETED/0:0、
+4 CPU/12 GiB/0 GPU、原 claim/LAUNCH/任务与 observer、原 builder 的全部检查及 ZIP 哈希、
+dispatcher 的交付绑定与 DONE，并逐字节核验 ZIP 已归档原九份文件、完整迁移链、
+授权、新源码和暂停/恢复原件。补充验收不持共享提交锁，不修改原 ZIP；其回执单独交付并
+绑定该 ZIP 与原 builder 回执。缺少任一部分，监控不得宣布完整交付或自行删除。
+新的 helper、授权和审计文件名不含 `pending`，避免旧 builder 对临时 pending 文件的排除规则。
