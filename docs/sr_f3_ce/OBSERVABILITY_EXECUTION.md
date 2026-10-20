@@ -252,3 +252,25 @@ AllocTRES为空、NodeList=None assigned，队列已消失；原申请、拒绝�
 节点空值检查回执保留。后续独立恢复授权必须哈希绑定该精确SUPERSESSION证明，
 原83e授权、源码、脚本、SUBMITTED和取消命令回执；运行及最终验收再读真实sacct，
 并验证ZIP逐字节归档上述证据。此例外不允许任意失败自动重试或重跑215520。
+
+### 216142 同作业记账延迟接续
+
+249539a 独立部署通过服务器210项测试后，02:17:39 SGT唯一提交216142，
+held资源已准确为22CPU/66GiB/0GPU。紧接提交的第008次sacct命令返回0但stdout为空，
+原门禁停止放行。02:20真实记账已是PENDING、Start=Unknown、ElapsedRaw=0、
+AllocTRES为空，原脚本和job_id未变。这是提交后的记账传播延迟，不能当作builder失败，
+也不能重新sbatch。
+
+独立 `resume_held_delivery.py` 只允许此精确216142和249539a授权。新授权绑定
+全部原16份命令文件、原源码三件、脚本、SUBMITTED、MAY_HAVE_SUBMITTED和容量证据。
+原第008次空结果保持原样；前7对实际执行过的命令回执逐字节复制至新命令链，
+另存复制谱系，明确这些是历史命令副本而非重新执行。补齐新第008次记账检查后，
+继续原格式的第009–016次新鲜容量、held、脚本、零运行复核及一次release。
+全程持原SUBMIT.lock；已有STARTED/RELEASE/接续意图或未知操作结果拒绝盲目重试。
+不再调用sbatch、scancel或requeue，不修改249539a源码、授权、原脚本或原8对命令。
+
+所有须归档的侧车授权、源码、复制谱系和接续结果先完成，再发布原RELEASE.json，
+避免worker提前构建ZIP遗漏审计。运行后沿用原worker和原builder。最终侧车
+`--mode verify-final` 先调用原恢复和迁移验收，再逐字节检查ZIP中的侧车证据，
+写 `delivery/FINAL_HELD_RECOVERY_VERIFIED.json` 绑定同一ZIP及另外三份验收回执。
+此附加门禁也通过且本地传输哈希一致，才可宣布交付并关闭监控。
