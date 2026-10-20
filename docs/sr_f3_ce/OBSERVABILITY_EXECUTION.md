@@ -274,3 +274,29 @@ AllocTRES为空，原脚本和job_id未变。这是提交后的记账传播延�
 `--mode verify-final` 先调用原恢复和迁移验收，再逐字节检查ZIP中的侧车证据，
 写 `delivery/FINAL_HELD_RECOVERY_VERIFIED.json` 绑定同一ZIP及另外三份验收回执。
 此附加门禁也通过且本地传输哈希一致，才可宣布交付并关闭监控。
+
+
+### 216142 容量等待后的精确接续
+
+ab7 同作业记账恢复在第012次节点容量查询处停止：cpu-1当时已满，
+未发布CAPACITY_BEFORE_RELEASE、RELEASE_INTENT或RELEASE，216142仍held且零运行。
+原001–012、ALLOCATION_VERIFIED及ab7部分审计原件保持不变；不得直接重跑
+249提交入口或ab7一次性恢复入口，也不得重新sbatch。
+
+独立 `continue_held_delivery.py` 仅处理这一已知未执行release的精确断点。
+新授权绑定原249授权和脚本、ab7授权及源码、原提交链、ab7部分命令与审计。
+容量不足时只在独立时间戳目录保存只读查询并返回WAIT_CAPACITY，可以重新检查；
+未知命令结果、身份变化、启动证据或已经写出的放行意图不获得自动重试权限。
+节点状态、22个空闲有效CPU、67584MiB调度可用内存及rose/关联额度均须通过。
+
+成功接续另建命令链，前八对回执复制并记录来源，不重执行历史sbatch；
+第009–016使用新鲜容量、未启动、原脚本和唯一release回执。
+原ALLOCATION_VERIFIED逐字节保留。完整新审计先落盘，再原子发布RELEASE，
+原249恢复worker与原builder继续使用同一216142、原脚本和科学设置。
+
+最终独立接续验收生成 `delivery/FINAL_HELD_CAPACITY_VERIFIED.json`，
+保留原builder、恢复、迁移门禁，补充核验ZIP中的所有历史
+容量中断、复制谱系、只读等待和成功放行证据。它明确替代未成功完成的ab7
+FINAL_HELD_RECOVERY_VERIFIED路径，不声称旧ab7门禁已经通过，也不改写旧失败。
+只有真实恢复COMPLETED/0:0、所有适用验收及下载后的本地哈希均通过，才能
+给用户交付原ZIP和外部绑定回执并关闭监控。
