@@ -202,3 +202,42 @@ dispatcher 的交付绑定与 DONE，并逐字节核验 ZIP 已归档原九份�
 授权、新源码和暂停/恢复原件。补充验收不持共享提交锁，不修改原 ZIP；其回执单独交付并
 绑定该 ZIP 与原 builder 回执。缺少任一部分，监控不得宣布完整交付或自行删除。
 新的 helper、授权和审计文件名不含 `pending`，避免旧 builder 对临时 pending 文件的排除规则。
+
+## 2026-10-21 高内存 CPU 交付恢复
+
+原 dispatcher `211333` 在最终 builder 阶段被 Slurm 以 OUT_OF_MEMORY 终止，
+原 DELIVERY_PROCESS=-9、END=FAILED 原件保持不变。训练12项、端点15项和
+release `215520` 已成功完成；用户仅授权重做打包和验收，不重跑这些任务。
+独立恢复不改变 CONFIG、EXECUTION_FREEZE、旧 operation、原 builder、原 claim 或迁移原件。
+
+三个新 helper 独立部署到 `operations/<commit>/`。`RECOVERY_AUTHORIZATION.json`
+绑定用户授权、原失败、冻结身份、原 builder 命令及源码、release/observer 完成、
+迁移授权和源码、三个新 helper、原科学与观测 source manifest，以及唯一恢复脚本。
+`submit_delivery_recovery.py` 在独立锁内核验新鲜 rose QoS/用户关联/队列和 cpu-1 容量，
+为打包恢复申请 4CPU/64GiB/0GPU/72h，先落盘 MAY_HAVE_SUBMITTED，再唯一 held sbatch。
+提交后核验未启动、资源及实际 batch script，重新核验容量后释放同一恢复 job_id。
+任何不明提交或释放均停止，不自动重投；不触碰其他作业。64GiB 是运维资源例外，
+不是科学设置变更，也不能据此保证不会再次 OOM。
+
+`recover_delivery.py --mode run` 在恢复分配内核验真实 Slurm 身份及原件后，仅执行
+原 DELIVERY_INTENT 中完全相同的 builder argv，流式保存其日志。STARTED 前不得存在
+历史恢复尝试或正式 ZIP。Slurm 放行与 RELEASE 回执之间允许最多60秒等待，未取得
+完整绑定则停止。原 builder 的七项检查、冻结身份、233340条记录等完整覆盖及 ZIP 哈希
+通过后，写恢复目录自己的 DELIVERY_VERIFIED 和 END=DONE，不改写旧 FAILED。
+
+恢复 job 真正 COMPLETED/0:0 后，`recover_delivery.py --mode verify-final` 核验
+原 builder、实际 cpu-1/4CPU/64GiB/0GPU、提交/放行/启动链、旧失败绑定及 ZIP 中的
+全部恢复前置证据，写 `delivery/FINAL_RECOVERY_VERIFIED.json`。随后
+`verify_recovered_migration.py` 复用哈希固定的原迁移链验证，保留原215520的终态、
+claim、LAUNCH、task、observer、迁移和暂停恢复归档检查；仅以本次明确授权的恢复
+成功链替代原 dispatcher 已不可能取得的 DONE。它写独立的
+`delivery/FINAL_MIGRATION_VERIFIED.json`，同时绑定原 FAILED、新恢复、原 builder 和 ZIP。
+
+交付必须同时提供原 ZIP、原 `.verification.json`、恢复与迁移两份补充回执。
+后置验收回执在 ZIP 建成之后产生，以外部哈希绑定补充，不反向修改已验收 ZIP。
+三重验收与本地文件传输哈希均通过后才删除监控。只完成数值发布、恢复END或单项PASS
+均不得宣布完整交付。恢复期间不重复启动昂贵 builder/全量验收轮询。
+
+按用户节省空间要求，失败大型临时打包产物仅在确认所属失败进程已经终止、没有活跃
+写入者且不是唯一科学证据后清理，保留小型失败回执与删除清单。2026-10-21 01:48 SGT
+预检原 delivery 目录为空，本次 OOM 尚未留下可删除的大 ZIP；不虚报释放空间。
