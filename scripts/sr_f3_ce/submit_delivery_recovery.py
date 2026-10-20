@@ -116,8 +116,8 @@ class Submission:
             node="cpu-1",
             qos="rose",
             account="rose",
-            cpus=4,
-            memory_mib=65536,
+            cpus=22,
+            memory_mib=67584,
             time_limit="3-00:00:00",
         )
         require(
@@ -267,10 +267,10 @@ class Submission:
             and "cpu_ok" in node.get("ActiveFeatures", "").split(","),
             "Node unavailable",
         )
-        require(int(node["CPUEfctv"]) - int(node["CPUAlloc"]) >= 4, "Insufficient CPUs")
+        require(int(node["CPUEfctv"]) - int(node["CPUAlloc"]) >= 22, "Insufficient CPUs")
         require(
             int(node["RealMemory"]) - int(node["AllocMem"]) - int(node.get("MemSpecLimit", "0"))
-            >= 65536,
+            >= 67584,
             "Insufficient memory",
         )
         return dict(
@@ -286,9 +286,9 @@ class Submission:
             Partition="cluster02",
             Command=str(self.script),
             Comment=self.comment,
-            NumCPUs="4",
+            NumCPUs="22",
             NumTasks="1",
-            **{"CPUs/Task": "4"},
+            **{"CPUs/Task": "22"},
             ReqNodeList="cpu-1",
             TimeLimit="3-00:00:00",
             Requeue="0",
@@ -310,7 +310,7 @@ class Submission:
         )
         requested = dict(x.split("=", 1) for x in f["ReqTRES"].split(","))
         require(
-            requested.get("cpu") == "4" and memory(requested.get("mem", "")) == 65536,
+            requested.get("cpu") == "22" and memory(requested.get("mem", "")) == 67584,
             "Resource request differs",
         )
         require(

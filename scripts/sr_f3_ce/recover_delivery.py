@@ -20,6 +20,9 @@ from types import ModuleType
 TARGET_ROOT = "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2"
 OLD_OPERATION = "35800b02b1ef1eff2378e4c933393b4ea2668e4d"
 MIGRATION_OPERATION = "3a7f5d120e02dcd042397408c6031a98713d1e7d"
+SUPERSEDED_JOB = "216128"
+SUPERSEDED_OPERATION = "83e116d1f55c3656d88d8f5a8ca965c4dd168e45"
+SUPERSEDED_DIRECTORY = "operations/delivery_recovery/20261021_delivery_oom"
 FAILED_ATTEMPT = "operations/dispatcher/attempts/0007"
 RELEASE_KEY = "job-164520339dd44ae6"
 REQUIRED_FILES = {
@@ -134,7 +137,7 @@ def resources(value):
         require(key not in result, "Repeated resource")
         result[key] = val
     require(
-        result.get("cpu") == "4" and memory_mib(result.get("mem", "")) == 65536,
+        result.get("cpu") == "22" and memory_mib(result.get("mem", "")) == 67584,
         "Recovery CPU or memory allocation differs",
     )
     require(
@@ -168,8 +171,8 @@ class Recovery:
             a.get("node") == "cpu-1"
             and a.get("qos") == "rose"
             and a.get("account") == "rose"
-            and a.get("cpus") == 4
-            and a.get("memory_mib") == 65536
+            and a.get("cpus") == 22
+            and a.get("memory_mib") == 67584
             and a.get("time_limit") == "3-00:00:00",
             "Recovery resource authorization differs",
         )
@@ -194,6 +197,7 @@ class Recovery:
             "Authorization omitted required original evidence",
         )
         self.check_originals()
+        self.verify_supersession()
         extras = a.get("extra_sources", {})
         require(
             isinstance(extras, dict)
@@ -254,11 +258,137 @@ class Recovery:
         for name, digest in self.auth["extra_sources"].items():
             require(sha(bounded(self.root, name)) == digest, "Recovery auxiliary source changed")
         self.check_originals()
+        self.verify_supersession()
         require(
             self.auth.get("expected_builder_identity") == self.expected_builder_identity(),
             "Frozen builder identity differs",
         )
         return self.auth
+
+    @staticmethod
+    def check_superseded_accounting(row):
+        require(
+            row.get("JobIDRaw") == SUPERSEDED_JOB
+            and row.get("State", "").split(" ", 1)[0] == "CANCELLED"
+            and row.get("ExitCode") == "0:0"
+            and row.get("Start") in {"Unknown", "None", ""}
+            and row.get("ElapsedRaw") == "0"
+            and row.get("AllocTRES") == ""
+            and row.get("NodeList") in {"Unknown", "None", "None assigned", "", "(null)"},
+            "Superseded recovery was not cancelled unstarted and unallocated",
+        )
+
+    def verify_supersession(self):
+        binding = self.auth.get("supersession", {})
+        require(
+            set(binding) == {"path", "sha256"}, "Exact recovery supersession authorization required"
+        )
+        proof_path = bounded(self.root, binding["path"])
+        require(sha(proof_path) == binding["sha256"], "Recovery supersession proof changed")
+        proof = read(proof_path)
+        require(
+            proof.get("status") == "CANCELLED_UNSTARTED_RECOVERY"
+            and proof.get("job_id") == SUPERSEDED_JOB
+            and proof.get("prior_recovery_directory") == SUPERSEDED_DIRECTORY,
+            "Recovery supersession scope differs",
+        )
+        expected = {
+            "prior_authorization": f"operations/{SUPERSEDED_OPERATION}/RECOVERY_AUTHORIZATION.json",
+            "prior_source": f"operations/{SUPERSEDED_OPERATION}/recover_delivery.py",
+            "prior_script": SUPERSEDED_DIRECTORY + "/run.sbatch",
+            "prior_submitted": SUPERSEDED_DIRECTORY + "/SUBMITTED.json",
+        }
+        retained = [proof_path]
+        for key, relative in expected.items():
+            require(
+                proof.get(key + "_path") == relative, "Superseded recovery evidence path differs"
+            )
+            path = bounded(self.root, relative)
+            require(sha(path) == proof.get(key + "_sha256"), "Superseded recovery evidence changed")
+            retained.append(path)
+        prior_auth = read(self.root / expected["prior_authorization"])
+        require(
+            prior_auth.get("root") == str(self.root)
+            and prior_auth.get("recovery_directory") == SUPERSEDED_DIRECTORY
+            and prior_auth.get("source_sha256") == proof["prior_source_sha256"]
+            and prior_auth.get("script_sha256") == proof["prior_script_sha256"]
+            and prior_auth.get("cpus") == 4
+            and prior_auth.get("memory_mib") == 65536,
+            "Superseded authorization identity differs",
+        )
+        submitted = read(self.root / expected["prior_submitted"])
+        require(
+            submitted.get("status") == "SUBMITTED"
+            and submitted.get("job_id") == SUPERSEDED_JOB
+            and submitted.get("authorization_sha256") == proof["prior_authorization_sha256"]
+            and submitted.get("script_sha256") == proof["prior_script_sha256"],
+            "Superseded submission binding differs",
+        )
+        prior = self.root / SUPERSEDED_DIRECTORY
+        require(
+            not any(
+                (prior / name).exists()
+                for name in (
+                    "STARTED.json",
+                    "PROCESS.json",
+                    "END.json",
+                    "DELIVERY_VERIFIED.json",
+                    "RELEASE.json",
+                    "RELEASE_INTENT.json",
+                    "ALLOCATION_VERIFIED.json",
+                )
+            ),
+            "Superseded recovery has launch, release, or completion evidence",
+        )
+        self.check_superseded_accounting(proof.get("terminal_accounting", {}))
+        commands = proof.get("command_receipts", {})
+        require(
+            isinstance(commands, dict) and bool(commands), "Supersession command evidence missing"
+        )
+        cancellations = 0
+        for name, digest in commands.items():
+            path = bounded(self.root, name)
+            require(sha(path) == digest, "Supersession command evidence changed")
+            result = read(path)
+            argv = result.get("argv", [])
+            require(
+                isinstance(argv, list)
+                and all(isinstance(item, str) for item in argv)
+                and result.get("returncode") == 0,
+                "Supersession command outcome unknown or failed",
+            )
+            if argv == ["scancel", "--state=PENDING", SUPERSEDED_JOB]:
+                cancellations += 1
+            else:
+                read_only = (
+                    argv[:2] == ["scontrol", "show"]
+                    or argv == ["scontrol", "write", "batch_script", SUPERSEDED_JOB, "-"]
+                    or argv[:1] in [["sacct"], ["squeue"]]
+                )
+                require(read_only, "Supersession contains an unauthorized command")
+            retained.append(path)
+        require(
+            cancellations == 1, "Supersession must prove exactly one precise pending cancellation"
+        )
+        return proof, retained
+
+    def superseded_terminal(self):
+        keys = ("JobIDRaw", "State", "ExitCode", "Start", "ElapsedRaw", "AllocTRES", "NodeList")
+        command = [
+            "sacct",
+            "-n",
+            "-P",
+            "-j",
+            SUPERSEDED_JOB,
+            "--format=" + ",".join("State%100" if key == "State" else key for key in keys),
+        ]
+        raw = self.query(command)
+        rows = [line.split("|") for line in raw.splitlines() if line.strip()]
+        rows = [row[: len(keys)] for row in rows if row[0] == SUPERSEDED_JOB]
+        require(len(rows) == 1 and len(rows[0]) == len(keys), "Superseded accounting ambiguous")
+        row = dict(zip(keys, rows[0], strict=True))
+        self.check_superseded_accounting(row)
+        return dict(argv=command, stdout=raw, accounting=row)
 
     def bind_submission(self):
         self.submission = read(self.submission_path)
@@ -451,7 +581,7 @@ class Recovery:
             and f.get("Partition") == "cluster02"
             and f.get("TimeLimit") == "3-00:00:00"
             and f.get("Requeue") == "0"
-            and f.get("NumCPUs") == "4"
+            and f.get("NumCPUs") == "22"
             and f.get("NumNodes") == "1",
             "Recovery live allocation differs",
         )
@@ -526,6 +656,7 @@ class Recovery:
             )
             allocation = self.live_allocation()
             failed_terminal = self.failed_dispatcher_terminal()
+            superseded_terminal = self.superseded_terminal()
             save(
                 self.directory / "STARTED.json",
                 dict(
@@ -538,6 +669,7 @@ class Recovery:
                     script_sha256=sha(self.script),
                     allocation=allocation,
                     failed_dispatcher_terminal=failed_terminal,
+                    superseded_recovery_terminal=superseded_terminal,
                     command=self.command,
                 ),
             )
@@ -673,6 +805,12 @@ class Recovery:
                 started.get("failed_dispatcher_terminal") == failed_terminal,
                 "Failed dispatcher terminal evidence changed",
             )
+            superseded_terminal = self.superseded_terminal()
+            require(
+                started.get("superseded_recovery_terminal", {}).get("accounting")
+                == superseded_terminal["accounting"],
+                "Superseded terminal evidence changed",
+            )
             account = self.terminal()
             builder = self.verify_builder()
             proof = read(self.directory / "DELIVERY_VERIFIED.json")
@@ -693,6 +831,8 @@ class Recovery:
             ]
             pre_run.extend(self.directory / name for name in release_chain["chain"])
             pre_run.extend(self.directory / name for name in release_chain["command_files"])
+            _, superseded_files = self.verify_supersession()
+            pre_run.extend(superseded_files)
             archived = {}
             with zipfile.ZipFile(self.archive) as package:
                 names = package.namelist()
@@ -725,6 +865,7 @@ class Recovery:
                 builder_receipt_sha256=sha(self.builder_path),
                 accounting=account,
                 failed_dispatcher_terminal=failed_terminal,
+                superseded_recovery_terminal=superseded_terminal,
                 recovery_end_sha256=sha(self.directory / "END.json"),
                 recovery_process_sha256=sha(self.directory / "PROCESS.json"),
                 recovery_delivery_sha256=sha(self.directory / "DELIVERY_VERIFIED.json"),

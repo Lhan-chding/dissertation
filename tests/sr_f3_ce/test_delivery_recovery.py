@@ -55,17 +55,22 @@ class FakeRunner:
                 Command=str(op.script),
                 TimeLimit="3-00:00:00",
                 Requeue="0",
-                NumCPUs="4",
+                NumCPUs="22",
                 NumNodes="1",
                 Partition="cluster02",
                 Comment="approved-delivery-recovery",
-                AllocTRES="cpu=4,mem=64G,node=1,billing=4",
+                AllocTRES="cpu=22,mem=66G,node=1,billing=22",
             )
             f.update(getattr(self, "live_overrides", {}))
             return SimpleNamespace(returncode=0, stdout=" ".join(k + "=" + v for k, v in f.items()))
         if command[:3] == ["scontrol", "write", "batch_script"]:
             return SimpleNamespace(
                 returncode=0, stdout=op.script.read_text() + getattr(self, "script_suffix", "")
+            )
+        if command[0] == "sacct" and command[command.index("-j") + 1] == "216128":
+            return SimpleNamespace(
+                returncode=0,
+                stdout=getattr(self, "superseded_terminal", "216128|CANCELLED|0:0|None|0||None\n"),
             )
         if command[0] == "sacct" and command[command.index("-j") + 1] == "211333":
             return SimpleNamespace(
@@ -85,7 +90,7 @@ class FakeRunner:
                         self.state,
                         self.exit,
                         self.node,
-                        "cpu=4,mem=64G,node=1,billing=4",
+                        "cpu=22,mem=66G,node=1,billing=22",
                         "varun024",
                         "rose",
                         "rose",
@@ -237,8 +242,8 @@ def recovery(tmp_path, monkeypatch):
         node="cpu-1",
         qos="rose",
         account="rose",
-        cpus=4,
-        memory_mib=65536,
+        cpus=22,
+        memory_mib=67584,
         time_limit="3-00:00:00",
         user="varun024",
         job_name="delivery-recovery-LH",
@@ -274,6 +279,66 @@ def recovery(tmp_path, monkeypatch):
             task_pool=identity["task_pool"],
         ),
     )
+    prior_deploy = root / "operations" / m.SUPERSEDED_OPERATION
+    prior_deploy.mkdir()
+    prior_journal = root / m.SUPERSEDED_DIRECTORY
+    prior_journal.mkdir()
+    prior_source = prior_deploy / "recover_delivery.py"
+    prior_source.write_text("# preserved failed operation83 source\n")
+    prior_script = prior_journal / "run.sbatch"
+    prior_script.write_text("# original 4CPU64GiB request\n")
+    prior_authorization = prior_deploy / "RECOVERY_AUTHORIZATION.json"
+    save(
+        prior_authorization,
+        dict(
+            root=str(root),
+            recovery_directory=m.SUPERSEDED_DIRECTORY,
+            source_sha256=digest(prior_source),
+            script_sha256=digest(prior_script),
+            cpus=4,
+            memory_mib=65536,
+        ),
+    )
+    prior_submitted = prior_journal / "SUBMITTED.json"
+    save(
+        prior_submitted,
+        dict(
+            status="SUBMITTED",
+            job_id="216128",
+            authorization_sha256=digest(prior_authorization),
+            script_sha256=digest(prior_script),
+        ),
+    )
+    cancel_receipt = prior_journal / "CANCELLED.json"
+    save(cancel_receipt, dict(argv=["scancel", "--state=PENDING", "216128"], returncode=0))
+    supersession = dict(
+        status="CANCELLED_UNSTARTED_RECOVERY",
+        job_id="216128",
+        prior_recovery_directory=m.SUPERSEDED_DIRECTORY,
+        terminal_accounting=dict(
+            JobIDRaw="216128",
+            State="CANCELLED",
+            ExitCode="0:0",
+            Start="None",
+            ElapsedRaw="0",
+            AllocTRES="",
+            NodeList="None",
+        ),
+        command_receipts={str(cancel_receipt.relative_to(root)): digest(cancel_receipt)},
+    )
+    for name, path in [
+        ("prior_authorization", prior_authorization),
+        ("prior_source", prior_source),
+        ("prior_script", prior_script),
+        ("prior_submitted", prior_submitted),
+    ]:
+        supersession[name + "_path"] = str(path.relative_to(root))
+        supersession[name + "_sha256"] = digest(path)
+    supersession_path = prior_journal / "SUPERSESSION.json"
+    save(supersession_path, supersession)
+    auth["supersession"] = dict(
+        path=str(supersession_path.relative_to(root)), sha256=digest(supersession_path)
+    )
     authorization = deploy / "RECOVERY_AUTHORIZATION.json"
     save(authorization, auth)
     submit_path = deploy / "submit_delivery_recovery.py"
@@ -306,10 +371,10 @@ def recovery(tmp_path, monkeypatch):
                 "JobId=216001 JobName=delivery-recovery-LH "
                 "Account=rose QOS=rose Partition=cluster02 "
                 f"Command={script} Comment=approved-delivery-recovery "
-                "NumCPUs=4 NumTasks=1 CPUs/Task=4 "
+                "NumCPUs=22 NumTasks=1 CPUs/Task=22 "
                 "ReqNodeList=cpu-1 TimeLimit=3-00:00:00 Requeue=0 JobState=PENDING "
                 "Reason=JobHeldUser RunTime=00:00:00 UserId=varun024(1001) NumNodes=1 "
-                "NodeList=(null) ReqTRES=cpu=4,mem=64G,node=1"
+                "NodeList=(null) ReqTRES=cpu=22,mem=66G,node=1"
             )
         elif argv[:3] == ["scontrol", "write", "batch_script"]:
             text = script.read_text()
@@ -358,7 +423,7 @@ def test_success_and_idempotent_final(recovery):
         {"Requeue": "1"},
         {"NumCPUs": "8"},
         {"AllocTRES": "cpu=4,mem=12G,node=1"},
-        {"AllocTRES": "cpu=4,mem=64G,node=1,gres/gpu=1"},
+        {"AllocTRES": "cpu=22,mem=66G,node=1,gres/gpu=1"},
         {"Partition": "gpu"},
         {"Comment": "other"},
     ],
@@ -602,3 +667,107 @@ def test_old_failure_terminal_rechecked_at_final(recovery):
     runner.old_terminal = "211333|FAILED|1:0|cpu-2|cpu=4,mem=12G,node=1|10000|\n"
     with pytest.raises(PermissionError):
         op.verify_final()
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("State", "RUNNING"),
+        ("ExitCode", "1:0"),
+        ("Start", "2026-10-21T00:00:00"),
+        ("ElapsedRaw", "1"),
+        ("AllocTRES", "cpu=4,mem=12G,node=1"),
+        ("NodeList", "cpu-1"),
+    ],
+)
+def test_supersession_terminal_requires_zero_execution(recovery, field, value):
+    op, runner, m = recovery
+    proof_path = op.root / op.auth["supersession"]["path"]
+    proof = m.read(proof_path)
+    proof["terminal_accounting"][field] = value
+    save(proof_path, proof)
+    op.auth["supersession"]["sha256"] = digest(proof_path)
+    save(op.authorization, op.auth)
+    with pytest.raises(PermissionError):
+        op.validate()
+    assert op.command not in runner.calls
+
+
+@pytest.mark.parametrize("receipt", ["STARTED.json", "RELEASE.json", "END.json", "PROCESS.json"])
+def test_started_superseded_attempt_cannot_be_replaced(recovery, receipt):
+    op, _, m = recovery
+    save(op.root / m.SUPERSEDED_DIRECTORY / receipt, {})
+    with pytest.raises(PermissionError, match="launch, release"):
+        op.validate()
+
+
+def test_live_supersession_is_rechecked_before_builder(recovery):
+    op, runner, _ = recovery
+    runner.superseded_terminal = "216128|RUNNING|0:0|None|0||None\n"
+    with pytest.raises(PermissionError):
+        op.run()
+    assert op.command not in runner.calls
+
+
+def test_live_supersession_is_rechecked_at_final(recovery):
+    op, runner, _ = recovery
+    op.run()
+    runner.superseded_terminal = "216128|CANCELLED|0:0|None|0|cpu=4|cpu-1\n"
+    with pytest.raises(PermissionError):
+        op.verify_final()
+
+
+def test_supersession_sources_are_archived(recovery):
+    op, runner, _ = recovery
+    runner.drop_archive = "evidence/" + op.auth["supersession"]["path"]
+    op.run()
+    with pytest.raises(PermissionError, match="absent"):
+        op.verify_final()
+
+
+@pytest.mark.parametrize(
+    "argv,code",
+    [
+        (["scancel", "--state=PENDING", "215520"], 0),
+        (["scancel", "216128"], 0),
+        (["scancel", "--state=PENDING", "216128"], 1),
+        (["scontrol", "requeue", "216128"], 0),
+        (["scontrol", "show", "job", "216128"], 0),
+    ],
+)
+def test_supersession_requires_exact_successful_cancellation(recovery, argv, code):
+    op, _, m = recovery
+    proof_path = op.root / op.auth["supersession"]["path"]
+    proof = m.read(proof_path)
+    name = next(iter(proof["command_receipts"]))
+    path = op.root / name
+    save(path, dict(argv=argv, returncode=code))
+    proof["command_receipts"][name] = digest(path)
+    save(proof_path, proof)
+    op.auth["supersession"]["sha256"] = digest(proof_path)
+    save(op.authorization, op.auth)
+    with pytest.raises(PermissionError):
+        op.validate()
+
+
+def test_duplicate_cancellation_in_supersession_rejected(recovery):
+    op, _, m = recovery
+    proof_path = op.root / op.auth["supersession"]["path"]
+    proof = m.read(proof_path)
+    duplicate = proof_path.parent / "DUPLICATE_CANCEL.json"
+    save(duplicate, dict(argv=["scancel", "--state=PENDING", "216128"], returncode=0))
+    proof["command_receipts"][str(duplicate.relative_to(op.root))] = digest(duplicate)
+    save(proof_path, proof)
+    op.auth["supersession"]["sha256"] = digest(proof_path)
+    save(op.authorization, op.auth)
+    with pytest.raises(PermissionError):
+        op.validate()
+
+
+def test_superseded_none_assigned_node_sentinel_retained(recovery):
+    op, runner, m = recovery
+    row = m.read(op.root / op.auth["supersession"]["path"])["terminal_accounting"]
+    row["NodeList"] = "None assigned"
+    m.Recovery.check_superseded_accounting(row)
+    runner.superseded_terminal = "216128|CANCELLED|0:0|Unknown|0||None assigned\n"
+    assert op.superseded_terminal()["accounting"]["NodeList"] == "None assigned"

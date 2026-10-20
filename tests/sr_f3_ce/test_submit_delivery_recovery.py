@@ -33,8 +33,8 @@ def case(tmp_path, monkeypatch):
         node="cpu-1",
         qos="rose",
         account="rose",
-        cpus=4,
-        memory_mib=65536,
+        cpus=22,
+        memory_mib=67584,
         time_limit="3-00:00:00",
     )
     authorization = source.parent / "AUTH.json"
@@ -70,11 +70,13 @@ def case(tmp_path, monkeypatch):
         elif argv[:3] == ["scontrol", "show", "job"]:
             text = (
                 "JobId=99 JobName=delivery-LH Account=rose QOS=rose Partition=cluster02 "
-                f"Command={script} Comment=exact-recovery NumCPUs=4 NumTasks=1 CPUs/Task=4 "
+                f"Command={script} Comment=exact-recovery NumCPUs=22 NumTasks=1 CPUs/Task=22 "
                 "ReqNodeList=cpu-1 TimeLimit=3-00:00:00 Requeue=0 JobState=PENDING "
                 "Reason=JobHeldUser RunTime=00:00:00 UserId=testuser(123) NumNodes=1 "
-                "NodeList=(null) ReqTRES=cpu=4,mem=64G,node=1"
+                "NodeList=(null) ReqTRES=cpu=22,mem=66G,node=1"
             )
+            if faults.get("plugin_12g"):
+                text = text.replace("mem=66G", "mem=12G")
             if faults.get("started"):
                 text = text.replace("JobState=PENDING", "JobState=RUNNING")
         elif argv[:3] == ["scontrol", "write", "batch_script"]:
@@ -291,3 +293,33 @@ def test_immutable_atomic_receipt_publication(tmp_path, monkeypatch):
         m.save(target, {"status": "CHANGED"})
     assert m.read(target) == {"status": "RELEASED"}
     assert list(tmp_path.iterdir()) == [target]
+
+
+def test_plugin_rewrites_memory_to_12g_blocks_release_and_retry(case):
+    op, calls, faults, _ = case
+    faults["plugin_12g"] = True
+    with pytest.raises(PermissionError, match="Resource request differs"):
+        op.submit()
+    assert (op.work / "SUBMITTED.json").exists()
+    assert not (op.work / "ALLOCATION_VERIFIED.json").exists()
+    assert ["scontrol", "release", "99"] not in calls
+    faults.clear()
+    with pytest.raises(PermissionError, match="Prior submission"):
+        op.submit()
+    assert sum(argv[0] == "sbatch" for argv in calls) == 1
+
+
+def test_cpu_policy_capacity_requires_all_22_cores(case):
+    op, calls, _, _ = case
+    original = op.runner
+
+    def runner(argv, **kwargs):
+        result = original(argv, **kwargs)
+        if argv[:3] == ["scontrol", "show", "node"]:
+            result.stdout = result.stdout.replace("CPUAlloc=42", "CPUAlloc=75")
+        return result
+
+    op.runner = runner
+    with pytest.raises(PermissionError, match="Insufficient CPUs"):
+        op.submit()
+    assert not any(argv[0] == "sbatch" for argv in calls)

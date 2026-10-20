@@ -214,9 +214,9 @@ release `215520` 已成功完成；用户仅授权重做打包和验收，不重
 绑定用户授权、原失败、冻结身份、原 builder 命令及源码、release/observer 完成、
 迁移授权和源码、三个新 helper、原科学与观测 source manifest，以及唯一恢复脚本。
 `submit_delivery_recovery.py` 在独立锁内核验新鲜 rose QoS/用户关联/队列和 cpu-1 容量，
-为打包恢复申请 4CPU/64GiB/0GPU/72h，先落盘 MAY_HAVE_SUBMITTED，再唯一 held sbatch。
+为打包恢复申请 22CPU/66GiB/0GPU/72h，先落盘 MAY_HAVE_SUBMITTED，再唯一 held sbatch。
 提交后核验未启动、资源及实际 batch script，重新核验容量后释放同一恢复 job_id。
-任何不明提交或释放均停止，不自动重投；不触碰其他作业。64GiB 是运维资源例外，
+任何不明提交或释放均停止，不自动重投；不触碰其他作业。66GiB 是运维资源例外，
 不是科学设置变更，也不能据此保证不会再次 OOM。
 
 `recover_delivery.py --mode run` 在恢复分配内核验真实 Slurm 身份及原件后，仅执行
@@ -226,7 +226,7 @@ release `215520` 已成功完成；用户仅授权重做打包和验收，不重
 通过后，写恢复目录自己的 DELIVERY_VERIFIED 和 END=DONE，不改写旧 FAILED。
 
 恢复 job 真正 COMPLETED/0:0 后，`recover_delivery.py --mode verify-final` 核验
-原 builder、实际 cpu-1/4CPU/64GiB/0GPU、提交/放行/启动链、旧失败绑定及 ZIP 中的
+原 builder、实际 cpu-1/22CPU/66GiB/0GPU、提交/放行/启动链、旧失败绑定及 ZIP 中的
 全部恢复前置证据，写 `delivery/FINAL_RECOVERY_VERIFIED.json`。随后
 `verify_recovered_migration.py` 复用哈希固定的原迁移链验证，保留原215520的终态、
 claim、LAUNCH、task、observer、迁移和暂停恢复归档检查；仅以本次明确授权的恢复
@@ -241,3 +241,14 @@ claim、LAUNCH、task、observer、迁移和暂停恢复归档检查；仅以本
 按用户节省空间要求，失败大型临时打包产物仅在确认所属失败进程已经终止、没有活跃
 写入者且不是唯一科学证据后清理，保留小型失败回执与删除清单。2026-10-21 01:48 SGT
 预检原 delivery 目录为空，本次 OOM 尚未留下可删除的大 ZIP；不虚报释放空间。
+
+2026-10-21 02:03 SGT 首个独立恢复申请216128被集群提交插件按每核3GiB
+强制改为4CPU/12GiB，资源门禁在hold状态拒绝放行，没有运行builder。
+按[集群CPU规则](https://github.com/NTUEEECluster/docs/blob/main/slurm-guide.md)，
+达到至少64GiB须申请22CPU/66GiB，不能修改已提交作业的资源。02:11:13 SGT
+经原脚本、PENDING/JobHeldUser、零运行和零分配复核后，只对216128执行一次
+`scancel --state=PENDING 216128`，终态CANCELLED/0:0、Start=None、ElapsedRaw=0、
+AllocTRES为空、NodeList=None assigned，队列已消失；原申请、拒绝和首轮
+节点空值检查回执保留。后续独立恢复授权必须哈希绑定该精确SUPERSESSION证明，
+原83e授权、源码、脚本、SUBMITTED和取消命令回执；运行及最终验收再读真实sacct，
+并验证ZIP逐字节归档上述证据。此例外不允许任意失败自动重试或重跑215520。
