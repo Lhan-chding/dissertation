@@ -380,3 +380,23 @@ FINAL_LOWMEM_RECOVERY_VERIFIED绑定同一ZIP、修订身份及内存回执。�
 规范化源码、授权、全部命令和等待链，输出外置
 `FINAL_CONSTRAINT_NORMALIZATION_VERIFIED.json`。该补充验收及本地下载SHA也通过
 才算完整交付；不反向修改ZIP、不伪造历史门禁、不把规范化成功当作worker已启动。
+
+## 2026-10-21 216983未启动精确替代
+
+集群明确拒绝修改216983已提交Features；e184规范化命令返回1，STOP原件保留。
+用户随后明确授权：确认216983未启动、零分配后精确取消，再提交唯一同规格
+4CPU/12GiB老师QoS替代作业，用修复后的程序完成内存实测和打包验收。
+独立`lowmem_replacement/`绑定原538授权、脚本、唯一不完整查询poll及e184拒绝
+审计，旧源和旧回执均不改。只认可这个已知未放行断点，不泛化失败重试。
+
+新held和live分配门禁仅接受`cpu_ok`或集群重复AND的`cpu_ok&cpu_ok`，保留
+查询原文；不接受其他逻辑表达式。退役必须取得CANCELLED/0:0、零运行、零分配
+和队列消失证明，然后才允许唯一sbatch。新工作目录为
+`operations/delivery_recovery/20261021_delivery_lowmem_replacement`。
+原cpu-1/cpu-2候选、4CPU/12GiB/0GPU、72h、节点及QoS容量守卫保持不变。
+
+原builder七项检查、233340条覆盖、内存PROFILE成功、恢复及215520迁移验收
+仍须全部通过。`FINAL_LOWMEM_REPLACEMENT_VERIFIED`补充回执必须绑定同一ZIP
+及216983退役、原未完成查询和被拒绝规范化的完整归档；明确取代未成功的旧
+低内存/规范化补充门禁，不声称它们PASS。12训练、15端点、215520不重跑，
+冻结科学设置不变。下载ZIP及全部适用回执、本地SHA一致后才交付和关闭监控。
