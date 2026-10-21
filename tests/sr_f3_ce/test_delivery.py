@@ -1966,6 +1966,175 @@ def test_work_trajectory_keeps_invalid_rows_and_distinct_parseable_denominators(
         delivery.work_occurrence_trajectory(root, api, dataset, training, monitor)
 
 
+
+def _bulk_work_trajectory_reference(root, api, dataset, training, monitor):
+    """Small-fixture oracle retaining the pre-streaming all-panels aggregation."""
+    from collections import defaultdict
+
+    models = {item["model_id"]: item for item in api.evaluation.endpoint_models()}
+    result = {}
+    for kind, entries in (("training", training), ("monitor", monitor)):
+        panels, sources = defaultdict(list), defaultdict(list)
+        for path, metadata, _ in entries:
+            key = (
+                (metadata["run_id"], int(path.name[:2]))
+                if kind == "training"
+                else (path.parents[2].name, int(path.parents[1].name.removeprefix("step-")))
+            )
+            for row in delivery.read(path)["records"]:
+                if kind == "monitor":
+                    task = dataset.tasks[row["qid"]]
+                    row = dict(row, score=api.contract.score(
+                        row["raw_text"], task["world"], task["query"],
+                        finish_reason=row["finish_reason"], protocol="structured",
+                    ))
+                panels[key].append(row)
+            sources[key].append(dict(
+                path="evidence/" + str(path.relative_to(root)), sha256=delivery.sha_file(path),
+            ))
+        result[kind] = []
+        for (model_id, step), rows in sorted(panels.items()):
+            summary = api.runner.work_occurrence(rows)
+            if kind == "monitor":
+                summary = dict(summary, scope=(
+                    "fixed checkpoint MONITOR raw; invalid text retained in denominator"
+                ))
+            else:
+                receipt = root / "runs" / model_id / "work_occurrence" / f"step-{step:02d}.json"
+                sources[model_id, step].append(dict(
+                    path="evidence/" + str(receipt.relative_to(root)),
+                    sha256=delivery.sha_file(receipt),
+                ))
+            model = models[model_id]
+            result[kind].append(dict(
+                model_id=model_id, arm=model["arm"], block=model["block"], step=step,
+                summary=summary, sources=sources[model_id, step],
+            ))
+    return dict(
+        protocol_revision="v2",
+        scope="descriptive existing raw only; no reward or selection changes",
+        new_model_calls=0, **result,
+    )
+
+
+def _split_work_fixture_groups(root, entries, *, training):
+    """Split every panel into deliberately nonlexical, cross-panel-interleaved groups."""
+    first, second = [], []
+    for path, metadata, count in entries:
+        rows = delivery.read(path)["records"]
+        # Unequal chunks exercise per-panel denominators rather than per-file counts.
+        cut = len(rows) // 3
+        left = path.with_name(path.stem + "-z.json")
+        right = path.with_name(path.stem + "-a.json")
+        write(left, dict(records=rows[:cut]))
+        write(right, dict(records=rows[cut:]))
+        first.append((left, metadata, cut))
+        second.append((right, metadata, count - cut))
+        if training:
+            receipt = root / "runs" / metadata["run_id"] / "work_occurrence" / (
+                f"step-{int(path.name[:2]):02d}.json"
+            )
+            value = delivery.read(receipt)
+            value["raw_group_sha256"] = [delivery.sha_file(left), delivery.sha_file(right)]
+            write(receipt, value)
+    return list(reversed(first)) + second
+
+
+def test_work_trajectory_interleaved_multigroup_matches_bulk_reference(complete_work_fixture):
+    root, api, dataset, training, monitor = complete_work_fixture
+    training = _split_work_fixture_groups(root, training, training=True)
+    monitor = _split_work_fixture_groups(root, monitor, training=False)
+    expected = _bulk_work_trajectory_reference(root, api, dataset, training, monitor)
+    actual = delivery.work_occurrence_trajectory(root, api, dataset, training, monitor)
+    assert actual == expected
+    assert delivery.encoded(actual) == delivery.encoded(expected)
+    for kind in ("training", "monitor"):
+        assert actual[kind][0]["sources"][0]["path"].endswith("-z.json")
+        assert actual[kind][0]["sources"][1]["path"].endswith("-a.json")
+
+
+@pytest.mark.parametrize("damage, message", [
+    ("missing_panel", "complete fixed"),
+    ("extra_row", "denominator"),
+    ("short_panel", "denominator"),
+    ("duplicate_group", "denominator"),
+    ("unknown_model", "unregistered model"),
+    ("wrong_step", "unregistered observation step"),
+    ("receipt_hash", "work occurrence differs"),
+])
+def test_work_trajectory_streaming_preserves_rejection_boundaries(
+    complete_work_fixture, damage, message,
+):
+    root, api, dataset, training, monitor = complete_work_fixture
+    path, metadata, count = training[0]
+    if damage == "missing_panel":
+        training = training[1:]
+    elif damage in {"extra_row", "short_panel"}:
+        value = delivery.read(path)
+        if damage == "extra_row":
+            value["records"].append(value["records"][0])
+        else:
+            value["records"].pop()
+        write(path, value)
+    elif damage == "duplicate_group":
+        training = [training[0], *training]
+    elif damage == "unknown_model":
+        training = [(path, dict(run_id="UNREGISTERED"), count), *training[1:]]
+    elif damage == "wrong_step":
+        changed = path.with_name("65-00.json")
+        write(changed, delivery.read(path))
+        training = [(changed, metadata, count), *training[1:]]
+    else:
+        receipt = root / "runs" / metadata["run_id"] / "work_occurrence/step-01.json"
+        value = delivery.read(receipt)
+        value["raw_group_sha256"] = ["0" * 64]
+        write(receipt, value)
+    with pytest.raises(PermissionError, match=message):
+        delivery.work_occurrence_trajectory(root, api, dataset, training, monitor)
+
+
+def test_work_trajectory_releases_raw_payloads_between_panels(complete_work_fixture, monkeypatch):
+    import weakref
+
+    root, api, dataset, training, monitor = complete_work_fixture
+    training = _split_work_fixture_groups(root, training, training=True)
+    monitor = _split_work_fixture_groups(root, monitor, training=False)
+    raw_panels = {
+        path: ("training", metadata["run_id"], int(path.name[:2]))
+        for path, metadata, _ in training
+    }
+    raw_panels.update({
+        path: ("monitor", path.parents[2].name, path.parents[1].name)
+        for path, _, _ in monitor
+    })
+    original_read = delivery.read
+    state = dict(panel=None, refs=[], transitions=0, peak=0)
+
+    class RawPayload:
+        pass
+
+    def tracked_read(path):
+        value = original_read(path)
+        panel = raw_panels.get(path)
+        if panel is not None:
+            if panel != state["panel"]:
+                # Weak references also catch the last loop variable retaining a row.
+                assert all(ref() is None for ref in state["refs"])
+                state.update(panel=panel, refs=[], transitions=state["transitions"] + 1)
+            for row in value["records"]:
+                row["_memory_probe"] = RawPayload()
+                state["refs"].append(weakref.ref(row["_memory_probe"]))
+            live = sum(ref() is not None for ref in state["refs"])
+            assert live <= (128 if panel[0] == "training" else 512)
+            state["peak"] = max(state["peak"], live)
+        return value
+
+    monkeypatch.setattr(delivery, "read", tracked_read)
+    result = delivery.work_occurrence_trajectory(root, api, dataset, training, monitor)
+    assert len(result["training"]) == 768 and len(result["monitor"]) == 51
+    assert state["transitions"] == 819 and state["peak"] == 512
+    assert all(ref() is None for ref in state["refs"])
+
 def task_pool_delivery_fixture(root, monkeypatch):
     """Operational wiring fixture only; it never claims actual scientific completion."""
     manifest, api = extension_fixture(root, monkeypatch)

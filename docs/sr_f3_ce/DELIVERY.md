@@ -83,3 +83,43 @@ python -m ruff check --no-cache scripts/sr_f3_ce/build_delivery.py tests/sr_f3_c
 ```
 
 这些小型 fixture 验证拒绝缺项/封存/篡改、负结果保留、真实 CRC 损坏、路径/链接和不可覆盖回执，不代表 GPU 实验已完成。交付入口为 ZIP 内 `START_HERE.md`。此包可重评分，但不是包含服务器权重的完整重训包。
+
+## 2026-10-21 分批内存修订与资源实测边界
+
+`work_occurrence_trajectory` 原实现将同类所有面板的完整回答保留到统计结束，
+包括训练98,304条或MONITOR26,112条中的token、概率和解码前缀等大字段。
+新版先索引原文件路径，再逐面板读取：训练最多128条、MONITOR最多512条。
+面板内原分组顺序、冻结的 `runner.work_occurrence`、MONITOR生产评分、
+训练原摘要及原分组SHA256核对均保持；完成一个面板即释放原文对象。
+ENGINE检查点在完整校验及支持qid读取之后释放，避免无用引用跨越后续打包阶段。
+ZIP压缩、原件复制与哈希本来已流式处理，本次没有降低任何覆盖或验收要求。
+
+`profile_delivery_memory.py` 用独立子进程测量RSS，区分macOS的字节和Linux的KiB。
+`synthetic` 使用完整768训练/51 MONITOR面板布局，但IO、hash和MONITOR评分为明确的测试替身；
+真实单组样本只用于复制回答对象形状，不代表完整真实数据。其回执不能作为最终交付验收。
+`real-build` 才调用真实builder及全部原验收门禁；Linux下要求已有Slurm分配，
+实际worker还须验证该分配属于获授权作业。采样RSS仅覆盖builder子进程，
+并非整个作业/cgroup总峰值。失败或OOM的采样峰值可能低于真实峰值。
+
+2026-10-21本地热点测量（源码绑定原件位于
+`artifacts/sr_f3_ce_protocol_fix_20261016/continuation/20261021T_lowmem_041435Z`）：
+
+| 同一完整布局输入 | 峰值RSS | 用时 |
+| --- | ---: | ---: |
+| 原358 builder，合成512 token | 3,560,980,480字节 | 15.99秒 |
+| 分批builder，相同输入 | 99,778,560字节 | 9.10秒 |
+| 分批builder，真实单组回答形状扩展 | 184,418,304字节 | 57.59秒 |
+
+前两项摘要输出SHA256相同，热点峰值降低97.20%。真实单组样本来自既有
+`SRF3CE_EXEC_b0/rollouts/64-00.json`，只读取得，没有生成新科学样本。
+这些是上述回执绑定版本的测量，不是完整builder已完成或已证实最低内存的声明。
+完整数据仍须在计算节点实测，并记录Slurm分配、真实全流程峰值和全部验收结果；
+资源建议须包含作业总开销与余量，不能把热点的176MiB直接换算成作业最低申请。
+
+### 独立交付实现修订
+
+科学结果与验收要求不变的交付实现可使用 `--delivery-revision-manifest`，不能改写既有运维源码或冒充旧 builder。manifest 固定为运行根内 `operations/<revision_commit>/DELIVERY_REVISION.json`，`schema_version=1`、`experiment_id=SR-F3-CE-20261016`、`root` 为实际规范运行根，`scope=DELIVERY_PACKAGING_AND_VERIFICATION_ONLY`。
+
+`bindings` 必须完整且仅包含 `builder`、`original_builder`、`helper_manifest`、`operation_identity`、`run_identity`、`scientific_source_manifest`、`execution_freeze`；每项为运行根相对 `path` 及 `sha256`。新 builder 位于该修订目录；原 builder、helper manifest 和 operation identity 仍指向 `35800b02b1ef1eff2378e4c933393b4ea2668e4d`，并继续验证全部原 helper 与 task-pool 身份。无修订 manifest 时原入口检查不变。
+
+ZIP 保留原 `helper/source/` 与 `HELPER_SOURCE_MANIFEST.json`，另归档 `delivery_revision/DELIVERY_REVISION.json` 和 `delivery_revision/source/build_delivery.py`；两者均纳入流式文件校验及独立 archive/source 绑定复核。`DELIVERY_PROVENANCE.json` 与外部 verification 回执新增相同 `delivery_revision` 身份。原七项验收、覆盖计数、冻结科学文件和任务 claim 不变；修订身份在最终 ZIP 复核前再次校验。部署或最终恢复验收必须要求此新增身份匹配授权，不能仅凭旧字段相容宣称旧 builder 已运行。

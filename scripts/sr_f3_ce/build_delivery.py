@@ -310,7 +310,91 @@ def _operation_module(path, expected):
     return module
 
 
-def load_task_pool_operation(root, api, identity_path, *, helper_manifest=None):
+def load_delivery_revision(root, manifest_path, *, helper_manifest, operation_identity):
+    """Authenticate a packaging-only revision without replacing historical helpers."""
+    root = Path(root).resolve(strict=True)
+    path = Path(manifest_path).resolve(strict=True)
+    manifest_sha256 = sha_file(path)
+    value = read(path)
+    commit = value.get("revision_commit", "")
+    old = root / "operations" / "35800b02b1ef1eff2378e4c933393b4ea2668e4d"
+    if (
+        not isinstance(commit, str)
+        or not re.fullmatch(r"[a-f0-9]{40}", commit)
+        or commit == old.name
+        or path != root / "operations" / commit / "DELIVERY_REVISION.json"
+        or value.get("schema_version") != 1
+        or value.get("experiment_id") != EXPERIMENT
+        or value.get("root") != str(root)
+        or value.get("scope") != "DELIVERY_PACKAGING_AND_VERIFICATION_ONLY"
+    ):
+        fail("Delivery revision identity or scope differs")
+    expected_paths = dict(
+        builder=path.parent / "build_delivery.py",
+        original_builder=old / "build_delivery.py",
+        helper_manifest=old / "OPERATION_SOURCES.json",
+        operation_identity=old / "OPERATION_IDENTITY.json",
+        run_identity=root / "RUN_IDENTITY.json",
+        scientific_source_manifest=root / "deployment/SOURCE_MANIFEST.json",
+        execution_freeze=root / "EXECUTION_FREEZE.json",
+    )
+    bindings = value.get("bindings", {})
+    if not isinstance(bindings, dict) or set(bindings) != set(expected_paths):
+        fail("Delivery revision bindings incomplete")
+    for name, expected_path in expected_paths.items():
+        record = bindings[name]
+        if (
+            not isinstance(record, dict)
+            or set(record) != {"path", "sha256"}
+            or bounded(root, record["path"]) != expected_path
+            or sha_file(expected_path) != record["sha256"]
+        ):
+            fail("Delivery revision binding differs: " + name)
+    if (
+        Path(__file__).resolve(strict=True) != expected_paths["builder"]
+        or helper_manifest is None
+        or Path(helper_manifest).resolve(strict=True) != expected_paths["helper_manifest"]
+        or operation_identity is None
+        or Path(operation_identity).resolve(strict=True) != expected_paths["operation_identity"]
+    ):
+        fail("Delivery revision does not bind actual builder and original operation")
+    original_manifest = read(expected_paths["helper_manifest"])
+    operation = read(expected_paths["operation_identity"])
+    if (
+        original_manifest.get("files", {}).get("build_delivery.py")
+        != bindings["original_builder"]["sha256"]
+        or operation.get("operation_sources_sha256") != bindings["helper_manifest"]["sha256"]
+        or operation.get("run_identity_sha256") != bindings["run_identity"]["sha256"]
+        or operation.get("source_manifest_sha256")
+        != bindings["scientific_source_manifest"]["sha256"]
+    ):
+        fail("Delivery revision historical identity linkage differs")
+    if sha_file(path) != manifest_sha256:
+        fail("Delivery revision manifest changed during validation")
+    sources = {
+        "delivery_revision/DELIVERY_REVISION.json": path,
+        "delivery_revision/source/build_delivery.py": expected_paths["builder"],
+    }
+    return SimpleNamespace(
+        original_builder=expected_paths["original_builder"],
+        helper_manifest=expected_paths["helper_manifest"],
+        identity=dict(
+            manifest_path=str(path.relative_to(root)),
+            manifest_sha256=manifest_sha256,
+            revision_commit=commit,
+            scope=value["scope"],
+            bindings=bindings,
+        ),
+        sources={
+            name: (source, dict(sha256=sha_file(source), bytes=source.stat().st_size))
+            for name, source in sources.items()
+        },
+    )
+
+
+def load_task_pool_operation(
+    root, api, identity_path, *, helper_manifest=None, delivery_revision=None
+):
     """Install only the registered operational adapter, retaining the frozen Controller class."""
     root = Path(root).resolve(strict=True)
     path = Path(identity_path).resolve(strict=True)
@@ -329,7 +413,7 @@ def load_task_pool_operation(root, api, identity_path, *, helper_manifest=None):
     manifest = operation / "OPERATION_SOURCES.json"
     if helper_manifest is not None and Path(helper_manifest).resolve(strict=True) != manifest:
         fail("Task-pool identity and delivery helper manifest belong to different operations")
-    helpers, receipt = helper_sources(manifest)
+    helpers, receipt = helper_sources(manifest, delivery_revision=delivery_revision)
     sources = receipt["original_manifest"]
     if (
         sources.get("operation_commit") != commit
@@ -1046,10 +1130,11 @@ def work_occurrence_trajectory(root, api, dataset, training, monitor):
         ("training", training, 12 * 64, 128),
         ("monitor", monitor, 3 + 12 * 4, 512),
     ):
-        panels = defaultdict(list)
+        # Index paths only: retaining every token/logprob array across all 768
+        # training panels caused unbounded growth with the total experiment size.
+        # Preserve source order within each panel and the original scorer/checks.
         paths = defaultdict(list)
         for path, metadata, _ in entries:
-            original = read(path)
             if kind == "training":
                 model_id, step = metadata["run_id"], int(path.name[:2])
             else:
@@ -1057,24 +1142,30 @@ def work_occurrence_trajectory(root, api, dataset, training, monitor):
                 step = int(path.parents[1].name.removeprefix("step-"))
             if model_id not in models:
                 fail("Work trajectory contains an unregistered model")
-            key = (model_id, step)
-            for row in original["records"]:
-                if kind == "monitor":
-                    task = dataset.tasks[row["qid"]]
-                    score = api.contract.score(
-                        row["raw_text"],
-                        task["world"],
-                        task["query"],
-                        finish_reason=row["finish_reason"],
-                        protocol="structured",
-                    )
-                    row = dict(row, score=score)
-                panels[key].append(row)
-            paths[key].append(path)
-        if len(panels) != expected_panels:
+            paths[(model_id, step)].append(path)
+        if len(paths) != expected_panels:
             fail("Work trajectory lacks complete fixed current-run panel coverage")
         values = []
-        for (model_id, step), rows in sorted(panels.items()):
+        for (model_id, step), panel_paths in sorted(paths.items()):
+            rows = []
+            for path in panel_paths:
+                original = read(path)
+                for row in original["records"]:
+                    if kind == "monitor":
+                        task = dataset.tasks[row["qid"]]
+                        score = api.contract.score(
+                            row["raw_text"],
+                            task["world"],
+                            task["query"],
+                            finish_reason=row["finish_reason"],
+                            protocol="structured",
+                        )
+                        row = dict(row, score=score)
+                    rows.append(row)
+                # Reject excess records before the next group can grow the panel.
+                if len(rows) > expected_rows:
+                    fail("Work trajectory denominator differs from fixed raw coverage")
+                del original
             if len(rows) != expected_rows:
                 fail("Work trajectory denominator differs from fixed raw coverage")
             model = models[model_id]
@@ -1093,7 +1184,7 @@ def work_occurrence_trajectory(root, api, dataset, training, monitor):
                 )
             sources = [
                 dict(path="evidence/" + str(path.relative_to(root)), sha256=sha_file(path))
-                for path in paths[(model_id, step)]
+                for path in panel_paths
             ]
             if kind == "training":
                 receipt_path = (
@@ -1122,6 +1213,8 @@ def work_occurrence_trajectory(root, api, dataset, training, monitor):
                     sources=sources,
                 )
             )
+            # Do not keep the previous panel alive while reading the next one.
+            del rows, row
         result[kind] = values
     return dict(
         protocol_revision=slot_revision_kwargs(root)["revision"],
@@ -2637,7 +2730,7 @@ def verify_cost_snapshot(root, snapshot, raw, current):
         fail("Archived scheduler totals differ from retained actual accounting output")
 
 
-def helper_sources(manifest_path=None):
+def helper_sources(manifest_path=None, *, delivery_revision=None):
     script = Path(__file__).resolve()
     files = {}
     if manifest_path:
@@ -2654,10 +2747,17 @@ def helper_sources(manifest_path=None):
             if sha_file(path) != expected:
                 fail("Auxiliary source differs from operations manifest")
             files[name] = path
-        if "build_delivery.py" not in files or files["build_delivery.py"] != script:
+        expected_builder = script
+        if delivery_revision is not None:
+            if manifest_path != delivery_revision.helper_manifest:
+                fail("Delivery revision historical helper manifest differs")
+            expected_builder = delivery_revision.original_builder
+        if "build_delivery.py" not in files or files["build_delivery.py"] != expected_builder:
             fail("Operations manifest does not bind this delivery builder")
         original_sha = sha_file(manifest_path)
     else:
+        if delivery_revision is not None:
+            fail("Delivery revision requires original helper manifest")
         files["build_delivery.py"] = script
         checkout = script.parents[2]
         for name in ("docs/sr_f3_ce/DELIVERY.md", "tests/sr_f3_ce/test_delivery.py"):
@@ -2939,6 +3039,8 @@ def _external_receipt(output, checked, provenance, coverage):
         receipt["observability_extension"] = provenance["observability_extension"]
     if "task_pool_operation" in provenance:
         receipt["task_pool_operation"] = provenance["task_pool_operation"]
+    if "delivery_revision" in provenance:
+        receipt["delivery_revision"] = provenance["delivery_revision"]
     _publish_bytes(Path(str(output) + ".verification.json"), encoded(receipt) + b"\n")
     _publish_bytes(
         Path(str(output) + ".sha256"), f"{receipt['archive']['sha256']}  {output.name}\n".encode()
@@ -2946,7 +3048,23 @@ def _external_receipt(output, checked, provenance, coverage):
     return receipt
 
 
-def _build(root, output, *, helper_manifest=None, extension_manifest=None, operation_identity=None):
+def _build(
+    root,
+    output,
+    *,
+    helper_manifest=None,
+    extension_manifest=None,
+    operation_identity=None,
+    delivery_revision_manifest=None,
+):
+    revision = None
+    if delivery_revision_manifest is not None:
+        revision = load_delivery_revision(
+            root,
+            delivery_revision_manifest,
+            helper_manifest=helper_manifest,
+            operation_identity=operation_identity,
+        )
     api = (
         load_frozen_api(root)
         if extension_manifest is None
@@ -2955,7 +3073,11 @@ def _build(root, output, *, helper_manifest=None, extension_manifest=None, opera
     task_pool = None
     if operation_identity is not None:
         task_pool = load_task_pool_operation(
-            root, api, operation_identity, helper_manifest=helper_manifest
+            root,
+            api,
+            operation_identity,
+            helper_manifest=helper_manifest,
+            delivery_revision=revision,
         )
     receipts = require_final_release(root, api)
     if task_pool is None:
@@ -2975,6 +3097,9 @@ def _build(root, output, *, helper_manifest=None, extension_manifest=None, opera
             task: sha_file(root / "tasks" / task / "COMPLETE.json") for task in receipts
         },
     )
+    if revision is not None:
+        provenance["helper_builder_sha256"] = sha_file(revision.original_builder)
+        provenance["delivery_revision"] = revision.identity
     if getattr(api, "protocol_source_guard", None) is not None:
         provenance["protocol_source_guard"] = api.protocol_source_guard
     if getattr(api, "observability", None) is not None:
@@ -3033,6 +3158,10 @@ def _build(root, output, *, helper_manifest=None, extension_manifest=None, opera
                     1,
                 )
             )
+    # The complete checkpoint has been authenticated and its raw chain checked.
+    # Only path/sidecar metadata is needed from here on; release tensor storage
+    # before report aggregation, ZIP creation and the independent archive checks.
+    del engine_state, row
     coverage.update(
         verified_tasks=len(receipts),
         training_paths=12,
@@ -3117,6 +3246,8 @@ def _build(root, output, *, helper_manifest=None, extension_manifest=None, opera
         },
         **{"helper/source/" + name: (path, helper_records[name]) for name, path in helpers.items()},
     }
+    if revision is not None:
+        sources.update(revision.sources)
     mappings = list(endpoint_map.values())
     for name, entries in collections.items():
         mappings.extend(
@@ -3150,6 +3281,15 @@ def _build(root, output, *, helper_manifest=None, extension_manifest=None, opera
     }
 
     def verify_complete(path):
+        if revision is not None:
+            current_revision = load_delivery_revision(
+                root,
+                delivery_revision_manifest,
+                helper_manifest=helper_manifest,
+                operation_identity=operation_identity,
+            )
+            if current_revision.identity != revision.identity:
+                fail("Delivery revision changed before final archive verification")
         checked = verify_zip(path)
         verify_bound_archive(
             path,
@@ -3248,6 +3388,9 @@ def _build(root, output, *, helper_manifest=None, extension_manifest=None, opera
             writer.add_path(name, path, expected)
         for name, path in helpers.items():
             writer.add_path("helper/source/" + name, path, helper_records[name])
+        if revision is not None:
+            for name, (path, expected) in revision.sources.items():
+                writer.add_path(name, path, expected)
         writer.finish()
         checked = verify_complete(temporary)
         with temporary.open("rb") as stream:
@@ -3260,7 +3403,15 @@ def _build(root, output, *, helper_manifest=None, extension_manifest=None, opera
         writer.archive.close()
 
 
-def build(root, output, *, helper_manifest=None, extension_manifest=None, operation_identity=None):
+def build(
+    root,
+    output,
+    *,
+    helper_manifest=None,
+    extension_manifest=None,
+    operation_identity=None,
+    delivery_revision_manifest=None,
+):
     root, output = Path(root).resolve(strict=True), Path(output).resolve()
     if output.suffix != ".zip" or (
         output.is_relative_to(root) and not output.is_relative_to(root / "delivery")
@@ -3273,6 +3424,7 @@ def build(root, output, *, helper_manifest=None, extension_manifest=None, operat
             helper_manifest=helper_manifest,
             extension_manifest=extension_manifest,
             operation_identity=operation_identity,
+            delivery_revision_manifest=delivery_revision_manifest,
         )
     except BaseException as exc:
         output.parent.mkdir(parents=True, exist_ok=True)
@@ -3313,6 +3465,11 @@ def main(argv=None):
         type=Path,
         help="Registered operation identity required to verify retained multi-task allocations",
     )
+    parser.add_argument(
+        "--delivery-revision-manifest",
+        type=Path,
+        help="Independent packaging revision binding this builder and unchanged original operation",
+    )
     args = parser.parse_args(argv)
     result = build(
         args.root,
@@ -3320,6 +3477,11 @@ def main(argv=None):
         helper_manifest=args.helper_manifest,
         extension_manifest=args.extension_manifest,
         operation_identity=args.operation_identity,
+        **(
+            {"delivery_revision_manifest": args.delivery_revision_manifest}
+            if args.delivery_revision_manifest is not None
+            else {}
+        ),
     )
     print(json.dumps(result, ensure_ascii=False))
 

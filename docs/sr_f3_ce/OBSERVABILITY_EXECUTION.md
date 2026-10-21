@@ -327,3 +327,31 @@ held身份、保存脚本和零运行/零分配，再唯一精确取消PENDING21
 明确替代未完成的旧rose接续验收路径。ZIP不反向修改；下载后SHA256
 一致并交付可点击文件，才删除监控。该段是授权边界，不代表作业已提交
 或验收已通过；实际job_id和阶段以真实回执为准。
+
+## 2026-10-21 低内存打包修订与唯一4核恢复
+
+用户明确授权：定位打包内存热点并流式/分批改造，科学结果与原验收标准不变；
+确认216897未启动、零分配后可精确取消，提交唯一4CPU/12GiB/0GPU老师QoS替代作业。
+12GiB是首次全量实测上限，不是已测得的最低需求。原215520、12训练与15端点不重跑。
+
+`build_delivery.py`逐面板处理原文，内存基准与边界见`DELIVERY.md`。
+独立`lowmem_delivery/`保持原恢复、迁移和全部退役历史，并把新builder与原358运维
+通过`DELIVERY_REVISION.json`显式绑定。旧358/3a7/249/ab7/b77/4401源码与授权不改。
+原211333 OOM/END FAILED保留；未成功的旧补充门禁不伪造PASS。
+
+新脚本使用老师QoS、account rose、单节点、4CPU/12GiB、`cpu_ok`，不请求GPU，也不
+指定固定nodelist；实际节点必须是x86_64的cpu-1或cpu-2。容量查询同时核对两节点，
+只有精确IDLE/MIXED且至少4空闲有效核与12288MiB调度可用内存的节点才合格。
+某候选的COMPLETING/PLANNED/DOWN/DRAIN等状态不使另一合格节点失效；全部不合格时
+保存完整WAIT_CAPACITY回执，不消耗一次性放行机会。缺失/未知命令结果或放行意图
+不允许盲重试。旧216897的完整历史、原脚本、未启动证明及精确取消终态/队列消失
+必须通过，之后才能唯一sbatch；MAY_HAVE_SUBMITTED出现后永不重复submit。
+
+新worker仅通过`profile_delivery_memory.py --mode real-build`运行修订builder的原打包验收。
+MEMORY_PROFILE记录builder子进程RSS与源哈希、成功回执hash；PROCESS另记录可用的
+当前worker cgroup-v2峰值，不能把某step读数冒充整个Slurm作业总峰值。
+最终要求原七项PASS与233340覆盖、FINAL_RECOVERY_VERIFIED、FINAL_MIGRATION_VERIFIED、
+FINAL_LOWMEM_RECOVERY_VERIFIED绑定同一ZIP、修订身份及内存回执。后者明确替代此前未成功
+的held/teacher补充门禁。原ZIP不反向改写；下载ZIP与验收/内存回执并核对SHA之后才结束监控。
+
+完整真实打包尚需计算节点实测；热点基准成功、单元测试通过或新作业已提交均不等于交付完成。
