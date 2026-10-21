@@ -27,6 +27,7 @@ ACCOUNT = "rose"
 PARTITION = "cluster02"
 GPU_LIMIT = 8
 SUBMIT_LIMIT = 5
+GPU_WALLTIME = "06:00:00"
 _TASK_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,160}\Z")
 _JOB_ID = re.compile(r"[0-9]+(?:_[0-9]+)?\Z")
 
@@ -346,7 +347,7 @@ def _reserved_usage(root, queue, slurm, user):
     return capacity
 
 
-def reconcile_timeouts(root, *, slurm=None):
+def reconcile_timeouts(root, *, slurm=None, queue=None):
     """Recover only released leases whose recorded job is terminal TIMEOUT.
 
     Failed jobs are recorded and blocked. A complete receipt alone cannot certify
@@ -361,7 +362,7 @@ def reconcile_timeouts(root, *, slurm=None):
     jobs.discard(None)
     if not jobs:
         return []
-    queue = slurm.queue()
+    queue = slurm.queue() if queue is None else queue
     terminal = {job: slurm.terminal(job) for job in jobs if job not in queue}
     changes = []
     for key, previous in running:
@@ -509,6 +510,7 @@ def submit(
     memory_gib_per_gpu=96,
     highmem=False,
     maximum_new_jobs=4,
+    walltime=GPU_WALLTIME,
 ):
     """Fill available capacity with up to four two-GPU allocations.
 
@@ -521,6 +523,8 @@ def submit(
     slurm, user = slurm or Slurm(), user or getpass.getuser()
     if cpus_per_gpu < 1 or memory_gib_per_gpu < 1 or not 1 <= maximum_new_jobs <= SUBMIT_LIMIT:
         raise ValueError("Invalid allocation resources")
+    if not re.fullmatch(r"[0-9]{1,3}:[0-5][0-9]:[0-5][0-9]", walltime):
+        raise ValueError("GPU walltime must be HH:MM:SS")
     directory = root / "pool"
     directory.mkdir(parents=True, exist_ok=True)
     launched = []
@@ -585,6 +589,7 @@ def submit(
                     "cpus": cpus_per_gpu * count,
                     "memory_gib": memory_gib_per_gpu * count,
                     "queue_usage": capacity,
+                    "walltime": walltime,
                 }
                 state["jobs"][key] = registration
                 _save(root, state)
@@ -600,7 +605,7 @@ def submit(
                 f"--gres=gpu:pro6000:{count}",
                 f"--cpus-per-task={cpus_per_gpu * count}",
                 f"--mem={memory_gib_per_gpu * count}G",
-                "--time=3-00:00:00",
+                f"--time={walltime}",
                 "--no-requeue",
                 f"--output={output}",
                 "--export=ALL",
@@ -636,9 +641,157 @@ def submit(
     return {"submitted": launched, "pool": status(root)}
 
 
+def _startup_failures(root):
+    """Count consecutive failed launches without a single task claim.
+
+    Scientific failures are task failures, not startup failures. Scheduler
+    TIMEOUT is the registered lease boundary. Explicitly cancelled pending jobs
+    may be replaced for scheduling, so CANCELLED is also excluded here.
+    """
+    with _locked(root) as state:
+        claimed_jobs = {
+            attempt["owner"].get("job_id")
+            for task in state["tasks"].values()
+            for attempt in task["attempts"]
+        }
+        streak, failures = 0, []
+        for key, row in sorted(state["jobs"].items()):
+            if row.get("job_id") in claimed_jobs:
+                streak, failures = 0, []
+                continue
+            terminal = row.get("scheduler_terminal", {})
+            failed = row["status"] == "REJECTED" or (
+                terminal and terminal["state"] not in ("TIMEOUT", "CANCELLED")
+            )
+            if failed:
+                streak += 1
+                failures.append(
+                    dict(
+                        job_key=key,
+                        job_id=row.get("job_id"),
+                        reason=terminal or row.get("submit_stderr"),
+                    )
+                )
+    return streak, failures
+
+
+def controller_tick(root, code, python, *, slurm=None, user=None, **submit_options):
+    """One read/reconcile/refill cycle, with no new experimental work."""
+    root = Path(root)
+    slurm, user = slurm or Slurm(), user or getpass.getuser()
+    if (root / "pool/STOP").exists():
+        return dict(status="STOPPED", reason="pool/STOP", pool=status(root))
+    queue = slurm.queue()
+    reconcile_timeouts(root, slurm=slurm, queue=queue)
+    # Also reconcile jobs that failed before their first task could be claimed.
+    _reserved_usage(root, queue, slurm, user)
+    summary = status(root)
+    if not summary["work_remaining"]:
+        return dict(
+            status="COMPLETE" if summary["all_complete"] else "FINISHED_WITH_BLOCKS", pool=summary
+        )
+    streak, failures = _startup_failures(root)
+    if streak >= 3:
+        return dict(
+            status="BLOCKED_STARTUP_FAILURES",
+            consecutive_startup_failures=streak,
+            startup_failures=failures,
+            pool=summary,
+        )
+    unknown = [
+        key
+        for key, row in summary["jobs"].items()
+        if row["status"] in ("SUBMITTING", "SUBMISSION_UNKNOWN")
+    ]
+    if unknown:
+        return dict(status="BLOCKED_SUBMISSION_UNKNOWN", unknown_jobs=unknown, pool=summary)
+    launched = submit(root, code, python, slurm=slurm, user=user, **submit_options)
+    # Rejected sbatch calls count too; do not repeat a bad startup indefinitely.
+    streak, failures = _startup_failures(root)
+    return dict(
+        status="BLOCKED_STARTUP_FAILURES" if streak >= 3 else "ACTIVE",
+        consecutive_startup_failures=streak,
+        startup_failures=failures,
+        submitted=[row["job_id"] for row in launched["submitted"]],
+        pool=launched["pool"],
+    )
+
+
+def controller(root, code, python, *, interval=150, slurm=None, user=None, **submit_options):
+    """Small CPU allocation replenishes six-hour GPU leases until work ends."""
+    if not 120 <= interval <= 180:
+        raise ValueError("Controller interval must be between 120 and 180 seconds")
+    root = Path(root).resolve()
+    slurm, user = slurm or Slurm(), user or getpass.getuser()
+    directory = root / "pool"
+    directory.mkdir(parents=True, exist_ok=True)
+    with (directory / "CONTROLLER.lock").open("a+") as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise RuntimeError("Another SR-F4 controller is already active") from exc
+        job_id = os.environ.get("SLURM_JOB_ID")
+        if job_id:
+            allocation = slurm.show(job_id)
+            if (
+                any(
+                    allocation.get(k) != v
+                    for k, v in {
+                        "QOS": QOS,
+                        "Account": ACCOUNT,
+                        "Partition": PARTITION,
+                        "JobName": "LH-SRF4-CTRL",
+                    }.items()
+                )
+                or max(gpu_count(allocation.get("ReqTRES")), gpu_count(allocation.get("AllocTRES")))
+                != 0
+            ):
+                raise PermissionError("Controller requires its registered zero-GPU allocation")
+        previous = None
+        while True:
+            try:
+                event = controller_tick(
+                    root, code, python, slurm=slurm, user=user, **submit_options
+                )
+            except Exception as error:
+                event = dict(
+                    status="BLOCKED_CONTROLLER_ERROR",
+                    error_type=type(error).__name__,
+                    reason=str(error),
+                    pool=status(root),
+                )
+            summary = event.pop("pool")
+            event.update(
+                at=now(),
+                job_id=job_id,
+                counts=summary["counts"],
+                jobs={
+                    key: dict(
+                        job_id=row.get("job_id"),
+                        status=row["status"],
+                        terminal=row.get("scheduler_terminal", {}).get("state"),
+                    )
+                    for key, row in summary["jobs"].items()
+                },
+            )
+            _write(directory / "CONTROLLER.json", event)
+            signature = json.dumps(
+                {key: value for key, value in event.items() if key not in ("at", "submitted")},
+                sort_keys=True,
+            )
+            if signature != previous:
+                print(json.dumps(event, ensure_ascii=False), flush=True)
+                previous = signature
+            if event["status"] != "ACTIVE":
+                return 2 if event["status"].startswith("BLOCKED") else 0
+            time.sleep(interval)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("mode", choices=("init", "status", "worker", "job", "submit", "reconcile"))
+    parser.add_argument(
+        "mode", choices=("init", "status", "worker", "job", "submit", "reconcile", "controller")
+    )
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--tasks", type=Path)
     parser.add_argument("--slot", default="0")
@@ -649,6 +802,8 @@ def main(argv=None):
     parser.add_argument("--memory-gib-per-gpu", type=int, default=96)
     parser.add_argument("--maximum-new-jobs", type=int, default=4)
     parser.add_argument("--highmem", action="store_true")
+    parser.add_argument("--walltime", default=GPU_WALLTIME)
+    parser.add_argument("--interval", type=int, default=150)
     args = parser.parse_args(argv)
     if args.mode == "init":
         result = init_pool(args.root, _read(args.tasks or args.root / "TASKS.json"))
@@ -664,8 +819,10 @@ def main(argv=None):
         result = reconcile_timeouts(args.root)
     else:
         if not args.code:
-            parser.error("submit requires --code")
-        result = submit(
+            parser.error(args.mode + " requires --code")
+        operation = controller if args.mode == "controller" else submit
+        options = {"interval": args.interval} if args.mode == "controller" else {}
+        result = operation(
             args.root,
             args.code,
             args.python,
@@ -673,7 +830,11 @@ def main(argv=None):
             memory_gib_per_gpu=args.memory_gib_per_gpu,
             highmem=args.highmem,
             maximum_new_jobs=args.maximum_new_jobs,
+            walltime=args.walltime,
+            **options,
         )
+        if args.mode == "controller":
+            return result
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0
 

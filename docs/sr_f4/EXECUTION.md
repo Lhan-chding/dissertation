@@ -18,11 +18,15 @@ B_CONFIRM 父模型按B测量要求每题8 draw，共1,344条；A两训练臂每
 - QoS：`soujanya-poria-startfund-2026-03`；account=`rose`；partition=`cluster02`。
 - 实时额度：共享 QoS 最多8张 PRO6000，本用户同时提交上限5个作业；计算其他用户占用、pending 和未知提交结果。
 - GPU 作业名称为 `LH-SRF4-*`，通常四个双卡作业，各卡独立领取任务；每完成一个任务立即领取下一项就绪任务，没有人为批次屏障。A 路径只依赖本块 B0；确认评测的依赖属于科学冻结要求。
-- 每卡申请96 GiB主机内存、8CPU；每个模型进程只看见一张卡。进程保留完整异常记录；不以退出码或作业结束代替样本完整性。
+- 每卡申请96 GiB主机内存、8CPU；集群提交插件实际将双卡作业设为8CPU、66GiB主机内存，保留其原始提交回执。每个模型进程只看见一张卡。进程保留完整异常记录；不以退出码或作业结束代替样本完整性。
+- GPU租约缩短为6小时以改善backfill；CPU控制器 `LH-SRF4-CTRL` 每150秒核对终态，在已释放的TIMEOUT之后恢复并补足额度。控制器占第五个作业名额，没有GPU。三次启动失败会明确阻断，FAILED任务不会被自动洗成重试。
+- 控制器的自身租约为3天；超过3天仍未完成时，需要重提同一 `controller.sbatch` 接续已有池。GPU租约不是科学停止预算。
 
 ## 启动和状态
 
 代码快照保存到运行根的 `code/`。首次准备在 CPU 作业执行 `python -m sr_f4.prepare --root RUN_ROOT --old-root OLD_ROOT --code CODE_ROOT`；随后 `python -m sr_f4.pool init --root RUN_ROOT`，再运行 `python -m sr_f4.pool submit --root RUN_ROOT --code CODE_ROOT --python PYTHON`。
+
+持续接续由 `sbatch CODE_ROOT/scripts/sr_f4/controller.sbatch` 启动。初次数据准备作业218288已经COMPLETED；5,408题图像路由准备完成，确认集模型调用数为0。最初四个3天GPU作业218289–218292因Priority排队，集群拒绝原地更改TimeLimit，因此在仍未开跑时撤回后改为6小时作业；替换终态和新作业编号以服务器 `RESOURCE_AMENDMENT_6H.json`、`pool/STATE.json` 为准。此前尚无新GPU回答，不能将已提交写成已训练完成。
 
 状态为 `python -m sr_f4.pool status --root RUN_ROOT`，每项科学任务保存在 `tasks/<task_id>/COMPLETE.json`，训练进度在 `RUNS/A/b*/r1/*/updates/`。调度任务完成不等于所有科学条件通过，应检查嵌套 result.status、B3 技术缺口和最终 coverage。可恢复 TIMEOUT 只在旧租约结束、调度器终态确认后重新接续。非超时失败须读实际异常、修复后另行登记；不自动洗掉失败。
 
@@ -39,3 +43,5 @@ B_CONFIRM 父模型按B测量要求每题8 draw，共1,344条；A两训练臂每
 ## 已完成的本地验证
 
 针对本次实现的72项 CPU 测试通过（包含两项评测预算修正回归检查），执行包55项参考算法检查通过，Ruff 通过。详细覆盖与限制见 `VALIDATION.json`。这些结果不等于 GPU 模型运行成功、不等于历史 golden replay 已完成，也不代表科学结论成立。
+
+后续控制器改动的23项 pool 专项测试通过，其中新增6项检查既有预约、CPU作业名额、超时续接、启动失败阻断和主动取消边界。

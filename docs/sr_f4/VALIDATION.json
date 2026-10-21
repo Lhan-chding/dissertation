@@ -3,6 +3,7 @@
   "date_singapore": "2026-10-22",
   "scope": "CPU checks of changed production behavior; not scientific outcome or GPU acceptance",
   "production_tests": {"command": "PYTHONPATH=src python -m pytest -q -p no:cacheprovider tests/sr_f4", "passed": 72},
+  "controller_followup_tests": {"command": "PYTHONPATH=src python -m pytest -q -p no:cacheprovider tests/sr_f4/test_pool.py", "passed": 23, "new_regressions": 6},
   "package_reference_checks": {"passed": 55, "source": "provided execution package tools/run_reference_checks.py"},
   "lint": "ruff check --no-cache src/sr_f4 tests/sr_f4 scripts/sr_f4: passed",
   "covered": [

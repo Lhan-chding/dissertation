@@ -130,6 +130,7 @@ def test_submission_uses_eight_gpus_even_before_queue_visibility(tmp_path, visib
     assert sum(item["gpus"] for item in result["submitted"]) == 8
     assert all(item["name"].startswith("LH-") for item in result["submitted"])
     assert all(not any("constraint" in arg for arg in command) for command in slurm.commands)
+    assert all("--time=06:00:00" in command for command in slurm.commands)
     again = pool.submit(tmp_path, tmp_path, "/usr/bin/python3", user="louis", slurm=slurm)
     assert again["submitted"] == []
 
@@ -181,3 +182,75 @@ def test_worker_continues_after_independent_task_failure(tmp_path, monkeypatch):
     summary = pool.status(tmp_path)
     assert summary["tasks"]["fails"]["status"] == "FAILED"
     assert summary["tasks"]["works"]["status"] == "COMPLETE"
+
+
+def test_controller_does_not_duplicate_four_pending_allocations(tmp_path):
+    pool.init_pool(tmp_path, [task(str(index)) for index in range(10)])
+    slurm = FakeSlurm()
+    pool.submit(tmp_path, tmp_path, "/usr/bin/python3", user="louis", slurm=slurm)
+    slurm.rows["900"] = row("louis", 0)  # Fifth, CPU-only controller job.
+    event = pool.controller_tick(tmp_path, tmp_path, "/usr/bin/python3", user="louis", slurm=slurm)
+    assert event["status"] == "ACTIVE"
+    assert event["submitted"] == []
+    assert len(slurm.commands) == 4
+
+
+def _register_old_jobs(root, count=3):
+    with pool._locked(root) as state:
+        for index in range(count):
+            state["jobs"][f"job-{index + 1:04d}"] = dict(
+                status="SUBMITTED", job_id=str(index + 1), gpus=2, user="louis"
+            )
+        pool._save(root, state)
+
+
+@pytest.mark.parametrize(
+    "terminal,expected", [("FAILED", "BLOCKED_STARTUP_FAILURES"), ("CANCELLED", "ACTIVE")]
+)
+def test_controller_blocks_startup_loop_but_allows_pending_cancellation(
+    tmp_path, terminal, expected
+):
+    pool.init_pool(tmp_path, [task("a")])
+    _register_old_jobs(tmp_path)
+    slurm = FakeSlurm(terminal=dict(state=terminal, qos=pool.QOS, account=pool.ACCOUNT))
+    event = pool.controller_tick(tmp_path, tmp_path, "/usr/bin/python3", user="louis", slurm=slurm)
+    assert event["status"] == expected
+    assert len(slurm.commands) == (0 if terminal == "FAILED" else 4)
+    assert len(event["pool"]["jobs"]) == (3 if terminal == "FAILED" else 7)
+
+
+def test_controller_requeues_only_timeout_and_replenishes_capacity(tmp_path, monkeypatch):
+    monkeypatch.setenv("SLURM_JOB_ID", "1")
+    pool.init_pool(tmp_path, [task("a", resume_supported=True), task("b")])
+    _register_old_jobs(tmp_path, 1)
+    _claimed, lease = pool.claim(tmp_path, "1:0")
+    lease.close()
+    slurm = FakeSlurm(
+        {"900": row("louis", 0)},
+        terminal=dict(state="TIMEOUT", qos=pool.QOS, account=pool.ACCOUNT, exit_code="0:0"),
+    )
+    event = pool.controller_tick(tmp_path, tmp_path, "/usr/bin/python3", user="louis", slurm=slurm)
+    assert event["status"] == "ACTIVE"
+    assert event["pool"]["tasks"]["a"]["status"] == "READY"
+    assert len(slurm.commands) == 4
+    state = pool._read(tmp_path / "pool/STATE.json")
+    assert state["tasks"]["a"]["attempts"][0]["status"] == "TIMEOUT"
+
+
+def test_controller_finishes_with_failures_without_retry(tmp_path):
+    pool.init_pool(tmp_path, [task("a"), task("b", ["a"])])
+    claimed, lease = pool.claim(tmp_path, "0")
+    pool.finish(tmp_path, claimed, 1)
+    lease.close()
+    slurm = FakeSlurm()
+    event = pool.controller_tick(tmp_path, tmp_path, "/usr/bin/python3", user="louis", slurm=slurm)
+    assert event["status"] == "FINISHED_WITH_BLOCKS"
+    assert event["pool"]["tasks"]["a"]["status"] == "FAILED"
+    assert not slurm.commands
+
+
+def test_controller_stop_does_not_query_or_submit(tmp_path):
+    pool.init_pool(tmp_path, [task("a")])
+    (tmp_path / "pool/STOP").touch()
+    event = pool.controller_tick(tmp_path, tmp_path, "/usr/bin/python3", slurm=object())
+    assert event["status"] == "STOPPED"
