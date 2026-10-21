@@ -123,3 +123,26 @@ ZIP压缩、原件复制与哈希本来已流式处理，本次没有降低任�
 `bindings` 必须完整且仅包含 `builder`、`original_builder`、`helper_manifest`、`operation_identity`、`run_identity`、`scientific_source_manifest`、`execution_freeze`；每项为运行根相对 `path` 及 `sha256`。新 builder 位于该修订目录；原 builder、helper manifest 和 operation identity 仍指向 `35800b02b1ef1eff2378e4c933393b4ea2668e4d`，并继续验证全部原 helper 与 task-pool 身份。无修订 manifest 时原入口检查不变。
 
 ZIP 保留原 `helper/source/` 与 `HELPER_SOURCE_MANIFEST.json`，另归档 `delivery_revision/DELIVERY_REVISION.json` 和 `delivery_revision/source/build_delivery.py`；两者均纳入流式文件校验及独立 archive/source 绑定复核。`DELIVERY_PROVENANCE.json` 与外部 verification 回执新增相同 `delivery_revision` 身份。原七项验收、覆盖计数、冻结科学文件和任务 claim 不变；修订身份在最终 ZIP 复核前再次校验。部署或最终恢复验收必须要求此新增身份匹配授权，不能仅凭旧字段相容宣称旧 builder 已运行。
+
+## 2026-10-21 用户澄清后的本地分析资料包
+
+用户要求按最初执行计划第16节交付必要结果、完整原文与可分析报告，
+不迁移整个运行目录，不下载模型权重、完整checkpoint、环境或重复缓存。
+`scripts/sr_f3_ce/analysis_bundle.py` 接受显式逐文件SHA256/字节数清单，
+只读取清单中的本地文件，不扫描目录追加内容，不提交作业或运行模型。
+既有端点聚合原文直接保留，训练、support、MONITOR和ENGINE原件保持原路径原字节，
+另提供原文索引、全部块及区间的中文报告与完整分析附录。
+
+```sh
+python -B scripts/sr_f3_ce/analysis_bundle.py \
+  --root /absolute/local/results_source \
+  --manifest /absolute/ANALYSIS_INPUT_MANIFEST.json \
+  --output /absolute/delivery/SR_F3_CE_ANALYSIS_RESULTS.zip
+```
+
+本地回执 `VERIFIED_LOCAL_ANALYSIS_DATA_BUNDLE` 只在实际ZIP检查通过后生成：
+所有成员的SHA256/CRC、gzip读至EOF、原文字段与固定覆盖、原发布MANIFEST及
+原生产重评分回执到端点原文的绑定必须通过。它复用原科学评分结果，
+不声称本地重新执行评分或旧服务器恢复/分配/模型验收。
+权重身份与必要失败、迁移和退役证据保留；服务器科学原件不删除。
+源码的fixture测试不能替代实际交付包的完整验证。
