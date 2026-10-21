@@ -192,7 +192,7 @@ def verify_data(data, output=None):
     seen = set()
     if output and (output.is_symlink() or not output.is_dir()):
         raise ValueError("Output must be a real directory")
-    with lzma.open(data, "rb") as stream:
+    with lzma.open(data, "rb") as compressed, io.BufferedReader(compressed, 1024 * 1024) as stream:
         dec = Decoder(stream, copy_references=False)
         intro = dec.read()
         if intro.get("format") != "SR_F3_CE_REVERSIBLE_MEMBERS_V1":
@@ -249,6 +249,18 @@ def verify_data(data, output=None):
                     logical.write(raw)
                     writer.write(raw)
                     count += 1
+                    if count % 10000 == 0:
+                        print(
+                            json.dumps(
+                                {
+                                    "phase": "verify",
+                                    "path": name,
+                                    "records": count,
+                                    "seconds": round(time.monotonic() - started, 1),
+                                }
+                            ),
+                            flush=True,
+                        )
                 if writer is not original:
                     writer.close()
             finally:
