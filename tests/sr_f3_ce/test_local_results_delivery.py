@@ -2,6 +2,7 @@
 
 import gzip
 import importlib.util
+import struct
 import zipfile
 from pathlib import Path
 from types import SimpleNamespace
@@ -337,3 +338,38 @@ def test_progress_is_bounded_stages_on_stderr(data, capsys):
         "VERIFY_END",
     ]
     assert all(isinstance(row["at_unix"], float) for row in events)
+
+
+@pytest.mark.parametrize(
+    "member", ["PACKAGE_MANIFEST.json", "START_HERE.md", "evidence/release/ENDPOINT_RAW.jsonl.gz"]
+)
+def test_streaming_archive_verification_rejects_bad_member_crc(data, member):
+    build(data)
+    with zipfile.ZipFile(data.output) as package:
+        cursor = package.start_dir
+    contents = bytearray(data.output.read_bytes())
+    while contents[cursor : cursor + 4] == b"PK\x01\x02":
+        name_length, extra_length, comment_length = struct.unpack_from(
+            "<HHH", contents, cursor + 28
+        )
+        name = contents[cursor + 46 : cursor + 46 + name_length].decode("utf-8")
+        if name == member:
+            original_crc = struct.unpack_from("<I", contents, cursor + 16)[0]
+            struct.pack_into("<I", contents, cursor + 16, original_crc ^ 1)
+            break
+        cursor += 46 + name_length + extra_length + comment_length
+    else:
+        pytest.fail("Fixture member not found in central directory")
+    data.output.write_bytes(contents)
+    # The actual payload and all SHA bindings remain unchanged: CRC alone rejects it.
+    with pytest.raises(zipfile.BadZipFile, match="Bad CRC-32"):
+        m.verify_archive(data.output)
+
+
+def test_archive_crc_does_not_require_repeated_testzip_pass(data, monkeypatch):
+    def duplicate_pass(*args, **kwargs):
+        pytest.fail("testzip would repeat every already CRC-checked hash read")
+
+    monkeypatch.setattr(zipfile.ZipFile, "testzip", duplicate_pass)
+    receipt = build(data)
+    assert receipt["checks"]["crc"] == "PASS"

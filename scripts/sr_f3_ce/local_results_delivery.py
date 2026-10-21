@@ -350,7 +350,8 @@ def verify_archive(archive):
                 with package.open(path) as compressed, gzip.GzipFile(fileobj=compressed) as stream:
                     for _ in iter(lambda: stream.read(CHUNK), b""):
                         pass
-        require(package.testzip() is None, "ZIP CRC failed")
+        # ZipExtFile checks each member CRC at EOF during the hash reads above;
+        # PACKAGE_MANIFEST.json was likewise read fully. No second archive pass.
         manifest = loads(package.read("TRANSPORT_MANIFEST.json"))
         files, _, _ = validate_manifest(manifest)
         require(
