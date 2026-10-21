@@ -355,3 +355,28 @@ FINAL_LOWMEM_RECOVERY_VERIFIED绑定同一ZIP、修订身份及内存回执。�
 的held/teacher补充门禁。原ZIP不反向改写；下载ZIP与验收/内存回执并核对SHA之后才结束监控。
 
 完整真实打包尚需计算节点实测；热点基准成功、单元测试通过或新作业已提交均不等于交付完成。
+
+## 216983 重复CPU约束的同作业规范化
+
+唯一4核替代216983首次接续读取到`Features=cpu_ok&cpu_ok`，原538门禁精确要求
+`cpu_ok`，因此在第一条held查询后停止，未放行。原poll只有完整001 intent/result，
+不补写RESULT、不删除原件，不重跑原continue。原worker运行时也校验该字段，
+不能只放宽接续器或改写查询回执。
+
+独立`normalize_lowmem_constraint.py`仅绑定216983、原538授权和这一个已知断点。
+它在原共享提交锁内再次核验held身份、原存储脚本、零运行和零分配，唯一执行
+`scontrol update JobId=216983 Features=cpu_ok`；这只是同一约束重复AND的等价规范化，
+不移除cpu_ok、不改变4CPU/12GiB、QoS、job_id、脚本或科学设置。只有调度器真实
+返回cpu_ok、原脚本及零分配再次通过才接受；未知结果、命令失败、再次重复追加
+或任何启动/放行证据都停止，不盲重试、不提交另一作业。
+
+新授权全文、完整源码UTF8与SHA、前后查询和唯一修改命令均保存在独立
+`commands/poll_constraint_normalization_216983` JSON审计。规范化之后的已知容量
+不足仅保存完整WAIT回执，可重复只读检查；原严格节点、CPU、内存、QoS门禁不变。
+条件具备时新建真实16命令链，历史提交只复制并记录谱系，原538
+`prior_release`必须能回放接受；原缺RESULT查询仍逐字节纳入全部teacher审计。
+
+最终侧车先执行原538完整原交付、恢复、迁移和低内存验收，然后核对同ZIP内的
+规范化源码、授权、全部命令和等待链，输出外置
+`FINAL_CONSTRAINT_NORMALIZATION_VERIFIED.json`。该补充验收及本地下载SHA也通过
+才算完整交付；不反向修改ZIP、不伪造历史门禁、不把规范化成功当作worker已启动。
