@@ -1,0 +1,76 @@
+{
+  "enabled": "ONLY_IF_C_GATE_RUN_C",
+  "method_status": "NEW_PROPOSAL_NOT_PREVIOUSLY_VALIDATED",
+  "arms": [
+    "J",
+    "EVID",
+    "SELECT",
+    "SELECT_SHUF"
+  ],
+  "repeats": 2,
+  "master_seeds": [
+    2026102211,
+    2026102212
+  ],
+  "steps": 32,
+  "checkpoints": [
+    0,
+    8,
+    16,
+    24,
+    32
+  ],
+  "dev_eval_steps": [
+    0,
+    16,
+    32
+  ],
+  "dev_draws": 2,
+  "primary_checkpoint": 32,
+  "groups": 16,
+  "group_size": 8,
+  "new_groups_per_step": 12,
+  "old_train_groups_per_step": 4,
+  "beta": 0.25,
+  "score_coefficients": {
+    "common_P": 0.5,
+    "extra_P_times_S": 0.5
+  },
+  "base_advantage": "NATIVE_AUDITED_A_J",
+  "final_advantage": "A_J + beta * failure_stratum_centered_score",
+  "post_addition_normalization": false,
+  "failure_stratum": {
+    "J": 0,
+    "protocol_valid": true,
+    "finish": true,
+    "certificate_sufficient": true,
+    "task_defined": true,
+    "min_size": 2,
+    "required_known_dimensions": [
+      "P",
+      "S"
+    ],
+    "unknown_policy": "ABSTAIN_ALL_EXTRA_CREDIT_FOR_THIS_FAILURE_STRATUM"
+  },
+  "shuffle": {
+    "field": "S",
+    "condition_on": [
+      "J",
+      "P",
+      "protocol_valid",
+      "finish",
+      "certificate_sufficient",
+      "task_defined"
+    ],
+    "preserve_residual_multiset": true,
+    "identity_allowed": true,
+    "separate_rng": true
+  },
+  "schedule": "FIXED_SHARED_ACROSS_ARMS_NO_SEMANTIC_SAMPLING",
+  "parent_start": "ORIGINAL_PARENTS_NOT_TRACK_A_ENDPOINTS",
+  "primary_contrasts": [
+    "SELECT-J",
+    "SELECT-EVID",
+    "SELECT-SELECT_SHUF"
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "seeds": {
+    "world_generation": 2026102221,
+    "split": 2026102222,
+    "audit": 2026102223,
+    "evaluation": 2026102224,
+    "bootstrap": 2026102225,
+    "shuffle": 2026102205
+  },
+  "B0": {
+    "blocks": 3,
+    "variants": 32,
+    "base_roots_per_variant": 4,
+    "base_draws": 8,
+    "additional_v7_roots": 8,
+    "additional_v7_draws": 32,
+    "total_answers": 3840
+  },
+  "B2": {
+    "diagnostic_worlds": 96,
+    "representative_worlds": 64,
+    "dev_diagnostic_worlds": 72,
+    "confirm_diagnostic_worlds": 24,
+    "dev_representative_worlds": 56,
+    "confirm_representative_worlds": 8,
+    "paired_prompts_per_diagnostic_world": 2,
+    "dev_prompts": 200,
+    "confirm_prompts": 56,
+    "parent_draws": 8,
+    "dev_parent_answers": 4800,
+    "confirm_parent_answers_if_opened": 1344
+  },
+  "C": {
+    "cells": [
+      "I-L",
+      "I-R",
+      "I-B",
+      "T-S",
+      "T-Q",
+      "T-C"
+    ],
+    "train_worlds_per_cell": 64,
+    "dev_worlds_per_cell": 16,
+    "confirm_id_worlds_per_cell": 20,
+    "confirm_transfer_worlds_per_cell": 20,
+    "prompts_per_world": 2,
+    "training_probe_worlds_per_cell": 4,
+    "training_probe_draws": 8,
+    "training_probe_answers_all_blocks": 1152,
+    "id_draws": 4,
+    "transfer_draws": 4
+  },
+  "optional_work_branch_probe": {
+    "enabled": false,
+    "known_world_prompts": 256,
+    "models": 2,
+    "branches": 2,
+    "draws": 4,
+    "answers_if_enabled": 4096,
+    "role": "NONBLOCKING_KNOWN_PANEL_MECHANISM_CHECK"
+  },
+  "split_keys": [
+    "world_id",
+    "base_content_sha256"
+  ],
+  "confirm_access": "AFTER_ALL_METHOD_AND_CHECKPOINT_DECISIONS_LOCKED"
+}

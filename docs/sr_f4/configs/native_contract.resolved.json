@@ -1,0 +1,217 @@
+{
+  "status": "SOURCE_AND_SERVER_RESOLVED_CPU_ADAPTER_CHECKS_PASS",
+  "repo_commit": "87b5d29e6790b0c1f8f43cbc74c704350693e3e5",
+  "repo_dirty_patch_sha256": null,
+  "parent_checkpoints": {
+    "b0": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+    "b1": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71002/adapter",
+    "b2": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71003/adapter"
+  },
+  "base_model_id": "Qwen/Qwen3.5-9B",
+  "tokenizer_sha256": null,
+  "prompt_hash": null,
+  "native_J_callable": "sr_f3_ce.contract.score",
+  "native_advantage_callable": "sr_f3_ce.training.group_advantages",
+  "update_callable": "sr_f4.training.update (native sr_f12.training.sequence_objective)",
+  "J_binary_verified": true,
+  "certificate_definition": "int(certificate_truth and certificate_sufficient); not equivalent to truth alone",
+  "truth_definition": "all parsed evidence values equal world series/category values; native empty list truth is vacuously true, SR-F4 P additionally requires nonempty evidence",
+  "sufficiency_definition": "sr_f3_ce.contract.sufficient_template(world, query, parsed_facts), using reported facts and public domain; sound template, not complete proof search",
+  "reward_std": {
+    "ddof": 0,
+    "epsilon": 1e-08,
+    "epsilon_location": "denominator std + epsilon; zero when std==0",
+    "dtype": "numpy.float64",
+    "formula": "(J_i - mean(J_group))/(population_std(J_group)+1e-8), zero for constant group"
+  },
+  "loss_reduction": {
+    "within_sequence": "arithmetic mean over unpadded completion tokens only",
+    "between_sequences": "sum sequence means / 128",
+    "distributed_denominator": "128 per optimizer update; no DDP in native worker",
+    "group_weight": "G/128; G32 has four times the sequence weight of G8"
+  },
+  "optimizer": {
+    "class": "torch.optim.AdamW",
+    "learning_rate": 1e-05,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "epsilon": 1e-08,
+    "weight_decay": 0.0,
+    "foreach": false,
+    "initialization_rule": "fresh empty Adam state for each run; inherit parent LoRA weights, not parent optimizer",
+    "scheduler": "LambdaLR constant 1.0",
+    "warmup_steps": 0
+  },
+  "lora_target_modules": [
+    "in_proj_b",
+    "o_proj",
+    "in_proj_z",
+    "q_proj",
+    "k_proj",
+    "up_proj",
+    "v_proj",
+    "gate_proj",
+    "in_proj_qkv",
+    "down_proj",
+    "out_proj",
+    "in_proj_a"
+  ],
+  "generation_train": {
+    "protocol": "structured",
+    "protocol_revision": "v2",
+    "do_sample": true,
+    "temperature": 1.0,
+    "top_p": 1.0,
+    "top_k": 0,
+    "max_new_tokens": 1024,
+    "repetition_penalty": 1.0,
+    "num_beams": 1,
+    "renormalize_logits": false,
+    "output_logits": true,
+    "output_scores": true,
+    "enable_thinking": false,
+    "stop_rule": "first balanced initial JSON object or eos or length"
+  },
+  "generation_eval": {
+    "synthetic": {
+      "temperature": 1.0,
+      "top_p": 1.0,
+      "top_k": 0,
+      "do_sample": true,
+      "max_new_tokens": 1024
+    },
+    "chartqa_plain": {
+      "do_sample": false,
+      "max_new_tokens": 256
+    },
+    "natural_work_stop": "first closed final tag or eos or length"
+  },
+  "max_grad_norm": 1.0,
+  "ppo_clip": {
+    "lower": 0.8,
+    "upper": 1.2,
+    "old_logprob": "current train logprob detached at the same one-update forward",
+    "ratio": "exp(current-current.detach()), exactly one numerically but with policy gradient",
+    "epochs_per_rollout": 1
+  },
+  "kl_estimator": "mean_token(expm1(reference_logprob-current_logprob)-(reference_logprob-current_logprob)); coefficient .02, no TIS multiplication on KL",
+  "dtype": {
+    "base": "bfloat16",
+    "adapter": "float32",
+    "loss_logprobs": "float32",
+    "advantages_before_loss": "float64"
+  },
+  "image_preprocessing": {
+    "canvas": [
+      1024,
+      768
+    ],
+    "native_processor_min_pixels": 786432,
+    "native_processor_max_pixels": 786432,
+    "enable_thinking": false,
+    "input_boundary": [
+      "prompt",
+      "image_file",
+      "image_sha256"
+    ],
+    "gold_sidecar_in_prompt": false
+  },
+  "native_golden_tests_passed": false,
+  "site_launcher": null,
+  "granted_allocation": {
+    "account": "rose",
+    "qos": "soujanya-poria-startfund-2026-03",
+    "qos_gpu_pro6000_cap": 8,
+    "submitted_jobs_per_user_cap": 5,
+    "job_name_prefix": "LH",
+    "live_verified_by": "root on 2026-10-22"
+  },
+  "repo_commit_role": "inherited_SR_F3_CE_source_commit_before_SRF4_implementation",
+  "hash_policy": "Use existing identities and required stable data/seed keys; no redundant whole-model or package rehash, per direct user instruction.",
+  "J_binary_verification_scope": "source: int conjunction of binary value_correct, certificate, presentation and finish; runtime replay not yet performed",
+  "lora_target_rule": "exact inherited adapter_config.json targets; all Linear modules under language_model.layers, excluding vision/merger/projector/lm_head/embed; never initialize a new adapter",
+  "lora": {
+    "rank": 8,
+    "alpha": 16,
+    "dropout": 0,
+    "bias": "none",
+    "trainable_dtype": "float32",
+    "base_frozen": true
+  },
+  "tis": {
+    "cap": 2.0,
+    "log_weight": "clamp(current.detach()-sampler_logprob,max=log(2))",
+    "weight": "exp(log_weight).detach()",
+    "placement": "multiplicative outside the min of PPO surrogate terms"
+  },
+  "kl_reference": "frozen original J6 parent adapter for each block, never moving policy",
+  "attention_backend": "eager",
+  "native_golden_test_status": "NOT_RUN_BY_SOURCE_AUDIT_AGENT; do not infer from source inspection",
+  "native_generation_group_limit": 8,
+  "native_seed_semantics": "generate_group saves/restores global RNG, seeds once from seeds[0]; other slot seeds are record identities, not independent RNG streams",
+  "native_checkpoint_api": {
+    "module": "sr_f3_ce.checkpoint",
+    "functions": [
+      "checkpoint_state",
+      "commit_checkpoint",
+      "read_checkpoint",
+      "load_checkpoint"
+    ],
+    "reuse_limit": "old SR-F3 identity, arm, cursor and hash schema; uses torch.load(weights_only=False), therefore do not use as untrusted SR-F4 data reader"
+  },
+  "native_loader_api": {
+    "class": "sr_f3_ce.runtime.SRF3CERuntime",
+    "parent_configuration": "sr_f3_ce.runtime.configure_parent_training",
+    "old_runner_reuse_limit": "sr_f3_ce.runner.load_runtime enforces old root, task and experiment identity; instantiate runtime in SR-F4 adapter"
+  },
+  "runtime_blockers": [
+    "frozen data manifests and production launch binding remain owned by main execution flow"
+  ],
+  "source_evidence": {
+    "J": "src/sr_f3_ce/contract.py:347-466",
+    "advantage": "src/sr_f3_ce/training.py:140-155",
+    "optimizer": "src/sr_f3_ce/training.py:64-81",
+    "sequence_objective": "src/sr_f12/training.py:56-97",
+    "reduction": "src/sr_f3_ce/training.py:380-421",
+    "clipping": "src/sr_f3_ce/training.py:474-489",
+    "lora": "src/sr_f3_ce/runtime.py:193-273",
+    "generation": "src/sr_f3_ce/runtime.py:61-73,806-868",
+    "processor": "src/sr_f1/runtime.py:600-665"
+  },
+  "source_run_root": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2",
+  "model_path": "/projects/_ssd/varunssd/louis-ssvc/cache/huggingface/hub/models--Qwen--Qwen3.5-9B/snapshots/c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+  "model_revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+  "python_executable": "/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12",
+  "environment_versions": {
+    "python": "3.12.14",
+    "torch": "2.13.0+cu130",
+    "transformers": "5.14.1",
+    "peft": "0.19.1",
+    "numpy": "2.5.2",
+    "Pillow": "12.3.0"
+  },
+  "runtime_identity_verification": "Live server values supplied by root; all three parent adapter configs agree on targets/r8/alpha16/dropout0. No repeated full-model hash pass.",
+  "new_advantage_callable": "sr_f4.training.native_advantages",
+  "sr_f4_seed_implementation": "sr_f4.runtime.independent_draw_rng: isolated torch.Generator per draw inside scoped multinomial dispatch; native batch limit8; CPU per-draw-stream and partition invariance checks passed",
+  "focused_cpu_validation": {
+    "status": "PASS",
+    "command": "PYTHONPATH=src /Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python -m pytest tests/sr_f4/test_training.py -q",
+    "tests_passed": 7,
+    "elapsed_seconds": 0.96,
+    "scope": [
+      "all256 binary G8 advantage patterns equal native",
+      "J loss/gradient/Adam-step equivalence on differentiable toy runtime",
+      "G32 groups with repeated qid and distinct group_id",
+      "final advantages unchanged at sequence_objective input",
+      "weights_only checkpoint parameter/optimizer/cursor/RNG restoration",
+      "per-draw RNG isolation and batch partition invariance",
+      "scoped multinomial restoration on exception"
+    ],
+    "gpu_executed": false,
+    "historical_golden_groups_replayed": 0,
+    "local_torch": "2.13.0",
+    "local_numpy": "2.5.2"
+  }
+}

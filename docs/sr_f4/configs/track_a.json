@@ -1,0 +1,44 @@
+{
+  "enabled": true,
+  "arms": [
+    "J_UNIFORM_NEW_REPEAT",
+    "LZ"
+  ],
+  "repeats": 1,
+  "master_seed": 2026102201,
+  "steps": 64,
+  "checkpoints": [
+    0,
+    16,
+    32,
+    48,
+    64
+  ],
+  "groups_uniform": 16,
+  "answers_per_update": 128,
+  "slots": 16,
+  "answers_per_slot": 8,
+  "state_init": "NEW_FROZEN_PARENT_PROBE",
+  "ema_alpha": 0.25,
+  "update_timing": "ONCE_PER_VARIANT_AT_END_OF_STEP_AFTER_AGGREGATING_ALL_ANSWERS",
+  "thresholds": {
+    "mastered_enter": 0.95,
+    "mastered_exit_below": 0.9,
+    "starved_enter_below": 0.125,
+    "starved_exit_at": 0.25
+  },
+  "weights": {
+    "mastered": 0.25,
+    "learning": 1.0,
+    "starved": 1.0
+  },
+  "group_sizes": {
+    "mastered": 8,
+    "learning": 8,
+    "starved": 32
+  },
+  "tail": "WEIGHTED_CONDITIONAL_FEASIBLE_SET",
+  "replacement": true,
+  "uniform_historical_identity": "REQUIRES_AUDIT_NOT_ASSUMED",
+  "primary_checkpoint": 64
+}

@@ -1,0 +1,24 @@
+{
+  "gate_version": "1.0.0",
+  "interpretation": "PREREGISTERED_OPERATIONAL_STANDARD_NOT_EFFECT_SIZE_OR_TIME_STOP",
+  "audit_dimensions": [
+    "perception",
+    "selection"
+  ],
+  "min_independent_reward_positive_worlds_per_dimension": 80,
+  "wilson_lower_95_min": 0.95,
+  "human_audit_base_n": 200,
+  "additional_predeclared_audit_max_n": 100,
+  "minimum_changed_groups_per_family": 24,
+  "minimum_independent_worlds_per_family": 8,
+  "minimum_changed_groups_per_block": 8,
+  "families": [
+    "INTERVAL",
+    "TOPK"
+  ],
+  "required_hard_fixture_false_positives": 0,
+  "native_J_binary": true,
+  "actual_training_probe_required": true,
+  "unknown_policy": "ABSTAIN",
+  "on_fail": "BLOCK_C_AND_DELIVER_MEASUREMENT_REPORT"
+}

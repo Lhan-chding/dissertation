@@ -1,0 +1,48 @@
+{
+  "status": "UNRESOLVED_EXAMPLE_NOT_LAUNCHABLE",
+  "repo_commit": null,
+  "repo_dirty_patch_sha256": null,
+  "parent_checkpoints": {
+    "b0": null,
+    "b1": null,
+    "b2": null
+  },
+  "base_model_id": "Qwen3.5-9B",
+  "tokenizer_sha256": null,
+  "prompt_hash": null,
+  "native_J_callable": null,
+  "native_advantage_callable": null,
+  "update_callable": null,
+  "J_binary_verified": null,
+  "certificate_definition": null,
+  "truth_definition": null,
+  "sufficiency_definition": null,
+  "reward_std": {
+    "ddof": null,
+    "epsilon": null,
+    "epsilon_location": null
+  },
+  "loss_reduction": {
+    "within_sequence": null,
+    "between_sequences": null,
+    "distributed_denominator": null
+  },
+  "optimizer": {
+    "class": null,
+    "betas": null,
+    "epsilon": null,
+    "weight_decay": null,
+    "initialization_rule": null
+  },
+  "lora_target_modules": null,
+  "generation_train": null,
+  "generation_eval": null,
+  "max_grad_norm": null,
+  "ppo_clip": null,
+  "kl_estimator": null,
+  "dtype": null,
+  "image_preprocessing": null,
+  "native_golden_tests_passed": false,
+  "site_launcher": null,
+  "granted_allocation": null
+}

@@ -1,0 +1,38 @@
+{
+  "experiment_id": "SRF4-CONSOLIDATED-20261022",
+  "version": "1.0.0",
+  "status": "DESIGN_NOT_EXECUTED",
+  "model": "Qwen3.5-9B",
+  "blocks": {
+    "b0": "SRF2_J6_s71001",
+    "b1": "SRF2_J6_s71002",
+    "b2": "SRF2_J6_s71003"
+  },
+  "training": {
+    "lora_rank": 8,
+    "learning_rate": 1e-05,
+    "kl_coefficient": 0.02,
+    "tis_cap": 2,
+    "micro_batch_size": 1,
+    "answers_per_update": 128,
+    "protocol_revision": "v2",
+    "native_contract": "configs/native_contract.resolved.json",
+    "other_parameters": "MUST_RESOLVE_FROM_NATIVE_TRAINING_CONFIG",
+    "loss_reduction": "INHERIT_AUDITED_NATIVE_REDUCTION"
+  },
+  "forbidden": [
+    "change_base_model",
+    "global_teacher_ce",
+    "time_budget_scientific_stop",
+    "test_based_early_stopping",
+    "post_residual_restandardization",
+    "silent_unknown_to_fail"
+  ],
+  "gpu_hours_policy": "RECORD_ONLY",
+  "production_ready": false,
+  "production_blockers": [
+    "resolved_native_contract",
+    "site_adapter_golden_tests",
+    "frozen_data_manifests"
+  ]
+}

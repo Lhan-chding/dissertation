@@ -1,0 +1,13 @@
+{
+  "repo_root": null,
+  "restored_results_root": null,
+  "compact_results_zip": null,
+  "data_root": null,
+  "output_root": null,
+  "checkpoint_roots": {
+    "b0": null,
+    "b1": null,
+    "b2": null
+  },
+  "instruction": "Resolve from the actual authorized workspace; do not fabricate paths. This file is not a launch configuration."
+}

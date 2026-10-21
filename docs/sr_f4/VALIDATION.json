@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "date_singapore": "2026-10-22",
+  "scope": "CPU checks of changed production behavior; not scientific outcome or GPU acceptance",
+  "production_tests": {"command": "PYTHONPATH=src python -m pytest -q -p no:cacheprovider tests/sr_f4", "passed": 72},
+  "package_reference_checks": {"passed": 55, "source": "provided execution package tools/run_reference_checks.py"},
+  "lint": "ruff check --no-cache src/sr_f4 tests/sr_f4 scripts/sr_f4: passed",
+  "covered": [
+    "native loss, gradient, and Adam update equivalence",
+    "binary group advantages, G32 and repeated question groups",
+    "independent per-answer sampling RNG and interrupted checkpoint publication",
+    "fixed world/split counts, held-out composition, and model-input boundary",
+    "conservative semantic fixtures and missing-human C gate",
+    "shared-QoS capacity, atomic task claims, and immediate per-GPU refill",
+    "endpoint budgets and paired-world analysis"
+  ],
+  "gpu_smoke_runs": 0,
+  "new_model_hash_sweeps": 0,
+  "historical_native_replay": "performed by registered B3 task after probes; not yet claimed passed",
+  "human_blind_audit": "MISSING"
+}
