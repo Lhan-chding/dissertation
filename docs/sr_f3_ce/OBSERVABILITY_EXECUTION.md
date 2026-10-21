@@ -428,3 +428,36 @@ FINAL_MIGRATION_VERIFIED、FINAL_QUEUED_RECOVERY_VERIFIED及MEMORY_PROFILE绑定
 新补充验收明确替代未成功的先前恢复补充路径，并逐字节覆盖原失败、全部退役、迁移、
 217029取消和新提交放行执行链；不伪造旧PASS。下载唯一ZIP与回执并分块SHA核验后
 交付、删除监控。未完成前不声称交付，也不重跑科学任务。
+
+
+## 2026-10-21 Local results-data delivery scope
+
+The user explicitly requested experimental results only, without model weights or
+large checkpoints, and a local streaming workflow with no concurrent server builder.
+This supersedes the full runtime-environment delivery scope, while frozen scientific
+settings, 12 training paths, 15 endpoints and completed release215520 remain unchanged.
+Job217210 was held after unstarted/zero-allocation and original-script checks. Evidence:
+`operations/local_results_delivery/217210_local_handoff/HELD_FOR_LOCAL_RESULTS.json`.
+An initializer error after the successful hold is retained; subsequent confirmation
+was read-only and did not repeat hold. Do not release or resubmit this job.
+
+`local_results_delivery.py` accepts a per-file SHA256/size transport manifest, retains
+raw outputs, task receipts, frozen plans, analyses, scoring code and technical history,
+and excludes tensor weights/checkpoints, Parquet datasets, fonts and runtime caches.
+SERVER_ONLY retains original registered hashes of omitted task artifacts; other omitted
+files explicitly have size-only/unverified identities. No fresh model integrity is claimed.
+
+`local_results_rescore.py` authenticates frozen production scoring code and rechecks
+233340 endpoint raw records and score chains, 98304 training answers, 2304 support
+answers, 26112 MONITOR and 2880 ENGINE records plus registered coverage and signals.
+It constructs no Controller, loads no tensors, and performs no inference or training.
+Released statistical analyses are retained with verified hashes, not newly recomputed.
+
+The streaming archive is independently reread for payload hashes, inventory, CRC,
+gzip EOF, original task links and raw-rescore receipt. FINAL_LOCAL_RESULTS_VERIFIED.json
+binds the unique ZIP. Historical server recovery/migration/queued final gates depended
+on an unexecuted server builder and are not reported as PASS. Their original evidence
+is preserved; new acceptance is explicitly limited to result data. Process RSS is scoped
+to its actual measurement, never presented as a minimum resource proof. Test, commit
+and push the new code; deliver clickable ZIP and acceptance receipt only after all
+data gates and local archive SHA pass, then delete the monitoring automation.
