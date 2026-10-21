@@ -400,3 +400,31 @@ FINAL_LOWMEM_RECOVERY_VERIFIED绑定同一ZIP、修订身份及内存回执。�
 及216983退役、原未完成查询和被拒绝规范化的完整归档；明确取代未成功的旧
 低内存/规范化补充门禁，不声称它们PASS。12训练、15端点、215520不重跑，
 冻结科学设置不变。下载ZIP及全部适用回执、本地SHA一致后才交付和关闭监控。
+
+
+## 2026-10-21 取消217029后的正常调度队列交付
+
+用户明确要求取消217029并尽快用合法方式完成完整打包。已在共享提交锁内核验
+原job、脚本、PENDING/JobHeldUser、Start Unknown、Elapsed0及空AllocTRES，精确
+`scancel --state=PENDING 217029`；终态CANCELLED/0:0、队列消失。原件不改，
+审计在`operations/delivery_recovery_handoff/217029_user_cancel`。
+
+独立`queued_delivery/`使用唯一4CPU/12GiB/0GPU、老师QoS、account rose、12小时
+上限的CPU批作业。科学652e52d、12训练/15端点/215520及已验证流式builder不变。
+授权明确绑定`queue_policy=SLURM_MANAGED_CPU_QUEUE`。提交先hold核验身份、脚本及
+零启动分配，再唯一release进入正常Slurm队列；不再以两节点当下空闲或IDLE/MIXED
+作为release必要条件。物理资源和节点可用性由Slurm负责，不强制分配COMPLETING/
+PLANNED节点、不修改节点状态。完整新鲜QoS/关联提交容量、两候选节点配置、CPU架构
+和cpu_ok约束仍必须核验；worker实际启动时照常验真分配4CPU/12GiB/0GPU、节点及脚本。
+旧人工hold等待可能额外错过资源释放窗口，新队列由调度器持续考虑；这不保证立即启动。
+
+本次显式退役旧217029，不再调用其接续器。新流程只有一次sbatch机会，未知提交/放行
+结果禁止盲重试，完整WAIT_ACCOUNTING/WAIT_CAPACITY可按新入口续接同一job。
+新worker仍只运行原打包命令的流式修订并记录真实子进程峰值；12GiB是首次全量上限，
+不是已证明最低需求。12小时是新操作上限，不是交付耗时承诺。
+
+最终必须原ZIP.verification七项PASS、233340覆盖、FINAL_RECOVERY_VERIFIED、
+FINAL_MIGRATION_VERIFIED、FINAL_QUEUED_RECOVERY_VERIFIED及MEMORY_PROFILE绑定同ZIP。
+新补充验收明确替代未成功的先前恢复补充路径，并逐字节覆盖原失败、全部退役、迁移、
+217029取消和新提交放行执行链；不伪造旧PASS。下载唯一ZIP与回执并分块SHA核验后
+交付、删除监控。未完成前不声称交付，也不重跑科学任务。
