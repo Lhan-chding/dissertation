@@ -692,7 +692,7 @@ class Recovery:
             and f.get("JobState") == "RUNNING"
             and f.get("NodeList") in self.auth["allowed_nodes"]
             and f.get("ReqNodeList") in {"(null)", "", "None"}
-            and f.get("Features") == "cpu_ok"
+            and f.get("Features") in {"cpu_ok", "cpu_ok&cpu_ok"}
             and f.get("QOS") == "soujanya-poria-startfund-2026-03"
             and f.get("Account") == "rose"
             and f.get("UserId", "").split("(")[0] == self.auth["user"]

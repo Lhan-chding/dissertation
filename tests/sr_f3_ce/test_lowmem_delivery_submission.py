@@ -185,7 +185,8 @@ def case(tmp_path, monkeypatch):
                 f"JobId={job} JobName={name} Account=rose QOS={qos} Partition=cluster02 "
                 f"Command={path} Comment={comment} NumCPUs={22 if old else 4} "
                 f"NumTasks=1 CPUs/Task={22 if old else 4} "
-                f"ReqNodeList={'cpu-1' if old else '(null)'} Features=cpu_ok "
+                f"ReqNodeList={'cpu-1' if old else '(null)'} "
+                f"Features={'cpu_ok' if old else faults.get('features', 'cpu_ok')} "
                 "TimeLimit=3-00:00:00 Requeue=0 JobState=PENDING "
                 "Reason=JobHeldUser RunTime=00:00:00 UserId=testuser(123) NumNodes=1 "
                 f"NodeList=(null) ReqTRES=cpu={22 if old else 4},mem={66 if old else 12}G,node=1"
@@ -379,7 +380,8 @@ def test_pending_accounting_after_queue_disappears_is_retryable(case):
     assert sum(a[0] == "scancel" for a in calls) == 1
 
 
-def test_teacher_final_gate_archives_real_retirement_and_poll_chain(case):
+@pytest.mark.parametrize("features", ["cpu_ok", "cpu_ok&cpu_ok"])
+def test_teacher_final_gate_archives_real_retirement_and_poll_chain(case, features):
     import zipfile
 
     op, _, faults, _ = case
@@ -412,7 +414,12 @@ def verify(root, authorization, *, runner):
     faults["node"] = faults["node2"] = "IDLE+COMPLETING+PLANNED"
     op.continue_job()
     faults.clear()
+    faults["features"] = features
     release = op.continue_job()
+    assert m.read(op.work / "ALLOCATION_VERIFIED.json")["fields"]["Features"] == features
+    for name in release["command_files"]:
+        if name.endswith("held_job.result.json"):
+            assert "Features=" + features + " " in m.read(op.work / name)["stdout"]
     delivery = op.root / "delivery"
     delivery.mkdir()
     archive = delivery / "SR_F3_CE_20261016.zip"
@@ -587,3 +594,25 @@ def test_retirement_refuses_changed_old_query_even_if_rebound(case, argv):
     with pytest.raises(PermissionError, match="wait contains mutation"):
         op.retire()
     assert not any(a[0] == "scancel" for a in calls)
+
+
+@pytest.mark.parametrize(
+    "features",
+    [
+        "",
+        "gpu_ok",
+        "cpu_ok|gpu_ok",
+        "cpu_ok&gpu_ok",
+        "cpu_ok&cpu_ok&cpu_ok",
+        "(cpu_ok)",
+        "cpu_ok,cpu_ok",
+    ],
+)
+def test_held_constraint_rejects_every_non_authorized_expression(case, features):
+    op, calls, faults, _ = case
+    op.retire()
+    op.submit()
+    faults["features"] = features
+    with pytest.raises(PermissionError, match="constraint differs"):
+        op.continue_job()
+    assert not any(c[:2] == ["scontrol", "release"] for c in calls)

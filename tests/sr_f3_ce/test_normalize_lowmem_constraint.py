@@ -20,6 +20,15 @@ body = (
     .replace('"operations/new"', '"operations/538aa3dd36e9d5a53f5aa0040b24d3999eab76e9"')
     .replace('"AUTH.json"', '"RECOVERY_AUTHORIZATION.json"')
 )
+# This historical sidecar targets the deployed 538 verifier, whose exact single
+# feature predicate must stay frozen even when a later worker supports duplicates.
+new_predicate = b'f.get("Features") in {"cpu_ok", "cpu_ok&cpu_ok"}'
+old_predicate = b'f.get("Features") == "cpu_ok"'
+body = body.replace(
+    '(deploy / name).write_bytes((BASE / "lowmem_delivery" / name).read_bytes())',
+    '(deploy / name).write_bytes((BASE / "lowmem_delivery" / name).read_bytes()'
+    + f".replace({new_predicate!r}, {old_predicate!r}))",
+)
 body = re.sub(r"\b99\b", "216983", body)
 fixture_module = ModuleType("constraint_original_fixture")
 fixture_module.__file__ = str(fixture_source)

@@ -171,7 +171,8 @@ class FakeRunner:
 
 
 @pytest.fixture
-def recovery(tmp_path, monkeypatch):
+def recovery(tmp_path, monkeypatch, request):
+    scheduler_features = getattr(request, "param", "cpu_ok")
     global op_module
     root = tmp_path / "selected_v2"
     root.mkdir()
@@ -438,7 +439,7 @@ def recovery(tmp_path, monkeypatch):
                 "Account=rose QOS=soujanya-poria-startfund-2026-03 Partition=cluster02 "
                 f"Command={script} Comment=approved-delivery-recovery "
                 "NumCPUs=4 NumTasks=1 CPUs/Task=4 "
-                "ReqNodeList=(null) Features=cpu_ok TimeLimit=3-00:00:00 "
+                f"ReqNodeList=(null) Features={scheduler_features} TimeLimit=3-00:00:00 "
                 "Requeue=0 JobState=PENDING "
                 "Reason=JobHeldUser RunTime=00:00:00 UserId=varun024(1001) NumNodes=1 "
                 "NodeList=(null) ReqTRES=cpu=4,mem=12G,node=1"
@@ -459,6 +460,7 @@ def recovery(tmp_path, monkeypatch):
     submission.submit()
     submission.continue_job()
     runner = FakeRunner()
+    runner.live_overrides = {"Features": scheduler_features}
     op = m.Recovery(root, authorization, runner=runner)
     runner.op = op
     monkeypatch.setenv("SLURM_JOB_ID", "216001")
@@ -912,3 +914,38 @@ def test_unknown_cgroup_is_not_reported_as_measured(recovery, monkeypatch):
     result = op.own_cgroup_memory()
     assert result["status"] == "UNKNOWN"
     assert "peak_bytes" not in result
+
+
+@pytest.mark.parametrize("recovery", ["cpu_ok", "cpu_ok&cpu_ok"], indirect=True)
+def test_constraint_spelling_preserved_held_release_live_and_final(recovery):
+    op, runner, m = recovery
+    features = runner.live_overrides["Features"]
+    release = m.read(op.directory / "RELEASE.json")
+    assert m.read(op.directory / "ALLOCATION_VERIFIED.json")["fields"]["Features"] == features
+    for name in release["command_files"]:
+        if name.endswith("held_job.result.json"):
+            assert "Features=" + features + " " in m.read(op.directory / name)["stdout"]
+    assert op.run()["status"] == "DONE"
+    assert m.read(op.directory / "STARTED.json")["allocation"]["Features"] == features
+    assert op.verify_final()["status"] == "FINAL_RECOVERY_VERIFIED"
+    assert sum(command == op.command for command in runner.calls) == 1
+
+
+@pytest.mark.parametrize(
+    "features",
+    [
+        "",
+        "gpu_ok",
+        "cpu_ok|gpu_ok",
+        "cpu_ok&gpu_ok",
+        "cpu_ok&cpu_ok&cpu_ok",
+        "(cpu_ok)",
+        "cpu_ok,cpu_ok",
+    ],
+)
+def test_live_constraint_rejects_every_non_authorized_expression(recovery, features):
+    op, runner, _ = recovery
+    runner.live_overrides["Features"] = features
+    with pytest.raises(PermissionError, match="live allocation differs"):
+        op.run()
+    assert op.command not in runner.calls

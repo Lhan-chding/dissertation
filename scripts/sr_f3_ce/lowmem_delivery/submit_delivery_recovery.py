@@ -357,7 +357,8 @@ class Submission:
             all(f.get(k) == v for k, v in expected.items()), "Held job request differs or started"
         )
         require(
-            f.get("ReqNodeList", "") in ("", "(null)", "None") and f.get("Features") == "cpu_ok",
+            f.get("ReqNodeList", "") in ("", "(null)", "None")
+            and f.get("Features") in {"cpu_ok", "cpu_ok&cpu_ok"},
             "CPU-only candidate constraint differs",
         )
         require(
