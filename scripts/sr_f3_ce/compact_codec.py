@@ -62,6 +62,22 @@ def _reference_count(value: object, depth: int, limits: Limits, remaining: int) 
     return count
 
 
+def _reference_shape(value: object) -> tuple[int, int]:
+    """Count expanded JSON values and maximum relative depth once per definition."""
+    count = maximum_depth = 0
+    stack = [(value, 0)]
+    while stack:
+        item, depth = stack.pop()
+        count += 1
+        maximum_depth = max(maximum_depth, depth)
+        if type(item) is list:
+            stack.extend((child, depth + 1) for child in item)
+        elif type(item) is dict:
+            stack.extend((child, depth + 1) for child in item.values())
+            stack.extend((key, depth + 1) for key in item)
+    return count, maximum_depth
+
+
 class Encoder:
     """Write independent records while retaining bounded intern dictionaries."""
 
@@ -195,13 +211,22 @@ class Encoder:
 
 
 class Decoder:
-    """Decode records; raises EOFError only at a clean record boundary."""
+    """Decode records; raises EOFError only at a clean record boundary.
 
-    def __init__(self, stream: BinaryIO, limits: Limits | None = None):
+    ``copy_references=False`` is only for trusted read-only consumers: decoded
+    interned containers alias across records and MUST NOT be mutated. The default
+    returns independent containers. Cached shape bounds remain enforced in both modes.
+    """
+
+    def __init__(
+        self, stream: BinaryIO, limits: Limits | None = None, *, copy_references: bool = True
+    ):
         self.stream = stream
         self.limits = limits or Limits()
         self.strings: list[str] = []
         self.containers: list[object] = []
+        self.container_shapes: list[tuple[int, int] | None] = []
+        self.copy_references = copy_references
         self.intern_bytes = 0
         self.values = 0
         if self._read(len(MAGIC)) != MAGIC:
@@ -286,16 +311,14 @@ class Decoder:
                 raise ValueError("invalid intern reference")
             if tag == b"r":
                 return table[index]
-            self.values += (
-                _reference_count(
-                    table[index],
-                    depth,
-                    self.limits,
-                    self.limits.max_record_values - self.values + 1,
-                )
-                - 1
-            )
-            return copy.deepcopy(table[index])
+            count, relative_depth = self.container_shapes[index]
+            if (
+                self.values + count - 1 > self.limits.max_record_values
+                or depth + relative_depth > self.limits.max_depth
+            ):
+                raise ValueError("expanded reference exceeds record or depth bound")
+            self.values += count - 1
+            return copy.deepcopy(table[index]) if self.copy_references else table[index]
         if tag == b"C":
             size = self._uint()
             if size > self.limits.max_container_bytes:
@@ -303,6 +326,7 @@ class Decoder:
             self._define(size)
             index = len(self.containers)
             self.containers.append(_PENDING)
+            self.container_shapes.append(None)
             self.values -= 1  # The definition wrapper is not a JSON value.
             value = self._value(depth, object_only=True)
             if type(value) is not dict:
@@ -312,7 +336,8 @@ class Decoder:
             ).encode("ascii")
             if len(canonical) != size:
                 raise ValueError("container intern size mismatch")
-            self.containers[index] = copy.deepcopy(value)
+            self.container_shapes[index] = _reference_shape(value)
+            self.containers[index] = copy.deepcopy(value) if self.copy_references else value
             return value
         if tag in (b"a", b"o", b"I", b"F", b"D"):
             count = self._uint()

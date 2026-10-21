@@ -193,7 +193,7 @@ def verify_data(data, output=None):
     if output and (output.is_symlink() or not output.is_dir()):
         raise ValueError("Output must be a real directory")
     with lzma.open(data, "rb") as stream:
-        dec = Decoder(stream)
+        dec = Decoder(stream, copy_references=False)
         intro = dec.read()
         if intro.get("format") != "SR_F3_CE_REVERSIBLE_MEMBERS_V1":
             raise ValueError("Wrong format")

@@ -196,3 +196,54 @@ def test_existing_container_reference_survives_full_table():
 def test_float_array_chunk_boundary():
     values = [1.5, -0.0] * 32769
     assert signature(loads(dumps(values))) == signature(values)
+
+
+def test_opt_in_read_only_references_alias_without_changing_values():
+    stream = io.BytesIO()
+    encoder = Encoder(stream)
+    value = {"identity": {"prompt": "x" * 1000, "ids": [1, 2]}}
+    for _ in range(3):
+        encoder.write(value)
+    decoder = Decoder(io.BytesIO(stream.getvalue()), copy_references=False)
+    first, second, third = decoder.read(), decoder.read(), decoder.read()
+    assert first == second == third == value
+    assert first is second is third
+    # Aliasing is deliberately exposed only to callers promising read-only use.
+    assert first["identity"] is third["identity"]
+
+
+@pytest.mark.parametrize("copy_references", [True, False])
+def test_cached_reference_shape_enforces_limits(copy_references):
+    stream = io.BytesIO()
+    encoder = Encoder(stream)
+    value = {"k": [1, 2, 3]}
+    encoder.write(value)
+    encoder.write([value, value])
+    decoder = Decoder(
+        io.BytesIO(stream.getvalue()), Limits(max_record_values=8), copy_references=copy_references
+    )
+    assert decoder.read() == value
+    with pytest.raises(ValueError, match="bound"):
+        decoder.read()
+    deeper = io.BytesIO()
+    encoder = Encoder(deeper)
+    encoder.write(value)
+    encoder.write([[value]])
+    decoder = Decoder(
+        io.BytesIO(deeper.getvalue()), Limits(max_depth=3), copy_references=copy_references
+    )
+    assert decoder.read() == value
+    with pytest.raises(ValueError, match="bound"):
+        decoder.read()
+
+
+def test_default_definition_result_mutation_does_not_change_cached_copy():
+    stream = io.BytesIO()
+    encoder = Encoder(stream)
+    value = {"k": {"values": [1, 2]}}
+    encoder.write(value)
+    encoder.write(value)
+    decoder = Decoder(io.BytesIO(stream.getvalue()))
+    first = decoder.read()
+    first["k"]["values"].append(3)
+    assert decoder.read() == value
