@@ -146,3 +146,28 @@ python -B scripts/sr_f3_ce/analysis_bundle.py \
 不声称本地重新执行评分或旧服务器恢复/分配/模型验收。
 权重身份与必要失败、迁移和退役证据保留；服务器科学原件不删除。
 源码的fixture测试不能替代实际交付包的完整验证。
+
+## 单包尺寸限制下的可逆压缩
+
+`compact_analysis.py` 与 `compact_codec.py` 可将已验收的本地分析ZIP重新编码，
+不读取服务器、不重采样、不修改科学结果，也不删除任何原成员或字段。
+浮点数组只有在float32往返精确相等时才用32位，否则保留float64；
+重复字符串/容器使用有界字典，最后由标准库LZMA压缩。
+JSON格式配方保留字段顺序、空白与换行；不适用配方的内容保留原始字节。
+端点gzip只支持原发布的确定性level9、空filename、mtime0形式；
+重建所用zlib必须产生原压缩字节，最终仍以实际原成员SHA256匹配为准。
+
+```sh
+python3 scripts/sr_f3_ce/compact_analysis.py build \
+  --source SR_F3_CE_ANALYSIS_RESULTS.zip --data COMPLETE_DATA.xz
+python3 scripts/sr_f3_ce/compact_analysis.py verify --data COMPLETE_DATA.xz
+python3 scripts/sr_f3_ce/compact_analysis.py extract \
+  --data COMPLETE_DATA.xz --output restored_results
+```
+
+`PASS_ALL_ORIGINAL_MEMBERS_BYTE_EXACT` 只在全量解码、重新序列化以及gzip重建后，
+每个成员字节数/SHA256、逻辑原文SHA和记录数均匹配时发布。
+它证明原已验收数据可完整还原，不声称原ZIP容器压缩布局逐字节相同。
+最终单一ZIP须实际小于400,000,000字节，包含标准库解码器、使用说明、
+直接可读中文报告、原验收回执及新的全量还原回执；不能用抽样或分卷冒充。
+还原会需要原始成员展开后的磁盘空间；压缩包小不意味着完整展开同样小。
