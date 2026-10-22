@@ -26,6 +26,8 @@ B_CONFIRM 父模型按B测量要求每题8 draw，共1,344条；A两训练臂每
 
 代码快照保存到运行根的 `code/`。首次准备在 CPU 作业执行 `python -m sr_f4.prepare --root RUN_ROOT --old-root OLD_ROOT --code CODE_ROOT`；随后 `python -m sr_f4.pool init --root RUN_ROOT`，再运行 `python -m sr_f4.pool submit --root RUN_ROOT --code CODE_ROOT --python PYTHON`。
 
+部署归档统一使用 `PYTHONPATH=src python -m sr_f4.deployment --output CODE_SNAPSHOT.tar`。除了src，还必须包括继承的 `docs/sr_f1/package` 参考代码、配置及manifest和amendments；只打包src与sr_f4文档不够。准备/控制器脚本在提交GPU前仅确认生产模块能导入，不加载模型或生成回答。
+
 持续接续由 `sbatch CODE_ROOT/scripts/sr_f4/controller.sbatch` 启动。初次数据准备作业218288已经COMPLETED；5,408题图像路由准备完成，确认集模型调用数为0。最初四个3天GPU作业218289–218292因Priority排队，集群拒绝原地更改TimeLimit，因此在仍未开跑时撤回后改为6小时作业；替换终态和新作业编号以服务器 `RESOURCE_AMENDMENT_6H.json`、`pool/STATE.json` 为准。此前尚无新GPU回答，不能将已提交写成已训练完成。
 
 状态为 `python -m sr_f4.pool status --root RUN_ROOT`，每项科学任务保存在 `tasks/<task_id>/COMPLETE.json`，训练进度在 `RUNS/A/b*/r1/*/updates/`。调度任务完成不等于所有科学条件通过，应检查嵌套 result.status、B3 技术缺口和最终 coverage。可恢复 TIMEOUT 只在旧租约结束、调度器终态确认后重新接续。非超时失败须读实际异常、修复后另行登记；不自动洗掉失败。
@@ -45,3 +47,9 @@ B_CONFIRM 父模型按B测量要求每题8 draw，共1,344条；A两训练臂每
 针对本次实现的72项 CPU 测试通过（包含两项评测预算修正回归检查），执行包55项参考算法检查通过，Ruff 通过。详细覆盖与限制见 `VALIDATION.json`。这些结果不等于 GPU 模型运行成功、不等于历史 golden replay 已完成，也不代表科学结论成立。
 
 后续控制器改动的23项 pool 专项测试通过，其中新增6项检查既有预约、CPU作业名额、超时续接、启动失败阻断和主动取消边界。
+
+## 2026-10-22 首次启动故障与恢复
+
+实查发现218310在新加坡时间02:50启动后，9个探针因部署缺少 `docs/sr_f1/package/PACKAGE_SHA256.json` 而在导入阶段失败，尚未加载模型或生成回答。其余双卡作业随后无就绪任务而退出；控制器218309于02:50停止。旧worker错误地返回0，导致Slurm显示COMPLETED而任务记录实际为FAILED。旧日志、9条失败attempt和控制器状态均保留，不能称作实验完成。
+
+修复包括补齐继承资源、用独立部署目录复现并修复导入故障，以及传播真实子任务失败退出码。恢复沿用同一36项登记任务、数据、种子与回答/更新预算；仅将这9个尚未执行模型的FAILED任务恢复PENDING，保留其历史attempt。新的GPU作业仍由老师QoS下的CPU控制器补交，并按单卡独立接续。

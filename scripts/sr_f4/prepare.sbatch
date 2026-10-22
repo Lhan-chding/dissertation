@@ -18,6 +18,7 @@ export OMP_NUM_THREADS=4
 export TOKENIZERS_PARALLELISM=false
 export CUBLAS_WORKSPACE_CONFIG=:4096:8
 cd "$SRF4_ROOT/code"
+"$SRF4_PYTHON" -c 'import sys; from sr_f4.deployment import check_imports; print(check_imports(".", sys.executable))'
 "$SRF4_PYTHON" -u -m sr_f4.prepare --root "$SRF4_ROOT" --old-root "$SRF4_OLD" --code "$SRF4_ROOT/code"
 "$SRF4_PYTHON" -u -m sr_f4.pool init --root "$SRF4_ROOT"
 "$SRF4_PYTHON" -u -m sr_f4.pool submit --root "$SRF4_ROOT" --code "$SRF4_ROOT/code" --python "$SRF4_PYTHON"

@@ -403,14 +403,15 @@ def worker(root, slot, *, python=None, poll_seconds=10):
     root = Path(root).resolve()
     python = python or sys.executable
     last_reconcile = 0.0
+    had_failure = False
     while True:
         if (root / "pool/STOP").exists():
-            return 0
+            return int(had_failure)
         task, lease = claim(root, slot)
         if task is None:
             summary = status(root)
             if not summary["work_remaining"]:
-                return 0
+                return int(had_failure)
             if os.environ.get("SLURM_JOB_ID") and time.monotonic() - last_reconcile >= 60:
                 reconcile_timeouts(root)
                 last_reconcile = time.monotonic()
@@ -431,8 +432,10 @@ def worker(root, slot, *, python=None, poll_seconds=10):
                     )
                 except OSError as exc:
                     finish(root, task, -1, error=str(exc))
+                    had_failure = True
                 else:
-                    finish(root, task, result.returncode)
+                    completed = finish(root, task, result.returncode)
+                    had_failure = had_failure or not completed
         finally:
             lease.close()
 
@@ -783,7 +786,9 @@ def controller(root, code, python, *, interval=150, slurm=None, user=None, **sub
                 print(json.dumps(event, ensure_ascii=False), flush=True)
                 previous = signature
             if event["status"] != "ACTIVE":
-                return 2 if event["status"].startswith("BLOCKED") else 0
+                if event["status"].startswith("BLOCKED"):
+                    return 2
+                return int(event["counts"].get("FAILED", 0) > 0)
             time.sleep(interval)
 
 

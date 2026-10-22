@@ -17,5 +17,6 @@ cd "$SRF4_ROOT/code"
 export PYTHONPATH="$SRF4_ROOT/code/src:$SRF4_ROOT/code"
 export OMP_NUM_THREADS=1
 export TOKENIZERS_PARALLELISM=false
+"$SRF4_PYTHON" -c 'import sys; from sr_f4.deployment import check_imports; print(check_imports(".", sys.executable))'
 exec "$SRF4_PYTHON" -u -m sr_f4.pool controller --root "$SRF4_ROOT" \
   --code "$SRF4_ROOT/code" --python "$SRF4_PYTHON" --interval 150 --walltime 06:00:00

@@ -178,7 +178,7 @@ def test_worker_continues_after_independent_task_failure(tmp_path, monkeypatch):
         return SimpleNamespace(returncode=int(key == "fails"))
 
     monkeypatch.setattr(pool.subprocess, "run", run)
-    assert pool.worker(tmp_path, "0", poll_seconds=0) == 0
+    assert pool.worker(tmp_path, "0", poll_seconds=0) == 1
     summary = pool.status(tmp_path)
     assert summary["tasks"]["fails"]["status"] == "FAILED"
     assert summary["tasks"]["works"]["status"] == "COMPLETE"
@@ -254,3 +254,18 @@ def test_controller_stop_does_not_query_or_submit(tmp_path):
     (tmp_path / "pool/STOP").touch()
     event = pool.controller_tick(tmp_path, tmp_path, "/usr/bin/python3", slurm=object())
     assert event["status"] == "STOPPED"
+
+
+def test_child_failure_propagates_to_worker_and_controller_exit(tmp_path, monkeypatch):
+    monkeypatch.delenv("SLURM_JOB_ID", raising=False)
+    pool.init_pool(tmp_path, [task("a"), task("dependent", ["a"])])
+    monkeypatch.setattr(
+        pool.subprocess, "run", lambda *args, **kwargs: SimpleNamespace(returncode=1)
+    )
+    assert pool.worker(tmp_path, "0") == 1
+    assert pool.controller(
+        tmp_path, tmp_path, "/usr/bin/python3", slurm=FakeSlurm(), user="louis"
+    ) == 1
+    state = pool._read(tmp_path / "pool/STATE.json")
+    assert state["tasks"]["a"]["attempts"][0]["returncode"] == 1
+    assert len(state["tasks"]["a"]["attempts"]) == 1
