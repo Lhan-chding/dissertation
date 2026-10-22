@@ -110,6 +110,42 @@ def shard_groups(groups, shard, shards):
     return [group for group in groups if group["group_index"] % shards == shard]
 
 
+def evaluation_assignments(groups, spec):
+    """Split execution phases without renumbering frozen groups or random streams."""
+    phase = spec.get("phase", "all")
+    if phase not in ("all", "regression", "confirm"):
+        raise ValueError("Unregistered evaluation phase")
+    assigned = shard_groups(groups, spec.get("shard", 0), spec.get("shards", 1))
+    if phase == "all":
+        return assigned
+    return [g for g in assigned if (g["panel"] == "B_CONFIRM") == (phase == "confirm")]
+
+
+def require_evaluation_ready(root, spec):
+    """Keep the confirmation barrier even when invoked outside the pool scheduler."""
+    from pathlib import Path
+
+    from .common import read
+
+    phase = spec.get("phase", "all")
+    if phase not in ("all", "regression", "confirm"):
+        raise ValueError("Unregistered evaluation phase")
+    if phase == "regression":
+        required = [] if spec["arm"] == "PARENT" else [f"A-b{spec['block']}-{spec['arm']}"]
+    else:
+        required = [
+            f"A-b{block}-{arm}"
+            for block in range(3)
+            for arm in ARMS
+            if arm != "PARENT"
+        ] + ["B3-replay"]
+    for key in required:
+        receipt = Path(root) / "tasks" / key / "COMPLETE.json"
+        if not receipt.exists() or read(receipt).get("status") != "COMPLETE":
+            raise PermissionError(f"Evaluation phase {phase} requires completed {key}")
+    return phase
+
+
 def model_input_for(frozen_input, image, protocol="structured"):
     """Build the runtime's three-field input from model-only manifest rows.
 

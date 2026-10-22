@@ -57,6 +57,23 @@ def registered_tasks():
                     dict(
                         task_id=key,
                         kind="eval",
+                        phase="regression",
+                        block=block,
+                        arm=arm,
+                        shard=shard,
+                        shards=2,
+                        dependencies=[] if arm == "PARENT" else [f"A-b{block}-{arm}"],
+                        resume_supported=True,
+                    )
+                )
+                confirm_key = f"EC-b{block}-{arm}-s{shard}"
+                evaluations.append(confirm_key)
+                tasks.append(
+                    dict(
+                        task_id=confirm_key,
+                        kind="eval",
+                        phase="confirm",
+                        evaluation_task_id=key,
                         block=block,
                         arm=arm,
                         shard=shard,

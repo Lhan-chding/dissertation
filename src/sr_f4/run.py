@@ -407,11 +407,13 @@ def run_eval(root, spec):
 
     from sr_f1.runtime import copy_parameters
 
-    from .evaluation import build_a_eval_groups
+    from .evaluation import build_a_eval_groups, evaluation_assignments, require_evaluation_ready
     from .runtime import load
 
     root = Path(root)
     block, arm, task_id = spec["block"], spec["arm"], spec["task_id"]
+    phase = require_evaluation_ready(root, spec)
+    evaluation_task_id = spec.get("evaluation_task_id", task_id)
     tasks, images = task_index(root), image_index(root)
     config = read(root / "CONFIG.json")
     external = []
@@ -428,9 +430,7 @@ def run_eval(root, spec):
         )
         images.update({r["qid"]: r for r in rows(root / "DATA/CHARTQA_IMAGES.jsonl")})
     all_groups = build_a_eval_groups(list(tasks.values()), block, arm=arm, external_tasks=external)
-    assignments = [
-        a for i, a in enumerate(all_groups) if i % spec.get("shards", 1) == spec.get("shard", 0)
-    ]
+    assignments = evaluation_assignments(all_groups, spec)
     runtime, _, _ = load(root, block, task_id)
     if arm != "PARENT":
         checkpoint = root / "RUNS/A" / f"b{block}/r1" / arm / "checkpoints/step-064.pt"
@@ -438,14 +438,19 @@ def run_eval(root, spec):
         copy_parameters(runtime.model, state["policy"])
         runtime.identity["step"] = 64
     directory = root / "EVAL" / f"b{block}" / arm / f"shard{spec.get('shard', 0)}"
-    write(
-        root / "CONFIRM_OPENED.json",
-        dict(
-            at=now(),
-            decisions_frozen=True,
-            C_status=read(root / "C_GATE_REPORT.json").get("decision", "BLOCK_C"),
-        ),
-    )
+    if phase != "regression":
+        from .pool import _locked
+
+        with _locked(root):
+            if not (root / "CONFIRM_OPENED.json").exists():
+                write(
+                    root / "CONFIRM_OPENED.json",
+                    dict(
+                        at=now(),
+                        decisions_frozen=True,
+                        C_status=read(root / "C_GATE_REPORT.json").get("decision", "BLOCK_C"),
+                    ),
+                )
     count = 0
     for assignment in assignments:
         task = tasks[assignment["qid"]]
@@ -456,20 +461,20 @@ def run_eval(root, spec):
             images[task["qid"]],
             assignment,
             directory / "groups",
-            task_id=task_id,
+            task_id=evaluation_task_id,
             block=block,
             master=2026102224,
             step=0 if arm == "PARENT" else 64,
             arm=arm,
             source="FINAL_EVAL",
-            allow_confirm=True,
+            allow_confirm=phase != "regression",
         )
         count += len(values)
         write(
-            directory / "PROGRESS.json",
-            dict(at=now(), answers=count, groups_total=len(assignments)),
+            directory / ("PROGRESS.json" if phase == "all" else f"PROGRESS_{phase}.json"),
+            dict(at=now(), phase=phase, answers=count, groups_total=len(assignments)),
         )
-    return dict(block=block, arm=arm, groups=len(assignments), answers=count)
+    return dict(block=block, arm=arm, phase=phase, groups=len(assignments), answers=count)
 
 
 def main():

@@ -5,6 +5,7 @@
   "production_tests": {"command": "PYTHONPATH=src python -m pytest -q -p no:cacheprovider tests/sr_f4", "passed": 72},
   "controller_followup_tests": {"command": "PYTHONPATH=src python -m pytest -q -p no:cacheprovider tests/sr_f4/test_pool.py", "passed": 23, "new_regressions": 6},
   "deployment_repair_tests": {"command": "PYTHONPATH=src python -m pytest -q -p no:cacheprovider tests/sr_f4/test_deployment.py tests/sr_f4/test_pool.py", "passed": 25, "scope": "isolated production archive imports and failure exit propagation; model_calls=0"},
+  "pipelined_evaluation_tests": {"command": "PYTHONPATH=src python -m pytest -q -p no:cacheprovider tests/sr_f4/test_evaluation.py tests/sr_f4/test_scheduling.py", "passed": 20, "scope": "unchanged sample identities and 106760-answer budget; per-model regression release; global confirmation gate; live-state migration and interruption recovery; model_calls=0"},
   "package_reference_checks": {"passed": 55, "source": "provided execution package tools/run_reference_checks.py"},
   "lint": "ruff check --no-cache src/sr_f4 tests/sr_f4 scripts/sr_f4: passed",
   "covered": [

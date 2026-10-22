@@ -6,7 +6,13 @@ from collections import Counter
 import pytest
 
 from sr_f3_ce.prompts import CONTRACT_V2
-from sr_f4.evaluation import ARMS, build_a_eval_groups, model_input_for, shard_groups
+from sr_f4.evaluation import (
+    ARMS,
+    build_a_eval_groups,
+    evaluation_assignments,
+    model_input_for,
+    shard_groups,
+)
 from sr_f4.reporting import coverage, load_evaluations, measurement_summary, paired_world_comparison
 
 
@@ -136,6 +142,89 @@ def test_input_does_not_accept_audit_sidecars():
     assert "<final>VALUE</final>" in out["prompt"]
     with pytest.raises(ValueError, match="audit task"):
         model_input_for(dict(source, gold_answer=42), image)
+
+
+def test_pipelined_phases_preserve_every_group_seed_draw_and_shard():
+    tasks = inventory()
+    external = [dict(qid=f"CHARTQA_{i}", pool="CHARTQA") for i in range(2500)]
+    totals = Counter()
+    for block in range(3):
+        for arm in ARMS:
+            groups = build_a_eval_groups(tasks, block, external, arm=arm)
+            for shard in range(2):
+                phases = {}
+                for phase in ("regression", "confirm"):
+                    phases[phase] = evaluation_assignments(
+                        groups, dict(phase=phase, shard=shard, shards=2)
+                    )
+                    totals[phase] += sum(g["G"] for g in phases[phase])
+                assert not {g["group_index"] for g in phases["regression"]} & {
+                    g["group_index"] for g in phases["confirm"]
+                }
+                assert all(g["panel"] != "B_CONFIRM" for g in phases["regression"])
+                assert all(g["panel"] == "B_CONFIRM" for g in phases["confirm"])
+                assert sorted(
+                    phases["regression"] + phases["confirm"], key=lambda g: g["group_index"]
+                ) == shard_groups(groups, shard, 2)
+    assert totals == dict(regression=104072, confirm=2688)
+
+
+def test_regression_runs_early_but_confirmation_remains_guarded(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+
+    from sr_f4 import evaluation, run, runtime
+    from sr_f4.common import read, write
+
+    groups = [
+        dict(qid="old0", panel="TEST_ID", group_index=0, G=4),
+        dict(qid="new", panel="B_CONFIRM", group_index=1, G=8),
+        dict(qid="old2", panel="TEST_ARITY", group_index=2, G=4),
+    ]
+    tasks = {g["qid"]: dict(qid=g["qid"]) for g in groups}
+    monkeypatch.setattr(run, "task_index", lambda root: tasks)
+    monkeypatch.setattr(run, "image_index", lambda root: {key: {} for key in tasks})
+    monkeypatch.setattr(evaluation, "build_a_eval_groups", lambda *args, **kwargs: groups)
+    loaded = []
+
+    def load(root, block, task_id):
+        loaded.append(task_id)
+        return SimpleNamespace(identity={}), None, None
+
+    monkeypatch.setattr(runtime, "load", load)
+    calls = []
+
+    def group(root, runtime, task, image, assignment, directory, **kwargs):
+        calls.append((task["qid"], kwargs["task_id"], kwargs["allow_confirm"]))
+        return [{}] * assignment["G"]
+
+    monkeypatch.setattr(run, "group", group)
+    write(tmp_path / "CONFIG.json", {})
+    original_id = "E-b0-PARENT-s0"
+    spec = dict(task_id=original_id, block=0, arm="PARENT", shard=0, shards=1)
+    regression = run.run_eval(tmp_path, dict(spec, phase="regression"))
+    assert regression["answers"] == 8
+    assert calls == [("old0", original_id, False), ("old2", original_id, False)]
+    assert not (tmp_path / "CONFIRM_OPENED.json").exists()
+    confirm = dict(spec, task_id="EC-b0-PARENT-s0", evaluation_task_id=original_id, phase="confirm")
+    with pytest.raises(PermissionError, match="requires completed A-"):
+        run.run_eval(tmp_path, confirm)
+    assert loaded == [original_id]
+    assert not (tmp_path / "CONFIRM_OPENED.json").exists()
+    for block in range(3):
+        for arm in ARMS:
+            if arm != "PARENT":
+                write(tmp_path / f"tasks/A-b{block}-{arm}/COMPLETE.json", dict(status="COMPLETE"))
+    with pytest.raises(PermissionError, match="B3-replay"):
+        run.run_eval(tmp_path, confirm)
+    write(tmp_path / "tasks/B3-replay/COMPLETE.json", dict(status="COMPLETE"))
+    write(tmp_path / "C_GATE_REPORT.json", dict(decision="BLOCK_C"))
+    result = run.run_eval(tmp_path, confirm)
+    assert result["answers"] == 8
+    assert calls[-1] == ("new", original_id, True)
+    directory = tmp_path / "EVAL/b0/PARENT/shard0"
+    assert read(directory / "PROGRESS_regression.json")["answers"] == 8
+    assert read(directory / "PROGRESS_confirm.json")["answers"] == 8
+    assert read(tmp_path / "CONFIRM_OPENED.json")["decisions_frozen"] is True
 
 
 def paired_fixture(draws=1):
