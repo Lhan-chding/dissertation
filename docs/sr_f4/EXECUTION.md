@@ -1,5 +1,13 @@
 # SR-F4 执行记录
 
+## 2026-10-23 C重新设计参考审查与离线开发
+
+审查用户返回的Claude设计稿，新增独立`credit_design_replay.py`，并列原F、仅已知子集、仅去充分性及F′+75%已知守卫；新增SELECT/SHUF可区分的N_sig、精确置换概率与L1、分项R、零基线处理。原credit、门控、训练接线均未改。只补取B0/B2_DEV已有开发紧凑记录（压缩约687KB），加C探针共9,792回答，无确认集访问、新GPU生成或归档下载。
+
+新增有限程序`verification_v3.py`，最终版本`srf4-observable-v3-programmatic-dev-r3`，并提供`redesign_measurement_replay.py`复现入口。支持月份别名及来源明确的Sum→Mean链，修复后置替换计算假PASS，并保留复杂语法UNKNOWN。最终C的S已知352/1152（v2为408），B0为258/3840，B2_DEV为1494/4800；覆盖有得有失，不能把该开发候选称为全面优于v2或已可接入训练。F′下最终C/B0/B2的N_sig分别0/0/1；唯一B2 TOPK例子已核对原文。详细数学纠错、标签变化、统计限制与后续测量方向见`C_REDESIGN_REVIEW_20261023_ZH.md`。保留初版和r2/r3输出，不回写旧结果。
+
+最终145项相关CPU测试、Ruff及diff check通过。上轮Claude交接文一处表格转录错误已勘误：原F内P/S已知的v2回答为INTERVAL8、TOPK2（此前误写10/0），总数10与原信号为零不变。AI审核继续按用户授权承担，不等待用户手填；新双模型接口、独立验证、D3及训练预算尚未执行。
+
 ## 2026-10-23 后续 C 测量开发与用户授权变更
 
 用户要求详细审查 Claude 参考材料并据此修改代码，且明确由 AI 代做审核。新增独立 `verification_v2.py` 开发版本和 `development_review.py`，保留冻结 v1、原始结果与原 C_GATE；AI记录明确标为AI_REVIEW，不能冒充真人。120条开发审核和42条双审已完成，最终既有探针S覆盖408/1152，冻结公式重放仍为0个SELECT−EVID差异组，未启动新训练。新审核口径是用户授权的流程修订，后续不再等待用户手填这批开发表；旧人类门控记录不追改。详细参考材料纠错、限制、结果和后续设计边界见 `CLAUDE_REVIEW_AND_C_REVISION_20261023.md`。
