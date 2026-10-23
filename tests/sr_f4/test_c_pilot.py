@@ -98,6 +98,11 @@ def test_prepare_freezes_full_budget_with_original_retention_routes(tmp_path, mo
             for t in external
         ],
     )
+    for path in ("DATA/IMAGE_MANIFEST.jsonl", "DATA/CHARTQA_IMAGES.jsonl"):
+        for image in rows(source / path):
+            file = source / "DATA" / image["image_file"]
+            file.parent.mkdir(parents=True, exist_ok=True)
+            file.write_bytes(b"registered-image-pixels")
     c_pilot.prepare(root, source, "revision")
     c_pilot.require_frozen(root)
     assert read(root / "READY.json")["images_created"] == 192
@@ -109,7 +114,11 @@ def test_prepare_freezes_full_budget_with_original_retention_routes(tmp_path, mo
         == 24290
     )
     images = {r["qid"]: r for r in rows(root / "DATA/IMAGE_MANIFEST.jsonl")}
-    assert images["chartqa-0000"]["image_file"] == str(source / "DATA/external/chartqa-0000.png")
+    assert images["chartqa-0000"]["image_file"] == "retained_images/external/chartqa-0000.png"
+    for image in images.values():
+        path = root / "DATA" / image["image_file"]
+        assert path.resolve().is_relative_to((root / "DATA").resolve())
+        assert path.is_file()
     assert images["chartqa-0000"]["image_sha256"] == "original"
     for b in range(3):
         plan = read(root / "DATA" / f"TRAIN_PLAN_b{b}.json")

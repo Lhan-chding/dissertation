@@ -9,6 +9,7 @@ from pathlib import Path
 from srf4_ref.sampling import seed_for
 
 from . import c_pilot_data as data
+from .c_pilot_images import local_image
 from .common import now, read, rows, write, write_rows
 
 SHARDS = 4
@@ -196,8 +197,7 @@ def prepare(root, source_root, revision):
         images.append(dict(qid=task["qid"], **rendered[world_id]))
     for task in [*retained, *external]:
         image = dict((routes if task.get("pool") == "CHARTQA" else old_images)[task["qid"]])
-        image["image_file"] = str(source_root / "DATA" / image["image_file"])
-        images.append(image)
+        images.append(local_image(root, source_root, image))
     tasks = [*tasks, *retained, *external]
     if len({t["qid"] for t in tasks}) != len(tasks):
         raise ValueError("Duplicate pilot task identity")
