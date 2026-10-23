@@ -180,6 +180,104 @@ def summarize(items):
     return result
 
 
+def known_v7_endpoint(by_variant):
+    """Expose the registered known-case endpoint without rereading raw answers.
+
+    This is a descriptive slice of a design-reused regression panel. The final
+    Track A specification retains old thresholds as engineering observations,
+    not as a formal scientific pass/fail rule.
+    """
+    index = {}
+    for row in by_variant:
+        if (row["panel"], row["family"], row["variant"]) != ("TEST_ID", "INTERVAL", 7):
+            continue
+        key = (_block(row["block"]), row["arm"])
+        if key[1] not in ARMS:
+            raise ValueError(f"Unknown known-v7 arm {key[1]!r}")
+        if key in index:
+            raise ValueError(f"Duplicate known-v7 endpoint {key}")
+        index[key] = row
+    missing, invalid, result_rows = [], [], []
+    for block in range(3):
+        for arm in ARMS:
+            row = index.get((block, arm))
+            if row is None:
+                missing.append(dict(block=block, arm=arm))
+                continue
+            if row.get("answers") != 256 or row.get("worlds") != 32:
+                invalid.append(dict(block=block, arm=arm, reason="INCOMPLETE_KNOWN_CASE_COVERAGE"))
+            for metric in ("value_correct", "J"):
+                value = row.get(metric, {})
+                count, total, mean = value.get("n"), value.get("sum"), value.get("mean")
+                if (
+                    count != 256
+                    or not isinstance(total, (int, float))
+                    or not math.isfinite(total)
+                    or not 0 <= total <= 256
+                    or not isinstance(mean, (int, float))
+                    or not math.isfinite(mean)
+                    or not math.isclose(mean, total / 256, abs_tol=1e-12)
+                ):
+                    invalid.append(dict(block=block, arm=arm, metric=metric, reason="INVALID_SUMMARY"))
+        if any(item["block"] == block for item in missing + invalid):
+            continue
+        for metric in ("value_correct", "J"):
+            arms = {arm: dict(index[block, arm][metric]) for arm in ARMS}
+            result_rows.append(
+                dict(
+                    block=block,
+                    metric=metric,
+                    answers_per_arm=256,
+                    worlds=32,
+                    arms=arms,
+                    lz_minus_uniform=arms["LZ"]["mean"] - arms["J_UNIFORM_NEW_REPEAT"]["mean"],
+                    lz_minus_parent=arms["LZ"]["mean"] - arms["PARENT"]["mean"],
+                )
+            )
+    return dict(
+        status="COMPLETE" if not missing and not invalid else "INCOMPLETE",
+        panel="TEST_ID",
+        family="INTERVAL",
+        variant=7,
+        checkpoint=dict(PARENT=0, J_UNIFORM_NEW_REPEAT=64, LZ=64),
+        interpretation="DESCRIPTIVE_KNOWN_CASE_REGRESSION",
+        formal_acceptance="NOT_ASSESSED_BY_POINT_THRESHOLDS",
+        source="ENDPOINT_BY_VARIANT.jsonl",
+        missing=missing,
+        invalid=invalid,
+        rows=result_rows,
+    )
+
+
+def known_v7_report_lines(endpoint):
+    lines = [
+        "",
+        "A 的已登记重点病例：TEST_ID / INTERVAL v7（参考意见称 E1）：",
+        "",
+        "父模型为step0，两条训练路径均为固定step64；每个块/路径256回答、32个独立world。这是已参与设计的旧回归病例。",
+        "",
+        f"汇总覆盖状态：`{endpoint['status']}`。缺失或无效块不补零、不作完整比较。",
+        "",
+        "|块|指标|父模型 %（分子/分母）|均匀 %（分子/分母）|LZ %（分子/分母）|LZ−均匀(pp)|LZ−父模型(pp)|",
+        "|---|---|---:|---:|---:|---:|---:|",
+    ]
+    for row in endpoint["rows"]:
+        cells = [
+            f"{100 * row['arms'][arm]['mean']:.2f} ({row['arms'][arm]['sum']:g}/{row['arms'][arm]['n']})"
+            for arm in ("PARENT", "J_UNIFORM_NEW_REPEAT", "LZ")
+        ]
+        lines.append(
+            f"|b{row['block']}|{row['metric']}|{'|'.join(cells)}|{100 * row['lz_minus_uniform']:+.2f}|{100 * row['lz_minus_parent']:+.2f}|"
+        )
+    lines += [
+        "",
+        "最终执行规范05将旧≥50%、各块≥−2pp等界限保留为工程观察，不作为显著性或正式非劣证明；此表不作正式E1通过判定。",
+        "",
+        "这张表说明本次固定路径在已知病例上的改善幅度，不能推出任意训练种子稳定获益、均匀采样永远学不会、新世界整体改善或C的语义奖励有效。逐回答汇总不含world内配对明细，不从这些汇总伪造病例置信区间；总体配对world区间仍另表报告。",
+    ]
+    return lines
+
+
 def paired_world_comparison(
     values, panel, arm, reference, *, metric="value_correct", replicates=10000
 ):
@@ -693,6 +791,7 @@ def report(root):
             variants.items(), key=lambda x: str(x[0])
         )
     ]
+    known_case = known_v7_endpoint(by_variant)
     comparisons = []
     for panel in sorted({row["panel"] for row in values}):
         pairs = (
@@ -734,6 +833,7 @@ def report(root):
         comparisons=comparisons,
         measurement=measurement,
         training_exposure=exposure,
+        known_v7_endpoint=known_case,
         inference_limits=[
             "A has one new paired training repeat per fixed parent block",
             "LZ changes exposure, G and effective update weighting together",
@@ -745,6 +845,7 @@ def report(root):
     write(root / "ANALYSIS/A_B_ENDPOINT_ANALYSIS.json", result)
     write_rows(root / "ANALYSIS/ENDPOINT_BY_MODEL.jsonl", summaries)
     write_rows(root / "ANALYSIS/ENDPOINT_BY_VARIANT.jsonl", by_variant)
+    write(root / "ANALYSIS/A_KNOWN_V7_ENDPOINT.json", known_case)
     write_rows(root / "ANALYSIS/NORMALIZED_ENDPOINTS.jsonl", values)
     write(root / "ANALYSIS/B_MEASUREMENT_SUMMARY.json", measurement)
     write(root / "ANALYSIS/A_TRAINING_EXPOSURE.json", exposure)
@@ -772,6 +873,7 @@ def report(root):
         f"|b{r['block']}|{r['arm']}|{r['expected']}|{r['actual']}|{r['missing']}|{r['status']}|"
         for r in coverage_rows
     ]
+    lines += known_v7_report_lines(known_case)
     lines += [
         "",
         "A 的 LZ 与均匀采样比较：",
