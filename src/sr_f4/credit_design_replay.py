@@ -21,7 +21,7 @@ from srf4_ref.credit import Observation, semantic_residual
 from .replay import SHUFFLE_SEEDS
 from .training import native_advantages
 
-SOURCES = {"B0", "B2_DEV", "C_TRAIN_PROBE", "HISTORICAL_RL"}
+SOURCES = {"B0", "B2_DEV", "C_TRAIN_PROBE", "HISTORICAL_RL", "C_TOPK_DEV_R1"}
 ARMS = ("J", "EVID", "SELECT", "SELECT_SHUF")
 BETA = 0.25
 

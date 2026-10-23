@@ -100,17 +100,23 @@ def test_shared_qos_counts_requests_allocations_and_cpu_jobs():
 
 
 class FakeSlurm:
-    def __init__(self, queue=None, *, visible=True, terminal=None):
+    def __init__(self, queue=None, *, visible=True, terminal=None, other_qos_jobs=()):
         self.rows = dict(queue or {})
         self.visible = visible
         self.terminal_record = terminal
         self.commands = []
+        self.other_qos_jobs = set(other_qos_jobs)
 
     def queue(self):
         return dict(self.rows)
 
     def terminal(self, job_id):
         return self.terminal_record
+
+    def user_job_ids(self, user):
+        return self.other_qos_jobs | {
+            key for key, value in self.rows.items() if value["UserId"].split("(")[0] == user
+        }
 
     def run(self, command):
         self.commands.append(command)
@@ -143,6 +149,88 @@ def test_submit_respects_cpu_job_cap_and_other_users_gpu_usage(tmp_path):
     result = pool.submit(tmp_path, tmp_path, "/usr/bin/python3", user="louis", slurm=slurm)
     assert len(result["submitted"]) == 1
     assert result["submitted"][0]["gpus"] == 2
+
+
+def test_one_four_gpu_job_uses_last_user_slot(tmp_path):
+    pool.init_pool(tmp_path, [task(str(index)) for index in range(12)])
+    slurm = FakeSlurm({str(index): row("louis", 1) for index in range(4)})
+    result = pool.submit(
+        tmp_path, tmp_path, "/usr/bin/python3", user="louis", slurm=slurm, gpus_per_job=4
+    )
+    assert len(result["submitted"]) == 1
+    allocation = result["submitted"][0]
+    assert allocation["gpus"] == 4
+    assert allocation["queue_usage"] == {"gpus": 4, "submitted": 4}
+    assert "--gres=gpu:pro6000:4" in slurm.commands[0]
+    assert "--cpus-per-task=32" in slurm.commands[0]
+    assert "--mem=384G" in slurm.commands[0]
+
+
+@pytest.mark.parametrize("other_jobs,expected", [(4, 1), (5, 0)])
+def test_all_qos_user_job_cap_does_not_charge_other_qos_gpu_capacity(
+    tmp_path, other_jobs, expected
+):
+    pool.init_pool(tmp_path, [task(str(index)) for index in range(12)])
+    slurm = FakeSlurm(other_qos_jobs={str(index) for index in range(other_jobs)})
+    result = pool.submit(
+        tmp_path, tmp_path, "/usr/bin/python3", user="louis", slurm=slurm, gpus_per_job=4
+    )
+    assert len(result["submitted"]) == expected
+    if expected:
+        assert result["submitted"][0]["gpus"] == 4
+        assert result["submitted"][0]["queue_usage"] == {"gpus": 0, "submitted": 4}
+
+
+def test_user_snapshot_does_not_double_count_locally_reserved_job(tmp_path):
+    pool.init_pool(tmp_path, [task("a")])
+    _register_old_jobs(tmp_path, 1)
+    slurm = FakeSlurm(other_qos_jobs={"1", "2", "3", "4"})
+    capacity = pool._reserved_usage(tmp_path, {}, slurm, "louis")
+    assert capacity == {"gpus": 2, "submitted": 4}
+
+
+def test_configured_gpu_width_is_clipped_to_teacher_capacity(tmp_path):
+    pool.init_pool(tmp_path, [task("a")])
+    slurm = FakeSlurm({"90": row("other", 6)})
+    result = pool.submit(
+        tmp_path, tmp_path, "/usr/bin/python3", user="louis", slurm=slurm, gpus_per_job=4
+    )
+    assert [item["gpus"] for item in result["submitted"]] == [2]
+
+
+@pytest.mark.parametrize("width", [0, 9, 2.5, True])
+def test_invalid_gpu_width_rejected_before_submission(tmp_path, width):
+    slurm = FakeSlurm()
+    with pytest.raises(ValueError, match="GPUs per job"):
+        pool.submit(
+            tmp_path, tmp_path, "/usr/bin/python3", slurm=slurm, gpus_per_job=width
+        )
+    assert not slurm.commands
+
+
+def test_user_queue_queries_all_qos_and_expands_arrays(monkeypatch):
+    slurm = pool.Slurm()
+    commands = []
+
+    def run(command):
+        commands.append(command)
+        return SimpleNamespace(returncode=0, stdout="42\n43_1\n43_2\n", stderr="")
+
+    monkeypatch.setattr(slurm, "run", run)
+    assert slurm.user_job_ids("louis") == {"42", "43_1", "43_2"}
+    assert commands == [
+        ["squeue", "--noheader", "--array", "--user", "louis", "--format=%i"]
+    ]
+
+
+@pytest.mark.parametrize("output", ["42\n42\n", "42_[1-3]\n"])
+def test_ambiguous_user_queue_fails_closed(monkeypatch, output):
+    slurm = pool.Slurm()
+    monkeypatch.setattr(
+        slurm, "run", lambda command: SimpleNamespace(returncode=0, stdout=output, stderr="")
+    )
+    with pytest.raises(RuntimeError, match="ambiguous"):
+        slurm.user_job_ids("louis")
 
 
 @pytest.mark.parametrize(

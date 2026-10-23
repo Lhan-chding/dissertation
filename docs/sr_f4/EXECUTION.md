@@ -1,5 +1,13 @@
 # SR-F4 执行记录
 
+## 2026-10-23 C 的 r5 解析修订与新 TOPK 小探针
+
+用户明确授权处理142条AI已知/程序UNKNOWN回答，并设计、实际运行一次小规模TOPK探针。逐条分类与解析规则见 `C_PARSER_R5_AND_TOPK_PROBE_20261023_ZH.md`，生成前冻结方案见 `C_TOPK_PROBE_PLAN_20261023_ZH.md`。该授权增加一个独立1536回答开发探针，没有授权直接启动24条C训练路径，也没有改变历史A/B结果或打开旧确认集。
+
+新根 `/projects/_ssd/varunssd/louis-ssvc/sr_f4_c_topk_probe_20261023` 使用 `python -m sr_f4.c_probe prepare --root NEW_ROOT --source-root OLD_ROOT --revision COMMIT` 准备32张图、64题、192组G8和12个独立领取分片。然后用现有pool提交GPU作业，全部分片完成自动领取CTOPK-report。老师QoS、rose、cluster02、LH前缀及共享8卡/用户5作业限制保持；用户作业数现在跨全部QoS统计。`--gpus-per-job`默认2，可在剩余作业槽受限时提高，每卡仍独立接任务。无需为这个小探针另占CPU控制器名额。
+
+定期监控应只看本新根的pool、进度和真实回答；排队/正常进度保持安静。若发生技术失败，保留attempt并诊断，`python -m sr_f4.c_probe coverage --root NEW_ROOT`生成含全部192组/1536回答分母的缺失表。不得重抽种子或扩大预算。完成后取回报告与必要小型汇总，不恢复用户已取消的大归档下载。
+
 ## 2026-10-23 C 全候选失败 AI 复核与 r4
 
 按用户“继续”要求，对全部243条C的F′候选失败做AI审阅，88条二审、8条分歧裁决保留UNKNOWN；232条S已知。沿用原F/原公式重放已有3个选择信号组，F′为4组4world，均为INTERVAL，TOPK仍0。这修正了将程序0信号理解成数据完全没有信号的解释。审核已由AI完成，不等待用户手填；不回写历史HUMAN门控。

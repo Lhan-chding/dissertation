@@ -381,6 +381,14 @@ def run_train(root, spec):
 
 
 def execute(root, spec):
+    if spec["kind"] == "c_topk_probe":
+        from .c_probe import run_slice
+
+        return run_slice(root, spec)
+    if spec["kind"] == "c_topk_report":
+        from .c_probe import report
+
+        return report(root)
     if spec["kind"] == "probe":
         return run_probe(root, spec)
     if spec["kind"] == "train":

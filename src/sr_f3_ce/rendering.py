@@ -164,9 +164,10 @@ def render_chart(task: dict, font_path=None) -> tuple[bytes, dict]:
     units = (bottom - top) / 100
     if units < 3:
         raise ValueError("One value unit is smaller than 3 source pixels")
-    title = (
-        "Quarterly quantities" if len(categories) == 4 else "Six-category quantities"
-    )
+    title = {
+        4: "Quarterly quantities",
+        8: "Eight-category quantities",
+    }.get(len(categories), "Six-category quantities")
     text((CANVAS[0] // 2, 24), title, size=28, anchor="ma")
     text((left - 2, 92), "Count", size=20)
     for value in range(0, 101, 10):

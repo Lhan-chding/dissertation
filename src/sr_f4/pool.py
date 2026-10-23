@@ -276,6 +276,18 @@ class Slurm:
             raise RuntimeError("Teacher QoS queue IDs are ambiguous")
         return {key: self.show(key) for key in ids}
 
+    def user_job_ids(self, user):
+        """Count this user's submitted jobs across all QoS and partitions."""
+        result = self.run(
+            ["squeue", "--noheader", "--array", "--user", user, "--format=%i"]
+        )
+        if result.returncode:
+            raise RuntimeError("Cannot read user-wide Slurm queue: " + result.stderr)
+        ids = result.stdout.split()
+        if len(set(ids)) != len(ids) or any(not _JOB_ID.fullmatch(key) for key in ids):
+            raise RuntimeError("User-wide Slurm queue IDs are ambiguous")
+        return set(ids)
+
     def terminal(self, job_id):
         result = self.run(
             [
@@ -321,6 +333,11 @@ def usage(queue, user):
 
 def _reserved_usage(root, queue, slurm, user):
     capacity = usage(queue, user)
+    user_jobs = slurm.user_job_ids(user) | {
+        key for key, row in queue.items() if row["UserId"].split("(")[0] == user
+    }
+    # Union both snapshots so a visibility race cannot drop a known reservation.
+    capacity["submitted"] = len(user_jobs)
     with _locked(root) as state:
         absent = [
             (key, dict(row))
@@ -343,7 +360,7 @@ def _reserved_usage(root, queue, slurm, user):
         else:
             # squeue disappearance alone is not evidence that a reservation ended.
             capacity["gpus"] += row["gpus"]
-            capacity["submitted"] += row["user"] == user
+            capacity["submitted"] += row["user"] == user and row["job_id"] not in user_jobs
     return capacity
 
 
@@ -513,19 +530,23 @@ def submit(
     memory_gib_per_gpu=96,
     highmem=False,
     maximum_new_jobs=4,
+    gpus_per_job=2,
     walltime=GPU_WALLTIME,
 ):
-    """Fill available capacity with up to four two-GPU allocations.
+    """Fill available capacity, defaulting to up to four two-GPU allocations.
 
     Queue capacity is refreshed immediately before every sbatch. All users in
-    the shared QoS count toward its eight GPUs; this user's CPU jobs also count
-    toward MaxSubmitPU=5. Unknown submission outcomes block repeat submission.
+    the shared QoS count toward its eight GPUs; all of this user's jobs count
+    toward the five-job cap, including other QoS and CPU-only jobs. Unknown
+    submission outcomes block repeat submission.
     """
     root, code = Path(root).resolve(), Path(code).resolve()
     python = str(Path(python).resolve())
     slurm, user = slurm or Slurm(), user or getpass.getuser()
     if cpus_per_gpu < 1 or memory_gib_per_gpu < 1 or not 1 <= maximum_new_jobs <= SUBMIT_LIMIT:
         raise ValueError("Invalid allocation resources")
+    if type(gpus_per_job) is not int or not 1 <= gpus_per_job <= GPU_LIMIT:
+        raise ValueError("GPUs per job must be an integer from 1 to 8")
     if not re.fullmatch(r"[0-9]{1,3}:[0-5][0-9]:[0-5][0-9]", walltime):
         raise ValueError("GPU walltime must be HH:MM:SS")
     directory = root / "pool"
@@ -554,7 +575,7 @@ def submit(
             available = GPU_LIMIT - capacity["gpus"]
             if available <= 0 or capacity["submitted"] >= SUBMIT_LIMIT:
                 break
-            count = min(2, available)
+            count = min(gpus_per_job, available)
             with _locked(root) as state:
                 sequence = len(state["jobs"]) + 1
                 key = f"job-{sequence:04d}"
@@ -806,6 +827,7 @@ def main(argv=None):
     parser.add_argument("--cpus-per-gpu", type=int, default=8)
     parser.add_argument("--memory-gib-per-gpu", type=int, default=96)
     parser.add_argument("--maximum-new-jobs", type=int, default=4)
+    parser.add_argument("--gpus-per-job", type=int, default=2)
     parser.add_argument("--highmem", action="store_true")
     parser.add_argument("--walltime", default=GPU_WALLTIME)
     parser.add_argument("--interval", type=int, default=150)
@@ -835,6 +857,7 @@ def main(argv=None):
             memory_gib_per_gpu=args.memory_gib_per_gpu,
             highmem=args.highmem,
             maximum_new_jobs=args.maximum_new_jobs,
+            gpus_per_job=args.gpus_per_job,
             walltime=args.walltime,
             **options,
         )

@@ -294,16 +294,22 @@ def test_natural_mean_chain_cannot_hide_replacement_or_unsupported_stage(calcula
     assert result["status"] == "UNKNOWN"
 
 
-def test_mean_chain_does_not_infer_missing_evidence_or_resolve_duplicate_values():
+def test_complete_adoption_linked_values_are_independent_of_structured_facts():
     work = MEAN_DECLARATION + "The arithmetic mean is (46+73)/2 = 119/2 = 59.5"
     evidence = [dict(series="Alpha", category=c, value=v)
                 for c, v in zip(MEAN_WORLD["categories"], MEAN_WORLD["series"]["Alpha"],
                                 strict=True)]
     assert selection(work, world=MEAN_WORLD, query=MEAN_QUERY,
-                     evidence=evidence, answer=59.5)["status"] == "UNKNOWN"
+                         evidence=evidence, answer=59.5)["status"] == "PASS"
     duplicate = copy.deepcopy(MEAN_WORLD)
     duplicate["series"]["Beta"][0] = 46
-    assert selection(work, world=duplicate, query=MEAN_QUERY, answer=59.5)["status"] == "UNKNOWN"
+    assert selection(work, world=duplicate, query=MEAN_QUERY, answer=59.5)["status"] == "PASS"
+    unlinked = ("The two categories with the largest Alpha values are April and March. "
+                "The arithmetic mean is (46+73)/2 = 119/2 = 59.5")
+    assert selection(unlinked, world=MEAN_WORLD, query=MEAN_QUERY,
+                     evidence=evidence, answer=59.5)["status"] == "UNKNOWN"
+    assert selection(unlinked, world=duplicate, query=MEAN_QUERY,
+                     answer=59.5)["status"] == "UNKNOWN"
 
 
 def test_mean_chain_extraction_is_independent_of_query_and_answer():
@@ -388,3 +394,307 @@ def test_versions_normalization_and_inputs_are_preserved():
     assert all(label["dimensions"][d] == old["dimensions"][d] for d in "POE")
     assert (task, record, score) == snapshot
     json.dumps(label, allow_nan=False)
+
+
+@pytest.mark.parametrize("declaration", [
+    "The top 2 categories with largest Alpha values are: April (66), March (34)",
+    "The two categories with largest Alpha values are April (66) and March (34)",
+    "The two largest Alpha values are in April (66) and March (34)",
+    "The two largest Alpha values are at April (66) and March (34)",
+    "Selected top 2 Alpha categories: April (66), March (34)",
+    "Selected categories with largest Alpha values: April (66), March (34)",
+    "Identify top 2 Alpha values: 66 (April), 34 (March)",
+    "The 2 largest Alpha values are: April=66, March=34",
+])
+def test_r5_natural_named_ranks_preserve_actual_rank_series(declaration):
+    assert selection(declaration, world=MEAN_WORLD, query=MEAN_QUERY,
+                     answer=59.5)["status"] == "PASS"
+    assert selection(declaration.replace("Alpha", "Beta"), world=MEAN_WORLD,
+                     query=MEAN_QUERY, answer=59.5)["status"] == "FAIL"
+
+
+def test_r5_beta_rank_and_eight_categories_are_supported():
+    world = dict(categories=["January", "February", "March", "April", "May", "June",
+                             "July", "August"], domain=[0, 100],
+                 series=dict(Alpha=[80, 70, 60, 50, 40, 30, 20, 10],
+                             Beta=[10, 20, 30, 40, 50, 60, 70, 80]))
+    query = dict(family="TOPK", k=2, direction="largest", selection_series="Beta",
+                 value="Alpha", aggregate="sum")
+    work = ("The two largest Beta values are in August (80) and July (70). "
+            "Their corresponding Alpha values are 10 and 20. Sum=10+20=30")
+    selected = selection(work, world=world, query=query, answer=30)
+    assert selected["status"] == "PASS"
+    assert selected["observed"]["selection_series"] == ["Beta"]
+    assert selection(work.replace("largest Beta", "largest Alpha"), world=world,
+                     query=query, answer=30)["status"] == "FAIL"
+
+
+def test_r5_contextual_rank_retains_observed_beta_series():
+    work = ("The Beta values for each month are: January=31, February=30, March=82, April=88. "
+            "The top two are April (88) and March (82)")
+    query = dict(MEAN_QUERY, selection_series="Beta")
+    assert selection(work, query=query)["status"] == "PASS"
+    assert selection(work, query=MEAN_QUERY)["status"] == "FAIL"
+    assert selection(work.replace("The Beta values", "The chart values"),
+                     query=query)["status"] == "UNKNOWN"
+
+
+@pytest.mark.parametrize("correspondence", [
+    "Their corresponding Beta values are 35, 68, and 35",
+    "The corresponding Beta values for these categories are February=35, March=68, June=35",
+    "Now, sum their corresponding Beta values: February Beta=35, March Beta=68, June Beta=35",
+])
+def test_r5_real_duplicate_values_are_bound_to_complete_named_adoption(correspondence):
+    world = dict(categories=["January", "February", "March", "April", "May", "June"],
+                 domain=[0, 100], series=dict(Alpha=[20, 84, 79, 30, 40, 62],
+                                            Beta=[35, 35, 68, 35, 10, 35]))
+    query = dict(MEAN_QUERY, k=3)
+    work = ("The three categories with largest Alpha values are February (84), March (79), "
+            "and June (62). " + correspondence + ". Sum=35+68+35=138; Mean=138/3=46")
+    evidence = [dict(series="Alpha", category="February", value=84)]
+    label, task, record, score = evaluate(work, world=world, query=query,
+                                        evidence=evidence, answer=46)
+    assert label["dimensions"]["S"]["status"] == "PASS"
+    assert label["dimensions"]["S"]["observed"]["categories"] == ["February", "June", "March"]
+    assert all(label["dimensions"][d] == verify_v2(task, record, score)["dimensions"][d]
+               for d in "POE")
+
+
+@pytest.mark.parametrize("middle", [
+    "Their corresponding Beta values are April=46, January=73",
+    "Their corresponding Beta values are 46, 73, 19",
+    "Their corresponding Beta values are 46",
+    "Their corresponding Beta values are April=46, April=73",
+    "Their corresponding Beta values are April=46, Unknown=73",
+    "Their corresponding Beta values are 46 and 73; Use January instead of March",
+    "Their corresponding Beta values are 46 and 73; Take only April",
+    "Their corresponding Beta values are 46 and 73; Selected: April, January",
+    "Their corresponding Beta values are 46 and 73; The top 2 Beta values are April, March",
+])
+def test_r5_linkage_cannot_hide_missing_extra_repeated_or_replaced_members(middle):
+    work = ("The top 2 Alpha values are April and March; " + middle
+            + "; Mean=(46+73)/2=59.5")
+    assert selection(work, world=MEAN_WORLD, query=MEAN_QUERY,
+                     answer=59.5)["status"] == "UNKNOWN"
+
+
+@pytest.mark.parametrize("calculation", ["Alpha mean=(46+73)/2=59.5", "Mean=(46+19)/2=32.5"])
+def test_r5_conflicting_series_or_operands_cannot_override_correspondence(calculation):
+    assert selection(MEAN_DECLARATION + calculation, world=MEAN_WORLD,
+                     query=MEAN_QUERY, answer=59.5)["status"] == "UNKNOWN"
+
+
+def test_r5_linked_extraction_does_not_depend_on_target_or_answer():
+    work = MEAN_DECLARATION + "Mean=(46+73)/2=59.5"
+    left = selection(work, world=MEAN_WORLD, query=MEAN_QUERY)
+    right = selection(work, world=MEAN_WORLD, query=dict(MEAN_QUERY, direction="smallest"),
+                      answer=999)
+    assert left["observed"] == right["observed"]
+    assert left["status"] == "PASS" and right["status"] == "FAIL"
+
+
+@pytest.mark.parametrize("pairs", [
+    "Differences: Jan (51-31=20), Feb (84-30=54), Mar (30-82=-52), Apr (20-88=-68)",
+    "Calculate (Alpha - Beta) for each month from January to April: "
+    "Jan:51-31=20, Feb:84-30=54, Mar:30-82=-52, Apr:20-88=-68",
+    "For January: Alpha=51, Beta=31 → difference=20; "
+    "In February: Alpha=84, Beta=30 → difference=54; "
+    "March: Alpha=30, Beta=82 → difference=30-82=-52; "
+    "Alpha - Beta in April: 20-88=-68",
+])
+def test_r5_named_work_differences_support_complete_sum_without_fact_lookup(pairs):
+    work = pairs + ". Sum of differences=20+54-52-68=-46; Mean=-46/4=-11.5"
+    label, task, record, score = evaluate(work, evidence=[dict(series="Alpha", category="January",
+                                                            value=51)])
+    assert label["dimensions"]["S"]["status"] == "PASS"
+    assert all(label["dimensions"][d] == verify_v2(task, record, score)["dimensions"][d]
+               for d in "POE")
+
+
+def test_r5_named_difference_cannot_change_series_or_hide_inconsistent_pair_assignments():
+    work = ("January: Alpha=51, Beta=31 → difference=84-30=54; "
+            "February:84-30=54; Sum=54+54=108")
+    assert selection(work)["status"] == "UNKNOWN"
+    assert selection(PAIRS + "Beta sum=20+54-52-68=-46")["status"] == "UNKNOWN"
+    assert selection("January:51-31=20; February:50-30=20; Sum=20+20=40")["status"] == "UNKNOWN"
+
+
+@pytest.mark.parametrize("suffix", ["Beta range=31-30=1", "Beta range=1", "Beta maximum=31"])
+def test_r5_range_summary_requires_consistent_full_adopted_set(suffix):
+    work = "Selected: Jan, Feb; " + suffix
+    assert selection(work, query=dict(QUERY, end=1))["status"] == "PASS"
+    assert selection(suffix, query=dict(QUERY, end=1))["status"] == "UNKNOWN"
+
+
+@pytest.mark.parametrize("suffix", [
+    "Beta range=88-30=58", "Beta range=31-30=2", "Range=31-30=1",
+    "Beta range=31-30=1 for January and April", "Beta maximum=88",
+])
+def test_r5_inconsistent_or_unbound_range_summary_stays_unknown(suffix):
+    assert selection("Selected: Jan, Feb; " + suffix,
+                     query=dict(QUERY, end=1))["status"] == "UNKNOWN"
+
+
+def test_r5_full_correspondence_supports_scalar_sum_and_range_without_world_completion():
+    work = "Selected: Jan, Feb; Their corresponding Beta values are 31 and 30; Range=31-30=1"
+    evidence = [dict(series="Alpha", category="January", value=51)]
+    assert selection(work, query=dict(QUERY, end=1), evidence=evidence)["status"] == "PASS"
+    assert selection(work.replace("Range=31-30=1", "Sum=61; Mean=61/2=30.5"),
+                     query=dict(QUERY, end=1), evidence=evidence)["status"] == "PASS"
+    assert selection(work.replace("Range=31-30=1", "Sum=62; Mean=62/2=31"),
+                     query=dict(QUERY, end=1), evidence=evidence)["status"] == "UNKNOWN"
+
+
+def test_r5_explicit_withdrawal_scopes_only_later_work():
+    work = "Selected: January; Discard the previous selection. Selected: February, March, April"
+    selected = selection(work, query=dict(QUERY, include_start=False))
+    assert selected["status"] == "PASS"
+    assert selected["observed"]["withdrawn_work"].endswith("selection. ")
+    assert selected["observed"]["explicit_claims"][0]["source_text"].startswith("Selected:")
+
+
+@pytest.mark.parametrize("withdrawal", [
+    "Perhaps discard the previous selection", "Do not discard the previous selection",
+    "Should we discard the previous selection?", "Discard the previous calculation only if needed",
+])
+def test_r5_speculative_or_negated_withdrawal_cannot_erase_conflict(withdrawal):
+    work = "Selected: January; " + withdrawal + ". Selected: February, March, April"
+    assert selection(work, query=dict(QUERY, include_start=False))["status"] == "UNKNOWN"
+
+
+def test_r5_incompatible_exclusion_annotation_stays_unknown():
+    for annotation in ["excluding start and including end", "excluding January",
+                       "excluding start, including end"]:
+        work = "Selected: January, February, March, April (" + annotation + "); " + CHAIN
+        assert selection(work)["status"] == "UNKNOWN"
+
+
+@pytest.mark.parametrize("replacement", [
+    "Exclude February", "Include March instead of February", "January and March instead",
+    "Remove February", "Omit February", "Drop February",
+])
+def test_r5_intermediate_replacement_cannot_be_hidden_by_a_later_supported_sum(replacement):
+    work = "Selected: January, February. " + replacement + ". Alpha sum=51+84=135"
+    assert selection(work, query=dict(QUERY, end=1))["status"] == "UNKNOWN"
+
+
+@pytest.mark.parametrize("mode", ["Beta", "beta", "BETA", "Alpha", "alpha"])
+def test_r5_named_difference_binding_respects_any_case_of_explicit_series(mode):
+    assert selection(PAIRS + mode + " sum=20+54-52-68=-46")["status"] == "UNKNOWN"
+
+
+@pytest.mark.parametrize("work", [
+    "Selected categories excluding start (January) and end (April): February and March",
+    "Selected categories excluding January (start) and April (end) are February and March",
+    "Selected categories: February and March (excluding January and April)",
+])
+def test_r5_complete_boundary_annotated_list_is_observable_without_completing_it(work):
+    assert selection(work, query=dict(QUERY, include_start=False,
+                                     include_end=False))["status"] == "PASS"
+    assert selection(work.replace("February and March", "March"),
+                     query=dict(QUERY, include_start=False, include_end=False))["status"] == "FAIL"
+    assert selection(work.replace("February and March", "January and March"))["status"] == "UNKNOWN"
+
+
+def test_r5_endpoint_membership_annotations_cannot_contradict_complete_list():
+    work = ("Selected categories: January, February, March, April "
+            "(start=January included, end=April included)")
+    assert selection(work)["status"] == "PASS"
+    assert selection(work.replace("January included", "January excluded"))["status"] == "UNKNOWN"
+
+
+@pytest.mark.parametrize("work", [
+    "The Alpha values for each category are: January=51, February=84, March=30, April=20. "
+    "Sorting in descending order: February (84), January (51). These are the top 2",
+    "Sorting Alpha values in descending order: February (84), January (51), March (30), "
+    "April (20). The top 2 are February, January",
+])
+def test_r5_local_sorting_context_retains_named_selection_and_series(work):
+    assert selection(work, query=MEAN_QUERY)["status"] == "PASS"
+    assert selection(work.replace("Alpha", "Beta"), query=MEAN_QUERY)["status"] == "FAIL"
+    assert selection(work.replace("Alpha", "chart"), query=MEAN_QUERY)["status"] == "UNKNOWN"
+
+
+@pytest.mark.parametrize("annotation", [
+    "Using the printed category order for ties, January comes before February",
+    "Since January and February are tied for largest, we use printed category order "
+    "— so we take January first, then February",
+])
+def test_r5_same_set_tie_order_annotation_does_not_erase_selection(annotation):
+    work = "The top 2 Alpha values are January (84), February (84). " + annotation
+    assert selection(work, query=MEAN_QUERY)["status"] == "PASS"
+    assert selection(work.replace(annotation, annotation.replace("February", "March")),
+                     query=MEAN_QUERY)["status"] == "UNKNOWN"
+    assert selection(work + "; Include March instead of January; Alpha sum=51+84=135",
+                     query=MEAN_QUERY)["status"] == "UNKNOWN"
+
+
+@pytest.mark.parametrize("declaration", [
+    "Largest two Alpha values are April (66) and March (34)",
+    "The largest two Alpha values are April (66) and March (34)",
+    "The two Alpha values are highest in April (66) and March (34)",
+])
+def test_r5_rank_word_order_does_not_veto_a_complete_named_set(declaration):
+    work = declaration + "; Beta mean=(46+73)/2=59.5"
+    assert selection(work, world=MEAN_WORLD, query=MEAN_QUERY)["status"] == "PASS"
+    assert selection(work.replace("Alpha", "Beta"), world=MEAN_WORLD,
+                     query=MEAN_QUERY)["status"] == "FAIL"
+    assert selection(work.replace("April (66)", "January (66)"), world=MEAN_WORLD,
+                     query=MEAN_QUERY)["status"] == "UNKNOWN"
+
+
+@pytest.mark.parametrize("header", [
+    "The Beta values across categories are",
+    "From the chart, Beta values are",
+    "The Beta values (orange line with square markers) for each month are",
+    "Beta values by category",
+    "The Beta values per month are",
+    "The Beta values per month (from bar heights) are",
+])
+@pytest.mark.parametrize("rank", [
+    "The two largest are April (88) and March (82)",
+    "Top 2: 88 (Apr), 82 (Mar)",
+])
+def test_r5_local_series_header_variants_keep_context_and_conflicts(header, rank):
+    work = (header + ": January=31, February=30, March=82, April=88. "
+            + rank + ". Mean=(88+82)/2=85")
+    query = dict(MEAN_QUERY, selection_series="Beta")
+    assert selection(work, query=query)["status"] == "PASS"
+    assert selection(work, query=MEAN_QUERY)["status"] == "FAIL"
+    assert selection(work.replace("Beta values", "Beta and Alpha values"),
+                     query=query)["status"] == "UNKNOWN"
+
+
+@pytest.mark.parametrize("note", ["not Beta", "use Alpha", "except January", "only 2 categories"])
+def test_r5_chart_context_parenthesis_cannot_carry_a_hidden_replacement(note):
+    work = ("The Beta values (" + note + ") for each month are: "
+            "January=31, February=30, March=82, April=88. "
+            "The two largest are April (88) and March (82). Mean=(88+82)/2=85")
+    assert selection(work, query=dict(MEAN_QUERY, selection_series="Beta"))["status"] == "UNKNOWN"
+
+
+@pytest.mark.parametrize("suffix", [" respectively", ", respectively"])
+def test_r5_respectively_comma_is_only_a_complete_list_terminator(suffix):
+    work = ("The top 2 Alpha values are April and March; "
+            "Their corresponding Beta values are 46 and 73" + suffix + "; Mean=(46+73)/2=59.5")
+    assert selection(work, world=MEAN_WORLD, query=MEAN_QUERY)["status"] == "PASS"
+    assert selection(work.replace("46 and 73", "46"), world=MEAN_WORLD,
+                     query=MEAN_QUERY)["status"] == "UNKNOWN"
+    assert selection(work.replace(suffix, suffix + " using January instead"),
+                     world=MEAN_WORLD, query=MEAN_QUERY)["status"] == "UNKNOWN"
+
+
+@pytest.mark.parametrize("adoption", [
+    "So we select February and April",
+    "So we SELECT February and April",
+    "So we select only February and April",
+    "So we adopt February and April",
+    "We adopted February and April",
+])
+def test_r5_later_active_adoption_cannot_bind_values_to_an_earlier_rank(adoption):
+    world = dict(categories=["January", "February", "March", "April"], domain=[0, 100],
+                 series=dict(Alpha=[57, 72, 20, 55], Beta=[12, 62, 35, 22]))
+    work = ("The highest Alpha values are February (72) and January (57). "
+            "April (55) is third. " + adoption + ". Their Beta values are 62 and 22. "
+            "Mean = (62 + 22)/2 = 42")
+    assert selection(work, world=world, query=MEAN_QUERY, answer=42)["status"] == "UNKNOWN"
