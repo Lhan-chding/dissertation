@@ -19,6 +19,9 @@ def test_task_matrix_pipelines_each_endpoint_without_global_training_barrier():
         if spec["kind"] == "c_pilot_eval" and spec["arm"] == "PARENT":
             assert spec["dependencies"] == []
     assert set(matrix[-1]["dependencies"]) == ids - {"CPF-REPORT"}
+    scheduled = c_pilot.pool_task_matrix()
+    assert sum(s.get("resume_supported") is True for s in scheduled) == 72
+    assert [{k: v for k, v in s.items() if k != "resume_supported"} for s in scheduled] == matrix
 
 
 def test_frozen_protocol_changes_fail_before_model_loading(tmp_path):
@@ -105,6 +108,8 @@ def test_prepare_freezes_full_budget_with_original_retention_routes(tmp_path, mo
             file.write_bytes(b"registered-image-pixels")
     c_pilot.prepare(root, source, "revision")
     c_pilot.require_frozen(root)
+    assert sum(t["spec"].get("resume_supported") is True
+               for t in read(root / "pool/STATE.json")["tasks"].values()) == 72
     assert read(root / "READY.json")["images_created"] == 192
     assert (
         sum(

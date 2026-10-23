@@ -137,6 +137,13 @@ def build_eval_groups(tasks, block):
     return groups
 
 
+def pool_task_matrix():
+    """Scheduling capabilities are separate from frozen experimental inputs."""
+    return [dict(spec, resume_supported=True)
+            if spec["kind"] in ("c_pilot_train", "c_pilot_eval") else spec
+            for spec in task_matrix()]
+
+
 def prepare(root, source_root, revision):
     from sr_f3_ce.rendering import render_chart
 
@@ -224,7 +231,7 @@ def prepare(root, source_root, revision):
         scientific_status="PROSPECTIVE_BOUNDED_C_FPRIME_TRAINING_PILOT",
     )
     write(root / "FROZEN.json", frozen)
-    result = init_pool(root, matrix)
+    result = init_pool(root, pool_task_matrix())
     write(
         root / "READY.json",
         dict(
