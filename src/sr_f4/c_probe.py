@@ -81,7 +81,7 @@ def prepare(root, source_root, revision):
     from sr_f3_ce.rendering import render_chart
 
     from .pool import init_pool
-    from .verification_v3 import VERIFIER_VERSION
+    from .verification_r5 import VERIFIER_VERSION
 
     root, source_root = Path(root), Path(source_root)
     if root.exists() and any(root.iterdir()):
@@ -166,7 +166,7 @@ def prepare(root, source_root, revision):
 
 
 def require_frozen(root):
-    from .verification_v3 import VERIFIER_VERSION
+    from .verification_r5 import VERIFIER_VERSION
 
     frozen = read(Path(root) / "FROZEN.json")
     config = read(Path(root) / "CONFIG.json")
@@ -183,7 +183,7 @@ def require_frozen(root):
     return frozen
 
 
-def coverage(root):
+def coverage(root, *, output_root=None):
     """Small file-presence inventory, including when a failed shard blocks report.
 
     The full report validates contents. This receipt never certifies responses
@@ -215,7 +215,8 @@ def coverage(root):
         counts=dict(cells),
         missing_groups=missing,
     )
-    write(root / "ANALYSIS/COVERAGE.json", result)
+    destination = root if output_root is None else Path(output_root)
+    write(destination / "ANALYSIS/COVERAGE.json", result)
     return result
 
 
@@ -262,16 +263,39 @@ def run_slice(root, spec):
     )
 
 
-def report(root):
+def report(root, *, measurement="r5", output=None):
     from .credit_design_replay import POLICIES, diagnose_group, summarize
     from .replay import replay_group
     from .run import task_index
     from .training import native_advantages
-    from .verification_v3 import VERIFIER_VERSION, verify_semantics
+    if measurement == "r5":
+        from .verification_r5 import VERIFIER_VERSION, verify_semantics
+    elif measurement == "r6":
+        from .verification_v3 import VERIFIER_VERSION, verify_semantics
 
-    root = Path(root)
-    require_frozen(root)
-    completeness = coverage(root)
+        if VERIFIER_VERSION != "srf4-observable-v3-programmatic-dev-r6":
+            raise ValueError("The separately registered r6 development verifier is required")
+    else:
+        raise ValueError("Only frozen r5 and separately recorded r6 are supported")
+    root = Path(root).resolve()
+    frozen = require_frozen(root)
+    if measurement == "r5":
+        if output is not None:
+            raise ValueError("The frozen r5 report uses its original output directory")
+        destination = root
+    else:
+        if output is None:
+            raise ValueError("r6 remeasurement requires a separate output directory")
+        destination = Path(output).resolve()
+        if (
+            destination == root
+            or destination.is_relative_to(root)
+            or root.is_relative_to(destination)
+        ):
+            raise ValueError("Remeasurement must not write into or contain the frozen run")
+        if destination.exists() and any(destination.iterdir()):
+            raise FileExistsError("Preserve existing remeasurement outputs")
+    completeness = coverage(root, output_root=destination)
     if completeness["missing_groups"]:
         return completeness
     tasks = task_index(root)
@@ -281,7 +305,7 @@ def report(root):
         for g in spec["assignments"]
     }
     labels, diagnostics, strata = [], [], defaultdict(list)
-    seen, measurement = set(), Counter()
+    seen, measurement_counts = set(), Counter()
     native = defaultdict(Counter)
     for assignment in rows(root / "DATA/PROBE_GROUPS.jsonl"):
         block = int(assignment["block"][1:])
@@ -329,7 +353,7 @@ def report(root):
                 ):
                     native[key][field] += record["score"][field] == 1
             for dimension in "PS":
-                measurement[
+                measurement_counts[
                     (task["cell"], f"b{block}", dimension, label["dimensions"][dimension]["status"])
                 ] += 1
             joined.append(dict(task=task, record=record, score=record["score"], label=label))
@@ -350,7 +374,9 @@ def report(root):
             cell=task["cell"],
             development_only=True,
             frozen_gate_eligible=False,
-            measurement_mode="PROGRAMMATIC_ONLY",
+            measurement_mode=(
+                "PROGRAMMATIC_ONLY" if measurement == "r5" else "PROGRAMMATIC_R6_SENSITIVITY"
+            ),
         )
         labels.append(replay)
         diagnostic = diagnose_group(replay)
@@ -369,12 +395,21 @@ def report(root):
         status=(
             "INCOMPLETE_TECHNICAL"
             if native["all"]["technical_invalid"]
-            else "PROBE_COMPLETE_NOT_C_TRAINING_AUTHORIZATION"
+            else (
+                "PROBE_COMPLETE_NOT_C_TRAINING_AUTHORIZATION"
+                if measurement == "r5"
+                else "REMEASUREMENT_COMPLETE_NOT_C_TRAINING_AUTHORIZATION"
+            )
         ),
         at=now(),
         answers=len(seen),
         groups=len(labels),
         verifier_version=VERIFIER_VERSION,
+        frozen_verifier_version=frozen["measurement_version"],
+        frozen_generation_revision=frozen["code_revision"],
+        measurement_mode=measurement,
+        source_root=str(root),
+        new_model_calls=0,
         training_updates=0,
         confirmation_access=False,
         native_statistics={
@@ -393,10 +428,10 @@ def report(root):
         },
         measurement=[
             dict(cell=k[0], block=k[1], dimension=k[2], label=k[3], count=v)
-            for k, v in sorted(measurement.items())
+            for k, v in sorted(measurement_counts.items())
         ],
     )
-    directory = root / "ANALYSIS"
+    directory = destination / "ANALYSIS"
     write_rows(directory / "GROUP_REPLAY.jsonl", labels)
     write_rows(directory / "GROUP_DIAGNOSTICS.jsonl", diagnostics)
     write(directory / "SUMMARY.json", result)
@@ -420,6 +455,7 @@ def report(root):
         "",
         f"记录 {len(seen)} 条回答、{len(labels)} 个组；三个固定父模型，没有训练更新。",
         f"状态：{result['status']}；技术无效回答：{native['all']['technical_invalid']}。",
+        f"测量版本：{VERIFIER_VERSION}；原始冻结版本：{frozen['measurement_version']}。",
         f"主口径 F′/75% 已知覆盖：N_act={primary['N_act']}，"
         f"N_sig={primary['N_sig']}，W_sig={primary['W_sig']}。",
         "",
@@ -453,7 +489,13 @@ def report(root):
         "不得把 UNKNOWN 填成期待的 S，或悄悄改本次冻结的测量版本。",
         "",
     ]
-    (root / "REPORT_ZH.md").write_text("\n".join(lines))
+    if measurement == "r6":
+        lines += [
+            "本文件是用户授权的r6开发重测；解析规则依据原有开发回答修订。",
+            "原r5报告与冻结设置保留，新旧差异须并列解释；本次没有新模型调用。",
+            "",
+        ]
+    (destination / "REPORT_ZH.md").write_text("\n".join(lines))
     return dict(
         status=result["status"],
         answers=len(seen),
@@ -466,10 +508,11 @@ def report(root):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("prepare", "report", "coverage"))
+    parser.add_argument("command", choices=("prepare", "report", "coverage", "remeasure"))
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--source-root", type=Path)
     parser.add_argument("--revision")
+    parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     if args.command == "prepare":
         if not args.source_root or not args.revision:
@@ -477,6 +520,10 @@ def main():
         print(prepare(args.root, args.source_root, args.revision))
     elif args.command == "report":
         print(report(args.root))
+    elif args.command == "remeasure":
+        if args.output is None:
+            parser.error("remeasure requires --output for separate r6 results")
+        print(report(args.root, measurement="r6", output=args.output))
     else:
         print(coverage(args.root))
 

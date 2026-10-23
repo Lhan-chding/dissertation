@@ -359,7 +359,6 @@ def test_complete_natural_selection_requires_consistent_annotations(work):
     "and including end (April): February, March, April",
     "Selected categories from January to April, excluding start and including end: "
     "February, March",
-    "Selected categories from January to April, excluding start and including end",
     "Selected categories: February, March, April (excluding January); Selected: February",
 ])
 def test_incomplete_or_conflicting_natural_selection_stays_unknown(work):
@@ -698,3 +697,455 @@ def test_r5_later_active_adoption_cannot_bind_values_to_an_earlier_rank(adoption
             "April (55) is third. " + adoption + ". Their Beta values are 62 and 22. "
             "Mean = (62 + 22)/2 = 42")
     assert selection(work, world=world, query=MEAN_QUERY, answer=42)["status"] == "UNKNOWN"
+
+
+# Frozen pre-probe r5 unknowns retain literal work and wrong adopted sets.
+R6_LITERAL_CASES = [
+    pytest.param(
+        (
+            'Selected categories: January, February, March, April (excluding start and includin'
+            'g end \u2192 Jan, Feb, Mar, Apr). Calculate (Alpha - Beta) for each:\nJanuary: 36 '
+            '- 67 = -31\nFebruary: 61 - 43 = 18\nMarch: 30 - 22 = 8\nApril: 42 - 78 = -36\nSum:'
+            ' -31 + 18 + 8 - 36 = -41'
+        ),
+        None,
+        [],
+        id='CFAIL-164'),
+    pytest.param(
+        (
+            'The selection is from January to April, excluding start (January) and including en'
+            'd (April). So selected categories are: February, March, April. Calculate Alpha - B'
+            'eta for each: February: 61 - 43 = 18; March: 30 - 22 = 8; April: 42 - 78 = -36. Su'
+            'm: 18 + 8 + (-36) = -10.'
+        ),
+        ['April', 'February', 'March'],
+        [],
+        id='CFAIL-077'),
+    pytest.param(
+        (
+            'Categories selected: January, February, March, April (from left to right, excludin'
+            "g start? Wait \u2014 instruction says 'excluding the start and including the end' "
+            "\u2014 but that would be February, March, April only? Let\u2019s re-read: 'Select "
+            "the categories from January to April, excluding the start and including the end.' "
+            "That is ambiguous. But note: 'excluding the start' likely means exclude January, a"
+            "nd 'including the end' means include April. So selected: February, March, April. H"
+            "owever, the phrase 'from January to April' suggests the range includes both endpoi"
+            "nts, but then 'excluding the start' modifies it. So we interpret as: range [Jan, A"
+            'pr], but remove Jan \u2192 so [Feb, Mar, Apr].'
+        ),
+        ['April', 'February', 'March'],
+        [],
+        id='CFAIL-189'),
+    pytest.param(
+        (
+            "The instruction says: 'Select the categories from January to April, including the "
+            "start and excluding the end.' That means we include January and February only. For"
+            ' each selected category, compute Alpha - Beta: January: 68 - 82 = -14; February: 7'
+            '7 - 85 = -8. Sum = -14 + (-8) = -22. Count = 2. Arithmetic mean = -22 / 2 = -11.'
+        ),
+        ['February', 'January'],
+        [],
+        id='CFAIL-032'),
+    pytest.param(
+        (
+            'Selected categories: January to April (including Jan and Apr). Calculate (Alpha - '
+            'Beta) for each: Jan: 83-41=42; Feb: 86-23=63; Mar: 76-74=2; Apr: 41-57=-16. Sum: 4'
+            '2+63+2-16 = 91.'
+        ),
+        ['April', 'February', 'January', 'March'],
+        [],
+        id='CFAIL-173'),
+    pytest.param(
+        (
+            'We are to compute the sum of (Alpha - Beta) for categories from January to April, '
+            "inclusive of January and excluding April? Wait \u2014 the instruction says: 'Selec"
+            't the categories from January to April, including the start and excluding the end.'
+            "' That means we include January, February, March \u2014 but NOT April. Because 'in"
+            "cluding the start (January) and excluding the end (April)' implies range [January,"
+            ' March].'
+        ),
+        ['February', 'January', 'March'],
+        [],
+        id='CFAIL-145'),
+    pytest.param(
+        (
+            "Selected categories: February to April (excluding start 'January', including end '"
+            "April'). Calculating differences: February: 61 - 43 = 18"
+        ),
+        ['April', 'February', 'March'],
+        [],
+        id='CFAIL-242'),
+    pytest.param(
+        (
+            'Selected categories: February (start-included), April (end-included). Alpha-Februa'
+            'ry: 61 - 43 = 18. Alpha-April: 42 - 78 = -36. Sum: 18 + (-36) = -18.'
+        ),
+        ['April', 'February'],
+        [],
+        id='CFAIL-116'),
+    pytest.param(
+        (
+            'Categories selected: January, February, March, April (excluding start? Wait \u2014'
+            " instruction says excluding the start and including the end. But 'from January to "
+            "April' \u2014 if we exclude start (January), then it's Feb, Mar, Apr. Let me re-re"
+            "ad: 'Select the categories from January to April, excluding the start and includin"
+            "g the end.' So that means: start = January? Exclude January. Include April. So cat"
+            'egories: February, March, April.'
+        ),
+        ['April', 'February', 'March'],
+        [],
+        id='CFAIL-236'),
+    pytest.param(
+        (
+            'Selected categories excluding start (January) and end (April) is only March. Alpha'
+            ' in March = 51, Beta in March = 61. Difference = 51 - 61 = -10.'
+        ),
+        ['March'],
+        [],
+        id='CFAIL-192'),
+    pytest.param(
+        (
+            'Selected categories: February and March (excluding Jan and April). Alpha-Feb:84, B'
+            'eta-Feb:30 \u2192 diff=54. Alpha-Mar:57, Beta-Mar:82 \u2192 diff=-25. Sum = 54 + ('
+            '-25) = 29. Count = 2. Mean = 29/2 = 14.5'
+        ),
+        ['February', 'March'],
+        [],
+        id='CFAIL-168'),
+    pytest.param(
+        (
+            'Excluding January (start) and April (end), we select February and March. For Febru'
+            'ary: Alpha=84, Beta=30 \u2192 difference = 54. For March: Alpha=56, Beta=82 \u2192'
+            ' difference = -26. Arithmetic mean of [54, -26] = (54 + (-26)) / 2 = 28 / 2 = 14.'
+        ),
+        ['February', 'March'],
+        [],
+        id='CFAIL-030'),
+    pytest.param(
+        (
+            'The Beta values for each month are: January=49, February=35, March=68, April=27, M'
+            'ay=47, June=35. The top 3 largest Beta values are March (68), January (49), and Ma'
+            'y (47). Their arithmetic mean is (68 + 49 + 47) / 3 = 164 / 3 = 54.666... which as'
+            ' a finite decimal is 54.67 (rounded to two decimals) or exact fraction 164/3.'
+        ),
+        ['January', 'March', 'May'],
+        [{'series': 'Beta', 'category': 'March', 'value': 68},
+         {'series': 'Beta', 'category': 'January', 'value': 49},
+         {'series': 'Beta', 'category': 'May', 'value': 47}],
+        id='CFAIL-089'),
+    pytest.param(
+        (
+            'The three Alpha values are: March=88, April=57, May=45. The corresponding Beta val'
+            'ues for these categories are: March=40, April=88, May=39. The arithmetic mean is ('
+            '40 + 88 + 39) / 3 = 167 / 3 = 55.666... which as a quoted fraction is 167/3.'
+        ),
+        ['April', 'March', 'May'],
+        [],
+        id='CFAIL-144'),
+    pytest.param(
+        (
+            'The three largest Alpha values are: April (58), May (58), and February (30) \u2014'
+            ' in printed category order for ties, February comes after April and May? Wait '
+            '\u2014 actually, since April and May are tied at 58, we use printed order: April b'
+            'efore May. So top 3 Alpha: April (58), May (58), February (30). Sum of correspondi'
+            'ng Beta values: 33 + 50 + 63 = 146.'
+        ),
+        ['April', 'February', 'May'],
+        [],
+        id='CFAIL-083'),
+    pytest.param(
+        (
+            'Step 1: Identify the three categories with the largest Beta values from the chart.'
+            ' From the bar heights, we can see: January Beta = 73, June Beta = 74, February Bet'
+            'a = 63. March=19, April=33, May=50. So top three are June (74), January (73), Febr'
+            'uary (63). Step 2: Get Alpha values for those categories: June Alpha = 11, January'
+            ' Alpha = 13, February Alpha = 30. Step 3: Sum Alpha values: 11 + 13 + 30 = 54.'
+        ),
+        ['February', 'January', 'June'],
+        [],
+        id='CFAIL-155'),
+    pytest.param(
+        (
+            'Selected categories: January, February, April (excluding start, including end). Ca'
+            'lculated Alpha - Beta for each: Jan: 36-67 = -31; Feb: 61-43 = 18; Apr: 42-78 = -3'
+            '6. Sum: -31 + 18 + (-36) = -49.'
+        ),
+        None,
+        [],
+        id='CFAIL-146'),
+    pytest.param(
+        (
+            'Selected categories from January to April excluding start and including end: Febru'
+            "ary, March, April. But note: 'excluding the start and including the end' of the ra"
+            'nge January\u2013April means we exclude January, include April. That gives Februar'
+            "y, March, April. However, the instruction says: 'Select the categories from Januar"
+            "y to April, excluding the start and including the end.' \u2014 so it's [February, "
+            'March, April]. But then it asks for sum of (Alpha - Beta) over selected categories'
+            ". Let's extract all values for each month for Alpha and Beta:\n\nJanuary: Alpha=36"
+            ', Beta=67 \u2192 diff = -31\nFebruary: Alpha=61, Beta=43 \u2192 diff = +18\nMarch:'
+            ' Alpha=30, Beta=22 \u2192 diff = +8\nApril: Alpha=42, Beta=78 \u2192 diff = -36\n'
+            '\nThe range is from January to April, excluding start (January), including end (Ap'
+            'ril). So selected categories: February, March, April.\n\nSum of differences: 18 + '
+            '8 + (-36) = -10\n'
+        ),
+        ['April', 'February', 'March'],
+        [],
+        id='CFAIL-031'),
+    pytest.param(
+        (
+            'The selected range is from January to April, excluding the start (January) and inc'
+            'luding the end (April). That leaves February, March, and April. For each of these '
+            'months, compute Alpha - Beta: February: 61 - 43 = 18; March: 30 - 22 = 8; April: 4'
+            '2 - 78 = -36. Sum: 18 + 8 + (-36) = -10.'
+        ),
+        ['April', 'February', 'March'],
+        [],
+        id='CFAIL-216'),
+    pytest.param(
+        (
+            'Selected categories: January to April (excluding start \u2192 not included? Wait, '
+            "the instruction says: 'Select the categories from January to April, excluding the "
+            "start and including the end.' That means exclude January, include April. So select"
+            "ed: February, March, April. Let's re-read carefully: 'from January to April, exclu"
+            "ding the start and including the end' \u2192 exclude January, include April \u2192"
+            ' so February, March, April.'
+        ),
+        ['April', 'February', 'March'],
+        [],
+        id='CFAIL-006'),
+    pytest.param(
+        (
+            'Selected categories from January to April (excluding start? \u2014 note: instructi'
+            "on says 'from January to April, excluding the start and including the end' \u2014 "
+            "this is ambiguous. But standard interpretation of 'from X to Y excluding start inc"
+            "luding end' would mean only April? However, the problem likely intends: include Ja"
+            "nuary, February, March, April \u2014 because 'excluding the start' might be a miss"
+            "tatement or misphrasing. Let\u2019s re-read: 'Select the categories from January t"
+            "o April, excluding the start and including the end.' That would literally mean exc"
+            "lude January, include April \u2192 only April. But that contradicts 'a one-element"
+            " range is 0' \u2014 if we take only April, then difference is 33-66 = -33, and mea"
+            "n is -33. However, the phrase 'from January to April' typically includes both endp"
+            "oints unless specified otherwise. The phrase 'excluding the start and including th"
+            "e end' seems contradictory with 'from January to April'. Given context and typical"
+            ' chart analysis, I believe the intent is to include January through April \u2014 i'
+            ".e., four categories. Also, the instruction says 'a one-element range is 0' which "
+            'suggests they expect more than one element to compute a non-zero mean. So I will a'
+            'ssume: categories selected are January, February, March, April \u2014 i.e., all fr'
+            "om start to end, despite the confusing wording. Perhaps 'excluding the start' was "
+            "meant to say 'inclusive of start'? Let's proceed with Jan-April as requested in na"
+            'tural language interpretation. Differences: Jan: 42-66 = -24; Feb: 40-61 = -21; Ma'
+            'r: 61-83 = -22; Apr: 33-66 = -33. Sum = -24 + (-21) + (-22) + (-33) = -100. Count '
+            '= 4. Mean = -100/4 = -25.'
+        ),
+        ['April', 'February', 'January', 'March'],
+        [],
+        id='CFAIL-233'),
+    pytest.param(
+        (
+            "Selected categories: January to April (excluding start? \u2014 wait, re-read: 'fro"
+            "m January to April, excluding the start and including the end'. That would mean ex"
+            'clude January, include April \u2192 so February, March, April. Let\u2019s verify t'
+            "hat interpretation. 'from January to April, excluding the start' \u2192 start is J"
+            "anuary, exclude it; 'including the end' \u2192 include April. So selected: Februar"
+            'y, March, April.'
+        ),
+        ['April', 'February', 'March'],
+        [],
+        id='CFAIL-057'),
+    pytest.param(
+        (
+            'Selected categories: January, February, March, April (excluding start of range? No'
+            "te: instruction says 'excluding the start and including the end' \u2014 but for a "
+            "range from January to April, 'start' is January, 'end' is April. So excluding star"
+            't means exclude January? But that would leave Feb, Mar, Apr. However, re-reading: '
+            "'Select the categories from January to April, excluding the start and including th"
+            "e end.' \u2014 this likely means: in the context of the full chart (Jan\u2013Jun),"
+            ' select the sub-range Jan\u2013Apr, and within that, exclude the very first catego'
+            "ry (Jan) and include the last (Apr). So selected: Feb, Mar, Apr. Let's verify with"
+            ' that interpretation.)'
+        ),
+        ['April', 'February', 'March'],
+        [],
+        id='CFAIL-046'),
+    pytest.param(
+        (
+            'Selected categories: January, February, March, April (excluding start January? '
+            "\u2014 Wait, instruction says 'from January to April, excluding the start and incl"
+            "uding the end'. But that would mean exclude January and include April \u2192 only "
+            "February, March, April. However, re-reading: 'from January to April, excluding the"
+            " start and including the end' \u2014 this is ambiguous. But note: 'start' likely r"
+            'efers to the beginning of the range, i.e., January. So selected categories: Februa'
+            "ry, March, April. Let's verify with values."
+        ),
+        ['April', 'February', 'March'],
+        [],
+        id='CFAIL-187'),
+    pytest.param(
+        (
+            'Selected categories: January, February, March, April (excluding start? No \u2014 p'
+            "rompt says 'from January to April, excluding the start and including the end' "
+            "\u2192 that would be February, March, April only. Let's re-read: 'Select the categ"
+            "ories from January to April, excluding the start and including the end.' So: start"
+            ' = January, end = April \u2192 exclude January, include February, March, April. Th'
+            'ree categories: Feb, Mar, Apr.'
+        ),
+        ['April', 'February', 'March'],
+        [],
+        id='CFAIL-107'),
+    pytest.param(
+        (
+            'Selected categories: January to April (inclusive) -> January, February, March, Apr'
+            'il. Calculate (Alpha - Beta) for each: January: 27-18=9; February: 25-82=-57; Marc'
+            'h: 52-48=4; April: 15-84=-69. Sum = 9 + (-57) + 4 + (-69) = -113.'
+        ),
+        ['April', 'February', 'January', 'March'],
+        [],
+        id='CFAIL-056'),
+    pytest.param(
+        (
+            'Selected categories: January, February, March, April (excluding start and includin'
+            'g end). For each month, compute (Alpha - Beta). January: 27-18=9; February: 25-82='
+            '-57; March: 52-48=4; April: 15-84=-69. Sum: 9 + (-57) + 4 + (-69) = -113.'
+        ),
+        None,
+        [],
+        id='CFAIL-074'),
+    pytest.param(
+        (
+            'The three categories with largest Alpha values are April (89), June (68), and Janu'
+            'ary (59). Their corresponding Beta values are approximately 49 (April), 59 (June),'
+            ' and 87 (January). Sum = 49 + 59 + 87 = 195.'
+        ),
+        ['April', 'January', 'June'],
+        [],
+        id='CFAIL-058'),
+    pytest.param(
+        (
+            'From the chart, Alpha values: April=89 (largest), June=68 (second), January=59 (th'
+            'ird). Sum of corresponding Beta values: 49 + 59 + 87 = 195.'
+        ),
+        ['April', 'January', 'June'],
+        [],
+        id='CFAIL-159'),
+    pytest.param(
+        (
+            'The three largest Alpha values are at March (88), April (57), and May (45). Summin'
+            'g them: 88 + 57 + 45 = 190. Dividing by 3 gives 190/3.'
+        ),
+        ['April', 'March', 'May'],
+        [{'series': 'Alpha', 'category': 'March', 'value': 88},
+         {'series': 'Alpha', 'category': 'April', 'value': 57},
+         {'series': 'Alpha', 'category': 'May', 'value': 45}],
+        id='CFAIL-226'),
+]
+
+
+@pytest.mark.parametrize("work, expected, evidence", R6_LITERAL_CASES)
+def test_r6_fixed_literal_cases_and_target_independent_extraction(work, expected, evidence):
+    world = dict(categories=["January", "February", "March", "April", "May", "June"],
+                 domain=[-100, 100], series=dict(Alpha=[1, 2, 3, 4, 5, 6],
+                                                Beta=[11, 12, 13, 14, 15, 16]))
+    label, task, record, score = evaluate(work, world=world, evidence=evidence)
+    selected = label["dimensions"]["S"]
+    assert selected["observed"].get("categories") == expected
+    assert (selected["status"] == "UNKNOWN") == (expected is None)
+    changed = selection(work, world=world, evidence=evidence,
+                        query=dict(QUERY, start=1, end=2), answer=999)
+    assert changed["observed"] == selected["observed"]
+    baseline = verify_v2(task, record, score)
+    assert {k: label["dimensions"][k] for k in ("P", "O", "E")} == {
+        k: baseline["dimensions"][k] for k in ("P", "O", "E")}
+
+
+@pytest.mark.parametrize("middle", [
+    "The instruction says: 'Select categories after you wait, considering categories'",
+    'Quoted draft: "So I will assume: categories selected are March, April; Let\'s proceed"',
+    'Quoted draft: "correction: Selected: March, April"',
+    'Quoted draft: "Text. Discard previous selection. Selected: March, April"',
+    "Wait, the instruction is already satisfied; keep the initial categories",
+    "Wait, for these categories exclude January and February",
+    "Wait, the start is excluded, including January is wrong",
+    "Wait, excluding January and including April",
+    "Wait, the start is January and is excluded",
+])
+def test_r6_quoted_or_conflicting_reconsideration_cannot_withdraw_adoption(middle):
+    work = ("Selected: January, February. " + middle
+            + ". So selected: January, February, March, April")
+    selected = selection(work)
+    assert selected["status"] == "UNKNOWN"
+    assert selected["observed"]["reconsideration"] is None
+    assert not selected["observed"]["withdrawn_work"]
+
+
+def test_r6_withdrawal_checks_every_membership_and_does_not_use_latest_wins():
+    work = ("Selected: January, February. Wait, for these categories exclude January and February. "
+            "So selected: February, March, April")
+    assert selection(work)["status"] == "UNKNOWN"
+    conflict = "Selected: January, February. Selected: February, March"
+    assert selection(conflict)["status"] == "UNKNOWN"
+    positive = ("Selected: January, February. Wait, for these categories exclude January "
+                "and include April. So selected: February, March, April")
+    assert selection(positive, query=dict(QUERY, include_start=False))["status"] == "PASS"
+
+
+@pytest.mark.parametrize("endpoint, expected", [
+    ("start", ["April", "February", "March"]),
+    ("end", ["February", "January", "March"]),
+])
+def test_r6_duplicate_endpoint_qualifiers_do_not_shift_range_twice(endpoint, expected):
+    work = f"Selected categories: January to April excluding {endpoint} and excluding {endpoint}"
+    assert selection(work)["observed"]["categories"] == expected
+
+
+def test_r6_response_range_can_supply_set_but_partial_work_cannot_shrink_it():
+    work = ("Selected categories: February to April (excluding start 'January', "
+            "including end 'April'). Calculating differences: February:61-43=18")
+    assert selection(work, query=dict(QUERY, include_start=False))["status"] == "PASS"
+    assert selection(work + "; Sum=18=18")["status"] == "UNKNOWN"
+    contradiction = ("Selected categories: February to April. "
+                     "February:61-43=18; April:42-78=-36; Sum=18+(-36)=-18")
+    assert selection(contradiction)["status"] == "UNKNOWN"
+
+
+def test_r6_quoted_instruction_and_wrong_actual_adoption_remain_separate():
+    work = ("The instruction says: 'Select the categories from January to April, "
+            "including the start and excluding the end.' "
+            "That means we include January and February only")
+    result = selection(work, query=dict(QUERY, include_end=False))
+    assert result["status"] == "FAIL"
+    assert result["observed"]["categories"] == ["February", "January"]
+    assert selection(work + ". So selected: January, February, March")["status"] == "UNKNOWN"
+
+
+def test_r6_data_enumeration_needs_complete_linked_reduction():
+    prefix = "The two Alpha values are: January=51, February=84. "
+    assert selection(prefix)["status"] == "UNKNOWN"
+    incomplete = prefix + "Their Beta values are: January=31, February=30"
+    assert selection(incomplete)["status"] == "UNKNOWN"
+    work = prefix + "Their Beta values are: January=31, February=30. Mean=(31+30)/2=30.5"
+    assert selection(work, query=MEAN_QUERY, evidence=[])["status"] == "PASS"
+    assert selection(work.replace("January=31", "March=31"), evidence=[])["status"] == "UNKNOWN"
+
+
+@pytest.mark.parametrize("tail", [
+    "So we interpret as: range [January, April], but remove January → so [February, April]",
+    "Because 'including the start (January) and excluding the end (April)' "
+    "implies range [January, March]",
+    "Let's re-read carefully: 'from January to April, excluding the start and including the end' "
+    "→ exclude January, include April → so February, March",
+])
+def test_r6_explanation_annotation_must_fully_agree_with_adopted_set(tail):
+    assert selection("Selected: February, March, April. " + tail)["status"] == "UNKNOWN"
+
+
+def test_r6_scalar_continuation_cannot_supply_new_operands_or_false_rounding():
+    work = "The two largest Alpha values are January and February. Summing them:51+84=135. "
+    assert selection(work + "Dividing by 2 gives 135/2", query=MEAN_QUERY)["status"] == "PASS"
+    for tail in ["Dividing by 2 gives 51/2", "Dividing by 2 gives 135/3",
+                 "Dividing by 2 gives 135/2 using March"]:
+        assert selection(work + tail, query=MEAN_QUERY)["status"] == "UNKNOWN"
+    rounding = ("Beta mean=(31+30+82)/3=143/3=47.666... which as a finite decimal is "
+                "47.67 (rounded to two decimals) or exact fraction 143/3")
+    assert selection(rounding, query=dict(QUERY, end=2))["status"] == "PASS"
+    assert selection(rounding.replace("47.67", "47.68"))["status"] == "UNKNOWN"
+    assert selection(rounding.replace("fraction 143/3", "fraction 144/3"))["status"] == "UNKNOWN"

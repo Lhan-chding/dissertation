@@ -52,7 +52,7 @@ def test_draws_unique_shards_complete_and_live_prepare_refused(prepared):
         c_probe.require_frozen(root)
 
 
-def test_full_budget_report_and_corrupted_resume_identity(prepared):
+def test_full_budget_report_and_corrupted_resume_identity(prepared, monkeypatch):
     root, _ = prepared
     tasks = {t["qid"]: t for t in rows(root / "DATA/TASKS.jsonl")}
     incomplete = c_probe.report(root)
@@ -106,6 +106,29 @@ def test_full_budget_report_and_corrupted_resume_identity(prepared):
     assert summary["native_statistics"]["all"]["rates"]["J"] == 1
     assert summary["native_statistics"]["all"]["rates"]["certificate_sufficient"] == 1
     assert not (root / "C_GATE_REPORT.json").exists()
+    original = {
+        p: (root / p).read_bytes()
+        for p in ("REPORT_ZH.md", "ANALYSIS/SUMMARY.json", "ANALYSIS/COVERAGE.json")
+    }
+    from sr_f4 import verification_v3
+
+    monkeypatch.setattr(
+        verification_v3, "VERIFIER_VERSION", "srf4-observable-v3-programmatic-dev-r6"
+    )
+    sensitivity = root.parent / "r6"
+    result6 = c_probe.report(root, measurement="r6", output=sensitivity)
+    assert result6["status"] == "REMEASUREMENT_COMPLETE_NOT_C_TRAINING_AUTHORIZATION"
+    summary6 = read(sensitivity / "ANALYSIS/SUMMARY.json")
+    assert summary6["answers"] == 1536 and summary6["new_model_calls"] == 0
+    assert summary6["verifier_version"].endswith("r6")
+    assert summary6["frozen_verifier_version"].endswith("r5")
+    assert all((root / p).read_bytes() == content for p, content in original.items())
+    with pytest.raises(FileExistsError):
+        c_probe.report(root, measurement="r6", output=sensitivity)
+    with pytest.raises(ValueError, match="frozen run"):
+        c_probe.report(root, measurement="r6", output=root / "ANALYSIS/r6")
+    with pytest.raises(ValueError, match="separate output"):
+        c_probe.report(root, measurement="r6")
     group = root / "PROBES/b0/groups/00000.json"
     saved = read(group)
     saved["rows"][0]["generation_status"] = "TECHNICAL_INVALID"
@@ -127,6 +150,17 @@ def test_changed_parent_reference_fails_before_model_load(prepared):
     write(root / "CONFIG.json", config)
     with pytest.raises(ValueError, match="freeze"):
         c_probe.require_frozen(root)
+
+
+def test_probe_stays_on_r5_when_development_verifier_changes(prepared, monkeypatch):
+    from sr_f4 import verification_v3
+
+    root, _ = prepared
+    monkeypatch.setattr(verification_v3, "VERIFIER_VERSION", "future-development-version")
+    assert c_probe.require_frozen(root)["measurement_version"].endswith("r5")
+    assert c_probe.report(root)["status"] == "INCOMPLETE_TECHNICAL"
+    with pytest.raises(ValueError, match="r6 development verifier"):
+        c_probe.report(root, measurement="r6", output=root.parent / "future")
 
 
 def test_slice_runs_registered_draws_and_resumes_without_new_calls(prepared, monkeypatch):

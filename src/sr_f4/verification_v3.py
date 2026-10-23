@@ -17,7 +17,7 @@ from sr_f3_ce import contract as native
 from . import verification as v1
 from . import verification_v2 as v2
 
-VERIFIER_VERSION = "srf4-observable-v3-programmatic-dev-r5"
+VERIFIER_VERSION = "srf4-observable-v3-programmatic-dev-r6"
 _NATURAL_MEAN = re.compile(
     r"^(?:(?:the|final|their)\s+)?(?:(?P<mode>Alpha|Beta|diff(?:erences?)?)\s+)?"
     r"(?:arithmetic\s+)?(?P<op>mean|average)(?:\s+of\s+(?P<listed>\[[^\]]+\]))?"
@@ -58,6 +58,7 @@ _MONTHS = (
 )
 
 _CARDINAL = r"(?:\d+|one|two|three|four|five|six|seven|eight)"
+_CARDINAL_WORDS = ("one", "two", "three", "four", "five", "six", "seven", "eight")
 _RANK_NATURAL = re.compile(
     r"^(?:(?:the|so|identify)\s+)?(?:"
     r"(?:top|bottom)\s+" + _CARDINAL + r"(?:\s+(?:largest|smallest))?"
@@ -136,20 +137,127 @@ def _local_series_context(clause, categories):
     return match
 
 
-def _active_work(work):
+def _quoted_spans(text):
+    return [match.span() for match in re.finditer(
+        r'''"(?:\\.|[^"\\])*"|(?<!\w)'(?:\\.|[^'\\])*' ''', text, re.X
+    )]
+
+
+def _without_quotes(text):
+    characters = list(text)
+    for lo, hi in _quoted_spans(text):
+        characters[lo:hi] = " " * (hi - lo)
+    return "".join(characters)
+
+
+def _active_work(work, categories):
     """Extend withdrawal only when earlier work is explicitly repudiated."""
-    active, withdrawn = v1._active_work(work)
+    corrections = list(v1._CORRECTION.finditer(_without_quotes(work)))
+    point = corrections[-1].end() if corrections else 0
+    active, withdrawn = work[point:], work[:point]
     withdrawal = re.compile(
         r"(?:^|(?<=[.;\n]))\s*(?:discard|ignore|withdraw)\s+(?:the\s+)?"
         r"(?:previous|earlier|initial)"
         r"\s+(?:selection|calculation|work)\s*[.;:]\s*", re.I
     )
-    matches = list(withdrawal.finditer(active))
+    matches = list(withdrawal.finditer(_without_quotes(active)))
     if matches:
         point = matches[-1].end()
         withdrawn += active[:point]
         active = active[point:]
-    return active, withdrawn
+    normalized, boundaries, _ = _normalize_months(active, categories)
+    category = "(?:" + "|".join(re.escape(c) for c in categories) + ")"
+    commitment = re.compile(
+        r"\b(?P<prefix>so\s+(?:selected(?:\s+categories)?|categories)\s*:|"
+        r"so\s+I\s+will\s+assume:\s*categories\s+selected\s+are\s+|"
+        + _CARDINAL + r"\s+categories\s*:|that\s+means\s+we\s+include\s+)"
+        r"\s*(?P<items>" + category + r"(?:\s*,\s*(?:and\s+)?" + category
+        + r"|\s+and\s+" + category + r")*)(?=\s*(?:[.;\n—)]|only\b|$))", re.I
+    )
+    quoted = _quoted_spans(normalized)
+    markers = [m for m in re.finditer(r"\bwait\b|\bre[- ]read(?:ing)?\b|\bno\s*[—,-]",
+                                     normalized, re.I)
+               if not any(lo <= m.start() < hi for lo, hi in quoted)]
+    for candidate in commitment.finditer(normalized):
+        if any(lo <= candidate.start() < hi for lo, hi in quoted):
+            continue
+        lead = re.split(r"[.;\n]", normalized[:candidate.start()])[-1]
+        if lead.strip(" '\u2019\""):
+            continue
+        selected = _complete_list(candidate.group("items"), categories)
+        if selected is None:
+            continue
+        prior = [m for m in markers if m.end() < candidate.start()]
+        assumption = "assume" in candidate.group("prefix").lower()
+        if assumption:
+            if not any(not any(lo <= m.start() < hi for lo, hi in quoted)
+                       for m in re.finditer(r"\blet(?:'s|\u2019s|\s+us)\s+proceed\b",
+                                            normalized, re.I) if m.start() >= candidate.end()):
+                continue
+        elif not prior:
+            continue
+        else:
+            reconsidered = normalized[prior[-1].start():candidate.start()]
+            reconsidered = _without_quotes(reconsidered)
+            if re.search(r"\b(?:keep|retain|unchanged)\b|\balready\s+satisfied\b|"
+                         r"\b(?:do\s+not|don't)\s+(?:change|revise)\b|"
+                         r"\b(?:wrong|incorrect|never)\b|\bnot\s+(?:include|exclude|remove)\b",
+                         reconsidered, re.I):
+                continue
+            if not re.search(r"\b(?:instruction|prompt|interpretation|start|end|"
+                             r"select|selected|category|categories|excluding|including|"
+                             r"exclude|include|ambiguous)\b", reconsidered, re.I):
+                continue
+            # A final statement cannot silently retain a member that the same
+            # correction explicitly excludes (or omit one it includes).
+            membership_pattern = re.compile(
+                r"\b(?P<action>exclud(?:e|ing)|remove|includ(?:e|ing))\s+"
+                r"(?:the\s+(?:very\s+)?(?:first|last)"
+                r"(?:\s+category)?\s*\()?\s*(?P<items>" + category
+                + r"(?:\s*,\s*(?:and\s+)?" + category + r"|\s+and\s+" + category + r")*)",
+                re.I
+            )
+            # Resolve only this explicit named-role pronoun, never a free "it".
+            reconsidered = re.sub(
+                r"(?:start|end)\s+is\s+(?P<name>" + category + r"),\s*"
+                r"(?P<action>exclude|include)\s+it\b",
+                lambda m: m.group("action") + " " + m.group("name"), reconsidered, flags=re.I
+            )
+            memberships = list(membership_pattern.finditer(reconsidered))
+            unparsed = membership_pattern.sub("", reconsidered)
+            if re.search(r"\b(?:includ\w*|exclud\w*|remov\w*)\b", unparsed, re.I):
+                continue
+            if any((name in selected) != member.group("action").lower().startswith("includ")
+                   for member in memberships
+                   for name in _complete_list(member.group("items"), categories) or []):
+                continue
+        point = boundaries[candidate.start()]
+        scope = dict(rule="V3_R6_EXPLICIT_FINAL_COMMITMENT_AFTER_RECONSIDERATION",
+                     source_text=active[:point], final_commitment=candidate.group(),
+                     adopted_categories=selected, explicit_assumption=assumption)
+        return active[point:], withdrawn + active[:point], scope
+    return active, withdrawn, None
+
+
+def _r6_surface(work):
+    """Mask only explicitly quoted instructions; retain offsets and quotations."""
+    characters, annotations = list(work), []
+    quote = re.compile(
+        r"\b(?:the\s+)?(?:instruction|prompt)\s+says\s*:\s*"
+        r"(?P<quote>['\"])(?P<body>Select\b[^'\"]+)(?P=quote)", re.I
+    )
+    for match in quote.finditer(work):
+        characters[match.start():match.end()] = " " * len(match.group())
+        characters[match.end() - 1] = "."
+        annotations.append(dict(text=match.group(), decoded_work_span=list(match.span()),
+                                rule="V3_R6_QUOTED_INSTRUCTION_IS_NOT_ADOPTION"))
+    for match in re.finditer(r"\bStep\s+\d+\s*:\s*", work, re.I):
+        characters[match.start():match.end()] = " " * len(match.group())
+        annotations.append(dict(text=match.group(), decoded_work_span=list(match.span()),
+                                rule="V3_R6_STEP_LABEL"))
+    for match in re.finditer(r"\bi\.e\.", work, re.I):
+        characters[match.start():match.end()] = "viz "
+    return "".join(characters), annotations
 
 
 def _normalize_months(work, categories):
@@ -200,6 +308,177 @@ def _source_spans(value, original_work, boundaries):
             value["source_text"] = original_work[lo:hi]
 
 
+def _r6_range_claim(clause, categories):
+    category = "(?:" + "|".join(re.escape(c) for c in categories) + ")"
+    names = {c.casefold(): c for c in categories}
+    match = re.fullmatch(
+        r"^(?:the\s+)?(?:selected\s+(?:categories|range)|selection|range)"
+        r"\s*(?:is\s+|:\s*)?(?:from\s+)?(?P<a>" + category + r")\s+to\s+"
+        r"(?P<b>" + category + r")(?P<tail>.*)$", clause, re.I
+    )
+    if match is None:
+        return None
+    a, b = [names[match.group(k).casefold()] for k in ("a", "b")]
+    lo, hi = categories.index(a), categories.index(b)
+    if lo > hi:
+        return None
+    tail = match.group("tail").strip().lstrip(",").strip()
+    declared = None
+    separator = re.search(r"\s*(?:→|->|:)\s*", tail)
+    if separator:
+        declared = _complete_list(re.sub(r"^only\s+", "", tail[separator.end():], flags=re.I),
+                                  categories)
+        if declared is None:
+            return None
+        tail = tail[:separator.start()].strip()
+    if tail.startswith("(") and tail.endswith(")"):
+        tail = tail[1:-1].strip()
+    memberships = []
+    if tail.lower() not in {"", "inclusive"}:
+        grouped = re.fullmatch(r"(?P<action>including|excluding)\s+(?P<items>.+)", tail, re.I)
+        grouped_names = _complete_list(grouped.group("items"), categories) if grouped else None
+        if grouped_names is not None:
+            memberships = [(name, grouped.group("action").lower() == "including")
+                           for name in grouped_names]
+        else:
+            annotation = re.compile(
+                r"(?P<action>including|excluding|inclusive\s+of|exclusive\s+of)\s+"
+                r"(?:the\s+)?(?:(?P<role>start|end)\s*)?"
+                r"(?:[('\"]?(?P<name>" + category + r")[)'\"]?)?", re.I
+            )
+            matches = list(annotation.finditer(tail))
+            rest = annotation.sub("", tail)
+            if not matches or re.sub(r"\band\b|[\s,]", "", rest, flags=re.I):
+                return None
+            for item in matches:
+                role = item.group("role")
+                if item.group("name"):
+                    name = names[item.group("name").casefold()]
+                elif role:
+                    name = a if role.lower() == "start" else b
+                else:
+                    return None
+                included = item.group("action").lower().startswith("inclus") or (
+                    item.group("action").lower() == "including"
+                )
+                memberships.append((name, included))
+        lo += any(name == a and not included for name, included in memberships)
+        hi -= any(name == b and not included for name, included in memberships)
+    selected = sorted(categories[lo:hi + 1])
+    if any((name in selected) != included for name, included in memberships):
+        return None
+    if declared is not None and declared != selected:
+        return None
+    return dict(categories=selected, range_endpoints=[a, b],
+                membership_annotations=[dict(category=name, included=value)
+                                        for name, value in memberships],
+                rule="V3_R6_RESPONSE_DECLARED_PRINTED_ORDER_RANGE")
+
+
+def _r6_named_declaration(clause, categories):
+    category = "(?:" + "|".join(re.escape(c) for c in categories) + ")"
+    text = clause
+    excluded = None
+    exclusion = re.fullmatch(r"excluding\s+(?P<excluded>.+?),\s*we\s+(?:select|consider)"
+                             r"\s+(?P<items>.+)", text, re.I)
+    if exclusion:
+        exclusions = re.sub(r"\s*\((?:start|end)\)", "", exclusion.group("excluded"), flags=re.I)
+        excluded = _complete_list(exclusions, categories)
+        text = "So we select " + exclusion.group("items")
+        if excluded is None:
+            return None
+    pattern = re.compile(
+        r"^(?:that\s+means\s+we\s+include\s+|(?:so\s+)?we\s+(?:select|adopt)\s+|"
+        r"that\s+(?:leaves|gives)\s+|so\s+categories\s*:\s*|"
+        + _CARDINAL + r"\s+categories\s*:\s*|"
+        r"so\s+I\s+will\s+assume:\s*categories\s+selected\s+are\s+)(?P<items>.+)$", re.I
+    )
+    match = pattern.fullmatch(text)
+    if match:
+        items = re.sub(r"\s+only$", "", match.group("items"), flags=re.I)
+        not_included = re.search(r"\s*—\s*but\s+NOT\s+(?P<items>.+)$", items, re.I)
+        if not_included:
+            excluded = _complete_list(not_included.group("items"), categories)
+            items = items[:not_included.start()]
+            if excluded is None:
+                return None
+        items = re.sub(r"\s*—\s*viz\s*,?\s*all\s+from\s+start\s+to\s+end,\s*"
+                       r"despite\s+the\s+confusing\s+wording$", "", items, flags=re.I)
+        selected = _complete_list(items.strip(), categories)
+        if selected is not None and not any(c in selected for c in excluded or []):
+            return dict(categories=selected, excluded_categories=excluded,
+                        rule="V3_R6_EXPLICIT_ACTIVE_NAMED_ADOPTION")
+    annotated = re.fullmatch(r"selected\s+categories:\s*(?P<items>.+)", text, re.I)
+    if annotated:
+        parts = re.split(r",\s*|\s+and\s+", annotated.group("items"))
+        parsed = [re.fullmatch(r"(?P<name>" + category + r")\s*\((?:start|end)-included\)",
+                               part, re.I) for part in parts]
+        if parsed and all(parsed):
+            selected = _complete_list(", ".join(m.group("name") for m in parsed), categories)
+            if selected is not None:
+                return dict(categories=selected, rule="V3_R6_NAMED_ITEM_MEMBERSHIP_ANNOTATIONS")
+    return None
+
+
+def _r6_rank_claims(work, categories):
+    category = "(?:" + "|".join(re.escape(c) for c in categories) + ")"
+    numbers = dict(zip(_CARDINAL_WORDS, range(1, 9), strict=True))
+    clauses, claims = list(v2._clauses(work)), []
+    for index, (clause, span) in enumerate(clauses):
+        enumerated = re.fullmatch(
+            r"(?:the\s+)?(?P<count>" + _CARDINAL + r")\s+(?P<series>Alpha|Beta)"
+            r"\s+values\s+are\s*:\s*(?P<items>.+)", clause, re.I
+        )
+        if enumerated:
+            selected = _complete_list(enumerated.group("items"), categories)
+            count_text = enumerated.group("count").lower()
+            count = int(count_text) if count_text.isdigit() else numbers[count_text]
+            if selected is not None and len(selected) == count:
+                claims.append(dict(text=clause, decoded_work_span=list(span), categories=selected,
+                                   requires_linked_reduction=True,
+                                   rule="V3_R6_ENUMERATED_DOMAIN_REQUIRES_COMPLETE_LINK"))
+        ordinal = re.fullmatch(r"from\s+the\s+chart,\s*(?P<series>Alpha|Beta)\s+values:"
+                               r"\s*(?P<items>.+)", clause, re.I)
+        if ordinal:
+            tokens = [re.fullmatch(r"(?P<name>" + category + r")\s*=\s*" + v2._NUMBER
+                                   + r"\s*\((?P<order>largest|highest|second|third|fourth|"
+                                   r"fifth|sixth|seventh|eighth)\)", item, re.I)
+                      for item in re.split(r",\s*(?:and\s+)?", ordinal.group("items"))]
+            orders = dict(largest=1, highest=1, second=2, third=3, fourth=4,
+                          fifth=5, sixth=6, seventh=7, eighth=8)
+            if tokens and all(tokens) and [orders[t.group("order").lower()] for t in tokens] == (
+                list(range(1, len(tokens) + 1))
+            ):
+                selected = _complete_list(", ".join(t.group("name") for t in tokens), categories)
+                if selected is not None:
+                    claims.append(dict(text=clause, decoded_work_span=list(span),
+                                       categories=selected,
+                                       selection_series=ordinal.group("series").title(),
+                                       rule="V3_R6_CONTIGUOUS_NAMED_ORDINAL_RANK"))
+        top = re.fullmatch(r"so\s+top\s+" + _CARDINAL + r"\s+are\s+(?P<items>.+)", clause, re.I)
+        if top is None:
+            continue
+        preceding = clauses[max(0, index - 3):index]
+        for offset, (intro, intro_span) in enumerate(preceding):
+            intent = re.fullmatch(
+                r"identify\s+the\s+" + _CARDINAL + r"\s+categories\s+with\s+the\s+"
+                r"(?:largest|highest|smallest|lowest)\s+(?P<series>Alpha|Beta)\s+values"
+                r"\s+from\s+the\s+chart", intro, re.I
+            )
+            if intent is None:
+                continue
+            local = " ".join(text for text, _ in preceding[offset:])
+            modes = {s.title() for s in re.findall(r"\b(?:Alpha|Beta)\b", local, re.I)}
+            selected = _complete_list(top.group("items"), categories)
+            if modes == {intent.group("series").title()} and selected is not None:
+                claims.append(dict(text=clause, decoded_work_span=list(span), categories=selected,
+                                   selection_series=intent.group("series").title(),
+                                   rank_context=dict(text=local,
+                                                     decoded_work_span=[intro_span[0], span[0]]),
+                                   rule="V3_R6_LOCAL_SINGLE_SERIES_RANK_CONTEXT"))
+    return claims
+
+
 def _explicit_claims(work, categories):
     """Only complete lists can supply a set; annotations must agree with it."""
     claims, unsupported, provisional = v2._explicit_claims(work, categories)
@@ -230,6 +509,12 @@ def _explicit_claims(work, categories):
     for clause, span in v2._clauses(work):
         context = previous_clause
         previous_clause = clause, span
+        r6_claim = _r6_range_claim(clause, categories) or _r6_named_declaration(clause, categories)
+        if r6_claim:
+            for collection in (claims, unsupported):
+                collection[:] = [x for x in collection if x["decoded_work_span"] != list(span)]
+            claims.append(dict(text=clause, decoded_work_span=list(span), **r6_claim))
+            continue
         rank_text = re.sub(r"\s*—\s*using\s+printed\s+(?:category\s+)?order\s+for\s+ties$",
                            "", clause, flags=re.I)
         rank = _RANK_NATURAL.fullmatch(rank_text) or _RANK_POSTMODIFIER.fullmatch(rank_text)
@@ -393,6 +678,11 @@ def _explicit_claims(work, categories):
                                rank_context=dict(text=context,
                                                  decoded_work_span=list(context_span)),
                                rule="V3_R5_NAMED_SORT_LIST_EXPLICITLY_ADOPTED_AS_TOPK"))
+    for claim in _r6_rank_claims(work, categories):
+        for collection in (claims, unsupported):
+            collection[:] = [x for x in collection
+                             if x["decoded_work_span"] != claim["decoded_work_span"]]
+        claims.append(claim)
     return claims, unsupported, provisional
 
 
@@ -458,7 +748,8 @@ def _difference_sources(work, facts, categories):
         r"^(?:(?:compute|calculate)\s+\(?Alpha\s*[-\N{MINUS SIGN}]\s*Beta\)?\s+for\s+each"
         r"(?:\s+(?:month|category))?(?:\s+from\s+" + category + r"\s+to\s+"
         + category + r")?|(?:Alpha\s*[-\N{MINUS SIGN}]\s*Beta\s+for\s+each)|"
-        r"differences)\s*:\s*", re.I
+        r"(?:calculating\s+)?differences|for\s+each\s+of\s+these\s+months,\s*"
+        r"compute\s+Alpha\s*-\s*Beta)\s*:\s*", re.I
     )
     named = re.compile(
         r"^(?:(?:for|in)\s+|Alpha\s*[-\N{MINUS SIGN}]\s*Beta\s+in\s+|Alpha-)?"
@@ -471,8 +762,22 @@ def _difference_sources(work, facts, categories):
         r"^Alpha\s*=\s*" + number + r"\s*,\s*Beta\s*=\s*" + number
         + r"\s*(?:→|=>)\s*diff(?:erence)?\s*=\s*(?P<calculation>.+)$", re.I
     )
+    hyphenated = re.compile(
+        r"^Alpha-(?P<name>" + category + r")\s*:\s*" + number + r"\s*,\s*"
+        r"Beta-(?P=name)\s*:\s*" + number + r"\s*(?:→|=>)\s*diff\s*=\s*"
+        r"(?P<value>" + v2._NUMBER + r")$", re.I
+    )
     for clause, span in v2._clauses(work):
         if v2._PROVISIONAL.search(clause):
+            continue
+        hyphen = hyphenated.fullmatch(clause)
+        if hyphen:
+            index = next(i for i, c in enumerate(categories)
+                         if c.casefold() == hyphen.group("name").casefold())
+            sources.append(dict(value=v2.Fraction(hyphen.group("value")),
+                                index_candidates=[index], text=clause,
+                                decoded_work_span=list(span), named=True,
+                                rule="V3_R5_NAMED_WORK_DIFFERENCE"))
             continue
         local = prefix.sub("", clause)
         local = re.sub(
@@ -516,6 +821,29 @@ def _difference_sources(work, facts, categories):
                        or s.get("rule") == "V3_R5_NAMED_WORK_DIFFERENCE"]
             sources.append(source)
     return sources
+
+
+def _r6_single_differences(work, categories):
+    category = "(?:" + "|".join(re.escape(c) for c in categories) + ")"
+    assigned = re.compile(
+        r"Alpha\s+in\s+(?P<name>" + category + r")\s*=\s*(?P<a>" + v2._NUMBER
+        + r")\s*,\s*Beta\s+in\s+(?P=name)\s*=\s*(?P<b>" + v2._NUMBER + r")", re.I
+    )
+    previous, traces = None, []
+    for clause, span in v2._clauses(work):
+        difference = re.fullmatch(r"difference\s*=\s*(?P<expression>.+)", clause, re.I)
+        match = assigned.fullmatch(previous[0]) if previous else None
+        pair = v2._PAIR.fullmatch(difference.group("expression")) if difference else None
+        if match and pair and all(v2.Fraction(match.group(k)) == v2.Fraction(pair.group(k))
+                                  for k in ("a", "b")):
+            name = next(c for c in categories if c.casefold() == match.group("name").casefold())
+            traces.append(dict(text=clause, decoded_work_span=list(span), categories=[name],
+                               named_pair_source=dict(text=previous[0],
+                                                      decoded_work_span=list(previous[1])),
+                               claimed_result=pair.group("value"),
+                               rule="V3_R6_SINGLE_NAMED_PAIR_DIFFERENCE"))
+        previous = clause, span
+    return traces
 
 
 def _base_reductions(work, facts, categories):
@@ -579,6 +907,8 @@ def _linked_values(work, explicit, categories):
         adoption = max(previous, key=lambda x: x["decoded_work_span"][1])
         mode = match.group("mode").title()
         items = re.sub(r",?\s+respectively$", "", match.group("items"), flags=re.I)
+        approximate = bool(re.match(r"approximately\s+", items, re.I))
+        items = re.sub(r"^approximately\s+", "", items, flags=re.I)
         # Named work values are observed claims, independently of P truth.
         items = re.sub(r"\b" + mode + r"\s+in\s+", "", items, flags=re.I)
         items = re.sub(r"\b" + mode + r"\s*(?==|:)", "", items, flags=re.I)
@@ -602,6 +932,7 @@ def _linked_values(work, explicit, categories):
         bindings.append(dict(text=clause, decoded_work_span=list(span),
                              categories=adoption["categories"], mode=mode,
                              values=list(map(str, values)), adoption_source=adoption.copy(),
+                             value_qualification="APPROXIMATELY" if approximate else "LITERAL",
                              binding_kind="NAMED" if named is not None else "COMPLETE_ANAPHOR"))
     return bindings, conflicts
 
@@ -712,6 +1043,7 @@ def _aggregate_annotations(work, explicit, bindings, facts, categories):
 
 def _trace_reductions(work, facts, categories, explicit=()):
     traces, ambiguous, unsupported = _base_reductions(work, facts, categories)
+    traces.extend(_r6_single_differences(work, categories))
     bindings, conflicts = _linked_values(work, explicit, categories)
     ambiguous.extend(conflicts)
     annotations = _aggregate_annotations(work, explicit, bindings, facts, categories)
@@ -920,6 +1252,125 @@ def _unrecognized_adoptions(work, explicit, categories):
     return rejected
 
 
+def _r6_explanation_annotations(work, explicit, categories):
+    """Validate bounded restatements against a complete adopted set.
+
+    These clauses cannot supply a selection alone. Every mentioned endpoint,
+    membership operation and resulting list must agree with the adoption.
+    """
+    cat = "(?:" + "|".join(re.escape(c) for c in categories) + ")"
+    names = {c.casefold(): c for c in categories}
+    patterns = [
+        ("removed", r"so we interpret as: range \[(?P<a>" + cat + r"),\s*(?P<b>" + cat
+         + r")\], but remove (?P<removed>" + cat + r") → so \[(?P<items>.+)\]"),
+        ("reread", r"let(?:'s|\u2019s) re-read carefully: ['\"]from (?P<a>" + cat + r") to "
+         r"(?P<b>" + cat + r"), excluding the start and including the end['\"] → "
+         r"exclude (?P<removed>" + cat + r"), include (?P<included>" + cat
+         + r") → so (?P<items>.+)"),
+        ("because", r"because ['\"]including the start \((?P<a>" + cat
+         + r")\) and excluding the end \((?P<b>" + cat + r")\)['\"] implies range "
+         r"\[(?P<c>" + cat + r"),\s*(?P<d>" + cat + r")\]"),
+        ("modified", r"however, the phrase ['\"]from (?P<a>" + cat + r") to (?P<b>"
+         + cat + r")[ '\"]* suggests the range includes both endpoints, but then "
+         r"['\"]excluding the start['\"] modifies it"),
+        ("note", r"but note: ['\"]excluding the start and including the end['\"] of "
+         r"the range (?P<a>" + cat + r")[\u2013-](?P<b>" + cat + r") means we exclude "
+         r"(?P<removed>" + cat + r"), include (?P<included>" + cat + r")"),
+        ("proceed", r"let(?:'s|\u2019s) proceed with (?P<a>" + cat + r")[\u2013-](?P<b>" + cat
+         + r") as requested in natural language interpretation"),
+    ]
+    annotations = []
+    for clause, span in v2._clauses(work):
+        preceding = [x for x in explicit if x["decoded_work_span"][1] <= span[0]]
+        if not preceding:
+            continue
+        adopted = max(preceding, key=lambda x: x["decoded_work_span"][1])["categories"]
+        expected = None
+        if re.fullmatch(r"but then it asks for sum of \(Alpha - Beta\) over selected categories",
+                        clause, re.I):
+            expected = adopted
+        for kind, pattern in patterns:
+            match = re.fullmatch(pattern, clause, re.I)
+            if match is None:
+                continue
+            groups = match.groupdict()
+            a, b = [names[groups[k].casefold()] for k in ("a", "b")]
+            lo, hi = categories.index(a), categories.index(b)
+            if lo > hi:
+                break
+            expected = list(categories[lo:hi + 1])
+            if kind == "because":
+                expected = expected[:-1]
+                c, d = [names[groups[k].casefold()] for k in ("c", "d")]
+                if expected != categories[categories.index(c):categories.index(d) + 1]:
+                    expected = None
+            elif kind in {"modified", "note", "reread"}:
+                expected = expected[1:]
+                if groups.get("removed") and names[groups["removed"].casefold()] != a:
+                    expected = None
+                if groups.get("included") and names[groups["included"].casefold()] != b:
+                    expected = None
+            elif kind == "removed":
+                removed = names[groups["removed"].casefold()]
+                expected = [c for c in expected if c != removed]
+            if groups.get("items") and _complete_list(groups["items"], categories) != (
+                sorted(expected) if expected is not None else None
+            ):
+                expected = None
+            break
+        if expected is not None and sorted(expected) == adopted:
+            annotations.append(dict(text=clause, decoded_work_span=list(span),
+                                    categories=adopted,
+                                    rule="V3_R6_CONSISTENT_ADOPTED_SET_EXPLANATION"))
+    return annotations
+
+
+def _r6_calculation_annotations(work, explicit, traces, facts, categories):
+    annotations = []
+    for source in _difference_sources(work, facts, categories):
+        if not source.get("named"):
+            continue
+        preceding = [x for x in explicit
+                     if x["decoded_work_span"][1] <= source["decoded_work_span"][0]]
+        if preceding and all(categories[i] in preceding[-1]["categories"]
+                             for i in source["index_candidates"]):
+            annotations.append(dict(text=source["text"],
+                                    decoded_work_span=source["decoded_work_span"],
+                                    rule="V3_R6_CATEGORY_CALCULATION_WITHIN_ADOPTED_SET"))
+    for clause, span in v2._clauses(work):
+        preceding = [t for t in traces if t["decoded_work_span"][1] <= span[0]]
+        if not preceding:
+            continue
+        trace = max(preceding, key=lambda x: x["decoded_work_span"][1])
+        dividing = re.fullmatch(r"dividing by (?P<d>\d+) gives (?P<n>[+-]?\d+)/(?P<d2>\d+)",
+                                clause, re.I)
+        rounded = re.fullmatch(
+            r"which as a finite decimal is (?P<decimal>" + v2._NUMBER + r") "
+            r"\(rounded to (?P<places>one|two|three|four|five|six|seven|eight|[1-8]) "
+            r"decimals?\) or exact fraction (?P<n>[+-]?\d+)/(?P<d>\d+)", clause, re.I
+        )
+        valid = False
+        if dividing and int(dividing.group("d")) and dividing.group("d") == dividing.group("d2"):
+            intervening = work[trace["decoded_work_span"][1]:span[0]].strip(" .;\n")
+            valid = (not intervening and trace.get("claimed_result") is not None
+                     and v2.Fraction(trace["claimed_result"]) == int(dividing.group("n")))
+        if rounded and int(rounded.group("d")) and trace.get("result_display_kind") == (
+            "ELLIPSIS_NOT_EXACT"
+        ):
+            value = v2.Fraction(int(rounded.group("n")), int(rounded.group("d")))
+            places = rounded.group("places")
+            places = int(places) if places.isdigit() else (
+                _CARDINAL_WORDS.index(places.lower()) + 1)
+            valid = (value == v2.Fraction(trace["claimed_numerator"])
+                     / v2.Fraction(trace["divisor"])
+                     and abs(v2.Fraction(rounded.group("decimal")) - value)
+                     < v2.Fraction(1, 2 * 10 ** places))
+        if valid:
+            annotations.append(dict(text=clause, decoded_work_span=list(span),
+                                    rule="V3_R6_SCALAR_DISPLAY_CONTINUATION"))
+    return annotations
+
+
 def _order_annotations(work, explicit, categories):
     """Recognize only ordering statements inside an already named full set."""
     category = "(?:" + "|".join(re.escape(c) for c in categories) + ")"
@@ -935,8 +1386,20 @@ def _order_annotations(work, explicit, categories):
     )
     annotations = []
     for clause, span in v2._clauses(work):
-        match = pair.fullmatch(clause) or ordered.fullmatch(clause)
+        tied = re.fullmatch(
+            r"since (?P<a>" + category + r") and (?P<b>" + category + r") are tied at "
+            r"(?P<value>" + v2._NUMBER + r"), we use printed order: (?P=a) before (?P=b)",
+            clause, re.I
+        )
+        match = pair.fullmatch(clause) or ordered.fullmatch(clause) or tied
         preceding = [x for x in explicit if x["decoded_work_span"][1] <= span[0]]
+        if tied and not preceding:
+            # A tie-order preface may refer to the immediately following rank.
+            following = [x for x in explicit if x["decoded_work_span"][0] >= span[1]]
+            if following:
+                following = min(following, key=lambda x: x["decoded_work_span"][0])
+                if not work[span[1]:following["decoded_work_span"][0]].strip(" .;\n"):
+                    preceding = [following]
         if not match or not preceding:
             continue
         adoption = max(preceding, key=lambda x: x["decoded_work_span"][1])
@@ -945,6 +1408,11 @@ def _order_annotations(work, explicit, categories):
             continue
         if categories.index(a) >= categories.index(b):
             continue
+        if tied:
+            rank = _RANK_NATURAL.fullmatch(adoption["text"])
+            ranked = dict(_named_values(rank.group("items"), categories) or []) if rank else {}
+            if not all(ranked.get(name) == v2.Fraction(tied.group("value")) for name in (a, b)):
+                continue
         if "items" in match.groupdict():
             items = re.sub(r"\s+first\b|\bthen\s+", "", match.group("items"), flags=re.I)
             if _complete_list(items, categories) != adoption["categories"]:
@@ -982,9 +1450,10 @@ def verify_semantics(task, raw_record, native_score):
     work = obj.get("work")
     if not isinstance(work, str) or not work.strip():
         return result
-    active, withdrawn = _active_work(work)
     categories = task["world"]["categories"]
+    active, withdrawn, reconsideration = _active_work(work, categories)
     normalized, boundaries, aliases = _normalize_months(active, categories)
+    normalized, surface_annotations = _r6_surface(normalized)
     explicit, rejected, provisional = _explicit_claims(normalized, categories)
     rejected.extend(_unrecognized_adoptions(normalized, explicit, categories))
     try:
@@ -992,6 +1461,14 @@ def verify_semantics(task, raw_record, native_score):
     except (ValueError, TypeError, KeyError, ZeroDivisionError):
         facts = {}
     traces, ambiguity, unsupported = _trace_reductions(normalized, facts, categories, explicit)
+    # An enumerated data domain becomes an adopted set only through a complete
+    # response-local correspondence and its final reduction, never by itself.
+    linked_spans = {
+        tuple(t["correspondence_source"]["adoption_source"]["decoded_work_span"])
+        for t in traces if "adoption_source" in t.get("correspondence_source", {})
+    }
+    explicit[:] = [c for c in explicit if not c.get("requires_linked_reduction")
+                   or tuple(c["decoded_work_span"]) in linked_spans]
     named_difference_spans = {tuple(x["decoded_work_span"])
                               for x in _difference_sources(normalized, facts, categories)
                               if x.get("rule") == "V3_R5_NAMED_WORK_DIFFERENCE"}
@@ -1000,7 +1477,11 @@ def verify_semantics(task, raw_record, native_score):
         and re.match(r"^for\s+each\s+selected\s+category,\s*compute\b", x["text"], re.I)
     )]
     order_annotations = _order_annotations(normalized, explicit, categories)
-    neutral_spans = {tuple(x["decoded_work_span"]) for x in order_annotations}
+    explanation_annotations = _r6_explanation_annotations(normalized, explicit, categories)
+    calculation_annotations = _r6_calculation_annotations(normalized, explicit, traces,
+                                                         facts, categories)
+    neutral_spans = {tuple(x["decoded_work_span"]) for x in
+                     [*order_annotations, *explanation_annotations, *calculation_annotations]}
     rejected[:] = [x for x in rejected if tuple(x["decoded_work_span"]) not in neutral_spans]
     unsupported_tail = _unrecognized_tail(normalized, explicit, traces, categories)
     unsupported_tail[:] = [x for x in unsupported_tail
@@ -1019,8 +1500,12 @@ def verify_semantics(task, raw_record, native_score):
         unsupported_tail=unsupported_tail,
         provisional_claims=provisional,
         withdrawn_work=withdrawn,
+        reconsideration=reconsideration,
         month_aliases=aliases,
+        surface_annotations=surface_annotations,
         neutral_order_annotations=order_annotations,
+        neutral_explanation_annotations=explanation_annotations,
+        neutral_calculation_annotations=calculation_annotations,
         decoded_work_span_origin="ACTIVE_WORK_AFTER_LAST_EXPLICIT_CORRECTION",
     )
     _source_spans(observations, active, boundaries)
