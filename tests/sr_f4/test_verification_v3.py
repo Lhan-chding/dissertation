@@ -240,6 +240,131 @@ def test_zero_denominator_rhs_is_unsupported():
     assert selection(PAIRS + "Sum=20+54-52-68=-46; Mean=-46/4=-46/0")["status"] == "UNKNOWN"
 
 
+MEAN_WORLD = dict(
+    categories=["January", "February", "March", "April"], domain=[0, 100],
+    series=dict(Alpha=[12, 9, 34, 66], Beta=[19, 11, 73, 46]),
+)
+MEAN_QUERY = dict(family="TOPK", k=2, direction="largest", value="Beta", aggregate="mean")
+MEAN_DECLARATION = (
+    "The two categories with the largest Alpha values are April (66) and March (34). "
+    "For these categories, the Beta values are 46 and 73. "
+)
+
+
+@pytest.mark.parametrize("calculation", [
+    "The arithmetic mean is (46 + 73) / 2 = 119 / 2 = 59.5",
+    "Arithmetic mean = (46 + 73) / 2 = 59.5",
+    "Mean = (46+73)/2 = 119/2 = 59.5",
+    "Beta sum=46+73=119; Arithmetic mean = 119/2 = 59.5",
+])
+def test_natural_mean_chain_binds_first_operands_and_keeps_source(calculation):
+    work = MEAN_DECLARATION + calculation
+    label, task, record, score = evaluate(work, world=MEAN_WORLD, query=MEAN_QUERY, answer=59.5)
+    selected = label["dimensions"]["S"]
+    assert selected["status"] == "PASS"
+    assert selected["observed"]["categories"] == ["April", "March"]
+    trace = selected["observed"]["final_reduction_claims"][-1]
+    lo, hi = trace["decoded_active_work_span"]
+    assert trace["source_text"] == work[lo:hi]
+    assert trace["claimed_result"] == "59.5"
+    assert all(stage["display_matches_computation"] for stage in trace["equality_stages"])
+    assert all(label["dimensions"][d] == verify_v2(task, record, score)["dimensions"][d]
+               for d in "POE")
+
+
+def test_wrong_arithmetic_in_mean_chain_does_not_change_selection():
+    work = MEAN_DECLARATION + "The arithmetic mean is (46+73)/3 = 110/3 = 40"
+    label, task, record, score = evaluate(work, world=MEAN_WORLD, query=MEAN_QUERY, answer=40)
+    assert label["dimensions"]["S"]["status"] == "PASS"
+    trace = label["dimensions"]["S"]["observed"]["final_reduction_claims"][-1]
+    assert not any(stage["display_matches_computation"] for stage in trace["equality_stages"])
+    assert label["dimensions"]["E"] == verify_v2(task, record, score)["dimensions"]["E"]
+
+
+@pytest.mark.parametrize("calculation", [
+    "The arithmetic mean is (46+73)/2 = (46+19)/2 = 32.5",
+    "The arithmetic mean is (46+73)/2 = 119/0 = 59.5",
+    "The arithmetic mean is (46+73)/2 = 119/2, using January instead",
+    "The arithmetic mean is (46+73)/2 = 59.5; Final result = (46+19)/2 = 32.5",
+    "The Alpha arithmetic mean is (46+73)/2 = 59.5",
+])
+def test_natural_mean_chain_cannot_hide_replacement_or_unsupported_stage(calculation):
+    result = selection(MEAN_DECLARATION + calculation, world=MEAN_WORLD,
+                       query=MEAN_QUERY, answer=59.5)
+    assert result["status"] == "UNKNOWN"
+
+
+def test_mean_chain_does_not_infer_missing_evidence_or_resolve_duplicate_values():
+    work = MEAN_DECLARATION + "The arithmetic mean is (46+73)/2 = 119/2 = 59.5"
+    evidence = [dict(series="Alpha", category=c, value=v)
+                for c, v in zip(MEAN_WORLD["categories"], MEAN_WORLD["series"]["Alpha"],
+                                strict=True)]
+    assert selection(work, world=MEAN_WORLD, query=MEAN_QUERY,
+                     evidence=evidence, answer=59.5)["status"] == "UNKNOWN"
+    duplicate = copy.deepcopy(MEAN_WORLD)
+    duplicate["series"]["Beta"][0] = 46
+    assert selection(work, world=duplicate, query=MEAN_QUERY, answer=59.5)["status"] == "UNKNOWN"
+
+
+def test_mean_chain_extraction_is_independent_of_query_and_answer():
+    work = "The arithmetic mean is (46+73)/2 = 119/2 = 59.5"
+    left = selection(work, world=MEAN_WORLD, query=MEAN_QUERY, answer=59.5)
+    right = selection(work, world=MEAN_WORLD, query=dict(MEAN_QUERY, direction="smallest"),
+                      answer=999)
+    assert left["observed"] == right["observed"]
+    assert left["status"] == "PASS" and right["status"] == "FAIL"
+
+
+def test_direct_mean_ellipsis_keeps_approximate_display():
+    work = "Beta arithmetic mean=(31+30+82)/3=143/3=47.666... which is 143/3"
+    result = selection(work, query=dict(QUERY, end=2), answer="143/3")
+    assert result["status"] == "PASS"
+    trace = result["observed"]["final_reduction_claims"][-1]
+    assert trace["claimed_result"] == "47.666..."
+    assert trace["result_display_kind"] == "ELLIPSIS_NOT_EXACT"
+    assert "exact_display_value" not in trace
+
+
+@pytest.mark.parametrize("work", [
+    "Selected categories are February, March, April (excluding January, including April)",
+    "Selected categories: February, March, April (excluding January)",
+    "Categories selected: Feb, Mar, Apr (exclude Jan, include Apr)",
+    "Selected categories from January to April, excluding start (January) "
+    "and including end (April): February, March, April",
+    "Selected categories from January to April excluding start and including end: "
+    "February, March, April",
+])
+def test_complete_natural_selection_requires_consistent_annotations(work):
+    label, *_ = evaluate(work, query=dict(QUERY, include_start=False))
+    selected = label["dimensions"]["S"]
+    assert selected["status"] == "PASS"
+    claim = selected["observed"]["explicit_claims"][0]
+    lo, hi = claim["decoded_active_work_span"]
+    assert claim["source_text"] == work[lo:hi]
+    assert selection(work)["status"] == "FAIL"
+
+
+@pytest.mark.parametrize("work", [
+    "Selected categories: January, February, March, April (excluding January)",
+    "Selected categories: February, March (including April)",
+    "Selected categories: February, March, April (excluding January, except March)",
+    "Selected categories: February, March, April (excluding January) but use only February",
+    "Selected categories from January to April, excluding start (February) "
+    "and including end (April): February, March, April",
+    "Selected categories from January to April, excluding start and including end: "
+    "February, March",
+    "Selected categories from January to April, excluding start and including end",
+    "Selected categories: February, March, April (excluding January); Selected: February",
+])
+def test_incomplete_or_conflicting_natural_selection_stays_unknown(work):
+    assert selection(work)["status"] == "UNKNOWN"
+
+
+def test_range_extrema_alone_still_do_not_supply_a_selection():
+    assert selection("Range = 88 - 30 = 58")["status"] == "UNKNOWN"
+    assert selection("Selected: Jan, Feb, Mar, Apr; Range = 88 - 30 = 58")["status"] == "UNKNOWN"
+
+
 @pytest.mark.parametrize("fields", [dict(truncated=True), dict(generation_status="ERROR")])
 def test_technical_failures_not_upgraded(fields):
     if "generation_status" in fields:
