@@ -330,7 +330,8 @@ def test_b_confirmation_measurement_reuses_all_eight_parent_draws_separately(tmp
     )
 
 
-def test_loader_ignores_partial_chunks_and_preserves_score_denominators(tmp_path):
+@pytest.mark.parametrize("workers", [1, 8])
+def test_loader_ignores_partial_chunks_and_preserves_score_denominators(tmp_path, workers):
     directory = tmp_path / "EVAL/b0/PARENT/shard0/groups"
     directory.mkdir(parents=True)
     record = dict(
@@ -345,12 +346,67 @@ def test_loader_ignores_partial_chunks_and_preserves_score_denominators(tmp_path
     )
     (directory / "00000.json").write_text(json.dumps(dict(rows=[record])))
     (directory / "00000.chunk0.json").write_text(json.dumps([record]))
-    loaded = load_evaluations(tmp_path, {"q": {"root_id": "w", "family": "INTERVAL"}})
+    loaded = load_evaluations(
+        tmp_path, {"q": {"root_id": "w", "family": "INTERVAL"}}, workers=workers
+    )
     assert len(loaded) == 1 and "J" not in loaded[0]["score"]
     assert loaded[0]["score"]["value_correct"] == 1
     (directory / "00001.json").write_text(json.dumps(dict(rows=[record])))
     with pytest.raises(ValueError, match="Duplicate"):
-        load_evaluations(tmp_path, {"q": {"root_id": "w", "family": "INTERVAL"}})
+        load_evaluations(
+            tmp_path, {"q": {"root_id": "w", "family": "INTERVAL"}}, workers=workers
+        )
+
+
+def test_parallel_loader_preserves_all_normalized_fields_and_file_order(tmp_path):
+    directory = tmp_path / "EVAL"
+    directory.mkdir()
+    tasks = {}
+    for i in range(35):
+        qid = f"q{i}"
+        tasks[qid] = dict(world_id=f"w{i}", family="TOPK", variant=i, purpose="confirm")
+        record = dict(
+            qid=qid, block=i % 3, arm="LZ", draw=0, panel="B_CONFIRM",
+            protocol="structured", score=dict(J=i % 2, value_correct=1, work_present=True),
+            tokens=[1, 2, 3], completion_token_count=7, finish_reason="length",
+            semantic={"dimensions": {"S": {"status": "UNKNOWN"}}},
+        )
+        if i % 2:
+            (directory / f"{i:05d}.jsonl").write_text(json.dumps(record) + "\n")
+        else:
+            (directory / f"{i:05d}.json").write_text(json.dumps(dict(rows=[record])))
+    serial = load_evaluations(tmp_path, tasks, workers=1)
+    assert load_evaluations(tmp_path, tasks, workers=8) == serial
+    assert [r["qid"] for r in serial] == [
+        f"q{i}" for i in [*range(1, 35, 2), *range(0, 35, 2)]
+    ]
+    assert all(r["completion_tokens"] == 7 and r["truncated"] for r in serial)
+    assert all(r["semantic_status"] == {"S": "UNKNOWN"} for r in serial)
+
+
+def test_parallel_reads_overlap_but_prefetch_is_bounded(monkeypatch):
+    from threading import Event, Lock
+
+    from sr_f4 import reporting
+
+    second_started = Event()
+    lock = Lock()
+    started = []
+
+    def reader(path):
+        with lock:
+            started.append(path)
+        if path == 0:
+            assert second_started.wait(5)
+        if path == 1:
+            second_started.set()
+        return [path]
+
+    monkeypatch.setattr(reporting, "_read_evaluation_file", reader)
+    stream = reporting._ordered_evaluation_files(list(range(100)), 4)
+    assert next(stream) == (0, [0])
+    assert len(started) <= 8
+    assert list(stream) == [(i, [i]) for i in range(1, 100)]
 
 
 def test_chartqa_nested_metrics_remain_separate(tmp_path):

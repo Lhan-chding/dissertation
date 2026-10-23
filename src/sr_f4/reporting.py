@@ -9,6 +9,7 @@ import argparse
 import json
 import math
 from collections import Counter, defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from srf4_ref.sampling import seed_for
@@ -62,7 +63,27 @@ def _raw_rows(path):
         yield from value["rows"]
 
 
-def load_evaluations(root, tasks):
+def _read_evaluation_file(path):
+    return list(_raw_rows(path))
+
+
+def _ordered_evaluation_files(paths, workers):
+    """Overlap storage latency, with bounded memory and unchanged input order."""
+    if not 1 <= workers <= 16:
+        raise ValueError("Evaluation readers must be between 1 and 16")
+    if workers == 1:
+        for path in paths:
+            yield path, _read_evaluation_file(path)
+        return
+    # Executor.map on the whole run would retain thousands of raw token arrays.
+    # Only one small batch is submitted, and results are consumed in path order.
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        for offset in range(0, len(paths), workers * 2):
+            batch = paths[offset : offset + workers * 2]
+            yield from zip(batch, executor.map(_read_evaluation_file, batch), strict=True)
+
+
+def load_evaluations(root, tasks, *, workers=8):
     """Accept raw JSONL or atomic group JSON, never count aggregate score files."""
     root = Path(root)
     registry = {}
@@ -75,10 +96,9 @@ def load_evaluations(root, tasks):
         }
     result, seen = [], set()
     paths = sorted((root / "EVAL").rglob("*.jsonl")) + sorted((root / "EVAL").rglob("*.json"))
-    for path in paths:
-        if ".chunk" in path.name:
-            continue
-        for record in _raw_rows(path):
+    paths = [path for path in paths if ".chunk" not in path.name]
+    for path, records in _ordered_evaluation_files(paths, workers):
+        for record in records:
             if not isinstance(record, dict) or "qid" not in record or "score" not in record:
                 continue
             meta = registry.get(record.get("task_id"), {})
