@@ -381,6 +381,18 @@ def run_train(root, spec):
 
 
 def execute(root, spec):
+    if spec["kind"] == "c_local_train":
+        from .c_local_training import run_train
+
+        return run_train(root, spec)
+    if spec["kind"] == "c_local_eval":
+        from .c_local import run_eval
+
+        return run_eval(root, spec)
+    if spec["kind"] == "c_local_report":
+        from .c_local_reporting import report
+
+        return report(root)
     if spec["kind"] == "c_pilot_train":
         from .c_pilot_training import run_train
 
