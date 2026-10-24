@@ -1,0 +1,292 @@
+{
+  "schema": "C_LOCAL_PRELAUNCH_V1",
+  "status": "PASS",
+  "at": "2026-10-24T07:34:38.918242+00:00",
+  "tested_code_revision": "beb3dd2c97e2bd64f70ea03f747d9d2560cd5a4e",
+  "data_version": "srf4-c-local-signal-rich-data-r1",
+  "measurement_version": "srf4-c-local-explicit-v1",
+  "protocol": {
+    "reward": {
+      "policy": "RELIABLE_ALL_OUTCOMES_LOCAL_CREDIT_V1",
+      "lambda_evidence": 0.25,
+      "lambda_selection": 0.25,
+      "eligible": "valid_finished_defined_both_J0_and_J1",
+      "shared_known_cohort": "P_and_S_known_minimum_two_and_75_percent_eligible",
+      "evidence": "P_minus_known_mean_P",
+      "selection": "P_times_S_minus_known_mean_P_times_S",
+      "shuffle": "one_uniform_permutation_within_joint_J_P_strata_no_retry",
+      "reduction": "native_full_sequence_mean_plus_each_auxiliary_own_span_mean",
+      "normalization": "no_auxiliary_std_no_combined_second_whitening",
+      "parser": "srf4-c-local-explicit-v1",
+      "credit_scope": "evidence_value_tokens_and_selection_declaration_tokens_only",
+      "conflict": "selection_and_compute_category_disagreement_is_UNKNOWN"
+    },
+    "optimizer": {
+      "name": "AdamW",
+      "lr": 1e-05,
+      "betas": [
+        0.9,
+        0.999
+      ],
+      "eps": 1e-08,
+      "weight_decay": 0,
+      "scheduler": "constant",
+      "grad_clip": 1.0,
+      "kl_beta": 0.02,
+      "policy_clip": 0.2,
+      "tis_cap": 2.0,
+      "updates": 12,
+      "answers_per_update": 128,
+      "reference": "fixed_initial_parent"
+    },
+    "generation": {
+      "protocol": "structured-v2-with-selection-declaration-v1",
+      "temperature": 1.0,
+      "top_p": 1.0,
+      "top_k": 0,
+      "max_new_tokens": 1024,
+      "do_sample": true,
+      "chartqa_protocol": "chartqa_plain",
+      "retention_prompt": "original_unchanged_v2",
+      "all_new_endpoint_prompts": "identical_for_parent_and_all_four_arms"
+    },
+    "statistics": {
+      "primary": "new_value_correct_SELECT_minus_SHUF",
+      "secondary": [
+        "native_J",
+        "SELECT_minus_J",
+        "SELECT_minus_EVID",
+        "SELECT_minus_PARENT"
+      ],
+      "bootstrap_replicates": 2000,
+      "bootstrap_seed": 2026102406,
+      "confidence": 0.95,
+      "unit": "paired_root_lineage_within_family_equal_family_equal_parent_weight",
+      "interpretation": "conditional_descriptive_not_training_seed_CI",
+      "per_block_required": true,
+      "adverse_results_required": true,
+      "adaptive_extension": false
+    },
+    "confirmation_access": false,
+    "review_origin": "AI_development_checks_not_human_review",
+    "historical_C_gate": "UNCHANGED",
+    "authorization": "2026-10-24 user authorized new tasks and local-credit four-arm pilot"
+  },
+  "data_plan": {
+    "version": "srf4-c-local-signal-rich-data-r1",
+    "master_seed": 2026102401,
+    "arms": [
+      "J",
+      "EVID",
+      "SELECT",
+      "SHUF"
+    ],
+    "blocks": [
+      0,
+      1,
+      2
+    ],
+    "steps": 12,
+    "groups_per_step": 16,
+    "draws_per_group": 8,
+    "evaluation_draws": 4,
+    "measurement_version": "srf4-c-local-explicit-v1",
+    "train_split": "C_LOCAL_TRAIN_R1",
+    "test_split": "C_LOCAL_TEST_R1",
+    "cells": [
+      "BINDING",
+      "IMPACT",
+      "TIES",
+      "SIGNED",
+      "INTERVAL",
+      "K_DIRECTION"
+    ],
+    "train_roots": 48,
+    "train_worlds": 72,
+    "train_queries": 192,
+    "test_roots": 96,
+    "test_worlds": 144,
+    "test_queries": 384,
+    "generation_seeds": {
+      "C_LOCAL_TRAIN_R1": 2026102402,
+      "C_LOCAL_TEST_R1": 2026102403
+    },
+    "world_seed_rule": "seed_for(split_seed, 'world', split, cell, root_index)",
+    "training_seed_rule": "seed_for(MASTER, 'train', block, step, group_index, qid, draw)",
+    "evaluation_seed_rule": "seed_for(MASTER, 'eval', block, group_index, qid, draw)",
+    "schedule": "One shuffled full 192-query inventory per block, twelve consecutive batches of sixteen; each query once; all arms shared; report batch family imbalance",
+    "schedule_seed_rule": "seed_for(MASTER, 'schedule', block)",
+    "world_disjointness": "Exact in-memory fact-table comparison with old probe, old F-prime pilot, nine public prototype worlds, and all new physical worlds; collision fails without retry",
+    "eval_models_per_block": [
+      "PARENT",
+      "J",
+      "EVID",
+      "SELECT",
+      "SHUF"
+    ],
+    "budgets": {
+      "train": 18432,
+      "new_tasks": 23040,
+      "retention": 7680,
+      "chartqa": 1250,
+      "evaluation": 31970,
+      "total": 50402
+    },
+    "retention": {
+      "seed": 2026102309,
+      "queries": 128,
+      "policy": "Two sampled sorted root IDs per family x variant, both grouped_bar and line retained; 4 tasks per stratum",
+      "family_order": [
+        "CROSS",
+        "INTERVAL",
+        "THRESHOLD",
+        "TOPK"
+      ],
+      "variant_order": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "draws": 4
+    },
+    "chartqa": {
+      "seed": 2026102310,
+      "queries": 250,
+      "policy": "Sample sorted qids once; b0 parent and four b0 endpoints only",
+      "draws": 1
+    },
+    "construction": {
+      "BINDING": "Six categories; planned Alpha/Beta selected-set overlap cycles 3/2/1/0 crossed with direction; full ranking-column x payload-column 2x2",
+      "IMPACT": "Six categories; ranking boundary gap 12; four payload deltas 0/1/20/65; four worlds share root; preserve zero-impact collision",
+      "TIES": "Six categories; one extreme, three-way tie, two opposite extremes; printed tie labels noncalendar; k3 mean/sum, k2 mean, opposite k3 mean",
+      "SIGNED": "Six categories; selected difference signs cycle all positive/mixed/all negative/mixed crossed with direction; Alpha-selected difference mean/sum, Beta-value mean, Beta-selected difference mean",
+      "INTERVAL": "Eight categories; positions1..6, positive endpoint and internal values, equality at3, negative at5; endpoint inclusion and positive filter variants",
+      "K_DIRECTION": "Eight categories; k2/3 x largest/smallest, cross-column value; ranking column balanced"
+    },
+    "filtering": "NO_PERFORMANCE_FILTER_NO_COLLISION_FILTER_NO_SEED_RETRY",
+    "scope": "SMALL_SIGNAL_RICH_LOCAL_CREDIT_C_PILOT_NOT_CONFIRMATION"
+  },
+  "checks": {
+    "cpu_gradient": "PASS",
+    "integration": "PASS",
+    "review": "PASS",
+    "ruff": "PASS",
+    "bash_syntax": "PASS",
+    "scoped_diff": "PASS"
+  },
+  "tests": {
+    "passed": 204,
+    "skipped": 8,
+    "failed": 0,
+    "mode": "CPU_ONLY",
+    "selection": "tests/sr_f4/test_c_local*.py + c_pilot orchestration/trainer + pool + training + sr_f3_ce runtime/audit_guard/training",
+    "command_options": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python -m pytest --import-mode=importlib -q -p no:cacheprovider",
+    "skip_reason": "8 historical frozen-tokenizer integration cases: local supplement absent; new CPU gradient and parser tests passed",
+    "collection_note": "Initial cross-directory default import mode collided on test_training names; importlib resolved collection, no product change"
+  },
+  "offline_replay": {
+    "status": "COMPLETE_OFFLINE_DIAGNOSTIC_NOT_SCIENTIFIC_GATE",
+    "source": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_f4_c_local_20261024/REPLAY_INPUT.jsonl",
+    "corpus": "old_Fprime_all_three_SELECT_training_paths_16_steps",
+    "counts": {
+      "groups": 768,
+      "answers": 6144,
+      "candidate_rows": 5616,
+      "known_rows": 3143,
+      "old_active_groups": 99,
+      "old_selection_signal_groups": 18,
+      "expanded_active_groups": 307,
+      "expanded_selection_signal_groups": 32,
+      "joint_J_P_swappable_groups": 17,
+      "joint_J_P_changed_groups": 15,
+      "joint_J_P_changed_rows": 34
+    },
+    "by_block": {
+      "0": {
+        "groups": 256,
+        "answers": 2048,
+        "candidate_rows": 1905,
+        "known_rows": 835,
+        "old_active_groups": 13,
+        "old_selection_signal_groups": 3,
+        "expanded_active_groups": 54,
+        "expanded_selection_signal_groups": 2,
+        "joint_J_P_swappable_groups": 2,
+        "joint_J_P_changed_groups": 2,
+        "joint_J_P_changed_rows": 4
+      },
+      "1": {
+        "groups": 256,
+        "answers": 2048,
+        "candidate_rows": 1808,
+        "known_rows": 1240,
+        "old_active_groups": 57,
+        "old_selection_signal_groups": 9,
+        "expanded_active_groups": 148,
+        "expanded_selection_signal_groups": 18,
+        "joint_J_P_swappable_groups": 9,
+        "joint_J_P_changed_groups": 8,
+        "joint_J_P_changed_rows": 18
+      },
+      "2": {
+        "groups": 256,
+        "answers": 2048,
+        "candidate_rows": 1903,
+        "known_rows": 1068,
+        "old_active_groups": 29,
+        "old_selection_signal_groups": 6,
+        "expanded_active_groups": 105,
+        "expanded_selection_signal_groups": 12,
+        "joint_J_P_swappable_groups": 6,
+        "joint_J_P_changed_groups": 5,
+        "joint_J_P_changed_rows": 12
+      }
+    },
+    "expanded_eligibility_reasons": {
+      "COVERAGE_LT75": 276,
+      "KNOWN_LT2": 183,
+      "ACTIVE": 307,
+      "CANDIDATE_LT2": 2
+    },
+    "expanded_signal_unique_questions": 23,
+    "expanded_signal_unique_roots": 21,
+    "conditional_swappable_unique_roots": 14,
+    "legacy_measurement": "frozen_r6_labels_only_for_cohort_arithmetic",
+    "strict_new_measurement": {
+      "version": "srf4-c-local-explicit-v1",
+      "selection": {
+        "UNKNOWN": 6144
+      }
+    },
+    "limitations": [
+      "No new SELECT/COMPUTE statements fabricated; old unsupported responses remain UNKNOWN.",
+      "Old-label replay is not an evaluation of the new explicit declaration parser.",
+      "No old endpoint, B_CONFIRM or new model generation is read or used.",
+      "Signal counts do not demonstrate causal learning benefit or new-task observability.",
+      "Token-local gradients are checked separately on CPU; old text is not relabeled as new."
+    ]
+  },
+  "review": {
+    "result": "PASS",
+    "scope": "read-only independent prelaunch code review and resolved-findings verification",
+    "resolved": [
+      "explicit old probe fact-table exclusion",
+      "joint J/P swappable opportunity separate from random no-op",
+      "actual per-channel surrogate objective means",
+      "self-contained prelaunch gate test fixture"
+    ]
+  },
+  "no_new_model_calls": true,
+  "no_extra_gpu_smoke": true,
+  "no_full_hash_scan": true,
+  "limits": [
+    "Engineering readiness only, not scientific success or human review.",
+    "Old-label arithmetic diagnostic is not new-format observability evidence.",
+    "New task output compliance and training benefit remain experimental questions."
+  ]
+}
