@@ -20,6 +20,8 @@ export PYTHONPATH="$SRF4_CODE/src:$SRF4_CODE"
 export OMP_NUM_THREADS=1
 export TOKENIZERS_PARALLELISM=false
 export PYTHONDONTWRITEBYTECODE=1
+# Check the deployed import closure on CPU before leasing any GPU.
+"$SRF4_PYTHON" -c 'import sys; from sr_f4.deployment import check_imports; print(check_imports(".", sys.executable))'
 # Preparation is real CPU data/rendering work in this allocation. A partial
 # root fails closed and is diagnosed; it is never silently re-prepared.
 if [ ! -f "$SRF4_ROOT/READY.json" ]; then
