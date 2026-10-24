@@ -29,4 +29,4 @@ if [ ! -f "$SRF4_ROOT/READY.json" ]; then
 fi
 exec "$SRF4_PYTHON" -u -m sr_f4.pool controller --root "$SRF4_ROOT" \
   --code "$SRF4_CODE" --python "$SRF4_PYTHON" --interval 150 \
-  --maximum-new-jobs 2 --gpus-per-job 4 --walltime 06:00:00
+  --maximum-new-jobs 2 --gpus-per-job 2 --walltime 06:00:00
