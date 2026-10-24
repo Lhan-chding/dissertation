@@ -1,0 +1,1906 @@
+{
+  "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+  "purpose": "DEVELOPER_DESIGN_EXAMPLES_ONLY",
+  "tasks": [
+    {
+      "qid": "C_DESIGN_20261024_BINDING_Alpha_to_Alpha",
+      "root_id": "C_DESIGN_20261024_BINDING",
+      "world_id": "C_DESIGN_20261024_BINDING_0",
+      "family": "BINDING",
+      "label": "Alpha_to_Alpha",
+      "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+      "split": "DESIGN_ONLY",
+      "world": {
+        "categories": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June"
+        ],
+        "series": {
+          "Alpha": [
+            84,
+            68,
+            55,
+            43,
+            29,
+            16
+          ],
+          "Beta": [
+            19,
+            47,
+            68,
+            83,
+            72,
+            54
+          ]
+        },
+        "domain": [
+          10,
+          90
+        ]
+      },
+      "query": {
+        "family": "TOPK",
+        "selection_series": "Alpha",
+        "value": "Alpha",
+        "k": 3,
+        "direction": "largest",
+        "aggregate": "mean"
+      },
+      "question": "Select the 3 categories with the largest Alpha values. What is the arithmetic mean of the Alpha values over the selected categories?",
+      "prompt": "Select the 3 categories with the largest Alpha values. What is the arithmetic mean of the Alpha values over the selected categories?\nAll displayed quantities are integer counts in [10,90]. Use the printed category order for ties. Empty sum or count is 0; other aggregates of an empty set are null. A one-element range is 0. Exact integers, finite decimals, and quoted fractions such as \"98/3\" are accepted. Do not use external tools. Include enough true chart facts to verify the selection and the answer; reporting all relevant facts is allowed. You may add a short \"work\" string after the evidence and before the answer; it is optional. Output exactly one JSON object whose top-level keys are \"evidence\", then optionally \"work\", then \"answer\". The value of \"evidence\" is a list; each list entry has exactly the keys \"series\", \"category\", and \"value\".",
+      "image_status": "NOT_RENDERED_TABLE_IS_DESIGN_SPECIFICATION",
+      "developer_only": {
+        "target_indices": [
+          0,
+          1,
+          2
+        ],
+        "target_set": [
+          "January",
+          "February",
+          "March"
+        ],
+        "selected_values": [
+          "84",
+          "68",
+          "55"
+        ],
+        "answer_exact": "69",
+        "independent_answer_exact": "69",
+        "hand_answer_exact": "69",
+        "hand_target_set_indices": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "qid": "C_DESIGN_20261024_BINDING_Alpha_to_Beta",
+      "root_id": "C_DESIGN_20261024_BINDING",
+      "world_id": "C_DESIGN_20261024_BINDING_0",
+      "family": "BINDING",
+      "label": "Alpha_to_Beta",
+      "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+      "split": "DESIGN_ONLY",
+      "world": {
+        "categories": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June"
+        ],
+        "series": {
+          "Alpha": [
+            84,
+            68,
+            55,
+            43,
+            29,
+            16
+          ],
+          "Beta": [
+            19,
+            47,
+            68,
+            83,
+            72,
+            54
+          ]
+        },
+        "domain": [
+          10,
+          90
+        ]
+      },
+      "query": {
+        "family": "TOPK",
+        "selection_series": "Alpha",
+        "value": "Beta",
+        "k": 3,
+        "direction": "largest",
+        "aggregate": "mean"
+      },
+      "question": "Select the 3 categories with the largest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?",
+      "prompt": "Select the 3 categories with the largest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?\nAll displayed quantities are integer counts in [10,90]. Use the printed category order for ties. Empty sum or count is 0; other aggregates of an empty set are null. A one-element range is 0. Exact integers, finite decimals, and quoted fractions such as \"98/3\" are accepted. Do not use external tools. Include enough true chart facts to verify the selection and the answer; reporting all relevant facts is allowed. You may add a short \"work\" string after the evidence and before the answer; it is optional. Output exactly one JSON object whose top-level keys are \"evidence\", then optionally \"work\", then \"answer\". The value of \"evidence\" is a list; each list entry has exactly the keys \"series\", \"category\", and \"value\".",
+      "image_status": "NOT_RENDERED_TABLE_IS_DESIGN_SPECIFICATION",
+      "developer_only": {
+        "target_indices": [
+          0,
+          1,
+          2
+        ],
+        "target_set": [
+          "January",
+          "February",
+          "March"
+        ],
+        "selected_values": [
+          "19",
+          "47",
+          "68"
+        ],
+        "answer_exact": "134/3",
+        "independent_answer_exact": "134/3",
+        "hand_answer_exact": "134/3",
+        "hand_target_set_indices": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "qid": "C_DESIGN_20261024_BINDING_Beta_to_Alpha",
+      "root_id": "C_DESIGN_20261024_BINDING",
+      "world_id": "C_DESIGN_20261024_BINDING_0",
+      "family": "BINDING",
+      "label": "Beta_to_Alpha",
+      "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+      "split": "DESIGN_ONLY",
+      "world": {
+        "categories": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June"
+        ],
+        "series": {
+          "Alpha": [
+            84,
+            68,
+            55,
+            43,
+            29,
+            16
+          ],
+          "Beta": [
+            19,
+            47,
+            68,
+            83,
+            72,
+            54
+          ]
+        },
+        "domain": [
+          10,
+          90
+        ]
+      },
+      "query": {
+        "family": "TOPK",
+        "selection_series": "Beta",
+        "value": "Alpha",
+        "k": 3,
+        "direction": "largest",
+        "aggregate": "mean"
+      },
+      "question": "Select the 3 categories with the largest Beta values. What is the arithmetic mean of the Alpha values over the selected categories?",
+      "prompt": "Select the 3 categories with the largest Beta values. What is the arithmetic mean of the Alpha values over the selected categories?\nAll displayed quantities are integer counts in [10,90]. Use the printed category order for ties. Empty sum or count is 0; other aggregates of an empty set are null. A one-element range is 0. Exact integers, finite decimals, and quoted fractions such as \"98/3\" are accepted. Do not use external tools. Include enough true chart facts to verify the selection and the answer; reporting all relevant facts is allowed. You may add a short \"work\" string after the evidence and before the answer; it is optional. Output exactly one JSON object whose top-level keys are \"evidence\", then optionally \"work\", then \"answer\". The value of \"evidence\" is a list; each list entry has exactly the keys \"series\", \"category\", and \"value\".",
+      "image_status": "NOT_RENDERED_TABLE_IS_DESIGN_SPECIFICATION",
+      "developer_only": {
+        "target_indices": [
+          3,
+          4,
+          2
+        ],
+        "target_set": [
+          "April",
+          "May",
+          "March"
+        ],
+        "selected_values": [
+          "43",
+          "29",
+          "55"
+        ],
+        "answer_exact": "127/3",
+        "independent_answer_exact": "127/3",
+        "hand_answer_exact": "127/3",
+        "hand_target_set_indices": [
+          2,
+          3,
+          4
+        ]
+      }
+    },
+    {
+      "qid": "C_DESIGN_20261024_BINDING_Beta_to_Beta",
+      "root_id": "C_DESIGN_20261024_BINDING",
+      "world_id": "C_DESIGN_20261024_BINDING_0",
+      "family": "BINDING",
+      "label": "Beta_to_Beta",
+      "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+      "split": "DESIGN_ONLY",
+      "world": {
+        "categories": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June"
+        ],
+        "series": {
+          "Alpha": [
+            84,
+            68,
+            55,
+            43,
+            29,
+            16
+          ],
+          "Beta": [
+            19,
+            47,
+            68,
+            83,
+            72,
+            54
+          ]
+        },
+        "domain": [
+          10,
+          90
+        ]
+      },
+      "query": {
+        "family": "TOPK",
+        "selection_series": "Beta",
+        "value": "Beta",
+        "k": 3,
+        "direction": "largest",
+        "aggregate": "mean"
+      },
+      "question": "Select the 3 categories with the largest Beta values. What is the arithmetic mean of the Beta values over the selected categories?",
+      "prompt": "Select the 3 categories with the largest Beta values. What is the arithmetic mean of the Beta values over the selected categories?\nAll displayed quantities are integer counts in [10,90]. Use the printed category order for ties. Empty sum or count is 0; other aggregates of an empty set are null. A one-element range is 0. Exact integers, finite decimals, and quoted fractions such as \"98/3\" are accepted. Do not use external tools. Include enough true chart facts to verify the selection and the answer; reporting all relevant facts is allowed. You may add a short \"work\" string after the evidence and before the answer; it is optional. Output exactly one JSON object whose top-level keys are \"evidence\", then optionally \"work\", then \"answer\". The value of \"evidence\" is a list; each list entry has exactly the keys \"series\", \"category\", and \"value\".",
+      "image_status": "NOT_RENDERED_TABLE_IS_DESIGN_SPECIFICATION",
+      "developer_only": {
+        "target_indices": [
+          3,
+          4,
+          2
+        ],
+        "target_set": [
+          "April",
+          "May",
+          "March"
+        ],
+        "selected_values": [
+          "83",
+          "72",
+          "68"
+        ],
+        "answer_exact": "223/3",
+        "independent_answer_exact": "223/3",
+        "hand_answer_exact": "223/3",
+        "hand_target_set_indices": [
+          2,
+          3,
+          4
+        ]
+      }
+    },
+    {
+      "qid": "C_DESIGN_20261024_IMPACT_zero",
+      "root_id": "C_DESIGN_20261024_IMPACT",
+      "world_id": "C_DESIGN_20261024_IMPACT_zero",
+      "family": "IMPACT",
+      "label": "zero",
+      "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+      "split": "DESIGN_ONLY",
+      "world": {
+        "categories": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June"
+        ],
+        "series": {
+          "Alpha": [
+            88,
+            73,
+            60,
+            48,
+            27,
+            12
+          ],
+          "Beta": [
+            29,
+            46,
+            55,
+            55,
+            69,
+            54
+          ]
+        },
+        "domain": [
+          10,
+          90
+        ]
+      },
+      "query": {
+        "family": "TOPK",
+        "selection_series": "Alpha",
+        "value": "Beta",
+        "k": 3,
+        "direction": "largest",
+        "aggregate": "mean"
+      },
+      "question": "Select the 3 categories with the largest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?",
+      "prompt": "Select the 3 categories with the largest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?\nAll displayed quantities are integer counts in [10,90]. Use the printed category order for ties. Empty sum or count is 0; other aggregates of an empty set are null. A one-element range is 0. Exact integers, finite decimals, and quoted fractions such as \"98/3\" are accepted. Do not use external tools. Include enough true chart facts to verify the selection and the answer; reporting all relevant facts is allowed. You may add a short \"work\" string after the evidence and before the answer; it is optional. Output exactly one JSON object whose top-level keys are \"evidence\", then optionally \"work\", then \"answer\". The value of \"evidence\" is a list; each list entry has exactly the keys \"series\", \"category\", and \"value\".",
+      "image_status": "NOT_RENDERED_TABLE_IS_DESIGN_SPECIFICATION",
+      "developer_only": {
+        "target_indices": [
+          0,
+          1,
+          2
+        ],
+        "target_set": [
+          "January",
+          "February",
+          "March"
+        ],
+        "selected_values": [
+          "29",
+          "46",
+          "55"
+        ],
+        "answer_exact": "130/3",
+        "independent_answer_exact": "130/3",
+        "hand_answer_exact": "130/3",
+        "hand_target_set_indices": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "qid": "C_DESIGN_20261024_IMPACT_small",
+      "root_id": "C_DESIGN_20261024_IMPACT",
+      "world_id": "C_DESIGN_20261024_IMPACT_small",
+      "family": "IMPACT",
+      "label": "small",
+      "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+      "split": "DESIGN_ONLY",
+      "world": {
+        "categories": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June"
+        ],
+        "series": {
+          "Alpha": [
+            88,
+            73,
+            60,
+            48,
+            27,
+            12
+          ],
+          "Beta": [
+            29,
+            46,
+            42,
+            41,
+            69,
+            54
+          ]
+        },
+        "domain": [
+          10,
+          90
+        ]
+      },
+      "query": {
+        "family": "TOPK",
+        "selection_series": "Alpha",
+        "value": "Beta",
+        "k": 3,
+        "direction": "largest",
+        "aggregate": "mean"
+      },
+      "question": "Select the 3 categories with the largest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?",
+      "prompt": "Select the 3 categories with the largest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?\nAll displayed quantities are integer counts in [10,90]. Use the printed category order for ties. Empty sum or count is 0; other aggregates of an empty set are null. A one-element range is 0. Exact integers, finite decimals, and quoted fractions such as \"98/3\" are accepted. Do not use external tools. Include enough true chart facts to verify the selection and the answer; reporting all relevant facts is allowed. You may add a short \"work\" string after the evidence and before the answer; it is optional. Output exactly one JSON object whose top-level keys are \"evidence\", then optionally \"work\", then \"answer\". The value of \"evidence\" is a list; each list entry has exactly the keys \"series\", \"category\", and \"value\".",
+      "image_status": "NOT_RENDERED_TABLE_IS_DESIGN_SPECIFICATION",
+      "developer_only": {
+        "target_indices": [
+          0,
+          1,
+          2
+        ],
+        "target_set": [
+          "January",
+          "February",
+          "March"
+        ],
+        "selected_values": [
+          "29",
+          "46",
+          "42"
+        ],
+        "answer_exact": "39",
+        "independent_answer_exact": "39",
+        "hand_answer_exact": "39",
+        "hand_target_set_indices": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "qid": "C_DESIGN_20261024_IMPACT_medium",
+      "root_id": "C_DESIGN_20261024_IMPACT",
+      "world_id": "C_DESIGN_20261024_IMPACT_medium",
+      "family": "IMPACT",
+      "label": "medium",
+      "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+      "split": "DESIGN_ONLY",
+      "world": {
+        "categories": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June"
+        ],
+        "series": {
+          "Alpha": [
+            88,
+            73,
+            60,
+            48,
+            27,
+            12
+          ],
+          "Beta": [
+            29,
+            46,
+            62,
+            42,
+            69,
+            54
+          ]
+        },
+        "domain": [
+          10,
+          90
+        ]
+      },
+      "query": {
+        "family": "TOPK",
+        "selection_series": "Alpha",
+        "value": "Beta",
+        "k": 3,
+        "direction": "largest",
+        "aggregate": "mean"
+      },
+      "question": "Select the 3 categories with the largest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?",
+      "prompt": "Select the 3 categories with the largest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?\nAll displayed quantities are integer counts in [10,90]. Use the printed category order for ties. Empty sum or count is 0; other aggregates of an empty set are null. A one-element range is 0. Exact integers, finite decimals, and quoted fractions such as \"98/3\" are accepted. Do not use external tools. Include enough true chart facts to verify the selection and the answer; reporting all relevant facts is allowed. You may add a short \"work\" string after the evidence and before the answer; it is optional. Output exactly one JSON object whose top-level keys are \"evidence\", then optionally \"work\", then \"answer\". The value of \"evidence\" is a list; each list entry has exactly the keys \"series\", \"category\", and \"value\".",
+      "image_status": "NOT_RENDERED_TABLE_IS_DESIGN_SPECIFICATION",
+      "developer_only": {
+        "target_indices": [
+          0,
+          1,
+          2
+        ],
+        "target_set": [
+          "January",
+          "February",
+          "March"
+        ],
+        "selected_values": [
+          "29",
+          "46",
+          "62"
+        ],
+        "answer_exact": "137/3",
+        "independent_answer_exact": "137/3",
+        "hand_answer_exact": "137/3",
+        "hand_target_set_indices": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "qid": "C_DESIGN_20261024_IMPACT_large",
+      "root_id": "C_DESIGN_20261024_IMPACT",
+      "world_id": "C_DESIGN_20261024_IMPACT_large",
+      "family": "IMPACT",
+      "label": "large",
+      "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+      "split": "DESIGN_ONLY",
+      "world": {
+        "categories": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June"
+        ],
+        "series": {
+          "Alpha": [
+            88,
+            73,
+            60,
+            48,
+            27,
+            12
+          ],
+          "Beta": [
+            29,
+            46,
+            82,
+            17,
+            69,
+            54
+          ]
+        },
+        "domain": [
+          10,
+          90
+        ]
+      },
+      "query": {
+        "family": "TOPK",
+        "selection_series": "Alpha",
+        "value": "Beta",
+        "k": 3,
+        "direction": "largest",
+        "aggregate": "mean"
+      },
+      "question": "Select the 3 categories with the largest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?",
+      "prompt": "Select the 3 categories with the largest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?\nAll displayed quantities are integer counts in [10,90]. Use the printed category order for ties. Empty sum or count is 0; other aggregates of an empty set are null. A one-element range is 0. Exact integers, finite decimals, and quoted fractions such as \"98/3\" are accepted. Do not use external tools. Include enough true chart facts to verify the selection and the answer; reporting all relevant facts is allowed. You may add a short \"work\" string after the evidence and before the answer; it is optional. Output exactly one JSON object whose top-level keys are \"evidence\", then optionally \"work\", then \"answer\". The value of \"evidence\" is a list; each list entry has exactly the keys \"series\", \"category\", and \"value\".",
+      "image_status": "NOT_RENDERED_TABLE_IS_DESIGN_SPECIFICATION",
+      "developer_only": {
+        "target_indices": [
+          0,
+          1,
+          2
+        ],
+        "target_set": [
+          "January",
+          "February",
+          "March"
+        ],
+        "selected_values": [
+          "29",
+          "46",
+          "82"
+        ],
+        "answer_exact": "157/3",
+        "independent_answer_exact": "157/3",
+        "hand_answer_exact": "157/3",
+        "hand_target_set_indices": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "qid": "C_DESIGN_20261024_TIES_top3_mean",
+      "root_id": "C_DESIGN_20261024_TIES",
+      "world_id": "C_DESIGN_20261024_TIES_0",
+      "family": "TIES",
+      "label": "top3_mean",
+      "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+      "split": "DESIGN_ONLY",
+      "world": {
+        "categories": [
+          "May",
+          "June",
+          "April",
+          "January",
+          "February",
+          "March"
+        ],
+        "series": {
+          "Alpha": [
+            80,
+            58,
+            58,
+            58,
+            22,
+            11
+          ],
+          "Beta": [
+            31,
+            47,
+            68,
+            83,
+            72,
+            54
+          ]
+        },
+        "domain": [
+          10,
+          90
+        ]
+      },
+      "query": {
+        "family": "TOPK",
+        "selection_series": "Alpha",
+        "value": "Beta",
+        "k": 3,
+        "direction": "largest",
+        "aggregate": "mean"
+      },
+      "question": "Select the 3 categories with the largest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?",
+      "prompt": "Select the 3 categories with the largest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?\nAll displayed quantities are integer counts in [10,90]. Use the printed category order for ties. Empty sum or count is 0; other aggregates of an empty set are null. A one-element range is 0. Exact integers, finite decimals, and quoted fractions such as \"98/3\" are accepted. Do not use external tools. Include enough true chart facts to verify the selection and the answer; reporting all relevant facts is allowed. You may add a short \"work\" string after the evidence and before the answer; it is optional. Output exactly one JSON object whose top-level keys are \"evidence\", then optionally \"work\", then \"answer\". The value of \"evidence\" is a list; each list entry has exactly the keys \"series\", \"category\", and \"value\".",
+      "image_status": "NOT_RENDERED_TABLE_IS_DESIGN_SPECIFICATION",
+      "developer_only": {
+        "target_indices": [
+          0,
+          1,
+          2
+        ],
+        "target_set": [
+          "May",
+          "June",
+          "April"
+        ],
+        "selected_values": [
+          "31",
+          "47",
+          "68"
+        ],
+        "answer_exact": "146/3",
+        "independent_answer_exact": "146/3",
+        "hand_answer_exact": "146/3",
+        "hand_target_set_indices": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "qid": "C_DESIGN_20261024_TIES_top3_sum",
+      "root_id": "C_DESIGN_20261024_TIES",
+      "world_id": "C_DESIGN_20261024_TIES_0",
+      "family": "TIES",
+      "label": "top3_sum",
+      "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+      "split": "DESIGN_ONLY",
+      "world": {
+        "categories": [
+          "May",
+          "June",
+          "April",
+          "January",
+          "February",
+          "March"
+        ],
+        "series": {
+          "Alpha": [
+            80,
+            58,
+            58,
+            58,
+            22,
+            11
+          ],
+          "Beta": [
+            31,
+            47,
+            68,
+            83,
+            72,
+            54
+          ]
+        },
+        "domain": [
+          10,
+          90
+        ]
+      },
+      "query": {
+        "family": "TOPK",
+        "selection_series": "Alpha",
+        "value": "Beta",
+        "k": 3,
+        "direction": "largest",
+        "aggregate": "sum"
+      },
+      "question": "Select the 3 categories with the largest Alpha values. What is the sum of the Beta values over the selected categories?",
+      "prompt": "Select the 3 categories with the largest Alpha values. What is the sum of the Beta values over the selected categories?\nAll displayed quantities are integer counts in [10,90]. Use the printed category order for ties. Empty sum or count is 0; other aggregates of an empty set are null. A one-element range is 0. Exact integers, finite decimals, and quoted fractions such as \"98/3\" are accepted. Do not use external tools. Include enough true chart facts to verify the selection and the answer; reporting all relevant facts is allowed. You may add a short \"work\" string after the evidence and before the answer; it is optional. Output exactly one JSON object whose top-level keys are \"evidence\", then optionally \"work\", then \"answer\". The value of \"evidence\" is a list; each list entry has exactly the keys \"series\", \"category\", and \"value\".",
+      "image_status": "NOT_RENDERED_TABLE_IS_DESIGN_SPECIFICATION",
+      "developer_only": {
+        "target_indices": [
+          0,
+          1,
+          2
+        ],
+        "target_set": [
+          "May",
+          "June",
+          "April"
+        ],
+        "selected_values": [
+          "31",
+          "47",
+          "68"
+        ],
+        "answer_exact": "146",
+        "independent_answer_exact": "146",
+        "hand_answer_exact": "146",
+        "hand_target_set_indices": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "qid": "C_DESIGN_20261024_TIES_top2_mean",
+      "root_id": "C_DESIGN_20261024_TIES",
+      "world_id": "C_DESIGN_20261024_TIES_0",
+      "family": "TIES",
+      "label": "top2_mean",
+      "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+      "split": "DESIGN_ONLY",
+      "world": {
+        "categories": [
+          "May",
+          "June",
+          "April",
+          "January",
+          "February",
+          "March"
+        ],
+        "series": {
+          "Alpha": [
+            80,
+            58,
+            58,
+            58,
+            22,
+            11
+          ],
+          "Beta": [
+            31,
+            47,
+            68,
+            83,
+            72,
+            54
+          ]
+        },
+        "domain": [
+          10,
+          90
+        ]
+      },
+      "query": {
+        "family": "TOPK",
+        "selection_series": "Alpha",
+        "value": "Beta",
+        "k": 2,
+        "direction": "largest",
+        "aggregate": "mean"
+      },
+      "question": "Select the 2 categories with the largest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?",
+      "prompt": "Select the 2 categories with the largest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?\nAll displayed quantities are integer counts in [10,90]. Use the printed category order for ties. Empty sum or count is 0; other aggregates of an empty set are null. A one-element range is 0. Exact integers, finite decimals, and quoted fractions such as \"98/3\" are accepted. Do not use external tools. Include enough true chart facts to verify the selection and the answer; reporting all relevant facts is allowed. You may add a short \"work\" string after the evidence and before the answer; it is optional. Output exactly one JSON object whose top-level keys are \"evidence\", then optionally \"work\", then \"answer\". The value of \"evidence\" is a list; each list entry has exactly the keys \"series\", \"category\", and \"value\".",
+      "image_status": "NOT_RENDERED_TABLE_IS_DESIGN_SPECIFICATION",
+      "developer_only": {
+        "target_indices": [
+          0,
+          1
+        ],
+        "target_set": [
+          "May",
+          "June"
+        ],
+        "selected_values": [
+          "31",
+          "47"
+        ],
+        "answer_exact": "39",
+        "independent_answer_exact": "39",
+        "hand_answer_exact": "39",
+        "hand_target_set_indices": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "qid": "C_DESIGN_20261024_TIES_bottom3_mean",
+      "root_id": "C_DESIGN_20261024_TIES",
+      "world_id": "C_DESIGN_20261024_TIES_0",
+      "family": "TIES",
+      "label": "bottom3_mean",
+      "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+      "split": "DESIGN_ONLY",
+      "world": {
+        "categories": [
+          "May",
+          "June",
+          "April",
+          "January",
+          "February",
+          "March"
+        ],
+        "series": {
+          "Alpha": [
+            80,
+            58,
+            58,
+            58,
+            22,
+            11
+          ],
+          "Beta": [
+            31,
+            47,
+            68,
+            83,
+            72,
+            54
+          ]
+        },
+        "domain": [
+          10,
+          90
+        ]
+      },
+      "query": {
+        "family": "TOPK",
+        "selection_series": "Alpha",
+        "value": "Beta",
+        "k": 3,
+        "direction": "smallest",
+        "aggregate": "mean"
+      },
+      "question": "Select the 3 categories with the smallest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?",
+      "prompt": "Select the 3 categories with the smallest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?\nAll displayed quantities are integer counts in [10,90]. Use the printed category order for ties. Empty sum or count is 0; other aggregates of an empty set are null. A one-element range is 0. Exact integers, finite decimals, and quoted fractions such as \"98/3\" are accepted. Do not use external tools. Include enough true chart facts to verify the selection and the answer; reporting all relevant facts is allowed. You may add a short \"work\" string after the evidence and before the answer; it is optional. Output exactly one JSON object whose top-level keys are \"evidence\", then optionally \"work\", then \"answer\". The value of \"evidence\" is a list; each list entry has exactly the keys \"series\", \"category\", and \"value\".",
+      "image_status": "NOT_RENDERED_TABLE_IS_DESIGN_SPECIFICATION",
+      "developer_only": {
+        "target_indices": [
+          5,
+          4,
+          1
+        ],
+        "target_set": [
+          "March",
+          "February",
+          "June"
+        ],
+        "selected_values": [
+          "54",
+          "72",
+          "47"
+        ],
+        "answer_exact": "173/3",
+        "independent_answer_exact": "173/3",
+        "hand_answer_exact": "173/3",
+        "hand_target_set_indices": [
+          1,
+          4,
+          5
+        ]
+      }
+    },
+    {
+      "qid": "C_DESIGN_20261024_SIGNED_diff_mean",
+      "root_id": "C_DESIGN_20261024_SIGNED",
+      "world_id": "C_DESIGN_20261024_SIGNED_0",
+      "family": "SIGNED",
+      "label": "diff_mean",
+      "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+      "split": "DESIGN_ONLY",
+      "world": {
+        "categories": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June"
+        ],
+        "series": {
+          "Alpha": [
+            87,
+            74,
+            61,
+            49,
+            31,
+            17
+          ],
+          "Beta": [
+            89,
+            47,
+            82,
+            16,
+            68,
+            54
+          ]
+        },
+        "domain": [
+          10,
+          90
+        ]
+      },
+      "query": {
+        "family": "TOPK",
+        "selection_series": "Alpha",
+        "value": "diff",
+        "k": 3,
+        "direction": "largest",
+        "aggregate": "mean"
+      },
+      "question": "Select the 3 categories with the largest Alpha values. What is the arithmetic mean of the Alpha minus Beta differences over the selected categories?",
+      "prompt": "Select the 3 categories with the largest Alpha values. What is the arithmetic mean of the Alpha minus Beta differences over the selected categories?\nAll displayed quantities are integer counts in [10,90]. Use the printed category order for ties. Empty sum or count is 0; other aggregates of an empty set are null. A one-element range is 0. Exact integers, finite decimals, and quoted fractions such as \"98/3\" are accepted. Do not use external tools. Include enough true chart facts to verify the selection and the answer; reporting all relevant facts is allowed. You may add a short \"work\" string after the evidence and before the answer; it is optional. Output exactly one JSON object whose top-level keys are \"evidence\", then optionally \"work\", then \"answer\". The value of \"evidence\" is a list; each list entry has exactly the keys \"series\", \"category\", and \"value\".",
+      "image_status": "NOT_RENDERED_TABLE_IS_DESIGN_SPECIFICATION",
+      "developer_only": {
+        "target_indices": [
+          0,
+          1,
+          2
+        ],
+        "target_set": [
+          "January",
+          "February",
+          "March"
+        ],
+        "selected_values": [
+          "-2",
+          "27",
+          "-21"
+        ],
+        "answer_exact": "4/3",
+        "independent_answer_exact": "4/3",
+        "hand_answer_exact": "4/3",
+        "hand_target_set_indices": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "qid": "C_DESIGN_20261024_SIGNED_diff_sum",
+      "root_id": "C_DESIGN_20261024_SIGNED",
+      "world_id": "C_DESIGN_20261024_SIGNED_0",
+      "family": "SIGNED",
+      "label": "diff_sum",
+      "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+      "split": "DESIGN_ONLY",
+      "world": {
+        "categories": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June"
+        ],
+        "series": {
+          "Alpha": [
+            87,
+            74,
+            61,
+            49,
+            31,
+            17
+          ],
+          "Beta": [
+            89,
+            47,
+            82,
+            16,
+            68,
+            54
+          ]
+        },
+        "domain": [
+          10,
+          90
+        ]
+      },
+      "query": {
+        "family": "TOPK",
+        "selection_series": "Alpha",
+        "value": "diff",
+        "k": 3,
+        "direction": "largest",
+        "aggregate": "sum"
+      },
+      "question": "Select the 3 categories with the largest Alpha values. What is the sum of the Alpha minus Beta differences over the selected categories?",
+      "prompt": "Select the 3 categories with the largest Alpha values. What is the sum of the Alpha minus Beta differences over the selected categories?\nAll displayed quantities are integer counts in [10,90]. Use the printed category order for ties. Empty sum or count is 0; other aggregates of an empty set are null. A one-element range is 0. Exact integers, finite decimals, and quoted fractions such as \"98/3\" are accepted. Do not use external tools. Include enough true chart facts to verify the selection and the answer; reporting all relevant facts is allowed. You may add a short \"work\" string after the evidence and before the answer; it is optional. Output exactly one JSON object whose top-level keys are \"evidence\", then optionally \"work\", then \"answer\". The value of \"evidence\" is a list; each list entry has exactly the keys \"series\", \"category\", and \"value\".",
+      "image_status": "NOT_RENDERED_TABLE_IS_DESIGN_SPECIFICATION",
+      "developer_only": {
+        "target_indices": [
+          0,
+          1,
+          2
+        ],
+        "target_set": [
+          "January",
+          "February",
+          "March"
+        ],
+        "selected_values": [
+          "-2",
+          "27",
+          "-21"
+        ],
+        "answer_exact": "4",
+        "independent_answer_exact": "4",
+        "hand_answer_exact": "4",
+        "hand_target_set_indices": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "qid": "C_DESIGN_20261024_SIGNED_beta_mean",
+      "root_id": "C_DESIGN_20261024_SIGNED",
+      "world_id": "C_DESIGN_20261024_SIGNED_0",
+      "family": "SIGNED",
+      "label": "beta_mean",
+      "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+      "split": "DESIGN_ONLY",
+      "world": {
+        "categories": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June"
+        ],
+        "series": {
+          "Alpha": [
+            87,
+            74,
+            61,
+            49,
+            31,
+            17
+          ],
+          "Beta": [
+            89,
+            47,
+            82,
+            16,
+            68,
+            54
+          ]
+        },
+        "domain": [
+          10,
+          90
+        ]
+      },
+      "query": {
+        "family": "TOPK",
+        "selection_series": "Alpha",
+        "value": "Beta",
+        "k": 3,
+        "direction": "largest",
+        "aggregate": "mean"
+      },
+      "question": "Select the 3 categories with the largest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?",
+      "prompt": "Select the 3 categories with the largest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?\nAll displayed quantities are integer counts in [10,90]. Use the printed category order for ties. Empty sum or count is 0; other aggregates of an empty set are null. A one-element range is 0. Exact integers, finite decimals, and quoted fractions such as \"98/3\" are accepted. Do not use external tools. Include enough true chart facts to verify the selection and the answer; reporting all relevant facts is allowed. You may add a short \"work\" string after the evidence and before the answer; it is optional. Output exactly one JSON object whose top-level keys are \"evidence\", then optionally \"work\", then \"answer\". The value of \"evidence\" is a list; each list entry has exactly the keys \"series\", \"category\", and \"value\".",
+      "image_status": "NOT_RENDERED_TABLE_IS_DESIGN_SPECIFICATION",
+      "developer_only": {
+        "target_indices": [
+          0,
+          1,
+          2
+        ],
+        "target_set": [
+          "January",
+          "February",
+          "March"
+        ],
+        "selected_values": [
+          "89",
+          "47",
+          "82"
+        ],
+        "answer_exact": "218/3",
+        "independent_answer_exact": "218/3",
+        "hand_answer_exact": "218/3",
+        "hand_target_set_indices": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "qid": "C_DESIGN_20261024_SIGNED_rank_beta_diff_mean",
+      "root_id": "C_DESIGN_20261024_SIGNED",
+      "world_id": "C_DESIGN_20261024_SIGNED_0",
+      "family": "SIGNED",
+      "label": "rank_beta_diff_mean",
+      "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+      "split": "DESIGN_ONLY",
+      "world": {
+        "categories": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June"
+        ],
+        "series": {
+          "Alpha": [
+            87,
+            74,
+            61,
+            49,
+            31,
+            17
+          ],
+          "Beta": [
+            89,
+            47,
+            82,
+            16,
+            68,
+            54
+          ]
+        },
+        "domain": [
+          10,
+          90
+        ]
+      },
+      "query": {
+        "family": "TOPK",
+        "selection_series": "Beta",
+        "value": "diff",
+        "k": 3,
+        "direction": "largest",
+        "aggregate": "mean"
+      },
+      "question": "Select the 3 categories with the largest Beta values. What is the arithmetic mean of the Alpha minus Beta differences over the selected categories?",
+      "prompt": "Select the 3 categories with the largest Beta values. What is the arithmetic mean of the Alpha minus Beta differences over the selected categories?\nAll displayed quantities are integer counts in [10,90]. Use the printed category order for ties. Empty sum or count is 0; other aggregates of an empty set are null. A one-element range is 0. Exact integers, finite decimals, and quoted fractions such as \"98/3\" are accepted. Do not use external tools. Include enough true chart facts to verify the selection and the answer; reporting all relevant facts is allowed. You may add a short \"work\" string after the evidence and before the answer; it is optional. Output exactly one JSON object whose top-level keys are \"evidence\", then optionally \"work\", then \"answer\". The value of \"evidence\" is a list; each list entry has exactly the keys \"series\", \"category\", and \"value\".",
+      "image_status": "NOT_RENDERED_TABLE_IS_DESIGN_SPECIFICATION",
+      "developer_only": {
+        "target_indices": [
+          0,
+          2,
+          4
+        ],
+        "target_set": [
+          "January",
+          "March",
+          "May"
+        ],
+        "selected_values": [
+          "-2",
+          "-21",
+          "-37"
+        ],
+        "answer_exact": "-20",
+        "independent_answer_exact": "-20",
+        "hand_answer_exact": "-20",
+        "hand_target_set_indices": [
+          0,
+          2,
+          4
+        ]
+      }
+    },
+    {
+      "qid": "C_DESIGN_20261024_INTERVAL_main",
+      "root_id": "C_DESIGN_20261024_INTERVAL",
+      "world_id": "C_DESIGN_20261024_INTERVAL_0",
+      "family": "INTERVAL",
+      "label": "main",
+      "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+      "split": "DESIGN_ONLY",
+      "world": {
+        "categories": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August"
+        ],
+        "series": {
+          "Alpha": [
+            70,
+            67,
+            58,
+            41,
+            66,
+            28,
+            81,
+            20
+          ],
+          "Beta": [
+            20,
+            26,
+            22,
+            41,
+            37,
+            50,
+            30,
+            65
+          ]
+        },
+        "domain": [
+          10,
+          90
+        ]
+      },
+      "query": {
+        "family": "INTERVAL",
+        "start": 1,
+        "end": 6,
+        "include_start": false,
+        "include_end": true,
+        "positive_only": true,
+        "value": "diff",
+        "aggregate": "mean"
+      },
+      "question": "Select the categories from February to July, excluding the start and including the end, retaining only categories where Alpha exceeds Beta. What is the arithmetic mean of the Alpha minus Beta differences over the selected categories?",
+      "prompt": "Select the categories from February to July, excluding the start and including the end, retaining only categories where Alpha exceeds Beta. What is the arithmetic mean of the Alpha minus Beta differences over the selected categories?\nAll displayed quantities are integer counts in [10,90]. Use the printed category order for ties. Empty sum or count is 0; other aggregates of an empty set are null. A one-element range is 0. Exact integers, finite decimals, and quoted fractions such as \"98/3\" are accepted. Do not use external tools. Include enough true chart facts to verify the selection and the answer; reporting all relevant facts is allowed. You may add a short \"work\" string after the evidence and before the answer; it is optional. Output exactly one JSON object whose top-level keys are \"evidence\", then optionally \"work\", then \"answer\". The value of \"evidence\" is a list; each list entry has exactly the keys \"series\", \"category\", and \"value\".",
+      "image_status": "NOT_RENDERED_TABLE_IS_DESIGN_SPECIFICATION",
+      "developer_only": {
+        "target_indices": [
+          2,
+          4,
+          6
+        ],
+        "target_set": [
+          "March",
+          "May",
+          "July"
+        ],
+        "selected_values": [
+          "36",
+          "29",
+          "51"
+        ],
+        "answer_exact": "116/3",
+        "independent_answer_exact": "116/3",
+        "hand_answer_exact": "116/3",
+        "hand_target_set_indices": [
+          2,
+          4,
+          6
+        ]
+      }
+    },
+    {
+      "qid": "C_DESIGN_20261024_INTERVAL_include_start",
+      "root_id": "C_DESIGN_20261024_INTERVAL",
+      "world_id": "C_DESIGN_20261024_INTERVAL_0",
+      "family": "INTERVAL",
+      "label": "include_start",
+      "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+      "split": "DESIGN_ONLY",
+      "world": {
+        "categories": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August"
+        ],
+        "series": {
+          "Alpha": [
+            70,
+            67,
+            58,
+            41,
+            66,
+            28,
+            81,
+            20
+          ],
+          "Beta": [
+            20,
+            26,
+            22,
+            41,
+            37,
+            50,
+            30,
+            65
+          ]
+        },
+        "domain": [
+          10,
+          90
+        ]
+      },
+      "query": {
+        "family": "INTERVAL",
+        "start": 1,
+        "end": 6,
+        "include_start": true,
+        "include_end": true,
+        "positive_only": true,
+        "value": "diff",
+        "aggregate": "mean"
+      },
+      "question": "Select the categories from February to July, including the start and including the end, retaining only categories where Alpha exceeds Beta. What is the arithmetic mean of the Alpha minus Beta differences over the selected categories?",
+      "prompt": "Select the categories from February to July, including the start and including the end, retaining only categories where Alpha exceeds Beta. What is the arithmetic mean of the Alpha minus Beta differences over the selected categories?\nAll displayed quantities are integer counts in [10,90]. Use the printed category order for ties. Empty sum or count is 0; other aggregates of an empty set are null. A one-element range is 0. Exact integers, finite decimals, and quoted fractions such as \"98/3\" are accepted. Do not use external tools. Include enough true chart facts to verify the selection and the answer; reporting all relevant facts is allowed. You may add a short \"work\" string after the evidence and before the answer; it is optional. Output exactly one JSON object whose top-level keys are \"evidence\", then optionally \"work\", then \"answer\". The value of \"evidence\" is a list; each list entry has exactly the keys \"series\", \"category\", and \"value\".",
+      "image_status": "NOT_RENDERED_TABLE_IS_DESIGN_SPECIFICATION",
+      "developer_only": {
+        "target_indices": [
+          1,
+          2,
+          4,
+          6
+        ],
+        "target_set": [
+          "February",
+          "March",
+          "May",
+          "July"
+        ],
+        "selected_values": [
+          "41",
+          "36",
+          "29",
+          "51"
+        ],
+        "answer_exact": "157/4",
+        "independent_answer_exact": "157/4",
+        "hand_answer_exact": "157/4",
+        "hand_target_set_indices": [
+          1,
+          2,
+          4,
+          6
+        ]
+      }
+    },
+    {
+      "qid": "C_DESIGN_20261024_INTERVAL_exclude_end",
+      "root_id": "C_DESIGN_20261024_INTERVAL",
+      "world_id": "C_DESIGN_20261024_INTERVAL_0",
+      "family": "INTERVAL",
+      "label": "exclude_end",
+      "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+      "split": "DESIGN_ONLY",
+      "world": {
+        "categories": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August"
+        ],
+        "series": {
+          "Alpha": [
+            70,
+            67,
+            58,
+            41,
+            66,
+            28,
+            81,
+            20
+          ],
+          "Beta": [
+            20,
+            26,
+            22,
+            41,
+            37,
+            50,
+            30,
+            65
+          ]
+        },
+        "domain": [
+          10,
+          90
+        ]
+      },
+      "query": {
+        "family": "INTERVAL",
+        "start": 1,
+        "end": 6,
+        "include_start": false,
+        "include_end": false,
+        "positive_only": true,
+        "value": "diff",
+        "aggregate": "mean"
+      },
+      "question": "Select the categories from February to July, excluding the start and excluding the end, retaining only categories where Alpha exceeds Beta. What is the arithmetic mean of the Alpha minus Beta differences over the selected categories?",
+      "prompt": "Select the categories from February to July, excluding the start and excluding the end, retaining only categories where Alpha exceeds Beta. What is the arithmetic mean of the Alpha minus Beta differences over the selected categories?\nAll displayed quantities are integer counts in [10,90]. Use the printed category order for ties. Empty sum or count is 0; other aggregates of an empty set are null. A one-element range is 0. Exact integers, finite decimals, and quoted fractions such as \"98/3\" are accepted. Do not use external tools. Include enough true chart facts to verify the selection and the answer; reporting all relevant facts is allowed. You may add a short \"work\" string after the evidence and before the answer; it is optional. Output exactly one JSON object whose top-level keys are \"evidence\", then optionally \"work\", then \"answer\". The value of \"evidence\" is a list; each list entry has exactly the keys \"series\", \"category\", and \"value\".",
+      "image_status": "NOT_RENDERED_TABLE_IS_DESIGN_SPECIFICATION",
+      "developer_only": {
+        "target_indices": [
+          2,
+          4
+        ],
+        "target_set": [
+          "March",
+          "May"
+        ],
+        "selected_values": [
+          "36",
+          "29"
+        ],
+        "answer_exact": "65/2",
+        "independent_answer_exact": "65/2",
+        "hand_answer_exact": "65/2",
+        "hand_target_set_indices": [
+          2,
+          4
+        ]
+      }
+    },
+    {
+      "qid": "C_DESIGN_20261024_INTERVAL_no_filter",
+      "root_id": "C_DESIGN_20261024_INTERVAL",
+      "world_id": "C_DESIGN_20261024_INTERVAL_0",
+      "family": "INTERVAL",
+      "label": "no_filter",
+      "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+      "split": "DESIGN_ONLY",
+      "world": {
+        "categories": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August"
+        ],
+        "series": {
+          "Alpha": [
+            70,
+            67,
+            58,
+            41,
+            66,
+            28,
+            81,
+            20
+          ],
+          "Beta": [
+            20,
+            26,
+            22,
+            41,
+            37,
+            50,
+            30,
+            65
+          ]
+        },
+        "domain": [
+          10,
+          90
+        ]
+      },
+      "query": {
+        "family": "INTERVAL",
+        "start": 1,
+        "end": 6,
+        "include_start": false,
+        "include_end": true,
+        "positive_only": false,
+        "value": "diff",
+        "aggregate": "mean"
+      },
+      "question": "Select the categories from February to July, excluding the start and including the end. What is the arithmetic mean of the Alpha minus Beta differences over the selected categories?",
+      "prompt": "Select the categories from February to July, excluding the start and including the end. What is the arithmetic mean of the Alpha minus Beta differences over the selected categories?\nAll displayed quantities are integer counts in [10,90]. Use the printed category order for ties. Empty sum or count is 0; other aggregates of an empty set are null. A one-element range is 0. Exact integers, finite decimals, and quoted fractions such as \"98/3\" are accepted. Do not use external tools. Include enough true chart facts to verify the selection and the answer; reporting all relevant facts is allowed. You may add a short \"work\" string after the evidence and before the answer; it is optional. Output exactly one JSON object whose top-level keys are \"evidence\", then optionally \"work\", then \"answer\". The value of \"evidence\" is a list; each list entry has exactly the keys \"series\", \"category\", and \"value\".",
+      "image_status": "NOT_RENDERED_TABLE_IS_DESIGN_SPECIFICATION",
+      "developer_only": {
+        "target_indices": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "target_set": [
+          "March",
+          "April",
+          "May",
+          "June",
+          "July"
+        ],
+        "selected_values": [
+          "36",
+          "0",
+          "29",
+          "-22",
+          "51"
+        ],
+        "answer_exact": "94/5",
+        "independent_answer_exact": "94/5",
+        "hand_answer_exact": "94/5",
+        "hand_target_set_indices": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      }
+    },
+    {
+      "qid": "C_DESIGN_20261024_K_DIRECTION_largest_2",
+      "root_id": "C_DESIGN_20261024_K_DIRECTION",
+      "world_id": "C_DESIGN_20261024_K_DIRECTION_0",
+      "family": "K_DIRECTION",
+      "label": "largest_2",
+      "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+      "split": "DESIGN_ONLY",
+      "world": {
+        "categories": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August"
+        ],
+        "series": {
+          "Alpha": [
+            42,
+            86,
+            57,
+            21,
+            74,
+            35,
+            63,
+            12
+          ],
+          "Beta": [
+            66,
+            24,
+            78,
+            43,
+            51,
+            87,
+            19,
+            60
+          ]
+        },
+        "domain": [
+          10,
+          90
+        ]
+      },
+      "query": {
+        "family": "TOPK",
+        "selection_series": "Alpha",
+        "value": "Beta",
+        "k": 2,
+        "direction": "largest",
+        "aggregate": "mean"
+      },
+      "question": "Select the 2 categories with the largest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?",
+      "prompt": "Select the 2 categories with the largest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?\nAll displayed quantities are integer counts in [10,90]. Use the printed category order for ties. Empty sum or count is 0; other aggregates of an empty set are null. A one-element range is 0. Exact integers, finite decimals, and quoted fractions such as \"98/3\" are accepted. Do not use external tools. Include enough true chart facts to verify the selection and the answer; reporting all relevant facts is allowed. You may add a short \"work\" string after the evidence and before the answer; it is optional. Output exactly one JSON object whose top-level keys are \"evidence\", then optionally \"work\", then \"answer\". The value of \"evidence\" is a list; each list entry has exactly the keys \"series\", \"category\", and \"value\".",
+      "image_status": "NOT_RENDERED_TABLE_IS_DESIGN_SPECIFICATION",
+      "developer_only": {
+        "target_indices": [
+          1,
+          4
+        ],
+        "target_set": [
+          "February",
+          "May"
+        ],
+        "selected_values": [
+          "24",
+          "51"
+        ],
+        "answer_exact": "75/2",
+        "independent_answer_exact": "75/2",
+        "hand_answer_exact": "75/2",
+        "hand_target_set_indices": [
+          1,
+          4
+        ]
+      }
+    },
+    {
+      "qid": "C_DESIGN_20261024_K_DIRECTION_largest_3",
+      "root_id": "C_DESIGN_20261024_K_DIRECTION",
+      "world_id": "C_DESIGN_20261024_K_DIRECTION_0",
+      "family": "K_DIRECTION",
+      "label": "largest_3",
+      "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+      "split": "DESIGN_ONLY",
+      "world": {
+        "categories": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August"
+        ],
+        "series": {
+          "Alpha": [
+            42,
+            86,
+            57,
+            21,
+            74,
+            35,
+            63,
+            12
+          ],
+          "Beta": [
+            66,
+            24,
+            78,
+            43,
+            51,
+            87,
+            19,
+            60
+          ]
+        },
+        "domain": [
+          10,
+          90
+        ]
+      },
+      "query": {
+        "family": "TOPK",
+        "selection_series": "Alpha",
+        "value": "Beta",
+        "k": 3,
+        "direction": "largest",
+        "aggregate": "mean"
+      },
+      "question": "Select the 3 categories with the largest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?",
+      "prompt": "Select the 3 categories with the largest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?\nAll displayed quantities are integer counts in [10,90]. Use the printed category order for ties. Empty sum or count is 0; other aggregates of an empty set are null. A one-element range is 0. Exact integers, finite decimals, and quoted fractions such as \"98/3\" are accepted. Do not use external tools. Include enough true chart facts to verify the selection and the answer; reporting all relevant facts is allowed. You may add a short \"work\" string after the evidence and before the answer; it is optional. Output exactly one JSON object whose top-level keys are \"evidence\", then optionally \"work\", then \"answer\". The value of \"evidence\" is a list; each list entry has exactly the keys \"series\", \"category\", and \"value\".",
+      "image_status": "NOT_RENDERED_TABLE_IS_DESIGN_SPECIFICATION",
+      "developer_only": {
+        "target_indices": [
+          1,
+          4,
+          6
+        ],
+        "target_set": [
+          "February",
+          "May",
+          "July"
+        ],
+        "selected_values": [
+          "24",
+          "51",
+          "19"
+        ],
+        "answer_exact": "94/3",
+        "independent_answer_exact": "94/3",
+        "hand_answer_exact": "94/3",
+        "hand_target_set_indices": [
+          1,
+          4,
+          6
+        ]
+      }
+    },
+    {
+      "qid": "C_DESIGN_20261024_K_DIRECTION_smallest_2",
+      "root_id": "C_DESIGN_20261024_K_DIRECTION",
+      "world_id": "C_DESIGN_20261024_K_DIRECTION_0",
+      "family": "K_DIRECTION",
+      "label": "smallest_2",
+      "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+      "split": "DESIGN_ONLY",
+      "world": {
+        "categories": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August"
+        ],
+        "series": {
+          "Alpha": [
+            42,
+            86,
+            57,
+            21,
+            74,
+            35,
+            63,
+            12
+          ],
+          "Beta": [
+            66,
+            24,
+            78,
+            43,
+            51,
+            87,
+            19,
+            60
+          ]
+        },
+        "domain": [
+          10,
+          90
+        ]
+      },
+      "query": {
+        "family": "TOPK",
+        "selection_series": "Alpha",
+        "value": "Beta",
+        "k": 2,
+        "direction": "smallest",
+        "aggregate": "mean"
+      },
+      "question": "Select the 2 categories with the smallest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?",
+      "prompt": "Select the 2 categories with the smallest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?\nAll displayed quantities are integer counts in [10,90]. Use the printed category order for ties. Empty sum or count is 0; other aggregates of an empty set are null. A one-element range is 0. Exact integers, finite decimals, and quoted fractions such as \"98/3\" are accepted. Do not use external tools. Include enough true chart facts to verify the selection and the answer; reporting all relevant facts is allowed. You may add a short \"work\" string after the evidence and before the answer; it is optional. Output exactly one JSON object whose top-level keys are \"evidence\", then optionally \"work\", then \"answer\". The value of \"evidence\" is a list; each list entry has exactly the keys \"series\", \"category\", and \"value\".",
+      "image_status": "NOT_RENDERED_TABLE_IS_DESIGN_SPECIFICATION",
+      "developer_only": {
+        "target_indices": [
+          7,
+          3
+        ],
+        "target_set": [
+          "August",
+          "April"
+        ],
+        "selected_values": [
+          "60",
+          "43"
+        ],
+        "answer_exact": "103/2",
+        "independent_answer_exact": "103/2",
+        "hand_answer_exact": "103/2",
+        "hand_target_set_indices": [
+          3,
+          7
+        ]
+      }
+    },
+    {
+      "qid": "C_DESIGN_20261024_K_DIRECTION_smallest_3",
+      "root_id": "C_DESIGN_20261024_K_DIRECTION",
+      "world_id": "C_DESIGN_20261024_K_DIRECTION_0",
+      "family": "K_DIRECTION",
+      "label": "smallest_3",
+      "status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+      "split": "DESIGN_ONLY",
+      "world": {
+        "categories": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August"
+        ],
+        "series": {
+          "Alpha": [
+            42,
+            86,
+            57,
+            21,
+            74,
+            35,
+            63,
+            12
+          ],
+          "Beta": [
+            66,
+            24,
+            78,
+            43,
+            51,
+            87,
+            19,
+            60
+          ]
+        },
+        "domain": [
+          10,
+          90
+        ]
+      },
+      "query": {
+        "family": "TOPK",
+        "selection_series": "Alpha",
+        "value": "Beta",
+        "k": 3,
+        "direction": "smallest",
+        "aggregate": "mean"
+      },
+      "question": "Select the 3 categories with the smallest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?",
+      "prompt": "Select the 3 categories with the smallest Alpha values. What is the arithmetic mean of the Beta values over the selected categories?\nAll displayed quantities are integer counts in [10,90]. Use the printed category order for ties. Empty sum or count is 0; other aggregates of an empty set are null. A one-element range is 0. Exact integers, finite decimals, and quoted fractions such as \"98/3\" are accepted. Do not use external tools. Include enough true chart facts to verify the selection and the answer; reporting all relevant facts is allowed. You may add a short \"work\" string after the evidence and before the answer; it is optional. Output exactly one JSON object whose top-level keys are \"evidence\", then optionally \"work\", then \"answer\". The value of \"evidence\" is a list; each list entry has exactly the keys \"series\", \"category\", and \"value\".",
+      "image_status": "NOT_RENDERED_TABLE_IS_DESIGN_SPECIFICATION",
+      "developer_only": {
+        "target_indices": [
+          7,
+          3,
+          5
+        ],
+        "target_set": [
+          "August",
+          "April",
+          "June"
+        ],
+        "selected_values": [
+          "60",
+          "43",
+          "87"
+        ],
+        "answer_exact": "190/3",
+        "independent_answer_exact": "190/3",
+        "hand_answer_exact": "190/3",
+        "hand_target_set_indices": [
+          3,
+          5,
+          7
+        ]
+      }
+    }
+  ]
+}

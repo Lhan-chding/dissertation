@@ -1,0 +1,248 @@
+{
+  "status": "CPU_ARITHMETIC_CHECKED_ONLY",
+  "design_status": "DESIGN_PROTOTYPE_NOT_FROZEN_NOT_MODEL_TESTED",
+  "question_count": 24,
+  "worlds": 9,
+  "root_lineages": 6,
+  "hand_and_two_oracles_agree": 24,
+  "hand_selected_sets_agree": 24,
+  "wrong_rule_checks": [
+    {
+      "qid": "C_DESIGN_20261024_BINDING_Alpha_to_Beta",
+      "rule": "rank_by_wrong_column",
+      "indices": [
+        2,
+        3,
+        4
+      ],
+      "categories": [
+        "March",
+        "April",
+        "May"
+      ],
+      "recomputed_answer_exact": "223/3",
+      "same_final_answer": false,
+      "is_observed_model_response": false
+    },
+    {
+      "qid": "C_DESIGN_20261024_IMPACT_zero",
+      "rule": "swap_boundary_March_for_April",
+      "indices": [
+        0,
+        1,
+        3
+      ],
+      "categories": [
+        "January",
+        "February",
+        "April"
+      ],
+      "recomputed_answer_exact": "130/3",
+      "same_final_answer": true,
+      "is_observed_model_response": false
+    },
+    {
+      "qid": "C_DESIGN_20261024_IMPACT_small",
+      "rule": "swap_boundary_March_for_April",
+      "indices": [
+        0,
+        1,
+        3
+      ],
+      "categories": [
+        "January",
+        "February",
+        "April"
+      ],
+      "recomputed_answer_exact": "116/3",
+      "same_final_answer": false,
+      "is_observed_model_response": false
+    },
+    {
+      "qid": "C_DESIGN_20261024_IMPACT_medium",
+      "rule": "swap_boundary_March_for_April",
+      "indices": [
+        0,
+        1,
+        3
+      ],
+      "categories": [
+        "January",
+        "February",
+        "April"
+      ],
+      "recomputed_answer_exact": "39",
+      "same_final_answer": false,
+      "is_observed_model_response": false
+    },
+    {
+      "qid": "C_DESIGN_20261024_IMPACT_large",
+      "rule": "swap_boundary_March_for_April",
+      "indices": [
+        0,
+        1,
+        3
+      ],
+      "categories": [
+        "January",
+        "February",
+        "April"
+      ],
+      "recomputed_answer_exact": "92/3",
+      "same_final_answer": false,
+      "is_observed_model_response": false
+    },
+    {
+      "qid": "C_DESIGN_20261024_TIES_top3_mean",
+      "rule": "calendar_order_breaks_tie",
+      "indices": [
+        0,
+        3,
+        2
+      ],
+      "categories": [
+        "May",
+        "January",
+        "April"
+      ],
+      "recomputed_answer_exact": "182/3",
+      "same_final_answer": false,
+      "is_observed_model_response": false
+    },
+    {
+      "qid": "C_DESIGN_20261024_TIES_top3_mean",
+      "rule": "include_entire_tie_block",
+      "indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "categories": [
+        "May",
+        "June",
+        "April",
+        "January"
+      ],
+      "recomputed_answer_exact": "229/4",
+      "same_final_answer": false,
+      "is_observed_model_response": false
+    },
+    {
+      "qid": "C_DESIGN_20261024_SIGNED_diff_mean",
+      "rule": "rank_by_wrong_column",
+      "indices": [
+        0,
+        2,
+        4
+      ],
+      "categories": [
+        "January",
+        "March",
+        "May"
+      ],
+      "recomputed_answer_exact": "-20",
+      "same_final_answer": false,
+      "is_observed_model_response": false
+    },
+    {
+      "qid": "C_DESIGN_20261024_INTERVAL_main",
+      "rule": "include_excluded_start",
+      "indices": [
+        1,
+        2,
+        4,
+        6
+      ],
+      "categories": [
+        "February",
+        "March",
+        "May",
+        "July"
+      ],
+      "recomputed_answer_exact": "157/4",
+      "same_final_answer": false,
+      "is_observed_model_response": false
+    },
+    {
+      "qid": "C_DESIGN_20261024_INTERVAL_main",
+      "rule": "exclude_included_end",
+      "indices": [
+        2,
+        4
+      ],
+      "categories": [
+        "March",
+        "May"
+      ],
+      "recomputed_answer_exact": "65/2",
+      "same_final_answer": false,
+      "is_observed_model_response": false
+    },
+    {
+      "qid": "C_DESIGN_20261024_INTERVAL_main",
+      "rule": "omit_positive_filter",
+      "indices": [
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "categories": [
+        "March",
+        "April",
+        "May",
+        "June",
+        "July"
+      ],
+      "recomputed_answer_exact": "94/5",
+      "same_final_answer": false,
+      "is_observed_model_response": false
+    }
+  ],
+  "mixed_J_failure_bounds": [
+    {
+      "successes": 1,
+      "failure_native_advantage": -0.3779644615806561,
+      "loose_final_upper_bound": -0.1279644615806561
+    },
+    {
+      "successes": 2,
+      "failure_native_advantage": -0.5773502558562927,
+      "loose_final_upper_bound": -0.32735025585629274
+    },
+    {
+      "successes": 3,
+      "failure_native_advantage": -0.7745966532414836,
+      "loose_final_upper_bound": -0.5245966532414836
+    },
+    {
+      "successes": 4,
+      "failure_native_advantage": -0.9999999800000003,
+      "loose_final_upper_bound": -0.7499999800000003
+    },
+    {
+      "successes": 5,
+      "failure_native_advantage": -1.2909944220691394,
+      "loose_final_upper_bound": -1.0409944220691394
+    },
+    {
+      "successes": 6,
+      "failure_native_advantage": -1.7320507675688783,
+      "loose_final_upper_bound": -1.4820507675688783
+    },
+    {
+      "successes": 7,
+      "failure_native_advantage": -2.645751231064593,
+      "loose_final_upper_bound": -2.395751231064593
+    }
+  ],
+  "model_calls": 0,
+  "gpu_jobs": 0,
+  "hashes_computed": 0,
+  "images_rendered": 0,
+  "unknown_labels_filled": 0,
+  "natural_signal_density": "NOT_MEASURED",
+  "r6_natural_response_coverage": "NOT_MEASURED"
+}
