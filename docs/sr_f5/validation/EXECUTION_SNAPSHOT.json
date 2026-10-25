@@ -1,5 +1,5 @@
 {
-  "status": "G2_PASS_G3_ACTIVE_NOT_SCIENTIFIC_COMPLETE",
+  "status": "G2_PASS_G3_NUMERICAL_DIAGNOSIS_REQUIRED",
   "as_of_local": "2026-10-25 23:58 Asia/Singapore",
   "cpu_job": {
     "id": "226030",
@@ -93,7 +93,7 @@
     "current_receipt": "CONTINUATION/CURRENT.json"
   },
   "g3": {
-    "status": "ACTIVE_NOT_PASSED",
+    "status": "INCOMPLETE_PROBABILITY_FAILURE",
     "primary_answers": 23040,
     "recovery_answers": 5120,
     "workers": [
@@ -106,8 +106,9 @@
       {
         "job_id": "226283",
         "gpus": 2,
-        "state": "RUNNING",
-        "node": "gpu-pro6000-9"
+        "state": "FAILED",
+        "node": "gpu-pro6000-9",
+        "exit_code": "1:0"
       }
     ],
     "evidence_directory": "G2_FINAL_20261025",
@@ -121,7 +122,8 @@
       "b0-HARD",
       "b0-LOCAL"
     ],
-    "observed_at": "2026-10-25T17:18:57Z"
+    "observed_at": "2026-10-25T17:18:57Z",
+    "latest_failure_evidence": "G3_PROBABILITY_FAILURE_226283.json"
   },
   "drain_controller": {
     "job": "226455",

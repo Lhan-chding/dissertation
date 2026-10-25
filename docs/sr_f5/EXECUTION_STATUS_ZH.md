@@ -1,6 +1,6 @@
 # SR-F5 执行状态（2026-10-25，新加坡）
 
-**2026-10-26 00:58（新加坡）：b0 HARD/LOCAL 的连续 12 步主路径及独立恢复对照均完成，冻结精确比较均 PASS；每臂 128 组重新生成结果全部匹配。快节点已继续 b1-SHUF/b1-DENSE。五张 GPU 继续运行，G3 尚未通过，正式实验未开始。**
+**2026-10-26 02:00（新加坡）：G3 作业 226283 因 b1-SHUF 第 7 步概率尾部检查失败而退出，未提交该步；同作业 b1-DENSE 被联动停止在第 6 步后。HARD/LOCAL 恢复 PASS 保留。J/SHUF 恢复及追加卡继续运行，准备同 token 定向诊断；G3 未通过，正式实验未开始。**
 
 从 F4 提交 `750db3d` 建立独立分支 `sr-f5-semantic-j-v1`。G2 沿用冻结科学代码 `26e560bac1a7c5b5563f52112bc1374685084b8d`，未因部署修复重生成回答。G3 运行代码为 `ea50c51f0f145a183df360ab82025216d6303aca`，服务器部署 `/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_ea50c51`。
 
@@ -25,7 +25,7 @@
 |226156|LH-SRF5-G2-DECISION|0|FAILED，部署缺少原生依赖文档，失败记录保留|
 |226277|LH-SRF5-G2-DECISION|0|COMPLETED / 0:0；84 项服务器检查通过，G2 汇总并提交 G3|
 |226282|LH-SRF5-G3-P0|2|RUNNING / gpu-pro6000-12|
-|226283|LH-SRF5-G3-P1|2|RUNNING / gpu-pro6000-9|
+|226283|LH-SRF5-G3-P1|2|FAILED / 1:0；b1-SHUF step7 概率尾部报警|
 |226455|LH-SRF5-G3-DRAIN|0|RUNNING / cpu-2；控制步骤位于 226282 allocation|
 |226588|LH-SRF5-G3-EXTRA|1|RUNNING / gpu-pro6000-7；用户授权夜间增加的第五张卡|
 
@@ -38,6 +38,8 @@ G3 共 15 条独立主路径、23,040 条回答；b0 五臂增加 5,120 条恢�
 00:58 实际核查：共保存 9,144/28,160 条回答（主路径 7,096，恢复诊断 2,048）。HARD/LOCAL 的模型、Adam、scheduler、各 RNG、原始采样和数值信用更新均精确匹配，连续主运行与新进程恢复身份检查全部通过；原始回执见 `validation/G3_FIRST_RECOVERY_PASS_20261026.json`。这只是五臂恢复要求中的两臂通过，不能替代完整 G3 门。J/SHUF 仍在连续主路径，边界控制器 ARMED、事件为空；追加 b2-DENSE 已提交 8 步。上述为时间点快照，继续以服务器当前回执为准。
 
 01:18 核查：J/SHUF 连续主路径均 COMPLETE（12 步、从零开始），已进入恢复。控制器验证身份后暂停两个调度父进程；只读进程检查确认父进程为 T、两个恢复子进程为 R、控制器存活，PID/start_ticks 与事件记录一致。五张 GPU 继续工作，累计 10,296 条已保存回答；尚无 J/SHUF 恢复 PASS，不能取消或重提原作业。回执见 `validation/G3_DRAIN_RECOVERY_ACTIVE_20261026.json`。
+
+02:00 失败诊断：b1-SHUF step7 的 64,221 个 token 中，sampler/train 差值均值 0.00141256 nat、最大 5.12116194 nat（冻结报警阈值 5）；TIS 触顶比例 0.0000155712。最大差值位于 `G3-b1-SHUF/007/06/3` 的 token 162（ID 313）。两个概率路径原已使用 FP32 log_softmax，不能把重复转换宣称修复。作业终态 FAILED/1:0，SHUF/DENSE 均保留 step006 原子检查点；SHUF step7 的 16 组完整保留，DENSE 完成 8 组、第 9 组只有 attempt 无完整原文，禁止盲目重采。完整失败向量在服务器 `NUMERICAL_TOKEN_AUDIT.jsonl`，本地摘要 `validation/G3_PROBABILITY_FAILURE_226283.json`。按 contract/07 准备冻结相同权重、相同 token 的原精度/FP32 模型诊断，不生成新回答、不更新参数、不降低阈值，诊断后再决定工程修复或登记配方变化。
 
 ## 利用率与效率边界
 

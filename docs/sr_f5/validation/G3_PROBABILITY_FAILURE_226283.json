@@ -1,0 +1,447 @@
+{
+  "observed_at": "2026-10-25T18:01:41.407297+00:00",
+  "job": "226283",
+  "science_revision": "ea50c51f0f145a183df360ab82025216d6303aca",
+  "accounting": "JobID|JobName|State|ExitCode|Elapsed|Reason\n226283|LH-SRF5-G3-P1|FAILED|1:0|04:07:17|None\n226283.batch|batch|FAILED|1:0|04:07:17|\n226283.extern|extern|COMPLETED|0:0|04:07:17|\n",
+  "failures": [
+    {
+      "at": "2026-10-25T17:57:19.259699+00:00",
+      "run_id": "G3-b1-SHUF",
+      "lane": "primary",
+      "attempted_step": 7,
+      "error": "ProbabilityMismatch('Token sampler/train discrepancy exceeds 5 nat; diagnose before update')",
+      "action": "preserve_failed_attempt_and_restore_committed_checkpoint"
+    }
+  ],
+  "diagnostics": [
+    {
+      "at": "2026-10-25T17:54:17.325586+00:00",
+      "run_id": "G3-b1-SHUF",
+      "step": 7,
+      "arm": "SHUF",
+      "pilot_lane": "primary",
+      "pilot_execution_id": "9905d4ecc6be4898aee64cc945cbd407",
+      "status": "UNCOMMITTED_FAILURE",
+      "error": "Token sampler/train discrepancy exceeds 5 nat; diagnose before update",
+      "diagnostics": {
+        "status": "FINITE",
+        "token_count": 64221,
+        "sampler_train_mean_absolute_difference": 0.0014125623274594545,
+        "sampler_train_p99_absolute_difference": 0.03690147027373314,
+        "sampler_train_max_absolute_difference": 5.121161937713623,
+        "sampler_train_absolute_quantiles": {
+          "min": 0.0,
+          "p50": 0.0,
+          "p95": 0.0001456530299037695,
+          "p99": 0.03690147027373314,
+          "p99_9": 0.1965140551328659,
+          "max": 5.121161937713623
+        },
+        "reference_current_signed_quantiles": {
+          "min": -2.735328435897827,
+          "p50": -1.1920926112907182e-07,
+          "p95": 4.7683579396107234e-07,
+          "p99": 0.010580264963209629,
+          "p99_9": 0.590833306312561,
+          "max": 5.130664825439453
+        },
+        "tis_truncated_fraction": 1.557123141537886e-05,
+        "tis_cap": 2.0,
+        "kl_token_max": 162.9988555908203,
+        "kl_top10_fraction_of_total": 0.6220248962862096,
+        "kl_nonfinite_tokens": 0,
+        "sampler_train_top10": [
+          {
+            "row_id": "G3-b1-SHUF/007/06/3",
+            "qid": "pilot_SIGNED_0007_v2",
+            "token_position": 162,
+            "token_id": 313,
+            "sampler_logprob": -0.009768186137080193,
+            "train_logprob": -5.130929946899414,
+            "reference_logprob": -0.0002653246629051864,
+            "sampler_train_delta": -5.121161937713623,
+            "reference_current_delta": 5.130664825439453,
+            "kl_token": 162.9988555908203
+          },
+          {
+            "row_id": "G3-b1-SHUF/007/06/5",
+            "qid": "pilot_SIGNED_0007_v2",
+            "token_position": 162,
+            "token_id": 313,
+            "sampler_logprob": -0.009768186137080193,
+            "train_logprob": -5.006716251373291,
+            "reference_logprob": -1.600433111190796,
+            "sampler_train_delta": -4.9969482421875,
+            "reference_current_delta": 3.406283140182495,
+            "kl_token": 25.746679306030273
+          },
+          {
+            "row_id": "G3-b1-SHUF/007/06/3",
+            "qid": "pilot_SIGNED_0007_v2",
+            "token_position": 151,
+            "token_id": 328,
+            "sampler_logprob": -2.8119678497314453,
+            "train_logprob": -1.7014137506484985,
+            "reference_logprob": -0.1269288957118988,
+            "sampler_train_delta": 1.1105540990829468,
+            "reference_current_delta": 1.5744848251342773,
+            "kl_token": 2.2537686824798584
+          },
+          {
+            "row_id": "G3-b1-SHUF/007/06/0",
+            "qid": "pilot_SIGNED_0007_v2",
+            "token_position": 151,
+            "token_id": 198,
+            "sampler_logprob": -0.06196783855557442,
+            "train_logprob": -0.9740784168243408,
+            "reference_logprob": -1.3132625818252563,
+            "sampler_train_delta": -0.9121105670928955,
+            "reference_current_delta": -0.3391841650009155,
+            "kl_token": 0.05153539776802063
+          },
+          {
+            "row_id": "G3-b1-SHUF/007/00/4",
+            "qid": "pilot_K_DIRECTION_0000_v0",
+            "token_position": 85,
+            "token_id": 67166,
+            "sampler_logprob": -2.3510568141937256,
+            "train_logprob": -3.0493361949920654,
+            "reference_logprob": -2.0191490650177,
+            "sampler_train_delta": -0.6982793807983398,
+            "reference_current_delta": 1.0301871299743652,
+            "kl_token": 0.7714029550552368
+          },
+          {
+            "row_id": "G3-b1-SHUF/007/15/4",
+            "qid": "pilot_K_DIRECTION_0005_v3",
+            "token_position": 84,
+            "token_id": 81291,
+            "sampler_logprob": -2.930023193359375,
+            "train_logprob": -3.4087467193603516,
+            "reference_logprob": -2.5791265964508057,
+            "sampler_train_delta": -0.47872352600097656,
+            "reference_current_delta": 0.8296201229095459,
+            "kl_token": 0.46282756328582764
+          },
+          {
+            "row_id": "G3-b1-SHUF/007/00/1",
+            "qid": "pilot_K_DIRECTION_0000_v0",
+            "token_position": 421,
+            "token_id": 81291,
+            "sampler_logprob": -1.1205599308013916,
+            "train_logprob": -1.5273337364196777,
+            "reference_logprob": -0.7221641540527344,
+            "sampler_train_delta": -0.40677380561828613,
+            "reference_current_delta": 0.8051695823669434,
+            "kl_token": 0.43190622329711914
+          },
+          {
+            "row_id": "G3-b1-SHUF/007/00/6",
+            "qid": "pilot_K_DIRECTION_0000_v0",
+            "token_position": 421,
+            "token_id": 81291,
+            "sampler_logprob": -1.1205599308013916,
+            "train_logprob": -1.5273337364196777,
+            "reference_logprob": -0.7221641540527344,
+            "sampler_train_delta": -0.40677380561828613,
+            "reference_current_delta": 0.8051695823669434,
+            "kl_token": 0.43190622329711914
+          },
+          {
+            "row_id": "G3-b1-SHUF/007/15/6",
+            "qid": "pilot_K_DIRECTION_0005_v3",
+            "token_position": 536,
+            "token_id": 23930,
+            "sampler_logprob": -1.5990033149719238,
+            "train_logprob": -1.9931461811065674,
+            "reference_logprob": -2.8664138317108154,
+            "sampler_train_delta": -0.39414286613464355,
+            "reference_current_delta": -0.873267650604248,
+            "kl_token": 0.290852427482605
+          },
+          {
+            "row_id": "G3-b1-SHUF/007/13/0",
+            "qid": "pilot_K_DIRECTION_0005_v1",
+            "token_position": 175,
+            "token_id": 43,
+            "sampler_logprob": -0.38713890314102173,
+            "train_logprob": -0.7580384612083435,
+            "reference_logprob": -0.28203830122947693,
+            "sampler_train_delta": -0.3708995580673218,
+            "reference_current_delta": 0.4760001599788666,
+            "kl_token": 0.13362309336662292
+          }
+        ],
+        "kl_top10": [
+          {
+            "row_id": "G3-b1-SHUF/007/06/3",
+            "qid": "pilot_SIGNED_0007_v2",
+            "token_position": 162,
+            "token_id": 313,
+            "sampler_logprob": -0.009768186137080193,
+            "train_logprob": -5.130929946899414,
+            "reference_logprob": -0.0002653246629051864,
+            "sampler_train_delta": -5.121161937713623,
+            "reference_current_delta": 5.130664825439453,
+            "kl_token": 162.9988555908203
+          },
+          {
+            "row_id": "G3-b1-SHUF/007/06/5",
+            "qid": "pilot_SIGNED_0007_v2",
+            "token_position": 162,
+            "token_id": 313,
+            "sampler_logprob": -0.009768186137080193,
+            "train_logprob": -5.006716251373291,
+            "reference_logprob": -1.600433111190796,
+            "sampler_train_delta": -4.9969482421875,
+            "reference_current_delta": 3.406283140182495,
+            "kl_token": 25.746679306030273
+          },
+          {
+            "row_id": "G3-b1-SHUF/007/06/5",
+            "qid": "pilot_SIGNED_0007_v2",
+            "token_position": 151,
+            "token_id": 328,
+            "sampler_logprob": -2.8119678497314453,
+            "train_logprob": -2.578889846801758,
+            "reference_logprob": -0.3132628798484802,
+            "sampler_train_delta": 0.2330780029296875,
+            "reference_current_delta": 2.265626907348633,
+            "kl_token": 6.371537208557129
+          },
+          {
+            "row_id": "G3-b1-SHUF/007/10/1",
+            "qid": "pilot_BINDING_0003_v2",
+            "token_position": 108,
+            "token_id": 18796,
+            "sampler_logprob": -2.3507068157196045,
+            "train_logprob": -2.579284429550171,
+            "reference_logprob": -0.47478002309799194,
+            "sampler_train_delta": -0.2285776138305664,
+            "reference_current_delta": 2.104504346847534,
+            "kl_token": 5.098531723022461
+          },
+          {
+            "row_id": "G3-b1-SHUF/007/06/0",
+            "qid": "pilot_SIGNED_0007_v2",
+            "token_position": 250,
+            "token_id": 333,
+            "sampler_logprob": -2.3502120971679688,
+            "train_logprob": -2.5788936614990234,
+            "reference_logprob": -0.6931591033935547,
+            "sampler_train_delta": -0.2286815643310547,
+            "reference_current_delta": 1.8857345581054688,
+            "kl_token": 3.7054595947265625
+          },
+          {
+            "row_id": "G3-b1-SHUF/007/06/3",
+            "qid": "pilot_SIGNED_0007_v2",
+            "token_position": 151,
+            "token_id": 328,
+            "sampler_logprob": -2.8119678497314453,
+            "train_logprob": -1.7014137506484985,
+            "reference_logprob": -0.1269288957118988,
+            "sampler_train_delta": 1.1105540990829468,
+            "reference_current_delta": 1.5744848251342773,
+            "kl_token": 2.2537686824798584
+          },
+          {
+            "row_id": "G3-b1-SHUF/007/07/0",
+            "qid": "pilot_SIGNED_0007_v3",
+            "token_position": 252,
+            "token_id": 333,
+            "sampler_logprob": -2.126936674118042,
+            "train_logprob": -2.126936435699463,
+            "reference_logprob": -0.6326144933700562,
+            "sampler_train_delta": 2.384185791015625e-07,
+            "reference_current_delta": 1.4943219423294067,
+            "kl_token": 1.9619919061660767
+          },
+          {
+            "row_id": "G3-b1-SHUF/007/06/6",
+            "qid": "pilot_SIGNED_0007_v2",
+            "token_position": 503,
+            "token_id": 4377,
+            "sampler_logprob": -2.017853021621704,
+            "train_logprob": -2.0179080963134766,
+            "reference_logprob": -0.5236422419548035,
+            "sampler_train_delta": -5.507469177246094e-05,
+            "reference_current_delta": 1.4942657947540283,
+            "kl_token": 1.9617979526519775
+          },
+          {
+            "row_id": "G3-b1-SHUF/007/10/0",
+            "qid": "pilot_BINDING_0003_v2",
+            "token_position": 180,
+            "token_id": 198,
+            "sampler_logprob": -0.05488354712724686,
+            "train_logprob": -0.31326740980148315,
+            "reference_logprob": -3.048595905303955,
+            "sampler_train_delta": -0.2583838701248169,
+            "reference_current_delta": -2.735328435897827,
+            "kl_token": 1.800201177597046
+          },
+          {
+            "row_id": "G3-b1-SHUF/007/13/3",
+            "qid": "pilot_K_DIRECTION_0005_v1",
+            "token_position": 310,
+            "token_id": 333,
+            "sampler_logprob": -2.017700672149658,
+            "train_logprob": -1.804769515991211,
+            "reference_logprob": -0.38689497113227844,
+            "sampler_train_delta": 0.21293115615844727,
+            "reference_current_delta": 1.4178745746612549,
+            "kl_token": 1.7104620933532715
+          }
+        ]
+      }
+    }
+  ],
+  "checkpoint_states": {
+    "SHUF": {
+      "progress": {
+        "committed_step": 6,
+        "target_step": 12,
+        "lane": "primary",
+        "answers": 768
+      },
+      "step7_groups": [
+        {
+          "group": "00",
+          "complete_group": true,
+          "raw_rows": 8
+        },
+        {
+          "group": "01",
+          "complete_group": true,
+          "raw_rows": 8
+        },
+        {
+          "group": "02",
+          "complete_group": true,
+          "raw_rows": 8
+        },
+        {
+          "group": "03",
+          "complete_group": true,
+          "raw_rows": 8
+        },
+        {
+          "group": "04",
+          "complete_group": true,
+          "raw_rows": 8
+        },
+        {
+          "group": "05",
+          "complete_group": true,
+          "raw_rows": 8
+        },
+        {
+          "group": "06",
+          "complete_group": true,
+          "raw_rows": 8
+        },
+        {
+          "group": "07",
+          "complete_group": true,
+          "raw_rows": 8
+        },
+        {
+          "group": "08",
+          "complete_group": true,
+          "raw_rows": 8
+        },
+        {
+          "group": "09",
+          "complete_group": true,
+          "raw_rows": 8
+        },
+        {
+          "group": "10",
+          "complete_group": true,
+          "raw_rows": 8
+        },
+        {
+          "group": "11",
+          "complete_group": true,
+          "raw_rows": 8
+        },
+        {
+          "group": "12",
+          "complete_group": true,
+          "raw_rows": 8
+        },
+        {
+          "group": "13",
+          "complete_group": true,
+          "raw_rows": 8
+        },
+        {
+          "group": "14",
+          "complete_group": true,
+          "raw_rows": 8
+        },
+        {
+          "group": "15",
+          "complete_group": true,
+          "raw_rows": 8
+        }
+      ]
+    },
+    "DENSE": {
+      "progress": {
+        "committed_step": 6,
+        "target_step": 12,
+        "lane": "primary",
+        "answers": 768
+      },
+      "step7_groups": [
+        {
+          "group": "00",
+          "complete_group": true,
+          "raw_rows": 8
+        },
+        {
+          "group": "01",
+          "complete_group": true,
+          "raw_rows": 8
+        },
+        {
+          "group": "02",
+          "complete_group": true,
+          "raw_rows": 8
+        },
+        {
+          "group": "03",
+          "complete_group": true,
+          "raw_rows": 8
+        },
+        {
+          "group": "04",
+          "complete_group": true,
+          "raw_rows": 8
+        },
+        {
+          "group": "05",
+          "complete_group": true,
+          "raw_rows": 8
+        },
+        {
+          "group": "06",
+          "complete_group": true,
+          "raw_rows": 8
+        },
+        {
+          "group": "07",
+          "complete_group": true,
+          "raw_rows": 8
+        },
+        {
+          "group": "08",
+          "complete_group": false,
+          "raw_rows": 0
+        }
+      ]
+    }
+  }
+}
