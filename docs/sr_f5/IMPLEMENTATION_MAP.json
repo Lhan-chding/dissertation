@@ -16,8 +16,8 @@
   "unfinished_at_initial_implementation": [
     "actual GPU tokenizer/processor preflight",
     "4608-response G2 gate",
-    "G3 runner, recovery replay and channel-gradient diagnostics",
-    "sealed retention subsets and full evaluation/statistical pipeline",
+    "G3 runner and recovery replay; channel-gradient kernel implemented, not GPU validated",
+    "formal evaluation/statistical pipeline; retention subsets already frozen",
     "G4 freeze and formal 45-path release"
   ],
   "scope": "Implementation inventory, not scientific completion",
@@ -32,5 +32,8 @@
     "job_ceiling_all_qos": 5,
     "gpu_ceiling_document": 8,
     "initial_effective_gpu_ceiling": 5
-  }
+  },
+  "initial_execution_commit": "26e560bac1a7c5b5563f52112bc1374685084b8d",
+  "followup_code_commit": "78acca3",
+  "server_source": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_code_26e560b"
 }

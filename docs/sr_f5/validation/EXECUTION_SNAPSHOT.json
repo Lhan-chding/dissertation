@@ -1,0 +1,64 @@
+{
+  "status": "G2_QUEUED_NOT_GPU_VALIDATED",
+  "as_of_local": "2026-10-25 Asia/Singapore",
+  "cpu_job": {
+    "id": "226030",
+    "state": "COMPLETED",
+    "exit_code": "0:0"
+  },
+  "cpu_tests": {
+    "passed": 168,
+    "skipped": 12,
+    "subtests_passed": 6
+  },
+  "data": {
+    "questions": 3120,
+    "roots": 780,
+    "unique_images": 1896,
+    "cross_split_world_collisions": 0,
+    "historical_world_collisions": 0
+  },
+  "g2": {
+    "expected_answers": 4608,
+    "actual_answers_observed": 0,
+    "workers": [
+      {
+        "job_id": "226033",
+        "name": "SRF5-G2-W0-LH",
+        "state": "PENDING",
+        "reason": "Priority",
+        "gpus": 1
+      },
+      {
+        "job_id": "226034",
+        "name": "SRF5-G2-W1-LH",
+        "state": "PENDING",
+        "reason": "Priority",
+        "gpus": 1
+      },
+      {
+        "job_id": "226035",
+        "name": "SRF5-G2-W2-LH",
+        "state": "PENDING",
+        "reason": "Priority",
+        "gpus": 1
+      },
+      {
+        "job_id": "226036",
+        "name": "SRF5-G2-W3-LH",
+        "state": "PENDING",
+        "reason": "Priority",
+        "gpus": 1
+      }
+    ],
+    "code_commit": "26e560bac1a7c5b5563f52112bc1374685084b8d"
+  },
+  "formal_paths": {
+    "registered": 45,
+    "started": 0,
+    "status": "NOT_RUN"
+  },
+  "unrelated_job": "225839 preserved unchanged",
+  "automatic_next_stages": false,
+  "server_root": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_20261025"
+}
