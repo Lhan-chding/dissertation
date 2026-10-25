@@ -1,6 +1,6 @@
 # SR-F5 执行状态（2026-10-25，新加坡）
 
-**2026-10-26 03:32（新加坡）：唯一 recipe_v2 已事前登记，统一全模型和浮点输入 FP32。服务器准备 226894 已 COMPLETED/0:0（332 passed、12 skipped、9 subtests passed）；第一个双卡普查 226900 已释放，实查 PENDING(Resources)，尚无新回答。旧版 J/SHUF 恢复继续；结束后不续跑旧池。第二个 v2 双卡作业等待预约容量，G3 与正式实验仍未通过。**
+**2026-10-26 03:40（新加坡）：唯一 recipe_v2 已事前登记，统一全模型和浮点输入 FP32。服务器准备 226894 已 COMPLETED/0:0（332 passed、12 skipped、9 subtests passed）；第一个双卡普查 226900 已释放，实查 PENDING(Resources)，尚无新回答。旧版 J/SHUF 恢复继续；结束后不续跑旧池。第二个 v2 双卡作业等待预约容量，G3 与正式实验仍未通过。**
 
 从 F4 提交 `750db3d` 建立独立分支 `sr-f5-semantic-j-v1`。G2 沿用冻结科学代码 `26e560bac1a7c5b5563f52112bc1374685084b8d`，未因部署修复重生成回答。G3 运行代码为 `ea50c51f0f145a183df360ab82025216d6303aca`，服务器部署 `/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_ea50c51`。
 
@@ -54,6 +54,8 @@ G3 共 15 条独立主路径、23,040 条回答；b0 五臂增加 5,120 条恢�
 03:32 事前登记与服务器准备已完成。科学代码 `47d5e85fb0c9b39d8f996465045d21956825f59d` 部署 `sr_f5_recipe_v2_47d5e85`，新根 `sr_f5_semantic_j_recipe_v2_20261026`，与旧根隔离。3,120 题、780 roots、1,896 张图像的构建、双 oracle、分区审计和 705 条历史世界排重通过。服务器 CPU 检查 332 passed、12 skipped、9 subtests passed（35.35 秒）；跳过项不算 PASS。只在本地 Git checkout 可执行的隔离打包测试已在实际提交上通过 1 项，不在服务器重复。CPU 全作业 83 秒，无模型调用。完整回执见 `validation/RECIPE_V2_REGISTRATION/`。
 
 第二版第一个双卡普查为 `226900/LH-SRF5-G2-P0`，分片 0/1，预期 2,304 回答；先 held 核对身份再释放。19:31:46 UTC 仍 PENDING(Resources)，不能声称运行或有吞吐。此时旧恢复 2 卡加新预约 2 卡，总计 4 卡、3 作业，另一双卡 pair 暂不提交。旧恢复最近三次两卡约 35–47% 利用率；不在连续对照途中更改模型、batch 或进程。待旧作业退出 squeue 且 sacct 终态后可启动 pair1，再完整聚合第二版 4,608 回答；仅真实 PASS 才冻结并进入 G3。下列更早的“原池续跑”安排均已由 recipe_v2 决定取代，历史段落只作事故记录。
+
+03:40 运维衔接 `23b67600423ad23c49d3f049075fd1618d74b376` 已提交推送并独立部署 `sr_f5_operations_23b6760`，科学仍是 `47d5e85`。19 项操作层回归通过（0.16 秒）；服务器实际读取新回执得到 `WAITING_FOR_G2_PAIR_RECEIPT`，未运行汇总、模型或重跑 CPU 测试。新普查 226900 仍 PENDING(Resources)、回答 0；旧 J/SHUF 恢复均已提交第 11 步。当前仅 4 张运行/排队预约卡、3 作业。衔接 CPU 作业尚未提交，待两个 G2 作业身份齐备后以 afterany 依赖接续；已有 G3 冻结或提交时不重复聚合。最新回执 `validation/RECIPE_V2_REGISTRATION/LIVE_20261026T0340.json`，自动跟进及服务器 CURRENT 已同步。
 
 ## 利用率与效率边界
 

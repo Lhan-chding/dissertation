@@ -1,6 +1,6 @@
 {
   "status": "RECIPE_V2_CPU_PASS_G2_PAIR0_PENDING",
-  "as_of_local": "2026-10-26 03:32 Asia/Singapore",
+  "as_of_local": "2026-10-26 03:40 Asia/Singapore",
   "cpu_job": {
     "id": "226030",
     "state": "COMPLETED",
@@ -123,7 +123,12 @@
       "b0-LOCAL"
     ],
     "observed_at": "2026-10-25T19:08:55Z",
-    "latest_failure_evidence": "G3_PROBABILITY_FAILURE_226283.json"
+    "latest_failure_evidence": "G3_PROBABILITY_FAILURE_226283.json",
+    "latest_recovery_steps_observed": {
+      "b0-J": 11,
+      "b0-SHUF": 11
+    },
+    "latest_recovery_observed_at": "2026-10-25T19:40:43Z"
   },
   "drain_controller": {
     "job": "226455",
@@ -200,6 +205,11 @@
     },
     "g2_pair1": "WAITING_FOR_CAPACITY",
     "resume_v1": false,
-    "evidence": "RECIPE_V2_REGISTRATION"
+    "evidence": "RECIPE_V2_REGISTRATION",
+    "advance_operations_revision": "23b67600423ad23c49d3f049075fd1618d74b376",
+    "advance_status": "WAITING_FOR_G2_PAIR_RECEIPT",
+    "advance_controller_job": null,
+    "actual_g2_responses_observed": 0,
+    "latest_evidence": "RECIPE_V2_REGISTRATION/LIVE_20261026T0340.json"
   }
 }

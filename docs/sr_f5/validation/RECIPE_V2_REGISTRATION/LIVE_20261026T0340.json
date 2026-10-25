@@ -1,0 +1,47 @@
+{
+  "at": "2026-10-25T19:40:43.064926+00:00",
+  "queue": [
+    "226900|LH-SRF5-G2-P0|PENDING|0:00|gres/gpu:pro6000:2|(Resources)",
+    "226282|LH-SRF5-G3-P0|RUNNING|6:16:04|gres/gpu:pro6000:2|gpu-pro6000-12",
+    "226455|LH-SRF5-G3-DRAIN|RUNNING|5:17:02|N/A|cpu-2"
+  ],
+  "groups": {
+    "b0": 0,
+    "b1": 0,
+    "b2": 0
+  },
+  "advance": {
+    "at": "2026-10-25T19:40:16.521609+00:00",
+    "status": "WAITING_FOR_G2_PAIR_RECEIPT",
+    "source_code": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+    "science_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+    "registration_digest": "58f7f4b47fd06143932da6f2157ffca15a9ba5a93c2a9a19b76c4e8cf86a3026",
+    "config_digest": "d14481203b6d9e430cc879f77f34bc478f034cecab1a511dd4c4a59f42f7660b",
+    "cpu_tests_digest": "63925d3f6ac171d4a1ba4daf34581fc06123145d638308339d2164df2913618d",
+    "cpu_tests_reused": "CPU_TESTS.json; no rerun",
+    "operations_script": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_operations_23b6760/scripts/sr_f5/advance_recipe_v2.py",
+    "operations_script_sha256": "8a6140dee9e5144dbd6bbdaa344c99bdc9f8a1969c98a74640ce293a1ffa1be9"
+  },
+  "v1_recovery": {
+    "J": {
+      "complete": false,
+      "checkpoints": [
+        "step-011"
+      ]
+    },
+    "SHUF": {
+      "complete": false,
+      "checkpoints": [
+        "step-011"
+      ]
+    }
+  },
+  "telemetry": {
+    "226282": [
+      "2026/10/25 19:40:12.446, 0, GPU-c98e23d9-2ab9-48ce-32b7-4e3faed492df, 35 %, 15 %, 68278 MiB, 97887 MiB, 130.55 W",
+      "2026/10/25 19:40:12.446, 1, GPU-15ceefa1-d8f2-f0ea-b044-af16053018b2, 38 %, 20 %, 68476 MiB, 97887 MiB, 131.16 W",
+      "2026/10/25 19:40:42.446, 0, GPU-c98e23d9-2ab9-48ce-32b7-4e3faed492df, 38 %, 18 %, 68278 MiB, 97887 MiB, 140.08 W",
+      "2026/10/25 19:40:42.446, 1, GPU-15ceefa1-d8f2-f0ea-b044-af16053018b2, 37 %, 18 %, 68476 MiB, 97887 MiB, 131.25 W"
+    ]
+  }
+}
