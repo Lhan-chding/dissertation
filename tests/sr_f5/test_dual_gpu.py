@@ -8,9 +8,30 @@ from types import SimpleNamespace
 
 import pytest
 
-from sr_f5.dual_gpu import run_worker, supervise, worker_environments
+from sr_f5.dual_gpu import run_worker, supervise, telemetry_command, worker_environments
 
 DISPATCH = runpy.run_path(str(Path(__file__).parents[2] / "scripts/sr_f5/submit_g2.py"))
+
+
+def test_batch_worker_inherits_required_backend_environment(tmp_path):
+    script = Path(__file__).parents[2] / "scripts/sr_f5/calibration.sbatch"
+    # Execute the real batch exports, stopping before its real-model exec.
+    prefix = script.read_text().split("exec /projects/", 1)[0]
+    result = subprocess.run(
+        [
+            "bash",
+            "-c",
+            prefix + "\npython3 -c 'import os; print(os.environ[\"CUBLAS_WORKSPACE_CONFIG\"])'",
+        ],
+        env=dict(
+            os.environ, SRF5_CODE=str(tmp_path), SRF5_LAUNCHER_CODE=str(tmp_path), SRF5_PAIR="0"
+        ),
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert result.stdout.strip() == ":4096:8"
+    assert telemetry_command(["3", "7"])[1] == "--id=3,7"
 
 
 def test_pairs_preserve_four_shards_and_one_device_each():

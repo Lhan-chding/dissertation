@@ -121,6 +121,16 @@ def run_worker(code, root, python):
     return 0
 
 
+def telemetry_command(devices):
+    return [
+        "nvidia-smi",
+        "--id=" + ",".join(devices),
+        "--query-gpu=timestamp,index,uuid,utilization.gpu,utilization.memory,memory.used,memory.total,power.draw",
+        "--format=csv",
+        "--loop=30",
+    ]
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pair", type=int, choices=(0, 1))
@@ -172,12 +182,26 @@ def main():
         allocation=actual,
     )
     write(path, receipt)
+    telemetry = None
+    telemetry_path = args.root / "slurm" / f"GPU-{job_id}.csv"
     try:
-        supervise([command, command], environments, logs)
+        with telemetry_path.open("a") as telemetry_stream:
+            telemetry = subprocess.Popen(
+                telemetry_command(receipt["devices"]),
+                stdout=telemetry_stream,
+                stderr=subprocess.STDOUT,
+                start_new_session=True,
+            )
+            receipt["gpu_telemetry"] = str(telemetry_path)
+            write(path, receipt)
+            supervise([command, command], environments, logs)
     except BaseException as exc:
         receipt.update(status="FAILED", finished_at=now(), error=repr(exc))
         write(path, receipt)
         raise
+    finally:
+        if telemetry is not None:
+            _stop_groups([telemetry], 2)
     receipt.update(status="COMPLETE", finished_at=now())
     write(path, receipt)
 
