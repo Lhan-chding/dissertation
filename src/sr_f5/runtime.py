@@ -15,6 +15,26 @@ from sr_f4.runtime import Runtime as NativeRuntime
 from srf5_ref.generator import seed_for
 
 PROTOCOL_VERSION = "structured_v3-1.0"
+NUMERICS_V2 = {
+    "recipe_version": 2,
+    "model_dtype": "float32",
+    "input_float_dtype": "float32",
+    "probability_dtype": "float32",
+}
+
+
+def registered_numerics(config):
+    """Absence preserves v1; an explicit numerical recipe must match exactly."""
+    if "numerics" not in config:
+        return None
+    recipe = config["numerics"]
+    if (
+        type(recipe) is not dict
+        or set(recipe) != set(NUMERICS_V2)
+        or any(type(recipe[k]) is not type(v) or recipe[k] != v for k, v in NUMERICS_V2.items())
+    ):
+        raise PermissionError("Unregistered SR-F5 numerical recipe")
+    return dict(recipe)
 
 
 def backend_protocol(protocol):
@@ -34,8 +54,35 @@ class Runtime(NativeRuntime):
         # One current prompt only. It is never reused across distinct image/prompt
         # identities; a changed file's frozen digest remains part of the key.
         key = (str(Path(run_root).resolve()), backend, tuple(sorted(safe.items())))
+        recipe = getattr(self, "_srf5_numerics", None)
+        if recipe is not None:
+            recipe = registered_numerics({"numerics": recipe})
+            key = (*key, tuple(sorted(recipe.items())))
         if getattr(self, "_srf5_prepared_key", None) != key:
             prepared = super().prepare_input(safe, run_root, protocol=backend)
+            if recipe is not None:
+                # Keep the native processor identity and its pre-cast hashes.
+                # The forward receives a separate tensor mapping: token IDs,
+                # masks and image grids remain their original integer tensors.
+                prepared = dict(prepared)
+                prepared["inputs"] = {
+                    name: value.float()
+                    if self.torch.is_tensor(value) and value.is_floating_point()
+                    else value
+                    for name, value in prepared["inputs"].items()
+                }
+                prepared["routing"] = dict(
+                    prepared["routing"],
+                    numerics_recipe_version=recipe["recipe_version"],
+                    input_float_dtype=recipe["input_float_dtype"],
+                    probability_dtype=recipe["probability_dtype"],
+                    forward_input_dtypes={
+                        name: str(value.dtype).removeprefix("torch.")
+                        for name, value in prepared["inputs"].items()
+                        if self.torch.is_tensor(value)
+                    },
+                    input_tensor_hash_scope="native_processor_before_registered_precision_cast",
+                )
             prepared["routing"]["sr_f5_protocol_version"] = PROTOCOL_VERSION
             self._srf5_prepared_key, self._srf5_prepared = key, prepared
         return self._srf5_prepared
@@ -89,7 +136,16 @@ class Runtime(NativeRuntime):
         super()._validate_prepared_revision(compatible)
 
     def stable_model_identity(self):
-        return dict(super().stable_model_identity(), sr_f5_protocol_version=PROTOCOL_VERSION)
+        identity = dict(super().stable_model_identity(), sr_f5_protocol_version=PROTOCOL_VERSION)
+        recipe = getattr(self, "_srf5_numerics", None)
+        if recipe is not None:
+            identity.update(
+                numerics=registered_numerics({"numerics": recipe}),
+                numerics_recipe_version=recipe["recipe_version"],
+                forward_parameter_dtypes=list(self.identity["forward_parameter_dtypes"]),
+                model_cast_from_dtype=self.identity["model_cast_from_dtype"],
+            )
+        return identity
 
 
 def load(root, parent, task_id, *, training=False):
@@ -101,6 +157,7 @@ def load(root, parent, task_id, *, training=False):
 
     root = Path(root)
     config = read(root / "CONFIG.json")
+    numerics = registered_numerics(config)
     if parent not in config["parents"] or parent not in config["model"]["parents"]:
         raise ValueError("Unknown registered parent")
     adapter = Path(config["model"]["parents"][parent])
@@ -129,6 +186,38 @@ def load(root, parent, task_id, *, training=False):
         account=account,
     )
     configure_parent_training(runtime, parent_adapter_config=read(adapter / "adapter_config.json"))
+    if numerics is not None:
+        # Parent verification precedes the explicit numerical change. Fresh Adam
+        # and the frozen parent reference are both created after this cast.
+        source_dtype = runtime.identity["dtype"]
+        runtime.model = runtime.model.float()
+        parameter_dtypes = sorted(
+            {
+                str(value.dtype).removeprefix("torch.")
+                for value in runtime.model.parameters()
+                if value.is_floating_point()
+            }
+        )
+        buffer_dtypes = sorted(
+            {
+                str(value.dtype).removeprefix("torch.")
+                for value in runtime.model.buffers()
+                if value.is_floating_point()
+            }
+        )
+        if parameter_dtypes != ["float32"] or any(dtype != "float32" for dtype in buffer_dtypes):
+            raise RuntimeError("Registered full-model float32 cast did not take effect")
+        runtime._srf5_numerics = dict(numerics)
+        runtime.identity.update(
+            dtype="float32",
+            numerics=dict(numerics),
+            numerics_recipe_version=2,
+            model_cast_from_dtype=source_dtype,
+            forward_parameter_dtypes=parameter_dtypes,
+            forward_float_buffer_dtypes=buffer_dtypes,
+            input_float_dtype="float32",
+            probability_dtype="float32",
+        )
     runtime.identity.update(
         parent_id=parent,
         run_id=task_id,

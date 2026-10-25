@@ -47,6 +47,8 @@ G3 共 15 条独立主路径、23,040 条回答；b0 五臂增加 5,120 条恢�
 
 03:16 已核实后续双卡缓存诊断 `226890/LH-SRF5-G3-CACHE` 为 PENDING(Resources)，运维 `0f7dced` 已提交并推送。原保存配置 `use_cache=True`、beam=1、temperature/top_p=1、top_k=0，未启用 forced EOS。工具 8 项定向 CPU 回归通过（0.80 秒），Ruff、启动脚本语法及提交前差异检查通过。实际新 GPU 结果尚无；总预约五卡四作业，恢复控制器继续工作。新回执为 `validation/G3_CACHE_DIAG_SUBMISSION_226890.json`，服务器 `CONTINUATION/PROBABILITY_CACHE_226283/`；自动跟进已同步先读这项结果，禁止重复提交或提前恢复故障池。
 
+03:18 缓存诊断226890已COMPLETED/0:0；BF16 G8前1,304个概率逐值复现原sampler，同精度FP32 cached/full最大差0.00056386 nat。未观察到工程身份错配，按contract/07进入唯一recipe_v2统一全模型FP32开发分支，不追认v1通过。完整分析及范围限制见 `NUMERICAL_DIAGNOSIS_RECIPE_V2_ZH.md`。追加226588已COMPLETED/0:0，两条路径各1,536回答完整；J/SHUF恢复第10步后继续交边界控制器完成，之后不再续跑v1未完成池。v2新根隔离，登记及CPU门之后才能启动新的4,608回答普查。v2数值实现15项CPU测试、既有21项/9子测试、唯一登记8项测试通过；Ruff通过。服务器CPU准备仍待执行。
+
 ## 利用率与效率边界
 
 每作业两卡、每卡一个独立进程，LH 前缀；全部用户作业最多五个，教师 QoS 总预约卡按五张限制，包括运行、排队、未知状态。计入未改动的其他作业 225839，当前共三个 GPU 作业、五张运行或排队预约卡。

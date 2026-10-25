@@ -1,6 +1,6 @@
 {
-  "status": "G2_PASS_G3_NUMERICAL_DIAGNOSIS_REQUIRED",
-  "as_of_local": "2026-10-26 03:16 Asia/Singapore",
+  "status": "V1_NUMERICAL_FAILURE_RECIPE_V2_PREPARING",
+  "as_of_local": "2026-10-26 03:18 Asia/Singapore",
   "cpu_job": {
     "id": "226030",
     "state": "COMPLETED",
@@ -135,14 +135,20 @@
   },
   "supplemental": {
     "job_id": "226588",
-    "state": "RUNNING",
+    "state": "COMPLETED",
     "node": "gpu-pro6000-7",
     "gpus": 1,
-    "observed_committed_step": 11,
+    "observed_committed_step": 12,
     "first_path": "b2-DENSE COMPLETE",
     "recent_utilization": 86.8,
-    "active_path": "b2-LOCAL",
-    "observed_at": "2026-10-25T19:08:51Z"
+    "active_path": null,
+    "observed_at": "2026-10-25T19:08:51Z",
+    "exit_code": "0:0",
+    "complete_paths": [
+      "b2-DENSE",
+      "b2-LOCAL"
+    ],
+    "evidence": "G3_SUPPLEMENTAL_COMPLETE_226588.json"
   },
   "probability_diagnosis": {
     "job_id": "226846",
@@ -161,12 +167,21 @@
   },
   "cache_diagnosis": {
     "job_id": "226890",
-    "status": "PENDING_RESOURCES",
+    "status": "DIAGNOSTIC_COMPLETE",
     "operations_revision": "0f7dced",
     "science_revision": "ea50c51f0f145a183df360ab82025216d6303aca",
-    "evidence": "G3_CACHE_DIAG_SUBMISSION_226890.json",
+    "evidence": "G3_CACHE_DIAG_226890",
     "tests_passed": 8,
     "new_samples": 0,
-    "optimizer_updates": 0
+    "optimizer_updates": 0,
+    "state": "COMPLETED",
+    "exit_code": "0:0"
+  },
+  "recipe_v2": {
+    "status": "DECISION_MADE_NOT_YET_REGISTERED",
+    "root": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026",
+    "report": "../NUMERICAL_DIAGNOSIS_RECIPE_V2_ZH.md",
+    "new_samples": 0,
+    "failed_v2_action": "STOP_NO_THIRD_RECIPE"
   }
 }

@@ -123,7 +123,15 @@ def prepare(root, config_file, revision):
     import sys
 
     result = subprocess.run(
-        [sys.executable, "-m", "pytest", "--import-mode=importlib", "-q", *tests],
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "--import-mode=importlib",
+            "-q",
+            "--ignore=tests/sr_f5/test_development_package.py",
+            *tests,
+        ],
         capture_output=True,
         text=True,
     )
@@ -133,6 +141,10 @@ def prepare(root, config_file, revision):
         status="PASS" if result.returncode == 0 else "FAIL",
         returncode=result.returncode,
         test_paths=tests,
+        local_only_check={
+            "path": "tests/sr_f5/test_development_package.py",
+            "reason": "git archive check runs once in the source checkout before deployment",
+        },
         model_calls=0,
         code_revision=revision,
         scope="CPU only; no GPU or scientific claim",

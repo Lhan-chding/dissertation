@@ -24,4 +24,4 @@ cd "$SRF5_CODE"
 # Launcher changes allocation only; each child imports the frozen science code.
 exec /projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12 -u \
   "$SRF5_LAUNCHER_CODE/src/sr_f5/dual_gpu.py" --pair "$SRF5_PAIR" \
-  --code "$SRF5_CODE" --root /projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_20261025
+  --code "$SRF5_CODE" --root "${SRF5_ROOT:-/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_20261025}"
