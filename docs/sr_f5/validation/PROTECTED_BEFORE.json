@@ -1,0 +1,93 @@
+[
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/cache/huggingface/hub/models--Qwen--Qwen3.5-9B/snapshots/c202236235762e1c871ad0ccb60c8ee5ba337b9a/config.json",
+    "bytes": 3126,
+    "mtime_ns": 1788849764192854184,
+    "inode": 4398125201998,
+    "device": 42
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter/adapter_config.json",
+    "bytes": 1293,
+    "mtime_ns": 1792141304227695175,
+    "inode": 4398152890048,
+    "device": 42
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter/adapter_model.safetensors",
+    "bytes": 86630872,
+    "mtime_ns": 1792141304265695218,
+    "inode": 4398152890049,
+    "device": 42
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71002/adapter/adapter_config.json",
+    "bytes": 1293,
+    "mtime_ns": 1792141308427699871,
+    "inode": 4398152890063,
+    "device": 42
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71002/adapter/adapter_model.safetensors",
+    "bytes": 86630872,
+    "mtime_ns": 1792141308470699920,
+    "inode": 4398152890064,
+    "device": 42
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71003/adapter/adapter_config.json",
+    "bytes": 1293,
+    "mtime_ns": 1792141312463704384,
+    "inode": 4398152890078,
+    "device": 42
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71003/adapter/adapter_model.safetensors",
+    "bytes": 86630872,
+    "mtime_ns": 1792141312501704427,
+    "inode": 4398152890079,
+    "device": 42
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f4_consolidated_20261022/DATA/TASKS.jsonl",
+    "bytes": 13476167,
+    "mtime_ns": 1792607233248605786,
+    "inode": 4398156011799,
+    "device": 42
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f4_consolidated_20261022/DATA/IMAGE_MANIFEST.jsonl",
+    "bytes": 1330332,
+    "mtime_ns": 1792607249381600915,
+    "inode": 4398156012707,
+    "device": 42
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f4_consolidated_20261022/DATA/CHARTQA_IMAGES.jsonl",
+    "bytes": 1000860,
+    "mtime_ns": 1792607250312600635,
+    "inode": 4398156012711,
+    "device": 42
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f4_c_local_pilot_20261024/DATA/TASKS.jsonl",
+    "bytes": 2801400,
+    "mtime_ns": 1792829507253847730,
+    "inode": 4398156163483,
+    "device": 42
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/external/chartqa/TASKS_AUDIT_ONLY.jsonl",
+    "bytes": 1704835,
+    "mtime_ns": 1792141217677608049,
+    "inode": 4398152879177,
+    "device": 42
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12",
+    "bytes": 31896496,
+    "mtime_ns": 1788593273192556175,
+    "inode": 4398123109658,
+    "device": 42
+  }
+]

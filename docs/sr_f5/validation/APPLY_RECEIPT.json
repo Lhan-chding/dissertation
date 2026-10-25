@@ -1,0 +1,30 @@
+{
+  "status": "APPLY_COMPLETE",
+  "project_root": "/projects/_ssd/varunssd/louis-ssvc",
+  "source_root": "sr_f3_ce_protocol_fix_20261016/selected_v2",
+  "archive": "storage_audits/cleanup_20261025_project_only/retained/SR_F3_CE_COMPLETE_UNDER_400MB.zip",
+  "allowed_files": 16339,
+  "directories_removed": 0,
+  "no_current_model_or_environment_scanned": true,
+  "archive_check": {
+    "status": "SHA256_AND_SIZE_PASS",
+    "sha256": "661e00f0dbf7f8989df0b2defef38aec8b375f84a88cc74350c66adde9099fc8",
+    "stat": {
+      "dev": 43,
+      "ino": 4398157064513,
+      "mode": 33188,
+      "size": 298272994,
+      "mtime_ns": 1792924478193203605,
+      "ctime_ns": 1792924478193203605,
+      "nlink": 1,
+      "blocks": 582565
+    },
+    "full_reconstruction": "REUSED_EXISTING_BYTE_EXACT_RECEIPT"
+  },
+  "counts": {
+    "DELETED": 16368
+  },
+  "logical_bytes_removed": 22256205609,
+  "allocated_bytes_released": 22260400640,
+  "allocated_bytes_note": "st_blocks*512 only when unlinking the last hardlink; filesystem snapshots or compression may prevent equivalent free-space increase"
+}

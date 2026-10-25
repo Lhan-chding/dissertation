@@ -28,12 +28,19 @@
     "cpu_suite": "one local focused integration pass, one actual server environment pass",
     "gpu_workers": 4,
     "preserve_unrelated_jobs": true,
-    "job_names_suffix": "-LH",
     "job_ceiling_all_qos": 5,
     "gpu_ceiling_document": 8,
-    "initial_effective_gpu_ceiling": 5
+    "initial_effective_gpu_ceiling": 5,
+    "job_names_prefix": "LH-",
+    "gpu_jobs": 2,
+    "gpus_per_job": 2,
+    "workers_per_gpu": 1,
+    "cleanup_scope": "/projects/_ssd/varunssd/louis-ssvc only",
+    "cleanup_hash_policy": "one retained archive identity check; one pass per allowlisted F3 file; no cache payload hash"
   },
   "initial_execution_commit": "26e560bac1a7c5b5563f52112bc1374685084b8d",
   "followup_code_commit": "78acca3",
-  "server_source": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_code_26e560b"
+  "server_source": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_code_26e560b",
+  "dual_gpu_launcher_commit": "c3d37acb94e5036377a551a1be12c7629dc20934",
+  "cleanup_code_commit": "da4dbd4"
 }

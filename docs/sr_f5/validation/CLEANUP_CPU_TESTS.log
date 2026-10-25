@@ -1,0 +1,5 @@
+tests/sr_f5/test_cleanup_project.py: 19 passed in 0.08s
+Ruff: All checks passed
+bash -n scripts/sr_f5/cleanup.sbatch: exit 0
+Server cleanup job 226060: COMPLETED 0:0
+Server postflight: PASS

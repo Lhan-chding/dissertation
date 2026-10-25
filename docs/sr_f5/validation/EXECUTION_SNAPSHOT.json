@@ -1,6 +1,6 @@
 {
   "status": "G2_QUEUED_NOT_GPU_VALIDATED",
-  "as_of_local": "2026-10-25 Asia/Singapore",
+  "as_of_local": "2026-10-25 18:46 Asia/Singapore",
   "cpu_job": {
     "id": "226030",
     "state": "COMPLETED",
@@ -23,35 +23,30 @@
     "actual_answers_observed": 0,
     "workers": [
       {
-        "job_id": "226033",
-        "name": "SRF5-G2-W0-LH",
+        "job_id": "226056",
+        "name": "LH-SRF5-G2-P0",
         "state": "PENDING",
-        "reason": "Priority",
-        "gpus": 1
+        "reason": "Resources",
+        "gpus": 2,
+        "shards": [
+          0,
+          1
+        ]
       },
       {
-        "job_id": "226034",
-        "name": "SRF5-G2-W1-LH",
+        "job_id": "226057",
+        "name": "LH-SRF5-G2-P1",
         "state": "PENDING",
         "reason": "Priority",
-        "gpus": 1
-      },
-      {
-        "job_id": "226035",
-        "name": "SRF5-G2-W2-LH",
-        "state": "PENDING",
-        "reason": "Priority",
-        "gpus": 1
-      },
-      {
-        "job_id": "226036",
-        "name": "SRF5-G2-W3-LH",
-        "state": "PENDING",
-        "reason": "Priority",
-        "gpus": 1
+        "gpus": 2,
+        "shards": [
+          2,
+          3
+        ]
       }
     ],
-    "code_commit": "26e560bac1a7c5b5563f52112bc1374685084b8d"
+    "code_commit": "26e560bac1a7c5b5563f52112bc1374685084b8d",
+    "launcher_commit": "c3d37ac"
   },
   "formal_paths": {
     "registered": 45,
@@ -60,5 +55,17 @@
   },
   "unrelated_job": "225839 preserved unchanged",
   "automatic_next_stages": false,
-  "server_root": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_20261025"
+  "server_root": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_20261025",
+  "cleanup": {
+    "job_id": "226060",
+    "name": "LH-SRF5-CLEANUP",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "status": "APPLY_COMPLETE",
+    "files_deleted": 16368,
+    "logical_bytes_removed": 22256205609,
+    "allocated_bytes_released": 22260400640,
+    "postflight": "PASS",
+    "scope": "/projects/_ssd/varunssd/louis-ssvc"
+  }
 }

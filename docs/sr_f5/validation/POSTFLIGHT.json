@@ -1,0 +1,64 @@
+{
+  "status": "PASS",
+  "project_root": "/projects/_ssd/varunssd/louis-ssvc",
+  "protected": [
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/huggingface/hub/models--Qwen--Qwen3.5-9B/snapshots/c202236235762e1c871ad0ccb60c8ee5ba337b9a/config.json",
+      "unchanged": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter/adapter_config.json",
+      "unchanged": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter/adapter_model.safetensors",
+      "unchanged": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71002/adapter/adapter_config.json",
+      "unchanged": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71002/adapter/adapter_model.safetensors",
+      "unchanged": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71003/adapter/adapter_config.json",
+      "unchanged": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71003/adapter/adapter_model.safetensors",
+      "unchanged": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f4_consolidated_20261022/DATA/TASKS.jsonl",
+      "unchanged": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f4_consolidated_20261022/DATA/IMAGE_MANIFEST.jsonl",
+      "unchanged": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f4_consolidated_20261022/DATA/CHARTQA_IMAGES.jsonl",
+      "unchanged": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f4_c_local_pilot_20261024/DATA/TASKS.jsonl",
+      "unchanged": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/external/chartqa/TASKS_AUDIT_ONLY.jsonl",
+      "unchanged": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12",
+      "unchanged": true
+    }
+  ],
+  "reappeared_deleted_paths": [],
+  "journal_counts": {
+    "DELETED": 16368
+  },
+  "verification": "metadata only; no repeated payload hashes",
+  "scheduler": "225839                       cafePOSELOCAL-SM    RUNNING      0:0 \n225839.batch                            batch    RUNNING      0:0 \n225839.exte+                           extern    RUNNING      0:0 \n226056                          LH-SRF5-G2-P0    PENDING      0:0 \n226057                          LH-SRF5-G2-P1    PENDING      0:0 \n226060                        LH-SRF5-CLEANUP  COMPLETED      0:0 \n226060.batch                            batch  COMPLETED      0:0 \n226060.exte+                           extern  COMPLETED      0:0 \n"
+}
