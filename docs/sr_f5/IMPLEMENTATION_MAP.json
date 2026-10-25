@@ -15,7 +15,8 @@
     "G3": "src/sr_f5/pilot.py",
     "G3_pool": "src/sr_f5/pilot_pool.py; scripts/sr_f5/submit_g3.py",
     "development_continuation": "scripts/sr_f5/advance_development.py",
-    "development_package": "scripts/sr_f5/package_development.py (includes transitive native contracts)"
+    "development_package": "scripts/sr_f5/package_development.py (includes transitive native contracts)",
+    "pilot_time_boundary": "scripts/sr_f5/drain_pair.py (external operations; frozen science unchanged)"
   },
   "unfinished_at_initial_implementation": [
     "actual GPU tokenizer/processor preflight",
@@ -69,6 +70,13 @@
     "g2_prerequisite_jobs": [
       "226134",
       "226135"
-    ]
+    ],
+    "drain_controller": {
+      "job": "226455",
+      "target": "226282",
+      "revision": "139709df6fe381b93a3d43cc92d1fdfb7a5f205c",
+      "receipt": "CONTINUATION/DRAIN_226282.json",
+      "state": "RUNNING_ARMED"
+    }
   }
 }

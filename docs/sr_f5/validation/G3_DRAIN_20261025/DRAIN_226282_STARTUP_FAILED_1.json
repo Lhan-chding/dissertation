@@ -1,0 +1,26 @@
+{
+  "status": "ARMED",
+  "job_id": "226282",
+  "source_revision": "ea50c51f0f145a183df360ab82025216d6303aca",
+  "controller_revision": "139709df6fe381b93a3d43cc92d1fdfb7a5f205c",
+  "controller": {
+    "pid": 316219,
+    "host": "gpu-pro6000-12.cluster02.eee.ntu.edu.sg"
+  },
+  "targets": {
+    "0": {
+      "parent": "b0",
+      "arm": "J",
+      "recovery": true
+    },
+    "1": {
+      "parent": "b0",
+      "arm": "SHUF",
+      "recovery": true
+    }
+  },
+  "started_at": "2026-10-25T14:21:20.547463+00:00",
+  "signals_only_coordinators": true,
+  "scientific_children_signalled": false,
+  "events": []
+}

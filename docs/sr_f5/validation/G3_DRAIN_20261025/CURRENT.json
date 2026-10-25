@@ -1,0 +1,39 @@
+{
+  "at": "2026-10-25T13:27:33.078320+00:00",
+  "phase": "G2_PASS_G3_ACTIVE",
+  "g2_jobs": [
+    "226134",
+    "226135"
+  ],
+  "expected_and_actual_responses": 4608,
+  "decision_job": "226277",
+  "source_code": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_ea50c51",
+  "source_revision": "ea50c51f0f145a183df360ab82025216d6303aca",
+  "decision_receipt": "CONTINUATION/ea50c51f0f145a183df360ab82025216d6303aca/DECISION.json",
+  "g3_submission": "G3_SUBMISSION_DUAL_GPU.json",
+  "retained_failures": [
+    {
+      "job": "226156",
+      "reason": "deployment omitted docs/sr_f1/package and amendments; failed before CPU checks or G2 aggregation",
+      "log": "slurm/G2-DECISION-226156.log"
+    }
+  ],
+  "repair": "committed packaging includes transitive native contracts; isolated archive import regression passed; no new model calls",
+  "decision_state": "COMPLETED",
+  "g2_gate": "PASS",
+  "g3_jobs": [
+    "226282",
+    "226283"
+  ],
+  "server_cpu_tests_passed": 84,
+  "drain": {
+    "job_id": "226282",
+    "receipt": "CONTINUATION/DRAIN_226282.json",
+    "launcher": "CONTINUATION/DRAIN_LAUNCH_226282.json",
+    "controller_revision": "139709df6fe381b93a3d43cc92d1fdfb7a5f205c",
+    "next_action": "Wait for first b0 J/SHUF full recovery PASS and planned cancellation; verify terminal allocation before same-frozen-code pair0 continuation; do not change science",
+    "controller_job": "226455",
+    "submission_receipt": "CONTINUATION/DRAIN_CPU_SUBMISSION_226282.json",
+    "startup_failure": "CONTINUATION/DRAIN_226282_STARTUP_FAILED_1.json"
+  }
+}

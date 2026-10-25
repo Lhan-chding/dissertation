@@ -1,0 +1,13 @@
+{
+  "status": "SUBMITTED",
+  "exit_code": 0,
+  "stdout": "226455\n",
+  "stderr": "sbatch: slurm_job_submit: enforced 1 CPUs for 1 task and 3072 MiB mem/node for 0 GPU(s) (model=none)\nsbatch: slurm_job_submit: you requested 1 CPUs/node and 1024 MiB mem/node\n",
+  "at": "2026-10-25T14:23:20.989154+00:00",
+  "before_queue": [
+    "226283|LH-SRF5-G3-P1|RUNNING",
+    "226282|LH-SRF5-G3-P0|RUNNING",
+    "225839|cafePOSELOCAL-SM|RUNNING"
+  ],
+  "failed_initial_step": "CANCELLED by 295800338"
+}

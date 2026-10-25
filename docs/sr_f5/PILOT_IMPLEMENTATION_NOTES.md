@@ -28,6 +28,8 @@ python -m sr_f5.pilot --root "$RUN_ROOT" --aggregate
 
 普通第 2 步实测：慢节点 J/SHUF 约 1,120/1,108 秒，快节点 HARD/LOCAL 约 522/517 秒。慢 worker 的 52–56 步超过 11.5 小时时限；集群拒绝修改 TimeLimit。新增外部运维脚本 `scripts/sr_f5/drain_pair.py`，不替换 G3 冻结科学代码、池顺序或采样参数。
 
-控制器作为同一 226282 allocation 内的 CPU-only overlapping step 运行，不增加作业或 GPU 预约。等两个 worker 的第一条 b0 路径进入恢复阶段，使用经过身份验证的 Linux pidfd 仅暂停负责启动下一阶段的 coordinator；正在执行的恢复子进程继续运行。子进程必须自行正常退出且 COMPLETE 绑定原 PID/start_ticks、从第 4 步恢复至第 12 步，随后用冻结部署做完整精确恢复比较。两侧全部 PASS 后记录计划性边界并取消本项目 allocation。其后仅在 squeue 消失和 sacct 终态已证实后，使用同一冻结代码和池计划提交新的双卡作业；已完成路径零模型调用复用，剩余路径照原顺序执行。
+控制器由持久 CPU 作业 `226455/LH-SRF5-G3-DRAIN` 承载，在 226282 allocation 内启动 CPU-only overlapping step；当前全用户共四个作业，不增加 GPU 预约。等两个 worker 的第一条 b0 路径进入恢复阶段，使用经过身份验证的 Linux pidfd 仅暂停负责启动下一阶段的 coordinator；正在执行的恢复子进程继续运行。子进程必须自行正常退出且 COMPLETE 绑定原 PID/start_ticks、从第 4 步恢复至第 12 步，随后用冻结部署做完整精确恢复比较。两侧全部 PASS 后记录计划性边界并取消本项目 allocation。其后仅在 squeue 消失和 sacct 终态已证实后，使用同一冻结代码和池计划提交新的双卡作业；已完成路径零模型调用复用，剩余路径照原顺序执行。
 
 任何身份歧义、阶段已越过、非零退出、比较失败或控制器期限到达，都解除已验证 coordinator 的暂停并保留错误回执；不会把部分恢复或计划性 CANCELLED 写为实验 PASS。控制器异常退出需要检查 `CONTINUATION/DRAIN_226282.json` 的 coordinator PID/start_ticks 与控制器存活；不得直接重提或盲发信号。科学子进程不收暂停信号，冻结代码目录保持原样。下一阶段仍以真实 G3 门为准。
+
+服务器运维部署 `sr_f5_operations_139709d`，revision `139709df6fe381b93a3d43cc92d1fdfb7a5f205c`。本地 7 项通过、1 项 Linux 专属测试跳过；服务器 8 项全部通过（0.38 秒），实测 coordinator 暂停时子进程仍正常退出。服务器 portable Python 未导出 pidfd API，但宿主 libc 提供同一接口，已使用并验证，未退化为有 PID 复用风险的裸信号。最初直接后台启动的子步骤 226282.0 随登录会话退出而 CANCELLED，events 为空，没有向训练进程发送信号，原始回执保留。22:25 核实持久控制作业 RUNNING、DRAIN 回执 ARMED，尚未执行暂停或边界取消。

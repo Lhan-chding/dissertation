@@ -114,5 +114,13 @@
     "actual_answers_observed": 400,
     "committed_updates_observed": 2,
     "first_updates_evidence": "G3_FIRST_UPDATES_20261025.json"
+  },
+  "drain_controller": {
+    "job": "226455",
+    "target_job": "226282",
+    "state": "RUNNING_ARMED",
+    "as_of": "2026-10-25T14:25:00Z",
+    "server_tests_passed": 8,
+    "science_revision_unchanged": true
   }
 }
