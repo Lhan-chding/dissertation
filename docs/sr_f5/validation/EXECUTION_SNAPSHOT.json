@@ -1,6 +1,6 @@
 {
   "status": "G2_PASS_G3_NUMERICAL_DIAGNOSIS_REQUIRED",
-  "as_of_local": "2026-10-26 03:08 Asia/Singapore",
+  "as_of_local": "2026-10-26 03:16 Asia/Singapore",
   "cpu_job": {
     "id": "226030",
     "state": "COMPLETED",
@@ -158,5 +158,15 @@
     "model_calls": 48,
     "gate_decision": "NOT_AUTHORIZED_BY_DIAGNOSTIC",
     "next_action": "Bounded saved-token cached G8/single replay; no scientific restart"
+  },
+  "cache_diagnosis": {
+    "job_id": "226890",
+    "status": "PENDING_RESOURCES",
+    "operations_revision": "0f7dced",
+    "science_revision": "ea50c51f0f145a183df360ab82025216d6303aca",
+    "evidence": "G3_CACHE_DIAG_SUBMISSION_226890.json",
+    "tests_passed": 8,
+    "new_samples": 0,
+    "optimizer_updates": 0
   }
 }
