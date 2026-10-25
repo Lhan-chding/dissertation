@@ -1,6 +1,6 @@
 {
   "status": "G2_PASS_G3_ACTIVE_NOT_SCIENTIFIC_COMPLETE",
-  "as_of_local": "2026-10-25 21:51 Asia/Singapore",
+  "as_of_local": "2026-10-25 23:58 Asia/Singapore",
   "cpu_job": {
     "id": "226030",
     "state": "COMPLETED",
@@ -111,9 +111,12 @@
       }
     ],
     "evidence_directory": "G2_FINAL_20261025",
-    "actual_answers_observed": 400,
-    "committed_updates_observed": 2,
-    "first_updates_evidence": "G3_FIRST_UPDATES_20261025.json"
+    "actual_answers_observed": 5896,
+    "first_updates_evidence": "G3_FIRST_UPDATES_20261025.json",
+    "primary_answers_observed": 5384,
+    "recovery_answers_observed": 512,
+    "primary_paths_complete": 2,
+    "latest_evidence": "G3_FIRST_PRIMARY_COMPLETIONS_20261025.json"
   },
   "drain_controller": {
     "job": "226455",
@@ -122,5 +125,14 @@
     "as_of": "2026-10-25T14:25:00Z",
     "server_tests_passed": 8,
     "science_revision_unchanged": true
+  },
+  "supplemental": {
+    "job_id": "226588",
+    "state": "RUNNING",
+    "node": "gpu-pro6000-7",
+    "gpus": 1,
+    "observed_committed_step": 2,
+    "first_path": "b2-DENSE",
+    "recent_utilization": 86.8
   }
 }
