@@ -93,18 +93,19 @@ def score_response(
     V=0, S=UNKNOWN and J_M3=0. No malformed original is repaired to earn reward.
     Natural/legacy protocols retain their native score and have S=NOT_APPLICABLE.
     """
+    natural_work = protocol in {"natural_work", "natural_work_v2"}
     reason = finish_reason or (
-        ("final_tag" if protocol == "natural_work" else "balanced") if finished else "length"
+        ("final_tag" if natural_work else "balanced") if finished else "length"
     )
     if not finished:
         reason = "length"
-    if protocol in {"natural_work", "structured_v2", "structured"}:
-        native_protocol = "natural_work" if protocol == "natural_work" else "structured"
+    if natural_work or protocol in {"structured_v2", "structured"}:
+        native_protocol = "natural_work" if natural_work else "structured"
         score = legacy.score(text, world, query, finish_reason=reason, protocol=native_protocol)
         score.update(
             V=score["presentation"],
             A=score["value_correct"],
-            P="NOT_APPLICABLE" if protocol == "natural_work" else "UNKNOWN",
+            P="NOT_APPLICABLE" if natural_work else "UNKNOWN",
             S="NOT_APPLICABLE",
             J_M3=None,
             J_legacy_projection=None,

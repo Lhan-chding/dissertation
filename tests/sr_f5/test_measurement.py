@@ -121,6 +121,26 @@ class NativeMeasurementTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             score_response(f["raw_response"], f["world"], dict(f["query"], surprise=True))
 
+    def test_natural_work_v2_alias_preserves_native_score_and_finish(self):
+        f = self.fixture
+        for raw, finished in (
+            ("Sum the values. <final>90</final>", True),
+            ("Sum the values. <final>89</final>", True),
+            ("Sum the values. <final>90", False),
+        ):
+            with self.subTest(raw=raw, finished=finished):
+                direct = score_response(
+                    raw, f["world"], f["query"], finished=finished, protocol="natural_work"
+                )
+                alias = score_response(
+                    raw, f["world"], f["query"], finished=finished, protocol="natural_work_v2"
+                )
+                self.assertEqual(alias.pop("protocol"), "natural_work_v2")
+                direct.pop("protocol")
+                self.assertEqual(alias, direct)
+                self.assertEqual(alias["finish"], int(finished))
+                self.assertEqual(alias["S"], "NOT_APPLICABLE")
+
 
 if __name__ == "__main__":
     unittest.main()
