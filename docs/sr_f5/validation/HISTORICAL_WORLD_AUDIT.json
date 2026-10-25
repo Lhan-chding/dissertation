@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "sources": [
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f4_c_local_pilot_20261024/DATA/TASKS.jsonl",
+      "rows": 954,
+      "world_rows": 704
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_code_26e560b/tests/sr_f5/collision_J1_SFAIL.json",
+      "rows": 1,
+      "world_rows": 1
+    }
+  ],
+  "new_questions_checked": 3120,
+  "historical_world_rows": 705,
+  "external_chartqa_rows_without_world": 250,
+  "comparison_keys": [
+    "exact_ordered_world",
+    "printed_world",
+    "renamed_reordered_world"
+  ],
+  "collisions": []
+}

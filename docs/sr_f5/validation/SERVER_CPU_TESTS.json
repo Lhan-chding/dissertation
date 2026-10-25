@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-25T10:18:30.477246+00:00",
+  "status": "PASS",
+  "returncode": 0,
+  "test_paths": [
+    "tests/sr_f5",
+    "tests/sr_f4/test_data.py",
+    "tests/sr_f3_ce/test_contract.py",
+    "tests/sr_f3_ce/test_protocol_revision.py"
+  ],
+  "model_calls": 0,
+  "code_revision": "26e560bac1a7c5b5563f52112bc1374685084b8d",
+  "scope": "CPU only; no GPU or scientific claim"
+}

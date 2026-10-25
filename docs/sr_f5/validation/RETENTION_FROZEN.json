@@ -1,0 +1,17 @@
+{
+  "status": "FROZEN_BEFORE_NEW_MODEL_OUTPUTS",
+  "source_root": "/projects/_ssd/varunssd/louis-ssvc/sr_f4_consolidated_20261022",
+  "legacy_source": "/projects/_ssd/varunssd/louis-ssvc/sr_f4_consolidated_20261022/DATA/TASKS.jsonl",
+  "chartqa_source": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/external/chartqa/TASKS_AUDIT_ONLY.jsonl",
+  "legacy_seed": 2026102309,
+  "chartqa_seed": 2026102310,
+  "legacy_questions": 128,
+  "chartqa_questions": 250,
+  "legacy_selection": "two roots per family/variant; both chart styles retained",
+  "chartqa_selection": "inherited sorted-ID seeded sample from fixed source",
+  "legacy_task_digest": "1ac0de45f0d1524956ad9a3e078b4be792aa19c89501bf031e06d99ba46f9bcc",
+  "chartqa_task_digest": "e3b8ccdff4f80d55fcfcdbeb6d005c3f1fa50eec0b0adbd4e633c3f582b0573f",
+  "all_48_formal_models_share_same_subsets": true,
+  "model_outputs_used": false,
+  "image_transfer_status": "source routes frozen; stage locally before evaluation"
+}

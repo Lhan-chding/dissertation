@@ -1,0 +1,113 @@
+{
+  "roots": 780,
+  "queries": 3120,
+  "cross_split_world_collisions": 0,
+  "status": "PASS",
+  "splits": {
+    "dev": {
+      "roots": 48,
+      "queries": 192,
+      "family_questions": {
+        "BINDING": 32,
+        "IMPACT": 32,
+        "INTERVAL": 32,
+        "K_DIRECTION": 32,
+        "SIGNED": 32,
+        "TIES": 32
+      },
+      "max_construction_attempt": 1
+    },
+    "pilot": {
+      "roots": 48,
+      "queries": 192,
+      "family_questions": {
+        "BINDING": 32,
+        "IMPACT": 32,
+        "INTERVAL": 32,
+        "K_DIRECTION": 32,
+        "SIGNED": 32,
+        "TIES": 32
+      },
+      "max_construction_attempt": 0
+    },
+    "train": {
+      "roots": 288,
+      "queries": 1152,
+      "family_questions": {
+        "BINDING": 192,
+        "IMPACT": 192,
+        "INTERVAL": 192,
+        "K_DIRECTION": 192,
+        "SIGNED": 192,
+        "TIES": 192
+      },
+      "max_construction_attempt": 1
+    },
+    "test_id": {
+      "roots": 96,
+      "queries": 384,
+      "family_questions": {
+        "BINDING": 64,
+        "IMPACT": 64,
+        "INTERVAL": 64,
+        "K_DIRECTION": 64,
+        "SIGNED": 64,
+        "TIES": 64
+      },
+      "max_construction_attempt": 0
+    },
+    "test_composition": {
+      "roots": 192,
+      "queries": 768,
+      "family_questions": {
+        "BINDING": 128,
+        "IMPACT": 128,
+        "INTERVAL": 128,
+        "K_DIRECTION": 128,
+        "SIGNED": 128,
+        "TIES": 128
+      },
+      "max_construction_attempt": 1
+    },
+    "test_relation": {
+      "roots": 48,
+      "queries": 192,
+      "family_questions": {
+        "BINDING": 32,
+        "IMPACT": 32,
+        "INTERVAL": 32,
+        "K_DIRECTION": 32,
+        "SIGNED": 32,
+        "TIES": 32
+      },
+      "max_construction_attempt": 0
+    },
+    "test_interface": {
+      "roots": 48,
+      "queries": 192,
+      "family_questions": {
+        "BINDING": 32,
+        "IMPACT": 32,
+        "INTERVAL": 32,
+        "K_DIRECTION": 32,
+        "SIGNED": 32,
+        "TIES": 32
+      },
+      "max_construction_attempt": 0
+    },
+    "dev_monitor": {
+      "roots": 12,
+      "queries": 48,
+      "family_questions": {
+        "BINDING": 8,
+        "IMPACT": 8,
+        "INTERVAL": 8,
+        "K_DIRECTION": 8,
+        "SIGNED": 8,
+        "TIES": 8
+      },
+      "max_construction_attempt": 0
+    }
+  },
+  "checked_lineages": true
+}
