@@ -45,3 +45,9 @@ python -m sr_f5.pilot --root "$RUN_ROOT" --aggregate
 本节取代上文第一版的后续池重提安排。第一版因真实概率门失败，经同 token 全序列/缓存、批量/单条与精度诊断后，事前登记唯一 recipe_v2。旧科学代码和全部原始证据保留；现存 b0 J/SHUF 连续恢复由原控制器完成，之后不再执行第一版未完成池。
 
 第二版科学版本 `47d5e85fb0c9b39d8f996465045d21956825f59d`，统一全模型和浮点输入 FP32；新开发/先导数据使用登记的派生种子，全部臂、预算、数值报警门和精确恢复标准不变。新根 `/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026` 已完成 CPU 准备（226894 COMPLETED/0:0）。普查双卡 pair0 为 226900，pair1 等待资源；回执分别为新根 `G2_SUBMISSION_PAIR0.json` / `G2_SUBMISSION_PAIR1.json`，不得冒用第一版合并回执。先验证两项退出队列及成功终态，再从第二版冻结源码聚合。已有 G3 冻结之后不得重新写入带时间戳的 G2 gate，避免破坏冻结身份。第二版仍失败即保留诊断、停止正式扩展，不允许第三版。
+
+第二版衔接使用独立运维脚本 `scripts/sr_f5/advance_recipe_v2.py`，不能调用旧 `advance_development.py`（旧版本既不识别两个独立 pair 回执，且会重复写 G2 gate）。运维脚本通过 `--code` 和 `--revision` 导入已登记科学部署，核对两项原始提交身份、退出队列和成功终态，复用实际 CPU PASS，随后仅一次聚合。`CONTINUATION/RECIPE_V2_G2_AGGREGATION.json` 保存聚合开始/完成及绑定摘要；不完整聚合需诊断，不能盲覆盖。`CONTINUATION/RECIPE_V2_ADVANCE.json` 保存当前决定。已有 G3 冻结只验证已有证据；已有提交直接停止重复操作。G2 第二版失败产生 `STOP_RECIPE_V2_FEASIBILITY`，不提交 G3。容量不足且从未提交时可在后续重入。
+
+`advance_recipe_v2.sbatch` 是 CPU 决策入口，`SRF5_CODE` / `SRF5_REVISION` 固定科学版本，`SRF5_OPERATIONS` 指向单独提交的运维部署。只有两个普查作业身份齐备且不存在活动/未知控制器时才提交后续 CPU 作业；读真实阶段决定后继续推进，禁止把提交成功当作科学通过。
+
+桥接验证：19 项小型操作层回归通过（0.16 秒），包含缺失/未知/错误 pair、活动/未知/失败作业、第二版门失败、部分聚合保留、已提交去重及冻结后的容量重试不改 gate 字节。Ruff 和 CPU 启动脚本语法检查通过；未重新运行既有 332 项服务器检查，没有模型调用。
