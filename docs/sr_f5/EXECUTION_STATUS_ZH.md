@@ -1,6 +1,6 @@
 # SR-F5 执行状态（2026-10-25，新加坡）
 
-**2026-10-26 04:04（新加坡）：旧版 b0 J/SHUF 恢复精确比较均 PASS；226282 已计划性 CANCELLED、226455 COMPLETED/0:0，均退出队列。第二版双卡普查 226900/226918 已齐备，分别等待 Resources/Priority，尚无新回答；CPU 决策 226919 等待两项结束，完整 G2 PASS 后才推进 G3。总预约四卡、三作业，旧版剩余池不续跑。**
+**2026-10-26 04:43（新加坡）：第二版双卡普查 226900 已于 20:36:10 UTC 在 gpu-pro6000-9 实际运行，观察到 b0 30 组、240 回答；两卡近期利用率 96–100%，两个分片运行身份均确认全模型/浮点输入 FP32。226918 仍 PENDING(Resources)，CPU 决策 226919 等待两项结束；尚未聚合 G2 或进入 G3。**
 
 从 F4 提交 `750db3d` 建立独立分支 `sr-f5-semantic-j-v1`。G2 沿用冻结科学代码 `26e560bac1a7c5b5563f52112bc1374685084b8d`，未因部署修复重生成回答。G3 运行代码为 `ea50c51f0f145a183df360ab82025216d6303aca`，服务器部署 `/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_ea50c51`。
 
@@ -29,8 +29,8 @@
 |226455|LH-SRF5-G3-DRAIN|0|COMPLETED / 0:0；19:58 UTC 完成边界控制|
 |226588|LH-SRF5-G3-EXTRA|1|COMPLETED / 0:0；b2-DENSE/LOCAL 各 1,536 回答完整|
 |226894|LH-SRF5-V2-CPU|0|COMPLETED / 0:0；第二版 CPU 准备通过|
-|226900|LH-SRF5-G2-P0|2|第二版 PENDING(Resources)，19:31 UTC 提交|
-|226918|LH-SRF5-G2-P1|2|第二版 PENDING(Priority)，分片 2/3|
+|226900|LH-SRF5-G2-P0|2|RUNNING / gpu-pro6000-9；20:36:10 UTC 开始|
+|226918|LH-SRF5-G2-P1|2|PENDING(Resources)，分片 2/3|
 |226919|LH-SRF5-V2-DECISION|0|PENDING(Dependency)，afterany:226900:226918|
 
 G3 共 15 条独立主路径、23,040 条回答；b0 五臂增加 5,120 条恢复诊断回答。b1/b2 不声称完成独立恢复重采样。详细恢复规则、原始证据要求与门槛见 `PILOT_IMPLEMENTATION_NOTES.md`。G3 完成后从同一冻结版本汇总，按 contract/05 诊断；不得用效果排名选配方。最多一次事前登记开发配方修订，第二版仍失败则停在可实施性诊断。所有 G0–G4 真实门通过及正式冻结之前，禁止进入 45 路正式矩阵。
@@ -62,6 +62,8 @@ G3 共 15 条独立主路径、23,040 条回答；b0 五臂增加 5,120 条恢�
 04:04 边界完成：两条恢复各 128 组、1,024 回答与连续主运行相应步骤精确匹配；模型、Adam、scheduler、各 RNG、fresh process 身份与 4→12 cursor、原始组及数值信用更新回执全部 PASS。226282 于 19:58:10 UTC 按计划 CANCELLED/0:0；CPU 控制器 226455 同时 COMPLETED/0:0，已核实两项退出 squeue。旧版四个已实际完成的 b0 恢复（J/SHUF/HARD/LOCAL）通过，并不补齐 DENSE 或把整个 G3 改为 PASS；旧剩余池不再启动。
 
 释放后使用原第二版科学部署提交 pair1 `226918/LH-SRF5-G2-P1`，预期 2,304 回答。已核验 held 身份并释放；随后提交唯一 CPU 衔接 `226919/LH-SRF5-V2-DECISION`，afterany 依赖 226900 与 226918。此控制器用运维 `23b6760` 导入科学 `47d5e85`，复用 CPU 验收，仅在两项成功终态和完整真实 G2 PASS 后冻结并提交 G3。20:04 UTC 核实两个 GPU 作业均仍排队、CPU 等待依赖、新回答为零，无可报告的新 GPU 吞吐。回执为 `validation/RECIPE_V2_REGISTRATION/BOUNDARY_AND_QUEUE_20261026T0404.json` 与 `G2_SUBMISSION_PAIR1.json`；服务器 CURRENT 已绑定当前控制器，禁止并行手动汇总或重复提交。
+
+04:43 首次实际 FP32 普查产出：226900 的两个进程分别使用不同已分配 GPU，模型浮点参数/缓冲、输入和概率 dtype 均为 float32，recipe_version=2。观察到 b0 30 组、240 回答，b1/b2 暂未产生完整组；两卡最近遥测约 96–100%，显存约 50,389 MiB。worker0/1 日志均持续发布 COMPLETE 组；无新技术失败。读取运行身份时首次目录快照只返回一项，随后按两个已知精确文件名读取均确认存在且 FP32 生效；目录计数是观察快照，不代替完整门审计。原始运行身份保留服务器，小型摘录及遥测见 `validation/RECIPE_V2_REGISTRATION/FIRST_RUNNING_20261026T0443.json`。226918 仍等资源；226919 依赖未满足，不手动抢跑聚合。
 
 ## 利用率与效率边界
 

@@ -1,0 +1,129 @@
+{
+  "at": "2026-10-25T20:43:31.628179+00:00",
+  "queue": [
+    "226918|LH-SRF5-G2-P1|PENDING|0:00|gres/gpu:pro6000:2|(Resources)",
+    "226919|LH-SRF5-V2-DECISION|PENDING|0:00|N/A|(Dependency)",
+    "226900|LH-SRF5-G2-P0|RUNNING|7:21|gres/gpu:pro6000:2|gpu-pro6000-9"
+  ],
+  "completed_groups_observed": {
+    "b0": 30,
+    "b1": 0,
+    "b2": 0
+  },
+  "completed_answers_observed": 240,
+  "runtime_identities": {
+    "G2-b0-0-of-4.json": {
+      "dtype": "float32",
+      "numerics": {
+        "recipe_version": 2,
+        "model_dtype": "float32",
+        "input_float_dtype": "float32",
+        "probability_dtype": "float32"
+      },
+      "forward_parameter_dtypes": [
+        "float32"
+      ],
+      "forward_float_buffer_dtypes": [
+        "float32"
+      ],
+      "input_float_dtype": "float32",
+      "probability_dtype": "float32",
+      "run_id": "G2-b0-0-of-4",
+      "hardware": {
+        "cuda_visible_device_count": 1,
+        "cuda_name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+        "cuda_total_memory_bytes": 101975851008,
+        "cuda_uuid": "4f8f5018-1ae4-5a0e-eb73-d9d949900077",
+        "compute_capability": [
+          12,
+          0
+        ],
+        "cuda_runtime": "13.0",
+        "hostname": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg",
+        "cuda_visible_devices": "0",
+        "name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+        "uuid": "GPU-4f8f5018-1ae4-5a0e-eb73-d9d949900077",
+        "pci_bus_id": "00000000:83:00.0",
+        "driver_version": "595.71.05",
+        "memory_mib": "97887"
+      },
+      "identity_note": "registered snapshot; adapter checked once on load; no base rehash"
+    },
+    "G2-b0-1-of-4.json": {
+      "dtype": "float32",
+      "numerics": {
+        "recipe_version": 2,
+        "model_dtype": "float32",
+        "input_float_dtype": "float32",
+        "probability_dtype": "float32"
+      },
+      "forward_parameter_dtypes": [
+        "float32"
+      ],
+      "forward_float_buffer_dtypes": [
+        "float32"
+      ],
+      "input_float_dtype": "float32",
+      "probability_dtype": "float32",
+      "run_id": "G2-b0-1-of-4",
+      "hardware": {
+        "cuda_visible_device_count": 1,
+        "cuda_name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+        "cuda_total_memory_bytes": 101975851008,
+        "cuda_uuid": "5c8befe6-6e10-1990-5e3f-de9b039a4c46",
+        "compute_capability": [
+          12,
+          0
+        ],
+        "cuda_runtime": "13.0",
+        "hostname": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg",
+        "cuda_visible_devices": "1",
+        "name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+        "uuid": "GPU-5c8befe6-6e10-1990-5e3f-de9b039a4c46",
+        "pci_bus_id": "00000000:D3:00.0",
+        "driver_version": "595.71.05",
+        "memory_mib": "97887"
+      },
+      "identity_note": "registered snapshot; adapter checked once on load; no base rehash"
+    }
+  },
+  "recent_gpu": [
+    "2026/10/25 20:38:40.986, 0, GPU-4f8f5018-1ae4-5a0e-eb73-d9d949900077, 97 %, 65 %, 50389 MiB, 97887 MiB, 297.57 W",
+    "2026/10/25 20:38:40.986, 1, GPU-5c8befe6-6e10-1990-5e3f-de9b039a4c46, 97 %, 66 %, 50389 MiB, 97887 MiB, 300.32 W",
+    "2026/10/25 20:39:10.987, 0, GPU-4f8f5018-1ae4-5a0e-eb73-d9d949900077, 100 %, 23 %, 50389 MiB, 97887 MiB, 300.12 W",
+    "2026/10/25 20:39:10.987, 1, GPU-5c8befe6-6e10-1990-5e3f-de9b039a4c46, 100 %, 20 %, 50389 MiB, 97887 MiB, 300.19 W",
+    "2026/10/25 20:39:40.988, 0, GPU-4f8f5018-1ae4-5a0e-eb73-d9d949900077, 97 %, 64 %, 50389 MiB, 97887 MiB, 297.43 W",
+    "2026/10/25 20:39:40.989, 1, GPU-5c8befe6-6e10-1990-5e3f-de9b039a4c46, 98 %, 65 %, 50389 MiB, 97887 MiB, 299.98 W",
+    "2026/10/25 20:40:10.990, 0, GPU-4f8f5018-1ae4-5a0e-eb73-d9d949900077, 96 %, 64 %, 50389 MiB, 97887 MiB, 299.25 W",
+    "2026/10/25 20:40:10.990, 1, GPU-5c8befe6-6e10-1990-5e3f-de9b039a4c46, 97 %, 65 %, 50389 MiB, 97887 MiB, 301.51 W",
+    "2026/10/25 20:40:40.991, 0, GPU-4f8f5018-1ae4-5a0e-eb73-d9d949900077, 73 %, 43 %, 50389 MiB, 97887 MiB, 266.17 W",
+    "2026/10/25 20:40:40.991, 1, GPU-5c8befe6-6e10-1990-5e3f-de9b039a4c46, 77 %, 45 %, 50389 MiB, 97887 MiB, 265.32 W",
+    "2026/10/25 20:41:10.992, 0, GPU-4f8f5018-1ae4-5a0e-eb73-d9d949900077, 97 %, 64 %, 50389 MiB, 97887 MiB, 300.72 W",
+    "2026/10/25 20:41:10.992, 1, GPU-5c8befe6-6e10-1990-5e3f-de9b039a4c46, 100 %, 50 %, 50389 MiB, 97887 MiB, 204.78 W",
+    "2026/10/25 20:41:40.992, 0, GPU-4f8f5018-1ae4-5a0e-eb73-d9d949900077, 98 %, 65 %, 50389 MiB, 97887 MiB, 299.22 W",
+    "2026/10/25 20:41:40.993, 1, GPU-5c8befe6-6e10-1990-5e3f-de9b039a4c46, 98 %, 65 %, 50389 MiB, 97887 MiB, 300.33 W",
+    "2026/10/25 20:42:10.994, 0, GPU-4f8f5018-1ae4-5a0e-eb73-d9d949900077, 98 %, 65 %, 50389 MiB, 97887 MiB, 301.63 W",
+    "2026/10/25 20:42:10.994, 1, GPU-5c8befe6-6e10-1990-5e3f-de9b039a4c46, 97 %, 64 %, 50389 MiB, 97887 MiB, 302.23 W",
+    "2026/10/25 20:42:40.995, 0, GPU-4f8f5018-1ae4-5a0e-eb73-d9d949900077, 97 %, 64 %, 50389 MiB, 97887 MiB, 298.21 W",
+    "2026/10/25 20:42:40.995, 1, GPU-5c8befe6-6e10-1990-5e3f-de9b039a4c46, 96 %, 64 %, 50389 MiB, 97887 MiB, 304.73 W",
+    "2026/10/25 20:43:10.995, 0, GPU-4f8f5018-1ae4-5a0e-eb73-d9d949900077, 98 %, 65 %, 50389 MiB, 97887 MiB, 298.56 W",
+    "2026/10/25 20:43:10.998, 1, GPU-5c8befe6-6e10-1990-5e3f-de9b039a4c46, 98 %, 65 %, 51027 MiB, 97887 MiB, 300.12 W"
+  ],
+  "worker_log_tails": {
+    "G2-W0-226900.log": [
+      "{\"task_id\": \"G2-b0-0-of-4\", \"qid\": \"dev_IMPACT_0006_v0\", \"status\": \"COMPLETE\"}",
+      "[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)",
+      "{\"task_id\": \"G2-b0-0-of-4\", \"qid\": \"dev_IMPACT_0007_v0\", \"status\": \"COMPLETE\"}",
+      "[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)"
+    ],
+    "G2-W1-226900.log": [
+      "{\"task_id\": \"G2-b0-1-of-4\", \"qid\": \"dev_IMPACT_0004_v1\", \"status\": \"COMPLETE\"}",
+      "[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)",
+      "{\"task_id\": \"G2-b0-1-of-4\", \"qid\": \"dev_IMPACT_0005_v1\", \"status\": \"COMPLETE\"}",
+      "[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)"
+    ]
+  },
+  "science_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+  "start": "2026-10-25T20:36:10",
+  "status": "PARTIAL_CENSUS_RUNNING_NOT_GATE_PASS"
+}

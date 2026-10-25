@@ -1,6 +1,6 @@
 {
-  "status": "RECIPE_V2_G2_BOTH_PAIRS_PENDING_DECISION_DEPENDENT",
-  "as_of_local": "2026-10-26 04:04 Asia/Singapore",
+  "status": "RECIPE_V2_G2_PAIR0_RUNNING_PAIR1_PENDING",
+  "as_of_local": "2026-10-26 04:43 Asia/Singapore",
   "cpu_job": {
     "id": "226030",
     "state": "COMPLETED",
@@ -189,7 +189,7 @@
     "exit_code": "0:0"
   },
   "recipe_v2": {
-    "status": "G2_BOTH_PAIRS_PENDING",
+    "status": "G2_PARTIAL_CENSUS_RUNNING",
     "root": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026",
     "report": "../NUMERICAL_DIAGNOSIS_RECIPE_V2_ZH.md",
     "failed_v2_action": "STOP_NO_THIRD_RECIPE",
@@ -204,15 +204,21 @@
     },
     "g2_pair0": {
       "job_id": "226900",
-      "state": "PENDING",
-      "reason": "Resources",
+      "state": "RUNNING",
+      "reason": "None",
       "gpus": 2,
-      "expected_answers": 2304
+      "expected_answers": 2304,
+      "node": "gpu-pro6000-9",
+      "start": "2026-10-25T20:36:10",
+      "recent_gpu_utilization_percent_range": [
+        96,
+        100
+      ]
     },
     "g2_pair1": {
       "job_id": "226918",
       "state": "PENDING",
-      "reason": "Priority",
+      "reason": "Resources",
       "gpus": 2,
       "expected_answers": 2304
     },
@@ -221,8 +227,13 @@
     "advance_operations_revision": "23b67600423ad23c49d3f049075fd1618d74b376",
     "advance_status": "PENDING_DEPENDENCY",
     "advance_controller_job": "226919",
-    "actual_g2_responses_observed": 0,
-    "latest_evidence": "RECIPE_V2_REGISTRATION/BOUNDARY_AND_QUEUE_20261026T0404.json",
-    "advance_dependency": "afterany:226900:226918"
+    "actual_g2_responses_observed": 240,
+    "latest_evidence": "RECIPE_V2_REGISTRATION/FIRST_RUNNING_20261026T0443.json",
+    "advance_dependency": "afterany:226900:226918",
+    "observed_g2_groups": {
+      "b0": 30,
+      "b1": 0,
+      "b2": 0
+    }
   }
 }
