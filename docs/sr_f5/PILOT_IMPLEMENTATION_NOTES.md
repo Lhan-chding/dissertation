@@ -33,3 +33,9 @@ python -m sr_f5.pilot --root "$RUN_ROOT" --aggregate
 任何身份歧义、阶段已越过、非零退出、比较失败或控制器期限到达，都解除已验证 coordinator 的暂停并保留错误回执；不会把部分恢复或计划性 CANCELLED 写为实验 PASS。控制器异常退出需要检查 `CONTINUATION/DRAIN_226282.json` 的 coordinator PID/start_ticks 与控制器存活；不得直接重提或盲发信号。科学子进程不收暂停信号，冻结代码目录保持原样。下一阶段仍以真实 G3 门为准。
 
 服务器运维部署 `sr_f5_operations_139709d`，revision `139709df6fe381b93a3d43cc92d1fdfb7a5f205c`。本地 7 项通过、1 项 Linux 专属测试跳过；服务器 8 项全部通过（0.38 秒），实测 coordinator 暂停时子进程仍正常退出。服务器 portable Python 未导出 pidfd API，但宿主 libc 提供同一接口，已使用并验证，未退化为有 PID 复用风险的裸信号。最初直接后台启动的子步骤 226282.0 随登录会话退出而 CANCELLED，events 为空，没有向训练进程发送信号，原始回执保留。22:25 核实持久控制作业 RUNNING、DRAIN 回执 ARMED，尚未执行暂停或边界取消。
+
+## 用户授权的夜间加卡（2026-10-25）
+
+用户授权再增加一至两张卡。当前四张 GPU，按五张总预约限制新增一张；两个双卡主作业保持原样，新增 `LH-SRF5-G3-EXTRA`。追加卡使用原冻结科学部署 `ea50c51`，提前执行原 worker 0/1 队列末尾的 b2-DENSE、b2-LOCAL 各 12 步，共 3,072 条原登记主回答；不增加实验臂、步数、采样预算或恢复回答，不按结果挑任务。排除已观测较慢的 gpu-pro6000-12；仍需实际启动后确认吞吐。
+
+这是用户授权的资源分配补充，原 FROZEN 与 POOL_PLAN 不改写。启动前要求两条目标尚无运行目录、原 pair0 仍在首条 b0 任务且边界控制器健康。`CONTINUATION/SUPPLEMENTAL_G3.json` 保存资源补充和作业身份。pair0 边界退出后，续跑必须同时等待追加作业进入终态、两条路径 COMPLETE，再运行原冻结池；完成路径以已有 checkpoint 零模型调用跳过。不得让原池与追加卡同时抢跑同一条路径；追加失败须先诊断并保留原文与状态，不能盲重提。
