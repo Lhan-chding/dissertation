@@ -3,6 +3,7 @@
 import json
 import os
 import socket
+import subprocess
 from pathlib import Path
 
 from sr_f4.common import now, read, write
@@ -43,7 +44,7 @@ def main():
         for key, row in jobs.items()
         if any(targeted(row.get(field, "")) for field in ("WorkDir", "Command"))
     ]
-    handles, unavailable = [], []
+    handles, unavailable, session_daemons = [], [], []
     process_count = 0
     for proc in Path("/proc").iterdir():
         if not proc.name.isdecimal():
@@ -66,7 +67,18 @@ def main():
         except FileNotFoundError:
             continue
         except PermissionError:
-            unavailable.append(int(proc.name))
+            # These login session services are not experiment workers. Their
+            # protected maps are inaccessible even to their owning account.
+            identity = subprocess.run(
+                ["ps", "-p", proc.name, "-o", "comm=,args="],
+                capture_output=True,
+                text=True,
+                check=False,
+            ).stdout.strip().split(maxsplit=1)
+            if identity in (["(sd-pam)", "(sd-pam)"], ["sshd", f"sshd: {getpass.getuser()}@notty"]):
+                session_daemons.append(dict(pid=int(proc.name), identity=identity))
+            elif (proc / "status").exists():
+                unavailable.append(int(proc.name))
     config = read(ROOT / "sr_f5_semantic_j_20261025/CONFIG.json")
     protected = []
     paths = [Path(config["model"]["model_path"]) / "config.json"]
@@ -104,6 +116,7 @@ def main():
         candidate_filter="archive allowlisted F3 output prefixes plus obsolete Qwen2.5 cache only",
         open_handles=handles,
         inaccessible_owned_processes=unavailable,
+        excluded_login_session_daemons=session_daemons,
         local_processes_checked=process_count,
         host=socket.gethostname(),
         activity_check_scope=("Current login descriptors/maps plus user-wide Slurm jobs"),
