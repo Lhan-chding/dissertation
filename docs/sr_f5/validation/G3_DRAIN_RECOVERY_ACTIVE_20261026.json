@@ -1,0 +1,151 @@
+{
+  "observed_at": "2026-10-25T17:19:37.417972+00:00",
+  "drain": {
+    "status": "ARMED",
+    "job_id": "226282",
+    "source_revision": "ea50c51f0f145a183df360ab82025216d6303aca",
+    "controller_revision": "139709df6fe381b93a3d43cc92d1fdfb7a5f205c",
+    "controller": {
+      "pid": 316358,
+      "host": "gpu-pro6000-12.cluster02.eee.ntu.edu.sg"
+    },
+    "targets": {
+      "0": {
+        "parent": "b0",
+        "arm": "J",
+        "recovery": true
+      },
+      "1": {
+        "parent": "b0",
+        "arm": "SHUF",
+        "recovery": true
+      }
+    },
+    "started_at": "2026-10-25T14:23:42.396144+00:00",
+    "signals_only_coordinators": true,
+    "scientific_children_signalled": false,
+    "events": [
+      {
+        "worker": 0,
+        "event": "COORDINATOR_PAUSE_INTENT",
+        "parent_pid": 308100,
+        "parent_start": "227959426",
+        "child_pid": 344499,
+        "child_start": "229351944"
+      },
+      {
+        "worker": 0,
+        "event": "COORDINATOR_PAUSED",
+        "parent_pid": 308100,
+        "child_pid": 344499
+      },
+      {
+        "worker": 1,
+        "event": "COORDINATOR_PAUSE_INTENT",
+        "parent_pid": 308101,
+        "parent_start": "227959426",
+        "child_pid": 344610,
+        "child_start": "229364531"
+      },
+      {
+        "worker": 1,
+        "event": "COORDINATOR_PAUSED",
+        "parent_pid": 308101,
+        "child_pid": 344610
+      }
+    ]
+  },
+  "primary": {
+    "J": {
+      "status": "COMPLETE",
+      "identity": {
+        "run_id": "G3-b0-J",
+        "parent": "b0",
+        "arm": "J",
+        "repeat": 0,
+        "frozen_digest": "845980b231085b6c3a5898a89e4a0293b006e90876135c67b604d8f18b477ab2",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "lane": "primary",
+      "committed_step": 12,
+      "responses": 1536,
+      "scientific_gate": "NOT_YET_AGGREGATED",
+      "execution": {
+        "id": "5eac3ec5a0ba487c923c9d68df7b7eea",
+        "process": {
+          "host": "gpu-pro6000-12.cluster02.eee.ntu.edu.sg",
+          "pid": 308103,
+          "start_ticks": "227959453"
+        },
+        "restored_step": 0
+      }
+    },
+    "SHUF": {
+      "status": "COMPLETE",
+      "identity": {
+        "run_id": "G3-b0-SHUF",
+        "parent": "b0",
+        "arm": "SHUF",
+        "repeat": 0,
+        "frozen_digest": "845980b231085b6c3a5898a89e4a0293b006e90876135c67b604d8f18b477ab2",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "lane": "primary",
+      "committed_step": 12,
+      "responses": 1536,
+      "scientific_gate": "NOT_YET_AGGREGATED",
+      "execution": {
+        "id": "7d32bff67ac645d3a926adfe54d02c38",
+        "process": {
+          "host": "gpu-pro6000-12.cluster02.eee.ntu.edu.sg",
+          "pid": 308104,
+          "start_ticks": "227959455"
+        },
+        "restored_step": 0
+      }
+    }
+  },
+  "process_observation": {
+    "method": "read-only /proc via overlapping srun inside allocation 226282",
+    "job_id": "226282",
+    "all_job_environment_matched": true,
+    "all_commands_matched_expected_project_roles": true,
+    "processes": [
+      {
+        "pid": 316358,
+        "state": "S",
+        "ppid": 316352,
+        "start_ticks": "228313514"
+      },
+      {
+        "pid": 308100,
+        "state": "T",
+        "ppid": 308091,
+        "start_ticks": "227959426"
+      },
+      {
+        "pid": 344499,
+        "state": "R",
+        "ppid": 308100,
+        "start_ticks": "229351944"
+      },
+      {
+        "pid": 308101,
+        "state": "T",
+        "ppid": 308091,
+        "start_ticks": "227959426"
+      },
+      {
+        "pid": 344610,
+        "state": "R",
+        "ppid": 308101,
+        "start_ticks": "229364531"
+      }
+    ],
+    "coordinators_paused_only": true,
+    "both_recovery_children_running": true,
+    "controller_alive": true
+  }
+}
