@@ -1,6 +1,6 @@
 {
   "status": "G2_PASS_G3_NUMERICAL_DIAGNOSIS_REQUIRED",
-  "as_of_local": "2026-10-25 23:58 Asia/Singapore",
+  "as_of_local": "2026-10-26 02:04 Asia/Singapore",
   "cpu_job": {
     "id": "226030",
     "state": "COMPLETED",
@@ -141,5 +141,15 @@
     "observed_committed_step": 10,
     "first_path": "b2-DENSE",
     "recent_utilization": 86.8
+  },
+  "probability_diagnosis": {
+    "job_id": "226846",
+    "status": "PENDING_RESOURCES",
+    "science_revision": "ea50c51f0f145a183df360ab82025216d6303aca",
+    "operations_revision": "fc012c3",
+    "evidence": "G3_PROBABILITY_DIAG_SUBMISSION_226846.json",
+    "tests_passed": 8,
+    "new_samples": 0,
+    "optimizer_updates": 0
   }
 }

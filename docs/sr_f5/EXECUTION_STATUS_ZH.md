@@ -41,6 +41,8 @@ G3 共 15 条独立主路径、23,040 条回答；b0 五臂增加 5,120 条恢�
 
 02:00 失败诊断：b1-SHUF step7 的 64,221 个 token 中，sampler/train 差值均值 0.00141256 nat、最大 5.12116194 nat（冻结报警阈值 5）；TIS 触顶比例 0.0000155712。最大差值位于 `G3-b1-SHUF/007/06/3` 的 token 162（ID 313）。两个概率路径原已使用 FP32 log_softmax，不能把重复转换宣称修复。作业终态 FAILED/1:0，SHUF/DENSE 均保留 step006 原子检查点；SHUF step7 的 16 组完整保留，DENSE 完成 8 组、第 9 组只有 attempt 无完整原文，禁止盲目重采。完整失败向量在服务器 `NUMERICAL_TOKEN_AUDIT.jsonl`，本地摘要 `validation/G3_PROBABILITY_FAILURE_226283.json`。按 contract/07 准备冻结相同权重、相同 token 的原精度/FP32 模型诊断，不生成新回答、不更新参数、不降低阈值，诊断后再决定工程修复或登记配方变化。
 
+02:04 后续：已提交双卡 `226846/LH-SRF5-G3-DIAG`，运维代码 `fc012c3`，科学仍 `ea50c51`。确认旧 226283 终态后，用空出的两卡预约做原 BF16 与 FP32 模型同 token 重算，每精度最多 24 次前向、不采样、不 backward/optimizer。8 项 CPU 定向检查、Ruff 和启动脚本语法检查通过，代码已推送；实际 GPU 结果尚无，作业 PENDING(Resources)，总预约五卡四作业。现存异常行 3/5 前 208 个 token 相同，长度分别 612/627，但原全序列前向在位置 162 不同，因而增加同 token 截短前缀对照；这只是诊断线索，不能提前断言原因或改精度。运行输出位于 `CONTINUATION/PROBABILITY_226283/{bf16,fp32}.json`，提交回执 `validation/G3_PROBABILITY_DIAG_SUBMISSION_226846.json`。自动跟进已改为先读取这项诊断，严禁盲重提故障池。
+
 ## 利用率与效率边界
 
 每作业两卡、每卡一个独立进程，LH 前缀；全部用户作业最多五个，教师 QoS 总预约卡按五张限制，包括运行、排队、未知状态。计入未改动的其他作业 225839，当前共三个 GPU 作业、五张运行或排队预约卡。
