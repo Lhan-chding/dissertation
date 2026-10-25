@@ -1,0 +1,1382 @@
+{
+  "job_id": "226846",
+  "state": "COMPLETED",
+  "exit_code": "0:0",
+  "node": "gpu-pro6000-9",
+  "start": "2026-10-25T19:04:08",
+  "end": "2026-10-25T19:05:22",
+  "gate_decision": "NOT_AUTHORIZED_BY_DIAGNOSTIC",
+  "new_samples": 0,
+  "optimizer_updates": 0,
+  "precision": {
+    "bf16": {
+      "status": "DIAGNOSTIC_COMPLETE",
+      "started_at": "2026-10-25T19:04:09.458031+00:00",
+      "precision": "bf16",
+      "run_id": "G3-b1-SHUF",
+      "checkpoint_step": 6,
+      "attempted_step": 7,
+      "group_index": 6,
+      "new_samples": 0,
+      "optimizer_updates": 0,
+      "gate_decision": "NOT_AUTHORIZED_BY_DIAGNOSTIC",
+      "limitations": [
+        "No cached forced-token replay in this bounded diagnostic.",
+        "FP32 changes only this diagnostic process; no production fix implied."
+      ],
+      "science_revision": "ea50c51f0f145a183df360ab82025216d6303aca",
+      "science_code": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_ea50c51",
+      "checkpoint_restored": true,
+      "gradient_checkpointing": false,
+      "original_parameter_dtypes": [
+        "torch.bfloat16",
+        "torch.float32"
+      ],
+      "diagnostic_parameter_dtypes": [
+        "torch.bfloat16",
+        "torch.float32"
+      ],
+      "finished_at": "2026-10-25T19:05:09.025624+00:00",
+      "model_calls": 24,
+      "prompt_checks_all_equal": true,
+      "rows": [
+        {
+          "row_id": "G3-b1-SHUF/007/06/0",
+          "token_count": 292,
+          "forwards": [
+            {
+              "length": 292,
+              "grad_enabled": true,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.005386938438365467,
+                "max_absolute_difference": 0.9121105782687664,
+                "max_position": 151
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.0,
+                "max_absolute_difference": 0.0,
+                "max_position": 0
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 198,
+                  "logprob": -0.9740784168243408
+                },
+                {
+                  "position": 162,
+                  "token_id": 313,
+                  "logprob": -2.932505594799295e-05
+                }
+              ]
+            },
+            {
+              "length": 292,
+              "grad_enabled": false,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.005386938438365467,
+                "max_absolute_difference": 0.9121105782687664,
+                "max_position": 151
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.0,
+                "max_absolute_difference": 0.0,
+                "max_position": 0
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 198,
+                  "logprob": -0.9740784168243408
+                },
+                {
+                  "position": 162,
+                  "token_id": 313,
+                  "logprob": -2.932505594799295e-05
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "row_id": "G3-b1-SHUF/007/06/1",
+          "token_count": 612,
+          "forwards": [
+            {
+              "length": 612,
+              "grad_enabled": true,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.001048542597549127,
+                "max_absolute_difference": 0.13944588229060173,
+                "max_position": 151
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.0,
+                "max_absolute_difference": 0.0,
+                "max_position": 0
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 198,
+                  "logprob": -0.20141372084617615
+                },
+                {
+                  "position": 162,
+                  "token_id": 198,
+                  "logprob": -2.4676019165781327e-05
+                }
+              ]
+            },
+            {
+              "length": 612,
+              "grad_enabled": false,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.001048542597549127,
+                "max_absolute_difference": 0.13944588229060173,
+                "max_position": 151
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.0,
+                "max_absolute_difference": 0.0,
+                "max_position": 0
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 198,
+                  "logprob": -0.20141372084617615
+                },
+                {
+                  "position": 162,
+                  "token_id": 198,
+                  "logprob": -2.4676019165781327e-05
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "row_id": "G3-b1-SHUF/007/06/2",
+          "token_count": 607,
+          "forwards": [
+            {
+              "length": 607,
+              "grad_enabled": true,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.0008578528036261395,
+                "max_absolute_difference": 0.1009821891784668,
+                "max_position": 152
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.0,
+                "max_absolute_difference": 0.0,
+                "max_position": 0
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 198,
+                  "logprob": -0.10020679980516434
+                },
+                {
+                  "position": 162,
+                  "token_id": 313,
+                  "logprob": -2.4318398573086597e-05
+                }
+              ]
+            },
+            {
+              "length": 607,
+              "grad_enabled": false,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.0008578528036261395,
+                "max_absolute_difference": 0.1009821891784668,
+                "max_position": 152
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.0,
+                "max_absolute_difference": 0.0,
+                "max_position": 0
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 198,
+                  "logprob": -0.10020679980516434
+                },
+                {
+                  "position": 162,
+                  "token_id": 313,
+                  "logprob": -2.4318398573086597e-05
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "row_id": "G3-b1-SHUF/007/06/3",
+          "token_count": 612,
+          "forwards": [
+            {
+              "length": 612,
+              "grad_enabled": true,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.010687346506272054,
+                "max_absolute_difference": 5.121161760762334,
+                "max_position": 162
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.0,
+                "max_absolute_difference": 0.0,
+                "max_position": 0
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 328,
+                  "logprob": -1.7014137506484985
+                },
+                {
+                  "position": 162,
+                  "token_id": 313,
+                  "logprob": -5.130929946899414
+                }
+              ]
+            },
+            {
+              "length": 612,
+              "grad_enabled": false,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.010687346506272054,
+                "max_absolute_difference": 5.121161760762334,
+                "max_position": 162
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.0,
+                "max_absolute_difference": 0.0,
+                "max_position": 0
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 328,
+                  "logprob": -1.7014137506484985
+                },
+                {
+                  "position": 162,
+                  "token_id": 313,
+                  "logprob": -5.130929946899414
+                }
+              ]
+            },
+            {
+              "length": 152,
+              "grad_enabled": true,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.0017292097677316974,
+                "max_absolute_difference": 0.2366197109222412,
+                "max_position": 151
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.009124272667071054,
+                "max_absolute_difference": 1.347173810005188,
+                "max_position": 151
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 328,
+                  "logprob": -3.0485875606536865
+                }
+              ]
+            },
+            {
+              "length": 152,
+              "grad_enabled": false,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.0017292097677316974,
+                "max_absolute_difference": 0.2366197109222412,
+                "max_position": 151
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.009124272667071054,
+                "max_absolute_difference": 1.347173810005188,
+                "max_position": 151
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 328,
+                  "logprob": -3.0485875606536865
+                }
+              ]
+            },
+            {
+              "length": 163,
+              "grad_enabled": true,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.005894538150316263,
+                "max_absolute_difference": 0.6850395202636719,
+                "max_position": 151
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.032679523083727464,
+                "max_absolute_difference": 4.878982454538345,
+                "max_position": 162
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 328,
+                  "logprob": -2.1269283294677734
+                },
+                {
+                  "position": 162,
+                  "token_id": 313,
+                  "logprob": -0.2519474923610687
+                }
+              ]
+            },
+            {
+              "length": 163,
+              "grad_enabled": false,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.005894538150316263,
+                "max_absolute_difference": 0.6850395202636719,
+                "max_position": 151
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.032679523083727464,
+                "max_absolute_difference": 4.878982454538345,
+                "max_position": 162
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 328,
+                  "logprob": -2.1269283294677734
+                },
+                {
+                  "position": 162,
+                  "token_id": 313,
+                  "logprob": -0.2519474923610687
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "row_id": "G3-b1-SHUF/007/06/4",
+          "token_count": 614,
+          "forwards": [
+            {
+              "length": 614,
+              "grad_enabled": true,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.0012291824288301614,
+                "max_absolute_difference": 0.18818998336791992,
+                "max_position": 533
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.0,
+                "max_absolute_difference": 0.0,
+                "max_position": 0
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 198,
+                  "logprob": -0.03804141283035278
+                },
+                {
+                  "position": 162,
+                  "token_id": 198,
+                  "logprob": -2.8967437174287625e-05
+                }
+              ]
+            },
+            {
+              "length": 614,
+              "grad_enabled": false,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.0012291824288301614,
+                "max_absolute_difference": 0.18818998336791992,
+                "max_position": 533
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.0,
+                "max_absolute_difference": 0.0,
+                "max_position": 0
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 198,
+                  "logprob": -0.03804141283035278
+                },
+                {
+                  "position": 162,
+                  "token_id": 198,
+                  "logprob": -2.8967437174287625e-05
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "row_id": "G3-b1-SHUF/007/06/5",
+          "token_count": 627,
+          "forwards": [
+            {
+              "length": 627,
+              "grad_enabled": true,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.009455302831344025,
+                "max_absolute_difference": 4.996948065236211,
+                "max_position": 162
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.0,
+                "max_absolute_difference": 0.0,
+                "max_position": 0
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 328,
+                  "logprob": -2.578889846801758
+                },
+                {
+                  "position": 162,
+                  "token_id": 313,
+                  "logprob": -5.006716251373291
+                }
+              ]
+            },
+            {
+              "length": 627,
+              "grad_enabled": false,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.009455302831344025,
+                "max_absolute_difference": 4.996948065236211,
+                "max_position": 162
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.0,
+                "max_absolute_difference": 0.0,
+                "max_position": 0
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 328,
+                  "logprob": -2.578889846801758
+                },
+                {
+                  "position": 162,
+                  "token_id": 313,
+                  "logprob": -5.006716251373291
+                }
+              ]
+            },
+            {
+              "length": 152,
+              "grad_enabled": true,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.0017292097677316974,
+                "max_absolute_difference": 0.2366197109222412,
+                "max_position": 151
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.003231762400380542,
+                "max_absolute_difference": 0.4696977138519287,
+                "max_position": 151
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 328,
+                  "logprob": -3.0485875606536865
+                }
+              ]
+            },
+            {
+              "length": 152,
+              "grad_enabled": false,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.0017292097677316974,
+                "max_absolute_difference": 0.2366197109222412,
+                "max_position": 151
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.003231762400380542,
+                "max_absolute_difference": 0.4696977138519287,
+                "max_position": 151
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 328,
+                  "logprob": -3.0485875606536865
+                }
+              ]
+            },
+            {
+              "length": 163,
+              "grad_enabled": true,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.005894538150316263,
+                "max_absolute_difference": 0.6850395202636719,
+                "max_position": 151
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.03202687139411364,
+                "max_absolute_difference": 4.754768759012222,
+                "max_position": 162
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 328,
+                  "logprob": -2.1269283294677734
+                },
+                {
+                  "position": 162,
+                  "token_id": 313,
+                  "logprob": -0.2519474923610687
+                }
+              ]
+            },
+            {
+              "length": 163,
+              "grad_enabled": false,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.005894538150316263,
+                "max_absolute_difference": 0.6850395202636719,
+                "max_position": 151
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.03202687139411364,
+                "max_absolute_difference": 4.754768759012222,
+                "max_position": 162
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 328,
+                  "logprob": -2.1269283294677734
+                },
+                {
+                  "position": 162,
+                  "token_id": 313,
+                  "logprob": -0.2519474923610687
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "row_id": "G3-b1-SHUF/007/06/6",
+          "token_count": 606,
+          "forwards": [
+            {
+              "length": 606,
+              "grad_enabled": true,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.0008182824737541468,
+                "max_absolute_difference": 0.1108999252319336,
+                "max_position": 529
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.0,
+                "max_absolute_difference": 0.0,
+                "max_position": 0
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 198,
+                  "logprob": -0.1002069041132927
+                },
+                {
+                  "position": 162,
+                  "token_id": 198,
+                  "logprob": -3.1709168979432434e-05
+                }
+              ]
+            },
+            {
+              "length": 606,
+              "grad_enabled": false,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.0008182824737541468,
+                "max_absolute_difference": 0.1108999252319336,
+                "max_position": 529
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.0,
+                "max_absolute_difference": 0.0,
+                "max_position": 0
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 198,
+                  "logprob": -0.1002069041132927
+                },
+                {
+                  "position": 162,
+                  "token_id": 198,
+                  "logprob": -3.1709168979432434e-05
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "row_id": "G3-b1-SHUF/007/06/7",
+          "token_count": 616,
+          "forwards": [
+            {
+              "length": 616,
+              "grad_enabled": true,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.0008088631653139929,
+                "max_absolute_difference": 0.1481366753578186,
+                "max_position": 542
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.0,
+                "max_absolute_difference": 0.0,
+                "max_position": 0
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 198,
+                  "logprob": -0.06196772679686546
+                },
+                {
+                  "position": 162,
+                  "token_id": 198,
+                  "logprob": -2.777537883957848e-05
+                }
+              ]
+            },
+            {
+              "length": 616,
+              "grad_enabled": false,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.0008088631653139929,
+                "max_absolute_difference": 0.1481366753578186,
+                "max_position": 542
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.0,
+                "max_absolute_difference": 0.0,
+                "max_position": 0
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 198,
+                  "logprob": -0.06196772679686546
+                },
+                {
+                  "position": 162,
+                  "token_id": 198,
+                  "logprob": -2.777537883957848e-05
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "fp32": {
+      "status": "DIAGNOSTIC_COMPLETE",
+      "started_at": "2026-10-25T19:04:09.457730+00:00",
+      "precision": "fp32",
+      "run_id": "G3-b1-SHUF",
+      "checkpoint_step": 6,
+      "attempted_step": 7,
+      "group_index": 6,
+      "new_samples": 0,
+      "optimizer_updates": 0,
+      "gate_decision": "NOT_AUTHORIZED_BY_DIAGNOSTIC",
+      "limitations": [
+        "No cached forced-token replay in this bounded diagnostic.",
+        "FP32 changes only this diagnostic process; no production fix implied."
+      ],
+      "science_revision": "ea50c51f0f145a183df360ab82025216d6303aca",
+      "science_code": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_ea50c51",
+      "checkpoint_restored": true,
+      "gradient_checkpointing": false,
+      "original_parameter_dtypes": [
+        "torch.bfloat16",
+        "torch.float32"
+      ],
+      "diagnostic_parameter_dtypes": [
+        "torch.float32"
+      ],
+      "finished_at": "2026-10-25T19:05:20.217331+00:00",
+      "model_calls": 24,
+      "prompt_checks_all_equal": true,
+      "rows": [
+        {
+          "row_id": "G3-b1-SHUF/007/06/0",
+          "token_count": 292,
+          "forwards": [
+            {
+              "length": 292,
+              "grad_enabled": true,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.0021925614227950685,
+                "max_absolute_difference": 0.2671264410018921,
+                "max_position": 257
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.005348727153629586,
+                "max_absolute_difference": 0.8947160542011261,
+                "max_position": 151
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 198,
+                  "logprob": -0.07936236262321472
+                },
+                {
+                  "position": 162,
+                  "token_id": 313,
+                  "logprob": -3.0040289857424796e-05
+                }
+              ]
+            },
+            {
+              "length": 292,
+              "grad_enabled": false,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.0021925614227950685,
+                "max_absolute_difference": 0.2671264410018921,
+                "max_position": 257
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.005348727153629586,
+                "max_absolute_difference": 0.8947160542011261,
+                "max_position": 151
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 198,
+                  "logprob": -0.07936236262321472
+                },
+                {
+                  "position": 162,
+                  "token_id": 313,
+                  "logprob": -3.0040289857424796e-05
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "row_id": "G3-b1-SHUF/007/06/1",
+          "token_count": 612,
+          "forwards": [
+            {
+              "length": 612,
+              "grad_enabled": true,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.0008380899076336506,
+                "max_absolute_difference": 0.12376117706298828,
+                "max_position": 564
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.0012991910707820808,
+                "max_absolute_difference": 0.22005736827850342,
+                "max_position": 564
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 198,
+                  "logprob": -0.0794127881526947
+                },
+                {
+                  "position": 162,
+                  "token_id": 198,
+                  "logprob": -2.8132995794294402e-05
+                }
+              ]
+            },
+            {
+              "length": 612,
+              "grad_enabled": false,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.0008380899076336506,
+                "max_absolute_difference": 0.12376117706298828,
+                "max_position": 564
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.0012991910707820808,
+                "max_absolute_difference": 0.22005736827850342,
+                "max_position": 564
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 198,
+                  "logprob": -0.0794127881526947
+                },
+                {
+                  "position": 162,
+                  "token_id": 198,
+                  "logprob": -2.8132995794294402e-05
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "row_id": "G3-b1-SHUF/007/06/2",
+          "token_count": 607,
+          "forwards": [
+            {
+              "length": 607,
+              "grad_enabled": true,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.000589743808570386,
+                "max_absolute_difference": 0.043545424938201904,
+                "max_position": 512
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.0004975207080499427,
+                "max_absolute_difference": 0.0737839937210083,
+                "max_position": 526
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 198,
+                  "logprob": -0.0794127881526947
+                },
+                {
+                  "position": 162,
+                  "token_id": 313,
+                  "logprob": -3.0040289857424796e-05
+                }
+              ]
+            },
+            {
+              "length": 607,
+              "grad_enabled": false,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.000589743808570386,
+                "max_absolute_difference": 0.043545424938201904,
+                "max_position": 512
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.0004975207080499427,
+                "max_absolute_difference": 0.0737839937210083,
+                "max_position": 526
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 198,
+                  "logprob": -0.0794127881526947
+                },
+                {
+                  "position": 162,
+                  "token_id": 313,
+                  "logprob": -3.0040289857424796e-05
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "row_id": "G3-b1-SHUF/007/06/3",
+          "token_count": 612,
+          "forwards": [
+            {
+              "length": 612,
+              "grad_enabled": true,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.004080933769469035,
+                "max_absolute_difference": 1.8358405251055956,
+                "max_position": 162
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.007300172623430096,
+                "max_absolute_difference": 3.2853212356567383,
+                "max_position": 162
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 328,
+                  "logprob": -2.572542428970337
+                },
+                {
+                  "position": 162,
+                  "token_id": 313,
+                  "logprob": -1.8456087112426758
+                }
+              ]
+            },
+            {
+              "length": 612,
+              "grad_enabled": false,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.004080933769469035,
+                "max_absolute_difference": 1.8358405251055956,
+                "max_position": 162
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.007300172623430096,
+                "max_absolute_difference": 3.2853212356567383,
+                "max_position": 162
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 328,
+                  "logprob": -2.572542428970337
+                },
+                {
+                  "position": 162,
+                  "token_id": 313,
+                  "logprob": -1.8456087112426758
+                }
+              ]
+            },
+            {
+              "length": 152,
+              "grad_enabled": true,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.001888032587832521,
+                "max_absolute_difference": 0.23899197578430176,
+                "max_position": 151
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.005772398680525464,
+                "max_absolute_difference": 0.871562123298645,
+                "max_position": 151
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 328,
+                  "logprob": -2.5729758739471436
+                }
+              ]
+            },
+            {
+              "length": 152,
+              "grad_enabled": false,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.001888032587832521,
+                "max_absolute_difference": 0.23899197578430176,
+                "max_position": 151
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.005772398680525464,
+                "max_absolute_difference": 0.871562123298645,
+                "max_position": 151
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 328,
+                  "logprob": -2.5729758739471436
+                }
+              ]
+            },
+            {
+              "length": 163,
+              "grad_enabled": true,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.013023172592638558,
+                "max_absolute_difference": 1.835795583203435,
+                "max_position": 162
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.025538478337977,
+                "max_absolute_difference": 3.285366177558899,
+                "max_position": 162
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 328,
+                  "logprob": -2.5729758739471436
+                },
+                {
+                  "position": 162,
+                  "token_id": 313,
+                  "logprob": -1.8455637693405151
+                }
+              ]
+            },
+            {
+              "length": 163,
+              "grad_enabled": false,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.013023172592638558,
+                "max_absolute_difference": 1.835795583203435,
+                "max_position": 162
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.025538478337977,
+                "max_absolute_difference": 3.285366177558899,
+                "max_position": 162
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 328,
+                  "logprob": -2.5729758739471436
+                },
+                {
+                  "position": 162,
+                  "token_id": 313,
+                  "logprob": -1.8455637693405151
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "row_id": "G3-b1-SHUF/007/06/4",
+          "token_count": 614,
+          "forwards": [
+            {
+              "length": 614,
+              "grad_enabled": true,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.0009766288464500943,
+                "max_absolute_difference": 0.17526042461395264,
+                "max_position": 210
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.001309961574137933,
+                "max_absolute_difference": 0.2618284225463867,
+                "max_position": 210
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 198,
+                  "logprob": -0.0794127881526947
+                },
+                {
+                  "position": 162,
+                  "token_id": 198,
+                  "logprob": -2.8132995794294402e-05
+                }
+              ]
+            },
+            {
+              "length": 614,
+              "grad_enabled": false,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.0009766288464500943,
+                "max_absolute_difference": 0.17526042461395264,
+                "max_position": 210
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.001309961574137933,
+                "max_absolute_difference": 0.2618284225463867,
+                "max_position": 210
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 198,
+                  "logprob": -0.0794127881526947
+                },
+                {
+                  "position": 162,
+                  "token_id": 198,
+                  "logprob": -2.8132995794294402e-05
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "row_id": "G3-b1-SHUF/007/06/5",
+          "token_count": 627,
+          "forwards": [
+            {
+              "length": 627,
+              "grad_enabled": true,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.0044536912892294105,
+                "max_absolute_difference": 1.8358405251055956,
+                "max_position": 162
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.00541395197514058,
+                "max_absolute_difference": 3.1611075401306152,
+                "max_position": 162
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 328,
+                  "logprob": -2.572542428970337
+                },
+                {
+                  "position": 162,
+                  "token_id": 313,
+                  "logprob": -1.8456087112426758
+                }
+              ]
+            },
+            {
+              "length": 627,
+              "grad_enabled": false,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.0044536912892294105,
+                "max_absolute_difference": 1.8358405251055956,
+                "max_position": 162
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.00541395197514058,
+                "max_absolute_difference": 3.1611075401306152,
+                "max_position": 162
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 328,
+                  "logprob": -2.572542428970337
+                },
+                {
+                  "position": 162,
+                  "token_id": 313,
+                  "logprob": -1.8456087112426758
+                }
+              ]
+            },
+            {
+              "length": 152,
+              "grad_enabled": true,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.001888032587832521,
+                "max_absolute_difference": 0.23899197578430176,
+                "max_position": 151
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.00028097003994564354,
+                "max_absolute_difference": 0.020306287333369255,
+                "max_position": 147
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 328,
+                  "logprob": -2.5729758739471436
+                }
+              ]
+            },
+            {
+              "length": 152,
+              "grad_enabled": false,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.001888032587832521,
+                "max_absolute_difference": 0.23899197578430176,
+                "max_position": 151
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.00028097003994564354,
+                "max_absolute_difference": 0.020306287333369255,
+                "max_position": 147
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 328,
+                  "logprob": -2.5729758739471436
+                }
+              ]
+            },
+            {
+              "length": 163,
+              "grad_enabled": true,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.013023172592638558,
+                "max_absolute_difference": 1.835795583203435,
+                "max_position": 162
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.019655587500421092,
+                "max_absolute_difference": 3.161152482032776,
+                "max_position": 162
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 328,
+                  "logprob": -2.5729758739471436
+                },
+                {
+                  "position": 162,
+                  "token_id": 313,
+                  "logprob": -1.8455637693405151
+                }
+              ]
+            },
+            {
+              "length": 163,
+              "grad_enabled": false,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.013023172592638558,
+                "max_absolute_difference": 1.835795583203435,
+                "max_position": 162
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.019655587500421092,
+                "max_absolute_difference": 3.161152482032776,
+                "max_position": 162
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 328,
+                  "logprob": -2.5729758739471436
+                },
+                {
+                  "position": 162,
+                  "token_id": 313,
+                  "logprob": -1.8455637693405151
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "row_id": "G3-b1-SHUF/007/06/6",
+          "token_count": 606,
+          "forwards": [
+            {
+              "length": 606,
+              "grad_enabled": true,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.0014531291350878763,
+                "max_absolute_difference": 0.23748087882995605,
+                "max_position": 563
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.0010582417229535,
+                "max_absolute_difference": 0.1987600326538086,
+                "max_position": 503
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 198,
+                  "logprob": -0.0794127881526947
+                },
+                {
+                  "position": 162,
+                  "token_id": 198,
+                  "logprob": -2.8132995794294402e-05
+                }
+              ]
+            },
+            {
+              "length": 606,
+              "grad_enabled": false,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.0014531291350878763,
+                "max_absolute_difference": 0.23748087882995605,
+                "max_position": 563
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.0010582417229535,
+                "max_absolute_difference": 0.1987600326538086,
+                "max_position": 503
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 198,
+                  "logprob": -0.0794127881526947
+                },
+                {
+                  "position": 162,
+                  "token_id": 198,
+                  "logprob": -2.8132995794294402e-05
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "row_id": "G3-b1-SHUF/007/06/7",
+          "token_count": 616,
+          "forwards": [
+            {
+              "length": 616,
+              "grad_enabled": true,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.0007705234394071527,
+                "max_absolute_difference": 0.0845949649810791,
+                "max_position": 567
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.0009436897769048032,
+                "max_absolute_difference": 0.11333954334259033,
+                "max_position": 542
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 198,
+                  "logprob": -0.0794127881526947
+                },
+                {
+                  "position": 162,
+                  "token_id": 198,
+                  "logprob": -2.8132995794294402e-05
+                }
+              ]
+            },
+            {
+              "length": 616,
+              "grad_enabled": false,
+              "versus_sampler": {
+                "mean_absolute_difference": 0.0007705234394071527,
+                "max_absolute_difference": 0.0845949649810791,
+                "max_position": 567
+              },
+              "versus_original_train": {
+                "mean_absolute_difference": 0.0009436897769048032,
+                "max_absolute_difference": 0.11333954334259033,
+                "max_position": 542
+              },
+              "selected_tokens": [
+                {
+                  "position": 151,
+                  "token_id": 198,
+                  "logprob": -0.0794127881526947
+                },
+                {
+                  "position": 162,
+                  "token_id": 198,
+                  "logprob": -2.8132995794294402e-05
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

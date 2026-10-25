@@ -1,6 +1,6 @@
 # SR-F5 执行状态（2026-10-25，新加坡）
 
-**2026-10-26 02:00（新加坡）：G3 作业 226283 因 b1-SHUF 第 7 步概率尾部检查失败而退出，未提交该步；同作业 b1-DENSE 被联动停止在第 6 步后。HARD/LOCAL 恢复 PASS 保留。J/SHUF 恢复及追加卡继续运行，准备同 token 定向诊断；G3 未通过，正式实验未开始。**
+**2026-10-26 03:08（新加坡）：G3 概率异常已在 BF16 下完整复现；FP32 对照明显降低差异，但尚不能标为修复。诊断 226846 正常完成，继续核对同 token 缓存与批次路径。226283 的失败和未提交第 7 步保留；J/SHUF 恢复及追加卡仍推进。G3 未通过，正式实验未开始。**
 
 从 F4 提交 `750db3d` 建立独立分支 `sr-f5-semantic-j-v1`。G2 沿用冻结科学代码 `26e560bac1a7c5b5563f52112bc1374685084b8d`，未因部署修复重生成回答。G3 运行代码为 `ea50c51f0f145a183df360ab82025216d6303aca`，服务器部署 `/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_ea50c51`。
 
@@ -42,6 +42,8 @@ G3 共 15 条独立主路径、23,040 条回答；b0 五臂增加 5,120 条恢�
 02:00 失败诊断：b1-SHUF step7 的 64,221 个 token 中，sampler/train 差值均值 0.00141256 nat、最大 5.12116194 nat（冻结报警阈值 5）；TIS 触顶比例 0.0000155712。最大差值位于 `G3-b1-SHUF/007/06/3` 的 token 162（ID 313）。两个概率路径原已使用 FP32 log_softmax，不能把重复转换宣称修复。作业终态 FAILED/1:0，SHUF/DENSE 均保留 step006 原子检查点；SHUF step7 的 16 组完整保留，DENSE 完成 8 组、第 9 组只有 attempt 无完整原文，禁止盲目重采。完整失败向量在服务器 `NUMERICAL_TOKEN_AUDIT.jsonl`，本地摘要 `validation/G3_PROBABILITY_FAILURE_226283.json`。按 contract/07 准备冻结相同权重、相同 token 的原精度/FP32 模型诊断，不生成新回答、不更新参数、不降低阈值，诊断后再决定工程修复或登记配方变化。
 
 02:04 后续：已提交双卡 `226846/LH-SRF5-G3-DIAG`，运维代码 `fc012c3`，科学仍 `ea50c51`。确认旧 226283 终态后，用空出的两卡预约做原 BF16 与 FP32 模型同 token 重算，每精度最多 24 次前向、不采样、不 backward/optimizer。8 项 CPU 定向检查、Ruff 和启动脚本语法检查通过，代码已推送；实际 GPU 结果尚无，作业 PENDING(Resources)，总预约五卡四作业。现存异常行 3/5 前 208 个 token 相同，长度分别 612/627，但原全序列前向在位置 162 不同，因而增加同 token 截短前缀对照；这只是诊断线索，不能提前断言原因或改精度。运行输出位于 `CONTINUATION/PROBABILITY_226283/{bf16,fp32}.json`，提交回执 `validation/G3_PROBABILITY_DIAG_SUBMISSION_226846.json`。自动跟进已改为先读取这项诊断，严禁盲重提故障池。
+
+03:08 诊断完成：226846 在 gpu-pro6000-9 上于 19:04:08–19:05:22 UTC 运行，COMPLETED/0:0；BF16/FP32 各 24 次前向，共 48 次，无新回答或参数更新。8 行的原始 token、prompt、mask/grid 与 processor 图像身份均核验一致；BF16 全序列训练前向逐值复现原失败向量，开/关梯度不改变结果。异常行 3 的最大 sampler/train 差仍为 5.12116 nat；FP32 降为 1.83584 nat，但不能据此声称修复。相同前缀在 BF16 的全长度与截短前向差异显著，FP32 下位置 162 的差仅约 0.00004494 nat。证据支持可重复且精度敏感的数值差异，尚未完成缓存/prefill 与 G8/单行路径核对。下一步为两种精度的原 G8 前 163 token 与第 3 行单条缓存强制回放：只读原 token，不随机采样、不更新、不放宽门槛；完成后依据 contract/07 决定工程修复或统一 recipe_v2，故障池仍禁止盲重提。完整小型结果和摘要见 `validation/G3_PROBABILITY_DIAG_226846/`。
 
 ## 利用率与效率边界
 

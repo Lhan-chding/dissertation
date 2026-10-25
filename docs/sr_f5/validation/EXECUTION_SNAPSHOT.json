@@ -1,6 +1,6 @@
 {
   "status": "G2_PASS_G3_NUMERICAL_DIAGNOSIS_REQUIRED",
-  "as_of_local": "2026-10-26 02:04 Asia/Singapore",
+  "as_of_local": "2026-10-26 03:08 Asia/Singapore",
   "cpu_job": {
     "id": "226030",
     "state": "COMPLETED",
@@ -112,17 +112,17 @@
       }
     ],
     "evidence_directory": "G2_FINAL_20261025",
-    "actual_answers_observed": 10296,
+    "actual_answers_observed": 14400,
     "first_updates_evidence": "G3_FIRST_UPDATES_20261025.json",
-    "primary_answers_observed": 8232,
-    "recovery_answers_observed": 2064,
-    "primary_paths_complete": 4,
+    "primary_answers_observed": 10848,
+    "recovery_answers_observed": 3552,
+    "primary_paths_complete": 5,
     "latest_evidence": "G3_DRAIN_RECOVERY_ACTIVE_20261026.json",
     "recovery_paths_pass": [
       "b0-HARD",
       "b0-LOCAL"
     ],
-    "observed_at": "2026-10-25T17:18:57Z",
+    "observed_at": "2026-10-25T19:08:55Z",
     "latest_failure_evidence": "G3_PROBABILITY_FAILURE_226283.json"
   },
   "drain_controller": {
@@ -138,18 +138,25 @@
     "state": "RUNNING",
     "node": "gpu-pro6000-7",
     "gpus": 1,
-    "observed_committed_step": 10,
-    "first_path": "b2-DENSE",
-    "recent_utilization": 86.8
+    "observed_committed_step": 11,
+    "first_path": "b2-DENSE COMPLETE",
+    "recent_utilization": 86.8,
+    "active_path": "b2-LOCAL",
+    "observed_at": "2026-10-25T19:08:51Z"
   },
   "probability_diagnosis": {
     "job_id": "226846",
-    "status": "PENDING_RESOURCES",
+    "status": "DIAGNOSTIC_COMPLETE",
     "science_revision": "ea50c51f0f145a183df360ab82025216d6303aca",
     "operations_revision": "fc012c3",
-    "evidence": "G3_PROBABILITY_DIAG_SUBMISSION_226846.json",
+    "evidence": "G3_PROBABILITY_DIAG_226846/SUMMARY.json",
     "tests_passed": 8,
     "new_samples": 0,
-    "optimizer_updates": 0
+    "optimizer_updates": 0,
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "model_calls": 48,
+    "gate_decision": "NOT_AUTHORIZED_BY_DIAGNOSTIC",
+    "next_action": "Bounded saved-token cached G8/single replay; no scientific restart"
   }
 }
