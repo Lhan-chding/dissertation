@@ -51,3 +51,5 @@ python -m sr_f5.pilot --root "$RUN_ROOT" --aggregate
 `advance_recipe_v2.sbatch` 是 CPU 决策入口，`SRF5_CODE` / `SRF5_REVISION` 固定科学版本，`SRF5_OPERATIONS` 指向单独提交的运维部署。只有两个普查作业身份齐备且不存在活动/未知控制器时才提交后续 CPU 作业；读真实阶段决定后继续推进，禁止把提交成功当作科学通过。
 
 桥接验证：19 项小型操作层回归通过（0.16 秒），包含缺失/未知/错误 pair、活动/未知/失败作业、第二版门失败、部分聚合保留、已提交去重及冻结后的容量重试不改 gate 字节。Ruff 和 CPU 启动脚本语法检查通过；未重新运行既有 332 项服务器检查，没有模型调用。
+
+04:04 实际接续：旧 J/SHUF 恢复精确 PASS 后 226282 已计划性终止且退出队列，226455 COMPLETED。第二版 pair0/pair1 为 226900/226918，依赖 CPU 决策为 226919；完整原始提交回执在新根两个 G2_SUBMISSION_PAIR*.json 和 CONTINUATION/RECIPE_V2_DECISION_SUBMISSION.json。当前控制器存在，禁止与其抢跑聚合或另交控制器。
