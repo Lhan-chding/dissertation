@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=SRF5-CPU-LH
+#SBATCH --job-name=LH-SRF5-CPU
 #SBATCH --account=rose
 #SBATCH --qos=soujanya-poria-startfund-2026-03
 #SBATCH --partition=cluster02
