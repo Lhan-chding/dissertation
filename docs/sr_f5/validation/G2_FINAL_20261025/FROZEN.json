@@ -1,0 +1,138 @@
+{
+  "status": "FROZEN_BEFORE_PILOT_OUTPUTS",
+  "code_revision": "ea50c51f0f145a183df360ab82025216d6303aca",
+  "source_identity": {
+    "sr_f5/pilot.py": "70b0eb125dfc1dcea31199b1c1aefe232fee79966b74294df9a416bf7e18cd21",
+    "sr_f5/runtime.py": "0a4cd26fa5a328189bc236f058fb5b0eb30132e014b882f1e2d4a811d54fef4e",
+    "sr_f5/training.py": "58013b4dec4902b3e1261e565c6de491c693d5e7b0ab4cb3b903913f47dc3cd0",
+    "sr_f5/calibration.py": "e1693c82749f3e9047f4b3c6208423789dcf394cb677c66fc432dd4eaf6d15db",
+    "sr_f5/measurement.py": "1b8e8cb7749f213b3b1e993f7e881ba4016ab6a76e520de750cd6b76ad0a6adb",
+    "sr_f4/training.py": "ee81b1f751f08ce025d86699906d59714d85dc16f7ba158f1632ad9beda70881",
+    "sr_f4/runtime.py": "a13c0e4e1124b14abcdf023c7b4c4cfb78d688126d496f8eb412d72de0f6e43c",
+    "sr_f3_ce/runtime.py": "27ca61c79c833be117cc723a11653bbeb2ab31cf0c8828c3844bd17a224b3272",
+    "sr_f3_ce/training.py": "fcca2f453f97814ee74e2da15339b016cd899310d9211aff6e247209755b0d94",
+    "sr_f12/training.py": "eb0b72cd0ca31d64c2f59c5f58cf244d16f6613cfcded725d4855e71c946fbb4",
+    "srf5_ref/credit.py": "4c199df32a26f7d5cc4eb69363328f46eef1facd4b5749c740f3f54daaa23f67",
+    "srf5_ref/objective.py": "b82ad0a69231f32b391f66d6d62fd44a59f79ea1d5093b4302edcfac7beb419e",
+    "srf5_ref/schedule.py": "bb9976bf305f2bae71ba11a66f706a9cc8ccdb12370b85b67b5b09ffb44b75c2"
+  },
+  "config_digest": "34edcfaf6509b99dfff96a9a9d933fa5887fd0aa022ced04fd2a31a7465cd786",
+  "g2": {
+    "gate": "dcbca396c632d6976f0b9beb2f9027993d4e0d8ff8550dfce16f9cff97dc9f59",
+    "metrics": "cf9fd0c73227c6664860f0eadb0ca99477a65c71bac3077dbcb0ba76a4131e5f"
+  },
+  "private_digest": "6a506902d5ff0e56468cf5695a89579f977054466def52140da0455289a8d8e7",
+  "public_digest": "d175d43b19c1a50630547105eb671733def91336a8ad437456e7714e599536c0",
+  "schedule_digests": {
+    "b0": "f0f13b3c0101435458d10fe3b4d9d5bf76778819a074bb92bf170fe0acc67fee",
+    "b1": "570c3d44f22fd352ed21494b141d2abb8868812e7b374cc8081a30b08a972882",
+    "b2": "fca3c62f113a7a80b7fe769eee55267ea8a020ab761646fc75d8df31f26372ea"
+  },
+  "protocol_version": "structured_v3-1.0",
+  "updates": 12,
+  "group_size": 8,
+  "responses_per_step": 128,
+  "primary_responses": 23040,
+  "recovery_responses": 5120,
+  "endpoint_probe_responses": 0,
+  "diagnostic_steps": [
+    1,
+    12
+  ],
+  "diagnostic_rows": [
+    0,
+    8,
+    16,
+    24,
+    32,
+    40,
+    48,
+    56,
+    64,
+    72,
+    80,
+    88,
+    96,
+    104,
+    112,
+    120
+  ],
+  "step12_review": {
+    "unique_per_path": 24,
+    "total": 360,
+    "selection": "sorted_row_id_unique_qid_text",
+    "reviewer": "program"
+  },
+  "recovery": {
+    "from_step": 4,
+    "to_step": 12,
+    "paths": "b0_all_five_arms",
+    "parameter_atol": 0.0,
+    "parameter_rtol": 0.0,
+    "optimizer_rng_comparison": "exact",
+    "raw_token_probability_credit_update_comparison": "exact"
+  },
+  "paths": [
+    {
+      "parent": "b0",
+      "arm": "J"
+    },
+    {
+      "parent": "b0",
+      "arm": "HARD"
+    },
+    {
+      "parent": "b0",
+      "arm": "DENSE"
+    },
+    {
+      "parent": "b0",
+      "arm": "LOCAL"
+    },
+    {
+      "parent": "b0",
+      "arm": "SHUF"
+    },
+    {
+      "parent": "b1",
+      "arm": "J"
+    },
+    {
+      "parent": "b1",
+      "arm": "HARD"
+    },
+    {
+      "parent": "b1",
+      "arm": "DENSE"
+    },
+    {
+      "parent": "b1",
+      "arm": "LOCAL"
+    },
+    {
+      "parent": "b1",
+      "arm": "SHUF"
+    },
+    {
+      "parent": "b2",
+      "arm": "J"
+    },
+    {
+      "parent": "b2",
+      "arm": "HARD"
+    },
+    {
+      "parent": "b2",
+      "arm": "DENSE"
+    },
+    {
+      "parent": "b2",
+      "arm": "LOCAL"
+    },
+    {
+      "parent": "b2",
+      "arm": "SHUF"
+    }
+  ],
+  "formal_outputs_allowed": false
+}

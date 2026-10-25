@@ -1,0 +1,147 @@
+{
+  "actual_response_count": 4608,
+  "unique_reviewed_responses": 360,
+  "unresolved_systematic_measurement_errors": 0,
+  "blocks": {
+    "b0": {
+      "groups": 192,
+      "responses": 1536,
+      "known_fraction": 0.9817708333333334,
+      "minimum_family_known_fraction": 0.9453125,
+      "family_known_fraction": {
+        "BINDING": 0.99609375,
+        "IMPACT": 0.9921875,
+        "TIES": 0.9921875,
+        "SIGNED": 0.96875,
+        "INTERVAL": 0.9453125,
+        "K_DIRECTION": 0.99609375
+      },
+      "mask_success_given_known": 0.996684350132626,
+      "nonzero_groups": 36,
+      "swappable_groups": 22,
+      "changed_groups": 15,
+      "families_with_signal": 6,
+      "roots_with_signal": 20,
+      "truncation_fraction": 0.0,
+      "exact_parseable_responses": 1517,
+      "unique_reviewed_by_family": {
+        "BINDING": 20,
+        "IMPACT": 20,
+        "TIES": 20,
+        "SIGNED": 20,
+        "INTERVAL": 20,
+        "K_DIRECTION": 20
+      },
+      "all_J_zero_groups": 2,
+      "all_J_one_groups": 55,
+      "mixed_J_groups": 135,
+      "state_counts": {
+        "A1_J1_SPASS": 1122,
+        "A1_J0_SPASS": 242,
+        "A0_J0_SPASS": 64,
+        "A0_J0_SFAIL": 75,
+        "A0_J0_SUNKNOWN": 21,
+        "A1_J0_SFAIL": 5,
+        "A1_J0_SUNKNOWN": 7
+      },
+      "P_known_fraction": 0.9759114583333334
+    },
+    "b1": {
+      "groups": 192,
+      "responses": 1536,
+      "known_fraction": 0.9544270833333334,
+      "minimum_family_known_fraction": 0.86328125,
+      "family_known_fraction": {
+        "BINDING": 0.98828125,
+        "IMPACT": 0.98046875,
+        "TIES": 0.96875,
+        "SIGNED": 0.86328125,
+        "INTERVAL": 0.9609375,
+        "K_DIRECTION": 0.96484375
+      },
+      "mask_success_given_known": 0.9979536152796725,
+      "nonzero_groups": 43,
+      "swappable_groups": 26,
+      "changed_groups": 17,
+      "families_with_signal": 6,
+      "roots_with_signal": 22,
+      "truncation_fraction": 0.0,
+      "exact_parseable_responses": 1485,
+      "unique_reviewed_by_family": {
+        "BINDING": 20,
+        "IMPACT": 20,
+        "TIES": 20,
+        "SIGNED": 20,
+        "INTERVAL": 20,
+        "K_DIRECTION": 20
+      },
+      "all_J_zero_groups": 11,
+      "all_J_one_groups": 23,
+      "mixed_J_groups": 158,
+      "state_counts": {
+        "A1_J1_SPASS": 837,
+        "A1_J0_SPASS": 372,
+        "A0_J0_SPASS": 153,
+        "A1_J0_SUNKNOWN": 15,
+        "A0_J0_SFAIL": 98,
+        "A0_J0_SUNKNOWN": 55,
+        "A1_J0_SFAIL": 4,
+        "A1_J1_SFAIL": 2
+      },
+      "P_known_fraction": 0.857421875
+    },
+    "b2": {
+      "groups": 192,
+      "responses": 1536,
+      "known_fraction": 0.9720052083333334,
+      "minimum_family_known_fraction": 0.9375,
+      "family_known_fraction": {
+        "BINDING": 0.99609375,
+        "IMPACT": 0.984375,
+        "TIES": 0.95703125,
+        "SIGNED": 0.9375,
+        "INTERVAL": 0.97265625,
+        "K_DIRECTION": 0.984375
+      },
+      "mask_success_given_known": 0.9946416610850636,
+      "nonzero_groups": 54,
+      "swappable_groups": 45,
+      "changed_groups": 36,
+      "families_with_signal": 6,
+      "roots_with_signal": 25,
+      "truncation_fraction": 0.001953125,
+      "exact_parseable_responses": 1504,
+      "unique_reviewed_by_family": {
+        "BINDING": 20,
+        "IMPACT": 20,
+        "TIES": 20,
+        "SIGNED": 20,
+        "INTERVAL": 20,
+        "K_DIRECTION": 20
+      },
+      "all_J_zero_groups": 4,
+      "all_J_one_groups": 26,
+      "mixed_J_groups": 162,
+      "state_counts": {
+        "A1_J1_SPASS": 982,
+        "A1_J0_SPASS": 201,
+        "A1_J0_SUNKNOWN": 17,
+        "A0_J0_SPASS": 188,
+        "A0_J0_SFAIL": 109,
+        "A0_J0_SUNKNOWN": 26,
+        "A1_J0_SFAIL": 6,
+        "A1_J1_SFAIL": 7
+      },
+      "P_known_fraction": 0.91015625
+    }
+  },
+  "missing_groups": [],
+  "failures": [],
+  "protocol_version": "structured_v3-1.0",
+  "scope": "G2 feasibility; no performance selection or formal model outputs",
+  "gate": {
+    "status": "PASS",
+    "errors": [],
+    "scope": "mechanical G2 criteria; independently verify raw evidence"
+  }
+}

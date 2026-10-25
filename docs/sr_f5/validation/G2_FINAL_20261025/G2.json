@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "errors": [],
+  "scope": "mechanical G2 criteria; independently verify raw evidence",
+  "at": "2026-10-25T13:22:33.042248+00:00",
+  "evidence": "G2/METRICS.json",
+  "raw_evidence": "G2/groups",
+  "actual_response_count": 4608
+}

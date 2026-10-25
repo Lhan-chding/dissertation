@@ -1,0 +1,28 @@
+Traceback (most recent call last):
+  File "/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_9c2ed85/scripts/sr_f5/advance_development.py", line 18, in <module>
+    from submit_g3 import submit
+  File "/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_9c2ed85/scripts/sr_f5/submit_g3.py", line 17, in <module>
+    from sr_f5.pilot_pool import freeze_pool, verify_code
+  File "/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_9c2ed85/src/sr_f5/pilot_pool.py", line 21, in <module>
+    from .pilot import registered_write, require_frozen
+  File "/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_9c2ed85/src/sr_f5/pilot.py", line 31, in <module>
+    from .training import build_credit_group, update
+  File "/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_9c2ed85/src/sr_f5/training.py", line 13, in <module>
+    from sr_f3_ce.training import validate_optimizer
+  File "/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_9c2ed85/src/sr_f3_ce/training.py", line 18, in <module>
+    from sr_f12.training import (
+  File "/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_9c2ed85/src/sr_f12/training.py", line 14, in <module>
+    from sr_f1.contract import reward_advantages as reward_advantages
+  File "/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_9c2ed85/src/sr_f1/contract.py", line 45, in <module>
+    _reference = reference_module("semantic_contract")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_9c2ed85/src/sr_f1/contract.py", line 35, in reference_module
+    manifest = json.loads((PACKAGE / "PACKAGE_SHA256.json").read_text())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/lib/python3.12/pathlib.py", line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_9c2ed85/docs/sr_f1/package/PACKAGE_SHA256.json'

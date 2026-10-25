@@ -1,0 +1,151 @@
+{
+  "status": "FROZEN_BEFORE_PILOT_OUTPUTS",
+  "code_revision": "ea50c51f0f145a183df360ab82025216d6303aca",
+  "g3_frozen_digest": "845980b231085b6c3a5898a89e4a0293b006e90876135c67b604d8f18b477ab2",
+  "source_identity": {
+    "src/sr_f5/pilot_pool.py": "0c134382a5c203dcab9d28686dd351a498c673873ab6f5d8407951b6874cbba8",
+    "src/sr_f5/dual_gpu.py": "51213261870c231fed3166ddcad95a26997e53aef117fbdebec159bbc81db9b8",
+    "scripts/sr_f5/pilot.sbatch": "0a293b9a0ec610cc89704a09bb51cecdb415854d954c5473ad2aac665850bdd6",
+    "scripts/sr_f5/submit_g3.py": "bda0c7690327661b6a6203e5ac3c0f48575dee5da06a24a3fd03ff347b4ac974"
+  },
+  "order_seed_namespace": "seed_for(master_seed, G3_pool_arm_order, parent)",
+  "allocation": "deterministic least-weighted-steps, worker-index tie break",
+  "arm_orders": {
+    "b0": {
+      "seed": 8874486624418313177,
+      "arms": [
+        "J",
+        "SHUF",
+        "LOCAL",
+        "HARD",
+        "DENSE"
+      ]
+    },
+    "b1": {
+      "seed": 6471990685821054449,
+      "arms": [
+        "LOCAL",
+        "SHUF",
+        "DENSE",
+        "HARD",
+        "J"
+      ]
+    },
+    "b2": {
+      "seed": 3028255904113570387,
+      "arms": [
+        "SHUF",
+        "DENSE",
+        "LOCAL",
+        "HARD",
+        "J"
+      ]
+    }
+  },
+  "workers": [
+    {
+      "worker": 0,
+      "weighted_steps": 52,
+      "tasks": [
+        {
+          "parent": "b0",
+          "arm": "J",
+          "recovery": true
+        },
+        {
+          "parent": "b0",
+          "arm": "DENSE",
+          "recovery": true
+        },
+        {
+          "parent": "b2",
+          "arm": "DENSE",
+          "recovery": false
+        }
+      ]
+    },
+    {
+      "worker": 1,
+      "weighted_steps": 56,
+      "tasks": [
+        {
+          "parent": "b0",
+          "arm": "SHUF",
+          "recovery": true
+        },
+        {
+          "parent": "b1",
+          "arm": "LOCAL",
+          "recovery": false
+        },
+        {
+          "parent": "b1",
+          "arm": "HARD",
+          "recovery": false
+        },
+        {
+          "parent": "b2",
+          "arm": "LOCAL",
+          "recovery": false
+        }
+      ]
+    },
+    {
+      "worker": 2,
+      "weighted_steps": 56,
+      "tasks": [
+        {
+          "parent": "b0",
+          "arm": "LOCAL",
+          "recovery": true
+        },
+        {
+          "parent": "b1",
+          "arm": "SHUF",
+          "recovery": false
+        },
+        {
+          "parent": "b1",
+          "arm": "J",
+          "recovery": false
+        },
+        {
+          "parent": "b2",
+          "arm": "HARD",
+          "recovery": false
+        }
+      ]
+    },
+    {
+      "worker": 3,
+      "weighted_steps": 56,
+      "tasks": [
+        {
+          "parent": "b0",
+          "arm": "HARD",
+          "recovery": true
+        },
+        {
+          "parent": "b1",
+          "arm": "DENSE",
+          "recovery": false
+        },
+        {
+          "parent": "b2",
+          "arm": "SHUF",
+          "recovery": false
+        },
+        {
+          "parent": "b2",
+          "arm": "J",
+          "recovery": false
+        }
+      ]
+    }
+  ],
+  "jobs": 2,
+  "gpus_per_job": 2,
+  "primary_paths": 15,
+  "recovery_paths": 5,
+  "automatic_formal_training": false
+}

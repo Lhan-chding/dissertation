@@ -1,6 +1,6 @@
 {
-  "status": "G2_RUNNING_PARTIAL_NOT_SCIENTIFIC_COMPLETE",
-  "as_of_local": "2026-10-25 20:03 Asia/Singapore",
+  "status": "G2_PASS_G3_ACTIVE_NOT_SCIENTIFIC_COMPLETE",
+  "as_of_local": "2026-10-25 21:28 Asia/Singapore",
   "cpu_job": {
     "id": "226030",
     "state": "COMPLETED",
@@ -20,42 +20,46 @@
   },
   "g2": {
     "expected_answers": 4608,
-    "actual_answers_observed": 216,
+    "actual_answers_observed": 4608,
     "workers": [
       {
         "job_id": "226134",
         "name": "LH-SRF5-G2-P0",
-        "state": "RUNNING",
+        "state": "COMPLETED",
         "reason": "None",
         "gpus": 2,
         "shards": [
           0,
           1
-        ]
+        ],
+        "exit_code": "0:0"
       },
       {
         "job_id": "226135",
         "name": "LH-SRF5-G2-P1",
-        "state": "PENDING",
-        "reason": "Resources",
+        "state": "COMPLETED",
+        "reason": "None",
         "gpus": 2,
         "shards": [
           2,
           3
-        ]
+        ],
+        "exit_code": "0:0"
       }
     ],
     "code_commit": "26e560bac1a7c5b5563f52112bc1374685084b8d",
     "launcher_commit": "30ee07b",
     "completed_groups_by_parent": {
-      "b0": 27,
-      "b1": 0,
-      "b2": 0
+      "b0": 192,
+      "b1": 192,
+      "b2": 192
     },
     "retained_failed_jobs": [
       "226056",
       "226057"
-    ]
+    ],
+    "status": "PASS",
+    "program_reviews": 360
   },
   "formal_paths": {
     "registered": 45,
@@ -78,11 +82,36 @@
     "scope": "/projects/_ssd/varunssd/louis-ssvc"
   },
   "continuation": {
-    "job_id": "226156",
-    "state": "PENDING",
-    "reason": "Dependency",
-    "source_commit": "9c2ed8590ff4451c8d2ce090fe4a66ae55dba973",
+    "job_id": "226277",
+    "state": "COMPLETED",
+    "reason": "None",
+    "source_commit": "ea50c51f0f145a183df360ab82025216d6303aca",
     "heartbeat": "sr-f5",
-    "g3_requires_g2_pass": true
+    "g3_requires_g2_pass": true,
+    "server_tests_passed": 84,
+    "retained_failed_job": "226156",
+    "current_receipt": "CONTINUATION/CURRENT.json"
+  },
+  "g3": {
+    "status": "ACTIVE_NOT_PASSED",
+    "primary_answers": 23040,
+    "recovery_answers": 5120,
+    "workers": [
+      {
+        "job_id": "226282",
+        "gpus": 2,
+        "state": "RUNNING",
+        "node": "gpu-pro6000-12"
+      },
+      {
+        "job_id": "226283",
+        "gpus": 2,
+        "state": "PENDING",
+        "reason": "Resources"
+      }
+    ],
+    "evidence_directory": "G2_FINAL_20261025",
+    "actual_answers_observed": 64,
+    "committed_updates_observed": 0
   }
 }

@@ -14,7 +14,8 @@
     "CPU preparation": "src/sr_f5/prepare.py",
     "G3": "src/sr_f5/pilot.py",
     "G3_pool": "src/sr_f5/pilot_pool.py; scripts/sr_f5/submit_g3.py",
-    "development_continuation": "scripts/sr_f5/advance_development.py"
+    "development_continuation": "scripts/sr_f5/advance_development.py",
+    "development_package": "scripts/sr_f5/package_development.py (includes transitive native contracts)"
   },
   "unfinished_at_initial_implementation": [
     "actual GPU tokenizer/processor preflight",
@@ -46,19 +47,28 @@
   "dual_gpu_launcher_commit": "c3d37acb94e5036377a551a1be12c7629dc20934",
   "cleanup_code_commit": "da4dbd4",
   "remaining_current": [
-    "Complete real 4608-answer G2 and gate",
     "Actual 15-path GPU G3 and five b0 recovery comparisons",
     "G0/G1 actual evidence completion and G4 formal freeze",
     "Formal evaluation/statistics implementation and 45 paths"
   ],
-  "development_code_commit": "9c2ed8590ff4451c8d2ce090fe4a66ae55dba973",
-  "development_source": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_9c2ed85",
+  "development_code_commit": "ea50c51f0f145a183df360ab82025216d6303aca",
+  "development_source": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_ea50c51",
   "g2_active_launcher_commit": "30ee07b",
   "continuation": {
-    "cpu_job": "226156",
-    "dependency": "afterany:226134:226135",
+    "cpu_job": "226277",
     "heartbeat_id": "sr-f5",
     "interval_minutes": 10,
-    "formal_requires_gates": true
+    "formal_requires_gates": true,
+    "state": "COMPLETED",
+    "g2_gate": "PASS",
+    "g3_jobs": [
+      "226282",
+      "226283"
+    ],
+    "current_receipt": "CONTINUATION/CURRENT.json",
+    "g2_prerequisite_jobs": [
+      "226134",
+      "226135"
+    ]
   }
 }
