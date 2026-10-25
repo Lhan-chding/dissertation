@@ -1,0 +1,340 @@
+{
+  "job_id": "226890",
+  "state": "COMPLETED",
+  "exit_code": "0:0",
+  "node": "gpu-pro6000-7",
+  "start": "2026-10-25T19:16:20",
+  "end": "2026-10-25T19:17:06",
+  "decision": "REGISTER_RECIPE_V2_NOT_V1_PASS",
+  "new_scientific_samples": 0,
+  "optimizer_updates": 0,
+  "precision": {
+    "bf16": {
+      "status": "DIAGNOSTIC_COMPLETE",
+      "kind": "FORCED_TOKEN_REPLAY_ONLY",
+      "started_at": "2026-10-25T19:16:21.283536+00:00",
+      "precision": "bf16",
+      "run_id": "G3-b1-SHUF",
+      "checkpoint_step": 6,
+      "token_prefix_length": 163,
+      "new_scientific_samples": 0,
+      "optimizer_updates": 0,
+      "gate_decision": "NOT_AUTHORIZED_BY_DIAGNOSTIC",
+      "science_revision": "ea50c51f0f145a183df360ab82025216d6303aca",
+      "science_code": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_ea50c51",
+      "parameter_dtypes": [
+        "torch.bfloat16",
+        "torch.float32"
+      ],
+      "finished_at": "2026-10-25T19:17:00.280527+00:00",
+      "native_forward_calls": 326,
+      "extra_forward_sequences": 1467,
+      "trials": [
+        {
+          "name": "G8",
+          "status": "REPLAY_COMPLETE",
+          "all_raw_logits_scores_equal": true,
+          "versus_same_precision_full": {
+            "max": 5.121161760762334,
+            "mean": 0.010244368732266789,
+            "tokens": 1304
+          },
+          "rows": [
+            {
+              "row_id": "G3-b1-SHUF/007/06/0",
+              "versus_original_sampler": {
+                "mean_absolute_difference": 0.0,
+                "max_absolute_difference": 0.0,
+                "max_position": 0
+              },
+              "versus_same_precision_full": {
+                "max": 0.9121105782687664,
+                "mean": 0.006668470763051093,
+                "tokens": 163
+              }
+            },
+            {
+              "row_id": "G3-b1-SHUF/007/06/1",
+              "versus_original_sampler": {
+                "mean_absolute_difference": 0.0,
+                "max_absolute_difference": 0.0,
+                "max_position": 0
+              },
+              "versus_same_precision_full": {
+                "max": 0.13944588229060173,
+                "mean": 0.0016330758947591354,
+                "tokens": 163
+              }
+            },
+            {
+              "row_id": "G3-b1-SHUF/007/06/2",
+              "versus_original_sampler": {
+                "mean_absolute_difference": 0.0,
+                "max_absolute_difference": 0.0,
+                "max_position": 0
+              },
+              "versus_same_precision_full": {
+                "max": 0.1009821891784668,
+                "mean": 0.0012673521090321477,
+                "tokens": 163
+              }
+            },
+            {
+              "row_id": "G3-b1-SHUF/007/06/3",
+              "versus_original_sampler": {
+                "mean_absolute_difference": 0.0,
+                "max_absolute_difference": 0.0,
+                "max_position": 0
+              },
+              "versus_same_precision_full": {
+                "max": 5.121161760762334,
+                "mean": 0.03851553414711508,
+                "tokens": 163
+              }
+            },
+            {
+              "row_id": "G3-b1-SHUF/007/06/4",
+              "versus_original_sampler": {
+                "mean_absolute_difference": 0.0,
+                "max_absolute_difference": 0.0,
+                "max_position": 0
+              },
+              "versus_same_precision_full": {
+                "max": 0.03828825801610947,
+                "mean": 0.0005434915210425457,
+                "tokens": 163
+              }
+            },
+            {
+              "row_id": "G3-b1-SHUF/007/06/5",
+              "versus_original_sampler": {
+                "mean_absolute_difference": 0.0,
+                "max_absolute_difference": 0.0,
+                "max_position": 0
+              },
+              "versus_same_precision_full": {
+                "max": 4.996948065236211,
+                "mean": 0.03236080731397967,
+                "tokens": 163
+              }
+            },
+            {
+              "row_id": "G3-b1-SHUF/007/06/6",
+              "versus_original_sampler": {
+                "mean_absolute_difference": 0.0,
+                "max_absolute_difference": 0.0,
+                "max_position": 0
+              },
+              "versus_same_precision_full": {
+                "max": 0.03823906555771828,
+                "mean": 0.0004052298641253355,
+                "tokens": 163
+              }
+            },
+            {
+              "row_id": "G3-b1-SHUF/007/06/7",
+              "versus_original_sampler": {
+                "mean_absolute_difference": 0.0,
+                "max_absolute_difference": 0.0,
+                "max_position": 0
+              },
+              "versus_same_precision_full": {
+                "max": 0.057642072439193726,
+                "mean": 0.0005609882450293096,
+                "tokens": 163
+              }
+            }
+          ]
+        },
+        {
+          "name": "single_row3",
+          "status": "REPLAY_COMPLETE",
+          "all_raw_logits_scores_equal": true,
+          "versus_same_precision_full": {
+            "max": 2.7807140350341797,
+            "mean": 0.02548003163088919,
+            "tokens": 163
+          },
+          "rows": [
+            {
+              "row_id": "G3-b1-SHUF/007/06/3",
+              "versus_original_sampler": {
+                "mean_absolute_difference": 0.015947324460051454,
+                "max_absolute_difference": 2.340447725728154,
+                "max_position": 162
+              },
+              "versus_same_precision_full": {
+                "max": 2.7807140350341797,
+                "mean": 0.02548003163088919,
+                "tokens": 163
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "fp32": {
+      "status": "DIAGNOSTIC_COMPLETE",
+      "kind": "FORCED_TOKEN_REPLAY_ONLY",
+      "started_at": "2026-10-25T19:16:21.285769+00:00",
+      "precision": "fp32",
+      "run_id": "G3-b1-SHUF",
+      "checkpoint_step": 6,
+      "token_prefix_length": 163,
+      "new_scientific_samples": 0,
+      "optimizer_updates": 0,
+      "gate_decision": "NOT_AUTHORIZED_BY_DIAGNOSTIC",
+      "science_revision": "ea50c51f0f145a183df360ab82025216d6303aca",
+      "science_code": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_ea50c51",
+      "parameter_dtypes": [
+        "torch.float32"
+      ],
+      "finished_at": "2026-10-25T19:17:04.401792+00:00",
+      "native_forward_calls": 326,
+      "extra_forward_sequences": 1467,
+      "trials": [
+        {
+          "name": "G8",
+          "status": "REPLAY_COMPLETE",
+          "all_raw_logits_scores_equal": true,
+          "versus_same_precision_full": {
+            "max": 0.0005638599395751953,
+            "mean": 1.405155922906142e-06,
+            "tokens": 1304
+          },
+          "rows": [
+            {
+              "row_id": "G3-b1-SHUF/007/06/0",
+              "versus_original_sampler": {
+                "mean_absolute_difference": 0.0006046464161020827,
+                "max_absolute_difference": 0.04082790017127991,
+                "max_position": 86
+              },
+              "versus_same_precision_full": {
+                "max": 1.7523765563964844e-05,
+                "mean": 1.4379559844686575e-07,
+                "tokens": 163
+              }
+            },
+            {
+              "row_id": "G3-b1-SHUF/007/06/1",
+              "versus_original_sampler": {
+                "mean_absolute_difference": 0.0004121259029654397,
+                "max_absolute_difference": 0.04082790017127991,
+                "max_position": 86
+              },
+              "versus_same_precision_full": {
+                "max": 4.668533802032471e-05,
+                "mean": 3.5337192446359096e-07,
+                "tokens": 163
+              }
+            },
+            {
+              "row_id": "G3-b1-SHUF/007/06/2",
+              "versus_original_sampler": {
+                "mean_absolute_difference": 0.0006046464161020827,
+                "max_absolute_difference": 0.04082790017127991,
+                "max_position": 86
+              },
+              "versus_same_precision_full": {
+                "max": 4.668533802032471e-05,
+                "mean": 3.716568076880249e-07,
+                "tokens": 163
+              }
+            },
+            {
+              "row_id": "G3-b1-SHUF/007/06/3",
+              "versus_original_sampler": {
+                "mean_absolute_difference": 0.013023764365287011,
+                "max_absolute_difference": 1.8360300678759813,
+                "max_position": 162
+              },
+              "versus_same_precision_full": {
+                "max": 0.0005638599395751953,
+                "mean": 4.656153639629941e-06,
+                "tokens": 163
+              }
+            },
+            {
+              "row_id": "G3-b1-SHUF/007/06/4",
+              "versus_original_sampler": {
+                "mean_absolute_difference": 0.0004121259029654397,
+                "max_absolute_difference": 0.04082790017127991,
+                "max_position": 86
+              },
+              "versus_same_precision_full": {
+                "max": 4.668533802032471e-05,
+                "mean": 3.5337192446359096e-07,
+                "tokens": 163
+              }
+            },
+            {
+              "row_id": "G3-b1-SHUF/007/06/5",
+              "versus_original_sampler": {
+                "mean_absolute_difference": 0.013023764365287011,
+                "max_absolute_difference": 1.8360300678759813,
+                "max_position": 162
+              },
+              "versus_same_precision_full": {
+                "max": 0.0005638599395751953,
+                "mean": 4.656153639629941e-06,
+                "tokens": 163
+              }
+            },
+            {
+              "row_id": "G3-b1-SHUF/007/06/6",
+              "versus_original_sampler": {
+                "mean_absolute_difference": 0.0004121259029654397,
+                "max_absolute_difference": 0.04082790017127991,
+                "max_position": 86
+              },
+              "versus_same_precision_full": {
+                "max": 4.668533802032471e-05,
+                "mean": 3.5337192446359096e-07,
+                "tokens": 163
+              }
+            },
+            {
+              "row_id": "G3-b1-SHUF/007/06/7",
+              "versus_original_sampler": {
+                "mean_absolute_difference": 0.0004121259029654397,
+                "max_absolute_difference": 0.04082790017127991,
+                "max_position": 86
+              },
+              "versus_same_precision_full": {
+                "max": 4.668533802032471e-05,
+                "mean": 3.5337192446359096e-07,
+                "tokens": 163
+              }
+            }
+          ]
+        },
+        {
+          "name": "single_row3",
+          "status": "REPLAY_COMPLETE",
+          "all_raw_logits_scores_equal": true,
+          "versus_same_precision_full": {
+            "max": 0.0010489225387573242,
+            "mean": 9.53132663767762e-06,
+            "tokens": 163
+          },
+          "rows": [
+            {
+              "row_id": "G3-b1-SHUF/007/06/3",
+              "versus_original_sampler": {
+                "mean_absolute_difference": 0.013029453749902735,
+                "max_absolute_difference": 1.836889447644353,
+                "max_position": 162
+              },
+              "versus_same_precision_full": {
+                "max": 0.0010489225387573242,
+                "mean": 9.53132663767762e-06,
+                "tokens": 163
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

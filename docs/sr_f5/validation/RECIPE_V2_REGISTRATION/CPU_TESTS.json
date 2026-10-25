@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-25T19:27:41.211086+00:00",
+  "status": "PASS",
+  "returncode": 0,
+  "test_paths": [
+    "tests/sr_f5",
+    "tests/sr_f4/test_data.py",
+    "tests/sr_f3_ce/test_contract.py",
+    "tests/sr_f3_ce/test_protocol_revision.py"
+  ],
+  "local_only_check": {
+    "path": "tests/sr_f5/test_development_package.py",
+    "reason": "git archive check runs once in the source checkout before deployment"
+  },
+  "model_calls": 0,
+  "code_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+  "scope": "CPU only; no GPU or scientific claim"
+}

@@ -1,6 +1,6 @@
 # SR-F5 执行状态（2026-10-25，新加坡）
 
-**2026-10-26 03:08（新加坡）：G3 概率异常已在 BF16 下完整复现；FP32 对照明显降低差异，但尚不能标为修复。诊断 226846 正常完成，继续核对同 token 缓存与批次路径。226283 的失败和未提交第 7 步保留；J/SHUF 恢复及追加卡仍推进。G3 未通过，正式实验未开始。**
+**2026-10-26 03:32（新加坡）：唯一 recipe_v2 已事前登记，统一全模型和浮点输入 FP32。服务器准备 226894 已 COMPLETED/0:0（332 passed、12 skipped、9 subtests passed）；第一个双卡普查 226900 已释放，实查 PENDING(Resources)，尚无新回答。旧版 J/SHUF 恢复继续；结束后不续跑旧池。第二个 v2 双卡作业等待预约容量，G3 与正式实验仍未通过。**
 
 从 F4 提交 `750db3d` 建立独立分支 `sr-f5-semantic-j-v1`。G2 沿用冻结科学代码 `26e560bac1a7c5b5563f52112bc1374685084b8d`，未因部署修复重生成回答。G3 运行代码为 `ea50c51f0f145a183df360ab82025216d6303aca`，服务器部署 `/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_ea50c51`。
 
@@ -27,7 +27,9 @@
 |226282|LH-SRF5-G3-P0|2|RUNNING / gpu-pro6000-12|
 |226283|LH-SRF5-G3-P1|2|FAILED / 1:0；b1-SHUF step7 概率尾部报警|
 |226455|LH-SRF5-G3-DRAIN|0|RUNNING / cpu-2；控制步骤位于 226282 allocation|
-|226588|LH-SRF5-G3-EXTRA|1|RUNNING / gpu-pro6000-7；用户授权夜间增加的第五张卡|
+|226588|LH-SRF5-G3-EXTRA|1|COMPLETED / 0:0；b2-DENSE/LOCAL 各 1,536 回答完整|
+|226894|LH-SRF5-V2-CPU|0|COMPLETED / 0:0；第二版 CPU 准备通过|
+|226900|LH-SRF5-G2-P0|2|第二版 PENDING(Resources)，19:31 UTC 提交|
 
 G3 共 15 条独立主路径、23,040 条回答；b0 五臂增加 5,120 条恢复诊断回答。b1/b2 不声称完成独立恢复重采样。详细恢复规则、原始证据要求与门槛见 `PILOT_IMPLEMENTATION_NOTES.md`。G3 完成后从同一冻结版本汇总，按 contract/05 诊断；不得用效果排名选配方。最多一次事前登记开发配方修订，第二版仍失败则停在可实施性诊断。所有 G0–G4 真实门通过及正式冻结之前，禁止进入 45 路正式矩阵。
 
@@ -48,6 +50,10 @@ G3 共 15 条独立主路径、23,040 条回答；b0 五臂增加 5,120 条恢�
 03:16 已核实后续双卡缓存诊断 `226890/LH-SRF5-G3-CACHE` 为 PENDING(Resources)，运维 `0f7dced` 已提交并推送。原保存配置 `use_cache=True`、beam=1、temperature/top_p=1、top_k=0，未启用 forced EOS。工具 8 项定向 CPU 回归通过（0.80 秒），Ruff、启动脚本语法及提交前差异检查通过。实际新 GPU 结果尚无；总预约五卡四作业，恢复控制器继续工作。新回执为 `validation/G3_CACHE_DIAG_SUBMISSION_226890.json`，服务器 `CONTINUATION/PROBABILITY_CACHE_226283/`；自动跟进已同步先读这项结果，禁止重复提交或提前恢复故障池。
 
 03:18 缓存诊断226890已COMPLETED/0:0；BF16 G8前1,304个概率逐值复现原sampler，同精度FP32 cached/full最大差0.00056386 nat。未观察到工程身份错配，按contract/07进入唯一recipe_v2统一全模型FP32开发分支，不追认v1通过。完整分析及范围限制见 `NUMERICAL_DIAGNOSIS_RECIPE_V2_ZH.md`。追加226588已COMPLETED/0:0，两条路径各1,536回答完整；J/SHUF恢复第10步后继续交边界控制器完成，之后不再续跑v1未完成池。v2新根隔离，登记及CPU门之后才能启动新的4,608回答普查。v2数值实现15项CPU测试、既有21项/9子测试、唯一登记8项测试通过；Ruff通过。服务器CPU准备仍待执行。
+
+03:32 事前登记与服务器准备已完成。科学代码 `47d5e85fb0c9b39d8f996465045d21956825f59d` 部署 `sr_f5_recipe_v2_47d5e85`，新根 `sr_f5_semantic_j_recipe_v2_20261026`，与旧根隔离。3,120 题、780 roots、1,896 张图像的构建、双 oracle、分区审计和 705 条历史世界排重通过。服务器 CPU 检查 332 passed、12 skipped、9 subtests passed（35.35 秒）；跳过项不算 PASS。只在本地 Git checkout 可执行的隔离打包测试已在实际提交上通过 1 项，不在服务器重复。CPU 全作业 83 秒，无模型调用。完整回执见 `validation/RECIPE_V2_REGISTRATION/`。
+
+第二版第一个双卡普查为 `226900/LH-SRF5-G2-P0`，分片 0/1，预期 2,304 回答；先 held 核对身份再释放。19:31:46 UTC 仍 PENDING(Resources)，不能声称运行或有吞吐。此时旧恢复 2 卡加新预约 2 卡，总计 4 卡、3 作业，另一双卡 pair 暂不提交。旧恢复最近三次两卡约 35–47% 利用率；不在连续对照途中更改模型、batch 或进程。待旧作业退出 squeue 且 sacct 终态后可启动 pair1，再完整聚合第二版 4,608 回答；仅真实 PASS 才冻结并进入 G3。下列更早的“原池续跑”安排均已由 recipe_v2 决定取代，历史段落只作事故记录。
 
 ## 利用率与效率边界
 

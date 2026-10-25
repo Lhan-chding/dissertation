@@ -1,0 +1,161 @@
+{
+  "at": "2026-10-25T19:27:41.755515+00:00",
+  "status": "CPU_READY_FOR_G2_PREFLIGHT",
+  "code_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+  "data_audit": {
+    "status": "PASS",
+    "scope": "CPU data construction, oracle, split and source rendering only",
+    "version": "srf5-native-data-v1",
+    "questions": 3120,
+    "unique_rendered_images": 1896,
+    "renderer": "sr_f3_ce.rendering.render_chart",
+    "style_mapping": {
+      "r0": "main",
+      "r1": "novel"
+    },
+    "chart": "grouped_bar",
+    "processor_readability": "NOT_RUN",
+    "historical_world_exclusion": "NOT_RUN; compare historical F4-C worlds before G1 release",
+    "image_hash_policy": "once per unique newly rendered image; no weight hashing",
+    "split_audit": {
+      "roots": 780,
+      "queries": 3120,
+      "cross_split_world_collisions": 0,
+      "status": "PASS",
+      "splits": {
+        "dev": {
+          "roots": 48,
+          "queries": 192,
+          "family_questions": {
+            "BINDING": 32,
+            "IMPACT": 32,
+            "INTERVAL": 32,
+            "K_DIRECTION": 32,
+            "SIGNED": 32,
+            "TIES": 32
+          },
+          "max_construction_attempt": 1
+        },
+        "pilot": {
+          "roots": 48,
+          "queries": 192,
+          "family_questions": {
+            "BINDING": 32,
+            "IMPACT": 32,
+            "INTERVAL": 32,
+            "K_DIRECTION": 32,
+            "SIGNED": 32,
+            "TIES": 32
+          },
+          "max_construction_attempt": 0
+        },
+        "train": {
+          "roots": 288,
+          "queries": 1152,
+          "family_questions": {
+            "BINDING": 192,
+            "IMPACT": 192,
+            "INTERVAL": 192,
+            "K_DIRECTION": 192,
+            "SIGNED": 192,
+            "TIES": 192
+          },
+          "max_construction_attempt": 1
+        },
+        "test_id": {
+          "roots": 96,
+          "queries": 384,
+          "family_questions": {
+            "BINDING": 64,
+            "IMPACT": 64,
+            "INTERVAL": 64,
+            "K_DIRECTION": 64,
+            "SIGNED": 64,
+            "TIES": 64
+          },
+          "max_construction_attempt": 0
+        },
+        "test_composition": {
+          "roots": 192,
+          "queries": 768,
+          "family_questions": {
+            "BINDING": 128,
+            "IMPACT": 128,
+            "INTERVAL": 128,
+            "K_DIRECTION": 128,
+            "SIGNED": 128,
+            "TIES": 128
+          },
+          "max_construction_attempt": 1
+        },
+        "test_relation": {
+          "roots": 48,
+          "queries": 192,
+          "family_questions": {
+            "BINDING": 32,
+            "IMPACT": 32,
+            "INTERVAL": 32,
+            "K_DIRECTION": 32,
+            "SIGNED": 32,
+            "TIES": 32
+          },
+          "max_construction_attempt": 0
+        },
+        "test_interface": {
+          "roots": 48,
+          "queries": 192,
+          "family_questions": {
+            "BINDING": 32,
+            "IMPACT": 32,
+            "INTERVAL": 32,
+            "K_DIRECTION": 32,
+            "SIGNED": 32,
+            "TIES": 32
+          },
+          "max_construction_attempt": 0
+        },
+        "dev_monitor": {
+          "roots": 12,
+          "queries": 48,
+          "family_questions": {
+            "BINDING": 8,
+            "IMPACT": 8,
+            "INTERVAL": 8,
+            "K_DIRECTION": 8,
+            "SIGNED": 8,
+            "TIES": 8
+          },
+          "max_construction_attempt": 0
+        }
+      },
+      "checked_lineages": true
+    }
+  },
+  "historical_audit": {
+    "status": "PASS",
+    "sources": [
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f4_c_local_pilot_20261024/DATA/TASKS.jsonl",
+        "rows": 954,
+        "world_rows": 704
+      },
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85/tests/sr_f5/collision_J1_SFAIL.json",
+        "rows": 1,
+        "world_rows": 1
+      }
+    ],
+    "new_questions_checked": 3120,
+    "historical_world_rows": 705,
+    "external_chartqa_rows_without_world": 250,
+    "comparison_keys": [
+      "exact_ordered_world",
+      "printed_world",
+      "renamed_reordered_world"
+    ],
+    "collisions": []
+  },
+  "model_calls": 0,
+  "formal_training_started": false,
+  "no_full_base_model_hash": true
+}

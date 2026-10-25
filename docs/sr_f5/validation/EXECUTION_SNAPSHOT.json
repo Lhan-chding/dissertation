@@ -1,6 +1,6 @@
 {
-  "status": "V1_NUMERICAL_FAILURE_RECIPE_V2_PREPARING",
-  "as_of_local": "2026-10-26 03:18 Asia/Singapore",
+  "status": "RECIPE_V2_CPU_PASS_G2_PAIR0_PENDING",
+  "as_of_local": "2026-10-26 03:32 Asia/Singapore",
   "cpu_job": {
     "id": "226030",
     "state": "COMPLETED",
@@ -142,7 +142,7 @@
     "first_path": "b2-DENSE COMPLETE",
     "recent_utilization": 86.8,
     "active_path": null,
-    "observed_at": "2026-10-25T19:08:51Z",
+    "observed_at": "2026-10-25T19:18:00Z",
     "exit_code": "0:0",
     "complete_paths": [
       "b2-DENSE",
@@ -163,7 +163,7 @@
     "exit_code": "0:0",
     "model_calls": 48,
     "gate_decision": "NOT_AUTHORIZED_BY_DIAGNOSTIC",
-    "next_action": "Bounded saved-token cached G8/single replay; no scientific restart"
+    "next_action": "Completed cache diagnosis; unique recipe_v2 registered"
   },
   "cache_diagnosis": {
     "job_id": "226890",
@@ -178,10 +178,28 @@
     "exit_code": "0:0"
   },
   "recipe_v2": {
-    "status": "DECISION_MADE_NOT_YET_REGISTERED",
+    "status": "REGISTERED_CPU_PASS_G2_PAIR0_PENDING",
     "root": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026",
     "report": "../NUMERICAL_DIAGNOSIS_RECIPE_V2_ZH.md",
-    "new_samples": 0,
-    "failed_v2_action": "STOP_NO_THIRD_RECIPE"
+    "failed_v2_action": "STOP_NO_THIRD_RECIPE",
+    "source_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+    "cpu_job": "226894",
+    "cpu_state": "COMPLETED",
+    "cpu_exit_code": "0:0",
+    "cpu_tests": {
+      "passed": 332,
+      "skipped": 12,
+      "subtests_passed": 9
+    },
+    "g2_pair0": {
+      "job_id": "226900",
+      "state": "PENDING",
+      "reason": "Resources",
+      "gpus": 2,
+      "expected_answers": 2304
+    },
+    "g2_pair1": "WAITING_FOR_CAPACITY",
+    "resume_v1": false,
+    "evidence": "RECIPE_V2_REGISTRATION"
   }
 }

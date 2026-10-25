@@ -1,0 +1,15 @@
+{
+  "decision": "REGISTER_RECIPE_V2",
+  "recipe_version": 2,
+  "source_revision": "ea50c51f0f145a183df360ab82025216d6303aca",
+  "engineering_mismatch_found": false,
+  "preserve_v1": true,
+  "uniform_all_arms": true,
+  "new_config_digest": "d14481203b6d9e430cc879f77f34bc478f034cecab1a511dd4c4a59f42f7660b",
+  "reason": "Reproducible BF16 sampler/full discrepancy above frozen 5nat gate; original G8 cached replay exactly reproduces sampler, while same-precision FP32 cached/full max is 0.00056386nat. No observed input/checkpoint/cache-boundary mismatch; register one uniform full-model FP32 recipe with prescribed new dev/pilot seeds.",
+  "limitation": "One checkpoint/group diagnostic only; no full G2/G3 or formal PASS claimed.",
+  "report": "docs/sr_f5/NUMERICAL_DIAGNOSIS_RECIPE_V2_ZH.md",
+  "v1_remaining_paths": "Do not resume; preserve incomplete paths. Allow existing b0 J/SHUF recovery to finish and controller to close allocation at validated boundary.",
+  "failed_v2_action": "STOP_FEASIBILITY_NO_RECIPE_V3",
+  "at": "2026-10-25T19:26:18.293411+00:00"
+}
