@@ -261,6 +261,9 @@ def update(
         "arm": credits[0]["arm"],
         "row_ids": [r["row_id"] for r in records],
     }
+    for field in ("pilot_lane", "pilot_execution_id"):
+        if runtime.identity.get(field) is not None:
+            audit_identity[field] = runtime.identity[field]
     try:
         for index, (record, coefficient) in enumerate(zip(records, coefficients, strict=True)):
             key = (record["qid"], record["model_input"], record["protocol"])
