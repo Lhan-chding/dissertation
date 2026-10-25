@@ -8,6 +8,7 @@ resumes paused coordinators. The original immutable deployment is not edited.
 from __future__ import annotations
 
 import argparse
+import ctypes
 import fcntl
 import json
 import os
@@ -113,8 +114,34 @@ def processes(root):
     return result
 
 
+def libc_pidfd_call(name, arguments, types):
+    """Portable CPython may omit wrappers even when the host libc exports pidfds."""
+    libc = ctypes.CDLL(None, use_errno=True)
+    function = getattr(libc, name)
+    function.argtypes = types
+    function.restype = ctypes.c_int
+    result = function(*arguments)
+    if result == -1:
+        error = ctypes.get_errno()
+        raise OSError(error, os.strerror(error))
+    return result
+
+
+def open_coordinator(pid):
+    if hasattr(os, "pidfd_open"):
+        return os.pidfd_open(pid)
+    return libc_pidfd_call("pidfd_open", (pid, 0), (ctypes.c_int, ctypes.c_uint))
+
+
 def signal_coordinator(handle, sig):
-    signal.pidfd_send_signal(handle, sig)
+    if hasattr(signal, "pidfd_send_signal"):
+        signal.pidfd_send_signal(handle, sig)
+    else:
+        libc_pidfd_call(
+            "pidfd_send_signal",
+            (handle, int(sig), None, 0),
+            (ctypes.c_int, ctypes.c_int, ctypes.c_void_p, ctypes.c_uint),
+        )
 
 
 def finish_evidence(root, arm, child):
@@ -216,7 +243,7 @@ def run(args):
                             continue
                         if len(cs) != 1:
                             raise RuntimeError("Scientific child identity is ambiguous")
-                        fd = os.pidfd_open(parent["pid"])
+                        fd = open_coordinator(parent["pid"])
                         try:
                             fresh = proc(parent["pid"], environment=True)
                             if fresh["start"] != parent["start"] or not matches_worker(

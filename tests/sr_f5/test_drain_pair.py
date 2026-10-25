@@ -4,6 +4,7 @@ import importlib.util
 import json
 import os
 import signal
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -116,7 +117,7 @@ def controller(monkeypatch, tmp_path):
     signals, commands, closed = [], [], []
     monkeypatch.setattr(module, "processes", lambda r: list(ps.values()))
     monkeypatch.setattr(module, "proc", lambda pid, **kw: ps[pid].copy())
-    monkeypatch.setattr(module.os, "pidfd_open", lambda pid: pid, raising=False)
+    monkeypatch.setattr(module, "open_coordinator", lambda pid: pid)
     monkeypatch.setattr(module.os, "close", closed.append)
     monkeypatch.setattr(module.signal, "signal", lambda *args: None)
 
@@ -213,7 +214,7 @@ def test_unrelated_worker_is_not_selected(controller):
     assert not c.signals
 
 
-@pytest.mark.skipif(not hasattr(os, "pidfd_open"), reason="Linux pidfd API required")
+@pytest.mark.skipif(sys.platform != "linux", reason="Linux pidfd API required")
 def test_real_pidfd_pause_does_not_stop_scientific_child():
     import subprocess
     import sys
@@ -235,7 +236,7 @@ def test_real_pidfd_pause_does_not_stop_scientific_child():
         stdout=subprocess.PIPE,
         text=True,
     )
-    fd = os.pidfd_open(parent.pid)
+    fd = module.open_coordinator(parent.pid)
     try:
         child = int(parent.stdout.readline())
         module.signal_coordinator(fd, signal.SIGSTOP)
