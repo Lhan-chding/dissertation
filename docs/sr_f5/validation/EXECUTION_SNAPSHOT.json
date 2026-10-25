@@ -1,6 +1,6 @@
 {
   "status": "G2_PASS_G3_ACTIVE_NOT_SCIENTIFIC_COMPLETE",
-  "as_of_local": "2026-10-25 21:28 Asia/Singapore",
+  "as_of_local": "2026-10-25 21:51 Asia/Singapore",
   "cpu_job": {
     "id": "226030",
     "state": "COMPLETED",
@@ -106,12 +106,13 @@
       {
         "job_id": "226283",
         "gpus": 2,
-        "state": "PENDING",
-        "reason": "Resources"
+        "state": "RUNNING",
+        "node": "gpu-pro6000-9"
       }
     ],
     "evidence_directory": "G2_FINAL_20261025",
-    "actual_answers_observed": 64,
-    "committed_updates_observed": 0
+    "actual_answers_observed": 400,
+    "committed_updates_observed": 2,
+    "first_updates_evidence": "G3_FIRST_UPDATES_20261025.json"
   }
 }

@@ -1,0 +1,144 @@
+{
+  "at": "2026-10-25T13:51:15.165371+00:00",
+  "source_revision": "ea50c51f0f145a183df360ab82025216d6303aca",
+  "squeue": [
+    "226283|LH-SRF5-G3-P1|RUNNING|1:11|gpu-pro6000-9",
+    "226282|LH-SRF5-G3-P0|RUNNING|26:36|gpu-pro6000-12"
+  ],
+  "lanes": [
+    {
+      "lane": "G3/RUNS/b0/HARD/primary",
+      "answers": 0,
+      "committed_updates": []
+    },
+    {
+      "lane": "G3/RUNS/b0/J/primary",
+      "answers": 200,
+      "committed_updates": [
+        {
+          "loss": 1.7423881217837334e-05,
+          "native": 1.7423881217837334e-05,
+          "aux": 0.0,
+          "kl": 0.0,
+          "status": "FINITE",
+          "token_count": 57044,
+          "sampler_train_mean_absolute_difference": 0.0014457277720794082,
+          "sampler_train_p99_absolute_difference": 0.049046311527490616,
+          "sampler_train_max_absolute_difference": 0.5954573154449463,
+          "tis_truncated_fraction": 0.0,
+          "tis_cap": 2.0,
+          "kl_token_max": 0.0,
+          "kl_top10_fraction_of_total": null,
+          "kl_nonfinite_tokens": 0,
+          "gradient_norm_before_clip": 0.04053996503353119,
+          "gradient_norm_after_clip": 0.04053996503353119,
+          "parameter_update_norm": 0.044115221292340794,
+          "sequence_count": 128,
+          "optimizer_updates": 1,
+          "microbatch_size": 1,
+          "kl_coefficient": 0.02,
+          "loss_reduction": "mean_of_128_sequence_means; auxiliary normalized independently",
+          "training_seconds": 387.3740553939715,
+          "step": 1,
+          "run_id": "G3-b0-J",
+          "lane": "primary",
+          "parent": "b0",
+          "arm": "J",
+          "primary_answers": 128,
+          "wall_seconds": 1112.037919222843,
+          "generated_tokens": 57044
+        }
+      ]
+    },
+    {
+      "lane": "G3/RUNS/b0/LOCAL/primary",
+      "answers": 0,
+      "committed_updates": []
+    },
+    {
+      "lane": "G3/RUNS/b0/SHUF/primary",
+      "answers": 200,
+      "committed_updates": [
+        {
+          "loss": 3.241006925236434e-05,
+          "native": 1.7423881217837334e-05,
+          "aux": 1.4987439499236643e-05,
+          "kl": 0.0,
+          "status": "FINITE",
+          "token_count": 57044,
+          "sampler_train_mean_absolute_difference": 0.0014457277720794082,
+          "sampler_train_p99_absolute_difference": 0.049046311527490616,
+          "sampler_train_max_absolute_difference": 0.5954573154449463,
+          "tis_truncated_fraction": 0.0,
+          "tis_cap": 2.0,
+          "kl_token_max": 0.0,
+          "kl_top10_fraction_of_total": null,
+          "kl_nonfinite_tokens": 0,
+          "gradient_norm_before_clip": 0.04433972015976906,
+          "gradient_norm_after_clip": 0.04433972015976906,
+          "parameter_update_norm": 0.04413941070944477,
+          "sequence_count": 128,
+          "optimizer_updates": 1,
+          "microbatch_size": 1,
+          "kl_coefficient": 0.02,
+          "loss_reduction": "mean_of_128_sequence_means; auxiliary normalized independently",
+          "training_seconds": 386.7926022093743,
+          "step": 1,
+          "run_id": "G3-b0-SHUF",
+          "lane": "primary",
+          "parent": "b0",
+          "arm": "SHUF",
+          "primary_answers": 128,
+          "wall_seconds": 1121.9894241811708,
+          "generated_tokens": 57044
+        }
+      ]
+    }
+  ],
+  "gpu": {
+    "226282": {
+      "last_samples": [
+        "2026/10/25 13:50:41.573, 0, GPU-c98e23d9-2ab9-48ce-32b7-4e3faed492df, 36 %, 16 %, 63078 MiB, 97887 MiB, 135.49 W",
+        "2026/10/25 13:50:41.573, 1, GPU-15ceefa1-d8f2-f0ea-b044-af16053018b2, 37 %, 18 %, 63078 MiB, 97887 MiB, 129.91 W",
+        "2026/10/25 13:51:11.574, 0, GPU-c98e23d9-2ab9-48ce-32b7-4e3faed492df, 36 %, 15 %, 63078 MiB, 97887 MiB, 134.99 W",
+        "2026/10/25 13:51:11.575, 1, GPU-15ceefa1-d8f2-f0ea-b044-af16053018b2, 38 %, 18 %, 63078 MiB, 97887 MiB, 130.00 W"
+      ],
+      "recent_utilization": {
+        "0": {
+          "samples": 10,
+          "mean": 45.6,
+          "min": 33.0,
+          "max": 100.0
+        },
+        "1": {
+          "samples": 10,
+          "mean": 37.3,
+          "min": 33.0,
+          "max": 40.0
+        }
+      }
+    },
+    "226283": {
+      "last_samples": [
+        "2026/10/25 13:50:37.712, 0, GPU-4f8f5018-1ae4-5a0e-eb73-d9d949900077, 3 %, 0 %, 4453 MiB, 97887 MiB, 86.42 W",
+        "2026/10/25 13:50:37.712, 1, GPU-5c8befe6-6e10-1990-5e3f-de9b039a4c46, 3 %, 0 %, 4453 MiB, 97887 MiB, 86.50 W",
+        "2026/10/25 13:51:07.712, 0, GPU-4f8f5018-1ae4-5a0e-eb73-d9d949900077, 87 %, 43 %, 27105 MiB, 97887 MiB, 247.29 W",
+        "2026/10/25 13:51:07.714, 1, GPU-5c8befe6-6e10-1990-5e3f-de9b039a4c46, 87 %, 43 %, 27105 MiB, 97887 MiB, 244.49 W"
+      ],
+      "recent_utilization": {
+        "0": {
+          "samples": 3,
+          "mean": 30.0,
+          "min": 0.0,
+          "max": 87.0
+        },
+        "1": {
+          "samples": 3,
+          "mean": 30.0,
+          "min": 0.0,
+          "max": 87.0
+        }
+      }
+    }
+  }
+}
