@@ -1,0 +1,220 @@
+{
+  "observed_at": "2026-10-25T16:59:18.473525+00:00",
+  "source_revision": "ea50c51f0f145a183df360ab82025216d6303aca",
+  "source_code": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_ea50c51",
+  "g3_status": "IN_PROGRESS",
+  "recovery": {
+    "HARD": {
+      "comparison": {
+        "status": "PASS",
+        "checks": {
+          "identity": true,
+          "step": true,
+          "policy": true,
+          "optimizer": true,
+          "scheduler": true,
+          "sampler_state": true,
+          "python_rng": true,
+          "numpy_rng": true,
+          "torch_rng": true,
+          "cuda_rng": true,
+          "state_keys": true,
+          "fresh_process": true,
+          "primary_continuous_from_zero": true,
+          "recovery_restored_step_four": true,
+          "terminal_step_twelve": true,
+          "numerical_credit_update_receipts": true,
+          "regenerated_groups": true
+        },
+        "parent": "b0",
+        "arm": "HARD",
+        "regenerated_groups": 128,
+        "actual_matching_groups": 128,
+        "criterion": "frozen exact; no tolerance widened after observing outputs",
+        "identity": {
+          "run_id": "G3-b0-HARD",
+          "parent": "b0",
+          "arm": "HARD",
+          "repeat": 0,
+          "frozen_digest": "845980b231085b6c3a5898a89e4a0293b006e90876135c67b604d8f18b477ab2",
+          "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+          "protocol_version": "structured_v3-1.0"
+        },
+        "checkpoint_metadata": {
+          "primary": {
+            "size": 260269781,
+            "mtime_ns": 1792942844239266637,
+            "inode": 4398156675752,
+            "device": 47
+          },
+          "recovery": {
+            "size": 260271317,
+            "mtime_ns": 1792947509420429947,
+            "inode": 4398156676726,
+            "device": 47
+          }
+        },
+        "completion_digests": {
+          "primary": "db7925dd28cc954fe972910ad191238343d284426146e83528827ce9453223eb",
+          "recovery": "8f29e12d61a46e8063395aac3a14afd3b6f8788f30c41af21b8dbf689b46ad06"
+        }
+      },
+      "primary": {
+        "status": "COMPLETE",
+        "identity": {
+          "run_id": "G3-b0-HARD",
+          "parent": "b0",
+          "arm": "HARD",
+          "repeat": 0,
+          "frozen_digest": "845980b231085b6c3a5898a89e4a0293b006e90876135c67b604d8f18b477ab2",
+          "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+          "protocol_version": "structured_v3-1.0"
+        },
+        "lane": "primary",
+        "committed_step": 12,
+        "responses": 1536,
+        "scientific_gate": "NOT_YET_AGGREGATED",
+        "execution": {
+          "id": "0defa1f8d51f4aaeb23641c9d17c408b",
+          "process": {
+            "host": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg",
+            "pid": 3271126,
+            "start_ticks": "209985232"
+          },
+          "restored_step": 0
+        }
+      },
+      "recovery": {
+        "status": "COMPLETE",
+        "identity": {
+          "run_id": "G3-b0-HARD",
+          "parent": "b0",
+          "arm": "HARD",
+          "repeat": 0,
+          "frozen_digest": "845980b231085b6c3a5898a89e4a0293b006e90876135c67b604d8f18b477ab2",
+          "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+          "protocol_version": "structured_v3-1.0"
+        },
+        "lane": "recovery",
+        "committed_step": 12,
+        "responses": 1024,
+        "scientific_gate": "NOT_YET_AGGREGATED",
+        "execution": {
+          "id": "45c49a604e61467785bb429559153866",
+          "process": {
+            "host": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg",
+            "pid": 3278434,
+            "start_ticks": "210649049"
+          },
+          "restored_step": 4
+        }
+      }
+    },
+    "LOCAL": {
+      "comparison": {
+        "status": "PASS",
+        "checks": {
+          "identity": true,
+          "step": true,
+          "policy": true,
+          "optimizer": true,
+          "scheduler": true,
+          "sampler_state": true,
+          "python_rng": true,
+          "numpy_rng": true,
+          "torch_rng": true,
+          "cuda_rng": true,
+          "state_keys": true,
+          "fresh_process": true,
+          "primary_continuous_from_zero": true,
+          "recovery_restored_step_four": true,
+          "terminal_step_twelve": true,
+          "numerical_credit_update_receipts": true,
+          "regenerated_groups": true
+        },
+        "parent": "b0",
+        "arm": "LOCAL",
+        "regenerated_groups": 128,
+        "actual_matching_groups": 128,
+        "criterion": "frozen exact; no tolerance widened after observing outputs",
+        "identity": {
+          "run_id": "G3-b0-LOCAL",
+          "parent": "b0",
+          "arm": "LOCAL",
+          "repeat": 0,
+          "frozen_digest": "845980b231085b6c3a5898a89e4a0293b006e90876135c67b604d8f18b477ab2",
+          "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+          "protocol_version": "structured_v3-1.0"
+        },
+        "checkpoint_metadata": {
+          "primary": {
+            "size": 260269781,
+            "mtime_ns": 1792942841425261929,
+            "inode": 4398156675743,
+            "device": 47
+          },
+          "recovery": {
+            "size": 260271317,
+            "mtime_ns": 1792947269704968432,
+            "inode": 4398156676663,
+            "device": 47
+          }
+        },
+        "completion_digests": {
+          "primary": "2f0756ad2d0758afac0bb721b53d60f3bddb3b827af94cdb7ff76bfd81b664d5",
+          "recovery": "28b7195aa6aad7c197ee03678bf4921e5e43107b12960b109d29887957c6fcfe"
+        }
+      },
+      "primary": {
+        "status": "COMPLETE",
+        "identity": {
+          "run_id": "G3-b0-LOCAL",
+          "parent": "b0",
+          "arm": "LOCAL",
+          "repeat": 0,
+          "frozen_digest": "845980b231085b6c3a5898a89e4a0293b006e90876135c67b604d8f18b477ab2",
+          "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+          "protocol_version": "structured_v3-1.0"
+        },
+        "lane": "primary",
+        "committed_step": 12,
+        "responses": 1536,
+        "scientific_gate": "NOT_YET_AGGREGATED",
+        "execution": {
+          "id": "fe9208823fd24a65947e809b78d44f9a",
+          "process": {
+            "host": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg",
+            "pid": 3271127,
+            "start_ticks": "209985232"
+          },
+          "restored_step": 0
+        }
+      },
+      "recovery": {
+        "status": "COMPLETE",
+        "identity": {
+          "run_id": "G3-b0-LOCAL",
+          "parent": "b0",
+          "arm": "LOCAL",
+          "repeat": 0,
+          "frozen_digest": "845980b231085b6c3a5898a89e4a0293b006e90876135c67b604d8f18b477ab2",
+          "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+          "protocol_version": "structured_v3-1.0"
+        },
+        "lane": "recovery",
+        "committed_step": 12,
+        "responses": 1024,
+        "scientific_gate": "NOT_YET_AGGREGATED",
+        "execution": {
+          "id": "88270bea9d6e4d1885119c8176967dcd",
+          "process": {
+            "host": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg",
+            "pid": 3278430,
+            "start_ticks": "210648783"
+          },
+          "restored_step": 4
+        }
+      }
+    }
+  }
+}

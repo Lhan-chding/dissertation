@@ -111,12 +111,17 @@
       }
     ],
     "evidence_directory": "G2_FINAL_20261025",
-    "actual_answers_observed": 5896,
+    "actual_answers_observed": 9144,
     "first_updates_evidence": "G3_FIRST_UPDATES_20261025.json",
-    "primary_answers_observed": 5384,
-    "recovery_answers_observed": 512,
+    "primary_answers_observed": 7096,
+    "recovery_answers_observed": 2048,
     "primary_paths_complete": 2,
-    "latest_evidence": "G3_FIRST_PRIMARY_COMPLETIONS_20261025.json"
+    "latest_evidence": "G3_FIRST_RECOVERY_PASS_20261026.json",
+    "recovery_paths_pass": [
+      "b0-HARD",
+      "b0-LOCAL"
+    ],
+    "observed_at": "2026-10-25T16:58:57Z"
   },
   "drain_controller": {
     "job": "226455",
@@ -131,7 +136,7 @@
     "state": "RUNNING",
     "node": "gpu-pro6000-7",
     "gpus": 1,
-    "observed_committed_step": 2,
+    "observed_committed_step": 8,
     "first_path": "b2-DENSE",
     "recent_utilization": 86.8
   }
