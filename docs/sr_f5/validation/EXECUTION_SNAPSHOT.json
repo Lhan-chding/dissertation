@@ -1,6 +1,6 @@
 {
-  "status": "G2_QUEUED_NOT_GPU_VALIDATED",
-  "as_of_local": "2026-10-25 18:46 Asia/Singapore",
+  "status": "G2_RUNNING_PARTIAL_NOT_SCIENTIFIC_COMPLETE",
+  "as_of_local": "2026-10-25 20:03 Asia/Singapore",
   "cpu_job": {
     "id": "226030",
     "state": "COMPLETED",
@@ -20,13 +20,13 @@
   },
   "g2": {
     "expected_answers": 4608,
-    "actual_answers_observed": 0,
+    "actual_answers_observed": 216,
     "workers": [
       {
-        "job_id": "226056",
+        "job_id": "226134",
         "name": "LH-SRF5-G2-P0",
-        "state": "PENDING",
-        "reason": "Resources",
+        "state": "RUNNING",
+        "reason": "None",
         "gpus": 2,
         "shards": [
           0,
@@ -34,10 +34,10 @@
         ]
       },
       {
-        "job_id": "226057",
+        "job_id": "226135",
         "name": "LH-SRF5-G2-P1",
         "state": "PENDING",
-        "reason": "Priority",
+        "reason": "Resources",
         "gpus": 2,
         "shards": [
           2,
@@ -46,7 +46,16 @@
       }
     ],
     "code_commit": "26e560bac1a7c5b5563f52112bc1374685084b8d",
-    "launcher_commit": "c3d37ac"
+    "launcher_commit": "30ee07b",
+    "completed_groups_by_parent": {
+      "b0": 27,
+      "b1": 0,
+      "b2": 0
+    },
+    "retained_failed_jobs": [
+      "226056",
+      "226057"
+    ]
   },
   "formal_paths": {
     "registered": 45,
@@ -54,7 +63,7 @@
     "status": "NOT_RUN"
   },
   "unrelated_job": "225839 preserved unchanged",
-  "automatic_next_stages": false,
+  "automatic_next_stages": "G3 only after actual G2 PASS; formal requires G0-G4",
   "server_root": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_20261025",
   "cleanup": {
     "job_id": "226060",
@@ -67,5 +76,13 @@
     "allocated_bytes_released": 22260400640,
     "postflight": "PASS",
     "scope": "/projects/_ssd/varunssd/louis-ssvc"
+  },
+  "continuation": {
+    "job_id": "226156",
+    "state": "PENDING",
+    "reason": "Dependency",
+    "source_commit": "9c2ed8590ff4451c8d2ce090fe4a66ae55dba973",
+    "heartbeat": "sr-f5",
+    "g3_requires_g2_pass": true
   }
 }

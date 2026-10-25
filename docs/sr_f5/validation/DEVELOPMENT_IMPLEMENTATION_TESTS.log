@@ -1,0 +1,11 @@
+Startup and telemetry: 14 tests passed
+Diagnosed G2 retry: 13 tests passed
+Independent review affected checks: 55 tests passed
+Pilot runner: 13 tests passed in 6.00s
+Pilot pool: 10 tests passed
+Continuation gate: 4 tests passed
+Training and continuation affected check before final two gate tests: 16 tests passed
+Ruff and affected bash syntax: PASS
+Counts are per invocation and overlap; do not sum as unique tests.
+Server affected CPU checks are scheduled inside decision job 226156 before G3 submission.
+Actual GPU G3: NOT_RUN

@@ -11,12 +11,14 @@
     "srf5_ref/credit.py,objective.py": "src/sr_f5/training.py (native loss and pre-update numerical gates)",
     "runtime": "src/sr_f5/runtime.py (isolated structured_v3 alias, old protocols unchanged)",
     "G2": "src/sr_f5/calibration.py",
-    "CPU preparation": "src/sr_f5/prepare.py"
+    "CPU preparation": "src/sr_f5/prepare.py",
+    "G3": "src/sr_f5/pilot.py",
+    "G3_pool": "src/sr_f5/pilot_pool.py; scripts/sr_f5/submit_g3.py",
+    "development_continuation": "scripts/sr_f5/advance_development.py"
   },
   "unfinished_at_initial_implementation": [
     "actual GPU tokenizer/processor preflight",
     "4608-response G2 gate",
-    "G3 runner and recovery replay; channel-gradient kernel implemented, not GPU validated",
     "formal evaluation/statistical pipeline; retention subsets already frozen",
     "G4 freeze and formal 45-path release"
   ],
@@ -42,5 +44,21 @@
   "followup_code_commit": "78acca3",
   "server_source": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_code_26e560b",
   "dual_gpu_launcher_commit": "c3d37acb94e5036377a551a1be12c7629dc20934",
-  "cleanup_code_commit": "da4dbd4"
+  "cleanup_code_commit": "da4dbd4",
+  "remaining_current": [
+    "Complete real 4608-answer G2 and gate",
+    "Actual 15-path GPU G3 and five b0 recovery comparisons",
+    "G0/G1 actual evidence completion and G4 formal freeze",
+    "Formal evaluation/statistics implementation and 45 paths"
+  ],
+  "development_code_commit": "9c2ed8590ff4451c8d2ce090fe4a66ae55dba973",
+  "development_source": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_9c2ed85",
+  "g2_active_launcher_commit": "30ee07b",
+  "continuation": {
+    "cpu_job": "226156",
+    "dependency": "afterany:226134:226135",
+    "heartbeat_id": "sr-f5",
+    "interval_minutes": 10,
+    "formal_requires_gates": true
+  }
 }
