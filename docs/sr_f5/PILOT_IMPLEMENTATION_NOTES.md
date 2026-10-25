@@ -23,3 +23,11 @@ python -m sr_f5.pilot --root "$RUN_ROOT" --aggregate
 调度器对全部 15 条主路径执行第一种运行，对 b0 五臂分别启动新进程恢复并比较。G3 聚合读取全部原始组、冻结 schedule、adapter step/seed、实际信用、已提交更新、最终 checkpoint 的 mmap 元数据与绑定恢复回执；不扫描基模权重，不新增烟测采样。CPU fixture 验证的是门控、事务和恢复逻辑，不能替代实际 GPU G3 结果。
 
 验证：13 项针对性测试通过，含真实小型 CPU Adam/checkpoint 的第 5 步中断、同策略完整批缓存恢复和完成路径零模型调用；Ruff 检查通过。实际 GPU 数值和门结果须由服务器回执确认。
+
+## 已运行作业的时限边界（2026-10-25）
+
+普通第 2 步实测：慢节点 J/SHUF 约 1,120/1,108 秒，快节点 HARD/LOCAL 约 522/517 秒。慢 worker 的 52–56 步超过 11.5 小时时限；集群拒绝修改 TimeLimit。新增外部运维脚本 `scripts/sr_f5/drain_pair.py`，不替换 G3 冻结科学代码、池顺序或采样参数。
+
+控制器作为同一 226282 allocation 内的 CPU-only overlapping step 运行，不增加作业或 GPU 预约。等两个 worker 的第一条 b0 路径进入恢复阶段，使用经过身份验证的 Linux pidfd 仅暂停负责启动下一阶段的 coordinator；正在执行的恢复子进程继续运行。子进程必须自行正常退出且 COMPLETE 绑定原 PID/start_ticks、从第 4 步恢复至第 12 步，随后用冻结部署做完整精确恢复比较。两侧全部 PASS 后记录计划性边界并取消本项目 allocation。其后仅在 squeue 消失和 sacct 终态已证实后，使用同一冻结代码和池计划提交新的双卡作业；已完成路径零模型调用复用，剩余路径照原顺序执行。
+
+任何身份歧义、阶段已越过、非零退出、比较失败或控制器期限到达，都解除已验证 coordinator 的暂停并保留错误回执；不会把部分恢复或计划性 CANCELLED 写为实验 PASS。控制器异常退出需要检查 `CONTINUATION/DRAIN_226282.json` 的 coordinator PID/start_ticks 与控制器存活；不得直接重提或盲发信号。科学子进程不收暂停信号，冻结代码目录保持原样。下一阶段仍以真实 G3 门为准。
