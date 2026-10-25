@@ -340,12 +340,17 @@ def run(root, parent, shard=0, shards=1):
 
 
 def independent_review(row, task):
-    """Program review uses a separate JSON decode and independent oracle B.
+    """Audit raw declarations without calling either production score function.
 
-    It checks final declarations/character boundaries, not free-text reasoning.
-    Stored native prefix offsets independently reconstruct token containment.
+    Oracle B independently supplies answer/selection truth. Exact scalar grammar
+    and certificate sufficiency remain the registered native low-level rules;
+    this is not a second independent proof of that certificate implementation.
     """
+    from sr_f4 import task_contract as legacy
+
     errors = []
+    text, world, query = row["full_text"], task["world"], task["query"]
+    truth = evaluate_b(world, query)
 
     def unique_pairs(pairs):
         result = {}
@@ -355,66 +360,211 @@ def independent_review(row, task):
             result[key] = value
         return result
 
+    decoder = json.JSONDecoder(
+        object_pairs_hook=unique_pairs,
+        parse_float=Decimal,
+        parse_constant=lambda _: (_ for _ in ()).throw(ValueError("nonfinite")),
+    )
+    # A balanced object can be structurally complete while invalid JSON. Finish
+    # therefore needs a lexical boundary, separately from successful JSON parse.
+    boundary, depth, quoted, escaped = None, 0, False, False
+    start = len(text) - len(text.lstrip())
+    if text[start : start + 1] == "{":
+        for index, char in enumerate(text[start:], start):
+            if quoted:
+                if escaped:
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == '"':
+                    quoted = False
+            elif char == '"':
+                quoted = True
+            elif char == "{":
+                depth += 1
+            elif char == "}":
+                depth -= 1
+                if depth == 0:
+                    boundary = index + 1
+                    break
+    prefix, whole, end = None, None, None
+    if boundary is not None and boundary <= 64000:
+        try:
+            candidate, end = decoder.raw_decode(text, start)
+            if isinstance(candidate, dict) and end == boundary:
+                prefix = candidate
+                if not text[end:].strip() and len(text) <= 64000:
+                    whole = candidate
+        except (ValueError, TypeError, ArithmeticError, RecursionError):
+            pass
+    known_structure = bool(
+        whole is not None
+        and set(whole)
+        in ({"evidence", "selected", "answer"}, {"evidence", "work", "selected", "answer"})
+        and isinstance(whole["evidence"], list)
+        and ("work" not in whole or isinstance(whole["work"], str))
+        and isinstance(whole["selected"], list)
+        and all(type(x) is str for x in whole["selected"])
+        and (whole["answer"] is None or type(whole["answer"]) in (str, int, Decimal))
+        and all(
+            isinstance(fact, dict)
+            and set(fact) == {"series", "category", "value"}
+            and isinstance(fact["series"], str)
+            and isinstance(fact["category"], str)
+            for fact in whole["evidence"]
+        )
+    )
+    expected_span, expected_s = None, "UNKNOWN"
+    if known_structure:
+        selected = [x.strip().casefold() for x in whole["selected"]]
+        target = {x.strip().casefold() for x in truth["selected"]}
+        expected_s = (
+            "PASS" if len(selected) == len(set(selected)) and set(selected) == target else "FAIL"
+        )
+        # Walk original raw members rather than trusting the stored span or
+        # reserializing Decimal literals. The strict decoder already validated it.
+        pos = start + 1
+        while True:
+            while text[pos].isspace():
+                pos += 1
+            key, pos = decoder.raw_decode(text, pos)
+            while text[pos].isspace():
+                pos += 1
+            pos += 1
+            while text[pos].isspace():
+                pos += 1
+            value_start = pos
+            _, pos = decoder.raw_decode(text, pos)
+            if key == "selected":
+                expected_span = [value_start, pos]
+            while text[pos].isspace():
+                pos += 1
+            if text[pos] == "}":
+                break
+            pos += 1
+
+    def facts_from(obj):
+        if not isinstance(obj, dict) or not isinstance(obj.get("evidence"), list):
+            raise ValueError("evidence type")
+        if len(obj["evidence"]) > 32:
+            raise ValueError("evidence length")
+        facts = {}
+        for fact in obj["evidence"]:
+            if not isinstance(fact, dict) or set(fact) != {"series", "category", "value"}:
+                raise ValueError("fact fields")
+            series, category = fact["series"], fact["category"]
+            if series not in world["series"] or category not in world["categories"]:
+                raise ValueError("unknown entity")
+            key = series, world["categories"].index(category)
+            if key in facts:
+                raise ValueError("duplicate fact")
+            value = legacy.rational(fact["value"])
+            if value.denominator != 1 or not world["domain"][0] <= value <= world["domain"][1]:
+                raise ValueError("fact domain")
+            facts[key] = value
+        return facts
+
+    expected = dict(
+        V=int(known_structure),
+        S=expected_s,
+        P="UNKNOWN",
+        value_parseable=0,
+        value_correct=0,
+        finish=int(row["finish_reason"] in ("balanced", "eos") and boundary is not None),
+        certificate_truth=0,
+        certificate_sufficient=0,
+        certificate=0,
+    )
     try:
-        obj = json.loads(
-            row["full_text"],
-            object_pairs_hook=unique_pairs,
-            parse_float=Decimal,
-            parse_constant=lambda _: (_ for _ in ()).throw(ValueError("nonfinite")),
-        )
-        selected = obj["selected"]
-        known_structure = (
-            isinstance(obj, dict)
-            and set(obj)
-            in ({"evidence", "selected", "answer"}, {"evidence", "work", "selected", "answer"})
-            and isinstance(obj["evidence"], list)
-            and ("work" not in obj or isinstance(obj["work"], str))
-            and isinstance(selected, list)
-            and all(type(x) is str for x in selected)
-            and (obj["answer"] is None or type(obj["answer"]) in (str, int, Decimal))
-            and all(
-                isinstance(fact, dict)
-                and set(fact) == {"series", "category", "value"}
-                and isinstance(fact["series"], str)
-                and isinstance(fact["category"], str)
-                for fact in obj["evidence"]
+        answer = None if prefix["answer"] is None else legacy.rational(prefix["answer"])
+        expected.update(value_parseable=1, value_correct=int(answer == truth["answer"]))
+    except (ValueError, TypeError, KeyError, ArithmeticError, RecursionError):
+        pass
+    valid_facts = False
+    try:
+        facts = facts_from(prefix)
+        valid_facts = True
+        fact_truth = all(v == world["series"][s][i] for (s, i), v in facts.items())
+        if (
+            "include_end" in query or "selection_series" in query
+        ) and not expected["value_parseable"]:
+            # The preserved extension scorer returns its legacy diagnostic
+            # certificate components before extension recomputation when the
+            # answer is unparseable. Preserve that branch; its J remains zero.
+            sufficiency = legacy.native.sufficient_template(
+                world, legacy.normalized_interval(query), facts
             )
+        else:
+            sufficiency = legacy.sufficient_template(world, query, facts)
+        expected.update(
+            certificate_truth=int(fact_truth),
+            certificate_sufficient=int(sufficiency),
+            certificate=int(fact_truth and sufficiency),
         )
-        if known_structure != bool(row["V"]):
-            errors.append("independent_structure_disagreement")
-        if row["S"] != "UNKNOWN":
-            if not isinstance(selected, list) or any(type(x) is not str for x in selected):
-                errors.append("known_non_string_selection")
-            else:
-                normalized = [x.strip().casefold() for x in selected]
-                expected = {
-                    x.strip().casefold()
-                    for x in evaluate_b(task["world"], task["query"])["selected"]
-                }
-                expected_s = (
-                    "PASS"
-                    if len(normalized) == len(set(normalized)) and set(normalized) == expected
-                    else "FAIL"
-                )
-                if expected_s != row["S"]:
-                    errors.append("independent_selection_disagreement")
-                lo, hi = row["selected_span"]
-                if json.loads(row["full_text"][lo:hi]) != selected:
-                    errors.append("selected_character_span_disagreement")
-    except (ValueError, TypeError, KeyError):
-        if row["S"] != "UNKNOWN":
-            errors.append("known_unparseable_object")
+    except (ValueError, TypeError, KeyError, ArithmeticError, RecursionError):
+        pass
+    try:
+        facts = facts_from(whole)
+        if facts:
+            expected["P"] = (
+                "PASS" if all(v == world["series"][s][i] for (s, i), v in facts.items()) else "FAIL"
+            )
+    except (ValueError, TypeError, KeyError, ArithmeticError, RecursionError):
+        pass
+    expected["A"] = expected["value_correct"]
+    expected["J_M3"] = int(
+        expected["V"] and expected["finish"] and expected["A"] and expected["certificate"]
+    )
+    expected["J"] = expected["J_M3"]
+    # Projection retains the old presentation limit, while J_M3 uses the v3
+    # structural gate exactly as registered. Do not silently merge the two Js.
+    expected["J_legacy_projection"] = (
+        int(
+            expected["A"]
+            and expected["finish"]
+            and expected["certificate"]
+            and expected["value_parseable"]
+            and valid_facts
+            and len(whole.get("work", "")) <= 16000
+        )
+        if known_structure
+        else None
+    )
+    for name, value in expected.items():
+        if row.get(name) != value:
+            errors.append(
+                {
+                    "V": "independent_structure_disagreement",
+                    "S": "independent_selection_disagreement",
+                }.get(name, f"independent_{name}_disagreement")
+            )
+    if row.get("selected_span") != expected_span:
+        errors.append("selected_character_span_disagreement")
     ends = row.get("token_prefix_character_ends", [])
     if len(ends) != len(row["tokens"]) or len(row["mask"]) != len(ends):
         errors.append("token_span_length_mismatch")
-    elif row["mask_ok"]:
-        lo, hi = row["selected_span"]
-        starts = [len(row["assistant_prefill"]), *ends[:-1]]
-        expected_mask = [b > a and lo <= a and b <= hi for a, b in zip(starts, ends, strict=True)]
-        if expected_mask != row["mask"] or not row.get("prefix_character_offsets_stable"):
+    else:
+        expected_mask = [False] * len(ends)
+        if expected_span and row.get("prefix_character_offsets_stable"):
+            starts = [len(row["assistant_prefill"]), *ends[:-1]]
+            if (
+                not ends
+                or ends[-1] != len(text)
+                or any(
+                    type(b) is not int or not 0 <= a <= b <= len(text)
+                    for a, b in zip(starts, ends, strict=True)
+                )
+            ):
+                errors.append("native_prefix_offsets_inconsistent")
+            else:
+                lo, hi = expected_span
+                expected_mask = [
+                    b > a and lo <= a and b <= hi for a, b in zip(starts, ends, strict=True)
+                ]
+        if row["mask"] != expected_mask or row["mask_ok"] != any(expected_mask):
             errors.append("native_prefix_mask_disagreement")
-    elif any(row["mask"]):
-        errors.append("unusable_mask_active")
+        if "selected_mask" in row and row["selected_mask"] != expected_mask:
+            errors.append("selected_mask_alias_disagreement")
     return dict(
         row_id=row["row_id"],
         qid=row["qid"],
@@ -423,7 +573,11 @@ def independent_review(row, task):
         reviewer="program",
         status="PASS" if not errors else "FAIL",
         errors=errors,
-        evidence="independent_JSON_selection_oracle_B_and_native_prefix_intervals",
+        expected_fields=expected,
+        expected_selected_span=expected_span,
+        evidence="independent_JSON_oracle_B_answer_selection_raw_fact_truth_and_native_prefix_intervals",
+        inherited_rules="native_exact_scalar_grammar_and_registered_certificate_sufficiency",
+        certificate_independence="sufficiency_rule_reused_not_independently_proved",
         free_text_reasoning_review="NOT_APPLICABLE_final_selected_only",
     )
 
