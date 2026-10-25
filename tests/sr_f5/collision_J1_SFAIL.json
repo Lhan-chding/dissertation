@@ -1,0 +1,107 @@
+{
+  "status": "CONSTRUCTED_REGRESSION_FIXTURE_NOT_MODEL_RESPONSE",
+  "world": {
+    "categories": [
+      "Mug",
+      "Lamp",
+      "Desk",
+      "Vase",
+      "Chair",
+      "Clock"
+    ],
+    "series": {
+      "Alpha": [
+        84,
+        72,
+        60,
+        48,
+        36,
+        24
+      ],
+      "Beta": [
+        18,
+        30,
+        42,
+        42,
+        54,
+        66
+      ]
+    },
+    "domain": [
+      10,
+      90
+    ]
+  },
+  "query": {
+    "family": "TOPK",
+    "selection_series": "Alpha",
+    "value": "Beta",
+    "k": 3,
+    "direction": "largest",
+    "aggregate": "sum"
+  },
+  "raw_response": "{\"evidence\":[{\"series\":\"Alpha\",\"category\":\"Mug\",\"value\":84},{\"series\":\"Alpha\",\"category\":\"Lamp\",\"value\":72},{\"series\":\"Alpha\",\"category\":\"Desk\",\"value\":60},{\"series\":\"Alpha\",\"category\":\"Vase\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Chair\",\"value\":36},{\"series\":\"Alpha\",\"category\":\"Clock\",\"value\":24},{\"series\":\"Beta\",\"category\":\"Mug\",\"value\":18},{\"series\":\"Beta\",\"category\":\"Lamp\",\"value\":30},{\"series\":\"Beta\",\"category\":\"Desk\",\"value\":42},{\"series\":\"Beta\",\"category\":\"Vase\",\"value\":42},{\"series\":\"Beta\",\"category\":\"Chair\",\"value\":54},{\"series\":\"Beta\",\"category\":\"Clock\",\"value\":66}],\"selected\":[\"Mug\",\"Lamp\",\"Vase\"],\"answer\":90}",
+  "expected_score": {
+    "V": 1,
+    "finish": 1,
+    "P": "PASS",
+    "S": "FAIL",
+    "certificate_truth": 1,
+    "certificate_sufficient": 1,
+    "value_correct": 1,
+    "value_parseable": 1,
+    "J": 1,
+    "selected_span": [
+      597,
+      618
+    ],
+    "reason": "CANONICAL_SELECTED_FIELD"
+  },
+  "expected_true_set": [
+    "Mug",
+    "Lamp",
+    "Desk"
+  ],
+  "relations": [
+    {
+      "variant": "anchor",
+      "gold_answer": 90,
+      "wrong_set_sum": 90,
+      "gold_selected": [
+        "Mug",
+        "Lamp",
+        "Desk"
+      ]
+    },
+    {
+      "variant": "selected_plus",
+      "gold_answer": 96,
+      "wrong_set_sum": 90,
+      "gold_selected": [
+        "Mug",
+        "Lamp",
+        "Desk"
+      ]
+    },
+    {
+      "variant": "unselected_plus",
+      "gold_answer": 90,
+      "wrong_set_sum": 96,
+      "gold_selected": [
+        "Mug",
+        "Lamp",
+        "Desk"
+      ]
+    },
+    {
+      "variant": "selected_minus",
+      "gold_answer": 84,
+      "wrong_set_sum": 90,
+      "gold_selected": [
+        "Mug",
+        "Lamp",
+        "Desk"
+      ]
+    }
+  ]
+}

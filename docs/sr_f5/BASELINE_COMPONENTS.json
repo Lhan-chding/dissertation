@@ -1,0 +1,13 @@
+{
+  "J_M3": "V_M3 * finish * A_legacy * certificate_legacy",
+  "V_M3": "strict one JSON object; evidence list, selected string array, answer scalar-or-null, optional work string; empty/wrong-size/duplicate/unknown selected labels structurally allowed",
+  "A_legacy": "sr_f4.task_contract.score exact value_correct",
+  "certificate_legacy": "sr_f4.task_contract.score certificate_truth && certificate_sufficient",
+  "finish": "historical balanced/eos and complete object",
+  "P": "native.parse_facts nonempty, all submitted facts true; malformed/empty UNKNOWN",
+  "S": "gold-blind top-level extraction then normalized set comparison, duplicate labels FAIL",
+  "projection": "raw character slicing selected member and adjacent comma, no parse-reserialize",
+  "loss": "sr_f12.training.sequence_objective; current/current.detach forward ratio=1, fixed-parent KL once, TIS cap2",
+  "reduction": "128 sequence means, aux independently normalized over chosen full/selected scope",
+  "preserved_old_modules": true
+}

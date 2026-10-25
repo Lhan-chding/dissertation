@@ -1,0 +1,36 @@
+{
+  "experiment": "SR-F5-SEMANTIC-J-20261025",
+  "base_commit": "750db3d",
+  "branch": "sr-f5-semantic-j-v1",
+  "original_runtime": "src/sr_f4/runtime.py",
+  "original_scorer": "src/sr_f4/task_contract.py",
+  "original_objective": "src/sr_f12/training.py:sequence_objective",
+  "mapping": {
+    "srf5_ref/generator.py,oracle.py,prompts.py,render.py": "src/sr_f5/data.py (native production renderer, not demo)",
+    "srf5_ref/measurement.py": "src/sr_f5/measurement.py (lossless projection, native historical scorer)",
+    "srf5_ref/credit.py,objective.py": "src/sr_f5/training.py (native loss and pre-update numerical gates)",
+    "runtime": "src/sr_f5/runtime.py (isolated structured_v3 alias, old protocols unchanged)",
+    "G2": "src/sr_f5/calibration.py",
+    "CPU preparation": "src/sr_f5/prepare.py"
+  },
+  "unfinished_at_initial_implementation": [
+    "actual GPU tokenizer/processor preflight",
+    "4608-response G2 gate",
+    "G3 runner, recovery replay and channel-gradient diagnostics",
+    "sealed retention subsets and full evaluation/statistical pipeline",
+    "G4 freeze and formal 45-path release"
+  ],
+  "scope": "Implementation inventory, not scientific completion",
+  "efficiency": {
+    "base_model_hash_sweep": false,
+    "new_image_hash": "once per unique new render",
+    "smoke_generation": "none separately; actual G2 is first model generation",
+    "cpu_suite": "one local focused integration pass, one actual server environment pass",
+    "gpu_workers": 4,
+    "preserve_unrelated_jobs": true,
+    "job_names_suffix": "-LH",
+    "job_ceiling_all_qos": 5,
+    "gpu_ceiling_document": 8,
+    "initial_effective_gpu_ceiling": 5
+  }
+}

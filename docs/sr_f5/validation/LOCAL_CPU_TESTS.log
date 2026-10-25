@@ -1,0 +1,11 @@
+.................................................................. [ 36%]
+........................................................................ [ 76%]
+..............................ssssssssssss                               [100%]
+=========================== short test summary info ============================
+SKIPPED [2] tests/sr_f3_ce/test_protocol_revision.py:139: Private original user package is not installed
+SKIPPED [1] tests/sr_f3_ce/test_protocol_revision.py:160: Private original user package is not installed
+SKIPPED [2] tests/sr_f3_ce/test_protocol_revision.py:221: Private original package and exact user amendment are not installed
+SKIPPED [5] tests/sr_f3_ce/test_protocol_revision.py:244: Private original package and exact user amendment are not installed
+SKIPPED [1] tests/sr_f3_ce/test_protocol_revision.py:267: Private original package and exact user amendment are not installed
+SKIPPED [1] tests/sr_f3_ce/test_protocol_revision.py:281: Private original package and exact user amendment are not installed
+168 passed, 12 skipped, 6 subtests passed in 1.99s
