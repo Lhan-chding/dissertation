@@ -1,5 +1,15 @@
 # SR-F5 执行状态（2026-10-25，新加坡）
 
+## 最新：2026-10-27 00:43 四条主路径完成
+
+实查续跑 228108/228121 均仍 RUNNING 于 gpu-pro6000-12。b0-DENSE、b1-LOCAL、b1-SHUF、b1-DENSE 各12步、1536回答已 COMPLETE；四份回执均 restored_step=0，绑定原冻结 digest，worker 子进程正常退出。累计完整主路径8/15（12288回答），完整恢复4/5（4096回答），共16384/28160（58.2%），尚差11776。此计数不含新路径部分回答；科学状态仍 NOT_YET_AGGREGATED，整体 G3 未通过，无 FAILURES.jsonl。
+
+原池自动继续：W0 于16:36:48 UTC进入 b0-DENSE fresh recovery4→12，之后 b2-DENSE；W1 于16:33:44进入 b1-HARD，之后 b2-LOCAL；W2 于16:34:08进入 b1-J，之后 b2-HARD；W3 于16:39:35进入 b2-SHUF，之后 b2-J。四条新 lane 已保存采样，观察时尚无新 UPDATE。DENSE恢复尚未比较通过，不能计为第五条恢复 PASS。
+
+作业截止分别为27日00:20:52/00:22:23 UTC，观察时尚余约7h38。旧路径近期普通步约19–20分钟、末步含诊断约19–22分钟，最长剩24更新，余量偏紧；优先实测新路径和 b2 普通步，在最终路径启动前评估时限，必要时先验证支持后续 task 的安全边界运维。旧 fdec062 first-task 控制器不适用；不向连续科学子进程发信号，不改已提交 TimeLimit。
+
+实时共享账号7作业、teacher预约7GPU（我们原4GPU未增，另有他人teacher三卡及rose两个排队作业），禁止增加预约或改动他人作业。没有新提交、聚合或科学变更。证据 `validation/RECIPE_V2_G3/REENTRY_FOUR_PRIMARY_COMPLETE_20261027T0044.json`；服务器 CURRENT 与自动跟进已更新。以下均为历史快照。
+
 ## 最新：2026-10-26 20:53 续跑开始
 
 228108 于 12:50:52 UTC（20:50:52 新加坡）在 gpu-pro6000-12 实际 RUNNING，仍使用科学 47d5e85 和原 POOL_PLAN。W0/W1 分别完成 J/SHUF 的 primary/recovery 复用，四条日志均明确 model_calls=0，恢复比较再次成功；随后按原顺序进入 b0-DENSE、b1-LOCAL。20:52:45 两条新主路径各已有首个完整采样组，尚无已提交 UPDATE，不能计作完成步骤。两卡最近两次遥测分别为 100%/100%、66%/69%，没有失败回执；此启动窗口不代表稳定吞吐。228121 仍 PENDING(Priority)。
