@@ -180,9 +180,11 @@ def run(args):
         or allocation["code_revision"] != args.revision
         or frozen["code_revision"] != args.revision
         or allocation["status"] != "RUNNING"
-        or allocation["workers"] != [0, 1]
+        or args.pair not in (0, 1)
+        or allocation.get("pair") != args.pair
+        or allocation["workers"] != [2 * args.pair, 2 * args.pair + 1]
     ):
-        raise PermissionError("Only the registered slow pair 0 may be drained")
+        raise PermissionError("Allocation must match the explicitly selected frozen pair")
     tasks = {w: plan["workers"][w]["tasks"][0] for w in allocation["workers"]}
     if any(t["parent"] != "b0" or not t["recovery"] for t in tasks.values()):
         raise PermissionError("Target must be the first b0 recovery in each lane")
@@ -195,6 +197,7 @@ def run(args):
     report = dict(
         status="ARMED",
         job_id=str(args.job),
+        pair=args.pair,
         source_revision=args.revision,
         controller_revision=args.controller_revision,
         controller=dict(pid=os.getpid(), host=socket.gethostname()),
@@ -373,6 +376,7 @@ def main():
         parser.add_argument("--" + name, type=Path, required=True)
     for name in ("job", "revision", "controller-revision"):
         parser.add_argument("--" + name, required=True)
+    parser.add_argument("--pair", type=int, choices=(0, 1), default=0)
     parser.add_argument("--poll-seconds", type=float, default=10)
     parser.add_argument("--max-seconds", type=float, default=9 * 3600)
     args = parser.parse_args()

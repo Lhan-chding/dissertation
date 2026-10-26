@@ -12,7 +12,7 @@ import pytest
 
 
 @pytest.fixture
-def controller(monkeypatch, tmp_path):
+def controller(monkeypatch, tmp_path, request):
     spec = importlib.util.spec_from_file_location(
         "drain_pair", Path(__file__).parents[2] / "scripts/sr_f5/drain_pair.py"
     )
@@ -26,6 +26,7 @@ def controller(monkeypatch, tmp_path):
         code=code,
         python=Path("/python"),
         job="123",
+        pair=getattr(request, "param", 0),
         revision="frozen",
         controller_revision="controller",
         max_seconds=10,
@@ -42,12 +43,20 @@ def controller(monkeypatch, tmp_path):
     put("G3/FROZEN.json", {"code_revision": "frozen"})
     put(
         "G3/dual_jobs/123.json",
-        dict(code=str(code), code_revision="frozen", status="RUNNING", workers=[0, 1]),
+        dict(
+            code=str(code),
+            code_revision="frozen",
+            status="RUNNING",
+            pair=args.pair,
+            workers=[2 * args.pair, 2 * args.pair + 1],
+        ),
     )
-    tasks = [dict(parent="b0", arm=arm, recovery=True) for arm in ["J", "SHUF"]]
+    tasks = [dict(parent="b0", arm=arm, recovery=True) for arm in ["J", "SHUF", "LOCAL", "HARD"]]
     put("G3/POOL_PLAN.json", {"workers": [dict(tasks=[t]) for t in tasks]})
     ps = {}
     for worker, task in enumerate(tasks):
+        if worker // 2 != args.pair:
+            continue
         arm = task["arm"]
         parent = 100 + worker
         child = 200 + worker
@@ -132,17 +141,34 @@ def controller(monkeypatch, tmp_path):
     )
 
 
+@pytest.mark.parametrize("controller", [0, 1], indirect=True)
 def test_success_stops_only_coordinators_and_compares_before_cancel(controller):
     c = controller
     c.m.run(c.args)
-    assert c.signals == [(100, signal.SIGSTOP), (101, signal.SIGSTOP)]
+    workers = [2 * c.args.pair, 2 * c.args.pair + 1]
+    assert c.signals == [(100 + worker, signal.SIGSTOP) for worker in workers]
     assert len(c.commands) == 3
     assert all("--compare-recovery" in cmd for cmd in c.commands[:2])
+    expected_arms = ["J", "SHUF"] if c.args.pair == 0 else ["LOCAL", "HARD"]
+    assert [cmd[cmd.index("--arm") + 1] for cmd in c.commands[:2]] == expected_arms
     assert c.commands[-1] == ["scancel", "123"]
     assert (
         c.m.read(c.args.root / "CONTINUATION/DRAIN_123.json")["status"]
         == "BOUNDARY_COMPLETE_CANCEL_REQUESTED"
     )
+
+
+@pytest.mark.parametrize(
+    "pair,workers", [(0, [2, 3]), (1, [0, 1]), (0, [0, 2]), (0, [0, 0]), (0, [0, 1, 2])]
+)
+def test_allocation_mismatched_or_invalid_workers_never_signal(controller, pair, workers):
+    c = controller
+    allocation = c.m.read(c.args.root / "G3/dual_jobs/123.json")
+    allocation.update(pair=pair, workers=workers)
+    c.put("G3/dual_jobs/123.json", allocation)
+    with pytest.raises(PermissionError, match="explicitly selected frozen pair"):
+        c.m.run(c.args)
+    assert not c.signals and not c.commands
 
 
 def test_failed_child_resumes_and_never_cancels(controller):
