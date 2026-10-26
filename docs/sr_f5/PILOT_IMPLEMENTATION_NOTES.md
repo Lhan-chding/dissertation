@@ -72,3 +72,5 @@ python -m sr_f5.pilot --root "$RUN_ROOT" --aggregate
 原冻结 pilot.run 在已提交 step12 时验证检查点头及最终 UPDATE，发布相同 COMPLETE 后 model_calls=0 返回；尚待 228108 实际启动观察重入。剩余 pair 最长 36 步，先前速度约 8–9 小时加排队。新节点若变慢必须重新审查时限；旧 drain_pair 的目标是 worker 第一项 b0，不能直接用于保护第二项 b0-DENSE。所有已完成/失败/调度子步骤证据保留。
 
 20:13 更新：核实共享账号一张卡终态释放后，pair1 续跑 228121 已 held 核验并释放，独立回执 G3_REENTRY_PAIR1_AFTER_227051.json。pair0 228108 不变；两项排队、总预约五卡三作业，容量等待已解决，不重复提交。服务器 CURRENT 和自动跟进已更新，证据 REENTRY_PAIR1_20261026T2013.json。
+
+20:53 实际重入验证：228108 在 gpu-pro6000-12 于 20:50:52 新加坡启动，W0/W1 的 J/SHUF primary/recovery 四条返回均有 model_calls=0，比较成功后进入 b0-DENSE/b1-LOCAL，各首组已保存，尚无 UPDATE。新节点普通步耗时未知，不能直接采用 gpu-pro6000-9 的 13–15 分钟；须据实检查到 2026-10-27 00:20:52 UTC 的时限，保护 DENSE 连续主路径及独立恢复。228121 仍排队。证据 REENTRY_RUNNING_228108_20261026T2053.json。
