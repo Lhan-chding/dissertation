@@ -61,3 +61,12 @@ python -m sr_f5.pilot --root "$RUN_ROOT" --aggregate
 首批恢复边界后仅在双方比较PASS、目标GPU作业退出squeue且sacct终态时重入对应pair，不能重提完整两个池或改冻结计划。使用科学部署原pilot.sbatch和SRF5_ROOT/SRF5_CODE/SRF5_REVISION/SRF5_PAIR，名称仍LH-SRF5-G3-P0/P1。新job回执必须单独保存并核实全用户作业和GPU预约。原primary/recovery COMPLETE与原子checkpoint由冻结代码零模型调用复用；已通过RECOVERY证据保留，不能把中断连续主路径重新拼接成连续对照。第二版没有supplemental；旧版追加卡屏障不适用。
 
 按当前步速，首b0恢复后pair0最长剩36步、pair1剩36步，预计各约8–9小时计算，可进入新11h30作业；仍须以实际速度检查时限。聚合需完整15主路径及b0五臂恢复PASS，正式训练仍禁止。当前部署代码的14项服务器针对性CPU检查通过，包含Linux pidfd身份固定；不重跑科学CPU门。
+
+
+## 2026-10-26 20:08 第二版边界完成与续跑
+
+四个 b0 恢复（J/SHUF/LOCAL/HARD）均 17 项检查 true、128 组精确匹配，八份 COMPLETE 与 RECOVERY completion_digests 相符。原 GPU 227050/227051 按计划取消且退出队列，CPU 控制 227163/227164 成功终态。全 G3 完整回答 10,240/28,160，仍不是 G3 PASS。边界证据见 validation/RECIPE_V2_G3/REENTRY_BOUNDARY_20261026T2006.json。
+
+同科学 47d5e85、同 POOL_PLAN 提交 pair0 228108；held 核实后释放，当前 PENDING(Resources)。独立续跑回执 CONTINUATION/G3_REENTRY_PAIR0_AFTER_227050.json，不覆盖原 G3_SUBMISSION_DUAL_GPU.json。共享账号另外两张 teacher 卡运行，故 pair1 未提交。续跑必须每次先查对应回执与实际队列，记录 UNKNOWN 后发起提交，不能在未知结果下重试。容量满足后只提交 pair1，保持 SRF5_CODE/ROOT/REVISION 和 SRF5_PAIR=1；不重跑 G2 aggregate 或重新提交两池。
+
+原冻结 pilot.run 在已提交 step12 时验证检查点头及最终 UPDATE，发布相同 COMPLETE 后 model_calls=0 返回；尚待 228108 实际启动观察重入。剩余 pair 最长 36 步，先前速度约 8–9 小时加排队。新节点若变慢必须重新审查时限；旧 drain_pair 的目标是 worker 第一项 b0，不能直接用于保护第二项 b0-DENSE。所有已完成/失败/调度子步骤证据保留。
