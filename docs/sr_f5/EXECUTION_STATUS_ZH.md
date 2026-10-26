@@ -2,6 +2,10 @@
 
 **2026-10-26 20:08（新加坡）实查：服务器已恢复连接。第二版 G2 全部 4,608 回答 PASS；G3 已完成 6,144 主回答及 4,096 恢复回答，共 10,240/28,160（36.4%），仍差 17,920。b0 J/SHUF/LOCAL/HARD 四条恢复均精确比较 PASS；整体 G3 尚未通过。旧 GPU 作业和两个控制器均已终态。按原冻结池提交 pair0 续跑 228108，当前 PENDING(Resources)；pair1 等待五卡配额允许后再提交。**
 
+## 20:13 续跑两组已齐备
+
+共享账号一张 teacher GPU 退出队列且 sacct 终态确认，实时容量降至 3 卡、2 作业。再次核验四条恢复、旧作业终态、冻结池及 pair1 回执缺失后，仅提交 pair1 228121/LH-SRF5-G3-P1；先 held 核实双卡、Account/QoS、Command/WorkDir，再 release，独立回执 CONTINUATION/G3_REENTRY_PAIR1_AFTER_227051.json。pair0 228108 未重复提交。最新两项均 PENDING（pair0 Resources、pair1 Priority）；当前合计预约 5 GPU、3 用户作业，含未修改的其他单卡 227232，无新增回答。pair1 原“容量等待”已解决，后续只监测现有两项作业及输出，不再次提交。证据 validation/RECIPE_V2_G3/REENTRY_PAIR1_20261026T2013.json；服务器 CURRENT 与自动跟进已同步。下面20:08段落保留提交前状态。
+
 ## 20:08 恢复连接后的核验与续跑
 
 227050 于 03:39:46 UTC、227051 于 05:45:38 UTC 在恢复比较通过后计划性 CANCELLED/0:0；CPU 控制器 227163/227164 分别同刻 COMPLETED/0:0。四项均已退出 squeue。两个 GPU 作业的 batch 子步骤为 FAILED/1:0，这是计划取消后的调度退出记录，完整保留；不能把子步骤状态抹去，也不能把有证据的连续对照误标为中途失败。四条 RECOVERY.json 的 17 项检查均为 true，每条 128 组/1,024 回答与主路径对应部分精确匹配，包含模型、Adam、scheduler、各 RNG、连续主进程和 fresh-process 恢复身份。COMPLETE 摘要与比较回执中的 digest 已核对。未出现 G3/FAILURES.jsonl。
@@ -69,7 +73,8 @@ CPU控制227163保护227050的J/SHUF，227164保护227051的LOCAL/HARD；09:58�
 |227051|LH-SRF5-G3-P1|2|计划性 CANCELLED/0:0，恢复边界通过|
 |227163|LH-SRF5-V2-DRAIN-P0|0|COMPLETED/0:0|
 |227164|LH-SRF5-V2-DRAIN-P1|0|COMPLETED/0:0|
-|228108|LH-SRF5-G3-P0|2|续跑 PENDING(Resources)，pair1尚未重提|
+|228108|LH-SRF5-G3-P0|2|续跑 PENDING(Resources)|
+|228121|LH-SRF5-G3-P1|2|续跑 PENDING(Priority)，held核验后释放|
 
 G3 共 15 条独立主路径、23,040 条回答；b0 五臂增加 5,120 条恢复诊断回答。b1/b2 不声称完成独立恢复重采样。详细恢复规则、原始证据要求与门槛见 `PILOT_IMPLEMENTATION_NOTES.md`。G3 完成后从同一冻结版本汇总，按 contract/05 诊断；不得用效果排名选配方。最多一次事前登记开发配方修订，第二版仍失败则停在可实施性诊断。所有 G0–G4 真实门通过及正式冻结之前，禁止进入 45 路正式矩阵。
 

@@ -1,0 +1,1285 @@
+{
+  "boundary": {
+    "at": "2026-10-26T12:12:38.119180+00:00",
+    "science_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+    "pool_digest": "ac6f6e18b838ef4a1a61064b88494bdbcf25f2bb191ed3a062a48e2ec8bfa1e6",
+    "boundaries": {
+      "227050": {
+        "status": "BOUNDARY_COMPLETE_CANCEL_REQUESTED",
+        "job_id": "227050",
+        "pair": 0,
+        "source_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+        "controller_revision": "fdec062aa469140d3c5589c084a396392df419b7",
+        "controller": {
+          "pid": 88496,
+          "host": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg"
+        },
+        "targets": {
+          "0": {
+            "parent": "b0",
+            "arm": "J",
+            "recovery": true
+          },
+          "1": {
+            "parent": "b0",
+            "arm": "SHUF",
+            "recovery": true
+          }
+        },
+        "started_at": "2026-10-26T01:57:27.493439+00:00",
+        "signals_only_coordinators": true,
+        "scientific_children_signalled": false,
+        "events": [
+          {
+            "worker": 0,
+            "event": "COORDINATOR_PAUSE_INTENT",
+            "parent_pid": 3393752,
+            "parent_start": "213271243",
+            "child_pid": 33192,
+            "child_start": "214282141"
+          },
+          {
+            "worker": 0,
+            "event": "COORDINATOR_PAUSED",
+            "parent_pid": 3393752,
+            "child_pid": 33192
+          },
+          {
+            "worker": 1,
+            "event": "COORDINATOR_PAUSE_INTENT",
+            "parent_pid": 3393753,
+            "parent_start": "213271243",
+            "child_pid": 29223,
+            "child_start": "214277451"
+          },
+          {
+            "worker": 1,
+            "event": "COORDINATOR_PAUSED",
+            "parent_pid": 3393753,
+            "child_pid": 29223
+          },
+          {
+            "worker": 1,
+            "event": "RECOVERY_PASS_AT_BOUNDARY"
+          },
+          {
+            "worker": 0,
+            "event": "RECOVERY_PASS_AT_BOUNDARY"
+          }
+        ],
+        "completed_at": "2026-10-26T03:39:46.817157+00:00",
+        "next_action": "Verify terminal allocation; submit same frozen pair in new job; preserve all complete paths"
+      },
+      "227051": {
+        "status": "BOUNDARY_COMPLETE_CANCEL_REQUESTED",
+        "job_id": "227051",
+        "pair": 1,
+        "source_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+        "controller_revision": "fdec062aa469140d3c5589c084a396392df419b7",
+        "controller": {
+          "pid": 88498,
+          "host": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg"
+        },
+        "targets": {
+          "2": {
+            "parent": "b0",
+            "arm": "LOCAL",
+            "recovery": true
+          },
+          "3": {
+            "parent": "b0",
+            "arm": "HARD",
+            "recovery": true
+          }
+        },
+        "started_at": "2026-10-26T01:57:27.491861+00:00",
+        "signals_only_coordinators": true,
+        "scientific_children_signalled": false,
+        "events": [
+          {
+            "worker": 3,
+            "event": "COORDINATOR_PAUSE_INTENT",
+            "parent_pid": 4009279,
+            "parent_start": "214020007",
+            "child_pid": 653029,
+            "child_start": "215027332"
+          },
+          {
+            "worker": 3,
+            "event": "COORDINATOR_PAUSED",
+            "parent_pid": 4009279,
+            "child_pid": 653029
+          },
+          {
+            "worker": 2,
+            "event": "COORDINATOR_PAUSE_INTENT",
+            "parent_pid": 4009278,
+            "parent_start": "214020007",
+            "child_pid": 659092,
+            "child_start": "215034551"
+          },
+          {
+            "worker": 2,
+            "event": "COORDINATOR_PAUSED",
+            "parent_pid": 4009278,
+            "child_pid": 659092
+          },
+          {
+            "worker": 3,
+            "event": "RECOVERY_PASS_AT_BOUNDARY"
+          },
+          {
+            "worker": 2,
+            "event": "RECOVERY_PASS_AT_BOUNDARY"
+          }
+        ],
+        "completed_at": "2026-10-26T05:45:38.173856+00:00",
+        "next_action": "Verify terminal allocation; submit same frozen pair in new job; preserve all complete paths"
+      }
+    },
+    "recovery": {
+      "J": {
+        "status": "PASS",
+        "checks": {
+          "identity": true,
+          "step": true,
+          "policy": true,
+          "optimizer": true,
+          "scheduler": true,
+          "sampler_state": true,
+          "python_rng": true,
+          "numpy_rng": true,
+          "torch_rng": true,
+          "cuda_rng": true,
+          "state_keys": true,
+          "fresh_process": true,
+          "primary_continuous_from_zero": true,
+          "recovery_restored_step_four": true,
+          "terminal_step_twelve": true,
+          "numerical_credit_update_receipts": true,
+          "regenerated_groups": true
+        },
+        "parent": "b0",
+        "arm": "J",
+        "regenerated_groups": 128,
+        "actual_matching_groups": 128,
+        "criterion": "frozen exact; no tolerance widened after observing outputs",
+        "identity": {
+          "run_id": "G3-b0-J",
+          "parent": "b0",
+          "arm": "J",
+          "repeat": 0,
+          "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+          "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+          "protocol_version": "structured_v3-1.0"
+        },
+        "checkpoint_metadata": {
+          "primary": {
+            "size": 260269781,
+            "mtime_ns": 1792979175206973127,
+            "inode": 4398157390103,
+            "device": 47
+          },
+          "recovery": {
+            "size": 260271317,
+            "mtime_ns": 1792985964011658299,
+            "inode": 4398157391926,
+            "device": 47
+          }
+        },
+        "completion_digests": {
+          "primary": "3b265a0a6dfc80674340b16ef698192143faeaad25fb1850e49e1af0222d2b84",
+          "recovery": "28e04fb9d1f75ceca6cd84742dce61ee668b17ad4c4ffe2440ad2c7c8dd5775a"
+        }
+      },
+      "SHUF": {
+        "status": "PASS",
+        "checks": {
+          "identity": true,
+          "step": true,
+          "policy": true,
+          "optimizer": true,
+          "scheduler": true,
+          "sampler_state": true,
+          "python_rng": true,
+          "numpy_rng": true,
+          "torch_rng": true,
+          "cuda_rng": true,
+          "state_keys": true,
+          "fresh_process": true,
+          "primary_continuous_from_zero": true,
+          "recovery_restored_step_four": true,
+          "terminal_step_twelve": true,
+          "numerical_credit_update_receipts": true,
+          "regenerated_groups": true
+        },
+        "parent": "b0",
+        "arm": "SHUF",
+        "regenerated_groups": 128,
+        "actual_matching_groups": 128,
+        "criterion": "frozen exact; no tolerance widened after observing outputs",
+        "identity": {
+          "run_id": "G3-b0-SHUF",
+          "parent": "b0",
+          "arm": "SHUF",
+          "repeat": 0,
+          "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+          "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+          "protocol_version": "structured_v3-1.0"
+        },
+        "checkpoint_metadata": {
+          "primary": {
+            "size": 260269781,
+            "mtime_ns": 1792979128167896922,
+            "inode": 4398157390074,
+            "device": 47
+          },
+          "recovery": {
+            "size": 260271317,
+            "mtime_ns": 1792985875939534201,
+            "inode": 4398157391898,
+            "device": 47
+          }
+        },
+        "completion_digests": {
+          "primary": "f378d42f3759e180caaa0473c1c11775d675d4d306018945e84fdddefc7440ef",
+          "recovery": "7d4b79c16f6c6e34fdd3876f1798070f710224ed525aa3fb75ead42ab2978a16"
+        }
+      },
+      "LOCAL": {
+        "status": "PASS",
+        "checks": {
+          "identity": true,
+          "step": true,
+          "policy": true,
+          "optimizer": true,
+          "scheduler": true,
+          "sampler_state": true,
+          "python_rng": true,
+          "numpy_rng": true,
+          "torch_rng": true,
+          "cuda_rng": true,
+          "state_keys": true,
+          "fresh_process": true,
+          "primary_continuous_from_zero": true,
+          "recovery_restored_step_four": true,
+          "terminal_step_twelve": true,
+          "numerical_credit_update_receipts": true,
+          "regenerated_groups": true
+        },
+        "parent": "b0",
+        "arm": "LOCAL",
+        "regenerated_groups": 128,
+        "actual_matching_groups": 128,
+        "criterion": "frozen exact; no tolerance widened after observing outputs",
+        "identity": {
+          "run_id": "G3-b0-LOCAL",
+          "parent": "b0",
+          "arm": "LOCAL",
+          "repeat": 0,
+          "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+          "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+          "protocol_version": "structured_v3-1.0"
+        },
+        "checkpoint_metadata": {
+          "primary": {
+            "size": 260269781,
+            "mtime_ns": 1792986699330701325,
+            "inode": 4398157392035,
+            "device": 47
+          },
+          "recovery": {
+            "size": 260271317,
+            "mtime_ns": 1792993513166064340,
+            "inode": 4398157425463,
+            "device": 47
+          }
+        },
+        "completion_digests": {
+          "primary": "b13bc1f5a46a9e8e9a6f3297481dba409e7cf5e1e44d57aaf55e7a1dd745460d",
+          "recovery": "49f56be0249cc4163c869ed5e1bb4db8814c32f5113f3fdd1b5152b9c935502f"
+        }
+      },
+      "HARD": {
+        "status": "PASS",
+        "checks": {
+          "identity": true,
+          "step": true,
+          "policy": true,
+          "optimizer": true,
+          "scheduler": true,
+          "sampler_state": true,
+          "python_rng": true,
+          "numpy_rng": true,
+          "torch_rng": true,
+          "cuda_rng": true,
+          "state_keys": true,
+          "fresh_process": true,
+          "primary_continuous_from_zero": true,
+          "recovery_restored_step_four": true,
+          "terminal_step_twelve": true,
+          "numerical_credit_update_receipts": true,
+          "regenerated_groups": true
+        },
+        "parent": "b0",
+        "arm": "HARD",
+        "regenerated_groups": 128,
+        "actual_matching_groups": 128,
+        "criterion": "frozen exact; no tolerance widened after observing outputs",
+        "identity": {
+          "run_id": "G3-b0-HARD",
+          "parent": "b0",
+          "arm": "HARD",
+          "repeat": 0,
+          "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+          "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+          "protocol_version": "structured_v3-1.0"
+        },
+        "checkpoint_metadata": {
+          "primary": {
+            "size": 260269781,
+            "mtime_ns": 1792986627124591033,
+            "inode": 4398157392010,
+            "device": 47
+          },
+          "recovery": {
+            "size": 260271317,
+            "mtime_ns": 1792993413712882757,
+            "inode": 4398157425453,
+            "device": 47
+          }
+        },
+        "completion_digests": {
+          "primary": "94c27e37263186a92656c82b48c8c448eeca61fffec1ffb16cb241cb446819aa",
+          "recovery": "9b0d2f03c40f5eeed1187bf255943a152c7b4fef47ccdc1494ddf400ee08fcb8"
+        }
+      }
+    },
+    "completions": {
+      "J/primary": {
+        "status": "COMPLETE",
+        "identity": {
+          "run_id": "G3-b0-J",
+          "parent": "b0",
+          "arm": "J",
+          "repeat": 0,
+          "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+          "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+          "protocol_version": "structured_v3-1.0"
+        },
+        "lane": "primary",
+        "committed_step": 12,
+        "responses": 1536,
+        "scientific_gate": "NOT_YET_AGGREGATED",
+        "execution": {
+          "id": "009e6a55f11a4735ad006979eee48406",
+          "process": {
+            "host": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg",
+            "pid": 3393770,
+            "start_ticks": "213271262"
+          },
+          "restored_step": 0
+        }
+      },
+      "J/recovery": {
+        "status": "COMPLETE",
+        "identity": {
+          "run_id": "G3-b0-J",
+          "parent": "b0",
+          "arm": "J",
+          "repeat": 0,
+          "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+          "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+          "protocol_version": "structured_v3-1.0"
+        },
+        "lane": "recovery",
+        "committed_step": 12,
+        "responses": 1024,
+        "scientific_gate": "NOT_YET_AGGREGATED",
+        "execution": {
+          "id": "303c1fe1bc1342239bd26bdb7ec5d221",
+          "process": {
+            "host": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg",
+            "pid": 33192,
+            "start_ticks": "214282141"
+          },
+          "restored_step": 4
+        }
+      },
+      "SHUF/primary": {
+        "status": "COMPLETE",
+        "identity": {
+          "run_id": "G3-b0-SHUF",
+          "parent": "b0",
+          "arm": "SHUF",
+          "repeat": 0,
+          "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+          "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+          "protocol_version": "structured_v3-1.0"
+        },
+        "lane": "primary",
+        "committed_step": 12,
+        "responses": 1536,
+        "scientific_gate": "NOT_YET_AGGREGATED",
+        "execution": {
+          "id": "56e8893bb0d5444eb97b27f574ed37ea",
+          "process": {
+            "host": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg",
+            "pid": 3393771,
+            "start_ticks": "213271262"
+          },
+          "restored_step": 0
+        }
+      },
+      "SHUF/recovery": {
+        "status": "COMPLETE",
+        "identity": {
+          "run_id": "G3-b0-SHUF",
+          "parent": "b0",
+          "arm": "SHUF",
+          "repeat": 0,
+          "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+          "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+          "protocol_version": "structured_v3-1.0"
+        },
+        "lane": "recovery",
+        "committed_step": 12,
+        "responses": 1024,
+        "scientific_gate": "NOT_YET_AGGREGATED",
+        "execution": {
+          "id": "e56450e8530e4826bc6a14f4299e3cab",
+          "process": {
+            "host": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg",
+            "pid": 29223,
+            "start_ticks": "214277451"
+          },
+          "restored_step": 4
+        }
+      },
+      "LOCAL/primary": {
+        "status": "COMPLETE",
+        "identity": {
+          "run_id": "G3-b0-LOCAL",
+          "parent": "b0",
+          "arm": "LOCAL",
+          "repeat": 0,
+          "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+          "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+          "protocol_version": "structured_v3-1.0"
+        },
+        "lane": "primary",
+        "committed_step": 12,
+        "responses": 1536,
+        "scientific_gate": "NOT_YET_AGGREGATED",
+        "execution": {
+          "id": "a84d7b2067794a52acbbd53e0af32cae",
+          "process": {
+            "host": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg",
+            "pid": 4009298,
+            "start_ticks": "214020025"
+          },
+          "restored_step": 0
+        }
+      },
+      "LOCAL/recovery": {
+        "status": "COMPLETE",
+        "identity": {
+          "run_id": "G3-b0-LOCAL",
+          "parent": "b0",
+          "arm": "LOCAL",
+          "repeat": 0,
+          "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+          "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+          "protocol_version": "structured_v3-1.0"
+        },
+        "lane": "recovery",
+        "committed_step": 12,
+        "responses": 1024,
+        "scientific_gate": "NOT_YET_AGGREGATED",
+        "execution": {
+          "id": "cf49aa188cbb4e5ba39ee13bb42b8390",
+          "process": {
+            "host": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg",
+            "pid": 659092,
+            "start_ticks": "215034551"
+          },
+          "restored_step": 4
+        }
+      },
+      "HARD/primary": {
+        "status": "COMPLETE",
+        "identity": {
+          "run_id": "G3-b0-HARD",
+          "parent": "b0",
+          "arm": "HARD",
+          "repeat": 0,
+          "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+          "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+          "protocol_version": "structured_v3-1.0"
+        },
+        "lane": "primary",
+        "committed_step": 12,
+        "responses": 1536,
+        "scientific_gate": "NOT_YET_AGGREGATED",
+        "execution": {
+          "id": "417df91aea114d3cba566acf5fd3718b",
+          "process": {
+            "host": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg",
+            "pid": 4009297,
+            "start_ticks": "214020025"
+          },
+          "restored_step": 0
+        }
+      },
+      "HARD/recovery": {
+        "status": "COMPLETE",
+        "identity": {
+          "run_id": "G3-b0-HARD",
+          "parent": "b0",
+          "arm": "HARD",
+          "repeat": 0,
+          "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+          "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+          "protocol_version": "structured_v3-1.0"
+        },
+        "lane": "recovery",
+        "committed_step": 12,
+        "responses": 1024,
+        "scientific_gate": "NOT_YET_AGGREGATED",
+        "execution": {
+          "id": "1ced4a1491ba4ba5bddb756a5715c69f",
+          "process": {
+            "host": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg",
+            "pid": 653029,
+            "start_ticks": "215027332"
+          },
+          "restored_step": 4
+        }
+      }
+    },
+    "terminal": {
+      "227050": {
+        "job_id": "227050",
+        "state": "CANCELLED",
+        "exit_code": "0:0",
+        "user": "varun024",
+        "account": "rose",
+        "qos": "soujanya-poria-startfund-2026-03"
+      },
+      "227163": {
+        "job_id": "227163",
+        "state": "COMPLETED",
+        "exit_code": "0:0",
+        "user": "varun024",
+        "account": "rose",
+        "qos": "soujanya-poria-startfund-2026-03"
+      },
+      "227051": {
+        "job_id": "227051",
+        "state": "CANCELLED",
+        "exit_code": "0:0",
+        "user": "varun024",
+        "account": "rose",
+        "qos": "soujanya-poria-startfund-2026-03"
+      },
+      "227164": {
+        "job_id": "227164",
+        "state": "COMPLETED",
+        "exit_code": "0:0",
+        "user": "varun024",
+        "account": "rose",
+        "qos": "soujanya-poria-startfund-2026-03"
+      }
+    },
+    "actions": [
+      {
+        "pair": 0,
+        "status": "EXISTING_RECEIPT_NO_SUBMIT",
+        "job_id": "228108"
+      },
+      {
+        "pair": 1,
+        "status": "RELEASED_VERIFIED",
+        "job_id": "228121",
+        "receipt": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/CONTINUATION/G3_REENTRY_PAIR1_AFTER_227051.json"
+      }
+    ],
+    "departed_capacity_job": {
+      "job_id": "228050",
+      "state": "FAILED",
+      "exit_code": "1:0",
+      "user": "varun024",
+      "account": "rose",
+      "qos": "soujanya-poria-startfund-2026-03"
+    },
+    "at_finished": "2026-10-26T12:12:38.896422+00:00",
+    "queue_after": {
+      "228108": {
+        "JobId": "228108",
+        "JobName": "LH-SRF5-G3-P0",
+        "UserId": "varun024(295800338)",
+        "GroupId": "varun024(295800338)",
+        "MCS_label": "N/A",
+        "Priority": "101",
+        "Nice": "0",
+        "Account": "rose",
+        "QOS": "soujanya-poria-startfund-2026-03",
+        "JobState": "PENDING",
+        "Reason": "Resources",
+        "Dependency": "(null)",
+        "Requeue": "1",
+        "Restarts": "0",
+        "BatchFlag": "1",
+        "Reboot": "0",
+        "ExitCode": "0:0",
+        "RunTime": "00:00:00",
+        "TimeLimit": "11:30:00",
+        "TimeMin": "N/A",
+        "SubmitTime": "2026-10-26T12:06:50",
+        "EligibleTime": "2026-10-26T12:06:50",
+        "AccrueTime": "2026-10-26T12:06:50",
+        "StartTime": "2026-10-26T21:01:25",
+        "EndTime": "2026-10-27T08:31:25",
+        "Deadline": "N/A",
+        "SuspendTime": "None",
+        "SecsPreSuspend": "0",
+        "LastSchedEval": "2026-10-26T12:12:37",
+        "Scheduler": "Main",
+        "Partition": "cluster02",
+        "ReqNodeList": "(null)",
+        "ExcNodeList": "(null)",
+        "SchedNodeList": "gpu-pro6000-8",
+        "NumNodes": "1-1",
+        "NumCPUs": "8",
+        "NumTasks": "1",
+        "ReqTRES": "cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2",
+        "AllocTRES": "(null)",
+        "CoreSpec": "*",
+        "MinCPUsNode": "8",
+        "MinMemoryNode": "66G",
+        "MinTmpDiskNode": "0",
+        "Features": "(null)",
+        "DelayBoot": "00:00:00",
+        "OverSubscribe": "OK",
+        "Contiguous": "0",
+        "Licenses": "(null)",
+        "Network": "(null)",
+        "Command": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85/scripts/sr_f5/pilot.sbatch",
+        "WorkDir": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+        "StdErr": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P0-228108.log",
+        "StdIn": "/dev/null",
+        "StdOut": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P0-228108.log",
+        "TresPerNode": "gres/gpu:pro6000:2",
+        "TresPerTask": "cpu:8"
+      },
+      "228121": {
+        "JobId": "228121",
+        "JobName": "LH-SRF5-G3-P1",
+        "UserId": "varun024(295800338)",
+        "GroupId": "varun024(295800338)",
+        "MCS_label": "N/A",
+        "Priority": "101",
+        "Nice": "0",
+        "Account": "rose",
+        "QOS": "soujanya-poria-startfund-2026-03",
+        "JobState": "PENDING",
+        "Reason": "None",
+        "Dependency": "(null)",
+        "Requeue": "1",
+        "Restarts": "0",
+        "BatchFlag": "1",
+        "Reboot": "0",
+        "ExitCode": "0:0",
+        "RunTime": "00:00:00",
+        "TimeLimit": "11:30:00",
+        "TimeMin": "N/A",
+        "SubmitTime": "2026-10-26T12:12:38",
+        "EligibleTime": "Unknown",
+        "AccrueTime": "Unknown",
+        "StartTime": "Unknown",
+        "EndTime": "Unknown",
+        "Deadline": "N/A",
+        "SuspendTime": "None",
+        "SecsPreSuspend": "0",
+        "LastSchedEval": "2026-10-26T12:12:38",
+        "Scheduler": "Main",
+        "Partition": "cluster02",
+        "ReqNodeList": "(null)",
+        "ExcNodeList": "(null)",
+        "NumNodes": "1-1",
+        "NumCPUs": "8",
+        "NumTasks": "1",
+        "ReqTRES": "cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2",
+        "AllocTRES": "(null)",
+        "CoreSpec": "*",
+        "MinCPUsNode": "8",
+        "MinMemoryNode": "66G",
+        "MinTmpDiskNode": "0",
+        "Features": "(null)",
+        "DelayBoot": "00:00:00",
+        "OverSubscribe": "OK",
+        "Contiguous": "0",
+        "Licenses": "(null)",
+        "Network": "(null)",
+        "Command": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85/scripts/sr_f5/pilot.sbatch",
+        "WorkDir": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+        "StdErr": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P1-228121.log",
+        "StdIn": "/dev/null",
+        "StdOut": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P1-228121.log",
+        "TresPerNode": "gres/gpu:pro6000:2",
+        "TresPerTask": "cpu:8"
+      },
+      "227232": {
+        "JobId": "227232",
+        "JobName": "cafeTEMPORAL2-SM",
+        "UserId": "varun024(295800338)",
+        "GroupId": "varun024(295800338)",
+        "MCS_label": "N/A",
+        "Priority": "101",
+        "Nice": "0",
+        "Account": "rose",
+        "QOS": "soujanya-poria-startfund-2026-03",
+        "JobState": "RUNNING",
+        "Reason": "None",
+        "Dependency": "(null)",
+        "Requeue": "1",
+        "Restarts": "0",
+        "BatchFlag": "1",
+        "Reboot": "0",
+        "ExitCode": "0:0",
+        "RunTime": "09:46:12",
+        "TimeLimit": "11:30:00",
+        "TimeMin": "N/A",
+        "SubmitTime": "2026-10-26T02:26:24",
+        "EligibleTime": "2026-10-26T02:26:24",
+        "AccrueTime": "2026-10-26T02:26:24",
+        "StartTime": "2026-10-26T02:26:26",
+        "EndTime": "2026-10-26T13:56:26",
+        "Deadline": "N/A",
+        "PreemptEligibleTime": "2026-10-26T02:26:26",
+        "PreemptTime": "None",
+        "SuspendTime": "None",
+        "SecsPreSuspend": "0",
+        "LastSchedEval": "2026-10-26T02:26:26",
+        "Scheduler": "Main",
+        "Partition": "cluster02",
+        "ReqNodeList": "(null)",
+        "ExcNodeList": "(null)",
+        "NodeList": "gpu-pro6000-9",
+        "BatchHost": "gpu-pro6000-9",
+        "NumNodes": "1",
+        "NumCPUs": "4",
+        "NumTasks": "1",
+        "ReqTRES": "cpu=4,mem=33G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1",
+        "AllocTRES": "cpu=4,mem=33G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1",
+        "CoreSpec": "*",
+        "MinCPUsNode": "4",
+        "MinMemoryNode": "33G",
+        "MinTmpDiskNode": "0",
+        "Features": "(null)",
+        "DelayBoot": "00:00:00",
+        "OverSubscribe": "OK",
+        "Contiguous": "0",
+        "Licenses": "(null)",
+        "Network": "(null)",
+        "Command": "/projects/_hdd/varunhdd/hgrel_hdd/next_v1/cafeTEMPORAL2.sbatch",
+        "WorkDir": "/projects/_hdd/varunhdd/hgrel_hdd/next_v1",
+        "StdErr": "/projects/_hdd/varunhdd/hgrel_hdd/result/slurm-cafeTEMPORAL2-227232.log",
+        "StdIn": "/dev/null",
+        "StdOut": "/projects/_hdd/varunhdd/hgrel_hdd/result/slurm-cafeTEMPORAL2-227232.log",
+        "TresPerNode": "gres/gpu:pro6000:1",
+        "TresPerTask": "cpu:8"
+      }
+    },
+    "primary_complete_answers": 6144,
+    "recovery_complete_answers": 4096
+  },
+  "verification": {
+    "at": "2026-10-26T12:13:25.262615+00:00",
+    "recipe_v2": {
+      "root": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026",
+      "source_code": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+      "source_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+      "cpu_job": "226894",
+      "cpu_submission": "CONTINUATION/RECIPE_V2_CPU_SUBMISSION.json",
+      "decision": "CONTINUATION/RECIPE_V2_DECISION.json",
+      "registration": "CONTINUATION/RECIPE_V2.json",
+      "resume_v1": false,
+      "cpu_state": "COMPLETED",
+      "cpu_exit_code": "0:0",
+      "cpu_gate": "PASS",
+      "cpu_tests_passed": 332,
+      "cpu_tests_skipped": 12,
+      "cpu_subtests_passed": 9,
+      "g2_pair0_job": "226900",
+      "g2_pair0_receipt": "G2_SUBMISSION_PAIR0.json",
+      "g2_pair1_status": "COMPLETED",
+      "advance_operations": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_operations_23b6760",
+      "advance_operations_revision": "23b67600423ad23c49d3f049075fd1618d74b376",
+      "advance_receipt": "CONTINUATION/RECIPE_V2_ADVANCE.json",
+      "aggregation_receipt": "CONTINUATION/RECIPE_V2_G2_AGGREGATION.json",
+      "advance_controller_job": "226919",
+      "g2_pair1_job": "226918",
+      "g2_pair1_receipt": "G2_SUBMISSION_PAIR1.json",
+      "advance_submission": "CONTINUATION/RECIPE_V2_DECISION_SUBMISSION.json",
+      "g2_pair0_state": "COMPLETED",
+      "g2_pair0_start": "2026-10-25T20:36:10",
+      "g2_pair0_node": "gpu-pro6000-9",
+      "advance_controller_state": "COMPLETED",
+      "g2_gate": "PASS",
+      "g2_actual_answers": 4608,
+      "g3_jobs": [
+        "228108",
+        "228121"
+      ],
+      "g3_submission": "G3_SUBMISSION_DUAL_GPU.json",
+      "g3_status": "BOTH_REENTRY_JOBS_RELEASED",
+      "g3_snapshot_at": "2026-10-26T12:13:25.262615+00:00",
+      "g3_primary_answers_observed": 6144,
+      "g3_recovery_answers_observed": 4096,
+      "g3_expected_answers_including_recovery": 28160,
+      "g3_drain_operations": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_operations_fdec062",
+      "g3_drain_revision": "fdec062aa469140d3c5589c084a396392df419b7",
+      "g3_drains": [
+        {
+          "pair": 0,
+          "target_job": "227050",
+          "controller_job": "227163",
+          "receipt": "CONTINUATION/DRAIN_227050.json",
+          "submission": "CONTINUATION/DRAIN_CPU_SUBMISSION_227050.json",
+          "state": "BOUNDARY_COMPLETE_CANCEL_REQUESTED",
+          "controller_state": "COMPLETED",
+          "controller_exit_code": "0:0",
+          "target_state": "CANCELLED",
+          "target_exit_code": "0:0"
+        },
+        {
+          "pair": 1,
+          "target_job": "227051",
+          "controller_job": "227164",
+          "receipt": "CONTINUATION/DRAIN_227051.json",
+          "submission": "CONTINUATION/DRAIN_CPU_SUBMISSION_227051.json",
+          "state": "BOUNDARY_COMPLETE_CANCEL_REQUESTED",
+          "controller_state": "COMPLETED",
+          "controller_exit_code": "0:0",
+          "target_state": "CANCELLED",
+          "target_exit_code": "0:0"
+        }
+      ],
+      "g3_continuation_rule": "For each pair require boundary receipt both recoveries PASS, target absent from squeue and terminal sacct before same frozen pair reentry; do not rerun G2 aggregate; no v2 supplemental job exists",
+      "g3_original_jobs": [
+        "227050",
+        "227051"
+      ],
+      "g3_original_jobs_terminal": {
+        "227050": {
+          "job_id": "227050",
+          "state": "CANCELLED",
+          "exit_code": "0:0",
+          "user": "varun024",
+          "account": "rose",
+          "qos": "soujanya-poria-startfund-2026-03"
+        },
+        "227163": {
+          "job_id": "227163",
+          "state": "COMPLETED",
+          "exit_code": "0:0",
+          "user": "varun024",
+          "account": "rose",
+          "qos": "soujanya-poria-startfund-2026-03"
+        },
+        "227051": {
+          "job_id": "227051",
+          "state": "CANCELLED",
+          "exit_code": "0:0",
+          "user": "varun024",
+          "account": "rose",
+          "qos": "soujanya-poria-startfund-2026-03"
+        },
+        "227164": {
+          "job_id": "227164",
+          "state": "COMPLETED",
+          "exit_code": "0:0",
+          "user": "varun024",
+          "account": "rose",
+          "qos": "soujanya-poria-startfund-2026-03"
+        }
+      },
+      "g3_reentry_jobs": {
+        "0": "228108",
+        "1": "228121"
+      },
+      "g3_reentry_receipts": {
+        "0": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/CONTINUATION/G3_REENTRY_PAIR0_AFTER_227050.json",
+        "1": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/CONTINUATION/G3_REENTRY_PAIR1_AFTER_227051.json"
+      },
+      "g3_pair1_status": "RELEASED_VERIFIED",
+      "g3_boundary_status": "BOTH_PAIRS_FOUR_RECOVERIES_PASS_OLD_ALLOCATIONS_TERMINAL",
+      "g3_boundary_evidence": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/CONTINUATION/REENTRY_BOUNDARY_20261026.json",
+      "g3_complete_responses": {
+        "primary": 6144,
+        "recovery": 4096,
+        "total": 10240,
+        "target": 28160,
+        "remaining": 17920
+      },
+      "g3_next_action": "Both frozen pairs already submitted: 228108 and 228121. Inspect current queue, worker receipts, GPU telemetry and progress. Never duplicate active/unknown jobs or G2 aggregation. Protect b0 DENSE continuous primary/recovery; aggregate G3 only after all registered outputs and recoveries complete.",
+      "last_verified_at": "2026-10-26T12:13:25.262615+00:00",
+      "g3_pair0_queue_snapshot": "228108|PENDING|(Resources)",
+      "g3_reentry_queue_snapshot": "228121|PENDING|(Priority)\n228108|PENDING|(Resources)",
+      "g3_pair1_boundary_evidence": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/CONTINUATION/REENTRY_PAIR1_BOUNDARY_20261026.json"
+    },
+    "pair1_submission": {
+      "status": "RELEASED_VERIFIED",
+      "at": "2026-10-26T12:12:38.853191+00:00",
+      "pair": 1,
+      "previous_job": "227051",
+      "source_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+      "code": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+      "root": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026",
+      "pool_plan_digest": "ac6f6e18b838ef4a1a61064b88494bdbcf25f2bb191ed3a062a48e2ec8bfa1e6",
+      "before_queue": {
+        "228108": {
+          "JobId": "228108",
+          "JobName": "LH-SRF5-G3-P0",
+          "UserId": "varun024(295800338)",
+          "GroupId": "varun024(295800338)",
+          "MCS_label": "N/A",
+          "Priority": "101",
+          "Nice": "0",
+          "Account": "rose",
+          "QOS": "soujanya-poria-startfund-2026-03",
+          "JobState": "PENDING",
+          "Reason": "Resources",
+          "Dependency": "(null)",
+          "Requeue": "1",
+          "Restarts": "0",
+          "BatchFlag": "1",
+          "Reboot": "0",
+          "ExitCode": "0:0",
+          "RunTime": "00:00:00",
+          "TimeLimit": "11:30:00",
+          "TimeMin": "N/A",
+          "SubmitTime": "2026-10-26T12:06:50",
+          "EligibleTime": "2026-10-26T12:06:50",
+          "AccrueTime": "2026-10-26T12:06:50",
+          "StartTime": "2026-10-26T21:01:25",
+          "EndTime": "2026-10-27T08:31:25",
+          "Deadline": "N/A",
+          "SuspendTime": "None",
+          "SecsPreSuspend": "0",
+          "LastSchedEval": "2026-10-26T12:12:37",
+          "Scheduler": "Main",
+          "Partition": "cluster02",
+          "ReqNodeList": "(null)",
+          "ExcNodeList": "(null)",
+          "SchedNodeList": "gpu-pro6000-8",
+          "NumNodes": "1-1",
+          "NumCPUs": "8",
+          "NumTasks": "1",
+          "ReqTRES": "cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2",
+          "AllocTRES": "(null)",
+          "CoreSpec": "*",
+          "MinCPUsNode": "8",
+          "MinMemoryNode": "66G",
+          "MinTmpDiskNode": "0",
+          "Features": "(null)",
+          "DelayBoot": "00:00:00",
+          "OverSubscribe": "OK",
+          "Contiguous": "0",
+          "Licenses": "(null)",
+          "Network": "(null)",
+          "Command": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85/scripts/sr_f5/pilot.sbatch",
+          "WorkDir": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+          "StdErr": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P0-228108.log",
+          "StdIn": "/dev/null",
+          "StdOut": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P0-228108.log",
+          "TresPerNode": "gres/gpu:pro6000:2",
+          "TresPerTask": "cpu:8"
+        },
+        "227232": {
+          "JobId": "227232",
+          "JobName": "cafeTEMPORAL2-SM",
+          "UserId": "varun024(295800338)",
+          "GroupId": "varun024(295800338)",
+          "MCS_label": "N/A",
+          "Priority": "101",
+          "Nice": "0",
+          "Account": "rose",
+          "QOS": "soujanya-poria-startfund-2026-03",
+          "JobState": "RUNNING",
+          "Reason": "None",
+          "Dependency": "(null)",
+          "Requeue": "1",
+          "Restarts": "0",
+          "BatchFlag": "1",
+          "Reboot": "0",
+          "ExitCode": "0:0",
+          "RunTime": "09:46:12",
+          "TimeLimit": "11:30:00",
+          "TimeMin": "N/A",
+          "SubmitTime": "2026-10-26T02:26:24",
+          "EligibleTime": "2026-10-26T02:26:24",
+          "AccrueTime": "2026-10-26T02:26:24",
+          "StartTime": "2026-10-26T02:26:26",
+          "EndTime": "2026-10-26T13:56:26",
+          "Deadline": "N/A",
+          "PreemptEligibleTime": "2026-10-26T02:26:26",
+          "PreemptTime": "None",
+          "SuspendTime": "None",
+          "SecsPreSuspend": "0",
+          "LastSchedEval": "2026-10-26T02:26:26",
+          "Scheduler": "Main",
+          "Partition": "cluster02",
+          "ReqNodeList": "(null)",
+          "ExcNodeList": "(null)",
+          "NodeList": "gpu-pro6000-9",
+          "BatchHost": "gpu-pro6000-9",
+          "NumNodes": "1",
+          "NumCPUs": "4",
+          "NumTasks": "1",
+          "ReqTRES": "cpu=4,mem=33G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1",
+          "AllocTRES": "cpu=4,mem=33G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1",
+          "CoreSpec": "*",
+          "MinCPUsNode": "4",
+          "MinMemoryNode": "33G",
+          "MinTmpDiskNode": "0",
+          "Features": "(null)",
+          "DelayBoot": "00:00:00",
+          "OverSubscribe": "OK",
+          "Contiguous": "0",
+          "Licenses": "(null)",
+          "Network": "(null)",
+          "Command": "/projects/_hdd/varunhdd/hgrel_hdd/next_v1/cafeTEMPORAL2.sbatch",
+          "WorkDir": "/projects/_hdd/varunhdd/hgrel_hdd/next_v1",
+          "StdErr": "/projects/_hdd/varunhdd/hgrel_hdd/result/slurm-cafeTEMPORAL2-227232.log",
+          "StdIn": "/dev/null",
+          "StdOut": "/projects/_hdd/varunhdd/hgrel_hdd/result/slurm-cafeTEMPORAL2-227232.log",
+          "TresPerNode": "gres/gpu:pro6000:1",
+          "TresPerTask": "cpu:8"
+        }
+      },
+      "terminal": {
+        "227050": {
+          "job_id": "227050",
+          "state": "CANCELLED",
+          "exit_code": "0:0",
+          "user": "varun024",
+          "account": "rose",
+          "qos": "soujanya-poria-startfund-2026-03"
+        },
+        "227163": {
+          "job_id": "227163",
+          "state": "COMPLETED",
+          "exit_code": "0:0",
+          "user": "varun024",
+          "account": "rose",
+          "qos": "soujanya-poria-startfund-2026-03"
+        },
+        "227051": {
+          "job_id": "227051",
+          "state": "CANCELLED",
+          "exit_code": "0:0",
+          "user": "varun024",
+          "account": "rose",
+          "qos": "soujanya-poria-startfund-2026-03"
+        },
+        "227164": {
+          "job_id": "227164",
+          "state": "COMPLETED",
+          "exit_code": "0:0",
+          "user": "varun024",
+          "account": "rose",
+          "qos": "soujanya-poria-startfund-2026-03"
+        }
+      },
+      "boundary": {
+        "status": "BOUNDARY_COMPLETE_CANCEL_REQUESTED",
+        "job_id": "227051",
+        "pair": 1,
+        "source_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+        "controller_revision": "fdec062aa469140d3c5589c084a396392df419b7",
+        "controller": {
+          "pid": 88498,
+          "host": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg"
+        },
+        "targets": {
+          "2": {
+            "parent": "b0",
+            "arm": "LOCAL",
+            "recovery": true
+          },
+          "3": {
+            "parent": "b0",
+            "arm": "HARD",
+            "recovery": true
+          }
+        },
+        "started_at": "2026-10-26T01:57:27.491861+00:00",
+        "signals_only_coordinators": true,
+        "scientific_children_signalled": false,
+        "events": [
+          {
+            "worker": 3,
+            "event": "COORDINATOR_PAUSE_INTENT",
+            "parent_pid": 4009279,
+            "parent_start": "214020007",
+            "child_pid": 653029,
+            "child_start": "215027332"
+          },
+          {
+            "worker": 3,
+            "event": "COORDINATOR_PAUSED",
+            "parent_pid": 4009279,
+            "child_pid": 653029
+          },
+          {
+            "worker": 2,
+            "event": "COORDINATOR_PAUSE_INTENT",
+            "parent_pid": 4009278,
+            "parent_start": "214020007",
+            "child_pid": 659092,
+            "child_start": "215034551"
+          },
+          {
+            "worker": 2,
+            "event": "COORDINATOR_PAUSED",
+            "parent_pid": 4009278,
+            "child_pid": 659092
+          },
+          {
+            "worker": 3,
+            "event": "RECOVERY_PASS_AT_BOUNDARY"
+          },
+          {
+            "worker": 2,
+            "event": "RECOVERY_PASS_AT_BOUNDARY"
+          }
+        ],
+        "completed_at": "2026-10-26T05:45:38.173856+00:00",
+        "next_action": "Verify terminal allocation; submit same frozen pair in new job; preserve all complete paths"
+      },
+      "stdout": "228121\n",
+      "stderr": "sbatch: slurm_job_submit: enforced 8 CPUs for 1 task and 67584 MiB mem/node for 2 GPU(s) (model=pro6000)\nsbatch: slurm_job_submit: you requested 8 CPUs/node and 131072 MiB mem/node\n",
+      "returncode": 0,
+      "job_id": "228121",
+      "verified_held": {
+        "JobId": "228121",
+        "JobName": "LH-SRF5-G3-P1",
+        "UserId": "varun024(295800338)",
+        "GroupId": "varun024(295800338)",
+        "MCS_label": "N/A",
+        "Priority": "0",
+        "Nice": "0",
+        "Account": "rose",
+        "QOS": "soujanya-poria-startfund-2026-03",
+        "JobState": "PENDING",
+        "Reason": "JobHeldUser",
+        "Dependency": "(null)",
+        "Requeue": "1",
+        "Restarts": "0",
+        "BatchFlag": "1",
+        "Reboot": "0",
+        "ExitCode": "0:0",
+        "RunTime": "00:00:00",
+        "TimeLimit": "11:30:00",
+        "TimeMin": "N/A",
+        "SubmitTime": "2026-10-26T12:12:38",
+        "EligibleTime": "Unknown",
+        "AccrueTime": "Unknown",
+        "StartTime": "Unknown",
+        "EndTime": "Unknown",
+        "Deadline": "N/A",
+        "SuspendTime": "None",
+        "SecsPreSuspend": "0",
+        "LastSchedEval": "2026-10-26T12:12:38",
+        "Scheduler": "Main",
+        "Partition": "cluster02",
+        "ReqNodeList": "(null)",
+        "ExcNodeList": "(null)",
+        "NumNodes": "1-1",
+        "NumCPUs": "8",
+        "NumTasks": "1",
+        "ReqTRES": "cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2",
+        "AllocTRES": "(null)",
+        "CoreSpec": "*",
+        "MinCPUsNode": "8",
+        "MinMemoryNode": "66G",
+        "MinTmpDiskNode": "0",
+        "Features": "(null)",
+        "DelayBoot": "00:00:00",
+        "OverSubscribe": "OK",
+        "Contiguous": "0",
+        "Licenses": "(null)",
+        "Network": "(null)",
+        "Command": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85/scripts/sr_f5/pilot.sbatch",
+        "WorkDir": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+        "StdErr": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P1-228121.log",
+        "StdIn": "/dev/null",
+        "StdOut": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P1-228121.log",
+        "TresPerNode": "gres/gpu:pro6000:2",
+        "TresPerTask": "cpu:8"
+      },
+      "released_at": "2026-10-26T12:12:38.886760+00:00",
+      "after_release": {
+        "JobId": "228121",
+        "JobName": "LH-SRF5-G3-P1",
+        "UserId": "varun024(295800338)",
+        "GroupId": "varun024(295800338)",
+        "MCS_label": "N/A",
+        "Priority": "101",
+        "Nice": "0",
+        "Account": "rose",
+        "QOS": "soujanya-poria-startfund-2026-03",
+        "JobState": "PENDING",
+        "Reason": "None",
+        "Dependency": "(null)",
+        "Requeue": "1",
+        "Restarts": "0",
+        "BatchFlag": "1",
+        "Reboot": "0",
+        "ExitCode": "0:0",
+        "RunTime": "00:00:00",
+        "TimeLimit": "11:30:00",
+        "TimeMin": "N/A",
+        "SubmitTime": "2026-10-26T12:12:38",
+        "EligibleTime": "Unknown",
+        "AccrueTime": "Unknown",
+        "StartTime": "Unknown",
+        "EndTime": "Unknown",
+        "Deadline": "N/A",
+        "SuspendTime": "None",
+        "SecsPreSuspend": "0",
+        "LastSchedEval": "2026-10-26T12:12:38",
+        "Scheduler": "Main",
+        "Partition": "cluster02",
+        "ReqNodeList": "(null)",
+        "ExcNodeList": "(null)",
+        "NumNodes": "1-1",
+        "NumCPUs": "8",
+        "NumTasks": "1",
+        "ReqTRES": "cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2",
+        "AllocTRES": "(null)",
+        "CoreSpec": "*",
+        "MinCPUsNode": "8",
+        "MinMemoryNode": "66G",
+        "MinTmpDiskNode": "0",
+        "Features": "(null)",
+        "DelayBoot": "00:00:00",
+        "OverSubscribe": "OK",
+        "Contiguous": "0",
+        "Licenses": "(null)",
+        "Network": "(null)",
+        "Command": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85/scripts/sr_f5/pilot.sbatch",
+        "WorkDir": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+        "StdErr": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P1-228121.log",
+        "StdIn": "/dev/null",
+        "StdOut": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P1-228121.log",
+        "TresPerNode": "gres/gpu:pro6000:2",
+        "TresPerTask": "cpu:8"
+      }
+    },
+    "queue": "             JOBID                             NAME        STATE                                 QOS             TRES_PER_NODE          NODELIST(REASON)\n            228121                    LH-SRF5-G3-P1      PENDING    soujanya-poria-startfund-2026-03        gres/gpu:pro6000:2                (Priority)\n            228108                    LH-SRF5-G3-P0      PENDING    soujanya-poria-startfund-2026-03        gres/gpu:pro6000:2               (Resources)\n            227232                 cafeTEMPORAL2-SM      RUNNING    soujanya-poria-startfund-2026-03        gres/gpu:pro6000:1             gpu-pro6000-9\n",
+    "logs": {}
+  }
+}

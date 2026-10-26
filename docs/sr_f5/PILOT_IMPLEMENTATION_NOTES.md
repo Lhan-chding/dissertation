@@ -70,3 +70,5 @@ python -m sr_f5.pilot --root "$RUN_ROOT" --aggregate
 同科学 47d5e85、同 POOL_PLAN 提交 pair0 228108；held 核实后释放，当前 PENDING(Resources)。独立续跑回执 CONTINUATION/G3_REENTRY_PAIR0_AFTER_227050.json，不覆盖原 G3_SUBMISSION_DUAL_GPU.json。共享账号另外两张 teacher 卡运行，故 pair1 未提交。续跑必须每次先查对应回执与实际队列，记录 UNKNOWN 后发起提交，不能在未知结果下重试。容量满足后只提交 pair1，保持 SRF5_CODE/ROOT/REVISION 和 SRF5_PAIR=1；不重跑 G2 aggregate 或重新提交两池。
 
 原冻结 pilot.run 在已提交 step12 时验证检查点头及最终 UPDATE，发布相同 COMPLETE 后 model_calls=0 返回；尚待 228108 实际启动观察重入。剩余 pair 最长 36 步，先前速度约 8–9 小时加排队。新节点若变慢必须重新审查时限；旧 drain_pair 的目标是 worker 第一项 b0，不能直接用于保护第二项 b0-DENSE。所有已完成/失败/调度子步骤证据保留。
+
+20:13 更新：核实共享账号一张卡终态释放后，pair1 续跑 228121 已 held 核验并释放，独立回执 G3_REENTRY_PAIR1_AFTER_227051.json。pair0 228108 不变；两项排队、总预约五卡三作业，容量等待已解决，不重复提交。服务器 CURRENT 和自动跟进已更新，证据 REENTRY_PAIR1_20261026T2013.json。
