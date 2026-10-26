@@ -53,3 +53,11 @@ python -m sr_f5.pilot --root "$RUN_ROOT" --aggregate
 桥接验证：19 项小型操作层回归通过（0.16 秒），包含缺失/未知/错误 pair、活动/未知/失败作业、第二版门失败、部分聚合保留、已提交去重及冻结后的容量重试不改 gate 字节。Ruff 和 CPU 启动脚本语法检查通过；未重新运行既有 332 项服务器检查，没有模型调用。
 
 04:04 实际接续：旧 J/SHUF 恢复精确 PASS 后 226282 已计划性终止且退出队列，226455 COMPLETED。第二版 pair0/pair1 为 226900/226918，依赖 CPU 决策为 226919；完整原始提交回执在新根两个 G2_SUBMISSION_PAIR*.json 和 CONTINUATION/RECIPE_V2_DECISION_SUBMISSION.json。当前控制器存在，禁止与其抢跑聚合或另交控制器。
+
+## 第二版G3实际运行与双pair恢复边界（2026-10-26 09:58）
+
+真实第二版G2已全量PASS，226919完成一次汇总并冻结提交227050/227051。不得重新聚合G2。科学仍47d5e85，边界运维独立fdec062；新增显式`--pair`，验证allocation.pair与[0,1]/[2,3]完全匹配，仍要求每worker第一条b0恢复，不适用于任意后续臂。两个CPU控制器227163/227164分别保护pair0的J/SHUF和pair1的LOCAL/HARD；回执为新根CONTINUATION/DRAIN_<target>.json及DRAIN_CPU_SUBMISSION_<target>.json。控制器max_seconds=20000、CPU作业6小时，均已实际运行。
+
+首批恢复边界后仅在双方比较PASS、目标GPU作业退出squeue且sacct终态时重入对应pair，不能重提完整两个池或改冻结计划。使用科学部署原pilot.sbatch和SRF5_ROOT/SRF5_CODE/SRF5_REVISION/SRF5_PAIR，名称仍LH-SRF5-G3-P0/P1。新job回执必须单独保存并核实全用户作业和GPU预约。原primary/recovery COMPLETE与原子checkpoint由冻结代码零模型调用复用；已通过RECOVERY证据保留，不能把中断连续主路径重新拼接成连续对照。第二版没有supplemental；旧版追加卡屏障不适用。
+
+按当前步速，首b0恢复后pair0最长剩36步、pair1剩36步，预计各约8–9小时计算，可进入新11h30作业；仍须以实际速度检查时限。聚合需完整15主路径及b0五臂恢复PASS，正式训练仍禁止。当前部署代码的14项服务器针对性CPU检查通过，包含Linux pidfd身份固定；不重跑科学CPU门。

@@ -1,0 +1,1443 @@
+{
+  "at": "2026-10-26T01:55:05.796440+00:00",
+  "root": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026",
+  "receipts": {
+    "GATES/G2.json": {
+      "status": "PASS",
+      "errors": [],
+      "scope": "mechanical G2 criteria; independently verify raw evidence",
+      "at": "2026-10-25T22:57:45.546257+00:00",
+      "evidence": "G2/METRICS.json",
+      "raw_evidence": "G2/groups",
+      "actual_response_count": 4608
+    },
+    "G2/METRICS.json": {
+      "actual_response_count": 4608,
+      "unique_reviewed_responses": 360,
+      "unresolved_systematic_measurement_errors": 0,
+      "blocks": {
+        "b0": {
+          "groups": 192,
+          "responses": 1536,
+          "known_fraction": 0.98828125,
+          "minimum_family_known_fraction": 0.96875,
+          "family_known_fraction": {
+            "BINDING": 0.99609375,
+            "IMPACT": 0.99609375,
+            "TIES": 0.98046875,
+            "SIGNED": 0.9921875,
+            "INTERVAL": 0.96875,
+            "K_DIRECTION": 0.99609375
+          },
+          "mask_success_given_known": 0.9986824769433466,
+          "nonzero_groups": 36,
+          "swappable_groups": 25,
+          "changed_groups": 17,
+          "families_with_signal": 5,
+          "roots_with_signal": 19,
+          "truncation_fraction": 0.0013020833333333333,
+          "exact_parseable_responses": 1521,
+          "unique_reviewed_by_family": {
+            "BINDING": 20,
+            "IMPACT": 20,
+            "TIES": 20,
+            "SIGNED": 20,
+            "INTERVAL": 20,
+            "K_DIRECTION": 20
+          },
+          "all_J_zero_groups": 2,
+          "all_J_one_groups": 54,
+          "mixed_J_groups": 136,
+          "state_counts": {
+            "A1_J1_SPASS": 1114,
+            "A1_J0_SPASS": 245,
+            "A1_J0_SUNKNOWN": 3,
+            "A0_J0_SPASS": 60,
+            "A0_J0_SFAIL": 99,
+            "A0_J0_SUNKNOWN": 15
+          },
+          "P_known_fraction": 0.98046875
+        },
+        "b1": {
+          "groups": 192,
+          "responses": 1536,
+          "known_fraction": 0.9680989583333334,
+          "minimum_family_known_fraction": 0.92578125,
+          "family_known_fraction": {
+            "BINDING": 0.984375,
+            "IMPACT": 0.99609375,
+            "TIES": 0.97265625,
+            "SIGNED": 0.94140625,
+            "INTERVAL": 0.92578125,
+            "K_DIRECTION": 0.98828125
+          },
+          "mask_success_given_known": 0.9993275050437121,
+          "nonzero_groups": 49,
+          "swappable_groups": 30,
+          "changed_groups": 23,
+          "families_with_signal": 6,
+          "roots_with_signal": 26,
+          "truncation_fraction": 0.0013020833333333333,
+          "exact_parseable_responses": 1491,
+          "unique_reviewed_by_family": {
+            "BINDING": 20,
+            "IMPACT": 20,
+            "TIES": 20,
+            "SIGNED": 20,
+            "INTERVAL": 20,
+            "K_DIRECTION": 20
+          },
+          "all_J_zero_groups": 25,
+          "all_J_one_groups": 30,
+          "mixed_J_groups": 137,
+          "state_counts": {
+            "A1_J1_SPASS": 829,
+            "A0_J0_SUNKNOWN": 42,
+            "A0_J0_SPASS": 159,
+            "A1_J0_SPASS": 357,
+            "A1_J0_SUNKNOWN": 7,
+            "A0_J0_SFAIL": 139,
+            "A1_J0_SFAIL": 3
+          },
+          "P_known_fraction": 0.8723958333333334
+        },
+        "b2": {
+          "groups": 192,
+          "responses": 1536,
+          "known_fraction": 0.978515625,
+          "minimum_family_known_fraction": 0.93359375,
+          "family_known_fraction": {
+            "BINDING": 1.0,
+            "IMPACT": 0.98828125,
+            "TIES": 0.98828125,
+            "SIGNED": 0.93359375,
+            "INTERVAL": 0.9765625,
+            "K_DIRECTION": 0.984375
+          },
+          "mask_success_given_known": 0.9973386560212908,
+          "nonzero_groups": 48,
+          "swappable_groups": 32,
+          "changed_groups": 24,
+          "families_with_signal": 6,
+          "roots_with_signal": 24,
+          "truncation_fraction": 0.0006510416666666666,
+          "exact_parseable_responses": 1510,
+          "unique_reviewed_by_family": {
+            "BINDING": 20,
+            "IMPACT": 20,
+            "TIES": 20,
+            "SIGNED": 20,
+            "INTERVAL": 20,
+            "K_DIRECTION": 20
+          },
+          "all_J_zero_groups": 6,
+          "all_J_one_groups": 32,
+          "mixed_J_groups": 154,
+          "state_counts": {
+            "A1_J1_SPASS": 1018,
+            "A1_J0_SPASS": 205,
+            "A0_J0_SPASS": 183,
+            "A0_J0_SFAIL": 94,
+            "A1_J1_SFAIL": 2,
+            "A0_J0_SUNKNOWN": 20,
+            "A1_J0_SUNKNOWN": 13,
+            "A1_J0_SFAIL": 1
+          },
+          "P_known_fraction": 0.9303385416666666
+        }
+      },
+      "missing_groups": [],
+      "failures": [],
+      "protocol_version": "structured_v3-1.0",
+      "scope": "G2 feasibility; no performance selection or formal model outputs",
+      "gate": {
+        "status": "PASS",
+        "errors": [],
+        "scope": "mechanical G2 criteria; independently verify raw evidence"
+      }
+    },
+    "CONTINUATION/RECIPE_V2_ADVANCE.json": {
+      "at": "2026-10-25T22:57:45.890482+00:00",
+      "status": "G3_SUBMITTED_AFTER_REAL_G2_PASS",
+      "source_code": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+      "science_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+      "registration_digest": "58f7f4b47fd06143932da6f2157ffca15a9ba5a93c2a9a19b76c4e8cf86a3026",
+      "config_digest": "d14481203b6d9e430cc879f77f34bc478f034cecab1a511dd4c4a59f42f7660b",
+      "cpu_tests_digest": "63925d3f6ac171d4a1ba4daf34581fc06123145d638308339d2164df2913618d",
+      "cpu_tests_reused": "CPU_TESTS.json; no rerun",
+      "operations_script": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_operations_23b6760/scripts/sr_f5/advance_recipe_v2.py",
+      "operations_script_sha256": "8a6140dee9e5144dbd6bbdaa344c99bdc9f8a1969c98a74640ce293a1ffa1be9",
+      "submission": {
+        "at": "2026-10-25T22:57:45.801665+00:00",
+        "status": "TWO_DUAL_GPU_JOBS_FOUR_WORKERS_SUBMITTED_AND_VERIFIED",
+        "source_code": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+        "code_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+        "pool_plan_digest": "ac6f6e18b838ef4a1a61064b88494bdbcf25f2bb191ed3a062a48e2ec8bfa1e6",
+        "all_qos_job_limit": 5,
+        "effective_total_gpu_limit": 5,
+        "registered_workers": 4,
+        "registered_jobs": 2,
+        "gpus_per_job": 2,
+        "jobs": [
+          {
+            "pair": 0,
+            "workers": [
+              0,
+              1
+            ],
+            "name": "LH-SRF5-G3-P0",
+            "status": "SUBMITTED",
+            "before": {
+              "226919": {
+                "JobId": "226919",
+                "JobName": "LH-SRF5-V2-DECISION",
+                "UserId": "varun024(295800338)",
+                "GroupId": "varun024(295800338)",
+                "MCS_label": "N/A",
+                "Priority": "100",
+                "Nice": "0",
+                "Account": "rose",
+                "QOS": "soujanya-poria-startfund-2026-03",
+                "JobState": "RUNNING",
+                "Reason": "None",
+                "Dependency": "(null)",
+                "Requeue": "1",
+                "Restarts": "0",
+                "BatchFlag": "1",
+                "Reboot": "0",
+                "ExitCode": "0:0",
+                "RunTime": "00:00:05",
+                "TimeLimit": "01:00:00",
+                "TimeMin": "N/A",
+                "SubmitTime": "2026-10-25T20:03:39",
+                "EligibleTime": "2026-10-25T22:57:40",
+                "AccrueTime": "Unknown",
+                "StartTime": "2026-10-25T22:57:40",
+                "EndTime": "2026-10-25T23:57:40",
+                "Deadline": "N/A",
+                "PreemptEligibleTime": "2026-10-25T22:57:40",
+                "PreemptTime": "None",
+                "SuspendTime": "None",
+                "SecsPreSuspend": "0",
+                "LastSchedEval": "2026-10-25T22:57:40",
+                "Scheduler": "Main",
+                "Partition": "cluster02",
+                "ReqNodeList": "(null)",
+                "ExcNodeList": "(null)",
+                "NodeList": "cpu-1",
+                "BatchHost": "cpu-1",
+                "NumNodes": "1",
+                "NumCPUs": "2",
+                "NumTasks": "1",
+                "ReqTRES": "cpu=2,mem=6G,node=1",
+                "AllocTRES": "cpu=2,mem=6G,node=1",
+                "CoreSpec": "*",
+                "MinCPUsNode": "2",
+                "MinMemoryNode": "6G",
+                "MinTmpDiskNode": "0",
+                "Features": "cpu_ok",
+                "DelayBoot": "00:00:00",
+                "OverSubscribe": "OK",
+                "Contiguous": "0",
+                "Licenses": "(null)",
+                "Network": "(null)",
+                "Command": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_operations_23b6760/scripts/sr_f5/advance_recipe_v2.sbatch",
+                "WorkDir": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+                "StdErr": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/V2-DECISION-226919.log",
+                "StdIn": "/dev/null",
+                "StdOut": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/V2-DECISION-226919.log",
+                "TresPerTask": "cpu:2"
+              }
+            },
+            "job_id": "227050",
+            "scheduler_message": "sbatch: slurm_job_submit: enforced 8 CPUs for 1 task and 67584 MiB mem/node for 2 GPU(s) (model=pro6000)\nsbatch: slurm_job_submit: you requested 8 CPUs/node and 131072 MiB mem/node\n",
+            "verified": {
+              "JobId": "227050",
+              "JobName": "LH-SRF5-G3-P0",
+              "UserId": "varun024(295800338)",
+              "GroupId": "varun024(295800338)",
+              "MCS_label": "N/A",
+              "Priority": "101",
+              "Nice": "0",
+              "Account": "rose",
+              "QOS": "soujanya-poria-startfund-2026-03",
+              "JobState": "PENDING",
+              "Reason": "None",
+              "Dependency": "(null)",
+              "Requeue": "1",
+              "Restarts": "0",
+              "BatchFlag": "1",
+              "Reboot": "0",
+              "ExitCode": "0:0",
+              "RunTime": "00:00:00",
+              "TimeLimit": "11:30:00",
+              "TimeMin": "N/A",
+              "SubmitTime": "2026-10-25T22:57:45",
+              "EligibleTime": "2026-10-25T22:57:45",
+              "AccrueTime": "Unknown",
+              "StartTime": "Unknown",
+              "EndTime": "Unknown",
+              "Deadline": "N/A",
+              "SuspendTime": "None",
+              "SecsPreSuspend": "0",
+              "LastSchedEval": "2026-10-25T22:57:45",
+              "Scheduler": "Main",
+              "Partition": "cluster02",
+              "ReqNodeList": "(null)",
+              "ExcNodeList": "(null)",
+              "NumNodes": "1-1",
+              "NumCPUs": "8",
+              "NumTasks": "1",
+              "ReqTRES": "cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2",
+              "AllocTRES": "(null)",
+              "CoreSpec": "*",
+              "MinCPUsNode": "8",
+              "MinMemoryNode": "66G",
+              "MinTmpDiskNode": "0",
+              "Features": "(null)",
+              "DelayBoot": "00:00:00",
+              "OverSubscribe": "OK",
+              "Contiguous": "0",
+              "Licenses": "(null)",
+              "Network": "(null)",
+              "Command": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85/scripts/sr_f5/pilot.sbatch",
+              "WorkDir": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+              "StdErr": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P0-227050.log",
+              "StdIn": "/dev/null",
+              "StdOut": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P0-227050.log",
+              "TresPerNode": "gres/gpu:pro6000:2",
+              "TresPerTask": "cpu:8"
+            }
+          },
+          {
+            "pair": 1,
+            "workers": [
+              2,
+              3
+            ],
+            "name": "LH-SRF5-G3-P1",
+            "status": "SUBMITTED",
+            "before": {
+              "227050": {
+                "JobId": "227050",
+                "JobName": "LH-SRF5-G3-P0",
+                "UserId": "varun024(295800338)",
+                "GroupId": "varun024(295800338)",
+                "MCS_label": "N/A",
+                "Priority": "101",
+                "Nice": "0",
+                "Account": "rose",
+                "QOS": "soujanya-poria-startfund-2026-03",
+                "JobState": "PENDING",
+                "Reason": "None",
+                "Dependency": "(null)",
+                "Requeue": "1",
+                "Restarts": "0",
+                "BatchFlag": "1",
+                "Reboot": "0",
+                "ExitCode": "0:0",
+                "RunTime": "00:00:00",
+                "TimeLimit": "11:30:00",
+                "TimeMin": "N/A",
+                "SubmitTime": "2026-10-25T22:57:45",
+                "EligibleTime": "2026-10-25T22:57:45",
+                "AccrueTime": "Unknown",
+                "StartTime": "Unknown",
+                "EndTime": "Unknown",
+                "Deadline": "N/A",
+                "SuspendTime": "None",
+                "SecsPreSuspend": "0",
+                "LastSchedEval": "2026-10-25T22:57:45",
+                "Scheduler": "Main",
+                "Partition": "cluster02",
+                "ReqNodeList": "(null)",
+                "ExcNodeList": "(null)",
+                "NumNodes": "1-1",
+                "NumCPUs": "8",
+                "NumTasks": "1",
+                "ReqTRES": "cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2",
+                "AllocTRES": "(null)",
+                "CoreSpec": "*",
+                "MinCPUsNode": "8",
+                "MinMemoryNode": "66G",
+                "MinTmpDiskNode": "0",
+                "Features": "(null)",
+                "DelayBoot": "00:00:00",
+                "OverSubscribe": "OK",
+                "Contiguous": "0",
+                "Licenses": "(null)",
+                "Network": "(null)",
+                "Command": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85/scripts/sr_f5/pilot.sbatch",
+                "WorkDir": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+                "StdErr": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P0-227050.log",
+                "StdIn": "/dev/null",
+                "StdOut": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P0-227050.log",
+                "TresPerNode": "gres/gpu:pro6000:2",
+                "TresPerTask": "cpu:8"
+              },
+              "226919": {
+                "JobId": "226919",
+                "JobName": "LH-SRF5-V2-DECISION",
+                "UserId": "varun024(295800338)",
+                "GroupId": "varun024(295800338)",
+                "MCS_label": "N/A",
+                "Priority": "100",
+                "Nice": "0",
+                "Account": "rose",
+                "QOS": "soujanya-poria-startfund-2026-03",
+                "JobState": "RUNNING",
+                "Reason": "None",
+                "Dependency": "(null)",
+                "Requeue": "1",
+                "Restarts": "0",
+                "BatchFlag": "1",
+                "Reboot": "0",
+                "ExitCode": "0:0",
+                "RunTime": "00:00:05",
+                "TimeLimit": "01:00:00",
+                "TimeMin": "N/A",
+                "SubmitTime": "2026-10-25T20:03:39",
+                "EligibleTime": "2026-10-25T22:57:40",
+                "AccrueTime": "Unknown",
+                "StartTime": "2026-10-25T22:57:40",
+                "EndTime": "2026-10-25T23:57:40",
+                "Deadline": "N/A",
+                "PreemptEligibleTime": "2026-10-25T22:57:40",
+                "PreemptTime": "None",
+                "SuspendTime": "None",
+                "SecsPreSuspend": "0",
+                "LastSchedEval": "2026-10-25T22:57:40",
+                "Scheduler": "Main",
+                "Partition": "cluster02",
+                "ReqNodeList": "(null)",
+                "ExcNodeList": "(null)",
+                "NodeList": "cpu-1",
+                "BatchHost": "cpu-1",
+                "NumNodes": "1",
+                "NumCPUs": "2",
+                "NumTasks": "1",
+                "ReqTRES": "cpu=2,mem=6G,node=1",
+                "AllocTRES": "cpu=2,mem=6G,node=1",
+                "CoreSpec": "*",
+                "MinCPUsNode": "2",
+                "MinMemoryNode": "6G",
+                "MinTmpDiskNode": "0",
+                "Features": "cpu_ok",
+                "DelayBoot": "00:00:00",
+                "OverSubscribe": "OK",
+                "Contiguous": "0",
+                "Licenses": "(null)",
+                "Network": "(null)",
+                "Command": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_operations_23b6760/scripts/sr_f5/advance_recipe_v2.sbatch",
+                "WorkDir": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+                "StdErr": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/V2-DECISION-226919.log",
+                "StdIn": "/dev/null",
+                "StdOut": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/V2-DECISION-226919.log",
+                "TresPerTask": "cpu:2"
+              }
+            },
+            "job_id": "227051",
+            "scheduler_message": "sbatch: slurm_job_submit: enforced 8 CPUs for 1 task and 67584 MiB mem/node for 2 GPU(s) (model=pro6000)\nsbatch: slurm_job_submit: you requested 8 CPUs/node and 131072 MiB mem/node\n",
+            "verified": {
+              "JobId": "227051",
+              "JobName": "LH-SRF5-G3-P1",
+              "UserId": "varun024(295800338)",
+              "GroupId": "varun024(295800338)",
+              "MCS_label": "N/A",
+              "Priority": "101",
+              "Nice": "0",
+              "Account": "rose",
+              "QOS": "soujanya-poria-startfund-2026-03",
+              "JobState": "PENDING",
+              "Reason": "None",
+              "Dependency": "(null)",
+              "Requeue": "1",
+              "Restarts": "0",
+              "BatchFlag": "1",
+              "Reboot": "0",
+              "ExitCode": "0:0",
+              "RunTime": "00:00:00",
+              "TimeLimit": "11:30:00",
+              "TimeMin": "N/A",
+              "SubmitTime": "2026-10-25T22:57:45",
+              "EligibleTime": "2026-10-25T22:57:45",
+              "AccrueTime": "Unknown",
+              "StartTime": "Unknown",
+              "EndTime": "Unknown",
+              "Deadline": "N/A",
+              "SuspendTime": "None",
+              "SecsPreSuspend": "0",
+              "LastSchedEval": "2026-10-25T22:57:45",
+              "Scheduler": "Main",
+              "Partition": "cluster02",
+              "ReqNodeList": "(null)",
+              "ExcNodeList": "(null)",
+              "NumNodes": "1-1",
+              "NumCPUs": "8",
+              "NumTasks": "1",
+              "ReqTRES": "cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2",
+              "AllocTRES": "(null)",
+              "CoreSpec": "*",
+              "MinCPUsNode": "8",
+              "MinMemoryNode": "66G",
+              "MinTmpDiskNode": "0",
+              "Features": "(null)",
+              "DelayBoot": "00:00:00",
+              "OverSubscribe": "OK",
+              "Contiguous": "0",
+              "Licenses": "(null)",
+              "Network": "(null)",
+              "Command": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85/scripts/sr_f5/pilot.sbatch",
+              "WorkDir": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+              "StdErr": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P1-227051.log",
+              "StdIn": "/dev/null",
+              "StdOut": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P1-227051.log",
+              "TresPerNode": "gres/gpu:pro6000:2",
+              "TresPerTask": "cpu:8"
+            }
+          }
+        ]
+      },
+      "terminals": [
+        {
+          "job_id": "226900",
+          "state": "COMPLETED",
+          "exit_code": "0:0",
+          "user": "varun024",
+          "account": "rose",
+          "qos": "soujanya-poria-startfund-2026-03"
+        },
+        {
+          "job_id": "226918",
+          "state": "COMPLETED",
+          "exit_code": "0:0",
+          "user": "varun024",
+          "account": "rose",
+          "qos": "soujanya-poria-startfund-2026-03"
+        }
+      ]
+    },
+    "CONTINUATION/RECIPE_V2_G2_AGGREGATION.json": {
+      "status": "COMPLETE",
+      "bindings": {
+        "source_code": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+        "science_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+        "registration_digest": "58f7f4b47fd06143932da6f2157ffca15a9ba5a93c2a9a19b76c4e8cf86a3026",
+        "config_digest": "d14481203b6d9e430cc879f77f34bc478f034cecab1a511dd4c4a59f42f7660b",
+        "cpu_tests_digest": "63925d3f6ac171d4a1ba4daf34581fc06123145d638308339d2164df2913618d",
+        "cpu_tests_reused": "CPU_TESTS.json; no rerun",
+        "pair_receipt_digests": [
+          "702ab0a117d2f57355b66f38502ea4306e9dc2bb712e384b6fce4fec54386022",
+          "c4504c8761a38cd175dfbb6e0d24b9dcfd8176c6fbfe19c21dc9fc92430f85b7"
+        ]
+      },
+      "gate": {
+        "status": "PASS",
+        "errors": [],
+        "scope": "mechanical G2 criteria; independently verify raw evidence"
+      },
+      "gate_digest": "247d2a23a70176da7c54c1503bd8099fd0fa6450aca2ca050789c7645acd8243",
+      "metrics_digest": "5a54d953303eb4ccbf2040b5f1f9ebad9ad5c4f5eb378b036200b8e59cd868e2",
+      "at": "2026-10-25T22:57:45.710494+00:00"
+    },
+    "G3/FROZEN.json": {
+      "status": "FROZEN_BEFORE_PILOT_OUTPUTS",
+      "code_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+      "source_identity": {
+        "sr_f5/pilot.py": "70b0eb125dfc1dcea31199b1c1aefe232fee79966b74294df9a416bf7e18cd21",
+        "sr_f5/runtime.py": "780f6d1fcaacc0ca52f98d5d238b6669ff8ed5c0eaf3d95a8b7c4f5e63d5bae4",
+        "sr_f5/training.py": "58013b4dec4902b3e1261e565c6de491c693d5e7b0ab4cb3b903913f47dc3cd0",
+        "sr_f5/calibration.py": "e1693c82749f3e9047f4b3c6208423789dcf394cb677c66fc432dd4eaf6d15db",
+        "sr_f5/measurement.py": "1b8e8cb7749f213b3b1e993f7e881ba4016ab6a76e520de750cd6b76ad0a6adb",
+        "sr_f4/training.py": "ee81b1f751f08ce025d86699906d59714d85dc16f7ba158f1632ad9beda70881",
+        "sr_f4/runtime.py": "a13c0e4e1124b14abcdf023c7b4c4cfb78d688126d496f8eb412d72de0f6e43c",
+        "sr_f3_ce/runtime.py": "27ca61c79c833be117cc723a11653bbeb2ab31cf0c8828c3844bd17a224b3272",
+        "sr_f3_ce/training.py": "fcca2f453f97814ee74e2da15339b016cd899310d9211aff6e247209755b0d94",
+        "sr_f12/training.py": "eb0b72cd0ca31d64c2f59c5f58cf244d16f6613cfcded725d4855e71c946fbb4",
+        "srf5_ref/credit.py": "4c199df32a26f7d5cc4eb69363328f46eef1facd4b5749c740f3f54daaa23f67",
+        "srf5_ref/objective.py": "b82ad0a69231f32b391f66d6d62fd44a59f79ea1d5093b4302edcfac7beb419e",
+        "srf5_ref/schedule.py": "bb9976bf305f2bae71ba11a66f706a9cc8ccdb12370b85b67b5b09ffb44b75c2"
+      },
+      "config_digest": "6fb74ca7c94c407b20df5ce79f30d5e286b6c5469d60bd1b95027d15a7c461db",
+      "g2": {
+        "gate": "db354cb8127d70fa7e91fbc88a17375d6b7e2e72dbd96896d0f08680e4b6d13a",
+        "metrics": "955b18dae51c503b5597ab0b64473529bc696c61c44c89cb37a54ced87042de6"
+      },
+      "private_digest": "8a1e3ad49fc59da532fe05cbd38c77618ffc6b82f4a5190174914a49daf0b068",
+      "public_digest": "6aaf1276e368ba6561568dcf4b4e4b6a5026bb9e25db080b56b73216a73d5a39",
+      "schedule_digests": {
+        "b0": "f0f13b3c0101435458d10fe3b4d9d5bf76778819a074bb92bf170fe0acc67fee",
+        "b1": "570c3d44f22fd352ed21494b141d2abb8868812e7b374cc8081a30b08a972882",
+        "b2": "fca3c62f113a7a80b7fe769eee55267ea8a020ab761646fc75d8df31f26372ea"
+      },
+      "protocol_version": "structured_v3-1.0",
+      "updates": 12,
+      "group_size": 8,
+      "responses_per_step": 128,
+      "primary_responses": 23040,
+      "recovery_responses": 5120,
+      "endpoint_probe_responses": 0,
+      "diagnostic_steps": [
+        1,
+        12
+      ],
+      "diagnostic_rows": [
+        0,
+        8,
+        16,
+        24,
+        32,
+        40,
+        48,
+        56,
+        64,
+        72,
+        80,
+        88,
+        96,
+        104,
+        112,
+        120
+      ],
+      "step12_review": {
+        "unique_per_path": 24,
+        "total": 360,
+        "selection": "sorted_row_id_unique_qid_text",
+        "reviewer": "program"
+      },
+      "recovery": {
+        "from_step": 4,
+        "to_step": 12,
+        "paths": "b0_all_five_arms",
+        "parameter_atol": 0.0,
+        "parameter_rtol": 0.0,
+        "optimizer_rng_comparison": "exact",
+        "raw_token_probability_credit_update_comparison": "exact"
+      },
+      "paths": [
+        {
+          "parent": "b0",
+          "arm": "J"
+        },
+        {
+          "parent": "b0",
+          "arm": "HARD"
+        },
+        {
+          "parent": "b0",
+          "arm": "DENSE"
+        },
+        {
+          "parent": "b0",
+          "arm": "LOCAL"
+        },
+        {
+          "parent": "b0",
+          "arm": "SHUF"
+        },
+        {
+          "parent": "b1",
+          "arm": "J"
+        },
+        {
+          "parent": "b1",
+          "arm": "HARD"
+        },
+        {
+          "parent": "b1",
+          "arm": "DENSE"
+        },
+        {
+          "parent": "b1",
+          "arm": "LOCAL"
+        },
+        {
+          "parent": "b1",
+          "arm": "SHUF"
+        },
+        {
+          "parent": "b2",
+          "arm": "J"
+        },
+        {
+          "parent": "b2",
+          "arm": "HARD"
+        },
+        {
+          "parent": "b2",
+          "arm": "DENSE"
+        },
+        {
+          "parent": "b2",
+          "arm": "LOCAL"
+        },
+        {
+          "parent": "b2",
+          "arm": "SHUF"
+        }
+      ],
+      "formal_outputs_allowed": false
+    },
+    "G3/POOL_PLAN.json": {
+      "status": "FROZEN_BEFORE_PILOT_OUTPUTS",
+      "code_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+      "g3_frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+      "source_identity": {
+        "src/sr_f5/pilot_pool.py": "0c134382a5c203dcab9d28686dd351a498c673873ab6f5d8407951b6874cbba8",
+        "src/sr_f5/dual_gpu.py": "51213261870c231fed3166ddcad95a26997e53aef117fbdebec159bbc81db9b8",
+        "scripts/sr_f5/pilot.sbatch": "0a293b9a0ec610cc89704a09bb51cecdb415854d954c5473ad2aac665850bdd6",
+        "scripts/sr_f5/submit_g3.py": "bda0c7690327661b6a6203e5ac3c0f48575dee5da06a24a3fd03ff347b4ac974"
+      },
+      "order_seed_namespace": "seed_for(master_seed, G3_pool_arm_order, parent)",
+      "allocation": "deterministic least-weighted-steps, worker-index tie break",
+      "arm_orders": {
+        "b0": {
+          "seed": 8874486624418313177,
+          "arms": [
+            "J",
+            "SHUF",
+            "LOCAL",
+            "HARD",
+            "DENSE"
+          ]
+        },
+        "b1": {
+          "seed": 6471990685821054449,
+          "arms": [
+            "LOCAL",
+            "SHUF",
+            "DENSE",
+            "HARD",
+            "J"
+          ]
+        },
+        "b2": {
+          "seed": 3028255904113570387,
+          "arms": [
+            "SHUF",
+            "DENSE",
+            "LOCAL",
+            "HARD",
+            "J"
+          ]
+        }
+      },
+      "workers": [
+        {
+          "worker": 0,
+          "weighted_steps": 52,
+          "tasks": [
+            {
+              "parent": "b0",
+              "arm": "J",
+              "recovery": true
+            },
+            {
+              "parent": "b0",
+              "arm": "DENSE",
+              "recovery": true
+            },
+            {
+              "parent": "b2",
+              "arm": "DENSE",
+              "recovery": false
+            }
+          ]
+        },
+        {
+          "worker": 1,
+          "weighted_steps": 56,
+          "tasks": [
+            {
+              "parent": "b0",
+              "arm": "SHUF",
+              "recovery": true
+            },
+            {
+              "parent": "b1",
+              "arm": "LOCAL",
+              "recovery": false
+            },
+            {
+              "parent": "b1",
+              "arm": "HARD",
+              "recovery": false
+            },
+            {
+              "parent": "b2",
+              "arm": "LOCAL",
+              "recovery": false
+            }
+          ]
+        },
+        {
+          "worker": 2,
+          "weighted_steps": 56,
+          "tasks": [
+            {
+              "parent": "b0",
+              "arm": "LOCAL",
+              "recovery": true
+            },
+            {
+              "parent": "b1",
+              "arm": "SHUF",
+              "recovery": false
+            },
+            {
+              "parent": "b1",
+              "arm": "J",
+              "recovery": false
+            },
+            {
+              "parent": "b2",
+              "arm": "HARD",
+              "recovery": false
+            }
+          ]
+        },
+        {
+          "worker": 3,
+          "weighted_steps": 56,
+          "tasks": [
+            {
+              "parent": "b0",
+              "arm": "HARD",
+              "recovery": true
+            },
+            {
+              "parent": "b1",
+              "arm": "DENSE",
+              "recovery": false
+            },
+            {
+              "parent": "b2",
+              "arm": "SHUF",
+              "recovery": false
+            },
+            {
+              "parent": "b2",
+              "arm": "J",
+              "recovery": false
+            }
+          ]
+        }
+      ],
+      "jobs": 2,
+      "gpus_per_job": 2,
+      "primary_paths": 15,
+      "recovery_paths": 5,
+      "automatic_formal_training": false
+    },
+    "G3_SUBMISSION_DUAL_GPU.json": {
+      "at": "2026-10-25T22:57:45.801665+00:00",
+      "status": "TWO_DUAL_GPU_JOBS_FOUR_WORKERS_SUBMITTED_AND_VERIFIED",
+      "source_code": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+      "code_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+      "pool_plan_digest": "ac6f6e18b838ef4a1a61064b88494bdbcf25f2bb191ed3a062a48e2ec8bfa1e6",
+      "all_qos_job_limit": 5,
+      "effective_total_gpu_limit": 5,
+      "registered_workers": 4,
+      "registered_jobs": 2,
+      "gpus_per_job": 2,
+      "jobs": [
+        {
+          "pair": 0,
+          "workers": [
+            0,
+            1
+          ],
+          "name": "LH-SRF5-G3-P0",
+          "status": "SUBMITTED",
+          "before": {
+            "226919": {
+              "JobId": "226919",
+              "JobName": "LH-SRF5-V2-DECISION",
+              "UserId": "varun024(295800338)",
+              "GroupId": "varun024(295800338)",
+              "MCS_label": "N/A",
+              "Priority": "100",
+              "Nice": "0",
+              "Account": "rose",
+              "QOS": "soujanya-poria-startfund-2026-03",
+              "JobState": "RUNNING",
+              "Reason": "None",
+              "Dependency": "(null)",
+              "Requeue": "1",
+              "Restarts": "0",
+              "BatchFlag": "1",
+              "Reboot": "0",
+              "ExitCode": "0:0",
+              "RunTime": "00:00:05",
+              "TimeLimit": "01:00:00",
+              "TimeMin": "N/A",
+              "SubmitTime": "2026-10-25T20:03:39",
+              "EligibleTime": "2026-10-25T22:57:40",
+              "AccrueTime": "Unknown",
+              "StartTime": "2026-10-25T22:57:40",
+              "EndTime": "2026-10-25T23:57:40",
+              "Deadline": "N/A",
+              "PreemptEligibleTime": "2026-10-25T22:57:40",
+              "PreemptTime": "None",
+              "SuspendTime": "None",
+              "SecsPreSuspend": "0",
+              "LastSchedEval": "2026-10-25T22:57:40",
+              "Scheduler": "Main",
+              "Partition": "cluster02",
+              "ReqNodeList": "(null)",
+              "ExcNodeList": "(null)",
+              "NodeList": "cpu-1",
+              "BatchHost": "cpu-1",
+              "NumNodes": "1",
+              "NumCPUs": "2",
+              "NumTasks": "1",
+              "ReqTRES": "cpu=2,mem=6G,node=1",
+              "AllocTRES": "cpu=2,mem=6G,node=1",
+              "CoreSpec": "*",
+              "MinCPUsNode": "2",
+              "MinMemoryNode": "6G",
+              "MinTmpDiskNode": "0",
+              "Features": "cpu_ok",
+              "DelayBoot": "00:00:00",
+              "OverSubscribe": "OK",
+              "Contiguous": "0",
+              "Licenses": "(null)",
+              "Network": "(null)",
+              "Command": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_operations_23b6760/scripts/sr_f5/advance_recipe_v2.sbatch",
+              "WorkDir": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+              "StdErr": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/V2-DECISION-226919.log",
+              "StdIn": "/dev/null",
+              "StdOut": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/V2-DECISION-226919.log",
+              "TresPerTask": "cpu:2"
+            }
+          },
+          "job_id": "227050",
+          "scheduler_message": "sbatch: slurm_job_submit: enforced 8 CPUs for 1 task and 67584 MiB mem/node for 2 GPU(s) (model=pro6000)\nsbatch: slurm_job_submit: you requested 8 CPUs/node and 131072 MiB mem/node\n",
+          "verified": {
+            "JobId": "227050",
+            "JobName": "LH-SRF5-G3-P0",
+            "UserId": "varun024(295800338)",
+            "GroupId": "varun024(295800338)",
+            "MCS_label": "N/A",
+            "Priority": "101",
+            "Nice": "0",
+            "Account": "rose",
+            "QOS": "soujanya-poria-startfund-2026-03",
+            "JobState": "PENDING",
+            "Reason": "None",
+            "Dependency": "(null)",
+            "Requeue": "1",
+            "Restarts": "0",
+            "BatchFlag": "1",
+            "Reboot": "0",
+            "ExitCode": "0:0",
+            "RunTime": "00:00:00",
+            "TimeLimit": "11:30:00",
+            "TimeMin": "N/A",
+            "SubmitTime": "2026-10-25T22:57:45",
+            "EligibleTime": "2026-10-25T22:57:45",
+            "AccrueTime": "Unknown",
+            "StartTime": "Unknown",
+            "EndTime": "Unknown",
+            "Deadline": "N/A",
+            "SuspendTime": "None",
+            "SecsPreSuspend": "0",
+            "LastSchedEval": "2026-10-25T22:57:45",
+            "Scheduler": "Main",
+            "Partition": "cluster02",
+            "ReqNodeList": "(null)",
+            "ExcNodeList": "(null)",
+            "NumNodes": "1-1",
+            "NumCPUs": "8",
+            "NumTasks": "1",
+            "ReqTRES": "cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2",
+            "AllocTRES": "(null)",
+            "CoreSpec": "*",
+            "MinCPUsNode": "8",
+            "MinMemoryNode": "66G",
+            "MinTmpDiskNode": "0",
+            "Features": "(null)",
+            "DelayBoot": "00:00:00",
+            "OverSubscribe": "OK",
+            "Contiguous": "0",
+            "Licenses": "(null)",
+            "Network": "(null)",
+            "Command": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85/scripts/sr_f5/pilot.sbatch",
+            "WorkDir": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+            "StdErr": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P0-227050.log",
+            "StdIn": "/dev/null",
+            "StdOut": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P0-227050.log",
+            "TresPerNode": "gres/gpu:pro6000:2",
+            "TresPerTask": "cpu:8"
+          }
+        },
+        {
+          "pair": 1,
+          "workers": [
+            2,
+            3
+          ],
+          "name": "LH-SRF5-G3-P1",
+          "status": "SUBMITTED",
+          "before": {
+            "227050": {
+              "JobId": "227050",
+              "JobName": "LH-SRF5-G3-P0",
+              "UserId": "varun024(295800338)",
+              "GroupId": "varun024(295800338)",
+              "MCS_label": "N/A",
+              "Priority": "101",
+              "Nice": "0",
+              "Account": "rose",
+              "QOS": "soujanya-poria-startfund-2026-03",
+              "JobState": "PENDING",
+              "Reason": "None",
+              "Dependency": "(null)",
+              "Requeue": "1",
+              "Restarts": "0",
+              "BatchFlag": "1",
+              "Reboot": "0",
+              "ExitCode": "0:0",
+              "RunTime": "00:00:00",
+              "TimeLimit": "11:30:00",
+              "TimeMin": "N/A",
+              "SubmitTime": "2026-10-25T22:57:45",
+              "EligibleTime": "2026-10-25T22:57:45",
+              "AccrueTime": "Unknown",
+              "StartTime": "Unknown",
+              "EndTime": "Unknown",
+              "Deadline": "N/A",
+              "SuspendTime": "None",
+              "SecsPreSuspend": "0",
+              "LastSchedEval": "2026-10-25T22:57:45",
+              "Scheduler": "Main",
+              "Partition": "cluster02",
+              "ReqNodeList": "(null)",
+              "ExcNodeList": "(null)",
+              "NumNodes": "1-1",
+              "NumCPUs": "8",
+              "NumTasks": "1",
+              "ReqTRES": "cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2",
+              "AllocTRES": "(null)",
+              "CoreSpec": "*",
+              "MinCPUsNode": "8",
+              "MinMemoryNode": "66G",
+              "MinTmpDiskNode": "0",
+              "Features": "(null)",
+              "DelayBoot": "00:00:00",
+              "OverSubscribe": "OK",
+              "Contiguous": "0",
+              "Licenses": "(null)",
+              "Network": "(null)",
+              "Command": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85/scripts/sr_f5/pilot.sbatch",
+              "WorkDir": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+              "StdErr": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P0-227050.log",
+              "StdIn": "/dev/null",
+              "StdOut": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P0-227050.log",
+              "TresPerNode": "gres/gpu:pro6000:2",
+              "TresPerTask": "cpu:8"
+            },
+            "226919": {
+              "JobId": "226919",
+              "JobName": "LH-SRF5-V2-DECISION",
+              "UserId": "varun024(295800338)",
+              "GroupId": "varun024(295800338)",
+              "MCS_label": "N/A",
+              "Priority": "100",
+              "Nice": "0",
+              "Account": "rose",
+              "QOS": "soujanya-poria-startfund-2026-03",
+              "JobState": "RUNNING",
+              "Reason": "None",
+              "Dependency": "(null)",
+              "Requeue": "1",
+              "Restarts": "0",
+              "BatchFlag": "1",
+              "Reboot": "0",
+              "ExitCode": "0:0",
+              "RunTime": "00:00:05",
+              "TimeLimit": "01:00:00",
+              "TimeMin": "N/A",
+              "SubmitTime": "2026-10-25T20:03:39",
+              "EligibleTime": "2026-10-25T22:57:40",
+              "AccrueTime": "Unknown",
+              "StartTime": "2026-10-25T22:57:40",
+              "EndTime": "2026-10-25T23:57:40",
+              "Deadline": "N/A",
+              "PreemptEligibleTime": "2026-10-25T22:57:40",
+              "PreemptTime": "None",
+              "SuspendTime": "None",
+              "SecsPreSuspend": "0",
+              "LastSchedEval": "2026-10-25T22:57:40",
+              "Scheduler": "Main",
+              "Partition": "cluster02",
+              "ReqNodeList": "(null)",
+              "ExcNodeList": "(null)",
+              "NodeList": "cpu-1",
+              "BatchHost": "cpu-1",
+              "NumNodes": "1",
+              "NumCPUs": "2",
+              "NumTasks": "1",
+              "ReqTRES": "cpu=2,mem=6G,node=1",
+              "AllocTRES": "cpu=2,mem=6G,node=1",
+              "CoreSpec": "*",
+              "MinCPUsNode": "2",
+              "MinMemoryNode": "6G",
+              "MinTmpDiskNode": "0",
+              "Features": "cpu_ok",
+              "DelayBoot": "00:00:00",
+              "OverSubscribe": "OK",
+              "Contiguous": "0",
+              "Licenses": "(null)",
+              "Network": "(null)",
+              "Command": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_operations_23b6760/scripts/sr_f5/advance_recipe_v2.sbatch",
+              "WorkDir": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+              "StdErr": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/V2-DECISION-226919.log",
+              "StdIn": "/dev/null",
+              "StdOut": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/V2-DECISION-226919.log",
+              "TresPerTask": "cpu:2"
+            }
+          },
+          "job_id": "227051",
+          "scheduler_message": "sbatch: slurm_job_submit: enforced 8 CPUs for 1 task and 67584 MiB mem/node for 2 GPU(s) (model=pro6000)\nsbatch: slurm_job_submit: you requested 8 CPUs/node and 131072 MiB mem/node\n",
+          "verified": {
+            "JobId": "227051",
+            "JobName": "LH-SRF5-G3-P1",
+            "UserId": "varun024(295800338)",
+            "GroupId": "varun024(295800338)",
+            "MCS_label": "N/A",
+            "Priority": "101",
+            "Nice": "0",
+            "Account": "rose",
+            "QOS": "soujanya-poria-startfund-2026-03",
+            "JobState": "PENDING",
+            "Reason": "None",
+            "Dependency": "(null)",
+            "Requeue": "1",
+            "Restarts": "0",
+            "BatchFlag": "1",
+            "Reboot": "0",
+            "ExitCode": "0:0",
+            "RunTime": "00:00:00",
+            "TimeLimit": "11:30:00",
+            "TimeMin": "N/A",
+            "SubmitTime": "2026-10-25T22:57:45",
+            "EligibleTime": "2026-10-25T22:57:45",
+            "AccrueTime": "Unknown",
+            "StartTime": "Unknown",
+            "EndTime": "Unknown",
+            "Deadline": "N/A",
+            "SuspendTime": "None",
+            "SecsPreSuspend": "0",
+            "LastSchedEval": "2026-10-25T22:57:45",
+            "Scheduler": "Main",
+            "Partition": "cluster02",
+            "ReqNodeList": "(null)",
+            "ExcNodeList": "(null)",
+            "NumNodes": "1-1",
+            "NumCPUs": "8",
+            "NumTasks": "1",
+            "ReqTRES": "cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2",
+            "AllocTRES": "(null)",
+            "CoreSpec": "*",
+            "MinCPUsNode": "8",
+            "MinMemoryNode": "66G",
+            "MinTmpDiskNode": "0",
+            "Features": "(null)",
+            "DelayBoot": "00:00:00",
+            "OverSubscribe": "OK",
+            "Contiguous": "0",
+            "Licenses": "(null)",
+            "Network": "(null)",
+            "Command": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85/scripts/sr_f5/pilot.sbatch",
+            "WorkDir": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+            "StdErr": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P1-227051.log",
+            "StdIn": "/dev/null",
+            "StdOut": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P1-227051.log",
+            "TresPerNode": "gres/gpu:pro6000:2",
+            "TresPerTask": "cpu:8"
+          }
+        }
+      ]
+    }
+  },
+  "lanes": [
+    {
+      "path": "G3/RUNS/b0/HARD/primary",
+      "complete": false,
+      "groups": 64,
+      "saved_answers": 512,
+      "progress": {
+        "committed_step": 3,
+        "target_step": 12,
+        "lane": "primary",
+        "answers": 384
+      },
+      "step_seconds": [
+        873.71,
+        788.04,
+        799.99
+      ],
+      "last_output_at": "2026-10-26T01:52:18.461554+00:00",
+      "max_sampler_train_difference": 0.0005509853363037109
+    },
+    {
+      "path": "G3/RUNS/b0/J/primary",
+      "complete": true,
+      "groups": 192,
+      "saved_answers": 1536,
+      "progress": {
+        "committed_step": 12,
+        "target_step": 12,
+        "lane": "primary",
+        "answers": 1536
+      },
+      "step_seconds": [
+        876.72,
+        791.49,
+        804.05,
+        822.95,
+        817.75,
+        788.45,
+        861.46,
+        885.9,
+        888.14,
+        837.67,
+        861.96,
+        839.41
+      ],
+      "last_output_at": "2026-10-26T01:40:08.267376+00:00",
+      "max_sampler_train_difference": 0.0035300254821777344
+    },
+    {
+      "path": "G3/RUNS/b0/J/recovery",
+      "complete": false,
+      "groups": 16,
+      "saved_answers": 128,
+      "progress": {},
+      "step_seconds": [],
+      "last_output_at": "2026-10-26T01:54:23.267747+00:00",
+      "max_sampler_train_difference": null
+    },
+    {
+      "path": "G3/RUNS/b0/LOCAL/primary",
+      "complete": false,
+      "groups": 64,
+      "saved_answers": 512,
+      "progress": {
+        "committed_step": 3,
+        "target_step": 12,
+        "lane": "primary",
+        "answers": 384
+      },
+      "step_seconds": [
+        883.74,
+        796.19,
+        805.45
+      ],
+      "last_output_at": "2026-10-26T01:52:45.837597+00:00",
+      "max_sampler_train_difference": 0.0005509853363037109
+    },
+    {
+      "path": "G3/RUNS/b0/SHUF/primary",
+      "complete": true,
+      "groups": 192,
+      "saved_answers": 1536,
+      "progress": {
+        "committed_step": 12,
+        "target_step": 12,
+        "lane": "primary",
+        "answers": 1536
+      },
+      "step_seconds": [
+        873.1,
+        790.54,
+        801.06,
+        819.8,
+        810.78,
+        786.13,
+        857.87,
+        883.12,
+        885.04,
+        833.4,
+        851.95,
+        835.57
+      ],
+      "last_output_at": "2026-10-26T01:39:22.821302+00:00",
+      "max_sampler_train_difference": 0.0035004615783691406
+    },
+    {
+      "path": "G3/RUNS/b0/SHUF/recovery",
+      "complete": false,
+      "groups": 16,
+      "saved_answers": 128,
+      "progress": {},
+      "step_seconds": [],
+      "last_output_at": "2026-10-26T01:53:34.864674+00:00",
+      "max_sampler_train_difference": null
+    }
+  ],
+  "gpu": {
+    "227050": [
+      {
+        "uuid": "GPU-4f8f5018-1ae4-5a0e-eb73-d9d949900077",
+        "samples": 20,
+        "mean_utilization": 92.7,
+        "last": [
+          "2026/10/26 01:54:56.990",
+          " 0",
+          " GPU-4f8f5018-1ae4-5a0e-eb73-d9d949900077",
+          " 100 %",
+          " 15 %",
+          " 82455 MiB",
+          " 97887 MiB",
+          " 283.62 W"
+        ]
+      },
+      {
+        "uuid": "GPU-5c8befe6-6e10-1990-5e3f-de9b039a4c46",
+        "samples": 20,
+        "mean_utilization": 95.75,
+        "last": [
+          "2026/10/26 01:54:56.991",
+          " 1",
+          " GPU-5c8befe6-6e10-1990-5e3f-de9b039a4c46",
+          " 100 %",
+          " 31 %",
+          " 87559 MiB",
+          " 97887 MiB",
+          " 305.63 W"
+        ]
+      }
+    ],
+    "227051": [
+      {
+        "uuid": "GPU-989cce17-75be-daf0-11ef-8884ef9e33ab",
+        "samples": 20,
+        "mean_utilization": 98.45,
+        "last": [
+          "2026/10/26 01:55:05.720",
+          " 1",
+          " GPU-989cce17-75be-daf0-11ef-8884ef9e33ab",
+          " 100 %",
+          " 31 %",
+          " 92303 MiB",
+          " 97887 MiB",
+          " 317.08 W"
+        ]
+      },
+      {
+        "uuid": "GPU-b2d25f7f-165e-096d-4865-fcc9bd3ab7f0",
+        "samples": 20,
+        "mean_utilization": 96.75,
+        "last": [
+          "2026/10/26 01:55:05.719",
+          " 0",
+          " GPU-b2d25f7f-165e-096d-4865-fcc9bd3ab7f0",
+          " 100 %",
+          " 16 %",
+          " 92303 MiB",
+          " 97887 MiB",
+          " 306.77 W"
+        ]
+      }
+    ]
+  },
+  "primary_answers": 4096,
+  "recovery_answers": 256,
+  "workers": {
+    "W0-227050.json": {
+      "at": "2026-10-25T22:57:48.118940+00:00",
+      "status": "RUNNING",
+      "worker": 0,
+      "job_id": "227050",
+      "code_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+      "pool_plan_digest": "ac6f6e18b838ef4a1a61064b88494bdbcf25f2bb191ed3a062a48e2ec8bfa1e6",
+      "completed": [],
+      "calls": [
+        {
+          "parent": "b0",
+          "arm": "J",
+          "phase": "primary",
+          "status": "COMPLETE",
+          "started_at": "2026-10-25T22:57:48.122309+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-26T01:46:16.905232+00:00"
+        },
+        {
+          "parent": "b0",
+          "arm": "J",
+          "phase": "recovery",
+          "status": "STARTED",
+          "started_at": "2026-10-26T01:46:16.911238+00:00"
+        }
+      ]
+    },
+    "W1-227050.json": {
+      "at": "2026-10-25T22:57:48.118865+00:00",
+      "status": "RUNNING",
+      "worker": 1,
+      "job_id": "227050",
+      "code_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+      "pool_plan_digest": "ac6f6e18b838ef4a1a61064b88494bdbcf25f2bb191ed3a062a48e2ec8bfa1e6",
+      "completed": [],
+      "calls": [
+        {
+          "parent": "b0",
+          "arm": "SHUF",
+          "phase": "primary",
+          "status": "COMPLETE",
+          "started_at": "2026-10-25T22:57:48.122168+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-26T01:45:30.009469+00:00"
+        },
+        {
+          "parent": "b0",
+          "arm": "SHUF",
+          "phase": "recovery",
+          "status": "STARTED",
+          "started_at": "2026-10-26T01:45:30.014742+00:00"
+        }
+      ]
+    },
+    "W2-227051.json": {
+      "at": "2026-10-26T01:02:35.753369+00:00",
+      "status": "RUNNING",
+      "worker": 2,
+      "job_id": "227051",
+      "code_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+      "pool_plan_digest": "ac6f6e18b838ef4a1a61064b88494bdbcf25f2bb191ed3a062a48e2ec8bfa1e6",
+      "completed": [],
+      "calls": [
+        {
+          "parent": "b0",
+          "arm": "LOCAL",
+          "phase": "primary",
+          "status": "STARTED",
+          "started_at": "2026-10-26T01:02:35.756360+00:00"
+        }
+      ]
+    },
+    "W3-227051.json": {
+      "at": "2026-10-26T01:02:35.753294+00:00",
+      "status": "RUNNING",
+      "worker": 3,
+      "job_id": "227051",
+      "code_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+      "pool_plan_digest": "ac6f6e18b838ef4a1a61064b88494bdbcf25f2bb191ed3a062a48e2ec8bfa1e6",
+      "completed": [],
+      "calls": [
+        {
+          "parent": "b0",
+          "arm": "HARD",
+          "phase": "primary",
+          "status": "STARTED",
+          "started_at": "2026-10-26T01:02:35.756214+00:00"
+        }
+      ]
+    }
+  },
+  "failures": null,
+  "queue": "227051|LH-SRF5-G3-P1|RUNNING|52:34|gres/gpu:pro6000:2|gpu-pro6000-9\n227050|LH-SRF5-G3-P0|RUNNING|2:57:22|gres/gpu:pro6000:2|gpu-pro6000-9\n",
+  "accounting": "JobID|JobName|State|ExitCode|Start|Elapsed|Timelimit\n226900|LH-SRF5-G2-P0|COMPLETED|0:0|2026-10-25T20:36:10|01:10:21|06:00:00\n226918|LH-SRF5-G2-P1|COMPLETED|0:0|2026-10-25T21:46:31|01:11:09|06:00:00\n226919|LH-SRF5-V2-DECISION|COMPLETED|0:0|2026-10-25T22:57:40|00:00:05|01:00:00\n227050|LH-SRF5-G3-P0|RUNNING|0:0|2026-10-25T22:57:45|02:57:22|11:30:00\n227051|LH-SRF5-G3-P1|RUNNING|0:0|2026-10-26T01:02:33|00:52:34|11:30:00\n"
+}
