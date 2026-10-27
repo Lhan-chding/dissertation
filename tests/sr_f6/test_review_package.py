@@ -512,15 +512,21 @@ def test_exclusive_lock_prevents_second_writer(fixture):
 
 def test_atomic_publication_does_not_replace_even_an_empty_racing_target(tmp_path):
     stage, target = tmp_path / "stage", tmp_path / "target"
-    stage.mkdir()
+    stage.mkdir(mode=0o700)
     target.mkdir()
     (stage / "synthetic").write_text("SYNTHETIC")
+    (stage / "synthetic").chmod(0o600)
+    (stage / "BINDING.json").write_text("SYNTHETIC COMMIT")
+    (stage / "BINDING.json").chmod(0o600)
     with pytest.raises(FileExistsError):
         review_package._publish(stage, target)
     assert stage.is_dir() and target.is_dir() and list(target.iterdir()) == []
     target.rmdir()
     review_package._publish(stage, target)
-    assert not stage.exists() and (target / "synthetic").read_text() == "SYNTHETIC"
+    assert (target / "synthetic").read_text() == "SYNTHETIC"
+    if stage.exists():  # Unsupported-FS fallback deliberately retains its original stage.
+        assert (stage / "synthetic").samefile(target / "synthetic")
+        assert (stage / "BINDING.json").samefile(target / "BINDING.json")
 
 
 def test_package_root_cannot_be_an_alias(fixture):
@@ -608,3 +614,240 @@ def test_real_saved_census_validator_is_called_and_detects_raw_mutation(fixture,
 
 
 ACTUAL_VALIDATE = census_evidence.validate_saved_census
+
+
+def _unsupported_publication(monkeypatch, code):
+    def unsupported(*_):
+        raise OSError(code, "SYNTHETIC unsupported directory rename")
+
+    monkeypatch.setattr(review_package, "_rename_exclusive", unsupported)
+
+
+def _publication_stage(tmp_path):
+    stage, target = tmp_path / "stage", tmp_path / "target"
+    stage.mkdir(mode=0o700)
+    (stage / "private").mkdir(mode=0o700)
+    files = {"private/source.json": b"SYNTHETIC PAYLOAD\n", "BINDING.json": b"SYNTHETIC COMMIT\n"}
+    for name, data in files.items():
+        (stage / name).write_bytes(data)
+        (stage / name).chmod(0o600)
+    return stage, target, files
+
+
+@pytest.mark.parametrize("error_name", ["EINVAL", "ENOSYS", "EOPNOTSUPP"])
+def test_unsupported_rename_uses_exclusive_links_and_last_binding(
+    tmp_path, monkeypatch, error_name
+):
+    import errno
+
+    _unsupported_publication(monkeypatch, getattr(errno, error_name))
+    stage, target, files = _publication_stage(tmp_path)
+    original = review_package.os.link
+    order = []
+
+    def link(source, destination, **kwargs):
+        order.append(Path(source).name)
+        if Path(source).name == "BINDING.json":
+            assert (target / "private/source.json").is_file()
+            assert not (target / "BINDING.json").exists()
+        return original(source, destination, **kwargs)
+
+    monkeypatch.setattr(review_package.os, "link", link)
+    review_package._publish(stage, target)
+    assert order == ["source.json", "BINDING.json"]
+    review_package._compare(target, files)
+    review_package._linked_stage(stage, target, files)
+    assert all((stage / name).samefile(target / name) for name in files)
+
+
+def test_fallback_preserves_foreign_existing_empty_target(tmp_path, monkeypatch):
+    import errno
+
+    _unsupported_publication(monkeypatch, errno.EINVAL)
+    stage, target, files = _publication_stage(tmp_path)
+    target.mkdir()
+    inode = target.stat().st_ino
+    with pytest.raises(FileExistsError):
+        review_package._publish(stage, target)
+    assert target.stat().st_ino == inode and list(target.iterdir()) == []
+    review_package._compare(stage, files)
+
+
+@pytest.mark.parametrize("point", ["payload", "before_binding", "after_binding"])
+def test_fallback_interruption_preserves_prefix_and_never_overwrites(tmp_path, monkeypatch, point):
+    import errno
+
+    _unsupported_publication(monkeypatch, errno.EINVAL)
+    stage, target, files = _publication_stage(tmp_path)
+    original_link, original_sync = review_package.os.link, review_package._fsync_directory
+
+    def link(source, destination, **kwargs):
+        if point == "payload" or (
+            point == "before_binding" and Path(source).name == "BINDING.json"
+        ):
+            raise OSError(errno.EIO, "SYNTHETIC link interruption")
+        return original_link(source, destination, **kwargs)
+
+    def sync(path):
+        if point == "after_binding" and (target / "BINDING.json").exists():
+            raise OSError(errno.EIO, "SYNTHETIC final directory sync interruption")
+        return original_sync(path)
+
+    monkeypatch.setattr(review_package.os, "link", link)
+    monkeypatch.setattr(review_package, "_fsync_directory", sync)
+    with pytest.raises(OSError):
+        review_package._publish(stage, target)
+    review_package._compare(stage, files)
+    before = {p.relative_to(target).as_posix(): p.stat().st_ino for p in target.rglob("*")}
+    monkeypatch.setattr(review_package.os, "link", original_link)
+    monkeypatch.setattr(review_package, "_fsync_directory", original_sync)
+    if point == "after_binding":
+        review_package._compare(target, files)
+        review_package._linked_stage(stage, target, files)
+    else:
+        with pytest.raises(PermissionError, match="BINDING commit"):
+            review_package._compare(target, files)
+    with pytest.raises(FileExistsError):
+        review_package._publish(stage, target)
+    assert before == {p.relative_to(target).as_posix(): p.stat().st_ino for p in target.rglob("*")}
+
+
+def test_fallback_complete_writer_retry_is_exact_and_rejects_foreign_stage(fixture, monkeypatch):
+    import errno
+
+    _unsupported_publication(monkeypatch, errno.EINVAL)
+    receipt = fixture.write()
+    target = fixture.root / review_package.DESTINATION
+    stage = target.with_name(".REVIEW_PACKAGE.staging")
+    assert stage.is_dir()
+    before = {
+        p.relative_to(target).as_posix(): (p.stat().st_ino, p.stat().st_mtime_ns)
+        for p in target.rglob("*")
+    }
+    assert fixture.write() == receipt
+    fixture.verify(receipt["package"])
+    assert before == {
+        p.relative_to(target).as_posix(): (p.stat().st_ino, p.stat().st_mtime_ns)
+        for p in target.rglob("*")
+    }
+    foreign = stage / "blind/EXTRACTION.jsonl"
+    data = foreign.read_bytes()
+    foreign.unlink()
+    foreign.write_bytes(data)
+    foreign.chmod(0o600)
+    with pytest.raises(PermissionError, match="Foreign staging"):
+        fixture.write()
+    assert foreign.read_bytes() == data  # Exact bytes do not authorize a foreign inode.
+
+
+def test_consumer_requires_commit_before_full_census_replay(fixture):
+    target = fixture.root / review_package.DESTINATION
+    target.mkdir(mode=0o700)
+    with pytest.raises(PermissionError, match="BINDING commit"):
+        fixture.verify({"path": review_package.DESTINATION + "/BINDING.json", "sha256": "a" * 64})
+    assert fixture.calls == []
+
+
+def test_non_unsupported_rename_error_never_enters_fallback(tmp_path, monkeypatch):
+    import errno
+
+    _unsupported_publication(monkeypatch, errno.EACCES)
+    stage, target, files = _publication_stage(tmp_path)
+    with pytest.raises(PermissionError):
+        review_package._publish(stage, target)
+    assert not target.exists()
+    review_package._compare(stage, files)
+
+
+def test_fallback_exact_tree_rejects_extra_empty_directory(tmp_path, monkeypatch):
+    import errno
+
+    _unsupported_publication(monkeypatch, errno.EINVAL)
+    stage, target, files = _publication_stage(tmp_path)
+    review_package._publish(stage, target)
+    (target / "unregistered").mkdir(mode=0o700)
+    with pytest.raises(PermissionError):
+        review_package._compare(target, files)
+
+
+def test_committed_fallback_can_retry_after_final_sync_interruption(fixture, monkeypatch):
+    import errno
+
+    _unsupported_publication(monkeypatch, errno.EINVAL)
+    target = fixture.root / review_package.DESTINATION
+    stage = target.with_name(".REVIEW_PACKAGE.staging")
+    original = review_package._fsync_directory
+
+    def interrupt(path):
+        if path == target.parent and (target / "BINDING.json").exists():
+            raise OSError(errno.EIO, "SYNTHETIC interrupted final sync")
+        return original(path)
+
+    monkeypatch.setattr(review_package, "_fsync_directory", interrupt)
+    with pytest.raises(OSError):
+        fixture.write()
+    inode = (target / "BINDING.json").stat().st_ino
+    monkeypatch.setattr(review_package, "_fsync_directory", original)
+    receipt = fixture.write()
+    fixture.verify(receipt["package"])
+    assert stage.exists() and (stage / "BINDING.json").samefile(target / "BINDING.json")
+    assert (target / "BINDING.json").stat().st_ino == inode
+
+
+def test_fallback_directory_replacement_cannot_redirect_commit(tmp_path, monkeypatch):
+    import errno
+
+    _unsupported_publication(monkeypatch, errno.EINVAL)
+    stage, target, files = _publication_stage(tmp_path)
+    old = tmp_path / "reserved-original"
+    original = review_package.os.link
+
+    def replace(source, destination, **kwargs):
+        if Path(source).name == "source.json":
+            target.rename(old)
+            target.mkdir(mode=0o700)
+            (target / "foreign").write_text("preserve")
+        return original(source, destination, **kwargs)
+
+    monkeypatch.setattr(review_package.os, "link", replace)
+    with pytest.raises(PermissionError, match="directory was replaced"):
+        review_package._publish(stage, target)
+    assert [p.name for p in target.iterdir()] == ["foreign"]
+    assert (old / "private/source.json").read_bytes() == files["private/source.json"]
+    assert not (old / "BINDING.json").exists()
+    review_package._compare(stage, files)
+
+
+@pytest.mark.parametrize("point", ["before_open", "reservation_sync"])
+def test_fallback_replacement_before_open_is_rejected(tmp_path, monkeypatch, point):
+    import errno
+
+    _unsupported_publication(monkeypatch, errno.EINVAL)
+    stage, target, files = _publication_stage(tmp_path)
+    reserved = tmp_path / "reserved-original"
+    original_open, original_sync = review_package.os.open, review_package._fsync_directory
+    replaced = False
+
+    def replace():
+        nonlocal replaced
+        if not replaced:
+            replaced = True
+            target.rename(reserved)
+            target.mkdir(mode=0o700)
+
+    def opening(path, *args, **kwargs):
+        if path == target and point == "before_open":
+            replace()
+        return original_open(path, *args, **kwargs)
+
+    def syncing(path):
+        if path == target.parent and point == "reservation_sync":
+            replace()
+        return original_sync(path)
+
+    monkeypatch.setattr(review_package.os, "open", opening)
+    monkeypatch.setattr(review_package, "_fsync_directory", syncing)
+    with pytest.raises(PermissionError, match="replaced"):
+        review_package._publish(stage, target)
+    assert list(target.iterdir()) == list(reserved.iterdir()) == []
+    review_package._compare(stage, files)

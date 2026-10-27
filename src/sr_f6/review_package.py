@@ -18,6 +18,7 @@ training authorization. Synthetic fixtures must carry their explicit origin.
 from __future__ import annotations
 
 import ctypes
+import errno
 import fcntl
 import hashlib
 import json
@@ -398,15 +399,26 @@ def _directory(root, relative):
     return path
 
 
+def _require_commit(directory):
+    _require(
+        (directory / "BINDING.json").is_file() and not (directory / "BINDING.json").is_symlink(),
+        "Partial package preserved; BINDING commit is absent",
+    )
+
+
 def _compare(directory, files):
     _require(
         directory.is_dir() and not directory.is_symlink(), "Missing complete immutable package"
     )
+    _require_commit(directory)
+    expected_directories = {str(parent) for name in files for parent in Path(name).parents}
     actual = set()
     for current, directories, names in os.walk(directory, followlinks=False):
         current = Path(current)
         _require(
-            not current.is_symlink() and current.stat().st_mode & 0o777 == 0o700,
+            not current.is_symlink()
+            and current.stat().st_mode & 0o777 == 0o700
+            and str(current.relative_to(directory)) in expected_directories,
             "Review package directory permissions changed",
         )
         for name in directories:
@@ -427,14 +439,14 @@ def _compare(directory, files):
 
 
 def _fsync_directory(path):
-    fd = os.open(path, os.O_RDONLY)
+    fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
     try:
         os.fsync(fd)
     finally:
         os.close(fd)
 
 
-def _publish(stage, target):
+def _rename_exclusive(stage, target):
     """Atomic no-replace rename; even an uncooperative empty target is preserved."""
     libc = ctypes.CDLL(None, use_errno=True)
     if sys.platform == "darwin":
@@ -452,11 +464,93 @@ def _publish(stage, target):
         )
         args = (-100, os.fsencode(stage), -100, os.fsencode(target), 1)  # AT_FDCWD, NOREPLACE
     else:
-        raise PermissionError("Atomic exclusive directory publication is unavailable")
+        raise OSError(errno.ENOSYS, "Atomic exclusive directory rename is unavailable")
     rename.restype = ctypes.c_int
     if rename(*args) != 0:
         error = ctypes.get_errno()
         raise OSError(error, os.strerror(error), str(target))
+
+
+def _linked_stage(stage, target, files):
+    """Both byte-verified trees must still be the same original publication objects."""
+    _compare(stage, files)
+    _require(
+        all(os.path.samestat((stage / name).stat(), (target / name).stat()) for name in files),
+        "Foreign staging beside published package; preserve and diagnose",
+    )
+
+
+def _publish_links(stage, target):
+    """Ceph fallback: reserve a directory, then commit BINDING with one exclusive link.
+
+    Keep the complete stage. It is a small hard-link alias, not a second scientific
+    identity. Interrupted prefixes are never repaired or mistaken for a package.
+    The caller lock coordinates writers. Capture the reserved inode immediately;
+    directory fds bind subsequent writes to it, rejecting later path replacement.
+    """
+    files = {}
+    for path in stage.rglob("*"):
+        _require(not path.is_symlink(), "Symlink in publication stage")
+        if path.is_file():
+            files[path.relative_to(stage).as_posix()] = path.read_bytes()
+        else:
+            _require(path.is_dir(), "Unexpected publication stage object")
+    _compare(stage, files)
+    target.mkdir(mode=0o700)  # Exclusive reservation; never adopt any existing directory.
+    reserved = target.stat(follow_symlinks=False)
+    root_fd = os.open(target, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    directories = {".": root_fd}
+    try:
+        _require(
+            os.path.samestat(reserved, os.fstat(root_fd)),
+            "Reserved publication directory was replaced before opening",
+        )
+        _fsync_directory(target.parent)
+        _require(
+            os.path.samestat(reserved, target.stat(follow_symlinks=False)),
+            "Reserved publication directory was replaced during reservation sync",
+        )
+        for relative in sorted(files, key=lambda name: (name == "BINDING.json", name)):
+            parts = Path(relative).parts
+            parent = "."
+            for part in parts[:-1]:
+                child = part if parent == "." else parent + "/" + part
+                if child not in directories:
+                    os.mkdir(part, mode=0o700, dir_fd=directories[parent])
+                    directories[child] = os.open(
+                        part,
+                        os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                        dir_fd=directories[parent],
+                    )
+                parent = child
+            if relative == "BINDING.json":
+                # All payload names must be durable before publishing the commit.
+                for fd in directories.values():
+                    os.fsync(fd)
+                _require(
+                    os.path.samestat(os.fstat(root_fd), target.stat(follow_symlinks=False)),
+                    "Reserved publication directory was replaced",
+                )
+            os.link(
+                stage / relative, parts[-1], dst_dir_fd=directories[parent], follow_symlinks=False
+            )  # Link creation cannot replace an existing name.
+        os.fsync(root_fd)
+        _fsync_directory(target.parent)
+        _compare(target, files)
+        _linked_stage(stage, target, files)
+    finally:
+        for fd in directories.values():
+            os.close(fd)
+
+
+def _publish(stage, target):
+    """Prefer atomic exclusive rename; use exclusive link publication only if unsupported."""
+    try:
+        _rename_exclusive(stage, target)
+    except OSError as exc:
+        if exc.errno not in (errno.EINVAL, errno.ENOSYS, errno.EOPNOTSUPP, errno.ENOTSUP):
+            raise
+        _publish_links(stage, target)
 
 
 def write_package(
@@ -466,6 +560,8 @@ def write_package(
 
     Exact retries verify every byte without rewriting. Partial staging/targets
     are preserved and rejected; a complete matching stage can be safely resumed.
+    Unsupported directory-rename filesystems retain the complete original stage;
+    only its exact hard-link publication can coexist with a complete target.
     Support failures are retained and never change sampling or grant access.
     """
     target = _directory(root, DESTINATION)
@@ -485,10 +581,13 @@ def write_package(
         stage = _directory(root, "PHASES/PILOT_V1/.REVIEW_PACKAGE.staging")
         if target.exists():
             _compare(target, files)
-            _require(
-                not stage.exists(),
-                "Unexpected staging beside published package; preserve and diagnose",
-            )
+            if stage.exists():
+                _linked_stage(stage, target, files)
+                # Complete link publication may have been interrupted at fsync.
+                for directory in (p for p in target.rglob("*") if p.is_dir()):
+                    _fsync_directory(directory)
+                _fsync_directory(target)
+                _fsync_directory(parent)
         else:
             if stage.exists():
                 _compare(stage, files)
@@ -543,6 +642,8 @@ def verify_package(
         "Only the fixed v2 package may be consumed",
     )
     _sha(package_ref["sha256"])
+    target = _directory(root, DESTINATION)
+    _require_commit(target)
     bundle = _derive(
         root,
         phase_identity_sha256=phase_identity_sha256,
@@ -553,7 +654,7 @@ def verify_package(
         hashlib.sha256(bundle["files"]["BINDING.json"]).hexdigest() == package_ref["sha256"],
         "Package binding differs from exact full-census replay",
     )
-    _compare(_directory(root, DESTINATION), bundle["files"])
+    _compare(target, bundle["files"])
     return dict(
         status="VERIFIED_REVIEW_PACKAGE_NOT_GATE_SIGNED",
         training_allowed=False,
