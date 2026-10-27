@@ -1,0 +1,278 @@
+{
+  "host": "cpu-2.cluster02.eee.ntu.edu.sg",
+  "at": "2026-10-27T04:44:41.315033+00:00",
+  "reason": "host-local st_dev binding; exact frozen recovery recomputation on aggregation node",
+  "source_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+  "arms": {
+    "J": {
+      "original_metadata": {
+        "primary": {
+          "size": 260269781,
+          "mtime_ns": 1792979175206973127,
+          "inode": 4398157390103,
+          "device": 48
+        },
+        "recovery": {
+          "size": 260271317,
+          "mtime_ns": 1792985964011658299,
+          "inode": 4398157391926,
+          "device": 48
+        }
+      },
+      "current_metadata": {
+        "primary": {
+          "size": 260269781,
+          "mtime_ns": 1792979175206973127,
+          "inode": 4398157390103,
+          "device": 43
+        },
+        "recovery": {
+          "size": 260271317,
+          "mtime_ns": 1792985964011658299,
+          "inode": 4398157391926,
+          "device": 43
+        }
+      },
+      "status": "PASS",
+      "checks": {
+        "identity": true,
+        "step": true,
+        "policy": true,
+        "optimizer": true,
+        "scheduler": true,
+        "sampler_state": true,
+        "python_rng": true,
+        "numpy_rng": true,
+        "torch_rng": true,
+        "cuda_rng": true,
+        "state_keys": true,
+        "fresh_process": true,
+        "primary_continuous_from_zero": true,
+        "recovery_restored_step_four": true,
+        "terminal_step_twelve": true,
+        "numerical_credit_update_receipts": true,
+        "regenerated_groups": true
+      },
+      "completion_digests": {
+        "primary": "3b265a0a6dfc80674340b16ef698192143faeaad25fb1850e49e1af0222d2b84",
+        "recovery": "28e04fb9d1f75ceca6cd84742dce61ee668b17ad4c4ffe2440ad2c7c8dd5775a"
+      }
+    },
+    "SHUF": {
+      "original_metadata": {
+        "primary": {
+          "size": 260269781,
+          "mtime_ns": 1792979128167896922,
+          "inode": 4398157390074,
+          "device": 48
+        },
+        "recovery": {
+          "size": 260271317,
+          "mtime_ns": 1792985875939534201,
+          "inode": 4398157391898,
+          "device": 48
+        }
+      },
+      "current_metadata": {
+        "primary": {
+          "size": 260269781,
+          "mtime_ns": 1792979128167896922,
+          "inode": 4398157390074,
+          "device": 43
+        },
+        "recovery": {
+          "size": 260271317,
+          "mtime_ns": 1792985875939534201,
+          "inode": 4398157391898,
+          "device": 43
+        }
+      },
+      "status": "PASS",
+      "checks": {
+        "identity": true,
+        "step": true,
+        "policy": true,
+        "optimizer": true,
+        "scheduler": true,
+        "sampler_state": true,
+        "python_rng": true,
+        "numpy_rng": true,
+        "torch_rng": true,
+        "cuda_rng": true,
+        "state_keys": true,
+        "fresh_process": true,
+        "primary_continuous_from_zero": true,
+        "recovery_restored_step_four": true,
+        "terminal_step_twelve": true,
+        "numerical_credit_update_receipts": true,
+        "regenerated_groups": true
+      },
+      "completion_digests": {
+        "primary": "f378d42f3759e180caaa0473c1c11775d675d4d306018945e84fdddefc7440ef",
+        "recovery": "7d4b79c16f6c6e34fdd3876f1798070f710224ed525aa3fb75ead42ab2978a16"
+      }
+    },
+    "DENSE": {
+      "original_metadata": {
+        "primary": {
+          "size": 260269781,
+          "mtime_ns": 1793032605963959875,
+          "inode": 4398157566153,
+          "device": 48
+        },
+        "recovery": {
+          "size": 260271317,
+          "mtime_ns": 1793041620282177219,
+          "inode": 4398157592315,
+          "device": 48
+        }
+      },
+      "current_metadata": {
+        "primary": {
+          "size": 260269781,
+          "mtime_ns": 1793032605963959875,
+          "inode": 4398157566153,
+          "device": 43
+        },
+        "recovery": {
+          "size": 260271317,
+          "mtime_ns": 1793041620282177219,
+          "inode": 4398157592315,
+          "device": 43
+        }
+      },
+      "status": "PASS",
+      "checks": {
+        "identity": true,
+        "step": true,
+        "policy": true,
+        "optimizer": true,
+        "scheduler": true,
+        "sampler_state": true,
+        "python_rng": true,
+        "numpy_rng": true,
+        "torch_rng": true,
+        "cuda_rng": true,
+        "state_keys": true,
+        "fresh_process": true,
+        "primary_continuous_from_zero": true,
+        "recovery_restored_step_four": true,
+        "terminal_step_twelve": true,
+        "numerical_credit_update_receipts": true,
+        "regenerated_groups": true
+      },
+      "completion_digests": {
+        "primary": "177a6eaef5183ed211f5a0e6a1e6c9d4765eac4cf2821d885ab90f6d7b4963fa",
+        "recovery": "6e93e06128455a06e2ce13c43b2de5ccacd6b59aaa2644ed26c56a1b1db2f4db"
+      }
+    },
+    "LOCAL": {
+      "original_metadata": {
+        "primary": {
+          "size": 260269781,
+          "mtime_ns": 1792986699330701325,
+          "inode": 4398157392035,
+          "device": 48
+        },
+        "recovery": {
+          "size": 260271317,
+          "mtime_ns": 1792993513166064340,
+          "inode": 4398157425463,
+          "device": 48
+        }
+      },
+      "current_metadata": {
+        "primary": {
+          "size": 260269781,
+          "mtime_ns": 1792986699330701325,
+          "inode": 4398157392035,
+          "device": 43
+        },
+        "recovery": {
+          "size": 260271317,
+          "mtime_ns": 1792993513166064340,
+          "inode": 4398157425463,
+          "device": 43
+        }
+      },
+      "status": "PASS",
+      "checks": {
+        "identity": true,
+        "step": true,
+        "policy": true,
+        "optimizer": true,
+        "scheduler": true,
+        "sampler_state": true,
+        "python_rng": true,
+        "numpy_rng": true,
+        "torch_rng": true,
+        "cuda_rng": true,
+        "state_keys": true,
+        "fresh_process": true,
+        "primary_continuous_from_zero": true,
+        "recovery_restored_step_four": true,
+        "terminal_step_twelve": true,
+        "numerical_credit_update_receipts": true,
+        "regenerated_groups": true
+      },
+      "completion_digests": {
+        "primary": "b13bc1f5a46a9e8e9a6f3297481dba409e7cf5e1e44d57aaf55e7a1dd745460d",
+        "recovery": "49f56be0249cc4163c869ed5e1bb4db8814c32f5113f3fdd1b5152b9c935502f"
+      }
+    },
+    "HARD": {
+      "original_metadata": {
+        "primary": {
+          "size": 260269781,
+          "mtime_ns": 1792986627124591033,
+          "inode": 4398157392010,
+          "device": 48
+        },
+        "recovery": {
+          "size": 260271317,
+          "mtime_ns": 1792993413712882757,
+          "inode": 4398157425453,
+          "device": 48
+        }
+      },
+      "current_metadata": {
+        "primary": {
+          "size": 260269781,
+          "mtime_ns": 1792986627124591033,
+          "inode": 4398157392010,
+          "device": 43
+        },
+        "recovery": {
+          "size": 260271317,
+          "mtime_ns": 1792993413712882757,
+          "inode": 4398157425453,
+          "device": 43
+        }
+      },
+      "status": "PASS",
+      "checks": {
+        "identity": true,
+        "step": true,
+        "policy": true,
+        "optimizer": true,
+        "scheduler": true,
+        "sampler_state": true,
+        "python_rng": true,
+        "numpy_rng": true,
+        "torch_rng": true,
+        "cuda_rng": true,
+        "state_keys": true,
+        "fresh_process": true,
+        "primary_continuous_from_zero": true,
+        "recovery_restored_step_four": true,
+        "terminal_step_twelve": true,
+        "numerical_credit_update_receipts": true,
+        "regenerated_groups": true
+      },
+      "completion_digests": {
+        "primary": "94c27e37263186a92656c82b48c8c448eeca61fffec1ffb16cb241cb446819aa",
+        "recovery": "9b0d2f03c40f5eeed1187bf255943a152c7b4fef47ccdc1494ddf400ee08fcb8"
+      }
+    }
+  }
+}

@@ -1,0 +1,256 @@
+{
+  "experiment": "SR-F5",
+  "recipe": "recipe_v2",
+  "status": "STOP_RECIPE_V2_FEASIBILITY",
+  "g3_gate": {
+    "status": "FAIL",
+    "errors": [
+      "numerical/runtime checks missing",
+      "b1/1: insufficient SHUF contrast",
+      "b1/2: insufficient SHUF contrast",
+      "b0/HARD:no_actual_reward_difference"
+    ],
+    "scope": "G3 feasibility, not performance significance",
+    "at": "2026-10-27T04:45:55.966719+00:00",
+    "evidence": "G3/METRICS.json",
+    "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0"
+  },
+  "science_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+  "primary_paths": 15,
+  "primary_responses": 23040,
+  "recovery_paths": 5,
+  "recovery_responses": 5120,
+  "total_responses": 28160,
+  "missing_paths": [],
+  "scientific_failures": [
+    "b0 HARD reward differences: 0",
+    "b1 SHUF changed groups steps5-8: 1 < 2",
+    "b1 SHUF changed groups steps9-12: 1 < 2"
+  ],
+  "technical_incident": {
+    "job": "229267",
+    "status": "FAILED/1:0",
+    "cause": "host-local st_dev metadata binding",
+    "resolution_job": "229269",
+    "resolution_status": "COMPLETED/0:0",
+    "exact_recovery_revalidated": true,
+    "science_changed": false
+  },
+  "formal_started": false,
+  "recipe_v3_allowed": false,
+  "blocks": {
+    "b0": {
+      "windows": [
+        {
+          "LOCAL_nonzero_groups": 14,
+          "SHUF_changed_groups": 5
+        },
+        {
+          "LOCAL_nonzero_groups": 13,
+          "SHUF_changed_groups": 3
+        },
+        {
+          "LOCAL_nonzero_groups": 11,
+          "SHUF_changed_groups": 3
+        }
+      ],
+      "signal_roots": 22,
+      "signal_families": 6,
+      "S_known_fraction": 0.99140625,
+      "verified_intervention_resampling_intervention": true,
+      "S_known_fraction_by_arm": {
+        "J": 0.9915364583333334,
+        "HARD": 0.9915364583333334,
+        "DENSE": 0.9915364583333334,
+        "LOCAL": 0.9908854166666666,
+        "SHUF": 0.9915364583333334
+      },
+      "hard_reward_difference": {
+        "reward_changed_rows": 0,
+        "reward_changed_groups": 0,
+        "advantage_changed_groups": 0
+      },
+      "channel_gradient_evidence_by_arm": {
+        "J": {
+          "maximum_native_gradient_norm": 0.03566868693350495,
+          "maximum_auxiliary_gradient_norm": 0.0,
+          "maximum_actual_gradient_norm": 0.07985809445381165
+        },
+        "HARD": {
+          "maximum_native_gradient_norm": 0.03566868693350495,
+          "maximum_auxiliary_gradient_norm": 0.0,
+          "maximum_actual_gradient_norm": 0.07985809445381165
+        },
+        "DENSE": {
+          "maximum_native_gradient_norm": 0.03566868693350495,
+          "maximum_auxiliary_gradient_norm": 0.0011583796410759933,
+          "maximum_actual_gradient_norm": 0.08089204132556915
+        },
+        "LOCAL": {
+          "maximum_native_gradient_norm": 0.03566868693350495,
+          "maximum_auxiliary_gradient_norm": 0.00041584750638430586,
+          "maximum_actual_gradient_norm": 0.08460132032632828
+        },
+        "SHUF": {
+          "maximum_native_gradient_norm": 0.03566868693350495,
+          "maximum_auxiliary_gradient_norm": 0.00041584750638430586,
+          "maximum_actual_gradient_norm": 0.07962867617607117
+        }
+      },
+      "state_counts": {
+        "PASS/J1": 6678,
+        "PASS/J0": 638,
+        "FAIL/J0": 298,
+        "UNKNOWN/J0": 66
+      }
+    },
+    "b1": {
+      "windows": [
+        {
+          "LOCAL_nonzero_groups": 20,
+          "SHUF_changed_groups": 10
+        },
+        {
+          "LOCAL_nonzero_groups": 7,
+          "SHUF_changed_groups": 1
+        },
+        {
+          "LOCAL_nonzero_groups": 9,
+          "SHUF_changed_groups": 1
+        }
+      ],
+      "signal_roots": 18,
+      "signal_families": 5,
+      "S_known_fraction": 0.9744791666666667,
+      "verified_intervention_resampling_intervention": true,
+      "S_known_fraction_by_arm": {
+        "J": 0.97265625,
+        "HARD": 0.9720052083333334,
+        "DENSE": 0.9765625,
+        "LOCAL": 0.9733072916666666,
+        "SHUF": 0.9778645833333334
+      },
+      "hard_reward_difference": {
+        "reward_changed_rows": 1,
+        "reward_changed_groups": 1,
+        "advantage_changed_groups": 1
+      },
+      "channel_gradient_evidence_by_arm": {
+        "J": {
+          "maximum_native_gradient_norm": 0.03428930812069198,
+          "maximum_auxiliary_gradient_norm": 0.0,
+          "maximum_actual_gradient_norm": 0.26835110783576965
+        },
+        "HARD": {
+          "maximum_native_gradient_norm": 0.03428930812069198,
+          "maximum_auxiliary_gradient_norm": 0.0,
+          "maximum_actual_gradient_norm": 0.2145875096321106
+        },
+        "DENSE": {
+          "maximum_native_gradient_norm": 0.03428930812069198,
+          "maximum_auxiliary_gradient_norm": 0.001368518594091467,
+          "maximum_actual_gradient_norm": 0.24833738803863525
+        },
+        "LOCAL": {
+          "maximum_native_gradient_norm": 0.03428930812069198,
+          "maximum_auxiliary_gradient_norm": 0.0001798366182832656,
+          "maximum_actual_gradient_norm": 0.2652686536312103
+        },
+        "SHUF": {
+          "maximum_native_gradient_norm": 0.03428930812069198,
+          "maximum_auxiliary_gradient_norm": 0.00021291204454727743,
+          "maximum_actual_gradient_norm": 0.2607361078262329
+        }
+      },
+      "state_counts": {
+        "PASS/J1": 5677,
+        "PASS/J0": 1332,
+        "FAIL/J0": 470,
+        "UNKNOWN/J0": 196,
+        "FAIL/J1": 5
+      }
+    },
+    "b2": {
+      "windows": [
+        {
+          "LOCAL_nonzero_groups": 24,
+          "SHUF_changed_groups": 11
+        },
+        {
+          "LOCAL_nonzero_groups": 14,
+          "SHUF_changed_groups": 6
+        },
+        {
+          "LOCAL_nonzero_groups": 9,
+          "SHUF_changed_groups": 4
+        }
+      ],
+      "signal_roots": 25,
+      "signal_families": 6,
+      "S_known_fraction": 0.9880208333333333,
+      "verified_intervention_resampling_intervention": true,
+      "S_known_fraction_by_arm": {
+        "J": 0.9869791666666666,
+        "HARD": 0.98828125,
+        "DENSE": 0.9895833333333334,
+        "LOCAL": 0.9889322916666666,
+        "SHUF": 0.986328125
+      },
+      "hard_reward_difference": {
+        "reward_changed_rows": 3,
+        "reward_changed_groups": 3,
+        "advantage_changed_groups": 3
+      },
+      "channel_gradient_evidence_by_arm": {
+        "J": {
+          "maximum_native_gradient_norm": 0.019080898798752386,
+          "maximum_auxiliary_gradient_norm": 0.0,
+          "maximum_actual_gradient_norm": 0.06564101576805115
+        },
+        "HARD": {
+          "maximum_native_gradient_norm": 0.019080898798752386,
+          "maximum_auxiliary_gradient_norm": 0.0,
+          "maximum_actual_gradient_norm": 0.06564101576805115
+        },
+        "DENSE": {
+          "maximum_native_gradient_norm": 0.019080898798752386,
+          "maximum_auxiliary_gradient_norm": 0.0013941138559103751,
+          "maximum_actual_gradient_norm": 0.06724908947944641
+        },
+        "LOCAL": {
+          "maximum_native_gradient_norm": 0.019080898798752386,
+          "maximum_auxiliary_gradient_norm": 0.00010587364748398011,
+          "maximum_actual_gradient_norm": 0.07499638944864273
+        },
+        "SHUF": {
+          "maximum_native_gradient_norm": 0.019080898798752386,
+          "maximum_auxiliary_gradient_norm": 0.00010587364748398011,
+          "maximum_actual_gradient_norm": 0.06996382027864456
+        }
+      },
+      "state_counts": {
+        "PASS/J1": 6018,
+        "PASS/J0": 1190,
+        "UNKNOWN/J0": 92,
+        "FAIL/J0": 367,
+        "FAIL/J1": 13
+      }
+    }
+  },
+  "report": "REPORT_ZH.md",
+  "numerical_summary": {
+    "updates": 180,
+    "all_finite": true,
+    "optimizer_updates_per_step": 1,
+    "max_step_mean_sampler_train_difference": 1.1705009228535346e-06,
+    "max_token_sampler_train_difference": 0.003695249557495117,
+    "max_tis_truncated_fraction": 0.0,
+    "all_parameter_updates_nonzero": true
+  },
+  "final_diagnostic_counts": "validation/RECIPE_V2_G3_FINAL/G3_FINAL_DIAGNOSTIC_COUNTS.json",
+  "automation": {
+    "id": "sr-f5",
+    "status": "DELETED",
+    "reason": "recipe_v2 scientific feasibility FAIL; final diagnosis preserved"
+  }
+}

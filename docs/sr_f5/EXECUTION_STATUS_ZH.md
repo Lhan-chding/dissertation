@@ -1,5 +1,15 @@
 # SR-F5 执行状态（2026-10-25，新加坡）
 
+## 最终：2026-10-27 12:45 G3 科学可实施性 FAIL，停止正式扩展
+
+集群恢复后已核实228108/228121于08:05:34/08:18:52新加坡时间COMPLETED/0:0，主作业及batch/extern均成功退出。15条primary全部连续12步、23040回答；b0五臂fresh recovery全部完成、5120回答，17项精确比较各臂均PASS。总计28160/28160。
+
+冻结源码47d5e85最终CPU汇总229269已COMPLETED/0:0，实际G3门FAIL：b0 HARD奖励改变行/组/advantage改变组均0；b1 SHUF三个窗口改变组10/1/1，后两窗口低于登记的每窗口至少2组。180次更新均FINITE，概率门均满足，360条预指定程序审核PASS。通用错误numerical/runtime checks missing由HARD零差异触发，不表示数值不稳定。
+
+首次汇总229267的跨节点st_dev绑定错误单独保留：GPU设备号48、cpu-2为43，size/mtime/inode及完成摘要未变。保存五份原恢复回执后，以原冻结代码在同一CPU作业内重新精确比较五臂并汇总，未改科学源、阈值或生成新回答。
+
+依contract05/07，唯一recipe_v2真实科学可实施性FAIL后停止，不开第三版，不改seed，不补不利窗口，不启动正式45路矩阵。G0/G1/G4最终占位保持NOT_RUN，v1/v2全部原始证据保留。自动跟进sr-f5已删除。最终报告 [REPORT_ZH.md](REPORT_ZH.md)、[SUMMARY.json](SUMMARY.json)，完整小型证据位于validation/RECIPE_V2_G3_FINAL/；服务器报告及CURRENT已记录STOP_RECIPE_V2_FEASIBILITY。以下为历史快照。
+
 ## 最新：2026-10-27 00:43 四条主路径完成
 
 实查续跑 228108/228121 均仍 RUNNING 于 gpu-pro6000-12。b0-DENSE、b1-LOCAL、b1-SHUF、b1-DENSE 各12步、1536回答已 COMPLETE；四份回执均 restored_step=0，绑定原冻结 digest，worker 子进程正常退出。累计完整主路径8/15（12288回答），完整恢复4/5（4096回答），共16384/28160（58.2%），尚差11776。此计数不含新路径部分回答；科学状态仍 NOT_YET_AGGREGATED，整体 G3 未通过，无 FAILURES.jsonl。

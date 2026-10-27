@@ -1,0 +1,1318 @@
+{
+  "at": "2026-10-27T04:43:00.205222+00:00",
+  "queue": "229108|cafeTD-FINAL-SM|PENDING\n228477|cafeD-POSELOCAL-SM|RUNNING\n228476|cafeA-PURETIME-SM|RUNNING\n",
+  "accounting": "228108|COMPLETED|0:0|2026-10-26T12:50:52|2026-10-27T00:05:34|11:14:42|11:30:00\n228121|COMPLETED|0:0|2026-10-26T12:52:23|2026-10-27T00:18:52|11:26:29|11:30:00\n",
+  "completions": {
+    "G3/RUNS/b0/SHUF/recovery/COMPLETE.json": {
+      "status": "COMPLETE",
+      "identity": {
+        "run_id": "G3-b0-SHUF",
+        "parent": "b0",
+        "arm": "SHUF",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "lane": "recovery",
+      "committed_step": 12,
+      "responses": 1024,
+      "scientific_gate": "NOT_YET_AGGREGATED",
+      "execution": {
+        "id": "e56450e8530e4826bc6a14f4299e3cab",
+        "process": {
+          "host": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg",
+          "pid": 29223,
+          "start_ticks": "214277451"
+        },
+        "restored_step": 4
+      }
+    },
+    "G3/RUNS/b0/SHUF/primary/COMPLETE.json": {
+      "status": "COMPLETE",
+      "identity": {
+        "run_id": "G3-b0-SHUF",
+        "parent": "b0",
+        "arm": "SHUF",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "lane": "primary",
+      "committed_step": 12,
+      "responses": 1536,
+      "scientific_gate": "NOT_YET_AGGREGATED",
+      "execution": {
+        "id": "56e8893bb0d5444eb97b27f574ed37ea",
+        "process": {
+          "host": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg",
+          "pid": 3393771,
+          "start_ticks": "213271262"
+        },
+        "restored_step": 0
+      }
+    },
+    "G3/RUNS/b0/J/recovery/COMPLETE.json": {
+      "status": "COMPLETE",
+      "identity": {
+        "run_id": "G3-b0-J",
+        "parent": "b0",
+        "arm": "J",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "lane": "recovery",
+      "committed_step": 12,
+      "responses": 1024,
+      "scientific_gate": "NOT_YET_AGGREGATED",
+      "execution": {
+        "id": "303c1fe1bc1342239bd26bdb7ec5d221",
+        "process": {
+          "host": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg",
+          "pid": 33192,
+          "start_ticks": "214282141"
+        },
+        "restored_step": 4
+      }
+    },
+    "G3/RUNS/b0/J/primary/COMPLETE.json": {
+      "status": "COMPLETE",
+      "identity": {
+        "run_id": "G3-b0-J",
+        "parent": "b0",
+        "arm": "J",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "lane": "primary",
+      "committed_step": 12,
+      "responses": 1536,
+      "scientific_gate": "NOT_YET_AGGREGATED",
+      "execution": {
+        "id": "009e6a55f11a4735ad006979eee48406",
+        "process": {
+          "host": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg",
+          "pid": 3393770,
+          "start_ticks": "213271262"
+        },
+        "restored_step": 0
+      }
+    },
+    "G3/RUNS/b0/LOCAL/recovery/COMPLETE.json": {
+      "status": "COMPLETE",
+      "identity": {
+        "run_id": "G3-b0-LOCAL",
+        "parent": "b0",
+        "arm": "LOCAL",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "lane": "recovery",
+      "committed_step": 12,
+      "responses": 1024,
+      "scientific_gate": "NOT_YET_AGGREGATED",
+      "execution": {
+        "id": "cf49aa188cbb4e5ba39ee13bb42b8390",
+        "process": {
+          "host": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg",
+          "pid": 659092,
+          "start_ticks": "215034551"
+        },
+        "restored_step": 4
+      }
+    },
+    "G3/RUNS/b0/LOCAL/primary/COMPLETE.json": {
+      "status": "COMPLETE",
+      "identity": {
+        "run_id": "G3-b0-LOCAL",
+        "parent": "b0",
+        "arm": "LOCAL",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "lane": "primary",
+      "committed_step": 12,
+      "responses": 1536,
+      "scientific_gate": "NOT_YET_AGGREGATED",
+      "execution": {
+        "id": "a84d7b2067794a52acbbd53e0af32cae",
+        "process": {
+          "host": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg",
+          "pid": 4009298,
+          "start_ticks": "214020025"
+        },
+        "restored_step": 0
+      }
+    },
+    "G3/RUNS/b0/HARD/recovery/COMPLETE.json": {
+      "status": "COMPLETE",
+      "identity": {
+        "run_id": "G3-b0-HARD",
+        "parent": "b0",
+        "arm": "HARD",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "lane": "recovery",
+      "committed_step": 12,
+      "responses": 1024,
+      "scientific_gate": "NOT_YET_AGGREGATED",
+      "execution": {
+        "id": "1ced4a1491ba4ba5bddb756a5715c69f",
+        "process": {
+          "host": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg",
+          "pid": 653029,
+          "start_ticks": "215027332"
+        },
+        "restored_step": 4
+      }
+    },
+    "G3/RUNS/b0/HARD/primary/COMPLETE.json": {
+      "status": "COMPLETE",
+      "identity": {
+        "run_id": "G3-b0-HARD",
+        "parent": "b0",
+        "arm": "HARD",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "lane": "primary",
+      "committed_step": 12,
+      "responses": 1536,
+      "scientific_gate": "NOT_YET_AGGREGATED",
+      "execution": {
+        "id": "417df91aea114d3cba566acf5fd3718b",
+        "process": {
+          "host": "gpu-pro6000-9.cluster02.eee.ntu.edu.sg",
+          "pid": 4009297,
+          "start_ticks": "214020025"
+        },
+        "restored_step": 0
+      }
+    },
+    "G3/RUNS/b0/DENSE/recovery/COMPLETE.json": {
+      "status": "COMPLETE",
+      "identity": {
+        "run_id": "G3-b0-DENSE",
+        "parent": "b0",
+        "arm": "DENSE",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "lane": "recovery",
+      "committed_step": 12,
+      "responses": 1024,
+      "scientific_gate": "NOT_YET_AGGREGATED",
+      "execution": {
+        "id": "45463f34375b405aaa46654a35ba236a",
+        "process": {
+          "host": "gpu-pro6000-12.cluster02.eee.ntu.edu.sg",
+          "pid": 1986111,
+          "start_ticks": "237752119"
+        },
+        "restored_step": 4
+      }
+    },
+    "G3/RUNS/b0/DENSE/primary/COMPLETE.json": {
+      "status": "COMPLETE",
+      "identity": {
+        "run_id": "G3-b0-DENSE",
+        "parent": "b0",
+        "arm": "DENSE",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "lane": "primary",
+      "committed_step": 12,
+      "responses": 1536,
+      "scientific_gate": "NOT_YET_AGGREGATED",
+      "execution": {
+        "id": "997a76740464452fa3fbc74d1ca71ce2",
+        "process": {
+          "host": "gpu-pro6000-12.cluster02.eee.ntu.edu.sg",
+          "pid": 1895855,
+          "start_ticks": "236398234"
+        },
+        "restored_step": 0
+      }
+    },
+    "G3/RUNS/b1/SHUF/primary/COMPLETE.json": {
+      "status": "COMPLETE",
+      "identity": {
+        "run_id": "G3-b1-SHUF",
+        "parent": "b1",
+        "arm": "SHUF",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71002/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "lane": "primary",
+      "committed_step": 12,
+      "responses": 1536,
+      "scientific_gate": "NOT_YET_AGGREGATED",
+      "execution": {
+        "id": "b3fd35480b13418e9060c2fe35a7d9e9",
+        "process": {
+          "host": "gpu-pro6000-12.cluster02.eee.ntu.edu.sg",
+          "pid": 1897476,
+          "start_ticks": "236407071"
+        },
+        "restored_step": 0
+      }
+    },
+    "G3/RUNS/b1/J/primary/COMPLETE.json": {
+      "status": "COMPLETE",
+      "identity": {
+        "run_id": "G3-b1-J",
+        "parent": "b1",
+        "arm": "J",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71002/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "lane": "primary",
+      "committed_step": 12,
+      "responses": 1536,
+      "scientific_gate": "NOT_YET_AGGREGATED",
+      "execution": {
+        "id": "021eeff945bd42068a5277f46069e40a",
+        "process": {
+          "host": "gpu-pro6000-12.cluster02.eee.ntu.edu.sg",
+          "pid": 1985967,
+          "start_ticks": "237736139"
+        },
+        "restored_step": 0
+      }
+    },
+    "G3/RUNS/b1/LOCAL/primary/COMPLETE.json": {
+      "status": "COMPLETE",
+      "identity": {
+        "run_id": "G3-b1-LOCAL",
+        "parent": "b1",
+        "arm": "LOCAL",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71002/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "lane": "primary",
+      "committed_step": 12,
+      "responses": 1536,
+      "scientific_gate": "NOT_YET_AGGREGATED",
+      "execution": {
+        "id": "0f74c79252ce4bb1b32a2254970b1bbf",
+        "process": {
+          "host": "gpu-pro6000-12.cluster02.eee.ntu.edu.sg",
+          "pid": 1895856,
+          "start_ticks": "236398249"
+        },
+        "restored_step": 0
+      }
+    },
+    "G3/RUNS/b1/HARD/primary/COMPLETE.json": {
+      "status": "COMPLETE",
+      "identity": {
+        "run_id": "G3-b1-HARD",
+        "parent": "b1",
+        "arm": "HARD",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71002/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "lane": "primary",
+      "committed_step": 12,
+      "responses": 1536,
+      "scientific_gate": "NOT_YET_AGGREGATED",
+      "execution": {
+        "id": "aab30c0308134a8b98b6953caf07e703",
+        "process": {
+          "host": "gpu-pro6000-12.cluster02.eee.ntu.edu.sg",
+          "pid": 1985931,
+          "start_ticks": "237733762"
+        },
+        "restored_step": 0
+      }
+    },
+    "G3/RUNS/b1/DENSE/primary/COMPLETE.json": {
+      "status": "COMPLETE",
+      "identity": {
+        "run_id": "G3-b1-DENSE",
+        "parent": "b1",
+        "arm": "DENSE",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71002/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "lane": "primary",
+      "committed_step": 12,
+      "responses": 1536,
+      "scientific_gate": "NOT_YET_AGGREGATED",
+      "execution": {
+        "id": "1e4181ea5c9747cdbead7e598450363d",
+        "process": {
+          "host": "gpu-pro6000-12.cluster02.eee.ntu.edu.sg",
+          "pid": 1897477,
+          "start_ticks": "236407091"
+        },
+        "restored_step": 0
+      }
+    },
+    "G3/RUNS/b2/SHUF/primary/COMPLETE.json": {
+      "status": "COMPLETE",
+      "identity": {
+        "run_id": "G3-b2-SHUF",
+        "parent": "b2",
+        "arm": "SHUF",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71003/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "lane": "primary",
+      "committed_step": 12,
+      "responses": 1536,
+      "scientific_gate": "NOT_YET_AGGREGATED",
+      "execution": {
+        "id": "46717135ef1f4c1386a2f7880bc175fa",
+        "process": {
+          "host": "gpu-pro6000-12.cluster02.eee.ntu.edu.sg",
+          "pid": 1986355,
+          "start_ticks": "237768827"
+        },
+        "restored_step": 0
+      }
+    },
+    "G3/RUNS/b2/J/primary/COMPLETE.json": {
+      "status": "COMPLETE",
+      "identity": {
+        "run_id": "G3-b2-J",
+        "parent": "b2",
+        "arm": "J",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71003/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "lane": "primary",
+      "committed_step": 12,
+      "responses": 1536,
+      "scientific_gate": "NOT_YET_AGGREGATED",
+      "execution": {
+        "id": "db1f582aa8454ef7a50ea2aa0a4c68b5",
+        "process": {
+          "host": "gpu-pro6000-12.cluster02.eee.ntu.edu.sg",
+          "pid": 2033180,
+          "start_ticks": "239151913"
+        },
+        "restored_step": 0
+      }
+    },
+    "G3/RUNS/b2/LOCAL/primary/COMPLETE.json": {
+      "status": "COMPLETE",
+      "identity": {
+        "run_id": "G3-b2-LOCAL",
+        "parent": "b2",
+        "arm": "LOCAL",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71003/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "lane": "primary",
+      "committed_step": 12,
+      "responses": 1536,
+      "scientific_gate": "NOT_YET_AGGREGATED",
+      "execution": {
+        "id": "9ce47e0a04ec4f51a1c17cb71981ea07",
+        "process": {
+          "host": "gpu-pro6000-12.cluster02.eee.ntu.edu.sg",
+          "pid": 2032650,
+          "start_ticks": "239081538"
+        },
+        "restored_step": 0
+      }
+    },
+    "G3/RUNS/b2/HARD/primary/COMPLETE.json": {
+      "status": "COMPLETE",
+      "identity": {
+        "run_id": "G3-b2-HARD",
+        "parent": "b2",
+        "arm": "HARD",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71003/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "lane": "primary",
+      "committed_step": 12,
+      "responses": 1536,
+      "scientific_gate": "NOT_YET_AGGREGATED",
+      "execution": {
+        "id": "40a1384f1dc1448fae81ccc6a8a1dee4",
+        "process": {
+          "host": "gpu-pro6000-12.cluster02.eee.ntu.edu.sg",
+          "pid": 2032557,
+          "start_ticks": "239074051"
+        },
+        "restored_step": 0
+      }
+    },
+    "G3/RUNS/b2/DENSE/primary/COMPLETE.json": {
+      "status": "COMPLETE",
+      "identity": {
+        "run_id": "G3-b2-DENSE",
+        "parent": "b2",
+        "arm": "DENSE",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71003/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "lane": "primary",
+      "committed_step": 12,
+      "responses": 1536,
+      "scientific_gate": "NOT_YET_AGGREGATED",
+      "execution": {
+        "id": "8c92517049374c97896a73ac66ad945e",
+        "process": {
+          "host": "gpu-pro6000-12.cluster02.eee.ntu.edu.sg",
+          "pid": 2029106,
+          "start_ticks": "238654315"
+        },
+        "restored_step": 0
+      }
+    }
+  },
+  "recoveries": {
+    "G3/RUNS/b0/DENSE/RECOVERY.json": {
+      "status": "PASS",
+      "checks": {
+        "identity": true,
+        "step": true,
+        "policy": true,
+        "optimizer": true,
+        "scheduler": true,
+        "sampler_state": true,
+        "python_rng": true,
+        "numpy_rng": true,
+        "torch_rng": true,
+        "cuda_rng": true,
+        "state_keys": true,
+        "fresh_process": true,
+        "primary_continuous_from_zero": true,
+        "recovery_restored_step_four": true,
+        "terminal_step_twelve": true,
+        "numerical_credit_update_receipts": true,
+        "regenerated_groups": true
+      },
+      "parent": "b0",
+      "arm": "DENSE",
+      "regenerated_groups": 128,
+      "actual_matching_groups": 128,
+      "criterion": "frozen exact; no tolerance widened after observing outputs",
+      "identity": {
+        "run_id": "G3-b0-DENSE",
+        "parent": "b0",
+        "arm": "DENSE",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "checkpoint_metadata": {
+        "primary": {
+          "size": 260269781,
+          "mtime_ns": 1793032605963959875,
+          "inode": 4398157566153,
+          "device": 48
+        },
+        "recovery": {
+          "size": 260271317,
+          "mtime_ns": 1793041620282177219,
+          "inode": 4398157592315,
+          "device": 48
+        }
+      },
+      "completion_digests": {
+        "primary": "177a6eaef5183ed211f5a0e6a1e6c9d4765eac4cf2821d885ab90f6d7b4963fa",
+        "recovery": "6e93e06128455a06e2ce13c43b2de5ccacd6b59aaa2644ed26c56a1b1db2f4db"
+      }
+    },
+    "G3/RUNS/b0/HARD/RECOVERY.json": {
+      "status": "PASS",
+      "checks": {
+        "identity": true,
+        "step": true,
+        "policy": true,
+        "optimizer": true,
+        "scheduler": true,
+        "sampler_state": true,
+        "python_rng": true,
+        "numpy_rng": true,
+        "torch_rng": true,
+        "cuda_rng": true,
+        "state_keys": true,
+        "fresh_process": true,
+        "primary_continuous_from_zero": true,
+        "recovery_restored_step_four": true,
+        "terminal_step_twelve": true,
+        "numerical_credit_update_receipts": true,
+        "regenerated_groups": true
+      },
+      "parent": "b0",
+      "arm": "HARD",
+      "regenerated_groups": 128,
+      "actual_matching_groups": 128,
+      "criterion": "frozen exact; no tolerance widened after observing outputs",
+      "identity": {
+        "run_id": "G3-b0-HARD",
+        "parent": "b0",
+        "arm": "HARD",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "checkpoint_metadata": {
+        "primary": {
+          "size": 260269781,
+          "mtime_ns": 1792986627124591033,
+          "inode": 4398157392010,
+          "device": 48
+        },
+        "recovery": {
+          "size": 260271317,
+          "mtime_ns": 1792993413712882757,
+          "inode": 4398157425453,
+          "device": 48
+        }
+      },
+      "completion_digests": {
+        "primary": "94c27e37263186a92656c82b48c8c448eeca61fffec1ffb16cb241cb446819aa",
+        "recovery": "9b0d2f03c40f5eeed1187bf255943a152c7b4fef47ccdc1494ddf400ee08fcb8"
+      }
+    },
+    "G3/RUNS/b0/LOCAL/RECOVERY.json": {
+      "status": "PASS",
+      "checks": {
+        "identity": true,
+        "step": true,
+        "policy": true,
+        "optimizer": true,
+        "scheduler": true,
+        "sampler_state": true,
+        "python_rng": true,
+        "numpy_rng": true,
+        "torch_rng": true,
+        "cuda_rng": true,
+        "state_keys": true,
+        "fresh_process": true,
+        "primary_continuous_from_zero": true,
+        "recovery_restored_step_four": true,
+        "terminal_step_twelve": true,
+        "numerical_credit_update_receipts": true,
+        "regenerated_groups": true
+      },
+      "parent": "b0",
+      "arm": "LOCAL",
+      "regenerated_groups": 128,
+      "actual_matching_groups": 128,
+      "criterion": "frozen exact; no tolerance widened after observing outputs",
+      "identity": {
+        "run_id": "G3-b0-LOCAL",
+        "parent": "b0",
+        "arm": "LOCAL",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "checkpoint_metadata": {
+        "primary": {
+          "size": 260269781,
+          "mtime_ns": 1792986699330701325,
+          "inode": 4398157392035,
+          "device": 48
+        },
+        "recovery": {
+          "size": 260271317,
+          "mtime_ns": 1792993513166064340,
+          "inode": 4398157425463,
+          "device": 48
+        }
+      },
+      "completion_digests": {
+        "primary": "b13bc1f5a46a9e8e9a6f3297481dba409e7cf5e1e44d57aaf55e7a1dd745460d",
+        "recovery": "49f56be0249cc4163c869ed5e1bb4db8814c32f5113f3fdd1b5152b9c935502f"
+      }
+    },
+    "G3/RUNS/b0/J/RECOVERY.json": {
+      "status": "PASS",
+      "checks": {
+        "identity": true,
+        "step": true,
+        "policy": true,
+        "optimizer": true,
+        "scheduler": true,
+        "sampler_state": true,
+        "python_rng": true,
+        "numpy_rng": true,
+        "torch_rng": true,
+        "cuda_rng": true,
+        "state_keys": true,
+        "fresh_process": true,
+        "primary_continuous_from_zero": true,
+        "recovery_restored_step_four": true,
+        "terminal_step_twelve": true,
+        "numerical_credit_update_receipts": true,
+        "regenerated_groups": true
+      },
+      "parent": "b0",
+      "arm": "J",
+      "regenerated_groups": 128,
+      "actual_matching_groups": 128,
+      "criterion": "frozen exact; no tolerance widened after observing outputs",
+      "identity": {
+        "run_id": "G3-b0-J",
+        "parent": "b0",
+        "arm": "J",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "checkpoint_metadata": {
+        "primary": {
+          "size": 260269781,
+          "mtime_ns": 1792979175206973127,
+          "inode": 4398157390103,
+          "device": 48
+        },
+        "recovery": {
+          "size": 260271317,
+          "mtime_ns": 1792985964011658299,
+          "inode": 4398157391926,
+          "device": 48
+        }
+      },
+      "completion_digests": {
+        "primary": "3b265a0a6dfc80674340b16ef698192143faeaad25fb1850e49e1af0222d2b84",
+        "recovery": "28e04fb9d1f75ceca6cd84742dce61ee668b17ad4c4ffe2440ad2c7c8dd5775a"
+      }
+    },
+    "G3/RUNS/b0/SHUF/RECOVERY.json": {
+      "status": "PASS",
+      "checks": {
+        "identity": true,
+        "step": true,
+        "policy": true,
+        "optimizer": true,
+        "scheduler": true,
+        "sampler_state": true,
+        "python_rng": true,
+        "numpy_rng": true,
+        "torch_rng": true,
+        "cuda_rng": true,
+        "state_keys": true,
+        "fresh_process": true,
+        "primary_continuous_from_zero": true,
+        "recovery_restored_step_four": true,
+        "terminal_step_twelve": true,
+        "numerical_credit_update_receipts": true,
+        "regenerated_groups": true
+      },
+      "parent": "b0",
+      "arm": "SHUF",
+      "regenerated_groups": 128,
+      "actual_matching_groups": 128,
+      "criterion": "frozen exact; no tolerance widened after observing outputs",
+      "identity": {
+        "run_id": "G3-b0-SHUF",
+        "parent": "b0",
+        "arm": "SHUF",
+        "repeat": 0,
+        "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+        "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+        "protocol_version": "structured_v3-1.0"
+      },
+      "checkpoint_metadata": {
+        "primary": {
+          "size": 260269781,
+          "mtime_ns": 1792979128167896922,
+          "inode": 4398157390074,
+          "device": 48
+        },
+        "recovery": {
+          "size": 260271317,
+          "mtime_ns": 1792985875939534201,
+          "inode": 4398157391898,
+          "device": 48
+        }
+      },
+      "completion_digests": {
+        "primary": "f378d42f3759e180caaa0473c1c11775d675d4d306018945e84fdddefc7440ef",
+        "recovery": "7d4b79c16f6c6e34fdd3876f1798070f710224ed525aa3fb75ead42ab2978a16"
+      }
+    }
+  },
+  "revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+  "scientific_status": "NOT_YET_AGGREGATED",
+  "pre_aggregation_gate": {
+    "status": "NOT_RUN",
+    "remaining": [
+      "15 pilot paths and actual numerical/recovery gates"
+    ],
+    "cpu_receipt": "CPU_TESTS.json"
+  },
+  "G3/dual_jobs/228*.json": {
+    "G3/dual_jobs/228108.json": {
+      "at": "2026-10-26T12:50:53.443383+00:00",
+      "status": "COMPLETE",
+      "job_id": "228108",
+      "pair": 0,
+      "code": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+      "code_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+      "pool_plan_digest": "ac6f6e18b838ef4a1a61064b88494bdbcf25f2bb191ed3a062a48e2ec8bfa1e6",
+      "workers": [
+        0,
+        1
+      ],
+      "devices": [
+        "0",
+        "1"
+      ],
+      "allocation": {
+        "JobId": "228108",
+        "JobName": "LH-SRF5-G3-P0",
+        "UserId": "varun024(295800338)",
+        "GroupId": "varun024(295800338)",
+        "MCS_label": "N/A",
+        "Priority": "101",
+        "Nice": "0",
+        "Account": "rose",
+        "QOS": "soujanya-poria-startfund-2026-03",
+        "JobState": "RUNNING",
+        "Reason": "None",
+        "Dependency": "(null)",
+        "Requeue": "1",
+        "Restarts": "0",
+        "BatchFlag": "1",
+        "Reboot": "0",
+        "ExitCode": "0:0",
+        "RunTime": "00:00:01",
+        "TimeLimit": "11:30:00",
+        "TimeMin": "N/A",
+        "SubmitTime": "2026-10-26T12:06:50",
+        "EligibleTime": "2026-10-26T12:06:50",
+        "AccrueTime": "2026-10-26T12:06:50",
+        "StartTime": "2026-10-26T12:50:52",
+        "EndTime": "2026-10-27T00:20:52",
+        "Deadline": "N/A",
+        "PreemptEligibleTime": "2026-10-26T12:50:52",
+        "PreemptTime": "None",
+        "SuspendTime": "None",
+        "SecsPreSuspend": "0",
+        "LastSchedEval": "2026-10-26T12:50:52",
+        "Scheduler": "Main",
+        "Partition": "cluster02",
+        "ReqNodeList": "(null)",
+        "ExcNodeList": "(null)",
+        "NodeList": "gpu-pro6000-12",
+        "BatchHost": "gpu-pro6000-12",
+        "NumNodes": "1",
+        "NumCPUs": "8",
+        "NumTasks": "1",
+        "ReqTRES": "cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2",
+        "AllocTRES": "cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2",
+        "CoreSpec": "*",
+        "MinCPUsNode": "8",
+        "MinMemoryNode": "66G",
+        "MinTmpDiskNode": "0",
+        "Features": "(null)",
+        "DelayBoot": "00:00:00",
+        "OverSubscribe": "OK",
+        "Contiguous": "0",
+        "Licenses": "(null)",
+        "Network": "(null)",
+        "Command": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85/scripts/sr_f5/pilot.sbatch",
+        "WorkDir": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+        "StdErr": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P0-228108.log",
+        "StdIn": "/dev/null",
+        "StdOut": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P0-228108.log",
+        "TresPerNode": "gres/gpu:pro6000:2",
+        "TresPerTask": "cpu:8"
+      },
+      "logs": [
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-W0-228108.log",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-W1-228108.log"
+      ],
+      "gpu_telemetry": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/GPU-228108.csv",
+      "finished_at": "2026-10-27T00:05:34.621702+00:00",
+      "scientific_gate": "NOT_YET_AGGREGATED"
+    },
+    "G3/dual_jobs/228121.json": {
+      "at": "2026-10-26T12:52:24.437692+00:00",
+      "status": "COMPLETE",
+      "job_id": "228121",
+      "pair": 1,
+      "code": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+      "code_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+      "pool_plan_digest": "ac6f6e18b838ef4a1a61064b88494bdbcf25f2bb191ed3a062a48e2ec8bfa1e6",
+      "workers": [
+        2,
+        3
+      ],
+      "devices": [
+        "0",
+        "1"
+      ],
+      "allocation": {
+        "JobId": "228121",
+        "JobName": "LH-SRF5-G3-P1",
+        "UserId": "varun024(295800338)",
+        "GroupId": "varun024(295800338)",
+        "MCS_label": "N/A",
+        "Priority": "101",
+        "Nice": "0",
+        "Account": "rose",
+        "QOS": "soujanya-poria-startfund-2026-03",
+        "JobState": "RUNNING",
+        "Reason": "Prolog",
+        "Dependency": "(null)",
+        "Requeue": "1",
+        "Restarts": "0",
+        "BatchFlag": "1",
+        "Reboot": "0",
+        "ExitCode": "0:0",
+        "RunTime": "00:00:01",
+        "TimeLimit": "11:30:00",
+        "TimeMin": "N/A",
+        "SubmitTime": "2026-10-26T12:12:38",
+        "EligibleTime": "2026-10-26T12:12:39",
+        "AccrueTime": "2026-10-26T12:12:39",
+        "StartTime": "2026-10-26T12:52:23",
+        "EndTime": "2026-10-27T00:22:23",
+        "Deadline": "N/A",
+        "PreemptEligibleTime": "2026-10-26T12:52:23",
+        "PreemptTime": "None",
+        "SuspendTime": "None",
+        "SecsPreSuspend": "0",
+        "LastSchedEval": "2026-10-26T12:52:23",
+        "Scheduler": "Backfill",
+        "Partition": "cluster02",
+        "ReqNodeList": "(null)",
+        "ExcNodeList": "(null)",
+        "NodeList": "gpu-pro6000-12",
+        "BatchHost": "gpu-pro6000-12",
+        "NumNodes": "1",
+        "NumCPUs": "8",
+        "NumTasks": "1",
+        "ReqTRES": "cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2",
+        "AllocTRES": "cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2",
+        "CoreSpec": "*",
+        "MinCPUsNode": "8",
+        "MinMemoryNode": "66G",
+        "MinTmpDiskNode": "0",
+        "Features": "(null)",
+        "DelayBoot": "00:00:00",
+        "OverSubscribe": "OK",
+        "Contiguous": "0",
+        "Licenses": "(null)",
+        "Network": "(null)",
+        "Command": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85/scripts/sr_f5/pilot.sbatch",
+        "WorkDir": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+        "StdErr": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P1-228121.log",
+        "StdIn": "/dev/null",
+        "StdOut": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-P1-228121.log",
+        "TresPerNode": "gres/gpu:pro6000:2",
+        "TresPerTask": "cpu:8"
+      },
+      "logs": [
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-W2-228121.log",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/G3-W3-228121.log"
+      ],
+      "gpu_telemetry": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/slurm/GPU-228121.csv",
+      "finished_at": "2026-10-27T00:18:52.501742+00:00",
+      "scientific_gate": "NOT_YET_AGGREGATED"
+    }
+  },
+  "G3/workers/W*-228*.json": {
+    "G3/workers/W3-228121.json": {
+      "at": "2026-10-26T12:52:24.638611+00:00",
+      "status": "COMPLETE",
+      "worker": 3,
+      "job_id": "228121",
+      "code_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+      "pool_plan_digest": "ac6f6e18b838ef4a1a61064b88494bdbcf25f2bb191ed3a062a48e2ec8bfa1e6",
+      "completed": [
+        {
+          "parent": "b0",
+          "arm": "HARD",
+          "recovery": true
+        },
+        {
+          "parent": "b1",
+          "arm": "DENSE",
+          "recovery": false
+        },
+        {
+          "parent": "b2",
+          "arm": "SHUF",
+          "recovery": false
+        },
+        {
+          "parent": "b2",
+          "arm": "J",
+          "recovery": false
+        }
+      ],
+      "calls": [
+        {
+          "parent": "b0",
+          "arm": "HARD",
+          "phase": "primary",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T12:52:24.640961+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-26T12:52:26.982834+00:00"
+        },
+        {
+          "parent": "b0",
+          "arm": "HARD",
+          "phase": "recovery",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T12:52:26.987920+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-26T12:52:29.244791+00:00"
+        },
+        {
+          "parent": "b0",
+          "arm": "HARD",
+          "phase": "compare_recovery",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T12:52:29.248489+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-26T12:52:38.064632+00:00"
+        },
+        {
+          "parent": "b1",
+          "arm": "DENSE",
+          "phase": "primary",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T12:52:38.072519+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-26T16:39:35.417625+00:00"
+        },
+        {
+          "parent": "b2",
+          "arm": "SHUF",
+          "phase": "primary",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T16:39:35.425611+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-26T20:30:06.285423+00:00"
+        },
+        {
+          "parent": "b2",
+          "arm": "J",
+          "phase": "primary",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T20:30:06.292068+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-27T00:18:51.625606+00:00"
+        }
+      ],
+      "finished_at": "2026-10-27T00:18:51.632450+00:00",
+      "scientific_gate": "NOT_YET_AGGREGATED"
+    },
+    "G3/workers/W1-228108.json": {
+      "at": "2026-10-26T12:50:53.619407+00:00",
+      "status": "COMPLETE",
+      "worker": 1,
+      "job_id": "228108",
+      "code_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+      "pool_plan_digest": "ac6f6e18b838ef4a1a61064b88494bdbcf25f2bb191ed3a062a48e2ec8bfa1e6",
+      "completed": [
+        {
+          "parent": "b0",
+          "arm": "SHUF",
+          "recovery": true
+        },
+        {
+          "parent": "b1",
+          "arm": "LOCAL",
+          "recovery": false
+        },
+        {
+          "parent": "b1",
+          "arm": "HARD",
+          "recovery": false
+        },
+        {
+          "parent": "b2",
+          "arm": "LOCAL",
+          "recovery": false
+        }
+      ],
+      "calls": [
+        {
+          "parent": "b0",
+          "arm": "SHUF",
+          "phase": "primary",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T12:50:53.622211+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-26T12:50:58.979835+00:00"
+        },
+        {
+          "parent": "b0",
+          "arm": "SHUF",
+          "phase": "recovery",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T12:50:58.983324+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-26T12:51:01.155522+00:00"
+        },
+        {
+          "parent": "b0",
+          "arm": "SHUF",
+          "phase": "compare_recovery",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T12:51:01.160919+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-26T12:51:09.640069+00:00"
+        },
+        {
+          "parent": "b1",
+          "arm": "LOCAL",
+          "phase": "primary",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T12:51:09.649752+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-26T16:33:44.768067+00:00"
+        },
+        {
+          "parent": "b1",
+          "arm": "HARD",
+          "phase": "primary",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T16:33:44.776291+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-26T20:18:22.534405+00:00"
+        },
+        {
+          "parent": "b2",
+          "arm": "LOCAL",
+          "phase": "primary",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T20:18:22.542411+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-27T00:05:33.665386+00:00"
+        }
+      ],
+      "finished_at": "2026-10-27T00:05:33.674747+00:00",
+      "scientific_gate": "NOT_YET_AGGREGATED"
+    },
+    "G3/workers/W0-228108.json": {
+      "at": "2026-10-26T12:50:53.619617+00:00",
+      "status": "COMPLETE",
+      "worker": 0,
+      "job_id": "228108",
+      "code_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+      "pool_plan_digest": "ac6f6e18b838ef4a1a61064b88494bdbcf25f2bb191ed3a062a48e2ec8bfa1e6",
+      "completed": [
+        {
+          "parent": "b0",
+          "arm": "J",
+          "recovery": true
+        },
+        {
+          "parent": "b0",
+          "arm": "DENSE",
+          "recovery": true
+        },
+        {
+          "parent": "b2",
+          "arm": "DENSE",
+          "recovery": false
+        }
+      ],
+      "calls": [
+        {
+          "parent": "b0",
+          "arm": "J",
+          "phase": "primary",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T12:50:53.623198+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-26T12:50:58.961687+00:00"
+        },
+        {
+          "parent": "b0",
+          "arm": "J",
+          "phase": "recovery",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T12:50:58.966800+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-26T12:51:01.155093+00:00"
+        },
+        {
+          "parent": "b0",
+          "arm": "J",
+          "phase": "compare_recovery",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T12:51:01.158173+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-26T12:51:09.492382+00:00"
+        },
+        {
+          "parent": "b0",
+          "arm": "DENSE",
+          "phase": "primary",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T12:51:09.500272+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-26T16:36:48.339479+00:00"
+        },
+        {
+          "parent": "b0",
+          "arm": "DENSE",
+          "phase": "recovery",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T16:36:48.344897+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-26T19:07:02.577958+00:00"
+        },
+        {
+          "parent": "b0",
+          "arm": "DENSE",
+          "phase": "compare_recovery",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T19:07:02.582459+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-26T19:07:10.301673+00:00"
+        },
+        {
+          "parent": "b2",
+          "arm": "DENSE",
+          "phase": "primary",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T19:07:10.311167+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-26T22:56:10.526785+00:00"
+        }
+      ],
+      "finished_at": "2026-10-26T22:56:10.534991+00:00",
+      "scientific_gate": "NOT_YET_AGGREGATED"
+    },
+    "G3/workers/W2-228121.json": {
+      "at": "2026-10-26T12:52:24.630304+00:00",
+      "status": "COMPLETE",
+      "worker": 2,
+      "job_id": "228121",
+      "code_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+      "pool_plan_digest": "ac6f6e18b838ef4a1a61064b88494bdbcf25f2bb191ed3a062a48e2ec8bfa1e6",
+      "completed": [
+        {
+          "parent": "b0",
+          "arm": "LOCAL",
+          "recovery": true
+        },
+        {
+          "parent": "b1",
+          "arm": "SHUF",
+          "recovery": false
+        },
+        {
+          "parent": "b1",
+          "arm": "J",
+          "recovery": false
+        },
+        {
+          "parent": "b2",
+          "arm": "HARD",
+          "recovery": false
+        }
+      ],
+      "calls": [
+        {
+          "parent": "b0",
+          "arm": "LOCAL",
+          "phase": "primary",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T12:52:24.633002+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-26T12:52:26.946079+00:00"
+        },
+        {
+          "parent": "b0",
+          "arm": "LOCAL",
+          "phase": "recovery",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T12:52:26.950778+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-26T12:52:29.317116+00:00"
+        },
+        {
+          "parent": "b0",
+          "arm": "LOCAL",
+          "phase": "compare_recovery",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T12:52:29.322146+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-26T12:52:37.858444+00:00"
+        },
+        {
+          "parent": "b1",
+          "arm": "SHUF",
+          "phase": "primary",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T12:52:37.867407+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-26T16:34:08.545243+00:00"
+        },
+        {
+          "parent": "b1",
+          "arm": "J",
+          "phase": "primary",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T16:34:08.553020+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-26T20:17:07.660525+00:00"
+        },
+        {
+          "parent": "b2",
+          "arm": "HARD",
+          "phase": "primary",
+          "status": "COMPLETE",
+          "started_at": "2026-10-26T20:17:07.667531+00:00",
+          "exit_code": 0,
+          "finished_at": "2026-10-27T00:02:56.491424+00:00"
+        }
+      ],
+      "finished_at": "2026-10-27T00:02:56.498415+00:00",
+      "scientific_gate": "NOT_YET_AGGREGATED"
+    }
+  }
+}

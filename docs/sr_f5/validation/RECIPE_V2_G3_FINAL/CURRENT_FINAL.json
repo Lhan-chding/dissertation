@@ -1,0 +1,266 @@
+{
+  "at": "2026-10-26T01:58:36.654603+00:00",
+  "phase": "STOP_RECIPE_V2_FEASIBILITY",
+  "g2_jobs": [
+    "226134",
+    "226135"
+  ],
+  "expected_and_actual_responses": 4608,
+  "decision_job": "226277",
+  "source_code": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_ea50c51",
+  "source_revision": "ea50c51f0f145a183df360ab82025216d6303aca",
+  "decision_receipt": "CONTINUATION/ea50c51f0f145a183df360ab82025216d6303aca/DECISION.json",
+  "g3_submission": "G3_SUBMISSION_DUAL_GPU.json",
+  "retained_failures": [
+    {
+      "job": "226156",
+      "reason": "deployment omitted docs/sr_f1/package and amendments; failed before CPU checks or G2 aggregation",
+      "log": "slurm/G2-DECISION-226156.log"
+    }
+  ],
+  "repair": "committed packaging includes transitive native contracts; isolated archive import regression passed; no new model calls",
+  "decision_state": "COMPLETED",
+  "g2_gate": "PASS",
+  "g3_jobs": [
+    "226282",
+    "226283"
+  ],
+  "server_cpu_tests_passed": 84,
+  "drain": {
+    "job_id": "226282",
+    "receipt": "CONTINUATION/DRAIN_226282.json",
+    "launcher": "CONTINUATION/drain_226282.sbatch",
+    "controller_revision": "139709df6fe381b93a3d43cc92d1fdfb7a5f205c",
+    "next_action": "No v1 restart; all remaining execution belongs to registered recipe_v2",
+    "controller_job": "226455",
+    "submission_receipt": "CONTINUATION/DRAIN_CPU_SUBMISSION_226282.json",
+    "startup_failure": "CONTINUATION/DRAIN_226282_STARTUP_FAILED_1.json",
+    "startup_failure_launcher": "CONTINUATION/DRAIN_LAUNCH_226282_FAILED_1.json",
+    "state": "BOUNDARY_COMPLETE_ALLOCATION_TERMINAL",
+    "target_terminal_state": "CANCELLED",
+    "controller_terminal_state": "COMPLETED",
+    "recovery_pass": [
+      "b0-J",
+      "b0-SHUF"
+    ]
+  },
+  "supplemental": {
+    "job_id": "226588",
+    "receipt": "CONTINUATION/SUPPLEMENTAL_G3.json",
+    "paths": [
+      {
+        "parent": "b2",
+        "arm": "DENSE"
+      },
+      {
+        "parent": "b2",
+        "arm": "LOCAL"
+      }
+    ],
+    "pair0_restart_requires": "SUPERSEDED: no v1 restart after registered recipe_v2",
+    "science_revision": "ea50c51f0f145a183df360ab82025216d6303aca",
+    "state": "COMPLETED",
+    "exit_code": "0:0"
+  },
+  "probability_diagnosis": {
+    "job_id": "226846",
+    "failed_job": "226283",
+    "receipt": "CONTINUATION/PROBABILITY_226283/SUBMISSION.json",
+    "outputs": [
+      "CONTINUATION/PROBABILITY_226283/bf16.json",
+      "CONTINUATION/PROBABILITY_226283/fp32.json"
+    ],
+    "restart_blocked_until_diagnosed": true,
+    "status": "DIAGNOSTIC_COMPLETE_RECIPE_V2_REGISTERED"
+  },
+  "cache_diagnosis": {
+    "job_id": "226890",
+    "receipt": "CONTINUATION/PROBABILITY_CACHE_226283/SUBMISSION.json",
+    "outputs": [
+      "CONTINUATION/PROBABILITY_CACHE_226283/bf16.json",
+      "CONTINUATION/PROBABILITY_CACHE_226283/fp32.json"
+    ],
+    "restart_blocked_until_diagnosed": true,
+    "status": "DIAGNOSTIC_COMPLETE_RECIPE_V2_REGISTERED"
+  },
+  "recipe_v2": {
+    "root": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026",
+    "source_code": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85",
+    "source_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+    "cpu_job": "226894",
+    "cpu_submission": "CONTINUATION/RECIPE_V2_CPU_SUBMISSION.json",
+    "decision": "CONTINUATION/RECIPE_V2_DECISION.json",
+    "registration": "CONTINUATION/RECIPE_V2.json",
+    "resume_v1": false,
+    "cpu_state": "COMPLETED",
+    "cpu_exit_code": "0:0",
+    "cpu_gate": "PASS",
+    "cpu_tests_passed": 332,
+    "cpu_tests_skipped": 12,
+    "cpu_subtests_passed": 9,
+    "g2_pair0_job": "226900",
+    "g2_pair0_receipt": "G2_SUBMISSION_PAIR0.json",
+    "g2_pair1_status": "COMPLETED",
+    "advance_operations": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_operations_23b6760",
+    "advance_operations_revision": "23b67600423ad23c49d3f049075fd1618d74b376",
+    "advance_receipt": "CONTINUATION/RECIPE_V2_ADVANCE.json",
+    "aggregation_receipt": "CONTINUATION/RECIPE_V2_G2_AGGREGATION.json",
+    "advance_controller_job": "226919",
+    "g2_pair1_job": "226918",
+    "g2_pair1_receipt": "G2_SUBMISSION_PAIR1.json",
+    "advance_submission": "CONTINUATION/RECIPE_V2_DECISION_SUBMISSION.json",
+    "g2_pair0_state": "COMPLETED",
+    "g2_pair0_start": "2026-10-25T20:36:10",
+    "g2_pair0_node": "gpu-pro6000-9",
+    "advance_controller_state": "COMPLETED",
+    "g2_gate": "PASS",
+    "g2_actual_answers": 4608,
+    "g3_jobs": [
+      "228108",
+      "228121"
+    ],
+    "g3_submission": "G3_SUBMISSION_DUAL_GPU.json",
+    "g3_status": "FAIL",
+    "g3_snapshot_at": "2026-10-26T12:13:25.262615+00:00",
+    "g3_primary_answers_observed": 23040,
+    "g3_recovery_answers_observed": 5120,
+    "g3_expected_answers_including_recovery": 28160,
+    "g3_drain_operations": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_operations_fdec062",
+    "g3_drain_revision": "fdec062aa469140d3c5589c084a396392df419b7",
+    "g3_drains": [
+      {
+        "pair": 0,
+        "target_job": "227050",
+        "controller_job": "227163",
+        "receipt": "CONTINUATION/DRAIN_227050.json",
+        "submission": "CONTINUATION/DRAIN_CPU_SUBMISSION_227050.json",
+        "state": "BOUNDARY_COMPLETE_CANCEL_REQUESTED",
+        "controller_state": "COMPLETED",
+        "controller_exit_code": "0:0",
+        "target_state": "CANCELLED",
+        "target_exit_code": "0:0"
+      },
+      {
+        "pair": 1,
+        "target_job": "227051",
+        "controller_job": "227164",
+        "receipt": "CONTINUATION/DRAIN_227051.json",
+        "submission": "CONTINUATION/DRAIN_CPU_SUBMISSION_227051.json",
+        "state": "BOUNDARY_COMPLETE_CANCEL_REQUESTED",
+        "controller_state": "COMPLETED",
+        "controller_exit_code": "0:0",
+        "target_state": "CANCELLED",
+        "target_exit_code": "0:0"
+      }
+    ],
+    "g3_continuation_rule": "For each pair require boundary receipt both recoveries PASS, target absent from squeue and terminal sacct before same frozen pair reentry; do not rerun G2 aggregate; no v2 supplemental job exists",
+    "g3_original_jobs": [
+      "227050",
+      "227051"
+    ],
+    "g3_original_jobs_terminal": {
+      "227050": {
+        "job_id": "227050",
+        "state": "CANCELLED",
+        "exit_code": "0:0",
+        "user": "varun024",
+        "account": "rose",
+        "qos": "soujanya-poria-startfund-2026-03"
+      },
+      "227163": {
+        "job_id": "227163",
+        "state": "COMPLETED",
+        "exit_code": "0:0",
+        "user": "varun024",
+        "account": "rose",
+        "qos": "soujanya-poria-startfund-2026-03"
+      },
+      "227051": {
+        "job_id": "227051",
+        "state": "CANCELLED",
+        "exit_code": "0:0",
+        "user": "varun024",
+        "account": "rose",
+        "qos": "soujanya-poria-startfund-2026-03"
+      },
+      "227164": {
+        "job_id": "227164",
+        "state": "COMPLETED",
+        "exit_code": "0:0",
+        "user": "varun024",
+        "account": "rose",
+        "qos": "soujanya-poria-startfund-2026-03"
+      }
+    },
+    "g3_reentry_jobs": {
+      "0": "228108",
+      "1": "228121"
+    },
+    "g3_reentry_receipts": {
+      "0": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/CONTINUATION/G3_REENTRY_PAIR0_AFTER_227050.json",
+      "1": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/CONTINUATION/G3_REENTRY_PAIR1_AFTER_227051.json"
+    },
+    "g3_pair1_status": "COMPLETED",
+    "g3_boundary_status": "BOTH_PAIRS_FOUR_RECOVERIES_PASS_OLD_ALLOCATIONS_TERMINAL",
+    "g3_boundary_evidence": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/CONTINUATION/REENTRY_BOUNDARY_20261026.json",
+    "g3_complete_responses": 28160,
+    "g3_next_action": "STOP_RECIPE_V2_FEASIBILITY; final diagnosis preserved; automation deleted; no further experiment or formal matrix release",
+    "last_verified_at": "2026-10-27T04:50:18.182184+00:00",
+    "g3_pair0_queue_snapshot": "228108|PENDING|(Resources)",
+    "g3_reentry_queue_snapshot": "228121|PENDING|(Priority)\n228108|PENDING|(Resources)",
+    "g3_pair1_boundary_evidence": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/CONTINUATION/REENTRY_PAIR1_BOUNDARY_20261026.json",
+    "g3_pair0_state": "COMPLETED",
+    "g3_pair0_start": "2026-10-26T12:50:52",
+    "g3_pair0_node": "gpu-pro6000-12",
+    "g3_pair0_time_limit": "11:30:00",
+    "g3_pair0_end_limit": "2026-10-27T00:20:52",
+    "g3_reentry_running_evidence": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/CONTINUATION/REENTRY_RUNNING_228108.json",
+    "g3_pair1_start": "2026-10-26T12:52:23",
+    "g3_pair1_node": "gpu-pro6000-12",
+    "g3_latest_observation": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/CONTINUATION/REENTRY_ALL_COMPLETE_20261027.json",
+    "g3_first_reentry_steps_seconds": {
+      "b0/DENSE": 1161.7264366857708,
+      "b1/LOCAL": 1023.0323494491167,
+      "b1/SHUF": 1024.2445853180252,
+      "b1/DENSE": 1053.0525184557773
+    },
+    "g3_second_reentry_steps_seconds": {
+      "b0/DENSE": 1056.4287679130211,
+      "b1/LOCAL": 931.9805047442205,
+      "b1/SHUF": 928.9556105230004,
+      "b1/DENSE": 953.6393399406224
+    },
+    "g3_time_limit_assessment": "Both existing GPU jobs completed within original limits; no new GPU submission needed.",
+    "g3_complete_primary_paths": 15,
+    "g3_complete_recovery_paths": 5,
+    "g3_aggregation_job": "229269",
+    "g3_aggregation_receipt": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/CONTINUATION/G3_AGGREGATION_SAME_NODE_SUBMISSION.json",
+    "g3_reentry_terminal": {
+      "228108": {
+        "status": "COMPLETED",
+        "exit_code": "0:0",
+        "end_utc": "2026-10-27T00:05:34"
+      },
+      "228121": {
+        "status": "COMPLETED",
+        "exit_code": "0:0",
+        "end_utc": "2026-10-27T00:18:52"
+      }
+    },
+    "g3_aggregation_state": "COMPLETED",
+    "g3_gate": "FAIL",
+    "g3_final_report": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/REPORT_ZH.md",
+    "g3_final_summary": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/SUMMARY.json",
+    "g3_final_metrics": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/G3/METRICS.json",
+    "g3_decision": "STOP_RECIPE_V2_FEASIBILITY",
+    "g3_technical_incident": {
+      "job": "229267",
+      "state": "FAILED",
+      "exit_code": "1:0",
+      "cause": "host-local st_dev differs; exact same-node revalidation and aggregation229269 succeeded",
+      "evidence": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/CONTINUATION/G3_SAME_NODE_REVALIDATION/DIAGNOSIS.json"
+    },
+    "automation_status": "DELETED"
+  },
+  "updated_at": "2026-10-27T04:50:18.182184+00:00"
+}

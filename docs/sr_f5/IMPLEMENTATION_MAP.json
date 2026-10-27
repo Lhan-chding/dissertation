@@ -48,9 +48,7 @@
   "dual_gpu_launcher_commit": "c3d37acb94e5036377a551a1be12c7629dc20934",
   "cleanup_code_commit": "da4dbd4",
   "remaining_current": [
-    "Actual 15-path GPU G3 and five b0 recovery comparisons",
-    "G0/G1 actual evidence completion and G4 formal freeze",
-    "Formal evaluation/statistics implementation and 45 paths"
+    "STOP_RECIPE_V2_FEASIBILITY: G3 FAIL; formal implementation and 45-path release are not pursued under contract05/07"
   ],
   "development_code_commit": "ea50c51f0f145a183df360ab82025216d6303aca",
   "development_source": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_ea50c51",
@@ -78,5 +76,20 @@
       "receipt": "CONTINUATION/DRAIN_226282.json",
       "state": "RUNNING_ARMED"
     }
+  },
+  "recipe_v2_final": {
+    "science_revision": "47d5e85fb0c9b39d8f996465045d21956825f59d",
+    "g3_gate": "FAIL",
+    "gpu_jobs": [
+      "228108",
+      "228121"
+    ],
+    "gpu_state": "COMPLETED/0:0",
+    "aggregation_job": "229269",
+    "aggregation_state": "COMPLETED/0:0",
+    "primary_responses": 23040,
+    "recovery_responses": 5120,
+    "report": "REPORT_ZH.md",
+    "automation_deleted": true
   }
 }

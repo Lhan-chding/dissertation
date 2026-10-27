@@ -1,0 +1,2198 @@
+{
+  "at": "2026-10-27T04:47:03.716126+00:00",
+  "purpose": "existing-output diagnosis; no model calls, no scientific changes",
+  "paths": {
+    "b0/J": {
+      "steps": [
+        {
+          "step": 1,
+          "nonzero_groups": 6,
+          "changed_groups": 4,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 6.868428386042069e-07,
+          "sampler_train_max_absolute_difference": 0.0005509853363037109,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.04471572357325662,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 2,
+          "nonzero_groups": 4,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 7.309838565561222e-07,
+          "sampler_train_max_absolute_difference": 0.00024378299713134766,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.033777954705746856,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 3,
+          "nonzero_groups": 2,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 3.68213221690894e-07,
+          "sampler_train_max_absolute_difference": 9.942054748535156e-05,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.027588853180215235,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 4,
+          "nonzero_groups": 2,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.602337639880716e-07,
+          "sampler_train_max_absolute_difference": 0.00021016597747802734,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.025167616205524997,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 5,
+          "nonzero_groups": 2,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.968596272192372e-07,
+          "sampler_train_max_absolute_difference": 0.0007138252258300781,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.02385339891226591,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 6,
+          "nonzero_groups": 5,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.892123115496361e-07,
+          "sampler_train_max_absolute_difference": 0.0001742839813232422,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.022149780522969165,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 7,
+          "nonzero_groups": 5,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 6.041972255843575e-07,
+          "sampler_train_max_absolute_difference": 0.0004448890686035156,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.021073607543265534,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 8,
+          "nonzero_groups": 2,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.848877210861247e-07,
+          "sampler_train_max_absolute_difference": 0.0012794137001037598,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.01858966301015882,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 9,
+          "nonzero_groups": 5,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.0487216779183655e-07,
+          "sampler_train_max_absolute_difference": 0.00019359588623046875,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.019636169871889514,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 10,
+          "nonzero_groups": 3,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 3.8773978872086445e-07,
+          "sampler_train_max_absolute_difference": 0.0001971721649169922,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.018718964079637326,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 11,
+          "nonzero_groups": 2,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 6.799859306738654e-07,
+          "sampler_train_max_absolute_difference": 0.0035300254821777344,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.017156352269843102,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 12,
+          "nonzero_groups": 1,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 3.2946303463177173e-07,
+          "sampler_train_max_absolute_difference": 0.00018596649169921875,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.015424275697949782,
+          "optimizer_updates": 1
+        }
+      ],
+      "state_counts": {
+        "PASS/J1": 1336,
+        "PASS/J0": 127,
+        "FAIL/J0": 60,
+        "UNKNOWN/J0": 13
+      },
+      "hard_changed_rows": []
+    },
+    "b0/HARD": {
+      "steps": [
+        {
+          "step": 1,
+          "nonzero_groups": 6,
+          "changed_groups": 4,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 6.868428386042069e-07,
+          "sampler_train_max_absolute_difference": 0.0005509853363037109,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.04471572357325662,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 2,
+          "nonzero_groups": 4,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 7.309838565561222e-07,
+          "sampler_train_max_absolute_difference": 0.00024378299713134766,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.033777954705746856,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 3,
+          "nonzero_groups": 2,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 3.68213221690894e-07,
+          "sampler_train_max_absolute_difference": 9.942054748535156e-05,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.027588853180215235,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 4,
+          "nonzero_groups": 2,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.602337639880716e-07,
+          "sampler_train_max_absolute_difference": 0.00021016597747802734,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.025167616205524997,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 5,
+          "nonzero_groups": 2,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.968596272192372e-07,
+          "sampler_train_max_absolute_difference": 0.0007138252258300781,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.02385339891226591,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 6,
+          "nonzero_groups": 5,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.892123115496361e-07,
+          "sampler_train_max_absolute_difference": 0.0001742839813232422,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.022149780522969165,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 7,
+          "nonzero_groups": 5,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 6.041972255843575e-07,
+          "sampler_train_max_absolute_difference": 0.0004448890686035156,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.021073607543265534,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 8,
+          "nonzero_groups": 2,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.848877210861247e-07,
+          "sampler_train_max_absolute_difference": 0.0012794137001037598,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.01858966301015882,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 9,
+          "nonzero_groups": 5,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.0487216779183655e-07,
+          "sampler_train_max_absolute_difference": 0.00019359588623046875,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.019636169871889514,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 10,
+          "nonzero_groups": 3,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 3.8773978872086445e-07,
+          "sampler_train_max_absolute_difference": 0.0001971721649169922,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.018718964079637326,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 11,
+          "nonzero_groups": 2,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 6.799859306738654e-07,
+          "sampler_train_max_absolute_difference": 0.0035300254821777344,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.017156352269843102,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 12,
+          "nonzero_groups": 1,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 3.2946303463177173e-07,
+          "sampler_train_max_absolute_difference": 0.00018596649169921875,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.015424275697949782,
+          "optimizer_updates": 1
+        }
+      ],
+      "state_counts": {
+        "PASS/J1": 1336,
+        "PASS/J0": 127,
+        "FAIL/J0": 60,
+        "UNKNOWN/J0": 13
+      },
+      "hard_changed_rows": []
+    },
+    "b0/DENSE": {
+      "steps": [
+        {
+          "step": 1,
+          "nonzero_groups": 6,
+          "changed_groups": 4,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 6.868428386042069e-07,
+          "sampler_train_max_absolute_difference": 0.0005509853363037109,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.044724957329483096,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 2,
+          "nonzero_groups": 4,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 7.329908839892596e-07,
+          "sampler_train_max_absolute_difference": 0.0002468228340148926,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.03377706816807723,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 3,
+          "nonzero_groups": 2,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 3.531229424424964e-07,
+          "sampler_train_max_absolute_difference": 0.0001277923583984375,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.027457167588199282,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 4,
+          "nonzero_groups": 2,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.547567016288667e-07,
+          "sampler_train_max_absolute_difference": 0.00016164779663085938,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.025057637723333546,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 5,
+          "nonzero_groups": 2,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.803789011020854e-07,
+          "sampler_train_max_absolute_difference": 0.0007152557373046875,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.023711205094869223,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 6,
+          "nonzero_groups": 5,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.806948936675326e-07,
+          "sampler_train_max_absolute_difference": 0.00017571449279785156,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.022059673093714594,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 7,
+          "nonzero_groups": 4,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.787244390376145e-07,
+          "sampler_train_max_absolute_difference": 0.0003523826599121094,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.020931930585650325,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 8,
+          "nonzero_groups": 2,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.7309396222772193e-07,
+          "sampler_train_max_absolute_difference": 0.0012669563293457031,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.01842028984431327,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 9,
+          "nonzero_groups": 5,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.150917618517269e-07,
+          "sampler_train_max_absolute_difference": 0.00027501583099365234,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.019507230769776028,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 10,
+          "nonzero_groups": 3,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.0722264316173096e-07,
+          "sampler_train_max_absolute_difference": 0.0003075599670410156,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.018525241761433883,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 11,
+          "nonzero_groups": 2,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 7.129173127395916e-07,
+          "sampler_train_max_absolute_difference": 0.003631591796875,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.017084483631141716,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 12,
+          "nonzero_groups": 1,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 3.422000247610413e-07,
+          "sampler_train_max_absolute_difference": 0.0001481175422668457,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.015406724733423381,
+          "optimizer_updates": 1
+        }
+      ],
+      "state_counts": {
+        "PASS/J1": 1337,
+        "PASS/J0": 126,
+        "FAIL/J0": 60,
+        "UNKNOWN/J0": 13
+      },
+      "hard_changed_rows": []
+    },
+    "b0/LOCAL": {
+      "steps": [
+        {
+          "step": 1,
+          "nonzero_groups": 6,
+          "changed_groups": 4,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 6.868428386042069e-07,
+          "sampler_train_max_absolute_difference": 0.0005509853363037109,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.044807360804918955,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 2,
+          "nonzero_groups": 4,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 7.364663474618283e-07,
+          "sampler_train_max_absolute_difference": 0.0002657175064086914,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.033626541079524876,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 3,
+          "nonzero_groups": 2,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 3.5942576914749225e-07,
+          "sampler_train_max_absolute_difference": 0.0001361370086669922,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.027375120259672918,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 4,
+          "nonzero_groups": 2,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.514214140272088e-07,
+          "sampler_train_max_absolute_difference": 0.00018787384033203125,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.02486244444528844,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 5,
+          "nonzero_groups": 2,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.138436449669825e-07,
+          "sampler_train_max_absolute_difference": 0.0007493495941162109,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.023440443290264457,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 6,
+          "nonzero_groups": 5,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.960125465913734e-07,
+          "sampler_train_max_absolute_difference": 0.0001926422119140625,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.02201584689671562,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 7,
+          "nonzero_groups": 4,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.497452661984426e-07,
+          "sampler_train_max_absolute_difference": 0.0001933574676513672,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.020816087007660255,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 8,
+          "nonzero_groups": 2,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.834244577978097e-07,
+          "sampler_train_max_absolute_difference": 0.0012602806091308594,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.018476842922348715,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 9,
+          "nonzero_groups": 5,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 3.901240575032716e-07,
+          "sampler_train_max_absolute_difference": 0.00014734268188476562,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.019598451159618353,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 10,
+          "nonzero_groups": 3,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 3.7776956673951645e-07,
+          "sampler_train_max_absolute_difference": 0.0002079010009765625,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.01855883235457621,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 11,
+          "nonzero_groups": 2,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 7.204322969300847e-07,
+          "sampler_train_max_absolute_difference": 0.003645658493041992,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.017270307778635155,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 12,
+          "nonzero_groups": 1,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 3.280921987425245e-07,
+          "sampler_train_max_absolute_difference": 0.0001659393310546875,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.015744182083881307,
+          "optimizer_updates": 1
+        }
+      ],
+      "state_counts": {
+        "PASS/J1": 1332,
+        "PASS/J0": 132,
+        "FAIL/J0": 58,
+        "UNKNOWN/J0": 14
+      },
+      "hard_changed_rows": []
+    },
+    "b0/SHUF": {
+      "steps": [
+        {
+          "step": 1,
+          "nonzero_groups": 6,
+          "changed_groups": 4,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 6.868428386042069e-07,
+          "sampler_train_max_absolute_difference": 0.0005509853363037109,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.044709732145445706,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 2,
+          "nonzero_groups": 4,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 7.278281941580644e-07,
+          "sampler_train_max_absolute_difference": 0.00025784969329833984,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.03379070654894531,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 3,
+          "nonzero_groups": 2,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 3.505874701659195e-07,
+          "sampler_train_max_absolute_difference": 0.00010180473327636719,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.027552822507457466,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 4,
+          "nonzero_groups": 2,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.499941610447422e-07,
+          "sampler_train_max_absolute_difference": 0.00012612342834472656,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.025121973448232655,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 5,
+          "nonzero_groups": 2,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.831037472285971e-07,
+          "sampler_train_max_absolute_difference": 0.0007672309875488281,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.023790479340562984,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 6,
+          "nonzero_groups": 5,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.690539299190277e-07,
+          "sampler_train_max_absolute_difference": 0.000194549560546875,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.021869724226266454,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 7,
+          "nonzero_groups": 5,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.886519147679792e-07,
+          "sampler_train_max_absolute_difference": 0.0003857612609863281,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.020793128880203432,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 8,
+          "nonzero_groups": 2,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.833721618524578e-07,
+          "sampler_train_max_absolute_difference": 0.0012913942337036133,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.018293363399844626,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 9,
+          "nonzero_groups": 5,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.114957334877545e-07,
+          "sampler_train_max_absolute_difference": 0.0001666545867919922,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.01949714395509809,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 10,
+          "nonzero_groups": 3,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 3.640446664121555e-07,
+          "sampler_train_max_absolute_difference": 0.0003418922424316406,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.018503910635825797,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 11,
+          "nonzero_groups": 2,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 6.855999572508154e-07,
+          "sampler_train_max_absolute_difference": 0.0035004615783691406,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.0170459606256807,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 12,
+          "nonzero_groups": 1,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 3.3883424066516454e-07,
+          "sampler_train_max_absolute_difference": 0.00022268295288085938,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.015244738518781456,
+          "optimizer_updates": 1
+        }
+      ],
+      "state_counts": {
+        "PASS/J1": 1337,
+        "PASS/J0": 126,
+        "FAIL/J0": 60,
+        "UNKNOWN/J0": 13
+      },
+      "hard_changed_rows": []
+    },
+    "b1/J": {
+      "steps": [
+        {
+          "step": 1,
+          "nonzero_groups": 3,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.344609294548718e-07,
+          "sampler_train_max_absolute_difference": 0.0003101825714111328,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.044306190312299494,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 2,
+          "nonzero_groups": 5,
+          "changed_groups": 3,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 6.220627710717963e-07,
+          "sampler_train_max_absolute_difference": 0.0006074905395507812,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.033267272733457545,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 3,
+          "nonzero_groups": 10,
+          "changed_groups": 5,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.473467581396108e-07,
+          "sampler_train_max_absolute_difference": 0.0002307891845703125,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.029613897136625697,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 4,
+          "nonzero_groups": 2,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.22422175461179e-07,
+          "sampler_train_max_absolute_difference": 0.00043642520904541016,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.027321006752352443,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 5,
+          "nonzero_groups": 1,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.809378424397437e-07,
+          "sampler_train_max_absolute_difference": 0.0005445480346679688,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.023992322210600926,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 6,
+          "nonzero_groups": 5,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.2971331026819826e-07,
+          "sampler_train_max_absolute_difference": 0.0005546808242797852,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.023523635257162813,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 7,
+          "nonzero_groups": 0,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 8.525486236976576e-07,
+          "sampler_train_max_absolute_difference": 0.001979351043701172,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.022432173385113743,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 8,
+          "nonzero_groups": 1,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.6054893232394534e-07,
+          "sampler_train_max_absolute_difference": 0.000759124755859375,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.021318836233512564,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 9,
+          "nonzero_groups": 2,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 3.7980694855832553e-07,
+          "sampler_train_max_absolute_difference": 0.00021839141845703125,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.019904947913800573,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 10,
+          "nonzero_groups": 1,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.4365643248056585e-07,
+          "sampler_train_max_absolute_difference": 0.0006310939788818359,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.018759377710205385,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 11,
+          "nonzero_groups": 3,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.546400873550738e-07,
+          "sampler_train_max_absolute_difference": 0.00045990943908691406,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.01767149498612828,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 12,
+          "nonzero_groups": 5,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 6.443724487326108e-07,
+          "sampler_train_max_absolute_difference": 0.00047588348388671875,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.016998226952704424,
+          "optimizer_updates": 1
+        }
+      ],
+      "state_counts": {
+        "PASS/J1": 1134,
+        "PASS/J0": 264,
+        "FAIL/J0": 95,
+        "UNKNOWN/J0": 42,
+        "FAIL/J1": 1
+      },
+      "hard_changed_rows": []
+    },
+    "b1/HARD": {
+      "steps": [
+        {
+          "step": 1,
+          "nonzero_groups": 3,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.344609294548718e-07,
+          "sampler_train_max_absolute_difference": 0.0003101825714111328,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.044306190312299494,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 2,
+          "nonzero_groups": 5,
+          "changed_groups": 3,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 6.220627710717963e-07,
+          "sampler_train_max_absolute_difference": 0.0006074905395507812,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.033267272733457545,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 3,
+          "nonzero_groups": 10,
+          "changed_groups": 5,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.473467581396108e-07,
+          "sampler_train_max_absolute_difference": 0.0002307891845703125,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.02967725483995753,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 4,
+          "nonzero_groups": 2,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.452970472357265e-07,
+          "sampler_train_max_absolute_difference": 0.0003446340560913086,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.027372763648062876,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 5,
+          "nonzero_groups": 1,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.944296279063565e-07,
+          "sampler_train_max_absolute_difference": 0.0005279779434204102,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.023980002654303983,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 6,
+          "nonzero_groups": 5,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.318216895171645e-07,
+          "sampler_train_max_absolute_difference": 0.0005789995193481445,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.023538387607750635,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 7,
+          "nonzero_groups": 0,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 8.289729294119752e-07,
+          "sampler_train_max_absolute_difference": 0.0020949840545654297,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.02231780437051709,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 8,
+          "nonzero_groups": 1,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.83120118133229e-07,
+          "sampler_train_max_absolute_difference": 0.0006229877471923828,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.021115588926995214,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 9,
+          "nonzero_groups": 2,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 3.9336970303338603e-07,
+          "sampler_train_max_absolute_difference": 0.00019860267639160156,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.01986731981161357,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 10,
+          "nonzero_groups": 2,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.3934184645877394e-07,
+          "sampler_train_max_absolute_difference": 0.0007451772689819336,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.019033056192879677,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 11,
+          "nonzero_groups": 3,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.6329296310432255e-07,
+          "sampler_train_max_absolute_difference": 0.0004756450653076172,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.01789581783256359,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 12,
+          "nonzero_groups": 5,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.943334144831169e-07,
+          "sampler_train_max_absolute_difference": 0.00038504600524902344,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.017405982496623493,
+          "optimizer_updates": 1
+        }
+      ],
+      "state_counts": {
+        "PASS/J1": 1131,
+        "PASS/J0": 265,
+        "FAIL/J0": 96,
+        "UNKNOWN/J0": 43,
+        "FAIL/J1": 1
+      },
+      "hard_changed_rows": [
+        {
+          "row_id": "G3-b1-HARD/003/08/6",
+          "qid": "pilot_K_DIRECTION_0004_v0",
+          "J": 1,
+          "S": "FAIL",
+          "source": "G3/RUNS/b1/HARD/primary/rollouts/003/08.json"
+        }
+      ]
+    },
+    "b1/DENSE": {
+      "steps": [
+        {
+          "step": 1,
+          "nonzero_groups": 3,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.344609294548718e-07,
+          "sampler_train_max_absolute_difference": 0.0003101825714111328,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.04432387247424816,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 2,
+          "nonzero_groups": 5,
+          "changed_groups": 3,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 6.186363066262857e-07,
+          "sampler_train_max_absolute_difference": 0.0006623268127441406,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.03320096280760723,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 3,
+          "nonzero_groups": 10,
+          "changed_groups": 5,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.578548893936386e-07,
+          "sampler_train_max_absolute_difference": 0.0002830028533935547,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.029701642654961457,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 4,
+          "nonzero_groups": 2,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.3858540266228374e-07,
+          "sampler_train_max_absolute_difference": 0.00039947032928466797,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.027253007406709637,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 5,
+          "nonzero_groups": 1,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.155598614692281e-07,
+          "sampler_train_max_absolute_difference": 0.0008327960968017578,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.023810614878110148,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 6,
+          "nonzero_groups": 5,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.4657832631855854e-07,
+          "sampler_train_max_absolute_difference": 0.0005866289138793945,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.02339442339693849,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 7,
+          "nonzero_groups": 0,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 8.03207001354167e-07,
+          "sampler_train_max_absolute_difference": 0.0022382736206054688,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.02236170046706235,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 8,
+          "nonzero_groups": 1,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.942742748426099e-07,
+          "sampler_train_max_absolute_difference": 0.0007338523864746094,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.02133839921417234,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 9,
+          "nonzero_groups": 2,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.188236744084861e-07,
+          "sampler_train_max_absolute_difference": 0.0004786252975463867,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.02000136414810796,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 10,
+          "nonzero_groups": 1,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.2397633137625235e-07,
+          "sampler_train_max_absolute_difference": 0.0006376504898071289,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.018760696170918325,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 11,
+          "nonzero_groups": 2,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.465638880901679e-07,
+          "sampler_train_max_absolute_difference": 0.00039839744567871094,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.017569434407811804,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 12,
+          "nonzero_groups": 5,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 1.0385311952632037e-06,
+          "sampler_train_max_absolute_difference": 0.0022363662719726562,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.01673524167384166,
+          "optimizer_updates": 1
+        }
+      ],
+      "state_counts": {
+        "PASS/J1": 1137,
+        "PASS/J0": 268,
+        "FAIL/J0": 94,
+        "UNKNOWN/J0": 36,
+        "FAIL/J1": 1
+      },
+      "hard_changed_rows": []
+    },
+    "b1/LOCAL": {
+      "steps": [
+        {
+          "step": 1,
+          "nonzero_groups": 3,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.344609294548718e-07,
+          "sampler_train_max_absolute_difference": 0.0003101825714111328,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.04430719234951932,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 2,
+          "nonzero_groups": 5,
+          "changed_groups": 3,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 6.290538863140682e-07,
+          "sampler_train_max_absolute_difference": 0.0006349086761474609,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.03313826767709265,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 3,
+          "nonzero_groups": 10,
+          "changed_groups": 5,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.429234306575381e-07,
+          "sampler_train_max_absolute_difference": 0.0003407001495361328,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.0294936968013672,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 4,
+          "nonzero_groups": 2,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.423058612701425e-07,
+          "sampler_train_max_absolute_difference": 0.0003618001937866211,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.027210379024907035,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 5,
+          "nonzero_groups": 1,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.228260988587863e-07,
+          "sampler_train_max_absolute_difference": 0.000537872314453125,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.02387585519386205,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 6,
+          "nonzero_groups": 5,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.647528726309247e-07,
+          "sampler_train_max_absolute_difference": 0.0005612373352050781,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.023326443900975463,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 7,
+          "nonzero_groups": 0,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 9.285009241466469e-07,
+          "sampler_train_max_absolute_difference": 0.0035517215728759766,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.0222993665448576,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 8,
+          "nonzero_groups": 1,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.216880936131929e-07,
+          "sampler_train_max_absolute_difference": 0.0007367134094238281,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.020927672868590635,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 9,
+          "nonzero_groups": 2,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.0008899304666556e-07,
+          "sampler_train_max_absolute_difference": 0.00022864341735839844,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.019676634130438474,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 10,
+          "nonzero_groups": 1,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.1582578091947653e-07,
+          "sampler_train_max_absolute_difference": 0.0005035400390625,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.018467253138705644,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 11,
+          "nonzero_groups": 1,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.7166363970063685e-07,
+          "sampler_train_max_absolute_difference": 0.0005528926849365234,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.017411239807308916,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 12,
+          "nonzero_groups": 5,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 1.1705009228535346e-06,
+          "sampler_train_max_absolute_difference": 0.003695249557495117,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.016609245729154936,
+          "optimizer_updates": 1
+        }
+      ],
+      "state_counts": {
+        "PASS/J1": 1135,
+        "PASS/J0": 267,
+        "FAIL/J0": 92,
+        "UNKNOWN/J0": 41,
+        "FAIL/J1": 1
+      },
+      "hard_changed_rows": []
+    },
+    "b1/SHUF": {
+      "steps": [
+        {
+          "step": 1,
+          "nonzero_groups": 3,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.344609294548718e-07,
+          "sampler_train_max_absolute_difference": 0.0003101825714111328,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.044306217211462544,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 2,
+          "nonzero_groups": 5,
+          "changed_groups": 3,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 6.164006549624901e-07,
+          "sampler_train_max_absolute_difference": 0.0006420612335205078,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.03315339283532399,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 3,
+          "nonzero_groups": 10,
+          "changed_groups": 5,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.498226300915121e-07,
+          "sampler_train_max_absolute_difference": 0.0002872943878173828,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.029533269398141323,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 4,
+          "nonzero_groups": 2,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.308281802423153e-07,
+          "sampler_train_max_absolute_difference": 0.00039386749267578125,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.027214037320095558,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 5,
+          "nonzero_groups": 1,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.5217575461720116e-07,
+          "sampler_train_max_absolute_difference": 0.00048553943634033203,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.023974461574300773,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 6,
+          "nonzero_groups": 5,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.6435246758846915e-07,
+          "sampler_train_max_absolute_difference": 0.0005420446395874023,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.023481535225743796,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 7,
+          "nonzero_groups": 0,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 8.114447496154753e-07,
+          "sampler_train_max_absolute_difference": 0.0036439895629882812,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.022314048218107733,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 8,
+          "nonzero_groups": 1,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.811403755411447e-07,
+          "sampler_train_max_absolute_difference": 0.00034677982330322266,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.021268156287093058,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 9,
+          "nonzero_groups": 2,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 3.9815844843360537e-07,
+          "sampler_train_max_absolute_difference": 0.00028586387634277344,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.019929333118348876,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 10,
+          "nonzero_groups": 1,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.083348130734521e-07,
+          "sampler_train_max_absolute_difference": 0.0004903078079223633,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.018833336455192536,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 11,
+          "nonzero_groups": 2,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.535387176929362e-07,
+          "sampler_train_max_absolute_difference": 0.0004801750183105469,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.017810136213389668,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 12,
+          "nonzero_groups": 5,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 6.153719027679472e-07,
+          "sampler_train_max_absolute_difference": 0.0007395744323730469,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.017401162599337237,
+          "optimizer_updates": 1
+        }
+      ],
+      "state_counts": {
+        "PASS/J1": 1140,
+        "PASS/J0": 268,
+        "FAIL/J0": 93,
+        "UNKNOWN/J0": 34,
+        "FAIL/J1": 1
+      },
+      "hard_changed_rows": []
+    },
+    "b2/J": {
+      "steps": [
+        {
+          "step": 1,
+          "nonzero_groups": 6,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 9.890361525322078e-07,
+          "sampler_train_max_absolute_difference": 0.0020445585250854492,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.044209057625768176,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 2,
+          "nonzero_groups": 4,
+          "changed_groups": 3,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.517760541806638e-07,
+          "sampler_train_max_absolute_difference": 0.00014495849609375,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.033732172208882936,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 3,
+          "nonzero_groups": 7,
+          "changed_groups": 5,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.852378197028884e-07,
+          "sampler_train_max_absolute_difference": 0.00020456314086914062,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.02883830613210946,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 4,
+          "nonzero_groups": 8,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.312078374368866e-07,
+          "sampler_train_max_absolute_difference": 0.00016307830810546875,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.026468706640156367,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 5,
+          "nonzero_groups": 7,
+          "changed_groups": 4,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.2707622444359e-07,
+          "sampler_train_max_absolute_difference": 0.0004024505615234375,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.025356876246853993,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 6,
+          "nonzero_groups": 1,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 3.1782542464497965e-07,
+          "sampler_train_max_absolute_difference": 0.00020325183868408203,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.023988223082779037,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 7,
+          "nonzero_groups": 3,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.043895043854718e-07,
+          "sampler_train_max_absolute_difference": 0.00022089481353759766,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.022095456029853088,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 8,
+          "nonzero_groups": 4,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.6981244850030635e-07,
+          "sampler_train_max_absolute_difference": 0.00015938282012939453,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.021044502946117778,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 9,
+          "nonzero_groups": 6,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.316196052262967e-07,
+          "sampler_train_max_absolute_difference": 0.001180410385131836,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.01960176118262108,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 10,
+          "nonzero_groups": 1,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.1010630980053975e-07,
+          "sampler_train_max_absolute_difference": 0.00011861324310302734,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.018237132947177364,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 11,
+          "nonzero_groups": 3,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.420424488671415e-07,
+          "sampler_train_max_absolute_difference": 0.00013208389282226562,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.016627857344573536,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 12,
+          "nonzero_groups": 0,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.6485951088470756e-07,
+          "sampler_train_max_absolute_difference": 0.00026798248291015625,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.015260892293911034,
+          "optimizer_updates": 1
+        }
+      ],
+      "state_counts": {
+        "PASS/J1": 1204,
+        "PASS/J0": 233,
+        "UNKNOWN/J0": 20,
+        "FAIL/J0": 76,
+        "FAIL/J1": 3
+      },
+      "hard_changed_rows": []
+    },
+    "b2/HARD": {
+      "steps": [
+        {
+          "step": 1,
+          "nonzero_groups": 6,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 9.890361525322078e-07,
+          "sampler_train_max_absolute_difference": 0.0020445585250854492,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.044209057625768176,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 2,
+          "nonzero_groups": 4,
+          "changed_groups": 3,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.517760541806638e-07,
+          "sampler_train_max_absolute_difference": 0.00014495849609375,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.033732172208882936,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 3,
+          "nonzero_groups": 7,
+          "changed_groups": 5,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.852378197028884e-07,
+          "sampler_train_max_absolute_difference": 0.00020456314086914062,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.029026122101707557,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 4,
+          "nonzero_groups": 8,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.327529268266517e-07,
+          "sampler_train_max_absolute_difference": 0.00013947486877441406,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.026533017911606577,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 5,
+          "nonzero_groups": 7,
+          "changed_groups": 4,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.173495765120606e-07,
+          "sampler_train_max_absolute_difference": 0.00040078163146972656,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.025445864942414523,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 6,
+          "nonzero_groups": 1,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 3.0679908036290726e-07,
+          "sampler_train_max_absolute_difference": 0.00021636486053466797,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.024054800637884573,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 7,
+          "nonzero_groups": 3,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.248417096481717e-07,
+          "sampler_train_max_absolute_difference": 0.00021409988403320312,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.022220680683807007,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 8,
+          "nonzero_groups": 4,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.960774617757124e-07,
+          "sampler_train_max_absolute_difference": 0.0002968311309814453,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.02102245608215429,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 9,
+          "nonzero_groups": 6,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.626503138955741e-07,
+          "sampler_train_max_absolute_difference": 0.0011809468269348145,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.019560556751369692,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 10,
+          "nonzero_groups": 1,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 3.9896153225527087e-07,
+          "sampler_train_max_absolute_difference": 0.00010776519775390625,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.018266810706296273,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 11,
+          "nonzero_groups": 3,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.338418193583493e-07,
+          "sampler_train_max_absolute_difference": 0.00011730194091796875,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.016714541260255514,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 12,
+          "nonzero_groups": 0,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.6339243908732897e-07,
+          "sampler_train_max_absolute_difference": 0.00024175643920898438,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.015255633227618574,
+          "optimizer_updates": 1
+        }
+      ],
+      "state_counts": {
+        "PASS/J1": 1208,
+        "PASS/J0": 233,
+        "UNKNOWN/J0": 18,
+        "FAIL/J0": 74,
+        "FAIL/J1": 3
+      },
+      "hard_changed_rows": [
+        {
+          "row_id": "G3-b2-HARD/003/02/0",
+          "qid": "pilot_SIGNED_0004_v2",
+          "J": 1,
+          "S": "FAIL",
+          "source": "G3/RUNS/b2/HARD/primary/rollouts/003/02.json"
+        },
+        {
+          "row_id": "G3-b2-HARD/007/15/2",
+          "qid": "pilot_TIES_0003_v3",
+          "J": 1,
+          "S": "FAIL",
+          "source": "G3/RUNS/b2/HARD/primary/rollouts/007/15.json"
+        },
+        {
+          "row_id": "G3-b2-HARD/010/10/7",
+          "qid": "pilot_TIES_0000_v2",
+          "J": 1,
+          "S": "FAIL",
+          "source": "G3/RUNS/b2/HARD/primary/rollouts/010/10.json"
+        }
+      ]
+    },
+    "b2/DENSE": {
+      "steps": [
+        {
+          "step": 1,
+          "nonzero_groups": 6,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 9.890361525322078e-07,
+          "sampler_train_max_absolute_difference": 0.0020445585250854492,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.044255771868678496,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 2,
+          "nonzero_groups": 4,
+          "changed_groups": 3,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.506304887603619e-07,
+          "sampler_train_max_absolute_difference": 0.000152587890625,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.03340202496952822,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 3,
+          "nonzero_groups": 6,
+          "changed_groups": 4,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.834662377106724e-07,
+          "sampler_train_max_absolute_difference": 0.00011563301086425781,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.028761604511595106,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 4,
+          "nonzero_groups": 8,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.130593254103587e-07,
+          "sampler_train_max_absolute_difference": 0.00016164779663085938,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.0264264349193194,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 5,
+          "nonzero_groups": 7,
+          "changed_groups": 4,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.323043978933129e-07,
+          "sampler_train_max_absolute_difference": 0.0004131793975830078,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.025402650298649767,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 6,
+          "nonzero_groups": 1,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 3.148993528157007e-07,
+          "sampler_train_max_absolute_difference": 9.632110595703125e-05,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.02435406662352104,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 7,
+          "nonzero_groups": 3,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.26244775755913e-07,
+          "sampler_train_max_absolute_difference": 0.00020611286163330078,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.022844214251323408,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 8,
+          "nonzero_groups": 3,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.693697803759278e-07,
+          "sampler_train_max_absolute_difference": 0.0002906322479248047,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.02137752112160351,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 9,
+          "nonzero_groups": 6,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.563365448324475e-07,
+          "sampler_train_max_absolute_difference": 0.0011414289474487305,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.020277386240471026,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 10,
+          "nonzero_groups": 1,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.3114590653203777e-07,
+          "sampler_train_max_absolute_difference": 0.00011348724365234375,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.019113816925297695,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 11,
+          "nonzero_groups": 3,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.5014022020950506e-07,
+          "sampler_train_max_absolute_difference": 0.00015878677368164062,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.017384487754700525,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 12,
+          "nonzero_groups": 0,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.7908531541907e-07,
+          "sampler_train_max_absolute_difference": 0.0002665519714355469,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.015988805062313687,
+          "optimizer_updates": 1
+        }
+      ],
+      "state_counts": {
+        "PASS/J1": 1203,
+        "PASS/J0": 241,
+        "UNKNOWN/J0": 16,
+        "FAIL/J0": 74,
+        "FAIL/J1": 2
+      },
+      "hard_changed_rows": []
+    },
+    "b2/LOCAL": {
+      "steps": [
+        {
+          "step": 1,
+          "nonzero_groups": 6,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 9.890361525322078e-07,
+          "sampler_train_max_absolute_difference": 0.0020445585250854492,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.0442843927285339,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 2,
+          "nonzero_groups": 4,
+          "changed_groups": 3,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.560303861784632e-07,
+          "sampler_train_max_absolute_difference": 0.00023317337036132812,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.03372488455289906,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 3,
+          "nonzero_groups": 6,
+          "changed_groups": 4,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.644971056677605e-07,
+          "sampler_train_max_absolute_difference": 0.0001342296600341797,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.028736358048909207,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 4,
+          "nonzero_groups": 8,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.048614528073813e-07,
+          "sampler_train_max_absolute_difference": 0.00013589859008789062,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.026517444733545004,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 5,
+          "nonzero_groups": 7,
+          "changed_groups": 3,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.185347049518896e-07,
+          "sampler_train_max_absolute_difference": 0.0003962516784667969,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.02523914295101494,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 6,
+          "nonzero_groups": 1,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 3.126926628738147e-07,
+          "sampler_train_max_absolute_difference": 9.489059448242188e-05,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.023819046713554927,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 7,
+          "nonzero_groups": 3,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.122336688145879e-07,
+          "sampler_train_max_absolute_difference": 0.0002377331256866455,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.02270197654583803,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 8,
+          "nonzero_groups": 3,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.938005417898239e-07,
+          "sampler_train_max_absolute_difference": 0.00011444091796875,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.021080357066047037,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 9,
+          "nonzero_groups": 5,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.579489084084344e-07,
+          "sampler_train_max_absolute_difference": 0.0012285709381103516,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.01927044620168674,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 10,
+          "nonzero_groups": 1,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.2035293290609843e-07,
+          "sampler_train_max_absolute_difference": 0.00014972686767578125,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.018059865074302812,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 11,
+          "nonzero_groups": 3,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.4279866528995626e-07,
+          "sampler_train_max_absolute_difference": 0.0001437664031982422,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.017056947252386115,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 12,
+          "nonzero_groups": 0,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.015594979340676e-07,
+          "sampler_train_max_absolute_difference": 0.00024127960205078125,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.015899830544638168,
+          "optimizer_updates": 1
+        }
+      ],
+      "state_counts": {
+        "PASS/J1": 1202,
+        "PASS/J0": 246,
+        "UNKNOWN/J0": 17,
+        "FAIL/J0": 68,
+        "FAIL/J1": 3
+      },
+      "hard_changed_rows": []
+    },
+    "b2/SHUF": {
+      "steps": [
+        {
+          "step": 1,
+          "nonzero_groups": 6,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 9.890361525322078e-07,
+          "sampler_train_max_absolute_difference": 0.0020445585250854492,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.04422784007997398,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 2,
+          "nonzero_groups": 4,
+          "changed_groups": 3,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.44396925761248e-07,
+          "sampler_train_max_absolute_difference": 0.0001354217529296875,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.03338174284371309,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 3,
+          "nonzero_groups": 6,
+          "changed_groups": 4,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.806686320080189e-07,
+          "sampler_train_max_absolute_difference": 0.00012159347534179688,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.02885654039387347,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 4,
+          "nonzero_groups": 8,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.4165005874674534e-07,
+          "sampler_train_max_absolute_difference": 0.00015020370483398438,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.026371865870090532,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 5,
+          "nonzero_groups": 7,
+          "changed_groups": 4,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.449917921396263e-07,
+          "sampler_train_max_absolute_difference": 0.0004100799560546875,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.02505842082989232,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 6,
+          "nonzero_groups": 0,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 3.021120278390299e-07,
+          "sampler_train_max_absolute_difference": 9.250640869140625e-05,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.02383653073328057,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 7,
+          "nonzero_groups": 3,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.042888346906693e-07,
+          "sampler_train_max_absolute_difference": 0.00022554397583007812,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.0225712613139253,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 8,
+          "nonzero_groups": 3,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.09815606619668e-07,
+          "sampler_train_max_absolute_difference": 0.00037038326263427734,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.020908752030146225,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 9,
+          "nonzero_groups": 6,
+          "changed_groups": 2,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 5.30214663285733e-07,
+          "sampler_train_max_absolute_difference": 0.0011785030364990234,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.019516487399438797,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 10,
+          "nonzero_groups": 1,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.3369453806008096e-07,
+          "sampler_train_max_absolute_difference": 0.00014352798461914062,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.018370204878101433,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 11,
+          "nonzero_groups": 3,
+          "changed_groups": 1,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.327305020979111e-07,
+          "sampler_train_max_absolute_difference": 0.00012379884719848633,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.016968904956655845,
+          "optimizer_updates": 1
+        },
+        {
+          "step": 12,
+          "nonzero_groups": 0,
+          "changed_groups": 0,
+          "status": "FINITE",
+          "sampler_train_mean_absolute_difference": 4.6961127964095795e-07,
+          "sampler_train_max_absolute_difference": 0.00027179718017578125,
+          "tis_truncated_fraction": 0.0,
+          "parameter_update_norm": 0.015512502486772991,
+          "optimizer_updates": 1
+        }
+      ],
+      "state_counts": {
+        "PASS/J1": 1201,
+        "PASS/J0": 237,
+        "UNKNOWN/J0": 21,
+        "FAIL/J0": 75,
+        "FAIL/J1": 2
+      },
+      "hard_changed_rows": []
+    }
+  },
+  "accounting": "228108|COMPLETED|0:0|2026-10-26T12:50:52|2026-10-27T00:05:34|11:14:42|gpu-pro6000-12\n228108.batch|COMPLETED|0:0|2026-10-26T12:50:52|2026-10-27T00:05:34|11:14:42|gpu-pro6000-12\n228108.extern|COMPLETED|0:0|2026-10-26T12:50:52|2026-10-27T00:05:34|11:14:42|gpu-pro6000-12\n228121|COMPLETED|0:0|2026-10-26T12:52:23|2026-10-27T00:18:52|11:26:29|gpu-pro6000-12\n228121.batch|COMPLETED|0:0|2026-10-26T12:52:23|2026-10-27T00:18:52|11:26:29|gpu-pro6000-12\n228121.extern|COMPLETED|0:0|2026-10-26T12:52:23|2026-10-27T00:18:52|11:26:29|gpu-pro6000-12\n229267|FAILED|1:0|2026-10-27T04:43:00|2026-10-27T04:43:07|00:00:07|cpu-2\n229267.batch|FAILED|1:0|2026-10-27T04:43:00|2026-10-27T04:43:07|00:00:07|cpu-2\n229267.extern|COMPLETED|0:0|2026-10-27T04:43:00|2026-10-27T04:43:07|00:00:07|cpu-2\n229269|COMPLETED|0:0|2026-10-27T04:44:40|2026-10-27T04:45:56|00:01:16|cpu-2\n229269.batch|COMPLETED|0:0|2026-10-27T04:44:40|2026-10-27T04:45:56|00:01:16|cpu-2\n229269.extern|COMPLETED|0:0|2026-10-27T04:44:40|2026-10-27T04:45:56|00:01:16|cpu-2\n",
+  "queue": "229108|cafeTD-FINAL-SM|PENDING|N/A|soujanya-poria-startfund-2026-03\n228477|cafeD-POSELOCAL-SM|RUNNING|gres/gpu:pro6000:1|rose\n228476|cafeA-PURETIME-SM|RUNNING|gres/gpu:pro6000:1|rose\n",
+  "review_count": 360,
+  "review_status_counts": {
+    "PASS": 360
+  },
+  "failures_files": []
+}

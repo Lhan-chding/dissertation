@@ -1,0 +1,54 @@
+{
+  "status": "PASS",
+  "checks": {
+    "identity": true,
+    "step": true,
+    "policy": true,
+    "optimizer": true,
+    "scheduler": true,
+    "sampler_state": true,
+    "python_rng": true,
+    "numpy_rng": true,
+    "torch_rng": true,
+    "cuda_rng": true,
+    "state_keys": true,
+    "fresh_process": true,
+    "primary_continuous_from_zero": true,
+    "recovery_restored_step_four": true,
+    "terminal_step_twelve": true,
+    "numerical_credit_update_receipts": true,
+    "regenerated_groups": true
+  },
+  "parent": "b0",
+  "arm": "SHUF",
+  "regenerated_groups": 128,
+  "actual_matching_groups": 128,
+  "criterion": "frozen exact; no tolerance widened after observing outputs",
+  "identity": {
+    "run_id": "G3-b0-SHUF",
+    "parent": "b0",
+    "arm": "SHUF",
+    "repeat": 0,
+    "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0",
+    "reference": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+    "protocol_version": "structured_v3-1.0"
+  },
+  "checkpoint_metadata": {
+    "primary": {
+      "size": 260269781,
+      "mtime_ns": 1792979128167896922,
+      "inode": 4398157390074,
+      "device": 48
+    },
+    "recovery": {
+      "size": 260271317,
+      "mtime_ns": 1792985875939534201,
+      "inode": 4398157391898,
+      "device": 48
+    }
+  },
+  "completion_digests": {
+    "primary": "f378d42f3759e180caaa0473c1c11775d675d4d306018945e84fdddefc7440ef",
+    "recovery": "7d4b79c16f6c6e34fdd3876f1798070f710224ed525aa3fb75ead42ab2978a16"
+  }
+}

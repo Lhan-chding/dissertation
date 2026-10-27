@@ -1,0 +1,15 @@
+{
+  "status": "SUBMITTED",
+  "at": "2026-10-27T04:44:40.059679+00:00",
+  "previous_technical_failure": "229267|FAILED|1:0|cpu-2\n",
+  "script": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/CONTINUATION/g3_same_node_revalidation.sbatch",
+  "program": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026/CONTINUATION/g3_same_node_revalidation.py",
+  "program_sha256": "4aa9366f407dddac8665ab4dcf0370292474aff72079d77816cee52dee7b7a82",
+  "no_model_calls": true,
+  "gpu_request": 0,
+  "frozen_source_unchanged": true,
+  "stdout": "229269\n",
+  "stderr": "",
+  "returncode": 0,
+  "job_id": "229269"
+}

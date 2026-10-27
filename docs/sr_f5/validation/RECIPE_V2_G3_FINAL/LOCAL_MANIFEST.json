@@ -1,0 +1,98 @@
+{
+  "CURRENT_FINAL.json": {
+    "bytes": 10778,
+    "sha256": "4071344de37beddf9b6e90fd1575da4d275ba6b8770d0b325ab11e62618b210a"
+  },
+  "G3-AGG-229267.log": {
+    "bytes": 700,
+    "sha256": "419e6dc86b356039b1a62e31088c7d3493d42ea68ba06aa59c3cb576f47feb02"
+  },
+  "G3-AGG-CHECK-229269.log": {
+    "bytes": 7021,
+    "sha256": "d43bfe078f12fdb4363629ec9bc7cbbc8d8cabea926966fbfb5b921b3d44c714"
+  },
+  "G3.json": {
+    "bytes": 427,
+    "sha256": "bbe10df6fa8434286db240d83f684f2c1654e87334d2ab8c537d4aa849892e50"
+  },
+  "G3_AGGREGATION_SAME_NODE_SUBMISSION.json": {
+    "bytes": 643,
+    "sha256": "f1f8c6f77c4ee13fe67e844b16774ffcc36e3b61673ea155133b4fe3a7de44f8"
+  },
+  "G3_AGGREGATION_SUBMISSION.json": {
+    "bytes": 787,
+    "sha256": "e0d203f70ff7922d0e187a950339e8613bd7034a19237f4b67314a81d98f1375"
+  },
+  "G3_FINAL_DIAGNOSTIC_COUNTS.json": {
+    "bytes": 80284,
+    "sha256": "edcfb10a62a137d77ce52ddd0bf58a52ca5b3b2ecb37ac3ef4fbc4d16d7d2723"
+  },
+  "G3_SAME_NODE_REVALIDATION/DENSE_RECOVERY_ORIGINAL.json": {
+    "bytes": 1559,
+    "sha256": "948088ce3802ac2d19ba2a94a9e636a9221fcb824d3e7a213568031b5b1536e1"
+  },
+  "G3_SAME_NODE_REVALIDATION/DENSE_RECOVERY_REVALIDATED.json": {
+    "bytes": 1558,
+    "sha256": "966c8162ad6562b4fc690ba28faa67382c684b88e672623209ff33cb39442a56"
+  },
+  "G3_SAME_NODE_REVALIDATION/DIAGNOSIS.json": {
+    "bytes": 7973,
+    "sha256": "02be29753b656bbdd540e6b0e3e8dcbc7aa852311ff3bbd975d550ca9617cdcd"
+  },
+  "G3_SAME_NODE_REVALIDATION/HARD_RECOVERY_ORIGINAL.json": {
+    "bytes": 1556,
+    "sha256": "cfa39fe49f150043ac3afbc001b3f668fbb5efa0245f5d16ac54f50a2fb47e2a"
+  },
+  "G3_SAME_NODE_REVALIDATION/HARD_RECOVERY_REVALIDATED.json": {
+    "bytes": 1555,
+    "sha256": "2aeee5fb7aaac500e20fa2b172f2d50788d4393ce2a48c89e911ca13863fbc0f"
+  },
+  "G3_SAME_NODE_REVALIDATION/J_RECOVERY_ORIGINAL.json": {
+    "bytes": 1547,
+    "sha256": "1a2fd0795f8cb78e5c69734b478b37b7dc18b253a434c0f80b01dbb252f1ad07"
+  },
+  "G3_SAME_NODE_REVALIDATION/J_RECOVERY_REVALIDATED.json": {
+    "bytes": 1546,
+    "sha256": "57f8773e3067526518090ac1b0b43a9fa4e99de56e8eb1c383326c37d770e30a"
+  },
+  "G3_SAME_NODE_REVALIDATION/LOCAL_RECOVERY_ORIGINAL.json": {
+    "bytes": 1559,
+    "sha256": "24527ca02c72be0e03e6a707f71fe553fa14cc4d7256fece1ae4900dc9e65278"
+  },
+  "G3_SAME_NODE_REVALIDATION/LOCAL_RECOVERY_REVALIDATED.json": {
+    "bytes": 1558,
+    "sha256": "909d51a35e3c3a60812f9518b61f7cadaf0caa3fc480d0e250cd1a8a218dece6"
+  },
+  "G3_SAME_NODE_REVALIDATION/SHUF_RECOVERY_ORIGINAL.json": {
+    "bytes": 1556,
+    "sha256": "9ca273c950513f63350e11a5fc960ce42b7e5104801247c7a5886601c04b2ed9"
+  },
+  "G3_SAME_NODE_REVALIDATION/SHUF_RECOVERY_REVALIDATED.json": {
+    "bytes": 1555,
+    "sha256": "8a07c3a8576fca182f9229d84d360e353287709c3bf90124d3cb1467def4ebc7"
+  },
+  "METRICS.json": {
+    "bytes": 7021,
+    "sha256": "d43bfe078f12fdb4363629ec9bc7cbbc8d8cabea926966fbfb5b921b3d44c714"
+  },
+  "PROGRAM_REVIEWS.jsonl": {
+    "bytes": 287042,
+    "sha256": "80d0b48549bede573ff7e253db194c6941e61195f656e62f703bf2d2ddfc34f4"
+  },
+  "REENTRY_ALL_COMPLETE_20261027.json": {
+    "bytes": 44265,
+    "sha256": "482b3723ed19185a0551bcffe78e9a7d4fcdbe8af3254d60fd496876d59735e7"
+  },
+  "g3_aggregate_47d5e85.sbatch": {
+    "bytes": 953,
+    "sha256": "7095b68c1cd8c23a2f87d7abaceb7b7c8961d4baf8c24f3b0ec4475b409590b6"
+  },
+  "g3_same_node_revalidation.py": {
+    "bytes": 1964,
+    "sha256": "4aa9366f407dddac8665ab4dcf0370292474aff72079d77816cee52dee7b7a82"
+  },
+  "g3_same_node_revalidation.sbatch": {
+    "bytes": 743,
+    "sha256": "8bcd9ede164305e2b10a19ef3cb7bc05b5bfb8a7af71179ea714a51ddc43ede8"
+  }
+}

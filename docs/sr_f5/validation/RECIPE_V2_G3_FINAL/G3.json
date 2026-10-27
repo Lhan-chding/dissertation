@@ -1,0 +1,13 @@
+{
+  "status": "FAIL",
+  "errors": [
+    "numerical/runtime checks missing",
+    "b1/1: insufficient SHUF contrast",
+    "b1/2: insufficient SHUF contrast",
+    "b0/HARD:no_actual_reward_difference"
+  ],
+  "scope": "G3 feasibility, not performance significance",
+  "at": "2026-10-27T04:45:55.966719+00:00",
+  "evidence": "G3/METRICS.json",
+  "frozen_digest": "e3849e3a3250358e5dd55ba0bc59d95e29ded924d8f4e3c6bea78126b29dbca0"
+}

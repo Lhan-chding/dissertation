@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85/src/sr_f5/pilot.py", line 934, in <module>
+    main()
+  File "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85/src/sr_f5/pilot.py", line 923, in main
+    result = aggregate(args.root)
+             ^^^^^^^^^^^^^^^^^^^^
+  File "/projects/_ssd/varunssd/louis-ssvc/sr_f5_recipe_v2_47d5e85/src/sr_f5/pilot.py", line 680, in aggregate
+    raise PermissionError("Recovery evidence is stale or belongs to another path")
+PermissionError: Recovery evidence is stale or belongs to another path
