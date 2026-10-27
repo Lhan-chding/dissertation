@@ -15,7 +15,7 @@
 - 独立 `sr_f6` 实现包括数据/渲染/调度、无损原生评分投影、完整 G8 信用、整序列 FP32 loss、单次 /128 更新、真实1536-token运行适配、来源绑定、processor预检、普查与严格门。旧 F5 源码保持不变。
 - 本地数据 `.local/sr_f6_cpu_preparation/DATA`：4,704 主任务加128配对自然接口，3,887 张原图；状态 `CPU_PREPARED_NOT_RELEASED`。真实处理器图像不能用这些原图替代。
 - 题组深诊断见 `GROUP_DESIGN_AUDIT_zh.md` 与 `validation/CPU_PRODUCTION/GROUP_DESIGN_MATH.json`。P1 active 覆盖平均增量 .131458，57.29% 根严格增加；覆盖净增280里，anchor同答案候选揭露净增43。保留3个未揭露强造碰撞、2个局部退步根、20个P0/P1相同根。尚无真实模型学习价值证据。
-- 最近完整本地集成回归：278 passed、12 skipped、9 subtests passed，见 `validation/INTEGRATED_CPU`；12项skip是旧F3私有原包未安装。后续修正另有针对性回归，最终计数以实际日志为准。
+- 完整本地集成回归：285 passed、12 skipped、9 subtests passed，见 `validation/FINAL_LOCAL`；12项skip是旧F3私有原包未安装。后续修正另有针对性回归，最终计数以实际日志为准。
 
 ## 服务器与调度
 
@@ -28,6 +28,8 @@ SSH `eee-cluster`。唯一写入/清理边界为 canonical `/projects/_ssd/varun
 所有新作业名 `LH-SRF6-…`。优先两个独立单GPU worker/作业；CPU准备任务也使用LH前缀。不能为绕过上限把GPU工作放登录节点或换未授权QoS。
 
 ## 下一步（不能跳过）
+
+首次实现提交 `5315e9e1a3319dd3d4ab658195dd4372b2523193` 已推送到 origin。固定部署 `/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_5315e9e`，首次准备作业 `229909 / LH-SRF6-Prepare` 已实际执行并以 `FAILED / 1:0` 结束，0模型回答、0更新。错误是来源绑定代码把冻结image_file相对路径接在F4根下，遗漏原F4构造使用的 `DATA/` 前缀。原路径和题ID未缺失、未替换；正在修正路由并以显式 `--resume-source-failure` 恢复。原失败日志及提交回执见 `validation/SERVER_PREPARATION`，原run起始记录保留。恢复只允许尚无DATA/模型输出的来源失败，不能覆盖已完成阶段。首次内存中的模型hash因异常未落盘，修复后需再绑定一次；之后新增逐对象持久缓存，防止重复整模型扫描。
 
 1. 完成本地最终修正检查，commit/push，并用固定revision归档部署到本项目新代码目录；记录实际路径、revision、job ID。现有源码全部进入来源清单，回归测试代码也绑定。
 2. `scripts/sr_f6/prepare.sbatch` 执行实际来源绑定、服务器数据构造、历史世界排除、真实processor 48图与tokenizer回归、native regression。原model内容只绑定一次；后续复用验证缓存，只核变动文件。
@@ -42,7 +44,7 @@ SSH `eee-cluster`。唯一写入/清理边界为 canonical `/projects/_ssd/varun
 
 ## 清理
 
-已授权唯一大体量归档清理目标：`sr_f3_ce_20261016/prior/raw`，其STOP为 `STOPPED_PROTOCOL_FAILURE`；当前F5/F6无依赖。先对45,454个普通文件（5,154,950,860B）做完整无损归档+成员校验，再按精确allowlist删原件。归档549,096,352B。实际删除是否完成以及净释放量必须以 `validation/STORAGE_20261027` 最终回执为准，不能仅凭归档完成断言释放空间。
+唯一大体量归档清理目标 `sr_f3_ce_20261016/prior/raw` 已完成，`POSTFLIGHT_PASS`；其STOP仍为 `STOPPED_PROTOCOL_FAILURE`，当前F5/F6无依赖。45,454个普通文件（5,154,950,860B）先完整无损归档并验收，再按精确allowlist删除原件。549,096,352B归档、原目录及恢复索引保留。扣除全部新归档、审计文件和索引，净逻辑磁盘节省 **4,552,186,777B，约4.24GiB**。详见 `validation/STORAGE_20261027/REPORT_zh.md` 与 `POSTFLIGHT.json`；不把共享df波动归因于本任务。
 
 其它项目 `/projects/_hdd/varunhdd/hgrel_hdd` 及其cafe作业均未修改。本项目模型、父adapter、环境、F4保持面板、F5 step004/step012、旧失败复现依赖保留。登录节点cache不等于无用实验文件，不清系统page cache。
 

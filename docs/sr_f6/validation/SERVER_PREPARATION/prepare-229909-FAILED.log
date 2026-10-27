@@ -1,0 +1,23 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_5315e9e/src/sr_f6/prepare.py", line 167, in <module>
+    main()
+  File "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_5315e9e/src/sr_f6/prepare.py", line 163, in main
+    print(json.dumps(prepare(args.root, args.config, args.revision), ensure_ascii=False))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_5315e9e/src/sr_f6/prepare.py", line 116, in prepare
+    binding = bind(config, config_path=config_file)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_5315e9e/src/sr_f6/source_binding.py", line 240, in bind
+    image = inventory_file(source_root / relative, project)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_5315e9e/src/sr_f6/source_binding.py", line 136, in inventory_file
+    resolved = path.resolve(strict=True)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/lib/python3.12/pathlib.py", line 1240, in resolve
+    s = self._flavour.realpath(self, strict=strict)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen posixpath>", line 424, in realpath
+  File "<frozen posixpath>", line 468, in _joinrealpath
+FileNotFoundError: [Errno 2] No such file or directory: '/projects/_ssd/varunssd/louis-ssvc/sr_f4_consolidated_20261022/images'

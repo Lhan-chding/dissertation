@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-27T11:50:35.837392+00:00",
+  "revision": "5315e9e1a3319dd3d4ab658195dd4372b2523193",
+  "code": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_5315e9e",
+  "root": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_semantic_factorial_20261027",
+  "queue_before": "229873|soujanya-poria-startfund-2026-03|RUNNING|gres/gpu:pro6000:1\n229874|soujanya-poria-startfund-2026-03|RUNNING|gres/gpu:pro6000:1\n229875|soujanya-poria-startfund-2026-03|RUNNING|gres/gpu:pro6000:1\n229347|soujanya-poria-startfund-2026-03|RUNNING|gres/gpu:pro6000:1\n229876|rose|RUNNING|gres/gpu:pro6000:1\n",
+  "teacher_qos_submitted": 4,
+  "purpose": "CPU preparation and processor only; no model generation",
+  "command": [
+    "sbatch",
+    "--parsable",
+    "--export=ALL,SRF6_CODE=/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_5315e9e,SRF6_ROOT=/projects/_ssd/varunssd/louis-ssvc/sr_f6_semantic_factorial_20261027,SRF6_REVISION=5315e9e1a3319dd3d4ab658195dd4372b2523193",
+    "--output=/projects/_ssd/varunssd/louis-ssvc/sr_f6_semantic_factorial_20261027/slurm/prepare-%j.log",
+    "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_5315e9e/scripts/sr_f6/prepare.sbatch"
+  ],
+  "returncode": 0,
+  "stdout": "229909\n",
+  "stderr": "sbatch: slurm_job_submit: enforced 4 CPUs for 1 task and 12288 MiB mem/node for 0 GPU(s) (model=none)\nsbatch: slurm_job_submit: you requested 4 CPUs/node and 16384 MiB mem/node\n",
+  "status": "SUBMITTED",
+  "job_id": "229909"
+}

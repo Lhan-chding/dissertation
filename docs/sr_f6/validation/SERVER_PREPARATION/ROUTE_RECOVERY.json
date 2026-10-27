@@ -1,0 +1,35 @@
+{
+  "status": "LOCAL_FIX_VERIFIED",
+  "at": "2026-10-27T11:58:14.802336+00:00",
+  "failed_job": "229909",
+  "failed_revision": "5315e9e1a3319dd3d4ab658195dd4372b2523193",
+  "error": "retention route was DATA-relative; binder omitted DATA prefix",
+  "scientific_samples": 0,
+  "optimizer_updates": 0,
+  "original_ids_and_images_unchanged": true,
+  "remote_original_image_checks": {
+    "LEGACY": {
+      "files": 128,
+      "bytes": 3888361
+    },
+    "CHARTQA": {
+      "files": 250,
+      "bytes": 10982037
+    },
+    "missing": [],
+    "hash_mismatches": []
+  },
+  "model_hash_retry_note": "First failed attempt kept hash only in memory. One rehash is necessary; new durable per-object cache prevents future repeated scans.",
+  "test_command": [
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python",
+    "-m",
+    "pytest",
+    "--import-mode=importlib",
+    "tests/sr_f6/test_runtime.py",
+    "tests/sr_f6/test_census.py",
+    "tests/sr_f6/test_prepare.py",
+    "tests/sr_f6/test_gates.py",
+    "-q"
+  ],
+  "test_exit_code": 0
+}

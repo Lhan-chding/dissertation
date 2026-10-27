@@ -13,6 +13,10 @@ set -euo pipefail
 cd "$SRF6_CODE"
 export PYTHONPATH="$SRF6_CODE/src"
 python=/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12
-"$python" -u -m sr_f6.prepare --root "$SRF6_ROOT" --config configs/sr_f6.json --revision "$SRF6_REVISION"
+recovery=()
+if [[ "${SRF6_RESUME_SOURCE_FAILURE:-0}" == 1 ]]; then
+  recovery+=(--resume-source-failure)
+fi
+"$python" -u -m sr_f6.prepare --root "$SRF6_ROOT" --config configs/sr_f6.json --revision "$SRF6_REVISION" "${recovery[@]}"
 "$python" -u -m sr_f6.runtime processor-preflight --root "$SRF6_ROOT"
 "$python" -u -m sr_f6.release native-regression --root "$SRF6_ROOT"

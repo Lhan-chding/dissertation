@@ -303,3 +303,77 @@ def test_shared_mount_device_number_is_not_a_content_cache_key():
     assert stat_cache_key(one) == stat_cache_key(other)
     other.st_ino = 24
     assert stat_cache_key(one) != stat_cache_key(other)
+
+
+def test_retention_route_uses_original_f4_data_root(tmp_path):
+    from sr_f6.source_binding import retention_image_path
+
+    source = tmp_path / "sr_f4"
+    actual = source / "DATA/images/legacy.png"
+    actual.parent.mkdir(parents=True)
+    actual.write_bytes(b"frozen image")
+    wrong = source / "images/legacy.png"
+    frozen = dict(source_root=str(source), legacy_source=str(source / "DATA/TASKS.jsonl"))
+    route = dict(qid="legacy-id", image_file="images/legacy.png")
+    assert retention_image_path(frozen, route) == actual
+    assert not wrong.exists()
+    chartqa = dict(qid="chartqa-id", image_file="external/chartqa/image.png")
+    assert retention_image_path(frozen, chartqa) == source / "DATA/external/chartqa/image.png"
+    with pytest.raises(PermissionError):
+        retention_image_path(frozen, dict(route, image_file="../images/legacy.png"))
+    with pytest.raises(PermissionError):
+        retention_image_path(dict(frozen, legacy_source=str(source / "TASKS.jsonl")), route)
+
+
+def test_binding_cache_survives_later_failure_without_rehash(monkeypatch, tmp_path):
+    from sr_f6 import source_binding as binding
+
+    model = tmp_path / "model.safetensors"
+    model.write_bytes(b"original model")
+    cache_path = tmp_path / "SOURCE_BINDING_CACHE.json"
+    context = {"config_canonical_sha256": "a" * 64}
+    first = binding.InventoryCache(cache_path, boundary=tmp_path, context=context)
+    original = first.inventory(model)
+    assert first.counts["new_content_hashes"] == 1
+    with pytest.raises(FileNotFoundError):
+        first.inventory(tmp_path / "missing-retention-image.png")
+    persisted = json.loads(cache_path.read_text())
+    assert persisted["objects"][str(model)] == original
+    binding._VERIFIED_STATS.clear()
+    actual_hash = binding.file_sha256
+    called = []
+
+    def counted(path):
+        called.append(str(path))
+        return actual_hash(path)
+
+    monkeypatch.setattr(binding, "file_sha256", counted)
+    restarted = binding.InventoryCache(cache_path, boundary=tmp_path, context=context)
+    assert restarted.inventory(model) == original
+    assert called == []
+    assert restarted.counts["unchanged_cache_hits"] == 1
+    next_file = tmp_path / "image.png"
+    next_file.write_bytes(b"image")
+    restarted.inventory(next_file)
+    assert called == [str(next_file)]
+    assert set(json.loads(cache_path.read_text())["objects"]) == {str(model), str(next_file)}
+
+
+def test_binding_cache_rejects_changed_context_and_changed_content(tmp_path):
+    from sr_f6 import source_binding as binding
+
+    path = tmp_path / "model.safetensors"
+    path.write_bytes(b"original")
+    cache_path = tmp_path / "SOURCE_BINDING_CACHE.json"
+    cache = binding.InventoryCache(cache_path, boundary=tmp_path, context={"config": "a"})
+    cache.inventory(path)
+    incompatible = binding.InventoryCache(cache_path, boundary=tmp_path, context={"config": "b"})
+    with pytest.raises(PermissionError, match="different binding"):
+        incompatible.inventory(path)
+    path.write_bytes(b"modified")
+    restarted = binding.InventoryCache(cache_path, boundary=tmp_path, context={"config": "a"})
+    with pytest.raises(PermissionError, match="content changed"):
+        restarted.inventory(path)
+    assert json.loads(cache_path.read_text())["objects"][str(path)][
+        "sha256"
+    ] != binding.file_sha256(path)

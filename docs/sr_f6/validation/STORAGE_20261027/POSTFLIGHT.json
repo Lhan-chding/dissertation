@@ -1,0 +1,89 @@
+{
+  "status": "POSTFLIGHT_PASS",
+  "hostname": "login-3.cluster02.eee.ntu.edu.sg",
+  "source_files_deleted": 45454,
+  "source_bytes_removed": 5154950860,
+  "source_lastlink_blocks_bytes": 5169610752,
+  "archive_bytes": 549096352,
+  "remaining_source_files": [
+    "ARCHIVED_LOCATION.json"
+  ],
+  "stopped_source_status_unchanged": true,
+  "f5_config_hashes_unchanged": true,
+  "audit_files": [
+    {
+      "name": "ALLOWLIST.json",
+      "bytes": 21280127,
+      "allocated_bytes": 21280256,
+      "sha256": "b9530acf33a6dce7a19bf58f87e20314d998c6959a5afa3dd45b7238221b5797"
+    },
+    {
+      "name": "APPLY_PREFLIGHT.json",
+      "bytes": 9189,
+      "allocated_bytes": 9216,
+      "sha256": "a5c56d11d70c0b0c1d7bd72baf6d34a583bbbece439f58c7d5850b03c3b501b0"
+    },
+    {
+      "name": "APPLY_RECEIPT.json",
+      "bytes": 874,
+      "allocated_bytes": 1024,
+      "sha256": "8e4b7765972ba294ddb1dd0f6f2e9c34d4f12c7324cd0b06346a8fdfdb633345"
+    },
+    {
+      "name": "ARCHIVE_VERIFIED.json",
+      "bytes": 252,
+      "allocated_bytes": 512,
+      "sha256": "fd35ea489bb1166bd305dd36c06e68f713a49b23a123c0ab1ecfa355d8c03b47"
+    },
+    {
+      "name": "DELETE_JOURNAL.jsonl",
+      "bytes": 14795625,
+      "allocated_bytes": 14795776,
+      "sha256": "b8df4a1af0b2b7feebf31b338bc1be78225e822c2a75a63701cbaaf76dad1251"
+    },
+    {
+      "name": "EXECUTION.lock",
+      "bytes": 0,
+      "allocated_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "INVENTORY.json",
+      "bytes": 17552899,
+      "allocated_bytes": 17553408,
+      "sha256": "c0531b304f6071f4ae2ebc5d025dacb2ef3a05683d922a250ccaa519e292a204"
+    },
+    {
+      "name": "PREDELETE_PROOF.json",
+      "bytes": 863,
+      "allocated_bytes": 1024,
+      "sha256": "f308de50c2741621117184162921858dd1fe6b343fa7ce12e77061b57eba82f5"
+    },
+    {
+      "name": "PREFLIGHT.json",
+      "bytes": 4402,
+      "allocated_bytes": 4608,
+      "sha256": "dc7c68600a9f0b0fc72eb49c38d7c646d48c14aeea827674e6fefd12a688c53e"
+    },
+    {
+      "name": "RAW_COMPLETE.tar.gz",
+      "bytes": 549096352,
+      "allocated_bytes": 549096448,
+      "sha256": "a56b889a1d62e07563067ee09663675322dd3b71b8922b4de61100a1bc8dc37b",
+      "hash_reused": true
+    },
+    {
+      "name": "cleanup_apply.py",
+      "bytes": 19192,
+      "allocated_bytes": 19456,
+      "sha256": "d82c838865b445b0dc568f5f9b9a1f312bec85bc78b8b243b64e13e84d95128b"
+    }
+  ],
+  "new_source_index_bytes": 874,
+  "audit_logical_bytes_including_this_report": 602763209,
+  "net_logical_bytes_saved_including_audit_and_index": 4552186777,
+  "allocated_bytes_saved_before_this_small_receipt": 4566848000,
+  "allocated_note": "File st_blocks accounting only; excludes final small receipt and filesystem metadata/snapshots; shared df changes are not attributed to this task.",
+  "hash_policy": "Reused verified archive SHA; source was checked by unchanged stat at deletion. Only small audit files were hashed for this index.",
+  "slurm_snapshot": "229873|cafeA30-CLEAN-SM|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1\n229874|cafeA-TIME-CLEAN-SM|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1\n229875|cafeB-SK-CLEAN-SM|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1\n229347|cafeC-REF-SM|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:1\n229876|cafeD-PLF-CLEAN-SM|RUNNING|rose|gres/gpu:pro6000:1\n"
+}

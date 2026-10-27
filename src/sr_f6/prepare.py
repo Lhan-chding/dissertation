@@ -85,7 +85,64 @@ def historical_audit(root, source_binding):
     return report
 
 
-def prepare(root, config_file, revision):
+def initialize(root, config_file, revision, *, resume_source_failure=False):
+    """Only a named pre-data source failure can be explicitly resumed."""
+    root, config_file = Path(root), Path(config_file)
+    if resume_source_failure:
+        allowed = {
+            "slurm",
+            "CONFIG.json",
+            "IMPLEMENTATION_REGISTRATION.json",
+            "PREPARATION_STARTED.json",
+            "SOURCE_BINDING_CACHE.json",
+            "SOURCE_BINDING_CACHE.json.lock",
+        }
+        if any(
+            p.name not in allowed and not p.name.startswith("PREPARATION_RECOVERY_")
+            for p in root.iterdir()
+        ):
+            raise PermissionError(
+                "Recovery only supports failed source binding before data/model work"
+            )
+        if (root / "CONFIG.json").read_bytes() != config_file.read_bytes():
+            raise PermissionError("Recovery configuration changed")
+        if read(root / "IMPLEMENTATION_REGISTRATION.json") != AMENDMENTS:
+            raise PermissionError("Recovery implementation contract changed")
+        previous = read(root / "PREPARATION_STARTED.json")
+        if previous.get("model_calls") != 0 or previous.get("optimizer_updates") != 0:
+            raise PermissionError("Recovery cannot claim pre-model status")
+        write_once(
+            root / f"PREPARATION_RECOVERY_{revision[:12]}.json",
+            {
+                "at": now(),
+                "previous_started_record": previous,
+                "new_revision": revision,
+                "reason": (
+                    "explicit recovery of failed source binding; "
+                    "no data or model outputs exist"
+                ),
+            },
+        )
+    else:
+        if root.exists() and any(p.name != "slurm" for p in root.iterdir()):
+            raise FileExistsError("Existing preparation must be diagnosed; no silent rebuild")
+        root.mkdir(parents=True, exist_ok=True)
+        with (root / "CONFIG.json").open("xb") as stream:
+            stream.write(config_file.read_bytes())
+        write_once(root / "IMPLEMENTATION_REGISTRATION.json", AMENDMENTS)
+        write_once(
+            root / "PREPARATION_STARTED.json",
+            {
+                "at": now(),
+                "revision": revision,
+                "status": "STARTED",
+                "model_calls": 0,
+                "optimizer_updates": 0,
+            },
+        )
+
+
+def prepare(root, config_file, revision, *, resume_source_failure=False):
     from .census import freeze_spec
     from .data import build
     from .source_binding import bind
@@ -97,23 +154,8 @@ def prepare(root, config_file, revision):
         raise PermissionError("Only the canonical registered SR-F6 root is writable")
     if not re.fullmatch(r"[0-9a-f]{40}", revision):
         raise ValueError("Immutable full Git revision required")
-    if root.exists() and any(p.name != "slurm" for p in root.iterdir()):
-        raise FileExistsError("Existing preparation must be diagnosed; no silent rebuild")
-    root.mkdir(parents=True, exist_ok=True)
-    with (root / "CONFIG.json").open("xb") as stream:
-        stream.write(config_file.read_bytes())
-    write_once(root / "IMPLEMENTATION_REGISTRATION.json", AMENDMENTS)
-    write_once(
-        root / "PREPARATION_STARTED.json",
-        {
-            "at": now(),
-            "revision": revision,
-            "status": "STARTED",
-            "model_calls": 0,
-            "optimizer_updates": 0,
-        },
-    )
-    binding = bind(config, config_path=config_file)
+    initialize(root, config_file, revision, resume_source_failure=resume_source_failure)
+    binding = bind(config, config_path=config_file, cache_path=root / "SOURCE_BINDING_CACHE.json")
     write_once(root / "SOURCE_BINDING.json", binding)
     build(root, config)
     historical_audit(root, binding)
@@ -159,8 +201,19 @@ def main():
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--config", type=Path, required=True)
     parser.add_argument("--revision", required=True)
+    parser.add_argument("--resume-source-failure", action="store_true")
     args = parser.parse_args()
-    print(json.dumps(prepare(args.root, args.config, args.revision), ensure_ascii=False))
+    print(
+        json.dumps(
+            prepare(
+                args.root,
+                args.config,
+                args.revision,
+                resume_source_failure=args.resume_source_failure,
+            ),
+            ensure_ascii=False,
+        )
+    )
 
 
 if __name__ == "__main__":

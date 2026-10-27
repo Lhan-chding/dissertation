@@ -7,12 +7,15 @@ It never upgrades packages, downloads a model, signs a gate, or edits F5 inputs.
 from __future__ import annotations
 
 import argparse
+import fcntl
 import hashlib
 import importlib.metadata
 import json
+import os
 import platform
 import socket
 import stat
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -151,8 +154,117 @@ def inventory_file(path, boundary=PROJECT):
     return result
 
 
+class InventoryCache:
+    """Durable per-file progress for source binding; never a scientific PASS.
+
+    Each completed inventory is saved immediately. An interrupted later object
+    does not invalidate earlier verified bytes. Cache hits still verify path and
+    metadata; changed contents are rejected rather than silently re-registered.
+    """
+
+    def __init__(self, path, *, boundary, context):
+        self.path = Path(path)
+        self.boundary = Path(boundary).resolve(strict=True)
+        self.context = context
+        self.counts = {
+            "new_content_hashes": 0,
+            "unchanged_cache_hits": 0,
+            "changed_stat_rehashes": 0,
+        }
+        if (
+            not self.path.is_absolute()
+            or self.path.resolve() != self.path
+            or not self.path.is_relative_to(self.boundary)
+            or not self.path.parent.is_dir()
+        ):
+            raise PermissionError("Binding cache must be a canonical file under the new run root")
+        self.lock_path = self.path.with_suffix(self.path.suffix + ".lock")
+        if self.lock_path.is_symlink() or self.path.is_symlink():
+            raise PermissionError("Binding cache and lock must not be symlinks")
+
+    def _read(self):
+        if not self.path.exists():
+            return {
+                "schema": "srf6-source-inventory-cache-v1",
+                "context": self.context,
+                "objects": {},
+            }
+        value = json.loads(self.path.read_text())
+        if (
+            value.get("schema") != "srf6-source-inventory-cache-v1"
+            or value.get("context") != self.context
+            or not isinstance(value.get("objects"), dict)
+        ):
+            raise PermissionError("Existing source inventory cache belongs to a different binding")
+        return value
+
+    def _write(self, value):
+        descriptor, temporary = tempfile.mkstemp(
+            prefix=self.path.name + ".", suffix=".tmp", dir=self.path.parent
+        )
+        try:
+            with os.fdopen(descriptor, "w") as stream:
+                json.dump(value, stream, sort_keys=True, indent=2, allow_nan=False)
+                stream.write("\n")
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(temporary, self.path)
+            directory = os.open(self.path.parent, os.O_RDONLY | os.O_DIRECTORY)
+            try:
+                os.fsync(directory)
+            finally:
+                os.close(directory)
+        finally:
+            Path(temporary).unlink(missing_ok=True)
+
+    def inventory(self, path):
+        path = Path(path)
+        with self.lock_path.open("a") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            cache = self._read()
+            key = str(path)
+            old = cache["objects"].get(key)
+            if old is None:
+                current = inventory_file(path, self.boundary)
+                self.counts["new_content_hashes"] += 1
+            else:
+                if old.get("path") != key:
+                    raise PermissionError("Cached source pathname disagrees with its key")
+                verification = verify_bound_files([old], self.boundary)
+                current = dict(old, stat_cache_key=verification["files"][0]["stat_cache_key"])
+                self.counts["changed_stat_rehashes"] += verification["content_rehashed"]
+                self.counts["unchanged_cache_hits"] += verification["unchanged_stat_reused"]
+            if old != current:
+                cache["objects"][key] = current
+                self._write(cache)
+            return current
+
+
+def retention_image_path(frozen, route):
+    """F4 manifests are relative to DATA, as staged by sr_f4.prepare.
+
+    F5 copied those route rows verbatim; source_root alone is not their base.
+    The frozen legacy task manifest independently identifies the DATA base.
+    """
+    source_root = Path(frozen["source_root"])
+    data_root = Path(frozen["legacy_source"]).parent
+    if data_root != source_root / "DATA":
+        raise PermissionError("Frozen F4 data-root provenance differs")
+    relative = Path(route["image_file"])
+    if relative.is_absolute() or ".." in relative.parts or not relative.parts:
+        raise PermissionError("Retention image route must be a safe DATA-relative path")
+    return data_root / relative
+
+
 def bind(
-    config, *, project=PROJECT, source=F5_CODE, previous=F5_RUN, config_path=None, deployment=None
+    config,
+    *,
+    project=PROJECT,
+    source=F5_CODE,
+    previous=F5_RUN,
+    config_path=None,
+    deployment=None,
+    cache_path=None,
 ):
     project, source, previous = Path(project), Path(source), Path(previous)
     if project.resolve(strict=True) != project:
@@ -160,16 +272,35 @@ def bind(
     for location in (source, previous):
         if location.resolve(strict=True) != location or not location.is_relative_to(project):
             raise PermissionError("F5 source must be a canonical owned-project descendant")
+    cache = None
+    if cache_path is not None:
+        expected_cache = Path(config["deployment"]["root"]) / "SOURCE_BINDING_CACHE.json"
+        if Path(cache_path) != expected_cache or expected_cache.parent in (source, previous):
+            raise PermissionError("Source cache is restricted to the registered new SR-F6 run")
+        cache = InventoryCache(
+            cache_path,
+            boundary=project,
+            context=dict(
+                project=str(project),
+                source=str(source),
+                previous=str(previous),
+                config_canonical_sha256=object_sha256(config),
+            ),
+        )
+
+    def inventory(path):
+        return cache.inventory(path) if cache is not None else inventory_file(path, project)
+
     old_config = json.loads((previous / "CONFIG.json").read_text())
     for key in ("model_path", "snapshot", "parents"):
         if old_config["model"][key] != config["model"][key]:
             raise PermissionError("Bound F5 model identity differs: " + key)
-    source_files = [inventory_file(source / name, project) for name in SOURCE_FILES]
+    source_files = [inventory(source / name) for name in SOURCE_FILES]
     deployment = Path(deployment) if deployment is not None else Path(__file__).resolve().parents[2]
     inherited = []
     for name, bound in zip(SOURCE_FILES, source_files, strict=True):
         local = deployment / name
-        digest = file_sha256(local)
+        digest = inventory(local)["sha256"]
         if digest != bound["sha256"]:
             raise PermissionError("Inherited production module drifted from bound F5: " + name)
         inherited.append(dict(path=str(local), relative=name, sha256=digest))
@@ -177,8 +308,7 @@ def bind(
     for parent, directory in config["model"]["parents"].items():
         path = Path(directory)
         files = [
-            inventory_file(path / name, project)
-            for name in ("adapter_config.json", "adapter_model.safetensors")
+            inventory(path / name) for name in ("adapter_config.json", "adapter_model.safetensors")
         ]
         metadata = json.loads((path / "adapter_config.json").read_text())
         parents[parent] = dict(
@@ -192,7 +322,7 @@ def bind(
         raise PermissionError("Snapshot directory differs from registration")
     # The HF snapshot may link to blobs; each target is independently bounded
     # to this project before reading. Weights receive content hashes too.
-    model_files = [inventory_file(p, project) for p in sorted(model.rglob("*")) if p.is_file()]
+    model_files = [inventory(p) for p in sorted(model.rglob("*")) if p.is_file()]
     names = {Path(x["path"]).name for x in model_files}
     if not {"config.json", "tokenizer_config.json"} <= names or not any(
         name.endswith(".safetensors") for name in names
@@ -206,7 +336,7 @@ def bind(
         "CHARTQA_SOURCE_ROUTES.jsonl",
         "FROZEN.json",
     ):
-        retention[name] = inventory_file(previous / "RETENTION" / name, project)
+        retention[name] = inventory(previous / "RETENTION" / name)
     for name, count in (("LEGACY", 128), ("CHARTQA", 250)):
         rows = [
             json.loads(line)
@@ -215,7 +345,7 @@ def bind(
         ]
         if len(rows) != count or len({row["qid"] for row in rows}) != count:
             raise ValueError("Frozen retention ID matrix differs: " + name)
-    source_root = Path(json.loads((previous / "RETENTION/FROZEN.json").read_text())["source_root"])
+    frozen_retention = json.loads((previous / "RETENTION/FROZEN.json").read_text())
     retention_images = {}
     for name, expected_count in (("LEGACY", 128), ("CHARTQA", 250)):
         tasks = [
@@ -234,10 +364,8 @@ def bind(
             raise ValueError("Retention image/qid correspondence differs: " + name)
         image_records = []
         for route in routes:
-            relative = Path(route["image_file"])
-            if relative.is_absolute() or ".." in relative.parts:
-                raise PermissionError("Retention image route must be a safe source-relative path")
-            image = inventory_file(source_root / relative, project)
+            image_path = retention_image_path(frozen_retention, route)
+            image = inventory(image_path)
             if image["sha256"] != route["image_sha256"]:
                 raise PermissionError("Frozen retention image content changed: " + route["qid"])
             image_records.append(dict(image, qid=route["qid"]))
@@ -260,7 +388,7 @@ def bind(
         config_file_sha256=file_sha256(config_path) if config_path is not None else None,
         previous_source=str(source),
         previous_run=str(previous),
-        previous_config=inventory_file(previous / "CONFIG.json", project),
+        previous_config=inventory(previous / "CONFIG.json"),
         source_files=source_files,
         inherited_deployment_files=inherited,
         source_content_sha256=object_sha256(inherited),
@@ -269,6 +397,8 @@ def bind(
         model_content_sha256=object_sha256(content_inventory(model_files)),
         retention=retention,
         retention_images=retention_images,
+        retention_image_root=str(Path(frozen_retention["legacy_source"]).parent),
+        inventory_cache=dict(path=str(cache_path), counts=dict(cache.counts)) if cache else None,
         optimizer_inheritance=False,
         model_calls=0,
         optimizer_updates=0,
@@ -284,11 +414,12 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--cache", type=Path)
     args = parser.parse_args()
     config = json.loads(args.config.read_text())
     if args.output.exists():
         raise FileExistsError("Preserve the existing binding; use a fresh receipt path")
-    result = bind(config, config_path=args.config)
+    result = bind(config, config_path=args.config, cache_path=args.cache)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("x") as stream:
         json.dump(result, stream, indent=2, ensure_ascii=False, allow_nan=False)

@@ -1,0 +1,22 @@
+{
+  "status": "COMPLETE",
+  "at": "2026-10-27T11:48:03.984571+00:00",
+  "source": "sr_f3_ce_20261016/prior/raw",
+  "archive": "/projects/_ssd/varunssd/louis-ssvc/storage_audits/cleanup_20261027_srf3_prior_raw/RAW_COMPLETE.tar.gz",
+  "deleted_files": 45454,
+  "logical_bytes_removed": 5154950860,
+  "lastlink_allocated_bytes_released": 5169610752,
+  "archive_bytes": 549096352,
+  "net_logical_bytes_saved": 4605854508,
+  "remaining_non_directories": [],
+  "archive_verification": {
+    "status": "PASS",
+    "members": 45454,
+    "source_bytes": 5154950860,
+    "archive_bytes": 549096352,
+    "archive_sha256": "a56b889a1d62e07563067ee09663675322dd3b71b8922b4de61100a1bc8dc37b",
+    "gzip_crc_read_to_eof": true,
+    "all_member_sha256": true
+  },
+  "note": "Allocated blocks are estimates, not a shared filesystem free-space delta; audit files consume additional bytes."
+}
