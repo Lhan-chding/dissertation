@@ -3,8 +3,11 @@
 This is not a stage-gate signer. ``assess_support`` checks a complete_summary
 projection, not the truth of arbitrary caller-supplied labels. ``check_support``
 first recomputes that projection through census.complete_summary, including its
-persisted raw-G8 validation. Coverage certificates remain dependent on the
-earlier mathematical audit; neither entry point executes a model or optimizer.
+persisted annotated-G8 validation. Independent original-raw, worker and actual
+call-accounting verification requires census_evidence.validate_saved_census;
+scientific admission must assess that verified summary. Coverage certificates
+remain dependent on the earlier mathematical audit; neither entry point executes
+a model or optimizer.
 """
 
 from __future__ import annotations
