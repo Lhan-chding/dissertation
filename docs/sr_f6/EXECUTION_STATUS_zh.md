@@ -2,6 +2,12 @@
 
 2026-10-27（Asia/Singapore）。本页是运行事实入口，不替代原合同或阶段证据。
 
+## 最新实际执行
+
+截至本轮最后队列核验，修复提交 `017b60a0f92df8fc6c799d9dc2f96c0976f451d3` 已推送，固定部署为 `/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_017b60a`。恢复任务 **229924 / LH-SRF6-Prepare-R1** 已在 `cpu-1` RUNNING（核验时 elapsed 0:41）。这仍是来源/数据/processor准备，**尚无模型普查或训练结果**。下一次先查该任务和run内回执，不能重复提交；实际提交参数见 `validation/SERVER_PREPARATION/PREPARE_SUBMISSION_017b60a.json`。
+
+路径修复后针对性回归 **38 passed**，Ruff通过；见 `validation/SERVER_PREPARATION/route_recovery_tests.log`。SOURCE_BINDING缓存已逐对象落盘，恢复不再重复扫描已完成且未变化的对象。原229909失败记录和旧部署完整保留。
+
 ## 用户授权与当前重点
 
 用户要求执行 `SR_F6_CODEX_实验实施包_20261027.zip`，并认真审查设计可能存在的错误。后续明确：题组是否真正有用是基础；只清理我们项目之前无用的缓存和结果，不碰其它项目；本项目 GPU 作业统一 `LH-` 前缀；避免冗余哈希；已授权自动跟进继续执行，仅关键变化通知。
@@ -29,7 +35,7 @@ SSH `eee-cluster`。唯一写入/清理边界为 canonical `/projects/_ssd/varun
 
 ## 下一步（不能跳过）
 
-首次实现提交 `5315e9e1a3319dd3d4ab658195dd4372b2523193` 已推送到 origin。固定部署 `/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_5315e9e`，首次准备作业 `229909 / LH-SRF6-Prepare` 已实际执行并以 `FAILED / 1:0` 结束，0模型回答、0更新。错误是来源绑定代码把冻结image_file相对路径接在F4根下，遗漏原F4构造使用的 `DATA/` 前缀。原路径和题ID未缺失、未替换；正在修正路由并以显式 `--resume-source-failure` 恢复。原失败日志及提交回执见 `validation/SERVER_PREPARATION`，原run起始记录保留。恢复只允许尚无DATA/模型输出的来源失败，不能覆盖已完成阶段。首次内存中的模型hash因异常未落盘，修复后需再绑定一次；之后新增逐对象持久缓存，防止重复整模型扫描。
+首次实现提交 `5315e9e1a3319dd3d4ab658195dd4372b2523193` 已推送到 origin。固定部署 `/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_5315e9e`，首次准备作业 `229909 / LH-SRF6-Prepare` 已实际执行并以 `FAILED / 1:0` 结束，0模型回答、0更新。错误是来源绑定代码把冻结image_file相对路径接在F4根下，遗漏原F4构造使用的 `DATA/` 前缀。原路径和题ID未缺失、未替换；已修正路由并以显式 `--resume-source-failure` 提交恢复。原失败日志及提交回执见 `validation/SERVER_PREPARATION`，原run起始记录保留。恢复只允许尚无DATA/模型输出的来源失败，不能覆盖已完成阶段。首次内存中的模型hash因异常未落盘，修复后需再绑定一次；之后新增逐对象持久缓存，防止重复整模型扫描。
 
 1. 完成本地最终修正检查，commit/push，并用固定revision归档部署到本项目新代码目录；记录实际路径、revision、job ID。现有源码全部进入来源清单，回归测试代码也绑定。
 2. `scripts/sr_f6/prepare.sbatch` 执行实际来源绑定、服务器数据构造、历史世界排除、真实processor 48图与tokenizer回归、native regression。原model内容只绑定一次；后续复用验证缓存，只核变动文件。
