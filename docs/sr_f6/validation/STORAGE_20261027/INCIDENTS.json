@@ -1,0 +1,19 @@
+[
+  {
+    "stage": "initial_apply",
+    "status": "AUTOMATIC_APPROVAL_REJECTED_NO_ACTION",
+    "reason": "This irreversibly deletes approximately 45,454 files (~5.15 GB) from the approved project path, but the transcript does not establish completed archive verification and all required pre-delete STOP/dependency checks; the conditional approval therefore cannot be safely exercised.",
+    "resolution": "Read actual ARCHIVE_VERIFIED/PREFLIGHT and produced actual PREDELETE_PROOF; the same scoped retry was approved."
+  },
+  {
+    "stage": "apply_attempt_1_and_2",
+    "status": "EXIT_75_NO_ACTION",
+    "reason": "Gateway routed to login-3 while initial metadata was collected on login-1.",
+    "resolution": "Observed only st_dev changed 43 to 41; all remaining stat fields matched. Registered mount-dev-only mapping under canonical project root, with strict tests; no content or source identity relaxation."
+  },
+  {
+    "stage": "verification_reuse",
+    "status": "REGISTERED_USER_PREFERENCE",
+    "reason": "User requested avoiding redundant full hash checks. One extra archive verification had already started when request arrived; later apply reuses completed member/CRC verification and compares stable file identity, with changed files blocked."
+  }
+]

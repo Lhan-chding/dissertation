@@ -1,0 +1,6 @@
+numpy
+scipy
+torch
+Pillow
+# CPU reference only. Production must use the already frozen, verified server environment.
+# Do NOT pip-upgrade the server training stack to satisfy this unpinned convenience file.

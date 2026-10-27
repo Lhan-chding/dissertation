@@ -1,0 +1,48 @@
+{
+  "checked_date": "2026-10-27",
+  "claims_are_method_comparisons_not_reproduced_baseline_results": true,
+  "references": [
+    {
+      "id": "R1",
+      "short_name": "VPS",
+      "url": "https://arxiv.org/html/2605.12519v2",
+      "read_scope": "structured SFT, deterministic claim verification, adaptive process weights"
+    },
+    {
+      "id": "R2",
+      "short_name": "DDCA",
+      "url": "https://arxiv.org/html/2602.02099",
+      "read_scope": "conditional correct-cluster length advantage and dynamic RLOO; direct mechanism neighbor"
+    },
+    {
+      "id": "R3",
+      "short_name": "ConsistRoll",
+      "url": "https://arxiv.org/html/2606.29812",
+      "read_scope": "joint cross-view reward versus independent augmentation"
+    },
+    {
+      "id": "R4",
+      "short_name": "OT-GRPO",
+      "url": "https://arxiv.org/html/2606.11918v2",
+      "read_scope": "relational verification and pair credit/OT"
+    },
+    {
+      "id": "R5",
+      "short_name": "DeFacto",
+      "url": "https://arxiv.org/html/2509.20912",
+      "read_scope": "grounding via positive/counterfactual/random masks and reward"
+    },
+    {
+      "id": "R6",
+      "short_name": "MAESTRO",
+      "url": "https://arxiv.org/html/2601.07208v2",
+      "read_scope": "contextual reward-configuration controller; out of scope this experiment"
+    },
+    {
+      "id": "R7",
+      "short_name": "Pasupat-Liang",
+      "url": "https://aclanthology.org/P16-1003.pdf",
+      "read_scope": "worlds, program equivalence classes and section5 information gain; PDF page screenshot checked"
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "observed_at_utc": "2026-10-27T11:33:11.210981+00:00",
+  "project_root": "/projects/_ssd/varunssd/louis-ssvc",
+  "source": "sr_f3_ce_20261016/prior/raw",
+  "inventory": {
+    "files": 45454,
+    "logical_bytes": 5154950860,
+    "allocated_bytes": 5169610752,
+    "nlink_counts": {
+      "1": 45454
+    }
+  },
+  "initial_project_du": "188G",
+  "shared_filesystem_df": {
+    "size": "279T",
+    "used": "94T",
+    "available": "186T",
+    "used_percent": "34%"
+  },
+  "login_memory_snapshot": {
+    "total": "62Gi",
+    "available": "39Gi",
+    "free": "5.1Gi",
+    "buff_cache": "35Gi",
+    "scope": "login node only; not GPU worker memory"
+  },
+  "unrelated_jobs_preserved": [
+    {
+      "job_id": 229347,
+      "job_name": "cafeC-REF-SM",
+      "command": "/projects/_hdd/varunhdd/hgrel_hdd/c_temporal_candidate_20261027.sbatch"
+    },
+    {
+      "job_id": 229348,
+      "job_name": "cafeC-TEMP-SM",
+      "command": "/projects/_hdd/varunhdd/hgrel_hdd/c_temporal_candidate_20261027.sbatch"
+    }
+  ],
+  "project_job_name_updates": [],
+  "project_job_name_reason": "No project-owned active GPU job found in initial scheduler snapshot; other-project jobs are outside authority.",
+  "protected": [
+    "Qwen3.5-9B model cache",
+    "all three SRF2_J6 parent adapters",
+    "ssvc-py312 environment",
+    "F4 retention and ChartQA",
+    "F5 raw/failed evidence and all step004/step012 states",
+    "old SR-F3 engine/resume",
+    "all paths outside canonical project root"
+  ],
+  "delete_status": "NOT_RUN; archive creation in progress",
+  "script_sha256_current": "0a598f98e62ad476ff05af4f95a92cfb38dcf3b3791b7a6f44a4b46bd8664006",
+  "tests": "19 passed; separate local CPU boundary tests only"
+}

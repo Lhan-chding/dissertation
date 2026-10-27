@@ -1,0 +1,209 @@
+{
+  "schema_version": "srf5-semantic-j-1.0",
+  "experiment_id": "SR-F5-SEMANTIC-J-20261025-RECIPE-V2",
+  "status": "RECIPE_V2_REGISTERED_NOT_GPU_VALIDATED",
+  "master_seed": 2026102501,
+  "model": {
+    "name": "Qwen3.5-9B",
+    "snapshot": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+    "model_path": "/projects/_ssd/varunssd/louis-ssvc/cache/huggingface/hub/models--Qwen--Qwen3.5-9B/snapshots/c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+    "parents": {
+      "b0": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+      "b1": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71002/adapter",
+      "b2": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71003/adapter"
+    },
+    "inherit_parent_lora_configuration": true,
+    "reference": "corresponding_frozen_parent",
+    "no_optimizer_state_inheritance": true
+  },
+  "arms": [
+    "J",
+    "HARD",
+    "DENSE",
+    "LOCAL",
+    "SHUF"
+  ],
+  "parents": [
+    "b0",
+    "b1",
+    "b2"
+  ],
+  "repeats": [
+    0,
+    1,
+    2
+  ],
+  "training": {
+    "updates": 72,
+    "groups_per_update": 16,
+    "draws_per_group": 8,
+    "roots_per_update": 4,
+    "variants_per_root": 4,
+    "epochs_over_registered_questions": 1,
+    "lr": 1e-05,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "eps": 1e-08,
+    "weight_decay": 0.0,
+    "lr_schedule": "constant",
+    "gradient_clip_norm": 1.0,
+    "kl_coefficient": 0.02,
+    "tis_cap": 2.0,
+    "clip_epsilon": 0.2,
+    "aux_coefficient": 0.25,
+    "microbatch_sequences": 1,
+    "optimizer_steps_per_rollout_batch": 1,
+    "temperature": 1.0,
+    "top_p": 1.0,
+    "top_k": 0,
+    "max_new_tokens": 1024,
+    "checkpoints": [
+      0,
+      12,
+      36,
+      72
+    ],
+    "primary_checkpoint": 72,
+    "loss_reduction": "mean_of_128_sequence_means; auxiliary independently normalized over its scope",
+    "use_dynamic_sampling": false,
+    "use_teacher_cross_entropy": false,
+    "use_grammar_constrained_decoding": false,
+    "use_gpu_hour_stopping": false
+  },
+  "families": [
+    "BINDING",
+    "IMPACT",
+    "TIES",
+    "SIGNED",
+    "INTERVAL",
+    "K_DIRECTION"
+  ],
+  "data": {
+    "dev_roots_per_family": 8,
+    "pilot_roots_per_family": 8,
+    "train_roots_per_family": 48,
+    "test_id_roots_per_family": 16,
+    "test_composition_roots_per_family": 32,
+    "test_relation_roots_per_family": 8,
+    "test_interface_roots_per_family": 8,
+    "variants_per_root": 4,
+    "main_categories": [
+      6,
+      8
+    ],
+    "value_grid": [
+      12,
+      18,
+      24,
+      30,
+      36,
+      42,
+      48,
+      54,
+      60,
+      66,
+      72,
+      78,
+      84
+    ],
+    "chart_domain": [
+      10,
+      90
+    ],
+    "chart_axis": [
+      0,
+      100
+    ],
+    "seeds": {
+      "demo": 2026102591,
+      "dev": 1815951875246227088,
+      "pilot": 2061628664439249252,
+      "train": 2026102504,
+      "test_id": 2026102505,
+      "test_composition": 2026102506,
+      "test_relation": 2026102507,
+      "test_interface": 2026102508,
+      "dev_monitor": 2026102509
+    },
+    "all_descendants_stay_in_root_split": true,
+    "model_outcome_rejection_sampling": false
+  },
+  "evaluation": {
+    "draws": 4,
+    "legacy_retention_questions": 128,
+    "legacy_retention_draws": 4,
+    "chartqa_questions": 250,
+    "chartqa_draws": 1,
+    "chartqa_all_parents_and_arms": true,
+    "dev_monitor_roots_per_family": 2,
+    "dev_monitor_draws": 2,
+    "dev_monitor_steps": [
+      12,
+      36
+    ],
+    "primary_panel": "test_composition",
+    "primary_metric": "exact_answer_correct_fixed_denominator",
+    "primary_comparisons": [
+      [
+        "LOCAL",
+        "J"
+      ],
+      [
+        "LOCAL",
+        "HARD"
+      ],
+      [
+        "LOCAL",
+        "SHUF"
+      ]
+    ],
+    "familywise_alpha": 0.05,
+    "simultaneous_interval_level": 0.9833333333333333,
+    "bootstrap_replicates": 20000,
+    "bootstrap_seed": 2026102510,
+    "retention_noninferiority_margins_pp": {
+      "legacy": 1.0,
+      "chartqa": 2.0
+    },
+    "minimum_practical_gain_pp": 1.0
+  },
+  "pilot": {
+    "updates": 12,
+    "repeats": 1,
+    "all_parents": true,
+    "arms": [
+      "J",
+      "HARD",
+      "DENSE",
+      "LOCAL",
+      "SHUF"
+    ],
+    "max_recipe_versions": 2,
+    "rank_arms_for_hyperparameter_selection": false
+  },
+  "deployment": {
+    "root": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_semantic_j_recipe_v2_20261026",
+    "python": "/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12",
+    "qos": "soujanya-poria-startfund-2026-03",
+    "account": "rose",
+    "partition": "cluster02",
+    "job_prefix": "LH-SRF5",
+    "default_concurrent_one_gpu_workers": 4,
+    "inherited_total_gpu_ceiling": 8,
+    "inherited_total_submitted_jobs_ceiling": 5,
+    "do_not_cancel_unrelated_jobs": true
+  },
+  "authorization": {
+    "local_reference_tests_allowed": true,
+    "server_training_launched_by_this_package": false,
+    "main_requires_gate_records": true
+  },
+  "numerics": {
+    "recipe_version": 2,
+    "model_dtype": "float32",
+    "input_float_dtype": "float32",
+    "probability_dtype": "float32"
+  }
+}

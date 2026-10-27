@@ -1,0 +1,66 @@
+{
+  "seven_success_advantage": 0.3779644730092272,
+  "lone_failure_advantage": -2.6457513110645903,
+  "claude_f14_section3_issue": "source sets -0.378 for the lone J=0 in 7/8; correct value is -sqrt(7), and both negative terms cannot constitute a sign flip",
+  "positive_success_local_coefficient_example": -0.009769374531762647,
+  "zero_of_32_one_sided95_upper": 0.0893681989862648,
+  "wrong_consistency_residual_derivative_at_p01_lambda1": -0.8,
+  "power_sensitivity_not_empirical": [
+    {
+      "independent_repeats_per_parent": 2,
+      "paired_run_sd_pp": 0.5,
+      "df": 3,
+      "approx_MDE80_pp": 1.272422210354761,
+      "note": "normal power approximation plus small-sample critical; not a measured 72-step variance"
+    },
+    {
+      "independent_repeats_per_parent": 2,
+      "paired_run_sd_pp": 1.0,
+      "df": 3,
+      "approx_MDE80_pp": 2.544844420709522,
+      "note": "normal power approximation plus small-sample critical; not a measured 72-step variance"
+    },
+    {
+      "independent_repeats_per_parent": 2,
+      "paired_run_sd_pp": 2.0,
+      "df": 3,
+      "approx_MDE80_pp": 5.089688841419044,
+      "note": "normal power approximation plus small-sample critical; not a measured 72-step variance"
+    },
+    {
+      "independent_repeats_per_parent": 2,
+      "paired_run_sd_pp": 4.0,
+      "df": 3,
+      "approx_MDE80_pp": 10.179377682838089,
+      "note": "normal power approximation plus small-sample critical; not a measured 72-step variance"
+    },
+    {
+      "independent_repeats_per_parent": 3,
+      "paired_run_sd_pp": 0.5,
+      "df": 6,
+      "approx_MDE80_pp": 0.7271406573470302,
+      "note": "normal power approximation plus small-sample critical; not a measured 72-step variance"
+    },
+    {
+      "independent_repeats_per_parent": 3,
+      "paired_run_sd_pp": 1.0,
+      "df": 6,
+      "approx_MDE80_pp": 1.4542813146940603,
+      "note": "normal power approximation plus small-sample critical; not a measured 72-step variance"
+    },
+    {
+      "independent_repeats_per_parent": 3,
+      "paired_run_sd_pp": 2.0,
+      "df": 6,
+      "approx_MDE80_pp": 2.9085626293881206,
+      "note": "normal power approximation plus small-sample critical; not a measured 72-step variance"
+    },
+    {
+      "independent_repeats_per_parent": 3,
+      "paired_run_sd_pp": 4.0,
+      "df": 6,
+      "approx_MDE80_pp": 5.817125258776241,
+      "note": "normal power approximation plus small-sample critical; not a measured 72-step variance"
+    }
+  ]
+}

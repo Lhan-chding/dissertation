@@ -1,0 +1,14 @@
+{
+  "stage": "FORMAL_FREEZE",
+  "status": "NOT_RUN",
+  "execution_origin": "TEMPLATE_ONLY",
+  "config_sha256": "59052e828fecec1a5cf15255cb0ef11f269406a087ee373688bd977012e319d9",
+  "code_sha256": null,
+  "executed_command": null,
+  "started_at": null,
+  "completed_at": null,
+  "exit_code": null,
+  "evidence": [],
+  "checks": {},
+  "reason": "Must be replaced by actual bound server evidence; changing status alone is not validation."
+}

@@ -1,0 +1,80 @@
+test_J_no_aux (test_reference.Credit.test_J_no_aux) ... ok
+test_constant_J_still_semantic (test_reference.Credit.test_constant_J_still_semantic) ... ok
+test_constant_success_has_signal (test_reference.Credit.test_constant_success_has_signal) ... ok
+test_global_not_equivalent_to_conditional (test_reference.Credit.test_global_not_equivalent_to_conditional) ... ok
+test_mean_score_can_cancel_not_bug (test_reference.Credit.test_mean_score_can_cancel_not_bug) ... ok
+test_no_resampling_until_shuffle_changes (test_reference.Credit.test_no_resampling_until_shuffle_changes) ... ok
+test_shuffle_can_legitimately_not_change (test_reference.Credit.test_shuffle_can_legitimately_not_change) ... ok
+test_shuffle_preserves_exact_credit_multiset (test_reference.Credit.test_shuffle_preserves_exact_credit_multiset) ... ok
+test_singleton_zero (test_reference.Credit.test_singleton_zero) ... ok
+test_standardized_advantage_correct (test_reference.Credit.test_standardized_advantage_correct) ... ok
+test_stratum_centering (test_reference.Credit.test_stratum_centering) ... ok
+test_unknown_does_not_get_fail (test_reference.Credit.test_unknown_does_not_get_fail) ... ok
+test_unknown_pattern_zero_sum (test_reference.Credit.test_unknown_pattern_zero_sum) ... ok
+test_zero_lambda (test_reference.Credit.test_zero_lambda) ... ok
+test_all_families (test_reference.Design.test_all_families) ... ok
+test_collision_is_mathematical_not_model_rate (test_reference.Design.test_collision_is_mathematical_not_model_rate) ... ok
+test_deterministic (test_reference.Design.test_deterministic) ... ok
+test_dual_oracle_on_views (test_reference.Design.test_dual_oracle_on_views) ... ok
+test_matching_bins (test_reference.Design.test_matching_bins) ... ok
+test_no_gold_in_prompt (test_reference.Design.test_no_gold_in_prompt) ... ok
+test_no_heldout_leak (test_reference.Design.test_no_heldout_leak) ... ok
+test_not_adversarial_P0 (test_reference.Design.test_not_adversarial_P0) ... ok
+test_shared_anchor (test_reference.Design.test_shared_anchor) ... ok
+test_dual_oracle_random (test_reference.ExactAndOracle.test_dual_oracle_random) ... ok
+test_exact_fraction (test_reference.ExactAndOracle.test_exact_fraction) ... ok
+test_finite_decimal (test_reference.ExactAndOracle.test_finite_decimal) ... ok
+test_interval_endpoints (test_reference.ExactAndOracle.test_interval_endpoints) ... ok
+test_negative_difference (test_reference.ExactAndOracle.test_negative_difference) ... ok
+test_no_bool (test_reference.ExactAndOracle.test_no_bool) ... ok
+test_no_float_tolerance (test_reference.ExactAndOracle.test_no_float_tolerance) ... ERROR
+test_nonnumeric (test_reference.ExactAndOracle.test_nonnumeric) ... ok
+test_ties (test_reference.ExactAndOracle.test_ties) ... ok
+test_correct_answer_wrong_binding (test_reference.Measurement.test_correct_answer_wrong_binding) ... ok
+test_duplicate_json_rejected (test_reference.Measurement.test_duplicate_json_rejected) ... ok
+test_duplicate_not_unknown (test_reference.Measurement.test_duplicate_not_unknown) ... ok
+test_empty_not_vacuously_true (test_reference.Measurement.test_empty_not_vacuously_true) ... ok
+test_exec_overlap_exact (test_reference.Measurement.test_exec_overlap_exact) ... ok
+test_extra_bindings_fail (test_reference.Measurement.test_extra_bindings_fail) ... ok
+test_full_pass (test_reference.Measurement.test_full_pass) ... ok
+test_gold_blind_missing_fields (test_reference.Measurement.test_gold_blind_missing_fields) ... ok
+test_gold_does_not_change_extraction (test_reference.Measurement.test_gold_does_not_change_extraction) ... ok
+test_null_operand_unknown (test_reference.Measurement.test_null_operand_unknown) ... ok
+test_order_invariance (test_reference.Measurement.test_order_invariance) ... ok
+test_partial_truncation_unknown (test_reference.Measurement.test_partial_truncation_unknown) ... ok
+test_projection_preserves_legacy_fields (test_reference.Measurement.test_projection_preserves_legacy_fields) ... ok
+test_truthful_wrong_scope_not_rewarded (test_reference.Measurement.test_truthful_wrong_scope_not_rewarded) ... ok
+test_unknown_selected_semantic_fail (test_reference.Measurement.test_unknown_selected_semantic_fail) ... ok
+test_bootstrap_identical_arms (test_reference.PlanningStatsGates.test_bootstrap_identical_arms) ... ok
+test_factorial (test_reference.PlanningStatsGates.test_factorial) ... ok
+test_holm (test_reference.PlanningStatsGates.test_holm) ... ok
+test_independent_repeats (test_reference.PlanningStatsGates.test_independent_repeats) ... ok
+test_launch_blocked (test_reference.PlanningStatsGates.test_launch_blocked) ... ok
+test_run_df (test_reference.PlanningStatsGates.test_run_df) ... ok
+test_same_seed_no_arm (test_reference.PlanningStatsGates.test_same_seed_no_arm) ... ok
+test_schedule_one_pass (test_reference.PlanningStatsGates.test_schedule_one_pass) ... ok
+test_window_balance (test_reference.PlanningStatsGates.test_window_balance) ... ok
+test_zero_variance_not_certainty (test_reference.PlanningStatsGates.test_zero_variance_not_certainty) ... ok
+test_fixed_sequence_normalization (test_reference.TorchObjective.test_fixed_sequence_normalization) ... ok
+test_kl_only_once (test_reference.TorchObjective.test_kl_only_once) ... /mnt/data/SR_F6_CODEX_20261027/tests/test_reference.py:182: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  self.assertAlmostEqual(float(r['loss']),float(r['native']+r['aux']+r['kl']),places=7)
+ok
+test_zero_aux_matches_native_gradient (test_reference.TorchObjective.test_zero_aux_matches_native_gradient) ... ok
+
+======================================================================
+ERROR: test_no_float_tolerance (test_reference.ExactAndOracle.test_no_float_tolerance)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/SR_F6_CODEX_20261027/tests/test_reference.py", line 21, in test_no_float_tolerance
+    def test_no_float_tolerance(self):self.assertNotEqual(exact('71.6666666667'),Fraction(215,3))
+                                                          ~~~~~^^^^^^^^^^^^^^^^^
+  File "/mnt/data/SR_F6_CODEX_20261027/src/srf6_ref/core.py", line 33, in exact
+    if abs(out.numerator) > 10**12 or out.denominator > 10**9: raise ValueError('number bounds')
+                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: number bounds
+
+----------------------------------------------------------------------
+Ran 60 tests in 2.442s
+
+FAILED (errors=1)

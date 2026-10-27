@@ -1,0 +1,17 @@
+{
+  "experiment_id": "SR-F6-SEMANTIC-LEARNING-20261027",
+  "status": "NOT_RUN",
+  "config_sha256": "59052e828fecec1a5cf15255cb0ef11f269406a087ee373688bd977012e319d9",
+  "source_revision": null,
+  "environment_manifest_sha256": null,
+  "parent_adapter_hashes": {},
+  "native_scorer_manifest": null,
+  "data_manifest": null,
+  "image_manifest": null,
+  "external_panel_ids_manifest": null,
+  "schedule_manifest": null,
+  "production_cli_help": null,
+  "test_access_policy": "all 54 step72 checkpoints committed before model accesses formal test",
+  "human_or_model_review_provenance": null,
+  "received_user_design": "this v1.0 package; no implicit authorization for recipe search"
+}

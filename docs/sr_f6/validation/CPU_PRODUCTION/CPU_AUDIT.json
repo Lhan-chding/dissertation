@@ -1,0 +1,142 @@
+{
+  "status": "PASS",
+  "scope": "CPU mathematical and identity checks only",
+  "splits": {
+    "DEV_CAL": {
+      "roots": 48,
+      "questions": 384,
+      "factors": [
+        "P0",
+        "P1"
+      ],
+      "family_questions": {
+        "BINDING": 64,
+        "IMPACT": 64,
+        "TIES": 64,
+        "SIGNED": 64,
+        "INTERVAL": 64,
+        "K_DIRECTION": 64
+      }
+    },
+    "DEV_PILOT": {
+      "roots": 48,
+      "questions": 384,
+      "factors": [
+        "P0",
+        "P1"
+      ],
+      "family_questions": {
+        "BINDING": 64,
+        "IMPACT": 64,
+        "TIES": 64,
+        "SIGNED": 64,
+        "INTERVAL": 64,
+        "K_DIRECTION": 64
+      }
+    },
+    "DEV_EVAL": {
+      "roots": 24,
+      "questions": 96,
+      "factors": [
+        "P0"
+      ],
+      "family_questions": {
+        "BINDING": 16,
+        "IMPACT": 16,
+        "TIES": 16,
+        "SIGNED": 16,
+        "INTERVAL": 16,
+        "K_DIRECTION": 16
+      }
+    },
+    "TRAIN": {
+      "roots": 288,
+      "questions": 2304,
+      "factors": [
+        "P0",
+        "P1"
+      ],
+      "family_questions": {
+        "BINDING": 384,
+        "IMPACT": 384,
+        "TIES": 384,
+        "SIGNED": 384,
+        "INTERVAL": 384,
+        "K_DIRECTION": 384
+      }
+    },
+    "TEST_ID": {
+      "roots": 96,
+      "questions": 384,
+      "factors": [
+        "P0"
+      ],
+      "family_questions": {
+        "BINDING": 64,
+        "IMPACT": 64,
+        "TIES": 64,
+        "SIGNED": 64,
+        "INTERVAL": 64,
+        "K_DIRECTION": 64
+      }
+    },
+    "TEST_COMPOSITION": {
+      "roots": 192,
+      "questions": 768,
+      "factors": [
+        "P0"
+      ],
+      "family_questions": {
+        "BINDING": 128,
+        "IMPACT": 128,
+        "TIES": 128,
+        "SIGNED": 128,
+        "INTERVAL": 128,
+        "K_DIRECTION": 128
+      }
+    },
+    "TEST_MECHANISM": {
+      "roots": 48,
+      "questions": 192,
+      "factors": [
+        "P0"
+      ],
+      "family_questions": {
+        "BINDING": 32,
+        "IMPACT": 32,
+        "TIES": 32,
+        "SIGNED": 32,
+        "INTERVAL": 32,
+        "K_DIRECTION": 32
+      }
+    },
+    "TEST_CLASSOUT": {
+      "roots": 48,
+      "questions": 192,
+      "factors": [
+        "P0"
+      ],
+      "family_questions": {
+        "BINDING": 32,
+        "IMPACT": 32,
+        "TIES": 32,
+        "SIGNED": 32,
+        "INTERVAL": 32,
+        "K_DIRECTION": 32
+      }
+    }
+  },
+  "question_oracle_comparisons": 4704,
+  "independent_native_oracles": 2,
+  "cross_split_world_duplicates": 0,
+  "training_manipulation": {
+    "mean_gap": 0.13145805776014108,
+    "strict_gain_fraction": 0.5729166666666666,
+    "roots": 288,
+    "model_outputs_used": false,
+    "status": "PASS"
+  },
+  "engineered_train_anchors": 96,
+  "processor_readability": "NOT_RUN",
+  "model_calls": 0
+}

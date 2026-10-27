@@ -1,0 +1,3900 @@
+[
+  {
+    "root_id": "DEV_CAL_BINDING_0000",
+    "certificate": {
+      "rules": [
+        "boundary_swap",
+        "wrong_value",
+        "wrong_aggregate",
+        "wrong_rank",
+        "wrong_direction",
+        "k_minus",
+        "k_plus",
+        "reverse_tie"
+      ],
+      "active_rules": [
+        "boundary_swap",
+        "wrong_value",
+        "wrong_aggregate",
+        "wrong_rank",
+        "wrong_direction",
+        "k_minus",
+        "k_plus",
+        "reverse_tie"
+      ],
+      "base_alias_rules": [
+        "boundary_swap",
+        "reverse_tie"
+      ],
+      "uncovered_by_pool": [],
+      "coverage_P0": 0.5,
+      "coverage_P1": 0.75,
+      "coverage_all_registered_P0": 0.5,
+      "coverage_all_registered_P1": 0.75,
+      "blind_P1": [
+        "k_plus",
+        "reverse_tie"
+      ],
+      "descriptors": [
+        [
+          "Alpha",
+          1,
+          6,
+          false,
+          "0"
+        ],
+        [
+          "Beta",
+          -1,
+          6,
+          false,
+          "-6"
+        ],
+        [
+          "Beta",
+          1,
+          6,
+          false,
+          "6"
+        ]
+      ],
+      "pool_size": 23,
+      "root_id": "DEV_CAL_BINDING_0000",
+      "engineered_collision_anchor": true,
+      "attempt": 0,
+      "rejections": []
+    },
+    "tasks": {
+      "P0": [
+        {
+          "qid": "DEV_CAL_BINDING_0000_P0_v0",
+          "root_id": "DEV_CAL_BINDING_0000",
+          "split": "DEV_CAL",
+          "family": "BINDING",
+          "factor": "P0",
+          "variant": 0,
+          "world": {
+            "categories": [
+              "Lamp",
+              "Mug",
+              "Chair",
+              "Clock",
+              "Vase",
+              "Desk"
+            ],
+            "series": {
+              "Alpha": [
+                36,
+                48,
+                72,
+                42,
+                84,
+                78
+              ],
+              "Beta": [
+                78,
+                66,
+                42,
+                48,
+                24,
+                78
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 2,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "102",
+          "gold_selected": [
+            "Vase",
+            "Desk"
+          ],
+          "gold_bindings": {
+            "Vase": "24",
+            "Desk": "78"
+          },
+          "edit_id": "anchor",
+          "edit_descriptor": null,
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_BINDING_0000_P0_v1",
+          "root_id": "DEV_CAL_BINDING_0000",
+          "split": "DEV_CAL",
+          "family": "BINDING",
+          "factor": "P0",
+          "variant": 1,
+          "world": {
+            "categories": [
+              "Lamp",
+              "Mug",
+              "Chair",
+              "Clock",
+              "Vase",
+              "Desk"
+            ],
+            "series": {
+              "Alpha": [
+                36,
+                54,
+                72,
+                42,
+                84,
+                78
+              ],
+              "Beta": [
+                78,
+                66,
+                42,
+                48,
+                24,
+                78
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 2,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "102",
+          "gold_selected": [
+            "Vase",
+            "Desk"
+          ],
+          "gold_bindings": {
+            "Vase": "24",
+            "Desk": "78"
+          },
+          "edit_id": "Alpha:1:6",
+          "edit_descriptor": [
+            "Alpha",
+            1,
+            6,
+            false,
+            "0"
+          ],
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_BINDING_0000_P0_v2",
+          "root_id": "DEV_CAL_BINDING_0000",
+          "split": "DEV_CAL",
+          "family": "BINDING",
+          "factor": "P0",
+          "variant": 2,
+          "world": {
+            "categories": [
+              "Lamp",
+              "Mug",
+              "Chair",
+              "Clock",
+              "Vase",
+              "Desk"
+            ],
+            "series": {
+              "Alpha": [
+                36,
+                48,
+                72,
+                42,
+                84,
+                78
+              ],
+              "Beta": [
+                78,
+                66,
+                42,
+                48,
+                18,
+                78
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 2,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "96",
+          "gold_selected": [
+            "Vase",
+            "Desk"
+          ],
+          "gold_bindings": {
+            "Vase": "18",
+            "Desk": "78"
+          },
+          "edit_id": "Beta:4:-6",
+          "edit_descriptor": [
+            "Beta",
+            -1,
+            6,
+            false,
+            "-6"
+          ],
+          "answer_delta": "-6",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_BINDING_0000_P0_v3",
+          "root_id": "DEV_CAL_BINDING_0000",
+          "split": "DEV_CAL",
+          "family": "BINDING",
+          "factor": "P0",
+          "variant": 3,
+          "world": {
+            "categories": [
+              "Lamp",
+              "Mug",
+              "Chair",
+              "Clock",
+              "Vase",
+              "Desk"
+            ],
+            "series": {
+              "Alpha": [
+                36,
+                48,
+                72,
+                42,
+                84,
+                78
+              ],
+              "Beta": [
+                78,
+                66,
+                42,
+                48,
+                30,
+                78
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 2,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "108",
+          "gold_selected": [
+            "Vase",
+            "Desk"
+          ],
+          "gold_bindings": {
+            "Vase": "30",
+            "Desk": "78"
+          },
+          "edit_id": "Beta:4:6",
+          "edit_descriptor": [
+            "Beta",
+            1,
+            6,
+            false,
+            "6"
+          ],
+          "answer_delta": "6",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        }
+      ],
+      "P1": [
+        {
+          "qid": "DEV_CAL_BINDING_0000_P1_v0",
+          "root_id": "DEV_CAL_BINDING_0000",
+          "split": "DEV_CAL",
+          "family": "BINDING",
+          "factor": "P1",
+          "variant": 0,
+          "world": {
+            "categories": [
+              "Lamp",
+              "Mug",
+              "Chair",
+              "Clock",
+              "Vase",
+              "Desk"
+            ],
+            "series": {
+              "Alpha": [
+                36,
+                48,
+                72,
+                42,
+                84,
+                78
+              ],
+              "Beta": [
+                78,
+                66,
+                42,
+                48,
+                24,
+                78
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 2,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "102",
+          "gold_selected": [
+            "Vase",
+            "Desk"
+          ],
+          "gold_bindings": {
+            "Vase": "24",
+            "Desk": "78"
+          },
+          "edit_id": "anchor",
+          "edit_descriptor": null,
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_BINDING_0000_P1_v1",
+          "root_id": "DEV_CAL_BINDING_0000",
+          "split": "DEV_CAL",
+          "family": "BINDING",
+          "factor": "P1",
+          "variant": 1,
+          "world": {
+            "categories": [
+              "Lamp",
+              "Mug",
+              "Chair",
+              "Clock",
+              "Vase",
+              "Desk"
+            ],
+            "series": {
+              "Alpha": [
+                36,
+                54,
+                72,
+                42,
+                84,
+                78
+              ],
+              "Beta": [
+                78,
+                66,
+                42,
+                48,
+                24,
+                78
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 2,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "102",
+          "gold_selected": [
+            "Vase",
+            "Desk"
+          ],
+          "gold_bindings": {
+            "Vase": "24",
+            "Desk": "78"
+          },
+          "edit_id": "Alpha:1:6",
+          "edit_descriptor": [
+            "Alpha",
+            1,
+            6,
+            false,
+            "0"
+          ],
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_BINDING_0000_P1_v2",
+          "root_id": "DEV_CAL_BINDING_0000",
+          "split": "DEV_CAL",
+          "family": "BINDING",
+          "factor": "P1",
+          "variant": 2,
+          "world": {
+            "categories": [
+              "Lamp",
+              "Mug",
+              "Chair",
+              "Clock",
+              "Vase",
+              "Desk"
+            ],
+            "series": {
+              "Alpha": [
+                36,
+                48,
+                72,
+                42,
+                84,
+                78
+              ],
+              "Beta": [
+                78,
+                66,
+                42,
+                48,
+                18,
+                78
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 2,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "96",
+          "gold_selected": [
+            "Vase",
+            "Desk"
+          ],
+          "gold_bindings": {
+            "Vase": "18",
+            "Desk": "78"
+          },
+          "edit_id": "Beta:4:-6",
+          "edit_descriptor": [
+            "Beta",
+            -1,
+            6,
+            false,
+            "-6"
+          ],
+          "answer_delta": "-6",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_BINDING_0000_P1_v3",
+          "root_id": "DEV_CAL_BINDING_0000",
+          "split": "DEV_CAL",
+          "family": "BINDING",
+          "factor": "P1",
+          "variant": 3,
+          "world": {
+            "categories": [
+              "Lamp",
+              "Mug",
+              "Chair",
+              "Clock",
+              "Vase",
+              "Desk"
+            ],
+            "series": {
+              "Alpha": [
+                36,
+                48,
+                72,
+                42,
+                84,
+                78
+              ],
+              "Beta": [
+                78,
+                66,
+                42,
+                48,
+                24,
+                84
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 2,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "108",
+          "gold_selected": [
+            "Vase",
+            "Desk"
+          ],
+          "gold_bindings": {
+            "Vase": "24",
+            "Desk": "84"
+          },
+          "edit_id": "Beta:5:6",
+          "edit_descriptor": [
+            "Beta",
+            1,
+            6,
+            false,
+            "6"
+          ],
+          "answer_delta": "6",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        }
+      ]
+    }
+  },
+  {
+    "root_id": "DEV_CAL_IMPACT_0000",
+    "certificate": {
+      "rules": [
+        "boundary_swap",
+        "wrong_value",
+        "wrong_aggregate",
+        "wrong_rank",
+        "wrong_direction",
+        "k_minus",
+        "k_plus",
+        "reverse_tie"
+      ],
+      "active_rules": [
+        "boundary_swap",
+        "wrong_value",
+        "wrong_aggregate",
+        "wrong_rank",
+        "wrong_direction",
+        "k_minus",
+        "k_plus"
+      ],
+      "base_alias_rules": [
+        "boundary_swap"
+      ],
+      "uncovered_by_pool": [
+        "reverse_tie"
+      ],
+      "coverage_P0": 0.5714285714285714,
+      "coverage_P1": 1.0,
+      "coverage_all_registered_P0": 0.5,
+      "coverage_all_registered_P1": 0.875,
+      "blind_P1": [],
+      "descriptors": [
+        [
+          "Beta",
+          1,
+          6,
+          false,
+          "0"
+        ],
+        [
+          "Alpha",
+          -1,
+          6,
+          false,
+          "0"
+        ],
+        [
+          "Beta",
+          -1,
+          6,
+          false,
+          "-6"
+        ]
+      ],
+      "pool_size": 23,
+      "root_id": "DEV_CAL_IMPACT_0000",
+      "engineered_collision_anchor": true,
+      "attempt": 0,
+      "rejections": []
+    },
+    "tasks": {
+      "P0": [
+        {
+          "qid": "DEV_CAL_IMPACT_0000_P0_v0",
+          "root_id": "DEV_CAL_IMPACT_0000",
+          "split": "DEV_CAL",
+          "family": "IMPACT",
+          "factor": "P0",
+          "variant": 0,
+          "world": {
+            "categories": [
+              "Lamp",
+              "Mug",
+              "Chair",
+              "Clock",
+              "Desk",
+              "Vase"
+            ],
+            "series": {
+              "Alpha": [
+                66,
+                54,
+                48,
+                18,
+                12,
+                30
+              ],
+              "Beta": [
+                48,
+                72,
+                42,
+                42,
+                30,
+                78
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 3,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "162",
+          "gold_selected": [
+            "Lamp",
+            "Mug",
+            "Chair"
+          ],
+          "gold_bindings": {
+            "Lamp": "48",
+            "Mug": "72",
+            "Chair": "42"
+          },
+          "edit_id": "anchor",
+          "edit_descriptor": null,
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_IMPACT_0000_P0_v1",
+          "root_id": "DEV_CAL_IMPACT_0000",
+          "split": "DEV_CAL",
+          "family": "IMPACT",
+          "factor": "P0",
+          "variant": 1,
+          "world": {
+            "categories": [
+              "Lamp",
+              "Mug",
+              "Chair",
+              "Clock",
+              "Desk",
+              "Vase"
+            ],
+            "series": {
+              "Alpha": [
+                66,
+                54,
+                48,
+                18,
+                12,
+                30
+              ],
+              "Beta": [
+                48,
+                72,
+                42,
+                48,
+                30,
+                78
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 3,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "162",
+          "gold_selected": [
+            "Lamp",
+            "Mug",
+            "Chair"
+          ],
+          "gold_bindings": {
+            "Lamp": "48",
+            "Mug": "72",
+            "Chair": "42"
+          },
+          "edit_id": "Beta:3:6",
+          "edit_descriptor": [
+            "Beta",
+            1,
+            6,
+            false,
+            "0"
+          ],
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_IMPACT_0000_P0_v2",
+          "root_id": "DEV_CAL_IMPACT_0000",
+          "split": "DEV_CAL",
+          "family": "IMPACT",
+          "factor": "P0",
+          "variant": 2,
+          "world": {
+            "categories": [
+              "Lamp",
+              "Mug",
+              "Chair",
+              "Clock",
+              "Desk",
+              "Vase"
+            ],
+            "series": {
+              "Alpha": [
+                66,
+                54,
+                42,
+                18,
+                12,
+                30
+              ],
+              "Beta": [
+                48,
+                72,
+                42,
+                42,
+                30,
+                78
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 3,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "162",
+          "gold_selected": [
+            "Lamp",
+            "Mug",
+            "Chair"
+          ],
+          "gold_bindings": {
+            "Lamp": "48",
+            "Mug": "72",
+            "Chair": "42"
+          },
+          "edit_id": "Alpha:2:-6",
+          "edit_descriptor": [
+            "Alpha",
+            -1,
+            6,
+            false,
+            "0"
+          ],
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_IMPACT_0000_P0_v3",
+          "root_id": "DEV_CAL_IMPACT_0000",
+          "split": "DEV_CAL",
+          "family": "IMPACT",
+          "factor": "P0",
+          "variant": 3,
+          "world": {
+            "categories": [
+              "Lamp",
+              "Mug",
+              "Chair",
+              "Clock",
+              "Desk",
+              "Vase"
+            ],
+            "series": {
+              "Alpha": [
+                66,
+                54,
+                48,
+                18,
+                12,
+                30
+              ],
+              "Beta": [
+                42,
+                72,
+                42,
+                42,
+                30,
+                78
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 3,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "156",
+          "gold_selected": [
+            "Lamp",
+            "Mug",
+            "Chair"
+          ],
+          "gold_bindings": {
+            "Lamp": "42",
+            "Mug": "72",
+            "Chair": "42"
+          },
+          "edit_id": "Beta:0:-6",
+          "edit_descriptor": [
+            "Beta",
+            -1,
+            6,
+            false,
+            "-6"
+          ],
+          "answer_delta": "-6",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        }
+      ],
+      "P1": [
+        {
+          "qid": "DEV_CAL_IMPACT_0000_P1_v0",
+          "root_id": "DEV_CAL_IMPACT_0000",
+          "split": "DEV_CAL",
+          "family": "IMPACT",
+          "factor": "P1",
+          "variant": 0,
+          "world": {
+            "categories": [
+              "Lamp",
+              "Mug",
+              "Chair",
+              "Clock",
+              "Desk",
+              "Vase"
+            ],
+            "series": {
+              "Alpha": [
+                66,
+                54,
+                48,
+                18,
+                12,
+                30
+              ],
+              "Beta": [
+                48,
+                72,
+                42,
+                42,
+                30,
+                78
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 3,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "162",
+          "gold_selected": [
+            "Lamp",
+            "Mug",
+            "Chair"
+          ],
+          "gold_bindings": {
+            "Lamp": "48",
+            "Mug": "72",
+            "Chair": "42"
+          },
+          "edit_id": "anchor",
+          "edit_descriptor": null,
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_IMPACT_0000_P1_v1",
+          "root_id": "DEV_CAL_IMPACT_0000",
+          "split": "DEV_CAL",
+          "family": "IMPACT",
+          "factor": "P1",
+          "variant": 1,
+          "world": {
+            "categories": [
+              "Lamp",
+              "Mug",
+              "Chair",
+              "Clock",
+              "Desk",
+              "Vase"
+            ],
+            "series": {
+              "Alpha": [
+                66,
+                54,
+                48,
+                18,
+                12,
+                30
+              ],
+              "Beta": [
+                48,
+                72,
+                42,
+                42,
+                30,
+                84
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 3,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "162",
+          "gold_selected": [
+            "Lamp",
+            "Mug",
+            "Chair"
+          ],
+          "gold_bindings": {
+            "Lamp": "48",
+            "Mug": "72",
+            "Chair": "42"
+          },
+          "edit_id": "Beta:5:6",
+          "edit_descriptor": [
+            "Beta",
+            1,
+            6,
+            false,
+            "0"
+          ],
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_IMPACT_0000_P1_v2",
+          "root_id": "DEV_CAL_IMPACT_0000",
+          "split": "DEV_CAL",
+          "family": "IMPACT",
+          "factor": "P1",
+          "variant": 2,
+          "world": {
+            "categories": [
+              "Lamp",
+              "Mug",
+              "Chair",
+              "Clock",
+              "Desk",
+              "Vase"
+            ],
+            "series": {
+              "Alpha": [
+                60,
+                54,
+                48,
+                18,
+                12,
+                30
+              ],
+              "Beta": [
+                48,
+                72,
+                42,
+                42,
+                30,
+                78
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 3,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "162",
+          "gold_selected": [
+            "Lamp",
+            "Mug",
+            "Chair"
+          ],
+          "gold_bindings": {
+            "Lamp": "48",
+            "Mug": "72",
+            "Chair": "42"
+          },
+          "edit_id": "Alpha:0:-6",
+          "edit_descriptor": [
+            "Alpha",
+            -1,
+            6,
+            false,
+            "0"
+          ],
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_IMPACT_0000_P1_v3",
+          "root_id": "DEV_CAL_IMPACT_0000",
+          "split": "DEV_CAL",
+          "family": "IMPACT",
+          "factor": "P1",
+          "variant": 3,
+          "world": {
+            "categories": [
+              "Lamp",
+              "Mug",
+              "Chair",
+              "Clock",
+              "Desk",
+              "Vase"
+            ],
+            "series": {
+              "Alpha": [
+                66,
+                54,
+                48,
+                18,
+                12,
+                30
+              ],
+              "Beta": [
+                48,
+                72,
+                36,
+                42,
+                30,
+                78
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 3,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "156",
+          "gold_selected": [
+            "Lamp",
+            "Mug",
+            "Chair"
+          ],
+          "gold_bindings": {
+            "Lamp": "48",
+            "Mug": "72",
+            "Chair": "36"
+          },
+          "edit_id": "Beta:2:-6",
+          "edit_descriptor": [
+            "Beta",
+            -1,
+            6,
+            false,
+            "-6"
+          ],
+          "answer_delta": "-6",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        }
+      ]
+    }
+  },
+  {
+    "root_id": "DEV_CAL_TIES_0000",
+    "certificate": {
+      "rules": [
+        "boundary_swap",
+        "wrong_value",
+        "wrong_aggregate",
+        "wrong_rank",
+        "wrong_direction",
+        "k_minus",
+        "k_plus",
+        "reverse_tie"
+      ],
+      "active_rules": [
+        "boundary_swap",
+        "wrong_value",
+        "wrong_aggregate",
+        "wrong_rank",
+        "wrong_direction",
+        "k_minus",
+        "k_plus",
+        "reverse_tie"
+      ],
+      "base_alias_rules": [
+        "boundary_swap"
+      ],
+      "uncovered_by_pool": [],
+      "coverage_P0": 1.0,
+      "coverage_P1": 1.0,
+      "coverage_all_registered_P0": 1.0,
+      "coverage_all_registered_P1": 1.0,
+      "blind_P1": [],
+      "descriptors": [
+        [
+          "Alpha",
+          -1,
+          6,
+          false,
+          "0"
+        ],
+        [
+          "Beta",
+          -1,
+          6,
+          false,
+          "0"
+        ],
+        [
+          "Alpha",
+          -1,
+          6,
+          false,
+          "24"
+        ]
+      ],
+      "pool_size": 23,
+      "root_id": "DEV_CAL_TIES_0000",
+      "engineered_collision_anchor": true,
+      "attempt": 0,
+      "rejections": []
+    },
+    "tasks": {
+      "P0": [
+        {
+          "qid": "DEV_CAL_TIES_0000_P0_v0",
+          "root_id": "DEV_CAL_TIES_0000",
+          "split": "DEV_CAL",
+          "family": "TIES",
+          "factor": "P0",
+          "variant": 0,
+          "world": {
+            "categories": [
+              "Chair",
+              "Clock",
+              "Lamp",
+              "Desk",
+              "Vase",
+              "Mug"
+            ],
+            "series": {
+              "Alpha": [
+                36,
+                84,
+                66,
+                66,
+                24,
+                66
+              ],
+              "Beta": [
+                42,
+                18,
+                24,
+                42,
+                36,
+                66
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 3,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "84",
+          "gold_selected": [
+            "Clock",
+            "Lamp",
+            "Desk"
+          ],
+          "gold_bindings": {
+            "Clock": "18",
+            "Lamp": "24",
+            "Desk": "42"
+          },
+          "edit_id": "anchor",
+          "edit_descriptor": null,
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_TIES_0000_P0_v1",
+          "root_id": "DEV_CAL_TIES_0000",
+          "split": "DEV_CAL",
+          "family": "TIES",
+          "factor": "P0",
+          "variant": 1,
+          "world": {
+            "categories": [
+              "Chair",
+              "Clock",
+              "Lamp",
+              "Desk",
+              "Vase",
+              "Mug"
+            ],
+            "series": {
+              "Alpha": [
+                36,
+                78,
+                66,
+                66,
+                24,
+                66
+              ],
+              "Beta": [
+                42,
+                18,
+                24,
+                42,
+                36,
+                66
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 3,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "84",
+          "gold_selected": [
+            "Clock",
+            "Lamp",
+            "Desk"
+          ],
+          "gold_bindings": {
+            "Clock": "18",
+            "Lamp": "24",
+            "Desk": "42"
+          },
+          "edit_id": "Alpha:1:-6",
+          "edit_descriptor": [
+            "Alpha",
+            -1,
+            6,
+            false,
+            "0"
+          ],
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_TIES_0000_P0_v2",
+          "root_id": "DEV_CAL_TIES_0000",
+          "split": "DEV_CAL",
+          "family": "TIES",
+          "factor": "P0",
+          "variant": 2,
+          "world": {
+            "categories": [
+              "Chair",
+              "Clock",
+              "Lamp",
+              "Desk",
+              "Vase",
+              "Mug"
+            ],
+            "series": {
+              "Alpha": [
+                36,
+                84,
+                66,
+                66,
+                24,
+                66
+              ],
+              "Beta": [
+                42,
+                18,
+                24,
+                42,
+                30,
+                66
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 3,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "84",
+          "gold_selected": [
+            "Clock",
+            "Lamp",
+            "Desk"
+          ],
+          "gold_bindings": {
+            "Clock": "18",
+            "Lamp": "24",
+            "Desk": "42"
+          },
+          "edit_id": "Beta:4:-6",
+          "edit_descriptor": [
+            "Beta",
+            -1,
+            6,
+            false,
+            "0"
+          ],
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_TIES_0000_P0_v3",
+          "root_id": "DEV_CAL_TIES_0000",
+          "split": "DEV_CAL",
+          "family": "TIES",
+          "factor": "P0",
+          "variant": 3,
+          "world": {
+            "categories": [
+              "Chair",
+              "Clock",
+              "Lamp",
+              "Desk",
+              "Vase",
+              "Mug"
+            ],
+            "series": {
+              "Alpha": [
+                36,
+                84,
+                66,
+                60,
+                24,
+                66
+              ],
+              "Beta": [
+                42,
+                18,
+                24,
+                42,
+                36,
+                66
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 3,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "108",
+          "gold_selected": [
+            "Clock",
+            "Lamp",
+            "Mug"
+          ],
+          "gold_bindings": {
+            "Clock": "18",
+            "Lamp": "24",
+            "Mug": "66"
+          },
+          "edit_id": "Alpha:3:-6",
+          "edit_descriptor": [
+            "Alpha",
+            -1,
+            6,
+            false,
+            "24"
+          ],
+          "answer_delta": "24",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        }
+      ],
+      "P1": [
+        {
+          "qid": "DEV_CAL_TIES_0000_P1_v0",
+          "root_id": "DEV_CAL_TIES_0000",
+          "split": "DEV_CAL",
+          "family": "TIES",
+          "factor": "P1",
+          "variant": 0,
+          "world": {
+            "categories": [
+              "Chair",
+              "Clock",
+              "Lamp",
+              "Desk",
+              "Vase",
+              "Mug"
+            ],
+            "series": {
+              "Alpha": [
+                36,
+                84,
+                66,
+                66,
+                24,
+                66
+              ],
+              "Beta": [
+                42,
+                18,
+                24,
+                42,
+                36,
+                66
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 3,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "84",
+          "gold_selected": [
+            "Clock",
+            "Lamp",
+            "Desk"
+          ],
+          "gold_bindings": {
+            "Clock": "18",
+            "Lamp": "24",
+            "Desk": "42"
+          },
+          "edit_id": "anchor",
+          "edit_descriptor": null,
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_TIES_0000_P1_v1",
+          "root_id": "DEV_CAL_TIES_0000",
+          "split": "DEV_CAL",
+          "family": "TIES",
+          "factor": "P1",
+          "variant": 1,
+          "world": {
+            "categories": [
+              "Chair",
+              "Clock",
+              "Lamp",
+              "Desk",
+              "Vase",
+              "Mug"
+            ],
+            "series": {
+              "Alpha": [
+                36,
+                84,
+                66,
+                66,
+                24,
+                60
+              ],
+              "Beta": [
+                42,
+                18,
+                24,
+                42,
+                36,
+                66
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 3,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "84",
+          "gold_selected": [
+            "Clock",
+            "Lamp",
+            "Desk"
+          ],
+          "gold_bindings": {
+            "Clock": "18",
+            "Lamp": "24",
+            "Desk": "42"
+          },
+          "edit_id": "Alpha:5:-6",
+          "edit_descriptor": [
+            "Alpha",
+            -1,
+            6,
+            false,
+            "0"
+          ],
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_TIES_0000_P1_v2",
+          "root_id": "DEV_CAL_TIES_0000",
+          "split": "DEV_CAL",
+          "family": "TIES",
+          "factor": "P1",
+          "variant": 2,
+          "world": {
+            "categories": [
+              "Chair",
+              "Clock",
+              "Lamp",
+              "Desk",
+              "Vase",
+              "Mug"
+            ],
+            "series": {
+              "Alpha": [
+                36,
+                84,
+                66,
+                66,
+                24,
+                66
+              ],
+              "Beta": [
+                36,
+                18,
+                24,
+                42,
+                36,
+                66
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 3,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "84",
+          "gold_selected": [
+            "Clock",
+            "Lamp",
+            "Desk"
+          ],
+          "gold_bindings": {
+            "Clock": "18",
+            "Lamp": "24",
+            "Desk": "42"
+          },
+          "edit_id": "Beta:0:-6",
+          "edit_descriptor": [
+            "Beta",
+            -1,
+            6,
+            false,
+            "0"
+          ],
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_TIES_0000_P1_v3",
+          "root_id": "DEV_CAL_TIES_0000",
+          "split": "DEV_CAL",
+          "family": "TIES",
+          "factor": "P1",
+          "variant": 3,
+          "world": {
+            "categories": [
+              "Chair",
+              "Clock",
+              "Lamp",
+              "Desk",
+              "Vase",
+              "Mug"
+            ],
+            "series": {
+              "Alpha": [
+                36,
+                84,
+                66,
+                60,
+                24,
+                66
+              ],
+              "Beta": [
+                42,
+                18,
+                24,
+                42,
+                36,
+                66
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 3,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "108",
+          "gold_selected": [
+            "Clock",
+            "Lamp",
+            "Mug"
+          ],
+          "gold_bindings": {
+            "Clock": "18",
+            "Lamp": "24",
+            "Mug": "66"
+          },
+          "edit_id": "Alpha:3:-6",
+          "edit_descriptor": [
+            "Alpha",
+            -1,
+            6,
+            false,
+            "24"
+          ],
+          "answer_delta": "24",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        }
+      ]
+    }
+  },
+  {
+    "root_id": "DEV_CAL_SIGNED_0000",
+    "certificate": {
+      "rules": [
+        "boundary_swap",
+        "wrong_value",
+        "wrong_aggregate",
+        "wrong_rank",
+        "wrong_direction",
+        "k_minus",
+        "k_plus",
+        "reverse_tie",
+        "reverse_difference"
+      ],
+      "active_rules": [
+        "boundary_swap",
+        "wrong_value",
+        "wrong_aggregate",
+        "wrong_rank",
+        "wrong_direction",
+        "k_minus",
+        "k_plus",
+        "reverse_tie",
+        "reverse_difference"
+      ],
+      "base_alias_rules": [
+        "boundary_swap",
+        "reverse_tie"
+      ],
+      "uncovered_by_pool": [],
+      "coverage_P0": 0.8888888888888888,
+      "coverage_P1": 0.8888888888888888,
+      "coverage_all_registered_P0": 0.8888888888888888,
+      "coverage_all_registered_P1": 0.8888888888888888,
+      "blind_P1": [
+        "k_plus"
+      ],
+      "descriptors": [
+        [
+          "Beta",
+          -1,
+          6,
+          false,
+          "6"
+        ],
+        [
+          "Alpha",
+          -1,
+          6,
+          false,
+          "-6"
+        ],
+        [
+          "Alpha",
+          1,
+          6,
+          false,
+          "6"
+        ]
+      ],
+      "pool_size": 29,
+      "root_id": "DEV_CAL_SIGNED_0000",
+      "engineered_collision_anchor": true,
+      "attempt": 0,
+      "rejections": []
+    },
+    "tasks": {
+      "P0": [
+        {
+          "qid": "DEV_CAL_SIGNED_0000_P0_v0",
+          "root_id": "DEV_CAL_SIGNED_0000",
+          "split": "DEV_CAL",
+          "family": "SIGNED",
+          "factor": "P0",
+          "variant": 0,
+          "world": {
+            "categories": [
+              "Lamp",
+              "Clock",
+              "Tray",
+              "Book",
+              "Desk",
+              "Mug",
+              "Vase",
+              "Chair"
+            ],
+            "series": {
+              "Alpha": [
+                72,
+                36,
+                48,
+                54,
+                12,
+                66,
+                84,
+                78
+              ],
+              "Beta": [
+                60,
+                78,
+                42,
+                72,
+                18,
+                12,
+                30,
+                66
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "diff",
+            "k": 2,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "66",
+          "gold_selected": [
+            "Vase",
+            "Chair"
+          ],
+          "gold_bindings": {
+            "Vase": "54",
+            "Chair": "12"
+          },
+          "edit_id": "anchor",
+          "edit_descriptor": null,
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_SIGNED_0000_P0_v1",
+          "root_id": "DEV_CAL_SIGNED_0000",
+          "split": "DEV_CAL",
+          "family": "SIGNED",
+          "factor": "P0",
+          "variant": 1,
+          "world": {
+            "categories": [
+              "Lamp",
+              "Clock",
+              "Tray",
+              "Book",
+              "Desk",
+              "Mug",
+              "Vase",
+              "Chair"
+            ],
+            "series": {
+              "Alpha": [
+                72,
+                36,
+                48,
+                54,
+                12,
+                66,
+                84,
+                78
+              ],
+              "Beta": [
+                60,
+                78,
+                42,
+                72,
+                18,
+                12,
+                24,
+                66
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "diff",
+            "k": 2,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "72",
+          "gold_selected": [
+            "Vase",
+            "Chair"
+          ],
+          "gold_bindings": {
+            "Vase": "60",
+            "Chair": "12"
+          },
+          "edit_id": "Beta:6:-6",
+          "edit_descriptor": [
+            "Beta",
+            -1,
+            6,
+            false,
+            "6"
+          ],
+          "answer_delta": "6",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_SIGNED_0000_P0_v2",
+          "root_id": "DEV_CAL_SIGNED_0000",
+          "split": "DEV_CAL",
+          "family": "SIGNED",
+          "factor": "P0",
+          "variant": 2,
+          "world": {
+            "categories": [
+              "Lamp",
+              "Clock",
+              "Tray",
+              "Book",
+              "Desk",
+              "Mug",
+              "Vase",
+              "Chair"
+            ],
+            "series": {
+              "Alpha": [
+                72,
+                36,
+                48,
+                54,
+                12,
+                66,
+                78,
+                78
+              ],
+              "Beta": [
+                60,
+                78,
+                42,
+                72,
+                18,
+                12,
+                30,
+                66
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "diff",
+            "k": 2,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "60",
+          "gold_selected": [
+            "Vase",
+            "Chair"
+          ],
+          "gold_bindings": {
+            "Vase": "48",
+            "Chair": "12"
+          },
+          "edit_id": "Alpha:6:-6",
+          "edit_descriptor": [
+            "Alpha",
+            -1,
+            6,
+            false,
+            "-6"
+          ],
+          "answer_delta": "-6",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_SIGNED_0000_P0_v3",
+          "root_id": "DEV_CAL_SIGNED_0000",
+          "split": "DEV_CAL",
+          "family": "SIGNED",
+          "factor": "P0",
+          "variant": 3,
+          "world": {
+            "categories": [
+              "Lamp",
+              "Clock",
+              "Tray",
+              "Book",
+              "Desk",
+              "Mug",
+              "Vase",
+              "Chair"
+            ],
+            "series": {
+              "Alpha": [
+                78,
+                36,
+                48,
+                54,
+                12,
+                66,
+                84,
+                78
+              ],
+              "Beta": [
+                60,
+                78,
+                42,
+                72,
+                18,
+                12,
+                30,
+                66
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "diff",
+            "k": 2,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "72",
+          "gold_selected": [
+            "Lamp",
+            "Vase"
+          ],
+          "gold_bindings": {
+            "Lamp": "18",
+            "Vase": "54"
+          },
+          "edit_id": "Alpha:0:6",
+          "edit_descriptor": [
+            "Alpha",
+            1,
+            6,
+            false,
+            "6"
+          ],
+          "answer_delta": "6",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        }
+      ],
+      "P1": [
+        {
+          "qid": "DEV_CAL_SIGNED_0000_P1_v0",
+          "root_id": "DEV_CAL_SIGNED_0000",
+          "split": "DEV_CAL",
+          "family": "SIGNED",
+          "factor": "P1",
+          "variant": 0,
+          "world": {
+            "categories": [
+              "Lamp",
+              "Clock",
+              "Tray",
+              "Book",
+              "Desk",
+              "Mug",
+              "Vase",
+              "Chair"
+            ],
+            "series": {
+              "Alpha": [
+                72,
+                36,
+                48,
+                54,
+                12,
+                66,
+                84,
+                78
+              ],
+              "Beta": [
+                60,
+                78,
+                42,
+                72,
+                18,
+                12,
+                30,
+                66
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "diff",
+            "k": 2,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "66",
+          "gold_selected": [
+            "Vase",
+            "Chair"
+          ],
+          "gold_bindings": {
+            "Vase": "54",
+            "Chair": "12"
+          },
+          "edit_id": "anchor",
+          "edit_descriptor": null,
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_SIGNED_0000_P1_v1",
+          "root_id": "DEV_CAL_SIGNED_0000",
+          "split": "DEV_CAL",
+          "family": "SIGNED",
+          "factor": "P1",
+          "variant": 1,
+          "world": {
+            "categories": [
+              "Lamp",
+              "Clock",
+              "Tray",
+              "Book",
+              "Desk",
+              "Mug",
+              "Vase",
+              "Chair"
+            ],
+            "series": {
+              "Alpha": [
+                72,
+                36,
+                48,
+                54,
+                12,
+                66,
+                84,
+                78
+              ],
+              "Beta": [
+                60,
+                78,
+                42,
+                72,
+                18,
+                12,
+                24,
+                66
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "diff",
+            "k": 2,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "72",
+          "gold_selected": [
+            "Vase",
+            "Chair"
+          ],
+          "gold_bindings": {
+            "Vase": "60",
+            "Chair": "12"
+          },
+          "edit_id": "Beta:6:-6",
+          "edit_descriptor": [
+            "Beta",
+            -1,
+            6,
+            false,
+            "6"
+          ],
+          "answer_delta": "6",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_SIGNED_0000_P1_v2",
+          "root_id": "DEV_CAL_SIGNED_0000",
+          "split": "DEV_CAL",
+          "family": "SIGNED",
+          "factor": "P1",
+          "variant": 2,
+          "world": {
+            "categories": [
+              "Lamp",
+              "Clock",
+              "Tray",
+              "Book",
+              "Desk",
+              "Mug",
+              "Vase",
+              "Chair"
+            ],
+            "series": {
+              "Alpha": [
+                72,
+                36,
+                48,
+                54,
+                12,
+                66,
+                78,
+                78
+              ],
+              "Beta": [
+                60,
+                78,
+                42,
+                72,
+                18,
+                12,
+                30,
+                66
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "diff",
+            "k": 2,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "60",
+          "gold_selected": [
+            "Vase",
+            "Chair"
+          ],
+          "gold_bindings": {
+            "Vase": "48",
+            "Chair": "12"
+          },
+          "edit_id": "Alpha:6:-6",
+          "edit_descriptor": [
+            "Alpha",
+            -1,
+            6,
+            false,
+            "-6"
+          ],
+          "answer_delta": "-6",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_SIGNED_0000_P1_v3",
+          "root_id": "DEV_CAL_SIGNED_0000",
+          "split": "DEV_CAL",
+          "family": "SIGNED",
+          "factor": "P1",
+          "variant": 3,
+          "world": {
+            "categories": [
+              "Lamp",
+              "Clock",
+              "Tray",
+              "Book",
+              "Desk",
+              "Mug",
+              "Vase",
+              "Chair"
+            ],
+            "series": {
+              "Alpha": [
+                78,
+                36,
+                48,
+                54,
+                12,
+                66,
+                84,
+                78
+              ],
+              "Beta": [
+                60,
+                78,
+                42,
+                72,
+                18,
+                12,
+                30,
+                66
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "diff",
+            "k": 2,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "72",
+          "gold_selected": [
+            "Lamp",
+            "Vase"
+          ],
+          "gold_bindings": {
+            "Lamp": "18",
+            "Vase": "54"
+          },
+          "edit_id": "Alpha:0:6",
+          "edit_descriptor": [
+            "Alpha",
+            1,
+            6,
+            false,
+            "6"
+          ],
+          "answer_delta": "6",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        }
+      ]
+    }
+  },
+  {
+    "root_id": "DEV_CAL_INTERVAL_0000",
+    "certificate": {
+      "rules": [
+        "boundary_swap",
+        "wrong_value",
+        "wrong_aggregate",
+        "toggle_start",
+        "toggle_end",
+        "toggle_filter",
+        "reverse_difference"
+      ],
+      "active_rules": [
+        "boundary_swap",
+        "wrong_value",
+        "wrong_aggregate",
+        "toggle_filter",
+        "reverse_difference"
+      ],
+      "base_alias_rules": [
+        "boundary_swap"
+      ],
+      "uncovered_by_pool": [
+        "toggle_start",
+        "toggle_end"
+      ],
+      "coverage_P0": 0.8,
+      "coverage_P1": 1.0,
+      "coverage_all_registered_P0": 0.5714285714285714,
+      "coverage_all_registered_P1": 0.7142857142857143,
+      "blind_P1": [],
+      "descriptors": [
+        [
+          "Alpha",
+          -1,
+          6,
+          false,
+          "0"
+        ],
+        [
+          "Beta",
+          1,
+          6,
+          false,
+          "-6"
+        ],
+        [
+          "Beta",
+          1,
+          6,
+          false,
+          "0"
+        ]
+      ],
+      "pool_size": 30,
+      "root_id": "DEV_CAL_INTERVAL_0000",
+      "engineered_collision_anchor": true,
+      "attempt": 0,
+      "rejections": []
+    },
+    "tasks": {
+      "P0": [
+        {
+          "qid": "DEV_CAL_INTERVAL_0000_P0_v0",
+          "root_id": "DEV_CAL_INTERVAL_0000",
+          "split": "DEV_CAL",
+          "family": "INTERVAL",
+          "factor": "P0",
+          "variant": 0,
+          "world": {
+            "categories": [
+              "Book",
+              "Chair",
+              "Lamp",
+              "Mug",
+              "Tray",
+              "Desk",
+              "Vase",
+              "Clock"
+            ],
+            "series": {
+              "Alpha": [
+                72,
+                42,
+                78,
+                24,
+                72,
+                84,
+                12,
+                30
+              ],
+              "Beta": [
+                24,
+                72,
+                42,
+                60,
+                30,
+                36,
+                60,
+                24
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "INTERVAL",
+            "start": 1,
+            "end": 6,
+            "include_start": false,
+            "include_end": false,
+            "positive_only": true,
+            "value": "diff",
+            "aggregate": "sum"
+          },
+          "gold_answer": "126",
+          "gold_selected": [
+            "Lamp",
+            "Tray",
+            "Desk"
+          ],
+          "gold_bindings": {
+            "Lamp": "36",
+            "Tray": "42",
+            "Desk": "48"
+          },
+          "edit_id": "anchor",
+          "edit_descriptor": null,
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_INTERVAL_0000_P0_v1",
+          "root_id": "DEV_CAL_INTERVAL_0000",
+          "split": "DEV_CAL",
+          "family": "INTERVAL",
+          "factor": "P0",
+          "variant": 1,
+          "world": {
+            "categories": [
+              "Book",
+              "Chair",
+              "Lamp",
+              "Mug",
+              "Tray",
+              "Desk",
+              "Vase",
+              "Clock"
+            ],
+            "series": {
+              "Alpha": [
+                72,
+                36,
+                78,
+                24,
+                72,
+                84,
+                12,
+                30
+              ],
+              "Beta": [
+                24,
+                72,
+                42,
+                60,
+                30,
+                36,
+                60,
+                24
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "INTERVAL",
+            "start": 1,
+            "end": 6,
+            "include_start": false,
+            "include_end": false,
+            "positive_only": true,
+            "value": "diff",
+            "aggregate": "sum"
+          },
+          "gold_answer": "126",
+          "gold_selected": [
+            "Lamp",
+            "Tray",
+            "Desk"
+          ],
+          "gold_bindings": {
+            "Lamp": "36",
+            "Tray": "42",
+            "Desk": "48"
+          },
+          "edit_id": "Alpha:1:-6",
+          "edit_descriptor": [
+            "Alpha",
+            -1,
+            6,
+            false,
+            "0"
+          ],
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_INTERVAL_0000_P0_v2",
+          "root_id": "DEV_CAL_INTERVAL_0000",
+          "split": "DEV_CAL",
+          "family": "INTERVAL",
+          "factor": "P0",
+          "variant": 2,
+          "world": {
+            "categories": [
+              "Book",
+              "Chair",
+              "Lamp",
+              "Mug",
+              "Tray",
+              "Desk",
+              "Vase",
+              "Clock"
+            ],
+            "series": {
+              "Alpha": [
+                72,
+                42,
+                78,
+                24,
+                72,
+                84,
+                12,
+                30
+              ],
+              "Beta": [
+                24,
+                72,
+                42,
+                60,
+                36,
+                36,
+                60,
+                24
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "INTERVAL",
+            "start": 1,
+            "end": 6,
+            "include_start": false,
+            "include_end": false,
+            "positive_only": true,
+            "value": "diff",
+            "aggregate": "sum"
+          },
+          "gold_answer": "120",
+          "gold_selected": [
+            "Lamp",
+            "Tray",
+            "Desk"
+          ],
+          "gold_bindings": {
+            "Lamp": "36",
+            "Tray": "36",
+            "Desk": "48"
+          },
+          "edit_id": "Beta:4:6",
+          "edit_descriptor": [
+            "Beta",
+            1,
+            6,
+            false,
+            "-6"
+          ],
+          "answer_delta": "-6",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_INTERVAL_0000_P0_v3",
+          "root_id": "DEV_CAL_INTERVAL_0000",
+          "split": "DEV_CAL",
+          "family": "INTERVAL",
+          "factor": "P0",
+          "variant": 3,
+          "world": {
+            "categories": [
+              "Book",
+              "Chair",
+              "Lamp",
+              "Mug",
+              "Tray",
+              "Desk",
+              "Vase",
+              "Clock"
+            ],
+            "series": {
+              "Alpha": [
+                72,
+                42,
+                78,
+                24,
+                72,
+                84,
+                12,
+                30
+              ],
+              "Beta": [
+                30,
+                72,
+                42,
+                60,
+                30,
+                36,
+                60,
+                24
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "INTERVAL",
+            "start": 1,
+            "end": 6,
+            "include_start": false,
+            "include_end": false,
+            "positive_only": true,
+            "value": "diff",
+            "aggregate": "sum"
+          },
+          "gold_answer": "126",
+          "gold_selected": [
+            "Lamp",
+            "Tray",
+            "Desk"
+          ],
+          "gold_bindings": {
+            "Lamp": "36",
+            "Tray": "42",
+            "Desk": "48"
+          },
+          "edit_id": "Beta:0:6",
+          "edit_descriptor": [
+            "Beta",
+            1,
+            6,
+            false,
+            "0"
+          ],
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        }
+      ],
+      "P1": [
+        {
+          "qid": "DEV_CAL_INTERVAL_0000_P1_v0",
+          "root_id": "DEV_CAL_INTERVAL_0000",
+          "split": "DEV_CAL",
+          "family": "INTERVAL",
+          "factor": "P1",
+          "variant": 0,
+          "world": {
+            "categories": [
+              "Book",
+              "Chair",
+              "Lamp",
+              "Mug",
+              "Tray",
+              "Desk",
+              "Vase",
+              "Clock"
+            ],
+            "series": {
+              "Alpha": [
+                72,
+                42,
+                78,
+                24,
+                72,
+                84,
+                12,
+                30
+              ],
+              "Beta": [
+                24,
+                72,
+                42,
+                60,
+                30,
+                36,
+                60,
+                24
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "INTERVAL",
+            "start": 1,
+            "end": 6,
+            "include_start": false,
+            "include_end": false,
+            "positive_only": true,
+            "value": "diff",
+            "aggregate": "sum"
+          },
+          "gold_answer": "126",
+          "gold_selected": [
+            "Lamp",
+            "Tray",
+            "Desk"
+          ],
+          "gold_bindings": {
+            "Lamp": "36",
+            "Tray": "42",
+            "Desk": "48"
+          },
+          "edit_id": "anchor",
+          "edit_descriptor": null,
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_INTERVAL_0000_P1_v1",
+          "root_id": "DEV_CAL_INTERVAL_0000",
+          "split": "DEV_CAL",
+          "family": "INTERVAL",
+          "factor": "P1",
+          "variant": 1,
+          "world": {
+            "categories": [
+              "Book",
+              "Chair",
+              "Lamp",
+              "Mug",
+              "Tray",
+              "Desk",
+              "Vase",
+              "Clock"
+            ],
+            "series": {
+              "Alpha": [
+                72,
+                42,
+                78,
+                24,
+                72,
+                84,
+                12,
+                24
+              ],
+              "Beta": [
+                24,
+                72,
+                42,
+                60,
+                30,
+                36,
+                60,
+                24
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "INTERVAL",
+            "start": 1,
+            "end": 6,
+            "include_start": false,
+            "include_end": false,
+            "positive_only": true,
+            "value": "diff",
+            "aggregate": "sum"
+          },
+          "gold_answer": "126",
+          "gold_selected": [
+            "Lamp",
+            "Tray",
+            "Desk"
+          ],
+          "gold_bindings": {
+            "Lamp": "36",
+            "Tray": "42",
+            "Desk": "48"
+          },
+          "edit_id": "Alpha:7:-6",
+          "edit_descriptor": [
+            "Alpha",
+            -1,
+            6,
+            false,
+            "0"
+          ],
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_INTERVAL_0000_P1_v2",
+          "root_id": "DEV_CAL_INTERVAL_0000",
+          "split": "DEV_CAL",
+          "family": "INTERVAL",
+          "factor": "P1",
+          "variant": 2,
+          "world": {
+            "categories": [
+              "Book",
+              "Chair",
+              "Lamp",
+              "Mug",
+              "Tray",
+              "Desk",
+              "Vase",
+              "Clock"
+            ],
+            "series": {
+              "Alpha": [
+                72,
+                42,
+                78,
+                24,
+                72,
+                84,
+                12,
+                30
+              ],
+              "Beta": [
+                24,
+                72,
+                42,
+                60,
+                30,
+                42,
+                60,
+                24
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "INTERVAL",
+            "start": 1,
+            "end": 6,
+            "include_start": false,
+            "include_end": false,
+            "positive_only": true,
+            "value": "diff",
+            "aggregate": "sum"
+          },
+          "gold_answer": "120",
+          "gold_selected": [
+            "Lamp",
+            "Tray",
+            "Desk"
+          ],
+          "gold_bindings": {
+            "Lamp": "36",
+            "Tray": "42",
+            "Desk": "42"
+          },
+          "edit_id": "Beta:5:6",
+          "edit_descriptor": [
+            "Beta",
+            1,
+            6,
+            false,
+            "-6"
+          ],
+          "answer_delta": "-6",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_INTERVAL_0000_P1_v3",
+          "root_id": "DEV_CAL_INTERVAL_0000",
+          "split": "DEV_CAL",
+          "family": "INTERVAL",
+          "factor": "P1",
+          "variant": 3,
+          "world": {
+            "categories": [
+              "Book",
+              "Chair",
+              "Lamp",
+              "Mug",
+              "Tray",
+              "Desk",
+              "Vase",
+              "Clock"
+            ],
+            "series": {
+              "Alpha": [
+                72,
+                42,
+                78,
+                24,
+                72,
+                84,
+                12,
+                30
+              ],
+              "Beta": [
+                24,
+                72,
+                42,
+                66,
+                30,
+                36,
+                60,
+                24
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "INTERVAL",
+            "start": 1,
+            "end": 6,
+            "include_start": false,
+            "include_end": false,
+            "positive_only": true,
+            "value": "diff",
+            "aggregate": "sum"
+          },
+          "gold_answer": "126",
+          "gold_selected": [
+            "Lamp",
+            "Tray",
+            "Desk"
+          ],
+          "gold_bindings": {
+            "Lamp": "36",
+            "Tray": "42",
+            "Desk": "48"
+          },
+          "edit_id": "Beta:3:6",
+          "edit_descriptor": [
+            "Beta",
+            1,
+            6,
+            false,
+            "0"
+          ],
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        }
+      ]
+    }
+  },
+  {
+    "root_id": "DEV_CAL_K_DIRECTION_0000",
+    "certificate": {
+      "rules": [
+        "boundary_swap",
+        "wrong_value",
+        "wrong_aggregate",
+        "wrong_rank",
+        "wrong_direction",
+        "k_minus",
+        "k_plus",
+        "reverse_tie"
+      ],
+      "active_rules": [
+        "boundary_swap",
+        "wrong_value",
+        "wrong_aggregate",
+        "wrong_rank",
+        "wrong_direction",
+        "k_minus",
+        "k_plus"
+      ],
+      "base_alias_rules": [
+        "boundary_swap"
+      ],
+      "uncovered_by_pool": [
+        "reverse_tie"
+      ],
+      "coverage_P0": 0.5714285714285714,
+      "coverage_P1": 1.0,
+      "coverage_all_registered_P0": 0.5,
+      "coverage_all_registered_P1": 0.875,
+      "blind_P1": [],
+      "descriptors": [
+        [
+          "Beta",
+          1,
+          6,
+          false,
+          "0"
+        ],
+        [
+          "Beta",
+          1,
+          6,
+          false,
+          "6"
+        ],
+        [
+          "Alpha",
+          1,
+          6,
+          false,
+          "0"
+        ]
+      ],
+      "pool_size": 30,
+      "root_id": "DEV_CAL_K_DIRECTION_0000",
+      "engineered_collision_anchor": true,
+      "attempt": 0,
+      "rejections": []
+    },
+    "tasks": {
+      "P0": [
+        {
+          "qid": "DEV_CAL_K_DIRECTION_0000_P0_v0",
+          "root_id": "DEV_CAL_K_DIRECTION_0000",
+          "split": "DEV_CAL",
+          "family": "K_DIRECTION",
+          "factor": "P0",
+          "variant": 0,
+          "world": {
+            "categories": [
+              "Tray",
+              "Clock",
+              "Desk",
+              "Vase",
+              "Book",
+              "Chair",
+              "Mug",
+              "Lamp"
+            ],
+            "series": {
+              "Alpha": [
+                30,
+                48,
+                54,
+                12,
+                24,
+                72,
+                36,
+                78
+              ],
+              "Beta": [
+                54,
+                60,
+                42,
+                24,
+                36,
+                72,
+                12,
+                54
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 4,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "228",
+          "gold_selected": [
+            "Clock",
+            "Desk",
+            "Chair",
+            "Lamp"
+          ],
+          "gold_bindings": {
+            "Clock": "60",
+            "Desk": "42",
+            "Chair": "72",
+            "Lamp": "54"
+          },
+          "edit_id": "anchor",
+          "edit_descriptor": null,
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_K_DIRECTION_0000_P0_v1",
+          "root_id": "DEV_CAL_K_DIRECTION_0000",
+          "split": "DEV_CAL",
+          "family": "K_DIRECTION",
+          "factor": "P0",
+          "variant": 1,
+          "world": {
+            "categories": [
+              "Tray",
+              "Clock",
+              "Desk",
+              "Vase",
+              "Book",
+              "Chair",
+              "Mug",
+              "Lamp"
+            ],
+            "series": {
+              "Alpha": [
+                30,
+                48,
+                54,
+                12,
+                24,
+                72,
+                36,
+                78
+              ],
+              "Beta": [
+                54,
+                60,
+                42,
+                24,
+                42,
+                72,
+                12,
+                54
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 4,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "228",
+          "gold_selected": [
+            "Clock",
+            "Desk",
+            "Chair",
+            "Lamp"
+          ],
+          "gold_bindings": {
+            "Clock": "60",
+            "Desk": "42",
+            "Chair": "72",
+            "Lamp": "54"
+          },
+          "edit_id": "Beta:4:6",
+          "edit_descriptor": [
+            "Beta",
+            1,
+            6,
+            false,
+            "0"
+          ],
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_K_DIRECTION_0000_P0_v2",
+          "root_id": "DEV_CAL_K_DIRECTION_0000",
+          "split": "DEV_CAL",
+          "family": "K_DIRECTION",
+          "factor": "P0",
+          "variant": 2,
+          "world": {
+            "categories": [
+              "Tray",
+              "Clock",
+              "Desk",
+              "Vase",
+              "Book",
+              "Chair",
+              "Mug",
+              "Lamp"
+            ],
+            "series": {
+              "Alpha": [
+                30,
+                48,
+                54,
+                12,
+                24,
+                72,
+                36,
+                78
+              ],
+              "Beta": [
+                54,
+                60,
+                42,
+                24,
+                36,
+                78,
+                12,
+                54
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 4,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "234",
+          "gold_selected": [
+            "Clock",
+            "Desk",
+            "Chair",
+            "Lamp"
+          ],
+          "gold_bindings": {
+            "Clock": "60",
+            "Desk": "42",
+            "Chair": "78",
+            "Lamp": "54"
+          },
+          "edit_id": "Beta:5:6",
+          "edit_descriptor": [
+            "Beta",
+            1,
+            6,
+            false,
+            "6"
+          ],
+          "answer_delta": "6",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_K_DIRECTION_0000_P0_v3",
+          "root_id": "DEV_CAL_K_DIRECTION_0000",
+          "split": "DEV_CAL",
+          "family": "K_DIRECTION",
+          "factor": "P0",
+          "variant": 3,
+          "world": {
+            "categories": [
+              "Tray",
+              "Clock",
+              "Desk",
+              "Vase",
+              "Book",
+              "Chair",
+              "Mug",
+              "Lamp"
+            ],
+            "series": {
+              "Alpha": [
+                30,
+                54,
+                54,
+                12,
+                24,
+                72,
+                36,
+                78
+              ],
+              "Beta": [
+                54,
+                60,
+                42,
+                24,
+                36,
+                72,
+                12,
+                54
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 4,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "228",
+          "gold_selected": [
+            "Clock",
+            "Desk",
+            "Chair",
+            "Lamp"
+          ],
+          "gold_bindings": {
+            "Clock": "60",
+            "Desk": "42",
+            "Chair": "72",
+            "Lamp": "54"
+          },
+          "edit_id": "Alpha:1:6",
+          "edit_descriptor": [
+            "Alpha",
+            1,
+            6,
+            false,
+            "0"
+          ],
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        }
+      ],
+      "P1": [
+        {
+          "qid": "DEV_CAL_K_DIRECTION_0000_P1_v0",
+          "root_id": "DEV_CAL_K_DIRECTION_0000",
+          "split": "DEV_CAL",
+          "family": "K_DIRECTION",
+          "factor": "P1",
+          "variant": 0,
+          "world": {
+            "categories": [
+              "Tray",
+              "Clock",
+              "Desk",
+              "Vase",
+              "Book",
+              "Chair",
+              "Mug",
+              "Lamp"
+            ],
+            "series": {
+              "Alpha": [
+                30,
+                48,
+                54,
+                12,
+                24,
+                72,
+                36,
+                78
+              ],
+              "Beta": [
+                54,
+                60,
+                42,
+                24,
+                36,
+                72,
+                12,
+                54
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 4,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "228",
+          "gold_selected": [
+            "Clock",
+            "Desk",
+            "Chair",
+            "Lamp"
+          ],
+          "gold_bindings": {
+            "Clock": "60",
+            "Desk": "42",
+            "Chair": "72",
+            "Lamp": "54"
+          },
+          "edit_id": "anchor",
+          "edit_descriptor": null,
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_K_DIRECTION_0000_P1_v1",
+          "root_id": "DEV_CAL_K_DIRECTION_0000",
+          "split": "DEV_CAL",
+          "family": "K_DIRECTION",
+          "factor": "P1",
+          "variant": 1,
+          "world": {
+            "categories": [
+              "Tray",
+              "Clock",
+              "Desk",
+              "Vase",
+              "Book",
+              "Chair",
+              "Mug",
+              "Lamp"
+            ],
+            "series": {
+              "Alpha": [
+                30,
+                48,
+                54,
+                12,
+                24,
+                72,
+                36,
+                78
+              ],
+              "Beta": [
+                60,
+                60,
+                42,
+                24,
+                36,
+                72,
+                12,
+                54
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 4,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "228",
+          "gold_selected": [
+            "Clock",
+            "Desk",
+            "Chair",
+            "Lamp"
+          ],
+          "gold_bindings": {
+            "Clock": "60",
+            "Desk": "42",
+            "Chair": "72",
+            "Lamp": "54"
+          },
+          "edit_id": "Beta:0:6",
+          "edit_descriptor": [
+            "Beta",
+            1,
+            6,
+            false,
+            "0"
+          ],
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_K_DIRECTION_0000_P1_v2",
+          "root_id": "DEV_CAL_K_DIRECTION_0000",
+          "split": "DEV_CAL",
+          "family": "K_DIRECTION",
+          "factor": "P1",
+          "variant": 2,
+          "world": {
+            "categories": [
+              "Tray",
+              "Clock",
+              "Desk",
+              "Vase",
+              "Book",
+              "Chair",
+              "Mug",
+              "Lamp"
+            ],
+            "series": {
+              "Alpha": [
+                30,
+                48,
+                54,
+                12,
+                24,
+                72,
+                36,
+                78
+              ],
+              "Beta": [
+                54,
+                66,
+                42,
+                24,
+                36,
+                72,
+                12,
+                54
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 4,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "234",
+          "gold_selected": [
+            "Clock",
+            "Desk",
+            "Chair",
+            "Lamp"
+          ],
+          "gold_bindings": {
+            "Clock": "66",
+            "Desk": "42",
+            "Chair": "72",
+            "Lamp": "54"
+          },
+          "edit_id": "Beta:1:6",
+          "edit_descriptor": [
+            "Beta",
+            1,
+            6,
+            false,
+            "6"
+          ],
+          "answer_delta": "6",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        },
+        {
+          "qid": "DEV_CAL_K_DIRECTION_0000_P1_v3",
+          "root_id": "DEV_CAL_K_DIRECTION_0000",
+          "split": "DEV_CAL",
+          "family": "K_DIRECTION",
+          "factor": "P1",
+          "variant": 3,
+          "world": {
+            "categories": [
+              "Tray",
+              "Clock",
+              "Desk",
+              "Vase",
+              "Book",
+              "Chair",
+              "Mug",
+              "Lamp"
+            ],
+            "series": {
+              "Alpha": [
+                36,
+                48,
+                54,
+                12,
+                24,
+                72,
+                36,
+                78
+              ],
+              "Beta": [
+                54,
+                60,
+                42,
+                24,
+                36,
+                72,
+                12,
+                54
+              ]
+            },
+            "domain": [
+              10,
+              90
+            ]
+          },
+          "query": {
+            "family": "TOPK",
+            "selection_series": "Alpha",
+            "value": "Beta",
+            "k": 4,
+            "direction": "largest",
+            "aggregate": "sum"
+          },
+          "gold_answer": "228",
+          "gold_selected": [
+            "Clock",
+            "Desk",
+            "Chair",
+            "Lamp"
+          ],
+          "gold_bindings": {
+            "Clock": "60",
+            "Desk": "42",
+            "Chair": "72",
+            "Lamp": "54"
+          },
+          "edit_id": "Alpha:0:6",
+          "edit_descriptor": [
+            "Alpha",
+            1,
+            6,
+            false,
+            "0"
+          ],
+          "answer_delta": "0",
+          "heldout_tags": [],
+          "engineered_collision_anchor": true,
+          "attempt": 0
+        }
+      ]
+    }
+  }
+]

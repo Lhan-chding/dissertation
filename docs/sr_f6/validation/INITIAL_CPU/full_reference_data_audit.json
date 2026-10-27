@@ -1,0 +1,368 @@
+{
+  "status": "PASS",
+  "elapsed_seconds": 3.2717649936676025,
+  "banks": {
+    "DEV_CAL": {
+      "roots": 48,
+      "reference_views_including_both_factors": 384,
+      "construction_attempt_max": 3,
+      "by_family": {
+        "BINDING": {
+          "coverage_P0": 0.6875,
+          "coverage_P1": 0.8794642857142857,
+          "gap": 0.1919642857142857,
+          "engineered_anchors": 3,
+          "anchor_with_any_candidate_alias": 5
+        },
+        "IMPACT": {
+          "coverage_P0": 0.7053571428571428,
+          "coverage_P1": 0.8973214285714286,
+          "gap": 0.1919642857142858,
+          "engineered_anchors": 3,
+          "anchor_with_any_candidate_alias": 5
+        },
+        "TIES": {
+          "coverage_P0": 0.984375,
+          "coverage_P1": 1.0,
+          "gap": 0.015625,
+          "engineered_anchors": 3,
+          "anchor_with_any_candidate_alias": 3
+        },
+        "SIGNED": {
+          "coverage_P0": 0.8333333333333334,
+          "coverage_P1": 0.9097222222222222,
+          "gap": 0.07638888888888884,
+          "engineered_anchors": 3,
+          "anchor_with_any_candidate_alias": 7
+        },
+        "INTERVAL": {
+          "coverage_P0": 0.7696428571428571,
+          "coverage_P1": 0.8869047619047619,
+          "gap": 0.11726190476190479,
+          "engineered_anchors": 3,
+          "anchor_with_any_candidate_alias": 4
+        },
+        "K_DIRECTION": {
+          "coverage_P0": 0.75,
+          "coverage_P1": 0.8928571428571429,
+          "gap": 0.1428571428571429,
+          "engineered_anchors": 3,
+          "anchor_with_any_candidate_alias": 3
+        }
+      },
+      "fraction_roots_strict_coverage_gain": 0.5208333333333334
+    },
+    "DEV_PILOT": {
+      "roots": 48,
+      "reference_views_including_both_factors": 384,
+      "construction_attempt_max": 2,
+      "by_family": {
+        "BINDING": {
+          "coverage_P0": 0.6502976190476191,
+          "coverage_P1": 0.8526785714285714,
+          "gap": 0.20238095238095233,
+          "engineered_anchors": 3,
+          "anchor_with_any_candidate_alias": 6
+        },
+        "IMPACT": {
+          "coverage_P0": 0.75,
+          "coverage_P1": 0.875,
+          "gap": 0.125,
+          "engineered_anchors": 3,
+          "anchor_with_any_candidate_alias": 3
+        },
+        "TIES": {
+          "coverage_P0": 0.96875,
+          "coverage_P1": 1.0,
+          "gap": 0.03125,
+          "engineered_anchors": 3,
+          "anchor_with_any_candidate_alias": 3
+        },
+        "SIGNED": {
+          "coverage_P0": 0.7447916666666666,
+          "coverage_P1": 0.8732638888888888,
+          "gap": 0.1284722222222222,
+          "engineered_anchors": 3,
+          "anchor_with_any_candidate_alias": 7
+        },
+        "INTERVAL": {
+          "coverage_P0": 0.7547619047619047,
+          "coverage_P1": 0.8601190476190476,
+          "gap": 0.10535714285714282,
+          "engineered_anchors": 3,
+          "anchor_with_any_candidate_alias": 4
+        },
+        "K_DIRECTION": {
+          "coverage_P0": 0.5959821428571428,
+          "coverage_P1": 0.8415178571428571,
+          "gap": 0.2455357142857143,
+          "engineered_anchors": 3,
+          "anchor_with_any_candidate_alias": 3
+        }
+      },
+      "fraction_roots_strict_coverage_gain": 0.5833333333333334
+    },
+    "DEV_EVAL": {
+      "roots": 24,
+      "reference_views_including_both_factors": 192,
+      "construction_attempt_max": 0,
+      "by_family": {
+        "BINDING": {
+          "coverage_P0": 0.5892857142857143,
+          "coverage_P1": 0.8303571428571428,
+          "gap": 0.2410714285714285,
+          "engineered_anchors": 0,
+          "anchor_with_any_candidate_alias": 1
+        },
+        "IMPACT": {
+          "coverage_P0": 0.48214285714285715,
+          "coverage_P1": 0.7544642857142857,
+          "gap": 0.27232142857142855,
+          "engineered_anchors": 0,
+          "anchor_with_any_candidate_alias": 2
+        },
+        "TIES": {
+          "coverage_P0": 1.0,
+          "coverage_P1": 1.0,
+          "gap": 0.0,
+          "engineered_anchors": 0,
+          "anchor_with_any_candidate_alias": 0
+        },
+        "SIGNED": {
+          "coverage_P0": 0.6666666666666666,
+          "coverage_P1": 0.9166666666666666,
+          "gap": 0.25,
+          "engineered_anchors": 0,
+          "anchor_with_any_candidate_alias": 4
+        },
+        "INTERVAL": {
+          "coverage_P0": 0.9166666666666667,
+          "coverage_P1": 0.9583333333333334,
+          "gap": 0.04166666666666663,
+          "engineered_anchors": 0,
+          "anchor_with_any_candidate_alias": 0
+        },
+        "K_DIRECTION": {
+          "coverage_P0": 0.8571428571428571,
+          "coverage_P1": 0.9285714285714286,
+          "gap": 0.07142857142857151,
+          "engineered_anchors": 0,
+          "anchor_with_any_candidate_alias": 2
+        }
+      },
+      "fraction_roots_strict_coverage_gain": 0.625
+    },
+    "TRAIN": {
+      "roots": 288,
+      "reference_views_including_both_factors": 2304,
+      "construction_attempt_max": 5,
+      "by_family": {
+        "BINDING": {
+          "coverage_P0": 0.6692708333333334,
+          "coverage_P1": 0.8612351190476191,
+          "gap": 0.1919642857142857,
+          "engineered_anchors": 16,
+          "anchor_with_any_candidate_alias": 35
+        },
+        "IMPACT": {
+          "coverage_P0": 0.7098214285714285,
+          "coverage_P1": 0.8720238095238094,
+          "gap": 0.16220238095238093,
+          "engineered_anchors": 16,
+          "anchor_with_any_candidate_alias": 28
+        },
+        "TIES": {
+          "coverage_P0": 0.8828125,
+          "coverage_P1": 0.9635416666666666,
+          "gap": 0.08072916666666663,
+          "engineered_anchors": 16,
+          "anchor_with_any_candidate_alias": 19
+        },
+        "SIGNED": {
+          "coverage_P0": 0.8248181216931217,
+          "coverage_P1": 0.9255952380952381,
+          "gap": 0.1007771164021164,
+          "engineered_anchors": 16,
+          "anchor_with_any_candidate_alias": 38
+        },
+        "INTERVAL": {
+          "coverage_P0": 0.733829365079365,
+          "coverage_P1": 0.8410714285714286,
+          "gap": 0.10724206349206356,
+          "engineered_anchors": 16,
+          "anchor_with_any_candidate_alias": 19
+        },
+        "K_DIRECTION": {
+          "coverage_P0": 0.7725694444444445,
+          "coverage_P1": 0.9184027777777778,
+          "gap": 0.14583333333333326,
+          "engineered_anchors": 16,
+          "anchor_with_any_candidate_alias": 21
+        }
+      },
+      "fraction_roots_strict_coverage_gain": 0.5729166666666666
+    },
+    "TEST_ID": {
+      "roots": 96,
+      "reference_views_including_both_factors": 768,
+      "construction_attempt_max": 0,
+      "by_family": {
+        "BINDING": {
+          "coverage_P0": 0.6506696428571429,
+          "coverage_P1": 0.8270089285714286,
+          "gap": 0.1763392857142857,
+          "engineered_anchors": 0,
+          "anchor_with_any_candidate_alias": 14
+        },
+        "IMPACT": {
+          "coverage_P0": 0.7857142857142857,
+          "coverage_P1": 0.9162946428571428,
+          "gap": 0.1305803571428571,
+          "engineered_anchors": 0,
+          "anchor_with_any_candidate_alias": 4
+        },
+        "TIES": {
+          "coverage_P0": 0.8359375,
+          "coverage_P1": 0.953125,
+          "gap": 0.1171875,
+          "engineered_anchors": 0,
+          "anchor_with_any_candidate_alias": 2
+        },
+        "SIGNED": {
+          "coverage_P0": 0.7517361111111112,
+          "coverage_P1": 0.8914930555555556,
+          "gap": 0.13975694444444442,
+          "engineered_anchors": 0,
+          "anchor_with_any_candidate_alias": 11
+        },
+        "INTERVAL": {
+          "coverage_P0": 0.7886904761904762,
+          "coverage_P1": 0.8943452380952381,
+          "gap": 0.10565476190476197,
+          "engineered_anchors": 0,
+          "anchor_with_any_candidate_alias": 2
+        },
+        "K_DIRECTION": {
+          "coverage_P0": 0.7410714285714286,
+          "coverage_P1": 0.9040178571428571,
+          "gap": 0.1629464285714285,
+          "engineered_anchors": 0,
+          "anchor_with_any_candidate_alias": 6
+        }
+      },
+      "fraction_roots_strict_coverage_gain": 0.6458333333333334
+    },
+    "TEST_COMPOSITION": {
+      "roots": 192,
+      "reference_views_including_both_factors": 1536,
+      "construction_attempt_max": 12,
+      "by_family": {
+        "BINDING": {
+          "coverage_P0": 0.7559523809523809,
+          "coverage_P1": 0.9047619047619048,
+          "gap": 0.14880952380952384,
+          "engineered_anchors": 0,
+          "anchor_with_any_candidate_alias": 0
+        },
+        "IMPACT": {
+          "coverage_P0": 0.87109375,
+          "coverage_P1": 0.9296875,
+          "gap": 0.05859375,
+          "engineered_anchors": 0,
+          "anchor_with_any_candidate_alias": 0
+        },
+        "TIES": {
+          "coverage_P0": 0.8203125,
+          "coverage_P1": 0.94140625,
+          "gap": 0.12109375,
+          "engineered_anchors": 0,
+          "anchor_with_any_candidate_alias": 0
+        },
+        "SIGNED": {
+          "coverage_P0": 0.859375,
+          "coverage_P1": 0.93359375,
+          "gap": 0.07421875,
+          "engineered_anchors": 0,
+          "anchor_with_any_candidate_alias": 0
+        },
+        "INTERVAL": {
+          "coverage_P0": 0.9046130952380953,
+          "coverage_P1": 0.9510416666666667,
+          "gap": 0.046428571428571375,
+          "engineered_anchors": 0,
+          "anchor_with_any_candidate_alias": 0
+        },
+        "K_DIRECTION": {
+          "coverage_P0": 0.8258928571428571,
+          "coverage_P1": 0.9508928571428571,
+          "gap": 0.125,
+          "engineered_anchors": 0,
+          "anchor_with_any_candidate_alias": 0
+        }
+      },
+      "fraction_roots_strict_coverage_gain": 0.5208333333333334
+    },
+    "TEST_MECHANISM": {
+      "roots": 48,
+      "reference_views_including_both_factors": 384,
+      "construction_attempt_max": 5,
+      "by_family": {
+        "BINDING": {
+          "coverage_P0": 0.6763392857142857,
+          "coverage_P1": 0.8303571428571428,
+          "gap": 0.1540178571428571,
+          "engineered_anchors": 3,
+          "anchor_with_any_candidate_alias": 6
+        },
+        "IMPACT": {
+          "coverage_P0": 0.7857142857142857,
+          "coverage_P1": 0.9196428571428571,
+          "gap": 0.1339285714285714,
+          "engineered_anchors": 3,
+          "anchor_with_any_candidate_alias": 4
+        },
+        "TIES": {
+          "coverage_P0": 0.953125,
+          "coverage_P1": 1.0,
+          "gap": 0.046875,
+          "engineered_anchors": 3,
+          "anchor_with_any_candidate_alias": 3
+        },
+        "SIGNED": {
+          "coverage_P0": 0.8732638888888888,
+          "coverage_P1": 0.9722222222222222,
+          "gap": 0.09895833333333337,
+          "engineered_anchors": 3,
+          "anchor_with_any_candidate_alias": 7
+        },
+        "INTERVAL": {
+          "coverage_P0": 0.7696428571428572,
+          "coverage_P1": 0.9035714285714286,
+          "gap": 0.1339285714285714,
+          "engineered_anchors": 3,
+          "anchor_with_any_candidate_alias": 3
+        },
+        "K_DIRECTION": {
+          "coverage_P0": 0.796875,
+          "coverage_P1": 0.9151785714285714,
+          "gap": 0.1183035714285714,
+          "engineered_anchors": 3,
+          "anchor_with_any_candidate_alias": 3
+        }
+      },
+      "fraction_roots_strict_coverage_gain": 0.5208333333333334
+    },
+    "TEST_CLASSOUT": {
+      "roots": 48,
+      "reference_views_including_both_factors": 192,
+      "construction_attempt_max": 0,
+      "coverage": "not optimized; held-out double edits"
+    }
+  },
+  "cross_split_duplicates": [],
+  "limitations": [
+    "Only CPU task/reference arithmetic and finite candidate coverage; no model-outcome effect or actual chart-processor readability tested.",
+    "Natural-interface, legacy and ChartQA panels require production manifests; all rendered inputs require real processor checks.",
+    "P1 coverage is relative to active candidates in the stated edit catalog, not all possible model failures."
+  ]
+}

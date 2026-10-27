@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "members": 45454,
+  "source_bytes": 5154950860,
+  "archive_bytes": 549096352,
+  "archive_sha256": "a56b889a1d62e07563067ee09663675322dd3b71b8922b4de61100a1bc8dc37b",
+  "gzip_crc_read_to_eof": true,
+  "all_member_sha256": true
+}

@@ -1,0 +1,18 @@
+{
+  "formal_paths": 54,
+  "core_paths": 36,
+  "control_paths": 18,
+  "answers_per_formal_path": 9216,
+  "eval_answers_per_checkpoint": 6010,
+  "counts": {
+    "parent_census_max": 9216,
+    "pilot_training": 13824,
+    "pilot_recovery_check": 1024,
+    "pilot_eval": 2304,
+    "formal_training": 497664,
+    "formal_dev_monitor": 5184,
+    "formal_eval": 342570
+  },
+  "max_generated_answers": 871786,
+  "note": "Census cache can reduce actual calls; recovery is validation, not an independent training replicate. Tokens/FLOPs/GPU hours are measured, never an outcome stopping rule."
+}

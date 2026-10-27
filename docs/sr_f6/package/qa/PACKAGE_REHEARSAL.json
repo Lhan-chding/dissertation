@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "scope": "Fresh ZIP extraction verified manifest, 67 CPU tests, and launch refusal. No production execution.",
+  "checks": [
+    {
+      "command": "python scripts/verify_manifest.py",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "log": "qa/fresh_unpack_check_0.log"
+    },
+    {
+      "command": "python -m unittest discover -s tests -v",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "log": "qa/fresh_unpack_check_1.log"
+    },
+    {
+      "command": "python scripts/launch_guard.py --receipts templates/gates --config configs/experiment.json",
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "passed": true,
+      "log": "qa/fresh_unpack_check_2.log"
+    }
+  ]
+}

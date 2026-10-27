@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-27",
+  "scope": "CPU_REFERENCE_ONLY",
+  "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "unit_tests": {
+    "count": 67,
+    "passed": 67,
+    "failed": 0,
+    "log": "qa/unit_tests.log"
+  },
+  "data_audit": {
+    "status": "PASS",
+    "roots": 792,
+    "reference_views_including_both_data_factors": 6144,
+    "cross_split_duplicates": 0,
+    "log": "qa/full_reference_data_audit.json"
+  },
+  "dev_images": {
+    "count": 12,
+    "rendered": "YES",
+    "visual_review": "MODEL_VISUAL: 1 full-size anchor plus all 12 contact-sheet inspected; not human or processor validation",
+    "real_processor_review": "NOT_RUN"
+  },
+  "launch_guard": {
+    "template_launch": "BLOCKED_AS_EXPECTED",
+    "exit_code": 2,
+    "log": "qa/launch_guard_blocked.log"
+  },
+  "f14_recheck": {
+    "executed": true,
+    "log": "qa/claude_f14_actual_run.log",
+    "arithmetic_correction": "qa/math_checks.json"
+  },
+  "server_source_binding": "NOT_RUN",
+  "production_native_J_parity": "NOT_RUN",
+  "real_model_census": "NOT_RUN",
+  "gpu_pilot": "NOT_RUN",
+  "gpu_training": "NOT_RUN",
+  "model_endpoint_effects": "NOT_RUN",
+  "no_font_binaries_distributed": true
+}

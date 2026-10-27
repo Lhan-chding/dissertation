@@ -1,0 +1,58 @@
+{
+  "kind": "UNUSED_P1_TEST_ACCEPTANCE_REMOVED",
+  "changed_roots": [
+    {
+      "root_id": "TEST_COMPOSITION_BINDING_0007",
+      "original_attempt": 1,
+      "corrected_attempt": 0,
+      "original_tasks_sha256": "75dc0c34e49947d7ab444386d6605662919a0b455a0c7cad984a5f93657266d1",
+      "corrected_tasks_sha256": "f49e32b5d7931e069da6423eeba66567221d312dc72ea08fd7b0905675f4d7c4"
+    },
+    {
+      "root_id": "TEST_COMPOSITION_TIES_0000",
+      "original_attempt": 3,
+      "corrected_attempt": 1,
+      "original_tasks_sha256": "16bce008da9be34ffdd71789bf5bc3aac58a2531d625a38549a5117de8b5b410",
+      "corrected_tasks_sha256": "abdb7c711ca467613fc702ebb8608aa4497f175b13c1b9b9a00280eba820c1fe"
+    },
+    {
+      "root_id": "TEST_COMPOSITION_INTERVAL_0013",
+      "original_attempt": 1,
+      "corrected_attempt": 0,
+      "original_tasks_sha256": "7bc43129c452abb03196061bfc7dcef70f9ee5d8700271b8727c2f3c6d920161",
+      "corrected_tasks_sha256": "61f09aed49ec03c78c618b347649f668d4fe0d138e997268a19314066b9311f3"
+    },
+    {
+      "root_id": "TEST_COMPOSITION_INTERVAL_0020",
+      "original_attempt": 2,
+      "corrected_attempt": 0,
+      "original_tasks_sha256": "31151aea2f69464e27c86138101365181e7eb4f3964fd478aca5813c7828883d",
+      "corrected_tasks_sha256": "6b52a5272f707d904fc2ac396c08585ca0dc144d98e2c74143ba8fabe3a47337"
+    },
+    {
+      "root_id": "TEST_COMPOSITION_K_DIRECTION_0016",
+      "original_attempt": 4,
+      "corrected_attempt": 2,
+      "original_tasks_sha256": "98d7df88f7c1c9093d774fceb4026b617dde4159e3d7bef316f3ccd5e8c3133e",
+      "corrected_tasks_sha256": "39d917de4021faa289f9092db0d37eb6180b2c0589379f2034dc9977df2be4de"
+    },
+    {
+      "root_id": "TEST_COMPOSITION_K_DIRECTION_0018",
+      "original_attempt": 11,
+      "corrected_attempt": 7,
+      "original_tasks_sha256": "d6d09ecb15ce0469913d67f3439ec7f04003df81714df348181655912869e76f",
+      "corrected_tasks_sha256": "fba33591f597b75bf23507059952ad86f2d30ff9a8fa257842b6692f0a8d06c1"
+    },
+    {
+      "root_id": "TEST_COMPOSITION_K_DIRECTION_0027",
+      "original_attempt": 5,
+      "corrected_attempt": 1,
+      "original_tasks_sha256": "6f051bf5f7cf51252b30d5e143da41c603602c6f1e19b68c0d352e41bc205d26",
+      "corrected_tasks_sha256": "37c371547c3d7cc12da421b49567ad4e41c13f6558adbeec2de9b51633f74607"
+    }
+  ],
+  "changed_root_count": 7,
+  "roots_compared": 192,
+  "seed_changed": false,
+  "model_outputs_used": false
+}

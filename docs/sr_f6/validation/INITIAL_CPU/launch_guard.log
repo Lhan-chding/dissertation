@@ -1,0 +1,21 @@
+{
+  "allowed": false,
+  "errors": [
+    "SOURCE_BINDING: not PASS",
+    "SOURCE_BINDING: not actual server evidence",
+    "SOURCE_BINDING: no evidence",
+    "DATA_AND_MEASUREMENT: not PASS",
+    "DATA_AND_MEASUREMENT: not actual server evidence",
+    "DATA_AND_MEASUREMENT: no evidence",
+    "PARENT_CENSUS: not PASS",
+    "PARENT_CENSUS: not actual server evidence",
+    "PARENT_CENSUS: no evidence",
+    "RUNTIME_PILOT: not PASS",
+    "RUNTIME_PILOT: not actual server evidence",
+    "RUNTIME_PILOT: no evidence",
+    "FORMAL_FREEZE: not PASS",
+    "FORMAL_FREEZE: not actual server evidence",
+    "FORMAL_FREEZE: no evidence"
+  ],
+  "purpose": "local consistency guard, not a cryptographic proof of experiment truth"
+}

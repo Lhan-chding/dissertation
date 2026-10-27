@@ -1,0 +1,60 @@
+{
+  "scope": "source copies included; this list records bytes, not endorsement",
+  "files": [
+    {
+      "path": "CLAUDE_ON_GPT_ROUND2_zh.md",
+      "bytes": 19676,
+      "sha256": "2e69ec5286a0248fc591e633a3d08814fafca92a899c68eccdb708234deb765c"
+    },
+    {
+      "path": "F5_CONFIG.json",
+      "bytes": 5197,
+      "sha256": "9491233151d4905e0706f43c442c2b6164b6dd0ab7decae8278ec8c95b78173a"
+    },
+    {
+      "path": "F5_G3_FINAL_DIAGNOSTIC_COUNTS.json",
+      "bytes": 80284,
+      "sha256": "edcfb10a62a137d77ce52ddd0bf58a52ca5b3b2ecb37ac3ef4fbc4d16d7d2723"
+    },
+    {
+      "path": "F5_METRICS.json",
+      "bytes": 7021,
+      "sha256": "d43bfe078f12fdb4363629ec9bc7cbbc8d8cabea926966fbfb5b921b3d44c714"
+    },
+    {
+      "path": "F5_oracle.py",
+      "bytes": 7625,
+      "sha256": "16ee245806248092d8970ac84e3f75c3f3fc2fe8495c06257d150fa6a17daa36"
+    },
+    {
+      "path": "F5_original_sr_f12_training.py",
+      "bytes": 21988,
+      "sha256": "eb0b72cd0ca31d64c2f59c5f58cf244d16f6613cfcded725d4855e71c946fbb4"
+    },
+    {
+      "path": "F5_original_sr_f4_task_contract.py",
+      "bytes": 7893,
+      "sha256": "a98e73540165cc7c0daeb0f96375341184fd345d0010a052213dec17bbf1be72"
+    },
+    {
+      "path": "RELATED_WORK_READING.json",
+      "bytes": 1574,
+      "sha256": "662599cd515b846d44dde197fa90aed60dae0d97e0aa965f40bbf900d8b6a083"
+    },
+    {
+      "path": "SR_F5_最新结果_独立详细分析_20261027_zh.md",
+      "bytes": 28663,
+      "sha256": "a5f165fa60073a5dd0937f0509d9a6d7a9d61375e426d80e7dcc02912f41a94a"
+    },
+    {
+      "path": "f14_checks.out",
+      "bytes": 1230,
+      "sha256": "b018c0bf58ec2cc487e129f7131d4b1849dc13b24a972fae1def6ea4eeb01a21"
+    },
+    {
+      "path": "f14_checks.py",
+      "bytes": 2527,
+      "sha256": "1b24e1c7a1863064333d78313fc7b926a915062d1282cbaab8513f21efa39dbd"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-27T11:39:57.876265+00:00",
+  "command": [
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python",
+    "-m",
+    "pytest",
+    "--import-mode=importlib",
+    "-q",
+    "-rs",
+    "tests/sr_f6",
+    "tests/sr_f5/test_measurement.py",
+    "tests/sr_f4/test_data.py",
+    "tests/sr_f3_ce/test_contract.py",
+    "tests/sr_f3_ce/test_protocol_revision.py"
+  ],
+  "exit_code": 0,
+  "scope": "local CPU only; not a model or server gate",
+  "earlier_collection_incident": "Default pytest import mode collided on repeated test_measurement/test_data basenames; required importlib mode fixes collection; no scientific outputs or tests removed."
+}

@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "hostname": "login-1.cluster02.eee.ntu.edu.sg",
+  "source_files": 45454,
+  "source_bytes": 5154950860,
+  "archive": {
+    "status": "PASS",
+    "members": 45454,
+    "source_bytes": 5154950860,
+    "archive_bytes": 549096352,
+    "archive_sha256": "a56b889a1d62e07563067ee09663675322dd3b71b8922b4de61100a1bc8dc37b",
+    "gzip_crc_read_to_eof": true,
+    "all_member_sha256": true
+  },
+  "stop_status": "STOPPED_PROTOCOL_FAILURE",
+  "current_preflight_status": "PASS",
+  "conflicting_jobs": [],
+  "open_handles": [],
+  "inaccessible_owned_processes": [],
+  "source_inventory_unchanged": true,
+  "source_code_sha256": "0a598f98e62ad476ff05af4f95a92cfb38dcf3b3791b7a6f44a4b46bd8664006",
+  "action_authorized": "delete only the exact unchanged archived members under sr_f3_ce_20261016/prior/raw; keep archive and directories; no other path"
+}
