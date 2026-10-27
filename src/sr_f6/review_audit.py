@@ -1,7 +1,8 @@
 """Aggregate independently submitted reviews, never manufacture their judgments.
 
-All inputs are explicit path/SHA256 references under the run root. The package
-manifest binds context to the frozen CENSUS_REVIEW_V1 producer, ledger, blind,
+All inputs are explicit path/SHA256 references under the run root. A legacy v1
+package binds the frozen CENSUS_REVIEW_V1 producer. A v2 package binds its actual
+PILOT_V1 producer and the separate frozen 86a760b sampler recipe. Both bind ledger, blind,
 task_source, judgment_tasks and ledger_source_identity. judgment_tasks contains
 only anonymous_id/world/query, checked against frozen DEV_CAL TASKS_PRIVATE.
 
@@ -38,6 +39,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import re
 from collections import Counter
 from datetime import datetime, timezone
@@ -87,7 +89,15 @@ def _json(raw):
     def nonfinite(_):
         raise ValueError("Nonfinite JSON")
 
-    return json.loads(raw, object_pairs_hook=_unique, parse_constant=nonfinite)
+    def finite_number(token):
+        value = float(token)
+        if not math.isfinite(value):
+            nonfinite(token)
+        return value
+
+    return json.loads(
+        raw, object_pairs_hook=_unique, parse_constant=nonfinite, parse_float=finite_number
+    )
 
 
 class _ArtifactReader:
@@ -584,30 +594,62 @@ def aggregate_review(
 ):
     """Verify frozen inputs and aggregate submitted independent work, read-only.
 
-    verify_phase authenticates the INPUT PRODUCER only. This new validator is
-    not part of that frozen deployment and never adopts its output context.
+    Legacy v1 verifies its old input producer only and retains the unreplayed
+    selection limitation. v2 calls verify_package once at final delivery: its
+    full 9216-row replay and returned artifacts are reused within this aggregate.
+    Do not run this final-delivery API after every individual review shard.
     Signatures/identity authenticity and the truth of independence attestations
     require external review; file hashes alone cannot establish either.
     """
     from .phases import verify_phase
 
     _sha(phase_identity_sha256)
-    producer = verify_phase(
-        root, PHASE, deployment=phase_deployment, expected_identity_sha256=phase_identity_sha256
-    )
-    _require(
-        producer.get("phase") == PHASE
-        and producer.get("identity_sha256") == phase_identity_sha256
-        and producer.get("training_allowed") is False
-        and producer.get("status") == "BOUND_NOT_AUTHORIZED",
-        "Input producer binding is not its registered review phase",
-    )
     reader = _ArtifactReader(root)
-    phase_identity = _artifact(
-        reader, {"path": f"PHASES/{PHASE}/IDENTITY.json", "sha256": phase_identity_sha256}
-    )
-    _require(phase_identity == producer["identity"], "Input producer identity bytes differ")
-    package, ledger, public, selected, tasks = _package(reader, producer, package_ref)
+    header = _artifact(reader, package_ref)
+    verification = None
+    if header.get("schema") == "srf6-review-package-binding-v2":
+        from .review_package import verify_package
+
+        verification = verify_package(
+            root,
+            package_ref,
+            phase_identity_sha256=phase_identity_sha256,
+            sampler_phase_identity_sha256=header["sampler_recipe"]["identity_sha256"],
+            review_spec_sha256=header["sampler_recipe"]["spec"]["sha256"],
+        )
+        producer = verification["producer"]
+        _require(
+            str(phase_deployment) == producer["deployment"],
+            "Actual PILOT producer deployment differs",
+        )
+        for reference in verification["inputs"]:
+            _require(
+                reader.references.setdefault(reference["path"], reference) == reference,
+                "Verified package input changed",
+            )
+        artifacts = verification["artifacts"]
+        package, ledger, tasks = artifacts["package"], artifacts["ledger"], artifacts["tasks"]
+        public, selected = _index(artifacts["blind"]), _index(ledger["selected"])
+    else:
+        _require(
+            header.get("schema") == "srf6-review-package-binding-v1",
+            "Unknown review package producer/schema",
+        )
+        producer = verify_phase(
+            root, PHASE, deployment=phase_deployment, expected_identity_sha256=phase_identity_sha256
+        )
+        _require(
+            producer.get("phase") == PHASE
+            and producer.get("identity_sha256") == phase_identity_sha256
+            and producer.get("training_allowed") is False
+            and producer.get("status") == "BOUND_NOT_AUTHORIZED",
+            "Input producer binding is not its registered review phase",
+        )
+        phase_identity = _artifact(
+            reader, {"path": f"PHASES/{PHASE}/IDENTITY.json", "sha256": phase_identity_sha256}
+        )
+        _require(phase_identity == producer["identity"], "Input producer identity bytes differ")
+        package, ledger, public, selected, tasks = _package(reader, producer, package_ref)
     _require(
         isinstance(review_refs, (list, tuple)) and isinstance(adjudication_refs, (list, tuple)),
         "Review/adjudication references must be explicit lists",
@@ -726,7 +768,7 @@ def aggregate_review(
     synthetic = package["execution_origin"] == "SYNTHETIC_TEST" or any(
         r["execution_origin"] == "SYNTHETIC_TEST" for r in (*submissions, *adjudicators)
     )
-    return dict(
+    report = dict(
         schema=VERSION,
         status="SYNTHETIC_ONLY" if synthetic else workflow,
         workflow_state=workflow,
@@ -790,3 +832,17 @@ def aggregate_review(
             "Coverage review only; no population error-rate claim or scientific authorization"
         ),
     )
+    if verification is not None:
+        report.update(
+            context=producer["identity"],
+            sampler_recipe=verification["sampler_recipe"],
+            census_input_producer=verification["input_producer"],
+            selection_provenance=verification["selection_provenance"],
+            selection_verification_required_before_admission=[],
+        )
+        report["validator"].update(
+            phase="PILOT_V1",
+            phase_identity_sha256=producer["identity_sha256"],
+            identity_scope="ACTUAL_PINNED_PILOT_EXECUTION_SEPARATE_FROM_SAMPLER_RECIPE",
+        )
+    return report

@@ -37,7 +37,7 @@ from sr_f12.runtime import _repeat_prompt
 from srf6_ref.core import seed_for
 
 PROTOCOL_VERSION = "structured_v4-srf6-1.0"
-EXECUTION_MODES = frozenset({"CENSUS", "TRAINING", "EVALUATION"})
+EXECUTION_MODES = frozenset({"CENSUS", "TRAINING", "EVALUATION", "REPLAY"})
 MODEL_PHASES = frozenset({"PILOT_V1", "FORMAL_V1"})
 EXECUTION_IDENTITY_FIELDS = (
     "run_root",
@@ -271,6 +271,28 @@ def _generation_authorized(runtime):
 
 
 class Runtime(FP32Runtime):
+    def _replay_session(self):
+        if self.execution_mode() == "REPLAY":
+            from .replay import active_session
+
+            return active_session(self)
+        source = getattr(self, "_srf6_source_context", None)
+        if source is not None:
+            if _check_loaded_source_identity(self) != "CENSUS_S0":
+                raise PermissionError(
+                    "NOT_AUTHORIZED: new-phase input/forward access requires scientific admission"
+                )
+        elif hasattr(self, "_srf6_execution_identity"):
+            raise PermissionError("Actual loaded source is missing; cannot downgrade to S0")
+        return None
+
+    def reserve(self, kind, count, **metadata):
+        # The unchanged native sampler calls this before any model.generate.
+        # This also closes direct calls to its private sampling entrypoint.
+        if self.execution_mode() == "REPLAY" and kind != "extra_forward_sequences":
+            raise PermissionError("REPLAY forbids generation and completion accounting")
+        return super().reserve(kind, count, **metadata)
+
     def _set_recipe(self):
         super()._set_recipe()
         for key, value in generation_recipe().items():
@@ -282,9 +304,55 @@ class Runtime(FP32Runtime):
         )
 
     def prepare_input(self, model_input, run_root, *, protocol="structured_v4"):
+        session = self._replay_session()
+        if session is not None:
+            session.check_input(model_input, run_root, protocol)
         prepared = super().prepare_input(model_input, run_root, protocol=backend_protocol(protocol))
         prepared["routing"]["sr_f6_protocol_version"] = PROTOCOL_VERSION
+        if session is not None:
+            from .replay import _RUNTIME_ACCESS
+
+            session.bind_prepared(prepared, access=_RUNTIME_ACCESS)
         return prepared
+
+    def _prepared_records(self, records):
+        session = self._replay_session()
+        if session is not None:
+            session.check_records(records)
+        prepared = super()._prepared_records(records)
+        if session is not None:
+            session.check_prepared(prepared)
+        return prepared
+
+    def batch_reference_forward(self, records, reference):
+        session = self._replay_session()
+        if session is None:
+            return super().batch_reference_forward(records, reference)
+        # At T03 step0 current and reference are the same verified parent.
+        # Avoid copying identical parameters and changing tensor version counters.
+        session.check_reference(reference)
+        return self.batch_sequence_forward(records, purpose="t03_reference", grad=False)
+
+    def reference_forward(self, prepared, tokens, reference):
+        session = self._replay_session()
+        if session is None:
+            return super().reference_forward(prepared, tokens, reference)
+        session.check_reference(reference)
+        return self.sequence_forward(prepared, tokens, purpose="t03_reference", grad=False)
+
+    def _native_forward(self, inputs, *, completion_start, lengths, purpose, grad):
+        session = self._replay_session()
+        if session is not None:
+            session.check_native(
+                inputs,
+                completion_start=completion_start,
+                lengths=lengths,
+                purpose=purpose,
+                grad=grad,
+            )
+        return super()._native_forward(
+            inputs, completion_start=completion_start, lengths=lengths, purpose=purpose, grad=grad
+        )
 
     def _validate_record_revision(self, record):
         if record.get("sr_f6_protocol_version") != PROTOCOL_VERSION:
@@ -306,6 +374,11 @@ class Runtime(FP32Runtime):
         if type(step) is not int or step < 0:
             raise PermissionError("A committed nonnegative policy step is required")
         mode = self.execution_mode()
+        if mode == "REPLAY":
+            if step != 0:
+                raise PermissionError("REPLAY requires the frozen step0 parent")
+            self._replay_session()
+            return self._srf6_policy_identity[1]
         if mode == "EVALUATION":
             expected = getattr(self, "_srf6_readonly_policy", None)
             parameters = dict(self.model.named_parameters())
@@ -413,6 +486,9 @@ class Runtime(FP32Runtime):
             )
 
     def _batch_forward(self, prepared, token_rows, *, purpose, grad):
+        session = self._replay_session()
+        if session is not None:
+            session.check_batch(prepared, token_rows)
         if self.execution_mode() == "EVALUATION":
             if grad:
                 raise PermissionError("Evaluation runtime cannot request gradient forwards")
@@ -438,6 +514,17 @@ class Runtime(FP32Runtime):
         inputs["mm_token_type_ids"] = torch.cat(
             [inputs["mm_token_type_ids"], torch.zeros_like(completion)], -1
         )
+        forward = dict(
+            completion_start=prompt_len,
+            lengths=list(map(len, token_rows)),
+            purpose=purpose,
+            grad=grad,
+        )
+        if session is not None:
+            from .replay import _RUNTIME_ACCESS
+
+            with session.native_call(inputs, **forward, access=_RUNTIME_ACCESS):
+                return self._native_forward(inputs, **forward)
         return self._native_forward(
             inputs,
             completion_start=prompt_len,
@@ -653,6 +740,8 @@ def load(
     They remain NOT_AUTHORIZED: phase scientific gates, evaluation-panel access
     locks, and orchestration are not implemented here, so generation is blocked.
     EVALUATION creates no optimizer and cannot perform gradient forwards.
+    PILOT REPLAY keeps adapter gradients, creates no optimizer, and requires an
+    active original-token session for every forward. It cannot sample/update.
     """
     import torch
 
@@ -662,6 +751,8 @@ def load(
     from .common import write_once
 
     selected_mode = _execution_mode(mode, training)
+    if selected_mode == "REPLAY" and phase != "PILOT_V1":
+        raise PermissionError("REPLAY is restricted to the registered PILOT_V1 phase")
     if not isinstance(task_id, str) or not re.fullmatch(
         r"[A-Za-z0-9][A-Za-z0-9_.-]{0,159}", task_id
     ):
@@ -822,7 +913,7 @@ def load(
 
     # Configure the audited backend above before touching CUDA RNG state.
     # Evaluation loading preserves its caller even when construction fails.
-    if selected_mode == "EVALUATION":
+    if selected_mode in {"EVALUATION", "REPLAY"}:
         rng = capture_rng()
         try:
             return construct()

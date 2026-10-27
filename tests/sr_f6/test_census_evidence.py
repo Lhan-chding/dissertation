@@ -172,6 +172,45 @@ def test_reader_rejects_symlinks_and_detects_midread_mutation(tmp_path, monkeypa
         reader.read("original.json")
 
 
+@pytest.mark.parametrize("lines", [False, True])
+@pytest.mark.parametrize(
+    "payload,message",
+    [
+        ('{"full_text":"FORGED_DUPLICATE_VALUE","full_text":"original"}', "Duplicate JSON"),
+        ('{"nested":{"seed":1,"seed":2}}', "Duplicate JSON"),
+        ('{"seed":1,"s\\u0065ed":2}', "Duplicate JSON"),
+        ('{"value":NaN}', "Nonfinite JSON"),
+        ('{"value":Infinity}', "Nonfinite JSON"),
+        ('{"value":-Infinity}', "Nonfinite JSON"),
+        ('{"value":1e9999}', "Nonfinite JSON"),
+        ('{"nested":[-1e9999]}', "Nonfinite JSON"),
+    ],
+)
+def test_reader_rejects_duplicate_and_nonfinite_evidence_containers(
+    tmp_path, lines, payload, message
+):
+    path = tmp_path / ("raw.jsonl" if lines else "raw.json")
+    path.write_text(payload + "\n")
+    with pytest.raises(PermissionError, match=message):
+        evidence._Reader(tmp_path).read(path.name, lines=lines)
+
+
+@pytest.mark.parametrize("lines", [False, True])
+def test_strict_container_read_preserves_invalid_model_response_text_verbatim(tmp_path, lines):
+    # The outer evidence is unambiguous; malformed generated JSON is valid evidence.
+    item = dict(
+        full_text='{"answer":NaN,"answer":0}',
+        tokens=[1, 2],
+        sampler_logprobs=[-0.25, 0.0],
+        native={"nested": [{"value": 1}, {"value": 2}]},
+    )
+    path = save(
+        tmp_path, "raw.jsonl" if lines else "raw.json", [item] if lines else item, lines=lines
+    )
+    result = evidence._Reader(tmp_path).read(path.name, lines=lines)
+    assert result == ([item] if lines else item)
+
+
 def build_complete_fixture(root):
     config = json.loads((Path(__file__).parents[2] / "configs/sr_f6.json").read_text())
     save(root, "CONFIG.json", config)

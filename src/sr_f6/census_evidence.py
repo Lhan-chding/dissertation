@@ -27,6 +27,32 @@ def _require(condition, message):
         raise PermissionError(message)
 
 
+def _strict_json(payload):
+    """Reject ambiguous containers; the model's full_text string stays untouched."""
+
+    def unique(pairs):
+        value = {}
+        for key, item in pairs:
+            _require(key not in value, "Duplicate JSON key in census evidence")
+            value[key] = item
+        return value
+
+    def finite_number(token):
+        value = float(token)
+        _require(math.isfinite(value), "Nonfinite JSON number in census evidence")
+        return value
+
+    def reject_constant(_):
+        raise PermissionError("Nonfinite JSON number in census evidence")
+
+    return json.loads(
+        payload,
+        object_pairs_hook=unique,
+        parse_float=finite_number,
+        parse_constant=reject_constant,
+    )
+
+
 class _Reader:
     """Read each evidence payload once at the final census binding boundary."""
 
@@ -50,8 +76,8 @@ class _Reader:
             "Census evidence changed between reads",
         )
         if lines:
-            return [json.loads(line) for line in payload.splitlines() if line.strip()]
-        return json.loads(payload)
+            return [_strict_json(line) for line in payload.splitlines() if line.strip()]
+        return _strict_json(payload)
 
 
 def _inventory(root, relative, pattern):

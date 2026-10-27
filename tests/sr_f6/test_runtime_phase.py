@@ -220,7 +220,7 @@ def test_evaluation_parent_is_read_only_and_does_not_create_optimizer(
     row = {}
     r._annotate_runtime_row(row, "structured", r.policy_tensor_identity())
     assert row["step"] == 0 and row["execution_mode"] == "EVALUATION"
-    with pytest.raises(PermissionError, match="gradient"):
+    with pytest.raises(PermissionError, match="NOT_AUTHORIZED"):
         r._batch_forward({}, [[1]], purpose="training_policy", grad=True)
     r.identity["step"] = 12
     with pytest.raises(PermissionError, match="bound content"):
@@ -228,8 +228,9 @@ def test_evaluation_parent_is_read_only_and_does_not_create_optimizer(
 
 
 @pytest.mark.parametrize("construction_fails", [False, True])
+@pytest.mark.parametrize("mode", ["EVALUATION", "REPLAY"])
 def test_evaluation_parent_load_preserves_rng_on_success_and_error(
-    mocked_model_load, monkeypatch, construction_fails
+    mocked_model_load, monkeypatch, construction_fails, mode
 ):
     import mm_dev.runtime as native
 
@@ -254,7 +255,7 @@ def test_evaluation_parent_load_preserves_rng_on_success_and_error(
         monkeypatch.setattr(runtime, "Runtime", FailingConstruction)
     before = state_hash(capture_rng())
     args = dict(
-        mode="EVALUATION",
+        mode=mode,
         phase="PILOT_V1",
         phase_identity_sha256="d" * 64,
         audit_root=f.audit,
@@ -265,6 +266,72 @@ def test_evaluation_parent_load_preserves_rng_on_success_and_error(
     else:
         runtime.load(f.root, "b0", "eval-rng", **args)
     assert state_hash(capture_rng()) == before
+
+
+def test_replay_load_keeps_gradients_but_requires_live_original_token_session(
+    mocked_model_load, monkeypatch
+):
+    import sr_f3_ce.training as native
+
+    monkeypatch.setattr(native, "fresh_optimizer", lambda *a: pytest.fail("REPLAY created Adam"))
+    f = mocked_model_load
+    r, optimizer, scheduler = runtime.load(
+        f.root,
+        "b0",
+        "replay-load",
+        mode="REPLAY",
+        phase="PILOT_V1",
+        phase_identity_sha256="d" * 64,
+        audit_root=f.audit,
+    )
+    assert optimizer is scheduler is None
+    assert all(p.requires_grad for p in r.model.parameters())
+    with pytest.raises(PermissionError, match="open_replay"):
+        r.prepare_input({}, f.root)
+    with pytest.raises(PermissionError, match="open_replay"):
+        r._native_forward({}, completion_start=1, lengths=[1], purpose="t03_native", grad=True)
+    with pytest.raises(PermissionError, match="NOT_AUTHORIZED"):
+        r.generate_group({}, f.root, [1] * 8)
+    with pytest.raises(PermissionError, match="forbids generation"):
+        r.reserve("completion_attempts", 8)
+    with pytest.raises(PermissionError, match=r"Evaluation|EVALUATION"):
+        runtime.load_committed_endpoint(r, None, expected_commit_sha256="a" * 64)
+    r.identity["execution_mode"] = "TRAINING"
+    with pytest.raises(PermissionError, match="mode"):
+        r.prepare_input({}, f.root)
+
+
+@pytest.mark.parametrize("phase", [None, "FORMAL_V1"])
+def test_replay_rejects_non_pilot_phase_before_loading(mocked_model_load, phase):
+    with pytest.raises(PermissionError, match="restricted"):
+        runtime.load(mocked_model_load.root, "b0", "x", mode="REPLAY", phase=phase)
+
+
+@pytest.mark.parametrize("mode", ["TRAINING", "EVALUATION"])
+def test_bound_new_phase_cannot_forward_unregistered_panels(mocked_model_load, mode):
+    f = mocked_model_load
+    r, _, _ = runtime.load(
+        f.root,
+        "b0",
+        "closed-panels",
+        mode=mode,
+        phase="PILOT_V1",
+        phase_identity_sha256="d" * 64,
+        audit_root=f.audit,
+        run_id="closed-panel-test",
+    )
+    operations = [
+        lambda: r.prepare_input({}, f.root),
+        lambda: r._prepared_records([{}]),
+        lambda: r._batch_forward({}, [[1]], purpose="test", grad=False),
+        lambda: r._native_forward({}, completion_start=1, lengths=[1], purpose="test", grad=False),
+    ]
+    for operation in operations:
+        with pytest.raises(PermissionError, match="NOT_AUTHORIZED"):
+            operation()
+    del r._srf6_source_context
+    with pytest.raises(PermissionError, match="cannot downgrade"):
+        r.prepare_input({}, f.root)
 
 
 def test_audit_paths_cannot_follow_symlinks_or_other_phase(tmp_path):

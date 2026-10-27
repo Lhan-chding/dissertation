@@ -23,6 +23,26 @@ LABELS = dict(A=1, J=1, V=1, finish=1, S=1, B=1)
 ORACLE = dict(answer="1", selected=["X"], bindings={"X": "1"})
 
 
+@pytest.mark.parametrize("lines", [False, True])
+@pytest.mark.parametrize("number", ["1e999", "-1e999"])
+def test_audit_reader_rejects_exponent_overflow(tmp_path, lines, number):
+    path = tmp_path / ("input.jsonl" if lines else "input.json")
+    path.write_text('{"value":' + number + "}\n")
+    ref = dict(path=path.name, sha256=file_hash(path))
+    with pytest.raises(ValueError, match="Nonfinite JSON"):
+        review_audit._artifact(review_audit._ArtifactReader(tmp_path), ref, lines=lines)
+
+
+@pytest.mark.parametrize("lines", [False, True])
+def test_audit_reader_preserves_finite_numbers_and_full_text_strings(tmp_path, lines):
+    item = dict(large=1e308, negative=-1e308, full_text='{"answer":1e999,"answer":-1e999}')
+    path = tmp_path / ("input.jsonl" if lines else "input.json")
+    path.write_text(json.dumps(item) + "\n")
+    ref = dict(path=path.name, sha256=file_hash(path))
+    result = review_audit._artifact(review_audit._ArtifactReader(tmp_path), ref, lines=lines)
+    assert result == ([item] if lines else item)
+
+
 class Fixture:
     def __init__(self, root):
         self.root = root
@@ -300,6 +320,87 @@ def test_complete_synthetic_review_never_signs_gate_or_adopts_input_producer_con
     assert result["selection_provenance"] == "NOT_RECOMPUTED_FROM_FULL_CENSUS"
     assert isinstance(result["inputs"], list)
     assert result["named_inputs"]["package"] == fx.package_ref
+
+
+def test_v2_final_delivery_reuses_one_full_package_verification_across_shards(fx, monkeypatch):
+    """Routing fixture only; real package replay is tested in test_review_package."""
+    from sr_f6 import review_package
+
+    producer = copy.deepcopy(fx.producer)
+    producer["phase"] = producer["identity"]["phase"] = "PILOT_V1"
+    producer["deployment"] = str(review_package._deployment())
+    sampler = dict(
+        identity_sha256="c" * 64, spec={"path": review_package.SPEC_PATH, "sha256": "e" * 64}
+    )
+    fx.package.update(
+        schema=review_package.SCHEMA, context=producer["identity"], sampler_recipe=sampler
+    )
+    fx.package_ref = fx.write("package/BINDING.json", fx.package)
+    calls = []
+
+    def verified(root, package_ref, **kwargs):
+        calls.append((root, package_ref, kwargs))
+        return dict(
+            producer=producer,
+            sampler_recipe=sampler,
+            input_producer={"phase": "CENSUS_S0", "identity_sha256": "f" * 64},
+            inputs=[
+                fx.package_ref,
+                fx.package["ledger"],
+                fx.package["blind"],
+                fx.package["task_source"],
+            ],
+            selection_provenance="RECOMPUTED_FROM_VERIFIED_FULL_CENSUS",
+            artifacts=dict(
+                package=fx.package,
+                ledger=fx.ledger,
+                blind=fx.blind,
+                tasks={
+                    t["qid"]: t
+                    for t in [
+                        json.loads(line)
+                        for line in (fx.root / fx.package["task_source"]["path"])
+                        .read_text()
+                        .splitlines()
+                    ]
+                },
+            ),
+        )
+
+    monkeypatch.setattr(review_package, "verify_package", verified)
+    refs = [
+        fx.submission(batch="first", ids=[item["anonymous_id"] for item in fx.blind[:180]]),
+        fx.submission(batch="second", ids=[item["anonymous_id"] for item in fx.blind[180:]]),
+    ]
+    result = review_audit.aggregate_review(
+        fx.root,
+        phase_deployment=producer["deployment"],
+        phase_identity_sha256=fx.pin,
+        package_ref=fx.package_ref,
+        review_refs=refs,
+    )
+    assert len(calls) == 1
+    assert calls[0][2] == dict(
+        phase_identity_sha256=fx.pin,
+        sampler_phase_identity_sha256="c" * 64,
+        review_spec_sha256="e" * 64,
+    )
+    assert result["status"] == "SYNTHETIC_ONLY"
+    assert result["independently_reviewed_original_answers"] == 360
+    assert result["validator"]["phase"] == result["context"]["phase"] == "PILOT_V1"
+    assert result["sampler_recipe"] == sampler
+    assert result["census_input_producer"]["phase"] == "CENSUS_S0"
+    assert result["selection_provenance"] == "RECOMPUTED_FROM_VERIFIED_FULL_CENSUS"
+    assert result["selection_verification_required_before_admission"] == []
+    assert result["gate_status"] == "NOT_SIGNED" and result["training_allowed"] is False
+    assert fx.package["task_source"] in result["inputs"]
+
+
+def test_unknown_package_schema_cannot_claim_an_arbitrary_producer(fx):
+    fx.package["schema"] = "arbitrary-producer"
+    fx.package_ref = fx.write("package/BINDING.json", fx.package)
+    with pytest.raises(ValueError, match="Unknown review package producer"):
+        fx.aggregate([])
 
 
 def test_multiple_reviewers_and_same_reviewer_disjoint_shards_cover_360(fx):
