@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import copy
 import math
+import re
+import sys
 import time
 from pathlib import Path
 
@@ -35,6 +37,17 @@ from sr_f12.runtime import _repeat_prompt
 from srf6_ref.core import seed_for
 
 PROTOCOL_VERSION = "structured_v4-srf6-1.0"
+EXECUTION_MODES = frozenset({"CENSUS", "TRAINING", "EVALUATION"})
+MODEL_PHASES = frozenset({"PILOT_V1", "FORMAL_V1"})
+EXECUTION_IDENTITY_FIELDS = (
+    "run_root",
+    "audit_root",
+    "task_id",
+    "run_id",
+    "phase",
+    "execution_mode",
+    "phase_identity_sha256",
+)
 
 
 def backend_protocol(protocol):
@@ -98,6 +111,165 @@ def verify_binding_inputs(root, config, parent=None):
     return bound, dict(model=model_check, parent=parent_check)
 
 
+def _actual_deployment():
+    """The caller cannot substitute a different deployment for loaded Python."""
+    return Path(__file__).resolve(strict=True).parents[2]
+
+
+def _verify_module_origins(deployment, manifest, modules):
+    members = {item["path"] for item in manifest["files"]}
+    packages = {
+        Path(path).parts[1].removesuffix(".py") for path in members if path.startswith("src/")
+    }
+    for module in modules:
+        name = getattr(module, "__name__", "")
+        path = getattr(module, "__file__", None)
+        if name.split(".")[0] not in packages or path is None:
+            continue
+        path = Path(path).resolve(strict=True)
+        if not path.is_relative_to(deployment):
+            raise PermissionError("Imported source dependency is outside the verified deployment")
+        if str(path.relative_to(deployment)) not in members:
+            raise PermissionError("Imported source dependency is missing from the phase manifest")
+
+
+def verify_runtime_source(root, *, phase=None, phase_identity_sha256=None):
+    """Bind actual imported source only; this function never grants execution.
+
+    Phase scientific prerequisite validation and evaluation access locks are not
+    implemented by this adapter. New-phase generation therefore fails closed.
+    """
+    from .phases import ORIGIN, verify_origin, verify_phase
+
+    deployment = _actual_deployment()
+    if phase is None:
+        if phase_identity_sha256 is not None:
+            raise PermissionError("A phase pin requires an explicit registered phase")
+        source = verify_origin(root, deployment=deployment)
+    else:
+        if (
+            phase not in MODEL_PHASES
+            or not isinstance(phase_identity_sha256, str)
+            or not re.fullmatch(r"[0-9a-f]{64}", phase_identity_sha256)
+        ):
+            raise PermissionError("Model phases require a pinned full phase identity SHA256")
+        source = verify_phase(
+            root,
+            phase,
+            deployment=deployment,
+            expected_identity_sha256=phase_identity_sha256,
+        )
+    identity = source["identity"]
+    manifest = read(Path(root) / identity["source_manifest"]["path"])
+    _verify_module_origins(deployment, manifest, tuple(sys.modules.values()))
+    if source["status"] != "BOUND_NOT_AUTHORIZED" or source["training_allowed"] is not False:
+        raise PermissionError("Source verification cannot masquerade as scientific authorization")
+    return {
+        **source,
+        "origin_identity_sha256": source["identity_sha256"]
+        if source["phase"] == ORIGIN
+        else identity["origin"]["identity"]["sha256"],
+    }
+
+
+def _execution_mode(mode, training):
+    if training is not None and type(training) is not bool:
+        raise ValueError("training must be a boolean compatibility option")
+    if mode is not None and (not isinstance(mode, str) or mode not in EXECUTION_MODES):
+        raise PermissionError("Unknown runtime execution mode")
+    selected = mode if mode is not None else ("TRAINING" if training else "CENSUS")
+    if selected not in EXECUTION_MODES or (
+        training is not None and mode is not None and training != (mode == "TRAINING")
+    ):
+        raise PermissionError("Conflicting or unknown runtime execution mode")
+    return selected
+
+
+def _audit_directory(root, phase, audit_root):
+    """New-phase writes are confined to their explicit per-path namespace."""
+    root = Path(root).resolve(strict=True)
+    if phase == "CENSUS_S0" and audit_root is None:
+        return root
+    if audit_root is None:
+        raise PermissionError("A new model phase requires its independent audit_root")
+    audit = Path(audit_root)
+    base = root / "PHASE_RUNS" / phase
+    if (
+        not audit.is_absolute()
+        or ".." in audit.parts
+        or not audit.is_relative_to(base)
+        or audit == base
+        or audit.resolve(strict=False) != audit
+    ):
+        raise PermissionError("Audit root must be a canonical descendant of its phase namespace")
+    for path in (audit, *audit.parents):
+        if path == root:
+            break
+        if path.is_symlink() or (path.exists() and not path.is_dir()):
+            raise PermissionError("Unsafe phase audit directory")
+    return audit
+
+
+def _runtime_artifact(audit, category, name):
+    if audit.is_symlink() or audit.resolve(strict=False) != audit:
+        raise PermissionError("Runtime audit root changed or became a symlink")
+    path = audit / category / name
+    for item in (path, *path.parents):
+        if item == audit:
+            break
+        if item.is_symlink():
+            raise PermissionError("Symlinked runtime evidence is forbidden")
+        if item.exists() and not (item.is_file() if item == path else item.is_dir()):
+            raise PermissionError("Runtime evidence has an invalid file type")
+    return path
+
+
+def _freeze_evaluation(runtime, step, policy_hash):
+    """Bind a read-only adapter after actual parent/COMMIT content validation."""
+    names = runtime._srf6_adapter_parameter_names
+    parameters = dict(runtime.model.named_parameters())
+    for value in parameters.values():
+        value.requires_grad_(False)
+        value.grad = None
+    runtime.model.eval()
+    runtime._srf6_readonly_policy = (step, policy_hash)
+    runtime._srf6_readonly_versions = {
+        name: (id(parameters[name]), parameters[name]._version) for name in names
+    }
+    runtime._srf6_policy_identity = (step, policy_hash)
+
+
+def _check_loaded_source_identity(runtime):
+    phase = runtime.identity.get("phase", "CENSUS_S0")
+    bound = getattr(runtime, "_srf6_source_context", None)
+    if bound is not None:
+        expected = {
+            "phase": bound["phase"],
+            "source_sha256": bound["identity"]["source_manifest"]["sha256"],
+            "source_hash": bound["identity"]["source_manifest"]["sha256"],
+            "data_hash": bound["identity"]["data_manifest"]["sha256"],
+            "origin_identity_sha256": bound["origin_identity_sha256"],
+            "phase_identity_sha256": bound["identity_sha256"]
+            if bound["phase"] != "CENSUS_S0"
+            else None,
+        }
+        if any(runtime.identity.get(key) != value for key, value in expected.items()):
+            raise PermissionError("Runtime identity differs from its actual loaded source")
+        phase = bound["phase"]
+    return phase
+
+
+def _generation_authorized(runtime):
+    # A future registered consumer must implement real phase prerequisite and
+    # panel-access validation. There is intentionally no bool/callback bypass.
+    phase = _check_loaded_source_identity(runtime)
+    if phase != "CENSUS_S0":
+        raise PermissionError(
+            "NOT_AUTHORIZED: phase scientific prerequisites and evaluation access locks "
+            "are not implemented; source binding does not authorize generation"
+        )
+
+
 class Runtime(FP32Runtime):
     def _set_recipe(self):
         super()._set_recipe()
@@ -133,7 +305,26 @@ class Runtime(FP32Runtime):
         step = self.identity["step"]
         if type(step) is not int or step < 0:
             raise PermissionError("A committed nonnegative policy step is required")
-        if not getattr(self, "_srf6_training", False) and step != 0:
+        mode = self.execution_mode()
+        if mode == "EVALUATION":
+            expected = getattr(self, "_srf6_readonly_policy", None)
+            parameters = dict(self.model.named_parameters())
+            versions = {
+                name: (id(parameters[name]), parameters[name]._version)
+                for name in self._srf6_adapter_parameter_names
+            }
+            if (
+                expected is None
+                or expected[0] != step
+                or self._srf6_policy_identity != expected
+                or versions != self._srf6_readonly_versions
+                or any(value.requires_grad for value in parameters.values())
+            ):
+                raise PermissionError(
+                    "Read-only evaluation policy no longer matches its bound content"
+                )
+            return expected[1]
+        if mode == "CENSUS" and step != 0:
             raise PermissionError("Frozen parent census cannot advance model parameters")
         cached = getattr(self, "_srf6_policy_identity", None)
         if cached is None or cached[0] != step:
@@ -142,6 +333,43 @@ class Runtime(FP32Runtime):
             self._srf6_policy_identity = cached
             self.identity["policy_hash"] = value
         return cached[1]
+
+    def execution_mode(self):
+        mode = getattr(self, "identity", {}).get(
+            "execution_mode", "TRAINING" if getattr(self, "_srf6_training", False) else "CENSUS"
+        )
+        if mode not in EXECUTION_MODES or mode != getattr(self, "_srf6_execution_mode", mode):
+            raise PermissionError("Unknown runtime mode")
+        return mode
+
+    def _annotate_runtime_row(self, row, backend, policy_tensor_hash):
+        row.update(
+            protocol="structured_v4",
+            backend_protocol=backend,
+            sr_f6_protocol_version=PROTOCOL_VERSION,
+            seed_semantics="independent_per_draw_torch_generator",
+            policy_hash=policy_tensor_hash,
+            policy_tensor_hash=policy_tensor_hash,
+            parent_content_hash=self.identity["parent_content_hash"],
+            source_sha256=self.identity["source_sha256"],
+            source_hash=self.identity["source_sha256"],
+            data_hash=self.identity["data_hash"],
+            run_id=self.identity["run_id"],
+            policy_step=self.identity["step"],
+            step=self.identity["step"] + int(self.execution_mode() == "TRAINING"),
+            execution_mode=self.execution_mode(),
+        )
+        for key in (
+            "phase",
+            "task_id",
+            "origin_identity_sha256",
+            "phase_identity_sha256",
+            "checkpoint_run_id",
+            "checkpoint_commit_sha256",
+            "checkpoint_step",
+        ):
+            if key in self.identity:
+                row[key] = self.identity[key]
 
     def generate_group(
         self,
@@ -153,23 +381,12 @@ class Runtime(FP32Runtime):
         generation=None,
         on_completion=None,
     ):
+        _generation_authorized(self)
         backend = backend_protocol(protocol)
         policy_tensor_hash = self.policy_tensor_identity()
 
         def capture(row):
-            row["protocol"] = "structured_v4"
-            row["backend_protocol"] = backend
-            row["sr_f6_protocol_version"] = PROTOCOL_VERSION
-            row["seed_semantics"] = "independent_per_draw_torch_generator"
-            row["policy_hash"] = policy_tensor_hash
-            row["policy_tensor_hash"] = policy_tensor_hash
-            row["parent_content_hash"] = self.identity["parent_content_hash"]
-            row["source_sha256"] = self.identity["source_sha256"]
-            row["source_hash"] = self.identity["source_sha256"]
-            row["data_hash"] = self.identity["data_hash"]
-            row["run_id"] = self.identity["run_id"]
-            row["policy_step"] = self.identity["step"]
-            row["step"] = self.identity["step"] + int(getattr(self, "_srf6_training", False))
+            self._annotate_runtime_row(row, backend, policy_tensor_hash)
             import hashlib
 
             row["prompt_sha256"] = hashlib.sha256(row["model_input"]["prompt"].encode()).hexdigest()
@@ -196,6 +413,10 @@ class Runtime(FP32Runtime):
             )
 
     def _batch_forward(self, prepared, token_rows, *, purpose, grad):
+        if self.execution_mode() == "EVALUATION":
+            if grad:
+                raise PermissionError("Evaluation runtime cannot request gradient forwards")
+            self.policy_tensor_identity()
         self._validate_prepared_revision(prepared)
         torch = self.torch
         if not token_rows or any(not tokens or len(tokens) > 1536 for tokens in token_rows):
@@ -413,13 +634,53 @@ class Runtime(FP32Runtime):
             restore_rng(rng)
 
 
-def load(root, parent, task_id, *, training=False):
+def load(
+    root,
+    parent,
+    task_id,
+    *,
+    training=None,
+    mode=None,
+    phase=None,
+    phase_identity_sha256=None,
+    audit_root=None,
+    run_id=None,
+):
+    """Load a bound parent, with separate provenance and execution semantics.
+
+    Default S0 loading retains its interface but verifies the actual historical
+    deployment. New phases require an explicit full identity pin and audit root.
+    They remain NOT_AUTHORIZED: phase scientific gates, evaluation-panel access
+    locks, and orchestration are not implemented here, so generation is blocked.
+    EVALUATION creates no optimizer and cannot perform gradient forwards.
+    """
     import torch
 
     from mm_dev.runtime import actual_cuda_identity, configure_audited_backend
     from sr_f3_ce.training import fresh_optimizer
 
+    from .common import write_once
+
+    selected_mode = _execution_mode(mode, training)
+    if not isinstance(task_id, str) or not re.fullmatch(
+        r"[A-Za-z0-9][A-Za-z0-9_.-]{0,159}", task_id
+    ):
+        raise PermissionError("Runtime task_id must be one safe execution identifier")
+    if selected_mode == "EVALUATION" and phase is None:
+        raise PermissionError("Evaluation requires an explicit registered execution phase")
+    if phase is None and run_id is not None:
+        raise PermissionError("Legacy S0 run_id remains its task_id")
+    if phase is not None and selected_mode == "TRAINING" and run_id is None:
+        raise PermissionError("Phase training requires its stable scientific run_id")
+    if run_id is not None and (not isinstance(run_id, str) or not run_id.strip()):
+        raise PermissionError("Explicit run_id must be nonempty")
+    effective_run_id = task_id if run_id is None else run_id
     root = Path(root)
+    source = verify_runtime_source(root, phase=phase, phase_identity_sha256=phase_identity_sha256)
+    audit = _audit_directory(root, source["phase"], audit_root)
+    identity_path = _runtime_artifact(audit, "runtime_identity", task_id + ".json")
+    if phase is not None and identity_path.exists():
+        raise FileExistsError("Preserve an existing runtime execution receipt; use a new task_id")
     config = read(root / "CONFIG.json")
     validate_generation_config(config)
     if parent not in config["model"]["parents"]:
@@ -431,94 +692,311 @@ def load(root, parent, task_id, *, training=False):
     configure_audited_backend()
     if not torch.cuda.is_available() or torch.cuda.device_count() != 1:
         raise RuntimeError("Each SR-F6 worker must own exactly one visible GPU")
-    seed_all(seed_for(config["master_seed"], "load", parent))
 
-    def account(kind, count, metadata):
-        if type(count) is not int or count < 0:
-            raise ValueError("Invalid model-call accounting")
-        append(
-            root / "accounting" / f"{task_id}.jsonl",
+    def construct():
+        seed_all(seed_for(config["master_seed"], "load", parent))
+
+        def account(kind, count, metadata):
+            if type(count) is not int or count < 0:
+                raise ValueError("Invalid model-call accounting")
+            append(
+                _runtime_artifact(audit, "accounting", task_id + ".jsonl"),
+                dict(
+                    at=now(),
+                    task_id=task_id,
+                    parent=parent,
+                    kind=kind,
+                    count=count,
+                    metadata=metadata,
+                ),
+            )
+
+        runtime = Runtime(
+            config["model"]["model_path"],
+            adapter_path=str(adapter),
+            output_root=root,
+            protocol_revision="v2",
+            account=account,
+        )
+        configure_parent_training(
+            runtime, parent_adapter_config=read(adapter / "adapter_config.json")
+        )
+        source_dtype = runtime.identity["dtype"]
+        runtime.model = runtime.model.float()
+        parameter_dtypes = sorted(
+            {
+                str(v.dtype).removeprefix("torch.")
+                for v in runtime.model.parameters()
+                if v.is_floating_point()
+            }
+        )
+        buffer_dtypes = sorted(
+            {
+                str(v.dtype).removeprefix("torch.")
+                for v in runtime.model.buffers()
+                if v.is_floating_point()
+            }
+        )
+        if parameter_dtypes != ["float32"] or any(v != "float32" for v in buffer_dtypes):
+            raise RuntimeError("Full FP32 conversion did not take effect")
+        runtime._srf5_numerics = dict(NUMERICS_V2)
+        runtime.identity.update(
+            dtype="float32",
+            numerics=dict(NUMERICS_V2),
+            numerics_recipe_version=2,
+            model_cast_from_dtype=source_dtype,
+            forward_parameter_dtypes=parameter_dtypes,
+            forward_float_buffer_dtypes=buffer_dtypes,
+            input_float_dtype="float32",
+            probability_dtype="float32",
+            parent_id=parent,
+            run_id=effective_run_id,
+            step=0,
+            snapshot=config["model"]["snapshot"],
+            sr_f6_protocol_version=PROTOCOL_VERSION,
+        )
+        _, post_load_files_check = verify_binding_inputs(root, config, parent)
+        if (
+            verify_runtime_source(root, phase=phase, phase_identity_sha256=phase_identity_sha256)
+            != source
+        ):
+            raise PermissionError("Source identity changed during model loading")
+        identity = source["identity"]
+        tensor_hash = state_hash(trainable_state(runtime.model))
+        runtime._srf6_adapter_parameter_names = tuple(
+            name for name, value in runtime.model.named_parameters() if value.requires_grad
+        )
+        runtime._srf6_training = selected_mode == "TRAINING"
+        runtime._srf6_execution_mode = selected_mode
+        runtime._srf6_policy_identity = (0, tensor_hash)
+        runtime._srf6_source_context = copy.deepcopy(source)
+        runtime.identity.update(
+            run_root=str(root.resolve(strict=True)),
+            audit_root=str(audit),
+            task_id=task_id,
+            phase=source["phase"],
+            execution_mode=selected_mode,
+            source_sha256=identity["source_manifest"]["sha256"],
+            source_hash=identity["source_manifest"]["sha256"],
+            data_hash=identity["data_manifest"]["sha256"],
+            config_sha256=identity["config_sha256"],
+            origin_identity_sha256=source["origin_identity_sha256"],
+            phase_identity_sha256=source["identity_sha256"] if phase is not None else None,
+            source_binding_status="BOUND_NOT_AUTHORIZED",
+            execution_authorization="NOT_AUTHORIZED"
+            if phase is not None
+            else "CALLER_CENSUS_GATE_REQUIRED",
+            parent_content_hash=bound["parents"][parent]["content_sha256"],
+            policy_hash=tensor_hash,
+            reference_hash=tensor_hash,
+            reference_parent=parent,
+        )
+        runtime._srf6_execution_identity = {
+            key: runtime.identity[key] for key in EXECUTION_IDENTITY_FIELDS
+        }
+        trainable = [
+            {"name": n, "shape": list(p.shape), "dtype": str(p.dtype)}
+            for n, p in runtime.model.named_parameters()
+            if p.requires_grad
+        ]
+        if selected_mode == "EVALUATION":
+            _freeze_evaluation(runtime, 0, tensor_hash)
+        optimizer, scheduler = (
+            fresh_optimizer(runtime.model) if selected_mode == "TRAINING" else (None, None)
+        )
+        writer = write_once if phase is not None else write
+        writer(
+            identity_path,
             dict(
-                at=now(), task_id=task_id, parent=parent, kind=kind, count=count, metadata=metadata
+                copy.deepcopy(runtime.identity),
+                hardware=actual_cuda_identity(),
+                inherited_adapter_parameters=trainable,
+                trainable_parameters=[] if selected_mode == "EVALUATION" else trainable,
+                fresh_optimizer=selected_mode == "TRAINING",
+                source_binding_note="content binding and loaded identity are separate receipts",
+                bound_files_before_load=bound_files_check,
+                bound_files_after_load=post_load_files_check,
             ),
         )
+        return runtime, optimizer, scheduler
 
-    runtime = Runtime(
-        config["model"]["model_path"],
-        adapter_path=str(adapter),
-        output_root=root,
-        protocol_revision="v2",
-        account=account,
+    # Configure the audited backend above before touching CUDA RNG state.
+    # Evaluation loading preserves its caller even when construction fails.
+    if selected_mode == "EVALUATION":
+        rng = capture_rng()
+        try:
+            return construct()
+        finally:
+            restore_rng(rng)
+    return construct()
+
+
+def load_committed_endpoint(runtime, tx, *, expected_commit_sha256):
+    """Copy a pinned, published adapter into an EVALUATION runtime, read-only.
+
+    ``tx`` must already hold its exclusive RunTransactions lock. This does not
+    create an optimizer, restore training RNG, run evaluation, or authorize any
+    panel access. Scientific phase/panel access gates remain unimplemented and
+    new-phase generate_group continues to fail closed after successful loading.
+    """
+    import json
+
+    import torch
+
+    from sr_f3_ce.training import finite_tree
+
+    from .common import write_once
+    from .transactions import RunTransactions, _cursor, _file_hash, _read_bytes
+
+    if runtime.execution_mode() != "EVALUATION" or not isinstance(tx, RunTransactions):
+        raise PermissionError("Endpoint loading requires EVALUATION and a real locked transaction")
+    if not isinstance(expected_commit_sha256, str) or not re.fullmatch(
+        r"[0-9a-f]{64}", expected_commit_sha256
+    ):
+        raise PermissionError("An exact committed endpoint identity is required")
+    identity = runtime.identity
+    _check_loaded_source_identity(runtime)
+    if identity.get("phase") not in MODEL_PHASES:
+        raise PermissionError("Endpoint evaluation requires its registered execution phase")
+    loaded_execution = getattr(runtime, "_srf6_execution_identity", None)
+    if loaded_execution is None or any(
+        identity.get(key) != loaded_execution.get(key) for key in EXECUTION_IDENTITY_FIELDS
+    ):
+        raise PermissionError("Endpoint runtime execution identity changed after loading")
+    if not isinstance(identity.get("task_id"), str) or not re.fullmatch(
+        r"[A-Za-z0-9][A-Za-z0-9_.-]{0,159}", identity["task_id"]
+    ):
+        raise PermissionError("Endpoint task_id is not a safe execution filename")
+    audit = _audit_directory(identity["run_root"], identity["phase"], identity["audit_root"])
+    source = verify_runtime_source(
+        identity["run_root"],
+        phase=identity["phase"],
+        phase_identity_sha256=identity["phase_identity_sha256"],
     )
-    configure_parent_training(runtime, parent_adapter_config=read(adapter / "adapter_config.json"))
-    source_dtype = runtime.identity["dtype"]
-    runtime.model = runtime.model.float()
-    parameter_dtypes = sorted(
-        {
-            str(v.dtype).removeprefix("torch.")
-            for v in runtime.model.parameters()
-            if v.is_floating_point()
+    if source != runtime._srf6_source_context:
+        raise PermissionError("Endpoint runtime source binding changed")
+    _audit_directory(identity["run_root"], identity["phase"], tx.directory)
+    tx._locked()
+    for key, expected in (
+        ("phase", identity["phase"]),
+        ("parent", identity["parent_id"]),
+        ("source_sha256", identity["source_sha256"]),
+        ("data_sha256", identity["data_hash"]),
+        ("config_sha256", identity["config_sha256"]),
+        ("reference_sha256", identity["reference_hash"]),
+        ("experiment_id", identity["experiment_id"]),
+    ):
+        if tx.identity.get(key) != expected:
+            raise PermissionError("Endpoint transaction differs from runtime " + key)
+    if tx.identity["run_id"] == identity["run_id"]:
+        raise PermissionError(
+            "Evaluation run and checkpoint producer must have distinct identities"
+        )
+    markers = tx.published()
+    matched = [marker for marker in markers if marker["commit_sha256"] == expected_commit_sha256]
+    if len(matched) != 1:
+        raise PermissionError("Pinned endpoint is not a unique published commit")
+    marker = matched[0]
+    step = marker["step"]
+    checkpoint = tx.checkpoints / f"step-{step:03d}"
+    receipt_path = _runtime_artifact(
+        audit, "runtime_identity", identity["task_id"] + "-endpoint.json"
+    )
+    if receipt_path.exists():
+        raise FileExistsError("Endpoint execution receipt already exists")
+    rng = capture_rng()
+    try:
+        path = checkpoint / "state.pt"
+        before = path.stat()
+        if _file_hash(path) != marker["state_sha256"]:
+            raise PermissionError("Endpoint checkpoint state content differs")
+        state = torch.load(path, map_location="cpu", weights_only=True)
+        after = path.stat()
+        if (before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns) != (
+            after.st_ino,
+            after.st_size,
+            after.st_mtime_ns,
+            after.st_ctime_ns,
+        ):
+            raise PermissionError("Endpoint state changed while loading")
+        if (
+            state.get("identity") != tx.identity
+            or state.get("step") != step
+            or state.get("sampler_state") != marker["sampler_state"]
+        ):
+            raise PermissionError("Endpoint serialized metadata differs from its commit")
+        parameters = dict(runtime.model.named_parameters())
+        names = runtime._srf6_adapter_parameter_names
+        policy = state.get("policy")
+        if (
+            not isinstance(policy, dict)
+            or set(policy) != set(names)
+            or set(marker.get("parameter_names", [])) != set(names)
+            or not finite_tree(policy)
+            or state_hash(policy) != marker["policy_sha256"]
+        ):
+            raise PermissionError("Endpoint adapter content/names differ")
+        for name, value in policy.items():
+            if (
+                not isinstance(value, torch.Tensor)
+                or value.dtype != torch.float32
+                or parameters[name].dtype != torch.float32
+                or value.shape != parameters[name].shape
+            ):
+                raise PermissionError("Endpoint adapter shape/dtype differs")
+        if step:
+            update_bytes = _read_bytes(checkpoint / "UPDATE.json")
+            import hashlib
+
+            if hashlib.sha256(update_bytes).hexdigest() != marker["update_sha256"]:
+                raise PermissionError("Endpoint update receipt changed")
+            update = json.loads(update_bytes)
+            qids = tx._evidence(
+                marker["references"],
+                update,
+                step,
+                marker["policy_before_sha256"],
+                marker["rng_sha256"],
+            )
+            if update.get("policy_after_sha256") != marker["policy_sha256"]:
+                raise PermissionError("Endpoint update policy differs from commit")
+            _cursor(
+                state["sampler_state"],
+                step,
+                markers[step - 1]["sampler_state"],
+                qids,
+                marker["references"]["rollout"],
+            )
+        with torch.no_grad():
+            for name, value in policy.items():
+                parameters[name].copy_(value)
+        actual = state_hash({name: parameters[name].detach().cpu().clone() for name in names})
+        if actual != marker["policy_sha256"]:
+            raise PermissionError("Actual loaded endpoint parameters differ")
+        _freeze_evaluation(runtime, step, actual)
+        identity.update(
+            step=step,
+            policy_hash=actual,
+            checkpoint_step=step,
+            checkpoint_run_id=tx.identity["run_id"],
+            checkpoint_commit_sha256=expected_commit_sha256,
+            checkpoint_state_sha256=marker["state_sha256"],
+            execution_authorization="NOT_AUTHORIZED",
+        )
+        report = {
+            "status": "ENDPOINT_LOADED_NOT_AUTHORIZED",
+            "runtime_identity": copy.deepcopy(identity),
+            "checkpoint_identity": copy.deepcopy(tx.identity),
+            "checkpoint": str(checkpoint),
+            "optimizer_created": False,
+            "training_rng_restored": False,
+            "model_calls": 0,
+            "optimizer_updates": 0,
         }
-    )
-    buffer_dtypes = sorted(
-        {
-            str(v.dtype).removeprefix("torch.")
-            for v in runtime.model.buffers()
-            if v.is_floating_point()
-        }
-    )
-    if parameter_dtypes != ["float32"] or any(v != "float32" for v in buffer_dtypes):
-        raise RuntimeError("Full FP32 conversion did not take effect")
-    runtime._srf5_numerics = dict(NUMERICS_V2)
-    runtime.identity.update(
-        dtype="float32",
-        numerics=dict(NUMERICS_V2),
-        numerics_recipe_version=2,
-        model_cast_from_dtype=source_dtype,
-        forward_parameter_dtypes=parameter_dtypes,
-        forward_float_buffer_dtypes=buffer_dtypes,
-        input_float_dtype="float32",
-        probability_dtype="float32",
-        parent_id=parent,
-        run_id=task_id,
-        step=0,
-        snapshot=config["model"]["snapshot"],
-        sr_f6_protocol_version=PROTOCOL_VERSION,
-    )
-    _, post_load_files_check = verify_binding_inputs(root, config, parent)
-    identity = read(root / "IDENTITY.json")
-    tensor_hash = state_hash(trainable_state(runtime.model))
-    runtime._srf6_training = bool(training)
-    runtime._srf6_policy_identity = (0, tensor_hash)
-    runtime.identity.update(
-        run_root=str(root.resolve(strict=True)),
-        source_sha256=identity["source_manifest"]["sha256"],
-        source_hash=identity["source_manifest"]["sha256"],
-        data_hash=identity["data_manifest"]["sha256"],
-        parent_content_hash=bound["parents"][parent]["content_sha256"],
-        policy_hash=tensor_hash,
-        reference_hash=tensor_hash,
-        reference_parent=parent,
-    )
-    trainable = [
-        {"name": n, "shape": list(p.shape), "dtype": str(p.dtype)}
-        for n, p in runtime.model.named_parameters()
-        if p.requires_grad
-    ]
-    write(
-        root / "runtime_identity" / f"{task_id}.json",
-        dict(
-            copy.deepcopy(runtime.identity),
-            hardware=actual_cuda_identity(),
-            trainable_parameters=trainable,
-            fresh_optimizer=bool(training),
-            source_binding_note="content binding and loaded identity are separate receipts",
-            bound_files_before_load=bound_files_check,
-            bound_files_after_load=post_load_files_check,
-        ),
-    )
-    optimizer, scheduler = fresh_optimizer(runtime.model) if training else (None, None)
-    return runtime, optimizer, scheduler
+        write_once(receipt_path, report)
+        return report
+    finally:
+        restore_rng(rng)
 
 
 def processor_preflight(root):
