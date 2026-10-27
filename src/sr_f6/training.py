@@ -71,10 +71,26 @@ def _sha(value, name):
 
 
 def _audit_path(runtime):
+    """Keep shared DATA resolution separate from a locked path's audit output."""
     root = Path(runtime.identity["run_root"])
     if not root.is_absolute() or root.resolve(strict=True) != root or not root.is_dir():
         raise PermissionError("Runtime audit root must be an existing canonical directory")
-    path = root / "NUMERICAL_TOKEN_AUDIT.jsonl"
+    identity = runtime.identity
+    if identity.get("execution_mode", "TRAINING") != "TRAINING":
+        raise PermissionError("Only a training runtime can execute an optimizer update")
+    registered_phase = identity.get("phase") in ("PILOT_V1", "FORMAL_V1")
+    if registered_phase and "audit_root" not in identity:
+        raise PermissionError("Later training phases require an isolated audit directory")
+    audit_root = Path(identity.get("audit_root", root))
+    if (
+        not audit_root.is_absolute()
+        or audit_root.resolve(strict=True) != audit_root
+        or not audit_root.is_dir()
+        or not audit_root.is_relative_to(root)
+        or ("audit_root" in identity and audit_root == root)
+    ):
+        raise PermissionError("Audit directory must be a canonical strict run descendant")
+    path = audit_root / "NUMERICAL_TOKEN_AUDIT.jsonl"
     if path.is_symlink() or (path.exists() and not path.is_file()):
         raise PermissionError("Unsafe numerical evidence path")
     return root, path
@@ -376,6 +392,8 @@ def update(
     reference_parent, run_id, parent_id, and committed step. At diagnostic steps
     it also includes the frozen 64 diagnostic_row_indices. Each row's step is
     the pending step, while adapter_identity.step is the committed source step.
+    Later phases also require a separate audit_root below the shared run_root;
+    public image paths continue to resolve relative to run_root.
     Successful return is UNCOMMITTED: this function does not advance identity.
     """
     import torch
@@ -392,6 +410,7 @@ def update(
         "committed_source_step": runtime.identity.get("step"),
         "arm": credits[0].get("arm") if credits else None,
         "policy_before_sha256": state_hash(before),
+        "audit_root": str(audit_path.parent),
     }
     optimizer_started = False
     try:

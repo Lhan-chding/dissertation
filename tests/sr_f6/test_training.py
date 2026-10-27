@@ -414,3 +414,74 @@ def test_update_after_adam_exception_requires_checkpoint_restore(tmp_path, monke
     assert saved["status"] == "UPDATE_ATTEMPT_FAILED_RESTORE_CHECKPOINT"
     assert int(optimizer.state[items[0].model.weight]["step"]) == 1
     assert items[0].identity["step"] == 0
+
+
+def test_distinct_path_audits_keep_shared_data_resolution(tmp_path):
+    for name in ("path-a", "path-b"):
+        items = batch(tmp_path)
+        runtime = items[0]
+        destination = tmp_path / "PHASE_RUNS" / "PILOT_V1" / name
+        destination.mkdir(parents=True)
+        runtime.identity.update(
+            phase="PILOT_V1", execution_mode="TRAINING", audit_root=str(destination)
+        )
+        original = runtime.prepare_input
+        seen_roots = []
+
+        def prepare(model_input, root, protocol, *, original=original, seen_roots=seen_roots):
+            seen_roots.append(root)
+            return original(model_input, root, protocol)
+
+        runtime.prepare_input = prepare
+        execute(items)
+        assert seen_roots == [tmp_path] * 16
+        saved = [
+            json.loads(line)
+            for line in (destination / "NUMERICAL_TOKEN_AUDIT.jsonl").read_text().splitlines()
+        ]
+        assert len(saved) == 1
+        assert saved[0]["status"] == "PREUPDATE_PASS"
+        assert saved[0]["audit_root"] == str(destination)
+    assert not (tmp_path / "NUMERICAL_TOKEN_AUDIT.jsonl").exists()
+
+
+@pytest.mark.parametrize("defect", ("missing", "shared", "external", "symlink", "relative"))
+def test_later_phase_audit_path_rejected_before_any_forward(tmp_path, defect):
+    root = tmp_path / "run"
+    root.mkdir()
+    items = batch(root)
+    runtime, _, scheduler, _, _ = items
+    runtime.identity.update(phase="PILOT_V1", execution_mode="TRAINING")
+    if defect == "shared":
+        runtime.identity["audit_root"] = str(root)
+    elif defect == "external":
+        external = tmp_path / "other-project"
+        external.mkdir()
+        runtime.identity["audit_root"] = str(external)
+    elif defect == "symlink":
+        target = root / "target"
+        target.mkdir()
+        link = root / "alias"
+        link.symlink_to(target, target_is_directory=True)
+        runtime.identity["audit_root"] = str(link)
+    elif defect == "relative":
+        runtime.identity["audit_root"] = "PHASE_RUNS/path-a"
+    before, epoch = runtime.model.weight.detach().clone(), scheduler.last_epoch
+    with pytest.raises(PermissionError):
+        execute(items)
+    assert not runtime.calls
+    assert_no_step(items, before, epoch)
+    assert not list(tmp_path.rglob("NUMERICAL_TOKEN_AUDIT.jsonl"))
+
+
+@pytest.mark.parametrize("mode", ("EVALUATION", "CENSUS"))
+def test_read_only_runtime_cannot_call_optimizer_update(tmp_path, mode):
+    items = batch(tmp_path)
+    runtime, _, scheduler, _, _ = items
+    runtime.identity["execution_mode"] = mode
+    before, epoch = runtime.model.weight.detach().clone(), scheduler.last_epoch
+    with pytest.raises(PermissionError, match="Only a training runtime"):
+        execute(items)
+    assert not runtime.calls
+    assert_no_step(items, before, epoch)
+    assert not (tmp_path / "NUMERICAL_TOKEN_AUDIT.jsonl").exists()
