@@ -14,6 +14,11 @@ set -euo pipefail
 cd "$SRF6_CODE"
 export PYTHONPATH="$SRF6_CODE/src"
 export PYTHONDONTWRITEBYTECODE=1
+export OMP_NUM_THREADS=1
+export CUBLAS_WORKSPACE_CONFIG=:4096:8
+export TOKENIZERS_PARALLELISM=false
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
 python=/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12
 # Two independent one-GPU shards. No model parallelism or changed sample order.
 srun --exclusive --ntasks=1 --gres=gpu:pro6000:1 --cpus-per-task=4 --mem=33G \
