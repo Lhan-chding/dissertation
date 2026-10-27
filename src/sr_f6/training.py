@@ -14,6 +14,7 @@ import math
 import re
 import time
 from collections import defaultdict
+from contextlib import nullcontext
 from pathlib import Path
 
 from mm_core.training import capture_rng, restore_rng, state_hash, trainable_state
@@ -386,6 +387,46 @@ def update(
     *,
     diagnostic_row_indices=(),
 ):
+    """Require a live original-token access session for an actual new-phase model."""
+    source = getattr(runtime, "_srf6_source_context", None)
+    permit = nullcontext()
+    from .runtime import _LOADED_RUNTIMES, Runtime, _check_loaded_source_identity
+
+    if isinstance(runtime, Runtime) and runtime in _LOADED_RUNTIMES:
+        _check_loaded_source_identity(runtime)
+    if source is not None:
+        if _check_loaded_source_identity(runtime) != "CENSUS_S0":
+            from .access import _UPDATE_ACCESS, active_session
+
+            permit = active_session(runtime).update(
+                records, group_sizes, reference, credits, access=_UPDATE_ACCESS
+            )
+    elif hasattr(runtime, "_srf6_execution_identity"):
+        raise PermissionError("Actual loaded source is missing; cannot downgrade to S0")
+    with permit:
+        return _update(
+            runtime,
+            optimizer,
+            scheduler,
+            records,
+            group_sizes,
+            reference,
+            credits,
+            diagnostic_row_indices=diagnostic_row_indices,
+        )
+
+
+def _update(
+    runtime,
+    optimizer,
+    scheduler,
+    records,
+    group_sizes,
+    reference,
+    credits,
+    *,
+    diagnostic_row_indices=(),
+):
     """Accumulate one /128 update, enforcing every probability gate before Adam.
 
     Required runtime identity includes run_root, source_sha256, reference_hash,
@@ -406,6 +447,7 @@ def update(
     traces, totals = [], {name: 0.0 for name in ("loss", "native", "aux", "kl")}
     audit_identity = {
         "at": now(),
+        "task_id": runtime.identity.get("task_id"),
         "run_id": runtime.identity.get("run_id"),
         "committed_source_step": runtime.identity.get("step"),
         "arm": credits[0].get("arm") if credits else None,

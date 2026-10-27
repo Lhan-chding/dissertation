@@ -339,11 +339,19 @@ def test_diagnostics_unique_recovery_and_evaluation_full_budget(project):
     assert recovery["update_steps"] == list(range(5, 13))
     assert recovery["new_generated_responses"] == 1024
     assert recovery["reuse_primary_steps5_to12_raw"] is recovery["adds_scientific_repeat"] is False
-    assert recovery["implementation_status"] == "NOT_IMPLEMENTED"
+    assert recovery["implementation_status"] == "IMPLEMENTED_NOT_EXECUTED"
     assert recovery["comparison"]["rule"] == "EXACT_TREE_NO_POSTHOC_TOLERANCE"
     assert recovery["comparison"]["continuity_required"] is True
+    from sr_f6.recovery import EVIDENCE_EXECUTION_KEYS
+
+    assert recovery["comparison"]["exact_exclusion_locations"][
+        "preupdate_evidence_top_level"
+    ] == list(EVIDENCE_EXECUTION_KEYS)
     assert recovery["actual_source_commit_binding"] == "REQUIRED_SEPARATELY_AFTER_STEP4_PUBLICATION"
     evaluation = spec["evaluation"]
+    from sr_f6.evaluation import SUMMARY_RECIPE
+
+    assert evaluation["descriptive_summary"] == SUMMARY_RECIPE
     assert evaluation["checkpoint_count"] == len(evaluation["endpoints"]) == 12
     assert sum(p["responses"] for p in evaluation["endpoints"]) == 2304
     assert sum(p["kind"] == "FROZEN_PARENT" for p in evaluation["endpoints"]) == 3

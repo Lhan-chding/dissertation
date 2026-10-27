@@ -18,6 +18,7 @@ def source_manifest(deployment):
         | set((deployment / "tests/sr_f6").rglob("*.py"))
         | set((deployment / "scripts/sr_f6").glob("*.py"))
         | set((deployment / "scripts/sr_f6").glob("*.sbatch"))
+        | set((deployment / "scripts/sr_f6").glob("*.sh"))
     )
     return {
         "files": [
@@ -118,8 +119,7 @@ def initialize(root, config_file, revision, *, resume_source_failure=False):
                 "previous_started_record": previous,
                 "new_revision": revision,
                 "reason": (
-                    "explicit recovery of failed source binding; "
-                    "no data or model outputs exist"
+                    "explicit recovery of failed source binding; no data or model outputs exist"
                 ),
             },
         )

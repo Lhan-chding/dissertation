@@ -11,6 +11,8 @@ import math
 import re
 import sys
 import time
+import weakref
+from contextlib import nullcontext
 from pathlib import Path
 
 from mm_core.training import capture_rng, restore_rng, state_hash, trainable_state
@@ -39,6 +41,8 @@ from srf6_ref.core import seed_for
 PROTOCOL_VERSION = "structured_v4-srf6-1.0"
 EXECUTION_MODES = frozenset({"CENSUS", "TRAINING", "EVALUATION", "REPLAY"})
 MODEL_PHASES = frozenset({"PILOT_V1", "FORMAL_V1"})
+_LOADED_RUNTIMES = weakref.WeakKeyDictionary()
+_LOADED_ENDPOINTS = weakref.WeakKeyDictionary()
 EXECUTION_IDENTITY_FIELDS = (
     "run_root",
     "audit_root",
@@ -242,6 +246,9 @@ def _freeze_evaluation(runtime, step, policy_hash):
 def _check_loaded_source_identity(runtime):
     phase = runtime.identity.get("phase", "CENSUS_S0")
     bound = getattr(runtime, "_srf6_source_context", None)
+    loaded = _LOADED_RUNTIMES.get(runtime) if isinstance(runtime, Runtime) else None
+    if loaded is not None and bound != loaded["source"]:
+        raise PermissionError("Actual loaded source is missing or changed; cannot downgrade to S0")
     if bound is not None:
         expected = {
             "phase": bound["phase"],
@@ -260,18 +267,30 @@ def _check_loaded_source_identity(runtime):
 
 
 def _generation_authorized(runtime):
-    # A future registered consumer must implement real phase prerequisite and
-    # panel-access validation. There is intentionally no bool/callback bypass.
     phase = _check_loaded_source_identity(runtime)
     if phase != "CENSUS_S0":
-        raise PermissionError(
-            "NOT_AUTHORIZED: phase scientific prerequisites and evaluation access locks "
-            "are not implemented; source binding does not authorize generation"
-        )
+        from .access import active_session
+
+        return active_session(runtime)
+    if hasattr(runtime, "_srf6_execution_identity") and not hasattr(
+        runtime, "_srf6_source_context"
+    ):
+        raise PermissionError("Actual loaded source is missing; cannot downgrade to S0")
+    return None
+
+
+def _session_access(session):
+    if session.runtime.execution_mode() == "REPLAY":
+        from .replay import _RUNTIME_ACCESS
+    else:
+        from .access import _RUNTIME_ACCESS
+    return _RUNTIME_ACCESS
 
 
 class Runtime(FP32Runtime):
     def _replay_session(self):
+        if self in _LOADED_RUNTIMES:
+            _check_loaded_source_identity(self)
         if self.execution_mode() == "REPLAY":
             from .replay import active_session
 
@@ -279,9 +298,9 @@ class Runtime(FP32Runtime):
         source = getattr(self, "_srf6_source_context", None)
         if source is not None:
             if _check_loaded_source_identity(self) != "CENSUS_S0":
-                raise PermissionError(
-                    "NOT_AUTHORIZED: new-phase input/forward access requires scientific admission"
-                )
+                from .access import active_session
+
+                return active_session(self)
         elif hasattr(self, "_srf6_execution_identity"):
             raise PermissionError("Actual loaded source is missing; cannot downgrade to S0")
         return None
@@ -291,6 +310,9 @@ class Runtime(FP32Runtime):
         # This also closes direct calls to its private sampling entrypoint.
         if self.execution_mode() == "REPLAY" and kind != "extra_forward_sequences":
             raise PermissionError("REPLAY forbids generation and completion accounting")
+        session = self._replay_session()
+        if session is not None and self.execution_mode() != "REPLAY":
+            session.check_reservation(kind, count, metadata)
         return super().reserve(kind, count, **metadata)
 
     def _set_recipe(self):
@@ -310,9 +332,7 @@ class Runtime(FP32Runtime):
         prepared = super().prepare_input(model_input, run_root, protocol=backend_protocol(protocol))
         prepared["routing"]["sr_f6_protocol_version"] = PROTOCOL_VERSION
         if session is not None:
-            from .replay import _RUNTIME_ACCESS
-
-            session.bind_prepared(prepared, access=_RUNTIME_ACCESS)
+            session.bind_prepared(prepared, access=_session_access(session))
         return prepared
 
     def _prepared_records(self, records):
@@ -326,7 +346,9 @@ class Runtime(FP32Runtime):
 
     def batch_reference_forward(self, records, reference):
         session = self._replay_session()
-        if session is None:
+        if session is None or self.execution_mode() != "REPLAY":
+            if session is not None:
+                session.check_reference(reference)
             return super().batch_reference_forward(records, reference)
         # At T03 step0 current and reference are the same verified parent.
         # Avoid copying identical parameters and changing tensor version counters.
@@ -335,7 +357,9 @@ class Runtime(FP32Runtime):
 
     def reference_forward(self, prepared, tokens, reference):
         session = self._replay_session()
-        if session is None:
+        if session is None or self.execution_mode() != "REPLAY":
+            if session is not None:
+                session.check_reference(reference)
             return super().reference_forward(prepared, tokens, reference)
         session.check_reference(reference)
         return self.sequence_forward(prepared, tokens, purpose="t03_reference", grad=False)
@@ -454,7 +478,7 @@ class Runtime(FP32Runtime):
         generation=None,
         on_completion=None,
     ):
-        _generation_authorized(self)
+        session = _generation_authorized(self)
         backend = backend_protocol(protocol)
         policy_tensor_hash = self.policy_tensor_identity()
 
@@ -475,7 +499,14 @@ class Runtime(FP32Runtime):
             if on_completion is not None:
                 on_completion(row)
 
-        with independent_draw_rng(self.torch, seeds):
+        permit = (
+            session.generation(
+                model_input, run_root, seeds, protocol=protocol, access=_session_access(session)
+            )
+            if session is not None
+            else nullcontext()
+        )
+        with permit, independent_draw_rng(self.torch, seeds):
             return self._generate_native_group(
                 model_input,
                 run_root,
@@ -521,9 +552,7 @@ class Runtime(FP32Runtime):
             grad=grad,
         )
         if session is not None:
-            from .replay import _RUNTIME_ACCESS
-
-            with session.native_call(inputs, **forward, access=_RUNTIME_ACCESS):
+            with session.native_call(inputs, **forward, access=_session_access(session)):
                 return self._native_forward(inputs, **forward)
         return self._native_forward(
             inputs,
@@ -909,6 +938,21 @@ def load(
                 bound_files_after_load=post_load_files_check,
             ),
         )
+        _LOADED_RUNTIMES[runtime] = dict(
+            execution=copy.deepcopy(runtime._srf6_execution_identity),
+            source=copy.deepcopy(source),
+            model=runtime.model,
+            parent={
+                key: runtime.identity[key]
+                for key in (
+                    "parent_id",
+                    "reference_parent",
+                    "reference_hash",
+                    "parent_content_hash",
+                    "config_sha256",
+                )
+            },
+        )
         return runtime, optimizer, scheduler
 
     # Configure the audited backend above before touching CUDA RNG state.
@@ -927,8 +971,8 @@ def load_committed_endpoint(runtime, tx, *, expected_commit_sha256):
 
     ``tx`` must already hold its exclusive RunTransactions lock. This does not
     create an optimizer, restore training RNG, run evaluation, or authorize any
-    panel access. Scientific phase/panel access gates remain unimplemented and
-    new-phase generate_group continues to fail closed after successful loading.
+    panel access. PILOT generation still requires a separately verified active
+    evaluation access session after successful loading; FORMAL remains closed.
     """
     import json
 
@@ -1085,6 +1129,13 @@ def load_committed_endpoint(runtime, tx, *, expected_commit_sha256):
             "optimizer_updates": 0,
         }
         write_once(receipt_path, report)
+        _LOADED_ENDPOINTS[runtime] = dict(
+            tx=tx,
+            run_id=tx.identity["run_id"],
+            step=step,
+            commit_sha256=expected_commit_sha256,
+            policy_sha256=actual,
+        )
         return report
     finally:
         restore_rng(rng)

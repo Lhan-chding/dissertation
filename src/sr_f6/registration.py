@@ -304,6 +304,37 @@ def _evaluation(reader, root, config, data_ref, paths, parents):
         responses=2304,
         endpoints=endpoints,
         seed_domain="pilot_dev_eval",
+        descriptive_summary=dict(
+            status="DESCRIPTIVE_ONLY_NOT_GATE",
+            master_seed=2026102701,
+            bootstrap_replicates=2000,
+            confidence_level=0.95,
+            quantiles=[0.025, 0.975],
+            quantile_interpolation="LINEAR_INDEX_N_MINUS_ONE_P",
+            resampling="SIX_FAMILIES_EACH_FOUR_ROOTS_WITH_REPLACEMENT",
+            paired_cluster="ROOT_FOUR_VIEWS_TWO_DRAWS",
+            absolute_seed_parts=[
+                "master_seed",
+                "pilot_dev_eval_summary",
+                "endpoint_id",
+                "label",
+                "statistic",
+            ],
+            absolute_labels=["A", "J", "V", "S", "B"],
+            absolute_statistics=["known_rate", "pass_rate_given_known"],
+            difference_seed_parts=[
+                "master_seed",
+                "pilot_dev_eval_summary",
+                "endpoint_id",
+                "parent_difference",
+                "metric",
+            ],
+            difference_metrics=["A", "J", "V", "S", "B", "S_known", "B_known"],
+            semantic_difference_denominator="BOTH_ENDPOINT_AND_PARENT_KNOWN",
+            zero_denominator_bootstrap="OMIT_AND_REPORT_DEFINED_REPLICATES_ALL_UNDEFINED_IS_NULL",
+            training_repeat_variance_estimated=False,
+            significance_gate=None,
+        ),
         seeds_by_parent={
             parent: [
                 {
@@ -461,6 +492,20 @@ def build_pilot_registration(root, *, phase_context, parent_references):
             repeat=0,
             logical_run_id=b0_u11["run_id"],
             storage_lane="RECOVERY",
+            physical_directory="PHASE_RUNS/PILOT_V1/RECOVERY/b0/r0/U11",
+            binding_path="PHASE_RUNS/PILOT_V1/RECOVERY/b0/r0/U11/RECOVERY_BINDING.json",
+            logical_identity_policy="Byte-identical PRIMARY RUN_IDENTITY and rollout registration",
+            execution_journal=(
+                "Per-process BEGIN/COMMIT references/END; actual native call accounting"
+            ),
+            continuity_rule=(
+                "Primary starts at step0; all twelve updates in one process; "
+                "1536 new responses; no prior data attempt"
+            ),
+            independent_process_proof=(
+                "SERVER_ACTUAL BEGIN/END bind hostname, Linux boot_id, pid and /proc start_ticks; "
+                "primary and recovery process identities must differ"
+            ),
             source_run_directory=b0_u11["run_directory"],
             source_checkpoint_step=4,
             target_checkpoint_step=12,
@@ -496,13 +541,50 @@ def build_pilot_registration(root, *, phase_context, parent_references):
                     "storage_lane",
                     "execution_id",
                 ],
+                exact_exclusion_locations={
+                    "original_row_top_level": ["task_id", "generation_seconds"],
+                    "original_row_model_identity": ["task_id", "audit_root"],
+                    "update_top_level": ["training_seconds"],
+                    "preupdate_evidence_top_level": [
+                        "at",
+                        "audit_root",
+                        "task_id",
+                        "source_audit_event",
+                    ],
+                },
                 metadata_exclusion_scope=(
                     "Execution receipts only; never recursive raw-text removal"
+                ),
+                audit_slice_exclusion_requires=(
+                    "Verify original bytes SHA and event content equality first"
+                ),
+                audit_prefix_import=(
+                    "Only original bytes through step4 event end; later events are generated anew"
+                ),
+                compared_hardware_fields=[
+                    "cuda_name",
+                    "cuda_total_memory_bytes",
+                    "compute_capability",
+                    "cuda_runtime",
+                    "driver_version",
+                ],
+                compared_environment_fields=[
+                    "dtype",
+                    "numerics",
+                    "attention_backend",
+                    "torch_version",
+                    "transformers_version",
+                    "forward_parameter_dtypes",
+                    "probability_dtype",
+                ],
+                physical_gpu_uuid_policy=(
+                    "Retain both actual UUIDs; equal UUID is not required "
+                    "for the registered two-worker plan"
                 ),
                 continuity_required=True,
                 scope="Only registered b0/U11 on the actually verified hardware/kernel/environment",
             ),
-            implementation_status="NOT_IMPLEMENTED",
+            implementation_status="IMPLEMENTED_NOT_EXECUTED",
         ),
         evaluation=_evaluation(reader, root, config, data_ref, paths, parents),
         engineering_conventions=dict(
