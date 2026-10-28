@@ -27,7 +27,7 @@ make_directory() {
 [[ "$SLURM_JOB_ID" =~ ^[0-9]+$ ]] || fail 'unsafe scheduler job id'
 [[ "$SLURM_JOB_NAME" == "LH-SRF6-Confirm-$SRF6_PARENT" ]] || fail 'wrong job prefix'
 [[ "$SRF6_PARENT" =~ ^b[012]$ ]] || fail 'unknown parent'
-[[ "$SRF6_ROOT" == "$project/sr_f6_confirm_v3_20261028" ]] || fail 'wrong run root'
+[[ "$SRF6_ROOT" == "$project/sr_f6_confirm_v3_20261028_r1" ]] || fail 'wrong run root'
 [[ "$SRF6_CODE" =~ ^/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_[0-9a-f]+$ ]] || fail 'source must be an immutable project deployment'
 canonical_directory "$project"
 canonical_directory "$SRF6_CODE"

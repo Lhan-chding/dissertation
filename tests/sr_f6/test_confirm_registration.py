@@ -677,7 +677,7 @@ def cpu_launcher(tmp_path):
     env = dict(
         os.environ,
         SRF6_CODE=str(code),
-        SRF6_ROOT=str(project / "sr_f6_confirm_v3_20261028"),
+        SRF6_ROOT=str(project / "sr_f6_confirm_v3_20261028_r1"),
         SRF6_ACTION="prepare",
         SRF6_REVISION="abcdef1" + "0" * 33,
         SLURM_JOB_ID="1234",
@@ -722,12 +722,16 @@ def test_actual_isolated_production_import_chain_requires_inherited_assets(tmp_p
     shutil.copytree(
         repository / "src", deployment / "src", ignore=shutil.ignore_patterns("__pycache__")
     )
-    for relative in registration.old.DEPLOYMENT_ASSETS[3:]:
+    for relative in registration.DEPLOYMENT_ASSETS[3:]:
         target = deployment / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(repository / relative, target)
     result = registration.check_deployment_imports(deployment)
     assert result["status"] == "PASS" and result["model_calls"] == 0
+    (deployment / "configs/sr_f6.json").unlink()
+    with pytest.raises(subprocess.CalledProcessError):
+        registration.check_deployment_imports(deployment)
+    shutil.copyfile(repository / "configs/sr_f6.json", deployment / "configs/sr_f6.json")
     (deployment / "docs/sr_f1/package/PACKAGE_SHA256.json").unlink()
     with pytest.raises(subprocess.CalledProcessError):
         registration.check_deployment_imports(deployment)
@@ -776,10 +780,13 @@ def registered(project, inputs, hashes, monkeypatch):
     monkeypatch.setattr(registration, "_source_paths", lambda _: ["actual.py"])
     monkeypatch.setattr(registration, "_frozen_implementations", lambda *args: {"unit_test": True})
     monkeypatch.setattr(registration.old, "validate_deployment_assets", lambda _: {})
+    monkeypatch.setattr(registration, "validate_deployment_assets", lambda _: {})
     monkeypatch.setattr(registration, "check_deployment_imports", lambda _: {"status": "PASS"})
     monkeypatch.setattr(registration.old, "_validate_producer", lambda *args: None)
     monkeypatch.setattr(registration, "_screen_basis", lambda: {"synthetic_test_only": True})
     monkeypatch.setattr(registration, "_verify_screen_basis", lambda _: None)
+    monkeypatch.setattr(registration, "_technical_predecessor", lambda: {"unit_test": True})
+    monkeypatch.setattr(registration, "_compare_technical_design", lambda *args: None)
     monkeypatch.setattr(contract, "validate_config", lambda _: None)
     monkeypatch.setattr(runtime, "_verify_module_origins", lambda *args: None)
     calls = []
@@ -891,3 +898,283 @@ def test_seal_requires_native_and_new_visual_evidence_without_generating_them(vi
     assert result["scope"] == "REGISTERED_9216_CONFIRMATION_ONLY"
     with pytest.raises(PermissionError, match="Preserve"):
         registration.seal_preflight(root, ref)
+
+
+def test_native_config_asset_is_separately_required_without_mutating_v3(project, monkeypatch):
+    repository = Path(__file__).resolve().parents[2]
+    deployment = project / "new-code"
+    deployment.mkdir()
+    monkeypatch.setattr(registration.old, "validate_deployment_assets", lambda _: {"old": True})
+    monkeypatch.setattr(registration.old, "_source_paths", lambda _: ["src/example.py"])
+    assert "configs/sr_f6.json" in registration.DEPLOYMENT_ASSETS
+    assert "configs/sr_f6.json" not in registration.old.DEPLOYMENT_ASSETS
+    for check in (registration.validate_deployment_assets, registration._source_paths):
+        with pytest.raises(PermissionError, match="Evidence is missing"):
+            check(deployment)
+    (deployment / "configs").mkdir()
+    config = deployment / "configs/sr_f6.json"
+    shutil.copyfile(repository / "configs/sr_f6.json", config)
+    resources = registration.validate_deployment_assets(deployment)
+    assert resources["native_regression_config_sha256"] == file_hash(config)
+    assert "configs/sr_f6.json" in registration._source_paths(deployment)
+    config.write_text("{}")
+    with pytest.raises(PermissionError, match="configuration differs"):
+        registration.validate_deployment_assets(deployment)
+
+
+@pytest.fixture
+def technical_prior(project, inputs, hashes, monkeypatch):
+    """Synthetic incident fixture; real hard pins remain in production source."""
+    from sr_f6 import confirm_data, source_binding
+
+    prior = project / "prior-confirm"
+    prior.mkdir()
+    deployment = project / "sr_f6_code_441d1ea"
+    deployment.mkdir()
+    monkeypatch.setattr(registration, "TECHNICAL_PRIOR_ROOT", prior)
+    monkeypatch.setattr(registration, "TECHNICAL_PRIOR_DEPLOYMENT", deployment)
+    source = deployment / "source.py"
+    source.write_text("# original incident source, preserved\n")
+    write_once(
+        prior / "SOURCE_MANIFEST.json",
+        dict(
+            revision=registration.TECHNICAL_PRIOR_REVISION,
+            files=[source_binding.inventory_file(source, boundary=project)],
+        ),
+    )
+    source_pin = file_hash(prior / "SOURCE_MANIFEST.json")
+    monkeypatch.setattr(registration, "TECHNICAL_PRIOR_SOURCE_SHA256", source_pin)
+    config = {"unit_test_original_config": True}
+    write_once(prior / "CONFIG.json", config)
+    public, private = inputs
+    plan = registration.make_plan(public, private, hashes)
+    write_once(prior / "CONFIRM_SPEC_FROZEN.json", plan)
+    data_file = prior / "DATA/unit-scientific-input.json"
+    write_once(data_file, {"fixed": "unit scientific bytes"})
+    member = source_binding.inventory_file(data_file, boundary=project)
+    member["path"] = str(data_file.relative_to(prior))
+    write_once(prior / "DATA/MANIFEST.json", dict(schema="unit-test-data", files=[member]))
+    record = dict(
+        schema=registration.REGISTRATION_SCHEMA,
+        phase=registration.PHASE,
+        version=registration.VERSION,
+        revision=registration.TECHNICAL_PRIOR_REVISION,
+        root=str(prior),
+        deployment=str(deployment),
+        status="BOUND_AWAITING_ACTUAL_PROCESSOR_AND_NEW_VISUAL_REVIEW",
+        source_manifest_sha256=source_pin,
+        generation_allowed=False,
+        training_allowed=False,
+        evaluation_allowed=False,
+        optimizer_updates=0,
+        parent_content_hashes=hashes,
+        **{
+            key: registration._ref(prior, relative)
+            for key, relative in (
+                ("source_manifest", "SOURCE_MANIFEST.json"),
+                ("config", "CONFIG.json"),
+                ("data_manifest", "DATA/MANIFEST.json"),
+                ("spec", "CONFIRM_SPEC_FROZEN.json"),
+            )
+        },
+    )
+    write_once(prior / "REGISTRATION.json", record)
+    pin = file_hash(prior / "REGISTRATION.json")
+    monkeypatch.setattr(registration, "TECHNICAL_PRIOR_REGISTRATION_SHA256", pin)
+    log = prior / "PREFLIGHT/NATIVE_REGRESSION.log"
+    log.parent.mkdir()
+    log.write_text(
+        f"FileNotFoundError: {deployment / 'configs/sr_f6.json'}\n"
+        "FAILED tests/sr_f6/test_runtime.py::"
+        "test_config_rejects_silent_numeric_or_sampling_change\n"
+        "1 failed, 231 passed in 13.56s\n"
+    )
+    log_pin = file_hash(log)
+    monkeypatch.setattr(registration, "TECHNICAL_PRIOR_LOG_SHA256", log_pin)
+    native = dict(
+        schema="srf6-confirm-native-regression-v1",
+        phase=registration.PHASE,
+        status="FAIL",
+        returncode=1,
+        registration_sha256=pin,
+        source_manifest_sha256=source_pin,
+        execution_origin="SERVER_ACTUAL",
+        model_calls=0,
+        optimizer_updates=0,
+        log=dict(path="PREFLIGHT/NATIVE_REGRESSION.log", sha256=log_pin),
+    )
+    write_once(prior / "PREFLIGHT/NATIVE_REGRESSION.json", native)
+    processor = dict(
+        schema=registration.PREFLIGHT_SCHEMA,
+        phase=registration.PHASE,
+        status="FAIL",
+        registration_sha256=pin,
+        execution_origin="SERVER_ACTUAL",
+        model_calls=0,
+        optimizer_updates=0,
+        generation_allowed=False,
+        training_allowed=False,
+        new_visual_review_required=True,
+        error=dict(type="PermissionError", message="Actual new-source CPU regression differs"),
+    )
+    write_once(prior / "PREFLIGHT/PROCESSOR.json", processor)
+    monkeypatch.setattr(confirm_data, "verify_data", lambda _: {"unit_test_external_check": True})
+    monkeypatch.setattr(confirm_data, "load_inputs", lambda _: copy.deepcopy((public, private)))
+    monkeypatch.setattr(
+        registration,
+        "verify_bound_files",
+        lambda files: source_binding.verify_bound_files(files, boundary=project),
+    )
+    return prior, record, native, processor, plan, config
+
+
+def test_specific_zero_call_incident_bound_without_modifying_original(technical_prior):
+    prior, record, _, _, plan, config = technical_prior
+    before = {str(p): p.read_bytes() for p in prior.rglob("*") if p.is_file()}
+    technical = registration._technical_predecessor()
+    assert technical["old_generated_answers"] == technical["old_processor_routes"] == 0
+    assert technical["old_authorization_reused"] is False
+    assert technical["job_id"] == "232374"
+    assert technical["spec_object_sha256"] == digest(plan)
+    assert technical["config_canonical_sha256"] == digest(config)
+    assert technical["references"]["source_manifest"] == record["source_manifest"]
+    assert before == {str(p): p.read_bytes() for p in prior.rglob("*") if p.is_file()}
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        "registration",
+        "different_failure",
+        "log",
+        "native_pass",
+        "native_calls",
+        "processor_calls",
+        "routes",
+        "seal",
+        "attempts",
+        "model_slot",
+        "submission",
+        "config_changed",
+        "deleted_config",
+        "old_source_repaired",
+    ],
+)
+def test_technical_repair_rejects_different_or_started_predecessor(technical_prior, mutation):
+    prior, _, native, processor, _, _ = technical_prior
+    if mutation == "registration":
+        (prior / "REGISTRATION.json").write_text("{}")
+    elif mutation == "different_failure":
+        processor["error"]["message"] = "GPU response error"
+    elif mutation == "log":
+        (prior / "PREFLIGHT/NATIVE_REGRESSION.log").write_text("other failure")
+    elif mutation == "native_pass":
+        native["status"] = "PASS"
+    elif mutation == "native_calls":
+        native["model_calls"] = 1
+    elif mutation == "processor_calls":
+        processor["model_calls"] = 1
+    elif mutation == "routes":
+        processor["inputs"] = []
+    elif mutation == "seal":
+        write_once(prior / "PREFLIGHT/SEAL.json", {"status": "PASS"})
+    elif mutation == "attempts":
+        write_once(prior / "CONFIRM/attempts/first.json", {"started": True})
+    elif mutation == "model_slot":
+        write_once(prior / "CONFIRM/execution_slots/b0-0.json", {"started": True})
+    elif mutation == "submission":
+        (prior / "SUBMISSIONS").mkdir()
+    elif mutation == "config_changed":
+        (prior / "CONFIG.json").write_text("{}")
+    elif mutation == "deleted_config":
+        (prior / "CONFIG.json").unlink()
+    else:
+        write_once(registration.TECHNICAL_PRIOR_DEPLOYMENT / "configs/sr_f6.json", {})
+    if mutation in {"native_pass", "native_calls"}:
+        (prior / "PREFLIGHT/NATIVE_REGRESSION.json").write_text(json.dumps(native))
+    if mutation in {"different_failure", "processor_calls", "routes"}:
+        (prior / "PREFLIGHT/PROCESSOR.json").write_text(json.dumps(processor))
+    with pytest.raises(PermissionError):
+        registration._technical_predecessor()
+
+
+@pytest.mark.parametrize("mutation", [None, "seed", "data", "config", "new_member", "threshold"])
+def test_r1_requires_identical_science_and_ignores_only_root_stat_provenance(
+    technical_prior,
+    project,
+    mutation,
+):
+    prior, _, _, _, plan, config = technical_prior
+    technical = registration._technical_predecessor()
+    root = project / "confirm"
+    root.mkdir()
+    (root / "CONFIG.json").write_bytes((prior / "CONFIG.json").read_bytes())
+    manifest = json.loads((prior / "DATA/MANIFEST.json").read_text())
+    manifest["files"][0]["resolved_path"] = str(root / manifest["files"][0]["path"])
+    manifest["files"][0]["stat_cache_key"]["ino"] += 1
+    if mutation == "seed":
+        plan["attempts"][0]["seed"] += 1
+    elif mutation == "data":
+        manifest["files"][0]["sha256"] = "a" * 64
+    elif mutation == "config":
+        (root / "CONFIG.json").write_text("{}")
+    elif mutation == "new_member":
+        manifest["files"].append(dict(path="DATA/new.json", bytes=2, sha256="a" * 64))
+    elif mutation == "threshold":
+        plan["gates"]["each_count_at_least"]["V"] = 1382
+    write_once(root / "DATA/MANIFEST.json", manifest)
+    if mutation is None:
+        registration._compare_technical_design(root, technical, plan, config)
+    else:
+        with pytest.raises(PermissionError, match="Technical repair"):
+            registration._compare_technical_design(root, technical, plan, config)
+
+
+def test_actual_rendered_pngs_are_identical_and_changed_pixels_cannot_repair_forward(
+    technical_prior,
+    project,
+):
+    from sr_f6.data import render_source
+    from sr_f6.source_binding import inventory_file
+    from srf6_ref import design
+
+    prior, _, _, _, plan, config = technical_prior
+    technical = registration._technical_predecessor()
+    root = project / "confirm"
+    root.mkdir()
+    (root / "CONFIG.json").write_bytes((prior / "CONFIG.json").read_bytes())
+    world = design.make_root(registration.SPLIT, FAMILIES[0], 0, registration.MASTER_SEED)["tasks"][
+        "P0"
+    ][0]["world"]
+    original_png, _ = render_source(world)
+    repaired_png, _ = render_source(copy.deepcopy(world))
+    assert original_png == repaired_png
+    relative = "DATA/images/fixed.png"
+    for directory, content in ((prior, original_png), (root, repaired_png)):
+        path = directory / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(content)
+    old_manifest = json.loads((prior / "DATA/MANIFEST.json").read_text())
+    old_manifest["files"].append(
+        dict(inventory_file(prior / relative, boundary=project), path=relative)
+    )
+    (prior / "DATA/MANIFEST.json").write_text(json.dumps(old_manifest))
+    technical["references"]["data_manifest"] = registration._ref(prior, "DATA/MANIFEST.json")
+    technical["data_content_sha256"] = digest(registration._data_content(old_manifest))
+    new_manifest = copy.deepcopy(old_manifest)
+    new_manifest["files"][-1] = dict(
+        inventory_file(root / relative, boundary=project), path=relative
+    )
+    write_once(root / "DATA/MANIFEST.json", new_manifest)
+    registration._compare_technical_design(root, technical, plan, config)
+    changed_world = copy.deepcopy(world)
+    changed_world["series"]["Alpha"][0] += 6
+    changed_png, _ = render_source(changed_world)
+    assert changed_png != original_png
+    (root / relative).write_bytes(changed_png)
+    new_manifest["files"][-1] = dict(
+        inventory_file(root / relative, boundary=project), path=relative
+    )
+    (root / "DATA/MANIFEST.json").write_text(json.dumps(new_manifest))
+    with pytest.raises(PermissionError, match="changed scientific data"):
+        registration._compare_technical_design(root, technical, plan, config)

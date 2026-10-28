@@ -13,7 +13,7 @@ from sr_f6 import confirm_dispatch as dispatch
 @pytest.fixture
 def environment(tmp_path, monkeypatch):
     project = tmp_path.resolve()
-    root = project / "sr_f6_confirm_v3_20261028"
+    root = project / "sr_f6_confirm_v3_20261028_r1"
     root.mkdir()
     monkeypatch.setattr(dispatch, "PROJECT", project)
     monkeypatch.setattr(dispatch, "ROOT", root)
@@ -243,8 +243,13 @@ def test_exact_recorded_job_state_queries_and_terminal_failure(monkeypatch):
     def query(argv, **kwargs):
         calls.append(argv)
         if argv[0] == "squeue":
-            assert argv[argv.index("--jobs") + 1] == "100,101"
-            return SimpleNamespace(returncode=0, stdout="100|RUNNING\n", stderr="")
+            assert "--jobs" not in argv
+            assert argv[argv.index("--user") + 1] == dispatch.USER
+            return SimpleNamespace(
+                returncode=0,
+                stdout="100|RUNNING\n999|PENDING\n555_[1-4]|PENDING\n",
+                stderr="",
+            )
         assert argv[0] == "sacct" and argv[argv.index("--jobs") + 1] == "101"
         return SimpleNamespace(returncode=0, stdout="101|CANCELLED by 123|0:15\n", stderr="")
 
@@ -276,3 +281,77 @@ def test_scheduler_query_failure_never_allows_submission(monkeypatch):
     )
     with pytest.raises(PermissionError, match="Cannot determine"):
         dispatch._job_states({"101"})
+
+
+@pytest.mark.parametrize("state,exit_code", [("COMPLETED", "0:0"), ("FAILED", "1:0")])
+def test_purged_registered_job_uses_current_user_queue_then_exact_accounting(
+    monkeypatch, state, exit_code
+):
+    calls = []
+
+    def query(argv, **kwargs):
+        calls.append(argv)
+        if argv[0] == "squeue":
+            if "--jobs" in argv:
+                # Real Slurm behavior once this completed ID is purged.
+                return SimpleNamespace(returncode=1, stdout="", stderr="Invalid job id specified")
+            assert argv == ["squeue", "--noheader", "--user", dispatch.USER, "--format=%i|%T"]
+            return SimpleNamespace(
+                returncode=0, stdout="777|RUNNING\n778_[1-8]|PENDING\n", stderr=""
+            )
+        assert argv == [
+            "sacct",
+            "--noheader",
+            "--parsable2",
+            "--allocations",
+            "--jobs",
+            "232359",
+            "--format=JobIDRaw,State,ExitCode",
+        ]
+        return SimpleNamespace(returncode=0, stdout=f"232359|{state}|{exit_code}\n", stderr="")
+
+    monkeypatch.setattr(dispatch.subprocess, "run", query)
+    assert dispatch._job_states({"232359"}) == {"232359": (state, exit_code)}
+    assert len(calls) == 2
+
+
+def test_unrelated_current_user_jobs_never_fill_a_missing_registered_state(monkeypatch):
+    calls = []
+
+    def query(argv, **kwargs):
+        calls.append(argv)
+        return SimpleNamespace(
+            returncode=0,
+            stdout="100_0|RUNNING\n1000|RUNNING\n" if argv[0] == "squeue" else "",
+            stderr="",
+        )
+
+    monkeypatch.setattr(dispatch.subprocess, "run", query)
+    with pytest.raises(PermissionError, match="unknown"):
+        dispatch._job_states({"100"})
+    assert calls[-1][calls[-1].index("--jobs") + 1] == "100"
+
+
+@pytest.mark.parametrize("script", ["confirm.sbatch", "confirm_cpu.sbatch"])
+def test_launchers_reject_the_preserved_failed_root_before_any_execution(script):
+    root = Path(__file__).resolve().parents[2]
+    path = root / "scripts/sr_f6" / script
+    text = path.read_text()
+    assert '"$project/sr_f6_confirm_v3_20261028_r1"' in text
+    result = dispatch.subprocess.run(
+        ["/bin/bash", str(path)],
+        capture_output=True,
+        text=True,
+        check=False,
+        env=dict(
+            PATH="/usr/bin:/bin",
+            SRF6_CODE="/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_abcdef0",
+            SRF6_ROOT="/projects/_ssd/varunssd/louis-ssvc/sr_f6_confirm_v3_20261028",
+            SRF6_PARENT="b0",
+            SRF6_ACTION="prepare",
+            SLURM_JOB_ID="123",
+            SLURM_JOB_NAME="LH-SRF6-Confirm-b0",
+        ),
+    )
+    assert result.returncode == 2
+    assert result.stdout == ""

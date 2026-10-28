@@ -13,7 +13,7 @@ from .common import now, read, write_once
 from .interface_screen_dispatch import USER, capacity
 from .source_binding import PROJECT
 
-ROOT = PROJECT / "sr_f6_confirm_v3_20261028"
+ROOT = PROJECT / "sr_f6_confirm_v3_20261028_r1"
 PARENTS = ("b0", "b1", "b2")
 
 
@@ -35,11 +35,11 @@ def _canonical(path, *, exists=True):
 
 
 def _job_states(job_ids):
-    """Read only exact recorded jobs; absent/unknown accounting is never success."""
+    """Filter the current user queue, then resolve missing recorded IDs via sacct."""
     if not job_ids or any(re.fullmatch(r"[0-9]+", job) is None for job in job_ids):
         raise PermissionError("Exact registered job IDs required")
     active = subprocess.run(
-        ["squeue", "--noheader", "--jobs", ",".join(sorted(job_ids)), "--format=%i|%T"],
+        ["squeue", "--noheader", "--user", USER, "--format=%i|%T"],
         capture_output=True,
         text=True,
         check=False,
@@ -49,9 +49,16 @@ def _job_states(job_ids):
     states = {}
     for line in active.stdout.splitlines():
         parts = line.strip().split("|")
-        if len(parts) != 2 or parts[0] not in job_ids or parts[0] in states:
+        if len(parts) != 2:
             raise PermissionError("Unexpected scheduler identity/state response")
-        states[parts[0]] = (parts[1], None)
+        # Slurm may purge terminal jobs from squeue entirely. Querying those
+        # IDs directly can return Invalid job id; unrelated current jobs are
+        # read only and do not become evidence for this project's submissions.
+        if parts[0] not in job_ids:
+            continue
+        if parts[0] in states or not parts[1].strip():
+            raise PermissionError("Unexpected scheduler identity/state response")
+        states[parts[0]] = (parts[1].strip(), None)
     missing = set(job_ids) - states.keys()
     if missing:
         history = subprocess.run(

@@ -26,7 +26,17 @@ from .common import digest, file_hash, now, read, safe_evidence, write_once
 from .interface_v3_protocol import VERSION as PROMPT_VERSION
 from .source_binding import PROJECT, inventory_file, stat_cache_key, verify_bound_files
 
-ROOT = PROJECT / "sr_f6_confirm_v3_20261028"
+DEFAULT_ROOT = PROJECT / "sr_f6_confirm_v3_20261028_r1"
+ROOT = DEFAULT_ROOT
+TECHNICAL_PRIOR_ROOT = PROJECT / "sr_f6_confirm_v3_20261028"
+TECHNICAL_PRIOR_REVISION = "441d1ea6cb459ce98f9a6c810d2219488a2c6ea5"
+TECHNICAL_PRIOR_DEPLOYMENT = PROJECT / "sr_f6_code_441d1ea"
+TECHNICAL_PRIOR_REGISTRATION_SHA256 = (
+    "8fc5edef470a399e526b0d41122728bfaeb1b5321389c6537dc270efdd5332f2"
+)
+TECHNICAL_PRIOR_SOURCE_SHA256 = "7f97edfc9a43faf8c77874bf3a3504d564c84639e5a368d60dc24a911955815d"
+TECHNICAL_PRIOR_LOG_SHA256 = "38cb0db7df13eedd68c86c56dbe824e572de565ecae406e9c72d01618636e47e"
+DEPLOYMENT_ASSETS = (*old.DEPLOYMENT_ASSETS, "configs/sr_f6.json")
 ORIGIN_ROOT = PROJECT / "sr_f6_semantic_factorial_20261027"
 SCREEN_ROOT = PROJECT / "sr_f6_interface_v3_20261028"
 SCREEN_REVISION = "5ca3fe96c71941e30213b0d7390ae0de2b405a1c"
@@ -104,13 +114,28 @@ def _bound(root, reference, *, lines=False):
 
 
 def _source_paths(deployment):
-    return old._source_paths(deployment)
+    paths = set(old._source_paths(deployment))
+    safe_evidence(deployment, "configs/sr_f6.json")
+    paths.add("configs/sr_f6.json")
+    return sorted(paths)
+
+
+def validate_deployment_assets(deployment):
+    from .contract import PACKAGE_CONFIG_SHA256
+
+    resources = old.validate_deployment_assets(deployment)
+    config = safe_evidence(deployment, "configs/sr_f6.json")
+    _require(
+        file_hash(config) == PACKAGE_CONFIG_SHA256,
+        "Native regression configuration differs from the frozen original package",
+    )
+    return dict(resources, native_regression_config_sha256=PACKAGE_CONFIG_SHA256)
 
 
 def check_deployment_imports(deployment):
     script = "\n".join(
         (
-            "import sys",
+            "import json, sys",
             "from pathlib import Path",
             "root = Path(sys.argv[1]).resolve(strict=True)",
             "sys.path.insert(0, str(root / 'src'))",
@@ -121,6 +146,8 @@ def check_deployment_imports(deployment):
             "import sr_f6.confirm_census",
             "import sr_f6.confirm_evidence",
             "import sr_f6.confirm_analysis",
+            "from sr_f6.runtime import validate_generation_config",
+            "validate_generation_config(json.loads((root / 'configs/sr_f6.json').read_text()))",
             "from sr_f1.contract import PACKAGE, load_config, _reference",
             "assert PACKAGE == root / 'docs/sr_f1/package'",
             "assert Path(_reference.__file__).is_relative_to(PACKAGE)",
@@ -606,6 +633,208 @@ def make_plan(public, private, parent_hashes):
     )
 
 
+def _data_content(manifest):
+    """Root-independent content identity; retain all scientific bytes and names."""
+    files = manifest.get("files")
+    _require(isinstance(files, list) and files, "Complete prior DATA content inventory required")
+    paths = [row["path"] for row in files]
+    _require(len(paths) == len(set(paths)), "Duplicate DATA member in technical repair")
+    for path in paths:
+        relative = Path(path)
+        _require(
+            not relative.is_absolute()
+            and ".." not in relative.parts
+            and relative.parts[0] == "DATA",
+            "Unexpected scientific data path",
+        )
+    return dict(
+        metadata={k: v for k, v in manifest.items() if k != "files"},
+        files=sorted(
+            ({k: row[k] for k in ("path", "bytes", "sha256")} for row in files),
+            key=lambda row: row["path"],
+        ),
+    )
+
+
+def _technical_predecessor():
+    """Only the specific 232374 pre-processor deployment failure may be superseded."""
+    from . import confirm_data
+
+    prior, deployment = _path(TECHNICAL_PRIOR_ROOT), _path(TECHNICAL_PRIOR_DEPLOYMENT)
+    pin = file_hash(safe_evidence(prior, "REGISTRATION.json"))
+    _require(
+        pin == TECHNICAL_PRIOR_REGISTRATION_SHA256,
+        "Exact immutable technical predecessor registration required",
+    )
+    registered = read(prior / "REGISTRATION.json")
+    _require(
+        registered.get("schema") == REGISTRATION_SCHEMA
+        and registered.get("phase") == PHASE
+        and registered.get("version") == VERSION
+        and registered.get("revision") == TECHNICAL_PRIOR_REVISION
+        and registered.get("root") == str(prior)
+        and registered.get("deployment") == str(deployment)
+        and registered.get("status") == "BOUND_AWAITING_ACTUAL_PROCESSOR_AND_NEW_VISUAL_REVIEW"
+        and registered.get("source_manifest_sha256") == TECHNICAL_PRIOR_SOURCE_SHA256
+        and registered.get("generation_allowed") is False
+        and registered.get("training_allowed") is False
+        and registered.get("evaluation_allowed") is False
+        and type(registered.get("optimizer_updates")) is int
+        and registered["optimizer_updates"] == 0,
+        "Technical predecessor is not the unstarted 441d1ea confirmation",
+    )
+    source = _bound(prior, registered["source_manifest"])
+    _require(
+        source.get("revision") == TECHNICAL_PRIOR_REVISION
+        and registered["source_manifest"]["sha256"] == TECHNICAL_PRIOR_SOURCE_SHA256,
+        "Preserved failed deployment source identity differs",
+    )
+    verify_bound_files(source["files"])
+    missing = deployment / "configs/sr_f6.json"
+    _require(
+        not missing.exists() and not missing.is_symlink(),
+        "Preserve the original incomplete deployment; do not add its missing resource",
+    )
+    for relative in (
+        "CONFIRM",
+        "SUBMISSIONS",
+        "accounting",
+        "runtime_identity",
+        "PREFLIGHT/processor",
+        "PREFLIGHT/SEAL.json",
+        "PREFLIGHT/VISUAL_REVIEW.json",
+    ):
+        path = prior / relative
+        _require(
+            not path.exists() and not path.is_symlink(),
+            "Technical predecessor already has processing, submission, or model execution",
+        )
+    native = read(safe_evidence(prior, "PREFLIGHT/NATIVE_REGRESSION.json"))
+    _require(
+        native.get("schema") == "srf6-confirm-native-regression-v1"
+        and native.get("phase") == PHASE
+        and native.get("status") == "FAIL"
+        and type(native.get("returncode")) is int
+        and native["returncode"] == 1
+        and native.get("registration_sha256") == pin
+        and native.get("source_manifest_sha256") == TECHNICAL_PRIOR_SOURCE_SHA256
+        and native.get("execution_origin") == "SERVER_ACTUAL"
+        and type(native.get("model_calls")) is int
+        and native["model_calls"] == 0
+        and type(native.get("optimizer_updates")) is int
+        and native["optimizer_updates"] == 0
+        and native.get("log")
+        == dict(path="PREFLIGHT/NATIVE_REGRESSION.log", sha256=TECHNICAL_PRIOR_LOG_SHA256),
+        "Exact zero-call native missing-config failure required",
+    )
+    log_path = safe_evidence(prior, native["log"]["path"])
+    _require(
+        file_hash(log_path) == TECHNICAL_PRIOR_LOG_SHA256,
+        "Preserved native technical failure log changed",
+    )
+    log = log_path.read_text()
+    failed = re.findall(r"^FAILED (\S+)", log, re.MULTILINE)
+    _require(
+        failed
+        == ["tests/sr_f6/test_runtime.py::test_config_rejects_silent_numeric_or_sampling_change"]
+        and "FileNotFoundError" in log
+        and str(missing) in log
+        and re.search(r"\b1 failed, 231 passed\b", log),
+        "Only the registered absent-config technical failure can be repaired",
+    )
+    processor = read(safe_evidence(prior, "PREFLIGHT/PROCESSOR.json"))
+    _require(
+        processor.get("schema") == PREFLIGHT_SCHEMA
+        and processor.get("phase") == PHASE
+        and processor.get("status") == "FAIL"
+        and processor.get("registration_sha256") == pin
+        and processor.get("execution_origin") == "SERVER_ACTUAL"
+        and type(processor.get("model_calls")) is int
+        and processor["model_calls"] == 0
+        and type(processor.get("optimizer_updates")) is int
+        and processor["optimizer_updates"] == 0
+        and processor.get("generation_allowed") is False
+        and processor.get("training_allowed") is False
+        and processor.get("new_visual_review_required") is True
+        and processor.get("error")
+        == dict(type="PermissionError", message="Actual new-source CPU regression differs")
+        and not set(processor).intersection(
+            {
+                "inputs",
+                "images",
+                "identity",
+                "tokenizer_fixtures",
+                "verified_dependencies",
+                "native_regression",
+            }
+        ),
+        "Prior processor must have failed before any actual processing or model call",
+    )
+    config = _bound(prior, registered["config"])
+    manifest = _bound(prior, registered["data_manifest"])
+    confirm_data.verify_data(prior)
+    public, private = confirm_data.load_inputs(prior)
+    spec = _bound(prior, registered["spec"])
+    _require(
+        spec == make_plan(public, private, registered["parent_content_hashes"]),
+        "Prior scientific plan differs from the fixed confirmation recipe",
+    )
+    references = {
+        "registration": _ref(prior, "REGISTRATION.json"),
+        "source_manifest": registered["source_manifest"],
+        "config": registered["config"],
+        "data_manifest": registered["data_manifest"],
+        "spec": registered["spec"],
+        "native_regression": _ref(prior, "PREFLIGHT/NATIVE_REGRESSION.json"),
+        "native_log": native["log"],
+        "processor_failure": _ref(prior, "PREFLIGHT/PROCESSOR.json"),
+    }
+    return dict(
+        schema="srf6-confirm-technical-predecessor-v1",
+        kind="PRE_PROCESSOR_DEPLOYMENT_RESOURCE_REPAIR",
+        root=str(prior),
+        deployment=str(deployment),
+        revision=TECHNICAL_PRIOR_REVISION,
+        job_id="232374",
+        preserved_status="TECHNICAL_FAIL_ZERO_CALLS_UNCHANGED",
+        references=references,
+        data_content_sha256=digest(_data_content(manifest)),
+        spec_object_sha256=digest(spec),
+        config_canonical_sha256=digest(config),
+        parent_content_hashes=registered["parent_content_hashes"],
+        old_processor_routes=0,
+        old_generated_answers=0,
+        old_optimizer_updates=0,
+        old_authorization_reused=False,
+        scientific_failure_reinterpreted=False,
+        repair_only="deploy the unchanged original configs/sr_f6.json and bind the new source/root",
+    )
+
+
+def _compare_technical_design(root, technical, plan, config):
+    prior = _path(TECHNICAL_PRIOR_ROOT)
+    _require(technical.get("root") == str(prior), "Fixed technical predecessor required")
+    old_plan = _bound(prior, technical["references"]["spec"])
+    old_manifest = _bound(prior, technical["references"]["data_manifest"])
+    new_manifest = read(safe_evidence(root, "DATA/MANIFEST.json"))
+    _require(
+        plan == old_plan
+        and digest(plan) == technical["spec_object_sha256"]
+        and plan["parent_content_hashes"] == technical["parent_content_hashes"],
+        "Technical repair changed registered seeds, groups, or scientific conditions",
+    )
+    _require(
+        (root / "CONFIG.json").read_bytes() == (prior / "CONFIG.json").read_bytes()
+        and digest(config) == technical["config_canonical_sha256"],
+        "Technical repair changed original configuration",
+    )
+    _require(
+        _data_content(new_manifest) == _data_content(old_manifest)
+        and digest(_data_content(new_manifest)) == technical["data_content_sha256"],
+        "Technical repair reselected questions or changed scientific data content",
+    )
+
+
 def register(root, revision):
     from . import confirm_data
     from .contract import validate_config
@@ -614,7 +843,7 @@ def register(root, revision):
     root = _root(root, exists=False)
     _require(not root.exists(), "Preserve an existing confirmation namespace")
     origin, deployment = _path(ORIGIN_ROOT), _deployment(revision)
-    resources = old.validate_deployment_assets(deployment)
+    resources = validate_deployment_assets(deployment)
     imports = check_deployment_imports(deployment)
     config = read(safe_evidence(origin, "CONFIG.json"))
     validate_config(config)
@@ -628,6 +857,7 @@ def register(root, revision):
     for parent in PARENTS:
         verify_binding_inputs(origin, config, parent)
     basis = _screen_basis()
+    technical = _technical_predecessor()
     roots = historical_roots(binding)
     root.mkdir()
     with (root / "CONFIG.json").open("xb") as stream:
@@ -640,15 +870,18 @@ def register(root, revision):
             at=now(),
             original_root=str(origin),
             predecessor=basis,
+            technical_predecessor=technical,
             generation_allowed=False,
             training_allowed=False,
             model_calls=0,
         ),
     )
     build = confirm_data.build(root, historical_roots=roots)
+    confirm_data.verify_data(root)
     public, private = confirm_data.load_inputs(root)
     parent_hashes = {p: binding["parents"][p]["content_sha256"] for p in PARENTS}
     plan = make_plan(public, private, parent_hashes)
+    _compare_technical_design(root, technical, plan, config)
     write_once(root / "CONFIRM_SPEC_FROZEN.json", plan)
     files = [inventory_file(deployment / relative) for relative in _source_paths(deployment)]
     frozen_implementations = _frozen_implementations(deployment, files)
@@ -675,6 +908,7 @@ def register(root, revision):
         original_identity_sha256=old.ORIGIN_IDENTITY_SHA256,
         historical_pilot_identity_sha256=old.PILOT_IDENTITY_SHA256,
         predecessor_screen=basis,
+        technical_predecessor=technical,
         historical_v2_status="SCREEN_FAIL_STOP_UNCHANGED",
         old_census_raw_status="DELETED_BY_USER_NOT_REUSED",
         source_manifest=_ref(root, "SOURCE_MANIFEST.json"),
@@ -696,6 +930,7 @@ def register(root, revision):
         optimizer_updates=0,
     )
     _verify_screen_basis(basis)
+    _require(_technical_predecessor() == technical, "Technical predecessor changed during repair")
     write_once(root / "REGISTRATION.json", record)
     return record
 
@@ -730,7 +965,7 @@ def verify_registered(root, parent=None, require_preflight=False):
     origin, deployment = _path(ORIGIN_ROOT), _deployment(record["revision"])
     _require(record["deployment"] == str(deployment), "Actual executing deployment differs")
     _require(
-        record["deployment_resources"] == old.validate_deployment_assets(deployment)
+        record["deployment_resources"] == validate_deployment_assets(deployment)
         and record.get("deployment_import_check", {}).get("status") == "PASS",
         "Complete actual deployment assets and imports required",
     )
@@ -784,6 +1019,11 @@ def verify_registered(root, parent=None, require_preflight=False):
     )
     old._validate_producer(origin, deployment)
     _verify_screen_basis(record["predecessor_screen"])
+    technical = _technical_predecessor()
+    _require(
+        record.get("technical_predecessor") == technical,
+        "Immutable zero-call technical predecessor binding differs",
+    )
     _bound(root, record["data_manifest"])
     _require(record["data_sha256"] == record["data_manifest"]["sha256"], "Data identity differs")
     data_check = confirm_data.verify_data(root)
@@ -804,6 +1044,7 @@ def verify_registered(root, parent=None, require_preflight=False):
         plan == make_plan(public, private, parent_hashes),
         "Frozen confirmation seeds, partitions, or conditions changed",
     )
+    _compare_technical_design(root, technical, plan, config)
     pin = file_hash(root / "REGISTRATION.json")
     preflight = None
     if require_preflight:

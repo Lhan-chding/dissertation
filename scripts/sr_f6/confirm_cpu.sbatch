@@ -15,7 +15,7 @@ project=/projects/_ssd/varunssd/louis-ssvc
 : "${SLURM_JOB_ID:?scheduler allocation required}"
 : "${SLURM_JOB_NAME:?LH-SRF6- name required}"
 [[ "$SLURM_JOB_ID" =~ ^[0-9]+$ && "$SLURM_JOB_NAME" == LH-SRF6-* ]] || exit 2
-[[ "$SRF6_ROOT" == "$project/sr_f6_confirm_v3_20261028" ]] || exit 2
+[[ "$SRF6_ROOT" == "$project/sr_f6_confirm_v3_20261028_r1" ]] || exit 2
 [[ "$SRF6_CODE" =~ ^/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_[0-9a-f]+$ ]] || exit 2
 [[ "$SRF6_ACTION" == prepare || "$SRF6_ACTION" == preflight || "$SRF6_ACTION" == assess ]] || exit 2
 operations="$project/sr_f6_operations_20261027/CONFIRM_V3_EXECUTION_20261028"
@@ -38,8 +38,8 @@ else
 fi
 cache="$operations/cpu_cache_$SLURM_JOB_ID"
 [[ ! -e "$cache" && ! -L "$cache" ]] || exit 2
-mkdir -- "$cache"
-mkdir -- "$cache/tmp"
+mkdir -- "$cache" || exit 2
+mkdir -- "$cache/tmp" || exit 2
 export PYTHONPATH="$SRF6_CODE/src" PYTHONDONTWRITEBYTECODE=1
 export CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false
 export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
@@ -52,10 +52,10 @@ export TORCH_HOME="$cache/torch" TORCH_EXTENSIONS_DIR="$cache/torch-extensions"
 export TORCHINDUCTOR_CACHE_DIR="$cache/inductor" TRITON_CACHE_DIR="$cache/triton"
 export CUDA_CACHE_PATH="$cache/cuda"
 unset BASH_ENV ENV
-cd "$SRF6_CODE"
+cd "$SRF6_CODE" || exit 2
 if [[ "$SRF6_ACTION" == prepare ]]; then
   "$project/envs/ssvc-py312/bin/python3.12" -u -m sr_f6.confirm_registration \
-    register --root "$SRF6_ROOT" --revision "$SRF6_REVISION"
+    register --root "$SRF6_ROOT" --revision "$SRF6_REVISION" || exit $?
 fi
 if [[ "$SRF6_ACTION" == assess ]]; then
   exec "$project/envs/ssvc-py312/bin/python3.12" -u -m sr_f6.confirm_analysis \
