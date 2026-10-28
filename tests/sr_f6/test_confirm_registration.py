@@ -474,6 +474,156 @@ def test_predecessor_runs_only_in_its_immutable_source(project, monkeypatch):
         registration._verify_screen_basis(result)
 
 
+@pytest.fixture
+def screen_with_snapshot_alias(project):
+    """Real HF snapshot/blobs layout with pre-existing content/stat bindings."""
+    from sr_f6.source_binding import inventory_file
+
+    screen = project / "screen"
+    screen.mkdir()
+    store = project / "cache/models--Qwen--model"
+    blob = store / "blobs/frozen-weight-blob"
+    blob.parent.mkdir(parents=True)
+    blob.write_bytes(b"already-bound model bytes; never rehashed in this regression")
+    alias = store / "snapshots/frozen-revision/model-00001-of-00004.safetensors"
+    alias.parent.mkdir(parents=True)
+    alias.symlink_to("../../blobs/frozen-weight-blob")
+    bound = inventory_file(alias, boundary=project)
+    source = project / "sr_f6_code_5ca3fe9/src/sr_f6/runtime.py"
+    source.parent.mkdir(parents=True)
+    source.write_text("# frozen test source\n")
+    original = project / "original/IDENTITY.json"
+    write_once(original, {"unit_test_origin": True})
+    image = project / "original/DATA/images/anchor.png"
+    image.parent.mkdir(parents=True)
+    image.write_bytes(b"unit-test image")
+    prior = project / "prior-v2"
+    write_once(prior / "REGISTRATION.json", {"unit_test": True})
+    write_once(prior / "SCREEN/SCREEN_ASSESSMENT.json", {"status": "SCREEN_FAIL_STOP"})
+    write_once(
+        screen / "SOURCE_MANIFEST.json", {"files": [inventory_file(source, boundary=project)]}
+    )
+    write_once(screen / "CONFIG.json", {"unit_test": True})
+    write_once(screen / "PREFLIGHT.json", {"verified_dependencies": [bound]})
+    write_once(screen / "PREFLIGHT_SEAL.json", {"unit_test": True})
+    stages = {}
+    for stage in (1, 2):
+        (screen / f"STAGE{stage}").mkdir()
+        relative = f"INPUT_PLAN/STAGE{stage}/plan.json"
+        write_once(screen / relative, {"unit_test": True})
+        stages[str(stage)] = {"plan": registration._ref(screen, relative)}
+    for directory in ("STAGE1/SCREEN", "STAGE1/accounting", "STAGE1/runtime_identity"):
+        (screen / directory).mkdir(parents=True, exist_ok=True)
+    report = dict(
+        decision=dict(status="SCREEN_PASS", stage2_parents=[]),
+        responses=576,
+        records_sha256="d" * 64,
+    )
+    write_once(screen / "STAGE1/SCREEN/SCREEN_ASSESSMENT.json", report)
+    write_once(screen / "STAGE1/SCREEN/ASSESSMENT_SEAL.json", {"unit_test": True})
+    write_once(
+        screen / "REGISTRATION.json",
+        dict(
+            source_manifest=registration._ref(screen, "SOURCE_MANIFEST.json"),
+            config=registration._ref(screen, "CONFIG.json"),
+            stages=stages,
+            upstream_files=[inventory_file(original, boundary=project)],
+            image_files=[inventory_file(image, boundary=project)],
+            design_basis=dict(
+                prior_root=str(prior),
+                registration=registration._ref(prior, "REGISTRATION.json"),
+                assessment=registration._ref(prior, "SCREEN/SCREEN_ASSESSMENT.json"),
+            ),
+        ),
+    )
+    return screen, alias, blob, bound
+
+
+def test_hf_snapshot_read_alias_reuses_original_content_binding(
+    screen_with_snapshot_alias, monkeypatch
+):
+    from sr_f6 import source_binding
+
+    _, alias, blob, _ = screen_with_snapshot_alias
+
+    def no_weight_rehash(path):
+        raise AssertionError("Unchanged bound inputs must reuse their recorded content identity")
+
+    monkeypatch.setattr(source_binding, "file_sha256", no_weight_rehash)
+    first = registration._screen_state()
+    assert registration._screen_state() == first
+    state = next(row for row in first if row["path"] == str(alias))
+    assert state["resolved_path"] == str(blob)
+    assert state["lstat_cache_key"] != state["stat_cache_key"]
+    assert state["aliases"][0]["path"] == str(alias)
+    assert state["aliases"][0]["target"] == "../../blobs/frozen-weight-blob"
+    with pytest.raises(PermissionError, match="Symlinked"):
+        registration._path(alias)
+
+
+def test_snapshot_alias_cannot_escape_project(screen_with_snapshot_alias, project):
+    _, alias, _, _ = screen_with_snapshot_alias
+    outside = project.parent / (project.name + "-outside-model")
+    outside.write_bytes(b"outside project")
+    alias.unlink()
+    alias.symlink_to(outside)
+    with pytest.raises(PermissionError, match="outside"):
+        registration._screen_state()
+
+
+def test_snapshot_alias_cannot_switch_to_other_in_project_blob(screen_with_snapshot_alias):
+    _, alias, blob, _ = screen_with_snapshot_alias
+    replacement = blob.with_name("different-frozen-blob")
+    replacement.write_bytes(blob.read_bytes())
+    alias.unlink()
+    alias.symlink_to("../../blobs/different-frozen-blob")
+    with pytest.raises(PermissionError, match="target changed"):
+        registration._screen_state()
+
+
+def test_replacing_alias_to_same_target_invalidates_recorded_predecessor_state(
+    screen_with_snapshot_alias,
+):
+    screen, alias, _, _ = screen_with_snapshot_alias
+    state = registration._screen_state()
+    basis = dict(
+        producer_phase="INTERFACE_SCREEN_V3",
+        root=str(screen),
+        deployment=str(registration.SCREEN_DEPLOYMENT),
+        revision=registration.SCREEN_REVISION,
+        status="SCREEN_PASS",
+        training_authorization_reused=False,
+        records_sha256="d" * 64,
+        registration=registration._ref(screen, "REGISTRATION.json"),
+        assessment=registration._ref(screen, "STAGE1/SCREEN/SCREEN_ASSESSMENT.json"),
+        seal=registration._ref(screen, "STAGE1/SCREEN/ASSESSMENT_SEAL.json"),
+        verified_state=state,
+    )
+    registration._verify_screen_basis(basis)
+    alias.unlink()
+    alias.symlink_to("../../blobs/./frozen-weight-blob")
+    with pytest.raises(PermissionError, match="evidence changed"):
+        registration._verify_screen_basis(basis)
+
+
+def test_bound_snapshot_replaced_during_validation_fails_closed(
+    screen_with_snapshot_alias,
+    monkeypatch,
+):
+    _, alias, _, bound = screen_with_snapshot_alias
+    verify = registration.verify_bound_files
+
+    def replace_after_validation(entries, *, boundary):
+        result = verify(entries, boundary=boundary)
+        alias.unlink()
+        alias.symlink_to("../../blobs/./frozen-weight-blob")
+        return result
+
+    monkeypatch.setattr(registration, "verify_bound_files", replace_after_validation)
+    with pytest.raises(PermissionError, match="alias changed during"):
+        registration._bound_read_states([bound])
+
+
 @pytest.mark.parametrize("status", ["SCREEN_FAIL_STOP", "STAGE2_REQUIRED", "COMPLETE"])
 def test_prior_fake_or_failed_screen_not_a_permission(project, monkeypatch, status):
     (project / "screen").mkdir()

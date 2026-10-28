@@ -150,6 +150,58 @@ def check_deployment_imports(deployment):
     )
 
 
+def _read_state(path):
+    """Observe a logical read path, its exact target, and every alias inode."""
+    path = Path(path)
+    resolved = _path(path.resolve(strict=True))
+    aliases = []
+    for current in (path, *path.parents):
+        if current == PROJECT:
+            break
+        if current.is_symlink():
+            aliases.append(
+                dict(
+                    path=str(current),
+                    target=str(current.readlink()),
+                    lstat_cache_key=stat_cache_key(current.lstat()),
+                )
+            )
+    return dict(
+        path=str(path),
+        resolved_path=str(resolved),
+        lstat_cache_key=stat_cache_key(path.lstat()),
+        stat_cache_key=stat_cache_key(path.stat()),
+        aliases=aliases,
+    )
+
+
+def _bound_read_states(entries):
+    """Accept existing read-only source aliases only under their original binding.
+
+    Model snapshot links are not writable destinations. Their recorded canonical
+    target must remain within this project; unchanged target metadata reuses the
+    original content verification without rereading model weights.
+    """
+    before = {}
+    for entry in entries:
+        path = Path(entry["path"])
+        _require(
+            path.is_absolute() and path.is_relative_to(PROJECT) and ".." not in path.parts,
+            "Bound read path is outside the authorized project",
+        )
+        expected = _path(entry["resolved_path"])
+        _require(path not in before, "Duplicate bound read path")
+        current = _read_state(path)
+        _require(current["resolved_path"] == str(expected), "Bound read target changed")
+        before[path] = current
+    verify_bound_files(entries, boundary=PROJECT)
+    _require(
+        all(_read_state(path) == state for path, state in before.items()),
+        "Bound read alias changed during verification",
+    )
+    return before
+
+
 def _screen_state():
     """Cheap exact metadata inventory after a full frozen-source validation.
 
@@ -168,13 +220,21 @@ def _screen_state():
         paths.update(safe_evidence(base, ref["path"]) for ref in refs.values())
     manifest = _bound(base, registration["source_manifest"])
     preflight = read(safe_evidence(base, "PREFLIGHT.json"))
+    bound_states = {}
     for entries in (
         manifest["files"],
         registration["upstream_files"],
         registration["image_files"],
         preflight["verified_dependencies"],
     ):
-        paths.update(_path(row["path"]) for row in entries)
+        states = _bound_read_states(entries)
+        for path, state in states.items():
+            _require(
+                path not in bound_states or bound_states[path] == state,
+                "Bound read alias changed between dependency inventories",
+            )
+        bound_states.update(states)
+        paths.update(states)
     prior = registration["design_basis"]
     for key in ("registration", "assessment"):
         paths.add(safe_evidence(_path(prior["prior_root"]), prior[key]["path"]))
@@ -191,9 +251,17 @@ def _screen_state():
         not any(p.is_file() for p in stage2.rglob("*")),
         "Passed stage one cannot have stage-two executions",
     )
-    return [
-        dict(path=str(path), stat_cache_key=stat_cache_key(path.stat())) for path in sorted(paths)
-    ]
+    result = []
+    for path in sorted(paths):
+        if path not in bound_states:
+            _path(path)
+        state = _read_state(path)
+        _require(
+            path not in bound_states or state == bound_states[path],
+            "Bound read alias changed while taking predecessor state",
+        )
+        result.append(state)
+    return result
 
 
 def _screen_basis():
