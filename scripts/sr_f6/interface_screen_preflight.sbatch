@@ -14,7 +14,7 @@ project=/projects/_ssd/varunssd/louis-ssvc
 : "${SLURM_JOB_ID:?scheduler allocation required}"
 : "${SLURM_JOB_NAME:?LH-SRF6- name required}"
 [[ "$SLURM_JOB_ID" =~ ^[0-9]+$ && "$SLURM_JOB_NAME" == LH-SRF6-* ]]
-[[ "$SRF6_ROOT" == "$project/sr_f6_interface_v2_20261028" ]]
+[[ "$SRF6_ROOT" == "$project/sr_f6_interface_v2_20261028_r1" ]]
 [[ "$SRF6_CODE" =~ ^/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_[0-9a-f]+$ ]]
 for directory in "$project" "$SRF6_CODE" "$SRF6_ROOT"; do
   [[ -d "$directory" && ! -L "$directory" ]]

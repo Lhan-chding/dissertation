@@ -27,7 +27,7 @@ make_directory() {
 [[ "$SLURM_JOB_ID" =~ ^[0-9]+$ ]] || fail 'unsafe scheduler job id'
 [[ "$SLURM_JOB_NAME" == LH-SRF6-* ]] || fail 'wrong job prefix'
 [[ "$SRF6_PARENT" =~ ^b[012]$ ]] || fail 'unknown parent'
-[[ "$SRF6_ROOT" == "$project/sr_f6_interface_v2_20261028" ]] || fail 'wrong run root'
+[[ "$SRF6_ROOT" == "$project/sr_f6_interface_v2_20261028_r1" ]] || fail 'wrong run root'
 [[ "$SRF6_CODE" == "$project/"* ]] || fail 'source must be inside canonical project'
 canonical_directory "$project"
 canonical_directory "$SRF6_CODE"

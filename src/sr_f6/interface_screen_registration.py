@@ -14,6 +14,7 @@ import hashlib
 import json
 import re
 import socket
+import subprocess
 import sys
 from pathlib import Path
 
@@ -23,7 +24,19 @@ from .interface_protocol import VERSION
 from .interface_repair import prepare_screen, screen_inputs, screen_plan
 from .source_binding import PROJECT, inventory_file, verify_bound_files
 
-ROOT = PROJECT / "sr_f6_interface_v2_20261028"
+ROOT = PROJECT / "sr_f6_interface_v2_20261028_r1"
+PRIOR_ROOT = PROJECT / "sr_f6_interface_v2_20261028"
+PRIOR_REVISION = "d40c0c3138b5f2f62888ca833667db3b0e5a0433"
+DEPLOYMENT_ASSETS = (
+    "src",
+    "tests/sr_f6",
+    "scripts/sr_f6",
+    "docs/sr_f6/package/configs/experiment.json",
+    "docs/sr_f1/package/PACKAGE_SHA256.json",
+    "docs/sr_f1/package/reference/semantic_contract.py",
+    "docs/sr_f1/package/config/SR_F1.json",
+)
+LEGACY_PACKAGE_SHA256 = "832e6cb387af2b0525b55cd076c5a0eb7ad87dd697c42e67b81f194ea580fa65"
 SOURCE_ROOT = PROJECT / "sr_f6_semantic_factorial_20261027"
 PHASE = "INTERFACE_SCREEN_V2"
 REGISTRATION_SCHEMA = "srf6-interface-screen-registration-v1"
@@ -106,9 +119,147 @@ def _source_paths(deployment):
             _path(path)
             if path.is_file() and path.suffix in extensions:
                 members.add(str(path.relative_to(deployment)))
-    members.add("docs/sr_f6/package/configs/experiment.json")
+    for relative in DEPLOYMENT_ASSETS[3:]:
+        path = _path(deployment / relative)
+        _require(path.is_file(), "Required deployment asset is missing: " + relative)
+        members.add(relative)
     _require(bool(members), "Executing source inventory is empty")
     return sorted(members)
+
+
+def validate_deployment_assets(deployment):
+    """Authenticate inherited executable resources, outside the old src manifest."""
+    from .contract import PACKAGE_CONFIG_SHA256
+
+    for relative in DEPLOYMENT_ASSETS[3:]:
+        safe_evidence(deployment, relative)
+    manifest_path = safe_evidence(deployment, "docs/sr_f1/package/PACKAGE_SHA256.json")
+    _require(
+        file_hash(manifest_path) == LEGACY_PACKAGE_SHA256, "Inherited package manifest changed"
+    )
+    manifest = read(manifest_path)
+    checks = {}
+    for relative in ("reference/semantic_contract.py", "config/SR_F1.json"):
+        path = safe_evidence(deployment, "docs/sr_f1/package/" + relative)
+        _require(file_hash(path) == manifest[relative], "Inherited executable resource changed")
+        checks[str(path.relative_to(deployment))] = manifest[relative]
+    _require(
+        file_hash(safe_evidence(deployment, "docs/sr_f6/package/configs/experiment.json"))
+        == PACKAGE_CONFIG_SHA256,
+        "Original F6 configuration resource changed",
+    )
+    return {
+        "legacy_package_manifest_sha256": LEGACY_PACKAGE_SHA256,
+        "legacy_resources": checks,
+        "historical_source_manifest_coverage": "NOT_CLAIMED_OUTSIDE_OLD_SRC_SCOPE",
+        "new_source_manifest_coverage": "ALL_LISTED_EXECUTABLE_RESOURCES",
+    }
+
+
+def check_deployment_imports(deployment):
+    """Resolve the actual isolated non-GPU import chain before registration."""
+    script = "\n".join(
+        (
+            "import sys",
+            "from pathlib import Path",
+            "root = Path(sys.argv[1]).resolve(strict=True)",
+            "sys.path.insert(0, str(root / 'src'))",
+            "import sr_f6.admission",
+            "import sr_f6.interface_screen",
+            "import sr_f6.interface_screen_runtime",
+            "from sr_f3_ce.training import fresh_optimizer",
+            "from sr_f1.contract import PACKAGE, load_config, _reference",
+            "assert PACKAGE == root / 'docs/sr_f1/package'",
+            "assert Path(_reference.__file__).is_relative_to(PACKAGE)",
+            "assert load_config()",
+            "packages = {p.name for p in (root / 'src').iterdir() if p.is_dir()}",
+            "for name, module in tuple(sys.modules.items()):",
+            "    if name.split('.')[0] in packages:",
+            "        path = getattr(module, '__file__', None)",
+            "        if path: assert Path(path).resolve().is_relative_to(root / 'src'), name",
+            "print('SCREEN_PRODUCTION_IMPORTS_RESOLVED; model_calls=0; optimizer_updates=0')",
+        )
+    )
+    completed = subprocess.run(
+        [sys.executable, "-I", "-B", "-c", script, str(deployment)],
+        cwd=deployment,
+        capture_output=True,
+        text=True,
+        check=True,
+        timeout=120,
+    )
+    return {
+        "status": "PASS",
+        "method": "isolated actual production imports; no model construction",
+        "stdout": completed.stdout.strip(),
+        "stderr": completed.stderr.strip(),
+        "model_calls": 0,
+        "optimizer_updates": 0,
+    }
+
+
+def _technical_supersession(public, plan):
+    """Continue only the diagnosed pre-model packaging failure, with identical draws."""
+    prior = _path(PRIOR_ROOT)
+    _require(
+        not (prior / "PREFLIGHT.json").exists(), "Prior preflight result requires separate review"
+    )
+    for directory in ("SCREEN", "runtime_identity", "accounting"):
+        base = _path(prior / directory, exists=False)
+        for candidate in base.rglob("*"):
+            _path(candidate)
+            _require(
+                not candidate.is_file(),
+                "Prior model execution/output prevents technical supersession",
+            )
+    old = read(safe_evidence(prior, "REGISTRATION.json"))
+    _require(
+        old.get("schema") == REGISTRATION_SCHEMA
+        and old.get("root") == str(prior)
+        and old.get("revision") == PRIOR_REVISION
+        and old.get("phase") == PHASE
+        and old.get("training_allowed") is False
+        and old.get("generation_allowed") is False,
+        "Superseded registration is not the diagnosed preflight deployment",
+    )
+    old_public = _read_reference(prior, old["public"], lines=True)
+    old_plan = _read_reference(prior, old["plan"])
+    _validate_plan(old_plan, old_public)
+    _require(public == old_public, "Technical repair cannot replace or alter screen inputs")
+    _require(
+        all(plan.get(key) == value for key, value in screen_plan(old_public).items()),
+        "Technical repair cannot replace fixed attempts/seeds",
+    )
+    log = safe_evidence(prior, "slurm/preflight-231455.log")
+    message = log.read_text()
+    missing = f"/sr_f6_code_{PRIOR_REVISION[:7]}/docs/sr_f1/package/PACKAGE_SHA256.json"
+    _require(
+        "FileNotFoundError" in message
+        and missing in message
+        and 'reference_module("semantic_contract")' in message,
+        "Pre-model missing legacy resource failure evidence differs",
+    )
+    records = [
+        inventory_file(safe_evidence(prior, relative))
+        for relative in (
+            "REGISTRATION.json",
+            old["public"]["path"],
+            old["plan"]["path"],
+            "slurm/preflight-231455.log",
+        )
+    ]
+    return {
+        "kind": "PRE_MODEL_DEPLOYMENT_RESOURCE_REPAIR",
+        "prior_root": str(prior),
+        "prior_revision": PRIOR_REVISION,
+        "prior_job_id": "231455",
+        "old_generated_answers": 0,
+        "old_optimizer_updates": 0,
+        "same_fixed_inputs_and_seed_plan": True,
+        "prior_authorization_reused": False,
+        "scientific_failure_claim": False,
+        "evidence": records,
+    }
 
 
 def _jsonl(path):
@@ -223,6 +374,8 @@ def register(root, *, source_root, revision):
     _require(source_root == SOURCE_ROOT, "Only the actual original input producer is allowed")
     _require(not root.exists(), "Preserve an existing screen namespace")
     deployment = _deployment(revision)
+    resources = validate_deployment_assets(deployment)
+    import_check = check_deployment_imports(deployment)
     config = read(safe_evidence(source_root, "CONFIG.json"))
     validate_config(config)
     _require(
@@ -232,6 +385,7 @@ def register(root, *, source_root, revision):
         "Historical producer identity changed",
     )
     public, private, _, _ = _source_data(source_root)
+    supersession = _technical_supersession(public, screen_plan(public))
     _validate_producer(source_root, deployment)
     binding = read(safe_evidence(source_root, "SOURCE_BINDING.json"))
     _require(set(binding["parents"]) == {"b0", "b1", "b2"}, "Three frozen parents required")
@@ -267,6 +421,9 @@ def register(root, *, source_root, revision):
         "revision": revision,
         "prompt_version": VERSION,
         "consumer_version": CONSUMER_VERSION,
+        "deployment_resources": resources,
+        "deployment_import_check": import_check,
+        "technical_supersession": supersession,
         "historical_status": "FAIL_UNCHANGED_OLD_RAW_DELETED_BY_USER",
         "original_identity_sha256": ORIGIN_IDENTITY_SHA256,
         "historical_pilot_identity_sha256": PILOT_IDENTITY_SHA256,
@@ -319,6 +476,11 @@ def verify_registered(root, *, require_preflight=True):
     _require(source_root == SOURCE_ROOT, "Original producer root differs")
     deployment = _deployment(registration["revision"])
     _require(registration["deployment"] == str(deployment), "Actual executing deployment differs")
+    _require(
+        registration.get("deployment_resources") == validate_deployment_assets(deployment)
+        and registration.get("deployment_import_check", {}).get("status") == "PASS",
+        "Inherited deployment resources/import check changed or missing",
+    )
     manifest = _read_reference(root, registration["source_manifest"])
     _require(
         registration["source_manifest_sha256"] == registration["source_manifest"]["sha256"]
@@ -372,6 +534,10 @@ def verify_registered(root, *, require_preflight=True):
     )
     plan = _read_reference(root, registration["plan"])
     _validate_plan(plan, public)
+    _require(
+        registration.get("technical_supersession") == _technical_supersession(public, plan),
+        "Technical supersession evidence or original zero-output boundary changed",
+    )
     _require(
         registration["data_sha256"]
         == digest({key: registration[key] for key in ("public", "private", "plan")}),
@@ -620,9 +786,6 @@ def _processor(context, facts):
 
 def preflight(root):
     """Run retained source consumers and the real processor, recording failures."""
-    from .admission import _Facts, _source
-    from .admission import _processor as historical_processor
-
     root = _root(root)
     _require(not (root / "PREFLIGHT.json").exists(), "Preserve the existing preflight result")
     receipt = {
@@ -641,6 +804,9 @@ def preflight(root):
         "checks": {},
     }
     try:
+        from .admission import _Facts, _source
+        from .admission import _processor as historical_processor
+
         context = verify_registered(root, require_preflight=False)
         facts = _Facts(context["source_root"])
         origin = facts.read("IDENTITY.json")

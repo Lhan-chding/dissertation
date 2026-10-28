@@ -2,6 +2,9 @@
 
 import copy
 import json
+import shutil
+import subprocess
+from pathlib import Path
 
 import pytest
 
@@ -16,6 +19,7 @@ def project(tmp_path, monkeypatch):
     monkeypatch.setattr(registration, "PROJECT", path)
     monkeypatch.setattr(registration, "ROOT", path / "screen")
     monkeypatch.setattr(registration, "SOURCE_ROOT", path / "old")
+    monkeypatch.setattr(registration, "PRIOR_ROOT", path / "prior")
     return path
 
 
@@ -46,10 +50,57 @@ def test_source_inventory_covers_recursive_entrypoints_and_rejects_symlinks(proj
         path = deployment / name
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("# bound source\n")
+    for relative in registration.DEPLOYMENT_ASSETS[3:]:
+        path = deployment / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("{}")
     assert "scripts/sr_f6/nested/run.sh" in registration._source_paths(deployment)
     (deployment / "src/escape.py").symlink_to(deployment / "src/core.py")
     with pytest.raises(PermissionError, match="Symlinked"):
         registration._source_paths(deployment)
+
+
+def test_missing_legacy_asset_blocks_source_inventory(project):
+    deployment = project / "code"
+    for name in registration.DEPLOYMENT_ASSETS[:3]:
+        (deployment / name).mkdir(parents=True)
+    for name in registration.DEPLOYMENT_ASSETS[3:]:
+        path = deployment / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("{}")
+    (deployment / "docs/sr_f1/package/PACKAGE_SHA256.json").unlink()
+    with pytest.raises(FileNotFoundError):
+        registration._source_paths(deployment)
+
+
+def test_isolated_production_imports_require_and_authenticate_legacy_package(tmp_path):
+    repository = Path(__file__).resolve().parents[2]
+    isolated = tmp_path / "deployment"
+    shutil.copytree(
+        repository / "src", isolated / "src", ignore=shutil.ignore_patterns("__pycache__")
+    )
+    config = "docs/sr_f6/package/configs/experiment.json"
+    (isolated / config).parent.mkdir(parents=True)
+    shutil.copyfile(repository / config, isolated / config)
+    with pytest.raises(subprocess.CalledProcessError) as missing:
+        registration.check_deployment_imports(isolated)
+    assert "PACKAGE_SHA256.json" in missing.value.stderr
+    for relative in registration.DEPLOYMENT_ASSETS[4:]:
+        target = isolated / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(repository / relative, target)
+    result = registration.check_deployment_imports(isolated)
+    assert result["status"] == "PASS"
+    assert result["model_calls"] == result["optimizer_updates"] == 0
+    assert "SCREEN_PRODUCTION_IMPORTS_RESOLVED" in result["stdout"]
+    assert (
+        registration.validate_deployment_assets(isolated)["legacy_package_manifest_sha256"]
+        == registration.LEGACY_PACKAGE_SHA256
+    )
+    semantic = isolated / "docs/sr_f1/package/reference/semantic_contract.py"
+    semantic.write_text(semantic.read_text() + "\n# changed\n")
+    with pytest.raises(PermissionError, match="executable resource changed"):
+        registration.validate_deployment_assets(isolated)
 
 
 @pytest.fixture
@@ -298,3 +349,75 @@ def test_register_refuses_existing_namespace_before_reading_sources(project):
     (project / "screen").mkdir()
     with pytest.raises(PermissionError, match="Preserve"):
         registration.register(project / "screen", source_root=project / "old", revision="a" * 40)
+
+
+@pytest.fixture
+def prior_attempt(project, public, monkeypatch):
+    from sr_f6.source_binding import inventory_file
+
+    monkeypatch.setattr(registration, "inventory_file", lambda path: inventory_file(path, project))
+    prior = project / "prior"
+    prior.mkdir()
+    inputs = prior / "INPUT_PLAN/MODEL_INPUTS.jsonl"
+    inputs.parent.mkdir()
+    inputs.write_text("".join(json.dumps(row) + "\n" for row in public))
+    write_once(prior / "INPUT_PLAN/SCREEN_INPUT_PLAN.json", screen_plan(public))
+    write_once(
+        prior / "REGISTRATION.json",
+        {
+            "schema": registration.REGISTRATION_SCHEMA,
+            "root": str(prior),
+            "revision": registration.PRIOR_REVISION,
+            "phase": registration.PHASE,
+            "training_allowed": False,
+            "generation_allowed": False,
+            "public": registration._reference(prior, "INPUT_PLAN/MODEL_INPUTS.jsonl"),
+            "plan": registration._reference(prior, "INPUT_PLAN/SCREEN_INPUT_PLAN.json"),
+        },
+    )
+    log = prior / "slurm/preflight-231455.log"
+    log.parent.mkdir()
+    log.write_text(
+        '_reference = reference_module("semantic_contract")\n'
+        "FileNotFoundError: [Errno 2] No such file or directory: "
+        "'/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_d40c0c3/"
+        "docs/sr_f1/package/PACKAGE_SHA256.json'\n"
+    )
+    return prior
+
+
+def test_technical_supersession_only_preserves_exact_zero_output_plan(prior_attempt, public):
+    result = registration._technical_supersession(public, screen_plan(public))
+    assert result["old_generated_answers"] == 0
+    assert result["same_fixed_inputs_and_seed_plan"] is True
+    assert result["prior_authorization_reused"] is False
+    assert result["scientific_failure_claim"] is False
+    assert len(result["evidence"]) == 4
+
+
+@pytest.mark.parametrize(
+    "mutation", ["raw", "runtime", "accounting", "preflight", "log", "input", "seed"]
+)
+def test_technical_supersession_rejects_unrelated_failures_or_changed_experiment(
+    prior_attempt, public, mutation
+):
+    plan = screen_plan(public)
+    if mutation in ("raw", "runtime", "accounting"):
+        relative = {
+            "raw": "SCREEN/raw/row.jsonl",
+            "runtime": "runtime_identity/worker.json",
+            "accounting": "accounting/worker.jsonl",
+        }[mutation]
+        path = prior_attempt / relative
+        path.parent.mkdir(parents=True)
+        path.write_text("{}")
+    elif mutation == "preflight":
+        (prior_attempt / "PREFLIGHT.json").write_text('{"status":"FAIL"}')
+    elif mutation == "log":
+        (prior_attempt / "slurm/preflight-231455.log").write_text("another failure")
+    elif mutation == "input":
+        public[0]["model_input"]["prompt"] += " changed"
+    else:
+        plan["attempts"][0]["seed"] += 1
+    with pytest.raises(PermissionError):
+        registration._technical_supersession(public, plan)
