@@ -384,15 +384,15 @@ def signature_prediction(tasks, answers):
     return output
 
 
-def census_diagnostics(records, private_tasks, *, master=2026102701):
-    """Read saved DEV_CAL records only; missing rows cannot become a signed PASS."""
+def census_diagnostics(records, private_tasks, *, master=2026102701, split="DEV_CAL"):
+    """Read an explicit development split; missing rows never sign a PASS."""
+    if split not in ("DEV_CAL", "DEV_SCHEMA_CONFIRM"):
+        raise ValueError("Only an explicit registered development split is accepted")
     if not records or not private_tasks:
         raise ValueError("Existing records and private tasks are required")
     tasks = {task["qid"]: task for task in private_tasks}
-    if len(tasks) != len(private_tasks) or any(
-        task["split"] != "DEV_CAL" for task in tasks.values()
-    ):
-        raise ValueError("Unique DEV_CAL private task manifest required")
+    if len(tasks) != len(private_tasks) or any(task["split"] != split for task in tasks.values()):
+        raise ValueError(f"Unique {split} private task manifest required")
     roots = defaultdict(lambda: {"tasks": defaultdict(list)})
     for task in tasks.values():
         root = roots[task["root_id"]]
@@ -408,7 +408,7 @@ def census_diagnostics(records, private_tasks, *, master=2026102701):
     for row in records:
         task = tasks.get(row["qid"])
         if task is None or row["parent"] not in {"b0", "b1", "b2"}:
-            raise ValueError("Response is outside the supplied registered DEV_CAL manifest")
+            raise ValueError(f"Response is outside the supplied registered {split} manifest")
         if any(row[key] != task[key] for key in ("root_id", "factor", "family")):
             raise ValueError("Response/task identity differs")
         if type(row["draw"]) is not int or not 0 <= row["draw"] < 8:
