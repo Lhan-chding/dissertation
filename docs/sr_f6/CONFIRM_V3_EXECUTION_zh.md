@@ -85,6 +85,10 @@ EOS不改成balanced，UNKNOWN不算错误也不从分母删除。固定shard执
 先实现并验证，不接受旧身份的许可。全部原门通过后才按合同进行12步pilot、恢复、54路72步
 及完整评测。
 
+新消费者的双来源绑定、固定360真实审核、固定24条数值重放及确认完成证明，见
+[CONFIRM_FOLLOWUP_EXECUTION_zh.md](CONFIRM_FOLLOWUP_EXECUTION_zh.md)。该完成证明不能替代
+未来pilot自身的源码、v3输入覆盖层和运行时准入登记。
+
 ## 题组结论与运维边界
 
 分别报告有限候选覆盖、真实错误匹配及UNKNOWN、完整G8信用机会、最终未见COMPOSITION的
