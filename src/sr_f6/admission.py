@@ -47,6 +47,11 @@ from pathlib import Path
 
 from . import data, numerical_replay, phases, registration, review_audit, review_package
 from .common import digest, file_hash, safe_evidence, write_once
+from .compatibility import (
+    coalesce_asset_inventory,
+    normalize_visual_item,
+    require_consumer_version,
+)
 from .source_binding import content_inventory, verify_bound_files
 
 SCHEMA = "srf6-pilot-admission-v1"
@@ -214,9 +219,11 @@ def _inventory(facts, items):
         }
 
 
-def _source(facts, phase, origin, config):
+def _source(facts, phase, origin, config, *, consumer_version=None):
     from .gates import PREFLIGHT_REQUIRED, _evidence
 
+    if consumer_version is not None:
+        require_consumer_version(consumer_version)
     ready = facts.read("PREFLIGHT/CENSUS_READY.json")
     _require(
         ready.get("status") == "READY_FOR_CENSUS"
@@ -324,22 +331,36 @@ def _source(facts, phase, origin, config):
             "Parent LoRA configuration differs",
         )
     _inventory(facts, [source["previous_config"], *source["retention"].values()])
+    adapted_inventories = {}
     for panel, count in (("LEGACY", 128), ("CHARTQA", 250)):
         rows = source["retention_images"][panel]
         _require(
             len(rows) == len({r["qid"] for r in rows}) == count,
             "Retention image/ID coverage differs",
         )
-        _inventory(facts, rows)
+        if consumer_version is None:
+            _inventory(facts, rows)
+        else:
+            adapted = coalesce_asset_inventory(rows)
+            _inventory(facts, adapted["unique_files"])
+            adapted_inventories[panel] = adapted
         ref = source["retention"][panel + "_TASKS.jsonl"]
         tasks = facts.outside(ref["path"], ref["sha256"], lines=True)
         _require({r["qid"] for r in tasks} == {r["qid"] for r in rows}, "Retention task IDs differ")
-    return dict(
+    result = dict(
         status="PASS",
         producer="CENSUS_S0",
         source_binding_status=source["status"],
         content_identity_only=True,
     )
+    if consumer_version is not None:
+        result["compatibility"] = dict(
+            consumer_version=consumer_version,
+            source_reference=facts.inputs["SOURCE_BINDING.json"],
+            retention_images=adapted_inventories,
+            gate_signed=False,
+        )
+    return result
 
 
 def _data(facts, config):
@@ -427,11 +448,13 @@ def _historical(facts, tasks):
     return dict(status="PASS", producer="CENSUS_S0", checked_question_rows=len(tasks))
 
 
-def _processor(facts, origin):
+def _processor(facts, origin, *, consumer_version=None):
     from PIL import Image
 
     from srf6_ref.core import FAMILIES
 
+    if consumer_version is not None:
+        require_consumer_version(consumer_version)
     report = facts.read("PREFLIGHT/PROCESSOR.json")
     visual = facts.read("PREFLIGHT/VISUAL_REVIEW.json")
     _require(
@@ -479,6 +502,8 @@ def _processor(facts, origin):
         and len({r["qid"] for r in reviews}) == 48,
         "Actual visual review is incomplete",
     )
+    if consumer_version is not None:
+        reviews = [normalize_visual_item(item) for item in reviews]
     reviews = {r["qid"]: r for r in reviews}
     for item in images:
         task, review = plan[item["qid"]], reviews[item["qid"]]
@@ -553,13 +578,22 @@ def _processor(facts, origin):
         )
     fixtures = report.get("tokenizer_fixtures", [])
     _tokenizer_roundtrips(facts, fixtures)
-    return dict(
+    result = dict(
         status="PASS",
         producer="CENSUS_S0",
         images=48,
         reviewer_type=visual["reviewer_type"],
         tokenizer_fixtures=len(fixtures),
     )
+    if consumer_version is not None:
+        result["compatibility"] = dict(
+            consumer_version=consumer_version,
+            source_reference=facts.inputs["PREFLIGHT/VISUAL_REVIEW.json"],
+            items=list(reviews.values()),
+            new_visual_review_performed=False,
+            gate_signed=False,
+        )
+    return result
 
 
 def _tokenizer_roundtrips(facts, fixtures):

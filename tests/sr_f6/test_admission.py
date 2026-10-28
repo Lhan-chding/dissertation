@@ -607,6 +607,158 @@ def test_processor_rechecks_48_actual_image_hashes_pixels_and_routing(processor_
     assert report["images"] == 48 and facts.synthetic
 
 
+def test_processor_legacy_alias_failure_is_unchanged_until_explicit_v2(processor_fixture):
+    from sr_f6.compatibility import CONSUMER_VERSION
+
+    root, origin, _, visual = processor_fixture
+    for row in visual["items"][16:]:
+        row["source_viewed"] = row.pop("reviewed_source")
+        row["processed_viewed"] = row.pop("reviewed_processed")
+        row["defects"] = row.pop("issues")
+    ref = save(root, "PREFLIGHT/VISUAL_REVIEW.json", visual)
+    original = (root / ref["path"]).read_bytes()
+    with pytest.raises(PermissionError, match="Unresolved/unviewed"):
+        admission._processor(admission._Facts(root), origin)
+    report = admission._processor(admission._Facts(root), origin, consumer_version=CONSUMER_VERSION)
+    assert report["status"] == "PASS" and report["images"] == 48
+    adapted = report["compatibility"]
+    assert adapted["source_reference"] == ref
+    assert not adapted["new_visual_review_performed"] and not adapted["gate_signed"]
+    assert len(adapted["items"]) == 48
+    assert (root / ref["path"]).read_bytes() == original
+
+
+@pytest.mark.parametrize("mutation", ["conflict", "unviewed", "defects", "fake_boolean"])
+def test_v2_processor_adapter_cannot_erase_negative_or_ambiguous_review(
+    processor_fixture, mutation
+):
+    from sr_f6.compatibility import CONSUMER_VERSION
+
+    root, origin, _, visual = processor_fixture
+    row = visual["items"][0]
+    row["source_viewed"] = row.pop("reviewed_source")
+    row["processed_viewed"] = row.pop("reviewed_processed")
+    row["defects"] = row.pop("issues")
+    if mutation == "conflict":
+        row["reviewed_source"] = False
+    elif mutation == "unviewed":
+        row["source_viewed"] = False
+    elif mutation == "defects":
+        row["defects"] = ["not readable"]
+    else:
+        row["source_viewed"] = 1
+    save(root, "PREFLIGHT/VISUAL_REVIEW.json", visual)
+    with pytest.raises((ValueError, PermissionError)):
+        admission._processor(admission._Facts(root), origin, consumer_version=CONSUMER_VERSION)
+
+
+def test_source_consumer_separates_250_questions_from_234_verified_files(tmp_path, monkeypatch):
+    """Exercise the actual retention branch and unchanged file verifier locally."""
+    import importlib.metadata
+
+    from sr_f6 import gates, phases, source_binding
+    from sr_f6.common import digest
+    from sr_f6.compatibility import CONSUMER_VERSION
+
+    monkeypatch.setattr(phases, "PROJECT", tmp_path)
+    monkeypatch.setattr(gates, "_evidence", lambda *args: None)
+    monkeypatch.setattr(admission, "_collect", lambda *args: None)
+    # Native source identity checks have separate coverage; this is an asset-boundary fixture.
+    monkeypatch.setattr(source_binding, "SOURCE_FILES", ())
+
+    def asset(relative, text="SYNTHETIC FILE"):
+        path = tmp_path / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
+        return dict(
+            path=str(path),
+            resolved_path=str(path),
+            sha256=file_hash(path),
+            bytes=path.stat().st_size,
+        )
+
+    config = dict(model=dict(model_path=str(tmp_path / "model"), parents={}))
+    parents = {}
+    for name in ("b0", "b1", "b2"):
+        config["model"]["parents"][name] = str(tmp_path / name)
+        files = [
+            asset(f"{name}/adapter_config.json", "{}"),
+            asset(f"{name}/adapter_model.safetensors"),
+        ]
+        parents[name] = dict(
+            path=config["model"]["parents"][name],
+            files=files,
+            content_sha256=digest(source_binding.content_inventory(files)),
+            lora_config={},
+        )
+    model_files = [
+        asset("model/" + name)
+        for name in ("config.json", "tokenizer_config.json", "model.safetensors")
+    ]
+    retention, images = {}, {}
+    for panel, count, unique in (("LEGACY", 128, 128), ("CHARTQA", 250, 234)):
+        files = [asset(f"images/{panel}/{i}.png") for i in range(unique)]
+        images[panel] = [dict(qid=f"{panel}-{i}", **files[i % unique]) for i in range(count)]
+        retention[panel + "_TASKS.jsonl"] = asset(
+            panel + ".jsonl",
+            "".join(json.dumps(dict(qid=row["qid"])) + "\n" for row in images[panel]),
+        )
+    source = dict(
+        status="SYNTHETIC_ONLY",
+        phase="SOURCE_BINDING",
+        execution_origin="SERVER_ACTUAL",
+        config_file_sha256="a" * 64,
+        config_canonical_sha256=digest(config),
+        optimizer_inheritance=False,
+        model_calls=0,
+        optimizer_updates=0,
+        parents=parents,
+        host="synthetic-host",
+        python="synthetic-python",
+        versions={"pytest": importlib.metadata.version("pytest")},
+        inherited_deployment_files=[],
+        source_content_sha256=digest([]),
+        source_files=[asset("source.py")],
+        model_files=model_files,
+        model_content_sha256=digest(source_binding.content_inventory(model_files)),
+        previous_config=asset("previous.json", "{}"),
+        retention=retention,
+        retention_images=images,
+    )
+    source_ref = save(tmp_path, "SOURCE_BINDING.json", source)
+    origin = dict(config_sha256="a" * 64)
+    ready = dict(
+        status="READY_FOR_CENSUS",
+        phase="DEV_CAL",
+        context=origin,
+        execution_origin="SERVER_ACTUAL",
+        optimizer_updates=0,
+        evidence=[],
+    )
+    ready_ref = save(tmp_path, "PREFLIGHT/CENSUS_READY.json", ready)
+    phase = dict(
+        identity=dict(
+            origin=dict(identity=dict(sha256="b" * 64), deployment=str(tmp_path)),
+            upstream=[
+                dict(producer_phase="CENSUS_S0", identity_sha256="b" * 64, evidence=[ready_ref])
+            ],
+        )
+    )
+    original = (tmp_path / source_ref["path"]).read_bytes()
+    with pytest.raises(PermissionError, match="duplicated"):
+        admission._source(admission._Facts(tmp_path), phase, origin, config)
+    report = admission._source(
+        admission._Facts(tmp_path), phase, origin, config, consumer_version=CONSUMER_VERSION
+    )
+    result = report["compatibility"]["retention_images"]["CHARTQA"]
+    assert result["question_count"] == 250 and result["unique_file_count"] == 234
+    assert {row["qid"] for row in result["question_references"]} == {
+        row["qid"] for row in images["CHARTQA"]
+    }
+    assert report["compatibility"]["source_reference"] == source_ref
+    assert (tmp_path / source_ref["path"]).read_bytes() == original
+
+
 @pytest.mark.parametrize(
     "mutation", ["coverage", "unviewed", "rgb", "grid", "recipe", "program_reviewer"]
 )

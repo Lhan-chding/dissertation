@@ -207,7 +207,16 @@ def all_tasks(roots):
     return [task for root in roots for tasks in root["tasks"].values() for task in tasks]
 
 
-def public_prompt(task, *, natural=False):
+def public_prompt(task, *, natural=False, prompt_version=None):
+    # An explicit opt-in preserves every frozen v1 caller and natural panel.
+    # The wire grammar and all scorers stay unchanged in interface-v2.
+    from .interface_protocol import VERSION as INTERFACE_VERSION
+    from .interface_protocol import public_prompt as clarified_prompt
+
+    if prompt_version not in (None, INTERFACE_VERSION):
+        raise ValueError("Unknown SR-F6 prompt revision")
+    if prompt_version == INTERFACE_VERSION and not natural:
+        return clarified_prompt(list(task["world"]["categories"]), dict(task["query"]))
     safe = {
         "world": {"categories": list(task["world"]["categories"])},
         "query": dict(task["query"]),
