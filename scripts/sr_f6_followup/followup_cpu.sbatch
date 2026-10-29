@@ -15,16 +15,16 @@ project=/projects/_ssd/varunssd/louis-ssvc
 : "${SLURM_JOB_ID:?scheduler allocation required}"
 : "${SLURM_JOB_NAME:?LH-SRF6- job name required}"
 [[ "$SLURM_JOB_ID" =~ ^[0-9]+$ && "$SLURM_JOB_NAME" == LH-SRF6-* ]] || exit 2
-[[ "$SRF6_ROOT" == "$project/sr_f6_confirm_followup_v1_20261029" ]] || exit 2
+[[ "$SRF6_ROOT" == "$project/sr_f6_confirm_followup_v2_20261029" ]] || exit 2
 [[ "$SRF6_CODE" =~ ^/projects/_ssd/varunssd/louis-ssvc/sr_f6_followup_code_[0-9a-f]+$ ]] || exit 2
 producer="$project/sr_f6_code_6e5d363"
-operations="$project/sr_f6_operations_20261027/CONFIRM_FOLLOWUP_EXECUTION_20261029"
+operations="$project/sr_f6_operations_20261027/CONFIRM_FOLLOWUP_V2_EXECUTION_20261029"
 for directory in "$project" "$SRF6_CODE" "$producer" "$operations"; do
   [[ -d "$directory" && ! -L "$directory" ]] || exit 2
   [[ "$(cd -P -- "$directory" && pwd -P)" == "$directory" ]] || exit 2
 done
 case "$SRF6_ACTION" in
-  register)
+  register|repair-prepare)
     : "${SRF6_REVISION:?full consumer revision required}"
     [[ "$SRF6_REVISION" =~ ^[0-9a-f]{40}$ ]] || exit 2
     suffix="${SRF6_CODE##*/sr_f6_followup_code_}"
@@ -55,6 +55,10 @@ unset BASH_ENV ENV
 cd "$SRF6_CODE"
 python="$project/envs/ssvc-py312/bin/python3.12"
 case "$SRF6_ACTION" in
+  repair-prepare)
+    "$python" -m pytest -q -p no:cacheprovider --basetemp "$cache/pytest" tests/sr_f6/test_followup_review_contract.py
+    exec "$python" -u -m sr_f6_followup.repair_prepare --root "$SRF6_ROOT" --revision "$SRF6_REVISION"
+    ;;
   register) exec "$python" -u -m sr_f6_followup.source register --root "$SRF6_ROOT" --revision "$SRF6_REVISION" ;;
   bind-support) exec "$python" -u -m sr_f6_followup.source bind-support --root "$SRF6_ROOT" ;;
   review-package) exec "$python" -u -m sr_f6_followup.review_package write --root "$SRF6_ROOT" ;;

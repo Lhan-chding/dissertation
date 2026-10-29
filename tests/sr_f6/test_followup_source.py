@@ -81,6 +81,17 @@ def setup(tmp_path, monkeypatch):
     monkeypatch.setattr(
         source, "_producer_context", lambda: calls.append("producer") or copy.deepcopy(context)
     )
+    monkeypatch.setattr(
+        source,
+        "repair_history",
+        lambda: dict(
+            references=[],
+            summary=dict(
+                consumer={"revision": "SYNTHETIC_ONLY_OLD_CONSUMER"},
+                status="BLOCKING_FINDINGS",
+            ),
+        ),
+    )
     source._SUPPORT_CACHE.clear()
     source._SOURCE_VERIFIED.clear()
     return SimpleNamespace(
@@ -183,12 +194,61 @@ def test_registration_freezes_distinct_consumer_and_original_contract(setup):
     assert result["registration"]["producer"]["revision"] == source.PRODUCER_REVISION
     assert result["spec"]["requirements"] == setup.context["spec"]["followup_requirements"]
     assert result["spec"]["training_allowed"] is False
+    assert result["spec"]["phase"] == "CONFIRM_FOLLOWUP_V2"
+    assert (
+        result["spec"]["repair_history"]["status"] == "HISTORICAL_NEGATIVE_EVIDENCE_NOT_AUTHORITY"
+    )
+    assert result["spec"]["repair_history"]["review_status"] == "BLOCKING_FINDINGS"
+    assert result["spec"]["repair_history"]["completed"] is False
     assert result["registration"]["status"] == "BOUND_NOT_AUTHORIZED"
     assert result["producer_context"]["root"] == setup.producer_root
     with pytest.raises(PermissionError):
         registered(setup)
     with pytest.raises(FileNotFoundError):
         source.require_support(setup.root, "review")
+
+
+def test_changed_pre_review_contract_invalidates_registration(setup):
+    from sr_f6_followup import review_contract
+
+    result = registered(setup)
+    expected = result["spec"]["review_contract"]
+    setup.monkeypatch.setattr(
+        review_contract, "specification", lambda: dict(expected, changed="SYNTHETIC_METHOD_CHANGE")
+    )
+    with pytest.raises(PermissionError, match="contract changed"):
+        source.verify_registered(setup.root)
+
+
+def test_changed_historical_failure_binding_invalidates_registration(setup):
+    registered(setup)
+    setup.monkeypatch.setattr(
+        source,
+        "repair_history",
+        lambda: dict(
+            references=[], summary=dict(consumer={}, status="REVIEW_COMPLETE_NOT_GATE_SIGNED")
+        ),
+    )
+    with pytest.raises(PermissionError, match="contract changed"):
+        source.verify_registered(setup.root)
+
+
+def test_old_followup_root_is_rejected_before_any_registration(setup):
+    previous = setup.project / "sr_f6_confirm_followup_v1_20261029"
+    with pytest.raises(PermissionError, match="separately registered followup root"):
+        source.register(previous, "abcdef1" + "0" * 33)
+    assert not previous.exists()
+
+
+def test_launchers_allow_only_new_root_and_operations():
+    checkout = Path(source.__file__).resolve().parents[2]
+    for path in (checkout / "scripts/sr_f6_followup").glob("*.sbatch"):
+        script = path.read_text()
+        assert "sr_f6_confirm_followup_v2_20261029" in script
+        assert "sr_f6_confirm_followup_v1_20261029" not in script
+    cpu = (checkout / "scripts/sr_f6_followup/followup_cpu.sbatch").read_text()
+    assert "CONFIRM_FOLLOWUP_V2_EXECUTION_20261029" in cpu
+    assert "CONFIRM_FOLLOWUP_EXECUTION_20261029" not in cpu
 
 
 @pytest.mark.parametrize("external", [False, True])

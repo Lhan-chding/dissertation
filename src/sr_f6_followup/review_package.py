@@ -27,9 +27,9 @@ from sr_f6.review_package import (
     _require_commit,
 )
 
-from . import sampling, source
+from . import review_contract, sampling, source
 
-SCHEMA = "srf6-followup-review-package-v1"
+SCHEMA = "srf6-followup-review-package-v2"
 DESTINATION = "REVIEW/PACKAGE"
 SELECTION = "RECOMPUTED_FROM_VERIFIED_FULL_CONFIRMATION"
 
@@ -85,6 +85,8 @@ def _derive(root):
     }
     _require(set(raw) == expected, "Exact original three-parent G8 matrix required")
     judgment = []
+    program_claims = []
+    by_id = {row["row_id"]: row for row in records}
     for row in ledger["selected"]:
         task = tasks[row["qid"]]
         _require(
@@ -95,10 +97,40 @@ def _derive(root):
         judgment.append(
             dict(anonymous_id=row["anonymous_id"], world=task["world"], query=task["query"])
         )
+        recorded = by_id[row["row_id"]]
+        score = recorded["score"]
+        _require(
+            all(score[key] == value for key, value in row["program_labels"].items()),
+            "Original score differs from selected program labels",
+        )
+        program_claims.append(
+            dict(
+                anonymous_id=row["anonymous_id"],
+                row_id=row["row_id"],
+                raw_text_sha256=row["raw_text_sha256"],
+                labels=row["program_labels"],
+                raw_generation_finish_reason=raw[row["row_id"]]["finish_reason"],
+                scored_finish_reason=score["finish_reason"],
+                original_score=score,
+                oracle=dict(
+                    answer=task["gold_answer"],
+                    selected=task["gold_selected"],
+                    bindings=task["gold_bindings"],
+                ),
+                source_identity=source_identity,
+            )
+        )
+    history = source.repair_history()
+    _require(
+        ledger["selected"] == history["ledger"]["selected"]
+        and blind == history["blind"]
+        and judgment == history["tasks"],
+        "Repair must preserve every original selected row, text, order and task",
+    )
     # Support already verified all external leaves. Adopt those identities, never
     # rehash model weights or replay the full raw matrix a second time here.
     external = {}
-    for ref in support["dependencies"]:
+    for ref in [*support["dependencies"], *history["references"]]:
         pin = {key: ref[key] for key in ("path", "sha256")}
         _require(external.setdefault(pin["path"], pin) == pin, "Conflicting upstream pin")
     registration = context["registration"]
@@ -116,6 +148,8 @@ def _derive(root):
         "judgment/TASKS.jsonl": _payload(judgment, lines=True),
         "private/SUPPORT.json": _payload(support),
         "private/CONFIRMATION_VALIDATION.json": _payload(validation),
+        "private/PROGRAM_CLAIMS.json": _payload(program_claims),
+        **{f"method/{name}": value for name, value in review_contract.payloads().items()},
     }
     refs = {name: _ref(f"{DESTINATION}/{name}", value) for name, value in files.items()}
     package = dict(
@@ -138,6 +172,13 @@ def _derive(root):
         judgment_tasks=refs["judgment/TASKS.jsonl"],
         support=refs["private/SUPPORT.json"],
         confirmation_validation=refs["private/CONFIRMATION_VALIDATION.json"],
+        program_claims=refs["private/PROGRAM_CLAIMS.json"],
+        review_method=refs["method/REVIEW_METHOD.md"],
+        adjudication_method=refs["method/ADJUDICATION_METHOD.md"],
+        review_contract=refs["method/CONTRACT.json"],
+        method_specification=review_contract.specification(),
+        repair_history_status="HISTORICAL_NEGATIVE_EVIDENCE_NOT_AUTHORITY",
+        historical_review_status=history["summary"]["status"],
         ledger_source_identity=source_identity,
         selection_provenance=SELECTION,
         selection_inputs_sha256=ledger["selection_inputs_sha256"],
@@ -147,7 +188,13 @@ def _derive(root):
     )
     files["BINDING.json"] = _payload(package)
     return dict(
-        context=context, package=package, files=files, ledger=ledger, blind=blind, tasks=tasks
+        context=context,
+        package=package,
+        files=files,
+        ledger=ledger,
+        blind=blind,
+        tasks=tasks,
+        program_claims=program_claims,
     )
 
 
@@ -233,7 +280,9 @@ def verify_package(root):
         package_ref=reference,
         inputs=[*bundle["package"]["inputs"], reference],
         external_inputs=bundle["package"]["external_inputs"],
-        artifacts={key: bundle[key] for key in ("package", "ledger", "blind", "tasks")},
+        artifacts={
+            key: bundle[key] for key in ("package", "ledger", "blind", "tasks", "program_claims")
+        },
     )
 
 

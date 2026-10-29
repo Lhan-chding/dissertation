@@ -43,7 +43,7 @@ from sr_f6.review_package import _directory, _fsync_directory, _payload
 
 from . import review_package, sampling, source
 
-VERSION = "srf6-followup-independent-review-audit-v1"
+VERSION = "srf6-followup-independent-review-audit-v2"
 TRACE_SCHEMA = "srf6-review-execution-trace-v1"
 REVIEW_DIRECTORY = "REVIEW/EXECUTIONS"
 DESTINATION = "REVIEW/AUDIT"
@@ -89,6 +89,21 @@ def _visible(facts, reference):
     return facts.bound(reference, lines=reference["path"].endswith(".jsonl"))
 
 
+def _method_refs(package, *, adjudication=False):
+    return [package["review_contract"], *([package["review_method"]] if adjudication else [])]
+
+
+def _method_materials(facts, package, *, adjudication=False):
+    materials = []
+    for ref in _method_refs(package, adjudication=adjudication):
+        facts.read(ref["path"], reference=ref, opaque=True)
+        raw = safe_evidence(facts.root, ref["path"]).read_text()
+        materials.append(
+            dict(reference=ref, content=json.loads(raw) if ref["path"].endswith(".json") else raw)
+        )
+    return materials
+
+
 def _trace(facts, submission, package, *, adjudication=False):
     reviewer = submission["reviewer"]
     _require(
@@ -98,7 +113,18 @@ def _trace(facts, submission, package, *, adjudication=False):
     )
     trace = facts.bound(reviewer["transcript"])
     source = facts.bound(reviewer["source"])
+    method = package["adjudication_method" if adjudication else "review_method"]
+    _require(reviewer.get("method") == method, "Reviewer method differs from preregistration")
     facts.read(reviewer["method"]["path"], reference=reviewer["method"], opaque=True)
+    _require(
+        trace.get("method_content") == safe_evidence(facts.root, method["path"]).read_text(),
+        "Actual trace must include the complete registered method",
+    )
+    _require(
+        trace.get("method_attachments")
+        == _method_materials(facts, package, adjudication=adjudication),
+        "Actual trace must include all registered method attachments",
+    )
     _require(
         trace.get("schema") == TRACE_SCHEMA and trace.get("execution_origin") == "ACTUAL_REVIEW",
         "Complete typed actual execution trace required",
@@ -215,8 +241,20 @@ def _inventory(reader, verification):
             and attempt.get("consumer") == verification["consumer"]
             and attempt.get("input_producer") == verification["input_producer"]
             and attempt.get("package") == verification["package_ref"]
+            and attempt.get("method")
+            == verification["artifacts"]["package"][
+                "adjudication_method" if attempt.get("kind") == "ADJUDICATION" else "review_method"
+            ]
             and attempt.get("execution_origin") == "ACTUAL_REVIEW",
             "Execution attempt differs from actual consumer/producer/package",
+        )
+        _require(
+            attempt.get("method_attachments")
+            == _method_refs(
+                verification["artifacts"]["package"],
+                adjudication=attempt.get("kind") == "ADJUDICATION",
+            ),
+            "Attempt method attachments differ from preregistration",
         )
         for path in sorted(child.rglob("*")):
             _require(not path.is_symlink(), "Symlinked review evidence forbidden")
@@ -261,13 +299,46 @@ def _membership(root):
     return result
 
 
-def _adjudication_inputs(package, review_refs, reader, findings_ref):
+def _adjudication_inputs(package, review_refs, reader, findings_ref, program_ref):
     refs = [package["blind"], package["judgment_tasks"]]
     for ref in review_refs:
         submission = reader.bound(ref)
-        refs.extend([ref, submission["blind_extraction"], submission["judgments"]])
-    refs.append(findings_ref)
+        refs.extend(
+            [
+                ref,
+                submission["blind_extraction"],
+                submission["judgments"],
+                submission["reviewer"]["source"],
+                submission["reviewer"]["transcript"],
+            ]
+        )
+    refs.extend([findings_ref, program_ref])
     return list({ref["path"]: ref for ref in refs}.values())
+
+
+def _program_packet(package, claims, findings, package_ref):
+    """Reveal complete stored PROGRAM claims even for ambiguity-only findings."""
+    index = _index(claims)
+    ids = sorted({row["anonymous_id"] for row in findings if row["anonymous_id"] is not None})
+    _require(set(ids) <= set(index), "Finding lacks its original program source row")
+    return dict(
+        schema="srf6-followup-adjudication-program-claims-v1",
+        package=package_ref,
+        source_program_claims=package["program_claims"],
+        status="ORIGINAL_PROGRAM_CLAIMS_NOT_ADJUDICATION_DECISIONS",
+        global_finding_ids=sorted(
+            row["finding_id"] for row in findings if row["anonymous_id"] is None
+        ),
+        items=[
+            dict(
+                index[key],
+                finding_ids=sorted(
+                    row["finding_id"] for row in findings if row["anonymous_id"] == key
+                ),
+            )
+            for key in ids
+        ],
+    )
 
 
 def _check_adjudications(reader, refs, review_refs, package_ref, package, findings, latest, traces):
@@ -286,7 +357,16 @@ def _check_adjudications(reader, refs, review_refs, package_ref, package, findin
             ),
             "Adjudication findings packet differs",
         )
-        inputs = _adjudication_inputs(package, review_refs, reader, finding_ref)
+        program_ref = value.get("program_claims")
+        _require(isinstance(program_ref, dict), "Complete program claims packet required")
+        _require(
+            reader.bound(program_ref)
+            == _program_packet(
+                package, reader.bound(package["program_claims"]), findings, package_ref
+            ),
+            "Adjudication program claims differ from original recorded evidence",
+        )
+        inputs = _adjudication_inputs(package, review_refs, reader, finding_ref, program_ref)
         _require(
             value.get("input_references") == inputs,
             "Adjudication must receive all original claims, texts, tasks and findings",
@@ -341,6 +421,7 @@ def aggregate_review(root):
         if ref in adjudication_refs:
             _require(
                 submission.get("findings") == attempt.get("findings")
+                and submission.get("program_claims") == attempt.get("program_claims")
                 and submission.get("input_references") == attempt.get("input_references"),
                 "Adjudication inputs differ from their pre-execution binding",
             )
@@ -390,6 +471,10 @@ def aggregate_review(root):
         latest = max(latest, _time(judgment["completed_at"]))
     agreements = {key: Counter() for key in LABELS}
     for anonymous_id, row in selected.items():
+        if len(independent_coverage) != 360:
+            # Partial inventory is progress only. No PROGRAM labels/oracles may
+            # be compared or disclosed before every blind judgment is sealed.
+            continue
         program = row["program_labels"]
         for error in _constraints(program):
             findings.append(
@@ -526,8 +611,13 @@ def aggregate_review(root):
         findings=findings,
         blocking_finding_ids=blockers,
         adjudication_required_ids=unresolved,
-        sampling_coverage=ledger["blocks"],
-        rare_cases=ledger["rare_cases"],
+        sampling_coverage=ledger["blocks"] if len(independent_coverage) == 360 else None,
+        rare_cases=ledger["rare_cases"] if len(independent_coverage) == 360 else None,
+        program_comparison_status=(
+            "FULL_INDEPENDENT_COVERAGE"
+            if len(independent_coverage) == 360
+            else "WITHHELD_UNTIL_ALL_360_JUDGMENTS"
+        ),
         interpretation=(
             "Coverage review only; no population error-rate claim or scientific authorization"
         ),
@@ -598,6 +688,11 @@ def prepare_execution(root, *, task_id, instance_id, reviewer_id, kind="REVIEW")
         parent = _directory(root, REVIEW_DIRECTORY)
         parent.mkdir(mode=0o700, exist_ok=True)
         prior = aggregate_review(root) if kind == "ADJUDICATION" else None
+        if prior is not None:
+            _require(
+                prior["independently_reviewed_original_answers"] == 360,
+                "All 360 independent judgments must finish before program disclosure",
+            )
         directory = parent / task_id
         directory.mkdir(mode=0o700)  # Preserve collisions/partials without retry.
         _fsync_directory(parent)
@@ -607,6 +702,12 @@ def prepare_execution(root, *, task_id, instance_id, reviewer_id, kind="REVIEW")
             consumer=verification["consumer"],
             input_producer=verification["input_producer"],
             package=verification["package_ref"],
+            method=verification["artifacts"]["package"][
+                "adjudication_method" if kind == "ADJUDICATION" else "review_method"
+            ],
+            method_attachments=_method_refs(
+                verification["artifacts"]["package"], adjudication=kind == "ADJUDICATION"
+            ),
             task_id=task_id,
             instance_id=instance_id,
             reviewer_id=reviewer_id,
@@ -629,11 +730,23 @@ def prepare_execution(root, *, task_id, instance_id, reviewer_id, kind="REVIEW")
                 f"{REVIEW_DIRECTORY}/{task_id}/FINDINGS.json", _payload(packet)
             )
             attempt["findings"] = finding_ref
+            program_packet = _program_packet(
+                verification["artifacts"]["package"],
+                verification["artifacts"]["program_claims"],
+                findings,
+                verification["package_ref"],
+            )
+            _write_once(directory / "PROGRAM_CLAIMS.json", program_packet)
+            program_ref = review_package._ref(
+                f"{REVIEW_DIRECTORY}/{task_id}/PROGRAM_CLAIMS.json", _payload(program_packet)
+            )
+            attempt["program_claims"] = program_ref
             attempt["input_references"] = _adjudication_inputs(
                 verification["artifacts"]["package"],
                 prior["named_inputs"]["reviews"],
                 _Facts(root),
                 finding_ref,
+                program_ref,
             )
         _write_once(directory / "ATTEMPT.json", attempt)
         return attempt

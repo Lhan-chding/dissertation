@@ -66,6 +66,12 @@ class Fixture:
                             model_input={"prompt": qid},
                             finish_reason="balanced",
                             execution_origin="SYNTHETIC_TEST",
+                            score=dict(
+                                **LABELS,
+                                finish_reason="balanced",
+                                unknown_reasons={},
+                                witness={"gold_selected": ["X"], "gold_answer": "1"},
+                            ),
                             **LABELS,
                         )
                         self.records.append(row)
@@ -119,6 +125,25 @@ class Fixture:
 
         monkeypatch.setattr(source, "require_support", require)
         monkeypatch.setattr(source, "_root", lambda root: Path(root))
+        ledger, blind = sampling.build_review(
+            self.records, raw_by_row=self.raw, source_identity={"historical": "a" * 64}
+        )
+        self.history = dict(
+            references=[],
+            package={},
+            ledger=copy.deepcopy(ledger),
+            blind=copy.deepcopy(blind),
+            tasks=[
+                dict(
+                    anonymous_id=row["anonymous_id"],
+                    world=tasks[row["qid"]]["world"],
+                    query=tasks[row["qid"]]["query"],
+                )
+                for row in ledger["selected"]
+            ],
+            summary={"status": "BLOCKING_FINDINGS"},
+        )
+        monkeypatch.setattr(source, "repair_history", lambda: copy.deepcopy(self.history))
 
     def write(self, path, value, *, lines=False):
         target = self.root / path
@@ -262,3 +287,26 @@ def test_foreign_partial_stage_preserved_even_beside_complete_package(fx):
     with pytest.raises(PermissionError):
         review_package.verify_package(fx.root)
     assert (stage / "partial").read_text() == "preserve"
+
+
+@pytest.mark.parametrize("part", ["ledger", "blind", "tasks"])
+def test_repair_cannot_replace_old_selection_text_or_task(fx, part):
+    if part == "ledger":
+        fx.history[part]["selected"][0]["row_id"] = "different-original"
+    elif part == "blind":
+        fx.history[part][0]["raw_text"] = "different-original"
+    else:
+        fx.history[part][0]["query"] = {"aggregate": "max"}
+    with pytest.raises(PermissionError, match="preserve every original"):
+        review_package.write_package(fx.root)
+    assert not (fx.root / "REVIEW").exists()
+
+
+def test_program_claims_bind_stored_witnesses_but_stay_out_of_blind_packet(fx):
+    fx.package()
+    artifacts = fx.verification["artifacts"]
+    assert len(artifacts["program_claims"]) == 360
+    row = artifacts["program_claims"][0]
+    assert row["labels"] == LABELS and row["original_score"]["witness"]["gold_answer"] == "1"
+    assert "labels" not in artifacts["blind"][0]
+    assert artifacts["package"]["review_method"]["path"].endswith("method/REVIEW_METHOD.md")

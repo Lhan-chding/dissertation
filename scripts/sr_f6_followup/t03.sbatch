@@ -26,7 +26,7 @@ make_directory() {
 : "${SLURM_JOB_NAME:?registered job name required}"
 [[ "$SLURM_JOB_ID" =~ ^[0-9]+$ ]] || fail 'unsafe scheduler job id'
 [[ "$SLURM_JOB_NAME" == LH-SRF6-T03 ]] || fail 'wrong job prefix'
-[[ "$SRF6_ROOT" == "$project/sr_f6_confirm_followup_v1_20261029" ]] || fail 'wrong run root'
+[[ "$SRF6_ROOT" == "$project/sr_f6_confirm_followup_v2_20261029" ]] || fail 'wrong run root'
 [[ "$SRF6_PRODUCER" == "$project/sr_f6_code_6e5d363" ]] || fail 'wrong scientific producer'
 [[ "$SRF6_CODE" =~ ^/projects/_ssd/varunssd/louis-ssvc/sr_f6_followup_code_[0-9a-f]+$ ]] || fail 'wrong consumer deployment'
 canonical_directory "$project"

@@ -21,12 +21,12 @@ import sys
 from pathlib import Path
 
 PROJECT = Path("/projects/_ssd/varunssd/louis-ssvc")
-ROOT = PROJECT / "sr_f6_confirm_followup_v1_20261029"
+ROOT = PROJECT / "sr_f6_confirm_followup_v2_20261029"
 PRODUCER_ROOT = PROJECT / "sr_f6_confirm_v3_20261028_r1"
 PRODUCER_DEPLOYMENT = PROJECT / "sr_f6_code_6e5d363"
 PRODUCER_REVISION = "6e5d36351b8c1f6f18c61661246191772ba6a6dd"
 PRODUCER_REGISTRATION_SHA256 = "483dfbb8efaf569c1a5041cb8f715baf23a46bd8e40e8e6f1f18d357523ccf79"
-SCHEMA = "srf6-followup-registration-v1"
+SCHEMA = "srf6-followup-registration-v2"
 SOURCE_SCHEMA = "srf6-followup-source-v1"
 SUPPORT_SCHEMA = "srf6-followup-support-binding-v1"
 SUPPORT_STATUS = "CONFIRM_SUPPORT_PASS_REVIEW_PENDING"
@@ -243,17 +243,35 @@ def _producer_identity(context):
     )
 
 
+def repair_history():
+    """Read the immutable failed v1 closure; it conveys no authorization."""
+    from .repair_history import verify
+
+    return verify()
+
+
 def _spec(context):
     from sr_f6.confirm_analysis import _followups
 
+    from . import review_contract
+
     followups = _followups(context["spec"], list(context["tasks"].values()))
+    history = repair_history()
     return dict(
-        schema="srf6-followup-spec-v1",
-        phase="CONFIRM_FOLLOWUP_V1",
+        schema="srf6-followup-spec-v2",
+        phase="CONFIRM_FOLLOWUP_V2",
         split="DEV_SCHEMA_CONFIRM",
         producer=_producer_identity(context),
         requirements=copy.deepcopy(context["spec"]["followup_requirements"]),
         original_requirements=followups,
+        review_contract=review_contract.specification(),
+        repair_history=dict(
+            status="HISTORICAL_NEGATIVE_EVIDENCE_NOT_AUTHORITY",
+            references=copy.deepcopy(history["references"]),
+            consumer=copy.deepcopy(history["summary"]["consumer"]),
+            review_status=history["summary"]["status"],
+            completed=False,
+        ),
         supported_purposes=["review", "t03", "admission"],
         review_requires="COMPLETE_FROZEN_CONFIRM_SUPPORT_PASS",
         t03_requires="COMPLETE_FROZEN_CONFIRM_SUPPORT_PASS_AND_NEW_360_REVIEW",
@@ -275,6 +293,7 @@ def register(root, revision):
         schema=SOURCE_SCHEMA, revision=revision, deployment=str(deployment), files=files
     )
     spec = _spec(producer)
+    _verify_module_origins(deployment, files)
     root.mkdir(exist_ok=False)
     _write(root / "SOURCE_MANIFEST.json", manifest)
     _write(root / "SPEC.json", spec)
@@ -349,6 +368,7 @@ def _verify_base(root):
     _require(record["producer"] == _producer_identity(producer), "Registered producer changed")
     spec = _bound(record["spec"])
     _require(spec == _spec(producer), "Original 360/T03 selection or followup contract changed")
+    _verify_module_origins(deployment, files)
     return dict(
         root=root,
         registration=record,
@@ -374,6 +394,7 @@ def _dependency_states(validation, context, extra_refs):
     ]
     refs.extend(validation["external_inputs"])
     refs.extend(extra_refs)
+    refs.extend(context["spec"]["repair_history"]["references"])
     refs.extend(
         _reference(context["root"] / name)
         for name in ("REGISTRATION.json", "SPEC.json", "SOURCE_MANIFEST.json")

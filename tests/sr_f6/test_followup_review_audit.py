@@ -52,9 +52,8 @@ class Fixture(fixtures.Fixture):
 
     def reviewer(self, task, instance, reviewer_id):
         prefix = "REVIEW/EXECUTIONS/" + task
-        method = self.write(
-            prefix + "/METHOD.json", {"method": "Independent raw reading and calculation"}
-        )
+        attempt = self.read({"path": prefix + "/ATTEMPT.json"})
+        method = attempt["method"]
         origin = self.write(
             prefix + "/SOURCE.json",
             dict(
@@ -85,6 +84,12 @@ class Fixture(fixtures.Fixture):
             instance_id=source_value["instance_id"],
             task_id=task,
             method=reviewer["method"],
+            method_content=(self.root / reviewer["method"]["path"]).read_text(),
+            method_attachments=review_audit._method_materials(
+                review_audit._Facts(self.root),
+                self.package_value,
+                adjudication=reviewer["method"] == self.package_value["adjudication_method"],
+            ),
             source=reviewer["source"],
             events=events,
         )
@@ -256,6 +261,7 @@ class Fixture(fixtures.Fixture):
                 reviewer=reviewer,
                 independent_of_reviewers=True,
                 findings=attempt["findings"],
+                program_claims=attempt["program_claims"],
                 input_references=attempt["input_references"],
                 decision_response=response_ref,
                 **response,
@@ -388,9 +394,15 @@ def test_trace_reading_chronology_leakage_and_labels_fail_closed(fx, kind):
 def test_incomplete_coverage_and_unresolved_false_pass_are_preserved(fx):
     fx.submit(ids={"R0001"}, labels=dict(fixtures.LABELS, S=0))
     out = review_audit.aggregate_review(fx.root)
-    assert out["status"] == "ADJUDICATION_REQUIRED" and not out["completed"]
-    assert out["findings"][0]["suspected_false_pass"]
+    assert out["status"] == "REVIEW_INCOMPLETE" and not out["completed"]
+    assert out["findings"] == []
+    assert all(value == {"rate": None} for value in out["agreement"].values())
     assert len(out["missing_independent_review_ids"]) == 359
+    fx.submit(task="remaining", ids={row["anonymous_id"] for row in fx.blind} - {"R0001"})
+    final = review_audit.aggregate_review(fx.root)
+    assert (
+        final["status"] == "ADJUDICATION_REQUIRED" and final["findings"][0]["suspected_false_pass"]
+    )
 
 
 def test_oracle_disagreement_and_independent_adjudication(fx):
@@ -409,6 +421,95 @@ def test_confirmed_production_error_remains_blocking(fx):
     fx.adjudicate(decision="PRODUCTION_INCORRECT")
     out = review_audit.aggregate_review(fx.root)
     assert out["status"] == "BLOCKING_FINDINGS" and not out["completed"]
+
+
+def test_ambiguity_without_disagreement_receives_complete_program_material(fx):
+    ref = fx.submit()
+    submission = fx.read(ref)
+    judgment = fx.read(submission["judgments"])
+    judgment["items"][0]["ambiguities"] = ["Request explicit program claim for this case"]
+    fx.retrace(ref, judgment=judgment)
+    before = review_audit.aggregate_review(fx.root)
+    assert [row["kind"] for row in before["findings"]] == ["REVIEW_AMBIGUITY"]
+    adjudication = fx.read(fx.adjudicate())
+    assert submission["reviewer"]["source"] in adjudication["input_references"]
+    # retrace produced the final bound trace; original response stages are visible.
+    assert fx.read(ref)["reviewer"]["transcript"] in adjudication["input_references"]
+    packet = fx.read(adjudication["program_claims"])
+    case = packet["items"][0]
+    assert case["labels"] == fixtures.LABELS
+    assert case["oracle"] == dict(answer="1", selected=["X"], bindings={"X": "1"})
+    assert case["original_score"]["witness"]["gold_answer"] == "1"
+    assert case["raw_generation_finish_reason"] == case["scored_finish_reason"] == "balanced"
+    assert case["finding_ids"] == [before["findings"][0]["finding_id"]]
+    assert review_audit.aggregate_review(fx.root)["completed"]
+
+
+def test_partial_review_cannot_disclose_program_to_adjudicator(fx):
+    fx.submit(
+        ids={fx.blind[0]["anonymous_id"]},
+        oracle=dict(answer="2", selected=["X"], bindings={"X": "1"}),
+    )
+    with pytest.raises(ValueError, match="All 360"):
+        fx.adjudicate()
+    assert not (fx.root / "REVIEW/EXECUTIONS/adj-1").exists()
+
+
+def test_partial_inventory_withholds_rare_labels_and_stratum_counts(fx, monkeypatch):
+    fx.submit(ids={"R0001"})
+    verification = copy.deepcopy(fx.verification)
+    ledger = verification["artifacts"]["ledger"]
+    ledger["rare_cases"] = [{"program_labels": dict(fixtures.LABELS, J=0), "qid": "private-case"}]
+    ledger["blocks"] = {"private-stratum": 9}
+    monkeypatch.setattr(review_package, "verify_package", lambda root: verification)
+    report = review_audit.aggregate_review(fx.root)
+    assert report["rare_cases"] is None and report["sampling_coverage"] is None
+    assert report["program_comparison_status"] == "WITHHELD_UNTIL_ALL_360_JUDGMENTS"
+    assert "private-case" not in fixtures.json.dumps(report)
+
+
+@pytest.mark.parametrize("mutation", ["substitute_method", "omit_method_text", "omit_contract"])
+def test_registered_method_cannot_be_substituted_or_omitted(fx, mutation):
+    ref = fx.submit()
+    value = fx.read(ref)
+    trace = fx.read(value["reviewer"]["transcript"])
+    if mutation == "substitute_method":
+        method = fx.write(
+            "REVIEW/EXECUTIONS/task-1/UNREGISTERED_METHOD.json", {"finish": "balanced or eos"}
+        )
+        value["reviewer"]["method"] = trace["method"] = method
+        trace["method_content"] = (fx.root / method["path"]).read_text()
+    elif mutation == "omit_method_text":
+        trace.pop("method_content")
+    else:
+        trace["method_attachments"] = []
+    value["reviewer"]["transcript"] = fx.write(value["reviewer"]["transcript"]["path"], trace)
+    fx.write(ref["path"], value)
+    with pytest.raises(ValueError, match="method"):
+        review_audit.aggregate_review(fx.root)
+
+
+def test_adjudication_program_packet_tampering_rejected_even_when_all_refs_resealed(fx):
+    fx.submit(oracle=dict(answer="2", selected=["X"], bindings={"X": "1"}))
+    ref = fx.adjudicate()
+    value = fx.read(ref)
+    packet = fx.read(value["program_claims"])
+    packet["items"][0]["labels"]["J"] = 0
+    previous = value["program_claims"]
+    changed = fx.write(previous["path"], packet)
+    value["program_claims"] = changed
+    value["input_references"] = [changed if r == previous else r for r in value["input_references"]]
+    attempt = fx.read({"path": "REVIEW/EXECUTIONS/adj-1/ATTEMPT.json"})
+    attempt.update(program_claims=changed, input_references=value["input_references"])
+    fx.write("REVIEW/EXECUTIONS/adj-1/ATTEMPT.json", attempt)
+    trace = fx.read(value["reviewer"]["transcript"])
+    trace["events"][0]["inputs"] = [
+        dict(reference=r, content=fx.read(r)) for r in value["input_references"]
+    ]
+    value["reviewer"]["transcript"] = fx.write(value["reviewer"]["transcript"]["path"], trace)
+    fx.write(ref["path"], value)
+    with pytest.raises(ValueError, match="program claims differ"):
+        review_audit.aggregate_review(fx.root)
 
 
 @pytest.mark.parametrize("kind", ["empty", "early", "same_instance"])
