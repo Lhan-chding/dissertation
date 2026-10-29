@@ -23,3 +23,13 @@
 11:02:43 UTC，在原233723/233849/233873/233920均完成离队、无新旧准备意图或阶段目录、teacher全用户实际1GPU/varun024的1槽后，唯一提交0GPU `233935/LH-SRF6-PilotV3-ClosurePrep`（4CPU12G）。11:03:42实际RUNNING/59秒，服务器native回归returncode0，PILOT_V3来源登记BOUND_NOT_AUTHORIZED，隔离历史核验一个attempt仍进行中、无failure。尚无确认binding/overlay/先导准入或GPU模型调用。
 
 不要重复deploy、生成请求、submit、register或复跑旧确认。当前只读唯一233935及阶段回执；终态完整READY_FOR_REGISTERED_PILOT_ONLY后才能实现并审查外层GPU提交器。技术故障保留原件，不自动重签/补抽；科学FAIL/INCONCLUSIVE按原合同停止。实际准备回执与续接见私有`.local/pilot_v3_closure_20261029/CONTINUE_zh.md`。后续文档提交不改变实际生产b7e7b06。
+
+## 11:27 UTC实际先导准入完成和原件交付
+
+233935已COMPLETED0:0，耗时12分32秒。服务器140项native回归通过（16.82秒）；来源、独立确认重建、固定384+96公开覆盖、完整九路注册、原模型/环境及共享数值实现对应全部核验完成。11:15:15原结果READY_FOR_REGISTERED_PILOT_ONLY，生成/训练/开发评估仅在原先导范围开放，FORMAL/TEST仍false；0新回答/0更新/0GPU提交。
+
+phase identity为`d9f061d1cf08e14c485083bbed421a412a29868fd8305ad4c265fb6404562284`，pilot spec为`4936b29e3a897334c1c4e67aad436bf46bdea9a105354d0155484d2acc20994c`，admission为`b65831ad6ec57c829a69a9ad0a87a6aaf6a4a173e2d921cf953462ca7519b2a6`，jobs plan为`56102cd5b10d93bde1996527e39fa1ec30943fc2618cab2838f03d5fd550d4f4`。共享数值对应仍明确new_trainer_numerical_pass=false，未扩大原24轨迹的测量范围。
+
+11:27:30已完成一次实际原件交付：50文件7,230,616bytes，111项内部引用核验，临时cache/tmp明确省略；旧原始依赖没有重复下载。首次传输在读取文件前因Slurm已purge作业实时条目而停止，改用全用户当前队列确认离队后唯一成功传输；随后本机曾误把空stderr.log解析为JSON，使用已收到字节完成核验，没有再次访问服务器。两项传输/解析技术记录完整保留，不改变实际准入结果。
+
+当前仅开始外层Round A操作器实施，独立于已冻结b7生产源码和准入。先导实际GPU尚未提交。实际后续记录见[PILOT_ROUND_A_EXECUTION_zh.md](PILOT_ROUND_A_EXECUTION_zh.md)。
