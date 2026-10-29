@@ -220,14 +220,14 @@ def test_storage_summary_failure_remains_deliverable():
 
     manager = SimpleNamespace(summary=broken)
     with pytest.raises(RuntimeError, match="storage changed"):
-        e._storage_summary(manager, 123)
+        e._storage_summary(manager, 123, 456, Path("/unused"))
     assert e._failure_summary(manager)["status"] == "STORAGE_SUMMARY_FAILED_PRESERVED"
 
 
 def test_fixture_storage_summary_cannot_publish_actual_complete():
     manager = SimpleNamespace(summary=lambda: {"scope": "SYNTHETIC_CPU_ONLY"})
     with pytest.raises(ValueError, match="did not complete"):
-        e._storage_summary(manager, 123)
+        e._storage_summary(manager, 123, 456, Path("/unused"))
 
 
 @pytest.fixture
@@ -246,6 +246,7 @@ def synthetic_protocol(original, monkeypatch):
         repair_source={"revision": "1" * 40},
         pins={"phase": "PILOT_V3"},
         max_host_bytes=1024,
+        max_disk_bytes=2048,
     )
     monkeypatch.setattr(e, "verify_contract", lambda *_: contract)
     validation_result = dict(
@@ -276,18 +277,33 @@ def synthetic_protocol(original, monkeypatch):
     monkeypatch.setattr(runtime, "_LOADED_RUNTIMES", {})
     monkeypatch.setenv("SLURM_JOB_NAME", "LH-SRF6-Test")
     summary = dict(
-        scope="CUDA_SAVED_ACTIVATION_STORAGE",
+        schema="srf6-saved-activation-hybrid-v2",
+        scope="CUDA_SAVED_ACTIVATION_HYBRID_STORAGE",
         model_bound=True,
         closed=True,
         pack_count=1,
         unpack_count=1,
         peak_host_bytes=64,
+        peak_disk_bytes=128,
+        max_host_bytes=1024,
+        max_disk_bytes=2048,
+        live_host_bytes=0,
+        live_disk_bytes=0,
+        staging_chunk_bytes=64 * 2**20,
+        peak_staging_host_bytes=32,
+        storage_failures=[],
+        cleanup_errors=[],
+        disk_bytes_written=128,
+        disk_bytes_read=128,
         numerical_pass=False,
     )
     provider = []
 
     @contextmanager
-    def storage(callback, **_):
+    def storage(callback, **kwargs):
+        scratch = kwargs["scratch_directory"]
+        scratch.mkdir()
+        summary["scratch_directory"] = str(scratch)
         provider.append(callback)
         yield SimpleNamespace(summary=lambda: summary)
 
@@ -379,3 +395,145 @@ def test_new_training_failure_is_preserved_without_retry(synthetic_protocol, mon
     assert failure["peer_cancellation_requested"] is False
     with pytest.raises(ValueError, match="single-attempt"):
         execute_fixture(fixture)
+
+
+@pytest.fixture
+def allocation_failure(tmp_path, monkeypatch):
+    monkeypatch.setattr(e, "PROJECT", tmp_path)
+    old = tmp_path / "old"
+    monkeypatch.setattr(e, "OLD_OPS", old)
+    reference = save(
+        old / "validate_FAILURE.json",
+        {
+            "job_id": "234358",
+            "status": "FAILED_PRESERVED",
+            "error_type": "PermissionError",
+            "error": "Wrong actual GPU/CPU/host-memory allocation",
+            "retry_authorized": False,
+        },
+    )
+    source = {"revision": e.OLD_REPAIR_REVISION}
+    save(
+        old / "validate_SUBMISSION.json",
+        {"source": source, "action": "validate", "job_id": "234358", "status": "SUBMITTED"},
+    )
+    save(old / "validate_ATTEMPT.json", {"source": source, "action": "validate"})
+    prior = save(
+        old / "CONTRACT.json",
+        {
+            "schema": "srf6-memory-repair-contract-v1",
+            "repair_source": {"revision": e.OLD_REPAIR_REVISION},
+            "max_host_bytes": 96 * 2**30,
+            "original_files": [{"path": "frozen", "sha256": "0" * 64}],
+        },
+    )
+    monkeypatch.setattr(e, "OLD_CONTRACT_SHA", prior["sha256"])
+    return {
+        "old_allocation_failure_ref": reference,
+        "prior_contract_ref": prior,
+        "schema": e.SCHEMA,
+        "repair_source": {"revision": "1" * 40},
+        "max_host_bytes": e.HOST_BYTES,
+        "max_disk_bytes": e.DISK_BYTES,
+        "original_files": [{"path": "frozen", "sha256": "0" * 64}],
+    }
+
+
+def test_v2_binds_original_premodel_allocation_failure(allocation_failure):
+    e._prior_allocation_failure(allocation_failure)
+
+
+@pytest.mark.parametrize("name", ["validate_STARTED.json", "VALIDATION", "resume_ATTEMPT.json"])
+def test_v2_refuses_prior_actual_execution(allocation_failure, name):
+    save(e.OLD_OPS / name, {})
+    with pytest.raises(ValueError, match=r"model execution|resume intent"):
+        e._prior_allocation_failure(allocation_failure)
+
+
+def test_v2_refuses_unrelated_prior_failure(allocation_failure):
+    reference = allocation_failure["old_allocation_failure_ref"]
+    value = json.loads(Path(reference["path"]).read_bytes())
+    value["error"] = "Actual model CUDA out of memory"
+    allocation_failure["old_allocation_failure_ref"] = save(Path(reference["path"]), value)
+    with pytest.raises(ValueError, match="pre-model allocation failure differs"):
+        e._prior_allocation_failure(allocation_failure)
+
+
+def test_v2_refuses_relabelled_old_source(allocation_failure):
+    save(
+        e.OLD_OPS / "validate_ATTEMPT.json",
+        {"action": "validate", "source": {"revision": "f" * 40}},
+    )
+    with pytest.raises(ValueError, match="source identity differs"):
+        e._prior_allocation_failure(allocation_failure)
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("cleanup_errors", ["cannot unlink owned tensor"]),
+        ("storage_failures", ["disk read changed bytes"]),
+        ("peak_disk_bytes", 2049),
+        ("peak_host_bytes", 1025),
+        ("peak_staging_host_bytes", 64 * 2**20 + 1),
+        ("live_disk_bytes", 1),
+        ("disk_bytes_read", 0),
+    ],
+)
+def test_hybrid_failure_cannot_publish_success(synthetic_protocol, field, value):
+    fixture = synthetic_protocol
+    fixture.summary[field] = value
+    with pytest.raises(ValueError, match="storage context"):
+        execute_fixture(fixture)
+    assert fixture.verified == []
+    assert not (fixture.root / e.JOBS / "TASKS" / e.QUEUE[0] / "COMPLETE.json").exists()
+
+
+def test_hybrid_storage_facts_precede_complete(synthetic_protocol):
+    fixture = synthetic_protocol
+    execute_fixture(fixture)
+    folder = fixture.path.parent / "EXECUTIONS" / e.QUEUE[0]
+    facts = json.loads((folder / "STORAGE_FACTS.json").read_bytes())
+    complete = json.loads((folder / "COMPLETE.json").read_bytes())
+    ref = complete["storage_facts_ref"]
+    assert e.strict_ref(ref["path"], ref["sha256"]) == (folder / "STORAGE_FACTS.json").read_bytes()
+    assert facts["status"] == "ACTUAL_STORAGE_CONTEXT_COMPLETE_NOT_SCIENTIFIC_PASS"
+    assert facts["offload"]["max_disk_bytes"] == 2048
+    assert facts["offload"]["scratch_directory"] == str(folder / "STORAGE")
+    assert not list((folder / "STORAGE").iterdir())
+
+
+def test_v2_cannot_change_original_evidence_or_scientific_registration(allocation_failure):
+    allocation_failure["original_files"][0]["sha256"] = "f" * 64
+    with pytest.raises(ValueError, match="altered original evidence"):
+        e._prior_allocation_failure(allocation_failure)
+
+
+def test_v2_cannot_substitute_prior_contract(allocation_failure):
+    allocation_failure["prior_contract_ref"]["sha256"] = "f" * 64
+    with pytest.raises(ValueError, match="Exact immutable v1"):
+        e._prior_allocation_failure(allocation_failure)
+
+
+@pytest.mark.parametrize("peak,written,read", [(128, 0, 0), (0, 128, 128), (-1, 128, 128)])
+def test_hybrid_peak_and_io_counters_must_agree(synthetic_protocol, peak, written, read):
+    fixture = synthetic_protocol
+    fixture.summary.update(peak_disk_bytes=peak, disk_bytes_written=written, disk_bytes_read=read)
+    with pytest.raises(ValueError, match="storage context"):
+        execute_fixture(fixture)
+    assert fixture.verified == []
+
+
+def test_hybrid_zero_disk_peak_requires_zero_io(synthetic_protocol):
+    fixture = synthetic_protocol
+    fixture.summary.update(peak_disk_bytes=0, disk_bytes_written=0, disk_bytes_read=0)
+    execute_fixture(fixture)
+    assert len(fixture.verified) == 1
+
+
+def test_old_storage_schema_rejected(synthetic_protocol):
+    fixture = synthetic_protocol
+    fixture.summary["schema"] = "srf6-saved-activation-offload-v1"
+    with pytest.raises(ValueError, match="storage context"):
+        execute_fixture(fixture)
+    assert fixture.verified == []

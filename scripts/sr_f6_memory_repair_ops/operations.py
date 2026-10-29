@@ -22,7 +22,9 @@ from pathlib import Path
 
 PROJECT = Path("/projects/_ssd/varunssd/louis-ssvc")
 ROOT = PROJECT / "sr_f6_semantic_factorial_20261027"
-OPS = PROJECT / "sr_f6_operations_20261027/PILOT_MEMORY_REPAIR_V1_20261029"
+OPS = PROJECT / "sr_f6_operations_20261027/PILOT_MEMORY_REPAIR_V2_20261029"
+FAILED_OPS = PROJECT / "sr_f6_operations_20261027/PILOT_MEMORY_REPAIR_V1_20261029"
+FAILED_REVISION = "e24d557c381e53bbf85773c4c6551530a1a084e6"
 CODE = PROJECT / "sr_f6_code_b7e7b06"
 PRODUCER = "b7e7b067f237b360b1dfb2c3075d3f14be7c281f"
 OLD_OPS = PROJECT / "sr_f6_pilot_ops_code_74a95f5"
@@ -129,7 +131,9 @@ def submission_metadata(actual, contract_path, contract_sha256, facts):
     """Submission precheck only: full cold verification remains inside allocation."""
     value = small_ref(ROOT, dict(path=str(contract_path), sha256=contract_sha256))
     require(
-        value.get("schema") == "srf6-memory-repair-contract-v1"
+        value.get("schema") == "srf6-memory-repair-contract-v2"
+        and value.get("max_host_bytes") == 8 * 2**30
+        and value.get("max_disk_bytes") == 96 * 2**30
         and value.get("experiment_root") == str(ROOT)
         and value.get("original_job_id") == "233996"
         and value.get("original_step_id") == "233996.1"
@@ -170,7 +174,63 @@ def submission_metadata(actual, contract_path, contract_sha256, facts):
         "original_worker_failure_ref",
     ):
         small_ref(ROOT, value[key])
+    prior = value["old_allocation_failure_ref"]
+    require(
+        Path(prior["path"]) == FAILED_OPS / "validate_FAILURE.json",
+        "Original allocation failure location differs",
+    )
+    failure = small_ref(FAILED_OPS, prior)
+    require(
+        failure.get("job_id") == "234358"
+        and failure.get("status") == "FAILED_PRESERVED"
+        and failure.get("error_type") == "PermissionError"
+        and failure.get("error") == "Wrong actual GPU/CPU/host-memory allocation"
+        and failure.get("retry_authorized") is False,
+        "Preserved pre-model allocation failure required",
+    )
     return dict(status="SUBMISSION_METADATA_ONLY_NOT_ADMISSION", full_verification="IN_GPU_CHILD")
+
+
+def prior_allocation_terminal(old):
+    """New independent root is allowed only for the evidenced zero-model failure."""
+    receipt = read(FAILED_OPS / "validate_SUBMISSION.json")
+    intent = read(FAILED_OPS / "validate_ATTEMPT.json")
+    source = receipt.get("source", {})
+    require(
+        receipt.get("status") == "SUBMITTED"
+        and receipt.get("job_id") == "234358"
+        and receipt.get("attempt_sha256") == sha(FAILED_OPS / "validate_ATTEMPT.json")
+        and source.get("revision") == FAILED_REVISION
+        and source.get("deployment") == str(PROJECT / "sr_f6_memory_repair_code_e24d557")
+        and intent.get("source") == source
+        and intent.get("action") == "validate"
+        and intent.get("validation") is None
+        and "--mem=128G" in intent.get("argv", []),
+        "Original unique failed allocation identity differs",
+    )
+    require(
+        not (FAILED_OPS / "validate_STARTED.json").exists()
+        and not (FAILED_OPS / "validate_COMPLETE.json").exists()
+        and not (FAILED_OPS / "VALIDATION").exists()
+        and not any(FAILED_OPS.glob("resume*")),
+        "Original failed allocation has model or recovery evidence",
+    )
+    rows = [
+        line.split("|")
+        for line in old.query(
+            ["sacct", "-n", "-P", "-j", "234358", "--format=JobIDRaw,State,ExitCode"]
+        ).splitlines()
+    ]
+    main = [row for row in rows if row and row[0] == "234358"]
+    require(
+        len(main) == 1 and main[0][1:3] == ["FAILED", "1:0"],
+        "Original validation allocation is not terminal failed",
+    )
+    require(
+        "234358" not in old.query(["squeue", "-h", "-u", USER, "-o", "%i"]).split(),
+        "Original validation allocation still queued",
+    )
+    return dict(job_id="234358", status="FAILED_BEFORE_MODEL_PRESERVED")
 
 
 def validation_terminal(old, actual, contract_path, contract_sha256, validation_ref):
@@ -179,7 +239,7 @@ def validation_terminal(old, actual, contract_path, contract_sha256, validation_
     require(Path(validation_ref["path"]) == OPS / "VALIDATION/RESULT.json", "Wrong validation path")
     result = small_ref(OPS, validation_ref)
     require(
-        result.get("schema") == "srf6-memory-storage-validation-v1"
+        result.get("schema") == "srf6-memory-storage-validation-v2"
         and result.get("contract_sha256") == contract_sha256
         and not (OPS / "VALIDATION/FAILURE.json").exists()
         and not (OPS / "validate_FAILURE.json").exists(),
@@ -314,7 +374,7 @@ def argv_for(actual, action, contract_path, contract_sha256, validation_ref=None
         "--qos=" + QOS,
         "--gres=gpu:pro6000:1",
         "--cpus-per-task=4",
-        "--mem=128G",
+        "--mem=33G",
         "--time=23:00:00",
         "--nodes=1",
         "--chdir=" + str(CODE),
@@ -331,6 +391,7 @@ def submit(actual, action, contract_path, contract_sha256, validation_ref=None):
     facts = old.metadata()
     capacity_module, _ = old.scheduler(facts)
     metadata = submission_metadata(actual, contract_path, contract_sha256, facts)
+    prior_allocation_terminal(old)
     if action == "resume":
         validation_terminal(old, actual, contract_path, contract_sha256, validation_ref)
     else:
@@ -416,7 +477,7 @@ def allocation(old, action, job_id):
             tres.get("gres/gpu:pro6000") == "1"
             and tres.get("gres/gpu", "1") == "1"
             and tres.get("cpu") == "4"
-            and tres.get("mem") in ("128G", "131072M"),
+            and tres.get("mem") in ("33G", "33792M"),
             "Wrong actual GPU/CPU/host-memory allocation",
         )
     return fields
@@ -469,6 +530,7 @@ def launch(actual, action, contract_path, contract_sha256, validation_ref=None):
             quiescent(old.query)
             facts = old.metadata()
             submission_metadata(actual, contract_path, contract_sha256, facts)
+            prior_allocation_terminal(old)
             if action == "resume":
                 validation_terminal(old, actual, contract_path, contract_sha256, validation_ref)
             cache = canonical(OPS / ("job-" + job_id), exists=False)

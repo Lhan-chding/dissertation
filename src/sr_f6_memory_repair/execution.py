@@ -17,7 +17,7 @@ import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
-SCHEMA = "srf6-memory-repair-contract-v1"
+SCHEMA = "srf6-memory-repair-contract-v2"
 PROJECT = Path("/projects/_ssd/varunssd/louis-ssvc")
 ROOT = PROJECT / "sr_f6_semantic_factorial_20261027"
 PRODUCER_REVISION = "b7e7b067f237b360b1dfb2c3075d3f14be7c281f"
@@ -26,6 +26,12 @@ JOBS = "PHASE_RUNS/PILOT_V3/JOBS"
 RUN = "PHASE_RUNS/PILOT_V3/PILOT_FROZEN/runs/b1/r0/U10"
 OLD_EXECUTION = "LH-SRF6-A-1-A-233996-PRIMARY-b1-U10"
 QUEUE = ("PRIMARY-b1-U10", "PRIMARY-b1-C_SHUF", "PRIMARY-b1-U11")
+OLD_REPAIR_REVISION = "e24d557c381e53bbf85773c4c6551530a1a084e6"
+OLD_OPS = PROJECT / "sr_f6_operations_20261027/PILOT_MEMORY_REPAIR_V1_20261029"
+OPS = PROJECT / "sr_f6_operations_20261027/PILOT_MEMORY_REPAIR_V2_20261029"
+OLD_CONTRACT_SHA = "548921a41c6da1bb2063d78fe3e00e456564682f8a9d2ab9b9fa9727e5ffa3df"
+HOST_BYTES = 8 * 2**30
+DISK_BYTES = 96 * 2**30
 
 
 def require(value, message):
@@ -98,7 +104,7 @@ def _source(contract):
     repair = contract["repair_source"]
     require(
         re.fullmatch(r"[0-9a-f]{40}", repair["revision"])
-        and repair["revision"] != PRODUCER_REVISION,
+        and repair["revision"] not in {PRODUCER_REVISION, OLD_REPAIR_REVISION},
         "Separate committed repair source required",
     )
     deployment = plain_path(repair["deployment"])
@@ -230,8 +236,63 @@ def _original_evidence(contract):
     )
 
 
+def _prior_allocation_failure(contract):
+    prior_ref = contract["prior_contract_ref"]
+    require(
+        prior_ref == {"path": str(OLD_OPS / "CONTRACT.json"), "sha256": OLD_CONTRACT_SHA},
+        "Exact immutable v1 contract required",
+    )
+    prior = bound_ref(PROJECT, prior_ref)
+    require(
+        prior.get("schema") == "srf6-memory-repair-contract-v1"
+        and prior.get("repair_source", {}).get("revision") == OLD_REPAIR_REVISION
+        and prior.get("max_host_bytes") == 96 * 2**30,
+        "Original v1 source or limits changed",
+    )
+    mutable = {"schema", "repair_source", "max_host_bytes"}
+    additions = {"max_disk_bytes", "old_allocation_failure_ref", "prior_contract_ref"}
+    require(
+        {k: v for k, v in prior.items() if k not in mutable}
+        == {k: v for k, v in contract.items() if k not in mutable | additions},
+        "V2 altered original evidence, provenance or scientific registration",
+    )
+    reference = contract["old_allocation_failure_ref"]
+    require(
+        ref_path(PROJECT, reference) == OLD_OPS / "validate_FAILURE.json",
+        "Only preserved original allocation failure can bind v2",
+    )
+    failure = bound_ref(PROJECT, reference)
+    require(
+        failure.get("job_id") == "234358"
+        and failure.get("status") == "FAILED_PRESERVED"
+        and failure.get("error_type") == "PermissionError"
+        and failure.get("error") == "Wrong actual GPU/CPU/host-memory allocation"
+        and failure.get("retry_authorized") is False,
+        "Original pre-model allocation failure differs",
+    )
+    for name in ("validate_STARTED.json", "validate_COMPLETE.json", "VALIDATION", "EXECUTIONS"):
+        require(not (OLD_OPS / name).exists(), "Old repair unexpectedly has model execution")
+    require(not any(OLD_OPS.glob("resume_*")), "Old repair resume intent or execution exists")
+    for name in ("validate_SUBMISSION.json", "validate_ATTEMPT.json"):
+        record = _json(plain_path(OLD_OPS / name).read_bytes())
+        require(
+            record.get("source", {}).get("revision") == OLD_REPAIR_REVISION
+            and record.get("action") == "validate",
+            "Old allocation source identity differs",
+        )
+        if name == "validate_SUBMISSION.json":
+            require(
+                record.get("job_id") == "234358" and record.get("status") == "SUBMITTED",
+                "Old allocation submission differs",
+            )
+
+
 def verify_contract(contract_path, expected_contract_sha256):
+    require(
+        plain_path(contract_path) == OPS / "CONTRACT.json", "New v2 operations contract required"
+    )
     contract = read_contract(contract_path, expected_contract_sha256)
+    _prior_allocation_failure(contract)
     require(
         plain_path(contract["experiment_root"]) == ROOT, "Only original registered root allowed"
     )
@@ -242,8 +303,11 @@ def verify_contract(contract_path, expected_contract_sha256):
         "Original execution differs",
     )
     require(
-        type(contract["max_host_bytes"]) is int and 0 < contract["max_host_bytes"] <= 96 * 2**30,
-        "Explicit bounded host activation memory required",
+        type(contract["max_host_bytes"]) is int
+        and contract["max_host_bytes"] == HOST_BYTES
+        and type(contract["max_disk_bytes"]) is int
+        and contract["max_disk_bytes"] == DISK_BYTES,
+        "Fixed v2 host and disk activation limits required",
     )
     require(
         contract["plan_ref"]
@@ -326,15 +390,39 @@ def _bound_model(runtime_module, execution_id):
     return values[0].model
 
 
-def _storage_summary(manager, max_host_bytes):
+def _storage_summary(manager, max_host_bytes, max_disk_bytes, scratch_directory):
     summary = manager.summary()
     require(
-        summary["scope"] == "CUDA_SAVED_ACTIVATION_STORAGE"
+        summary["scope"] == "CUDA_SAVED_ACTIVATION_HYBRID_STORAGE"
+        and summary.get("schema") == "srf6-saved-activation-hybrid-v2"
         and summary["model_bound"]
         and summary["closed"]
         and summary["pack_count"] > 0
         and summary["unpack_count"] > 0
         and summary["peak_host_bytes"] <= max_host_bytes
+        and summary["peak_disk_bytes"] <= max_disk_bytes
+        and summary["max_host_bytes"] == max_host_bytes
+        and summary["max_disk_bytes"] == max_disk_bytes
+        and summary["scratch_directory"] == str(scratch_directory)
+        and summary["live_host_bytes"] == 0
+        and summary["live_disk_bytes"] == 0
+        and summary["staging_chunk_bytes"] == 64 * 2**20
+        and summary["peak_staging_host_bytes"] <= summary["staging_chunk_bytes"]
+        and not summary["storage_failures"]
+        and not summary["cleanup_errors"]
+        and (
+            (
+                summary["peak_disk_bytes"] == 0
+                and summary["disk_bytes_written"] == 0
+                and summary["disk_bytes_read"] == 0
+            )
+            or (
+                summary["peak_disk_bytes"] > 0
+                and summary["disk_bytes_written"] > 0
+                and summary["disk_bytes_read"] > 0
+            )
+        )
+        and not any(plain_path(scratch_directory).iterdir())
         and summary["numerical_pass"] is False,
         "Actual bound storage context did not complete",
     )
@@ -449,9 +537,27 @@ def run_task(contract_path, expected_contract_sha256, validation_ref, task_id, a
             with saved_activation_offload(
                 lambda: _bound_model(runtime, execution_id),
                 max_host_bytes=contract["max_host_bytes"],
+                max_disk_bytes=contract["max_disk_bytes"],
+                scratch_directory=extension / "STORAGE",
             ) as manager:
                 pilot.run(root, "b1", task["arm"], execution_id, **contract["pins"])
-            storage_summary = _storage_summary(manager, contract["max_host_bytes"])
+            storage_summary = _storage_summary(
+                manager,
+                contract["max_host_bytes"],
+                contract["max_disk_bytes"],
+                extension / "STORAGE",
+            )
+            _write(
+                extension / "STORAGE_FACTS.json",
+                dict(
+                    status="ACTUAL_STORAGE_CONTEXT_COMPLETE_NOT_SCIENTIFIC_PASS",
+                    at=_now(),
+                    contract_ref={"path": str(contract_path), "sha256": expected_contract_sha256},
+                    validation_ref=validation_ref,
+                    execution_id=execution_id,
+                    offload=storage_summary,
+                ),
+            )
             producer = pilot_jobs._ref(
                 root, directory / "TRAINER_ATTEMPTS" / execution_id / "COMPLETE.json"
             )
@@ -468,7 +574,17 @@ def run_task(contract_path, expected_contract_sha256, validation_ref, task_id, a
             pilot_jobs._write(attempt / "COMPLETE.json", receipt)
             _write(
                 extension / "COMPLETE.json",
-                dict(receipt, offload=storage_summary, full_trainer_numerical_pass=False),
+                dict(
+                    receipt,
+                    offload=storage_summary,
+                    storage_facts_ref={
+                        "path": str(extension / "STORAGE_FACTS.json"),
+                        "sha256": hashlib.sha256(
+                            (extension / "STORAGE_FACTS.json").read_bytes()
+                        ).hexdigest(),
+                    },
+                    full_trainer_numerical_pass=False,
+                ),
             )
             return receipt
         except BaseException as exc:

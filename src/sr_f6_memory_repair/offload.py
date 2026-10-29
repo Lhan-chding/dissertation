@@ -1,9 +1,11 @@
 """Explicit saved-activation storage repair; never a model admission or retry.
 
 The registered computation is unchanged: no casts, truncation, recomputation,
-checkpoint mode or RNG operation. Only CUDA intermediates saved for backward
-are copied synchronously to CPU and restored to their original device. Model
+checkpoint mode or RNG operation. CUDA intermediates saved for backward use
+bounded CPU storage and optionally a private raw-byte disk spill. Model
 parameter/buffer storages stay resident instead of being copied once per use.
+Disk transfers stage at most 64 MiB in addition to the retained CPU bound;
+neither bound includes other process memory or the operating system page cache.
 
 The frozen caller must not mutate saved activations in-place. Like PyTorch's
 save_on_cpu, copied saved tensors do not retain a dead CUDA tensor's version
@@ -12,10 +14,19 @@ counter. Live-source and retained-model mutations are checked on unpack.
 
 from __future__ import annotations
 
+import hashlib
+import os
+import shutil
+import stat
+import uuid
 import weakref
 from contextlib import AbstractContextManager
+from pathlib import Path
 
 SCHEMA = "srf6-saved-activation-offload-v1"
+HYBRID_SCHEMA = "srf6-saved-activation-hybrid-v2"
+STAGING_CHUNK_BYTES = 64 * 1024 * 1024
+PROJECT = Path("/projects/_ssd/varunssd/louis-ssvc")
 
 
 def _storage(tensor):
@@ -83,6 +94,159 @@ class _Offloaded:
             self.released = True
 
 
+def _blocks(tensor):
+    """Logical row-major views, never a full CUDA contiguous/reshape copy."""
+    if tensor.numel() * tensor.element_size() <= STAGING_CHUNK_BYTES:
+        yield tensor
+        return
+    row_bytes = tensor[0].numel() * tensor.element_size()
+    rows = max(1, STAGING_CHUNK_BYTES // row_bytes)
+    if row_bytes > STAGING_CHUNK_BYTES:
+        for index in range(tensor.shape[0]):
+            yield from _blocks(tensor[index])
+    else:
+        for start in range(0, tensor.shape[0], rows):
+            yield tensor[start : start + rows]
+
+
+class _DiskSaved:
+    def __init__(self, tensor, owner, size):
+        import torch
+
+        self.owner, self.size = owner, size
+        self.source, self.version = weakref.ref(tensor), tensor._version
+        self.device, self.dtype, self.shape = tensor.device, tensor.dtype, tuple(tensor.shape)
+        self.finished = self.released = self.preserve = False
+        owner._check_scratch()
+        if owner.live_disk_bytes + size > owner.max_disk_bytes:
+            raise MemoryError("Registered saved-activation disk bound exceeded")
+        if shutil.disk_usage(owner.scratch_directory).free < size + STAGING_CHUNK_BYTES:
+            raise OSError("Insufficient free space for owned activation spill")
+        self.path = owner.scratch_directory / (uuid.uuid4().hex + ".tensor")
+        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
+        fd = os.open(self.path.name, flags, 0o600, dir_fd=owner.scratch_fd)
+        self.identity = (os.fstat(fd).st_dev, os.fstat(fd).st_ino)
+        owner.live_disk_bytes += size
+        owner.peak_disk_bytes = max(owner.peak_disk_bytes, owner.live_disk_bytes)
+        written = 0
+        hasher = hashlib.sha256()
+        try:
+            with os.fdopen(fd, "wb", buffering=0) as stream:
+                for block in _blocks(tensor):
+                    cpu = block.detach().to(
+                        device="cpu",
+                        copy=True,
+                        non_blocking=False,
+                        memory_format=torch.contiguous_format,
+                    )
+                    data = memoryview(cpu.reshape(-1).view(torch.uint8).numpy()).cast("B")
+                    owner.peak_staging_host_bytes = max(owner.peak_staging_host_bytes, len(data))
+                    hasher.update(data)
+                    offset = 0
+                    while offset < len(data):
+                        count = stream.write(data[offset:])
+                        if not count:
+                            raise OSError("Activation spill write made no progress")
+                        offset += count
+                        written += count
+                        owner.disk_bytes_written += count
+                    del data, cpu
+                if written != size:
+                    raise RuntimeError("Activation spill logical byte count differs")
+                os.fsync(stream.fileno())
+            self.sha256 = hasher.hexdigest()
+            self.finished = True
+        except BaseException as exc:
+            owner.live_disk_bytes -= size - written
+            owner.storage_failures.append(
+                dict(
+                    file=self.path.name,
+                    stage="write",
+                    bytes=written,
+                    error_type=type(exc).__name__,
+                    error=str(exc),
+                )
+            )
+            # Partial bytes remain as evidence; no retry or replacement file.
+            raise
+
+    def _check_file(self):
+        self.owner._check_scratch()
+        value = os.stat(self.path.name, dir_fd=self.owner.scratch_fd, follow_symlinks=False)
+        if (
+            not stat.S_ISREG(value.st_mode)
+            or value.st_nlink != 1
+            or (value.st_dev, value.st_ino) != self.identity
+            or value.st_size != self.size
+        ):
+            raise PermissionError("Owned activation spill file identity changed")
+
+    def unpack(self):
+        import torch
+
+        original = self.source()
+        if original is not None and original._version != self.version:
+            raise RuntimeError("Saved activation was mutated in-place")
+        try:
+            self._check_file()
+            restored = torch.empty(self.shape, dtype=self.dtype, device=self.device)
+            flat = restored.reshape(-1)
+            buffer = bytearray(min(STAGING_CHUNK_BYTES, self.size))
+            self.owner.peak_staging_host_bytes = max(
+                self.owner.peak_staging_host_bytes, len(buffer)
+            )
+            digest = hashlib.sha256()
+            byte_offset = 0
+            fd = os.open(self.path.name, os.O_RDONLY | os.O_NOFOLLOW, dir_fd=self.owner.scratch_fd)
+            with os.fdopen(fd, "rb", buffering=0) as stream:
+                current = os.fstat(stream.fileno())
+                if (current.st_dev, current.st_ino) != self.identity:
+                    raise PermissionError("Owned activation spill changed during open")
+                while byte_offset < self.size:
+                    needed = min(len(buffer), self.size - byte_offset)
+                    view = memoryview(buffer)[:needed]
+                    received = 0
+                    while received < needed:
+                        count = stream.readinto(view[received:])
+                        if not count:
+                            raise OSError("Activation spill read ended early")
+                        received += count
+                    digest.update(view)
+                    self.owner.disk_bytes_read += received
+                    staging = torch.frombuffer(view, dtype=self.dtype)
+                    start = byte_offset // restored.element_size()
+                    flat[start : start + staging.numel()].copy_(staging, non_blocking=False)
+                    byte_offset += received
+                    del staging, view
+                if stream.read(1):
+                    raise RuntimeError("Activation spill gained trailing bytes")
+            if digest.hexdigest() != self.sha256:
+                raise RuntimeError("Activation spill content digest differs")
+            self.owner.unpack_count += 1
+            return restored
+        except BaseException as exc:
+            self.preserve = True
+            self.owner.storage_failures.append(
+                dict(
+                    file=self.path.name, stage="read", error_type=type(exc).__name__, error=str(exc)
+                )
+            )
+            raise
+
+    def __del__(self):
+        if not getattr(self, "finished", False) or self.released or self.preserve:
+            return
+        try:
+            self._check_file()
+            os.unlink(self.path.name, dir_fd=self.owner.scratch_fd)
+            self.owner.live_disk_bytes -= self.size
+            self.released = True
+        except BaseException as exc:
+            self.owner.cleanup_errors.append(
+                dict(file=self.path.name, error_type=type(exc).__name__, error=str(exc))
+            )
+
+
 class SavedActivationOffload(AbstractContextManager):
     """One scoped hook manager; each execution must supply its actual model.
 
@@ -92,13 +256,35 @@ class SavedActivationOffload(AbstractContextManager):
     synthetic evidence. Production mode never offloads CPU tensors.
     """
 
-    def __init__(self, model_or_provider, *, max_host_bytes, fixture=False):
+    def __init__(
+        self,
+        model_or_provider,
+        *,
+        max_host_bytes,
+        fixture=False,
+        scratch_directory=None,
+        max_disk_bytes=None,
+    ):
         if type(max_host_bytes) is not int or max_host_bytes <= 0:
             raise ValueError("An explicit positive host-memory bound is required")
         if type(fixture) is not bool:
             raise TypeError("fixture must be an explicit boolean")
+        if scratch_directory is None and max_disk_bytes is not None:
+            raise ValueError("Disk bound requires a new private scratch directory")
+        if scratch_directory is not None and (
+            type(max_disk_bytes) is not int or max_disk_bytes <= 0
+        ):
+            raise ValueError("Scratch storage requires an explicit positive disk bound")
         self.provider = model_or_provider
         self.max_host_bytes = max_host_bytes
+        self.scratch_directory = Path(scratch_directory) if scratch_directory is not None else None
+        self.max_disk_bytes = max_disk_bytes
+        self.scratch_identity = None
+        self.scratch_fd = None
+        self.live_disk_bytes = self.peak_disk_bytes = 0
+        self.peak_staging_host_bytes = 0
+        self.disk_bytes_written = self.disk_bytes_read = 0
+        self.storage_failures, self.cleanup_errors = [], []
         self.fixture = fixture
         self.model = None
         self.resident = None
@@ -153,6 +339,10 @@ class SavedActivationOffload(AbstractContextManager):
             raise PermissionError("Unexpected saved tensor device")
         size = tensor.numel() * tensor.element_size()
         if self.live_host_bytes + size > self.max_host_bytes:
+            if self.scratch_directory is not None:
+                packed = _DiskSaved(tensor, self, size)
+                self.total_offloaded_bytes += size
+                return packed
             raise MemoryError("Registered saved-activation host-memory bound exceeded")
         packed = _Offloaded(tensor, self, size)
         self.total_offloaded_bytes += size
@@ -167,10 +357,43 @@ class SavedActivationOffload(AbstractContextManager):
 
         if self.entered or self.closed:
             raise RuntimeError("An offload execution context cannot be reused")
+        if self.scratch_directory is not None:
+            path = self.scratch_directory
+            if (
+                not path.is_absolute()
+                or path.resolve() != path
+                or path.parent.resolve(strict=True) != path.parent
+                or not path.parent.is_dir()
+            ):
+                raise PermissionError("Scratch must have an existing canonical parent")
+            if not self.fixture and (path == PROJECT or not path.is_relative_to(PROJECT)):
+                raise PermissionError("Production scratch must stay inside the canonical project")
+            path.mkdir(mode=0o700, exist_ok=False)
+            value = path.lstat()
+            self.scratch_identity = (value.st_dev, value.st_ino)
+            self.scratch_fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+            self._check_scratch()
         self.entered = True
         self.hooks = torch.autograd.graph.saved_tensors_hooks(self._pack, self._unpack)
         self.hooks.__enter__()
         return self
+
+    def _check_scratch(self):
+        path = self.scratch_directory
+        value = path.lstat()
+        opened = os.fstat(self.scratch_fd)
+        if (
+            not stat.S_ISDIR(value.st_mode)
+            or path.resolve(strict=True) != path
+            or (value.st_dev, value.st_ino) != self.scratch_identity
+            or (opened.st_dev, opened.st_ino) != self.scratch_identity
+        ):
+            raise PermissionError("Private scratch directory identity changed")
+
+    def __del__(self):
+        if getattr(self, "scratch_fd", None) is not None:
+            os.close(self.scratch_fd)
+            self.scratch_fd = None
 
     def __exit__(self, *exception):
         try:
@@ -184,9 +407,17 @@ class SavedActivationOffload(AbstractContextManager):
         # not in every saved-tensor hook of the large model.
         if self.model is not None and _model_inventory(self.model) != self.model_inventory:
             raise RuntimeError("Bound model inventory changed during offload execution")
+        if self.scratch_identity is not None:
+            self._check_scratch()
         return dict(
-            schema=SCHEMA,
-            scope="SYNTHETIC_CPU_ONLY" if self.fixture else "CUDA_SAVED_ACTIVATION_STORAGE",
+            schema=HYBRID_SCHEMA if self.scratch_directory is not None else SCHEMA,
+            scope="SYNTHETIC_CPU_ONLY"
+            if self.fixture
+            else (
+                "CUDA_SAVED_ACTIVATION_HYBRID_STORAGE"
+                if self.scratch_directory is not None
+                else "CUDA_SAVED_ACTIVATION_STORAGE"
+            ),
             model_bound=self.model is not None,
             max_host_bytes=self.max_host_bytes,
             pack_count=self.pack_count,
@@ -198,8 +429,26 @@ class SavedActivationOffload(AbstractContextManager):
             total_offloaded_bytes=self.total_offloaded_bytes,
             closed=self.closed,
             numerical_pass=False,
+            scratch_directory=str(self.scratch_directory) if self.scratch_directory else None,
+            max_disk_bytes=self.max_disk_bytes,
+            live_disk_bytes=self.live_disk_bytes,
+            peak_disk_bytes=self.peak_disk_bytes,
+            peak_staging_host_bytes=self.peak_staging_host_bytes,
+            staging_chunk_bytes=STAGING_CHUNK_BYTES,
+            disk_bytes_written=self.disk_bytes_written,
+            disk_bytes_read=self.disk_bytes_read,
+            storage_failures=list(self.storage_failures),
+            cleanup_errors=list(self.cleanup_errors),
         )
 
 
-def saved_activation_offload(model_or_provider, *, max_host_bytes, fixture=False):
-    return SavedActivationOffload(model_or_provider, max_host_bytes=max_host_bytes, fixture=fixture)
+def saved_activation_offload(
+    model_or_provider, *, max_host_bytes, fixture=False, scratch_directory=None, max_disk_bytes=None
+):
+    return SavedActivationOffload(
+        model_or_provider,
+        max_host_bytes=max_host_bytes,
+        fixture=fixture,
+        scratch_directory=scratch_directory,
+        max_disk_bytes=max_disk_bytes,
+    )

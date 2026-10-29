@@ -30,7 +30,7 @@ from sr_f12.training import enforce_probability_gate
 
 from .offload import saved_activation_offload
 
-SCHEMA = "srf6-memory-storage-validation-v1"
+SCHEMA = "srf6-memory-storage-validation-v2"
 PLAN = dict(
     baseline_rows=[0],
     offload_rows=list(range(128)),
@@ -163,7 +163,69 @@ def recompute(evidence, tensors, originals):
     )
 
 
-def _measure(runtime, records, credits, reference, originals, *, max_host_bytes, fixture=False):
+def verify_storage(summary, scratch_directory, max_host_bytes, max_disk_bytes, *, fixture=False):
+    """Check the complete owned hybrid storage lifecycle, including cold cleanup."""
+    scratch = Path(scratch_directory)
+    scope = "SYNTHETIC_CPU_ONLY" if fixture else "CUDA_SAVED_ACTIVATION_HYBRID_STORAGE"
+    require(
+        scratch.is_absolute() and scratch == scratch.resolve(strict=True) and scratch.is_dir(),
+        "Canonical owned validation scratch required",
+    )
+    require(
+        summary["scope"] == scope
+        and summary["schema"] == "srf6-saved-activation-hybrid-v2"
+        and summary["closed"] is True
+        and summary["model_bound"] is True
+        and summary["numerical_pass"] is False,
+        "Actual hybrid storage context did not complete",
+    )
+    require(
+        summary["max_host_bytes"] == max_host_bytes
+        and summary["max_disk_bytes"] == max_disk_bytes
+        and summary["scratch_directory"] == str(scratch),
+        "Hybrid storage identity differs",
+    )
+    require(
+        0 <= summary["peak_host_bytes"] <= max_host_bytes
+        and 0 <= summary["peak_disk_bytes"] <= max_disk_bytes
+        and summary["staging_chunk_bytes"] == 64 * 1024**2
+        and 0 <= summary["peak_staging_host_bytes"] <= summary["staging_chunk_bytes"],
+        "Hybrid storage bound exceeded",
+    )
+    require(
+        summary["pack_count"] > 0
+        and summary["unpack_count"] > 0
+        and summary["live_host_bytes"] == summary["live_disk_bytes"] == 0
+        and not summary["storage_failures"]
+        and not summary["cleanup_errors"]
+        and not any(scratch.iterdir()),
+        "Hybrid storage failed or payload remains",
+    )
+    written, read = summary["disk_bytes_written"], summary["disk_bytes_read"]
+    require(
+        type(written) is int
+        and type(read) is int
+        and written >= summary["peak_disk_bytes"]
+        and (summary["peak_disk_bytes"] == 0) == (written == 0)
+        and read >= 0
+        and ((written == read == 0) or (written > 0 and read > 0)),
+        "Incomplete actual disk spill/read accounting",
+    )
+    return summary
+
+
+def _measure(
+    runtime,
+    records,
+    credits,
+    reference,
+    originals,
+    *,
+    max_host_bytes,
+    scratch_directory=None,
+    max_disk_bytes=None,
+    fixture=False,
+):
     import torch
 
     root = Path(runtime.identity["run_root"])
@@ -244,7 +306,11 @@ def _measure(runtime, records, credits, reference, originals, *, max_host_bytes,
         runtime.model.zero_grad(set_to_none=True)
         restore_rng(baseline_rng)
         with saved_activation_offload(
-            runtime.model, max_host_bytes=max_host_bytes, fixture=fixture
+            runtime.model,
+            max_host_bytes=max_host_bytes,
+            scratch_directory=scratch_directory,
+            max_disk_bytes=max_disk_bytes,
+            fixture=fixture,
         ) as offload:
             for index in range(128):
                 result, trace = forward(index)
@@ -283,6 +349,14 @@ def _measure(runtime, records, credits, reference, originals, *, max_host_bytes,
         if not fixture:
             evidence["offload_peak_cuda_bytes"] = torch.cuda.max_memory_allocated()
         tensors["accumulated"] = gradients()
+        if scratch_directory is not None:
+            verify_storage(
+                evidence["offload"],
+                scratch_directory,
+                max_host_bytes,
+                max_disk_bytes,
+                fixture=fixture,
+            )
     except BaseException as exc:
         exc.validation_partial = (evidence, tensors)
         raise
@@ -297,7 +371,16 @@ def _measure(runtime, records, credits, reference, originals, *, max_host_bytes,
     return evidence, tensors
 
 
-def measure_fixture(runtime, records, credits, originals, *, max_host_bytes=10_000_000):
+def measure_fixture(
+    runtime,
+    records,
+    credits,
+    originals,
+    *,
+    max_host_bytes=10_000_000,
+    scratch_directory=None,
+    max_disk_bytes=None,
+):
     require(all(p.device.type == "cpu" for p in runtime.model.parameters()), "CPU fixture only")
     return _measure(
         runtime,
@@ -306,6 +389,8 @@ def measure_fixture(runtime, records, credits, originals, *, max_host_bytes=10_0
         runtime.reference,
         originals,
         max_host_bytes=max_host_bytes,
+        scratch_directory=scratch_directory,
+        max_disk_bytes=max_disk_bytes,
         fixture=True,
     )
 
@@ -519,6 +604,10 @@ def run_validation(contract_path, expected_contract_sha256, output):
         output.is_absolute() and output.parent.resolve().is_relative_to(canonical),
         "Technical output must be canonical",
     )
+    require(
+        output == Path(contract_path).parent / "VALIDATION",
+        "Validation must use its registered new operations directory",
+    )
     require(not output.exists(), "Preserve existing validation attempt")
     output.mkdir()
     write_once(
@@ -544,12 +633,15 @@ def run_validation(contract_path, expected_contract_sha256, output):
             runtime.reference,
             originals,
             max_host_bytes=contract["max_host_bytes"],
+            scratch_directory=output / "STORAGE",
+            max_disk_bytes=contract["max_disk_bytes"],
         )
         evidence.update(
             runtime_identity=runtime.identity,
             ledger=ledger,
             contract_sha256=expected_contract_sha256,
             original_ready_ref=contract["original_ready_ref"],
+            prior_allocation_failure_ref=contract["old_allocation_failure_ref"],
             producer_revision=contract["producer"]["revision"],
             repair_revision=contract["repair_source"]["revision"],
         )
@@ -595,6 +687,10 @@ def verify_validation(contract_path, expected_contract_sha256, validation_ref):
 
     contract = verify_contract(contract_path, expected_contract_sha256)
     result_path = Path(validation_ref["path"])
+    require(
+        result_path == Path(contract_path).parent / "VALIDATION/RESULT.json",
+        "Validation result outside registered new operations directory",
+    )
     result = json.loads(strict_ref(result_path, validation_ref["sha256"]))
     require(not (result_path.parent / "FAILURE.json").exists(), "Failed validation preserved")
     require(
@@ -626,7 +722,8 @@ def verify_validation(contract_path, expected_contract_sha256, validation_ref):
         "Synthetic evidence cannot authorize recovery",
     )
     require(
-        evidence["contract_sha256"] == expected_contract_sha256
+        evidence["prior_allocation_failure_ref"] == contract["old_allocation_failure_ref"]
+        and evidence["contract_sha256"] == expected_contract_sha256
         and evidence["producer_revision"] == contract["producer"]["revision"]
         and evidence["repair_revision"] == contract["repair_source"]["revision"],
         "Execution source binding differs",
@@ -702,12 +799,14 @@ def verify_validation(contract_path, expected_contract_sha256, validation_ref):
         "Native call ledger incomplete",
     )
     require(
-        evidence["offload"]["scope"] == "CUDA_SAVED_ACTIVATION_STORAGE"
-        and evidence["offload"]["closed"]
-        and evidence["offload"]["pack_count"] > 0
-        and evidence["offload"]["unpack_count"] > 0
-        and evidence["offload"]["peak_host_bytes"] <= contract["max_host_bytes"],
-        "Offload was not actually measured",
+        contract["max_host_bytes"] == 8 * 1024**3 and contract["max_disk_bytes"] == 96 * 1024**3,
+        "Frozen hybrid limits changed",
+    )
+    verify_storage(
+        evidence["offload"],
+        result_path.parent / "STORAGE",
+        contract["max_host_bytes"],
+        contract["max_disk_bytes"],
     )
     computed = recompute(evidence, tensors, originals)
     require(

@@ -16,13 +16,19 @@ def model():
     return torch.nn.Sequential(torch.nn.Linear(7, 11), torch.nn.Tanh(), torch.nn.Linear(11, 19))
 
 
-def run(original, length, offload):
+def run(original, length, offload, scratch=None):
     net = copy.deepcopy(original)
     optimizer = torch.optim.AdamW(net.parameters(), lr=1e-4)
     inputs = torch.linspace(-1.3, 1.1, length * 7).reshape(length, 7)
     targets = torch.arange(length) % 19
     context = (
-        saved_activation_offload(net, max_host_bytes=32 * 1024 * 1024, fixture=True)
+        saved_activation_offload(
+            net,
+            max_host_bytes=1 if scratch else 32 * 1024 * 1024,
+            fixture=True,
+            scratch_directory=scratch,
+            max_disk_bytes=32 * 1024 * 1024 if scratch else None,
+        )
         if offload
         else nullcontext()
     )
@@ -224,3 +230,243 @@ def test_summary_rejects_live_model_inventory_replacement(mutation):
             net[0].weight.data = net[0].weight.detach().clone()
         with pytest.raises(RuntimeError, match="model inventory changed"):
             manager.summary()
+
+
+def test_hybrid_1536_values_gradients_diagnostics_and_adam_exact(tmp_path):
+    original = model()
+    expected = run(original, 1536, False)
+    actual = run(original, 1536, True, tmp_path / "STORAGE")
+    torch.testing.assert_close(actual[:5], expected[:5], rtol=0, atol=0)
+    summary = actual[5]
+    assert summary["disk_bytes_read"] > summary["disk_bytes_written"] > 0
+    assert summary["peak_staging_host_bytes"] <= summary["staging_chunk_bytes"]
+    assert summary["live_host_bytes"] == summary["live_disk_bytes"] == 0
+    assert not summary["storage_failures"] and not summary["cleanup_errors"]
+    assert not list((tmp_path / "STORAGE").iterdir())
+
+
+@pytest.mark.parametrize("kind", ["transpose", "slice", "expand", "scalar", "integer", "bool"])
+def test_hybrid_raw_values_exact_for_views_and_dtypes(tmp_path, monkeypatch, kind):
+    from sr_f6_memory_repair import offload
+
+    monkeypatch.setattr(offload, "STAGING_CHUNK_BYTES", 128)
+    source = torch.arange(77, dtype=torch.float32).reshape(7, 11)
+    values = {
+        "transpose": source.T,
+        "slice": source[:, ::2],
+        "expand": source[:1].expand(9, 11),
+        "scalar": torch.tensor(1.375),
+        "integer": source.to(torch.int64).T,
+        "bool": (source > 17).T,
+    }
+    value = values[kind]
+    with saved_activation_offload(
+        model(),
+        max_host_bytes=1,
+        fixture=True,
+        scratch_directory=tmp_path / "STORAGE",
+        max_disk_bytes=10000,
+    ) as m:
+        # A bool scalar would fit in the host pool; these values all exceed it.
+        packed = m._pack(value)
+        torch.testing.assert_close(m._unpack(packed), value, rtol=0, atol=0)
+        torch.testing.assert_close(m._unpack(packed), value, rtol=0, atol=0)
+        assert m.summary()["peak_staging_host_bytes"] <= 128
+        del packed
+        gc.collect()
+        assert m.summary()["live_disk_bytes"] == 0
+        assert not list((tmp_path / "STORAGE").iterdir())
+
+
+def test_hybrid_128_rows_release_all_owned_files(tmp_path, monkeypatch):
+    from sr_f6_memory_repair import offload
+
+    monkeypatch.setattr(
+        offload.os, "fsync", lambda _: None
+    )  # lifecycle test, not durability evidence
+    net = model()
+    with saved_activation_offload(
+        net,
+        max_host_bytes=1,
+        fixture=True,
+        scratch_directory=tmp_path / "STORAGE",
+        max_disk_bytes=100000,
+    ) as m:
+        for _ in range(128):
+            (net(torch.ones(4, 7)).square().mean() / 128).backward()
+            assert m.summary()["live_disk_bytes"] == m.summary()["live_host_bytes"] == 0
+            assert not list((tmp_path / "STORAGE").iterdir())
+        assert m.summary()["disk_bytes_written"] > 100 * m.summary()["peak_disk_bytes"]
+
+
+def test_corrupt_spill_preserved_and_rejected(tmp_path):
+    with saved_activation_offload(
+        model(),
+        max_host_bytes=1,
+        fixture=True,
+        scratch_directory=tmp_path / "STORAGE",
+        max_disk_bytes=10000,
+    ) as m:
+        packed = m._pack(torch.ones(4, 7))
+        with packed.path.open("r+b") as f:
+            f.write(b"\xff")
+        with pytest.raises(RuntimeError, match="digest differs"):
+            m._unpack(packed)
+        path = packed.path
+        del packed
+        gc.collect()
+        assert path.exists()
+        assert m.summary()["storage_failures"][0]["stage"] == "read"
+        assert m.summary()["live_disk_bytes"] == 4 * 7 * 4
+
+
+def test_foreign_file_and_replaced_spill_never_deleted(tmp_path):
+    target = tmp_path / "protected"
+    target.write_bytes(b"protected")
+    with saved_activation_offload(
+        model(),
+        max_host_bytes=1,
+        fixture=True,
+        scratch_directory=tmp_path / "STORAGE",
+        max_disk_bytes=10000,
+    ) as m:
+        packed = m._pack(torch.ones(4, 7))
+        foreign = tmp_path / "STORAGE/foreign"
+        foreign.write_bytes(b"foreign")
+        packed.path.unlink()
+        packed.path.symlink_to(target)
+        path = packed.path
+        del packed
+        gc.collect()
+        assert path.is_symlink()
+        assert target.read_bytes() == b"protected"
+        assert foreign.read_bytes() == b"foreign"
+        assert m.summary()["cleanup_errors"]
+
+
+def test_replaced_scratch_directory_is_never_cleaned(tmp_path):
+    scratch = tmp_path / "STORAGE"
+    with saved_activation_offload(
+        model(), max_host_bytes=1, fixture=True, scratch_directory=scratch, max_disk_bytes=10000
+    ) as m:
+        packed = m._pack(torch.ones(4, 7))
+        filename = packed.path.name
+        scratch.rename(tmp_path / "preserved")
+        scratch.mkdir()
+        replacement = scratch / filename
+        replacement.write_bytes(b"foreign")
+        del packed
+        gc.collect()
+        assert replacement.read_bytes() == b"foreign"
+        assert (tmp_path / "preserved" / filename).exists()
+        assert m.cleanup_errors
+        with pytest.raises(PermissionError, match="directory identity changed"):
+            m.summary()
+
+
+def test_hybrid_disk_bound_and_free_space_fail_before_file_creation(tmp_path, monkeypatch):
+    from sr_f6_memory_repair import offload
+
+    with saved_activation_offload(
+        model(),
+        max_host_bytes=1,
+        fixture=True,
+        scratch_directory=tmp_path / "SMALL",
+        max_disk_bytes=16,
+    ) as m:
+        with pytest.raises(MemoryError, match="disk bound"):
+            m._pack(torch.ones(4, 7))
+        assert not list((tmp_path / "SMALL").iterdir())
+    with saved_activation_offload(
+        model(),
+        max_host_bytes=1,
+        fixture=True,
+        scratch_directory=tmp_path / "FULL",
+        max_disk_bytes=10000,
+    ) as m:
+        original = offload.shutil.disk_usage(tmp_path)
+        monkeypatch.setattr(offload.shutil, "disk_usage", lambda _: original._replace(free=0))
+        with pytest.raises(OSError, match="free space"):
+            m._pack(torch.ones(4, 7))
+        assert not list((tmp_path / "FULL").iterdir())
+
+
+def test_failed_spill_write_keeps_partial_file_and_metadata(tmp_path, monkeypatch):
+    from sr_f6_memory_repair import offload
+
+    def fail(_):
+        raise OSError("injected fsync failure")
+
+    monkeypatch.setattr(offload.os, "fsync", fail)
+    with saved_activation_offload(
+        model(),
+        max_host_bytes=1,
+        fixture=True,
+        scratch_directory=tmp_path / "STORAGE",
+        max_disk_bytes=10000,
+    ) as m:
+        with pytest.raises(OSError, match="injected fsync"):
+            m._pack(torch.ones(4, 7))
+        assert len(list((tmp_path / "STORAGE").iterdir())) == 1
+        assert m.summary()["storage_failures"][0]["stage"] == "write"
+        assert m.summary()["live_disk_bytes"] == 4 * 7 * 4
+
+
+def test_scratch_must_be_new_canonical_and_project_scoped(tmp_path):
+    existing = tmp_path / "EXISTING"
+    existing.mkdir()
+    with (
+        pytest.raises(FileExistsError),
+        saved_activation_offload(
+            model(),
+            max_host_bytes=1,
+            fixture=True,
+            scratch_directory=existing,
+            max_disk_bytes=10000,
+        ),
+    ):
+        pass
+    linked = tmp_path / "linked"
+    linked.symlink_to(existing, target_is_directory=True)
+    with (
+        pytest.raises(PermissionError, match="canonical"),
+        saved_activation_offload(
+            model(),
+            max_host_bytes=1,
+            fixture=True,
+            scratch_directory=linked / "STORAGE",
+            max_disk_bytes=10000,
+        ),
+    ):
+        pass
+    with (
+        pytest.raises(PermissionError, match="canonical project"),
+        saved_activation_offload(
+            model(), max_host_bytes=1, scratch_directory=tmp_path / "OUTSIDE", max_disk_bytes=10000
+        ),
+    ):
+        pass
+    assert not (tmp_path / "OUTSIDE").exists()
+
+
+def test_mixed_pool_and_spill_stay_bounded_and_preserve_raw_special_values(tmp_path):
+    with saved_activation_offload(
+        model(),
+        max_host_bytes=16,
+        fixture=True,
+        scratch_directory=tmp_path / "STORAGE",
+        max_disk_bytes=10000,
+    ) as m:
+        host = m._pack(torch.ones(4))
+        source = torch.tensor([float("nan"), -0.0, float("inf"), -float("inf"), 1.0])
+        disk = m._pack(source)
+        restored = m._unpack(disk)
+        assert torch.equal(restored.view(torch.uint8), source.view(torch.uint8))
+        assert m.summary()["live_host_bytes"] == 16
+        assert m.summary()["live_disk_bytes"] == 20
+        assert m.summary()["peak_host_bytes"] <= 16
+        assert m.summary()["peak_disk_bytes"] <= 10000
+        del host, disk
+        gc.collect()
+        assert m.summary()["live_host_bytes"] == m.summary()["live_disk_bytes"] == 0
+        assert not list((tmp_path / "STORAGE").iterdir())

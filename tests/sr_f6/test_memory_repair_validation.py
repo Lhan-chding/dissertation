@@ -114,7 +114,7 @@ def test_production_cold_verifier_rejects_complete_synthetic_receipt(tmp_path, m
 
     runtime, _, _, rows, credits, originals = setup(tmp_path)
     evidence, tensors = v.measure_fixture(runtime, rows, credits, originals)
-    output = tmp_path / "validation"
+    output = tmp_path / "VALIDATION"
     output.mkdir()
     (output / "EVIDENCE.json").write_text(json.dumps(evidence))
     torch.save(tensors, output / "TENSORS.pt")
@@ -133,3 +133,82 @@ def test_production_cold_verifier_rejects_complete_synthetic_receipt(tmp_path, m
     monkeypatch.setattr(v, "_originals", lambda _: ({}, rows, credits, originals))
     with pytest.raises(PermissionError, match="Synthetic"):
         v.verify_validation(tmp_path / "contract.json", "1" * 64, v._ref(output / "RESULT.json"))
+
+
+def test_hybrid_validation_uses_owned_spill_and_restores_exact_gradients(tmp_path):
+    runtime, optimizer, _, rows, credits, originals = setup(tmp_path)
+    before = state_hash(runtime.model.state_dict())
+    scratch = tmp_path / "STORAGE"
+    evidence, tensors = v.measure_fixture(
+        runtime,
+        rows,
+        credits,
+        originals,
+        max_host_bytes=1,
+        max_disk_bytes=1024**2,
+        scratch_directory=scratch,
+    )
+    assert evidence["offload"]["disk_bytes_written"] > 0
+    assert evidence["offload"]["disk_bytes_read"] > 0
+    assert evidence["offload"]["peak_disk_bytes"] <= 1024**2
+    assert evidence["offload"]["peak_host_bytes"] <= 1
+    assert not list(scratch.iterdir())
+    assert state_hash(runtime.model.state_dict()) == before
+    assert not optimizer.state
+    assert v.recompute(evidence, tensors, originals) == evidence["comparisons"]
+    for mutation in (
+        "host",
+        "disk",
+        "staging",
+        "cleanup",
+        "read",
+        "path",
+        "live",
+        "failure",
+        "no_io",
+        "peak_zero",
+        "short_write",
+    ):
+        damaged = copy.deepcopy(evidence["offload"])
+        if mutation == "host":
+            damaged["peak_host_bytes"] = 2
+        if mutation == "disk":
+            damaged["peak_disk_bytes"] = 1024**2 + 1
+        if mutation == "staging":
+            damaged["peak_staging_host_bytes"] = 64 * 1024**2 + 1
+        if mutation == "cleanup":
+            damaged["cleanup_errors"] = ["failed"]
+        if mutation == "read":
+            damaged["disk_bytes_read"] = 0
+        if mutation == "no_io":
+            damaged["disk_bytes_written"] = damaged["disk_bytes_read"] = 0
+        if mutation == "peak_zero":
+            damaged["peak_disk_bytes"] = 0
+        if mutation == "short_write":
+            damaged["disk_bytes_written"] = damaged["peak_disk_bytes"] - 1
+        if mutation == "path":
+            damaged["scratch_directory"] = str(tmp_path)
+        if mutation == "live":
+            damaged["live_disk_bytes"] = 1
+        if mutation == "failure":
+            damaged["storage_failures"] = ["failed"]
+        with pytest.raises(PermissionError):
+            v.verify_storage(damaged, scratch, 1, 1024**2, fixture=True)
+
+
+def test_cold_hybrid_scratch_rejects_leftover_file(tmp_path):
+    runtime, _, _, rows, credits, originals = setup(tmp_path)
+    scratch = tmp_path / "STORAGE"
+    evidence, _ = v.measure_fixture(
+        runtime,
+        rows,
+        credits,
+        originals,
+        max_host_bytes=1,
+        max_disk_bytes=1024**2,
+        scratch_directory=scratch,
+    )
+    (scratch / "unclosed").write_bytes(b"preserve")
+    with pytest.raises(PermissionError, match="payload remains"):
+        v.verify_storage(evidence["offload"], scratch, 1, 1024**2, fixture=True)
+    assert (scratch / "unclosed").read_bytes() == b"preserve"

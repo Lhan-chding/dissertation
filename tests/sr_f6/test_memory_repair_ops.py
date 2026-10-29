@@ -1,5 +1,6 @@
 """Synthetic isolated operation checks, no scheduler or model invocation."""
 
+import ast
 import builtins
 import importlib.util
 import json
@@ -16,6 +17,20 @@ def load():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def actual_validator_schema():
+    """Read the actual module contract without importing its Torch runtime."""
+    path = Path(__file__).resolve().parents[2] / "src/sr_f6_memory_repair/validation.py"
+    tree = ast.parse(path.read_text())
+    values = [
+        ast.literal_eval(node.value)
+        for node in tree.body
+        if isinstance(node, ast.Assign)
+        and any(isinstance(target, ast.Name) and target.id == "SCHEMA" for target in node.targets)
+    ]
+    assert len(values) == 1
+    return values[0]
 
 
 @pytest.fixture
@@ -53,6 +68,7 @@ def setup(tmp_path, monkeypatch):
     )
     monkeypatch.setattr(m, "original", lambda: old)
     monkeypatch.setattr(m, "submission_metadata", lambda *args: dict(status="METADATA_ONLY"))
+    monkeypatch.setattr(m, "prior_allocation_terminal", lambda *args: {})
     monkeypatch.setattr(m, "quiescent", lambda query: dict(target_locks="OBSERVED_FREE"))
     calls = []
 
@@ -68,7 +84,7 @@ def test_one_independent_lane_uses_legal_last_gpu(setup):
     m, a, c, _, calls = setup
     receipt = m.submit(a, "validate", c, m.sha(c))
     assert receipt["status"] == "SUBMITTED" and len(calls) == 1
-    assert "--gres=gpu:pro6000:1" in calls[0] and "--mem=128G" in calls[0]
+    assert "--gres=gpu:pro6000:1" in calls[0] and "--mem=33G" in calls[0]
     assert "--no-requeue" in calls[0]
     assert not any("b0" in x for x in calls[0])
 
@@ -190,11 +206,11 @@ def test_allocation_checks_both_requested_and_allocated(setup):
         + m.QOS
         + " NumCPUs=4 Partition=cluster02 Account=rose UserId=varun024(10) "
     )
-    tres = "cpu=4,mem=128G,gres/gpu=1,gres/gpu:pro6000=1"
+    tres = "cpu=4,mem=33G,gres/gpu=1,gres/gpu:pro6000=1"
     old = SimpleNamespace(query=lambda argv: fields + "ReqTRES=" + tres + " AllocTRES=" + tres)
     assert m.allocation(old, "validate", "90")["JobId"] == "90"
     old.query = lambda argv: (
-        fields + "ReqTRES=" + tres + " AllocTRES=cpu=4,mem=33G,gres/gpu:pro6000:1"
+        fields + "ReqTRES=" + tres + " AllocTRES=cpu=4,mem=128G,gres/gpu:pro6000:1"
     )
     with pytest.raises(PermissionError):
         m.allocation(old, "validate", "90")
@@ -318,6 +334,8 @@ def test_lightweight_metadata_binds_exact_source_and_only_small_refs(tmp_path, m
     monkeypatch.setattr(m, "PROJECT", tmp_path)
     monkeypatch.setattr(m, "ROOT", tmp_path / "root")
     monkeypatch.setattr(m, "CODE", tmp_path / "code")
+    monkeypatch.setattr(m, "FAILED_OPS", tmp_path / "old_ops")
+    m.FAILED_OPS.mkdir()
     m.ROOT.mkdir()
     source = tmp_path / "source"
     source.mkdir()
@@ -332,7 +350,9 @@ def test_lightweight_metadata_binds_exact_source_and_only_small_refs(tmp_path, m
     refpath.write_text("{}")
     ref = dict(path=str(refpath), sha256=m.sha(refpath))
     value = dict(
-        schema="srf6-memory-repair-contract-v1",
+        schema="srf6-memory-repair-contract-v2",
+        max_host_bytes=8 * 2**30,
+        max_disk_bytes=96 * 2**30,
         experiment_root=str(m.ROOT),
         original_job_id="233996",
         original_step_id="233996.1",
@@ -357,6 +377,19 @@ def test_lightweight_metadata_binds_exact_source_and_only_small_refs(tmp_path, m
             )
         }
     )
+    failure = m.FAILED_OPS / "validate_FAILURE.json"
+    failure.write_text(
+        json.dumps(
+            dict(
+                job_id="234358",
+                status="FAILED_PRESERVED",
+                error_type="PermissionError",
+                error="Wrong actual GPU/CPU/host-memory allocation",
+                retry_authorized=False,
+            )
+        )
+    )
+    value["old_allocation_failure_ref"] = dict(path=str(failure), sha256=m.sha(failure))
     c = tmp_path / "contract.json"
     c.write_text(json.dumps(value))
     assert m.submission_metadata(a, c, m.sha(c), dict(plan={}, manifest={})) == dict(
@@ -369,9 +402,10 @@ def test_lightweight_metadata_binds_exact_source_and_only_small_refs(tmp_path, m
 
 
 @pytest.mark.parametrize(
-    "state,live", [("RUNNING|0:0", ""), ("FAILED|1:0", ""), ("COMPLETED|0:0", "90001")]
+    "state,live",
+    [("RUNNING|0:0", ""), ("FAILED|1:0", ""), ("COMPLETED|0:0", "90001"), ("COMPLETED|0:0", "")],
 )
-def test_validation_terminal_rejects_result_before_successful_job_end(setup, state, live):
+def test_validation_terminal_matches_actual_validator_and_requires_success(setup, state, live):
     m, a, c, _, _ = setup
     out = m.OPS / "VALIDATION"
     out.mkdir(parents=True)
@@ -384,7 +418,7 @@ def test_validation_terminal_rejects_result_before_successful_job_end(setup, sta
         path.write_bytes(b"unread tensor bytes")
         refs[name] = dict(path=str(path), sha256=m.sha(path))
     value = dict(
-        schema="srf6-memory-storage-validation-v1",
+        schema=actual_validator_schema(),
         contract_sha256=m.sha(c),
         verifier_source_ref=dict(path=str(verifier), sha256=m.sha(verifier)),
         **refs,
@@ -409,5 +443,65 @@ def test_validation_terminal_rejects_result_before_successful_job_end(setup, sta
         json.dumps(dict(job_id="90001", source=a, completed=[ref]))
     )
     old = SimpleNamespace(query=lambda argv: "90001|" + state if argv[0] == "sacct" else live)
-    with pytest.raises(PermissionError, match=r"terminal|queued"):
-        m.validation_terminal(old, a, c, m.sha(c), ref)
+    if state == "COMPLETED|0:0" and not live:
+        assert m.validation_terminal(old, a, c, m.sha(c), ref)["job_id"] == "90001"
+        value["schema"] = "srf6-memory-storage-validation-v1"
+        result.write_text(json.dumps(value))
+        ref["sha256"] = m.sha(result)
+        with pytest.raises(PermissionError, match="unrelated validation"):
+            m.validation_terminal(old, a, c, m.sha(c), ref)
+    else:
+        with pytest.raises(PermissionError, match=r"terminal|queued"):
+            m.validation_terminal(old, a, c, m.sha(c), ref)
+
+
+@pytest.mark.parametrize(
+    "artifact", [None, "validate_STARTED.json", "VALIDATION", "resume_ATTEMPT.json"]
+)
+def test_v2_requires_preserved_zero_model_allocation_failure(tmp_path, monkeypatch, artifact):
+    m = load()
+    monkeypatch.setattr(m, "PROJECT", tmp_path)
+    monkeypatch.setattr(m, "FAILED_OPS", tmp_path / "old")
+    m.FAILED_OPS.mkdir()
+    source = dict(
+        revision=m.FAILED_REVISION, deployment=str(tmp_path / "sr_f6_memory_repair_code_e24d557")
+    )
+    intent = dict(source=source, action="validate", validation=None, argv=["--mem=128G"])
+    intent_path = m.FAILED_OPS / "validate_ATTEMPT.json"
+    intent_path.write_text(json.dumps(intent))
+    (m.FAILED_OPS / "validate_SUBMISSION.json").write_text(
+        json.dumps(
+            dict(
+                source=source,
+                status="SUBMITTED",
+                job_id="234358",
+                attempt_sha256=m.sha(intent_path),
+            )
+        )
+    )
+    old = SimpleNamespace(
+        query=lambda argv: "234358|FAILED|1:0" if argv[0] == "sacct" else "233996"
+    )
+    if artifact:
+        path = m.FAILED_OPS / artifact
+        path.mkdir() if artifact == "VALIDATION" else path.write_text("{}")
+        with pytest.raises(PermissionError, match="model or recovery"):
+            m.prior_allocation_terminal(old)
+    else:
+        assert m.prior_allocation_terminal(old)["status"] == "FAILED_BEFORE_MODEL_PRESERVED"
+        old.query = lambda argv: "234358|FAILED|1:0" if argv[0] == "sacct" else "234358"
+        with pytest.raises(PermissionError, match="still queued"):
+            m.prior_allocation_terminal(old)
+
+
+def test_v2_source_uses_new_ops_and_scheduler_real_33g():
+    m = load()
+    assert m.OPS.name == "PILOT_MEMORY_REPAIR_V2_20261029"
+    assert m.FAILED_OPS.name == "PILOT_MEMORY_REPAIR_V1_20261029"
+    argv = m.argv_for(
+        dict(revision="a" * 40, deployment=str(m.PROJECT / "new"), binding_sha256="b" * 64),
+        "validate",
+        m.OPS / "CONTRACT.json",
+        "c" * 64,
+    )
+    assert "--mem=33G" in argv and "--mem=128G" not in argv
