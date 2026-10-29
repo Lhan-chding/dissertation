@@ -19,3 +19,9 @@ B仅在A完整后才能准备，EVAL仅在九路主实验及唯一恢复完整�
 11:42:41 UTC，已核实233935完成离队且teacher全用户实际1GPU/varun024的1槽，唯一提交`233996/LH-SRF6-PilotV3-A`。明确SUBMITTED回执、A_ATTEMPT与A_SUBMISSION均已保存，intent sha为`e27dc5c2eaa83cecc1592139df3df22f1168199f7710999b7e2609287e406eee`。提交后teacher已知3GPU预留/2槽；其它项目只读核额、未修改。
 
 11:42:56 UTC实际PENDING(Resources)，尚无A_STARTED、worker或任务产物。这是排队状态，不是先导完成或科学PASS。禁止再次deploy/submit/prepare/重采；只用私有`.local/pilot_round_a_20261029/run_operation.py read`读取唯一233996及原回执，续接见同目录CONTINUE。旧9216回答、360审核、24T03和全部FAIL/UNKNOWN原件保留。后续文档提交不改变实际操作74a95f5或模型生产b7e7b06。
+
+## 12:02 UTC连接超时，当前运行状态未知
+
+11:46:55 UTC最后成功只读核查仍为PENDING(Resources)，无A_STARTED/worker/任务产物。12:01:57与12:02:36 UTC两次有时限的SSH只读查询均连接超时（returncode255），没有取得新的服务器状态，也没有执行新提交或服务器写入。原状态快照与两次故障回执均保留。当前233996状态及资源占用为UNKNOWN，不能继续沿用旧PENDING作为实时事实，也不能视作模型或科学失败。
+
+保留原作业；连接恢复后先查唯一233996、原意图/回执和worker/失败，不重提、不补抽。相同连接故障未变化时不重复通知，自动跟进继续。Round B仍受A六个真实完整任务门控制。
