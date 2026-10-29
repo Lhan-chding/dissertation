@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from sr_f6 import historical_confirmation, phases, pilot_contract
+from sr_f6 import historical_closure, phases, pilot_contract
 from sr_f6 import pilot_v3_admission as admission
 from sr_f6.common import file_hash
 
@@ -60,7 +60,7 @@ def test_synthetic_registration_cannot_be_promoted(root, monkeypatch):
     context = dict(identity_sha256="0" * 64, phase="PILOT_V3")
     monkeypatch.setattr(admission, "_phase", lambda *args: context)
     ref = dict(path="overlay.json", sha256="1" * 64)
-    confirmation = dict(path=historical_confirmation.BINDING_PATH, sha256="2" * 64)
+    confirmation = dict(path=historical_closure.BINDING_PATH, sha256="2" * 64)
     spec = dict(
         phase="PILOT_V3",
         input_overlay=ref,
@@ -113,14 +113,14 @@ def test_bound_alias_target_state_changes_invalidate_warm_proof(root):
     target.write_bytes(b"no model")
     alias = root / "alias"
     alias.symlink_to(target)
-    before = historical_confirmation._state(alias)
+    before = historical_closure._state(alias)
     other = root.parent / "synthetic-other"
     other.write_bytes(b"no model")
     alias.unlink()
     alias.symlink_to(other)
-    assert historical_confirmation._state(alias) != before
+    assert historical_closure._state(alias) != before
     outside = Path("/etc/hosts")
     alias.unlink()
     alias.symlink_to(outside)
     with pytest.raises(PermissionError):
-        historical_confirmation._state(alias)
+        historical_closure._state(alias)

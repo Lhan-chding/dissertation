@@ -13,7 +13,7 @@ import importlib
 import inspect
 from pathlib import Path
 
-from . import historical_confirmation as historical
+from . import historical_closure as historical
 from .common import digest, file_hash
 
 SCHEMA = "srf6-pilot-v3-kernel-correspondence-v1"
@@ -413,6 +413,7 @@ def verify_kernel_compatibility(root, *, phase_context, confirmation_binding):
         current_deployment=str(current),
         producer=facts["producer"],
         consumer=facts["consumer"],
+        repair_verifier=copy.deepcopy(facts["repair_verifier"]),
         confirmation_binding_ref=checked["binding_ref"],
         original_t03_spec_ref=spec_ref,
         original_numerical_sha256=digest(numerical),

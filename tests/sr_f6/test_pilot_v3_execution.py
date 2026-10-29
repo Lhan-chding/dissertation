@@ -14,7 +14,7 @@ from mm_core.training import state_hash, trainable_state
 from sr_f3_ce.training import fresh_optimizer
 from sr_f6 import (
     evaluation,
-    historical_confirmation,
+    historical_closure,
     pilot,
     pilot_audit,
     pilot_contract,
@@ -84,7 +84,7 @@ def prepared(v3_factory, monkeypatch, prototype):  # noqa: F811
     # synthetic scope never goes through production admission/access/model load.
     binding = dict(path="SYNTHETIC_CONFIRMATION.json", sha256="7" * 64)
     monkeypatch.setattr(
-        historical_confirmation,
+        historical_closure,
         "require_confirmation_binding",
         lambda *args, **kwargs: dict(binding_ref=binding, scope="SYNTHETIC_ONLY"),
     )

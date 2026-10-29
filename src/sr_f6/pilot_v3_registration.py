@@ -33,7 +33,7 @@ def build_pilot_v3_registration(
     confirmation_binding_ref,
 ):
     """Build new-source artifacts from original inputs, without publishing."""
-    from .historical_confirmation import require_confirmation_binding
+    from .historical_closure import require_confirmation_binding
 
     root = _plain_path(root)
     context = pilot_v3_inputs._context(root, phase_context)

@@ -12,7 +12,7 @@ import importlib.metadata
 import os
 from pathlib import Path
 
-from . import historical_confirmation as historical
+from . import historical_closure as historical
 from . import phases, pilot_contract
 from .common import digest, file_hash
 from .historical_pilot import _json, _write

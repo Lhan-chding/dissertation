@@ -14,7 +14,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from sr_f6 import historical_confirmation, pilot_v3_inputs, pilot_v3_registration, registration
+from sr_f6 import historical_closure, pilot_v3_inputs, pilot_v3_registration, registration
 from sr_f6.common import file_hash
 from sr_f6.planning import draw_seed, formal_paths
 from sr_f6.rollouts import _bound
@@ -38,7 +38,7 @@ def registered_inputs(v3_project, monkeypatch):  # noqa: F811 - imported pytest 
     }
     write(project.root / relative, value)
     project.confirmation_ref = {"path": relative, "sha256": file_hash(project.root / relative)}
-    project.actual_confirmation_verifier = historical_confirmation.require_confirmation_binding
+    project.actual_confirmation_verifier = historical_closure.require_confirmation_binding
 
     def synthetic_dependency(root, *, phase_context, confirmation_binding_ref):
         assert root == project.root and phase_context == project.context
@@ -51,9 +51,7 @@ def registered_inputs(v3_project, monkeypatch):  # noqa: F811 - imported pytest 
             "verification": {"evidence_scope": "SYNTHETIC_UNIT_FIXTURE_NOT_CONFIRMATION"},
         }
 
-    monkeypatch.setattr(
-        historical_confirmation, "require_confirmation_binding", synthetic_dependency
-    )
+    monkeypatch.setattr(historical_closure, "require_confirmation_binding", synthetic_dependency)
     return project
 
 
@@ -356,7 +354,7 @@ def test_failed_publication_keeps_attempt_without_published_plan(registered_inpu
 
 def test_actual_confirmation_boundary_rejects_synthetic_input(registered_inputs, monkeypatch):
     monkeypatch.setattr(
-        historical_confirmation,
+        historical_closure,
         "require_confirmation_binding",
         registered_inputs.actual_confirmation_verifier,
     )
