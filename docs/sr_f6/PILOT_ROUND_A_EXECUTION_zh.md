@@ -11,3 +11,11 @@ B仅在A完整后才能准备，EVAL仅在九路主实验及唯一恢复完整�
 外层操作器已完成30项本地回归，覆盖精确身份、固定资源、满槽/配额/未知预留、重复或不明提交、错误分配、启动环境及半写回执；Ruff、格式、bash语法和diff检查通过。独立复核已修正两项问题：提交回执采用同目录fsync后不覆盖原子发布，避免快启动读取半份JSON；作业内构造固定环境后设置SLURM_EXPORT_ENV=ALL，让内部srun继承实际环境，符合[Slurm官方export说明](https://slurm.schedmd.com/sbatch.html#OPT_export)。原b7代码不变。
 
 本段登记时仍无新操作源码部署、GPU意图或GPU作业。工程检查通过不等于真实GPU执行或先导科学PASS；实际操作commit、部署与提交回执将在后续事实段补充。
+
+## 11:42 UTC实际唯一提交
+
+独立操作源码`74a95f5b94e5c4e1d92ba7a5ba8b250b850ac4e8`已commit、push并由ls-remote核实；源身份与b7模型生产者分开。一次部署`sr_f6_pilot_ops_code_74a95f5`，四文件25,234bytes，实际标准库导入、来源绑定、封存元数据及无既有worker输出检查通过，部署阶段0模型调用/0作业。operation binding为`0ed394b9ebabc4f752b0f7a44df67acbc5b4fdcfa601146be0ef5434dddb7c64`。
+
+11:42:41 UTC，已核实233935完成离队且teacher全用户实际1GPU/varun024的1槽，唯一提交`233996/LH-SRF6-PilotV3-A`。明确SUBMITTED回执、A_ATTEMPT与A_SUBMISSION均已保存，intent sha为`e27dc5c2eaa83cecc1592139df3df22f1168199f7710999b7e2609287e406eee`。提交后teacher已知3GPU预留/2槽；其它项目只读核额、未修改。
+
+11:42:56 UTC实际PENDING(Resources)，尚无A_STARTED、worker或任务产物。这是排队状态，不是先导完成或科学PASS。禁止再次deploy/submit/prepare/重采；只用私有`.local/pilot_round_a_20261029/run_operation.py read`读取唯一233996及原回执，续接见同目录CONTINUE。旧9216回答、360审核、24T03和全部FAIL/UNKNOWN原件保留。后续文档提交不改变实际操作74a95f5或模型生产b7e7b06。
