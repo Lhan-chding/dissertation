@@ -108,7 +108,11 @@ def fixture(tmp_path, prototype):
             for p in ("b0", "b1", "b2")
         },
     )
-    return root, {"evaluation": plan}, full_truth_response(prototype["world"], prototype["query"])
+    return (
+        root,
+        {"phase": "PILOT_V1", "evaluation": plan},
+        full_truth_response(prototype["world"], prototype["query"]),
+    )
 
 
 class SyntheticRuntime:
@@ -402,15 +406,22 @@ def test_full_summary_pairs_all_roots_and_preserves_unknowns(fixture):
 def test_recovery_lane_and_missing_commit_are_not_endpoint_sources(tmp_path):
     root = tmp_path.resolve()
     relative = "runs/b0/r0/U11/RUN_IDENTITY.json"
-    identity = dict(lane="RECOVERY", max_steps=12, run_id="SYNTHETIC/PILOT/b0/r0/U11", parent="b0")
+    identity = dict(
+        phase="PILOT_V1",
+        lane="RECOVERY",
+        max_steps=12,
+        run_id="SYNTHETIC/PILOT/b0/r0/U11",
+        parent="b0",
+    )
     ref = save(root, f"{evaluation.REGISTRATION_DIRECTORY}/{relative}", identity)
     ref["path"] = relative
     spec = dict(
+        phase="PILOT_V1",
         paths=[
             dict(
                 run_id=identity["run_id"], run_directory="runs/b0/r0/U11", transaction_identity=ref
             )
-        ]
+        ],
     )
     endpoint = dict(kind="PILOT_ENDPOINT", run_id=identity["run_id"], parent="b0")
     with pytest.raises(PermissionError, match="PRIMARY"), evaluation._source(root, spec, endpoint):

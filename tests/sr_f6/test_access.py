@@ -390,6 +390,75 @@ def eval_open(case, ledger=None):
     )
 
 
+def test_v3_evaluation_access_consumes_verified_overlay(evaluation_case, monkeypatch):
+    """Synthetic admission only; exercise real V3 input/held-ledger access routing."""
+    from sr_f6 import interface_v3_protocol, pilot_v3_admission, pilot_v3_inputs
+
+    case, r = evaluation_case, evaluation_case["runtime"]
+    root, grant = case["experiment"], case["grant"]
+    old = case["ledger"]
+    spec = grant["pilot_spec"]
+    overlay_ref = dict(path="PHASE_RUNS/PILOT_V3/INPUTS_V3/OVERLAY_MANIFEST.json", sha256="7" * 64)
+    spec.update(
+        phase="PILOT_V3", input_overlay=overlay_ref, prompt_version=interface_v3_protocol.VERSION
+    )
+    path = root / "PHASE_RUNS/PILOT_V3/INPUTS_V3/DEV_EVAL/MODEL_INPUTS.jsonl"
+    path.parent.mkdir(parents=True)
+    public = {
+        qid: pilot_v3_inputs._project_public(row, old.tasks[qid]) for qid, row in old.public.items()
+    }
+    path.write_text("".join(json.dumps(row) + "\n" for row in public.values()))
+    spec["evaluation"]["inputs"]["public"] = case["eval_module"]._reference(root, path)
+    grant.update(scope="PILOT_V3_REGISTERED_ONLY")
+    grant["phase_context"]["phase"] = "PILOT_V3"
+    case["admission_ref"]["path"] = "PHASES/PILOT_V3/ADMISSION.json"
+    grant["admission_ref"] = case["admission_ref"]
+    fields = dict(
+        phase="PILOT_V3",
+        input_overlay=overlay_ref,
+        input_overlay_sha256=overlay_ref["sha256"],
+        prompt_version=interface_v3_protocol.VERSION,
+        pilot_spec_sha256="9" * 64,
+    )
+    r.identity.update(fields, audit_root=str(root / "PHASE_RUNS/PILOT_V3/EVALUATION/b0/parent"))
+    r._srf6_source_context["phase"] = "PILOT_V3"
+    r._srf6_execution_identity = {
+        key: copy.deepcopy(r.identity[key])
+        for key in runtime._execution_identity_fields("PILOT_V3")
+    }
+    runtime._LOADED_RUNTIMES[r].update(
+        execution=copy.deepcopy(r._srf6_execution_identity),
+        source=copy.deepcopy(r._srf6_source_context),
+    )
+    monkeypatch.setattr(
+        pilot_v3_admission, "require_pilot_v3_admission", lambda *a, **k: copy.deepcopy(grant)
+    )
+    seen = []
+
+    def synthetic_overlay(experiment, *, phase_context, overlay_ref):
+        assert experiment == root and phase_context == grant["phase_context"]
+        assert overlay_ref == spec["input_overlay"]
+        seen.append(True)
+        return dict(inputs_by_split={"DEV_EVAL": copy.deepcopy(spec["evaluation"]["inputs"])})
+
+    monkeypatch.setattr(pilot_v3_inputs, "verify_overlay", synthetic_overlay)
+    identity = dict(
+        old.identity,
+        **fields,
+        admission_ref=case["admission_ref"],
+        input_refs=spec["evaluation"]["inputs"],
+    )
+    ledger = case["eval_module"].EvaluationLedger(
+        root, identity, spec["evaluation"], public, old.tasks
+    )
+    with ledger, eval_open(case, ledger) as session:
+        assert session.mode == "EVALUATION" and seen
+        assert session._evaluation_inputs == {
+            qid: row["model_input"] for qid, row in public.items()
+        }
+        assert r.calls == 0
+
+
 def test_evaluation_exact_panel_two_draws_no_forwards_or_update(evaluation_case):
     case, r = evaluation_case, evaluation_case["runtime"]
     with case["ledger"] as ledger, eval_open(case) as session:

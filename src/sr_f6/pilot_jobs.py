@@ -22,12 +22,11 @@ import time
 from contextlib import contextmanager, suppress
 from pathlib import Path
 
-from . import evaluation, recovery
-from .admission import require_pilot_admission
+from . import evaluation, pilot_contract, recovery
 from .common import now, write_once
-from .registration import DIRECTORY as REGISTRATION_DIRECTORY
 from .transactions import RunTransactions, _plain_path, _read_bytes, _require
 
+REGISTRATION_DIRECTORY = "PHASE_RUNS/PILOT_V1/PILOT_FROZEN"
 DIRECTORY = "PHASE_RUNS/PILOT_V1/JOBS"
 PLAN = DIRECTORY + "/PLAN.json"
 SCHEMA = "srf6-fixed-pilot-jobs-v1"
@@ -60,13 +59,19 @@ def _safe_id(value):
 
 
 def _admitted(root, pins):
-    admitted = require_pilot_admission(root, **pins)
+    contract = pilot_contract.for_phase(pins.get("phase", "PILOT_V1"))
+    admitted = pilot_contract.require_admission(root, **{**pins, "phase": contract.phase})
     _require(
         admitted["status"] == "VERIFIED_PILOT_ADMISSION"
-        and admitted["scope"] == "PILOT_V1_REGISTERED_ONLY",
+        and admitted["scope"] == contract.admission_scope
+        and admitted["pilot_spec"]["phase"] == contract.phase,
         "Actual PILOT admission required",
     )
     return admitted
+
+
+def _contract(admitted):
+    return pilot_contract.for_phase(admitted["pilot_spec"]["phase"])
 
 
 def _plan(admitted, pins):
@@ -120,7 +125,7 @@ def _plan(admitted, pins):
     return dict(
         schema=SCHEMA,
         status="FROZEN_OPERATIONS_NOT_AUTHORIZED",
-        phase="PILOT_V1",
+        phase=_contract(admitted).phase,
         pins=copy.deepcopy(pins),
         phase_identity=spec["phase_identity"],
         source_manifest=spec["actual_source_manifest"],
@@ -141,20 +146,25 @@ def _plan(admitted, pins):
     )
 
 
-def build_plan(root, *, phase_identity_sha256, pilot_spec_sha256, admission_ref):
+def build_plan(root, *, phase_identity_sha256, pilot_spec_sha256, admission_ref, phase="PILOT_V1"):
     root = _plain_path(root)
     pins = dict(
         phase_identity_sha256=phase_identity_sha256,
         pilot_spec_sha256=pilot_spec_sha256,
         admission_ref=admission_ref,
     )
+    contract = pilot_contract.for_phase(phase)
+    if contract.phase != "PILOT_V1":
+        pins["phase"] = contract.phase
     return _plan(_admitted(root, pins), pins)
 
 
 def freeze_plan(root, **pins):
     root = _plain_path(root)
     plan = build_plan(root, **pins)
-    if not (root / PLAN).exists():
+    contract = pilot_contract.for_phase(plan["phase"])
+    plan_path = root / contract.jobs_directory / "PLAN.json"
+    if not plan_path.exists():
         admitted = _admitted(root, pins)
         for item in admitted["pilot_spec"]["paths"]:
             directory = root / item["audit_root"]
@@ -166,17 +176,31 @@ def freeze_plan(root, **pins):
                 "Freeze operations before first pilot execution; never retrofit task order",
             )
         _require(
-            not (root / recovery.DIRECTORY).exists() and not (root / evaluation.DIRECTORY).exists(),
+            not (root / contract.recovery_directory).exists()
+            and not (root / contract.evaluation_directory).exists(),
             "Freeze operations before recovery or evaluation output",
         )
-    _write(root / PLAN, plan)
-    return _ref(root, root / PLAN)
+    _write(plan_path, plan)
+    return _ref(root, plan_path)
 
 
 def verify_plan(root, plan_ref):
     root = _plain_path(root)
-    _require(plan_ref.get("path") == PLAN, "Only fixed PILOT jobs plan is allowed")
+    _require(
+        plan_ref.get("path")
+        in {
+            pilot_contract.for_phase(p).jobs_directory + "/PLAN.json"
+            for p in ("PILOT_V1", "PILOT_V3")
+        },
+        "Only fixed PILOT jobs plan is allowed",
+    )
     plan = recovery._bound(root, plan_ref)
+    contract = pilot_contract.for_phase(plan["phase"])
+    _require(
+        plan_ref["path"] == contract.jobs_directory + "/PLAN.json"
+        and plan["pins"].get("phase", "PILOT_V1") == contract.phase,
+        "Operations phase/path/pins differ",
+    )
     admitted = _admitted(root, plan["pins"])
     _require(
         plan == _plan(admitted, plan["pins"]), "Operations plan differs from frozen registration"
@@ -204,7 +228,9 @@ def _registered(root, admitted, task):
     ]
     _require(len(matches) == 1, "Task is outside registered primary matrix")
     item = matches[0]
-    identity = recovery._bound(root / REGISTRATION_DIRECTORY, item["transaction_identity"])
+    identity = recovery._bound(
+        root / _contract(admitted).registration_directory, item["transaction_identity"]
+    )
     return _plain_path(root / item["audit_root"]), identity
 
 
@@ -234,7 +260,13 @@ def _training_done(root, admitted, task, report, *, recovered=None):
         )
         final = _ref(root, directory / "checkpoints/step-012/COMMIT.json")
         _require(report["final_commit"] == final, "Actual terminal commit reference differs")
-        executed = recovery._execution(root, report["execution"], directory, identity)
+        executed = recovery._execution(
+            root,
+            report["execution"],
+            directory,
+            identity,
+            pilot_spec_sha256=admitted["pilot_spec_ref"]["sha256"],
+        )
         _require(
             executed["end"]["scope"] == "SERVER_ACTUAL",
             "Synthetic execution cannot complete production task",
@@ -242,13 +274,19 @@ def _training_done(root, admitted, task, report, *, recovered=None):
     return report
 
 
-def _result_path(root, task):
-    return root / DIRECTORY / "TASKS" / task["task_id"] / "COMPLETE.json"
+def _result_path(root, task, *, phase="PILOT_V1"):
+    return (
+        root
+        / pilot_contract.for_phase(phase).jobs_directory
+        / "TASKS"
+        / task["task_id"]
+        / "COMPLETE.json"
+    )
 
 
 def _verify_task(root, plan_ref, admitted, task, *, receipt=None):
     """Scheduling completion only; the final scientific consumer must audit all facts."""
-    path = _result_path(root, task)
+    path = _result_path(root, task, phase=_contract(admitted).phase)
     if receipt is None:
         if not path.exists():
             return None
@@ -285,7 +323,9 @@ def _verify_task(root, plan_ref, admitted, task, *, receipt=None):
     else:
         spec, plan = admitted["pilot_spec"], admitted["pilot_spec"]["evaluation"]
         endpoint = evaluation._endpoint(plan, task["endpoint_id"])
-        public, tasks = evaluation._inputs(root, plan)
+        public, tasks = evaluation._inputs(
+            root, plan, spec=spec, phase_context=admitted["phase_context"]
+        )
         with evaluation._source(root, spec, endpoint) as source:
             identity = evaluation._identity(
                 root,
@@ -306,7 +346,7 @@ def _verify_task(root, plan_ref, admitted, task, *, receipt=None):
 
 def _completed_attempt(root, plan_ref, admitted, task):
     """Recover only derived operations receipts; never redo a producer's work."""
-    history = _result_path(root, task).parent / "ATTEMPTS"
+    history = _result_path(root, task, phase=_contract(admitted).phase).parent / "ATTEMPTS"
     if not history.exists():
         return None
     for attempt in sorted(history.iterdir()):
@@ -323,7 +363,7 @@ def _completed_attempt(root, plan_ref, admitted, task):
             producer = attempt / "RECOVERY_RESULT.json"
             trained = (
                 root
-                / recovery.DIRECTORY
+                / _contract(admitted).recovery_directory
                 / "TRAINER_ATTEMPTS"
                 / start["execution_id"]
                 / "COMPLETE.json"
@@ -334,11 +374,19 @@ def _completed_attempt(root, plan_ref, admitted, task):
                     admitted,
                     task,
                     _ref(root, trained),
-                    _ref(root, root / recovery.BINDING),
+                    _ref(
+                        root,
+                        root / (_contract(admitted).recovery_directory + "/RECOVERY_BINDING.json"),
+                    ),
                     attempt,
                 )
         else:
-            producer = root / evaluation.DIRECTORY / task["endpoint_id"] / "COMPLETE.json"
+            producer = (
+                root
+                / _contract(admitted).evaluation_directory
+                / task["endpoint_id"]
+                / "COMPLETE.json"
+            )
         if not producer.exists():
             continue
         receipt = dict(
@@ -350,7 +398,7 @@ def _completed_attempt(root, plan_ref, admitted, task):
             gate_status="NOT_SIGNED",
         )
         _verify_task(root, plan_ref, admitted, task, receipt=receipt)
-        _write(_result_path(root, task), receipt)
+        _write(_result_path(root, task, phase=_contract(admitted).phase), receipt)
         _write(attempt / "COMPLETE.json", receipt)
         return receipt
     return None
@@ -381,7 +429,7 @@ def _comparison(root, plan_ref, admitted, plan):
     directory, identity = _registered(root, admitted, task)
     with (
         RunTransactions(directory, identity) as primary,
-        RunTransactions(root / recovery.DIRECTORY, identity) as restored,
+        RunTransactions(root / _contract(admitted).recovery_directory, identity) as restored,
     ):
         result = recovery.verify_comparison(
             primary,
@@ -401,7 +449,7 @@ def _comparison(root, plan_ref, admitted, plan):
         and result["independent_process_verified"],
         "Actual recovery exactness failed; no evaluation expansion",
     )
-    return (directory, root / recovery.DIRECTORY)
+    return (directory, root / _contract(admitted).recovery_directory)
 
 
 def _stamps(directories):
@@ -441,9 +489,9 @@ def _stop_child_group(child):
     child.wait()
 
 
-def _evaluation_barrier(root, plan_ref, worker, attempt_id, *, timeout):
+def _evaluation_barrier(root, plan_ref, worker, attempt_id, *, timeout, phase="PILOT_V1"):
     """Both actual cold verifications finish before either endpoint queue starts."""
-    base = root / DIRECTORY / "WORKERS" / "EVAL"
+    base = root / pilot_contract.for_phase(phase).jobs_directory / "WORKERS" / "EVAL"
     own = base / str(worker) / "ATTEMPTS" / attempt_id
     peer = base / str(1 - worker) / "ATTEMPTS" / attempt_id
     value = dict(status="PREREQUISITES_VERIFIED", plan_ref=plan_ref, attempt_id=attempt_id)
@@ -486,7 +534,8 @@ def _invoke(command, log_path):
 
 
 def _arguments(root, pins):
-    return [
+    phase = pilot_contract.for_phase(pins.get("phase", "PILOT_V1")).phase
+    return (["--phase", phase] if phase != "PILOT_V1" else []) + [
         "--phase-identity-sha256",
         pins["phase_identity_sha256"],
         "--pilot-spec-sha256",
@@ -514,7 +563,7 @@ def _finish_recovery(root, admitted, task, trained_ref, binding_ref, attempt):
     )
     _training_done(root, admitted, task, trained, recovered=bound)
     primary_directory, identity = _registered(root, admitted, task)
-    directory = root / recovery.DIRECTORY
+    directory = root / _contract(admitted).recovery_directory
     with (
         RunTransactions(primary_directory, identity) as primary,
         RunTransactions(directory, identity) as restored,
@@ -576,7 +625,10 @@ def _execute(root, plan_ref, plan, admitted, task, execution_id, attempt):
             execution_id,
         ]
         _invoke(command, attempt / "process.log")
-        return _ref(root, root / evaluation.DIRECTORY / task["endpoint_id"] / "COMPLETE.json")
+        return _ref(
+            root,
+            root / _contract(admitted).evaluation_directory / task["endpoint_id"] / "COMPLETE.json",
+        )
     directory, identity = _registered(root, admitted, task)
     binding_ref = None
     if task["kind"] == "RECOVERY":
@@ -585,8 +637,12 @@ def _execute(root, plan_ref, plan, admitted, task, execution_id, attempt):
         _require(primary is not None, "Actual b0/U11 primary completion required")
         primary_report = recovery._bound(root, primary["producer"])
         with RunTransactions(directory, identity) as tx:
-            if (root / recovery.BINDING).exists():
-                binding_ref = _ref(root, root / recovery.BINDING)
+            if (
+                root / (_contract(admitted).recovery_directory + "/RECOVERY_BINDING.json")
+            ).exists():
+                binding_ref = _ref(
+                    root, root / (_contract(admitted).recovery_directory + "/RECOVERY_BINDING.json")
+                )
                 recovery.verify_recovery(
                     root,
                     phase_context=admitted["phase_context"],
@@ -603,7 +659,7 @@ def _execute(root, plan_ref, plan, admitted, task, execution_id, attempt):
                     primary_execution_ref=primary_report["execution"],
                 )
                 binding_ref = imported["binding_ref"]
-        directory = root / recovery.DIRECTORY
+        directory = root / _contract(admitted).recovery_directory
     command = [
         sys.executable,
         "-u",
@@ -660,7 +716,7 @@ def run_worker(root, *, plan_ref, round_id, worker, attempt_id, resume_tasks=())
     _worker_environment(root)
     queue = plan["queues"][round_id][worker]
     _require(set(resume_tasks) <= set(queue), "Resume may only name tasks in this fixed lane")
-    folder = root / DIRECTORY / "WORKERS" / round_id / str(worker)
+    folder = root / _contract(admitted).jobs_directory / "WORKERS" / round_id / str(worker)
     with _lock(folder / ".worker.lock"), _interruptions():
         attempt = folder / "ATTEMPTS" / attempt_id
         _require(not attempt.exists(), "Worker attempt IDs are immutable")
@@ -681,7 +737,9 @@ def run_worker(root, *, plan_ref, round_id, worker, attempt_id, resume_tasks=())
         _write(attempt / "STARTED.json", started)
         completed = []
         try:
-            with _lock(root / DIRECTORY / ".prerequisites.lock", wait=True):
+            with _lock(
+                root / _contract(admitted).jobs_directory / ".prerequisites.lock", wait=True
+            ):
                 _dependency_check(root, plan_ref, plan, admitted, round_id, worker)
                 guard_dirs = (
                     _comparison(root, plan_ref, admitted, plan) if round_id == "EVAL" else ()
@@ -694,6 +752,7 @@ def run_worker(root, *, plan_ref, round_id, worker, attempt_id, resume_tasks=())
                     worker,
                     attempt_id,
                     timeout=plan["peer_verification_wait_seconds"],
+                    **({"phase": plan["phase"]} if plan["phase"] != "PILOT_V1" else {}),
                 )
             for task_id in queue:
                 task = next(t for t in plan["tasks"] if t["task_id"] == task_id)
@@ -703,12 +762,16 @@ def run_worker(root, *, plan_ref, round_id, worker, attempt_id, resume_tasks=())
                 )
                 existing = _verify_task(root, plan_ref, admitted, task)
                 if existing is not None:
-                    completed.append(_ref(root, _result_path(root, task)))
+                    completed.append(
+                        _ref(root, _result_path(root, task, phase=_contract(admitted).phase))
+                    )
                     continue
-                task_dir = root / DIRECTORY / "TASKS" / task_id
+                task_dir = root / _contract(admitted).jobs_directory / "TASKS" / task_id
                 with _lock(task_dir / ".task.lock"):
                     if _completed_attempt(root, plan_ref, admitted, task) is not None:
-                        completed.append(_ref(root, _result_path(root, task)))
+                        completed.append(
+                            _ref(root, _result_path(root, task, phase=_contract(admitted).phase))
+                        )
                         continue
                     history = task_dir / "ATTEMPTS"
                     if history.exists() and any(history.iterdir()):
@@ -744,9 +807,11 @@ def run_worker(root, *, plan_ref, round_id, worker, attempt_id, resume_tasks=())
                         )
                         # Never publish an operations COMPLETE before actual producer verification.
                         _verify_task(root, plan_ref, admitted, task, receipt=receipt)
-                        _write(_result_path(root, task), receipt)
+                        _write(_result_path(root, task, phase=_contract(admitted).phase), receipt)
                         _write(task_attempt / "COMPLETE.json", receipt)
-                        completed.append(_ref(root, _result_path(root, task)))
+                        completed.append(
+                            _ref(root, _result_path(root, task, phase=_contract(admitted).phase))
+                        )
                     except BaseException as exc:
                         _write(
                             task_attempt / "FAILURE.json",
@@ -795,19 +860,45 @@ def aggregate(root, *, plan_ref):
             _verify_task(root, plan_ref, admitted, task) is not None,
             "Workload is incomplete: " + task["task_id"],
         )
-        refs.append(_ref(root, _result_path(root, task)))
+        refs.append(_ref(root, _result_path(root, task, phase=_contract(admitted).phase)))
     _comparison(root, plan_ref, admitted, plan)
     evaluation.aggregate(root, **plan["pins"])
     result = dict(
         schema=SCHEMA,
         status="WORKLOAD_COMPLETE_NOT_GATE_SIGNED",
         plan_ref=plan_ref,
-        inputs=[*refs, _ref(root, root / evaluation.DIRECTORY / "SUMMARY.json")],
+        inputs=[
+            *refs,
+            _ref(root, root / _contract(admitted).evaluation_directory / "SUMMARY.json"),
+        ],
         scientific_gate="REQUIRES_SEPARATE_COMPLETE_FACT_AUDIT",
         gate_status="NOT_SIGNED",
         formal_authorized=False,
     )
-    _write(root / DIRECTORY / "SUMMARY.json", result)
+    if _contract(admitted).phase == "PILOT_V3":
+        from .pilot_audit import audit
+
+        task = next(t for t in plan["tasks"] if t["kind"] == "RECOVERY")
+        recovered = recovery._bound(root, _verify_task(root, plan_ref, admitted, task)["producer"])
+        facts = audit(
+            root,
+            **plan["pins"],
+            recovery_binding_ref=recovered["binding_ref"],
+            recovery_comparison_ref=recovered["comparison_ref"],
+            evaluation_summary_ref=_ref(
+                root, root / _contract(admitted).evaluation_directory / "SUMMARY.json"
+            ),
+        )
+        _require(
+            facts["status"] == "COMPLETE_FACTS_NOT_GATE_SIGNED",
+            "Complete original pilot fact audit required; preserve failed/unknown facts",
+        )
+        result["inputs"].append(
+            _ref(root, root / _contract(admitted).audit_directory / "FACTS.json")
+        )
+        result["scientific_gate"] = "COMPLETE_FACT_AUDIT_NOT_GATE_SIGNED"
+        result["phase"] = _contract(admitted).phase
+    _write(root / _contract(admitted).jobs_directory / "SUMMARY.json", result)
     return result
 
 
@@ -815,6 +906,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("freeze", "worker", "aggregate"))
     parser.add_argument("--root", type=Path, required=True)
+    parser.add_argument("--phase", choices=("PILOT_V1", "PILOT_V3"), default="PILOT_V1")
     parser.add_argument("--phase-identity-sha256")
     parser.add_argument("--pilot-spec-sha256")
     parser.add_argument("--admission-sha256")
@@ -827,12 +919,34 @@ def main(argv=None):
     if args.action == "freeze":
         result = freeze_plan(
             args.root,
+            phase=args.phase,
             phase_identity_sha256=args.phase_identity_sha256,
             pilot_spec_sha256=args.pilot_spec_sha256,
-            admission_ref=dict(path="PHASES/PILOT_V1/ADMISSION.json", sha256=args.admission_sha256),
+            admission_ref=dict(
+                path=pilot_contract.for_phase(args.phase).admission_path,
+                sha256=args.admission_sha256,
+            ),
         )
     else:
-        plan_ref = dict(path=PLAN, sha256=args.plan_sha256)
+        plan_ref = dict(
+            path=pilot_contract.for_phase(args.phase).jobs_directory + "/PLAN.json",
+            sha256=args.plan_sha256,
+        )
+        if args.phase == "PILOT_V3":
+            pinned, _ = verify_plan(_plain_path(args.root), plan_ref)
+            _require(
+                pinned["pins"]
+                == dict(
+                    phase=args.phase,
+                    phase_identity_sha256=args.phase_identity_sha256,
+                    pilot_spec_sha256=args.pilot_spec_sha256,
+                    admission_ref=dict(
+                        path=pilot_contract.for_phase(args.phase).admission_path,
+                        sha256=args.admission_sha256,
+                    ),
+                ),
+                "V3 launcher must supply all exact frozen phase/spec/admission pins",
+            )
         result = (
             aggregate(args.root, plan_ref=plan_ref)
             if args.action == "aggregate"

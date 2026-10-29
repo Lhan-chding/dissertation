@@ -79,7 +79,7 @@ def _audit_path(runtime):
     identity = runtime.identity
     if identity.get("execution_mode", "TRAINING") != "TRAINING":
         raise PermissionError("Only a training runtime can execute an optimizer update")
-    registered_phase = identity.get("phase") in ("PILOT_V1", "FORMAL_V1")
+    registered_phase = identity.get("phase") in ("PILOT_V1", "PILOT_V3", "FORMAL_V1")
     if registered_phase and "audit_root" not in identity:
         raise PermissionError("Later training phases require an isolated audit directory")
     audit_root = Path(identity.get("audit_root", root))

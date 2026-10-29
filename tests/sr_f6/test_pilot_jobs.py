@@ -44,6 +44,7 @@ def case(tmp_path, monkeypatch):
         phase_context={"fixture": "SYNTHETIC_ONLY"},
         pilot_spec_ref={"sha256": "b" * 64},
         pilot_spec=dict(
+            phase="PILOT_V1",
             paths=paths,
             evaluation=dict(endpoints=endpoints),
             phase_identity=dict(sha256="a" * 64),
@@ -54,7 +55,7 @@ def case(tmp_path, monkeypatch):
         ),
     )
     monkeypatch.setattr(
-        jobs, "require_pilot_admission", lambda root, **kwargs: copy.deepcopy(admitted)
+        jobs.pilot_contract, "require_admission", lambda root, **kwargs: copy.deepcopy(admitted)
     )
     monkeypatch.setattr(jobs, "_worker_environment", lambda root: None)
     monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "0")
@@ -93,8 +94,8 @@ def test_plan_cannot_be_retrofitted_or_tampered(case, monkeypatch, tmp_path):
     with pytest.raises(PermissionError):
         jobs.verify_plan(case["root"], jobs._ref(case["root"], file))
     monkeypatch.setattr(
-        jobs,
-        "require_pilot_admission",
+        jobs.pilot_contract,
+        "require_admission",
         lambda *a, **k: (_ for _ in ()).throw(PermissionError("actual evidence missing")),
     )
     with pytest.raises(PermissionError, match="actual evidence"):

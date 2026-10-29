@@ -24,13 +24,14 @@ from pathlib import Path
 
 from srf6_ref.core import FAMILIES, seed_for
 
+from . import pilot_contract
 from .census_evidence import _strict_json
 from .common import digest, write_once
 from .measurement import score_response
-from .registration import DIRECTORY as REGISTRATION_DIRECTORY
 from .transactions import RunTransactions, _plain_path, _read_bytes, _require, _sha
 
 FORMAT = "srf6-pilot-evaluation-v1"
+REGISTRATION_DIRECTORY = "PHASE_RUNS/PILOT_V1/PILOT_FROZEN"
 DIRECTORY = "PHASE_RUNS/PILOT_V1/EVALUATION"
 SYNTHETIC_DIRECTORY = "SYNTHETIC_EVALUATION"
 LABELS = ("A", "J", "V", "S", "B")
@@ -111,6 +112,13 @@ def _write(path, value):
         os.close(fd)
 
 
+def _overlay_identity(value, identity):
+    """V3 pins must be checked on original raw and actual loader evidence."""
+    if pilot_contract.for_phase(identity.get("phase", "PILOT_V1")).phase == "PILOT_V3":
+        for key in ("pilot_spec_sha256", "input_overlay", "input_overlay_sha256", "prompt_version"):
+            _require(value.get(key) == identity[key], "Evaluation V3 identity differs: " + key)
+
+
 def _plan(spec):
     plan = spec["evaluation"]
     _require(
@@ -166,9 +174,27 @@ def _plan(spec):
     return plan
 
 
-def _inputs(root, plan):
+def _inputs(root, plan, *, spec=None, phase_context=None):
+    phase = "PILOT_V1" if spec is None else spec["phase"]
+    contract = pilot_contract.for_phase(phase)
+    public_path = "DATA/DEV_EVAL/MODEL_INPUTS.jsonl"
+    if contract.phase == "PILOT_V3":
+        from .pilot_v3_inputs import verify_overlay
+
+        _require(
+            phase_context is not None and phase_context.get("phase") == contract.phase,
+            "Verified V3 phase context required for evaluation overlay",
+        )
+        overlay = verify_overlay(
+            root, phase_context=phase_context, overlay_ref=spec["input_overlay"]
+        )
+        _require(
+            plan["inputs"] == overlay["inputs_by_split"]["DEV_EVAL"],
+            "Evaluation inputs differ from verified V3 overlay",
+        )
+        public_path = overlay["inputs_by_split"]["DEV_EVAL"]["public"]["path"]
     _require(
-        plan["inputs"]["public"]["path"] == "DATA/DEV_EVAL/MODEL_INPUTS.jsonl"
+        plan["inputs"]["public"]["path"] == public_path
         and plan["inputs"]["private"]["path"] == "DATA/DEV_EVAL/TASKS_PRIVATE.jsonl",
         "Only DEV_EVAL input files may be accessed",
     )
@@ -213,7 +239,9 @@ class EvaluationLedger:
         self.public, self.tasks = copy.deepcopy(public), copy.deepcopy(tasks)
         self.schedule = copy.deepcopy(plan["seeds_by_parent"][self.endpoint["parent"]])
         base = (
-            SYNTHETIC_DIRECTORY if identity["execution_origin"] == "SYNTHETIC_TEST" else DIRECTORY
+            SYNTHETIC_DIRECTORY
+            if identity["execution_origin"] == "SYNTHETIC_TEST"
+            else pilot_contract.for_phase(identity.get("phase", "PILOT_V1")).evaluation_directory
         )
         _require(
             identity["execution_origin"] in ("SYNTHETIC_TEST", "SERVER_ACTUAL"),
@@ -464,7 +492,7 @@ class EvaluationLedger:
             audit_root=str(self.directory),
             parent_id=self.identity["parent"],
             execution_mode="EVALUATION",
-            phase="PILOT_V1",
+            phase=pilot_contract.for_phase(self.identity.get("phase", "PILOT_V1")).phase,
             phase_identity_sha256=self.identity["phase_identity_sha256"],
             run_id=self.identity["evaluation_run_id"],
             run_root=str(self.root),
@@ -477,6 +505,7 @@ class EvaluationLedger:
             _require(
                 report.get(key) == expected, "Actual evaluation loader evidence differs: " + key
             )
+        _overlay_identity(report, self.identity)
         refs = [_reference(self.root, path)]
         if self.identity["checkpoint_commit_sha256"] is not None:
             path = self.directory / "runtime_identity" / (task_id + "-endpoint.json")
@@ -488,6 +517,7 @@ class EvaluationLedger:
                 "Read-only endpoint loader evidence required",
             )
             actual = loaded["runtime_identity"]
+            _overlay_identity(actual, self.identity)
             _require(
                 actual.get("checkpoint_commit_sha256") == self.identity["checkpoint_commit_sha256"]
                 and actual.get("policy_hash") == self.identity["policy_tensor_sha256"],
@@ -558,12 +588,13 @@ def _validate_raw(row, identity, item, seeds, draw):
         step=identity["checkpoint_step"],
         source_sha256=identity["source_sha256"],
         data_hash=identity["data_sha256"],
-        phase="PILOT_V1",
+        phase=pilot_contract.for_phase(identity.get("phase", "PILOT_V1")).phase,
         phase_identity_sha256=identity["phase_identity_sha256"],
         run_root=identity["run_root"],
         run_id=identity["evaluation_run_id"],
     ).items():
         _require(row.get(key) == expected, "Original evaluation identity differs: " + key)
+    _overlay_identity(row, identity)
     if identity["checkpoint_commit_sha256"] is not None:
         _require(
             row.get("checkpoint_commit_sha256") == identity["checkpoint_commit_sha256"]
@@ -828,18 +859,18 @@ def run_synthetic_endpoint(root, *, spec, endpoint_id, runtime, policy_tensor_sh
         return report
 
 
-def _admitted(root, phase_identity_sha256, pilot_spec_sha256, admission_ref):
-    from .admission import require_pilot_admission
-
-    result = require_pilot_admission(
+def _admitted(root, phase_identity_sha256, pilot_spec_sha256, admission_ref, *, phase="PILOT_V1"):
+    contract = pilot_contract.for_phase(phase)
+    result = pilot_contract.require_admission(
         root,
+        phase=contract.phase,
         phase_identity_sha256=phase_identity_sha256,
         pilot_spec_sha256=pilot_spec_sha256,
         admission_ref=admission_ref,
     )
     _require(
         result.get("status") == "VERIFIED_PILOT_ADMISSION"
-        and result.get("scope") == "PILOT_V1_REGISTERED_ONLY"
+        and result.get("scope") == contract.admission_scope
         and result.get("generation_authorized") is True,
         "Actual PILOT scientific admission required",
     )
@@ -849,6 +880,7 @@ def _admitted(root, phase_identity_sha256, pilot_spec_sha256, admission_ref):
 @contextmanager
 def _source(root, spec, endpoint):
     """Keep the PRIMARY producer lock live across endpoint load and evaluation."""
+    contract = pilot_contract.for_phase(spec["phase"])
     if endpoint["kind"] == "FROZEN_PARENT":
         report = _bound(root, endpoint["reference"])
         _require(
@@ -868,17 +900,25 @@ def _source(root, spec, endpoint):
     paths = [p for p in spec["paths"] if p["run_id"] == endpoint["run_id"]]
     _require(len(paths) == 1, "Endpoint producer run not registered")
     item = paths[0]
-    run_dir = _plain_path(root / REGISTRATION_DIRECTORY / item["run_directory"])
+    run_dir = _plain_path(root / contract.registration_directory / item["run_directory"])
     ref = dict(item["transaction_identity"])
-    ref["path"] = f"{REGISTRATION_DIRECTORY}/{ref['path']}"
+    ref["path"] = f"{contract.registration_directory}/{ref['path']}"
     identity = _bound(root, ref)
     _require(
-        identity.get("lane") == "PRIMARY"
+        identity.get("phase") == contract.phase
+        and identity.get("lane") == "PRIMARY"
         and identity.get("max_steps") == 12
         and identity.get("run_id") == endpoint["run_id"]
         and identity.get("parent") == endpoint["parent"],
         "Only the registered PRIMARY step12 endpoint is evaluable",
     )
+    if contract.phase == "PILOT_V3":
+        _require(
+            identity.get("input_overlay") == spec["input_overlay"]
+            and identity.get("input_overlay_sha256") == spec["input_overlay"]["sha256"]
+            and identity.get("prompt_version") == spec["prompt_version"],
+            "Endpoint V3 input identity differs from registration",
+        )
     with RunTransactions(run_dir, identity) as tx:
         markers = tx.published()
         _require(
@@ -904,12 +944,15 @@ def _source(root, spec, endpoint):
 def _identity(root, admitted, endpoint, source, pilot_spec_sha256, admission_ref):
     context, spec = admitted["phase_context"], admitted["pilot_spec"]
     parent = endpoint["parent"]
-    experiment = spec["paths"][0]["run_id"].split("/PILOT/", 1)[0]
+    contract = pilot_contract.for_phase(spec["phase"])
+    _require(context["phase"] == contract.phase, "Admitted phase differs from evaluation spec")
+    namespace = "PILOT" if contract.phase == "PILOT_V1" else contract.phase
+    experiment = spec["paths"][0]["run_id"].split(f"/{namespace}/", 1)[0]
     return dict(
         format=FORMAT,
         execution_origin="SERVER_ACTUAL",
         run_root=str(root),
-        evaluation_run_id=f"{experiment}/PILOT_DEV_EVAL/{endpoint['endpoint_id']}",
+        evaluation_run_id=f"{experiment}/{namespace}_DEV_EVAL/{endpoint['endpoint_id']}",
         endpoint_id=endpoint["endpoint_id"],
         parent=parent,
         checkpoint_step=endpoint["checkpoint_step"],
@@ -924,11 +967,28 @@ def _identity(root, admitted, endpoint, source, pilot_spec_sha256, admission_ref
         admission_ref=copy.deepcopy(admission_ref),
         input_refs=spec["evaluation"]["inputs"],
         endpoint_refs=source["refs"],
+        **(
+            dict(
+                phase=contract.phase,
+                input_overlay=copy.deepcopy(spec["input_overlay"]),
+                input_overlay_sha256=spec["input_overlay"]["sha256"],
+                prompt_version=spec["prompt_version"],
+            )
+            if contract.phase == "PILOT_V3"
+            else {}
+        ),
     )
 
 
 def run_endpoint(
-    root, *, endpoint_id, task_id, phase_identity_sha256, pilot_spec_sha256, admission_ref
+    root,
+    *,
+    endpoint_id,
+    task_id,
+    phase_identity_sha256,
+    pilot_spec_sha256,
+    admission_ref,
+    phase="PILOT_V1",
 ):
     """Run only one registered endpoint; no runtime or sampler override exists."""
     from mm_core.training import capture_rng, restore_rng
@@ -938,11 +998,11 @@ def run_endpoint(
 
     root = _plain_path(root)
     _require(root.is_dir(), "Existing canonical experiment root required")
-    admitted = _admitted(root, phase_identity_sha256, pilot_spec_sha256, admission_ref)
+    admitted = _admitted(root, phase_identity_sha256, pilot_spec_sha256, admission_ref, phase=phase)
     spec = admitted["pilot_spec"]
     plan = _plan(spec)
     endpoint = _endpoint(plan, endpoint_id)
-    public, tasks = _inputs(root, plan)
+    public, tasks = _inputs(root, plan, spec=spec, phase_context=admitted["phase_context"])
     with _source(root, spec, endpoint) as source:
         identity = _identity(root, admitted, endpoint, source, pilot_spec_sha256, admission_ref)
         with EvaluationLedger(root, identity, plan, public, tasks) as ledger:
@@ -962,10 +1022,11 @@ def run_endpoint(
                     endpoint["parent"],
                     task_id,
                     mode="EVALUATION",
-                    phase="PILOT_V1",
+                    phase=pilot_contract.for_phase(phase).phase,
                     phase_identity_sha256=phase_identity_sha256,
                     audit_root=ledger.directory,
                     run_id=identity["evaluation_run_id"],
+                    **({"pilot_spec_sha256": pilot_spec_sha256} if phase == "PILOT_V3" else {}),
                 )
                 _require(
                     type(runtime) is native.Runtime
@@ -1156,14 +1217,20 @@ def summarize_reports(reports, *, master_seed=2026102701):
 
 
 def verify_evaluation(
-    root, *, phase_identity_sha256, pilot_spec_sha256, admission_ref, summary_ref=None
+    root,
+    *,
+    phase_identity_sha256,
+    pilot_spec_sha256,
+    admission_ref,
+    summary_ref=None,
+    phase="PILOT_V1",
 ):
     """Read and replay every complete endpoint; missing/UNKNOWN never become zeros."""
     root = _plain_path(root)
-    admitted = _admitted(root, phase_identity_sha256, pilot_spec_sha256, admission_ref)
+    admitted = _admitted(root, phase_identity_sha256, pilot_spec_sha256, admission_ref, phase=phase)
     spec = admitted["pilot_spec"]
     plan = _plan(spec)
-    public, tasks = _inputs(root, plan)
+    public, tasks = _inputs(root, plan, spec=spec, phase_context=admitted["phase_context"])
     reports, inputs = [], []
     with ExitStack() as locks:
         for endpoint in plan["endpoints"]:
@@ -1186,25 +1253,39 @@ def verify_evaluation(
             pilot_spec_sha256=pilot_spec_sha256,
             admission_ref=admission_ref,
             inputs=inputs,
+            **(
+                dict(
+                    phase=phase,
+                    input_overlay=spec["input_overlay"],
+                    prompt_version=spec["prompt_version"],
+                )
+                if phase == "PILOT_V3"
+                else {}
+            ),
         )
         if summary_ref is not None:
             _require(
-                summary_ref.get("path") == DIRECTORY + "/SUMMARY.json"
+                summary_ref.get("path")
+                == pilot_contract.for_phase(phase).evaluation_directory + "/SUMMARY.json"
                 and _bound(root, summary_ref) == result,
                 "Saved evaluation summary differs from complete original evidence",
             )
         return result
 
 
-def aggregate(root, *, phase_identity_sha256, pilot_spec_sha256, admission_ref):
+def aggregate(root, *, phase_identity_sha256, pilot_spec_sha256, admission_ref, phase="PILOT_V1"):
     """Publish the deterministic description after the read-only evidence replay."""
     result = verify_evaluation(
         root,
         phase_identity_sha256=phase_identity_sha256,
         pilot_spec_sha256=pilot_spec_sha256,
         admission_ref=admission_ref,
+        phase=phase,
     )
-    _write(_plain_path(root) / DIRECTORY / "SUMMARY.json", result)
+    _write(
+        _plain_path(root) / pilot_contract.for_phase(phase).evaluation_directory / "SUMMARY.json",
+        result,
+    )
     return result
 
 
@@ -1212,6 +1293,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("run", "aggregate"))
     parser.add_argument("root", type=Path)
+    parser.add_argument("--phase", choices=("PILOT_V1", "PILOT_V3"), default="PILOT_V1")
     parser.add_argument("--phase-identity-sha256", required=True)
     parser.add_argument("--pilot-spec-sha256", required=True)
     parser.add_argument("--admission-sha256", required=True)
@@ -1219,9 +1301,13 @@ def main():
     parser.add_argument("--task-id")
     args = parser.parse_args()
     kwargs = dict(
+        phase=args.phase,
         phase_identity_sha256=args.phase_identity_sha256,
         pilot_spec_sha256=args.pilot_spec_sha256,
-        admission_ref={"path": "PHASES/PILOT_V1/ADMISSION.json", "sha256": args.admission_sha256},
+        admission_ref={
+            "path": pilot_contract.for_phase(args.phase).admission_path,
+            "sha256": args.admission_sha256,
+        },
     )
     if args.action == "run":
         if not args.endpoint_id or not args.task_id:

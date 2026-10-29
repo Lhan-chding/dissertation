@@ -15,7 +15,7 @@ from pathlib import Path
 from mm_core.training import state_hash
 
 from .common import digest
-from .registration import DIRECTORY
+from .pilot_contract import for_phase
 from .replay import _tensor_stamp
 from .transactions import RunTransactions, _plain_path, _read_json
 
@@ -32,7 +32,6 @@ def _require(value, message):
 def _loaded(runtime, root, mode):
     from .runtime import (
         _LOADED_RUNTIMES,
-        EXECUTION_IDENTITY_FIELDS,
         Runtime,
         _check_loaded_source_identity,
     )
@@ -43,14 +42,14 @@ def _loaded(runtime, root, mode):
     bound = _LOADED_RUNTIMES.get(runtime)
     _require(bound is not None and bound["model"] is runtime.model, "Actual runtime load required")
     _require(
-        _check_loaded_source_identity(runtime) == "PILOT_V1"
+        _check_loaded_source_identity(runtime) in ("PILOT_V1", "PILOT_V3")
         and runtime.execution_mode() == mode
         and runtime._srf6_source_context == bound["source"]
         and runtime.identity.get("run_root") == str(root),
         "Only the bound PILOT runtime and matching execution mode are authorized",
     )
     _require(
-        all(runtime.identity.get(k) == bound["execution"][k] for k in EXECUTION_IDENTITY_FIELDS),
+        all(runtime.identity.get(k) == v for k, v in bound["execution"].items()),
         "Runtime execution identity changed",
     )
     _require(
@@ -65,11 +64,13 @@ def _loaded(runtime, root, mode):
 
 
 def _admission(runtime, root, mode, pilot_spec_sha256, admission_ref):
-    from .admission import require_pilot_admission
+    from .pilot_contract import require_admission
 
     bound = _loaded(runtime, root, mode)
-    result = require_pilot_admission(
+    contract = for_phase(bound["source"]["phase"])
+    result = require_admission(
         root,
+        phase=contract.phase,
         phase_identity_sha256=runtime.identity["phase_identity_sha256"],
         admission_ref=admission_ref,
         pilot_spec_sha256=pilot_spec_sha256,
@@ -77,7 +78,7 @@ def _admission(runtime, root, mode, pilot_spec_sha256, admission_ref):
     context = result["phase_context"]
     _require(
         result.get("status") == "VERIFIED_PILOT_ADMISSION"
-        and result.get("scope") == "PILOT_V1_REGISTERED_ONLY"
+        and result.get("scope") == contract.admission_scope
         and result.get("generation_authorized") is True
         and result.get("training_authorized") is True
         and result.get("admission_ref") == admission_ref
@@ -87,6 +88,15 @@ def _admission(runtime, root, mode, pilot_spec_sha256, admission_ref):
         and context["deployment"] == bound["source"]["deployment"],
         "Admission does not bind the actual loaded PILOT source",
     )
+    if contract.phase == "PILOT_V3":
+        spec = result["pilot_spec"]
+        _require(
+            runtime.identity.get("pilot_spec_sha256") == pilot_spec_sha256
+            and runtime.identity.get("input_overlay") == spec["input_overlay"]
+            and runtime.identity.get("input_overlay_sha256") == spec["input_overlay"]["sha256"]
+            and runtime.identity.get("prompt_version") == spec["prompt_version"],
+            "Actual V3 runtime does not match the admitted input overlay",
+        )
     return result
 
 
@@ -568,7 +578,8 @@ def open_training_access(
     ]
     _require(len(paths) == 1, "Runtime is not one of the nine registered PILOT runs")
     path = paths[0]
-    identity = rollouts._bound(tx, root / DIRECTORY, path["transaction_identity"])
+    directory = for_phase(admission["phase_context"]["phase"]).registration_directory
+    identity = rollouts._bound(tx, root / directory, path["transaction_identity"])
     _require(tx.identity == identity, "Transaction identity differs from registered primary")
     expected_directory = _plain_path(root / path["audit_root"])
     if tx.directory != expected_directory:
@@ -631,11 +642,11 @@ def open_training_access(
 
 @contextmanager
 def open_evaluation_access(runtime, *, experiment_root, pilot_spec_sha256, admission_ref, ledger):
-    from .evaluation import DIRECTORY as EVALUATION_DIRECTORY
     from .evaluation import EvaluationLedger, _inputs
 
     root = _plain_path(experiment_root)
     admission = _admission(runtime, root, "EVALUATION", pilot_spec_sha256, admission_ref)
+    contract = for_phase(admission["phase_context"]["phase"])
     _require(type(ledger) is EvaluationLedger, "Actual held EvaluationLedger required")
     ledger._locked()
     plan = admission["pilot_spec"]["evaluation"]
@@ -650,11 +661,17 @@ def open_evaluation_access(runtime, *, experiment_root, pilot_spec_sha256, admis
     )
     _require(endpoint is not None and endpoint == ledger.endpoint, "Unregistered endpoint")
     _require(
-        ledger.directory == _plain_path(root / EVALUATION_DIRECTORY / endpoint["endpoint_id"])
+        ledger.directory
+        == _plain_path(root / contract.evaluation_directory / endpoint["endpoint_id"])
         and runtime.identity["audit_root"] == str(ledger.directory),
         "Evaluation directory differs",
     )
-    public, tasks = _inputs(root, plan)
+    public, tasks = _inputs(
+        root,
+        plan,
+        spec=admission["pilot_spec"],
+        phase_context=admission["phase_context"],
+    )
     _require(
         ledger.public == public
         and ledger.tasks == tasks
@@ -678,6 +695,14 @@ def open_evaluation_access(runtime, *, experiment_root, pilot_spec_sha256, admis
         and ledger.identity.get("input_refs") == plan["inputs"],
         "Evaluation loaded identity differs",
     )
+    if contract.phase == "PILOT_V3":
+        _require(
+            all(
+                ledger.identity.get(key) == runtime.identity.get(key)
+                for key in ("phase", "input_overlay", "input_overlay_sha256", "prompt_version")
+            ),
+            "Evaluation V3 source or input overlay changed",
+        )
     _require(
         runtime.identity["step"] == endpoint["checkpoint_step"]
         and runtime.identity["parent_id"] == endpoint["parent"],

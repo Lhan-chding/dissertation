@@ -47,7 +47,7 @@ def prototype():
 def factory(tmp_path, monkeypatch, prototype):
     """Full phase provenance + tiny synthetic imagery, without source-check mocks."""
 
-    def create(*, mutate_data=None):
+    def create(*, mutate_data=None, phase="PILOT_V1", real_source_modules=()):
         project = tmp_path / "project"
         project.mkdir()
         monkeypatch.setattr(phases, "PROJECT", project)
@@ -61,6 +61,12 @@ def factory(tmp_path, monkeypatch, prototype):
         shutil.copytree(old, new)
         (new / "src/sr_f6/registration.py").write_text("# CPU fixture new phase source\n")
         monkeypatch.setattr(registration, "_actual_deployment", lambda: new)
+        for module in real_source_modules:
+            source_path = Path(module.__file__)
+            target = new / "src" / (module.__name__.replace(".", "/") + ".py")
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(source_path.read_bytes())
+            monkeypatch.setattr(module, "__file__", str(target))
         original = Path(__file__).parents[2] / "configs/sr_f6.json"
         (root / "CONFIG.json").write_bytes(original.read_bytes())
         config = json.loads(original.read_bytes())
@@ -200,11 +206,15 @@ def factory(tmp_path, monkeypatch, prototype):
         delta = phases.source_delta(
             source,
             current,
-            reasons={"src/sr_f6/registration.py": "Prospective CPU fixture registration source"},
+            reasons={
+                item["path"]: "SYNTHETIC prospective CPU fixture source; no execution evidence"
+                for item in current["files"]
+                if item["path"] != "src/sr_f6/runtime.py"
+            },
         )
         context = phases.register_phase(
             root,
-            phase="PILOT_V1",
+            phase=phase,
             deployment=new,
             revision=new_revision,
             origin_deployment=old,
@@ -603,3 +613,76 @@ def test_parent_reference_boundaries(project, kind):
         path.symlink_to(other)
     with pytest.raises(PermissionError):
         build(project)
+
+
+def _synthetic_assembly_arguments():
+    """Fixed no-filesystem inputs for the pre-v3 byte-compatibility anchor."""
+    config = json.loads((Path(__file__).parents[2] / "configs/sr_f6.json").read_bytes())
+
+    def reference(relative):
+        return {"path": relative, "sha256": hashlib.sha256(relative.encode()).hexdigest()}
+
+    context = {
+        "identity_sha256": "1" * 64,
+        "identity": {
+            "source_manifest": reference("PHASES/PILOT_V1/SOURCE_MANIFEST.json"),
+            "data_manifest": reference("DATA/MANIFEST.json"),
+            "config_sha256": "2" * 64,
+            "origin": {"identity": reference("IDENTITY.json")},
+        },
+    }
+    refs = {
+        parent: reference(f"runtime_identity/SYNTHETIC-{parent}.json")
+        for parent in registration.PARENTS
+    }
+    parents = {
+        parent: {
+            "runtime_identity": refs[parent],
+            "tensor_sha256": str(index + 3) * 64,
+            "parent_content_sha256": str(index + 6) * 64,
+            "parameter_inventory_sha256": "9" * 64,
+            "evidence_producer": "CENSUS_S0",
+        }
+        for index, parent in enumerate(registration.PARENTS)
+    }
+    order = [
+        item
+        for item in formal_paths(config)
+        if item["repeat"] == 0 and item["arm"] in registration.ARMS
+    ]
+    args = (
+        Path("/SYNTHETIC_CPU_ONLY"),
+        context,
+        refs,
+        config,
+        reference,
+        reference("DATA/FORMAL_PATH_ORDER.json"),
+        order,
+        parents,
+        reference("SOURCE_BINDING.json"),
+    )
+    kwargs = {
+        "shared_inputs": {
+            "public": reference("DATA/DEV_PILOT/MODEL_INPUTS.jsonl"),
+            "private": reference("DATA/DEV_PILOT/TASKS_PRIVATE.jsonl"),
+        },
+        "evaluation_inputs": {
+            "public": reference("DATA/DEV_EVAL/MODEL_INPUTS.jsonl"),
+            "private": reference("DATA/DEV_EVAL/TASKS_PRIVATE.jsonl"),
+        },
+    }
+    return args, kwargs
+
+
+def test_private_assembly_retains_pre_v3_v1_bytes():
+    args, kwargs = _synthetic_assembly_arguments()
+    bundle = registration._assemble_registration(*args, **kwargs)
+    member_hashes = {
+        name: hashlib.sha256(registration._payload(value)).hexdigest()
+        for name, value in bundle["files"].items()
+    }
+    # Captured from the pre-extraction PILOT_V1 public builder, including its
+    # original evaluation constructor, with these exact synthetic inputs.
+    assert (
+        digest(member_hashes) == "886be3f7f38e1baf6c2f600f3241f47adbc03154436ddc6b659672685500d31a"
+    )

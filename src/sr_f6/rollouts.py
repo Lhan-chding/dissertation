@@ -191,6 +191,44 @@ def _load_rng(tx, reference):
     return result
 
 
+def _v3_overlay(tx, root):
+    """Check bound V3 projection identity without granting a live session."""
+    from . import pilot_v3_inputs as projection
+
+    identity = tx.identity
+    reference = identity.get("input_overlay")
+    _require(
+        isinstance(reference, dict)
+        and reference.get("path") == f"{projection.DIRECTORY}/{projection.MANIFEST_FILE}"
+        and reference.get("sha256") == identity.get("input_overlay_sha256")
+        and _sha(reference.get("sha256")),
+        "Explicit registered V3 overlay identity required",
+    )
+    overlay = _bound(tx, root, reference)
+    _require(
+        overlay.get("schema") == projection.SCHEMA
+        and overlay.get("phase") == identity["phase"] == "PILOT_V3"
+        and overlay.get("phase_identity")
+        == dict(path="PHASES/PILOT_V3/IDENTITY.json", sha256=identity["phase_identity_sha256"])
+        and overlay.get("actual_source_manifest")
+        == dict(path="PHASES/PILOT_V3/SOURCE_MANIFEST.json", sha256=identity["source_sha256"])
+        and overlay.get("data_manifest")
+        == dict(path="DATA/MANIFEST.json", sha256=identity["data_sha256"])
+        and overlay.get("origin_identity", {}).get("sha256") == identity["origin_identity_sha256"]
+        and overlay.get("config_sha256") == identity["config_sha256"]
+        and overlay.get("prompt_version")
+        == identity.get("prompt_version")
+        == projection.PROMPT_VERSION
+        and overlay.get("wire_protocol") == "structured_v4"
+        and overlay.get("old_data_modified") is False
+        and overlay.get("training_authorized") is False
+        and overlay.get("generation_authorized") is False
+        and set(overlay.get("splits", {})) == {"DEV_PILOT", "DEV_EVAL"},
+        "V3 overlay differs from the real run's registered source and inputs",
+    )
+    return overlay
+
+
 def _registration_inputs(tx, root, registration, config, manifest):
     """Validate immutable split semantics once; no full-split image filesystem scan."""
     _require(
@@ -198,7 +236,11 @@ def _registration_inputs(tx, root, registration, config, manifest):
         and config.get("experiment_id") == tx.identity["experiment_id"],
         "Config/DATA identity differs",
     )
-    phase_contracts = {"PILOT_V1": (12, "DEV_PILOT"), "FORMAL_V1": (72, "TRAIN")}
+    phase_contracts = {
+        "PILOT_V1": (12, "DEV_PILOT"),
+        "PILOT_V3": (12, "DEV_PILOT"),
+        "FORMAL_V1": (72, "TRAIN"),
+    }
     phase = tx.identity["phase"]
     _require(phase in phase_contracts, "Unregistered rollout phase")
     expected_steps, split = phase_contracts[phase]
@@ -244,7 +286,18 @@ def _registration_inputs(tx, root, registration, config, manifest):
         "private": f"DATA/{split}/TASKS_PRIVATE.jsonl",
         "schedule": f"DATA/SCHEDULES/{split}-{tx.identity['parent']}-r{tx.identity['repeat']}.json",
     }
+    overlay = _v3_overlay(tx, root) if phase == "PILOT_V3" else None
     for name, relative in expected_paths.items():
+        if name == "public" and overlay is not None:
+            projected = overlay["splits"][split]
+            _require(
+                inputs[name] == projected["public"]
+                and projected["original_public"]
+                == dict(path=relative, sha256=inventory.get(relative))
+                and projected["private"] == inputs["private"],
+                "V3 public projection must bind the same original frozen split",
+            )
+            continue
         _require(
             inputs[name] == {"path": relative, "sha256": inventory.get(relative)}
             and _sha(inventory.get(relative)),
@@ -256,6 +309,26 @@ def _registration_inputs(tx, root, registration, config, manifest):
     )
     public = _bound(tx, root, inputs["public"], kind="jsonl")
     private = _bound(tx, root, inputs["private"], kind="jsonl")
+    if overlay is not None:
+        from .interface_v3_protocol import public_prompt as v3_prompt
+
+        original_public = _bound(
+            tx, root, overlay["splits"][split]["original_public"], kind="jsonl"
+        )
+        _require(len(original_public) == len(public), "V3 projection row count changed")
+        task_lookup = {task["qid"]: task for task in private}
+        for original, projected in zip(original_public, public, strict=True):
+            task = task_lookup[original["qid"]]
+            expected = copy.deepcopy(original)
+            expected["model_input"]["prompt"] = v3_prompt(
+                task["world"]["categories"], task["query"]
+            )
+            if "prompt_sha256" in original:
+                expected["prompt_sha256"] = hashlib.sha256(
+                    expected["model_input"]["prompt"].encode()
+                ).hexdigest()
+            expected["prompt_version"] = overlay["prompt_version"]
+            _require(projected == expected, "V3 projection changed fields beyond its public prompt")
     expected_n = counts * 6 * 4 * 2
     _require(len(public) == len(private) == expected_n, "Complete paired split ledger required")
     publics, tasks = {row["qid"]: row for row in public}, {row["qid"]: row for row in private}
@@ -293,7 +366,12 @@ def _registration_inputs(tx, root, registration, config, manifest):
             "Only public model-input whitelist is allowed",
         )
         _require(
-            safe["prompt"] == public_prompt(task),
+            safe["prompt"]
+            == (
+                v3_prompt(task["world"]["categories"], task["query"])
+                if overlay is not None
+                else public_prompt(task)
+            ),
             "Public prompt differs from model-blind task projection",
         )
         image = safe["image_file"]
@@ -359,6 +437,14 @@ def _context(tx, runtime, experiment_root, registration_ref):
             _require(
                 runtime.identity.get(key) == tx.identity[key], "Runtime phase provenance differs"
             )
+    if tx.identity["phase"] == "PILOT_V3":
+        _require(
+            all(
+                runtime.identity.get(key) == tx.identity.get(key)
+                for key in ("input_overlay", "input_overlay_sha256", "prompt_version")
+            ),
+            "Actual V3 runtime and transaction projection differ",
+        )
     _require(
         tx.identity.get("rollout_registration") == registration_ref,
         "Rollout registration is not frozen in run identity",
@@ -384,6 +470,9 @@ def _context(tx, runtime, experiment_root, registration_ref):
     if key not in semantics:
         semantics[key] = _registration_inputs(tx, root, registration, config, manifest)
     else:
+        if tx.identity["phase"] == "PILOT_V3":
+            overlay = _v3_overlay(tx, root)
+            _bound(tx, root, overlay["splits"]["DEV_PILOT"]["original_public"], kind="jsonl")
         for name in ("public", "private", "schedule"):
             _bound(
                 tx,
@@ -467,7 +556,14 @@ def _validate_raw(raw, runtime, safe, seeds, policy, root):
             ),
             "Raw adapter identity differs",
         )
-        for key in ("origin_identity_sha256", "phase_identity_sha256"):
+        for key in (
+            "origin_identity_sha256",
+            "phase_identity_sha256",
+            "pilot_spec_sha256",
+            "input_overlay",
+            "input_overlay_sha256",
+            "prompt_version",
+        ):
             if key in runtime.identity:
                 _require(row.get(key) == runtime.identity[key], f"Raw {key} differs")
         tokens, logps = row.get("tokens"), row.get("sampler_logprobs")

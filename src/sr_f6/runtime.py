@@ -40,7 +40,7 @@ from srf6_ref.core import seed_for
 
 PROTOCOL_VERSION = "structured_v4-srf6-1.0"
 EXECUTION_MODES = frozenset({"CENSUS", "TRAINING", "EVALUATION", "REPLAY"})
-MODEL_PHASES = frozenset({"PILOT_V1", "FORMAL_V1"})
+MODEL_PHASES = frozenset({"PILOT_V1", "PILOT_V3", "FORMAL_V1"})
 _LOADED_RUNTIMES = weakref.WeakKeyDictionary()
 _LOADED_ENDPOINTS = weakref.WeakKeyDictionary()
 EXECUTION_IDENTITY_FIELDS = (
@@ -52,6 +52,41 @@ EXECUTION_IDENTITY_FIELDS = (
     "execution_mode",
     "phase_identity_sha256",
 )
+V3_INPUT_IDENTITY_FIELDS = (
+    "pilot_spec_sha256",
+    "input_overlay",
+    "input_overlay_sha256",
+    "prompt_version",
+)
+
+
+def _execution_identity_fields(phase):
+    return EXECUTION_IDENTITY_FIELDS + (V3_INPUT_IDENTITY_FIELDS if phase == "PILOT_V3" else ())
+
+
+def _pilot_input_binding(root, source, pilot_spec_sha256):
+    """Bind the real V3 plan before loading; this does not grant admission."""
+    if source["phase"] != "PILOT_V3":
+        if pilot_spec_sha256 is not None:
+            raise PermissionError("The V3 input pin requires its explicit PILOT_V3 phase")
+        return {}
+    if not isinstance(pilot_spec_sha256, str) or not re.fullmatch(
+        r"[0-9a-f]{64}", pilot_spec_sha256
+    ):
+        raise PermissionError("PILOT_V3 requires its actual frozen pilot specification")
+    from .pilot_contract import verify_registration
+
+    context = {k: v for k, v in source.items() if k != "origin_identity_sha256"}
+    registered = verify_registration(
+        root, phase_context=context, pilot_spec_sha256=pilot_spec_sha256
+    )
+    overlay = registered["overlay"]
+    return dict(
+        pilot_spec_sha256=pilot_spec_sha256,
+        input_overlay=copy.deepcopy(overlay["manifest_ref"]),
+        input_overlay_sha256=overlay["manifest_ref"]["sha256"],
+        prompt_version=overlay["manifest"]["prompt_version"],
+    )
 
 
 def backend_protocol(protocol):
@@ -263,6 +298,15 @@ def _check_loaded_source_identity(runtime):
         if any(runtime.identity.get(key) != value for key, value in expected.items()):
             raise PermissionError("Runtime identity differs from its actual loaded source")
         phase = bound["phase"]
+        if phase == "PILOT_V3" and (
+            loaded is None
+            or any(
+                runtime.identity.get(key) != loaded["execution"].get(key)
+                or key not in loaded["execution"]
+                for key in V3_INPUT_IDENTITY_FIELDS
+            )
+        ):
+            raise PermissionError("Actual loaded V3 specification or input overlay changed")
     return phase
 
 
@@ -390,6 +434,11 @@ class Runtime(FP32Runtime):
             super().stable_model_identity(),
             sr_f6_protocol_version=PROTOCOL_VERSION,
             registered_max_new_tokens=1536,
+            **{
+                key: copy.deepcopy(self.identity[key])
+                for key in V3_INPUT_IDENTITY_FIELDS
+                if self.identity.get("phase") == "PILOT_V3"
+            },
         )
 
     def policy_tensor_identity(self):
@@ -464,6 +513,7 @@ class Runtime(FP32Runtime):
             "checkpoint_run_id",
             "checkpoint_commit_sha256",
             "checkpoint_step",
+            *V3_INPUT_IDENTITY_FIELDS,
         ):
             if key in self.identity:
                 row[key] = self.identity[key]
@@ -761,6 +811,7 @@ def load(
     phase_identity_sha256=None,
     audit_root=None,
     run_id=None,
+    pilot_spec_sha256=None,
 ):
     """Load a bound parent, with separate provenance and execution semantics.
 
@@ -797,6 +848,7 @@ def load(
     effective_run_id = task_id if run_id is None else run_id
     root = Path(root)
     source = verify_runtime_source(root, phase=phase, phase_identity_sha256=phase_identity_sha256)
+    input_binding = _pilot_input_binding(root, source, pilot_spec_sha256)
     audit = _audit_directory(root, source["phase"], audit_root)
     identity_path = _runtime_artifact(audit, "runtime_identity", task_id + ".json")
     if phase is not None and identity_path.exists():
@@ -879,6 +931,7 @@ def load(
         if (
             verify_runtime_source(root, phase=phase, phase_identity_sha256=phase_identity_sha256)
             != source
+            or _pilot_input_binding(root, source, pilot_spec_sha256) != input_binding
         ):
             raise PermissionError("Source identity changed during model loading")
         identity = source["identity"]
@@ -910,9 +963,10 @@ def load(
             policy_hash=tensor_hash,
             reference_hash=tensor_hash,
             reference_parent=parent,
+            **input_binding,
         )
         runtime._srf6_execution_identity = {
-            key: runtime.identity[key] for key in EXECUTION_IDENTITY_FIELDS
+            key: runtime.identity[key] for key in _execution_identity_fields(source["phase"])
         }
         trainable = [
             {"name": n, "shape": list(p.shape), "dtype": str(p.dtype)}
@@ -995,7 +1049,8 @@ def load_committed_endpoint(runtime, tx, *, expected_commit_sha256):
         raise PermissionError("Endpoint evaluation requires its registered execution phase")
     loaded_execution = getattr(runtime, "_srf6_execution_identity", None)
     if loaded_execution is None or any(
-        identity.get(key) != loaded_execution.get(key) for key in EXECUTION_IDENTITY_FIELDS
+        identity.get(key) != loaded_execution.get(key)
+        for key in _execution_identity_fields(identity.get("phase"))
     ):
         raise PermissionError("Endpoint runtime execution identity changed after loading")
     if not isinstance(identity.get("task_id"), str) or not re.fullmatch(
@@ -1023,6 +1078,10 @@ def load_committed_endpoint(runtime, tx, *, expected_commit_sha256):
     ):
         if tx.identity.get(key) != expected:
             raise PermissionError("Endpoint transaction differs from runtime " + key)
+    if identity["phase"] == "PILOT_V3":
+        for key in ("input_overlay", "input_overlay_sha256", "prompt_version"):
+            if tx.identity.get(key) != identity[key]:
+                raise PermissionError("Endpoint transaction V3 input binding differs")
     if tx.identity["run_id"] == identity["run_id"]:
         raise PermissionError(
             "Evaluation run and checkpoint producer must have distinct identities"

@@ -20,7 +20,7 @@ from types import SimpleNamespace
 from sr_f3_ce.training import finite_tree
 from sr_f12.training import enforce_probability_gate
 
-from . import recovery, registration, rollouts, training
+from . import pilot_contract, recovery, registration, rollouts, training
 from .common import digest, write_once
 from .credit import ARMS, build_credit_group
 from .transactions import RunTransactions, _plain_path, _read_bytes, _require
@@ -118,10 +118,11 @@ def _runtime(tx, root, task, *, synthetic):
         "source_sha256": tx.identity["source_sha256"],
         "data_hash": tx.identity["data_sha256"],
         "reference_hash": tx.identity["reference_sha256"],
-        "phase": "PILOT_V1",
+        "phase": pilot_contract.for_phase(tx.identity["phase"]).phase,
         "execution_mode": "TRAINING",
     }.items():
         _require(value.get(key) == expected, "Physical runtime identity differs: " + key)
+    recovery._overlay_identity(value, tx.identity)
     if synthetic:
         _require(value.get("execution_origin") == "SYNTHETIC_TEST", "Explicit CPU origin required")
     else:
@@ -192,9 +193,9 @@ def _verify_run(tx, root, *, synthetic=False, attempt_pins=None):
     tx._locked()
     markers = tx.published()
     _require([m["step"] for m in markers] == list(range(13)), "All thirteen pilot states required")
+    pilot_contract.for_phase(tx.identity["phase"])
     _require(
-        tx.identity["phase"] == "PILOT_V1"
-        and tx.identity["lane"] in (("PRIMARY", "MAIN") if synthetic else ("PRIMARY",))
+        tx.identity["lane"] in (("PRIMARY", "MAIN") if synthetic else ("PRIMARY",))
         and tx.identity["max_steps"] == 12
         and tx.identity["repeat"] == 0
         and tx.identity["arm"] in registration.ARMS,
@@ -445,6 +446,12 @@ def verify_execution_inventory(
             )
         begins[task] = begin
     for task in sorted(tasks):
+        if not synthetic and task in runtimes:
+            recovery._overlay_identity(
+                _runtime(tx, root, task, synthetic=False),
+                tx.identity,
+                pilot_spec_sha256=attempt_pins["pilot_spec_sha256"],
+            )
         for mapping in (attempts, journals):
             if task in mapping:
                 for path in mapping[task].iterdir():
@@ -589,7 +596,11 @@ def verify_execution_inventory(
                 )
             if (folder / "END.json").exists():
                 recovery._execution(
-                    root, recovery._ref(root, folder / "END.json"), tx.directory, tx.identity
+                    root,
+                    recovery._ref(root, folder / "END.json"),
+                    tx.directory,
+                    tx.identity,
+                    pilot_spec_sha256=(attempt_pins or {}).get("pilot_spec_sha256"),
                 )
                 status = "SEGMENT_COMPLETE"
                 if terminal and terminal.get("status") != "FAILED_PRESERVED":
@@ -878,14 +889,16 @@ def verify_runtime_pilot(
     recovery_binding_ref,
     recovery_comparison_ref,
     evaluation_summary_ref,
+    phase="PILOT_V1",
 ):
     """Verify all registered actual facts; no caller-provided PASS or data is accepted."""
-    from .admission import require_pilot_admission
     from .evaluation import verify_evaluation
 
     root = _plain_path(root)
-    admitted = require_pilot_admission(
+    contract = pilot_contract.for_phase(phase)
+    admitted = pilot_contract.require_admission(
         root,
+        phase=contract.phase,
         phase_identity_sha256=phase_identity_sha256,
         pilot_spec_sha256=pilot_spec_sha256,
         admission_ref=admission_ref,
@@ -909,7 +922,9 @@ def verify_runtime_pilot(
     results, transactions, snapshots = [], {}, {}
     with ExitStack() as locks:
         for item in paths:
-            identity = recovery._bound(root / registration.DIRECTORY, item["transaction_identity"])
+            identity = recovery._bound(
+                root / contract.registration_directory, item["transaction_identity"]
+            )
             directory = recovery._path(root, item["audit_root"])
             tx = locks.enter_context(RunTransactions(directory, identity))
             transactions[(item["parent"], item["arm"])] = tx
@@ -948,6 +963,7 @@ def verify_runtime_pilot(
         pilot_spec_sha256=pilot_spec_sha256,
         admission_ref=admission_ref,
         summary_ref=evaluation_summary_ref,
+        phase=contract.phase,
     )
     _require(
         evaluation["status"] == "COMPLETE_DESCRIPTIVE_NOT_GATE_SIGNED"
@@ -989,6 +1005,15 @@ def verify_runtime_pilot(
         ),
         phase_identity_sha256=phase_identity_sha256,
         pilot_spec_sha256=pilot_spec_sha256,
+        **(
+            dict(
+                phase=contract.phase,
+                input_overlay=spec["input_overlay"],
+                prompt_version=spec["prompt_version"],
+            )
+            if contract.phase == "PILOT_V3"
+            else {}
+        ),
         paths=9,
         logical_updates=108,
         primary_responses=13824,
@@ -1017,7 +1042,11 @@ def verify_runtime_pilot(
 def audit(root, **kwargs):
     """Publish one immutable fact report, never a scientific gate signature."""
     result = verify_runtime_pilot(root, **kwargs)
-    destination = _plain_path(root) / DIRECTORY / "FACTS.json"
+    destination = (
+        _plain_path(root)
+        / pilot_contract.for_phase(kwargs.get("phase", "PILOT_V1")).audit_directory
+        / "FACTS.json"
+    )
     write_once(_plain_path(destination), result)
     return result
 
@@ -1025,6 +1054,7 @@ def audit(root, **kwargs):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("root", type=Path)
+    parser.add_argument("--phase", choices=("PILOT_V1", "PILOT_V3"), default="PILOT_V1")
     for name in (
         "phase-identity-sha256",
         "pilot-spec-sha256",
@@ -1036,19 +1066,24 @@ def main(argv=None):
     ):
         parser.add_argument("--" + name, required=True)
     args = parser.parse_args(argv)
-    from .evaluation import DIRECTORY as EVALUATION_DIRECTORY
+    contract = pilot_contract.for_phase(args.phase)
 
     result = audit(
         args.root,
+        phase=contract.phase,
         phase_identity_sha256=args.phase_identity_sha256,
         pilot_spec_sha256=args.pilot_spec_sha256,
-        admission_ref=dict(path="PHASES/PILOT_V1/ADMISSION.json", sha256=args.admission_sha256),
-        recovery_binding_ref=dict(path=recovery.BINDING, sha256=args.recovery_binding_sha256),
+        admission_ref=dict(path=contract.admission_path, sha256=args.admission_sha256),
+        recovery_binding_ref=dict(
+            path=contract.recovery_directory + "/RECOVERY_BINDING.json",
+            sha256=args.recovery_binding_sha256,
+        ),
         recovery_comparison_ref=dict(
             path=args.recovery_comparison_path, sha256=args.recovery_comparison_sha256
         ),
         evaluation_summary_ref=dict(
-            path=EVALUATION_DIRECTORY + "/SUMMARY.json", sha256=args.evaluation_summary_sha256
+            path=contract.evaluation_directory + "/SUMMARY.json",
+            sha256=args.evaluation_summary_sha256,
         ),
     )
     print(result["status"])

@@ -18,7 +18,7 @@ from pathlib import Path
 
 from mm_core.training import state_hash, trainable_state
 
-from . import registration, rollouts, training
+from . import pilot_contract, rollouts, training
 from .census_evidence import _strict_json
 from .common import now
 from .transactions import RunTransactions, _plain_path, _read_bytes, _require, _write_json
@@ -157,7 +157,7 @@ def _drive(
     tx._locked()
     tx._runtime(runtime)
     _require(
-        tx.identity["phase"] == PHASE
+        tx.identity["phase"] == pilot_contract.for_phase(runtime.identity["phase"]).phase
         and tx.identity["max_steps"] == 12
         and tx.identity["repeat"] == 0
         and tx.identity["arm"] in ("U10", "U11", "C_SHUF"),
@@ -259,23 +259,24 @@ def _drive(
         recovery_binding=recovery_binding_ref,
         gate_status="NOT_SIGNED",
         training_authorized=False,
+        **({"phase": tx.identity["phase"]} if tx.identity["phase"] == "PILOT_V3" else {}),
     )
 
 
-def _context(root, phase_identity_sha256):
+def _context(root, phase_identity_sha256, *, phase=PHASE):
     from .phases import verify_phase
 
     return verify_phase(
         root,
-        PHASE,
+        pilot_contract.for_phase(phase).phase,
         deployment=Path(__file__).resolve(strict=True).parents[2],
         expected_identity_sha256=phase_identity_sha256,
     )
 
 
 def _registered_path(root, phase_context, pilot_spec_sha256, parent, arm):
-    checked = registration.verify_pilot_registration(
-        root, phase_context=phase_context, expected_spec_sha256=pilot_spec_sha256
+    checked = pilot_contract.verify_registration(
+        root, phase_context=phase_context, pilot_spec_sha256=pilot_spec_sha256
     )
     matches = [p for p in checked["spec"]["paths"] if p["parent"] == parent and p["arm"] == arm]
     _require(len(matches) == 1, "Parent/arm is not one of the nine registered pilot paths")
@@ -299,20 +300,22 @@ def run(
     phase_identity_sha256,
     pilot_spec_sha256,
     admission_ref,
+    phase=PHASE,
     recovery_binding_ref=None,
 ):
     """Run exactly the remaining registered twelve-step primary or recovery path."""
     import torch
 
     from .access import open_training_access
-    from .admission import require_pilot_admission
     from .recovery import ExecutionJournal, verify_recovery
     from .runtime import Runtime, load
 
     root, task_id = _plain_path(root), _task_id(task_id)
-    phase_context = _context(root, phase_identity_sha256)
-    require_pilot_admission(
+    contract = pilot_contract.for_phase(phase)
+    phase_context = _context(root, phase_identity_sha256, phase=contract.phase)
+    pilot_contract.require_admission(
         root,
+        phase=contract.phase,
         phase_identity_sha256=phase_identity_sha256,
         admission_ref=admission_ref,
         pilot_spec_sha256=pilot_spec_sha256,
@@ -357,6 +360,7 @@ def run(
             admission_ref=copy.deepcopy(admission_ref),
             recovery_binding=copy.deepcopy(recovery_binding_ref),
             initial_published_step=tx.published()[-1]["step"] if tx.published() else None,
+            **({"phase": contract.phase} if contract.phase == "PILOT_V3" else {}),
         )
         _write(attempt_directory / "STARTED.json", attempt)
         try:
@@ -365,10 +369,13 @@ def run(
                 parent,
                 task_id,
                 mode="TRAINING",
-                phase=PHASE,
+                phase=contract.phase,
                 phase_identity_sha256=phase_identity_sha256,
                 audit_root=directory,
                 run_id=identity["run_id"],
+                **(
+                    {"pilot_spec_sha256": pilot_spec_sha256} if contract.phase == "PILOT_V3" else {}
+                ),
             )
             _require(
                 type(loaded) is Runtime
@@ -461,6 +468,7 @@ def main(argv=None):
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, required=True)
+    parser.add_argument("--phase", choices=("PILOT_V1", "PILOT_V3"), default=PHASE)
     parser.add_argument("--parent", choices=("b0", "b1", "b2"), required=True)
     parser.add_argument("--arm", choices=("U10", "U11", "C_SHUF"), required=True)
     parser.add_argument("--task-id", required=True)
@@ -474,6 +482,7 @@ def main(argv=None):
         args.parent,
         args.arm,
         args.task_id,
+        phase=args.phase,
         phase_identity_sha256=args.phase_identity_sha256,
         pilot_spec_sha256=args.pilot_spec_sha256,
         admission_ref=dict(zip(("path", "sha256"), args.admission, strict=True)),

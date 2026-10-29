@@ -24,7 +24,7 @@ from pathlib import Path, PurePosixPath
 from mm_core.training import state_hash
 from sr_f3_ce.training import finite_tree
 
-from . import registration
+from . import pilot_contract
 from .transactions import (
     RunTransactions,
     _canonical,
@@ -187,9 +187,22 @@ def _counts(events, task_id, parent):
     return counts
 
 
+def _overlay_identity(value, identity, *, pilot_spec_sha256=None):
+    """Check actual V3 metadata; a source or path name alone is insufficient."""
+    if pilot_contract.for_phase(identity["phase"]).phase == "PILOT_V3":
+        for key in ("input_overlay", "input_overlay_sha256", "prompt_version"):
+            _require(value.get(key) == identity[key], "Recovery V3 identity differs: " + key)
+        _require(_sha(value.get("pilot_spec_sha256")), "Actual V3 spec pin required")
+        if pilot_spec_sha256 is not None:
+            _require(
+                value["pilot_spec_sha256"] == pilot_spec_sha256,
+                "Actual V3 spec differs from admitted registration",
+            )
+
+
 def _registration(root, phase_context, pilot_spec_sha256):
-    value = registration.verify_pilot_registration(
-        root, phase_context=phase_context, expected_spec_sha256=pilot_spec_sha256
+    value = pilot_contract.verify_registration(
+        root, phase_context=phase_context, pilot_spec_sha256=pilot_spec_sha256
     )
     spec = value["spec"]
     item = next(p for p in spec["paths"] if (p["parent"], p["arm"]) == ("b0", "U11"))
@@ -199,7 +212,7 @@ def _registration(root, phase_context, pilot_spec_sha256):
         identity["lane"] == "PRIMARY"
         and identity["repeat"] == 0
         and identity["max_steps"] == 12
-        and identity["phase"] == "PILOT_V1",
+        and identity["phase"] == pilot_contract.for_phase(phase_context["phase"]).phase,
         "Only registered b0/U11 primary identity can be imported",
     )
     return spec, primary, identity
@@ -329,7 +342,7 @@ def _row(row):
     return result
 
 
-def _execution(root, ref, directory, identity, *, require_continuous=False):
+def _execution(root, ref, directory, identity, *, require_continuous=False, pilot_spec_sha256=None):
     """Recompute journal facts from bound receipts, not its claimed status."""
     end = _bound(root, ref)
     task = end.get("task_id")
@@ -468,10 +481,13 @@ def _execution(root, ref, directory, identity, *, require_continuous=False):
         ("data_hash", identity["data_sha256"]),
         ("reference_hash", identity["reference_sha256"]),
         ("parent_id", identity["parent"]),
-        ("phase", "PILOT_V1"),
+        ("phase", pilot_contract.for_phase(identity["phase"]).phase),
         ("execution_mode", "TRAINING"),
     ):
         _require(runtime.get(key) == expected, "Runtime evidence identity differs: " + key)
+    if identity["phase"] == "PILOT_V3" and end["scope"] == "SERVER_ACTUAL":
+        _require(_sha(pilot_spec_sha256), "Admitted V3 spec pin required for actual execution")
+    _overlay_identity(runtime, identity, pilot_spec_sha256=pilot_spec_sha256)
     if end["scope"] == "SERVER_ACTUAL":
         hardware = runtime.get("hardware", {})
         process = begin.get("process_identity", {})
@@ -574,6 +590,7 @@ class ExecutionJournal:
             "Explicit resume flags required",
         )
         identity = self.runtime.identity
+        _overlay_identity(identity, self.tx.identity)
         task = identity.get("task_id")
         _require(
             isinstance(task, str) and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,159}", task),
@@ -600,14 +617,22 @@ class ExecutionJournal:
         )
         if self.lane == "RECOVERY":
             _require(
-                self.tx.directory == self.root / DIRECTORY and self.binding_ref is not None,
+                self.tx.directory
+                == self.root
+                / pilot_contract.for_phase(self.tx.identity["phase"]).recovery_directory
+                and self.binding_ref is not None,
                 "Only the fixed registered recovery lane is allowed",
             )
             binding = _bound(self.root, self.binding_ref)
             _require(
                 binding["logical_identity"] == self.tx.identity, "Recovery logical identity differs"
             )
-            _require(self.binding_ref["path"] == BINDING, "Fixed recovery binding required")
+            _require(
+                self.binding_ref["path"]
+                == pilot_contract.for_phase(self.tx.identity["phase"]).recovery_directory
+                + "/RECOVERY_BINDING.json",
+                "Fixed recovery binding required",
+            )
             if self.scope == "SERVER_ACTUAL":
                 primary_end = _bound(self.root, binding["primary_execution_ref"])
                 primary_begin = _bound(self.root, primary_end["begin_reference"])
@@ -768,7 +793,13 @@ class ExecutionJournal:
         )
         # Verify the prospective terminal before publication, retaining a diagnostic on failure.
         ref = _save(self.root, self.folder / "END.json", result)
-        _execution(self.root, ref, self.tx.directory, self.tx.identity)
+        _execution(
+            self.root,
+            ref,
+            self.tx.directory,
+            self.tx.identity,
+            pilot_spec_sha256=self.runtime.identity.get("pilot_spec_sha256"),
+        )
         self.finished = True
         return ref
 
@@ -984,6 +1015,7 @@ def prepare_recovery(
     primary_tx._locked()
     root = _plain_path(experiment_root)
     _, primary, identity = _registration(root, phase_context, pilot_spec_sha256)
+    contract = pilot_contract.for_phase(phase_context["phase"])
     _require(
         primary_tx.directory == primary and primary_tx.identity == identity, "Wrong primary run"
     )
@@ -992,7 +1024,14 @@ def prepare_recovery(
         len(markers) == 13 and markers[4]["commit_sha256"] == source_commit_sha256,
         "Actual complete primary and pinned source step4 required",
     )
-    execution = _execution(root, primary_execution_ref, primary, identity, require_continuous=True)
+    execution = _execution(
+        root,
+        primary_execution_ref,
+        primary,
+        identity,
+        require_continuous=True,
+        pilot_spec_sha256=pilot_spec_sha256,
+    )
     scope = execution["end"]["scope"]
     files = _prefix_files(primary_tx, markers, synthetic=scope == "SYNTHETIC_ONLY")
     lengths = _audit_prefixes(primary_tx, markers)
@@ -1008,7 +1047,7 @@ def prepare_recovery(
         status="IMPORTED_PREFIX_NOT_AUTHORIZED",
         scope=scope,
         storage_lane="RECOVERY",
-        directory=DIRECTORY,
+        directory=contract.recovery_directory,
         logical_identity=identity,
         primary_directory=primary.relative_to(root).as_posix(),
         phase_identity_sha256=phase_context["identity_sha256"],
@@ -1031,7 +1070,7 @@ def prepare_recovery(
     _require(
         markers[4]["sampler_state"]["actual_calls"] == 512, "Imported calls must be exactly512"
     )
-    destination = root / DIRECTORY
+    destination = root / contract.recovery_directory
     destination.parent.mkdir(parents=True, exist_ok=True)
     fd = os.open(
         _plain_path(destination.parent / ".recovery-import.lock"),
@@ -1080,15 +1119,18 @@ def prepare_recovery(
 def verify_recovery(root, *, phase_context, pilot_spec_sha256, binding_ref, verify_payloads=True):
     """Validate fixed storage binding; payload verification is needed once before cached access."""
     root = _plain_path(root)
+    contract = pilot_contract.for_phase(phase_context["phase"])
     _require(
-        binding_ref.get("path") == BINDING, "Only the unique registered recovery binding is allowed"
+        binding_ref.get("path") == contract.recovery_directory + "/RECOVERY_BINDING.json",
+        "Only the unique registered recovery binding is allowed",
     )
     binding = _bound(root, binding_ref)
     _, primary, identity = _registration(root, phase_context, pilot_spec_sha256)
-    destination = _path(root, DIRECTORY)
+    contract = pilot_contract.for_phase(phase_context["phase"])
+    destination = _path(root, contract.recovery_directory)
     _require(
         binding.get("format") == FORMAT
-        and binding.get("directory") == DIRECTORY
+        and binding.get("directory") == contract.recovery_directory
         and binding.get("storage_lane") == "RECOVERY"
         and binding.get("logical_identity") == identity
         and binding.get("primary_directory") == primary.relative_to(root).as_posix()
@@ -1121,7 +1163,12 @@ def verify_recovery(root, *, phase_context, pilot_spec_sha256, binding_ref, veri
     )
     # The unchanged primary retains its independently bound terminal proof.
     execution = _execution(
-        root, binding["primary_execution_ref"], primary, identity, require_continuous=True
+        root,
+        binding["primary_execution_ref"],
+        primary,
+        identity,
+        require_continuous=True,
+        pilot_spec_sha256=pilot_spec_sha256,
     )
     _require(
         binding["scope"] == execution["end"]["scope"],
@@ -1253,9 +1300,14 @@ def _comparison_facts(
         primary_tx.directory,
         primary_tx.identity,
         require_continuous=True,
+        pilot_spec_sha256=pilot_spec_sha256,
     )
     recovered = _execution(
-        root, recovery_execution_ref, recovery_tx.directory, recovery_tx.identity
+        root,
+        recovery_execution_ref,
+        recovery_tx.directory,
+        recovery_tx.identity,
+        pilot_spec_sha256=pilot_spec_sha256,
     )
     _require(
         recovered["begin"]["storage_lane"] == "RECOVERY"
@@ -1464,7 +1516,9 @@ def compare_recovery(primary_tx, recovery_tx, **kwargs):
     except Exception as exc:
         root = _plain_path(kwargs["root"])
         _require(
-            recovery_tx.directory == root / DIRECTORY, "Failure output must stay in recovery lane"
+            recovery_tx.directory
+            == root / pilot_contract.for_phase(recovery_tx.identity["phase"]).recovery_directory,
+            "Failure output must stay in recovery lane",
         )
         folder = recovery_tx.directory / "COMPARISONS"
         folder.mkdir(exist_ok=True)
@@ -1501,7 +1555,10 @@ def main(argv=None):
     context = _json(_read_bytes(args.phase_context))
     common = dict(phase_context=context, pilot_spec_sha256=args.pilot_spec_sha256)
     _, primary, identity = _registration(root, **common)
-    binding_ref = dict(path=BINDING, sha256=args.binding_sha256)
+    contract = pilot_contract.for_phase(context["phase"])
+    binding_ref = dict(
+        path=contract.recovery_directory + "/RECOVERY_BINDING.json", sha256=args.binding_sha256
+    )
     if args.command == "verify":
         result = verify_recovery(root, binding_ref=binding_ref, **common)
     else:
@@ -1518,7 +1575,7 @@ def main(argv=None):
                 )
             else:
                 _require(args.recovery_execution is not None, "Recovery execution receipt required")
-                with RunTransactions(root / DIRECTORY, identity) as rtx:
+                with RunTransactions(root / contract.recovery_directory, identity) as rtx:
                     result = compare_recovery(
                         tx,
                         rtx,

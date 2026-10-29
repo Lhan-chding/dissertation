@@ -270,6 +270,17 @@ def _evaluation(reader, root, config, data_ref, paths, parents):
             and data_ref(image)["sha256"] == safe["image_sha256"],
             "DEV_EVAL image differs from frozen inventory",
         )
+    return _evaluation_plan(config, paths, parents, inputs)
+
+
+def _evaluation_plan(config, paths, parents, inputs, *, directory=DIRECTORY):
+    """Pure fixed evaluation plan; no validation, filesystem or authorization."""
+    expected = {
+        f"DEV_EVAL_{family}_{index:04d}_P0_v{view}"
+        for family in FAMILIES
+        for index in range(4)
+        for view in range(4)
+    }
     endpoints = [
         dict(
             kind="FROZEN_PARENT",
@@ -289,7 +300,7 @@ def _evaluation(reader, root, config, data_ref, paths, parents):
             parent=item["parent"],
             run_id=item["run_id"],
             checkpoint_step=12,
-            expected_commit_path=f"{DIRECTORY}/{item['run_directory']}/checkpoints/step-012/COMMIT.json",
+            expected_commit_path=f"{directory}/{item['run_directory']}/checkpoints/step-012/COMMIT.json",
             actual_commit_binding="REQUIRED_AFTER_PUBLICATION_BEFORE_EVALUATION",
             responses=192,
         )
@@ -365,21 +376,74 @@ def build_pilot_registration(root, *, phase_context, parent_references):
     reader, config, data, data_ref, order_ref, order, parents, binding_ref = _inputs(
         root, context, parent_references
     )
+    bundle = _assemble_registration(
+        root,
+        context,
+        parent_references,
+        config,
+        data_ref,
+        order_ref,
+        order,
+        parents,
+        binding_ref,
+        shared_inputs={
+            "public": data_ref("DATA/DEV_PILOT/MODEL_INPUTS.jsonl"),
+            "private": data_ref("DATA/DEV_PILOT/TASKS_PRIVATE.jsonl"),
+        },
+        evaluation_inputs={
+            "public": data_ref("DATA/DEV_EVAL/MODEL_INPUTS.jsonl"),
+            "private": data_ref("DATA/DEV_EVAL/TASKS_PRIVATE.jsonl"),
+        },
+    )
+    for path in bundle["spec"]["paths"]:
+        value = bundle["files"][f"{path['run_directory']}/ROLLOUT_REGISTRATION.json"]
+        reader.identity = value["identity"]
+        _registration_inputs(reader, root, value, config, data)
+    _require(
+        bundle["spec"]["evaluation"]
+        == _evaluation(reader, root, config, data_ref, bundle["spec"]["paths"], parents),
+        "Evaluation construction differs",
+    )
+    return bundle
+
+
+def _assemble_registration(
+    root,
+    context,
+    parent_references,
+    config,
+    data_ref,
+    order_ref,
+    order,
+    parents,
+    binding_ref,
+    *,
+    shared_inputs,
+    evaluation_inputs,
+    phase=PHASE,
+    directory=DIRECTORY,
+    schema=SCHEMA,
+    run_namespace="PILOT",
+    identity_bindings=None,
+    spec_bindings=None,
+):
+    """Pure deterministic assembly shared by the two closed pilot contracts.
+
+    Callers must independently verify source, data, parents and any extra binding.
+    No old files or authorization receipts are read or relabeled here.
+    Defaults deliberately retain PILOT_V1's exact serialized artifacts.
+    """
     phase_identity = context["identity"]
     source_hash = phase_identity["source_manifest"]["sha256"]
     files, paths = {}, []
-    shared_inputs = {
-        "public": data_ref("DATA/DEV_PILOT/MODEL_INPUTS.jsonl"),
-        "private": data_ref("DATA/DEV_PILOT/TASKS_PRIVATE.jsonl"),
-    }
     for index, ordered in enumerate(order):
         parent, arm = ordered["parent"], ordered["arm"]
-        run_id = f"{config['experiment_id']}/PILOT/{parent}/r0/{arm}"
+        run_id = f"{config['experiment_id']}/{run_namespace}/{parent}/r0/{arm}"
         run_directory = f"runs/{parent}/r0/{arm}"
         identity_core = dict(
             experiment_id=config["experiment_id"],
             run_id=run_id,
-            phase=PHASE,
+            phase=phase,
             parent=parent,
             arm=arm,
             repeat=0,
@@ -395,6 +459,7 @@ def build_pilot_registration(root, *, phase_context, parent_references):
             origin_identity_sha256=phase_identity["origin"]["identity"]["sha256"],
             diagnostic_row_indices=list(DIAGNOSTIC_ROWS),
         )
+        identity_core.update(copy.deepcopy(identity_bindings or {}))
         inputs = {
             **shared_inputs,
             "schedule": data_ref(f"DATA/SCHEDULES/DEV_PILOT-{parent}-r0.json"),
@@ -428,8 +493,6 @@ def build_pilot_registration(root, *, phase_context, parent_references):
                 for step in range(1, 13)
             ],
         )
-        reader.identity = identity_core
-        _registration_inputs(reader, root, registration, config, data)
         registration_ref = _reference("ROLLOUT_REGISTRATION.json", registration)
         identity = {**identity_core, "rollout_registration": registration_ref}
         files[f"{run_directory}/ROLLOUT_REGISTRATION.json"] = registration
@@ -445,7 +508,7 @@ def build_pilot_registration(root, *, phase_context, parent_references):
                 responses=1536,
                 run_id=run_id,
                 run_directory=run_directory,
-                audit_root=f"{DIRECTORY}/{run_directory}",
+                audit_root=f"{directory}/{run_directory}",
                 transaction_identity=_reference(f"{run_directory}/RUN_IDENTITY.json", identity),
                 rollout_registration=_reference(
                     f"{run_directory}/ROLLOUT_REGISTRATION.json", registration
@@ -454,11 +517,11 @@ def build_pilot_registration(root, *, phase_context, parent_references):
         )
     b0_u11 = next(item for item in paths if item["parent"] == "b0" and item["arm"] == "U11")
     spec = dict(
-        schema=SCHEMA,
-        phase=PHASE,
+        schema=schema,
+        phase=phase,
         status="PILOT_PLAN_NOT_AUTHORIZED",
         phase_identity={
-            "path": f"PHASES/{PHASE}/IDENTITY.json",
+            "path": f"PHASES/{phase}/IDENTITY.json",
             "sha256": context["identity_sha256"],
         },
         actual_source_manifest=phase_identity["source_manifest"],
@@ -492,8 +555,8 @@ def build_pilot_registration(root, *, phase_context, parent_references):
             repeat=0,
             logical_run_id=b0_u11["run_id"],
             storage_lane="RECOVERY",
-            physical_directory="PHASE_RUNS/PILOT_V1/RECOVERY/b0/r0/U11",
-            binding_path="PHASE_RUNS/PILOT_V1/RECOVERY/b0/r0/U11/RECOVERY_BINDING.json",
+            physical_directory=f"PHASE_RUNS/{phase}/RECOVERY/b0/r0/U11",
+            binding_path=f"PHASE_RUNS/{phase}/RECOVERY/b0/r0/U11/RECOVERY_BINDING.json",
             logical_identity_policy="Byte-identical PRIMARY RUN_IDENTITY and rollout registration",
             execution_journal=(
                 "Per-process BEGIN/COMMIT references/END; actual native call accounting"
@@ -511,7 +574,7 @@ def build_pilot_registration(root, *, phase_context, parent_references):
             target_checkpoint_step=12,
             update_steps=list(range(5, 13)),
             new_generated_responses=1024,
-            expected_source_commit_path=f"{DIRECTORY}/{b0_u11['run_directory']}/checkpoints/step-004/COMMIT.json",
+            expected_source_commit_path=f"{directory}/{b0_u11['run_directory']}/checkpoints/step-004/COMMIT.json",
             actual_source_commit_binding="REQUIRED_SEPARATELY_AFTER_STEP4_PUBLICATION",
             source_prefix_policy=(
                 "Verified state and consumption prefix; "
@@ -586,16 +649,16 @@ def build_pilot_registration(root, *, phase_context, parent_references):
             ),
             implementation_status="IMPLEMENTED_NOT_EXECUTED",
         ),
-        evaluation=_evaluation(reader, root, config, data_ref, paths, parents),
+        evaluation=_evaluation_plan(config, paths, parents, evaluation_inputs, directory=directory),
         engineering_conventions=dict(
             status="PROSPECTIVE_ENGINEERING_CONVENTIONS",
             freeze_before_first_pilot_output=True,
             path_order=(
                 "Filter frozen FORMAL_PATH_ORDER to repeat0 and U10/U11/C_SHUF, preserving order"
             ),
-            run_id_pattern="{experiment}/PILOT/{parent}/r0/{arm}",
+            run_id_pattern="{experiment}/" + run_namespace + "/{parent}/r0/{arm}",
             primary_lane="PRIMARY",
-            registration_directory=DIRECTORY,
+            registration_directory=directory,
             diagnostic_groups=list(DIAGNOSTIC_GROUPS),
             shuffle_seed="seed_for(master,pilot_shuffle,parent,0,arm,step,group_index)",
             evaluation_seed="seed_for(master,pilot_dev_eval,parent,qid,draw)",
@@ -608,10 +671,11 @@ def build_pilot_registration(root, *, phase_context, parent_references):
         generation_authorized=False,
         execution_status="NOT_RUN",
     )
+    spec.update(copy.deepcopy(spec_bindings or {}))
     files[SPEC_FILE] = spec
     return dict(
         status="READY_TO_FREEZE_NOT_AUTHORIZED",
-        directory=str(root / DIRECTORY),
+        directory=str(root / directory),
         spec=spec,
         files=files,
         spec_sha256=hashlib.sha256(_payload(spec)).hexdigest(),

@@ -21,6 +21,9 @@ ORIGIN = "CENSUS_S0"
 PHASES = {
     "CENSUS_REVIEW_V1": ({ORIGIN}, {ORIGIN}),
     "PILOT_V1": ({ORIGIN}, {ORIGIN, "CENSUS_REVIEW_V1"}),
+    # Original data/parent provenance only; separate V3 confirmation admission
+    # must succeed before any model access. Historical failed gates stay failed.
+    "PILOT_V3": ({ORIGIN}, {ORIGIN}),
     "FORMAL_V1": ({ORIGIN, "PILOT_V1"}, {ORIGIN, "CENSUS_REVIEW_V1", "PILOT_V1"}),
 }
 MANIFEST_SCHEMA = "srf6-phase-source-manifest-v1"
