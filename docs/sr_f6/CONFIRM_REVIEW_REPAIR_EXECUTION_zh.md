@@ -56,3 +56,5 @@
 09:42:24 UTC终态核实：233849已`COMPLETED 0:0`（8分17秒），但实际封存为`UNKNOWN / NOT_SIGNED`，全部执行权限仍false。来源/数据/processor/视觉、9216支持与360审核检查已通过；完整数值证据消费者把三父均记为`INCOMPLETE`。因此原三个RESULT的PASS不能提升为完整确认通过，PILOT没有启动。原ADMISSION的attempt/assessment/receipt及提交意图、回执共五份原件已只读交付，assessment SHA为`39146a0a887a3800477d758102846c1be28c6517ebf2ed47822abc312ef56c2d`；禁止覆盖、重签或重新运行数值轨迹。
 
 轻量元数据诊断未发现三父运行身份、硬件、STARTED字段、adapter参数清单或16条forward账本数量的差异；这些局部相符仍不能替代完整校验。为获得原消费者内部的具体错误，在实际核实前序终态及teacher合法容量后，于09:47:28唯一提交0GPU诊断233873/LH-SRF6-T03-Diagnostic，仅调用冻结`verify_completed`并保存详细诊断。它不调用模型、不重跑T03、不执行admission.assess或seal。当前是技术UNKNOWN待诊断，不是已经确认的科学FAIL；不得绕过此状态推进训练。
+
+2026-10-29 10:36 UTC：原诊断已完成，三父均因原始回答无 `row_id` 而读取失败；原UNKNOWN保持。独立新读取器1879f8c已push/deploy、205项回归及服务器实际导入/AST证明通过，唯一0GPU核验233920已登记并RUNNING，尚无最终判定。没有重新执行数值轨迹或回答采样；详见[独立读取修复状态](CLOSURE_REPAIR_EXECUTION_zh.md)。旧先导历史桥接仍拒绝旧UNKNOWN，后续必须绑定实际新核验来源。
