@@ -17,7 +17,7 @@ import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
-SCHEMA = "srf6-memory-repair-contract-v3"
+SCHEMA = "srf6-memory-repair-contract-v4"
 PROJECT = Path("/projects/_ssd/varunssd/louis-ssvc")
 ROOT = PROJECT / "sr_f6_semantic_factorial_20261027"
 PRODUCER_REVISION = "b7e7b067f237b360b1dfb2c3075d3f14be7c281f"
@@ -28,7 +28,17 @@ OLD_EXECUTION = "LH-SRF6-A-1-A-233996-PRIMARY-b1-U10"
 QUEUE = ("PRIMARY-b1-U10", "PRIMARY-b1-C_SHUF", "PRIMARY-b1-U11")
 OLD_REPAIR_REVISION = "e24d557c381e53bbf85773c4c6551530a1a084e6"
 OLD_OPS = PROJECT / "sr_f6_operations_20261027/PILOT_MEMORY_REPAIR_V1_20261029"
-OPS = PROJECT / "sr_f6_operations_20261027/PILOT_MEMORY_REPAIR_V3_20261030"
+OPS = PROJECT / "sr_f6_operations_20261027/PILOT_MEMORY_REPAIR_V4_20261030"
+V3_OPS = PROJECT / "sr_f6_operations_20261027/PILOT_MEMORY_REPAIR_V3_20261030"
+V3_REVISION = "1aeeadf66fc046381b83c770464c00a8269bcf0a"
+V3_CONTRACT_SHA = "21dd00034aba783d5d91b8b753439a175b99dc3a375c964c9261f4dc0e4ac22a"
+DEVICE_BYTES = 24 * 2**30
+WINDOW = {
+    "rows": [0, 1, 2, 3],
+    "diagnostic_required": True,
+    "max_total_row_seconds": 902.8157889822033,
+    "continue_in_same_process": True,
+}
 PREDECESSOR_OPS = PROJECT / "sr_f6_operations_20261027/PILOT_MEMORY_REPAIR_V2_20261029"
 PREDECESSOR_REVISION = "f4b882dfbfa28e73da22244c082d324bdc7f2d2c"
 PREDECESSOR_CONTRACT_SHA = "7986ec98efac680254368e6431c5652d307e4816c7a58986fd733240c002bec6"
@@ -108,7 +118,7 @@ def _source(contract):
     require(
         re.fullmatch(r"[0-9a-f]{40}", repair["revision"])
         and repair["revision"]
-        not in {PRODUCER_REVISION, OLD_REPAIR_REVISION, PREDECESSOR_REVISION},
+        not in {PRODUCER_REVISION, OLD_REPAIR_REVISION, PREDECESSOR_REVISION, V3_REVISION},
         "Separate committed repair source required",
     )
     deployment = plain_path(repair["deployment"])
@@ -122,7 +132,14 @@ def _source(contract):
     )
     required = {
         deployment / "src/sr_f6_memory_repair" / f
-        for f in ("__init__.py", "execution.py", "offload.py", "validation.py", "arena.py")
+        for f in (
+            "__init__.py",
+            "execution.py",
+            "offload.py",
+            "validation.py",
+            "arena.py",
+            "residency.py",
+        )
     }
     require(required <= set(paths), "Repair implementation source closure incomplete")
     require(
@@ -261,6 +278,11 @@ def _prior_allocation_failure(contract):
         "storage_backend",
         "predecessor_contract_ref",
         "predecessor_disposition_ref",
+        "v3_predecessor_contract_ref",
+        "v3_predecessor_disposition_ref",
+        "max_device_bytes",
+        "validation_window",
+        "performance_reference_ref",
     }
     require(
         {k: v for k, v in prior.items() if k not in mutable}
@@ -298,7 +320,7 @@ def _prior_allocation_failure(contract):
             )
 
 
-def predecessor_evidence(contract):
+def _v2_predecessor_evidence(contract):
     """Bind controlled interruption, never reinterpret a numerical failure as retry."""
     expected = {"path": str(PREDECESSOR_OPS / "CONTRACT.json"), "sha256": PREDECESSOR_CONTRACT_SHA}
     require(
@@ -325,12 +347,13 @@ def predecessor_evidence(contract):
         "V3 altered v2 evidence, provenance or scientific registration",
     )
     require(
-        contract.get("schema") == SCHEMA and contract.get("storage_backend") == "arena_v3",
+        contract.get("schema") == "srf6-memory-repair-contract-v3"
+        and contract.get("storage_backend") == "arena_v3",
         "Explicit v3 arena contract required",
     )
     disposition_ref = contract["predecessor_disposition_ref"]
     require(
-        ref_path(PROJECT, disposition_ref) == OPS / "PREDECESSOR_DISPOSITION.json",
+        ref_path(PROJECT, disposition_ref) == V3_OPS / "PREDECESSOR_DISPOSITION.json",
         "Separate v3 predecessor disposition required",
     )
     disposition = receipt(disposition_ref)
@@ -348,7 +371,7 @@ def predecessor_evidence(contract):
     targets = {
         "inner_failure_ref": PREDECESSOR_OPS / "VALIDATION/FAILURE.json",
         "outer_failure_ref": PREDECESSOR_OPS / "validate_FAILURE.json",
-        "interruption_ref": OPS / "INTERRUPTION_RESULT.json",
+        "interruption_ref": V3_OPS / "INTERRUPTION_RESULT.json",
     }
     records = {}
     for key, path in targets.items():
@@ -402,9 +425,150 @@ def predecessor_evidence(contract):
     return disposition
 
 
+def predecessor_evidence(contract):
+    """Bind controlled interruption, never reinterpret a numerical failure as retry."""
+    expected = {"path": str(V3_OPS / "CONTRACT.json"), "sha256": V3_CONTRACT_SHA}
+    require(
+        contract.get("v3_predecessor_contract_ref") == expected,
+        "Exact immutable v3 predecessor contract required",
+    )
+
+    def receipt(ref):
+        path = ref_path(PROJECT, ref)
+        require(path.stat().st_size <= 4 * 1024 * 1024, "Bounded predecessor receipt required")
+        return bound_ref(PROJECT, ref)
+
+    prior = receipt(expected)
+    require(
+        prior.get("schema") == "srf6-memory-repair-contract-v3"
+        and prior.get("repair_source", {}).get("revision") == V3_REVISION,
+        "Predecessor source differs",
+    )
+    _v2_predecessor_evidence(prior)
+    mutable = {"schema", "repair_source"}
+    additions = {
+        "max_device_bytes",
+        "validation_window",
+        "performance_reference_ref",
+        "v3_predecessor_contract_ref",
+        "v3_predecessor_disposition_ref",
+    }
+    require(
+        {k: v for k, v in prior.items() if k not in mutable}
+        == {k: v for k, v in contract.items() if k not in mutable | additions},
+        "V4 altered v3 evidence, provenance or scientific registration",
+    )
+    require(
+        contract.get("schema") == SCHEMA and contract.get("storage_backend") == "arena_v3",
+        "Explicit v4 arena contract required",
+    )
+    disposition_ref = contract["v3_predecessor_disposition_ref"]
+    require(
+        ref_path(PROJECT, disposition_ref) == OPS / "PREDECESSOR_DISPOSITION.json",
+        "Separate v4 predecessor disposition required",
+    )
+    disposition = receipt(disposition_ref)
+    require(
+        disposition.get("schema") == "srf6-memory-performance-transition-v1"
+        and disposition.get("status") == "TECHNICAL_SUPERSESSION_PRESERVED"
+        and disposition.get("predecessor_job_id") == "235551"
+        and disposition.get("predecessor_source_revision") == V3_REVISION
+        and disposition.get("predecessor_contract_ref") == expected
+        and disposition.get("terminal_state") == "FAILED"
+        and disposition.get("exit_code") == "1:0"
+        and disposition.get("reason") == "performance_supersession",
+        "Controlled technical supersession required",
+    )
+    targets = {
+        "inner_failure_ref": V3_OPS / "VALIDATION/FAILURE.json",
+        "outer_failure_ref": V3_OPS / "validate_FAILURE.json",
+        "interruption_ref": OPS / "INTERRUPTION_RESULT.json",
+    }
+    records = {}
+    for key, path in targets.items():
+        require(ref_path(PROJECT, disposition[key]) == path, "Wrong predecessor evidence path")
+        records[key] = receipt(disposition[key])
+    inner, outer, interruption = (records[key] for key in targets)
+    require(
+        inner.get("status") == "FAILED_PRESERVED"
+        and inner.get("error_type") == "KeyboardInterrupt",
+        "Only controlled interruption may supersede v3; numerical failures stay closed",
+    )
+    attempt_path = plain_path(V3_OPS / "VALIDATION/ATTEMPT.json")
+    require(attempt_path.stat().st_size <= 4 * 1024 * 1024, "Bounded validation attempt required")
+    attempt = _json(attempt_path.read_bytes())
+    require(
+        attempt.get("schema") == "srf6-memory-storage-validation-v3"
+        and attempt.get("contract_sha256") == V3_CONTRACT_SHA,
+        "Predecessor actual validation contract differs",
+    )
+    require(
+        outer.get("status") == "FAILED_PRESERVED"
+        and outer.get("job_id") == "235551"
+        and outer.get("retry_authorized") is False,
+        "Preserved outer predecessor failure required",
+    )
+    require(
+        interruption.get("schema") == "srf6-memory-performance-interruption-v1"
+        and interruption.get("status") == "EXACT_CHILD_SIGINT_SENT"
+        and interruption.get("reason") == "performance_supersession"
+        and interruption.get("job_id") == "235551"
+        and interruption.get("source_revision") == V3_REVISION
+        and interruption.get("signal") == "SIGINT"
+        and interruption.get("returncode") == 0
+        and type(interruption.get("child_pid")) is int
+        and interruption["child_pid"] > 0
+        and type(interruption.get("parent_pid")) is int
+        and interruption["parent_pid"] > 0
+        and all(
+            isinstance(interruption.get(k), str) and interruption[k]
+            for k in ("child_start_time", "cgroup", "command_line")
+        ),
+        "Exact-child controlled interruption receipt required",
+    )
+    require(
+        not any(p.name != "resume.lock" for p in V3_OPS.glob("resume*"))
+        and not (V3_OPS / "EXECUTIONS").exists()
+        and not (V3_OPS / "validate_COMPLETE.json").exists()
+        and not (V3_OPS / "VALIDATION/RESULT.json").exists(),
+        "Predecessor success, resume intent or execution forbids transition",
+    )
+    require(
+        type(contract.get("max_device_bytes")) is int
+        and contract["max_device_bytes"] == DEVICE_BYTES
+        and contract.get("validation_window") == WINDOW,
+        "Fixed v4 device budget and technical observation window required",
+    )
+    reference = contract["performance_reference_ref"]
+    require(
+        ref_path(PROJECT, reference) == OPS / "PERFORMANCE_REFERENCE.json",
+        "Separate immutable performance projection required",
+    )
+    performance = receipt(reference)
+    require(
+        performance.get("schema") == "srf6-memory-performance-reference-v1"
+        and performance.get("status") == "OBSERVED_TIMING_PROJECTION_NOT_SERVER_ATTESTATION"
+        and performance.get("prior_job_id") == "235551"
+        and performance.get("prior_contract_ref") == expected
+        and performance.get("progress_sequence") == 26
+        and performance.get("completed_rows") == 4
+        and performance.get("rows") == [0, 1, 2, 3]
+        and performance.get("observed_total_row_seconds") == 1805.6315779644065
+        and performance.get("max_total_row_seconds") == WINDOW["max_total_row_seconds"]
+        and isinstance(performance.get("observation_at"), str)
+        and performance["observation_at"]
+        and isinstance(performance.get("local_snapshot"), dict)
+        and set(performance["local_snapshot"]) == {"path", "sha256"}
+        and Path(performance["local_snapshot"]["path"]).is_absolute()
+        and re.fullmatch(r"[0-9a-f]{64}", performance["local_snapshot"]["sha256"]),
+        "Frozen observed timing projection differs",
+    )
+    return disposition
+
+
 def verify_contract(contract_path, expected_contract_sha256):
     require(
-        plain_path(contract_path) == OPS / "CONTRACT.json", "New v3 operations contract required"
+        plain_path(contract_path) == OPS / "CONTRACT.json", "New v4 operations contract required"
     )
     contract = read_contract(contract_path, expected_contract_sha256)
     _prior_allocation_failure(contract)
@@ -507,7 +671,13 @@ def _bound_model(runtime_module, execution_id):
 
 
 def _storage_summary(
-    manager, max_host_bytes, max_disk_bytes, scratch_directory, *, disk_backend="file_v2"
+    manager,
+    max_host_bytes,
+    max_disk_bytes,
+    scratch_directory,
+    *,
+    disk_backend="file_v2",
+    max_device_bytes=0,
 ):
     summary = manager.summary()
     require(
@@ -522,7 +692,9 @@ def _storage_summary(
         and summary["model_bound"]
         and summary["closed"]
         and summary["pack_count"] > 0
-        and summary["unpack_count"] > 0
+        and summary["unpack_count"]
+        + (summary.get("device_resident_unpack_count", 0) if max_device_bytes > 0 else 0)
+        > 0
         and summary["peak_host_bytes"] <= max_host_bytes
         and summary["peak_disk_bytes"] <= max_disk_bytes
         and summary["max_host_bytes"] == max_host_bytes
@@ -564,6 +736,10 @@ def _storage_summary(
             and summary.get("arena_write_calls", -1) >= 0,
             "Actual arena storage context did not complete",
         )
+    if max_device_bytes:
+        from .validation import verify_device_storage
+
+        verify_device_storage(summary, max_device_bytes)
     return summary
 
 
@@ -678,6 +854,7 @@ def run_task(contract_path, expected_contract_sha256, validation_ref, task_id, a
                 max_disk_bytes=contract["max_disk_bytes"],
                 scratch_directory=extension / "STORAGE",
                 disk_backend=contract.get("storage_backend", "file_v2"),
+                max_device_bytes=contract.get("max_device_bytes", 0),
             ) as manager:
                 pilot.run(root, "b1", task["arm"], execution_id, **contract["pins"])
             storage_summary = _storage_summary(
@@ -686,6 +863,7 @@ def run_task(contract_path, expected_contract_sha256, validation_ref, task_id, a
                 contract["max_disk_bytes"],
                 extension / "STORAGE",
                 disk_backend=contract.get("storage_backend", "file_v2"),
+                max_device_bytes=contract.get("max_device_bytes", 0),
             )
             _write(
                 extension / "STORAGE_FACTS.json",

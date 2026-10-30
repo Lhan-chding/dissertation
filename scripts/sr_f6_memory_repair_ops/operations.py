@@ -22,7 +22,10 @@ from pathlib import Path
 
 PROJECT = Path("/projects/_ssd/varunssd/louis-ssvc")
 ROOT = PROJECT / "sr_f6_semantic_factorial_20261027"
-OPS = PROJECT / "sr_f6_operations_20261027/PILOT_MEMORY_REPAIR_V3_20261030"
+OPS = PROJECT / "sr_f6_operations_20261027/PILOT_MEMORY_REPAIR_V4_20261030"
+V3_OPS = PROJECT / "sr_f6_operations_20261027/PILOT_MEMORY_REPAIR_V3_20261030"
+V3_REVISION = "1aeeadf66fc046381b83c770464c00a8269bcf0a"
+V3_CONTRACT_SHA = "21dd00034aba783d5d91b8b753439a175b99dc3a375c964c9261f4dc0e4ac22a"
 PREDECESSOR_OPS = PROJECT / "sr_f6_operations_20261027/PILOT_MEMORY_REPAIR_V2_20261029"
 PREDECESSOR_REVISION = "f4b882dfbfa28e73da22244c082d324bdc7f2d2c"
 PREDECESSOR_CONTRACT_SHA = "7986ec98efac680254368e6431c5652d307e4816c7a58986fd733240c002bec6"
@@ -45,6 +48,7 @@ MEMBERS = (
     "src/sr_f6_memory_repair/__init__.py",
     "src/sr_f6_memory_repair/offload.py",
     "src/sr_f6_memory_repair/arena.py",
+    "src/sr_f6_memory_repair/residency.py",
     "src/sr_f6_memory_repair/execution.py",
     "src/sr_f6_memory_repair/validation.py",
 )
@@ -136,7 +140,8 @@ def submission_metadata(actual, contract_path, contract_sha256, facts):
     """Submission precheck only: full cold verification remains inside allocation."""
     value = small_ref(ROOT, dict(path=str(contract_path), sha256=contract_sha256))
     require(
-        value.get("schema") == "srf6-memory-repair-contract-v3"
+        value.get("schema") == "srf6-memory-repair-contract-v4"
+        and value.get("max_device_bytes") == 24 * 2**30
         and value.get("storage_backend") == "arena_v3"
         and value.get("max_host_bytes") == 8 * 2**30
         and value.get("max_disk_bytes") == 96 * 2**30
@@ -246,6 +251,8 @@ def predecessor_locks():
         # resume.lock may not exist until first observation; it is not evidence.
         stack.enter_context(lock(PREDECESSOR_OPS / "resume.lock"))
         stack.enter_context(lock(PREDECESSOR_OPS / "validate.lock", existing=True))
+        stack.enter_context(lock(V3_OPS / "resume.lock"))
+        stack.enter_context(lock(V3_OPS / "validate.lock", existing=True))
         yield
 
 
@@ -258,7 +265,7 @@ def predecessor_records(actual, contract_path, contract_sha256):
     return module.predecessor_evidence(contract)
 
 
-def predecessor_terminal(old, actual, contract_path, contract_sha256):
+def _v2_predecessor_terminal(old, actual, contract_path, contract_sha256):
     """A failed controlled interruption permanently fences immutable v2 resume."""
     disposition = predecessor_records(actual, contract_path, contract_sha256)
     receipt = read(PREDECESSOR_OPS / "validate_SUBMISSION.json")
@@ -302,13 +309,58 @@ def predecessor_terminal(old, actual, contract_path, contract_sha256):
     return disposition
 
 
+def predecessor_terminal(old, actual, contract_path, contract_sha256):
+    """A failed controlled interruption permanently fences immutable v3 resume."""
+    _v2_predecessor_terminal(old, actual, contract_path, contract_sha256)
+    disposition = predecessor_records(actual, contract_path, contract_sha256)
+    receipt = read(V3_OPS / "validate_SUBMISSION.json")
+    intent = read(V3_OPS / "validate_ATTEMPT.json")
+    source = receipt.get("source", {})
+    require(
+        receipt.get("status") == "SUBMITTED"
+        and receipt.get("job_id") == "235551"
+        and receipt.get("attempt_sha256") == sha(V3_OPS / "validate_ATTEMPT.json")
+        and source.get("revision") == V3_REVISION
+        and source.get("deployment") == str(PROJECT / "sr_f6_memory_repair_code_1aeeadf")
+        and source.get("binding_sha256")
+        == "62931a6a3148ca2037a55d0e174bc09705fc9114c6e3273bdd3e2a55afa54ed2"
+        and intent.get("source") == source
+        and intent.get("action") == "validate"
+        and intent.get("contract")
+        == {"path": str(V3_OPS / "CONTRACT.json"), "sha256": V3_CONTRACT_SHA}
+        and intent.get("validation") is None,
+        "Unique v3 predecessor submission differs",
+    )
+    rows = [
+        line.split("|")
+        for line in old.query(
+            ["sacct", "-n", "-P", "-j", "235551", "--format=JobIDRaw,State,ExitCode"]
+        ).splitlines()
+    ]
+    main = [row for row in rows if row and row[0] == "235551"]
+    require(
+        len(main) == 1 and main[0][1:3] == ["FAILED", "1:0"],
+        "Predecessor must be terminal controlled FAILED 1:0; late PASS blocks v4",
+    )
+    require(
+        "235551" not in old.query(["squeue", "-h", "-u", USER, "-o", "%i"]).split(),
+        "Predecessor still queued",
+    )
+    for task in TASKS:
+        require(
+            not (ROOT / "PHASE_RUNS/PILOT_V3/JOBS/TASKS" / task / "COMPLETE.json").exists(),
+            "Original b1 task already complete",
+        )
+    return disposition
+
+
 def validation_terminal(old, actual, contract_path, contract_sha256, validation_ref):
     """A receipt alone cannot authorize a race with unfinished cold verification."""
     require(validation_ref is not None, "Actual immutable validation required")
     require(Path(validation_ref["path"]) == OPS / "VALIDATION/RESULT.json", "Wrong validation path")
     result = small_ref(OPS, validation_ref)
     require(
-        result.get("schema") == "srf6-memory-storage-validation-v3"
+        result.get("schema") == "srf6-memory-storage-validation-v4"
         and result.get("contract_sha256") == contract_sha256
         and not (OPS / "VALIDATION/FAILURE.json").exists()
         and not (OPS / "validate_FAILURE.json").exists(),

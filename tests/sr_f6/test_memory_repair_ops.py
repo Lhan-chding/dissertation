@@ -28,7 +28,9 @@ def actual_validator_schema():
         ast.literal_eval(node.value)
         for node in tree.body
         if isinstance(node, ast.Assign)
-        and any(isinstance(target, ast.Name) and target.id == "SCHEMA" for target in node.targets)
+        and any(
+            isinstance(target, ast.Name) and target.id == "V4_SCHEMA" for target in node.targets
+        )
     ]
     assert len(values) == 1
     return values[0]
@@ -353,7 +355,8 @@ def test_lightweight_metadata_binds_exact_source_and_only_small_refs(tmp_path, m
     refpath.write_text("{}")
     ref = dict(path=str(refpath), sha256=m.sha(refpath))
     value = dict(
-        schema="srf6-memory-repair-contract-v3",
+        schema="srf6-memory-repair-contract-v4",
+        max_device_bytes=24 * 2**30,
         storage_backend="arena_v3",
         max_host_bytes=8 * 2**30,
         max_disk_bytes=96 * 2**30,
@@ -500,7 +503,8 @@ def test_v2_requires_preserved_zero_model_allocation_failure(tmp_path, monkeypat
 
 def test_v3_source_uses_new_ops_and_scheduler_real_33g():
     m = load()
-    assert m.OPS.name == "PILOT_MEMORY_REPAIR_V3_20261030"
+    assert m.OPS.name == "PILOT_MEMORY_REPAIR_V4_20261030"
+    assert m.V3_OPS.name == "PILOT_MEMORY_REPAIR_V3_20261030"
     assert m.PREDECESSOR_OPS.name == "PILOT_MEMORY_REPAIR_V2_20261029"
     assert m.FAILED_OPS.name == "PILOT_MEMORY_REPAIR_V1_20261029"
     argv = m.argv_for(
@@ -548,7 +552,7 @@ def terminal_predecessor(tmp_path, monkeypatch):
 
 def test_controlled_failed_predecessor_terminal_allows_gate(terminal_predecessor):
     m, old, _ = terminal_predecessor
-    assert m.predecessor_terminal(old, {}, "unused", "unused") == {"verified": True}
+    assert m._v2_predecessor_terminal(old, {}, "unused", "unused") == {"verified": True}
 
 
 @pytest.mark.parametrize(
@@ -567,14 +571,14 @@ def test_active_unknown_and_late_pass_predecessor_block(terminal_predecessor, ro
     m, old, state = terminal_predecessor
     state["sacct"] = row
     with pytest.raises(PermissionError, match="terminal controlled"):
-        m.predecessor_terminal(old, {}, "unused", "unused")
+        m._v2_predecessor_terminal(old, {}, "unused", "unused")
 
 
 def test_terminal_predecessor_still_queued_blocks(terminal_predecessor):
     m, old, state = terminal_predecessor
     state["squeue"] = "234384\n"
     with pytest.raises(PermissionError, match="still queued"):
-        m.predecessor_terminal(old, {}, "unused", "unused")
+        m._v2_predecessor_terminal(old, {}, "unused", "unused")
 
 
 def test_predecessor_complete_b1_task_blocks(terminal_predecessor):
@@ -583,7 +587,7 @@ def test_predecessor_complete_b1_task_blocks(terminal_predecessor):
     target.parent.mkdir(parents=True)
     target.write_text("{}")
     with pytest.raises(PermissionError, match="already complete"):
-        m.predecessor_terminal(old, {}, "unused", "unused")
+        m._v2_predecessor_terminal(old, {}, "unused", "unused")
 
 
 @pytest.mark.parametrize(
@@ -604,6 +608,9 @@ def test_v3_holds_both_old_locks_during_submit(setup, monkeypatch):
     monkeypatch.setattr(m, "PREDECESSOR_OPS", c.parent / "v2")
     m.PREDECESSOR_OPS.mkdir()
     (m.PREDECESSOR_OPS / "validate.lock").touch()
+    monkeypatch.setattr(m, "V3_OPS", c.parent / "v3")
+    m.V3_OPS.mkdir()
+    (m.V3_OPS / "validate.lock").touch()
     # Rebind the real contextmanager to this isolated module's globals.
     import types
     from contextlib import contextmanager
@@ -628,3 +635,54 @@ def test_partial_new_validation_directory_blocks_submission(setup):
     with pytest.raises(PermissionError, match="Prior partial action output"):
         m.submit(a, "validate", c, m.sha(c))
     assert calls == []
+
+
+@pytest.fixture
+def v3_terminal_predecessor(terminal_predecessor, monkeypatch):
+    m, old, state = terminal_predecessor
+    monkeypatch.setattr(m, "V3_OPS", m.PROJECT / "v3")
+    m.V3_OPS.mkdir()
+    source = dict(
+        revision=m.V3_REVISION,
+        deployment=str(m.PROJECT / "sr_f6_memory_repair_code_1aeeadf"),
+        binding_sha256="62931a6a3148ca2037a55d0e174bc09705fc9114c6e3273bdd3e2a55afa54ed2",
+    )
+    intent = dict(
+        source=source,
+        action="validate",
+        validation=None,
+        contract=dict(path=str(m.V3_OPS / "CONTRACT.json"), sha256=m.V3_CONTRACT_SHA),
+    )
+    (m.V3_OPS / "validate_ATTEMPT.json").write_text(json.dumps(intent))
+    receipt = dict(
+        source=source,
+        status="SUBMITTED",
+        job_id="235551",
+        attempt_sha256=m.sha(m.V3_OPS / "validate_ATTEMPT.json"),
+    )
+    (m.V3_OPS / "validate_SUBMISSION.json").write_text(json.dumps(receipt))
+    state["v3"] = "235551|FAILED|1:0"
+    old.query = lambda argv: (
+        state["v3"] if argv[0] == "sacct" and argv[4] == "235551" else state[argv[0]]
+    )
+    return m, old, state
+
+
+def test_v4_requires_both_predecessor_terminals(v3_terminal_predecessor):
+    m, old, _ = v3_terminal_predecessor
+    assert m.predecessor_terminal(old, {}, "unused", "unused") == {"verified": True}
+
+
+@pytest.mark.parametrize("state", ["RUNNING", "COMPLETING", "COMPLETED", "UNKNOWN"])
+def test_v4_v3_active_or_late_pass_blocks(v3_terminal_predecessor, state):
+    m, old, rows = v3_terminal_predecessor
+    rows["v3"] = "235551|" + state + "|0:0"
+    with pytest.raises(PermissionError, match="terminal controlled"):
+        m.predecessor_terminal(old, {}, "unused", "unused")
+
+
+def test_v4_v3_still_queued_blocks(v3_terminal_predecessor):
+    m, old, rows = v3_terminal_predecessor
+    rows["squeue"] = "235551"
+    with pytest.raises(PermissionError, match="still queued"):
+        m.predecessor_terminal(old, {}, "unused", "unused")

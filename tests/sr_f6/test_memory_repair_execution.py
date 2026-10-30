@@ -544,6 +544,7 @@ def predecessor(tmp_path, monkeypatch):
     monkeypatch.setattr(e, "PROJECT", tmp_path)
     monkeypatch.setattr(e, "ROOT", tmp_path / "root")
     monkeypatch.setattr(e, "OPS", tmp_path / "v3")
+    monkeypatch.setattr(e, "V3_OPS", tmp_path / "v3")
     monkeypatch.setattr(e, "PREDECESSOR_OPS", tmp_path / "v2")
 
     def write(path, value):
@@ -596,7 +597,7 @@ def predecessor(tmp_path, monkeypatch):
     )
     contract = {
         **prior,
-        "schema": e.SCHEMA,
+        "schema": "srf6-memory-repair-contract-v3",
         "repair_source": {"revision": "a" * 40},
         "storage_backend": "arena_v3",
         "predecessor_contract_ref": prior_ref,
@@ -607,7 +608,7 @@ def predecessor(tmp_path, monkeypatch):
 
 def test_predecessor_preserves_exact_science_and_controlled_failure(predecessor):
     contract, disposition, _ = predecessor
-    assert e.predecessor_evidence(contract) == disposition
+    assert e._v2_predecessor_evidence(contract) == disposition
 
 
 @pytest.mark.parametrize(
@@ -623,7 +624,7 @@ def test_v3_cannot_change_predecessor_registration(predecessor, field, value):
     contract, _, _ = predecessor
     contract[field] = value
     with pytest.raises(ValueError, match="altered v2"):
-        e.predecessor_evidence(contract)
+        e._v2_predecessor_evidence(contract)
 
 
 @pytest.mark.parametrize(
@@ -641,7 +642,7 @@ def test_any_predecessor_resume_or_late_success_blocks_transition(predecessor, p
     contract, _, write = predecessor
     write(e.PREDECESSOR_OPS / path, {})
     with pytest.raises(ValueError, match="forbids transition"):
-        e.predecessor_evidence(contract)
+        e._v2_predecessor_evidence(contract)
 
 
 @pytest.mark.parametrize("error_type", ["RuntimeError", "ValueError", "OutOfMemoryError"])
@@ -654,7 +655,7 @@ def test_numerical_or_other_failure_never_recast_as_performance_retry(predecesso
         e.OPS / "PREDECESSOR_DISPOSITION.json", disposition
     )
     with pytest.raises(ValueError, match="Only controlled"):
-        e.predecessor_evidence(contract)
+        e._v2_predecessor_evidence(contract)
 
 
 def test_predecessor_wrong_source_rejected(predecessor):
@@ -664,14 +665,14 @@ def test_predecessor_wrong_source_rejected(predecessor):
         e.OPS / "PREDECESSOR_DISPOSITION.json", disposition
     )
     with pytest.raises(ValueError, match="Controlled technical"):
-        e.predecessor_evidence(contract)
+        e._v2_predecessor_evidence(contract)
 
 
 def test_predecessor_disposition_bytes_cannot_change(predecessor):
     contract, _, _ = predecessor
     (e.OPS / "PREDECESSOR_DISPOSITION.json").write_text("{}")
     with pytest.raises(ValueError):
-        e.predecessor_evidence(contract)
+        e._v2_predecessor_evidence(contract)
 
 
 @pytest.mark.parametrize(
@@ -711,3 +712,175 @@ def test_arena_storage_summary_bound_and_reclaimed(synthetic_protocol, tmp_path,
             e._storage_summary(manager, 1024, 2048, scratch, disk_backend="arena_v3")
     else:
         assert e._storage_summary(manager, 1024, 2048, scratch, disk_backend="arena_v3") == summary
+
+
+@pytest.fixture
+def v4_predecessor(predecessor, monkeypatch):
+    prior, _, write = predecessor
+    prior["repair_source"] = {"revision": e.V3_REVISION}
+    prior_ref = write(e.V3_OPS / "CONTRACT.json", prior)
+    monkeypatch.setattr(e, "V3_CONTRACT_SHA", prior_ref["sha256"])
+    monkeypatch.setattr(e, "OPS", e.PROJECT / "v4")
+    write(
+        e.V3_OPS / "VALIDATION/ATTEMPT.json",
+        dict(schema="srf6-memory-storage-validation-v3", contract_sha256=prior_ref["sha256"]),
+    )
+    interruption = dict(
+        schema="srf6-memory-performance-interruption-v1",
+        status="EXACT_CHILD_SIGINT_SENT",
+        reason="performance_supersession",
+        job_id="235551",
+        source_revision=e.V3_REVISION,
+        signal="SIGINT",
+        child_pid=765722,
+        parent_pid=765710,
+        child_start_time="285477529",
+        cgroup="job_235551",
+        command_line="bound-child",
+        returncode=0,
+    )
+    disposition = dict(
+        schema="srf6-memory-performance-transition-v1",
+        status="TECHNICAL_SUPERSESSION_PRESERVED",
+        predecessor_job_id="235551",
+        predecessor_source_revision=e.V3_REVISION,
+        predecessor_contract_ref=prior_ref,
+        terminal_state="FAILED",
+        exit_code="1:0",
+        reason="performance_supersession",
+        inner_failure_ref=write(
+            e.V3_OPS / "VALIDATION/FAILURE.json",
+            dict(status="FAILED_PRESERVED", error_type="KeyboardInterrupt"),
+        ),
+        outer_failure_ref=write(
+            e.V3_OPS / "validate_FAILURE.json",
+            dict(status="FAILED_PRESERVED", job_id="235551", retry_authorized=False),
+        ),
+        interruption_ref=write(e.OPS / "INTERRUPTION_RESULT.json", interruption),
+    )
+    performance = dict(
+        schema="srf6-memory-performance-reference-v1",
+        status="OBSERVED_TIMING_PROJECTION_NOT_SERVER_ATTESTATION",
+        prior_job_id="235551",
+        prior_contract_ref=prior_ref,
+        local_snapshot=dict(path="/local/STATUS_20261030T100149721453.json", sha256="a" * 64),
+        observation_at="2026-10-30T10:01:49Z",
+        progress_sequence=26,
+        completed_rows=4,
+        rows=[0, 1, 2, 3],
+        observed_total_row_seconds=1805.6315779644065,
+        max_total_row_seconds=902.8157889822033,
+    )
+    contract = {
+        **prior,
+        "schema": e.SCHEMA,
+        "repair_source": {"revision": "b" * 40},
+        "max_device_bytes": e.DEVICE_BYTES,
+        "validation_window": dict(e.WINDOW),
+        "performance_reference_ref": write(e.OPS / "PERFORMANCE_REFERENCE.json", performance),
+        "v3_predecessor_contract_ref": prior_ref,
+        "v3_predecessor_disposition_ref": write(
+            e.OPS / "PREDECESSOR_DISPOSITION.json", disposition
+        ),
+    }
+    return contract, disposition, write
+
+
+def test_v4_preserves_complete_v2_v3_chain(v4_predecessor):
+    contract, disposition, _ = v4_predecessor
+    assert e.predecessor_evidence(contract) == disposition
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("max_device_bytes", 25 * 2**30),
+        ("validation_window", {"rows": [0, 1, 2]}),
+        ("storage_backend", "file_v2"),
+        ("original_files", []),
+    ],
+)
+def test_v4_budget_window_and_science_cannot_change(v4_predecessor, field, value):
+    contract, _, _ = v4_predecessor
+    contract[field] = value
+    with pytest.raises(ValueError):
+        e.predecessor_evidence(contract)
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "resume_ATTEMPT.json",
+        "resume_SUBMISSION.json",
+        "resume_COMPLETE.json",
+        "VALIDATION/RESULT.json",
+        "validate_COMPLETE.json",
+        "EXECUTIONS/partial",
+    ],
+)
+def test_v4_v3_success_or_resume_blocks(v4_predecessor, path):
+    contract, _, write = v4_predecessor
+    write(e.V3_OPS / path, {})
+    with pytest.raises(ValueError, match="forbids transition"):
+        e.predecessor_evidence(contract)
+
+
+def test_v4_preserved_v2_bytes_are_still_required(v4_predecessor):
+    contract, _, _ = v4_predecessor
+    (e.PREDECESSOR_OPS / "CONTRACT.json").write_text("{}")
+    with pytest.raises(ValueError):
+        e.predecessor_evidence(contract)
+
+
+@pytest.mark.parametrize("error_type", ["ValueError", "TechnicalWindowStop", "OutOfMemoryError"])
+def test_v4_does_not_recast_scientific_or_other_technical_failures(v4_predecessor, error_type):
+    contract, disposition, write = v4_predecessor
+    disposition["inner_failure_ref"] = write(
+        e.V3_OPS / "VALIDATION/FAILURE.json", dict(status="FAILED_PRESERVED", error_type=error_type)
+    )
+    contract["v3_predecessor_disposition_ref"] = write(
+        e.OPS / "PREDECESSOR_DISPOSITION.json", disposition
+    )
+    with pytest.raises(ValueError, match="Only controlled"):
+        e.predecessor_evidence(contract)
+
+
+def test_all_device_residency_task_storage_completes(synthetic_protocol, tmp_path):
+    from sr_f6_memory_repair.residency import DeviceResidency
+
+    scratch = tmp_path / "all-device-summary"
+    scratch.mkdir()
+    summary = synthetic_protocol.summary
+    summary.update(DeviceResidency(e.DEVICE_BYTES).summary())
+    summary.update(
+        schema="srf6-saved-activation-arena-v3",
+        disk_backend="arena_v3",
+        scratch_directory=str(scratch),
+        unpack_count=0,
+        peak_host_bytes=0,
+        peak_disk_bytes=0,
+        disk_bytes_read=0,
+        disk_bytes_written=0,
+        arena_physical_bytes=0,
+        peak_arena_physical_bytes=0,
+        arena_created_count=0,
+        arena_deleted_count=0,
+        arena_open_count=0,
+        arena_fsync_count=0,
+        arena_read_calls=0,
+        arena_write_calls=0,
+        device_resident_pack_count=2,
+        device_resident_unpack_count=2,
+        peak_device_bytes=128,
+        peak_device_storage_count=1,
+    )
+    manager = SimpleNamespace(summary=lambda: summary)
+    assert (
+        e._storage_summary(
+            manager, 1024, 2048, scratch, disk_backend="arena_v3", max_device_bytes=e.DEVICE_BYTES
+        )
+        == summary
+    )
+    # A v3 receipt cannot borrow v4 counters to invent an old offload execution.
+    with pytest.raises(ValueError, match="storage context"):
+        e._storage_summary(manager, 1024, 2048, scratch, disk_backend="arena_v3")

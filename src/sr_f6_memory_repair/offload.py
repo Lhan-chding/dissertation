@@ -255,6 +255,11 @@ class SavedActivationOffload(AbstractContextManager):
     inside this scope. It must return the actual, uniquely bound model object.
     `fixture=True` copies CPU tensors for regression tests and is labeled as
     synthetic evidence. Production mode never offloads CPU tensors.
+
+    `max_device_bytes=0` preserves the original policy. A positive explicit
+    candidate budget retains CUDA activation backing storages without copies;
+    it excludes model tensors, restored spill tensors and allocator overhead,
+    and is not a bound on total CUDA memory. Fixture mode exercises it on CPU.
     """
 
     def __init__(
@@ -266,11 +271,19 @@ class SavedActivationOffload(AbstractContextManager):
         scratch_directory=None,
         max_disk_bytes=None,
         disk_backend="file_v2",
+        max_device_bytes=0,
     ):
         if type(max_host_bytes) is not int or max_host_bytes <= 0:
             raise ValueError("An explicit positive host-memory bound is required")
         if type(fixture) is not bool:
             raise TypeError("fixture must be an explicit boolean")
+        if type(max_device_bytes) is not int or max_device_bytes < 0:
+            raise ValueError("Device-memory bound must be an explicit nonnegative integer")
+        self.device_residency = None
+        if max_device_bytes:
+            from .residency import DeviceResidency
+
+            self.device_residency = DeviceResidency(max_device_bytes)
         if disk_backend not in ("file_v2", "arena_v3"):
             raise ValueError("Unknown activation disk backend")
         if disk_backend == "arena_v3" and scratch_directory is None:
@@ -351,6 +364,10 @@ class SavedActivationOffload(AbstractContextManager):
             return _Resident(tensor)
         if tensor.device.type != "cuda" and not self.fixture:
             raise PermissionError("Unexpected saved tensor device")
+        if self.device_residency is not None:
+            packed = self.device_residency.pack(tensor)
+            if packed is not None:
+                return packed
         size = tensor.numel() * tensor.element_size()
         if self.live_host_bytes + size > self.max_host_bytes:
             if self.scratch_directory is not None:
@@ -480,6 +497,7 @@ class SavedActivationOffload(AbstractContextManager):
             disk_bytes_read=self.disk_bytes_read,
             storage_failures=list(self.storage_failures),
             cleanup_errors=list(self.cleanup_errors),
+            **(self.device_residency.summary() if self.device_residency is not None else {}),
         )
 
 
@@ -491,6 +509,7 @@ def saved_activation_offload(
     scratch_directory=None,
     max_disk_bytes=None,
     disk_backend="file_v2",
+    max_device_bytes=0,
 ):
     return SavedActivationOffload(
         model_or_provider,
@@ -499,4 +518,5 @@ def saved_activation_offload(
         scratch_directory=scratch_directory,
         max_disk_bytes=max_disk_bytes,
         disk_backend=disk_backend,
+        max_device_bytes=max_device_bytes,
     )

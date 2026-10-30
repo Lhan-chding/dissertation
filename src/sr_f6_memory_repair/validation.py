@@ -13,6 +13,7 @@ import copy
 import hashlib
 import io
 import json
+import math
 import os
 import re
 import stat
@@ -67,6 +68,261 @@ def require(value, message):
         raise PermissionError(message)
 
 
+V4_SCHEMA = "srf6-memory-storage-validation-v4"
+MAX_DEVICE_BYTES = 24 * 1024**3
+VALIDATION_WINDOW = dict(
+    rows=[0, 1, 2, 3],
+    diagnostic_required=True,
+    max_total_row_seconds=902.8157889822033,
+    continue_in_same_process=True,
+)
+
+
+class TechnicalWindowStop(RuntimeError):
+    """A fixed technical throughput condition failed; not a scientific gate."""
+
+
+def validation_schema(contract):
+    maximum = contract.get("max_device_bytes", 0)
+    require(type(maximum) is int and maximum >= 0, "Invalid device residency contract")
+    if maximum:
+        window = contract.get("validation_window")
+        require(
+            maximum == MAX_DEVICE_BYTES
+            and type(window) is dict
+            and window == VALIDATION_WINDOW
+            and type(window["rows"]) is list
+            and all(type(v) is int for v in window["rows"])
+            and window["diagnostic_required"] is True
+            and window["continue_in_same_process"] is True
+            and type(window["max_total_row_seconds"]) is float,
+            "Frozen v4 residency/window contract differs",
+        )
+        return V4_SCHEMA
+    require("validation_window" not in contract, "Legacy validation cannot adopt a new window")
+    return SCHEMA
+
+
+def verify_device_storage(summary, expected_max_device_bytes):
+    """Backing-storage charges may outlive released hooks; active hooks may not."""
+    require(
+        type(expected_max_device_bytes) is int and expected_max_device_bytes > 0,
+        "Explicit device bound required",
+    )
+    expected = dict(
+        device_residency_schema="srf6-bounded-device-residency-candidate-v1",
+        device_accounting_scope="UNIQUE_LIVE_SAVED_ACTIVATION_BACKING_STORAGE",
+        device_accounting_release="CPP_STORAGE_EXPIRATION_CONSERVATIVE_REAP",
+        device_peak_scope="CONSERVATIVE_CHARGED_PAYLOAD_HIGH_WATER_NOT_CUDA_PEAK",
+    )
+    require(
+        all(summary.get(k) == val for k, val in expected.items()),
+        "Device accounting identity differs",
+    )
+    keys = (
+        "max_device_bytes",
+        "live_device_bytes",
+        "peak_device_bytes",
+        "device_storage_count",
+        "device_pending_storage_count",
+        "device_active_view_count",
+        "peak_device_storage_count",
+        "device_resident_pack_count",
+        "device_alias_pack_count",
+        "device_resident_unpack_count",
+        "device_spill_count",
+    )
+    require(
+        all(type(summary.get(k)) is int and summary[k] >= 0 for k in keys),
+        "Incomplete device residency counters",
+    )
+    require(
+        summary["max_device_bytes"] == expected_max_device_bytes
+        and summary["live_device_bytes"]
+        <= summary["peak_device_bytes"]
+        <= expected_max_device_bytes
+        and summary["device_active_view_count"] == 0
+        and summary["device_pending_storage_count"]
+        <= summary["device_storage_count"]
+        <= summary["peak_device_storage_count"]
+        and summary["device_alias_pack_count"] <= summary["device_resident_pack_count"]
+        and summary["device_resident_pack_count"] > 0
+        and summary["device_resident_unpack_count"] > 0,
+        "Actual device residency bound/lifecycle differs",
+    )
+    return summary
+
+
+class CudaObservations:
+    """No CUDA peak resets: snapshots retain process-lifetime high water marks."""
+
+    def __init__(self, *, fixture=False, clock=None):
+        import socket
+
+        import torch
+
+        require(clock is None or fixture, "Custom timing is CPU fixture only")
+        self.fixture = fixture
+        self.clock = time.monotonic if clock is None else clock
+        self.records = []
+        self.identity = dict(
+            scope="SYNTHETIC_CPU_OBSERVATIONS" if fixture else "ACTUAL_CUDA_PROCESS_OBSERVATIONS",
+            process_id=os.getpid(),
+            hostname=socket.gethostname(),
+            peak_reset_count=0,
+            peak_scope="PROCESS_LIFETIME_INCLUDES_LOAD_BASELINE_AND_ALL_ROWS_NO_RESET",
+        )
+        if not fixture:
+            require(
+                torch.cuda.is_available() and torch.cuda.device_count() == 1,
+                "Actual one-device CUDA observation required",
+            )
+            props = torch.cuda.get_device_properties(0)
+            self.identity.update(
+                cuda_uuid=str(props.uuid),
+                cuda_name=props.name,
+                cuda_total_memory_bytes=props.total_memory,
+            )
+
+    def observe(self, stage, row=None):
+        import torch
+
+        value = dict(
+            sequence=len(self.records), stage=stage, row_index=row, monotonic_seconds=self.clock()
+        )
+        if not self.fixture:
+            torch.cuda.synchronize()
+            free, total = torch.cuda.mem_get_info()
+            value.update(
+                memory_allocated=torch.cuda.memory_allocated(),
+                memory_reserved=torch.cuda.memory_reserved(),
+                max_memory_allocated=torch.cuda.max_memory_allocated(),
+                max_memory_reserved=torch.cuda.max_memory_reserved(),
+                free_device_bytes=free,
+                total_device_bytes=total,
+            )
+            value["monotonic_seconds"] = self.clock()
+        self.records.append(value)
+        return value
+
+    def evidence(self):
+        return dict(identity=dict(self.identity), observations=self.records)
+
+
+def window_measurement(observations, indices):
+    require(
+        set(VALIDATION_WINDOW["rows"]) <= set(indices),
+        "Original first four rows must be diagnostic",
+    )
+    spans = []
+    for row in VALIDATION_WINDOW["rows"]:
+        start = [r for r in observations if r["stage"] == "row_forward" and r["row_index"] == row]
+        end = [r for r in observations if r["stage"] == "row_finished" and r["row_index"] == row]
+        require(
+            len(start) == len(end) == 1, "Technical window must use each original row exactly once"
+        )
+        duration = end[0]["monotonic_seconds"] - start[0]["monotonic_seconds"]
+        require(
+            type(duration) in (int, float) and math.isfinite(duration) and duration >= 0,
+            "Invalid measured technical row duration",
+        )
+        spans.append(
+            dict(
+                row_index=row,
+                start_sequence=start[0]["sequence"],
+                end_sequence=end[0]["sequence"],
+                seconds=duration,
+            )
+        )
+    total = sum(s["seconds"] for s in spans)
+    return dict(
+        rule=copy.deepcopy(VALIDATION_WINDOW),
+        rows=spans,
+        total_row_seconds=total,
+        scope="TECHNICAL_OBSERVATION_ONLY_NOT_TRAINING_FEASIBILITY_OR_SCIENTIFIC_GATE",
+        status="CONTINUE_SAME_PROCESS"
+        if total <= VALIDATION_WINDOW["max_total_row_seconds"]
+        else "TECHNICAL_STOP_NO_SCIENTIFIC_CONCLUSION",
+    )
+
+
+def verify_cuda_observations(evidence, hardware, diagnostic_indices):
+    observation = evidence["cuda_observations"]
+    identity, records = observation["identity"], observation["observations"]
+    require(
+        identity["scope"] == "ACTUAL_CUDA_PROCESS_OBSERVATIONS"
+        and identity["peak_reset_count"] == 0
+        and identity["peak_scope"]
+        == "PROCESS_LIFETIME_INCLUDES_LOAD_BASELINE_AND_ALL_ROWS_NO_RESET"
+        and type(identity["process_id"]) is int
+        and identity["process_id"] > 0
+        and all(
+            identity[k] == hardware[k]
+            for k in ("cuda_uuid", "cuda_name", "cuda_total_memory_bytes", "hostname")
+        ),
+        "Actual CUDA observation identity differs",
+    )
+    expected = [
+        ("before_load", None),
+        ("after_load", None),
+        ("baseline_forward", 0),
+        ("baseline_backward", 0),
+    ]
+    for row in range(128):
+        expected.append(("row_forward", row))
+        if row in diagnostic_indices:
+            expected.extend(("diagnostic_" + channel, row) for channel in ("native", "aux", "kl"))
+        expected.extend((("row_backward", row), ("row_finished", row)))
+    expected.extend((("restoration", None), ("recompute", None), ("measurement_finished", None)))
+    require(
+        [(r["stage"], r["row_index"]) for r in records] == expected,
+        "Incomplete, reordered or repeated CUDA stage observations",
+    )
+    previous_time = previous_allocated_peak = previous_reserved_peak = 0
+    for index, row in enumerate(records):
+        require(
+            row["sequence"] == index
+            and type(row["monotonic_seconds"]) in (float, int)
+            and math.isfinite(row["monotonic_seconds"])
+            and row["monotonic_seconds"] >= previous_time,
+            "CUDA observation sequence/timing differs",
+        )
+        keys = (
+            "memory_allocated",
+            "memory_reserved",
+            "max_memory_allocated",
+            "max_memory_reserved",
+            "free_device_bytes",
+            "total_device_bytes",
+        )
+        require(
+            all(type(row.get(k)) is int and row[k] >= 0 for k in keys),
+            "Actual CUDA byte counters absent",
+        )
+        require(
+            row["memory_allocated"] <= row["memory_reserved"]
+            and row["memory_allocated"] <= row["max_memory_allocated"] <= row["max_memory_reserved"]
+            and row["memory_reserved"] <= row["max_memory_reserved"]
+            and row["max_memory_allocated"] >= previous_allocated_peak
+            and row["max_memory_reserved"] >= previous_reserved_peak
+            and row["free_device_bytes"]
+            <= row["total_device_bytes"]
+            == identity["cuda_total_memory_bytes"],
+            "CUDA high water or physical observation differs",
+        )
+        previous_time = row["monotonic_seconds"]
+        previous_allocated_peak, previous_reserved_peak = (
+            row["max_memory_allocated"],
+            row["max_memory_reserved"],
+        )
+    window = window_measurement(records, diagnostic_indices)
+    require(
+        window == evidence["technical_window"] and window["status"] == "CONTINUE_SAME_PROCESS",
+        "Fixed technical observation window did not pass",
+    )
+    return observation
+
+
 class ProgressWriter:
     """Atomic latest observation owned by this process, never a restart checkpoint."""
 
@@ -114,7 +370,8 @@ class ProgressWriter:
         }
     )
 
-    def __init__(self, directory, *, contract_sha256, repair_revision):
+    def __init__(self, directory, *, contract_sha256, repair_revision, cuda_observer=None):
+        self.cuda_observer = cuda_observer
         self.directory = Path(directory)
         require(
             self.directory.is_absolute()
@@ -188,6 +445,9 @@ class ProgressWriter:
             previous_stage_seconds=previous_seconds,
             stage_seconds=dict(self.stage_seconds),
         )
+        if self.cuda_observer is not None:
+            value["cuda_observation"] = self.cuda_observer.records[-1]
+            value["cuda_observation_identity"] = self.cuda_observer.identity
         payload = (json.dumps(value, sort_keys=True, allow_nan=False) + "\n").encode()
         require(len(payload) <= 32768, "Progress record exceeded fixed size bound")
         fd = os.open(self.directory, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
@@ -336,6 +596,7 @@ def verify_storage(
     *,
     fixture=False,
     disk_backend="file_v2",
+    max_device_bytes=0,
 ):
     """Check the complete owned hybrid storage lifecycle, including cold cleanup."""
     require(disk_backend in {"file_v2", "arena_v3"}, "Unknown validation storage backend")
@@ -373,7 +634,11 @@ def verify_storage(
     )
     require(
         summary["pack_count"] > 0
-        and summary["unpack_count"] > 0
+        and (
+            summary["unpack_count"]
+            + (summary.get("device_resident_unpack_count", 0) if max_device_bytes else 0)
+        )
+        > 0
         and summary["live_host_bytes"] == summary["live_disk_bytes"] == 0
         and not summary["storage_failures"]
         and not summary["cleanup_errors"]
@@ -430,6 +695,8 @@ def verify_storage(
         and ((written == read == 0) or (written > 0 and read > 0)),
         "Incomplete actual disk spill/read accounting",
     )
+    if max_device_bytes:
+        verify_device_storage(summary, max_device_bytes)
     return summary
 
 
@@ -446,15 +713,31 @@ def _measure(
     fixture=False,
     disk_backend="file_v2",
     progress=None,
+    max_device_bytes=0,
+    cuda_observer=None,
 ):
     import torch
 
+    if max_device_bytes:
+        require(
+            cuda_observer is not None and cuda_observer.fixture is fixture,
+            "Explicit bound CUDA observer required for residency validation",
+        )
+        if not fixture:
+            require(max_device_bytes == MAX_DEVICE_BYTES, "Fixed device candidate required")
+    else:
+        require(cuda_observer is None, "Legacy validation keeps its original observations")
     root = Path(runtime.identity["run_root"])
     coefficients = _validate_records(
         runtime, records, [8] * 16, reference, credits, root, trainable_state(runtime.model)
     )
     indices = _diagnostic_indices(runtime, records, runtime.identity["diagnostic_row_indices"])
     require(len(originals) == 27, "Exactly 27 preserved original forwards required")
+    if max_device_bytes:
+        require(
+            set(VALIDATION_WINDOW["rows"]) <= set(indices),
+            "Original first four rows must be diagnostic",
+        )
     params = {
         name: value for name, value in runtime.model.named_parameters() if value.requires_grad
     }
@@ -481,16 +764,21 @@ def _measure(
         }
     }
 
+    if cuda_observer is not None:
+        evidence["cuda_observations"] = cuda_observer.evidence()
+        evidence["max_device_bytes"] = max_device_bytes
     completed_rows = 0
     offload = None
 
     def report(stage, row=None):
-        if progress is not None:
-            try:
+        try:
+            if cuda_observer is not None:
+                cuda_observer.observe(stage, row)
+            if progress is not None:
                 progress(stage, row, completed_rows, counts, offload)
-            except BaseException as exc:
-                exc.validation_partial = (evidence, tensors)
-                raise
+        except BaseException as exc:
+            exc.validation_partial = (evidence, tensors)
+            raise
 
     def gradients():
         return {
@@ -520,7 +808,7 @@ def _measure(
 
     try:
         runtime.model.eval()
-        if not fixture:
+        if not fixture and not max_device_bytes:
             torch.cuda.reset_peak_memory_stats()
         runtime.model.zero_grad(set_to_none=True)
         baseline_rng = capture_rng()
@@ -536,7 +824,8 @@ def _measure(
         del result
         if not fixture:
             evidence["baseline_peak_cuda_bytes"] = torch.cuda.max_memory_allocated()
-            torch.cuda.reset_peak_memory_stats()
+            if not max_device_bytes:
+                torch.cuda.reset_peak_memory_stats()
         runtime.model.zero_grad(set_to_none=True)
         restore_rng(baseline_rng)
         with saved_activation_offload(
@@ -546,6 +835,7 @@ def _measure(
             max_disk_bytes=max_disk_bytes,
             fixture=fixture,
             disk_backend=disk_backend,
+            max_device_bytes=max_device_bytes,
         ) as offload:
             for index in range(128):
                 report("row_forward", index)
@@ -585,6 +875,13 @@ def _measure(
                 del result
                 completed_rows += 1
                 report("row_finished", index)
+                if max_device_bytes and index == 3:
+                    window = window_measurement(cuda_observer.records, indices)
+                    evidence["technical_window"] = window
+                    if window["status"] != "CONTINUE_SAME_PROCESS":
+                        raise TechnicalWindowStop(
+                            "Fixed first-four-row technical throughput condition failed"
+                        )
         evidence["offload"] = offload.summary()
         if not fixture:
             evidence["offload_peak_cuda_bytes"] = torch.cuda.max_memory_allocated()
@@ -597,6 +894,7 @@ def _measure(
                 max_disk_bytes,
                 fixture=fixture,
                 disk_backend=disk_backend,
+                max_device_bytes=max_device_bytes,
             )
     except BaseException as exc:
         exc.validation_partial = (evidence, tensors)
@@ -629,8 +927,14 @@ def measure_fixture(
     max_disk_bytes=None,
     disk_backend="file_v2",
     progress=None,
+    max_device_bytes=0,
+    fixture_clock=None,
 ):
     require(all(p.device.type == "cpu" for p in runtime.model.parameters()), "CPU fixture only")
+    observer = CudaObservations(fixture=True, clock=fixture_clock) if max_device_bytes else None
+    if observer is not None:
+        observer.observe("before_load")
+        observer.observe("after_load")
     return _measure(
         runtime,
         records,
@@ -643,6 +947,8 @@ def measure_fixture(
         fixture=True,
         disk_backend=disk_backend,
         progress=progress,
+        max_device_bytes=max_device_bytes,
+        cuda_observer=observer,
     )
 
 
@@ -807,7 +1113,7 @@ def _technical_runtime(contract, ready, records, account):
         run_id=records[0]["run_id"],
         step=0,
         diagnostic_row_indices=ready["spec"]["identity"]["diagnostic_row_indices"],
-        technical_consumer=SCHEMA,
+        technical_consumer=validation_schema(contract),
         loaded_producer_modules=loaded_sources,
         numerics=dict(NUMERICS_V2),
         model_cast_from_dtype=source_dtype,
@@ -849,6 +1155,8 @@ def run_validation(contract_path, expected_contract_sha256, output):
     from .execution import verify_contract
 
     contract = verify_contract(contract_path, expected_contract_sha256)
+    schema = validation_schema(contract)
+    max_device_bytes = contract.get("max_device_bytes", 0)
     output = Path(output)
     canonical = Path("/projects/_ssd/varunssd/louis-ssvc")
     require(
@@ -863,7 +1171,7 @@ def run_validation(contract_path, expected_contract_sha256, output):
     output.mkdir()
     write_once(
         output / "ATTEMPT.json",
-        dict(schema=SCHEMA, contract_sha256=expected_contract_sha256, plan=PLAN),
+        dict(schema=schema, contract_sha256=expected_contract_sha256, plan=PLAN),
     )
     ledger = []
 
@@ -874,13 +1182,20 @@ def run_validation(contract_path, expected_contract_sha256, output):
         )
         ledger.append(dict(kind=kind, count=count, metadata=metadata))
 
+    observer = None
     try:
         ready, records, credits, originals = _originals(contract)
+        if max_device_bytes:
+            observer = CudaObservations()
+            observer.observe("before_load")
         runtime = _technical_runtime(contract, ready, records, account)
+        if observer is not None:
+            observer.observe("after_load")
         progress = ProgressWriter(
             output,
             contract_sha256=expected_contract_sha256,
             repair_revision=contract["repair_source"]["revision"],
+            cuda_observer=observer,
         )
         evidence, tensors = _measure(
             runtime,
@@ -893,6 +1208,8 @@ def run_validation(contract_path, expected_contract_sha256, output):
             max_disk_bytes=contract["max_disk_bytes"],
             disk_backend=contract["storage_backend"],
             progress=progress,
+            max_device_bytes=max_device_bytes,
+            cuda_observer=observer,
         )
         evidence.update(
             runtime_identity=runtime.identity,
@@ -903,11 +1220,19 @@ def run_validation(contract_path, expected_contract_sha256, output):
             producer_revision=contract["producer"]["revision"],
             repair_revision=contract["repair_source"]["revision"],
         )
+        if max_device_bytes:
+            try:
+                verify_cuda_observations(
+                    evidence, runtime.identity["hardware"], evidence["diagnostic_indices"]
+                )
+            except BaseException as exc:
+                exc.validation_partial = (evidence, tensors)
+                raise
         verify_contract(contract_path, expected_contract_sha256)
         torch.save(tensors, output / "TENSORS.pt")
         write_once(output / "EVIDENCE.json", evidence)
         result = dict(
-            schema=SCHEMA,
+            schema=schema,
             status="VERIFIED_ACTUAL_STORAGE_REPAIR_BATCH",
             contract_sha256=expected_contract_sha256,
             evidence_ref=_ref(output / "EVIDENCE.json"),
@@ -920,6 +1245,8 @@ def run_validation(contract_path, expected_contract_sha256, output):
             contract_path, expected_contract_sha256, _ref(output / "RESULT.json")
         )
     except BaseException as exc:
+        if observer is not None:
+            write_once(output / "CUDA_OBSERVATIONS_PARTIAL.json", observer.evidence())
         if hasattr(exc, "validation_partial"):
             from sr_f6.training import _safe
 
@@ -944,6 +1271,8 @@ def verify_validation(contract_path, expected_contract_sha256, validation_ref):
     from .execution import strict_ref, verify_contract
 
     contract = verify_contract(contract_path, expected_contract_sha256)
+    schema = validation_schema(contract)
+    max_device_bytes = contract.get("max_device_bytes", 0)
     result_path = Path(validation_ref["path"])
     require(
         result_path == Path(contract_path).parent / "VALIDATION/RESULT.json",
@@ -952,7 +1281,7 @@ def verify_validation(contract_path, expected_contract_sha256, validation_ref):
     result = json.loads(strict_ref(result_path, validation_ref["sha256"]))
     require(not (result_path.parent / "FAILURE.json").exists(), "Failed validation preserved")
     require(
-        result["schema"] == SCHEMA
+        result["schema"] == schema
         and result["status"] == "VERIFIED_ACTUAL_STORAGE_REPAIR_BATCH"
         and result["plan"] == PLAN
         and result["contract_sha256"] == expected_contract_sha256,
@@ -1002,7 +1331,7 @@ def verify_validation(contract_path, expected_contract_sha256, validation_ref):
 
     identity = evidence["runtime_identity"]
     require(
-        identity["technical_consumer"] == SCHEMA
+        identity["technical_consumer"] == schema
         and identity["dtype"] == "float32"
         and identity["numerics"] == NUMERICS_V2
         and identity["parent_id"] == "b1"
@@ -1066,7 +1395,11 @@ def verify_validation(contract_path, expected_contract_sha256, validation_ref):
         contract["max_host_bytes"],
         contract["max_disk_bytes"],
         disk_backend=contract["storage_backend"],
+        max_device_bytes=max_device_bytes,
     )
+    if max_device_bytes:
+        require(evidence["max_device_bytes"] == max_device_bytes, "Actual device bound differs")
+        verify_cuda_observations(evidence, hardware, evidence["diagnostic_indices"])
     computed = recompute(evidence, tensors, originals)
     require(
         computed == evidence["comparisons"], "Stored comparison differs from full raw recomputation"
