@@ -13,7 +13,12 @@ import copy
 import hashlib
 import io
 import json
+import os
+import re
+import stat
 import sys
+import time
+import uuid
 from pathlib import Path
 
 from mm_core.training import capture_rng, restore_rng, state_hash, trainable_state
@@ -30,7 +35,7 @@ from sr_f12.training import enforce_probability_gate
 
 from .offload import saved_activation_offload
 
-SCHEMA = "srf6-memory-storage-validation-v2"
+SCHEMA = "srf6-memory-storage-validation-v3"
 PLAN = dict(
     baseline_rows=[0],
     offload_rows=list(range(128)),
@@ -60,6 +65,166 @@ RESTORE_KEYS = (
 def require(value, message):
     if not value:
         raise PermissionError(message)
+
+
+class ProgressWriter:
+    """Atomic latest observation owned by this process, never a restart checkpoint."""
+
+    STAGES = frozenset(
+        {
+            "baseline_forward",
+            "baseline_backward",
+            "row_forward",
+            "diagnostic_native",
+            "diagnostic_aux",
+            "diagnostic_kl",
+            "row_backward",
+            "row_finished",
+            "restoration",
+            "recompute",
+            "measurement_finished",
+        }
+    )
+    STORAGE_FIELDS = (
+        "pack_count",
+        "unpack_count",
+        "live_host_bytes",
+        "peak_host_bytes",
+        "live_disk_bytes",
+        "peak_disk_bytes",
+        "disk_bytes_written",
+        "disk_bytes_read",
+        "arena_physical_bytes",
+        "peak_arena_physical_bytes",
+        "arena_created_count",
+        "arena_deleted_count",
+        "arena_fsync_count",
+        "arena_open_count",
+        "arena_read_calls",
+        "arena_write_calls",
+    )
+    COUNT_FIELDS = frozenset(
+        {
+            "reference_forwards",
+            "policy_forwards",
+            "backward_calls",
+            "diagnostic_gradient_calls",
+            "generated_responses",
+            "optimizer_updates",
+        }
+    )
+
+    def __init__(self, directory, *, contract_sha256, repair_revision):
+        self.directory = Path(directory)
+        require(
+            self.directory.is_absolute()
+            and self.directory == self.directory.resolve(strict=True)
+            and self.directory.is_dir(),
+            "Canonical progress directory required",
+        )
+        require(re.fullmatch(r"[0-9a-f]{64}", contract_sha256), "Progress contract hash required")
+        require(re.fullmatch(r"[0-9a-f]{40}", repair_revision), "Progress source required")
+        self.binding = dict(contract_sha256=contract_sha256, repair_revision=repair_revision)
+        st = self.directory.stat()
+        self.directory_identity = (st.st_dev, st.st_ino)
+        self.latest_identity = None
+        self.sequence = 0
+        self.started = self.last_at = time.monotonic()
+        self.last_stage = None
+        self.stage_seconds = {}
+
+    def _check_directory(self, fd):
+        current = self.directory.lstat()
+        opened = os.fstat(fd)
+        require(
+            stat.S_ISDIR(current.st_mode)
+            and (current.st_dev, current.st_ino) == self.directory_identity
+            and (opened.st_dev, opened.st_ino) == self.directory_identity,
+            "Owned progress directory changed",
+        )
+
+    def __call__(self, stage, row_index, completed_rows, counts, manager=None):
+        require(stage in self.STAGES, "Unknown validation progress stage")
+        require(
+            row_index is None or (type(row_index) is int and 0 <= row_index < 128),
+            "Invalid progress row",
+        )
+        require(
+            type(completed_rows) is int and 0 <= completed_rows <= 128,
+            "Invalid completed row count",
+        )
+        require(
+            set(counts) == self.COUNT_FIELDS
+            and all(type(v) is int and v >= 0 for v in counts.values()),
+            "Invalid progress call counts",
+        )
+        require(
+            counts["generated_responses"] == counts["optimizer_updates"] == 0,
+            "Validation progress cannot include generation or updates",
+        )
+        now = time.monotonic()
+        previous_seconds = now - self.last_at
+        if self.last_stage is not None:
+            self.stage_seconds[self.last_stage] = (
+                self.stage_seconds.get(self.last_stage, 0.0) + previous_seconds
+            )
+        storage = {
+            name: value
+            for name in self.STORAGE_FIELDS
+            if manager is not None and type(value := getattr(manager, name, None)) is int
+        }
+        value = dict(
+            schema="srf6-validation-progress-v1",
+            status="NOT_COMPLETE_NOT_RESUMABLE",
+            **self.binding,
+            sequence=self.sequence,
+            stage=stage,
+            row_index=row_index,
+            completed_rows=completed_rows,
+            counts=dict(counts),
+            storage=storage,
+            elapsed_seconds=now - self.started,
+            previous_stage=self.last_stage,
+            previous_stage_seconds=previous_seconds,
+            stage_seconds=dict(self.stage_seconds),
+        )
+        payload = (json.dumps(value, sort_keys=True, allow_nan=False) + "\n").encode()
+        require(len(payload) <= 32768, "Progress record exceeded fixed size bound")
+        fd = os.open(self.directory, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        temporary = ".PROGRESS." + uuid.uuid4().hex + ".tmp"
+        try:
+            self._check_directory(fd)
+            if self.latest_identity is not None:
+                old = os.stat("PROGRESS.json", dir_fd=fd, follow_symlinks=False)
+                require(
+                    stat.S_ISREG(old.st_mode)
+                    and old.st_nlink == 1
+                    and (old.st_dev, old.st_ino) == self.latest_identity,
+                    "Owned progress record changed",
+                )
+            out = os.open(
+                temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600, dir_fd=fd
+            )
+            with os.fdopen(out, "wb") as stream:
+                stream.write(payload)
+                stream.flush()
+                os.fsync(stream.fileno())
+                created = os.fstat(stream.fileno())
+            self._check_directory(fd)
+            if self.latest_identity is None:
+                os.link(
+                    temporary, "PROGRESS.json", src_dir_fd=fd, dst_dir_fd=fd, follow_symlinks=False
+                )
+                os.unlink(temporary, dir_fd=fd)
+            else:
+                os.replace(temporary, "PROGRESS.json", src_dir_fd=fd, dst_dir_fd=fd)
+            os.fsync(fd)
+            self.latest_identity = (created.st_dev, created.st_ino)
+        finally:
+            # Never remove an unknown replacement or evidence after a failed publication.
+            os.close(fd)
+        self.sequence += 1
+        self.last_at, self.last_stage = now, stage
 
 
 def _trace(record, current, ref):
@@ -163,8 +328,17 @@ def recompute(evidence, tensors, originals):
     )
 
 
-def verify_storage(summary, scratch_directory, max_host_bytes, max_disk_bytes, *, fixture=False):
+def verify_storage(
+    summary,
+    scratch_directory,
+    max_host_bytes,
+    max_disk_bytes,
+    *,
+    fixture=False,
+    disk_backend="file_v2",
+):
     """Check the complete owned hybrid storage lifecycle, including cold cleanup."""
+    require(disk_backend in {"file_v2", "arena_v3"}, "Unknown validation storage backend")
     scratch = Path(scratch_directory)
     scope = "SYNTHETIC_CPU_ONLY" if fixture else "CUDA_SAVED_ACTIVATION_HYBRID_STORAGE"
     require(
@@ -173,7 +347,12 @@ def verify_storage(summary, scratch_directory, max_host_bytes, max_disk_bytes, *
     )
     require(
         summary["scope"] == scope
-        and summary["schema"] == "srf6-saved-activation-hybrid-v2"
+        and summary["schema"]
+        == (
+            "srf6-saved-activation-arena-v3"
+            if disk_backend == "arena_v3"
+            else "srf6-saved-activation-hybrid-v2"
+        )
         and summary["closed"] is True
         and summary["model_bound"] is True
         and summary["numerical_pass"] is False,
@@ -201,6 +380,46 @@ def verify_storage(summary, scratch_directory, max_host_bytes, max_disk_bytes, *
         and not any(scratch.iterdir()),
         "Hybrid storage failed or payload remains",
     )
+    if disk_backend == "arena_v3":
+        require(summary.get("disk_backend") == "arena_v3", "Actual arena backend differs")
+        require(
+            summary.get("arena_physical_bytes") == 0
+            and type(summary.get("peak_arena_physical_bytes")) is int
+            and summary["peak_disk_bytes"]
+            <= summary["peak_arena_physical_bytes"]
+            <= max_disk_bytes,
+            "Arena physical storage bound exceeded",
+        )
+        keys = (
+            "arena_created_count",
+            "arena_deleted_count",
+            "arena_fsync_count",
+            "arena_open_count",
+            "arena_read_calls",
+            "arena_write_calls",
+        )
+        require(
+            all(type(summary.get(k)) is int and summary[k] >= 0 for k in keys),
+            "Incomplete arena counters",
+        )
+        require(
+            summary["arena_created_count"] == summary["arena_deleted_count"]
+            and summary["arena_fsync_count"] <= summary["arena_created_count"]
+            and summary["arena_open_count"] == summary["arena_created_count"],
+            "Arena lifecycle counters differ",
+        )
+        require(
+            (summary["disk_bytes_written"] == 0 and summary["arena_created_count"] == 0)
+            or (
+                summary["disk_bytes_written"] > 0
+                and summary["arena_created_count"] > 0
+                and summary["arena_read_calls"] > 0
+                and summary["arena_write_calls"] > 0
+            ),
+            "Incomplete arena actual IO",
+        )
+    else:
+        require(summary.get("disk_backend", "file_v2") == "file_v2", "Legacy backend differs")
     written, read = summary["disk_bytes_written"], summary["disk_bytes_read"]
     require(
         type(written) is int
@@ -225,6 +444,8 @@ def _measure(
     scratch_directory=None,
     max_disk_bytes=None,
     fixture=False,
+    disk_backend="file_v2",
+    progress=None,
 ):
     import torch
 
@@ -260,6 +481,17 @@ def _measure(
         }
     }
 
+    completed_rows = 0
+    offload = None
+
+    def report(stage, row=None):
+        if progress is not None:
+            try:
+                progress(stage, row, completed_rows, counts, offload)
+            except BaseException as exc:
+                exc.validation_partial = (evidence, tensors)
+                raise
+
     def gradients():
         return {
             name: None if p.grad is None else p.grad.detach().cpu().clone()
@@ -292,10 +524,12 @@ def _measure(
             torch.cuda.reset_peak_memory_stats()
         runtime.model.zero_grad(set_to_none=True)
         baseline_rng = capture_rng()
+        report("baseline_forward", 0)
         result, evidence["baseline_trace"] = forward(0)
         evidence["baseline_loss"] = {
             k: float(v.detach()) for k, v in result.items() if k in ("loss", "native", "aux", "kl")
         }
+        report("baseline_backward", 0)
         (result["loss"] / 128).backward()
         counts["backward_calls"] += 1
         tensors["baseline"] = gradients()
@@ -311,14 +545,17 @@ def _measure(
             scratch_directory=scratch_directory,
             max_disk_bytes=max_disk_bytes,
             fixture=fixture,
+            disk_backend=disk_backend,
         ) as offload:
             for index in range(128):
+                report("row_forward", index)
                 result, trace = forward(index)
                 evidence["traces"].append(trace)
                 if index in indices:
                     rng = capture_rng()
                     try:
                         for name, buffers in tensors["channels"].items():
+                            report("diagnostic_" + name, index)
                             values = torch.autograd.grad(
                                 result[name] / 128,
                                 tuple(params.values()),
@@ -335,6 +572,7 @@ def _measure(
                                     buffers[key].add_(gradient.detach().cpu())
                     finally:
                         restore_rng(rng)
+                report("row_backward", index)
                 (result["loss"] / 128).backward()
                 counts["backward_calls"] += 1
                 if index == 0:
@@ -345,6 +583,8 @@ def _measure(
                         if k in ("loss", "native", "aux", "kl")
                     }
                 del result
+                completed_rows += 1
+                report("row_finished", index)
         evidence["offload"] = offload.summary()
         if not fixture:
             evidence["offload_peak_cuda_bytes"] = torch.cuda.max_memory_allocated()
@@ -356,17 +596,24 @@ def _measure(
                 max_host_bytes,
                 max_disk_bytes,
                 fixture=fixture,
+                disk_backend=disk_backend,
             )
     except BaseException as exc:
         exc.validation_partial = (evidence, tensors)
         raise
     finally:
-        evidence["restoration"] = preserved.restore()
+        # Restoration is mandatory even when progress storage fails.
+        try:
+            report("restoration")
+        finally:
+            evidence["restoration"] = preserved.restore()
     try:
+        report("recompute")
         evidence["comparisons"] = recompute(evidence, tensors, originals)
     except BaseException as exc:
         exc.validation_partial = (evidence, tensors)
         raise
+    report("measurement_finished")
     evidence["scope"] = "SYNTHETIC_CPU_ONLY" if fixture else "ACTUAL_CUDA_STORAGE_VALIDATION"
     return evidence, tensors
 
@@ -380,6 +627,8 @@ def measure_fixture(
     max_host_bytes=10_000_000,
     scratch_directory=None,
     max_disk_bytes=None,
+    disk_backend="file_v2",
+    progress=None,
 ):
     require(all(p.device.type == "cpu" for p in runtime.model.parameters()), "CPU fixture only")
     return _measure(
@@ -392,6 +641,8 @@ def measure_fixture(
         scratch_directory=scratch_directory,
         max_disk_bytes=max_disk_bytes,
         fixture=True,
+        disk_backend=disk_backend,
+        progress=progress,
     )
 
 
@@ -626,6 +877,11 @@ def run_validation(contract_path, expected_contract_sha256, output):
     try:
         ready, records, credits, originals = _originals(contract)
         runtime = _technical_runtime(contract, ready, records, account)
+        progress = ProgressWriter(
+            output,
+            contract_sha256=expected_contract_sha256,
+            repair_revision=contract["repair_source"]["revision"],
+        )
         evidence, tensors = _measure(
             runtime,
             records,
@@ -635,6 +891,8 @@ def run_validation(contract_path, expected_contract_sha256, output):
             max_host_bytes=contract["max_host_bytes"],
             scratch_directory=output / "STORAGE",
             max_disk_bytes=contract["max_disk_bytes"],
+            disk_backend=contract["storage_backend"],
+            progress=progress,
         )
         evidence.update(
             runtime_identity=runtime.identity,
@@ -807,6 +1065,7 @@ def verify_validation(contract_path, expected_contract_sha256, validation_ref):
         result_path.parent / "STORAGE",
         contract["max_host_bytes"],
         contract["max_disk_bytes"],
+        disk_backend=contract["storage_backend"],
     )
     computed = recompute(evidence, tensors, originals)
     require(

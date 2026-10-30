@@ -18,6 +18,7 @@ import hashlib
 import os
 import shutil
 import stat
+import threading
 import uuid
 import weakref
 from contextlib import AbstractContextManager
@@ -264,11 +265,24 @@ class SavedActivationOffload(AbstractContextManager):
         fixture=False,
         scratch_directory=None,
         max_disk_bytes=None,
+        disk_backend="file_v2",
     ):
         if type(max_host_bytes) is not int or max_host_bytes <= 0:
             raise ValueError("An explicit positive host-memory bound is required")
         if type(fixture) is not bool:
             raise TypeError("fixture must be an explicit boolean")
+        if disk_backend not in ("file_v2", "arena_v3"):
+            raise ValueError("Unknown activation disk backend")
+        if disk_backend == "arena_v3" and scratch_directory is None:
+            raise ValueError("Arena backend requires a new private scratch directory")
+        self.disk_backend = disk_backend
+        self._arena_lock = threading.RLock()
+        self._arena_current = None
+        self._arenas = set()
+        self.arena_physical_bytes = self.peak_arena_physical_bytes = 0
+        self.arena_created_count = self.arena_deleted_count = 0
+        self.arena_fsync_count = self.arena_open_count = 0
+        self.arena_read_calls = self.arena_write_calls = 0
         if scratch_directory is None and max_disk_bytes is not None:
             raise ValueError("Disk bound requires a new private scratch directory")
         if scratch_directory is not None and (
@@ -340,7 +354,12 @@ class SavedActivationOffload(AbstractContextManager):
         size = tensor.numel() * tensor.element_size()
         if self.live_host_bytes + size > self.max_host_bytes:
             if self.scratch_directory is not None:
-                packed = _DiskSaved(tensor, self, size)
+                if self.disk_backend == "arena_v3":
+                    from .arena import pack
+
+                    packed = pack(self, tensor, size)
+                else:
+                    packed = _DiskSaved(tensor, self, size)
                 self.total_offloaded_bytes += size
                 return packed
             raise MemoryError("Registered saved-activation host-memory bound exceeded")
@@ -399,6 +418,9 @@ class SavedActivationOffload(AbstractContextManager):
         try:
             return self.hooks.__exit__(*exception)
         finally:
+            if exception and exception[0] is not None and self.disk_backend == "arena_v3":
+                for arena in self._arenas:
+                    arena.preserve = True
             self.closed = True
 
     def summary(self):
@@ -409,8 +431,27 @@ class SavedActivationOffload(AbstractContextManager):
             raise RuntimeError("Bound model inventory changed during offload execution")
         if self.scratch_identity is not None:
             self._check_scratch()
+        if self.disk_backend == "arena_v3":
+            with self._arena_lock:
+                for arena in self._arenas:
+                    arena.check()
         return dict(
-            schema=HYBRID_SCHEMA if self.scratch_directory is not None else SCHEMA,
+            schema=(
+                "srf6-saved-activation-arena-v3"
+                if self.disk_backend == "arena_v3"
+                else HYBRID_SCHEMA
+                if self.scratch_directory is not None
+                else SCHEMA
+            ),
+            disk_backend=self.disk_backend,
+            arena_physical_bytes=self.arena_physical_bytes,
+            peak_arena_physical_bytes=self.peak_arena_physical_bytes,
+            arena_created_count=self.arena_created_count,
+            arena_deleted_count=self.arena_deleted_count,
+            arena_fsync_count=self.arena_fsync_count,
+            arena_open_count=self.arena_open_count,
+            arena_read_calls=self.arena_read_calls,
+            arena_write_calls=self.arena_write_calls,
             scope="SYNTHETIC_CPU_ONLY"
             if self.fixture
             else (
@@ -443,7 +484,13 @@ class SavedActivationOffload(AbstractContextManager):
 
 
 def saved_activation_offload(
-    model_or_provider, *, max_host_bytes, fixture=False, scratch_directory=None, max_disk_bytes=None
+    model_or_provider,
+    *,
+    max_host_bytes,
+    fixture=False,
+    scratch_directory=None,
+    max_disk_bytes=None,
+    disk_backend="file_v2",
 ):
     return SavedActivationOffload(
         model_or_provider,
@@ -451,4 +498,5 @@ def saved_activation_offload(
         fixture=fixture,
         scratch_directory=scratch_directory,
         max_disk_bytes=max_disk_bytes,
+        disk_backend=disk_backend,
     )

@@ -17,7 +17,7 @@ import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
-SCHEMA = "srf6-memory-repair-contract-v2"
+SCHEMA = "srf6-memory-repair-contract-v3"
 PROJECT = Path("/projects/_ssd/varunssd/louis-ssvc")
 ROOT = PROJECT / "sr_f6_semantic_factorial_20261027"
 PRODUCER_REVISION = "b7e7b067f237b360b1dfb2c3075d3f14be7c281f"
@@ -28,7 +28,10 @@ OLD_EXECUTION = "LH-SRF6-A-1-A-233996-PRIMARY-b1-U10"
 QUEUE = ("PRIMARY-b1-U10", "PRIMARY-b1-C_SHUF", "PRIMARY-b1-U11")
 OLD_REPAIR_REVISION = "e24d557c381e53bbf85773c4c6551530a1a084e6"
 OLD_OPS = PROJECT / "sr_f6_operations_20261027/PILOT_MEMORY_REPAIR_V1_20261029"
-OPS = PROJECT / "sr_f6_operations_20261027/PILOT_MEMORY_REPAIR_V2_20261029"
+OPS = PROJECT / "sr_f6_operations_20261027/PILOT_MEMORY_REPAIR_V3_20261030"
+PREDECESSOR_OPS = PROJECT / "sr_f6_operations_20261027/PILOT_MEMORY_REPAIR_V2_20261029"
+PREDECESSOR_REVISION = "f4b882dfbfa28e73da22244c082d324bdc7f2d2c"
+PREDECESSOR_CONTRACT_SHA = "7986ec98efac680254368e6431c5652d307e4816c7a58986fd733240c002bec6"
 OLD_CONTRACT_SHA = "548921a41c6da1bb2063d78fe3e00e456564682f8a9d2ab9b9fa9727e5ffa3df"
 HOST_BYTES = 8 * 2**30
 DISK_BYTES = 96 * 2**30
@@ -104,7 +107,8 @@ def _source(contract):
     repair = contract["repair_source"]
     require(
         re.fullmatch(r"[0-9a-f]{40}", repair["revision"])
-        and repair["revision"] not in {PRODUCER_REVISION, OLD_REPAIR_REVISION},
+        and repair["revision"]
+        not in {PRODUCER_REVISION, OLD_REPAIR_REVISION, PREDECESSOR_REVISION},
         "Separate committed repair source required",
     )
     deployment = plain_path(repair["deployment"])
@@ -118,7 +122,7 @@ def _source(contract):
     )
     required = {
         deployment / "src/sr_f6_memory_repair" / f
-        for f in ("__init__.py", "execution.py", "offload.py", "validation.py")
+        for f in ("__init__.py", "execution.py", "offload.py", "validation.py", "arena.py")
     }
     require(required <= set(paths), "Repair implementation source closure incomplete")
     require(
@@ -250,7 +254,14 @@ def _prior_allocation_failure(contract):
         "Original v1 source or limits changed",
     )
     mutable = {"schema", "repair_source", "max_host_bytes"}
-    additions = {"max_disk_bytes", "old_allocation_failure_ref", "prior_contract_ref"}
+    additions = {
+        "max_disk_bytes",
+        "old_allocation_failure_ref",
+        "prior_contract_ref",
+        "storage_backend",
+        "predecessor_contract_ref",
+        "predecessor_disposition_ref",
+    }
     require(
         {k: v for k, v in prior.items() if k not in mutable}
         == {k: v for k, v in contract.items() if k not in mutable | additions},
@@ -287,12 +298,117 @@ def _prior_allocation_failure(contract):
             )
 
 
+def predecessor_evidence(contract):
+    """Bind controlled interruption, never reinterpret a numerical failure as retry."""
+    expected = {"path": str(PREDECESSOR_OPS / "CONTRACT.json"), "sha256": PREDECESSOR_CONTRACT_SHA}
+    require(
+        contract.get("predecessor_contract_ref") == expected,
+        "Exact immutable v2 predecessor contract required",
+    )
+
+    def receipt(ref):
+        path = ref_path(PROJECT, ref)
+        require(path.stat().st_size <= 4 * 1024 * 1024, "Bounded predecessor receipt required")
+        return bound_ref(PROJECT, ref)
+
+    prior = receipt(expected)
+    require(
+        prior.get("schema") == "srf6-memory-repair-contract-v2"
+        and prior.get("repair_source", {}).get("revision") == PREDECESSOR_REVISION,
+        "Predecessor source differs",
+    )
+    mutable = {"schema", "repair_source"}
+    additions = {"storage_backend", "predecessor_contract_ref", "predecessor_disposition_ref"}
+    require(
+        {k: v for k, v in prior.items() if k not in mutable}
+        == {k: v for k, v in contract.items() if k not in mutable | additions},
+        "V3 altered v2 evidence, provenance or scientific registration",
+    )
+    require(
+        contract.get("schema") == SCHEMA and contract.get("storage_backend") == "arena_v3",
+        "Explicit v3 arena contract required",
+    )
+    disposition_ref = contract["predecessor_disposition_ref"]
+    require(
+        ref_path(PROJECT, disposition_ref) == OPS / "PREDECESSOR_DISPOSITION.json",
+        "Separate v3 predecessor disposition required",
+    )
+    disposition = receipt(disposition_ref)
+    require(
+        disposition.get("schema") == "srf6-memory-performance-transition-v1"
+        and disposition.get("status") == "TECHNICAL_SUPERSESSION_PRESERVED"
+        and disposition.get("predecessor_job_id") == "234384"
+        and disposition.get("predecessor_source_revision") == PREDECESSOR_REVISION
+        and disposition.get("predecessor_contract_ref") == expected
+        and disposition.get("terminal_state") == "FAILED"
+        and disposition.get("exit_code") == "1:0"
+        and disposition.get("reason") == "performance_supersession",
+        "Controlled technical supersession required",
+    )
+    targets = {
+        "inner_failure_ref": PREDECESSOR_OPS / "VALIDATION/FAILURE.json",
+        "outer_failure_ref": PREDECESSOR_OPS / "validate_FAILURE.json",
+        "interruption_ref": OPS / "INTERRUPTION_RESULT.json",
+    }
+    records = {}
+    for key, path in targets.items():
+        require(ref_path(PROJECT, disposition[key]) == path, "Wrong predecessor evidence path")
+        records[key] = receipt(disposition[key])
+    inner, outer, interruption = (records[key] for key in targets)
+    require(
+        inner.get("status") == "FAILED_PRESERVED"
+        and inner.get("error_type") == "KeyboardInterrupt",
+        "Only controlled interruption may supersede v2; numerical failures stay closed",
+    )
+    attempt_path = plain_path(PREDECESSOR_OPS / "VALIDATION/ATTEMPT.json")
+    require(attempt_path.stat().st_size <= 4 * 1024 * 1024, "Bounded validation attempt required")
+    attempt = _json(attempt_path.read_bytes())
+    require(
+        attempt.get("schema") == "srf6-memory-storage-validation-v2"
+        and attempt.get("contract_sha256") == PREDECESSOR_CONTRACT_SHA,
+        "Predecessor actual validation contract differs",
+    )
+    require(
+        outer.get("status") == "FAILED_PRESERVED"
+        and outer.get("job_id") == "234384"
+        and outer.get("retry_authorized") is False,
+        "Preserved outer predecessor failure required",
+    )
+    require(
+        interruption.get("schema") == "srf6-memory-performance-interruption-v1"
+        and interruption.get("status") == "EXACT_CHILD_SIGINT_SENT"
+        and interruption.get("reason") == "performance_supersession"
+        and interruption.get("job_id") == "234384"
+        and interruption.get("source_revision") == PREDECESSOR_REVISION
+        and interruption.get("signal") == "SIGINT"
+        and interruption.get("returncode") == 0
+        and type(interruption.get("child_pid")) is int
+        and interruption["child_pid"] > 0
+        and type(interruption.get("parent_pid")) is int
+        and interruption["parent_pid"] > 0
+        and all(
+            isinstance(interruption.get(k), str) and interruption[k]
+            for k in ("child_start_time", "cgroup", "command_line")
+        ),
+        "Exact-child controlled interruption receipt required",
+    )
+    require(
+        not any(p.name != "resume.lock" for p in PREDECESSOR_OPS.glob("resume*"))
+        and not (PREDECESSOR_OPS / "EXECUTIONS").exists()
+        and not (PREDECESSOR_OPS / "validate_COMPLETE.json").exists()
+        and not (PREDECESSOR_OPS / "VALIDATION/RESULT.json").exists(),
+        "Predecessor success, resume intent or execution forbids transition",
+    )
+    return disposition
+
+
 def verify_contract(contract_path, expected_contract_sha256):
     require(
-        plain_path(contract_path) == OPS / "CONTRACT.json", "New v2 operations contract required"
+        plain_path(contract_path) == OPS / "CONTRACT.json", "New v3 operations contract required"
     )
     contract = read_contract(contract_path, expected_contract_sha256)
     _prior_allocation_failure(contract)
+    predecessor_evidence(contract)
     require(
         plain_path(contract["experiment_root"]) == ROOT, "Only original registered root allowed"
     )
@@ -390,11 +506,19 @@ def _bound_model(runtime_module, execution_id):
     return values[0].model
 
 
-def _storage_summary(manager, max_host_bytes, max_disk_bytes, scratch_directory):
+def _storage_summary(
+    manager, max_host_bytes, max_disk_bytes, scratch_directory, *, disk_backend="file_v2"
+):
     summary = manager.summary()
     require(
         summary["scope"] == "CUDA_SAVED_ACTIVATION_HYBRID_STORAGE"
-        and summary.get("schema") == "srf6-saved-activation-hybrid-v2"
+        and disk_backend in ("file_v2", "arena_v3")
+        and summary.get("schema")
+        == (
+            "srf6-saved-activation-arena-v3"
+            if disk_backend == "arena_v3"
+            else "srf6-saved-activation-hybrid-v2"
+        )
         and summary["model_bound"]
         and summary["closed"]
         and summary["pack_count"] > 0
@@ -426,6 +550,20 @@ def _storage_summary(manager, max_host_bytes, max_disk_bytes, scratch_directory)
         and summary["numerical_pass"] is False,
         "Actual bound storage context did not complete",
     )
+    if disk_backend == "arena_v3":
+        require(
+            summary.get("disk_backend") == "arena_v3"
+            and summary.get("arena_physical_bytes") == 0
+            and summary["peak_disk_bytes"]
+            <= summary.get("peak_arena_physical_bytes", -1)
+            <= max_disk_bytes
+            and summary.get("arena_created_count") == summary.get("arena_deleted_count")
+            and summary.get("arena_open_count") == summary.get("arena_created_count")
+            and 0 <= summary.get("arena_fsync_count", -1) <= summary.get("arena_created_count", -1)
+            and summary.get("arena_read_calls", -1) >= 0
+            and summary.get("arena_write_calls", -1) >= 0,
+            "Actual arena storage context did not complete",
+        )
     return summary
 
 
@@ -539,6 +677,7 @@ def run_task(contract_path, expected_contract_sha256, validation_ref, task_id, a
                 max_host_bytes=contract["max_host_bytes"],
                 max_disk_bytes=contract["max_disk_bytes"],
                 scratch_directory=extension / "STORAGE",
+                disk_backend=contract.get("storage_backend", "file_v2"),
             ) as manager:
                 pilot.run(root, "b1", task["arm"], execution_id, **contract["pins"])
             storage_summary = _storage_summary(
@@ -546,6 +685,7 @@ def run_task(contract_path, expected_contract_sha256, validation_ref, task_id, a
                 contract["max_host_bytes"],
                 contract["max_disk_bytes"],
                 extension / "STORAGE",
+                disk_backend=contract.get("storage_backend", "file_v2"),
             )
             _write(
                 extension / "STORAGE_FACTS.json",

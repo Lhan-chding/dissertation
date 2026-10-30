@@ -5,6 +5,7 @@ import builtins
 import importlib.util
 import json
 import subprocess
+from contextlib import nullcontext
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -69,6 +70,8 @@ def setup(tmp_path, monkeypatch):
     monkeypatch.setattr(m, "original", lambda: old)
     monkeypatch.setattr(m, "submission_metadata", lambda *args: dict(status="METADATA_ONLY"))
     monkeypatch.setattr(m, "prior_allocation_terminal", lambda *args: {})
+    monkeypatch.setattr(m, "predecessor_terminal", lambda *args: {})
+    monkeypatch.setattr(m, "predecessor_locks", nullcontext)
     monkeypatch.setattr(m, "quiescent", lambda query: dict(target_locks="OBSERVED_FREE"))
     calls = []
 
@@ -350,7 +353,8 @@ def test_lightweight_metadata_binds_exact_source_and_only_small_refs(tmp_path, m
     refpath.write_text("{}")
     ref = dict(path=str(refpath), sha256=m.sha(refpath))
     value = dict(
-        schema="srf6-memory-repair-contract-v2",
+        schema="srf6-memory-repair-contract-v3",
+        storage_backend="arena_v3",
         max_host_bytes=8 * 2**30,
         max_disk_bytes=96 * 2**30,
         experiment_root=str(m.ROOT),
@@ -494,9 +498,10 @@ def test_v2_requires_preserved_zero_model_allocation_failure(tmp_path, monkeypat
             m.prior_allocation_terminal(old)
 
 
-def test_v2_source_uses_new_ops_and_scheduler_real_33g():
+def test_v3_source_uses_new_ops_and_scheduler_real_33g():
     m = load()
-    assert m.OPS.name == "PILOT_MEMORY_REPAIR_V2_20261029"
+    assert m.OPS.name == "PILOT_MEMORY_REPAIR_V3_20261030"
+    assert m.PREDECESSOR_OPS.name == "PILOT_MEMORY_REPAIR_V2_20261029"
     assert m.FAILED_OPS.name == "PILOT_MEMORY_REPAIR_V1_20261029"
     argv = m.argv_for(
         dict(revision="a" * 40, deployment=str(m.PROJECT / "new"), binding_sha256="b" * 64),
@@ -505,3 +510,121 @@ def test_v2_source_uses_new_ops_and_scheduler_real_33g():
         "c" * 64,
     )
     assert "--mem=33G" in argv and "--mem=128G" not in argv
+
+
+@pytest.fixture
+def terminal_predecessor(tmp_path, monkeypatch):
+    m = load()
+    monkeypatch.setattr(m, "PROJECT", tmp_path)
+    monkeypatch.setattr(m, "ROOT", tmp_path / "root")
+    monkeypatch.setattr(m, "PREDECESSOR_OPS", tmp_path / "v2")
+    m.PREDECESSOR_OPS.mkdir()
+    source = dict(
+        revision=m.PREDECESSOR_REVISION,
+        deployment=str(tmp_path / "sr_f6_memory_repair_code_f4b882d"),
+        binding_sha256="bfb521f15b6caae49225548643a54f5b72a90e117f26288470fcd35db638be28",
+    )
+    intent = dict(
+        source=source,
+        action="validate",
+        validation=None,
+        contract=dict(
+            path=str(m.PREDECESSOR_OPS / "CONTRACT.json"), sha256=m.PREDECESSOR_CONTRACT_SHA
+        ),
+    )
+    (m.PREDECESSOR_OPS / "validate_ATTEMPT.json").write_text(json.dumps(intent))
+    receipt = dict(
+        source=source,
+        status="SUBMITTED",
+        job_id="234384",
+        attempt_sha256=m.sha(m.PREDECESSOR_OPS / "validate_ATTEMPT.json"),
+    )
+    (m.PREDECESSOR_OPS / "validate_SUBMISSION.json").write_text(json.dumps(receipt))
+    monkeypatch.setattr(m, "predecessor_records", lambda *args: {"verified": True})
+    state = dict(sacct="234384|FAILED|1:0\n", squeue="")
+    old = SimpleNamespace(query=lambda argv: state[argv[0]])
+    return m, old, state
+
+
+def test_controlled_failed_predecessor_terminal_allows_gate(terminal_predecessor):
+    m, old, _ = terminal_predecessor
+    assert m.predecessor_terminal(old, {}, "unused", "unused") == {"verified": True}
+
+
+@pytest.mark.parametrize(
+    "row",
+    [
+        "",
+        "234384|RUNNING|0:0",
+        "234384|COMPLETING|0:0",
+        "234384|UNKNOWN|0:0",
+        "234384|COMPLETED|0:0",
+        "234384|FAILED|0:9",
+        "234384|CANCELLED|0:15",
+    ],
+)
+def test_active_unknown_and_late_pass_predecessor_block(terminal_predecessor, row):
+    m, old, state = terminal_predecessor
+    state["sacct"] = row
+    with pytest.raises(PermissionError, match="terminal controlled"):
+        m.predecessor_terminal(old, {}, "unused", "unused")
+
+
+def test_terminal_predecessor_still_queued_blocks(terminal_predecessor):
+    m, old, state = terminal_predecessor
+    state["squeue"] = "234384\n"
+    with pytest.raises(PermissionError, match="still queued"):
+        m.predecessor_terminal(old, {}, "unused", "unused")
+
+
+def test_predecessor_complete_b1_task_blocks(terminal_predecessor):
+    m, old, _ = terminal_predecessor
+    target = m.ROOT / "PHASE_RUNS/PILOT_V3/JOBS/TASKS/PRIMARY-b1-U10/COMPLETE.json"
+    target.parent.mkdir(parents=True)
+    target.write_text("{}")
+    with pytest.raises(PermissionError, match="already complete"):
+        m.predecessor_terminal(old, {}, "unused", "unused")
+
+
+@pytest.mark.parametrize(
+    "suffix", ["_COMPLETE.json", "_FAILURE.json", "_STARTED.json", "_SUBMISSION.json"]
+)
+def test_every_existing_new_action_receipt_blocks_resubmission(setup, suffix):
+    m, a, c, _, calls = setup
+    m.OPS.mkdir()
+    (m.OPS / ("validate" + suffix)).write_text("{}")
+    with pytest.raises(PermissionError, match="Prior or partial"):
+        m.submit(a, "validate", c, m.sha(c))
+    assert calls == []
+
+
+def test_v3_holds_both_old_locks_during_submit(setup, monkeypatch):
+    m, a, c, _, calls = setup
+    real = load()
+    monkeypatch.setattr(m, "PREDECESSOR_OPS", c.parent / "v2")
+    m.PREDECESSOR_OPS.mkdir()
+    (m.PREDECESSOR_OPS / "validate.lock").touch()
+    # Rebind the real contextmanager to this isolated module's globals.
+    import types
+    from contextlib import contextmanager
+
+    wrapped = types.FunctionType(real.predecessor_locks.__wrapped__.__code__, m.__dict__)
+    monkeypatch.setattr(m, "predecessor_locks", contextmanager(wrapped))
+
+    def check(*args):
+        for name in ("validate.lock", "resume.lock"):
+            with pytest.raises(BlockingIOError), m.lock(m.PREDECESSOR_OPS / name, existing=True):
+                pass
+        return {}
+
+    monkeypatch.setattr(m, "predecessor_terminal", check)
+    assert m.submit(a, "validate", c, m.sha(c))["status"] == "SUBMITTED"
+    assert len(calls) == 1
+
+
+def test_partial_new_validation_directory_blocks_submission(setup):
+    m, a, c, _, calls = setup
+    (m.OPS / "VALIDATION").mkdir(parents=True)
+    with pytest.raises(PermissionError, match="Prior partial action output"):
+        m.submit(a, "validate", c, m.sha(c))
+    assert calls == []

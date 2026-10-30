@@ -135,7 +135,8 @@ def test_production_cold_verifier_rejects_complete_synthetic_receipt(tmp_path, m
         v.verify_validation(tmp_path / "contract.json", "1" * 64, v._ref(output / "RESULT.json"))
 
 
-def test_hybrid_validation_uses_owned_spill_and_restores_exact_gradients(tmp_path):
+@pytest.mark.parametrize("disk_backend", ["file_v2", "arena_v3"])
+def test_hybrid_validation_uses_owned_spill_and_restores_exact_gradients(tmp_path, disk_backend):
     runtime, optimizer, _, rows, credits, originals = setup(tmp_path)
     before = state_hash(runtime.model.state_dict())
     scratch = tmp_path / "STORAGE"
@@ -147,6 +148,7 @@ def test_hybrid_validation_uses_owned_spill_and_restores_exact_gradients(tmp_pat
         max_host_bytes=1,
         max_disk_bytes=1024**2,
         scratch_directory=scratch,
+        disk_backend=disk_backend,
     )
     assert evidence["offload"]["disk_bytes_written"] > 0
     assert evidence["offload"]["disk_bytes_read"] > 0
@@ -193,7 +195,27 @@ def test_hybrid_validation_uses_owned_spill_and_restores_exact_gradients(tmp_pat
         if mutation == "failure":
             damaged["storage_failures"] = ["failed"]
         with pytest.raises(PermissionError):
-            v.verify_storage(damaged, scratch, 1, 1024**2, fixture=True)
+            v.verify_storage(damaged, scratch, 1, 1024**2, fixture=True, disk_backend=disk_backend)
+
+    if disk_backend == "arena_v3":
+        for key, value in (
+            ("arena_physical_bytes", 1),
+            ("peak_arena_physical_bytes", 1024**2 + 1),
+            ("arena_deleted_count", -1),
+            ("arena_fsync_count", -1),
+            ("arena_open_count", -1),
+            ("arena_read_calls", 0),
+            ("arena_write_calls", 0),
+            ("disk_backend", "file_v2"),
+            ("schema", "srf6-saved-activation-hybrid-v2"),
+        ):
+            damaged = dict(evidence["offload"], **{key: value})
+            with pytest.raises(PermissionError):
+                v.verify_storage(
+                    damaged, scratch, 1, 1024**2, fixture=True, disk_backend="arena_v3"
+                )
+        with pytest.raises(PermissionError):
+            v.verify_storage(evidence["offload"], scratch, 1, 1024**2, fixture=True)
 
 
 def test_cold_hybrid_scratch_rejects_leftover_file(tmp_path):

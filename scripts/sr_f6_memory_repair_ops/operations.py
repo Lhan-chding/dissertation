@@ -22,7 +22,10 @@ from pathlib import Path
 
 PROJECT = Path("/projects/_ssd/varunssd/louis-ssvc")
 ROOT = PROJECT / "sr_f6_semantic_factorial_20261027"
-OPS = PROJECT / "sr_f6_operations_20261027/PILOT_MEMORY_REPAIR_V2_20261029"
+OPS = PROJECT / "sr_f6_operations_20261027/PILOT_MEMORY_REPAIR_V3_20261030"
+PREDECESSOR_OPS = PROJECT / "sr_f6_operations_20261027/PILOT_MEMORY_REPAIR_V2_20261029"
+PREDECESSOR_REVISION = "f4b882dfbfa28e73da22244c082d324bdc7f2d2c"
+PREDECESSOR_CONTRACT_SHA = "7986ec98efac680254368e6431c5652d307e4816c7a58986fd733240c002bec6"
 FAILED_OPS = PROJECT / "sr_f6_operations_20261027/PILOT_MEMORY_REPAIR_V1_20261029"
 FAILED_REVISION = "e24d557c381e53bbf85773c4c6551530a1a084e6"
 CODE = PROJECT / "sr_f6_code_b7e7b06"
@@ -38,8 +41,10 @@ LAUNCHER = "scripts/sr_f6_memory_repair_ops/launch.sbatch"
 MEMBERS = (
     SCRIPT,
     LAUNCHER,
+    "scripts/sr_f6_memory_repair_ops/benchmark_storage.py",
     "src/sr_f6_memory_repair/__init__.py",
     "src/sr_f6_memory_repair/offload.py",
+    "src/sr_f6_memory_repair/arena.py",
     "src/sr_f6_memory_repair/execution.py",
     "src/sr_f6_memory_repair/validation.py",
 )
@@ -131,7 +136,8 @@ def submission_metadata(actual, contract_path, contract_sha256, facts):
     """Submission precheck only: full cold verification remains inside allocation."""
     value = small_ref(ROOT, dict(path=str(contract_path), sha256=contract_sha256))
     require(
-        value.get("schema") == "srf6-memory-repair-contract-v2"
+        value.get("schema") == "srf6-memory-repair-contract-v3"
+        and value.get("storage_backend") == "arena_v3"
         and value.get("max_host_bytes") == 8 * 2**30
         and value.get("max_disk_bytes") == 96 * 2**30
         and value.get("experiment_root") == str(ROOT)
@@ -233,13 +239,76 @@ def prior_allocation_terminal(old):
     return dict(job_id="234358", status="FAILED_BEFORE_MODEL_PRESERVED")
 
 
+@contextmanager
+def predecessor_locks():
+    """Serialize against immutable v2 submitters during the transition check."""
+    with ExitStack() as stack:
+        # resume.lock may not exist until first observation; it is not evidence.
+        stack.enter_context(lock(PREDECESSOR_OPS / "resume.lock"))
+        stack.enter_context(lock(PREDECESSOR_OPS / "validate.lock", existing=True))
+        yield
+
+
+def predecessor_records(actual, contract_path, contract_sha256):
+    contract = small_ref(ROOT, dict(path=str(contract_path), sha256=contract_sha256))
+    module_path = canonical(Path(actual["deployment"]) / "src/sr_f6_memory_repair/execution.py")
+    spec = importlib.util.spec_from_file_location("srf6_v3_predecessor_verifier", module_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.predecessor_evidence(contract)
+
+
+def predecessor_terminal(old, actual, contract_path, contract_sha256):
+    """A failed controlled interruption permanently fences immutable v2 resume."""
+    disposition = predecessor_records(actual, contract_path, contract_sha256)
+    receipt = read(PREDECESSOR_OPS / "validate_SUBMISSION.json")
+    intent = read(PREDECESSOR_OPS / "validate_ATTEMPT.json")
+    source = receipt.get("source", {})
+    require(
+        receipt.get("status") == "SUBMITTED"
+        and receipt.get("job_id") == "234384"
+        and receipt.get("attempt_sha256") == sha(PREDECESSOR_OPS / "validate_ATTEMPT.json")
+        and source.get("revision") == PREDECESSOR_REVISION
+        and source.get("deployment") == str(PROJECT / "sr_f6_memory_repair_code_f4b882d")
+        and source.get("binding_sha256")
+        == "bfb521f15b6caae49225548643a54f5b72a90e117f26288470fcd35db638be28"
+        and intent.get("source") == source
+        and intent.get("action") == "validate"
+        and intent.get("contract")
+        == {"path": str(PREDECESSOR_OPS / "CONTRACT.json"), "sha256": PREDECESSOR_CONTRACT_SHA}
+        and intent.get("validation") is None,
+        "Unique v2 predecessor submission differs",
+    )
+    rows = [
+        line.split("|")
+        for line in old.query(
+            ["sacct", "-n", "-P", "-j", "234384", "--format=JobIDRaw,State,ExitCode"]
+        ).splitlines()
+    ]
+    main = [row for row in rows if row and row[0] == "234384"]
+    require(
+        len(main) == 1 and main[0][1:3] == ["FAILED", "1:0"],
+        "Predecessor must be terminal controlled FAILED 1:0; late PASS blocks v3",
+    )
+    require(
+        "234384" not in old.query(["squeue", "-h", "-u", USER, "-o", "%i"]).split(),
+        "Predecessor still queued",
+    )
+    for task in TASKS:
+        require(
+            not (ROOT / "PHASE_RUNS/PILOT_V3/JOBS/TASKS" / task / "COMPLETE.json").exists(),
+            "Original b1 task already complete",
+        )
+    return disposition
+
+
 def validation_terminal(old, actual, contract_path, contract_sha256, validation_ref):
     """A receipt alone cannot authorize a race with unfinished cold verification."""
     require(validation_ref is not None, "Actual immutable validation required")
     require(Path(validation_ref["path"]) == OPS / "VALIDATION/RESULT.json", "Wrong validation path")
     result = small_ref(OPS, validation_ref)
     require(
-        result.get("schema") == "srf6-memory-storage-validation-v2"
+        result.get("schema") == "srf6-memory-storage-validation-v3"
         and result.get("contract_sha256") == contract_sha256
         and not (OPS / "VALIDATION/FAILURE.json").exists()
         and not (OPS / "validate_FAILURE.json").exists(),
@@ -397,7 +466,8 @@ def submit(actual, action, contract_path, contract_sha256, validation_ref=None):
     else:
         require(action == "validate" and validation_ref is None, "Wrong validation request")
     canonical(OPS, exists=False).mkdir(parents=True, exist_ok=True)
-    with lock(OPS / (action + ".lock")):
+    with predecessor_locks(), lock(OPS / (action + ".lock")):
+        predecessor_terminal(old, actual, contract_path, contract_sha256)
         require(
             not any(
                 (OPS / (action + suffix)).exists()
@@ -406,9 +476,14 @@ def submit(actual, action, contract_path, contract_sha256, validation_ref=None):
                     "_SUBMISSION.json",
                     "_STARTED.json",
                     "_FAILURE.json",
+                    "_COMPLETE.json",
                 )
             ),
             "Prior or partial action forbids automatic retry",
+        )
+        require(
+            not (OPS / ("VALIDATION" if action == "validate" else "EXECUTIONS")).exists(),
+            "Prior partial action output forbids automatic retry",
         )
         quiet = quiescent(old.query)
         snapshot = capacity_module.capacity(query=old.query)
@@ -531,6 +606,8 @@ def launch(actual, action, contract_path, contract_sha256, validation_ref=None):
             facts = old.metadata()
             submission_metadata(actual, contract_path, contract_sha256, facts)
             prior_allocation_terminal(old)
+            with predecessor_locks():
+                predecessor_terminal(old, actual, contract_path, contract_sha256)
             if action == "resume":
                 validation_terminal(old, actual, contract_path, contract_sha256, validation_ref)
             cache = canonical(OPS / ("job-" + job_id), exists=False)

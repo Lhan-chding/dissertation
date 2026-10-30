@@ -537,3 +537,177 @@ def test_old_storage_schema_rejected(synthetic_protocol):
     with pytest.raises(ValueError, match="storage context"):
         execute_fixture(fixture)
     assert fixture.verified == []
+
+
+@pytest.fixture
+def predecessor(tmp_path, monkeypatch):
+    monkeypatch.setattr(e, "PROJECT", tmp_path)
+    monkeypatch.setattr(e, "ROOT", tmp_path / "root")
+    monkeypatch.setattr(e, "OPS", tmp_path / "v3")
+    monkeypatch.setattr(e, "PREDECESSOR_OPS", tmp_path / "v2")
+
+    def write(path, value):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(value))
+        return {"path": str(path), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+
+    prior = dict(
+        schema="srf6-memory-repair-contract-v2",
+        repair_source=dict(revision=e.PREDECESSOR_REVISION),
+        original_files=[{"path": "untouched", "sha256": "a" * 64}],
+        max_host_bytes=e.HOST_BYTES,
+        max_disk_bytes=e.DISK_BYTES,
+        pins={"frozen": True},
+    )
+    prior_ref = write(e.PREDECESSOR_OPS / "CONTRACT.json", prior)
+    monkeypatch.setattr(e, "PREDECESSOR_CONTRACT_SHA", prior_ref["sha256"])
+    write(
+        e.PREDECESSOR_OPS / "VALIDATION/ATTEMPT.json",
+        dict(schema="srf6-memory-storage-validation-v2", contract_sha256=prior_ref["sha256"]),
+    )
+    inner = dict(status="FAILED_PRESERVED", error_type="KeyboardInterrupt")
+    outer = dict(status="FAILED_PRESERVED", job_id="234384", retry_authorized=False)
+    interruption = dict(
+        schema="srf6-memory-performance-interruption-v1",
+        status="EXACT_CHILD_SIGINT_SENT",
+        reason="performance_supersession",
+        job_id="234384",
+        source_revision=e.PREDECESSOR_REVISION,
+        signal="SIGINT",
+        child_pid=872291,
+        parent_pid=800000,
+        returncode=0,
+        child_start_time="known-start",
+        cgroup="job_234384",
+        command_line="bound-child",
+    )
+    disposition = dict(
+        schema="srf6-memory-performance-transition-v1",
+        status="TECHNICAL_SUPERSESSION_PRESERVED",
+        predecessor_job_id="234384",
+        predecessor_source_revision=e.PREDECESSOR_REVISION,
+        predecessor_contract_ref=prior_ref,
+        terminal_state="FAILED",
+        exit_code="1:0",
+        reason="performance_supersession",
+        inner_failure_ref=write(e.PREDECESSOR_OPS / "VALIDATION/FAILURE.json", inner),
+        outer_failure_ref=write(e.PREDECESSOR_OPS / "validate_FAILURE.json", outer),
+        interruption_ref=write(e.OPS / "INTERRUPTION_RESULT.json", interruption),
+    )
+    contract = {
+        **prior,
+        "schema": e.SCHEMA,
+        "repair_source": {"revision": "a" * 40},
+        "storage_backend": "arena_v3",
+        "predecessor_contract_ref": prior_ref,
+        "predecessor_disposition_ref": write(e.OPS / "PREDECESSOR_DISPOSITION.json", disposition),
+    }
+    return contract, disposition, write
+
+
+def test_predecessor_preserves_exact_science_and_controlled_failure(predecessor):
+    contract, disposition, _ = predecessor
+    assert e.predecessor_evidence(contract) == disposition
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("pins", {"frozen": False}),
+        ("original_files", []),
+        ("max_disk_bytes", 2**40),
+        ("extra", "unregistered"),
+    ],
+)
+def test_v3_cannot_change_predecessor_registration(predecessor, field, value):
+    contract, _, _ = predecessor
+    contract[field] = value
+    with pytest.raises(ValueError, match="altered v2"):
+        e.predecessor_evidence(contract)
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "resume_ATTEMPT.json",
+        "resume_SUBMISSION.json",
+        "resume_COMPLETE.json",
+        "EXECUTIONS/partial",
+        "validate_COMPLETE.json",
+        "VALIDATION/RESULT.json",
+    ],
+)
+def test_any_predecessor_resume_or_late_success_blocks_transition(predecessor, path):
+    contract, _, write = predecessor
+    write(e.PREDECESSOR_OPS / path, {})
+    with pytest.raises(ValueError, match="forbids transition"):
+        e.predecessor_evidence(contract)
+
+
+@pytest.mark.parametrize("error_type", ["RuntimeError", "ValueError", "OutOfMemoryError"])
+def test_numerical_or_other_failure_never_recast_as_performance_retry(predecessor, error_type):
+    contract, disposition, write = predecessor
+    disposition["inner_failure_ref"] = write(
+        e.PREDECESSOR_OPS / "VALIDATION/FAILURE.json", dict(error_type=error_type)
+    )
+    contract["predecessor_disposition_ref"] = write(
+        e.OPS / "PREDECESSOR_DISPOSITION.json", disposition
+    )
+    with pytest.raises(ValueError, match="Only controlled"):
+        e.predecessor_evidence(contract)
+
+
+def test_predecessor_wrong_source_rejected(predecessor):
+    contract, disposition, write = predecessor
+    disposition["predecessor_source_revision"] = "a" * 40
+    contract["predecessor_disposition_ref"] = write(
+        e.OPS / "PREDECESSOR_DISPOSITION.json", disposition
+    )
+    with pytest.raises(ValueError, match="Controlled technical"):
+        e.predecessor_evidence(contract)
+
+
+def test_predecessor_disposition_bytes_cannot_change(predecessor):
+    contract, _, _ = predecessor
+    (e.OPS / "PREDECESSOR_DISPOSITION.json").write_text("{}")
+    with pytest.raises(ValueError):
+        e.predecessor_evidence(contract)
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        (None, None),
+        ("arena_physical_bytes", 1),
+        ("peak_arena_physical_bytes", 2049),
+        ("arena_deleted_count", 0),
+        ("arena_open_count", 2),
+        ("arena_fsync_count", 2),
+        ("disk_backend", "file_v2"),
+    ],
+)
+def test_arena_storage_summary_bound_and_reclaimed(synthetic_protocol, tmp_path, field, value):
+    scratch = tmp_path / "arena-summary"
+    scratch.mkdir()
+    summary = synthetic_protocol.summary
+    summary.update(
+        schema="srf6-saved-activation-arena-v3",
+        disk_backend="arena_v3",
+        scratch_directory=str(scratch),
+        arena_physical_bytes=0,
+        peak_arena_physical_bytes=128,
+        arena_created_count=1,
+        arena_deleted_count=1,
+        arena_open_count=1,
+        arena_fsync_count=1,
+        arena_read_calls=1,
+        arena_write_calls=1,
+    )
+    if field:
+        summary[field] = value
+    manager = SimpleNamespace(summary=lambda: summary)
+    if field:
+        with pytest.raises(ValueError, match="arena storage context"):
+            e._storage_summary(manager, 1024, 2048, scratch, disk_backend="arena_v3")
+    else:
+        assert e._storage_summary(manager, 1024, 2048, scratch, disk_backend="arena_v3") == summary
