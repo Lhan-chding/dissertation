@@ -66,3 +66,14 @@ v2缺少行级进度也是工程缺陷：中途账本和数值结果在内存，
 v3以新源码和PILOT_MEMORY_REPAIR_V3_20261030独立登记。切换门要求旧v2经明确的性能替换中断，真实保存内层KeyboardInterrupt和外层失败，且实际FAILED1:0并离队；原失败、部分数值、暂存和旧部署保留。已有v2成功、数值失败、恢复意图或新v3部分操作均阻断切换，禁止自动重试。新提交同时持有旧验证/恢复锁，仍核全用户teacher配额和五槽。新v3必须完成自身实际CUDA验证和冷核验，旧结果不替代新存储的验证。
 
 本段代码检查：204项修复、进度、切换及合成存储基准测试通过；Ruff、格式、bash语法和diff检查通过。独立存储复核60项通过，未见阻断问题。实际Ceph合成基准及新CUDA验证尚未完成，不能称性能修复已获实际认证。合成基准固定705张量和4次读取，只验证存储路径，不做模型调用、生成或更新；其数据不属于原实验采样。
+
+
+## v3实际部署、存储基准和受控切换
+
+v3源码`1aeeadf66fc046381b83c770464c00a8269bcf0a`已commit/push并ls-remote核实，独立部署`sr_f6_memory_repair_code_1aeeadf`，9文件143232bytes，binding `62931a6a3148ca2037a55d0e174bc09705fc9114c6e3273bdd3e2a55afa54ed2`。第二轮独立复核validation/progress/execution/operations共142项通过，未见阻断问题；这是本地工程证据。
+
+09:12 UTC在原234384分配内、同一Ceph路径运行一次固定合成CPU存储基准，没有新GPU分配或模型计算。两后端均写370,124,800bytes、读4遍1,480,499,200bytes并逐次核对原字节，705张量。v2总13.9279秒（写4.9781秒），v3总5.1162秒（写1.0685秒），本次观测约2.7223倍；open次数3526→2，fsync705→1，生命周期检查通过。此小规模、固定顺序CPU基准含缓存影响，不代表真实模型端到端加速比，也不能据此承诺整轮完成时间。基准RESULT sha `20582321e24e70a84941260c113f1f3454952e9eac8b1ccb8a20ff4432f1eccd`。
+
+09:14:59 UTC使用已核实PID/父PID/启动时刻/cgroup/完整命令及pidfd，仅向原验证子进程发送一次SIGINT。先前一次兼容性探测因服务器Python没有os.pidfd_open，在发信号和远程意图写入前停止；该本地错误回执保留，随后调用系统pidfd接口成功。没有信号发送到其它进程或重复信号。09:15:37原234384真实FAILED1:0（17:09:07）并离队，原代码真实写入内层KeyboardInterrupt、外层失败、PARTIAL_EVIDENCE及PARTIAL_TENSORS。部分账本为70次reference/70次policy、69次完整反向（含固定baseline一次）、110次诊断梯度、69条暂存前向trace、0生成/0更新；即暂存路径完整完成68行，下一行部分执行。恢复记录所有模型、reference、RNG及梯度检查通过，无恢复错误。不能把部分结果签成完整数值通过，也不能当可续跑检查点。
+
+新合同sha `21dd00034aba783d5d91b8b753439a175b99dc3a375c964c9261f4dc0e4ac22a`，绑定原88refs、v2原合同及真实受控中断处置sha `d9dd34f000270c7d131770d8422d00418b5b00c9c4ad1be4798ee0d06dd0498b`，科学字段逐项保持。确认v3无既有意图/回执/部分输出、旧验证终态离队、原b1锁空闲和实时资源门后，09:18:21 UTC唯一提交`235551/LH-SRF6-Memory-Validate`，1GPU/4CPU/33G/23h/no-requeue。提交意图sha `f6c568125a5657ef8b33fff36839972649d999fe07886742b220c8e6be022a2a`。这里只确认SUBMITTED；尚无新CUDA数值结论或b1训练恢复。不得重复部署、冻结、validate-submit、旧v2恢复或重采；最新实际回执和后续入口位于私有`.local/pilot_memory_repair_v3_20261030/CONTINUE_zh.md`。后续文档提交不改变实际生产身份1aeeadf。
