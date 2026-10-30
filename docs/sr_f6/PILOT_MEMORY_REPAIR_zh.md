@@ -193,3 +193,17 @@ v7源`4be18ca1c9bd2db0b905b0d3c3f22873f97cc081`已提交推送并ls-remote核实
 新合同实际sha `e5e14a0ce0036b9b640c930d01fc9f34ce68a7f48f0303eebb44d323b0e28cd9`，仍逐字段继承原v4完整合同、88原始引用及v6成功闭包。13:56:40只读确认无任何validate提交/执行/结果部分；实时teacher全用户容量、varun024五槽、前驱终态与锁门通过后，13:57:04唯一提交`235864/LH-SRF6-Memory-Full`，1PRO6000/4CPU/33G/23h/no-requeue，意图sha `17e8643a566af46e39f28d23de3835291192b667aa9143c8823601596e92af50`。本机VALIDATE_SUBMIT_ATTEMPT/RESULT和服务器SUBMISSION明确SUBMITTED，禁止再freeze/validate-submit。
 
 13:57:29实际RUNNING24秒，STARTED于13:57:06.255605发布，Req/Alloc相符；日志阶段`initial_contract_started`，尚无逐行PROGRESS或RESULT/FAILURE。只是完整前置核验已启动，不是CUDA全批次通过。后续仅用本目录run_operation.py read跟踪235864；保持原前4诊断<=902.8157889822033秒同进程门、原128/64diag/27forward/row0完整梯度、0生成0更新。真实终态、正式RESULT与GPU冷证明闭包后才防重唯一fetch，并先分析完整耗时再实现训练恢复。原v5/v6完成与清理记录不重做，所有旧失败保留。
+
+## v7完整验证实际成功与训练恢复边界
+
+唯一235864于14:26:08 UTC真实COMPLETED 0:0、离队，调度总29分04秒。正式RESULT sha `2f6c641d2dd84b1691459eccca766e02ffbd4bd1c6af6047986e843edd2e34e7`，EVIDENCE sha `fd79c45fae2ea4e2f8bc0e6ef6e5c27300697c80a157632ffd86ff8b1d30537d`，GPU冷证明sha `376448405f87ef45c09ab3a91e15e871da756ffe07b91c24c18758c7a1bd7108`。状态`VERIFIED_ACTUAL_STORAGE_REPAIR_BATCH`，外层`COMPLETED_FULL_VALIDATION_NO_TRAINING`。防重检查后唯一交付9份报告已完成；完整TENSORS sha `ae45edef12e2698cee50d66d9dc7302d65c8d1bf057cbb7971bd00525965f390`留服务器，属于后续必要依赖。不能重复fetch、验证或重采。
+
+实际完成原128行、64诊断三通道、27归档前向与行0完整梯度配对；129 reference、129 policy、129 backward、192 diagnostic调用，0新回答、0optimizer更新。行0全部496梯度张量最大差0、违规0，原27前向比较均通过，原概率门通过，模型/reference/RNG/梯度及其它恢复条件为真。这不是128行各自完整baseline梯度配对，也不证明完整trainer或学习收益。
+
+完整测量1002.376秒（16分42秒）；128行累计995.273秒，其中64诊断行663.646秒、64普通行331.627秒。诊断行平均10.369秒，普通行平均5.182秒；全部行范围3.664–31.753秒。原前4诊断60.86569秒，通过原902.81579秒技术门并在同一进程继续，未额外重放前缀。模型加载完成在总流程722.754秒，末次合同核验约5.115秒，GPU冷验约5.993秒；首轮完整历史核验的冷缓存成本不能用末次热缓存速度替代。
+
+全过程allocated峰82.076GiB，reserved峰94.211GiB，最小已采样free仅86.25MiB；日志保留两条分配OOM警告，此后完整计算成功。allocated与物理总量之差不代表即时空闲显存；不能把这个结果说成未来全部长样本无OOM风险。实际磁盘写42.810GB、读104.944GB，13个arena均关闭删除，峰活跃磁盘约6.77GB，无storage_failures/cleanup_errors。storage摘要的`numerical_pass=false`表示存储层自身不签数值结论；数值结论来自独立验证器与GPU冷证明。
+
+决策：完整批次速度值得继续实现独立的原b1训练恢复。按原每任务4个诊断步和8个普通步，机械外推三任务纯更新约7.73小时，未含后续生成、optimizer、检查点及闭包，不是23小时内完成保证。验证从未执行optimizer更新，实际训练仍可能遇到技术失败；保留失败且不自动重试。新增独立`sr_f6_memory_resume`包和恢复操作器，实际依赖冻结v7校验/存储源码及原b7 producer，不能改写旧模块或直接重提旧v4resume。独立envelope只绑定原v7合同/RESULT/COLD/COMPLETE、本次执行源码和固定b1队列；科学参数直接读取原v7合同。各任务新进程按U10→C_SHUF→U11执行，首批原READY复用；原科学门和后续A/B/DEV条件不变。本段为实现边界，尚无新恢复作业提交。
+
+独立v8包/操作器共5生产源码已完成；新增97项专项、全部memory关联588项通过（21.28秒），Ruff/format/bash-n通过。私有部署/冻结/读取提交helper经独立只读审核、外层及远端AST验证，额外81项通过。所有旧修复源码保持原字节；新执行只改变准入/来源和资源观察，原pilot计算调用不变。最终独立代码审核无阻断，额外97项通过（0.30秒）、四个v7引用与交付原件逐一一致；实际训练未开始。
