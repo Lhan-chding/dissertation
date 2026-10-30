@@ -988,7 +988,18 @@ def _originals(contract):
     return ready, records, credit["groups"], event["probability_vectors"]
 
 
-def _technical_runtime(contract, ready, records, account):
+def _technical_runtime(contract, ready, records, account, *, stage_callback=None):
+    setup_started = time.monotonic()
+
+    def measured(name, started):
+        if stage_callback is not None:
+            stage_callback(name, time.monotonic() - started)
+
+    def starting(name):
+        if stage_callback is not None:
+            stage_callback(name + "_started", 0.0)
+        return time.monotonic()
+
     import torch
 
     from mm_core.vl_runtime import seed_all
@@ -1071,7 +1082,9 @@ def _technical_runtime(contract, ready, records, account):
     root = Path(contract["experiment_root"])
     config = json.loads((root / "CONFIG.json").read_bytes())
     validate_generation_config(config)
+    started = starting("verify_binding_before")
     bound, before = verify_binding_inputs(root, config, "b1")
+    measured("verify_binding_before", started)
     backend_identity = configure_audited_backend()
     require(
         torch.cuda.is_available() and torch.cuda.device_count() == 1,
@@ -1079,6 +1092,7 @@ def _technical_runtime(contract, ready, records, account):
     )
     seed_all(seed_for(config["master_seed"], "load", "b1"))
     adapter = Path(config["model"]["parents"]["b1"])
+    started = starting("model_load")
     runtime = TechnicalRuntime(
         config["model"]["model_path"],
         adapter_path=str(adapter),
@@ -1086,11 +1100,18 @@ def _technical_runtime(contract, ready, records, account):
         protocol_revision="v2",
         account=account,
     )
+    if stage_callback is not None:
+        torch.cuda.synchronize()
+    measured("model_load", started)
+    started = starting("configure_training_and_fp32")
     configure_parent_training(
         runtime, parent_adapter_config=json.loads((adapter / "adapter_config.json").read_bytes())
     )
     source_dtype = runtime.identity["dtype"]
     runtime.model.float()
+    if stage_callback is not None:
+        torch.cuda.synchronize()
+    measured("configure_training_and_fp32", started)
     require(
         all(
             p.dtype == torch.float32 and p.device.type == "cuda" for p in runtime.model.parameters()
@@ -1141,7 +1162,10 @@ def _technical_runtime(contract, ready, records, account):
         parent_content_hash=bound["parents"]["b1"]["content_sha256"],
         bound_files_before=before,
     )
+    started = starting("verify_binding_after")
     _, runtime.identity["bound_files_after"] = verify_binding_inputs(root, config, "b1")
+    measured("verify_binding_after", started)
+    measured("runtime_setup_total", setup_started)
     return runtime
 
 
