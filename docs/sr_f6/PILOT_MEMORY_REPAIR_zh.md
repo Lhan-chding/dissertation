@@ -156,3 +156,5 @@ v3源码`1aeeadf66fc046381b83c770464c00a8269bcf0a`已commit/push并ls-remote核�
 v5未保存每行随机状态，只保存全程初态hash。新验证要求全程初态与v5一致，且本次每条候选前后随机状态不推进；明确记录`historical_per_row_rng_state=NOT_RECORDED`。完整loss/向量/496梯度的数值比较能够判断与固定历史参考是否等价，但不声称已重放旧长行逐行RNG轨迹。模型、适配器、输入、原环境、FP32、原算子和容差保持，任何实际不符都保存失败而停止。
 
 v6实现及相关存储/恢复/小测试/操作器回归396项通过（21.75秒）；独立数值审核65项、独立操作器审核29项通过，无剩余阻断。Ruff、格式、启动脚本语法及diff检查通过。新冷证明为`VERIFIED_ACTUAL_TWO_ROW_REUSED_REFERENCE_SMOKE`，明确依赖保留的v5完整参考张量；不是独立全批次复现实验。此处工程检查尚不代表44GiB实际CUDA速度或显存门通过。
+
+v6生产源`1af637e0b4aaded4e444a4904091ec309927a9ff`已commit/push并ls-remote核实。11:43:32 UTC独立部署`sr_f6_memory_smoke_reuse_code_1af637e`，10源码加manifest共11文件230320bytes，binding `95f4b5c31c4e42c35afb3734815c5b0328a765a8b934b81468982da8c87ab50a`。新`PILOT_MEMORY_REPAIR_V6_20261030`合同sha `ec1d146141f67794b0bb4c78a9a8164e5c67038044f738e3dad19f758f6b150c`，固定引用已完成v5合同及RESULT，原七个数值依赖源码逐字节保持。11:44:09只读确认无执行/提交部分；实时前驱终态、teacher全用户8GPU和varun024五槽容量门通过后，11:44:29唯一提交`235771/LH-SRF6-Memory-Reuse`，1GPU/4CPU/33G/35min/no-requeue，意图sha `a10a41c4b09023bb775e6659b41fcb724c0e3d150d02943f14a8d6413893e053`。此刻只有SUBMITTED回执，尚未实际CUDA通过，不重提。
