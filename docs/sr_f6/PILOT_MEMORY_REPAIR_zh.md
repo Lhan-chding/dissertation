@@ -146,3 +146,13 @@ v3源码`1aeeadf66fc046381b83c770464c00a8269bcf0a`已commit/push并ls-remote核�
 删除前核验旧作业均FAILED 1:0且离队、路径无符号链接、每个文件dev/inode/size/mtime/nlink与盘点一致，并持有旧validate/launch/resume锁。66项保留文件在删除前后逐一hash相同，当前v5完整张量身份/大小/mtime未变；之后成功的小报告交付再次证明当前继承依赖可读。原模型、READY、回答、实验数据、全部源码、失败小报告以及**v4 PARTIAL_TENSORS/PARTIAL_EVIDENCE**保留。v2/v3已删除的大张量不能再做原张量复核，不得重建假原件；原失败结论和小报告仍保留。
 
 服务器清理回执位于canonical operations下`CLEANUP_OLD_VALIDATION_20261030`；ATTEMPT sha `34c23abc8d8b2b6606dc7016d47ae047b0c31a7ceca24bd19371bf3de7891c78`，逐文件DELETED清单sha `74f79de3c23bb6966af938a396e922e004a133a37d8a9e3f09a7632116c18181`，COMPLETE状态`DELETED_ALLOWLIST_VERIFIED`。本机私有清单和回执位于`.local/cleanup_old_validation_20261030/`，不上Git。本次没有新模型调用、提交、重采或部署修改；后续不能再按旧文档要求恢复已授权删除的暂存。
+
+## v6固定44GiB候选与历史参考复用
+
+根据v5真实分阶段耗时和读写量，下一等价候选把保存激活的GPU驻留预算从24GiB固定为44GiB，CPU8GiB、分块64MiB和磁盘96GiB保持。长行v5 allocated峰61.620GiB加20GiB的载荷推算为81.620GiB，低于普通eager实测82.114GiB；采样free减20GiB仍约10.848GiB。这只说明新候选有实测依据，不保证新峰值或其他行安全。原每条120秒、allocated至少2GiB余量及数值容差不变；新候选失败不自动改预算重试。
+
+独立新模块`smoke_reuse.py`和`sr_f6_memory_smoke_reuse_ops`使用新的来源与操作目录，保留v5部署。先在GPU分配内按绑定hash读取并冷重验v5完整参考梯度，再仅计算原row0/row26的44GiB候选，各一次reference前向、policy前向和反向，合计4次前向、2次反向，0新回答、0更新、0诊断梯度。参考分别是已交付的v5普通eager和长行allspill；它们的耗时和CUDA观测明确属于历史，不计作本次调用。普通候选通过原数值/速度/显存条件才进入长行；结果仍不授予完整批次或训练准入。
+
+v5未保存每行随机状态，只保存全程初态hash。新验证要求全程初态与v5一致，且本次每条候选前后随机状态不推进；明确记录`historical_per_row_rng_state=NOT_RECORDED`。完整loss/向量/496梯度的数值比较能够判断与固定历史参考是否等价，但不声称已重放旧长行逐行RNG轨迹。模型、适配器、输入、原环境、FP32、原算子和容差保持，任何实际不符都保存失败而停止。
+
+v6实现及相关存储/恢复/小测试/操作器回归396项通过（21.75秒）；独立数值审核65项、独立操作器审核29项通过，无剩余阻断。Ruff、格式、启动脚本语法及diff检查通过。新冷证明为`VERIFIED_ACTUAL_TWO_ROW_REUSED_REFERENCE_SMOKE`，明确依赖保留的v5完整参考张量；不是独立全批次复现实验。此处工程检查尚不代表44GiB实际CUDA速度或显存门通过。
