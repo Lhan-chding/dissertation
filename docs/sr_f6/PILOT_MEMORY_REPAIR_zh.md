@@ -89,3 +89,13 @@ v3源码`1aeeadf66fc046381b83c770464c00a8269bcf0a`已commit/push并ls-remote核�
 下一候选固定24GiB驻留预算，**只限制保存激活的有效载荷，不是总GPU占用上限**；模型、计算临时量、恢复的暂存张量、分配器保留均另计。真实峰值及速度必须以新来源验证。为避免再次盲跑全批，完整原128行中的前4诊断行作为同进程技术观察窗，固定总耗时上限902.8157889822033秒（上述真实前4行耗时的一半）；达标后直接继续行4，不重算前缀。不达标真实保存PARTIAL/FAILURE，不自动调预算重试，不签科学失败或成功。该观察只决定是否值得继续技术验证，不单独证明训练可行；完整128行、原比较及冷核验仍必须全部满足。
 
 候选完整合同/执行闭包已实现，最终九组275项通过（9.69秒），独立审核273项通过且无剩余阻断；Ruff、格式、bash语法及scoped diff检查通过。复核发现并修正了CUDA峰值误重置、观测异常漏PARTIAL、全GPU驻留被旧CPU/disk计数误拒三处问题。实际CUDA峰值、速度和数值尚未通过；截至本段记录，235551仍未中断或替换，没有新提交、重采或热改旧部署。按照本次用户要求，即使v3最终数值验证通过，也须先明确训练性能是否可行，不能仅因出现RESULT就立即扩展训练。
+
+## v4实际受控替换与唯一验证
+
+新源码`c84c275fd3e2c51fa7c0045aa62409e20edeebd3`已提交、推送并ls-remote核实；独立部署`sr_f6_memory_repair_code_c84c275`，9源码加manifest共10文件174039bytes，binding `2151d1d7c8273ee751ec6d4249eeacb753d5d1b24486018f9c013a24e8845af4`。旧b7、v1、v2、v3部署和失败原件均保留。
+
+10:22:29 UTC仅向核实PID/启动时刻/cgroup/父进程/命令的235551验证子进程发送一次pidfd SIGINT。10:23:44该作业真实FAILED1:0（1:05:23）且离队；原程序保存KeyboardInterrupt、PARTIAL_EVIDENCE、PARTIAL_TENSORS和外层失败，模型/reference/RNG/梯度恢复检查全部通过。实际完整6行，7条暂存trace，reference/policy各8（包含原baseline）、完整反向7、诊断梯度20，0生成/0更新；这些部分结果不作为新来源的可续跑检查点。旧部分证据sha `4e2ed9b893041369c89a7e8cf7177ba5f43edd1496db08159f9d6ba6fbdb8082`，旧部分张量sha `fb969e2274c982c29491ef8876effff4226853395b06e9e189175cdaf98475ef`，新处置sha `9e493ac9e22c521e5b173cd45e39c9cd4387bfc11394856e2fb8f8a7c36908b4`。
+
+新合同sha `dfd8d792aed9fb2dc0d9a33ed4962afefb410609b974c92a34659efccc444a34`复用原88文件和1978审计快照，逐字段保持科学注册并绑定完整v1/v2/v3失败链。性能参考是已有本机实际快照的冻结投影（sha `5f1717b93046d8c754a2b725b1e10f0414db0faf21e826e7ef5f81b69b3a217f`），明确不是服务器签章。提交前read确认新validate/resume/tasks全空、无VALIDATION；实时资源门、旧作业终态离队与b1锁均满足后，10:25:49 UTC唯一提交`235653/LH-SRF6-Memory-Validate`，1GPU/4CPU/33G/23h/no-requeue。10:27:29实际RUNNING1:40，STARTED存在，尚在前置核验，无VALIDATION/PROGRESS/FAILURE；不是实际CUDA数值或性能通过。
+
+后续唯一入口和防重记录位于私有`.local/pilot_memory_repair_v4_20261030/CONTINUE_zh.md`。新源仍核验同一批原回答，不重新生成；前4行窗口属于本次完整128行，不另跑小测后重算前缀。旧235551不再发信号或提交/恢复。只有完整数值、存储与冷核验成功且真实终态离队才能交付；训练恢复仍须实际速度评估及防重核对，不能仅凭前4行改善作出训练可行结论。
