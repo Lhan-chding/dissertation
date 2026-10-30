@@ -183,3 +183,13 @@ v6生产源`1af637e0b4aaded4e444a4904091ec309927a9ff`已commit/push并ls-remote�
 v7工程完成：全部相关memory回归491项通过（21.41秒），Ruff/格式/bash/diff通过。独立审核确认10个核心计算函数/类AST与旧完整验证一致，旧八模块与实际v6合同逐字节一致；操作器独立41项通过。新增最终RESULT/COLD元数据闭包测试后，v7三组共95项。完整成功发布顺序为私有候选结果→GPU重读完整张量冷核→绑定正式结果hash的冷证明→最终RESULT，公开验收不接受候选文件。首次/末次完整闭包、原数据、模型、测量及冷核都输出带时间的阶段日志；不把缺少RESULT解释为速度正常。当前仅工程检查，尚无v7实际CUDA结果或训练准入。
 
 v7源`4be18ca1c9bd2db0b905b0d3c3f22873f97cc081`已提交推送并ls-remote核实。12:17:00 UTC第一次独立源码部署连接在SSH建立前失败：返回255，`Network is unreachable`，stdout为空；本机DEPLOY_ATTEMPT/DEPLOY_RESULT及准备好的源码归档、CODE_REVISION均保留。这不是数值或科学失败，也不是已完成部署；尚未冻结合同、提交作业或执行GPU验证。连接恢复后须先只读核查预定独立目录及任何部分回执，再在保留原连接失败记录的前提下续接；不能直接重跑会覆盖本机防重记录的deploy_once.py。
+
+## 2026-10-30 13:57 UTC：VPN原因查明，v7唯一完整验证已启动
+
+用户要求进一步区分VPN与集群故障。只读GlobalProtect日志显示新加坡时间20:03:41–42断开，明确记录`Life time expired, disconnect!`；21:52:43重新建立IPSec隧道并进入Connected。目标10.97.216.128路由已指向utun4，13:53:43 UTC实际SSH成功进入集群，精确新部署目录不存在且不是符号链接。此前连接中断与本机VPN会话到期对应；当前没有集群宕机证据。未更改VPN配置或凭据。
+
+独立审核后的唯一连接恢复helper复用已冻结同字节归档，重新核manifest/归档/13成员与生产提交4be18ca一致，远端要求新部署与v7 ops均不存在。13:55:49 UTC恢复部署成功：12源码加manifest共13文件302838bytes，binding仍`797bc640bea90b03f21a4952196df1d18ef196459aaae481d0b740482787fe02`。原DEPLOY_ATTEMPT/DEPLOY_RESULT失败保持原样，新增DEPLOY_RECOVERY_ATTEMPT/RESULT；禁止重执行任何部署helper。freeze仅改读实际成功恢复回执，辅助脚本及嵌入远端代码语法核验通过。
+
+新合同实际sha `e5e14a0ce0036b9b640c930d01fc9f34ce68a7f48f0303eebb44d323b0e28cd9`，仍逐字段继承原v4完整合同、88原始引用及v6成功闭包。13:56:40只读确认无任何validate提交/执行/结果部分；实时teacher全用户容量、varun024五槽、前驱终态与锁门通过后，13:57:04唯一提交`235864/LH-SRF6-Memory-Full`，1PRO6000/4CPU/33G/23h/no-requeue，意图sha `17e8643a566af46e39f28d23de3835291192b667aa9143c8823601596e92af50`。本机VALIDATE_SUBMIT_ATTEMPT/RESULT和服务器SUBMISSION明确SUBMITTED，禁止再freeze/validate-submit。
+
+13:57:29实际RUNNING24秒，STARTED于13:57:06.255605发布，Req/Alloc相符；日志阶段`initial_contract_started`，尚无逐行PROGRESS或RESULT/FAILURE。只是完整前置核验已启动，不是CUDA全批次通过。后续仅用本目录run_operation.py read跟踪235864；保持原前4诊断<=902.8157889822033秒同进程门、原128/64diag/27forward/row0完整梯度、0生成0更新。真实终态、正式RESULT与GPU冷证明闭包后才防重唯一fetch，并先分析完整耗时再实现训练恢复。原v5/v6完成与清理记录不重做，所有旧失败保留。
