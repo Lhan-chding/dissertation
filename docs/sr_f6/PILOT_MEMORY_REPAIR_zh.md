@@ -207,3 +207,11 @@ v7源`4be18ca1c9bd2db0b905b0d3c3f22873f97cc081`已提交推送并ls-remote核实
 决策：完整批次速度值得继续实现独立的原b1训练恢复。按原每任务4个诊断步和8个普通步，机械外推三任务纯更新约7.73小时，未含后续生成、optimizer、检查点及闭包，不是23小时内完成保证。验证从未执行optimizer更新，实际训练仍可能遇到技术失败；保留失败且不自动重试。新增独立`sr_f6_memory_resume`包和恢复操作器，实际依赖冻结v7校验/存储源码及原b7 producer，不能改写旧模块或直接重提旧v4resume。独立envelope只绑定原v7合同/RESULT/COLD/COMPLETE、本次执行源码和固定b1队列；科学参数直接读取原v7合同。各任务新进程按U10→C_SHUF→U11执行，首批原READY复用；原科学门和后续A/B/DEV条件不变。本段为实现边界，尚无新恢复作业提交。
 
 独立v8包/操作器共5生产源码已完成；新增97项专项、全部memory关联588项通过（21.28秒），Ruff/format/bash-n通过。私有部署/冻结/读取提交helper经独立只读审核、外层及远端AST验证，额外81项通过。所有旧修复源码保持原字节；新执行只改变准入/来源和资源观察，原pilot计算调用不变。最终独立代码审核无阻断，额外97项通过（0.30秒）、四个v7引用与交付原件逐一一致；实际训练未开始。
+
+## v8恢复实际提交（2026-10-30 UTC）
+
+恢复源`e4d2b0ca4155b489a21f0b3cd2696b6860df7626`已提交推送并ls-remote核实。14:53:35唯一部署`sr_f6_memory_resume_code_e4d2b0c`成功，5源码+manifest共6文件43116bytes，binding `0b3df1de667a6b172e40e03646eeec329f4c9e1d34862d5ee4bc4e335458618a`。独立合同sha `6ae70ea969803febcb8f91c4e2ad6da78c9e901abb30769bd109ddda8e608957`，四个实际v7成功引用均固定，旧来源与科学pins不改。
+
+14:54:19只读确认无已有resume意图/执行/原任务COMPLETE，U10仅step000和原READYstep001；实时资源、前驱终态/离队、锁和防重门通过，14:54:42唯一提交`235953/LH-SRF6-Memory-Resume`，1PRO6000/4CPU/33G/23h/no-requeue，意图sha `d4212cdaf7aac0e0c9da44fb2016aa896a68502fe7d389538d9ec0ad3eb38e5f`。本机RESUME_SUBMIT_ATTEMPT/RESULT及服务器SUBMISSION已明确SUBMITTED，禁止再提交。
+
+14:55:13实际RUNNING31秒，外层STARTED14:54:45.507606，Req/Alloc相符且无FAILURE。当前为GPU子进程前置完整核验，尚无任务EXECUTIONS STARTED或新checkpoint；不是训练完成或科学通过。按原U10→C_SHUF→U11顺序每任务新进程，首批复用原READY，后续原固定步骤正常执行；技术失败保留且不自动重试。仅在三任务与原A六任务全部真实闭包后推进原B与DEV门。
