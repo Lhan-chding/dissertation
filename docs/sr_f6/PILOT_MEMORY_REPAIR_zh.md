@@ -125,3 +125,24 @@ v3源码`1aeeadf66fc046381b83c770464c00a8269bcf0a`已commit/push并ls-remote核�
 新`PILOT_MEMORY_REPAIR_V5_20261030`先预检小合同的实际源码/原输入及库版本，再发布同字节正式合同，sha `d8031ca63eab7cb17ed6b9272b03dab72b3fd42b9ca057cee853680fcba5deb7`。11:04:05 UTC只读确认无已有提交意图或部分结果；实时teacher全用户8GPU、varun024五槽、旧终态和b1锁检查通过后，11:04:23唯一提交`235713/LH-SRF6-Memory-Smoke`，1GPU/4CPU/33G/35min/no-requeue。意图sha `bdf2ea317679b5a6097f7609d85a4ac15840bf52efdd07a896c6f54a89e71550`。11:05:33实际为PENDING(Resources)，尚无STARTED或模型测量，不能报告实际CUDA通过或估算剩余计算时间。
 
 实际入口、已执行动作和防重回执见私有`.local/pilot_memory_repair_v5_20261030/CONTINUE_zh.md`；自动跟进已更新为235713及两条小测试顺序，不再按旧v4恢复。只读跟踪该唯一作业；完整终态与冷证明后才一次交付小报告，再评估是否值得完整批次。当前未提交任何完整验证后继或训练恢复，旧作业不重提。
+
+## 2026-10-30 小测试完成与用户授权清理
+
+235713于11:07:52 UTC启动、11:14:41真实COMPLETED 0:0，总调度运行6分49秒，已离队。RESULT sha `be1f794c8ce608ac9c6b1943e14ddae9086c486322308edcbadba81900fc9d37`；GPU子进程冷核验为`VERIFIED_ACTUAL_TWO_ROW_SMOKE`，最终状态`SMOKE_NUMERICAL_PERFORMANCE_MEASURED`，仍为`NOT_FULL_BATCH_ADMISSION`。清理后唯一交付脚本再次核验合同、继承依赖、终态、无FAILURE/watchdog及绑定冷证明，成功交付小报告；FETCH_ATTEMPT/FETCH_RESULT/SMOKE_DELIVERY已存在，不能再次fetch。完整张量仍在服务器，sha `1091f6d3b75382f5f554b48da1c2f5e1553be6c9673eda119f184133f0705597`。
+
+| 原样本与路径 | 实测秒数 | CUDA allocated峰值bytes |
+| --- | ---: | ---: |
+| row0普通478token，eager参考 | 5.595908 | 88168999936 |
+| row0普通，24GiB候选 | 54.993892 | 65257750016 |
+| row26原OOM长809token，全溢出参考 | 206.116453 | 40235334656 |
+| row26长，24GiB候选 | 91.997829 | 66164180992 |
+
+两对各496个适配器梯度张量的最大绝对差均为0，违规元素0；前向比较及原概率条件通过，两个候选均通过固定120秒和2GiB显存余量门。模型/reference/RNG/梯度恢复条件全部为真，0新回答、0optimizer更新。运行证据总时间400.593907秒，前置合同核验5.260695秒、模型加载28.597487秒，四次测量约358.704秒；不是原先长时间的完整历史闭包核验。
+
+普通候选相对eager约慢9.83倍；长候选相对全溢出参考约快2.24倍。固定顺序及缓存效应限制了速度比的外推，且长行没有原eager完整梯度。普通候选写24.598GB、读24.556GB；长候选写37.334GB、读37.281GB，主要时间仍在带存储的policy前向和反向。小测试证明这两条的存储数值等价和显存可运行，不能证明完整训练吞吐可接受。如果机械按55–92秒乘128，仅普通一次前后向已约1.96–3.27小时/批，尚未计64诊断、生成和冷核验；这只是两点情景估算，不是128行实测区间。完整后继尚未实现或提交，先分析剩余存储搬运开销及可行的等价改进，不能凭小测试门通过直接扩展训练。
+
+用户随后明确选择“清理旧验证临时文件和大输出，保留当前任务必需的记录”。这取代此前对所有旧大张量及暂存的永久保留要求。11:21:39–11:21:44 UTC执行一次精确白名单清理：v2/v3/v4的`VALIDATION/STORAGE/`临时张量与旧job编译缓存，以及当前继承门不再读取的v2/v3 `VALIDATION/PARTIAL_TENSORS.pt`。共删除18231个文件，逻辑158614024066bytes，删除前分配块合计158614590976bytes（约158.6GB）；这是删除文件的块计数，不是共享文件系统空闲量的净变化。空目录保留，没有整树删除ops或VALIDATION。
+
+删除前核验旧作业均FAILED 1:0且离队、路径无符号链接、每个文件dev/inode/size/mtime/nlink与盘点一致，并持有旧validate/launch/resume锁。66项保留文件在删除前后逐一hash相同，当前v5完整张量身份/大小/mtime未变；之后成功的小报告交付再次证明当前继承依赖可读。原模型、READY、回答、实验数据、全部源码、失败小报告以及**v4 PARTIAL_TENSORS/PARTIAL_EVIDENCE**保留。v2/v3已删除的大张量不能再做原张量复核，不得重建假原件；原失败结论和小报告仍保留。
+
+服务器清理回执位于canonical operations下`CLEANUP_OLD_VALIDATION_20261030`；ATTEMPT sha `34c23abc8d8b2b6606dc7016d47ae047b0c31a7ceca24bd19371bf3de7891c78`，逐文件DELETED清单sha `74f79de3c23bb6966af938a396e922e004a133a37d8a9e3f09a7632116c18181`，COMPLETE状态`DELETED_ALLOWLIST_VERIFIED`。本机私有清单和回执位于`.local/cleanup_old_validation_20261030/`，不上Git。本次没有新模型调用、提交、重采或部署修改；后续不能再按旧文档要求恢复已授权删除的暂存。
