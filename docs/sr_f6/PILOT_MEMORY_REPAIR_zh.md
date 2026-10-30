@@ -215,3 +215,9 @@ v7源`4be18ca1c9bd2db0b905b0d3c3f22873f97cc081`已提交推送并ls-remote核实
 14:54:19只读确认无已有resume意图/执行/原任务COMPLETE，U10仅step000和原READYstep001；实时资源、前驱终态/离队、锁和防重门通过，14:54:42唯一提交`235953/LH-SRF6-Memory-Resume`，1PRO6000/4CPU/33G/23h/no-requeue，意图sha `d4212cdaf7aac0e0c9da44fb2016aa896a68502fe7d389538d9ec0ad3eb38e5f`。本机RESUME_SUBMIT_ATTEMPT/RESULT及服务器SUBMISSION已明确SUBMITTED，禁止再提交。
 
 14:55:13实际RUNNING31秒，外层STARTED14:54:45.507606，Req/Alloc相符且无FAILURE。当前为GPU子进程前置完整核验，尚无任务EXECUTIONS STARTED或新checkpoint；不是训练完成或科学通过。按原U10→C_SHUF→U11顺序每任务新进程，首批复用原READY，后续原固定步骤正常执行；技术失败保留且不自动重试。仅在三任务与原A六任务全部真实闭包后推进原B与DEV门。
+
+## 首步真实提交与第二步推进（2026-10-30 15:42:11 UTC）
+
+235953持续RUNNING、无外层/任务FAILURE。原U10 step001的COMMIT已于15:36:30.162743发布，status=COMMITTED；COMMIT文件sha9c706b933bd8431da7238e8c8cc7253285f84bc2f06766802461f3d7a317fd82，规范marker自hash与UPDATE引用hash实际核对一致（本次没有重新加载state.pt）。UPDATE保留发布前UPDATED_UNCOMMITTED字段，由外层COMMIT证明已提交，不能误报未提交。128条、optimizer_updates=1、rng_restored=true、参数确实改变；training_seconds=1350.8742533610202（22分31秒），相对v7测量1002.376秒长34.77%，两者工作范围不同，不把差额无证据归因于存储/优化器。首步复用原READY；新的step002为原计划后续生成，不是重复采样旧步。
+
+15:42:11只读小回执显示step002已完成9/16组（00..08），09已STARTED，READY尚未发布。9组实际31.271–38.031秒，均值34.026秒，最近COMPLETE15:41:46.705265，明确连续推进。按这个观测生成余量约4分钟，仅生成情景估计，不含step002训练/保存，不是完成保证。两条首步allocator警告后已完成首步更新；15:36:42另有生成阶段分配警告后仍连续完成多组，故本次警告未导致终止或卡死。不能由此声称未来无OOM风险，也未修改allocator/预算/运行部署。诊断原件FIRST_STEP_INSPECTION_20261030T154211.json与STATUS_20261030T154115562827.json保存在本机v8私有目录；无重提、重跑或重采。
