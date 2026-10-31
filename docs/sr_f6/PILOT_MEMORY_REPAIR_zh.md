@@ -240,6 +240,15 @@ v7源`4be18ca1c9bd2db0b905b0d3c3f22873f97cc081`已提交推送并ls-remote核实
 
 新增独立 `sr_f6_round_b` 与 B 操作器，旧 b7/v7/v8 来源不改。固定两路：b2 U10→U11→C_SHUF 各原12步；唯一 b0/U11 从原 step004 导入至独立恢复目录，再按原种子生成 steps005..012 的1024回答并调用原精确恢复比较器。科学参数直接沿原合同，每任务新进程，使用实际冻结v7存储修复；不复用 PRIMARY 的 steps005..012 回答，不增加种子/阈值/科学门。
 
-新合同绑定真实A总交付回执、六份单线程原样精确审核及 v8 完成闭包。提交前核验原235953真实COMPLETED 0:0与离队、两路无既有任务/恢复残留、来源字节和锁；实际teacher全用户8GPU与varun024五槽门、2PRO6000/8CPU/66G/23h/no-requeue资源均独立核实。原目录只允许注册文件，部分rollout/恢复staging/未知提交均阻止重试。共享前驱核验和原恢复导入/比较使用同一锁，模型训练各自独立；单lane失败保留且不取消peer。
+新合同绑定真实A总交付回执、六份单线程原样精确审核及 v8 完成闭包。提交前核验原235953真实COMPLETED 0:0与离队、两路无既有任务/恢复残留、来源字节和锁；已实现实时teacher全用户8GPU与varun024五槽门，并分别核验2PRO6000/8CPU/66G/23h/no-requeue的提交请求与运行时实际分配。原目录只允许注册文件，部分rollout/恢复staging/未知提交均阻止重试。共享前驱核验和原恢复导入/比较使用同一锁，模型训练各自独立；单lane失败保留且不取消peer。
 
 工程关联回归697项通过（56.25秒），独立审核64项通过（0.77秒），Ruff/格式/bash语法/diff通过。审核期间修正首次锁父目录缺失、残留防重遗漏、已退休作业查询方式及srun单线程环境继承问题，并加入回归测试；均发生在首次部署之前。本段仅记录工程审核，B尚无真实提交或结果，DEV/FORMAL/TEST未准入。
+
+
+## B唯一提交（2026-10-31 11:19 UTC）
+
+独立生产源 `83e58037253f89b80c5179f604b0e2c656ecbe2b` 已commit/push并ls-remote核实。11:18:39 UTC唯一部署 `sr_f6_round_b_code_83e5803` 成功，5源码+manifest共6文件49786bytes，binding `9c0bb8c7da225af17dca8fbd4a9b86cae77aa578c10c40b63218a064beb33852`。部署/冻结/提交读取helper亦通过独立只读审核；A证据11文件1940676bytes全部按原引用hash核实，原字节存于新ops的A_EVIDENCE。旧源码和旧失败不改。
+
+唯一合同 `PILOT_ROUND_B_20261031/CONTRACT.json` sha `daa002017251a8ec756cf3ded430f661693ea6703c94937426812a3706ef328e` 已冻结，前驱235953实际COMPLETED0:0离队。11:19:12只读确认无B提交意图、四task执行或新checkpoint。11:19:31实时teacher全用户已保留1GPU/上限8，varun024已提交1作业/上限5；加入2GPU、1作业符合两项门。锁/防重/容量门通过后唯一提交 **237289/LH-SRF6-PilotV3-B**，2PRO6000/8CPU/66G/23h/no-requeue，意图sha `c66c02619047d92fb5a594d7fd579d174d1b3fb0a2072828e82283d5559f1f14`。本机SUBMIT_ATTEMPT/RESULT及服务器round_b_SUBMISSION明确SUBMITTED，禁止再次deploy/freeze/submit或热改部署。
+
+11:19:51快照为PENDING/Priority，ReqTRES与合同一致，尚无AllocTRES、round_b_STARTED、lane/taskSTARTED或FAILURE。不能称实际GPU开跑或科学通过；运行时入口仍将核实实际分配。下一步仅用私有 `.local/pilot_round_b_20261031/run_operation.py read` 50秒限时只读跟踪：lane0固定b2 U10→U11→C_SHUF，lane1唯一b0/U11 step004→012恢复。保留失败，不自动重提；九主路径和恢复全部真实闭包后才原DEV门。详细回执及继续说明见同目录CONTINUE_zh.md。
