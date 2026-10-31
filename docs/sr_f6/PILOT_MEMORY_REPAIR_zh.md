@@ -221,3 +221,16 @@ v7源`4be18ca1c9bd2db0b905b0d3c3f22873f97cc081`已提交推送并ls-remote核实
 235953持续RUNNING、无外层/任务FAILURE。原U10 step001的COMMIT已于15:36:30.162743发布，status=COMMITTED；COMMIT文件sha9c706b933bd8431da7238e8c8cc7253285f84bc2f06766802461f3d7a317fd82，规范marker自hash与UPDATE引用hash实际核对一致（本次没有重新加载state.pt）。UPDATE保留发布前UPDATED_UNCOMMITTED字段，由外层COMMIT证明已提交，不能误报未提交。128条、optimizer_updates=1、rng_restored=true、参数确实改变；training_seconds=1350.8742533610202（22分31秒），相对v7测量1002.376秒长34.77%，两者工作范围不同，不把差额无证据归因于存储/优化器。首步复用原READY；新的step002为原计划后续生成，不是重复采样旧步。
 
 15:42:11只读小回执显示step002已完成9/16组（00..08），09已STARTED，READY尚未发布。9组实际31.271–38.031秒，均值34.026秒，最近COMPLETE15:41:46.705265，明确连续推进。按这个观测生成余量约4分钟，仅生成情景估计，不含step002训练/保存，不是完成保证。两条首步allocator警告后已完成首步更新；15:36:42另有生成阶段分配警告后仍连续完成多组，故本次警告未导致终止或卡死。不能由此声称未来无OOM风险，也未修改allocator/预算/运行部署。诊断原件FIRST_STEP_INSPECTION_20261030T154211.json与STATUS_20261030T154115562827.json保存在本机v8私有目录；无重提、重跑或重采。
+
+
+## v8真实完成与A六任务交付核验（2026-10-31 10:57 UTC）
+
+235953已于10:44:52 UTC真实COMPLETED 0:0，运行19:50:10；10:49:54快照确认离队。原b1 U10、C_SHUF、U11均step000..012和READY001..012齐全，原任务COMPLETE、新execution COMPLETE/STORAGE_FACTS及resume_COMPLETE均存在，无新FAILURE。外层仍为QUEUE_COMPLETE_NOT_GATE_SIGNED；resume_COMPLETE文件sha为`11ebc9105631ad5836fd1c0c8933bec48e46ed9f7d3fb21b5fcc473482e670cb`。禁止重复部署、恢复提交、训练或采样。
+
+只读交付审核覆盖原b0/b1六任务：逐任务核验冻结b7全源码清单、原计划/spec引用、原任务/producer/执行journal/accounting闭包，流式校验78个state.pt完整文件哈希（不加载张量）、72个UPDATE与COMMIT链、1152个原G8 raw/RNG引用及每组8行、原PREUPDATE事件和全部已保存概率向量统计。六任务均通过原精确数值比较和原门槛；审核新增回答0、优化器更新0。私有总回执为`.local/pilot_memory_resume_v8_20261030/A_DELIVERY_AUDIT_20261031.json`，含六份A_TASK_AUDIT_OMP1回执和原件hash。这里的9216条是六条已训练路径各1536条；没有重新评定原普查9216/360审核/T03/233920/233849。
+
+首次交付检查器未固定CPU线程数（随后诊断进程实际为12），b0/U11 step003等少量mean/KL总量归约与原保存值精确比较不一致。已定位原b7启动器及v8操作器均明确OMP_NUM_THREADS=1；将只读检查进程恢复这一原设置后，六任务72步全部原样精确通过。没有改生产代码、原统计、阈值或科学条件。原失败检查回执A_TASK_AUDIT_PRIMARY-b0-U11_20261031T105234及诊断回执保留；这是审核环境技术事件，不是训练失败或科学FAIL。
+
+旧worker/task/trainer失败、原U10 READY001及原审计日志字节前缀hash均核对未变。三恢复任务offload均closed=true、storage_failures/cleanup_errors为空、host/disk/device live bytes全0；arena建立/删除分别333/333、333/333、344/344。实际allocated峰约83.95/83.96/83.39GiB，reserved峰约94.22/94.16/94.16GiB；保留之前allocator警告，不把本次完成外推为其它任务内存安全保证。
+
+本轮完成的是A交付完整性及持久化数值证据审核，不代替最终九路GPU状态/原raw评分/信用暴露/唯一恢复对照与DEV科学门。下一步实现、测试和审核独立B操作来源：固定b2 U10→U11→C_SHUF及唯一b0/U11 step004→012恢复；当前没有B新作业。所有新来源须scoped commit/push核实再冻结部署；旧b7/v7/v8来源不热改。九路和恢复全部真实闭包后才原DEV三父九端点，至少2父信用、U11至少12组/8root/3家族，不加必须赢或SHUF必须失效门；FORMAL/TEST仍未授权。
