@@ -301,3 +301,20 @@ b2的原UPDATE.training_seconds按12步求和：U10为8022.95854542451秒，U11�
 实时用户4作业/上限5、B真实终态离队、完整小回执/来源/防重门通过，07:44:27.383596UTC唯一提交238732/LH-SRF6-PostB-Delivery。4CPU/12G/2h/noGPU/no-requeue，请求实际核验REQUEST_VERIFIED；意图sha e994645f1a4d991dfd6dd962c0f6b9c93ae38707d9f753c81ee76b4936ca1b80，comment SRF6PD-acfdbddf821d44568a70d4e8dab0f0e7。部署/冻结/提交全过程本机ATTEMPT/RESULT和服务器持久回执齐全明确SUBMITTED，禁止再deploy/freeze/submit或热改部署。
 
 07:44:41.442597UTC只读快照仍PENDING，sacct 0:0/00:00:00/Unknown开始结束；RESULT尚不存在，无STARTED/COMPLETE/FAILURE。不称已执行或审核通过。私有证据位于.local/pilot_post_b_delivery_20261101/，读取命令为本机venv python scripts/sr_f6_post_b_delivery/client.py read，50秒SSH，仅小回执。等待真实终态离队及9PRIMARY、RECOVERY、RESULT/COMPLETE整体闭包、full_delivery_verified=true和完整历史后，再按原信用门准备DEV；外层科学gate仍NOT_SIGNED。所有worker已停止修改。四成员扩展最终ops/client45项通过0.47秒，Ruff通过；此前124项整合通过22.73秒。
+
+
+### 238732技术终态与保留旧OOM的独立v2交付审核（2026-11-01）
+
+08:02:07UTC真实读取确认238732已FAILED 1:0、离队：07:44:43开始、07:47:10结束，实际00:02:27。b0/U11、C_SHUF、U10三条原主路径检查分别完成约29.74、37.13、36.95秒；随后b1/U10的原execution inventory拒绝`Failed numerical attempt remains in inventory; cannot assert runtime gate`。FAILURE sha `bdb76777e45b3708c5c915dc07e4a5a7184bd2bd9ce52fc297a202dff1db0a3e`，状态DELIVERY_VERIFICATION_INCOMPLETE/scientific_gate_status=NOT_EVALUATED、新回答/更新均0；未完成RECOVERY或整体RESULT/COMPLETE。原失败和三份部分成功回执全部保留，原238732不重新部署/冻结/提交。
+
+只读原字节证据确认阻断来自早已保留的233996/b1/U10 OOM：原数值首行2481675bytes，sha `1978e39d51e6b3bbbedc0048b4275db048d1f9507d7a7b40c0c8baa504ad0915`，UNCOMMITTED_FAILURE_NO_OPTIMIZER_STEP，optimizer_started=false、parameter_state_changed=false。实际process.log sha `2b393958950be9f9721ee492668ce8a74af88b41f11e6c6692283a9da33dbbfe`显示原training.py第537行backward显存不足，原执行COMMITS为空；随后235953新进程从原step0恢复，step1新回答0、复用16组原128回答。旧部分计算实际27行、54次policy/reference forward、48次诊断，不计作完整已提交更新。这是技术交付核验与原“所有历史事件必须PASS”规则的冲突，不是新科学FAIL。
+
+新增独立scripts/sr_f6_post_b_delivery_v2，不热改b7/v7/v8/B或已部署v1。普通八路仍调用冻结原_verify_run；b1/U10静态等价保留原12更新/13state、原raw/RNG/评分/信用/数值、journal及1536回答总预算检查，仅增加唯一固定旧OOM的严格对账。绑定原v7/v8合同、88个原step0/READY文件当前字节、原失败/执行/账本/traceback及实际后继恢复证据；目标路径必须且仅一次该原事件，改变/未知/新增失败均拒绝。部分诊断单列，不删日志、不将旧失败改为PASS、不monkeypatch、不注入缓存。记录literal_original_runtime_gate=REJECTED_BY_PRESERVED_OOM_NOT_OVERRIDDEN，明确这是独立审核适配而非原全PASS函数通过。
+
+primary_readonly.py固定sha `524b468a13d0ce7d281c2b89244e5a13462a4fe7ee49da8bef9938c0a3ad0fe5`；recovery_readonly.py保持v1原字节sha `56c50f7c8c9d710c27d3471aa590667c5776aa922869ae39212c629fdaba2a9c`。既存v7小验证回执仅作证明消费，v7张量不重新加载/验证/fetch。私有HISTORICAL_OOM_PROOF.json为2364bytes、sha `5d235c3885217559562c63cea42123029b1177da4394b7739ed678ea4616c81c`，独立传送并绑定新合同，绝不上Git。新审核完整重核九路和唯一原恢复，不把v1三份部分回执替代当前完整检查；新增回答/更新仍0。
+
+v2独立操作器使用PILOT_POST_B_DELIVERY_V2_20261101、新source目录、5源码+manifest。九字段合同增加原v1合同/失败及固定私有证明引用。提交前及运行时核对B237289 COMPLETED0:0与238732 FAILED1:0、二者离队，原失败类型/hash/NOT_EVALUATED和零新回答/更新；实时五槽门、唯一意图、未知不重提。预算4CPU12GiB2h/noGPU/no-requeue/OMP1，十锁及前后库存保持，新输出只在新ops。此段记载实现准备，不代表新部署或提交，更不代表交付或科学通过。
+
+独立复核已核对原函数AST、实际既存v7/恢复/COMMIT/失败字段以及操作器全部边界，无剩余阻断。新primary专项35项通过48.23秒；父线程driver/operator/client初步114项通过1.04秒，最终整合记录随后追加。只有新作业真实成功离队、九路+恢复及全历史完整闭包、原信用门满足后才准备独立DEV；不新增U11必须赢或SHUF必须失效条件，FORMAL/TEST仍待原科学准入。
+
+父线程最终整合：OMP_NUM_THREADS=1，v2 driver/operator/client、primary只读对账及原recovery consumer合计189项通过72.63秒；Ruff check/format、bash -n与git diff --check通过。primary/recovery运行成员hash与driver固定值实测一致。独立审核员及两个实现worker均已停止修改；这些仍是本地工程证据，尚非服务器交付通过。
