@@ -252,3 +252,32 @@ v7源`4be18ca1c9bd2db0b905b0d3c3f22873f97cc081`已提交推送并ls-remote核实
 唯一合同 `PILOT_ROUND_B_20261031/CONTRACT.json` sha `daa002017251a8ec756cf3ded430f661693ea6703c94937426812a3706ef328e` 已冻结，前驱235953实际COMPLETED0:0离队。11:19:12只读确认无B提交意图、四task执行或新checkpoint。11:19:31实时teacher全用户已保留1GPU/上限8，varun024已提交1作业/上限5；加入2GPU、1作业符合两项门。锁/防重/容量门通过后唯一提交 **237289/LH-SRF6-PilotV3-B**，2PRO6000/8CPU/66G/23h/no-requeue，意图sha `c66c02619047d92fb5a594d7fd579d174d1b3fb0a2072828e82283d5559f1f14`。本机SUBMIT_ATTEMPT/RESULT及服务器round_b_SUBMISSION明确SUBMITTED，禁止再次deploy/freeze/submit或热改部署。
 
 11:19:51快照为PENDING/Priority，ReqTRES与合同一致，尚无AllocTRES、round_b_STARTED、lane/taskSTARTED或FAILURE。不能称实际GPU开跑或科学通过；运行时入口仍将核实实际分配。下一步仅用私有 `.local/pilot_round_b_20261031/run_operation.py read` 50秒限时只读跟踪：lane0固定b2 U10→U11→C_SHUF，lane1唯一b0/U11 step004→012恢复。保留失败，不自动重提；九主路径和恢复全部真实闭包后才原DEV门。详细回执及继续说明见同目录CONTINUE_zh.md。
+
+
+## B真实完成与完整交付审核边界（2026-11-01 07:14 UTC）
+
+网络恢复后，STATUS_20261101T070803574003.json及B_CLOSURE_SMALL_READ_20261101T071440.json证明唯一237289于2026-10-31 23:48:25 UTC（新加坡11月1日07:48:25）真实COMPLETED 0:0、离队，运行12:27:49。round_b_COMPLETE原字节sha为`0047dabc1db4484e9949d1f367896e02df07b3d4ae6e99d9636d25b7c87bd77f`，状态仍`ROUND_B_COMPLETE_NOT_GATE_SIGNED`，evaluation_authorized=false。两lane及四任务完成；四份原task_COMPLETE、四份execution_COMPLETE和四份STORAGE_FACTS引用均按原字节hash核对。各路径step000..012、READY001..012齐全，无新FAILURE；存储均closed=true、无storage_failures/cleanup_errors、live device/host/disk为0。
+
+b2的原UPDATE.training_seconds按12步求和：U10为8022.95854542451秒，U11为7957.772767235525秒，C_SHUF为7889.716088694986秒。这是纯更新记录的实际时间，不用STORAGE_FACTS.elapsed或Slurm总时间替代。唯一b0/U11恢复仍为原step004到012、8次新更新/1024新回答，原精确独立比较PASS证据保持；没有重跑恢复或生成新回答。VPN失联期间作业实际正常完成，连接故障不是训练失败。
+
+最终九主路径完整交付审核尚未完成。07:10:44启动的单路径原b7 `_verify_run`（b2/U10、OMP_NUM_THREADS=1、CPU检查点加载）超过50秒SSH限时，回执PRIMARY_FACT_AUDIT_b2_U10_20261101T071044.json保留`READ_AUDIT_TIMEOUT_PRESERVE`，结果UNKNOWN，不能称PASS或科学FAIL。07:13的login-3进程快照不能证明login-1旧审核结束；随后07:14:39同一login-1实际进程快照确认旧审核已不在，未并发或自动重复审核。
+
+原审核每路径需13个state.pt完整hash与CPU反序列化、12步原概率统计、408份原RNG及192组raw/信用和完整历史execution inventory；50秒连接上限不适合作为计算时限。保持原审核函数不变，后续用独立CPU调度作业持久化审核结果，SSH仅提交/读取。当前07:14:39用户5个已提交作业槽均被其它项目占用，不能新增作业，不触碰这些作业。拟用4CPU/12GiB/2h、无GPU、OMP1、no-requeue，资源是待验证的执行预算，不是完成保证。
+
+完整交付审核必须调用原 `_verify_run` 九路及原恢复核验/全比较inventory，保存原 `_exposure`事实；不能跳过或替换state加载、评分、信用、数值或历史失败检查。原 `pilot_audit.verify_runtime_pilot/audit`要求DEV已完成，不能在DEV之前伪造最终RUNTIME_PILOT_AUDIT/FACTS。后续DEV内层已存在原b7 `pilot_jobs worker --round EVAL --worker 0|1`，固定三父九端点、12端点2304回答、每端点新进程；仍需独立外层生产来源/合同/唯一提交门。九路交付审核完成前不启动DEV；最终聚合也不自动签科学准入，FORMAL/TEST仍待真实科学门。
+
+
+### 07:22 UTC只读审核发现与收窄
+
+独立源码审核发现原recovery.verify_recovery/verify_comparison并非在新进程中完全只读：它们经_registration重建PILOT_V3注册，调用historical_closure.require_confirmation_binding；缓存未建立时会重新执行历史确认审核并写PHASE_RUNS/PILOT_V3/HISTORICAL_CORRECTED_CONFIRMATION_AUDITS，phase验证还可能写root/.verification-cache。verify_payloads=False也不能绕过该前置链。上述恢复函数在本轮未执行，九主路径审核超时也没有调用它们；不能因函数名为verify就认为没有副作用。
+
+因此新CPU入口收窄为九主路径原_verify_run与已有B/恢复小回执hash闭包读取；成功也仅PRIMARY_FACTS_RECOVERY_RECHECK_PENDING、full_delivery_verified=false，禁止DEV。删除直接恢复验证调用，不注入缓存、不monkeypatch、不改冻结b7，也不扩大旧目录写入白名单。完整恢复复核仍需独立等价只读consumer逐项映射原断言、绑定已存在注册/确认/比较及全比较历史；原精确独立PASS保持有效，但不能声称本轮完整恢复复核已执行。先前“直接调用原恢复核验”的执行提案据此撤回，原科学门未变。
+
+
+### 独立CPU主路径审核入口准备
+
+新增scripts/sr_f6_post_b_delivery/audit.py、launch.sbatch及README，专项tests/sr_f6/test_post_b_delivery.py。固定新ops为PILOT_POST_B_DELIVERY_20261101，合同仅schema/output_directory/driver_sha256/source_deployment/b_job_id/round_b_complete_sha256六字段；实际B终态、源码680成员、计划/spec/phase/admission原字节、四任务闭包、原恢复小回执hash均独立检查。九路原函数在既存事务锁下运行，前后目录快照一致，每阶段保存实际elapsed_seconds与进程峰RSS；原实验数据不写，输出/缓存只入新ops。运行时校验rose/cluster02/原teacher QoS、4CPU12G2h/noGPU/no-requeue/OMP1，任何已有RESULT目录阻止复用。
+
+独立只读审核追踪原九路调用链，确认没有原恢复入口触发的历史重评/旧root缓存写入，launcher语法通过。32项专项测试通过0.16秒，Ruff及格式通过。本机真实回执形状smoke通过但不是live数据审核，未加载远端checkpoint或运行完整九路。此包尚未部署/冻结/提交；独立不可变部署与防重提交operator、完整恢复等价只读consumer仍待实现，README列出明确前置门。源代码准备不能写成实际交付完成。
+
+父线程最终关联验证：OMP_NUM_THREADS=1，test_post_b_delivery/test_pilot_audit/test_recovery合计81项通过97.26秒；Ruff check/format、bash -n与git diff --check通过。仅本地测试，不是服务器完整交付审核。
