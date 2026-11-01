@@ -1,9 +1,9 @@
-"""CPU-only primary verification through the unchanged frozen PILOT_V3 verifier.
+"""CPU-only delivery verification through the unchanged frozen PILOT_V3 verifier.
 
 This is deliberately not pilot_audit.audit: that final fact boundary requires DEV.
 No training, generation, recovery preparation, comparison publication or admission
-is performed here. Recovery is limited to hash-bound saved receipts: its original
-verifier transitively reruns historical confirmation and is deliberately absent.
+is performed here. A separately pinned read-only recovery consumer retains the
+original comparison assertions and consumes existing historical proof bytes.
 A new output directory is an irreversible attempt boundary.
 """
 
@@ -13,6 +13,7 @@ import argparse
 import datetime as dt
 import hashlib
 import importlib
+import importlib.util
 import json
 import os
 import re
@@ -40,6 +41,8 @@ ADMISSION_SHA = "b65831ad6ec57c829a69a9ad0a87a6aaf6a4a173e2d921cf953462ca7519b2a
 MANIFEST_SHA = "c6f694582b152e5ccb3e0b303f4ace50c4432ec2ac884fccfd42b37de704bb87"
 B_COMPLETE_SHA = "0047dabc1db4484e9949d1f367896e02df07b3d4ae6e99d9636d25b7c87bd77f"
 B_CONTRACT_SHA = "daa002017251a8ec756cf3ded430f661693ea6703c94937426812a3706ef328e"
+RECOVERY_CONSUMER_SHA = "56c50f7c8c9d710c27d3471aa590667c5776aa922869ae39212c629fdaba2a9c"
+RECOVERY_DIRECTORY = "PHASE_RUNS/PILOT_V3/RECOVERY/b0/r0/U11"
 SCHEMA = "srf6-post-b-delivery-v1"
 PAIRS = {(p, a) for p in ("b0", "b1", "b2") for a in ("U10", "U11", "C_SHUF")}
 B_TASKS = {"PRIMARY-b2-U10", "PRIMARY-b2-U11", "PRIMARY-b2-C_SHUF", "RECOVERY-b0-U11"}
@@ -318,7 +321,32 @@ def existing_transaction(transactions, directory, identity):
     return transactions.RunTransactions(directory, identity)
 
 
-def verify_training(output, spec, context, admission_ref):
+def load_recovery_consumer():
+    path = plain(Path(__file__).parent / "recovery_readonly.py")
+    require(sha(path) == RECOVERY_CONSUMER_SHA, "Recovery consumer differs from driver pin")
+    spec = importlib.util.spec_from_file_location("srf6_delivery_recovery_readonly", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    require(plain(module.__file__) == path, "Wrong recovery consumer origin")
+    require(sha(path) == RECOVERY_CONSUMER_SHA, "Recovery consumer changed during import")
+    return module
+
+
+def recovery_passed(value):
+    comparison = value["comparison"]
+    return (
+        value["status"] == "RECOVERY_FACTS_RECHECKED_NOT_GATE_SIGNED"
+        and comparison["status"] == "PASS"
+        and comparison["exact"] is True
+        and comparison["differences"] == []
+        and comparison["independent_process_verified"] is True
+        and comparison["new_generated_responses"] == 1024
+        and value["comparison_history"]["status"] == "ALL_SAVED_FACTS_VERIFIED"
+        and value["new_responses"] == value["new_updates"] == 0
+    )
+
+
+def verify_training(output, spec, context, admission_ref, recovery_saved):
     require(
         not any(name == "sr_f6" or name.startswith("sr_f6.") for name in sys.modules),
         "Start a fresh interpreter; do not reuse imported research modules",
@@ -336,6 +364,7 @@ def verify_training(output, spec, context, admission_ref):
             == DEPLOYMENT / "src" / (module.__name__.replace(".", "/") + ".py"),
             "Wrong imported verifier",
         )
+    consumer = load_recovery_consumer()
     paths = spec["paths"]
     runs, locked, snapshots, measurements = [], {}, {}, []
     with ExitStack() as stack:
@@ -345,6 +374,12 @@ def verify_training(output, spec, context, admission_ref):
             tx = stack.enter_context(existing_transaction(transactions, directory, identity))
             locked[(item["parent"], item["arm"])] = tx
             snapshots[directory] = audit._snapshot(directory)
+        primary = locked[("b0", "U11")]
+        recovery_directory = under(ROOT, RECOVERY_DIRECTORY)
+        recovery_tx = stack.enter_context(
+            existing_transaction(transactions, recovery_directory, primary.identity)
+        )
+        snapshots[recovery_directory] = audit._snapshot(recovery_directory)
         for item in paths:
             tx = locked[(item["parent"], item["arm"])]
             started, before_usage = time.perf_counter(), usage()
@@ -378,13 +413,41 @@ def verify_training(output, spec, context, admission_ref):
                 output / f"PRIMARY-{item['parent']}-{item['arm']}.json",
                 {"facts": facts, "measurement": measurement},
             )
+        started, before_usage = time.perf_counter(), usage()
+        write(
+            output / "RECOVERY_STARTED.json",
+            {"at": now(), "consumer_sha256": RECOVERY_CONSUMER_SHA},
+        )
+        producer = recovery_saved["producer"]
+        recovered = consumer.verify_saved_recovery(
+            primary,
+            recovery_tx,
+            root=ROOT,
+            phase_context=context,
+            pilot_spec_sha256=SPEC_SHA,
+            binding_ref=producer["binding_ref"],
+            comparison_ref=producer["comparison_ref"],
+            recovery_execution_ref=producer["recovery_execution_ref"],
+        )
+        measurement = dict(
+            stage="RECOVERY",
+            elapsed_seconds=time.perf_counter() - started,
+            usage_before=before_usage,
+            usage_after=usage(),
+        )
+        measurements.append(measurement)
+        write(output / "RECOVERY.json", {"facts": recovered, "measurement": measurement})
+        require(
+            recovery_passed(recovered), "Recovery recheck or full comparison history incomplete"
+        )
         require(
             all(audit._snapshot(path) == snapshot for path, snapshot in snapshots.items()),
-            "Primary inventory changed during verification",
+            "Primary/recovery inventory changed during verification",
         )
         require(not torch.cuda.is_initialized(), "Unexpected CUDA initialization")
         return {
             "runs": runs,
+            "recovery": recovered,
             "exposure": audit._exposure(runs),
             "paths": 9,
             "logical_updates": 108,
@@ -438,12 +501,12 @@ def run(contract_path, contract_sha256):
         plan, spec, context, admission_ref = source_and_pins()
         closure, producer = verify_b(plan)
         write(output / "B_CLOSURE.json", closure)
-        facts = verify_training(output, spec, context, admission_ref)
+        facts = verify_training(output, spec, context, admission_ref, producer)
         result = dict(
             schema=SCHEMA,
-            status="PRIMARY_FACTS_RECOVERY_RECHECK_PENDING",
-            recovery_recheck_status="NOT_RUN_HISTORICAL_SIDE_EFFECT_BOUNDARY",
-            full_delivery_verified=False,
+            status="DELIVERY_FACTS_NOT_SCIENTIFIC_GATE",
+            recovery_recheck_status="EXACT_SAVED_FACTS_AND_HISTORY_VERIFIED",
+            full_delivery_verified=True,
             at=now(),
             gate_status="NOT_SIGNED",
             evaluation_authorized=False,
@@ -461,9 +524,9 @@ def run(contract_path, contract_sha256):
         write(
             output / "COMPLETE.json",
             {
-                "status": "PRIMARY_FACTS_RECOVERY_RECHECK_PENDING",
-                "full_delivery_verified": False,
-                "recovery_recheck_status": "NOT_RUN_HISTORICAL_SIDE_EFFECT_BOUNDARY",
+                "status": "DELIVERY_FACTS_NOT_SCIENTIFIC_GATE",
+                "full_delivery_verified": True,
+                "recovery_recheck_status": "EXACT_SAVED_FACTS_AND_HISTORY_VERIFIED",
                 "at": now(),
                 "result_ref": result_ref,
                 "gate_status": "NOT_SIGNED",

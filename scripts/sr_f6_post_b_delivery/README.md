@@ -1,81 +1,71 @@
 # SR-F6 post-B delivery audit
 
-This independent CPU wrapper verifies the nine completed primary pilot runs
-using the frozen b7 audit functions. It reads the existing recovery completion
-receipt by hash but does not reverify the full recovery. It does not
-generate answers, train, rerun recovery comparison production, evaluate DEV, or
-write the original final scientific audit. Checkpoint tensors are loaded on CPU.
-The original training raw records are checked with their registered scorer; the
-earlier census/review/T03 records are not rescored.
+This independent CPU job verifies nine completed primary pilot runs using the
+unchanged frozen b7 `_verify_run`, including CPU checkpoint loads, original raw
+scores, RNG, credit, numerical records and execution history. A separately pinned
+`recovery_readonly.py` retains the original recovery comparison assertions and
+checks the saved comparison against fresh state/raw/RNG facts and all comparison
+history. It generates no answers, performs no updates, and publishes no new
+recovery comparison. The earlier census/review/T03 records are not rescored.
 
-The driver and launcher are preparation for a new, separately bound deployment.
-They are not a submission tool. Do not run the launcher against a working copy,
-reuse the completed A/B deployments, or call `sbatch` without the submission
-checks below. There is currently no deployment or submitted job for this wrapper.
+The consumer reconstructs registration and verifies the existing historical
+confirmation transport proof and every bound input byte. It does not rerun that
+historical scientific confirmation or issue a new admission. Its seven adapted
+functions have AST equivalence tests against the frozen original core, plus real
+tensor/RNG differential tests and proof/history mutation tests. No frozen module
+is patched and no prevalidated cache is injected. Phase hashing is fresh and
+read-only. The original recovery entry points must not be called here because
+they can rerun historical confirmation and write into the old experiment root.
 
-## Execution contract
+## Bound source and execution
 
-Use a fresh directory under
-`/projects/_ssd/varunssd/louis-ssvc/sr_f6_operations_20261027`.
-Commit and push the reviewed source, verify the pushed revision, then create an
-immutable deployment manifest and a separately hashed contract. The contract
-binds the driver bytes, frozen b7 source, B completion evidence and a new output
-directory. Do not overwrite an existing contract, result or attempt record.
+The runtime manifest contains `operations.py`, `audit.py`, `launch.sbatch`, and
+`recovery_readonly.py`. The driver also pins the consumer SHA-256 and checks its
+absolute import origin. The immutable source manifest binds the committed and
+verified pushed revision. A separate six-field contract binds driver bytes,
+frozen b7 deployment, B completion, and the exclusive output directory:
+`/projects/_ssd/varunssd/louis-ssvc/sr_f6_operations_20261027/PILOT_POST_B_DELIVERY_20261101`.
 
-The launcher requires these exported values:
+Use the local `client.py` with the project Python environment. After reviewed
+source is committed and pushed, execute `prepare --revision FULL_COMMIT`, then
+`deploy`, `freeze`, and `submit` in order. `prepare` verifies both remote branch
+and local source against immutable Git objects. Transport checks repeat source
+object validation; private attempts and raw responses are saved under
+`.local/pilot_post_b_delivery_20261101`. Do not call `sbatch` directly or reuse
+A/B deployments.
 
-- `SRF6_DELIVERY_CONTRACT`: absolute contract file path.
-- `SRF6_DELIVERY_CONTRACT_SHA256`: its SHA-256.
-- `SRF6_DELIVERY_DRIVER`: absolute path to the immutable audit driver.
+The operator verifies B terminal `COMPLETED/0:0` and queue absence, complete B
+receipt hashes, actual source and contract, unique lock/intent, and live five-job
+capacity immediately before submission. It preserves unknown submissions and
+forbids automatic resubmission. A clean `NO_LEGAL_CAPACITY` response has no remote
+intent and may be checked later. Otherwise use `reconcile` for a missing or
+ambiguous response; it only reads scheduler evidence and never submits. `read`
+checks persistent receipts and scheduler state. Never change other project jobs.
 
-It checks contract/driver bytes before running the driver and puts all caches in
-the new operations directory. The proposed allocation is 4 CPUs, 12 GiB, two
-hours, zero GPUs, no requeue, and `OMP_NUM_THREADS=1`. These limits are an initial
-execution budget, not measured guarantees. Preserve partial results and technical
-failures; diagnose before any equivalence-preserving continuation.
-
-## Submission prerequisites
-
-An independent, reviewed submission operator is still required. It must:
-
-1. Verify the source deployment manifest, contract and exact requested resources.
-2. Verify 237289 is terminal `COMPLETED/0:0` and absent from the queue, with the
-   four task/execution/storage closures and original exact recovery evidence.
-3. Acquire a unique submission lock and reject existing intents, attempts,
-   unknown submissions, results or prior execution of this audit contract.
-4. Read the live user submission count and reject submission at five occupied
-   slots. Do not modify or cancel any other project jobs. This CPU job does not
-   consume a GPU reservation, but still consumes a submitted-job slot.
-5. Persist a unique intent and the actual scheduler response. A missing or
-   ambiguous response requires reconciliation, never automatic resubmission.
-
-All SSH uses `eee-cluster` with a 50-second connection/command bound. Audit
-computation belongs in the scheduled job; SSH only submits or reads persistent
-receipts. Do not repeatedly run the whole audit on a login node to fit that bound.
+All SSH uses `eee-cluster` with a 50-second bound. Heavy verification runs only in
+the scheduled job: 4 CPUs, 12 GiB, two hours, zero GPUs, no requeue, OMP1. These
+are execution limits, not completion guarantees. All new output and process
+caches stay in the independent operations root. All ten existing transaction
+locks remain held through verification and final unchanged-inventory checks.
+Original failures remain preserved. Any existing output directory prevents reuse.
 
 ## Acceptance and next stage
 
-The wrapper records delivery facts and the original exposure measurements,
-including unfavorable results. A technical exception is not a scientific FAIL.
-Even successful completion remains `PRIMARY_FACTS_RECOVERY_RECHECK_PENDING`,
-with `full_delivery_verified=false` and no DEV authorization.
+Only fresh comparison PASS/exact/independent-process/1024 original recovery
+answers plus `ALL_SAVED_FACTS_VERIFIED` history can close the delivery audit.
+A completed job must also have its actual terminal scheduler state and all
+persistent receipts checked. Successful facts are labeled
+`DELIVERY_FACTS_NOT_SCIENTIFIC_GATE`, `full_delivery_verified=true`, with
+`gate_status=NOT_SIGNED` and `evaluation_authorized=false`. The consumer alone
+always reports `full_delivery_verified=false` because it covers only recovery.
+Technical exceptions preserve `DELIVERY_VERIFICATION_INCOMPLETE`, not science FAIL.
 
-The frozen `recovery.verify_recovery` and `verify_comparison` functions transitively
-rebuild PILOT_V3 registration. In a fresh process that invokes the historical
-confirmation verifier, creates new historical audit files, and can update the
-phase verification cache. They must not be called by this wrapper. Neither
-`verify_payloads=False` nor moving those writes into an allowlist removes the
-historical re-audit. Do not inject caches or monkeypatch frozen functions.
-
-Full delivery still requires a separately reviewed, equivalent read-only recovery
-consumer: bind the existing registration/confirmation and original comparison,
-map every original comparison assertion, and verify complete comparison history.
-Referencing the existing exact PASS is not a claim that this recheck has run.
-
-Only after checking the actual terminal job state, every delivery receipt and the
-registered recovery/credit evidence may the independent DEV outer operator be
-prepared for admission. The frozen b7 EVAL workers already define twelve
-endpoints (three parents plus nine trained endpoints), 2,304 answers, and a new
-process per endpoint. Final `pilot_audit.audit` requires that real DEV evidence;
-do not fabricate a pre-DEV `RUNTIME_PILOT_AUDIT/FACTS.json`. FORMAL/TEST require
-their original scientific admission and real production provenance.
+Original exposure measurements, including unfavorable results, are preserved.
+DEV requires separate inspection of these facts and original credit requirements
+(two parents and U11 at least 12 groups, eight roots, three families), without
+adding U11-win or SHUF-failure conditions. The independent DEV outer operator
+still needs bound production source and a new contract. Original EVAL workers
+cover twelve endpoints (three parents and nine trained endpoints), 2,304 answers,
+each in a fresh process. Final `pilot_audit.audit` requires real DEV results;
+never fabricate a pre-DEV `RUNTIME_PILOT_AUDIT/FACTS.json`. FORMAL/TEST remain
+subject to their original scientific admission and new production provenance.

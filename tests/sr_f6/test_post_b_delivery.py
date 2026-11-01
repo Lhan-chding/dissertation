@@ -119,9 +119,9 @@ def test_measurement_false_does_not_claim_scientific_fail(driver, contract, monk
         lambda *args: {"exposure": {"registered_exposure_met": False}, "paths": 9},
     )
     result = driver.run(path, driver.sha(path))
-    assert result["status"] == "PRIMARY_FACTS_RECOVERY_RECHECK_PENDING"
-    assert result["full_delivery_verified"] is False
-    assert result["recovery_recheck_status"] == "NOT_RUN_HISTORICAL_SIDE_EFFECT_BOUNDARY"
+    assert result["status"] == "DELIVERY_FACTS_NOT_SCIENTIFIC_GATE"
+    assert result["full_delivery_verified"] is True
+    assert result["recovery_recheck_status"] == "EXACT_SAVED_FACTS_AND_HISTORY_VERIFIED"
     assert result["gate_status"] == "NOT_SIGNED"
     assert result["exposure"]["registered_exposure_met"] is False
     assert result["evaluation_authorized"] is result["formal_authorized"] is False
@@ -266,7 +266,7 @@ def test_calls_original_verifiers_under_all_locks(driver, tmp_path, monkeypatch,
     )
 
     def original_run(tx, root, *, attempt_pins):
-        assert len(live) == 9
+        assert len(live) == 10
         assert root == driver.ROOT and attempt_pins["context"] == {"frozen": True}
         calls.append(("primary", tx.directory))
         return {"scope": "SERVER_ACTUAL", "directory": str(tx.directory)}
@@ -303,18 +303,36 @@ def test_calls_original_verifiers_under_all_locks(driver, tmp_path, monkeypatch,
         ),
     }
     monkeypatch.setattr(driver, "importlib", SimpleNamespace(import_module=modules.__getitem__))
+
+    def read_only_recovery(primary, recovered, **kwargs):
+        assert len(live) == 10 and primary.identity == recovered.identity
+        assert kwargs["phase_context"] == {"identity": {"frozen": True}}
+        return recovery_facts()
+
+    monkeypatch.setattr(
+        driver,
+        "load_recovery_consumer",
+        lambda: SimpleNamespace(verify_saved_recovery=read_only_recovery),
+    )
+    producer = {
+        "producer": {key: {} for key in ("binding_ref", "comparison_ref", "recovery_execution_ref")}
+    }
     if mutation:
         with pytest.raises(PermissionError, match="Run changed"):
-            driver.verify_training(output, {"paths": paths}, {"identity": {"frozen": True}}, {})
+            driver.verify_training(
+                output, {"paths": paths}, {"identity": {"frozen": True}}, {}, producer
+            )
         assert len(calls) == 1
         assert all(p.name.endswith("_STARTED.json") for p in output.glob("PRIMARY-*.json"))
     else:
-        facts = driver.verify_training(output, {"paths": paths}, {"identity": {"frozen": True}}, {})
+        facts = driver.verify_training(
+            output, {"paths": paths}, {"identity": {"frozen": True}}, {}, producer
+        )
         assert len(calls) == 9 and facts["paths"] == 9
         assert all(call[0] == "primary" for call in calls)
-        assert "recovery" not in facts
+        assert driver.recovery_passed(facts["recovery"])
         assert facts["exposure"] == {"count": 9, "registered_exposure_met": False}
-        assert len(facts["measurements"]) == 9
+        assert len(facts["measurements"]) == 10
         assert all(m["elapsed_seconds"] >= 0 for m in facts["measurements"])
         assert facts["measurements"][0]["usage_after"]["maxrss_unit"] == "KiB"
         assert len(list(output.glob("PRIMARY-*.json"))) == 18
@@ -447,3 +465,56 @@ def test_original_task_tamper_blocks_delivery(driver, b_closure):
     Path(outer["completed"][0]["task_complete_ref"]["path"]).write_text("{}")
     with pytest.raises(PermissionError, match="hash differs"):
         driver.verify_b(plan)
+
+
+def recovery_facts():
+    return dict(
+        status="RECOVERY_FACTS_RECHECKED_NOT_GATE_SIGNED",
+        comparison=dict(
+            status="PASS",
+            exact=True,
+            differences=[],
+            independent_process_verified=True,
+            new_generated_responses=1024,
+        ),
+        comparison_history=dict(status="ALL_SAVED_FACTS_VERIFIED"),
+        new_responses=0,
+        new_updates=0,
+    )
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("status", "FAIL"),
+        ("exact", False),
+        ("differences", ["state"]),
+        ("independent_process_verified", False),
+        ("new_generated_responses", 0),
+    ],
+)
+def test_recovery_complete_label_cannot_replace_inner_gate(driver, field, value):
+    facts = recovery_facts()
+    assert driver.recovery_passed(facts)
+    facts["comparison"][field] = value
+    assert not driver.recovery_passed(facts)
+
+
+def test_unknown_comparison_history_blocks_full_delivery(driver):
+    facts = recovery_facts()
+    facts["comparison_history"]["status"] = "HISTORICAL_TECHNICAL_UNKNOWN"
+    assert not driver.recovery_passed(facts)
+
+
+def test_consumer_tamper_rejected_before_import(driver, tmp_path, monkeypatch):
+    monkeypatch.setattr(driver, "__file__", str(tmp_path / "audit.py"))
+    (tmp_path / "recovery_readonly.py").write_text("raise RuntimeError('must not execute')")
+    with pytest.raises(PermissionError, match="consumer differs"):
+        driver.load_recovery_consumer()
+
+
+def test_consumer_source_pin_matches_runtime_member(driver):
+    assert (
+        driver.sha(Path(driver.__file__).with_name("recovery_readonly.py"))
+        == driver.RECOVERY_CONSUMER_SHA
+    )

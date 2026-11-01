@@ -281,3 +281,14 @@ b2的原UPDATE.training_seconds按12步求和：U10为8022.95854542451秒，U11�
 独立只读审核追踪原九路调用链，确认没有原恢复入口触发的历史重评/旧root缓存写入，launcher语法通过。32项专项测试通过0.16秒，Ruff及格式通过。本机真实回执形状smoke通过但不是live数据审核，未加载远端checkpoint或运行完整九路。此包尚未部署/冻结/提交；独立不可变部署与防重提交operator、完整恢复等价只读consumer仍待实现，README列出明确前置门。源代码准备不能写成实际交付完成。
 
 父线程最终关联验证：OMP_NUM_THREADS=1，test_post_b_delivery/test_pilot_audit/test_recovery合计81项通过97.26秒；Ruff check/format、bash -n与git diff --check通过。仅本地测试，不是服务器完整交付审核。
+
+
+### 完整只读交付审核与独立操作器准备（2026-11-01）
+
+新增独立recovery_readonly.py，以原七个函数的AST归一对照、真实torch/Adam/RNG差分和历史证明/比较inventory破坏测试核对等价性；独立审核确认六个原helper文件与冻结b7 packaged_source全字节一致。保留原恢复断言、前缀核验及完整比较历史；原注册/overlay重建使用真实输入，历史确认只冷读既存transport proof、REQUEST/stdout/stderr和全部输入hash，不重新运行普查/历史确认，不写旧目录、不注入缓存或monkeypatch。此边界是已有历史科学证据的完整性复核，不是新历史科学准入。
+
+主driver固定consumer sha56c50f7c8c9d710c27d3471aa590667c5776aa922869ae39212c629fdaba2a9c并核对实际导入来源；九主路径原_verify_run及唯一恢复完整复核均在十个既存事务锁下执行，前后目录库存一致。仅内层comparison PASS/exact/空差异/独立进程/1024原恢复回答及ALL_SAVED_FACTS_VERIFIED全历史成立，才输出DELIVERY_FACTS_NOT_SCIENTIFIC_GATE、full_delivery_verified=true；科学gate仍NOT_SIGNED、evaluation/formal授权false。任何技术异常保留原记录，不当科学FAIL。
+
+独立operations.py/client.py负责四源码成员+manifest不可变部署、六字段合同、唯一意图/提交/UNKNOWN核对与只读进展。客户端逐次将包字节与真实提交的Git对象核对；提交前核对B真实终态、完整小回执、独占锁、五槽实时容量和4CPU12GiB2h/noGPU/no-requeue预算，50秒SSH仅运送命令/读持久回执。07:36:17UTC只读确认用户4槽，仍须提交前再次核对；其它项目不修改。本段为准备，不是已部署或已提交。完整审核实际成功及原信用门检查之前不启动DEV。
+
+整合专项124测试通过22.73秒（含consumer39、client10、driver40、operator35）；Ruff检查、bash语法和diff检查通过。两次独立静态审核覆盖新操作器/客户端及整合driver/consumer，无阻断发现；所有验证仅本地工程证据。
