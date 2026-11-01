@@ -292,3 +292,12 @@ b2的原UPDATE.training_seconds按12步求和：U10为8022.95854542451秒，U11�
 独立operations.py/client.py负责四源码成员+manifest不可变部署、六字段合同、唯一意图/提交/UNKNOWN核对与只读进展。客户端逐次将包字节与真实提交的Git对象核对；提交前核对B真实终态、完整小回执、独占锁、五槽实时容量和4CPU12GiB2h/noGPU/no-requeue预算，50秒SSH仅运送命令/读持久回执。07:36:17UTC只读确认用户4槽，仍须提交前再次核对；其它项目不修改。本段为准备，不是已部署或已提交。完整审核实际成功及原信用门检查之前不启动DEV。
 
 整合专项124测试通过22.73秒（含consumer39、client10、driver40、operator35）；Ruff检查、bash语法和diff检查通过。两次独立静态审核覆盖新操作器/客户端及整合driver/consumer，无阻断发现；所有验证仅本地工程证据。
+
+
+### 完整CPU交付审核唯一提交238732（2026-11-01 07:44 UTC）
+
+源码a860da748800dc5754aa24479ebf6d758a7022ff已scoped commit/push/ls-remote核实。四runtime源码+manifest共5文件85824bytes，07:44:00.379972UTC唯一部署sr_f6_post_b_delivery_code_a860da7成功，binding fa3c6c70ccafcfcfb4a40cc83b8731ac801a6614918b51e421b7815b68433302。独立合同PILOT_POST_B_DELIVERY_20261101/CONTRACT.json sha c2806275b851afa7e0dd684cec1a7005f8de7da330f450b10dca79ca4902dfb5已唯一冻结；b7/v7/v8/B原部署不改。
+
+实时用户4作业/上限5、B真实终态离队、完整小回执/来源/防重门通过，07:44:27.383596UTC唯一提交238732/LH-SRF6-PostB-Delivery。4CPU/12G/2h/noGPU/no-requeue，请求实际核验REQUEST_VERIFIED；意图sha e994645f1a4d991dfd6dd962c0f6b9c93ae38707d9f753c81ee76b4936ca1b80，comment SRF6PD-acfdbddf821d44568a70d4e8dab0f0e7。部署/冻结/提交全过程本机ATTEMPT/RESULT和服务器持久回执齐全明确SUBMITTED，禁止再deploy/freeze/submit或热改部署。
+
+07:44:41.442597UTC只读快照仍PENDING，sacct 0:0/00:00:00/Unknown开始结束；RESULT尚不存在，无STARTED/COMPLETE/FAILURE。不称已执行或审核通过。私有证据位于.local/pilot_post_b_delivery_20261101/，读取命令为本机venv python scripts/sr_f6_post_b_delivery/client.py read，50秒SSH，仅小回执。等待真实终态离队及9PRIMARY、RECOVERY、RESULT/COMPLETE整体闭包、full_delivery_verified=true和完整历史后，再按原信用门准备DEV；外层科学gate仍NOT_SIGNED。所有worker已停止修改。四成员扩展最终ops/client45项通过0.47秒，Ruff通过；此前124项整合通过22.73秒。
