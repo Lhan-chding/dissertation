@@ -329,3 +329,10 @@ v2独立操作器使用PILOT_POST_B_DELIVERY_V2_20261101、新source目录、5�
 08:16:14.261610UTC只读快照PENDING，尚无STARTED/RESULT/FAILURE，不称已审核通过。下一步仅运行本机venv python scripts/sr_f6_post_b_delivery_v2/client.py read，50秒SSH保存私有时间快照，观察238798真实分配、9PRIMARY/RECOVERY/RESULT/COMPLETE/FAILURE及elapsed/RSS。wrapper顶层full_delivery_verified=false仅读操作，实际结论读取RESULT内层。只有真实COMPLETED0:0离队、完整九路与恢复原字节闭包、full_delivery_verified=true、原_exposure至少2父反馈信用且U11至少12组/8root/3家族，才独立准备原DEV来源/合同/提交门。不是科学准入，不增加U11必须赢/SHUF必须失效门。
 
 旧238732技术失败及其三路部分成功、原233996 OOM及所有历史不利记录原样保留。新consumer是明确独立适配，原全PASS inventory仍拒绝旧OOM；不声称原函数通过。完整恢复读取仍用原只读consumer，不调用原verify_recovery/verify_comparison fresh、不重评历史确认/普查、不重复唯一恢复、0新回答0更新。所有worker已停止修改。
+
+
+### 用户终止审核与自动后续（2026-11-01 16:28新加坡时间）
+
+用户明确要求“不用审核了，直接给结果，没必要”。已删除sr-f6自动跟进；仅取消指定238798/LH-SRF6-PostB-DeliveryV2，08:28:08UTC实际CANCELLED by 295800338、离队、Elapsed00:00:00（未开始），其它作业未动。停止审核/修复/自动扩展，不再按上文旧“下一步”继续提交。既有训练、恢复及所有证据保留；未启动DEV/FORMAL/TEST。用户取消不是科学FAIL。
+
+按用户要求仅汇总既存credit.json中的原J分数，未重评分、未跑审核或新采样。每路径1536回答，b0的U10/U11/C_SHUF为1201/1202/1198；b1为1264/1268/1272；b2为1129/1128/1128。三父合计各4608回答，分别3594(77.99%)、3598(78.08%)、3598(78.08%)。U11相对U10仅多4条(0.087个百分点)，与SHUF总数相同；这是训练期间累计原分数，不能当作最终模型独立评估效果或显著收益。U11保存的非零辅助信用共89组/21root/5家族，不替代本轮未完成的完整审核。已有唯一恢复回执精确PASS保持。DEV独立评估尚未运行，因此没有训练后独立性能结论。原始读取与取消回执保存在.local/pilot_post_b_delivery_v2_20261101。
