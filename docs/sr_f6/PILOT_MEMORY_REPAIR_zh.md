@@ -318,3 +318,14 @@ v2独立操作器使用PILOT_POST_B_DELIVERY_V2_20261101、新source目录、5�
 独立复核已核对原函数AST、实际既存v7/恢复/COMMIT/失败字段以及操作器全部边界，无剩余阻断。新primary专项35项通过48.23秒；父线程driver/operator/client初步114项通过1.04秒，最终整合记录随后追加。只有新作业真实成功离队、九路+恢复及全历史完整闭包、原信用门满足后才准备独立DEV；不新增U11必须赢或SHUF必须失效条件，FORMAL/TEST仍待原科学准入。
 
 父线程最终整合：OMP_NUM_THREADS=1，v2 driver/operator/client、primary只读对账及原recovery consumer合计189项通过72.63秒；Ruff check/format、bash -n与git diff --check通过。primary/recovery运行成员hash与driver固定值实测一致。独立审核员及两个实现worker均已停止修改；这些仍是本地工程证据，尚非服务器交付通过。
+
+
+### v2唯一CPU交付审核238798已提交（2026-11-01 08:16 UTC）
+
+生产源bb054cbb936ded3cbba1aa9e4760cab2d6792a01已scoped commit/push/ls-remote核实。08:15:33.153996UTC唯一部署sr_f6_post_b_delivery_v2_code_bb054cb成功，5源码+manifest=6文件139735bytes，binding 6aa0cb129376dcc99b46d6651dc15febdfa565266ca06d805e3130b13fd98d04。私有2364byte原OOM证明单独按固定hash写入新ops，未上Git。08:15:50.733739UTC唯一冻结九字段合同PILOT_POST_B_DELIVERY_V2_20261101/CONTRACT.json，sha c4a73186db14f45584a656fde745a8dad6c22fc83dc41f0642076ae7f2037851。
+
+08:16:01.423647UTC实际双前驱237289 COMPLETED0:0、238732 FAILED1:0且均离队；实时用户4槽/上限5，加入1CPU作业合法。唯一提交238798/LH-SRF6-PostB-DeliveryV2，4CPU12G2h/noGPU/no-requeue，实际请求REQUEST_VERIFIED。意图sha 64f966347355b7bab5bc41bf0fd868260a283f3579985878347851c800f2c921，comment SRF6PDV2-e57ab2ec4fa043c493bf568462ab1d06。本机ATTEMPT/RESULT及server SUBMISSION均明确SUBMITTED；禁止重复deploy/freeze/submit或热改部署，未知只能先reconcile。
+
+08:16:14.261610UTC只读快照PENDING，尚无STARTED/RESULT/FAILURE，不称已审核通过。下一步仅运行本机venv python scripts/sr_f6_post_b_delivery_v2/client.py read，50秒SSH保存私有时间快照，观察238798真实分配、9PRIMARY/RECOVERY/RESULT/COMPLETE/FAILURE及elapsed/RSS。wrapper顶层full_delivery_verified=false仅读操作，实际结论读取RESULT内层。只有真实COMPLETED0:0离队、完整九路与恢复原字节闭包、full_delivery_verified=true、原_exposure至少2父反馈信用且U11至少12组/8root/3家族，才独立准备原DEV来源/合同/提交门。不是科学准入，不增加U11必须赢/SHUF必须失效门。
+
+旧238732技术失败及其三路部分成功、原233996 OOM及所有历史不利记录原样保留。新consumer是明确独立适配，原全PASS inventory仍拒绝旧OOM；不声称原函数通过。完整恢复读取仍用原只读consumer，不调用原verify_recovery/verify_comparison fresh、不重评历史确认/普查、不重复唯一恢复、0新回答0更新。所有worker已停止修改。
