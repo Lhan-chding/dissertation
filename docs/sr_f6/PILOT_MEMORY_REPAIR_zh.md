@@ -364,3 +364,16 @@ v2独立操作器使用PILOT_POST_B_DELIVERY_V2_20261101、新source目录、5�
 该事件为启动脚本故障，非科学结果；不删除pyc/失败，不热改原部署或重提238849。继续用户直接DEV授权，准备独立v2来源/合同/唯一提交：显式srun --export=ALL、SLURM_EXPORT_ENV=ALL，所有子Python显式-I -B。固定原12端点2304回答不变，提交前核实际238849 FAILED1:0且离队、固定失败回执和原评估目录仍为空；不重启交付审核、不重采已有回答、不修改旧训练/恢复/其它项目。
 
 独立DEVv2实现完成：同时补齐原运行时要求的CUBLAS_WORKSPACE_CONFIG=:4096:8，srun沿已成功B参数exact/nodes1/kill-on-bad-exit0/exportALL；所有子Python-I-B。原adapter仅新wrapper命名空间/schema变化，采样/模型/评分核心字节逻辑不变。真实子进程测试删除PYTHONDONTWRITEBYTECODE仍无pyc、原OMP/CUBLAS继承通过；135项关联测试2.02秒、Ruff/format/bash/diff通过。独立复核无阻断、worker停止修改；不重新运行交付审核。此时尚未新部署/提交，实际回执另记。
+
+
+### DEVv2已唯一提交239023（2026-11-01 18:11新加坡时间）
+
+本次来源aeda61b1308ab79d619f73ce22c7510aea1b71bd已commit/push/ls-remote核实；独立部署/projects/_ssd/varunssd/louis-ssvc/sr_f6_dev_eval_v2_code_aeda61b，4源码+manifest=5文件104429bytes，binding64bb476661881b199a9111c8d284e8f1dea5205dc295abc90f42e452a406c142；合同/projects/_ssd/varunssd/louis-ssvc/sr_f6_operations_20261027/PILOT_DEV_EVAL_V2_20261101/CONTRACT.json shaddbea27f3b61ad706345a72fe891a074d59b70b7afd8de2a9db4c8f90c4e647f。
+唯一部署2026-11-01T10:11:04.515229+00:00，唯一freeze2026-11-01T10:11:16.431356+00:00，唯一submit2026-11-01T10:11:30.784941+00:00：239023/LH-SRF6-PilotV3-DEVV2，2PRO6000/8CPU66G/23h/no-requeue/OMP1，REQUEST_VERIFIED。实时用户1/5槽、teacher1/8GPU；B237289 COMPLETED0:0、旧DEV238849 FAILED1:0且离队。意图sha327f180128758d6bb2daac4ce81195c8d41f1d2e217b95f1aa1f42c81489ec87，commentSRF6DEVV2-dd9003d9faa4415dae00b5166888ebf2。本机ATTEMPT/RESULT及server SUBMISSION均SUBMITTED，绝不重复deploy/freeze/submit或热改部署。
+
+最新真实读取2026-11-01T10:11:45.468541+00:00：239023|PENDING|0:0|00:00:00|Unknown|Unknown。尚无STARTED/原端点文件；未称实际采样或科学通过。下一步仅：
+/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python scripts/sr_f6_dev_eval_v2/client.py read
+50秒SSH保存私有回执；未知先查调度/意图，禁止重提。
+
+
+私有完整续接记录.local/pilot_dev_eval_v2_20261101/CONTINUE_zh.md。当前仍排队，未有评估结果；不重新开启额外交付审核或旧自动跟进。
