@@ -356,3 +356,11 @@ v2独立操作器使用PILOT_POST_B_DELIVERY_V2_20261101、新source目录、5�
 
 
 后续只读本机 scripts/sr_f6_dev_eval/client.py read 跟踪；实际完成后直接汇总原DEV结果，不重新附加交付审核。125项整合测试1.93秒通过；源码已推送，旧自动跟进未重建。当前真实状态为PENDING，尚无采样结果。完整私有续接记录在.local/pilot_dev_eval_20261101/CONTINUE_zh.md。
+
+### DEV238849启动技术失败与直接修复（2026-11-01 18:05新加坡时间）
+
+用户要求继续。实际只读确认238849于09:13:43UTC分配gpu-pro6000-1的2PRO6000/8CPU66G，09:13:44以FAILED1:0退出且离队；两lane均在入口报OMP1 required，尚未建立原EVALUATION任何文件，0回答0更新。根因为srun继承sbatch的指定export白名单，launcher新设置的OMP等未传到step。子Python未显式-B，又产生operations.cpython-312.pyc，使后续read严格部署inventory拒绝；原4源码+manifest字节均未改变，额外pyc及全部失败原样保留。原FAILURE sha bea396ff4e1dd962a002c458d2b79479f66630cb2e7953bbdea94b231be3ddca；两lane日志sha857f579afc7ddf51395cc2856e7e908ba629e0e8cd7981c409869bc82d7dd77a/28a43589d371fdb4180e16956a710a3ee71203ca55f5a19e069749c58fcd310b。私有DIAG_20261101T100549.json记录真实调度、日志、源码清单和空采样目录。
+
+该事件为启动脚本故障，非科学结果；不删除pyc/失败，不热改原部署或重提238849。继续用户直接DEV授权，准备独立v2来源/合同/唯一提交：显式srun --export=ALL、SLURM_EXPORT_ENV=ALL，所有子Python显式-I -B。固定原12端点2304回答不变，提交前核实际238849 FAILED1:0且离队、固定失败回执和原评估目录仍为空；不重启交付审核、不重采已有回答、不修改旧训练/恢复/其它项目。
+
+独立DEVv2实现完成：同时补齐原运行时要求的CUBLAS_WORKSPACE_CONFIG=:4096:8，srun沿已成功B参数exact/nodes1/kill-on-bad-exit0/exportALL；所有子Python-I-B。原adapter仅新wrapper命名空间/schema变化，采样/模型/评分核心字节逻辑不变。真实子进程测试删除PYTHONDONTWRITEBYTECODE仍无pyc、原OMP/CUBLAS继承通过；135项关联测试2.02秒、Ruff/format/bash/diff通过。独立复核无阻断、worker停止修改；不重新运行交付审核。此时尚未新部署/提交，实际回执另记。
