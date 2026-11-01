@@ -344,3 +344,15 @@ v2独立操作器使用PILOT_POST_B_DELIVERY_V2_20261101、新source目录、5�
 08:32:02UTC只读确认原EVALUATION及JOBS/EVAL不存在已采样或完成记录；用户4/5作业槽，teacher当前2/8GPU，本次计划单作业2PRO6000/8CPU66G/23h/no-requeue/OMP1，提交前重新实时检查。原冷启动入口会递归重审历史确认并写旧目录，因此新增独立scripts/sr_f6_dev_eval包装，静态分离历史授权与原实际采样/模型加载逻辑：保持原plan/spec/输入/seed/评分、真实冻结模型/step12张量和原防重ledger，每端点新进程，两个lane独立失败且不取消peer。当前权限来自显式用户授权合同，旧ADMISSION仅作原来源引用，历史确认不重评；不monkeypatch、不注入授权缓存、不热改旧来源。该段仅记录实现与授权，部署/提交回执随后追加。
 
 直接DEV包装最终125项本地关联测试通过；Ruff/format/bash语法/diff检查通过。独立复核确认原实际runtime/endpoint/access/ledger/输入与评分核心保留、固定SOURCE_BINDING及实施注册小对象身份匹配，用户授权仅替代递归历史审核入口；部署前全部worker停止修改。这些是启动代码本地检查，未重新运行CPU交付审核。
+
+
+### 用户直接授权DEV已唯一提交238849（2026-11-01 16:43新加坡时间）
+
+生产源 ef9ea08b3c24048ed58ca1af84cb33553581294e 已commit/push/ls-remote核实；部署 /projects/_ssd/varunssd/louis-ssvc/sr_f6_dev_eval_code_ef9ea08，4源码+manifest=5文件/101084bytes，binding 1750bb22406638b87f1ecd138d25e1afa9d172f23f4a0b7d67bc98c345589648。
+合同 /projects/_ssd/varunssd/louis-ssvc/sr_f6_operations_20261027/PILOT_DEV_EVAL_20261101/CONTRACT.json sha 1dea036cb5028ca10f78a0883657e7cfb7342f81d5614113f2b230d667fca37a。
+08:42:39UTC唯一deploy、08:42:54唯一freeze、08:43:09唯一submit 238849/LH-SRF6-PilotV3-DEV，2PRO6000/8CPU66G/23h/no-requeue/OMP1。实时用户4/5槽，teacher2/8GPU；原B237289 COMPLETED0:0及已取消238798均离队。REQUEST_VERIFIED。意图 df62f01d9e298f8c84654daeec19ab165265acab5d0542bf42d3e952398f9e20。禁止重复deploy/freeze/submit及热改部署。
+
+最新读取 2026-11-01T08:43:21.465072+00:00：238849|PENDING|0:0|00:00:00|Unknown|Unknown；无STARTED/FAILURE/端点评估记录，尚未分配GPU；不能称已开始采样或完成。
+
+
+后续只读本机 scripts/sr_f6_dev_eval/client.py read 跟踪；实际完成后直接汇总原DEV结果，不重新附加交付审核。125项整合测试1.93秒通过；源码已推送，旧自动跟进未重建。当前真实状态为PENDING，尚无采样结果。完整私有续接记录在.local/pilot_dev_eval_20261101/CONTINUE_zh.md。
