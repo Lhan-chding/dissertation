@@ -1,0 +1,337 @@
+{
+  "status": "PASS_FIXED_FIXTURES",
+  "native_source": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_b7e7b06/src/sr_f6/measurement.py",
+  "native_sha256": "90c26410af3f5526bce5b697138c72e0bf2d0cb58f3557d67fe42cf35db29a04",
+  "fixtures": [
+    {
+      "fixture": "correct",
+      "text": "{\"evidence\":[{\"series\":\"Alpha\",\"category\":\"Book\",\"value\":72},{\"series\":\"Alpha\",\"category\":\"Bowl\",\"value\":66},{\"series\":\"Alpha\",\"category\":\"Chair\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Clock\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Desk\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Frame\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Lamp\",\"value\":18},{\"series\":\"Alpha\",\"category\":\"Mug\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Book\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Bowl\",\"value\":18},{\"series\":\"Beta\",\"category\":\"Chair\",\"value\":24},{\"series\":\"Beta\",\"category\":\"Clock\",\"value\":30},{\"series\":\"Beta\",\"category\":\"Desk\",\"value\":36},{\"series\":\"Beta\",\"category\":\"Frame\",\"value\":42},{\"series\":\"Beta\",\"category\":\"Lamp\",\"value\":48},{\"series\":\"Beta\",\"category\":\"Mug\",\"value\":54}],\"selected\":[\"Book\",\"Bowl\",\"Chair\"],\"bindings\":[{\"category\":\"Book\",\"operand\":\"12\"},{\"category\":\"Bowl\",\"operand\":\"18\"},{\"category\":\"Chair\",\"operand\":\"24\"}],\"aggregate\":\"sum\",\"answer\":\"54\"}",
+      "finish_reason": "balanced",
+      "native": {
+        "A": 1,
+        "S": 1,
+        "B": 1,
+        "V": 1,
+        "J": 1
+      },
+      "probe": {
+        "A": 1,
+        "S": 1,
+        "B": 1,
+        "V_probe": 1
+      },
+      "differences": {}
+    },
+    {
+      "fixture": "true_prefix",
+      "text": "{\"evidence\":[{\"series\":\"Alpha\",\"category\":\"Book\",\"value\":72},{\"series\":\"Alpha\",\"category\":\"Bowl\",\"value\":66},{\"series\":\"Alpha\",\"category\":\"Chair\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Clock\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Desk\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Frame\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Lamp\",\"value\":18},{\"series\":\"Alpha\",\"category\":\"Mug\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Book\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Bowl\",\"value\":18},{\"series\":\"Beta\",\"category\":\"Chair\",\"value\":24},{\"series\":\"Beta\",\"category\":\"Clock\",\"value\":30},{\"series\":\"Beta\",\"category\":\"Desk\",\"value\":36},{\"series\":\"Beta\",\"category\":\"Frame\",\"value\":42},{\"series\":\"Beta\",\"category\":\"Lamp\",\"value\":48},{\"series\":\"Beta\",\"category\":\"Mug\",\"value\":54}],\"selected\":[\"Book\",\"Bowl\",\"Chair\"],\"bindings\":[{\"category\":\"Book\",\"operand\":\"12\"},{\"category\":\"Bowl\",\"operand\":\"18\"},{\"category\":\"Chair\",\"operand\":\"24\"}],\"aggregate\":\"sum\",\"answer\":\"54\"}",
+      "finish_reason": "balanced",
+      "native": {
+        "A": 1,
+        "S": 1,
+        "B": 1,
+        "V": 1,
+        "J": 1
+      },
+      "probe": {
+        "A": 1,
+        "S": 1,
+        "B": 1,
+        "V_probe": 1
+      },
+      "differences": {}
+    },
+    {
+      "fixture": "incomplete",
+      "text": "{\"evidence\":[{\"series\":\"Alpha\",\"category\":\"Book\",\"value\":72},{\"series\":\"Alpha\",\"category\":\"Bowl\",\"value\":66},{\"series\":\"Alpha\",\"category\":\"Chair\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Clock\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Desk\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Frame\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Lamp\",\"value\":18},{\"series\":\"Alpha\",\"category\":\"Mug\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Book\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Bowl\",\"value\":18},{\"series\":\"Beta\",\"category\":\"Chair\",\"value\":24},{\"series\":\"Beta\",\"category\":\"Clock\",\"value\":30},{\"series\":\"Beta\",\"category\":\"Desk\",\"value\":36},{\"series\":\"Beta\",\"category\":\"Frame\",\"value\":42},{\"series\":\"Beta\",\"category\":\"Lamp\",\"value\":48},{\"series\":\"Beta\",\"category\":\"Mug\",\"value\":54}],\"selected\":[\"Book\",\"Bowl\",\"Chair\"],\"bindings\":[{\"category\":\"Book\",\"operand\":\"12\"},{\"category\":\"Bowl\",\"operand\":\"18\"},{\"category\":\"Chair\",\"operand\":\"24\"}],\"aggregate\":\"sum\",\"answer\":\"54\"}",
+      "finish_reason": "length",
+      "native": {
+        "A": 1,
+        "S": null,
+        "B": null,
+        "V": 1,
+        "J": 0
+      },
+      "probe": {
+        "A": 1,
+        "S": null,
+        "B": null,
+        "V_probe": 1
+      },
+      "differences": {}
+    },
+    {
+      "fixture": "truncated",
+      "text": "{\"evidence\":[{\"series\":\"Alpha\",\"category\":\"Book\",\"value\":72},{\"series\":\"Alpha\",\"category\":\"Bowl\",\"value\":66},{\"series\":\"Alpha\",\"category\":\"Chair\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Clock\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Desk\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Frame\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Lamp\",\"value\":18},{\"series\":\"Alpha\",\"category\":\"Mug\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Book\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Bowl\",\"value\":18},{\"series\":\"Beta\",\"category\":\"Chair\",\"value\":24},{\"series\":\"Beta\",\"category\":\"Clock\",\"value\":30},{\"series\":\"Beta\",\"category\":\"Desk\",\"value\":36},{\"series\":\"Beta\",\"category\":\"Frame\",\"value\":42},{\"series\":\"Beta\",\"category\":\"Lamp\",\"value\":48},{\"series\":\"Beta\",\"category\":\"Mug\",\"value\":54}],\"selected\":[\"Book\",\"Bowl\",\"Chair\"],\"bindings\":[{\"category\":\"Book\",\"operand\":\"12\"},{\"category\":\"Bowl\",\"operand\":\"18\"},{\"category\":\"Chair\",\"operand\":\"24\"}],\"aggregate\":\"sum\",\"answer\":\"54",
+      "finish_reason": "length",
+      "native": {
+        "A": 0,
+        "S": null,
+        "B": null,
+        "V": 0,
+        "J": 0
+      },
+      "probe": {
+        "A": 0,
+        "S": null,
+        "B": null,
+        "V_probe": 0
+      },
+      "differences": {}
+    },
+    {
+      "fixture": "duplicate_key",
+      "text": "{\"evidence\":[{\"series\":\"Alpha\",\"category\":\"Book\",\"value\":72},{\"series\":\"Alpha\",\"category\":\"Bowl\",\"value\":66},{\"series\":\"Alpha\",\"category\":\"Chair\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Clock\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Desk\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Frame\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Lamp\",\"value\":18},{\"series\":\"Alpha\",\"category\":\"Mug\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Book\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Bowl\",\"value\":18},{\"series\":\"Beta\",\"category\":\"Chair\",\"value\":24},{\"series\":\"Beta\",\"category\":\"Clock\",\"value\":30},{\"series\":\"Beta\",\"category\":\"Desk\",\"value\":36},{\"series\":\"Beta\",\"category\":\"Frame\",\"value\":42},{\"series\":\"Beta\",\"category\":\"Lamp\",\"value\":48},{\"series\":\"Beta\",\"category\":\"Mug\",\"value\":54}],\"selected\":[\"Book\",\"Bowl\",\"Chair\"],\"bindings\":[{\"category\":\"Book\",\"operand\":\"12\"},{\"category\":\"Bowl\",\"operand\":\"18\"},{\"category\":\"Chair\",\"operand\":\"24\"}],\"aggregate\":\"sum\",\"answer\":\"54\",\"answer\":\"54\"}",
+      "finish_reason": "balanced",
+      "native": {
+        "A": 0,
+        "S": null,
+        "B": null,
+        "V": 0,
+        "J": 0
+      },
+      "probe": {
+        "A": 0,
+        "S": null,
+        "B": null,
+        "V_probe": 0
+      },
+      "differences": {}
+    },
+    {
+      "fixture": "prefix_duplicate_evidence",
+      "text": "{\"evidence\":[{\"series\":\"Alpha\",\"category\":\"Book\",\"value\":72},{\"series\":\"Alpha\",\"category\":\"Bowl\",\"value\":66},{\"series\":\"Alpha\",\"category\":\"Chair\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Clock\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Desk\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Frame\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Lamp\",\"value\":18},{\"series\":\"Alpha\",\"category\":\"Mug\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Book\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Bowl\",\"value\":18},{\"series\":\"Beta\",\"category\":\"Chair\",\"value\":24},{\"series\":\"Beta\",\"category\":\"Clock\",\"value\":30},{\"series\":\"Beta\",\"category\":\"Desk\",\"value\":36},{\"series\":\"Beta\",\"category\":\"Frame\",\"value\":42},{\"series\":\"Beta\",\"category\":\"Lamp\",\"value\":48},{\"series\":\"Beta\",\"category\":\"Mug\",\"value\":54}],\"evidence\":[{\"series\":\"Alpha\",\"category\":\"Book\",\"value\":72},{\"series\":\"Alpha\",\"category\":\"Bowl\",\"value\":66},{\"series\":\"Alpha\",\"category\":\"Chair\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Clock\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Desk\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Frame\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Lamp\",\"value\":18},{\"series\":\"Alpha\",\"category\":\"Mug\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Book\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Bowl\",\"value\":18},{\"series\":\"Beta\",\"category\":\"Chair\",\"value\":24},{\"series\":\"Beta\",\"category\":\"Clock\",\"value\":30},{\"series\":\"Beta\",\"category\":\"Desk\",\"value\":36},{\"series\":\"Beta\",\"category\":\"Frame\",\"value\":42},{\"series\":\"Beta\",\"category\":\"Lamp\",\"value\":48},{\"series\":\"Beta\",\"category\":\"Mug\",\"value\":54}],\"selected\":[\"Book\",\"Bowl\",\"Chair\"],\"bindings\":[{\"category\":\"Book\",\"operand\":\"12\"},{\"category\":\"Bowl\",\"operand\":\"18\"},{\"category\":\"Chair\",\"operand\":\"24\"}],\"aggregate\":\"sum\",\"answer\":\"54\"}",
+      "finish_reason": "balanced",
+      "native": {
+        "A": 0,
+        "S": null,
+        "B": null,
+        "V": 0,
+        "J": 0
+      },
+      "probe": {
+        "A": 0,
+        "S": null,
+        "B": null,
+        "V_probe": 0
+      },
+      "differences": {}
+    },
+    {
+      "fixture": "two_objects",
+      "text": "{\"evidence\":[{\"series\":\"Alpha\",\"category\":\"Book\",\"value\":72},{\"series\":\"Alpha\",\"category\":\"Bowl\",\"value\":66},{\"series\":\"Alpha\",\"category\":\"Chair\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Clock\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Desk\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Frame\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Lamp\",\"value\":18},{\"series\":\"Alpha\",\"category\":\"Mug\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Book\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Bowl\",\"value\":18},{\"series\":\"Beta\",\"category\":\"Chair\",\"value\":24},{\"series\":\"Beta\",\"category\":\"Clock\",\"value\":30},{\"series\":\"Beta\",\"category\":\"Desk\",\"value\":36},{\"series\":\"Beta\",\"category\":\"Frame\",\"value\":42},{\"series\":\"Beta\",\"category\":\"Lamp\",\"value\":48},{\"series\":\"Beta\",\"category\":\"Mug\",\"value\":54}],\"selected\":[\"Book\",\"Bowl\",\"Chair\"],\"bindings\":[{\"category\":\"Book\",\"operand\":\"12\"},{\"category\":\"Bowl\",\"operand\":\"18\"},{\"category\":\"Chair\",\"operand\":\"24\"}],\"aggregate\":\"sum\",\"answer\":\"54\"}{\"evidence\":[{\"series\":\"Alpha\",\"category\":\"Book\",\"value\":72},{\"series\":\"Alpha\",\"category\":\"Bowl\",\"value\":66},{\"series\":\"Alpha\",\"category\":\"Chair\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Clock\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Desk\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Frame\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Lamp\",\"value\":18},{\"series\":\"Alpha\",\"category\":\"Mug\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Book\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Bowl\",\"value\":18},{\"series\":\"Beta\",\"category\":\"Chair\",\"value\":24},{\"series\":\"Beta\",\"category\":\"Clock\",\"value\":30},{\"series\":\"Beta\",\"category\":\"Desk\",\"value\":36},{\"series\":\"Beta\",\"category\":\"Frame\",\"value\":42},{\"series\":\"Beta\",\"category\":\"Lamp\",\"value\":48},{\"series\":\"Beta\",\"category\":\"Mug\",\"value\":54}],\"selected\":[\"Book\",\"Bowl\",\"Chair\"],\"bindings\":[{\"category\":\"Book\",\"operand\":\"12\"},{\"category\":\"Bowl\",\"operand\":\"18\"},{\"category\":\"Chair\",\"operand\":\"24\"}],\"aggregate\":\"sum\",\"answer\":\"54\"}",
+      "finish_reason": "balanced",
+      "native": {
+        "A": 0,
+        "S": null,
+        "B": null,
+        "V": 0,
+        "J": 0
+      },
+      "probe": {
+        "A": 0,
+        "S": null,
+        "B": null,
+        "V_probe": 0
+      },
+      "differences": {}
+    },
+    {
+      "fixture": "markdown",
+      "text": "```json\n{\"evidence\":[{\"series\":\"Alpha\",\"category\":\"Book\",\"value\":72},{\"series\":\"Alpha\",\"category\":\"Bowl\",\"value\":66},{\"series\":\"Alpha\",\"category\":\"Chair\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Clock\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Desk\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Frame\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Lamp\",\"value\":18},{\"series\":\"Alpha\",\"category\":\"Mug\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Book\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Bowl\",\"value\":18},{\"series\":\"Beta\",\"category\":\"Chair\",\"value\":24},{\"series\":\"Beta\",\"category\":\"Clock\",\"value\":30},{\"series\":\"Beta\",\"category\":\"Desk\",\"value\":36},{\"series\":\"Beta\",\"category\":\"Frame\",\"value\":42},{\"series\":\"Beta\",\"category\":\"Lamp\",\"value\":48},{\"series\":\"Beta\",\"category\":\"Mug\",\"value\":54}],\"selected\":[\"Book\",\"Bowl\",\"Chair\"],\"bindings\":[{\"category\":\"Book\",\"operand\":\"12\"},{\"category\":\"Bowl\",\"operand\":\"18\"},{\"category\":\"Chair\",\"operand\":\"24\"}],\"aggregate\":\"sum\",\"answer\":\"54\"}\n```",
+      "finish_reason": "eos",
+      "native": {
+        "A": 0,
+        "S": null,
+        "B": null,
+        "V": 0,
+        "J": 0
+      },
+      "probe": {
+        "A": 0,
+        "S": null,
+        "B": null,
+        "V_probe": 0
+      },
+      "differences": {}
+    },
+    {
+      "fixture": "wrong_selection",
+      "text": "{\"evidence\":[{\"series\":\"Alpha\",\"category\":\"Book\",\"value\":72},{\"series\":\"Alpha\",\"category\":\"Bowl\",\"value\":66},{\"series\":\"Alpha\",\"category\":\"Chair\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Clock\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Desk\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Frame\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Lamp\",\"value\":18},{\"series\":\"Alpha\",\"category\":\"Mug\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Book\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Bowl\",\"value\":18},{\"series\":\"Beta\",\"category\":\"Chair\",\"value\":24},{\"series\":\"Beta\",\"category\":\"Clock\",\"value\":30},{\"series\":\"Beta\",\"category\":\"Desk\",\"value\":36},{\"series\":\"Beta\",\"category\":\"Frame\",\"value\":42},{\"series\":\"Beta\",\"category\":\"Lamp\",\"value\":48},{\"series\":\"Beta\",\"category\":\"Mug\",\"value\":54}],\"selected\":[\"Book\",\"Bowl\",\"Clock\"],\"bindings\":[{\"category\":\"Book\",\"operand\":\"12\"},{\"category\":\"Bowl\",\"operand\":\"18\"},{\"category\":\"Chair\",\"operand\":\"24\"}],\"aggregate\":\"sum\",\"answer\":\"54\"}",
+      "finish_reason": "balanced",
+      "native": {
+        "A": 1,
+        "S": 0,
+        "B": 1,
+        "V": 1,
+        "J": 1
+      },
+      "probe": {
+        "A": 1,
+        "S": 0,
+        "B": 1,
+        "V_probe": 1
+      },
+      "differences": {}
+    },
+    {
+      "fixture": "selection_unknown",
+      "text": "{\"evidence\":[{\"series\":\"Alpha\",\"category\":\"Book\",\"value\":72},{\"series\":\"Alpha\",\"category\":\"Bowl\",\"value\":66},{\"series\":\"Alpha\",\"category\":\"Chair\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Clock\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Desk\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Frame\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Lamp\",\"value\":18},{\"series\":\"Alpha\",\"category\":\"Mug\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Book\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Bowl\",\"value\":18},{\"series\":\"Beta\",\"category\":\"Chair\",\"value\":24},{\"series\":\"Beta\",\"category\":\"Clock\",\"value\":30},{\"series\":\"Beta\",\"category\":\"Desk\",\"value\":36},{\"series\":\"Beta\",\"category\":\"Frame\",\"value\":42},{\"series\":\"Beta\",\"category\":\"Lamp\",\"value\":48},{\"series\":\"Beta\",\"category\":\"Mug\",\"value\":54}],\"selected\":\"Book\",\"bindings\":[{\"category\":\"Book\",\"operand\":\"12\"},{\"category\":\"Bowl\",\"operand\":\"18\"},{\"category\":\"Chair\",\"operand\":\"24\"}],\"aggregate\":\"sum\",\"answer\":\"54\"}",
+      "finish_reason": "balanced",
+      "native": {
+        "A": 1,
+        "S": null,
+        "B": 1,
+        "V": 0,
+        "J": 0
+      },
+      "probe": {
+        "A": 1,
+        "S": null,
+        "B": 1,
+        "V_probe": 0
+      },
+      "differences": {}
+    },
+    {
+      "fixture": "duplicate_selection",
+      "text": "{\"evidence\":[{\"series\":\"Alpha\",\"category\":\"Book\",\"value\":72},{\"series\":\"Alpha\",\"category\":\"Bowl\",\"value\":66},{\"series\":\"Alpha\",\"category\":\"Chair\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Clock\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Desk\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Frame\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Lamp\",\"value\":18},{\"series\":\"Alpha\",\"category\":\"Mug\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Book\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Bowl\",\"value\":18},{\"series\":\"Beta\",\"category\":\"Chair\",\"value\":24},{\"series\":\"Beta\",\"category\":\"Clock\",\"value\":30},{\"series\":\"Beta\",\"category\":\"Desk\",\"value\":36},{\"series\":\"Beta\",\"category\":\"Frame\",\"value\":42},{\"series\":\"Beta\",\"category\":\"Lamp\",\"value\":48},{\"series\":\"Beta\",\"category\":\"Mug\",\"value\":54}],\"selected\":[\"Book\",\"Book\",\"Chair\"],\"bindings\":[{\"category\":\"Book\",\"operand\":\"12\"},{\"category\":\"Bowl\",\"operand\":\"18\"},{\"category\":\"Chair\",\"operand\":\"24\"}],\"aggregate\":\"sum\",\"answer\":\"54\"}",
+      "finish_reason": "balanced",
+      "native": {
+        "A": 1,
+        "S": 0,
+        "B": 1,
+        "V": 1,
+        "J": 1
+      },
+      "probe": {
+        "A": 1,
+        "S": 0,
+        "B": 1,
+        "V_probe": 1
+      },
+      "differences": {}
+    },
+    {
+      "fixture": "wrong_answer",
+      "text": "{\"evidence\":[{\"series\":\"Alpha\",\"category\":\"Book\",\"value\":72},{\"series\":\"Alpha\",\"category\":\"Bowl\",\"value\":66},{\"series\":\"Alpha\",\"category\":\"Chair\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Clock\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Desk\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Frame\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Lamp\",\"value\":18},{\"series\":\"Alpha\",\"category\":\"Mug\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Book\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Bowl\",\"value\":18},{\"series\":\"Beta\",\"category\":\"Chair\",\"value\":24},{\"series\":\"Beta\",\"category\":\"Clock\",\"value\":30},{\"series\":\"Beta\",\"category\":\"Desk\",\"value\":36},{\"series\":\"Beta\",\"category\":\"Frame\",\"value\":42},{\"series\":\"Beta\",\"category\":\"Lamp\",\"value\":48},{\"series\":\"Beta\",\"category\":\"Mug\",\"value\":54}],\"selected\":[\"Book\",\"Bowl\",\"Chair\"],\"bindings\":[{\"category\":\"Book\",\"operand\":\"12\"},{\"category\":\"Bowl\",\"operand\":\"18\"},{\"category\":\"Chair\",\"operand\":\"24\"}],\"aggregate\":\"sum\",\"answer\":\"999\"}",
+      "finish_reason": "balanced",
+      "native": {
+        "A": 0,
+        "S": 1,
+        "B": 1,
+        "V": 1,
+        "J": 0
+      },
+      "probe": {
+        "A": 0,
+        "S": 1,
+        "B": 1,
+        "V_probe": 1
+      },
+      "differences": {}
+    },
+    {
+      "fixture": "answer_not_gated",
+      "text": "{\"evidence\":[{\"series\":\"Alpha\",\"category\":\"Book\",\"value\":72},{\"series\":\"Alpha\",\"category\":\"Bowl\",\"value\":66},{\"series\":\"Alpha\",\"category\":\"Chair\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Clock\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Desk\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Frame\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Lamp\",\"value\":18},{\"series\":\"Alpha\",\"category\":\"Mug\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Book\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Bowl\",\"value\":18},{\"series\":\"Beta\",\"category\":\"Chair\",\"value\":24},{\"series\":\"Beta\",\"category\":\"Clock\",\"value\":30},{\"series\":\"Beta\",\"category\":\"Desk\",\"value\":36},{\"series\":\"Beta\",\"category\":\"Frame\",\"value\":42},{\"series\":\"Beta\",\"category\":\"Lamp\",\"value\":48},{\"series\":\"Beta\",\"category\":\"Mug\",\"value\":54}],\"selected\":\"invalid\",\"bindings\":[{\"category\":\"Book\",\"operand\":\"12\"},{\"category\":\"Bowl\",\"operand\":\"18\"},{\"category\":\"Chair\",\"operand\":\"24\"}],\"aggregate\":\"sum\",\"answer\":\"54\"}",
+      "finish_reason": "balanced",
+      "native": {
+        "A": 1,
+        "S": null,
+        "B": 1,
+        "V": 0,
+        "J": 0
+      },
+      "probe": {
+        "A": 1,
+        "S": null,
+        "B": 1,
+        "V_probe": 0
+      },
+      "differences": {}
+    },
+    {
+      "fixture": "work_cannot_repair",
+      "text": "{\"evidence\":[{\"series\":\"Alpha\",\"category\":\"Book\",\"value\":72},{\"series\":\"Alpha\",\"category\":\"Bowl\",\"value\":66},{\"series\":\"Alpha\",\"category\":\"Chair\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Clock\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Desk\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Frame\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Lamp\",\"value\":18},{\"series\":\"Alpha\",\"category\":\"Mug\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Book\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Bowl\",\"value\":18},{\"series\":\"Beta\",\"category\":\"Chair\",\"value\":24},{\"series\":\"Beta\",\"category\":\"Clock\",\"value\":30},{\"series\":\"Beta\",\"category\":\"Desk\",\"value\":36},{\"series\":\"Beta\",\"category\":\"Frame\",\"value\":42},{\"series\":\"Beta\",\"category\":\"Lamp\",\"value\":48},{\"series\":\"Beta\",\"category\":\"Mug\",\"value\":54}],\"selected\":[\"Book\",\"Bowl\",\"Chair\"],\"bindings\":[{\"category\":\"Book\",\"operand\":\"12\"},{\"category\":\"Bowl\",\"operand\":\"18\"},{\"category\":\"Chair\",\"operand\":\"24\"}],\"aggregate\":\"sum\",\"answer\":\"999\",\"work\":\"Actually the answer is 54\"}",
+      "finish_reason": "balanced",
+      "native": {
+        "A": 0,
+        "S": 1,
+        "B": 1,
+        "V": 1,
+        "J": 0
+      },
+      "probe": {
+        "A": 0,
+        "S": 1,
+        "B": 1,
+        "V_probe": 1
+      },
+      "differences": {}
+    },
+    {
+      "fixture": "wrong_binding",
+      "text": "{\"evidence\":[{\"series\":\"Alpha\",\"category\":\"Book\",\"value\":72},{\"series\":\"Alpha\",\"category\":\"Bowl\",\"value\":66},{\"series\":\"Alpha\",\"category\":\"Chair\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Clock\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Desk\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Frame\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Lamp\",\"value\":18},{\"series\":\"Alpha\",\"category\":\"Mug\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Book\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Bowl\",\"value\":18},{\"series\":\"Beta\",\"category\":\"Chair\",\"value\":24},{\"series\":\"Beta\",\"category\":\"Clock\",\"value\":30},{\"series\":\"Beta\",\"category\":\"Desk\",\"value\":36},{\"series\":\"Beta\",\"category\":\"Frame\",\"value\":42},{\"series\":\"Beta\",\"category\":\"Lamp\",\"value\":48},{\"series\":\"Beta\",\"category\":\"Mug\",\"value\":54}],\"selected\":[\"Book\",\"Bowl\",\"Chair\"],\"bindings\":[{\"category\":\"Book\",\"operand\":999}],\"aggregate\":\"sum\",\"answer\":\"54\"}",
+      "finish_reason": "balanced",
+      "native": {
+        "A": 1,
+        "S": 1,
+        "B": 0,
+        "V": 1,
+        "J": 1
+      },
+      "probe": {
+        "A": 1,
+        "S": 1,
+        "B": 0,
+        "V_probe": 1
+      },
+      "differences": {}
+    },
+    {
+      "fixture": "binding_unknown",
+      "text": "{\"evidence\":[{\"series\":\"Alpha\",\"category\":\"Book\",\"value\":72},{\"series\":\"Alpha\",\"category\":\"Bowl\",\"value\":66},{\"series\":\"Alpha\",\"category\":\"Chair\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Clock\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Desk\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Frame\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Lamp\",\"value\":18},{\"series\":\"Alpha\",\"category\":\"Mug\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Book\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Bowl\",\"value\":18},{\"series\":\"Beta\",\"category\":\"Chair\",\"value\":24},{\"series\":\"Beta\",\"category\":\"Clock\",\"value\":30},{\"series\":\"Beta\",\"category\":\"Desk\",\"value\":36},{\"series\":\"Beta\",\"category\":\"Frame\",\"value\":42},{\"series\":\"Beta\",\"category\":\"Lamp\",\"value\":48},{\"series\":\"Beta\",\"category\":\"Mug\",\"value\":54}],\"selected\":[\"Book\",\"Bowl\",\"Chair\"],\"bindings\":\"bad\",\"aggregate\":\"sum\",\"answer\":\"54\"}",
+      "finish_reason": "balanced",
+      "native": {
+        "A": 1,
+        "S": 1,
+        "B": null,
+        "V": 0,
+        "J": 0
+      },
+      "probe": {
+        "A": 1,
+        "S": 1,
+        "B": null,
+        "V_probe": 0
+      },
+      "differences": {}
+    },
+    {
+      "fixture": "nonfinite",
+      "text": "{\"evidence\":[{\"series\":\"Alpha\",\"category\":\"Book\",\"value\":72},{\"series\":\"Alpha\",\"category\":\"Bowl\",\"value\":66},{\"series\":\"Alpha\",\"category\":\"Chair\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Clock\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Desk\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Frame\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Lamp\",\"value\":18},{\"series\":\"Alpha\",\"category\":\"Mug\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Book\",\"value\":12},{\"series\":\"Beta\",\"category\":\"Bowl\",\"value\":18},{\"series\":\"Beta\",\"category\":\"Chair\",\"value\":24},{\"series\":\"Beta\",\"category\":\"Clock\",\"value\":30},{\"series\":\"Beta\",\"category\":\"Desk\",\"value\":36},{\"series\":\"Beta\",\"category\":\"Frame\",\"value\":42},{\"series\":\"Beta\",\"category\":\"Lamp\",\"value\":48},{\"series\":\"Beta\",\"category\":\"Mug\",\"value\":54}],\"selected\":[\"Book\",\"Bowl\",\"Chair\"],\"bindings\":[{\"category\":\"Book\",\"operand\":\"12\"},{\"category\":\"Bowl\",\"operand\":\"18\"},{\"category\":\"Chair\",\"operand\":\"24\"}],\"aggregate\":\"sum\",\"answer\":NaN}",
+      "finish_reason": "balanced",
+      "native": {
+        "A": 0,
+        "S": null,
+        "B": null,
+        "V": 0,
+        "J": 0
+      },
+      "probe": {
+        "A": 0,
+        "S": null,
+        "B": null,
+        "V_probe": 0
+      },
+      "differences": {}
+    }
+  ],
+  "compared_fields": [
+    "A",
+    "S",
+    "B"
+  ],
+  "native_J_for_ten_categories": "NOT_APPLICABLE_OLD_WORLD_SCHEMA_MAXIMUM_8",
+  "scope": "8-category fixed fixtures validate shared extraction/scoring semantics. Frozen probe scorer supports the new 10-category worlds. V_probe and order diagnostics never replace native J."
+}

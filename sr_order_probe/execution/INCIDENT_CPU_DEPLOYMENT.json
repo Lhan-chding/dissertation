@@ -1,0 +1,12 @@
+{
+  "incident_id": "CPU_DEPLOYMENT_SNAPSHOT_1",
+  "job_id": "242456",
+  "state": "FAILED",
+  "exit_code": "1:0",
+  "elapsed": "00:00:24",
+  "cause": "Deployment archive captured driver and test edits at different moments; 3 fixtures missing newly required identity fields. No GPU/model call occurred.",
+  "recovery": "Stable v2 archive, local and server 89 tests pass; job 242476 COMPLETED 0:0 in 00:01:21",
+  "v2_archive_sha256": "dee52e779eb2a171d0b0bf6d4b99dc4141c17bdad332ca17d4ce960ccf08ade7",
+  "science_changed": false,
+  "model_calls": 0
+}

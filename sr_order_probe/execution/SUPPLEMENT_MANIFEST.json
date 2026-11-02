@@ -1,0 +1,38 @@
+{
+  "at": "2026-11-02T12:48:02.538852+00:00",
+  "audit_seed": 2026110203,
+  "scope": "Registered report fields and 54+18 audit selection; no change to primary metric/statistic/inputs",
+  "real_model_calls_before_freeze": 0,
+  "files": [
+    {
+      "path": "backend/native_adapter.py",
+      "sha256": "9c391c5adcb55910baeb06897035a45dc459047937f9f29abaeb4f439f12381a"
+    },
+    {
+      "path": "scripts/supplementary_report.py",
+      "sha256": "40f4377e0743923b339b3816794750994858e308388d1dcc6261ffe24b7a7b17"
+    },
+    {
+      "path": "tests/test_supplementary_report.py",
+      "sha256": "a45319faa1e9c1e1196cabe25288bedd03bb44333870e9a9f7e805ce731545a0"
+    }
+  ],
+  "primary_analysis": [
+    {
+      "path": "scripts/analyze.py",
+      "sha256": "a9991c505ce60123b6f44f0ac475a90a91b1b25dd86173cb03c9281e0c87f7e3"
+    },
+    {
+      "path": "scripts/score_answers.py",
+      "sha256": "4baf1bd6836fec6b2c00e889e779d5346ff4040b4f8d0d560ff20007d1de2fb9"
+    },
+    {
+      "path": "src/order_probe/statistics.py",
+      "sha256": "c6f37ebcae120a1bed96ea51d94f7b1fbaac9dbee57822a452b5790e423b85e6"
+    },
+    {
+      "path": "src/order_probe/measurement.py",
+      "sha256": "fc71ef5dd8925f18cc7b9f47ae45cec44c762b70c3616c036e2859ac49b85a2f"
+    }
+  ]
+}

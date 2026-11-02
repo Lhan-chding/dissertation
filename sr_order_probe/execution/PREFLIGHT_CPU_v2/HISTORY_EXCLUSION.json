@@ -1,0 +1,40 @@
+{
+  "status": "PASS_RECORDED_SCOPE",
+  "new_views": 104,
+  "historical_sources": [
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_semantic_factorial_20261027/DATA/TRAIN/TASKS_PRIVATE.jsonl",
+      "sha256": "7e844c16e179d17d1c5172cc101888178b0c039b1365283a083c8a474a8145e3",
+      "rows": 2304
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_semantic_factorial_20261027/DATA/DEV_CAL/TASKS_PRIVATE.jsonl",
+      "sha256": "30f40a8d9c64b73aaa6c72469521c68bb51df7f38f2dda5bfbf1f57315f1d949",
+      "rows": 384
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_semantic_factorial_20261027/DATA/DEV_PILOT/TASKS_PRIVATE.jsonl",
+      "sha256": "445982da7338c31ecae08db54a52b580558f9b9f9747fef4ef1bf8b49be786ff",
+      "rows": 384
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_semantic_factorial_20261027/DATA/DEV_EVAL/TASKS_PRIVATE.jsonl",
+      "sha256": "61c62e01e0d975f9b02c2c3e33a8a67f712a2643f211e42e34c2243d5f1fbbf1",
+      "rows": 96
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_interface_v3_20261028/INPUT_PLAN/STAGE1/TASKS_PRIVATE.jsonl",
+      "sha256": "048a961938c09ab53d31834f4f3a16624be47e079b5fe93af1c2065194fa8828",
+      "rows": 96
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_interface_v3_20261028/INPUT_PLAN/STAGE2/TASKS_PRIVATE.jsonl",
+      "sha256": "768c66b8fedd04d6ca464e846c369555fd15a04d2254fdac81fb4cce9eef1080",
+      "rows": 96
+    }
+  ],
+  "exact_unique": 2351,
+  "positional_unique": 2351,
+  "matches": [],
+  "scope": "Only explicitly named previously-used train/development indices; no unseen or sealed test coverage claim"
+}

@@ -1,0 +1,185 @@
+{
+  "status": "PASS_VISUAL_REVIEW",
+  "reviewer": "Codex primary agent visual inspection",
+  "method": "24 source images and 24 actual processor tensor reconstructions inspected using 12 four-image contact sheets; no OCR; not human blinded review",
+  "images_reviewed": 24,
+  "source_images_reviewed": 24,
+  "processor_check_sha256": "be7e3189a1a3adb5a88b8f2ac2f7ea66b64b7098f6934684d653ddc51d3a4f27",
+  "findings": {
+    "category_labels_legible": true,
+    "bars_legends_ticks_present": true,
+    "no_clipping_observed": true,
+    "no_condition_gold_annotations_observed": true
+  },
+  "images": [
+    {
+      "index": 0,
+      "qid": "SMOKE_ORDER_0000_view0",
+      "source_sha256": "d9e3f33942dfb99294b64590e7d71bb28082f018d7e64b5e852604061af45512",
+      "processed_png_sha256": "a232c7685424da733cbce146ce0cfe7da5d205cf0d472c6efb6ed6ef20085d58",
+      "review": "NO_VISIBLE_RENDERING_DEFECT"
+    },
+    {
+      "index": 1,
+      "qid": "SMOKE_ORDER_0000_view1",
+      "source_sha256": "7cdac5ef7bc16f1a4915d6dfe1ce372e10188aa7a66a5803cfb2a2781d04cd73",
+      "processed_png_sha256": "8ee9dbbc3e36f8040ceb977e3093b2fa667e17d42eaf90c6be38c5f1323462ab",
+      "review": "NO_VISIBLE_RENDERING_DEFECT"
+    },
+    {
+      "index": 2,
+      "qid": "SMOKE_ORDER_0001_view0",
+      "source_sha256": "73bb781b1371b81d89fe2f3abc76ea90b9a354039094d616c587cb0cde550491",
+      "processed_png_sha256": "749f4d95c87893d538521ce7208376b063ac5eda3cacb2d88746b72734f74c72",
+      "review": "NO_VISIBLE_RENDERING_DEFECT"
+    },
+    {
+      "index": 3,
+      "qid": "SMOKE_ORDER_0001_view1",
+      "source_sha256": "6b32731c9a8467f454f43a9650c4497cd9cccbde11007fbea0cf03c9c3841d1f",
+      "processed_png_sha256": "01967a07e09a5a95ddb5eb90026cd786cb935f1647c3750f0cc5fd3093141753",
+      "review": "NO_VISIBLE_RENDERING_DEFECT"
+    },
+    {
+      "index": 4,
+      "qid": "SMOKE_ORDER_0002_view0",
+      "source_sha256": "3f607bbfa604abced2261245c9614068e6a40ce89a69d99a9ee9bd963795deae",
+      "processed_png_sha256": "8b9f60ee321fce772c5b4d5d06a8c75e3207671dfb4fc5b7989c90a1ae250e8a",
+      "review": "NO_VISIBLE_RENDERING_DEFECT"
+    },
+    {
+      "index": 5,
+      "qid": "SMOKE_ORDER_0002_view1",
+      "source_sha256": "a101b33d8466c7a2aaebd108175e97a168e65f09c63e7ad4dc547793eaae445d",
+      "processed_png_sha256": "637df38136dce45a1cd0277ffd9298ff9c5e96e3af427ff730bf1c89578f0fe9",
+      "review": "NO_VISIBLE_RENDERING_DEFECT"
+    },
+    {
+      "index": 6,
+      "qid": "SMOKE_ORDER_0003_view0",
+      "source_sha256": "eda7ebcccf957de3d5ab7e05473ee59db22f9cf4cd2382126c862e45e5dc620f",
+      "processed_png_sha256": "0dbf16e261f8099bb913c8177095f8ef751b4109b0beb10b882e4cd93c34324d",
+      "review": "NO_VISIBLE_RENDERING_DEFECT"
+    },
+    {
+      "index": 7,
+      "qid": "SMOKE_ORDER_0003_view1",
+      "source_sha256": "ab5560b9b2375e18a72ffb59c3f708a33d21e53232457772af33fca7849aacc5",
+      "processed_png_sha256": "7ae7f4fa16ac6519d28a501386d852fa679d03c81d6702a6e1edf8f33d8defad",
+      "review": "NO_VISIBLE_RENDERING_DEFECT"
+    },
+    {
+      "index": 8,
+      "qid": "MAIN_ORDER_0000_view0",
+      "source_sha256": "f42287f7d5c423771d58581d834557c62f8f9bf9208f0746e5d2a41ab656d2e8",
+      "processed_png_sha256": "2578f7596d639f8c93ebcf8e01cf2e02c55535cb8a6992988fae959669463aab",
+      "review": "NO_VISIBLE_RENDERING_DEFECT"
+    },
+    {
+      "index": 9,
+      "qid": "MAIN_ORDER_0000_view1",
+      "source_sha256": "764423639dac1660a5e0e0fd02d40819844f2477c2ebf90a61da37e1295f4cb0",
+      "processed_png_sha256": "979d7e3750b5b0a8bdd185112eb8c5066d7117b5a61c584048a4b6da62bd66bc",
+      "review": "NO_VISIBLE_RENDERING_DEFECT"
+    },
+    {
+      "index": 10,
+      "qid": "MAIN_ORDER_0001_view0",
+      "source_sha256": "5a2ce7924652d84000255bc18b2ecdcff0d9ab42653e2226c6f8557c1bdefe34",
+      "processed_png_sha256": "648ea76d3601324e165b1c3e0280b07a5fc3c69b13b4b4b1e68b27951a23c817",
+      "review": "NO_VISIBLE_RENDERING_DEFECT"
+    },
+    {
+      "index": 11,
+      "qid": "MAIN_ORDER_0001_view1",
+      "source_sha256": "fb0d0e91b135a55254bcebb776ae033b657483f4e3253d62403fb1172e3b11d1",
+      "processed_png_sha256": "1c0d9408dda48db6943584341b8f08056013561b226ec348198f6ceae6ae4216",
+      "review": "NO_VISIBLE_RENDERING_DEFECT"
+    },
+    {
+      "index": 12,
+      "qid": "MAIN_ORDER_0012_view0",
+      "source_sha256": "b5a69e0e7311092ffd0cf249bc6b7279ba292c34f186b09f6e26cc998c4e3d28",
+      "processed_png_sha256": "b8a8d509dcb9954976500bfbcbeead424a8c66145a63f32fe297f52797ec345b",
+      "review": "NO_VISIBLE_RENDERING_DEFECT"
+    },
+    {
+      "index": 13,
+      "qid": "MAIN_ORDER_0012_view1",
+      "source_sha256": "14e18cb9bf59885f01fe3c6505533b304b641223e08b48733bfa123cb9435758",
+      "processed_png_sha256": "8f6122ff2136b54f91acc1f3b54ba77994f4bc97d1fbfcd0212ea52c7a29837c",
+      "review": "NO_VISIBLE_RENDERING_DEFECT"
+    },
+    {
+      "index": 14,
+      "qid": "MAIN_ORDER_0013_view0",
+      "source_sha256": "e11931ea658f4a92da5c2ff8a2c900232525e79148e695912acfd8209540ce68",
+      "processed_png_sha256": "b2c904dbb4c53738dec634440c0b0bb80b227c8eca9a90caf3ec160cf6f3fe93",
+      "review": "NO_VISIBLE_RENDERING_DEFECT"
+    },
+    {
+      "index": 15,
+      "qid": "MAIN_ORDER_0013_view1",
+      "source_sha256": "ab60b00b26fc8b122bff396693b23dc80e68451346eef4aeeb6feaaa8bf80e34",
+      "processed_png_sha256": "4f6b1550091e4174acaa2d943e756024d71cda7da9effca83b974c1c3ca30b5a",
+      "review": "NO_VISIBLE_RENDERING_DEFECT"
+    },
+    {
+      "index": 16,
+      "qid": "MAIN_ORDER_0024_view0",
+      "source_sha256": "4228f8977f050378dc2323843def2c8aec22d64242097ba9c98ec33af9c85358",
+      "processed_png_sha256": "a3c8e8890ecc875f8458efbea4a8d5fd331137f1bd70e704eaca14bcb5fd1b35",
+      "review": "NO_VISIBLE_RENDERING_DEFECT"
+    },
+    {
+      "index": 17,
+      "qid": "MAIN_ORDER_0024_view1",
+      "source_sha256": "ddffd385e80386e23dd4557c229b9499d1b7743ce019989c7076a1cd5ef8cfc0",
+      "processed_png_sha256": "f46e937fc6d2f019c28c8beca57c66e0461f221896a80eb00db8a42a7f98d55f",
+      "review": "NO_VISIBLE_RENDERING_DEFECT"
+    },
+    {
+      "index": 18,
+      "qid": "MAIN_ORDER_0025_view0",
+      "source_sha256": "524ef4710cc141ac009b05356f771c71027688907759b94073e9b457981d6a4e",
+      "processed_png_sha256": "a3fd276e249277b5bc47c93d6aae600497b00d2e3b36749c56d5db2495228bf8",
+      "review": "NO_VISIBLE_RENDERING_DEFECT"
+    },
+    {
+      "index": 19,
+      "qid": "MAIN_ORDER_0025_view1",
+      "source_sha256": "5eb55e138271fa1269473632f35c5bafdf182736d83f1020b19462f63a3971e5",
+      "processed_png_sha256": "18140d6c8faa77a783e177fe52b7de0a63d1e995d4317486fd1ea3e28b51065e",
+      "review": "NO_VISIBLE_RENDERING_DEFECT"
+    },
+    {
+      "index": 20,
+      "qid": "MAIN_ORDER_0036_view0",
+      "source_sha256": "d6be34c0262ff7217584351acba52cabf5b40f05f4b03d5833a605907b0c9a55",
+      "processed_png_sha256": "8057b9ba7fc41b1833e1e1f876a7a9d817648b78c2b9017cf92edcfa011cc5ac",
+      "review": "NO_VISIBLE_RENDERING_DEFECT"
+    },
+    {
+      "index": 21,
+      "qid": "MAIN_ORDER_0036_view1",
+      "source_sha256": "efa481c3907bd7c3ff49a07f434432e4c71111f7998f20de937803e9e39cc30b",
+      "processed_png_sha256": "6aed15fbdd740ff8036086fb80aa226f3c76c00fb6c75b38a9647a9cf459a3a3",
+      "review": "NO_VISIBLE_RENDERING_DEFECT"
+    },
+    {
+      "index": 22,
+      "qid": "MAIN_ORDER_0037_view0",
+      "source_sha256": "fb519e5214b62d6164c8205a6f53f6a16b71be6924be1fcf361fe9c2b99e0a41",
+      "processed_png_sha256": "1a5105da00da592dd345ae5f5ed39c5764f4e471b2de7bc635ddc760013b8946",
+      "review": "NO_VISIBLE_RENDERING_DEFECT"
+    },
+    {
+      "index": 23,
+      "qid": "MAIN_ORDER_0037_view1",
+      "source_sha256": "68cae7afad5ee60e455bd477e4967ce81c4a42907e8bf94e2cca8594c89662eb",
+      "processed_png_sha256": "a37276689de3beee0e3b5ea37c6a7537f382536b99c3449f622d5604e1c9ee6b",
+      "review": "NO_VISIBLE_RENDERING_DEFECT"
+    }
+  ],
+  "caveat": "No claim about model perception or answerability. Processor-only generation_config is inherited 1024 and was never used to sample; actual GPU runtime must bind 1536. All source bytes unchanged."
+}

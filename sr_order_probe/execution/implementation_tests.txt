@@ -87,8 +87,14 @@ test_historical_renaming_cannot_hide_overlap (test_server_preflight.ServerPrefli
 test_history_no_open_of_sealed_path (test_server_preflight.ServerPreflightTests.test_history_no_open_of_sealed_path) ... ok
 test_inverse_patch_tensor (test_server_preflight.ServerPreflightTests.test_inverse_patch_tensor) ... ok
 test_no_history_is_not_a_pass (test_server_preflight.ServerPreflightTests.test_no_history_is_not_a_pass) ... ok
+test_duplicate_request_is_rejected (test_supplementary_report.SupplementaryReportTests.test_duplicate_request_is_rejected) ... ok
+test_exception_priority_uses_unknown_first (test_supplementary_report.SupplementaryReportTests.test_exception_priority_uses_unknown_first) ... ok
+test_missing_timing_remains_missing (test_supplementary_report.SupplementaryReportTests.test_missing_timing_remains_missing) ... ok
+test_raw_tokens_are_counted_without_retokenizing (test_supplementary_report.SupplementaryReportTests.test_raw_tokens_are_counted_without_retokenizing) ... ok
+test_stratification_uniqueness_and_order_independence (test_supplementary_report.SupplementaryReportTests.test_stratification_uniqueness_and_order_independence) ... ok
+test_unknown_denominator_not_dropped (test_supplementary_report.SupplementaryReportTests.test_unknown_denominator_not_dropped) ... ok
 
 ----------------------------------------------------------------------
-Ran 89 tests in 1.348s
+Ran 95 tests in 1.414s
 
 OK

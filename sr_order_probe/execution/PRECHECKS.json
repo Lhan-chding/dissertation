@@ -1,0 +1,16 @@
+{
+  "checks": {
+    "history": {
+      "path": "PREFLIGHT_CPU_v2/HISTORY_EXCLUSION.json",
+      "sha256": "504902d66227432ce5460161c5729818d61dc694d6b40aaabfb62e91cbc2de73"
+    },
+    "processor_visual": {
+      "path": "PREFLIGHT_CPU_v2/VISUAL_REVIEW.json",
+      "sha256": "2e42fb3e86d3128938c087c0ce66aca45aacc6318cbab5b4236e087a159ea3bc"
+    },
+    "scorer_fixtures": {
+      "path": "PREFLIGHT_CPU_v2/SCORER_FIXTURES.json",
+      "sha256": "05ee157694e9e2d7fd2ebca66d2488674011bd99d072d3a0dba6c4ce3ce13210"
+    }
+  }
+}

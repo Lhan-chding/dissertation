@@ -198,6 +198,10 @@ class NativeBackend:
                 super()._set_recipe()
                 for key, value in native.generation_recipe().items():
                     setattr(self.generation_config, key, value)
+                self.identity.update(
+                    generation_config_expanded=self.generation_config.to_dict(),
+                    runtime_recipe='SR-ORDER-PROBE-native-1536-readonly',
+                    experiment_id=config['experiment_id'])
             def prepare_input(self, model_input, run_root, *, protocol='structured'):
                 if protocol != 'structured' or model_input != backend._active_safe:
                     raise PermissionError('Native input differs from active public request')
@@ -230,6 +234,7 @@ class NativeBackend:
         if self._after != self._before:
             raise PermissionError('Parent bytes changed during loading')
         runtime.identity.update(dtype='float32', parent_id=parent, run_id=config['experiment_id'], step=0,
+                                input_float_dtype='float32', probability_dtype='float32',
                                 numerics=dict(native.NUMERICS_V2), model_cast_from_dtype=self._source_dtype,
                                 forward_parameter_dtypes=self._parameter_dtypes, forward_float_buffer_dtypes=self._buffer_dtypes)
         self.runtime, self._closed = runtime, False

@@ -1,0 +1,10 @@
+{
+  "status": "CPU_CHECKS_COMPLETE_NOT_GPU_GATE",
+  "history_status": "PASS_RECORDED_SCOPE",
+  "scorer_status": "PASS_FIXED_FIXTURES",
+  "processor_status": "PROCESSED_IMAGES_READY_FOR_VISUAL_REVIEW",
+  "visual_review": "NOT_RUN",
+  "gpu_smoke": "NOT_RUN",
+  "optimizer_updates": 0,
+  "model_calls": 0
+}
