@@ -1,0 +1,84 @@
+{
+  "status": "SUBMITTED",
+  "prior_queue": [
+    "242203|cafeDIRcont-SM|gres/gpu:pro6000:1|soujanya-poria-startfund-2026-03|RUNNING",
+    "241769|cafeRELATE-SM|gres/gpu:pro6000:1|soujanya-poria-startfund-2026-03|RUNNING"
+  ],
+  "jobs": [
+    {
+      "parent": "b0",
+      "job_id": "242490",
+      "command": [
+        "sbatch",
+        "--parsable",
+        "--job-name=LH-SROP-SMOKE-b0",
+        "--partition=cluster02",
+        "--account=rose",
+        "--qos=soujanya-poria-startfund-2026-03",
+        "--nodes=1",
+        "--ntasks=2",
+        "--gres=gpu:pro6000:2",
+        "--time=04:00:00",
+        "--no-requeue",
+        "--output=/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102/logs/SMOKE-b0-%j.out",
+        "--error=/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102/logs/SMOKE-b0-%j.err",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102/deploy/v2/scripts/run_worker_pair.sh",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102/deploy/v2",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102",
+        "SMOKE",
+        "b0"
+      ],
+      "submitted_utc": "2026-11-02T12:49:34.963295+00:00"
+    },
+    {
+      "parent": "b1",
+      "job_id": "242491",
+      "command": [
+        "sbatch",
+        "--parsable",
+        "--job-name=LH-SROP-SMOKE-b1",
+        "--partition=cluster02",
+        "--account=rose",
+        "--qos=soujanya-poria-startfund-2026-03",
+        "--nodes=1",
+        "--ntasks=2",
+        "--gres=gpu:pro6000:2",
+        "--time=04:00:00",
+        "--no-requeue",
+        "--output=/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102/logs/SMOKE-b1-%j.out",
+        "--error=/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102/logs/SMOKE-b1-%j.err",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102/deploy/v2/scripts/run_worker_pair.sh",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102/deploy/v2",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102",
+        "SMOKE",
+        "b1"
+      ],
+      "submitted_utc": "2026-11-02T12:49:34.972847+00:00"
+    },
+    {
+      "parent": "b2",
+      "job_id": "242492",
+      "command": [
+        "sbatch",
+        "--parsable",
+        "--job-name=LH-SROP-SMOKE-b2",
+        "--partition=cluster02",
+        "--account=rose",
+        "--qos=soujanya-poria-startfund-2026-03",
+        "--nodes=1",
+        "--ntasks=2",
+        "--gres=gpu:pro6000:2",
+        "--time=04:00:00",
+        "--no-requeue",
+        "--output=/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102/logs/SMOKE-b2-%j.out",
+        "--error=/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102/logs/SMOKE-b2-%j.err",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102/deploy/v2/scripts/run_worker_pair.sh",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102/deploy/v2",
+        "/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102",
+        "SMOKE",
+        "b2"
+      ],
+      "submitted_utc": "2026-11-02T12:49:34.979858+00:00"
+    }
+  ]
+}
