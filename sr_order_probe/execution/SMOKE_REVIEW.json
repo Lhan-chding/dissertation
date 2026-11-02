@@ -1,0 +1,406 @@
+{
+  "status": "REVIEWED_SMOKE_TECHNICAL_PASS_NOT_MAIN_EVIDENCE",
+  "at": "2026-11-02T16:38:14.887904+00:00",
+  "N": 216,
+  "parents": [
+    {
+      "parent": "b0",
+      "N": 72,
+      "A_correct": 45,
+      "S_hit": 45,
+      "S_unknown": 15,
+      "json_valid": 57
+    },
+    {
+      "parent": "b1",
+      "N": 72,
+      "A_correct": 48,
+      "S_hit": 51,
+      "S_unknown": 16,
+      "json_valid": 56
+    },
+    {
+      "parent": "b2",
+      "N": 72,
+      "A_correct": 49,
+      "S_hit": 50,
+      "S_unknown": 7,
+      "json_valid": 65
+    }
+  ],
+  "by_parent_condition": [
+    {
+      "parent": "b0",
+      "condition": "C0",
+      "N": 8,
+      "A": 8,
+      "S_hit": 8,
+      "S_unknown": 0,
+      "B_pass": 8,
+      "json_valid": 8,
+      "complete": 8
+    },
+    {
+      "parent": "b0",
+      "condition": "C_ALT",
+      "N": 8,
+      "A": 5,
+      "S_hit": 5,
+      "S_unknown": 0,
+      "B_pass": 5,
+      "json_valid": 8,
+      "complete": 8
+    },
+    {
+      "parent": "b0",
+      "condition": "C_ENUM",
+      "N": 8,
+      "A": 3,
+      "S_hit": 3,
+      "S_unknown": 0,
+      "B_pass": 3,
+      "json_valid": 8,
+      "complete": 8
+    },
+    {
+      "parent": "b0",
+      "condition": "C_NOLIST",
+      "N": 8,
+      "A": 8,
+      "S_hit": 8,
+      "S_unknown": 0,
+      "B_pass": 8,
+      "json_valid": 8,
+      "complete": 8
+    },
+    {
+      "parent": "b0",
+      "condition": "C_PRINT",
+      "N": 8,
+      "A": 8,
+      "S_hit": 8,
+      "S_unknown": 0,
+      "B_pass": 8,
+      "json_valid": 8,
+      "complete": 8
+    },
+    {
+      "parent": "b0",
+      "condition": "C_REF",
+      "N": 8,
+      "A": 8,
+      "S_hit": 8,
+      "S_unknown": 0,
+      "B_pass": 8,
+      "json_valid": 8,
+      "complete": 8
+    },
+    {
+      "parent": "b0",
+      "condition": "P_PLACEBO",
+      "N": 8,
+      "A": 3,
+      "S_hit": 3,
+      "S_unknown": 5,
+      "B_pass": 3,
+      "json_valid": 3,
+      "complete": 8
+    },
+    {
+      "parent": "b0",
+      "condition": "P_REVTIE",
+      "N": 8,
+      "A": 0,
+      "S_hit": 0,
+      "S_unknown": 5,
+      "B_pass": 0,
+      "json_valid": 3,
+      "complete": 8
+    },
+    {
+      "parent": "b0",
+      "condition": "P_STABLE",
+      "N": 8,
+      "A": 2,
+      "S_hit": 2,
+      "S_unknown": 5,
+      "B_pass": 2,
+      "json_valid": 3,
+      "complete": 8
+    },
+    {
+      "parent": "b1",
+      "condition": "C0",
+      "N": 8,
+      "A": 8,
+      "S_hit": 8,
+      "S_unknown": 0,
+      "B_pass": 8,
+      "json_valid": 8,
+      "complete": 8
+    },
+    {
+      "parent": "b1",
+      "condition": "C_ALT",
+      "N": 8,
+      "A": 5,
+      "S_hit": 6,
+      "S_unknown": 0,
+      "B_pass": 5,
+      "json_valid": 8,
+      "complete": 8
+    },
+    {
+      "parent": "b1",
+      "condition": "C_ENUM",
+      "N": 8,
+      "A": 7,
+      "S_hit": 8,
+      "S_unknown": 0,
+      "B_pass": 7,
+      "json_valid": 8,
+      "complete": 8
+    },
+    {
+      "parent": "b1",
+      "condition": "C_NOLIST",
+      "N": 8,
+      "A": 7,
+      "S_hit": 8,
+      "S_unknown": 0,
+      "B_pass": 8,
+      "json_valid": 8,
+      "complete": 8
+    },
+    {
+      "parent": "b1",
+      "condition": "C_PRINT",
+      "N": 8,
+      "A": 8,
+      "S_hit": 8,
+      "S_unknown": 0,
+      "B_pass": 8,
+      "json_valid": 8,
+      "complete": 8
+    },
+    {
+      "parent": "b1",
+      "condition": "C_REF",
+      "N": 8,
+      "A": 7,
+      "S_hit": 7,
+      "S_unknown": 0,
+      "B_pass": 7,
+      "json_valid": 8,
+      "complete": 8
+    },
+    {
+      "parent": "b1",
+      "condition": "P_PLACEBO",
+      "N": 8,
+      "A": 3,
+      "S_hit": 3,
+      "S_unknown": 5,
+      "B_pass": 3,
+      "json_valid": 3,
+      "complete": 8
+    },
+    {
+      "parent": "b1",
+      "condition": "P_REVTIE",
+      "N": 8,
+      "A": 1,
+      "S_hit": 1,
+      "S_unknown": 5,
+      "B_pass": 1,
+      "json_valid": 3,
+      "complete": 8
+    },
+    {
+      "parent": "b1",
+      "condition": "P_STABLE",
+      "N": 8,
+      "A": 2,
+      "S_hit": 2,
+      "S_unknown": 6,
+      "B_pass": 2,
+      "json_valid": 2,
+      "complete": 8
+    },
+    {
+      "parent": "b2",
+      "condition": "C0",
+      "N": 8,
+      "A": 8,
+      "S_hit": 8,
+      "S_unknown": 0,
+      "B_pass": 8,
+      "json_valid": 8,
+      "complete": 8
+    },
+    {
+      "parent": "b2",
+      "condition": "C_ALT",
+      "N": 8,
+      "A": 3,
+      "S_hit": 3,
+      "S_unknown": 1,
+      "B_pass": 3,
+      "json_valid": 7,
+      "complete": 8
+    },
+    {
+      "parent": "b2",
+      "condition": "C_ENUM",
+      "N": 8,
+      "A": 5,
+      "S_hit": 6,
+      "S_unknown": 0,
+      "B_pass": 5,
+      "json_valid": 8,
+      "complete": 8
+    },
+    {
+      "parent": "b2",
+      "condition": "C_NOLIST",
+      "N": 8,
+      "A": 7,
+      "S_hit": 7,
+      "S_unknown": 0,
+      "B_pass": 7,
+      "json_valid": 8,
+      "complete": 8
+    },
+    {
+      "parent": "b2",
+      "condition": "C_PRINT",
+      "N": 8,
+      "A": 6,
+      "S_hit": 6,
+      "S_unknown": 0,
+      "B_pass": 6,
+      "json_valid": 8,
+      "complete": 8
+    },
+    {
+      "parent": "b2",
+      "condition": "C_REF",
+      "N": 8,
+      "A": 8,
+      "S_hit": 8,
+      "S_unknown": 0,
+      "B_pass": 8,
+      "json_valid": 8,
+      "complete": 8
+    },
+    {
+      "parent": "b2",
+      "condition": "P_PLACEBO",
+      "N": 8,
+      "A": 6,
+      "S_hit": 6,
+      "S_unknown": 2,
+      "B_pass": 6,
+      "json_valid": 6,
+      "complete": 8
+    },
+    {
+      "parent": "b2",
+      "condition": "P_REVTIE",
+      "N": 8,
+      "A": 0,
+      "S_hit": 0,
+      "S_unknown": 2,
+      "B_pass": 0,
+      "json_valid": 6,
+      "complete": 8
+    },
+    {
+      "parent": "b2",
+      "condition": "P_STABLE",
+      "N": 8,
+      "A": 6,
+      "S_hit": 6,
+      "S_unknown": 2,
+      "B_pass": 6,
+      "json_valid": 6,
+      "complete": 8
+    }
+  ],
+  "finish": {
+    "eos": 37,
+    "balanced": 179
+  },
+  "prefix_tokens": {
+    "C0": {
+      "N": 24,
+      "forced_token_min": 1,
+      "forced_token_max": 1,
+      "suffix_tokens": 13041
+    },
+    "C_ALT": {
+      "N": 24,
+      "forced_token_min": 1,
+      "forced_token_max": 1,
+      "suffix_tokens": 13062
+    },
+    "C_ENUM": {
+      "N": 24,
+      "forced_token_min": 1,
+      "forced_token_max": 1,
+      "suffix_tokens": 13214
+    },
+    "C_NOLIST": {
+      "N": 24,
+      "forced_token_min": 1,
+      "forced_token_max": 1,
+      "suffix_tokens": 13796
+    },
+    "C_PRINT": {
+      "N": 24,
+      "forced_token_min": 1,
+      "forced_token_max": 1,
+      "suffix_tokens": 12529
+    },
+    "C_REF": {
+      "N": 24,
+      "forced_token_min": 1,
+      "forced_token_max": 1,
+      "suffix_tokens": 13291
+    },
+    "P_PLACEBO": {
+      "N": 24,
+      "forced_token_min": 274,
+      "forced_token_max": 278,
+      "suffix_tokens": 4154
+    },
+    "P_REVTIE": {
+      "N": 24,
+      "forced_token_min": 274,
+      "forced_token_max": 278,
+      "suffix_tokens": 5061
+    },
+    "P_STABLE": {
+      "N": 24,
+      "forced_token_min": 274,
+      "forced_token_max": 278,
+      "suffix_tokens": 4011
+    }
+  },
+  "sampled_tokens": 92159,
+  "technical_errors": 0,
+  "optimizer_updates": 0,
+  "effect_gate_applied": false,
+  "actual_template_modes": {
+    "b0": {
+      "enable_thinking": false
+    },
+    "b1": {
+      "enable_thinking": false
+    },
+    "b2": {
+      "enable_thinking": false
+    }
+  },
+  "claim_limit": "4 smoke worlds only, no main inference or causal effect conclusion"
+}

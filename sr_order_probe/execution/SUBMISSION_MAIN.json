@@ -1,0 +1,49 @@
+{
+  "at": "2026-11-02T16:43:31.983994+00:00",
+  "status": "SUBMITTED",
+  "prior_qos_queue": [
+    "242906|varun024|cafePARTctx-SM|RUNNING|gres/gpu:pro6000:1",
+    "242907|varun024|cafePARTrole-SM|RUNNING|gres/gpu:pro6000:1",
+    "242878|varun024|cafeREL31to60-SM|RUNNING|gres/gpu:pro6000:1",
+    "242203|varun024|cafeDIRcont-SM|RUNNING|gres/gpu:pro6000:1"
+  ],
+  "prior_user_queue": [
+    "242906|cafePARTctx-SM|RUNNING|gres/gpu:pro6000:1",
+    "242907|cafePARTrole-SM|RUNNING|gres/gpu:pro6000:1",
+    "242878|cafeREL31to60-SM|RUNNING|gres/gpu:pro6000:1",
+    "242203|cafeDIRcont-SM|RUNNING|gres/gpu:pro6000:1"
+  ],
+  "command": [
+    "sbatch",
+    "--parsable",
+    "--job-name=LH-SROP-MAIN-4W",
+    "--partition=cluster02",
+    "--account=rose",
+    "--qos=soujanya-poria-startfund-2026-03",
+    "--nodes=1",
+    "--ntasks=4",
+    "--gres=gpu:pro6000:4",
+    "--time=08:00:00",
+    "--no-requeue",
+    "--output=/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102/logs/MAIN-4W-%j.out",
+    "--error=/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102/logs/MAIN-4W-%j.err",
+    "/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102/deploy/run_main_four_workers.sh",
+    "/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102/deploy/v2",
+    "/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102"
+  ],
+  "launcher_sha256": "6860b04e674494824ef79ce76638f0fcb8794b1568ef73452fa15fb59f6e1588",
+  "workers_per_parent": 4,
+  "requests_per_worker": 360,
+  "parents_sequential": [
+    "b0",
+    "b1",
+    "b2"
+  ],
+  "science_changed": false,
+  "smoke_gate": "REVERIFIED",
+  "audit_status": "NOT_RUN",
+  "returncode": 0,
+  "stdout": "242982\n",
+  "stderr": "sbatch: slurm_job_submit: enforced 16 CPUs for 4 task and 135168 MiB mem/node for 4 GPU(s) (model=pro6000)\nsbatch: slurm_job_submit: you requested 4 CPUs/node and 0 MiB mem/node\n",
+  "job_id": "242982"
+}

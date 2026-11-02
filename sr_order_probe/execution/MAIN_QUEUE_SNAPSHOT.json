@@ -1,0 +1,12 @@
+{
+  "job_id": "242982",
+  "checked_at": "2026-11-03T00:44:34+08:00",
+  "status": "PENDING",
+  "reason": "QOSGrpGRES",
+  "main_saved": 0,
+  "main_expected": 4320,
+  "qos_pro6000_limit": 8,
+  "visible_other_gpu_requests": 4,
+  "requested_gpus": 4,
+  "note": "Visible requested GPU counts do not explain scheduler admission; no start time promised, no resubmission or unrelated job changes."
+}

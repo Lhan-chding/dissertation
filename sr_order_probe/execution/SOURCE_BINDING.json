@@ -1,0 +1,90 @@
+{
+  "status": "ACTUAL_SMOKE_SOURCE_BOUND",
+  "runtime_config": {
+    "native_code_root": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_b7e7b06",
+    "historical_source_binding": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_semantic_factorial_20261027/SOURCE_BINDING.json",
+    "native_runtime_sha256": "c71d490c75221a05a9b05516219bf57b592bacd45ea6bba057c462032f1bbcd4"
+  },
+  "parent_hashes": {
+    "b0": {
+      "adapter_config.json": "b4cd04ac2482b3615ccdbba959aa129201ea321b9e59e66245bdd80f41535568",
+      "adapter_model.safetensors": "501e9ff25dde77ab5c2042dba82236f74e8a39c5df89b5fb3ed1d2901314e5a0"
+    },
+    "b1": {
+      "adapter_config.json": "3df88f113e1e11158d717c836069287002be4b9585f821dc9888e05b8afe2314",
+      "adapter_model.safetensors": "5185e60049aa1fa912ee8c49ddb9ff5e6dcd6515fe147bbb94c91e60e134c3ba"
+    },
+    "b2": {
+      "adapter_config.json": "92c3259edf8f0e442cf7396ca0677c839b1010fcfab69ea74dad1c238f9fb8e0",
+      "adapter_model.safetensors": "4c99a3cec2ba3b1ac28f6cd8a0bf0953d5022ece34bc9fb2676ea0c886a68b02"
+    }
+  },
+  "source_initial": {
+    "files": [
+      {
+        "bytes": 1071,
+        "path": "backend/interface.py",
+        "sha256": "b8e9b76818525faa89c00cfbab6117052cd69e0025dba106568c8425b72c46cc"
+      },
+      {
+        "bytes": 22018,
+        "path": "backend/native_adapter.py",
+        "sha256": "a2a0d877d347257deb2e1482f5130fd4ddd81354f20e90f16faeb89748a07dd8"
+      },
+      {
+        "bytes": 65,
+        "path": "order_probe_server/__init__.py",
+        "sha256": "a308b1e23708eaee28a844c7da9771eacc1f9510a8606505f2a0d2953942cc40"
+      },
+      {
+        "bytes": 33,
+        "path": "order_probe_server/__main__.py",
+        "sha256": "d4e74c819961c9aa098476c90c0dd781441bb45a5f35fab6f7cea141dc640627"
+      },
+      {
+        "bytes": 24292,
+        "path": "order_probe_server/driver.py",
+        "sha256": "2d0bf74615f79d5428b764b858646fb2d9ccb83ad10cfda579cd843a7ef56bf9"
+      }
+    ]
+  },
+  "science_manifest_sha256": "037a3488a5035340c7ffd51ad4af19634d2680106193aa48233fce5e423a198e",
+  "supplement_manifest": {
+    "at": "2026-11-02T12:48:02.538852+00:00",
+    "audit_seed": 2026110203,
+    "scope": "Registered report fields and 54+18 audit selection; no change to primary metric/statistic/inputs",
+    "real_model_calls_before_freeze": 0,
+    "files": [
+      {
+        "path": "backend/native_adapter.py",
+        "sha256": "9c391c5adcb55910baeb06897035a45dc459047937f9f29abaeb4f439f12381a"
+      },
+      {
+        "path": "scripts/supplementary_report.py",
+        "sha256": "40f4377e0743923b339b3816794750994858e308388d1dcc6261ffe24b7a7b17"
+      },
+      {
+        "path": "tests/test_supplementary_report.py",
+        "sha256": "a45319faa1e9c1e1196cabe25288bedd03bb44333870e9a9f7e805ce731545a0"
+      }
+    ],
+    "primary_analysis": [
+      {
+        "path": "scripts/analyze.py",
+        "sha256": "a9991c505ce60123b6f44f0ac475a90a91b1b25dd86173cb03c9281e0c87f7e3"
+      },
+      {
+        "path": "scripts/score_answers.py",
+        "sha256": "4baf1bd6836fec6b2c00e889e779d5346ff4040b4f8d0d560ff20007d1de2fb9"
+      },
+      {
+        "path": "src/order_probe/statistics.py",
+        "sha256": "c6f37ebcae120a1bed96ea51d94f7b1fbaac9dbee57822a452b5790e423b85e6"
+      },
+      {
+        "path": "src/order_probe/measurement.py",
+        "sha256": "fc71ef5dd8925f18cc7b9f47ae45cec44c762b70c3616c036e2859ac49b85a2f"
+      }
+    ]
+  }
+}

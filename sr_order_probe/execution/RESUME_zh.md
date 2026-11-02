@@ -1,23 +1,24 @@
-> 最新：原三项烟测因启动环境缺项在模型加载前失败，零回答；恢复作业为242525/242526/242527。入口改用运行根下 `deploy/run_worker_pair_envfix.sh`。先读INCIDENT_LAUNCH_ENV.json及SUBMISSIONS_SMOKE_ENVFIX.json，以下旧提交编号仅作历史记录。
-
 # 继续本次已提交探查
 
-当前完整任务尚未完成。先读取 `EXECUTION_STATE_zh.md`、`SUBMISSIONS_SMOKE.json`，检查原有作业；不要再次提交216条烟测。
+当前完整任务尚未完成。216条烟测已真实完成并通过技术验收，主实验作业242982已提交。先读取 `SUBMISSION_MAIN.json`、`SMOKE_RECEIPT.json`、`SMOKE_REVIEW.json`；不要重复提交烟测或MAIN。
 
 - SSH：`eee-cluster`。
 - 新运行根：`/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102`。
 - 实际入口源码：上述根的 `deploy/v2`，加已记录的 `deploy/presmoke-patch.tar.gz`。
 - Python：`/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12`。
-- b0/b1/b2 烟测作业：242490/242491/242492，每父两卡、两个固定分片，共72条。
-- 三作业最近均PENDING(Priority)。不修改旧F5/F6文件、不操作其他作业、不打开封存TEST内容。
+- 恢复烟测242525/242526/242527均COMPLETED 0:0，每父72条。原失败作业及原因保留于INCIDENT_LAUNCH_ENV.json。
+- MAIN作业242982：LH-SROP-MAIN-4W；单作业4卡，每父4个固定分片，各360条，依次b0、b1、b2，共4320条。入口是运行根下deploy/run_main_four_workers.sh。
+- 不修改旧F5/F6文件、不操作其他作业、不打开封存TEST内容。
 
-## 烟测完成后
+## 已验收烟测与当前主探查
 
-1. 检查三个作业 `sacct`、stdout/stderr、`ATTEMPTS.jsonl`、`RECORDS/SMOKE`、`WORKERS/*/{START,END,RECOVERY}.json`；必须真实父身份、全FP32、模型不变、完整216 ID、同assistant长prefix、真实suffix与终止一致。无输出质量门。
-2. 在实际入口目录执行 `python -m order_probe_server seal-smoke --run-root <新运行根>`。该命令重验原输出及预检证据，不能手写PASS。
-3. 使用 `scripts/score_answers.py --inputs <deploy/v2/data> --answers <运行根/RAW/SMOKE.jsonl> --split SMOKE --out <新烟测评分路径>`。检查UNKNOWN、length、技术错误与分组指标；低正确率和非法模型输出保留，不重采、不删条件。
-4. 只有技术路径通过，才重新查全部实际/等待/不明GPU分配和五作业上限，为MAIN提交各父同样的两分片入口 `scripts/run_worker_pair.sh <code> <root> MAIN b0|b1|b2`。预计主请求每父1440、每分片720。所有seed固定。
-5. 断点续跑只使用同split/parent/shard，既有完整输出自动复用；同ID系统故障最多一次恢复。已保存技术异常原文不能被当作无输出重采。
+全部216条与六个worker结束身份已复核，SMOKE_TECHNICAL_PASS。技术错误0、采样token 92,159、参数更新0；终止37 eos与179 balanced，无length。三个长prefix条件实际强制274–278 tokens，同assistant。b0/b1/b2答案正确45/48/49条（每父72）；这不是主实验效果证据，也没有用于放行或改参数。
+
+2026-11-03 00:43新加坡时间提交主实验242982。提交前同QoS四项其他作业共4卡，账号4个作业，因此申请一个名额和4卡，总计8卡、5作业。更改仅为确定性请求分片，冻结输入、模型、种子、batch=1及评分不变。每个worker得到33GiB host内存。
+
+先查242982的squeue/sacct和MAIN记录。任何worker失败均停止后续父模型及统计；保留原输出/失败。断点只续原MAIN/parent/4分片组合，已落盘回答不得重采，同ID系统故障最多一次恢复。不要无条件重启整个作业。
+
+入口在全部worker完成后按顺序collect、score、analyze、supplement，输出RAW/MAIN.jsonl、SCORES_MAIN.jsonl、ANALYSIS_MAIN、SUPPLEMENT_MAIN。这是有限流水线，没有定期监控。若已有输出，先验证，不能覆盖或盲目重复分析。
 
 ## 主探查完成后
 
@@ -30,3 +31,7 @@
 ## 已保留的技术事件
 
 CPU作业242456因抓取源码/测试时不同步失败，无模型调用；242476使用统一快照完成89项测试及实际processor/历史排重。之后13项原生后端和6项补充报告服务器定向测试通过，本地总95项通过。预检回执、48幅源/处理图和目视检查均存于 `execution/PREFLIGHT_CPU_v2`。原部署归档与失败日志留在新运行根，不覆盖失败状态。
+
+## 最新调度状态
+
+新加坡2026-11-03 00:44实查：242982为PENDING，原因QOSGrpGRES，MAIN仍0/4320。QoS总限8张PRO6000，其他可见请求4张，本作业请求4张；可见请求合计不能完整解释调度器准入，不能承诺立即开始。不重复提交或改变其他作业。见MAIN_QUEUE_SNAPSHOT.json。
