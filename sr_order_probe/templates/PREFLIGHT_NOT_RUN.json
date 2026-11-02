@@ -1,0 +1,21 @@
+{
+  "experiment_id": "SR-ORDER-PROBE-20261102-v1",
+  "historical_identity_bound": false,
+  "historical_world_exclusion_pass": false,
+  "dual_oracle_pass": false,
+  "prompt_diff_pass": false,
+  "processor_visual_inspected": false,
+  "prefill_boundary_verified": false,
+  "prefill_stop_scanner_verified": false,
+  "scorer_fixtures_pass": false,
+  "no_optimizer_no_backprop": false,
+  "smoke_complete_and_technical_pass": false,
+  "main_inputs_frozen": false,
+  "model_updates": 0,
+  "train_authorized": false,
+  "main_requests": 4320,
+  "source_commit": "NOT_RUN",
+  "input_manifest_sha256": "NOT_RUN",
+  "runtime_identity_sha256": "NOT_RUN",
+  "smoke_receipt_sha256": "NOT_RUN"
+}

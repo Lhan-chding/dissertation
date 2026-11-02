@@ -1,0 +1,1 @@
+4320 synthetic fixture responses scored; expected paired effects verified; real model calls 0

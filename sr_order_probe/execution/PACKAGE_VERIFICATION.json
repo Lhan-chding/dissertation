@@ -1,0 +1,10 @@
+{
+  "checked_utc": "2026-11-02T12:29:01.694132+00:00",
+  "archive_sha256": "37c72507453d7203ebe11441d77dd5dfdcae07fcebb20a09508e156557a1052b",
+  "zip_members": 166,
+  "manifest_members": 165,
+  "mismatches": [],
+  "unit_test_exit_code": 0,
+  "real_model_calls": 0,
+  "status": "PASS_CPU_ONLY"
+}

@@ -1,0 +1,47 @@
+[
+  {
+    "path": "sources/CLAUDE_ON_GPT_ROUND4_zh.md",
+    "sha256": "2281995318bae82e5ae8ef7b87a35ac203b85437f770cbf342936881619e0398",
+    "bytes": 18875
+  },
+  {
+    "path": "sources/SR_回应Claude第四轮_样本外核查与语境探查修订_20261102.md",
+    "sha256": "05711d23d0fec337c85f000696b6cb18ef265349cbebcc6c9ebc87bd7527c08b",
+    "bytes": 29691
+  },
+  {
+    "path": "sources/historical_core.py",
+    "sha256": "9b0086b5cd4eea8ddd88669e0c2223c43b7b3a0aeb5c53cf27912caa887cf8bd",
+    "bytes": 6006
+  },
+  {
+    "path": "sources/historical_interface_protocol.py",
+    "sha256": "5d4cdc167fe33adc9275a5ac8dbb8f686a33ffc97af090f5575cf57322cba7f2",
+    "bytes": 7028
+  },
+  {
+    "path": "sources/historical_interface_v3_protocol.py",
+    "sha256": "8636cacb393fe9dbfdbb149de30595ce59853710a39ab3b7ca5a01177317d80e",
+    "bytes": 5683
+  },
+  {
+    "path": "sources/historical_measurement.py",
+    "sha256": "90c26410af3f5526bce5b697138c72e0bf2d0cb58f3557d67fe42cf35db29a04",
+    "bytes": 10948
+  },
+  {
+    "path": "sources/historical_prompt_examples.json",
+    "sha256": "f5cc0280ddddc7f839043001ba9310c5b17ac5343daa6bec3b10865bcf3bad75",
+    "bytes": 7569
+  },
+  {
+    "path": "sources/historical_reference_renderer.py",
+    "sha256": "a424cdf336d96d53c91c5b4bb3cfb753663770d507d6d781fa43c843d86de560",
+    "bytes": 2642
+  },
+  {
+    "path": "sources/historical_sr_f6.json",
+    "sha256": "59052e828fecec1a5cf15255cb0ef11f269406a087ee373688bd977012e319d9",
+    "bytes": 6466
+  }
+]

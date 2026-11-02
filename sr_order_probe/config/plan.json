@@ -1,0 +1,183 @@
+{
+  "schema_version": "sr-order-probe-v1.0",
+  "experiment_id": "SR-ORDER-PROBE-20261102-v1",
+  "scope": "INFERENCE_ONLY",
+  "protocol_status": "DESIGN_FINAL_RUNTIME_NOT_BOUND",
+  "model": {
+    "name": "Qwen3.5-9B",
+    "snapshot": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+    "model_path": "/projects/_ssd/varunssd/louis-ssvc/cache/huggingface/hub/models--Qwen--Qwen3.5-9B/snapshots/c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+    "parents": {
+      "b0": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+      "b1": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71002/adapter",
+      "b2": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71003/adapter"
+    },
+    "inherit_parent_lora_configuration": true,
+    "reference": "corresponding_frozen_parent",
+    "no_optimizer_state_inheritance": true
+  },
+  "authorization": {
+    "new_inference_only": true,
+    "optimizer_updates": 0,
+    "train": false,
+    "reward_change": false,
+    "open_formal_test": false,
+    "modify_historical_runs": false,
+    "automatic_followup_training": false
+  },
+  "generation": {
+    "temperature": 1.0,
+    "top_p": 1.0,
+    "top_k": 0,
+    "max_new_tokens": 1536,
+    "batch_size": 1,
+    "model_dtype": "float32",
+    "input_float_dtype": "float32",
+    "probability_dtype": "float32",
+    "grammar_constrained_decoding": false,
+    "generation_backend": "INHERIT_FROZEN_F6_NATIVE",
+    "thinking_mode": "INHERIT_AND_BIND_EXACT",
+    "stop": "FIRST_BALANCED_TOP_LEVEL_OBJECT_OR_EOS_OR_LIMIT; scanner includes assistant prefill"
+  },
+  "data": {
+    "master_seed": 2026110201,
+    "main_roots": 48,
+    "smoke_roots": 4,
+    "structures": [
+      [
+        2,
+        1
+      ],
+      [
+        3,
+        1
+      ],
+      [
+        3,
+        2
+      ],
+      [
+        4,
+        2
+      ]
+    ],
+    "roots_per_structure": 12,
+    "categories": 10,
+    "strictly_better_items": 2,
+    "rank_series": "Alpha",
+    "operand_series": "Beta",
+    "grid": [
+      12,
+      18,
+      24,
+      30,
+      36,
+      42,
+      48,
+      54,
+      60,
+      66,
+      72,
+      78,
+      84
+    ],
+    "names": [
+      "Book",
+      "Bowl",
+      "Chair",
+      "Clock",
+      "Desk",
+      "Frame",
+      "Lamp",
+      "Mug",
+      "Plate",
+      "Shelf",
+      "Spoon",
+      "Stool",
+      "Table",
+      "Tray",
+      "Vase",
+      "Watch"
+    ],
+    "renamings": [
+      "ALIGNED",
+      "CONFLICT"
+    ],
+    "enumeration": "uniform positional permutation conditional on boundary first-r disagreement; fixed across paired renamings",
+    "max_structural_attempts": 10000,
+    "reject_on_model_outcome": false,
+    "boundary_alternatives_have_distinct_answers": true,
+    "placebo": "same-size tied block wholly unselected; reverse same number of entries as boundary reversal"
+  },
+  "conditions": {
+    "natural": [
+      "C0",
+      "C_NOLIST",
+      "C_ENUM",
+      "C_REF",
+      "C_PRINT",
+      "C_ALT"
+    ],
+    "prefix": [
+      "P_STABLE",
+      "P_REVTIE",
+      "P_PLACEBO"
+    ],
+    "prefix_base_prompt": "C_NOLIST",
+    "natural_draws": 2,
+    "prefix_draws": 1,
+    "smoke_draws": 1
+  },
+  "budget": {
+    "main_natural": 3456,
+    "main_prefix": 864,
+    "main_total": 4320,
+    "smoke_total": 216,
+    "unique_scientific_requests_max": 4536,
+    "main_updates": 0,
+    "retries": "infrastructure-only; at most one same-ID same-seed retry; all attempts billed separately; no resampling for output quality"
+  },
+  "statistics": {
+    "root_cluster": "48 numerical/positional worlds; paired renamings and all parents resampled together",
+    "bootstrap_replicates": 10000,
+    "bootstrap_seed": 2026110202,
+    "stratified_by": "boundary structure; 12 roots each",
+    "outcomes_primary": [
+      "A",
+      "S_hit"
+    ],
+    "contrasts_primary": [
+      "D_ENUM",
+      "I_ALT",
+      "D_REV",
+      "D_SPEC"
+    ],
+    "multiplicity": "Holm across 8 pooled tests; approximate centered cluster-bootstrap p; Bonferroni 99.375% intervals also",
+    "parents": "equal weight fixed three parents; no model-population or training variance claim",
+    "effect_size_gate": false,
+    "minimum_effect_pp_reference": 5.0
+  },
+  "deployment": {
+    "root": "/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102",
+    "python": "/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12",
+    "historical_runtime_root": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_semantic_factorial_20261027",
+    "qos": "soujanya-poria-startfund-2026-03",
+    "account": "rose",
+    "partition": "cluster02",
+    "job_prefix": "LH-SROP",
+    "default_gpu_workers": 1,
+    "slurm_settings": "Historical defaults only; inspect live queue/hardware before submission; preserve scientific inputs",
+    "use_gpu_hour_stop": false
+  },
+  "runtime_binding_required": [
+    "adapter_and_snapshot_identity",
+    "tokenizer_processor_chat_template",
+    "prefill_is_same_assistant_message",
+    "input_token_boundary_and_decoding",
+    "processor_images",
+    "historical_prompt_equivalence",
+    "historical_world_exclusion",
+    "no_optimizer_no_backprop",
+    "native_scorer_fixture_equivalence"
+  ]
+}

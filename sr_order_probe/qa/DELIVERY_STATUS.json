@@ -1,0 +1,29 @@
+{
+  "date": "2026-11-02",
+  "unit_tests": {
+    "run": 52,
+    "passed": 52
+  },
+  "construction": {
+    "main_roots": 48,
+    "smoke_roots": 4,
+    "views_and_images": 104,
+    "main_requests": 4320,
+    "smoke_requests": 216
+  },
+  "input_validation": "PASS_CPU_ONLY",
+  "historical_exclusion": "PASS only recorded census/dev/pilot members; server broader used-history check pending",
+  "prefix_checks": "all 104 views: equal factual multiset, equal character count, equal moved-entry count; no selected/answer in prefix",
+  "synthetic_pipeline": "4320 deliberately constructed responses; real model calls 0; not scientific evidence",
+  "source_chart_visual_inspection": {
+    "unique_smoke_views": 8,
+    "method": "assistant visual inspection of all eight smoke source charts in a contact sheet; one additionally at full size",
+    "actual_processor_images": "NOT_RUN"
+  },
+  "server_runtime": "NOT_RUN",
+  "actual_Qwen_tokenizer_prefill": "NOT_RUN",
+  "actual_processor_images": "NOT_RUN",
+  "real_inference": "NOT_RUN",
+  "parameter_updates": 0,
+  "training": "FORBIDDEN"
+}

@@ -1,0 +1,23 @@
+{
+  "status": "CPU_CONSTRUCTION_ONLY",
+  "counts": {
+    "SMOKE": {
+      "roots": 4,
+      "views": 8,
+      "requests": 216
+    },
+    "MAIN": {
+      "roots": 48,
+      "views": 96,
+      "requests": 4320
+    }
+  },
+  "images_rendered": true,
+  "historical_exclusion": "SERVER_CHECK_REQUIRED",
+  "processor_visual_check": "NOT_RUN",
+  "GPU_inference": "NOT_RUN",
+  "optimizer_updates": 0,
+  "config_sha256": "84b128e3193a02a9767cf44c3c5753ddd727834e736162ea001b7aa69e99b5d4",
+  "font_path_local": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+  "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+}

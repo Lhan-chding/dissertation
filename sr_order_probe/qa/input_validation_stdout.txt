@@ -1,0 +1,44 @@
+{
+  "MAIN": {
+    "roots": 48,
+    "views": 96,
+    "requests": 4320,
+    "parents": {
+      "b2": 1440,
+      "b1": 1440,
+      "b0": 1440
+    },
+    "conditions": {
+      "P_REVTIE": 288,
+      "P_PLACEBO": 288,
+      "C_ENUM": 576,
+      "P_STABLE": 288,
+      "C0": 576,
+      "C_NOLIST": 576,
+      "C_REF": 576,
+      "C_ALT": 576,
+      "C_PRINT": 576
+    }
+  },
+  "SMOKE": {
+    "roots": 4,
+    "views": 8,
+    "requests": 216,
+    "parents": {
+      "b1": 72,
+      "b0": 72,
+      "b2": 72
+    },
+    "conditions": {
+      "P_REVTIE": 24,
+      "C_ENUM": 24,
+      "C_REF": 24,
+      "P_PLACEBO": 24,
+      "C_PRINT": 24,
+      "C_NOLIST": 24,
+      "C_ALT": 24,
+      "P_STABLE": 24,
+      "C0": 24
+    }
+  }
+}

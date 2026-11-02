@@ -1,0 +1,27 @@
+{
+  "status": "PASS_WITH_RECORDED_SCOPE",
+  "new_views": 104,
+  "historical_sources": [
+    {
+      "archive": "SR_F6_REVIEW_20261028.zip",
+      "archive_sha256": "9d53e0529b087517a011a077a1b5cf79b92201163f5ebca018f4335b13273c7e",
+      "member": "SR_F6_20261028/EVIDENCE/RUN/PHASES/PILOT_V1/DELIVERY_PROJECTION_20261027/DEV_CAL_TASKS_PRIVATE.jsonl",
+      "rows": 384
+    },
+    {
+      "archive": "SR_F6_PILOT_DEV_FOR_GPT_CLAUDE_20261102.zip",
+      "archive_sha256": "c86c47ab23acb24f45f09bde82c093c1cf1475c2d6625490bdf086358a755fc9",
+      "member": "04_DESIGN/DEV_EVAL_TASKS_PRIVATE.jsonl",
+      "rows": 96
+    },
+    {
+      "archive": "SR_F6_PILOT_DEV_FOR_GPT_CLAUDE_20261102.zip",
+      "archive_sha256": "c86c47ab23acb24f45f09bde82c093c1cf1475c2d6625490bdf086358a755fc9",
+      "member": "04_DESIGN/DEV_PILOT_TASKS_PRIVATE.jsonl",
+      "rows": 384
+    }
+  ],
+  "overlap_qids": [],
+  "scope": "Only named previously-used F6 development/census/pilot data. No claim about inaccessible historical or sealed tests.",
+  "server_historical_used_data_index": "PENDING"
+}

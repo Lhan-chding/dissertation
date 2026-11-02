@@ -1,0 +1,17 @@
+{
+  "status": "PASS_SYNTHETIC_FIXTURE_ONLY",
+  "invented_responses_checked": 4320,
+  "real_model_calls": 0,
+  "optimizer_updates": 0,
+  "expected_contrasts": {
+    "A/D_ENUM": 1.0,
+    "A/I_ALT": 1.0,
+    "A/D_REV": 1.0,
+    "A/D_SPEC": 1.0,
+    "S_hit/D_ENUM": 1.0,
+    "S_hit/I_ALT": 1.0,
+    "S_hit/D_REV": 1.0,
+    "S_hit/D_SPEC": 1.0
+  },
+  "warning": "These numbers are deliberately constructed test values, not model results."
+}

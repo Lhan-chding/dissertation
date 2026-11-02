@@ -1,0 +1,234 @@
+{
+  "schema_version": "srf6-factorial-v1.0",
+  "experiment_id": "SR-F6-SEMANTIC-LEARNING-20261027",
+  "status": "DESIGN_FROZEN_CPU_REFERENCE_ONLY",
+  "master_seed": 2026102701,
+  "model": {
+    "name": "Qwen3.5-9B",
+    "snapshot": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+    "model_path": "/projects/_ssd/varunssd/louis-ssvc/cache/huggingface/hub/models--Qwen--Qwen3.5-9B/snapshots/c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+    "parents": {
+      "b0": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+      "b1": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71002/adapter",
+      "b2": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71003/adapter"
+    },
+    "inherit_parent_lora_configuration": true,
+    "reference": "corresponding_frozen_parent",
+    "no_optimizer_state_inheritance": true
+  },
+  "arms": [
+    "U00",
+    "U01",
+    "U10",
+    "U11",
+    "C_GLOBAL",
+    "C_SHUF"
+  ],
+  "training": {
+    "updates": 72,
+    "repeats": [
+      0,
+      1,
+      2
+    ],
+    "groups_per_update": 16,
+    "draws_per_group": 8,
+    "roots_per_update": 4,
+    "views_per_root": 4,
+    "lr": 1e-05,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "eps": 1e-08,
+    "weight_decay": 0.0,
+    "lr_schedule": "constant",
+    "gradient_clip_norm": 1.0,
+    "kl_coefficient": 0.02,
+    "tis_cap": 2.0,
+    "clip_epsilon": 0.2,
+    "aux_coefficient": 0.5,
+    "component_weights": {
+      "S": 0.5,
+      "B": 0.5
+    },
+    "semantic_centering": "same prompt + J + S/B known-mask, inclusive mean; singleton zero",
+    "microbatch_sequences": 1,
+    "optimizer_steps_per_rollout_batch": 1,
+    "temperature": 1.0,
+    "top_p": 1.0,
+    "top_k": 0,
+    "max_new_tokens": 1536,
+    "checkpoints": [
+      0,
+      12,
+      36,
+      72
+    ],
+    "primary_checkpoint": 72,
+    "use_dynamic_sampling": false,
+    "use_teacher_cross_entropy": false,
+    "use_grammar_constrained_decoding": false,
+    "use_gpu_hour_stopping": false
+  },
+  "numerics": {
+    "model_dtype": "float32",
+    "input_float_dtype": "float32",
+    "probability_dtype": "float32",
+    "prob_mean_warning_nat": 0.01,
+    "prob_max_warning_nat": 5.0,
+    "tis_cap_fraction_warning": 0.01,
+    "silent_log_ratio_clamp": false
+  },
+  "data": {
+    "families": [
+      "BINDING",
+      "IMPACT",
+      "TIES",
+      "SIGNED",
+      "INTERVAL",
+      "K_DIRECTION"
+    ],
+    "roots_per_family": {
+      "DEV_CAL": 8,
+      "DEV_PILOT": 8,
+      "DEV_EVAL": 4,
+      "TRAIN": 48,
+      "TEST_ID": 16,
+      "TEST_COMPOSITION": 32,
+      "TEST_MECHANISM": 8,
+      "TEST_CLASSOUT": 8
+    },
+    "train_engineered_alias_fraction": "1/3 anchors; task-defined boundary-swap candidate, not measured natural error rate",
+    "views_per_factor": 4,
+    "edit_magnitude": 6,
+    "P0": "uniform matched-cost-bin sample",
+    "P1": "maximum finite-library response-signature coverage in same bins",
+    "max_construction_attempts": 256,
+    "reject_on_model_outcome": false,
+    "seeds": {
+      "DEV_CAL": 2026102711,
+      "DEV_PILOT": 2026102712,
+      "DEV_EVAL": 2026102713,
+      "TRAIN": 2026102714,
+      "TEST_ID": 2026102715,
+      "TEST_COMPOSITION": 2026102716,
+      "TEST_MECHANISM": 2026102717,
+      "TEST_CLASSOUT": 2026102718
+    }
+  },
+  "pilot": {
+    "parents": [
+      "b0",
+      "b1",
+      "b2"
+    ],
+    "arms": [
+      "U10",
+      "U11",
+      "C_SHUF"
+    ],
+    "repeats": [
+      0
+    ],
+    "updates": 12,
+    "recovery_check": {
+      "parent": "b0",
+      "arm": "U11",
+      "from_step": 4,
+      "to_step": 12
+    },
+    "effect_significance_is_gate": false,
+    "shuffle_null_is_gate": false,
+    "dose_tuning": false
+  },
+  "evaluation": {
+    "panels": {
+      "COMPOSITION": {
+        "questions": 768,
+        "draws": 4
+      },
+      "ID": {
+        "questions": 384,
+        "draws": 2
+      },
+      "MECHANISM": {
+        "questions": 192,
+        "draws": 4
+      },
+      "CLASSOUT": {
+        "questions": 192,
+        "draws": 2
+      },
+      "NATURAL_INTERFACE": {
+        "questions": 128,
+        "draws": 2
+      },
+      "LEGACY": {
+        "questions": 128,
+        "draws": 4
+      },
+      "CHARTQA": {
+        "questions": 250,
+        "draws": 1
+      }
+    },
+    "all_paths_and_parents": true,
+    "primary_metric": "final answer exact correctness; failures stay in denominator",
+    "primary_contrasts": [
+      "data_at_J",
+      "feedback_P0",
+      "feedback_P1",
+      "interaction"
+    ],
+    "alpha": 0.05,
+    "primary_multiplicity": "Holm over four two-sided contrasts; simultaneous Bonferroni 98.75% CI also reported",
+    "bootstrap_replicates": 10000,
+    "bootstrap_seed": 2026102731,
+    "minimum_practical_effect_pp": 2.0,
+    "legacy_noninferiority_margin_pp": 1.0,
+    "chartqa_noninferiority_margin_pp": 2.0,
+    "test_model_access_before_all_formal_checkpoints_complete": false
+  },
+  "deployment": {
+    "root": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_semantic_factorial_20261027",
+    "python": "/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12",
+    "qos": "soujanya-poria-startfund-2026-03",
+    "account": "rose",
+    "partition": "cluster02",
+    "job_prefix": "LH-SRF6",
+    "default_concurrent_one_gpu_workers": 1,
+    "read_live_shared_queue_before_submit": true,
+    "do_not_cancel_unrelated_jobs": true,
+    "previous_failed_experiment_read_only": true
+  },
+  "authorization": {
+    "this_package_launches_server_jobs": false,
+    "codex_may_implement_registered_phases": true,
+    "formal_requires_actual_bound_receipts": true,
+    "unregistered_recipe_search_allowed": false,
+    "dynamic_controller_in_scope": false
+  },
+  "feasibility": {
+    "min_observability_each_parent_factor": 0.9,
+    "census_each_factor": {
+      "nonzero_cond_groups": 24,
+      "distinct_roots": 12,
+      "families": 3,
+      "parents": 2
+    },
+    "census_shuf_total_changed_groups": 12,
+    "census_shuf_total_roots": 6,
+    "coverage_mean_gap_min": 0.05,
+    "coverage_fraction_roots_strict_gain_min": 0.3333333333333333,
+    "pilot_U11_total": {
+      "nonzero_groups": 12,
+      "roots": 8,
+      "families": 3,
+      "parents_with_repeated_intervention": 2
+    },
+    "effect_significance_gate": false,
+    "shuffle_no_effect_gate": false,
+    "failure_action": "STOP_AND_REPORT; no automatic dose/data/seed redesign or reduced-arm launch"
+  }
+}

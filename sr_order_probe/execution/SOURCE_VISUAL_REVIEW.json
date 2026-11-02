@@ -1,0 +1,40 @@
+{
+  "status": "SOURCE_IMAGES_REVIEWED_PROCESSOR_PENDING",
+  "reviewer": "Codex primary agent visual inspection",
+  "review_method": "Model visual inspection of six contact sheets containing all 24 registered images; not human blind review; no OCR",
+  "source_views": 24,
+  "scope": "All 8 smoke views and paired views of first 2 MAIN roots in each structure",
+  "findings": {
+    "category_labels_legible": true,
+    "bars_legends_ticks_present": true,
+    "no_clipping_observed": true,
+    "no_condition_or_gold_annotations_observed": true
+  },
+  "caveat": "Display review does not certify semantic difficulty, model perception, or actual processor output. No inputs replaced. Contact-sheet labels are review-only and never sent to model.",
+  "sheets": [
+    {
+      "path": "source_visuals/source_0.png",
+      "sha256": "7684a3cb37c9c0733bfd73d02e5cbfb6490973b64a6546f6cc46f567eb2b6227"
+    },
+    {
+      "path": "source_visuals/source_1.png",
+      "sha256": "b1a857d7d1226dd89bce6316cacf745552c7ff431aeb860a184a705404a6433a"
+    },
+    {
+      "path": "source_visuals/source_2.png",
+      "sha256": "baa2cab350e22b32e464d050fb06ac06a7909dfdeceefa48de8fb0b5629b0e54"
+    },
+    {
+      "path": "source_visuals/source_3.png",
+      "sha256": "820e3609ab7b64f10f9ac3f397c30842fc636b0ac86956d9b282f80aa9fe72bd"
+    },
+    {
+      "path": "source_visuals/source_4.png",
+      "sha256": "47aa23cf4b5173df3d144079c19dacbf77b2bb814a8b8bcc15fa007c66e10305"
+    },
+    {
+      "path": "source_visuals/source_5.png",
+      "sha256": "3d05069589be94ec055eb017f1ac315d2018e4ccf398af033cd430fbcf5b4cc6"
+    }
+  ]
+}

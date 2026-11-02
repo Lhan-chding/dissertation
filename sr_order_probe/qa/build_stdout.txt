@@ -1,0 +1,12 @@
+{
+  "SMOKE": {
+    "roots": 4,
+    "views": 8,
+    "requests": 216
+  },
+  "MAIN": {
+    "roots": 48,
+    "views": 96,
+    "requests": 4320
+  }
+}

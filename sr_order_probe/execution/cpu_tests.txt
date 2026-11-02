@@ -1,0 +1,57 @@
+test_all_boundary_choices_answer_separate (test_probe.DataTests.test_all_boundary_choices_answer_separate) ... ok
+test_deterministic (test_probe.DataTests.test_deterministic) ... ok
+test_dual_oracles (test_probe.DataTests.test_dual_oracles) ... ok
+test_factor_balance (test_probe.DataTests.test_factor_balance) ... ok
+test_gold_finite (test_probe.DataTests.test_gold_finite) ... ok
+test_names_balanced_not_world_replicates (test_probe.DataTests.test_names_balanced_not_world_replicates) ... ok
+test_no_outcome_selection (test_probe.DataTests.test_no_outcome_selection) ... ok
+test_no_shared_worlds (test_probe.DataTests.test_no_shared_worlds) ... ok
+test_paired_views (test_probe.DataTests.test_paired_views) ... ok
+test_placebo_same_size_unselected (test_probe.DataTests.test_placebo_same_size_unselected) ... ok
+test_root_count (test_probe.DataTests.test_root_count) ... ok
+test_smoke_count (test_probe.DataTests.test_smoke_count) ... ok
+test_structure_balance (test_probe.DataTests.test_structure_balance) ... ok
+test_budget (test_probe.InputTests.test_budget) ... ok
+test_c0_exact_historical_examples (test_probe.InputTests.test_c0_exact_historical_examples) ... ok
+test_common_seeds_within_branch (test_probe.InputTests.test_common_seeds_within_branch) ... ok
+test_enum_boundary_conflict (test_probe.InputTests.test_enum_boundary_conflict) ... ok
+test_enum_same_members (test_probe.InputTests.test_enum_same_members) ... ok
+test_nolist_keeps_format (test_probe.InputTests.test_nolist_keeps_format) ... ok
+test_order_instructions_only_append (test_probe.InputTests.test_order_instructions_only_append) ... ok
+test_prefix_beta_not_spatial_list (test_probe.InputTests.test_prefix_beta_not_spatial_list) ... ok
+test_prefix_equal_perturbation_count (test_probe.InputTests.test_prefix_equal_perturbation_count) ... ok
+test_prefix_no_gold_target_fields (test_probe.InputTests.test_prefix_no_gold_target_fields) ... ok
+test_prefix_same_base_prompt (test_probe.InputTests.test_prefix_same_base_prompt) ... ok
+test_prefix_validation_all (test_probe.InputTests.test_prefix_validation_all) ... ok
+test_ref_not_change_others (test_probe.InputTests.test_ref_not_change_others) ... ok
+test_sampler_no_private_world (test_probe.InputTests.test_sampler_no_private_world) ... ok
+test_smoke_budget (test_probe.InputTests.test_smoke_budget) ... ok
+test_unknown_condition_raises (test_probe.InputTests.test_unknown_condition_raises) ... ok
+test_answer_not_gated_by_new_field (test_probe.ScoreTests.test_answer_not_gated_by_new_field) ... ok
+test_correct (test_probe.ScoreTests.test_correct) ... ok
+test_duplicate_json_key (test_probe.ScoreTests.test_duplicate_json_key) ... ok
+test_duplicate_selection_is_failure (test_probe.ScoreTests.test_duplicate_selection_is_failure) ... ok
+test_exact_fraction (test_probe.ScoreTests.test_exact_fraction) ... ok
+test_incomplete_unknown (test_probe.ScoreTests.test_incomplete_unknown) ... ok
+test_missing_rank_order_unknown (test_probe.ScoreTests.test_missing_rank_order_unknown) ... ok
+test_no_second_json_repair (test_probe.ScoreTests.test_no_second_json_repair) ... ok
+test_no_work_answer_repair (test_probe.ScoreTests.test_no_work_answer_repair) ... ok
+test_nonfinite_rejected (test_probe.ScoreTests.test_nonfinite_rejected) ... ok
+test_number_bounds (test_probe.ScoreTests.test_number_bounds) ... ok
+test_order_truth_separated (test_probe.ScoreTests.test_order_truth_separated) ... ok
+test_scanner_escaped_quote_and_brace (test_probe.ScoreTests.test_scanner_escaped_quote_and_brace) ... ok
+test_scanner_prefix_suffix (test_probe.ScoreTests.test_scanner_prefix_suffix) ... ok
+test_stable_prefix_truthful (test_probe.ScoreTests.test_stable_prefix_truthful) ... ok
+test_bootstrap_reproducible (test_probe.StatisticsTests.test_bootstrap_reproducible) ... ok
+test_constant_nonzero_flag (test_probe.StatisticsTests.test_constant_nonzero_flag) ... ok
+test_holm (test_probe.StatisticsTests.test_holm) ... ok
+test_interaction_sign (test_probe.StatisticsTests.test_interaction_sign) ... ok
+test_not_run_preflight_blocked (test_probe.StatisticsTests.test_not_run_preflight_blocked) ... ok
+test_protocol_forbids_training (test_probe.StatisticsTests.test_protocol_forbids_training) ... ok
+test_specificity_contrast (test_probe.StatisticsTests.test_specificity_contrast) ... ok
+test_zero_effect (test_probe.StatisticsTests.test_zero_effect) ... ok
+
+----------------------------------------------------------------------
+Ran 52 tests in 0.126s
+
+OK
