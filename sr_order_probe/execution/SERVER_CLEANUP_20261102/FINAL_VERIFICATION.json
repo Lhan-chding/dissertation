@@ -1,0 +1,46 @@
+{
+  "status": "VERIFIED_CLEANUP_COMPLETE",
+  "at": "2026-11-02T13:03:59.375148+00:00",
+  "deleted_transport_archives": 13,
+  "deleted_cpu_cache_roots": 3,
+  "removed_logical_bytes": 411822068,
+  "removed_allocated_bytes": 414317568,
+  "probe_frozen_inputs_and_scientific_source": "UNCHANGED_VERIFIED",
+  "probe_prechecks": "UNCHANGED_VERIFIED",
+  "parents": [
+    {
+      "parent": "b0",
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter/adapter_config.json",
+      "sha256": "b4cd04ac2482b3615ccdbba959aa129201ea321b9e59e66245bdd80f41535568"
+    },
+    {
+      "parent": "b0",
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter/adapter_model.safetensors",
+      "sha256": "501e9ff25dde77ab5c2042dba82236f74e8a39c5df89b5fb3ed1d2901314e5a0"
+    },
+    {
+      "parent": "b1",
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71002/adapter/adapter_config.json",
+      "sha256": "3df88f113e1e11158d717c836069287002be4b9585f821dc9888e05b8afe2314"
+    },
+    {
+      "parent": "b1",
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71002/adapter/adapter_model.safetensors",
+      "sha256": "5185e60049aa1fa912ee8c49ddb9ff5e6dcd6515fe147bbb94c91e60e134c3ba"
+    },
+    {
+      "parent": "b2",
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71003/adapter/adapter_config.json",
+      "sha256": "92c3259edf8f0e442cf7396ca0677c839b1010fcfab69ea74dad1c238f9fb8e0"
+    },
+    {
+      "parent": "b2",
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71003/adapter/adapter_model.safetensors",
+      "sha256": "4c99a3cec2ba3b1ac28f6cd8a0bf0953d5022ece34bc9fb2676ea0c886a68b02"
+    }
+  ],
+  "queue_after": "242203|cafeDIRcont-SM|RUNNING|gres/gpu:pro6000:1\n241769|cafeRELATE-SM|RUNNING|gres/gpu:pro6000:1\n",
+  "outside_project_paths_modified": false,
+  "model_checkpoints_or_raw_outputs_deleted": false,
+  "system_ram_cache_cleared": false
+}

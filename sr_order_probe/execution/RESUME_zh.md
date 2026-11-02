@@ -1,3 +1,5 @@
+> 最新：原三项烟测因启动环境缺项在模型加载前失败，零回答；恢复作业为242525/242526/242527。入口改用运行根下 `deploy/run_worker_pair_envfix.sh`。先读INCIDENT_LAUNCH_ENV.json及SUBMISSIONS_SMOKE_ENVFIX.json，以下旧提交编号仅作历史记录。
+
 # 继续本次已提交探查
 
 当前完整任务尚未完成。先读取 `EXECUTION_STATE_zh.md`、`SUBMISSIONS_SMOKE.json`，检查原有作业；不要再次提交216条烟测。

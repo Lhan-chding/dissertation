@@ -1,0 +1,27 @@
+{
+  "status": "COMPLETE",
+  "deleted_roots": [
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_operations_20261027/CONFIRM_V3_EXECUTION_20261028/cpu_cache_232374",
+      "job": "232374",
+      "job_terminal": "232374|FAILED|1:0|2026-10-28T15:10:48"
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_operations_20261027/CONFIRM_V3_EXECUTION_20261028/cpu_cache_232423",
+      "job": "232423",
+      "job_terminal": "232423|COMPLETED|0:0|2026-10-28T15:35:52"
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_operations_20261027/PILOT_V3_CLOSURE_EXECUTION_20261029/cpu_cache_233935",
+      "job": "233935",
+      "job_terminal": "233935|COMPLETED|0:0|2026-10-29T11:15:15"
+    }
+  ],
+  "regular_files": 7313,
+  "symlinks_unlinked_without_following": 190,
+  "deleted_logical_file_bytes": 311377292,
+  "deleted_allocated_bytes": 313872384,
+  "after_utc": "2026-11-02T13:02:09.683118+00:00",
+  "logs_receipts_and_production_sources_retained": true,
+  "model_files_or_experiment_raw_deleted": false
+}

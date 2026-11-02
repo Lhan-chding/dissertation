@@ -1,0 +1,17 @@
+{
+  "kind": "PRE_MODEL_LAUNCH_ENVIRONMENT_FAILURE",
+  "old_jobs": [
+    "242490",
+    "242491",
+    "242492"
+  ],
+  "sacct": "JobID|State|ExitCode|Elapsed|Start|End\n242490|FAILED|1:0|00:00:09|2026-11-02T12:57:13|2026-11-02T12:57:22\n242490.batch|FAILED|1:0|00:00:09|2026-11-02T12:57:13|2026-11-02T12:57:22\n242490.extern|COMPLETED|0:0|00:00:09|2026-11-02T12:57:13|2026-11-02T12:57:22\n242490.0|FAILED|1:0|00:00:07|2026-11-02T12:57:13|2026-11-02T12:57:20\n242490.1|FAILED|1:0|00:00:02|2026-11-02T12:57:20|2026-11-02T12:57:22\n242491|FAILED|1:0|00:00:04|2026-11-02T12:57:43|2026-11-02T12:57:47\n242491.batch|FAILED|1:0|00:00:04|2026-11-02T12:57:43|2026-11-02T12:57:47\n242491.extern|COMPLETED|0:0|00:00:04|2026-11-02T12:57:43|2026-11-02T12:57:47\n242491.0|FAILED|1:0|00:00:01|2026-11-02T12:57:44|2026-11-02T12:57:45\n242491.1|FAILED|1:0|00:00:02|2026-11-02T12:57:45|2026-11-02T12:57:47\n242492|FAILED|1:0|00:00:03|2026-11-02T12:58:14|2026-11-02T12:58:17\n242492.batch|FAILED|1:0|00:00:03|2026-11-02T12:58:14|2026-11-02T12:58:17\n242492.extern|COMPLETED|0:0|00:00:03|2026-11-02T12:58:14|2026-11-02T12:58:17\n242492.0|FAILED|1:0|00:00:02|2026-11-02T12:58:14|2026-11-02T12:58:16\n242492.1|FAILED|1:0|00:00:01|2026-11-02T12:58:16|2026-11-02T12:58:17\n",
+  "failure": "CUBLAS_WORKSPACE_CONFIG=:4096:8 required by inherited configure_audited_backend; missing in launcher",
+  "model_calls": 0,
+  "sampled_requests": 0,
+  "scientific_inputs_changed": false,
+  "fix": "Export original required deterministic environment; partition allocated CPU memory across 2 steps. Existing sampler, seeds, source, inputs unchanged.",
+  "launcher_path": "/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102/deploy/run_worker_pair_envfix.sh",
+  "launcher_sha256": "76d88ac0b4163d4465519cac16e8c1757cb4ab6fd24432e3056a0d452b08fb39",
+  "cleanup_relation": "All failures occurred before first cleanup deletion (2026-11-02T12:59:48Z); inputs/source/parents verified unchanged after cleanup."
+}

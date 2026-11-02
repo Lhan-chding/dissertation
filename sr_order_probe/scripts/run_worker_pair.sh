@@ -14,11 +14,17 @@ parent=$4
 python_bin=/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12
 export PYTHONDONTWRITEBYTECODE=1
 export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false
+export CUBLAS_WORKSPACE_CONFIG=:4096:8 OMP_NUM_THREADS=1
+# Partition the scheduler's granted host memory between the two steps; without
+# a per-step limit, each step reserves the whole allocation and runs serially.
+[[ ${SLURM_MEM_PER_NODE:-} =~ ^[0-9]+$ ]]
+worker_mem_mb=$((SLURM_MEM_PER_NODE / 2))
+((worker_mem_mb > 0))
 cd "$code_dir"
 # Each Slurm step receives exactly one allocated GPU. Children cannot see both.
 pids=()
 for shard in 0 1; do
-  srun --exclusive --exact --nodes=1 --ntasks=1 --gpus-per-task=1 \
+  srun --exclusive --exact --nodes=1 --ntasks=1 --gpus-per-task=1 --mem="${worker_mem_mb}M" \
     "$python_bin" -u -m order_probe_server run \
     --run-root "$run_root" --split "$split" --parent "$parent" \
     --shard-index "$shard" --shard-count 2 &

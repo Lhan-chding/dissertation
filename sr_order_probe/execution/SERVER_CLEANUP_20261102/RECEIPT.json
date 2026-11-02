@@ -1,0 +1,125 @@
+{
+  "status": "COMPLETE",
+  "deleted_count": 13,
+  "deleted_logical_bytes": 100444776,
+  "deleted_allocated_bytes": 100445184,
+  "after_utc": "2026-11-02T12:59:48.004151+00:00",
+  "deleted": [
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f4_c_local_code_750db3d.tar",
+      "bytes": 7280640,
+      "allocated_bytes_before": 7280640,
+      "sha256": "67ab28f9ce87b7cf37914eb3fc8ab7a025e7c751ae069717876e38f220f7da88",
+      "retained_copy": "/projects/_ssd/varunssd/louis-ssvc/sr_f4_c_local_code_750db3d",
+      "verified_retained_files": 546
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/srf4-c-fprime-48a15e5.tar",
+      "bytes": 6901760,
+      "allocated_bytes_before": 6901760,
+      "sha256": "d2bee2cd8c52a3c2aa8cdfcacd08b89f493969ffc3d14e541cdf4dce3d677e29",
+      "retained_copy": "/projects/_ssd/varunssd/louis-ssvc/sr_f4_c_fprime_code_48a15e5",
+      "verified_retained_files": 522
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/srf4-c-fprime-ea7f68b.tar",
+      "bytes": 6891520,
+      "allocated_bytes_before": 6891520,
+      "sha256": "44f3b47149469f47951278097eaafd98e1af24c00e40be80fbb69f4b4d2f4d15",
+      "retained_copy": "/projects/_ssd/varunssd/louis-ssvc/sr_f4_c_fprime_code_ea7f68b",
+      "verified_retained_files": 519
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/srf5_cleanup_14d5a54.tar",
+      "bytes": 30720,
+      "allocated_bytes_before": 30720,
+      "sha256": "858f50543aa4d1cd6c628841bb12c3a098232ac9b16d3aafa3c34b5078df63be",
+      "retained_copy": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_cleanup_14d5a54",
+      "verified_retained_files": 3
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/srf5_cleanup_da4dbd4.tar",
+      "bytes": 30720,
+      "allocated_bytes_before": 30720,
+      "sha256": "97ea3efa1a0c0aaa448e9d3a26d304cb1ef8de48e67b45c24476ba62aafe5b35",
+      "retained_copy": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_cleanup_da4dbd4",
+      "verified_retained_files": 3
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/srf5_code_26e560b.tar",
+      "bytes": 6850560,
+      "allocated_bytes_before": 6850560,
+      "sha256": "7f16c584e8ba022f5144c999c8e49d256afcd54de6151c987741c2a59db92a98",
+      "retained_copy": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_code_26e560b",
+      "verified_retained_files": 514
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/srf5_development_9c2ed85.tar",
+      "bytes": 10209280,
+      "allocated_bytes_before": 10209280,
+      "sha256": "192ddb7d3064321d636152ea53f4545c81a34495f78d3c8f43828ec70bacbdc9",
+      "retained_copy": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_9c2ed85",
+      "verified_retained_files": 837
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/srf5_development_ea50c51.tar",
+      "bytes": 28241920,
+      "allocated_bytes_before": 28241920,
+      "sha256": "2e5fc9f5a8be71323212801298e7f1b465847c456b32be2f930abcb3cfab8051",
+      "retained_copy": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_development_ea50c51",
+      "verified_retained_files": 925
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/srf5_dual_launcher_c3d37ac.tar",
+      "bytes": 30720,
+      "allocated_bytes_before": 30720,
+      "sha256": "f9978cf5789695ac919081e553aaa19f06c4afd789eb9ade01992f7e506bf455",
+      "retained_copy": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_launcher_c3d37ac",
+      "verified_retained_files": 5
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/srf5_g2_retry_launcher_30ee07b.tar",
+      "bytes": 40960,
+      "allocated_bytes_before": 40960,
+      "sha256": "3f45a3fa315b9323576f6403b483a820048b60d5a9c5a2f49e1f9ee493346f64",
+      "retained_copy": "/projects/_ssd/varunssd/louis-ssvc/sr_f5_launcher_30ee07b",
+      "verified_retained_files": 4
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/srf6-017b60a.tar.gz",
+      "bytes": 11303148,
+      "allocated_bytes_before": 11303424,
+      "sha256": "66a97a5e58f0dd432710d1d21c8caefb1b9ec753d4fc98e2255f143e6e4a469d",
+      "retained_copy": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_017b60a",
+      "verified_retained_files": 3284
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/srf6-5315e9e.tar.gz",
+      "bytes": 11294192,
+      "allocated_bytes_before": 11294208,
+      "sha256": "bc48d639f42b2de334ebd102a192b2b5c451bb2cb4e18bb23c9efe9ed4003856",
+      "retained_copy": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_5315e9e",
+      "verified_retained_files": 3275
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/srf6-86a760b.tar.gz",
+      "bytes": 11338636,
+      "allocated_bytes_before": 11338752,
+      "sha256": "efd7aef89d8162709584c8c37fe04850b170409c2650935d0facce878bcadcc8",
+      "retained_copy": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_86a760b",
+      "verified_retained_files": 3293
+    }
+  ],
+  "protected": [
+    "cache/huggingface",
+    "envs",
+    "all model snapshots and adapters",
+    "all experiment raw outputs and checkpoints",
+    "sr_order_probe_20261102",
+    "sr_f6_code_b7e7b06",
+    "all unrelated projects/jobs"
+  ],
+  "ram_cache_cleared": false,
+  "jobs_cancelled": [],
+  "followed_symlinks": false
+}
