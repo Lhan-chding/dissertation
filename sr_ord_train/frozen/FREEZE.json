@@ -1,0 +1,96 @@
+{
+  "counts": {
+    "clarification": 384,
+    "endpoint_rows": 1024,
+    "evaluation": 26624,
+    "optimizer_updates": 288,
+    "panel_per_endpoint": {
+      "authority8": 48,
+      "context8": 96,
+      "prefix10": 96,
+      "retention8": 96,
+      "scale10": 48,
+      "swap8": 256,
+      "transfer8": 384
+    },
+    "parent_endpoints": 2,
+    "smoke": 192,
+    "total_generations": 64064,
+    "train_groups": 4608,
+    "train_rollouts": 36864,
+    "trained_endpoints": 24
+  },
+  "doses": {
+    "11031": {
+      "LIST": {
+        "D_conflicts": 16,
+        "G_conflicts": 13,
+        "different_inputs": 3,
+        "different_steps": [
+          1,
+          4,
+          14
+        ],
+        "slots": 16
+      },
+      "REPORT": {
+        "D_conflicts": 16,
+        "G_conflicts": 10,
+        "different_inputs": 6,
+        "different_steps": [
+          5,
+          6,
+          9,
+          15,
+          17,
+          23
+        ],
+        "slots": 16
+      }
+    },
+    "11032": {
+      "LIST": {
+        "D_conflicts": 16,
+        "G_conflicts": 6,
+        "different_inputs": 10,
+        "different_steps": [
+          4,
+          5,
+          8,
+          10,
+          11,
+          13,
+          16,
+          17,
+          20,
+          22
+        ],
+        "slots": 16
+      },
+      "REPORT": {
+        "D_conflicts": 16,
+        "G_conflicts": 13,
+        "different_inputs": 3,
+        "different_steps": [
+          9,
+          15,
+          18
+        ],
+        "slots": 16
+      }
+    }
+  },
+  "files": {
+    "clarification_manifest.jsonl": "c61b05f95ecf733ec183abff9285711e5228fc1353ee25ee2c7158cd931d5b3b",
+    "evaluation_manifest.jsonl": "4885ebc75fda00ed8dfde2e34ee0c6db60846a8e2418119524c2d6d8d72947ac",
+    "images.jsonl": "5368f896abc83bc0cd43fb6ead9f4d558714dd945a38cbc4f31f961293b28fcf",
+    "inputs.jsonl": "20166a955b694af94a511a2bc9de252338a00e95248acce8fb79b56fe5e436be",
+    "private_cases.jsonl": "b2348d4329c6187c4f21135a437b8ee96074d7168374753ceab1b0b2c8af078f",
+    "smoke_groups.jsonl": "fefb360e33e1f1b56e90edf40c669befeb8622e80f8bca811ccea3d71d6cc90c",
+    "training_groups.jsonl": "402123e8fb5b3390a450262551b77dd86fdbdbd59dc3877fd6e739471aeb8375"
+  },
+  "font_sha256": "ae7b7855e115a5966d8b1b3f80f254ccc117ec86f9965e202ee2940453837280",
+  "images_rendered": true,
+  "pillow": "12.3.0",
+  "version": "SR-ORD-TRAIN-1.0"
+}

@@ -1,0 +1,34 @@
+{
+  "version": "order-runtime-plan-export-v1",
+  "scientific_freeze_sha256": "68ad54feb3c95245161d726a113502f5fbc21fb76f49123cb20d743e74c0cfca",
+  "source_files": {
+    "clarification_manifest.jsonl": "c61b05f95ecf733ec183abff9285711e5228fc1353ee25ee2c7158cd931d5b3b",
+    "evaluation_manifest.jsonl": "4885ebc75fda00ed8dfde2e34ee0c6db60846a8e2418119524c2d6d8d72947ac",
+    "images.jsonl": "5368f896abc83bc0cd43fb6ead9f4d558714dd945a38cbc4f31f961293b28fcf",
+    "inputs.jsonl": "20166a955b694af94a511a2bc9de252338a00e95248acce8fb79b56fe5e436be",
+    "private_cases.jsonl": "b2348d4329c6187c4f21135a437b8ee96074d7168374753ceab1b0b2c8af078f",
+    "smoke_groups.jsonl": "fefb360e33e1f1b56e90edf40c669befeb8622e80f8bca811ccea3d71d6cc90c",
+    "training_groups.jsonl": "402123e8fb5b3390a450262551b77dd86fdbdbd59dc3877fd6e739471aeb8375"
+  },
+  "derivation": "seed_for(group_seed, 'draw', draw_index_0_to_7)",
+  "provenance": "Derived solely from frozen pre-outcome registration; never infer or replace expected slots from receipts.",
+  "paths": 12,
+  "train_groups": 4608,
+  "smoke_groups": 24,
+  "distinct_request_ids": 37056,
+  "files": {
+    "paths/b0-11031-D.json": "470ce8bf3a2201815b13bca1383c98766b0ffa7a2b0cfa35763bd23c463e819f",
+    "paths/b0-11031-G.json": "fc05ee43efc7e3a3b1e5d723749a6e942dfecfb98d9cfb1f557fff0f3ea0d3af",
+    "paths/b0-11031-R.json": "b02165920b5cdf1b16b710c10e586ed2b850f4dfec1b0c899b6b934f13e1d229",
+    "paths/b0-11032-D.json": "79dcb9a98bb813d5c71f7b1cb1c648bb03df09a76f5bb504e834bf1e9b758148",
+    "paths/b0-11032-G.json": "5ec61eb9aa1a08941eab720cf5b080aaef7721cb08beeec2af3d0fac6baa4d06",
+    "paths/b0-11032-R.json": "dd6463cd44274e9da53ab6081f2b57aa17d4b8ee03bbba91b4cfbb3e28b6ea44",
+    "paths/b1-11031-D.json": "1cfc9b6eca0c7fd9b463d07c81e9a5fcb5ad00eb8ba4a1838edcc5d86d29d2ee",
+    "paths/b1-11031-G.json": "072f21e841e761e34328ad98b4aa7d05491c97602e82edbd57a93cbf3a2f9e85",
+    "paths/b1-11031-R.json": "1b7a67c4e87c69ac714bf93449e9eea775d650bbb6dea24130a46200643cf171",
+    "paths/b1-11032-D.json": "c314f918d4a92e2a680b5f705cfa8b6aeb7156ea68473850d5b55aa6546ba158",
+    "paths/b1-11032-G.json": "48fb472f3d673991d6f73883b720e62b48bf74b021fb779419122e012d63b521",
+    "paths/b1-11032-R.json": "013fb130a841057a69decba77765a790f4fc4bae1da5083f6cdb4cb2990aa89e",
+    "smoke_slots.json": "2ed11ed95ee8f7e8ea720428ce221131cbcb730b6da35cf04ef1ac884783cd84"
+  }
+}

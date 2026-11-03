@@ -1,0 +1,38 @@
+test_attempt_persistence_refuses_duplicate (test_backend.BackendBoundaryTests.test_attempt_persistence_refuses_duplicate) ... ok
+test_changed_input_and_seed_rejected (test_backend.BackendBoundaryTests.test_changed_input_and_seed_rejected) ... ok
+test_image_escape_or_replacement_rejected (test_backend.BackendBoundaryTests.test_image_escape_or_replacement_rejected) ... ok
+test_native_rebinding_preserves_code_and_original_globals (test_backend.BackendBoundaryTests.test_native_rebinding_preserves_code_and_original_globals) ... ok
+test_path_scope_filter (test_backend.BackendBoundaryTests.test_path_scope_filter) ... ok
+test_prefix_serialization_preserves_full_text (test_backend.BackendBoundaryTests.test_prefix_serialization_preserves_full_text) ... ok
+test_private_field_rejected (test_backend.BackendBoundaryTests.test_private_field_rejected) ... ok
+test_public_projection_is_exact_and_immutable (test_backend.BackendBoundaryTests.test_public_projection_is_exact_and_immutable) ... ok
+test_registration_denies_historical_identity_before_import (test_backend.BackendBoundaryTests.test_registration_denies_historical_identity_before_import) ... ok
+test_frozen_slots_budget_and_model_boundary_without_evaluation_read (test_registration.RegistrationTests.test_frozen_slots_budget_and_model_boundary_without_evaluation_read) ... ok
+test_register_rerun_preserves_bytes_and_rejects_tampering (test_registration.RegistrationTests.test_register_rerun_preserves_bytes_and_rejects_tampering) ... ok
+test_reject_destination_inside_frozen_before_writing (test_registration.RegistrationTests.test_reject_destination_inside_frozen_before_writing) ... ok
+test_reject_duplicate_and_nonfinite_json (test_registration.RegistrationTests.test_reject_duplicate_and_nonfinite_json) ... ok
+test_reject_mismatched_case_identity_and_unsafe_source (test_registration.RegistrationTests.test_reject_mismatched_case_identity_and_unsafe_source) ... ok
+test_all_binary_g8_match_native_j_only (test_training.CreditTests.test_all_binary_g8_match_native_j_only) ... ok
+test_constant_groups_keep_all_zero_advantages (test_training.CreditTests.test_constant_groups_keep_all_zero_advantages) ... ok
+test_invalid_credit_does_not_become_zero_reward (test_training.CreditTests.test_invalid_credit_does_not_become_zero_reward) ... ok
+test_equal_sequence_weight_scalar_gradient_and_update (test_training.SyntheticUpdateTests.test_equal_sequence_weight_scalar_gradient_and_update) ... skipped 'Requires existing torch environment; not a passing GPU check'
+test_gradient_gate_holds_before_adam (test_training.SyntheticUpdateTests.test_gradient_gate_holds_before_adam) ... skipped 'Requires existing torch environment; not a passing GPU check'
+test_kl_gate_holds_before_adam (test_training.SyntheticUpdateTests.test_kl_gate_holds_before_adam) ... skipped 'Requires existing torch environment; not a passing GPU check'
+test_other_arm_rollout_is_rejected (test_training.SyntheticUpdateTests.test_other_arm_rollout_is_rejected) ... skipped 'Requires existing torch environment; not a passing GPU check'
+test_prompt_tensor_mismatch_is_rejected (test_training.SyntheticUpdateTests.test_prompt_tensor_mismatch_is_rejected) ... skipped 'Requires existing torch environment; not a passing GPU check'
+test_sampler_probability_gate_holds_before_adam (test_training.SyntheticUpdateTests.test_sampler_probability_gate_holds_before_adam) ... skipped 'Requires existing torch environment; not a passing GPU check'
+test_token_mutation_is_rejected (test_training.SyntheticUpdateTests.test_token_mutation_is_rejected) ... skipped 'Requires existing torch environment; not a passing GPU check'
+test_unknown_seed_is_rejected (test_training.SyntheticUpdateTests.test_unknown_seed_is_rejected) ... skipped 'Requires existing torch environment; not a passing GPU check'
+test_complete_reuse_exact_identity_and_raw_bytes (test_transactions.FileTransactionTests.test_complete_reuse_exact_identity_and_raw_bytes) ... ok
+test_journal_chain_rejects_removed_event (test_transactions.FileTransactionTests.test_journal_chain_rejects_removed_event) ... ok
+test_lock_identity_and_write_once (test_transactions.FileTransactionTests.test_lock_identity_and_write_once) ... ok
+test_raw_identity_and_sampler_must_match (test_transactions.FileTransactionTests.test_raw_identity_and_sampler_must_match) ... ok
+test_staging_and_partial_journal_fail_closed (test_transactions.FileTransactionTests.test_staging_and_partial_journal_fail_closed) ... ok
+test_symlink_and_unlocked_access_rejected (test_transactions.FileTransactionTests.test_symlink_and_unlocked_access_rejected) ... ok
+test_unknown_blocks_retry_and_other_requests (test_transactions.FileTransactionTests.test_unknown_blocks_retry_and_other_requests) ... ok
+test_checkpoint_roundtrip_and_tamper (test_transactions.TorchTransactionTests.test_checkpoint_roundtrip_and_tamper) ... skipped 'torch unavailable; requires bound server environment'
+
+----------------------------------------------------------------------
+Ran 33 tests in 2.646s
+
+OK (skipped=9)

@@ -1,0 +1,10 @@
+{
+  "status": "SYNTHETIC_CPU_INTEGRATION_ONLY",
+  "real_generations": 0,
+  "parameter_updates": 0,
+  "cases_scored_with_constructed_gold_text": 704,
+  "formal_eval_rows_joined_and_analyzed": 26624,
+  "clarification_rows_checked": 384,
+  "artificial_primary_D_minus_G": 0.0,
+  "note": "This is a scoring/oracle/manifest consistency test; synthetic repeated outputs give no scientific evidence."
+}

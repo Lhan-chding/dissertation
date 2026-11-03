@@ -1,0 +1,10 @@
+test_frozen_slots_budget_and_model_boundary_without_evaluation_read (test_registration.RegistrationTests.test_frozen_slots_budget_and_model_boundary_without_evaluation_read) ... ok
+test_register_rerun_preserves_bytes_and_rejects_tampering (test_registration.RegistrationTests.test_register_rerun_preserves_bytes_and_rejects_tampering) ... ok
+test_reject_destination_inside_frozen_before_writing (test_registration.RegistrationTests.test_reject_destination_inside_frozen_before_writing) ... ok
+test_reject_duplicate_and_nonfinite_json (test_registration.RegistrationTests.test_reject_duplicate_and_nonfinite_json) ... ok
+test_reject_mismatched_case_identity_and_unsafe_source (test_registration.RegistrationTests.test_reject_mismatched_case_identity_and_unsafe_source) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 2.678s
+
+OK

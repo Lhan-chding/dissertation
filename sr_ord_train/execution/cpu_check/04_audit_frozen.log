@@ -1,0 +1,107 @@
+{
+  "clarification_pairs_have_identical_order": true,
+  "counts": {
+    "clarification": 384,
+    "endpoint_rows": 1024,
+    "evaluation": 26624,
+    "optimizer_updates": 288,
+    "panel_per_endpoint": {
+      "authority8": 48,
+      "context8": 96,
+      "prefix10": 96,
+      "retention8": 96,
+      "scale10": 48,
+      "swap8": 256,
+      "transfer8": 384
+    },
+    "parent_endpoints": 2,
+    "smoke": 192,
+    "total_generations": 64064,
+    "train_groups": 4608,
+    "train_rollouts": 36864,
+    "trained_endpoints": 24
+  },
+  "distinct_cases": 1516,
+  "distinct_fact_multisets": 748,
+  "distinct_inputs": 1282,
+  "doses": {
+    "11031": {
+      "LIST": {
+        "D_conflicts": 16,
+        "G_conflicts": 13,
+        "different_inputs": 3,
+        "different_steps": [
+          1,
+          4,
+          14
+        ],
+        "slots": 16
+      },
+      "REPORT": {
+        "D_conflicts": 16,
+        "G_conflicts": 10,
+        "different_inputs": 6,
+        "different_steps": [
+          5,
+          6,
+          9,
+          15,
+          17,
+          23
+        ],
+        "slots": 16
+      }
+    },
+    "11032": {
+      "LIST": {
+        "D_conflicts": 16,
+        "G_conflicts": 6,
+        "different_inputs": 10,
+        "different_steps": [
+          4,
+          5,
+          8,
+          10,
+          11,
+          13,
+          16,
+          17,
+          20,
+          22
+        ],
+        "slots": 16
+      },
+      "REPORT": {
+        "D_conflicts": 16,
+        "G_conflicts": 13,
+        "different_inputs": 3,
+        "different_steps": [
+          9,
+          15,
+          18
+        ],
+        "slots": 16
+      }
+    }
+  },
+  "freeze_sha256": "68ad54feb3c95245161d726a113502f5fbc21fb76f49123cb20d743e74c0cfca",
+  "legacy_original_pngs_to_bind_on_cluster": 96,
+  "legacy_status": "DEPLOYMENT_BIND_REQUIRED_NOT_VERIFIED_HERE",
+  "manifest_files_verified": 7,
+  "model_calls": 0,
+  "new_png_sha256_verified": 804,
+  "optimizer_steps_executed": 0,
+  "scope_unique_roots": {
+    "authority8": 24,
+    "clarification": 24,
+    "context8": 24,
+    "prefix10": 32,
+    "retention8": 24,
+    "scale10": 24,
+    "smoke": 12,
+    "swap8": 32,
+    "train": 384,
+    "transfer8": 96
+  },
+  "status": "CPU_FROZEN_AUDIT_PASS"
+}
