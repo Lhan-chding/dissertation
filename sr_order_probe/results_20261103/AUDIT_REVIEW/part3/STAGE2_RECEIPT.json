@@ -1,0 +1,8 @@
+{
+  "stage": "independent world/query judgment frozen before FROZEN_SCORES read",
+  "created_utc": "2026-11-03T07:29:48.396000+00:00",
+  "count": 24,
+  "findings_sha256": "176a23eeea9739274bab72d39f05d58d63ee629408b48aa62a6a279bf11e3e48",
+  "all_provided_gold_checks_pass": true,
+  "production_scorer_read_or_called": false
+}

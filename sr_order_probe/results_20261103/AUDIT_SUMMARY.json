@@ -1,0 +1,327 @@
+{
+  "status": "COMPLETE_AGENT_REVIEW",
+  "rows": 72,
+  "reviewers": [
+    {
+      "reviewer": "/root/audit_part1",
+      "rows": 24,
+      "extraction_sha256": "c37a89cd24aeaa714f017c1a9bcae2f14b4743065de9aa5f41dca6724268345d",
+      "finding_sha256": "2dcfd3dde891c336b78bf5a6c92316c26fc7ce13b4b49f2995e9e3d4b06d1853",
+      "initial_disagreement_count": 2
+    },
+    {
+      "reviewer": "/root/audit_part2",
+      "rows": 24,
+      "extraction_sha256": "ecc431fcd6e9bb1f9afc30a9e93143daf57120c288f9c9c929090bfdb9f00cd7",
+      "finding_sha256": "f42fbf4a097db275fc231cda7420f66b0818af3c6c90be67d9ee99d6c2806a8a",
+      "initial_disagreement_count": 6
+    },
+    {
+      "reviewer": "/root/audit_part3",
+      "rows": 24,
+      "extraction_sha256": "7a02d93cea983dfc57df9dc02802331fd24149914a46e3003faf93330eae3290",
+      "finding_sha256": "176a23eeea9739274bab72d39f05d58d63ee629408b48aa62a6a279bf11e3e48",
+      "initial_disagreement_count": 20
+    }
+  ],
+  "initial_disagreement_cells": 28,
+  "unresolved_disagreements": 0,
+  "production_score_changed": false,
+  "disagreements": [
+    {
+      "reviewer": "/root/audit_part1",
+      "request_id": "MAIN_ORDER_0041_view0/b0/P_REVTIE/d0",
+      "index": 16,
+      "field": "B",
+      "independent": 0,
+      "frozen": null,
+      "reason": "Independent first-pass B encoded inability to verify invalid JSON as 0, whereas frozen B uses null (UNKNOWN). This is reviewer state-encoding disagreement, not evidence that malformed JSON should pass. Preserve initial finding; adjudicated B=null for both malformed records.",
+      "adjudicated": null
+    },
+    {
+      "reviewer": "/root/audit_part1",
+      "request_id": "MAIN_ORDER_0023_view1/b0/P_PLACEBO/d0",
+      "index": 17,
+      "field": "B",
+      "independent": 0,
+      "frozen": null,
+      "reason": "Independent first-pass B encoded inability to verify invalid JSON as 0, whereas frozen B uses null (UNKNOWN). This is reviewer state-encoding disagreement, not evidence that malformed JSON should pass. Preserve initial finding; adjudicated B=null for both malformed records.",
+      "adjudicated": null
+    },
+    {
+      "reviewer": "/root/audit_part2",
+      "ordinal": 7,
+      "request_id": "MAIN_ORDER_0007_view1/b1/P_STABLE/d0",
+      "field": "B",
+      "independent": 0,
+      "frozen": null,
+      "reason": "Initial independent B encoded unparseable bindings as 0, while frozen uses null for UNKNOWN. Raw JSON is invalid; no binding verdict can be established. This is reviewer status encoding disagreement, not evidence of a frozen scorer bug; retain original independent result and resolve B as UNKNOWN."
+    },
+    {
+      "reviewer": "/root/audit_part2",
+      "ordinal": 8,
+      "request_id": "MAIN_ORDER_0021_view0/b1/P_STABLE/d0",
+      "field": "B",
+      "independent": 0,
+      "frozen": null,
+      "reason": "Initial independent B encoded unparseable bindings as 0, while frozen uses null for UNKNOWN. Raw JSON is invalid; no binding verdict can be established. This is reviewer status encoding disagreement, not evidence of a frozen scorer bug; retain original independent result and resolve B as UNKNOWN."
+    },
+    {
+      "reviewer": "/root/audit_part2",
+      "ordinal": 9,
+      "request_id": "MAIN_ORDER_0040_view1/b1/P_REVTIE/d0",
+      "field": "B",
+      "independent": 0,
+      "frozen": null,
+      "reason": "Initial independent B encoded unparseable bindings as 0, while frozen uses null for UNKNOWN. Raw JSON is invalid; no binding verdict can be established. This is reviewer status encoding disagreement, not evidence of a frozen scorer bug; retain original independent result and resolve B as UNKNOWN."
+    },
+    {
+      "reviewer": "/root/audit_part2",
+      "ordinal": 10,
+      "request_id": "MAIN_ORDER_0017_view0/b1/P_REVTIE/d0",
+      "field": "B",
+      "independent": 0,
+      "frozen": null,
+      "reason": "Initial independent B encoded unparseable bindings as 0, while frozen uses null for UNKNOWN. Raw JSON is invalid; no binding verdict can be established. This is reviewer status encoding disagreement, not evidence of a frozen scorer bug; retain original independent result and resolve B as UNKNOWN."
+    },
+    {
+      "reviewer": "/root/audit_part2",
+      "ordinal": 11,
+      "request_id": "MAIN_ORDER_0001_view0/b1/P_PLACEBO/d0",
+      "field": "B",
+      "independent": 0,
+      "frozen": null,
+      "reason": "Initial independent B encoded unparseable bindings as 0, while frozen uses null for UNKNOWN. Raw JSON is invalid; no binding verdict can be established. This is reviewer status encoding disagreement, not evidence of a frozen scorer bug; retain original independent result and resolve B as UNKNOWN."
+    },
+    {
+      "reviewer": "/root/audit_part2",
+      "ordinal": 12,
+      "request_id": "MAIN_ORDER_0025_view0/b1/P_PLACEBO/d0",
+      "field": "B",
+      "independent": 0,
+      "frozen": null,
+      "reason": "Initial independent B encoded unparseable bindings as 0, while frozen uses null for UNKNOWN. Raw JSON is invalid; no binding verdict can be established. This is reviewer status encoding disagreement, not evidence of a frozen scorer bug; retain original independent result and resolve B as UNKNOWN."
+    },
+    {
+      "reviewer": "/root/audit_part3",
+      "request_id": "MAIN_ORDER_0044_view0/b2/P_REVTIE/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "reviewer": "/root/audit_part3",
+      "request_id": "MAIN_ORDER_0011_view1/b2/P_PLACEBO/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "reviewer": "/root/audit_part3",
+      "request_id": "MAIN_ORDER_0006_view1/b2/P_PLACEBO/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "reviewer": "/root/audit_part3",
+      "request_id": "MAIN_ORDER_0003_view0/b1/P_STABLE/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "reviewer": "/root/audit_part3",
+      "request_id": "MAIN_ORDER_0033_view1/b2/P_PLACEBO/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "reviewer": "/root/audit_part3",
+      "request_id": "MAIN_ORDER_0002_view1/b1/P_PLACEBO/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "reviewer": "/root/audit_part3",
+      "request_id": "MAIN_ORDER_0011_view0/b0/P_REVTIE/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "reviewer": "/root/audit_part3",
+      "request_id": "MAIN_ORDER_0043_view0/b1/P_REVTIE/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "reviewer": "/root/audit_part3",
+      "request_id": "MAIN_ORDER_0003_view1/b0/P_PLACEBO/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "reviewer": "/root/audit_part3",
+      "request_id": "MAIN_ORDER_0038_view0/b1/P_REVTIE/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "reviewer": "/root/audit_part3",
+      "request_id": "MAIN_ORDER_0018_view0/b1/P_REVTIE/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "reviewer": "/root/audit_part3",
+      "request_id": "MAIN_ORDER_0046_view1/b1/P_REVTIE/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "reviewer": "/root/audit_part3",
+      "request_id": "MAIN_ORDER_0021_view1/b1/P_PLACEBO/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "reviewer": "/root/audit_part3",
+      "request_id": "MAIN_ORDER_0014_view0/b0/P_STABLE/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "reviewer": "/root/audit_part3",
+      "request_id": "MAIN_ORDER_0022_view1/b1/C_NOLIST/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "reviewer": "/root/audit_part3",
+      "request_id": "MAIN_ORDER_0047_view1/b1/P_STABLE/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "reviewer": "/root/audit_part3",
+      "request_id": "MAIN_ORDER_0014_view1/b0/P_PLACEBO/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "reviewer": "/root/audit_part3",
+      "request_id": "MAIN_ORDER_0047_view0/b0/P_PLACEBO/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "reviewer": "/root/audit_part3",
+      "request_id": "MAIN_ORDER_0025_view1/b0/C_REF/d1",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "reviewer": "/root/audit_part3",
+      "request_id": "MAIN_ORDER_0002_view1/b0/P_PLACEBO/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    }
+  ],
+  "limitation": "Not human double blind, not proof of zero scoring errors in the population; original request IDs reveal condition."
+}

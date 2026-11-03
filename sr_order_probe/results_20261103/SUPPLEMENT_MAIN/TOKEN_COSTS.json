@@ -1,0 +1,54 @@
+{
+  "status": "MEASURED_MAIN_OUTPUTS_ONLY",
+  "N": 4320,
+  "metrics": {
+    "input_tokens": {
+      "known": 4320,
+      "missing": 0,
+      "total": 6513408.0,
+      "mean": 1507.7333333333333,
+      "median": 1478.0,
+      "min": 1420.0,
+      "max": 1697.0
+    },
+    "forced_prefix_tokens": {
+      "known": 4320,
+      "missing": 0,
+      "total": 240516.0,
+      "mean": 55.675,
+      "median": 1.0,
+      "min": 1.0,
+      "max": 278.0
+    },
+    "context_tokens_before_prefix": {
+      "known": 4320,
+      "missing": 0,
+      "total": 6272892.0,
+      "mean": 1452.0583333333334,
+      "median": 1455.0,
+      "min": 1419.0,
+      "max": 1481.0
+    },
+    "sampled_tokens": {
+      "known": 4320,
+      "missing": 0,
+      "total": 2043761.0,
+      "mean": 473.0928240740741,
+      "median": 473.0,
+      "min": 6.0,
+      "max": 1536.0
+    },
+    "generation_seconds": {
+      "known": 4320,
+      "missing": 0,
+      "total": 61122.20530746272,
+      "mean": 14.14865863598674,
+      "median": 14.087550944415852,
+      "min": 1.0033173700794578,
+      "max": 45.39481636881828
+    }
+  },
+  "note": "Input tokens include the forced prefix and expanded image tokens. Generation seconds sum may overlap across parallel workers; it is not GPU allocation wall time. Smoke and infrastructure retries are excluded and must be reported separately.",
+  "gpu_allocation_seconds": null,
+  "gpu_allocation_status": "REQUIRES_SCHEDULER_ACCOUNTING"
+}

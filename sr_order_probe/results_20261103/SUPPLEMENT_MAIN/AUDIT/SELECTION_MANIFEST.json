@@ -1,0 +1,378 @@
+{
+  "seed": 2026110203,
+  "audit_status": "NOT_RUN",
+  "selected": [
+    {
+      "request_id": "MAIN_ORDER_0015_view0/b0/C0/d1",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0030_view1/b0/C0/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0012_view1/b0/C_NOLIST/d1",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0016_view1/b0/C_NOLIST/d1",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0025_view1/b0/C_ENUM/d1",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0016_view1/b0/C_ENUM/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0042_view1/b0/C_REF/d1",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0030_view0/b0/C_REF/d1",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0018_view0/b0/C_PRINT/d1",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0027_view0/b0/C_PRINT/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0022_view0/b0/C_ALT/d1",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0023_view1/b0/C_ALT/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0012_view0/b0/P_STABLE/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0028_view0/b0/P_STABLE/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0013_view0/b0/P_REVTIE/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0041_view0/b0/P_REVTIE/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0023_view1/b0/P_PLACEBO/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0015_view0/b0/P_PLACEBO/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0047_view1/b1/C0/d1",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0005_view1/b1/C0/d1",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0021_view1/b1/C_NOLIST/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0044_view1/b1/C_NOLIST/d1",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0044_view0/b1/C_ENUM/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0000_view0/b1/C_ENUM/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0038_view1/b1/C_REF/d1",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0046_view1/b1/C_REF/d1",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0047_view1/b1/C_PRINT/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0007_view0/b1/C_PRINT/d1",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0041_view0/b1/C_ALT/d1",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0042_view0/b1/C_ALT/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0007_view1/b1/P_STABLE/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0021_view0/b1/P_STABLE/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0040_view1/b1/P_REVTIE/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0017_view0/b1/P_REVTIE/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0001_view0/b1/P_PLACEBO/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0025_view0/b1/P_PLACEBO/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0020_view1/b2/C0/d1",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0006_view0/b2/C0/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0020_view0/b2/C_NOLIST/d1",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0034_view0/b2/C_NOLIST/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0042_view0/b2/C_ENUM/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0000_view1/b2/C_ENUM/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0038_view1/b2/C_REF/d1",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0020_view0/b2/C_REF/d1",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0033_view0/b2/C_PRINT/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0017_view0/b2/C_PRINT/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0026_view1/b2/C_ALT/d1",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0005_view1/b2/C_ALT/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0018_view0/b2/P_STABLE/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0046_view0/b2/P_STABLE/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0044_view0/b2/P_REVTIE/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0002_view1/b2/P_REVTIE/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0011_view1/b2/P_PLACEBO/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0006_view1/b2/P_PLACEBO/d0",
+      "selection_stage": "STRATIFIED_54",
+      "selection_reason": "TWO_PER_PARENT_CONDITION"
+    },
+    {
+      "request_id": "MAIN_ORDER_0003_view0/b1/P_STABLE/d0",
+      "selection_stage": "EXCEPTIONS_18",
+      "selection_reason": "SELECTED_UNKNOWN"
+    },
+    {
+      "request_id": "MAIN_ORDER_0033_view1/b2/P_PLACEBO/d0",
+      "selection_stage": "EXCEPTIONS_18",
+      "selection_reason": "SELECTED_UNKNOWN"
+    },
+    {
+      "request_id": "MAIN_ORDER_0002_view1/b1/P_PLACEBO/d0",
+      "selection_stage": "EXCEPTIONS_18",
+      "selection_reason": "SELECTED_UNKNOWN"
+    },
+    {
+      "request_id": "MAIN_ORDER_0011_view0/b0/P_REVTIE/d0",
+      "selection_stage": "EXCEPTIONS_18",
+      "selection_reason": "SELECTED_UNKNOWN"
+    },
+    {
+      "request_id": "MAIN_ORDER_0043_view0/b1/P_REVTIE/d0",
+      "selection_stage": "EXCEPTIONS_18",
+      "selection_reason": "SELECTED_UNKNOWN"
+    },
+    {
+      "request_id": "MAIN_ORDER_0003_view1/b0/P_PLACEBO/d0",
+      "selection_stage": "EXCEPTIONS_18",
+      "selection_reason": "SELECTED_UNKNOWN"
+    },
+    {
+      "request_id": "MAIN_ORDER_0038_view0/b1/P_REVTIE/d0",
+      "selection_stage": "EXCEPTIONS_18",
+      "selection_reason": "SELECTED_UNKNOWN"
+    },
+    {
+      "request_id": "MAIN_ORDER_0018_view0/b1/P_REVTIE/d0",
+      "selection_stage": "EXCEPTIONS_18",
+      "selection_reason": "SELECTED_UNKNOWN"
+    },
+    {
+      "request_id": "MAIN_ORDER_0046_view1/b1/P_REVTIE/d0",
+      "selection_stage": "EXCEPTIONS_18",
+      "selection_reason": "SELECTED_UNKNOWN"
+    },
+    {
+      "request_id": "MAIN_ORDER_0021_view1/b1/P_PLACEBO/d0",
+      "selection_stage": "EXCEPTIONS_18",
+      "selection_reason": "SELECTED_UNKNOWN"
+    },
+    {
+      "request_id": "MAIN_ORDER_0014_view0/b0/P_STABLE/d0",
+      "selection_stage": "EXCEPTIONS_18",
+      "selection_reason": "SELECTED_UNKNOWN"
+    },
+    {
+      "request_id": "MAIN_ORDER_0022_view1/b1/C_NOLIST/d0",
+      "selection_stage": "EXCEPTIONS_18",
+      "selection_reason": "SELECTED_UNKNOWN"
+    },
+    {
+      "request_id": "MAIN_ORDER_0047_view1/b1/P_STABLE/d0",
+      "selection_stage": "EXCEPTIONS_18",
+      "selection_reason": "SELECTED_UNKNOWN"
+    },
+    {
+      "request_id": "MAIN_ORDER_0009_view1/b1/P_REVTIE/d0",
+      "selection_stage": "EXCEPTIONS_18",
+      "selection_reason": "SELECTED_UNKNOWN"
+    },
+    {
+      "request_id": "MAIN_ORDER_0014_view1/b0/P_PLACEBO/d0",
+      "selection_stage": "EXCEPTIONS_18",
+      "selection_reason": "SELECTED_UNKNOWN"
+    },
+    {
+      "request_id": "MAIN_ORDER_0047_view0/b0/P_PLACEBO/d0",
+      "selection_stage": "EXCEPTIONS_18",
+      "selection_reason": "SELECTED_UNKNOWN"
+    },
+    {
+      "request_id": "MAIN_ORDER_0025_view1/b0/C_REF/d1",
+      "selection_stage": "EXCEPTIONS_18",
+      "selection_reason": "SELECTED_UNKNOWN"
+    },
+    {
+      "request_id": "MAIN_ORDER_0002_view1/b0/P_PLACEBO/d0",
+      "selection_stage": "EXCEPTIONS_18",
+      "selection_reason": "SELECTED_UNKNOWN"
+    }
+  ],
+  "method": "54: two per parent/condition, sorted-ID seeded random sample. 18: fixed priority exceptional categories, same RNG, deduplicate; fill any remainder from all unused requests.",
+  "exception_priority": [
+    "SELECTED_UNKNOWN",
+    "ANSWER_UNPARSEABLE",
+    "PREFIX_DUPLICATE_KEY",
+    "ORDER_COMPLETE_VALUES_WRONG"
+  ],
+  "reviewer_order": "Extract fields from 72_SELECTED_BLIND before opening PRIVATE_TASKS or score/selection reasons. This is not a claim of human double-blind review; original request IDs retain their registered condition names.",
+  "raw_sha256": "ea5890c4aeb35ecef1df5fb2d6959f8a9b2b15c82de4305c0d13509dedd05186",
+  "scores_sha256": "1dd2b4059ceee8e58971622d178ae3a7682aeb2f7e9b05f9daab83bcc890e713",
+  "blind_sha256": "fcf9269f9570ea6a7d91802223afa1dc988d20baa9bd4ac8177b163a655aa203",
+  "private_sha256": "9adcac28a3f6bcc2e5ea1c305e6582c778abd9d4abf74b447d807f6845f783ab"
+}

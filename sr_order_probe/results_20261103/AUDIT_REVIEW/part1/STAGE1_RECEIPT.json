@@ -1,0 +1,10 @@
+{
+  "stage": 1,
+  "utc": "2026-11-03T07:28:29.181191+00:00",
+  "rows": 24,
+  "extraction_sha256": "c37a89cd24aeaa714f017c1a9bcae2f14b4743065de9aa5f41dca6724268345d",
+  "blind_sha256": "cbc917bba7375262ba875820db3495cfaf82d7d66cfd616057f07054ad1c176c",
+  "private_or_scores_read": false,
+  "production_scorer_used": false,
+  "raw_read_count": 24
+}

@@ -1,0 +1,9 @@
+{
+  "main_comparisons_changed": false,
+  "scores_recomputed": false,
+  "model_calls": 0,
+  "optimizer_updates": 0,
+  "primary_inference": "UNCHANGED_FROZEN_ANALYSIS",
+  "audit_status": "NOT_RUN",
+  "audit_seed": 2026110203
+}

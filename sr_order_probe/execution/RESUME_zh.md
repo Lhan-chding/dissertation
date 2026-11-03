@@ -1,3 +1,5 @@
+> 最终更新：主实验与72条审核已完成。先读 FINAL_STATUS_zh.md 与 ../results_20261103/RESULTS_REPORT_zh.md。下文提交/排队/待审核状态为历史记录，禁止据此重复运行。
+
 # 继续本次已提交探查
 
 当前完整任务尚未完成。216条烟测已真实完成并通过技术验收，主实验作业242982已提交。先读取 `SUBMISSION_MAIN.json`、`SMOKE_RECEIPT.json`、`SMOKE_REVIEW.json`；不要重复提交烟测或MAIN。

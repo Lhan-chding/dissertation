@@ -1,0 +1,7 @@
+{
+  "completed_utc": "2026-11-03T07:29:16.359764+00:00",
+  "independent_findings_sha256": "f42fbf4a097db275fc231cda7420f66b0818af3c6c90be67d9ee99d6c2806a8a",
+  "frozen_scores_read": false,
+  "production_scorer_read_or_called": false,
+  "gold_checks_all_pass": true
+}

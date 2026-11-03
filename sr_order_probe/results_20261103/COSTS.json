@@ -1,0 +1,187 @@
+{
+  "scheduler_timezone": "UTC",
+  "user_timezone": "Asia/Singapore",
+  "source": "TZ=UTC sacct live query 2026-11-03T07:28:37Z",
+  "jobs": [
+    {
+      "JobID": "242456",
+      "JobName": "LH-SROP-CPU",
+      "State": "FAILED",
+      "ExitCode": "1:0",
+      "ElapsedRaw": "24",
+      "Start": "2026-11-02T12:38:57",
+      "End": "2026-11-02T12:39:21",
+      "AllocTRES": "cpu=1,mem=3G,node=1",
+      "allocated_gpus": 0,
+      "elapsed_seconds": 24,
+      "gpu_seconds": 0
+    },
+    {
+      "JobID": "242476",
+      "JobName": "LH-SROP-CPU-v2",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "ElapsedRaw": "81",
+      "Start": "2026-11-02T12:43:00",
+      "End": "2026-11-02T12:44:21",
+      "AllocTRES": "cpu=1,mem=3G,node=1",
+      "allocated_gpus": 0,
+      "elapsed_seconds": 81,
+      "gpu_seconds": 0
+    },
+    {
+      "JobID": "242490",
+      "JobName": "LH-SROP-SMOKE-b0",
+      "State": "FAILED",
+      "ExitCode": "1:0",
+      "ElapsedRaw": "9",
+      "Start": "2026-11-02T12:57:13",
+      "End": "2026-11-02T12:57:22",
+      "AllocTRES": "billing=16,cpu=8,gres/gpu:pro6000=2,gres/gpu=2,mem=66G,node=1",
+      "allocated_gpus": 2,
+      "elapsed_seconds": 9,
+      "gpu_seconds": 18
+    },
+    {
+      "JobID": "242491",
+      "JobName": "LH-SROP-SMOKE-b1",
+      "State": "FAILED",
+      "ExitCode": "1:0",
+      "ElapsedRaw": "4",
+      "Start": "2026-11-02T12:57:43",
+      "End": "2026-11-02T12:57:47",
+      "AllocTRES": "billing=16,cpu=8,gres/gpu:pro6000=2,gres/gpu=2,mem=66G,node=1",
+      "allocated_gpus": 2,
+      "elapsed_seconds": 4,
+      "gpu_seconds": 8
+    },
+    {
+      "JobID": "242492",
+      "JobName": "LH-SROP-SMOKE-b2",
+      "State": "FAILED",
+      "ExitCode": "1:0",
+      "ElapsedRaw": "3",
+      "Start": "2026-11-02T12:58:14",
+      "End": "2026-11-02T12:58:17",
+      "AllocTRES": "billing=16,cpu=8,gres/gpu:pro6000=2,gres/gpu=2,mem=66G,node=1",
+      "allocated_gpus": 2,
+      "elapsed_seconds": 3,
+      "gpu_seconds": 6
+    },
+    {
+      "JobID": "242525",
+      "JobName": "LH-SROP-SMOKE-R1-b0",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "ElapsedRaw": "508",
+      "Start": "2026-11-02T14:06:29",
+      "End": "2026-11-02T14:14:57",
+      "AllocTRES": "billing=16,cpu=8,gres/gpu:pro6000=2,gres/gpu=2,mem=66G,node=1",
+      "allocated_gpus": 2,
+      "elapsed_seconds": 508,
+      "gpu_seconds": 1016
+    },
+    {
+      "JobID": "242526",
+      "JobName": "LH-SROP-SMOKE-R1-b1",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "ElapsedRaw": "710",
+      "Start": "2026-11-02T14:06:30",
+      "End": "2026-11-02T14:18:20",
+      "AllocTRES": "billing=16,cpu=8,gres/gpu:pro6000=2,gres/gpu=2,mem=66G,node=1",
+      "allocated_gpus": 2,
+      "elapsed_seconds": 710,
+      "gpu_seconds": 1420
+    },
+    {
+      "JobID": "242527",
+      "JobName": "LH-SROP-SMOKE-R1-b2",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "ElapsedRaw": "517",
+      "Start": "2026-11-02T14:15:09",
+      "End": "2026-11-02T14:23:46",
+      "AllocTRES": "billing=16,cpu=8,gres/gpu:pro6000=2,gres/gpu=2,mem=66G,node=1",
+      "allocated_gpus": 2,
+      "elapsed_seconds": 517,
+      "gpu_seconds": 1034
+    },
+    {
+      "JobID": "242982",
+      "JobName": "LH-SROP-MAIN-4W",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "ElapsedRaw": "15978",
+      "Start": "2026-11-02T22:18:03",
+      "End": "2026-11-03T02:44:21",
+      "AllocTRES": "billing=32,cpu=16,gres/gpu:pro6000=4,gres/gpu=4,mem=132G,node=1",
+      "allocated_gpus": 4,
+      "elapsed_seconds": 15978,
+      "gpu_seconds": 63912
+    }
+  ],
+  "total_gpu_seconds": 67414,
+  "total_gpu_hours": 18.726111111111113,
+  "main_gpu_hours": 17.753333333333334,
+  "smoke_success_gpu_hours": 0.9638888888888889,
+  "initialization_failure_gpu_hours": 0.008888888888888889,
+  "gpu_utilization": null,
+  "financial_cost": null,
+  "main_token_costs": {
+    "status": "MEASURED_MAIN_OUTPUTS_ONLY",
+    "N": 4320,
+    "metrics": {
+      "input_tokens": {
+        "known": 4320,
+        "missing": 0,
+        "total": 6513408.0,
+        "mean": 1507.7333333333333,
+        "median": 1478.0,
+        "min": 1420.0,
+        "max": 1697.0
+      },
+      "forced_prefix_tokens": {
+        "known": 4320,
+        "missing": 0,
+        "total": 240516.0,
+        "mean": 55.675,
+        "median": 1.0,
+        "min": 1.0,
+        "max": 278.0
+      },
+      "context_tokens_before_prefix": {
+        "known": 4320,
+        "missing": 0,
+        "total": 6272892.0,
+        "mean": 1452.0583333333334,
+        "median": 1455.0,
+        "min": 1419.0,
+        "max": 1481.0
+      },
+      "sampled_tokens": {
+        "known": 4320,
+        "missing": 0,
+        "total": 2043761.0,
+        "mean": 473.0928240740741,
+        "median": 473.0,
+        "min": 6.0,
+        "max": 1536.0
+      },
+      "generation_seconds": {
+        "known": 4320,
+        "missing": 0,
+        "total": 61122.20530746272,
+        "mean": 14.14865863598674,
+        "median": 14.087550944415852,
+        "min": 1.0033173700794578,
+        "max": 45.39481636881828
+      }
+    },
+    "note": "Input tokens include the forced prefix and expanded image tokens. Generation seconds sum may overlap across parallel workers; it is not GPU allocation wall time. Smoke and infrastructure retries are excluded and must be reported separately.",
+    "gpu_allocation_seconds": null,
+    "gpu_allocation_status": "REQUIRES_SCHEDULER_ACCOUNTING"
+  },
+  "smoke_sampled_tokens": 92159,
+  "total_sampled_tokens": 2135920
+}

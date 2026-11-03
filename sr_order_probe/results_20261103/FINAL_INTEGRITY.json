@@ -1,0 +1,45 @@
+{
+  "SMOKE": {
+    "N": 216,
+    "parents": {
+      "b1": 72,
+      "b0": 72,
+      "b2": 72
+    },
+    "finish": {
+      "eos": 37,
+      "balanced": 179
+    },
+    "sampled_tokens": 92159,
+    "technical_errors": 0,
+    "raw_sha256": "40dc299bd2859f3f134c434bf62cd68dbc597b7d5504644ed6db12d61de27eea",
+    "full_token_count_and_prefix_boundary_checked": true
+  },
+  "MAIN": {
+    "N": 4320,
+    "parents": {
+      "b2": 1440,
+      "b1": 1440,
+      "b0": 1440
+    },
+    "finish": {
+      "balanced": 3821,
+      "eos": 488,
+      "length": 11
+    },
+    "sampled_tokens": 2043761,
+    "technical_errors": 0,
+    "raw_sha256": "ea5890c4aeb35ecef1df5fb2d6959f8a9b2b15c82de4305c0d13509dedd05186",
+    "full_token_count_and_prefix_boundary_checked": true
+  },
+  "attempts": {
+    "events": {
+      "START": 4536,
+      "SAVED": 4536
+    },
+    "max_attempt": 1,
+    "unique_started": 4536,
+    "multiple_starts": []
+  },
+  "validation_status": "PASS_RAW_AND_TOKEN_INTEGRITY_ONLY"
+}

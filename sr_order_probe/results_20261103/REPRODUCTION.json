@@ -1,0 +1,36 @@
+{
+  "status": "BYTE_IDENTICAL_SCORE_AND_ANALYSIS",
+  "model_calls": 0,
+  "checks": [
+    {
+      "original": "SCORES_MAIN.jsonl",
+      "reproduced": "REPRO_SCORES_MAIN.jsonl",
+      "sha256": "1dd2b4059ceee8e58971622d178ae3a7682aeb2f7e9b05f9daab83bcc890e713",
+      "byte_identical": true
+    },
+    {
+      "original": "ANALYSIS_MAIN/ANALYSIS_SCOPE.json",
+      "reproduced": "REPRO_ANALYSIS/ANALYSIS_SCOPE.json",
+      "sha256": "72159d35ddce5447052840c7673da2e623134ccada84a98431a67c666acab6f2",
+      "byte_identical": true
+    },
+    {
+      "original": "ANALYSIS_MAIN/CONTRASTS.json",
+      "reproduced": "REPRO_ANALYSIS/CONTRASTS.json",
+      "sha256": "52208f7311358db3b4856b5b4f1f908ed1ec3f124ab59a64eff12f3cea01fc41",
+      "byte_identical": true
+    },
+    {
+      "original": "ANALYSIS_MAIN/DESCRIPTIVE.json",
+      "reproduced": "REPRO_ANALYSIS/DESCRIPTIVE.json",
+      "sha256": "353765651d58ccae8025f154da6b196b59924fcce9e2c353bba8854420007ab4",
+      "byte_identical": true
+    },
+    {
+      "original": "ANALYSIS_MAIN/ROOT_EFFECTS.csv",
+      "reproduced": "REPRO_ANALYSIS/ROOT_EFFECTS.csv",
+      "sha256": "b633edb7f30f2ec9bf48349df1bb6e215ecceac71f16596db835292d8cbd550f",
+      "byte_identical": true
+    }
+  ]
+}

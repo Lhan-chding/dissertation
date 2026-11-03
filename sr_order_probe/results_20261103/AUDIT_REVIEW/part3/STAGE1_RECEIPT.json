@@ -1,0 +1,9 @@
+{
+  "stage": "BLIND-only extraction frozen before PRIVATE/FROZEN read",
+  "created_utc": "2026-11-03T07:29:06.047149+00:00",
+  "count": 24,
+  "raw_rows_actually_read": 24,
+  "extraction_sha256": "7a02d93cea983dfc57df9dc02802331fd24149914a46e3003faf93330eae3290",
+  "blind_sha256": "df3cf898fa2bbdbb2711846efb1dd5c13d067e0861d0b895d2c10fc05a57fa15",
+  "production_scorer_read_or_called": false
+}

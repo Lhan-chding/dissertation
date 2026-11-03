@@ -1,0 +1,1285 @@
+{
+  "review_mode": "independent_agent_not_human_double_blind",
+  "rows": 24,
+  "fields_per_row": 9,
+  "matched_cells": 210,
+  "initial_disagreement_count": 6,
+  "initial_disagreement_rows": 6,
+  "disagreements": [
+    {
+      "ordinal": 7,
+      "request_id": "MAIN_ORDER_0007_view1/b1/P_STABLE/d0",
+      "field": "B",
+      "independent": 0,
+      "frozen": null,
+      "reason": "Initial independent B encoded unparseable bindings as 0, while frozen uses null for UNKNOWN. Raw JSON is invalid; no binding verdict can be established. This is reviewer status encoding disagreement, not evidence of a frozen scorer bug; retain original independent result and resolve B as UNKNOWN."
+    },
+    {
+      "ordinal": 8,
+      "request_id": "MAIN_ORDER_0021_view0/b1/P_STABLE/d0",
+      "field": "B",
+      "independent": 0,
+      "frozen": null,
+      "reason": "Initial independent B encoded unparseable bindings as 0, while frozen uses null for UNKNOWN. Raw JSON is invalid; no binding verdict can be established. This is reviewer status encoding disagreement, not evidence of a frozen scorer bug; retain original independent result and resolve B as UNKNOWN."
+    },
+    {
+      "ordinal": 9,
+      "request_id": "MAIN_ORDER_0040_view1/b1/P_REVTIE/d0",
+      "field": "B",
+      "independent": 0,
+      "frozen": null,
+      "reason": "Initial independent B encoded unparseable bindings as 0, while frozen uses null for UNKNOWN. Raw JSON is invalid; no binding verdict can be established. This is reviewer status encoding disagreement, not evidence of a frozen scorer bug; retain original independent result and resolve B as UNKNOWN."
+    },
+    {
+      "ordinal": 10,
+      "request_id": "MAIN_ORDER_0017_view0/b1/P_REVTIE/d0",
+      "field": "B",
+      "independent": 0,
+      "frozen": null,
+      "reason": "Initial independent B encoded unparseable bindings as 0, while frozen uses null for UNKNOWN. Raw JSON is invalid; no binding verdict can be established. This is reviewer status encoding disagreement, not evidence of a frozen scorer bug; retain original independent result and resolve B as UNKNOWN."
+    },
+    {
+      "ordinal": 11,
+      "request_id": "MAIN_ORDER_0001_view0/b1/P_PLACEBO/d0",
+      "field": "B",
+      "independent": 0,
+      "frozen": null,
+      "reason": "Initial independent B encoded unparseable bindings as 0, while frozen uses null for UNKNOWN. Raw JSON is invalid; no binding verdict can be established. This is reviewer status encoding disagreement, not evidence of a frozen scorer bug; retain original independent result and resolve B as UNKNOWN."
+    },
+    {
+      "ordinal": 12,
+      "request_id": "MAIN_ORDER_0025_view0/b1/P_PLACEBO/d0",
+      "field": "B",
+      "independent": 0,
+      "frozen": null,
+      "reason": "Initial independent B encoded unparseable bindings as 0, while frozen uses null for UNKNOWN. Raw JSON is invalid; no binding verdict can be established. This is reviewer status encoding disagreement, not evidence of a frozen scorer bug; retain original independent result and resolve B as UNKNOWN."
+    }
+  ],
+  "comparisons": [
+    {
+      "request_id": "MAIN_ORDER_0038_view1/b1/C_REF/d1",
+      "ordinal": 1,
+      "checks": {
+        "A": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "S": {
+          "independent": "PASS",
+          "frozen": 1,
+          "matches": true
+        },
+        "B": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "rank_order_known": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "values_true": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "print": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "alphabetical": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "value_sorted": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "order_compliance": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        }
+      }
+    },
+    {
+      "request_id": "MAIN_ORDER_0046_view1/b1/C_REF/d1",
+      "ordinal": 2,
+      "checks": {
+        "A": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "S": {
+          "independent": "PASS",
+          "frozen": 1,
+          "matches": true
+        },
+        "B": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "rank_order_known": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "values_true": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "print": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "alphabetical": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "value_sorted": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "order_compliance": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        }
+      }
+    },
+    {
+      "request_id": "MAIN_ORDER_0047_view1/b1/C_PRINT/d0",
+      "ordinal": 3,
+      "checks": {
+        "A": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "S": {
+          "independent": "PASS",
+          "frozen": 1,
+          "matches": true
+        },
+        "B": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "rank_order_known": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "values_true": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "print": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "alphabetical": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "value_sorted": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "order_compliance": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        }
+      }
+    },
+    {
+      "request_id": "MAIN_ORDER_0007_view0/b1/C_PRINT/d1",
+      "ordinal": 4,
+      "checks": {
+        "A": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "S": {
+          "independent": "PASS",
+          "frozen": 1,
+          "matches": true
+        },
+        "B": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "rank_order_known": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "values_true": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "print": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "alphabetical": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "value_sorted": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "order_compliance": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      }
+    },
+    {
+      "request_id": "MAIN_ORDER_0041_view0/b1/C_ALT/d1",
+      "ordinal": 5,
+      "checks": {
+        "A": {
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        "S": {
+          "independent": "PASS",
+          "frozen": 1,
+          "matches": true
+        },
+        "B": {
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        "rank_order_known": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "values_true": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "print": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "alphabetical": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "value_sorted": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "order_compliance": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        }
+      }
+    },
+    {
+      "request_id": "MAIN_ORDER_0042_view0/b1/C_ALT/d0",
+      "ordinal": 6,
+      "checks": {
+        "A": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "S": {
+          "independent": "PASS",
+          "frozen": 1,
+          "matches": true
+        },
+        "B": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "rank_order_known": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "values_true": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "print": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "alphabetical": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "value_sorted": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "order_compliance": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        }
+      }
+    },
+    {
+      "request_id": "MAIN_ORDER_0007_view1/b1/P_STABLE/d0",
+      "ordinal": 7,
+      "checks": {
+        "A": {
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        "S": {
+          "independent": "UNKNOWN",
+          "frozen": null,
+          "matches": true
+        },
+        "B": {
+          "independent": 0,
+          "frozen": null,
+          "matches": false
+        },
+        "rank_order_known": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "values_true": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "print": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "alphabetical": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "value_sorted": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "order_compliance": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        }
+      }
+    },
+    {
+      "request_id": "MAIN_ORDER_0021_view0/b1/P_STABLE/d0",
+      "ordinal": 8,
+      "checks": {
+        "A": {
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        "S": {
+          "independent": "UNKNOWN",
+          "frozen": null,
+          "matches": true
+        },
+        "B": {
+          "independent": 0,
+          "frozen": null,
+          "matches": false
+        },
+        "rank_order_known": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "values_true": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "print": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "alphabetical": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "value_sorted": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "order_compliance": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        }
+      }
+    },
+    {
+      "request_id": "MAIN_ORDER_0040_view1/b1/P_REVTIE/d0",
+      "ordinal": 9,
+      "checks": {
+        "A": {
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        "S": {
+          "independent": "UNKNOWN",
+          "frozen": null,
+          "matches": true
+        },
+        "B": {
+          "independent": 0,
+          "frozen": null,
+          "matches": false
+        },
+        "rank_order_known": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "values_true": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "print": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "alphabetical": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "value_sorted": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "order_compliance": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        }
+      }
+    },
+    {
+      "request_id": "MAIN_ORDER_0017_view0/b1/P_REVTIE/d0",
+      "ordinal": 10,
+      "checks": {
+        "A": {
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        "S": {
+          "independent": "UNKNOWN",
+          "frozen": null,
+          "matches": true
+        },
+        "B": {
+          "independent": 0,
+          "frozen": null,
+          "matches": false
+        },
+        "rank_order_known": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "values_true": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "print": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "alphabetical": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "value_sorted": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "order_compliance": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        }
+      }
+    },
+    {
+      "request_id": "MAIN_ORDER_0001_view0/b1/P_PLACEBO/d0",
+      "ordinal": 11,
+      "checks": {
+        "A": {
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        "S": {
+          "independent": "UNKNOWN",
+          "frozen": null,
+          "matches": true
+        },
+        "B": {
+          "independent": 0,
+          "frozen": null,
+          "matches": false
+        },
+        "rank_order_known": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "values_true": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "print": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "alphabetical": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "value_sorted": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "order_compliance": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        }
+      }
+    },
+    {
+      "request_id": "MAIN_ORDER_0025_view0/b1/P_PLACEBO/d0",
+      "ordinal": 12,
+      "checks": {
+        "A": {
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        "S": {
+          "independent": "UNKNOWN",
+          "frozen": null,
+          "matches": true
+        },
+        "B": {
+          "independent": 0,
+          "frozen": null,
+          "matches": false
+        },
+        "rank_order_known": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "values_true": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "print": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "alphabetical": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "value_sorted": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        "order_compliance": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        }
+      }
+    },
+    {
+      "request_id": "MAIN_ORDER_0020_view1/b2/C0/d1",
+      "ordinal": 13,
+      "checks": {
+        "A": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "S": {
+          "independent": "PASS",
+          "frozen": 1,
+          "matches": true
+        },
+        "B": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "rank_order_known": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "values_true": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "print": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "alphabetical": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "value_sorted": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "order_compliance": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        }
+      }
+    },
+    {
+      "request_id": "MAIN_ORDER_0006_view0/b2/C0/d0",
+      "ordinal": 14,
+      "checks": {
+        "A": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "S": {
+          "independent": "PASS",
+          "frozen": 1,
+          "matches": true
+        },
+        "B": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "rank_order_known": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "values_true": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "print": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "alphabetical": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "value_sorted": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "order_compliance": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        }
+      }
+    },
+    {
+      "request_id": "MAIN_ORDER_0020_view0/b2/C_NOLIST/d1",
+      "ordinal": 15,
+      "checks": {
+        "A": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "S": {
+          "independent": "PASS",
+          "frozen": 1,
+          "matches": true
+        },
+        "B": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "rank_order_known": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "values_true": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "print": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "alphabetical": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "value_sorted": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "order_compliance": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        }
+      }
+    },
+    {
+      "request_id": "MAIN_ORDER_0034_view0/b2/C_NOLIST/d0",
+      "ordinal": 16,
+      "checks": {
+        "A": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "S": {
+          "independent": "PASS",
+          "frozen": 1,
+          "matches": true
+        },
+        "B": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "rank_order_known": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "values_true": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "print": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "alphabetical": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "value_sorted": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "order_compliance": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        }
+      }
+    },
+    {
+      "request_id": "MAIN_ORDER_0042_view0/b2/C_ENUM/d0",
+      "ordinal": 17,
+      "checks": {
+        "A": {
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        "S": {
+          "independent": "FAIL",
+          "frozen": 0,
+          "matches": true
+        },
+        "B": {
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        "rank_order_known": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "values_true": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "print": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "alphabetical": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "value_sorted": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "order_compliance": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        }
+      }
+    },
+    {
+      "request_id": "MAIN_ORDER_0000_view1/b2/C_ENUM/d0",
+      "ordinal": 18,
+      "checks": {
+        "A": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "S": {
+          "independent": "PASS",
+          "frozen": 1,
+          "matches": true
+        },
+        "B": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "rank_order_known": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "values_true": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "print": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "alphabetical": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "value_sorted": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "order_compliance": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        }
+      }
+    },
+    {
+      "request_id": "MAIN_ORDER_0038_view1/b2/C_REF/d1",
+      "ordinal": 19,
+      "checks": {
+        "A": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "S": {
+          "independent": "PASS",
+          "frozen": 1,
+          "matches": true
+        },
+        "B": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "rank_order_known": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "values_true": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "print": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "alphabetical": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "value_sorted": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "order_compliance": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        }
+      }
+    },
+    {
+      "request_id": "MAIN_ORDER_0020_view0/b2/C_REF/d1",
+      "ordinal": 20,
+      "checks": {
+        "A": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "S": {
+          "independent": "PASS",
+          "frozen": 1,
+          "matches": true
+        },
+        "B": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "rank_order_known": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "values_true": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "print": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "alphabetical": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "value_sorted": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "order_compliance": {
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        }
+      }
+    },
+    {
+      "request_id": "MAIN_ORDER_0033_view0/b2/C_PRINT/d0",
+      "ordinal": 21,
+      "checks": {
+        "A": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "S": {
+          "independent": "PASS",
+          "frozen": 1,
+          "matches": true
+        },
+        "B": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "rank_order_known": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "values_true": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "print": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "alphabetical": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "value_sorted": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "order_compliance": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      }
+    },
+    {
+      "request_id": "MAIN_ORDER_0017_view0/b2/C_PRINT/d0",
+      "ordinal": 22,
+      "checks": {
+        "A": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "S": {
+          "independent": "PASS",
+          "frozen": 1,
+          "matches": true
+        },
+        "B": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "rank_order_known": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "values_true": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "print": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "alphabetical": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "value_sorted": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "order_compliance": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      }
+    },
+    {
+      "request_id": "MAIN_ORDER_0026_view1/b2/C_ALT/d1",
+      "ordinal": 23,
+      "checks": {
+        "A": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "S": {
+          "independent": "PASS",
+          "frozen": 1,
+          "matches": true
+        },
+        "B": {
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        "rank_order_known": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "values_true": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "print": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "alphabetical": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "value_sorted": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "order_compliance": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      }
+    },
+    {
+      "request_id": "MAIN_ORDER_0005_view1/b2/C_ALT/d0",
+      "ordinal": 24,
+      "checks": {
+        "A": {
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        "S": {
+          "independent": "FAIL",
+          "frozen": 0,
+          "matches": true
+        },
+        "B": {
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        "rank_order_known": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "values_true": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "print": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "alphabetical": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        "value_sorted": {
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        "order_compliance": {
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      }
+    }
+  ],
+  "resolution": "Retain six initial B=0 versus null disagreements. Invalid JSON makes B UNKNOWN; frozen null is appropriate. No independently established production scoring defect in this sample. No extrapolation to zero error in the population."
+}

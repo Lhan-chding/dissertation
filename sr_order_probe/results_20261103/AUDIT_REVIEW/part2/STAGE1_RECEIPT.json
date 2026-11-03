@@ -1,0 +1,9 @@
+{
+  "completed_utc": "2026-11-03T07:28:35.025593+00:00",
+  "source": "BLIND.jsonl",
+  "source_sha256": "81cfc154cf389f8dedc4233f677f99868378dd038977e216b9b7814e08c27a2d",
+  "extraction_sha256": "ecc431fcd6e9bb1f9afc30a9e93143daf57120c288f9c9c929090bfdb9f00cd7",
+  "rows_read": 24,
+  "private_or_scores_read": false,
+  "production_scorer_read_or_called": false
+}

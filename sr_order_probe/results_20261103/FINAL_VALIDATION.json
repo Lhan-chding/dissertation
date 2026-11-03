@@ -1,0 +1,16 @@
+{
+  "status": "COMPLETED_LOCAL_VALIDATION",
+  "tests": {
+    "command": "python -m unittest discover -s tests -q",
+    "count": 98,
+    "passed": 98,
+    "failed": 0
+  },
+  "main_rescoring": "4320 rows byte-identical",
+  "analysis_reproduction": "4 files byte-identical",
+  "independent_audit_rows": 72,
+  "unresolved_audit_disagreements": 0,
+  "model_calls_during_review": 0,
+  "report_review": "Independent statistical reviewer; 36 condition summaries and 15 case rows checked; citation corrected and limits expanded",
+  "package_verification": "SEPARATE_DELIVERY_VERIFICATION_RECEIPT"
+}

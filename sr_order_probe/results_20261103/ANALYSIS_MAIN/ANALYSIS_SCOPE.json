@@ -1,0 +1,9 @@
+{
+  "status": "DESCRIPTIVE_AND_PAIRED_ROOT_INFERENCE",
+  "optimizer_updates": 0,
+  "model_training_variance_estimated": false,
+  "natural_mediation_identified": false,
+  "primary_tests": 8,
+  "native_J_not_replaced": true,
+  "note": "S_hit means confirmed correct/all assigned outputs. UNKNOWN is not assigned a semantic truth value."
+}

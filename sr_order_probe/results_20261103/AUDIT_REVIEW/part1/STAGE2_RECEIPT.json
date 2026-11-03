@@ -1,0 +1,9 @@
+{
+  "stage": 2,
+  "utc": "2026-11-03T07:29:10.180659+00:00",
+  "rows": 24,
+  "findings_sha256": "2dcfd3dde891c336b78bf5a6c92316c26fc7ce13b4b49f2995e9e3d4b06d1853",
+  "frozen_scores_read": false,
+  "production_scorer_used": false,
+  "all_provided_gold_verified": true
+}

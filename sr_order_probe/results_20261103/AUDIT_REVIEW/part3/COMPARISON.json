@@ -1,0 +1,2466 @@
+{
+  "review_type": "independent agent audit, not human double blind",
+  "created_utc": "2026-11-03T07:30:50.839138+00:00",
+  "sample_count": 24,
+  "raw_rows_actually_read": 24,
+  "all_derived_gold_checks_pass": true,
+  "fields_compared": [
+    "A",
+    "S",
+    "S_hit",
+    "B",
+    "rank_order_known",
+    "rank_values_true",
+    "rank_order_print",
+    "rank_order_alphabetical",
+    "rank_order_numeric_world",
+    "order_compliance",
+    "boundary_order_print",
+    "forced_evidence"
+  ],
+  "initial_disagreement_cells": 20,
+  "initial_disagreement_rows": 20,
+  "initial_disagreements": [
+    {
+      "request_id": "MAIN_ORDER_0044_view0/b2/P_REVTIE/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "request_id": "MAIN_ORDER_0011_view1/b2/P_PLACEBO/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "request_id": "MAIN_ORDER_0006_view1/b2/P_PLACEBO/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "request_id": "MAIN_ORDER_0003_view0/b1/P_STABLE/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "request_id": "MAIN_ORDER_0033_view1/b2/P_PLACEBO/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "request_id": "MAIN_ORDER_0002_view1/b1/P_PLACEBO/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "request_id": "MAIN_ORDER_0011_view0/b0/P_REVTIE/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "request_id": "MAIN_ORDER_0043_view0/b1/P_REVTIE/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "request_id": "MAIN_ORDER_0003_view1/b0/P_PLACEBO/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "request_id": "MAIN_ORDER_0038_view0/b1/P_REVTIE/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "request_id": "MAIN_ORDER_0018_view0/b1/P_REVTIE/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "request_id": "MAIN_ORDER_0046_view1/b1/P_REVTIE/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "request_id": "MAIN_ORDER_0021_view1/b1/P_PLACEBO/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "request_id": "MAIN_ORDER_0014_view0/b0/P_STABLE/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "request_id": "MAIN_ORDER_0022_view1/b1/C_NOLIST/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "request_id": "MAIN_ORDER_0047_view1/b1/P_STABLE/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "request_id": "MAIN_ORDER_0014_view1/b0/P_PLACEBO/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "request_id": "MAIN_ORDER_0047_view0/b0/P_PLACEBO/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "request_id": "MAIN_ORDER_0025_view1/b0/C_REF/d1",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    },
+    {
+      "request_id": "MAIN_ORDER_0002_view1/b0/P_PLACEBO/d0",
+      "field": "B",
+      "independent_field": "B",
+      "independent": 0,
+      "frozen": null,
+      "matches": false,
+      "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+      "adjudicated": null
+    }
+  ],
+  "adjudication": "20 B unknown-handling corrections to independent audit draft; original files preserved. No production scoring defect demonstrated.",
+  "residual_disagreements_after_adjudication": 0,
+  "source_sha256": {
+    "BLIND.jsonl": "df3cf898fa2bbdbb2711846efb1dd5c13d067e0861d0b895d2c10fc05a57fa15",
+    "PRIVATE.jsonl": "bf89ce254ba05799097005d3ab399aa7c6f59e3e836cf6583eed2d578a9b4937",
+    "EXTRACTION.jsonl": "7a02d93cea983dfc57df9dc02802331fd24149914a46e3003faf93330eae3290",
+    "INDEPENDENT_FINDINGS.jsonl": "176a23eeea9739274bab72d39f05d58d63ee629408b48aa62a6a279bf11e3e48",
+    "FROZEN_SCORES.jsonl": "af655871c05e180dbdaa8fd27c6910559e7adb67dab343063327c48735e84b37"
+  },
+  "rows": [
+    {
+      "request_id": "MAIN_ORDER_0018_view0/b2/P_STABLE/d0",
+      "row": 1,
+      "checks": [
+        {
+          "field": "A",
+          "independent_field": "A",
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "S",
+          "independent_field": "S",
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "S_hit",
+          "independent_field": "S_hit",
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "B",
+          "independent_field": "B",
+          "independent": 1,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "rank_order_known",
+          "independent_field": "rank_order_known",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "rank_values_true",
+          "independent_field": "rank_values_true",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "rank_order_print",
+          "independent_field": "rank_is_print",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_order_alphabetical",
+          "independent_field": "rank_is_alphabetical",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_order_numeric_world",
+          "independent_field": "rank_is_value_sorted",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "order_compliance",
+          "independent_field": "order_compliance",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "boundary_order_print",
+          "independent_field": "critical_tie_print_order",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "forced_evidence",
+          "independent_field": "evidence_forced",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      ],
+      "all_initial_fields_match": true
+    },
+    {
+      "request_id": "MAIN_ORDER_0046_view0/b2/P_STABLE/d0",
+      "row": 2,
+      "checks": [
+        {
+          "field": "A",
+          "independent_field": "A",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S",
+          "independent_field": "S",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S_hit",
+          "independent_field": "S_hit",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "B",
+          "independent_field": "B",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_order_known",
+          "independent_field": "rank_order_known",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "rank_values_true",
+          "independent_field": "rank_values_true",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "rank_order_print",
+          "independent_field": "rank_is_print",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_order_alphabetical",
+          "independent_field": "rank_is_alphabetical",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_order_numeric_world",
+          "independent_field": "rank_is_value_sorted",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "order_compliance",
+          "independent_field": "order_compliance",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "boundary_order_print",
+          "independent_field": "critical_tie_print_order",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "forced_evidence",
+          "independent_field": "evidence_forced",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      ],
+      "all_initial_fields_match": true
+    },
+    {
+      "request_id": "MAIN_ORDER_0044_view0/b2/P_REVTIE/d0",
+      "row": 3,
+      "checks": [
+        {
+          "field": "A",
+          "independent_field": "A",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S",
+          "independent_field": "S",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "S_hit",
+          "independent_field": "S_hit",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "B",
+          "independent_field": "B",
+          "independent": 0,
+          "frozen": null,
+          "matches": false,
+          "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+          "adjudicated": null
+        },
+        {
+          "field": "rank_order_known",
+          "independent_field": "rank_order_known",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_values_true",
+          "independent_field": "rank_values_true",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_print",
+          "independent_field": "rank_is_print",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_alphabetical",
+          "independent_field": "rank_is_alphabetical",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_numeric_world",
+          "independent_field": "rank_is_value_sorted",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "order_compliance",
+          "independent_field": "order_compliance",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "boundary_order_print",
+          "independent_field": "critical_tie_print_order",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "forced_evidence",
+          "independent_field": "evidence_forced",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      ],
+      "all_initial_fields_match": false
+    },
+    {
+      "request_id": "MAIN_ORDER_0002_view1/b2/P_REVTIE/d0",
+      "row": 4,
+      "checks": [
+        {
+          "field": "A",
+          "independent_field": "A",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S",
+          "independent_field": "S",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S_hit",
+          "independent_field": "S_hit",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "B",
+          "independent_field": "B",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_order_known",
+          "independent_field": "rank_order_known",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "rank_values_true",
+          "independent_field": "rank_values_true",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "rank_order_print",
+          "independent_field": "rank_is_print",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_order_alphabetical",
+          "independent_field": "rank_is_alphabetical",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_order_numeric_world",
+          "independent_field": "rank_is_value_sorted",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "order_compliance",
+          "independent_field": "order_compliance",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "boundary_order_print",
+          "independent_field": "critical_tie_print_order",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "forced_evidence",
+          "independent_field": "evidence_forced",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      ],
+      "all_initial_fields_match": true
+    },
+    {
+      "request_id": "MAIN_ORDER_0011_view1/b2/P_PLACEBO/d0",
+      "row": 5,
+      "checks": [
+        {
+          "field": "A",
+          "independent_field": "A",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S",
+          "independent_field": "S",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "S_hit",
+          "independent_field": "S_hit",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "B",
+          "independent_field": "B",
+          "independent": 0,
+          "frozen": null,
+          "matches": false,
+          "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+          "adjudicated": null
+        },
+        {
+          "field": "rank_order_known",
+          "independent_field": "rank_order_known",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "rank_values_true",
+          "independent_field": "rank_values_true",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "rank_order_print",
+          "independent_field": "rank_is_print",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_order_alphabetical",
+          "independent_field": "rank_is_alphabetical",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_order_numeric_world",
+          "independent_field": "rank_is_value_sorted",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "order_compliance",
+          "independent_field": "order_compliance",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "boundary_order_print",
+          "independent_field": "critical_tie_print_order",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "forced_evidence",
+          "independent_field": "evidence_forced",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      ],
+      "all_initial_fields_match": false
+    },
+    {
+      "request_id": "MAIN_ORDER_0006_view1/b2/P_PLACEBO/d0",
+      "row": 6,
+      "checks": [
+        {
+          "field": "A",
+          "independent_field": "A",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S",
+          "independent_field": "S",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "S_hit",
+          "independent_field": "S_hit",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "B",
+          "independent_field": "B",
+          "independent": 0,
+          "frozen": null,
+          "matches": false,
+          "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+          "adjudicated": null
+        },
+        {
+          "field": "rank_order_known",
+          "independent_field": "rank_order_known",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_values_true",
+          "independent_field": "rank_values_true",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_print",
+          "independent_field": "rank_is_print",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_alphabetical",
+          "independent_field": "rank_is_alphabetical",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_numeric_world",
+          "independent_field": "rank_is_value_sorted",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "order_compliance",
+          "independent_field": "order_compliance",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "boundary_order_print",
+          "independent_field": "critical_tie_print_order",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "forced_evidence",
+          "independent_field": "evidence_forced",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      ],
+      "all_initial_fields_match": false
+    },
+    {
+      "request_id": "MAIN_ORDER_0003_view0/b1/P_STABLE/d0",
+      "row": 7,
+      "checks": [
+        {
+          "field": "A",
+          "independent_field": "A",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S",
+          "independent_field": "S",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "S_hit",
+          "independent_field": "S_hit",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "B",
+          "independent_field": "B",
+          "independent": 0,
+          "frozen": null,
+          "matches": false,
+          "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+          "adjudicated": null
+        },
+        {
+          "field": "rank_order_known",
+          "independent_field": "rank_order_known",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_values_true",
+          "independent_field": "rank_values_true",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_print",
+          "independent_field": "rank_is_print",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_alphabetical",
+          "independent_field": "rank_is_alphabetical",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_numeric_world",
+          "independent_field": "rank_is_value_sorted",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "order_compliance",
+          "independent_field": "order_compliance",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "boundary_order_print",
+          "independent_field": "critical_tie_print_order",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "forced_evidence",
+          "independent_field": "evidence_forced",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      ],
+      "all_initial_fields_match": false
+    },
+    {
+      "request_id": "MAIN_ORDER_0033_view1/b2/P_PLACEBO/d0",
+      "row": 8,
+      "checks": [
+        {
+          "field": "A",
+          "independent_field": "A",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S",
+          "independent_field": "S",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "S_hit",
+          "independent_field": "S_hit",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "B",
+          "independent_field": "B",
+          "independent": 0,
+          "frozen": null,
+          "matches": false,
+          "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+          "adjudicated": null
+        },
+        {
+          "field": "rank_order_known",
+          "independent_field": "rank_order_known",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_values_true",
+          "independent_field": "rank_values_true",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_print",
+          "independent_field": "rank_is_print",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_alphabetical",
+          "independent_field": "rank_is_alphabetical",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_numeric_world",
+          "independent_field": "rank_is_value_sorted",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "order_compliance",
+          "independent_field": "order_compliance",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "boundary_order_print",
+          "independent_field": "critical_tie_print_order",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "forced_evidence",
+          "independent_field": "evidence_forced",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      ],
+      "all_initial_fields_match": false
+    },
+    {
+      "request_id": "MAIN_ORDER_0002_view1/b1/P_PLACEBO/d0",
+      "row": 9,
+      "checks": [
+        {
+          "field": "A",
+          "independent_field": "A",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S",
+          "independent_field": "S",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "S_hit",
+          "independent_field": "S_hit",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "B",
+          "independent_field": "B",
+          "independent": 0,
+          "frozen": null,
+          "matches": false,
+          "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+          "adjudicated": null
+        },
+        {
+          "field": "rank_order_known",
+          "independent_field": "rank_order_known",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_values_true",
+          "independent_field": "rank_values_true",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_print",
+          "independent_field": "rank_is_print",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_alphabetical",
+          "independent_field": "rank_is_alphabetical",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_numeric_world",
+          "independent_field": "rank_is_value_sorted",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "order_compliance",
+          "independent_field": "order_compliance",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "boundary_order_print",
+          "independent_field": "critical_tie_print_order",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "forced_evidence",
+          "independent_field": "evidence_forced",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      ],
+      "all_initial_fields_match": false
+    },
+    {
+      "request_id": "MAIN_ORDER_0011_view0/b0/P_REVTIE/d0",
+      "row": 10,
+      "checks": [
+        {
+          "field": "A",
+          "independent_field": "A",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S",
+          "independent_field": "S",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "S_hit",
+          "independent_field": "S_hit",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "B",
+          "independent_field": "B",
+          "independent": 0,
+          "frozen": null,
+          "matches": false,
+          "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+          "adjudicated": null
+        },
+        {
+          "field": "rank_order_known",
+          "independent_field": "rank_order_known",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_values_true",
+          "independent_field": "rank_values_true",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_print",
+          "independent_field": "rank_is_print",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_alphabetical",
+          "independent_field": "rank_is_alphabetical",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_numeric_world",
+          "independent_field": "rank_is_value_sorted",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "order_compliance",
+          "independent_field": "order_compliance",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "boundary_order_print",
+          "independent_field": "critical_tie_print_order",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "forced_evidence",
+          "independent_field": "evidence_forced",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      ],
+      "all_initial_fields_match": false
+    },
+    {
+      "request_id": "MAIN_ORDER_0043_view0/b1/P_REVTIE/d0",
+      "row": 11,
+      "checks": [
+        {
+          "field": "A",
+          "independent_field": "A",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S",
+          "independent_field": "S",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "S_hit",
+          "independent_field": "S_hit",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "B",
+          "independent_field": "B",
+          "independent": 0,
+          "frozen": null,
+          "matches": false,
+          "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+          "adjudicated": null
+        },
+        {
+          "field": "rank_order_known",
+          "independent_field": "rank_order_known",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_values_true",
+          "independent_field": "rank_values_true",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_print",
+          "independent_field": "rank_is_print",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_alphabetical",
+          "independent_field": "rank_is_alphabetical",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_numeric_world",
+          "independent_field": "rank_is_value_sorted",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "order_compliance",
+          "independent_field": "order_compliance",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "boundary_order_print",
+          "independent_field": "critical_tie_print_order",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "forced_evidence",
+          "independent_field": "evidence_forced",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      ],
+      "all_initial_fields_match": false
+    },
+    {
+      "request_id": "MAIN_ORDER_0003_view1/b0/P_PLACEBO/d0",
+      "row": 12,
+      "checks": [
+        {
+          "field": "A",
+          "independent_field": "A",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S",
+          "independent_field": "S",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "S_hit",
+          "independent_field": "S_hit",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "B",
+          "independent_field": "B",
+          "independent": 0,
+          "frozen": null,
+          "matches": false,
+          "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+          "adjudicated": null
+        },
+        {
+          "field": "rank_order_known",
+          "independent_field": "rank_order_known",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_values_true",
+          "independent_field": "rank_values_true",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_print",
+          "independent_field": "rank_is_print",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_alphabetical",
+          "independent_field": "rank_is_alphabetical",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_numeric_world",
+          "independent_field": "rank_is_value_sorted",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "order_compliance",
+          "independent_field": "order_compliance",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "boundary_order_print",
+          "independent_field": "critical_tie_print_order",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "forced_evidence",
+          "independent_field": "evidence_forced",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      ],
+      "all_initial_fields_match": false
+    },
+    {
+      "request_id": "MAIN_ORDER_0038_view0/b1/P_REVTIE/d0",
+      "row": 13,
+      "checks": [
+        {
+          "field": "A",
+          "independent_field": "A",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S",
+          "independent_field": "S",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "S_hit",
+          "independent_field": "S_hit",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "B",
+          "independent_field": "B",
+          "independent": 0,
+          "frozen": null,
+          "matches": false,
+          "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+          "adjudicated": null
+        },
+        {
+          "field": "rank_order_known",
+          "independent_field": "rank_order_known",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_values_true",
+          "independent_field": "rank_values_true",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_print",
+          "independent_field": "rank_is_print",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_alphabetical",
+          "independent_field": "rank_is_alphabetical",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_numeric_world",
+          "independent_field": "rank_is_value_sorted",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "order_compliance",
+          "independent_field": "order_compliance",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "boundary_order_print",
+          "independent_field": "critical_tie_print_order",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "forced_evidence",
+          "independent_field": "evidence_forced",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      ],
+      "all_initial_fields_match": false
+    },
+    {
+      "request_id": "MAIN_ORDER_0018_view0/b1/P_REVTIE/d0",
+      "row": 14,
+      "checks": [
+        {
+          "field": "A",
+          "independent_field": "A",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S",
+          "independent_field": "S",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "S_hit",
+          "independent_field": "S_hit",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "B",
+          "independent_field": "B",
+          "independent": 0,
+          "frozen": null,
+          "matches": false,
+          "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+          "adjudicated": null
+        },
+        {
+          "field": "rank_order_known",
+          "independent_field": "rank_order_known",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_values_true",
+          "independent_field": "rank_values_true",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_print",
+          "independent_field": "rank_is_print",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_alphabetical",
+          "independent_field": "rank_is_alphabetical",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_numeric_world",
+          "independent_field": "rank_is_value_sorted",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "order_compliance",
+          "independent_field": "order_compliance",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "boundary_order_print",
+          "independent_field": "critical_tie_print_order",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "forced_evidence",
+          "independent_field": "evidence_forced",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      ],
+      "all_initial_fields_match": false
+    },
+    {
+      "request_id": "MAIN_ORDER_0046_view1/b1/P_REVTIE/d0",
+      "row": 15,
+      "checks": [
+        {
+          "field": "A",
+          "independent_field": "A",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S",
+          "independent_field": "S",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "S_hit",
+          "independent_field": "S_hit",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "B",
+          "independent_field": "B",
+          "independent": 0,
+          "frozen": null,
+          "matches": false,
+          "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+          "adjudicated": null
+        },
+        {
+          "field": "rank_order_known",
+          "independent_field": "rank_order_known",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_values_true",
+          "independent_field": "rank_values_true",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_print",
+          "independent_field": "rank_is_print",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_alphabetical",
+          "independent_field": "rank_is_alphabetical",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_numeric_world",
+          "independent_field": "rank_is_value_sorted",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "order_compliance",
+          "independent_field": "order_compliance",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "boundary_order_print",
+          "independent_field": "critical_tie_print_order",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "forced_evidence",
+          "independent_field": "evidence_forced",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      ],
+      "all_initial_fields_match": false
+    },
+    {
+      "request_id": "MAIN_ORDER_0021_view1/b1/P_PLACEBO/d0",
+      "row": 16,
+      "checks": [
+        {
+          "field": "A",
+          "independent_field": "A",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S",
+          "independent_field": "S",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "S_hit",
+          "independent_field": "S_hit",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "B",
+          "independent_field": "B",
+          "independent": 0,
+          "frozen": null,
+          "matches": false,
+          "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+          "adjudicated": null
+        },
+        {
+          "field": "rank_order_known",
+          "independent_field": "rank_order_known",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_values_true",
+          "independent_field": "rank_values_true",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_print",
+          "independent_field": "rank_is_print",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_alphabetical",
+          "independent_field": "rank_is_alphabetical",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_numeric_world",
+          "independent_field": "rank_is_value_sorted",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "order_compliance",
+          "independent_field": "order_compliance",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "boundary_order_print",
+          "independent_field": "critical_tie_print_order",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "forced_evidence",
+          "independent_field": "evidence_forced",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      ],
+      "all_initial_fields_match": false
+    },
+    {
+      "request_id": "MAIN_ORDER_0014_view0/b0/P_STABLE/d0",
+      "row": 17,
+      "checks": [
+        {
+          "field": "A",
+          "independent_field": "A",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S",
+          "independent_field": "S",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "S_hit",
+          "independent_field": "S_hit",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "B",
+          "independent_field": "B",
+          "independent": 0,
+          "frozen": null,
+          "matches": false,
+          "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+          "adjudicated": null
+        },
+        {
+          "field": "rank_order_known",
+          "independent_field": "rank_order_known",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_values_true",
+          "independent_field": "rank_values_true",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_print",
+          "independent_field": "rank_is_print",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_alphabetical",
+          "independent_field": "rank_is_alphabetical",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_numeric_world",
+          "independent_field": "rank_is_value_sorted",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "order_compliance",
+          "independent_field": "order_compliance",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "boundary_order_print",
+          "independent_field": "critical_tie_print_order",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "forced_evidence",
+          "independent_field": "evidence_forced",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      ],
+      "all_initial_fields_match": false
+    },
+    {
+      "request_id": "MAIN_ORDER_0022_view1/b1/C_NOLIST/d0",
+      "row": 18,
+      "checks": [
+        {
+          "field": "A",
+          "independent_field": "A",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S",
+          "independent_field": "S",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "S_hit",
+          "independent_field": "S_hit",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "B",
+          "independent_field": "B",
+          "independent": 0,
+          "frozen": null,
+          "matches": false,
+          "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+          "adjudicated": null
+        },
+        {
+          "field": "rank_order_known",
+          "independent_field": "rank_order_known",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_values_true",
+          "independent_field": "rank_values_true",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_print",
+          "independent_field": "rank_is_print",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_alphabetical",
+          "independent_field": "rank_is_alphabetical",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_numeric_world",
+          "independent_field": "rank_is_value_sorted",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "order_compliance",
+          "independent_field": "order_compliance",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "boundary_order_print",
+          "independent_field": "critical_tie_print_order",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "forced_evidence",
+          "independent_field": "evidence_forced",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        }
+      ],
+      "all_initial_fields_match": false
+    },
+    {
+      "request_id": "MAIN_ORDER_0047_view1/b1/P_STABLE/d0",
+      "row": 19,
+      "checks": [
+        {
+          "field": "A",
+          "independent_field": "A",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S",
+          "independent_field": "S",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "S_hit",
+          "independent_field": "S_hit",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "B",
+          "independent_field": "B",
+          "independent": 0,
+          "frozen": null,
+          "matches": false,
+          "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+          "adjudicated": null
+        },
+        {
+          "field": "rank_order_known",
+          "independent_field": "rank_order_known",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_values_true",
+          "independent_field": "rank_values_true",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_print",
+          "independent_field": "rank_is_print",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_alphabetical",
+          "independent_field": "rank_is_alphabetical",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_numeric_world",
+          "independent_field": "rank_is_value_sorted",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "order_compliance",
+          "independent_field": "order_compliance",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "boundary_order_print",
+          "independent_field": "critical_tie_print_order",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "forced_evidence",
+          "independent_field": "evidence_forced",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      ],
+      "all_initial_fields_match": false
+    },
+    {
+      "request_id": "MAIN_ORDER_0009_view1/b1/P_REVTIE/d0",
+      "row": 20,
+      "checks": [
+        {
+          "field": "A",
+          "independent_field": "A",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S",
+          "independent_field": "S",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "S_hit",
+          "independent_field": "S_hit",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "B",
+          "independent_field": "B",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_order_known",
+          "independent_field": "rank_order_known",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "rank_values_true",
+          "independent_field": "rank_values_true",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "rank_order_print",
+          "independent_field": "rank_is_print",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_order_alphabetical",
+          "independent_field": "rank_is_alphabetical",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_order_numeric_world",
+          "independent_field": "rank_is_value_sorted",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "order_compliance",
+          "independent_field": "order_compliance",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "boundary_order_print",
+          "independent_field": "critical_tie_print_order",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "forced_evidence",
+          "independent_field": "evidence_forced",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      ],
+      "all_initial_fields_match": true
+    },
+    {
+      "request_id": "MAIN_ORDER_0014_view1/b0/P_PLACEBO/d0",
+      "row": 21,
+      "checks": [
+        {
+          "field": "A",
+          "independent_field": "A",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S",
+          "independent_field": "S",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "S_hit",
+          "independent_field": "S_hit",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "B",
+          "independent_field": "B",
+          "independent": 0,
+          "frozen": null,
+          "matches": false,
+          "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+          "adjudicated": null
+        },
+        {
+          "field": "rank_order_known",
+          "independent_field": "rank_order_known",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "rank_values_true",
+          "independent_field": "rank_values_true",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "rank_order_print",
+          "independent_field": "rank_is_print",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_order_alphabetical",
+          "independent_field": "rank_is_alphabetical",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_order_numeric_world",
+          "independent_field": "rank_is_value_sorted",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "order_compliance",
+          "independent_field": "order_compliance",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "boundary_order_print",
+          "independent_field": "critical_tie_print_order",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        },
+        {
+          "field": "forced_evidence",
+          "independent_field": "evidence_forced",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      ],
+      "all_initial_fields_match": false
+    },
+    {
+      "request_id": "MAIN_ORDER_0047_view0/b0/P_PLACEBO/d0",
+      "row": 22,
+      "checks": [
+        {
+          "field": "A",
+          "independent_field": "A",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S",
+          "independent_field": "S",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "S_hit",
+          "independent_field": "S_hit",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "B",
+          "independent_field": "B",
+          "independent": 0,
+          "frozen": null,
+          "matches": false,
+          "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+          "adjudicated": null
+        },
+        {
+          "field": "rank_order_known",
+          "independent_field": "rank_order_known",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_values_true",
+          "independent_field": "rank_values_true",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_print",
+          "independent_field": "rank_is_print",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_alphabetical",
+          "independent_field": "rank_is_alphabetical",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_numeric_world",
+          "independent_field": "rank_is_value_sorted",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "order_compliance",
+          "independent_field": "order_compliance",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "boundary_order_print",
+          "independent_field": "critical_tie_print_order",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "forced_evidence",
+          "independent_field": "evidence_forced",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      ],
+      "all_initial_fields_match": false
+    },
+    {
+      "request_id": "MAIN_ORDER_0025_view1/b0/C_REF/d1",
+      "row": 23,
+      "checks": [
+        {
+          "field": "A",
+          "independent_field": "A",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S",
+          "independent_field": "S",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "S_hit",
+          "independent_field": "S_hit",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "B",
+          "independent_field": "B",
+          "independent": 0,
+          "frozen": null,
+          "matches": false,
+          "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+          "adjudicated": null
+        },
+        {
+          "field": "rank_order_known",
+          "independent_field": "rank_order_known",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_values_true",
+          "independent_field": "rank_values_true",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_print",
+          "independent_field": "rank_is_print",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_alphabetical",
+          "independent_field": "rank_is_alphabetical",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_numeric_world",
+          "independent_field": "rank_is_value_sorted",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "order_compliance",
+          "independent_field": "order_compliance",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "boundary_order_print",
+          "independent_field": "critical_tie_print_order",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "forced_evidence",
+          "independent_field": "evidence_forced",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        }
+      ],
+      "all_initial_fields_match": false
+    },
+    {
+      "request_id": "MAIN_ORDER_0002_view1/b0/P_PLACEBO/d0",
+      "row": 24,
+      "checks": [
+        {
+          "field": "A",
+          "independent_field": "A",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "S",
+          "independent_field": "S",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "S_hit",
+          "independent_field": "S_hit",
+          "independent": 0,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "B",
+          "independent_field": "B",
+          "independent": 0,
+          "frozen": null,
+          "matches": false,
+          "reason": "Independent audit draft collapsed unavailable bindings to zero. Raw invalid JSON or missing bindings provides no evaluable binding claim; UNKNOWN/null is appropriate. This is an audit-side correction, not evidence of a production scorer bug.",
+          "adjudicated": null
+        },
+        {
+          "field": "rank_order_known",
+          "independent_field": "rank_order_known",
+          "independent": false,
+          "frozen": 0,
+          "matches": true
+        },
+        {
+          "field": "rank_values_true",
+          "independent_field": "rank_values_true",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_print",
+          "independent_field": "rank_is_print",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_alphabetical",
+          "independent_field": "rank_is_alphabetical",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "rank_order_numeric_world",
+          "independent_field": "rank_is_value_sorted",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "order_compliance",
+          "independent_field": "order_compliance",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "boundary_order_print",
+          "independent_field": "critical_tie_print_order",
+          "independent": null,
+          "frozen": null,
+          "matches": true
+        },
+        {
+          "field": "forced_evidence",
+          "independent_field": "evidence_forced",
+          "independent": true,
+          "frozen": 1,
+          "matches": true
+        }
+      ],
+      "all_initial_fields_match": false
+    }
+  ],
+  "limits": [
+    "Only 24 fixed samples; cannot establish zero error in population.",
+    "No human double-blind review claim.",
+    "All six valid evidence arrays in this partition are forced-prefix evidence; do not call them spontaneous truthful evidence.",
+    "No valid C_PRINT/C_ALT sample in this partition, so compliance has no positive evaluable coverage."
+  ]
+}
