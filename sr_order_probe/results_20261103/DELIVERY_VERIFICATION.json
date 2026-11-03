@@ -1,0 +1,15 @@
+{
+  "status": "VERIFIED_COMPLETE_EVIDENCE_PACKAGE",
+  "archive": "SR_ORDER_PROBE_COMPLETE_20261103.zip",
+  "bytes": 110209798,
+  "sha256": "c4444dfd68a60b9f835874d89ca39fc50854bc82fb1bcbf704d52eaf2b38d674",
+  "members": 454,
+  "manifest_entries": 453,
+  "crc_read_to_eof": true,
+  "every_manifest_hash_verified": true,
+  "raw_gzip_roundtrip_verified": true,
+  "main_rows": 4320,
+  "smoke_rows": 216,
+  "independent_review_rows": 72,
+  "optimizer_updates": 0
+}

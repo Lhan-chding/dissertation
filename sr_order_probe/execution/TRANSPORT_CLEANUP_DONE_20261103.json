@@ -1,0 +1,27 @@
+{
+  "status": "EXACT_ALLOWLIST_DELETED",
+  "files": [
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102/DELIVERY_CAPTURE_20261103.tar.gz",
+      "sha256": "c9f1ab2c7ee2f1c7f1d7fa6791ce13264e09305a94ab770c8ca9fa34bf0e755e",
+      "bytes": 100220592,
+      "allocated_bytes": 100220928
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102/NATIVE_SOURCE_20261103.tar.gz",
+      "sha256": "1c5901061d996987b9683ddfb6919abc41724004a5f43f70693200f574b1abd3",
+      "bytes": 1954711,
+      "allocated_bytes": 1954816
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102/FINAL_REVIEW_UPLOAD_20261103.tar.gz",
+      "sha256": "62a3eea07348794c852598e137c38e6f0164c671aa4b9d734a655832a60d74a4",
+      "bytes": 228489,
+      "allocated_bytes": 228864
+    }
+  ],
+  "logical_bytes": 102403792,
+  "allocated_bytes": 102404608,
+  "all_absent": true,
+  "raw_main_still_present": true
+}

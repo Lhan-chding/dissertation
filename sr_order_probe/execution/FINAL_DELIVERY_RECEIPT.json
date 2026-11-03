@@ -1,0 +1,29 @@
+{
+  "status": "COMPLETE_WITH_REPORTED_MEASUREMENT_LIMITS",
+  "at": "2026-11-03T07:40:48.402690+00:00",
+  "main_job": "242982",
+  "main_rows": 4320,
+  "smoke_rows": 216,
+  "independent_review_rows": 72,
+  "optimizer_updates": 0,
+  "final_report": "/projects/_ssd/varunssd/louis-ssvc/sr_order_probe_20261102/FINAL_REVIEW_20261103/RESULTS/RESULTS_REPORT_zh.md",
+  "archive_location": "USER_LOCAL_WORKSPACE",
+  "archive": {
+    "status": "VERIFIED_COMPLETE_EVIDENCE_PACKAGE",
+    "archive": "SR_ORDER_PROBE_COMPLETE_20261103.zip",
+    "bytes": 110209798,
+    "sha256": "c4444dfd68a60b9f835874d89ca39fc50854bc82fb1bcbf704d52eaf2b38d674",
+    "members": 454,
+    "manifest_entries": 453,
+    "crc_read_to_eof": true,
+    "every_manifest_hash_verified": true,
+    "raw_gzip_roundtrip_verified": true,
+    "main_rows": 4320,
+    "smoke_rows": 216,
+    "independent_review_rows": 72,
+    "optimizer_updates": 0
+  },
+  "new_experiments_authorized": false,
+  "periodic_monitor_created": false,
+  "final_source_commit": "61b765c09e6d3c68d7434a0ec4dd31727610c3ec"
+}
