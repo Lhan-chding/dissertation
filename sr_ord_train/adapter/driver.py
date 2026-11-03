@@ -57,6 +57,27 @@ def worker(binding_path, parent, mode, arm=None, train_seed=None):
         smoke = read_json(PACKAGE / 'run/SMOKE_TECHNICAL_REVIEW.json')
         if smoke['status'] != 'SMOKE_TECHNICAL_PASS' or smoke['manifest_sha256'] != binding['manifest_sha256']:
             raise PermissionError('Actual smoke review required')
+    if mode == 'TRAINING':
+        expected = {r['request_id']:r for r in jsonl(binding['requests_manifest']['path'])
+                    if r['scope'] == 'CLARIFICATION'}
+        actual = []
+        for p in ('b0','b1'):
+            stage = PACKAGE/'run/clarification'/p
+            completed = list((stage/'executions').glob('*/WORKER_COMPLETE.json'))
+            if not completed:
+                raise PermissionError('Complete fixed clarification before training')
+            raw_path = stage/'RAW.jsonl'
+            if not any(read_json(f).get('raw_sha256') == file_sha(raw_path) for f in completed):
+                raise PermissionError('Clarification completion bytes changed')
+            actual.extend(jsonl(raw_path))
+        if len(actual) != len(expected) or len({r['request_id'] for r in actual}) != 384:
+            raise PermissionError('Clarification coverage differs')
+        for row in actual:
+            request = expected.get(row['request_id'])
+            if request is None or row['seed'] != request['seed'] or row['input_id'] != request['input_id']:
+                raise PermissionError('Clarification request identity differs')
+            if row.get('generation_status') != 'COMPLETE' or row.get('technical_validation_errors'):
+                raise PermissionError('Unresolved clarification technical failure')
     name = f'{parent}-{train_seed}-{arm}' if mode == 'TRAINING' else parent
     stage = PACKAGE / 'run' / ('paths' if mode == 'TRAINING' else mode.lower()) / name
     stage.mkdir(parents=True, exist_ok=True)

@@ -18,6 +18,7 @@ def main():
     registration = read_json(PACKAGE / 'execution/registration/INDEX.json')
     history = read_json(evidence['source_binding']['path'])
     config = read_json(evidence['config']['path'])
+    historical_pilot = read_json(evidence['pilot_spec']['path'])
     if evidence['status'] != 'CPU_SERVER_BINDING_PASS_NOT_GPU':
         raise ValueError('Native binding incomplete')
     for name in ('source_binding', 'config', 'pilot_spec', 'overlay'):
@@ -41,6 +42,7 @@ def main():
         model=dict(snapshot='c202236235762e1c871ad0ccb60c8ee5ba337b9a',
                    model_path=config['model']['model_path'],
                    parents={p:history['parents'][p]['path'] for p in ('b0','b1')}),
+        parent_tensor_sha256={p:historical_pilot['parent_tensors'][p]['tensor_sha256'] for p in ('b0','b1')},
         requests_manifest=dict(path=str(manifest), sha256=file_sha(manifest)),
         recipe=evidence['recipe'],
         native_binding=dict(path=str(PACKAGE/'execution/NATIVE_BINDING.json'),sha256=file_sha(PACKAGE/'execution/NATIVE_BINDING.json')),

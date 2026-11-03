@@ -307,6 +307,9 @@ class NativeBackend:
                 super()._set_recipe()
                 for key,value in native.generation_recipe().items():
                     setattr(self.generation_config,key,value)
+                self.identity.update(
+                    runtime_recipe='SR-ORD-TRAIN-1-native-full-sequence-1536',
+                    generation_config_expanded=self.generation_config.to_dict())
             def prepare_input(self,model_input,run_root,*,protocol='structured_v4'):
                 if protocol not in ('structured_v4','structured') or Path(run_root).resolve() != backend.inputs_dir:
                     raise PermissionError('Unregistered preparation root/protocol')
@@ -383,6 +386,8 @@ class NativeBackend:
         self.adapter_names = tuple(n for n,p in runtime.model.named_parameters() if p.requires_grad)
         self.reference = {n:p.detach().cpu().clone() for n,p in runtime.model.named_parameters() if p.requires_grad}
         parent_hash = native.state_hash(self.reference)
+        if parent_hash != binding['parent_tensor_sha256'][parent]:
+            raise PermissionError('Loaded parent tensors differ from verified historical snapshot')
         if any(v.is_floating_point() and v.dtype != torch.float32 for v in (*runtime.model.parameters(),*runtime.model.buffers())):
             raise PermissionError('FP32 cast failed')
         if mode == 'CLARIFICATION':

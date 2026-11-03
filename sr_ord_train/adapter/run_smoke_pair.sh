@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-root=/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package
+root=/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2
 python_bin=/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python3.12
 export PYTHONDONTWRITEBYTECODE=1
 export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false

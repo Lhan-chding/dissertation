@@ -1,9 +1,11 @@
 """Boundary and native helper equivalence tests; no model loading."""
 import copy
+import ast
 import json
 from pathlib import Path
 import tempfile
 import unittest
+from types import SimpleNamespace
 from adapter.backend import (NativeBackend, bind_native_kernel, file_sha,
     prefix_helpers, public_request, text_sha, verify_binding, write_once)
 
@@ -81,4 +83,24 @@ class BackendBoundaryTests(unittest.TestCase):
         self.assertTrue(backend._matches_path(row))
         for change in [{'parent':'b1'},{'arm':'G'},{'train_seed':11032},{'scope':'CLARIFICATION'}]:
             self.assertFalse(backend._matches_path(dict(row,**change)))
+    def test_loaded_recipe_receipt_matches_actual_generation_limit(self):
+        # Execute the real nested method against a CPU-only legacy parent fixture.
+        tree=ast.parse((Path(__file__).parents[1]/'adapter/backend.py').read_text())
+        method=next(n for n in ast.walk(tree) if isinstance(n,ast.FunctionDef) and n.name=='_set_recipe')
+        class Config(SimpleNamespace):
+            def to_dict(self): return vars(self).copy()
+        class Legacy:
+            def _set_recipe(self):
+                self.generation_config=Config(max_new_tokens=1024)
+                self.identity={'runtime_recipe':'legacy-1024','generation_config_expanded':{'max_new_tokens':1024}}
+        cls=ast.ClassDef(name='RecipeFixture',bases=[ast.Name(id='Legacy',ctx=ast.Load())],
+                         keywords=[],body=[copy.deepcopy(method)],decorator_list=[])
+        module=ast.fix_missing_locations(ast.Module(body=[cls],type_ignores=[]))
+        namespace={'Legacy':Legacy,'native':SimpleNamespace(generation_recipe=lambda:{'max_new_tokens':1536})}
+        exec(compile(module,'actual_recipe_fixture','exec'),namespace)
+        runtime=namespace['RecipeFixture']()
+        runtime._set_recipe()
+        self.assertEqual(runtime.generation_config.max_new_tokens,1536)
+        self.assertEqual(runtime.identity['generation_config_expanded']['max_new_tokens'],1536)
+        self.assertEqual(runtime.identity['runtime_recipe'],'SR-ORD-TRAIN-1-native-full-sequence-1536')
 if __name__=='__main__': unittest.main()
