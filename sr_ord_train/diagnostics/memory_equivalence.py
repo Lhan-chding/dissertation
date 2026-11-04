@@ -339,11 +339,12 @@ def run_probe(binding_path, output, index, mode):
             gradient_file = execution / 'adapter_gradients.pt'
             with gradient_file.open('xb') as stream:
                 torch.save(gradients, stream)
+            scalar_terms, tensor_terms = objective_evidence(loss)
             result.update(status='COMPLETE', request_id=probe_id, token_path_sha256=row['token_path_sha256'],
                           prompt_tensor_hash=row['prompt_tensor_hash'], advantage=advantage,
                           train_logprobs=current.detach().cpu().tolist(),
                           reference_logprobs=reference.detach().cpu().tolist(),
-                          scalar_terms={k: float(v.detach()) for k, v in loss.items()},
+                          scalar_terms=scalar_terms, tensor_terms=tensor_terms,
                           scaled_loss=float(scaled.detach()), gradient_file=str(gradient_file),
                           gradient_file_sha256=file_hash(gradient_file),
                           gradient_names=list(gradients), gradient_none_names=[k for k, v in gradients.items() if v is None])
@@ -390,6 +391,28 @@ def run_probe(binding_path, output, index, mode):
     return result
 
 
+def objective_evidence(terms):
+    """Retain scalar objectives and token diagnostics without reducing vectors."""
+    import torch
+    import math
+    scalars, tensors = {}, {}
+    for name, value in terms.items():
+        if type(value) in (int, float, bool):
+            require(math.isfinite(value), 'Nonfinite native objective metadata: ' + name)
+            scalars[name] = value
+            continue
+        require(isinstance(value, torch.Tensor), 'Unsupported native objective evidence: ' + name)
+        detached = value.detach().cpu()
+        require(bool(torch.isfinite(detached).all()), 'Nonfinite native objective evidence: ' + name)
+        if detached.ndim == 0:
+            scalars[name] = float(detached)
+        else:
+            tensors[name] = {'shape': list(detached.shape), 'dtype': str(detached.dtype),
+                             'values': detached.tolist()}
+    require('loss' in scalars, 'Scalar native loss required')
+    return scalars, tensors
+
+
 def compare_results(baseline, offload):
     result = {'status': 'EQUIVALENCE_UNVERIFIED', 'baseline_status': baseline['status'],
               'offload_status': offload['status'], 'production_recovery_authorized': False}
@@ -406,7 +429,7 @@ def compare_results(baseline, offload):
         return result
     import torch
     scalar_fields = ('request_id', 'token_path_sha256', 'prompt_tensor_hash', 'advantage',
-                     'train_logprobs', 'reference_logprobs', 'scalar_terms', 'scaled_loss',
+                     'train_logprobs', 'reference_logprobs', 'scalar_terms', 'tensor_terms', 'scaled_loss',
                      'immutable_state_hashes', 'restored_rng_sha256')
     result['exact_fields'] = {k: baseline[k] == offload[k] for k in scalar_fields}
     gradients = []

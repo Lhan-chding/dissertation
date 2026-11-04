@@ -8,7 +8,7 @@ import unittest
 sys.path.insert(0, str(Path(__file__).parents[1]))
 from diagnostics.memory_equivalence import (BoundedSavedTensors, OFFLOAD_CAP_BYTES,
     OFFLOAD_MODE, compare_results, memory_budget, readonly_path, record_final_audit,
-    require_output, select_probes)
+    require_output, select_probes, objective_evidence)
 from adapter.transactions import canonical, digest
 
 try:
@@ -116,6 +116,42 @@ class DiagnosticSelectionTests(unittest.TestCase):
 
 @unittest.skipIf(torch is None, 'PyTorch unavailable: CPU equivalence fixture not executed')
 class BoundedHookTests(unittest.TestCase):
+    def test_objective_evidence_preserves_vectors_booleans_and_metadata(self):
+        import json
+        terms = {'loss': torch.tensor(1.25, requires_grad=True),
+                 'ratio': torch.tensor([1., 2.]), 'singleton': torch.tensor([3.]),
+                 'tis_truncated': torch.tensor([False, True]),
+                 'token_count': 2, 'kl_coefficient': .02}
+        scalars, tensors = objective_evidence(terms)
+        self.assertEqual(set(scalars) | set(tensors), set(terms))
+        self.assertEqual(scalars, {'loss': 1.25, 'token_count': 2, 'kl_coefficient': .02})
+        self.assertEqual(tensors['ratio']['values'], [1., 2.])
+        self.assertEqual(tensors['singleton']['shape'], [1])
+        self.assertEqual(tensors['tis_truncated']['values'], [False, True])
+        json.dumps({'scalars': scalars, 'tensors': tensors}, allow_nan=False)
+        with self.assertRaisesRegex(PermissionError, 'Nonfinite'):
+            objective_evidence({'loss': torch.tensor(1.), 'ratio': torch.tensor([float('nan')])})
+
+    def test_real_native_objective_evidence_retains_all_fields(self):
+        import importlib.util
+        from adapter.transactions import file_hash
+        from runtime_contract import PINS
+        source = Path('/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_b7e7b06/src/sr_f6/objective.py')
+        if not source.exists():
+            self.skipTest('Pinned native source is only available on the execution server')
+        self.assertEqual(file_hash(source), PINS['sr_f6/objective.py'])
+        spec = importlib.util.spec_from_file_location('native_objective_regression', source)
+        native = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(native)
+        current = torch.tensor([-1.0, -2.0], requires_grad=True)
+        terms = native.sequence_loss(current, torch.tensor([-1.1, -2.1]),
+                                     torch.tensor([-1.05, -2.05]), 1., 0.)
+        scalars, tensors = objective_evidence(terms)
+        self.assertEqual(set(scalars) | set(tensors), set(terms))
+        self.assertEqual(scalars['token_count'], 2)
+        self.assertEqual(tensors['ratio']['values'], terms['ratio'].detach().tolist())
+        self.assertIn('tis_truncated', tensors)
+
     def test_cumulative_cap_does_not_reset_on_unpack_and_snapshot_owns_bytes(self):
         source = torch.arange(8, dtype=torch.float32, requires_grad=True)
         hook = BoundedSavedTensors(cap_bytes=32, force_cpu_copy=True)
