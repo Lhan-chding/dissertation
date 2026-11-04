@@ -11,7 +11,9 @@ cd "$root"
 worker_mem_mb=$((SLURM_MEM_PER_NODE / 2))
 worker_cpus=$((SLURM_CPUS_ON_NODE / 2))
 ((worker_mem_mb > 0 && worker_cpus > 0))
-step=(srun --exclusive --exact --nodes=1 --ntasks=1 --cpus-per-task="$worker_cpus" --gpus-per-task=1 --mem="${worker_mem_mb}M")
+# sbatch exports a CPU-only TRES request. Each worker declares both CPU and GPU
+# resources explicitly, so do not also pass that conflicting inherited option.
+step=(env -u SLURM_TRES_PER_TASK srun --exclusive --exact --nodes=1 --ntasks=1 --cpus-per-task="$worker_cpus" --gpus-per-task=1 --mem="${worker_mem_mb}M")
 "${step[@]}" "$python_bin" -B -m adapter.driver --binding execution/RUN_BINDING.json --parent b0 --mode DEV_SMOKE &
 p0=$!
 "${step[@]}" "$python_bin" -B -m adapter.driver --binding execution/RUN_BINDING.json --parent b1 --mode DEV_SMOKE &
