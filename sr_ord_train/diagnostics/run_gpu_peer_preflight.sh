@@ -15,5 +15,5 @@ export PYTORCH_ALLOC_CONF=expandable_segments:True
 cd "$root"
 printf 'GPU-only peer preflight; two visible GPUs; granted CPU=%s memoryMiB=%s; CPU offload forbidden\n' "$SLURM_CPUS_ON_NODE" "$SLURM_MEM_PER_NODE"
 env -u SLURM_TRES_PER_TASK srun --exclusive --exact --nodes=1 --ntasks=1 \
-    --cpus-per-task="$SLURM_CPUS_ON_NODE" --gpus-per-task=2 --mem="${SLURM_MEM_PER_NODE}M" \
+    --cpus-per-task="$SLURM_CPUS_ON_NODE" --gpus-per-task=pro6000:2 --mem="${SLURM_MEM_PER_NODE}M" \
     "$python_bin" -B -m diagnostics.gpu_peer_preflight --output "run/gpu_peer_${SLURM_JOB_ID}"

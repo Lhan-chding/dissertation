@@ -117,7 +117,7 @@ sys.exit(7 if os.environ.get('FAIL')=='1' else 0)
     def test_exact_two_gpu_single_step_uses_granted_resources(self):
         result, call = self.run_launcher()
         self.assertEqual(result.returncode, 0, result.stderr)
-        for value in ('--gpus-per-task=2','--mem=67584M','--cpus-per-task=8','--ntasks=1',
+        for value in ('--gpus-per-task=pro6000:2','--mem=67584M','--cpus-per-task=8','--ntasks=1',
                       'diagnostics.gpu_peer_preflight','run/gpu_peer_123'):
             self.assertIn(value, call)
         result, _ = self.run_launcher(fail=True)
