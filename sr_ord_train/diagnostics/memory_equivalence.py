@@ -24,7 +24,7 @@ sys.path.insert(0, str(PACKAGE))
 from adapter.backend import object_sha
 from adapter.transactions import PathTransactions, file_hash, read_json, require, write_once
 
-PROBES = {'b0-11031-R': 4, 'b1-11031-R': 2, 'b1-11031-G': 2}
+PROBES = {'b0-11031-R': 4, 'b1-11031-R': 2, 'b1-11031-G': 2, 'b0-11031-G': 8}
 OFFLOAD_CAP_BYTES = 4 * 1024 ** 3
 MINIMUM_HOST_MIB = (24 + 4) * 1024
 OFFLOAD_MODE = 'bounded_cpu_saved_tensors'
