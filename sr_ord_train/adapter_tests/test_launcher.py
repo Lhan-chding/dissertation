@@ -9,10 +9,10 @@ import unittest
 
 
 class LauncherTests(unittest.TestCase):
-    def run_launcher(self, failing_parent=''):
+    def run_launcher(self, failing_parent='', filename='run_smoke_pair.sh'):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            script = (Path(__file__).parents[1]/'adapter/run_smoke_pair.sh').read_text()
+            script = (Path(__file__).parents[1]/'adapter'/filename).read_text()
             script = script.replace(
                 'root=/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2',
                 'root=' + str(root))
@@ -51,6 +51,15 @@ sys.exit(7 if parent == os.environ.get('STUB_FAIL_PARENT') else 0)
         result, calls = self.run_launcher('b1')
         self.assertEqual(result.returncode, 1)
         self.assertEqual(set(calls), {'b0','b1'})
+
+    def test_clarification_dispatches_both_fixed_parents_in_clarification_mode(self):
+        result, calls = self.run_launcher(filename='run_clarification_pair.sh')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(set(calls), {'b0','b1'})
+        for call in calls.values():
+            args = call['argv']
+            self.assertEqual(args[args.index('--mode')+1], 'CLARIFICATION')
+            self.assertIn('--gpus-per-task=1', args)
 
 
 if __name__ == '__main__':
