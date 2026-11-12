@@ -1,0 +1,28 @@
+{
+  "status": "SUBMITTED_WAITING_FOR_GPU",
+  "job_id": "1736279",
+  "job_name": "LH-SATDOSE-DRY",
+  "account": "rose",
+  "qos": "rose",
+  "partition": "cluster02",
+  "gpus": 2,
+  "gpu_type": "pro6000",
+  "workers": 1,
+  "cpus": 8,
+  "memory": "66G",
+  "walltime": "3-00:00:00",
+  "walltime_interpretation": "Scheduler limit, not scientific stopping rule",
+  "automatic_requeue": false,
+  "scope": "DRY_ONLY",
+  "starts": [
+    11031,
+    11032
+  ],
+  "planned_responses": 1280,
+  "formal_optimizer_updates": 0,
+  "design_freeze_sha256": "6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0",
+  "implementation_code_commit": "86839fffbbbdb84d68fbce8995da8f19acc60bd9",
+  "launcher_commit": "ade6583",
+  "submission_log_sha256": "923004169c19e7746f5c1fa0ed883303ffd0527cbc37c4dc62bf29d27c5c86ab",
+  "no_duplicate_submission": true
+}

@@ -1,0 +1,32 @@
+JobId=1736279 JobName=LH-SATDOSE-DRY
+   UserId=varun024(295800338) GroupId=varun024(295800338) MCS_label=N/A
+   Priority=1 Nice=0 Account=rose QOS=rose
+   JobState=PENDING Reason=Priority Dependency=(null)
+   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0
+   RunTime=00:00:00 TimeLimit=3-00:00:00 TimeMin=N/A
+   SubmitTime=2026-11-12T15:33:44 EligibleTime=2026-11-12T15:33:44
+   AccrueTime=2026-11-12T15:33:44
+   StartTime=2026-11-14T01:48:59 EndTime=2026-11-17T01:48:59 Deadline=N/A
+   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-11-12T15:35:01 Scheduler=Main
+   Partition=cluster02 AllocNode:Sid=login-1:1836923
+   ReqNodeList=(null) ExcNodeList=(null)
+   NodeList=
+   NumNodes=1-1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:*
+   ReqTRES=cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2
+   AllocTRES=(null)
+   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*
+   MinCPUsNode=8 MinMemoryNode=66G MinTmpDiskNode=0
+   Features=(null) DelayBoot=00:00:00
+   OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null)
+   Command=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/run_dry.sh
+   WorkDir=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling
+   StdErr=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/dry_submission_20261112/slurm-1736279.err
+   StdIn=/dev/null
+   StdOut=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/dry_submission_20261112/slurm-1736279.out
+   Power=
+   TresPerNode=gres/gpu:pro6000:2
+   TresPerTask=cpu:8
+   
+
+bb9db352766eab1c14ebd32cf3fb6ce0ff14ee95ebd0023154645f8b3081c9e2  run_dry.sh
+NO_RUNTIME_OUTPUT_DIRECTORY
