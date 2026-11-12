@@ -1,0 +1,79 @@
+ERROR
+test_bindings_and_restart_identity (test_configuration.ConfigurationTests) ... ok
+test_dry_budget (test_configuration.ConfigurationTests) ... ok
+test_formal_budget (test_configuration.ConfigurationTests) ... ok
+test_generation_total (test_configuration.ConfigurationTests) ... ok
+test_gpu_template_cannot_authorize (test_configuration.ConfigurationTests) ... ok
+test_main_and_dev_budget (test_configuration.ConfigurationTests) ... ok
+test_panel_arithmetic (test_configuration.ConfigurationTests) ... ok
+test_restrictions_and_effect_threshold (test_configuration.ConfigurationTests) ... ok
+test_aligned_covariance_closed_form (test_core.AdvantageTests) ... ok
+test_all_256_binary_vectors (test_core.AdvantageTests) ... ok
+test_allone_source_mixed (test_core.AdvantageTests) ... ok
+test_allzero_source_mixed (test_core.AdvantageTests) ... ok
+test_dry_keeps_zero_groups (test_core.AdvantageTests) ... ok
+test_dry_missing_group (test_core.AdvantageTests) ... ok
+test_eta_perfect (test_core.AdvantageTests) ... ok
+test_reject_none_float_bool (test_core.AdvantageTests) ... ok
+test_unknown_cannot_be_correct (test_core.AdvantageTests) ... ok
+test_unknown_retained (test_core.AdvantageTests) ... ok
+test_wrong_reward_direction (test_core.AdvantageTests) ... ok
+test_absolute (test_core.ArtifactTests) ... ok
+test_digest_and_tamper (test_core.ArtifactTests) ... ok
+test_traversal (test_core.ArtifactTests) ... ok
+test_duplicate (test_core.JSONTests) ... ok
+test_duplicate_label_not_correct (test_core.JSONTests) ... ok
+test_eos_readable (test_core.JSONTests) ... ok
+test_markdown_unknown (test_core.JSONTests) ... ok
+test_no_auto_brace_repair (test_core.JSONTests) ... ok
+test_nonfinite (test_core.JSONTests) ... ok
+test_not_array_unknown (test_core.JSONTests) ... ok
+test_order_invariant (test_core.JSONTests) ... ok
+test_partial_length_unknown (test_core.JSONTests) ... ok
+test_text_bound (test_core.JSONTests) ... ok
+test_top_list_unknown (test_core.JSONTests) ... ok
+test_unknown_not_correct (test_core.JSONTests) ... ok
+test_bad_stratum (test_core.ScheduleTests) ... ok
+test_counts (test_core.ScheduleTests) ... ok
+test_deterministic (test_core.ScheduleTests) ... ok
+test_duplicate_request (test_core.ScheduleTests) ... ok
+test_false_t0_conflict (test_core.ScheduleTests) ... ok
+test_missing_group (test_core.ScheduleTests) ... ok
+test_off_pair_world (test_core.ScheduleTests) ... ok
+test_root_reuse (test_core.ScheduleTests) ... ok
+test_wrong_draw_seed (test_core.ScheduleTests) ... ok
+test_chart (test_core.SourceTests) ... ok
+test_duplicate (test_core.SourceTests) ... ok
+test_extra (test_core.SourceTests) ... ok
+test_list (test_core.SourceTests) ... ok
+test_missing_strict_better (test_core.SourceTests) ... ok
+test_non_list_is_not_chart (test_core.SourceTests) ... ok
+test_same_is_not_evidence_for_source (test_core.SourceTests) ... ok
+test_unknown (test_core.SourceTests) ... ok
+test_bootstrap_deterministic (test_core.StatisticsTests) ... ok
+test_interval_no_overlap (test_core.StatisticsTests) ... ok
+test_invalid_interval (test_core.StatisticsTests) ... ok
+test_no_effect (test_core.StatisticsTests) ... ok
+test_positive_uncertain_size (test_core.StatisticsTests) ... ok
+test_practical (test_core.StatisticsTests) ... ok
+test_stratified_root_analysis (test_core.StatisticsTests) ... ok
+test_uncertain (test_core.StatisticsTests) ... ok
+
+======================================================================
+ERROR: setUpClass (test_admission_integration.AdmissionIntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/louis/Documents/ChatGPT/dissertation-ntu/experiments/sr_satdose_20261112/supplied_package/tests/test_admission_integration.py", line 33, in setUpClass
+    from sr_f6.measurement import score_response
+  File "/private/tmp/satdose_historical_verified_20261112/vendor/native_src/sr_f6/measurement.py", line 13, in <module>
+    from sr_f4 import task_contract
+  File "/private/tmp/satdose_historical_verified_20261112/vendor/native_src/sr_f4/task_contract.py", line 14, in <module>
+    from sr_f3_ce import contract as native
+  File "/private/tmp/satdose_historical_verified_20261112/vendor/native_src/sr_f3_ce/contract.py", line 12, in <module>
+    from itertools import pairwise, product
+ImportError: cannot import name 'pairwise' from 'itertools' (unknown location)
+
+----------------------------------------------------------------------
+Ran 59 tests in 0.129s
+
+FAILED (errors=1)

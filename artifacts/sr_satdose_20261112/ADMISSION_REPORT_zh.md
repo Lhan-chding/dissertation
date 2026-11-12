@@ -1,31 +1,36 @@
-# SR-SATDOSE-1 准入报告（2026-11-12）
+# SR-SATDOSE-1 准入报告（2026-11-12，历史包已补齐）
 
-状态：HOLD_MISSING_HISTORICAL_BUNDLE。没有获得模型调用或正式训练准入。
+状态：PREPARED_PENDING_VISUAL_ACCEPTANCE_AND_GPU_VERIFICATION。尚未获得正式训练准入，没有模型生成、影子Adam或正式更新。
 
-## 已执行
+## 已闭合的证据
 
-- 原执行包38个登记文件大小与SHA全部吻合，原始包内容保持不变。
-- 服务器指定23个源码文件和两个R24 state.pt文件SHA全部吻合（见 intake/SOURCE_FILE_AUDIT.json）。这只是文件核验，不代表已加载并核验policy/reference张量。
-- 本地CPU测试59项通过、11项因缺少原生依赖跳过；初次macOS临时目录路径别名导致1项失败，使用真实路径TMPDIR=/private/tmp后通过，未修改测试。
-- 服务器使用旧完整package_v2原生依赖运行新包70项测试：全部通过、零跳过。
-- 服务器旧完整项目数据生成、评分与runtime contract测试22项全部通过，零跳过。原8类别data_design.py真实存在。
-- 固定训练槽位检查通过：4路径、96更新、1536组、768个新训练root槽位、12288个回答预算。这不代表任务/图像已生成或冻结。
-- 建立新服务器目录 /projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112，保存用户原始输入zip、解压原包与本次CPU测试日志。
+- 用户提供 `.worktrees/sr-ord-train-20261103/sr_ord_train/execution/final_delivery_20261111/SR_ORD_TRAIN_RESULTS_20261111.zip`，SHA256 为 `b6a560fd0d74e9fbca0d0000b74dcc622b749c400e4f45fb211f6301e29d89d2`，与执行包绑定完全吻合。原文件名中的 `(1)` 不影响身份。
+- 本地Python3.12与服务器分别运行历史审计：1099个文件、36864条训练记录、4608个G8和26624条评估记录核验通过；复现14条J=1但选择不正确，未改原生J定义。此前“缺少历史包”阻塞已解除。
+- 原包38个登记文件大小/SHA、服务器指定23个源码文件和两个R24 state.pt SHA均吻合。
+- 服务器真实CPU张量审计：两个R24分别496个张量，policy SHA及原b0 reference tensor SHA全部吻合；原b0两文件SHA通过。未构造Qwen实例。
+- 完整运行源码锁核验570个native源码、124个legacy执行源码、13个模型文件和2个parent文件；数据构造依赖28文件本地/远端完全一致。
+- 原执行包70项测试全部通过，零跳过；旧完整项目22项测试全部通过。新runtime 66项测试全部通过、零跳过，见 intake/runtime_cpu_tests_final.log；独立审查所发现的reference参数临时交换误报已经修复并加真实原生回归。
+- 服务器 prepared_data_v1 已生成1376张图片，2656次oracle检查通过，全部28936个请求ID唯一且预算吻合：TRAIN12288、DRY1280、PREFIX_CALIB96、DEV1512、MAIN13760。
+- PNG结构、柱高、元数据、历史DEV图片SHA、排重和两臂仅清单变化检查通过；仍是PREPARED_NOT_DESIGN_FROZEN。
 
-## 缺失与门禁
+## 可视核验与后续门禁
 
-本包 evidence/SOURCE_FILES.json 绑定的历史包为 SR_ORD_TRAIN_RESULTS_20261111(1).zip，71366142字节，SHA256 b6a560fd0d74e9fbca0d0000b74dcc622b749c400e4f45fb211f6301e29d89d2。
+计划第3.3节要求“随机种子固定选32张人工可视检查”。固定32图与私有核验数值位于 visual_review/index.html。已由AI查看8页联系表、32张图，未见裁切、重叠、图例缺失或答案提示；AI_VISUAL_REVIEW.json 明确标注非人工检查，不冒充人工验收。
 
-在已查本地Downloads/Documents和服务器指定范围未找到该包或完整解压副本，详见 intake/HISTORICAL_BUNDLE_SEARCH.json。不能用本包附带的旧审计报告代替本次重新执行 tools/audit_historical.py，也不能重新拼造同名文件冒充原始包。
+目前等待用户完成人工检查，或明确授权以本次AI可视检查替代该人工环节。未获得答复前不写通过的人工回执、不生成DESIGN_FREEZE、不调用模型。
 
-以下均为PENDING：历史全结果重放审计、张量身份和原reference加载、数据/图像及跨历史数据排重、DESIGN_FREEZE、DRY、PREFIX_CALIB、GPU梯度/数值/影子Adam验收、正式两步canary、后续训练与MAIN。
+已实现只读R24 runtime、原token生成与捕获、梯度诊断、原生reference加载、CPU冻结/源码锁工具和DRY入口；它们通过CPU检查不等于真实GPU验收。真实DRY、PREFIX_CALIB、梯度/内存/影子Adam验证、生产loss独立重放、canary、正式训练与MAIN均未执行。正式训练事务发布、canary工程整合及终态MAIN runner尚未端到端完成；禁止旧CLI绕过门禁。
 
-本次新增模型生成0，影子更新0，正式更新0；没有提交新GPU作业，没有调用旧CLI绕过门禁，没有解封MAIN。
+新增模型生成0，shadow optimizer调用0，正式更新0；没有提交新GPU作业、没有解封MAIN。
 
-## 恢复入口
+## 服务器位置
 
-取得指定历史包或其真实完整解压目录后，先验证原zip SHA/文件清单，再运行原包 tools/audit_historical.py。之后按 CODEX_START_HERE_zh.md 顺序实施。当前仅纳入原始执行包和预检证据，尚未实现服务器训练适配器；不能把CPU PASS作为训练许可。
+`/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112`：原输入包、已SHA验证历史包及解压副本、CPU审计、implementation_preflight、prepared_data_v1。
 
-## 清理
+`prepared_data_v1/runtime_source_lock.json` 为真实来源锁，尚不是DESIGN_FREEZE。临时部署的单文件预检工具不是最终执行版本；模型调用前必须部署已提交的完整runtime并核对其全集SHA。
 
-已删除66个可再生缓存普通文件，共2025323字节（约1.93 MiB），删除后上述范围普通文件为0，错误为0；详见 intake/CLEANUP_RECEIPT.json。只删除已确认可再生缓存，保留模型、检查点、原始结果、唯一审计证据及活动任务依赖；不能据目录名cache推断内部模型权重可删除。
+## 清理与Git
+
+第三轮实际删除9702203395字节冗余归档，净逻辑减少9659735435字节；此前缓存清理2025323字节另计。原9.25GB归档中的唯一历史RUN_REGISTRY、完整成员及链接元数据和恢复说明均先保存、独立SHA核验后才删除归档。清理各轮实际结果见 intake/CLEANUP_RECEIPT.json、CLEANUP_SECOND_PASS.json、CLEANUP_THIRD_PASS.json。第二轮VPN超时没有产生新增删除；后续恢复后继续核验和删除冗余归档。保留新实验所有依赖、唯一科研原始记录、必要检查点与模型。
+
+Git远程已核实为PUBLIC。此前推送包含服务器路径/日志/审计证据的提交被自动审批拒绝，公开外发许可仍未得到明确答复；本次不绕过拒绝。代码和证据可本地提交，但不能称已推送。

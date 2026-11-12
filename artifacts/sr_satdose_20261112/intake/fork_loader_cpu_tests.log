@@ -1,0 +1,16 @@
+test_changed_file_rejected (test_fork_loader.ForkTests.test_changed_file_rejected) ... ok
+test_exact_resume_restores_adam_scheduler_and_policy (test_fork_loader.ForkTests.test_exact_resume_restores_adam_scheduler_and_policy) ... ok
+test_failed_optimizer_rolls_back (test_fork_loader.ForkTests.test_failed_optimizer_rolls_back) ... ok
+test_non_lora_trainable_rejected (test_fork_loader.ForkTests.test_non_lora_trainable_rejected) ... ok
+test_reference_precedes_policy_and_old_adam_ignored (test_fork_loader.ForkTests.test_reference_precedes_policy_and_old_adam_ignored) ... ok
+test_resume_cannot_cross_arm (test_fork_loader.ForkTests.test_resume_cannot_cross_arm) ... ok
+test_resume_rejects_untrusted_commit_sha (test_fork_loader.ForkTests.test_resume_rejects_untrusted_commit_sha) ... ok
+test_shape_error_precedes_mutation (test_fork_loader.ForkTests.test_shape_error_precedes_mutation) ... ok
+test_two_arms_identical_policy_distinct_identity (test_fork_loader.ForkTests.test_two_arms_identical_policy_distinct_identity) ... ok
+test_wrong_parent_fails_without_mutation (test_fork_loader.ForkTests.test_wrong_parent_fails_without_mutation) ... ok
+test_wrong_source_identity_rejected (test_fork_loader.ForkTests.test_wrong_source_identity_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.922s
+
+OK

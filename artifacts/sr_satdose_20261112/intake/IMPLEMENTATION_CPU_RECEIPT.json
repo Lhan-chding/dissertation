@@ -1,0 +1,16 @@
+{
+  "status": "CPU_IMPLEMENTATION_TESTS_PASS_NOT_GPU_ADMISSION",
+  "tests": 66,
+  "failures": 0,
+  "skipped": 0,
+  "log_sha256": "d7da0da5b2f3fed26dcbf25d05913448bc24c6bf3468fae87d0b192e89e321db",
+  "command": "SATDOSE_NATIVE_SRC='/verified/native/src' .venv/bin/python -m unittest discover -s experiments/sr_satdose_20261112/tests -v",
+  "model_calls": 0,
+  "formal_updates": 0,
+  "human_visual_review": "PENDING",
+  "review_notes": [
+    "Reference LoRA swap version false-positive fixed and covered using actual native reference_parameters",
+    "DRY uses readonly fork with optimizer and scheduler both None",
+    "New native Runtime/dry driver independently reviewed; actual GPU validation pending"
+  ]
+}

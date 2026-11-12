@@ -1,0 +1,46 @@
+test_duplicate_json_rejected (test_backend.BackendTests.test_duplicate_json_rejected) ... ok
+test_exact_original_capture_and_no_second_attempt (test_backend.BackendTests.test_exact_original_capture_and_no_second_attempt) ... ok
+test_exception_keeps_unknown_and_no_retry (test_backend.BackendTests.test_exception_keeps_unknown_and_no_retry) ... ok
+test_frozen_input_changed_before_registry (test_backend.BackendTests.test_frozen_input_changed_before_registry) ... ok
+test_main_sealed (test_backend.BackendTests.test_main_sealed) ... ok
+test_no_private_field_projection_bypass (test_backend.BackendTests.test_no_private_field_projection_bypass) ... ok
+test_original_image_identity (test_backend.BackendTests.test_original_image_identity) ... ok
+test_partial_manifest_cannot_admit (test_backend.BackendTests.test_partial_manifest_cannot_admit) ... ok
+test_policy_changed_is_technical_hold (test_backend.BackendTests.test_policy_changed_is_technical_hold) ... ok
+test_prefix_not_training (test_backend.BackendTests.test_prefix_not_training) ... ok
+test_symlink_rejected (test_backend.BackendTests.test_symlink_rejected) ... ok
+test_training_freshness_and_canary (test_backend.BackendTests.test_training_freshness_and_canary) ... ok
+test_truncated_real_capture_is_retained (test_backend.BackendTests.test_truncated_real_capture_is_retained) ... ok
+test_complete_budget_and_no_freeze (test_data_adapter.DataAdapterTests.test_complete_budget_and_no_freeze) ... ok
+test_cross_split_duplicate_rejected (test_data_adapter.DataAdapterTests.test_cross_split_duplicate_rejected) ... ok
+test_frozen_eval_seed_pairs (test_data_adapter.DataAdapterTests.test_frozen_eval_seed_pairs) ... ok
+test_historical_duplicate_rejected (test_data_adapter.DataAdapterTests.test_historical_duplicate_rejected) ... ok
+test_public_projection_and_probe_disjoint (test_data_adapter.DataAdapterTests.test_public_projection_and_probe_disjoint) ... ok
+test_render_structure_detects_wrong_world (test_data_adapter.DataAdapterTests.test_render_structure_detects_wrong_world) ... ok
+test_schedule_pairing_and_only_list_difference (test_data_adapter.DataAdapterTests.test_schedule_pairing_and_only_list_difference) ... ok
+test_source_tamper_and_overwrite_rejected (test_data_adapter.DataAdapterTests.test_source_tamper_and_overwrite_rejected) ... ok
+test_direction_floor_uses_repeat_not_between_halves (test_diagnostics.DiagnosticsTests.test_direction_floor_uses_repeat_not_between_halves) ... ok
+test_disjoint_frozen_partition (test_diagnostics.DiagnosticsTests.test_disjoint_frozen_partition) ... ok
+test_gradient_cleanup_and_rng_on_failure (test_diagnostics.DiagnosticsTests.test_gradient_cleanup_and_rng_on_failure) ... ok
+test_native_replay_recomposition_and_unchanged (test_diagnostics.DiagnosticsTests.test_native_replay_recomposition_and_unchanged) ... ok
+test_pins_and_missing_grad_fail_closed (test_diagnostics.DiagnosticsTests.test_pins_and_missing_grad_fail_closed) ... ok
+test_reject_tampered_sampler_and_existing_grad (test_diagnostics.DiagnosticsTests.test_reject_tampered_sampler_and_existing_grad) ... ok
+test_shadow_copies_replay_and_once_per_start (test_diagnostics.DiagnosticsTests.test_shadow_copies_replay_and_once_per_start) ... ok
+test_witness_uses_sum_and_loo (test_diagnostics.DiagnosticsTests.test_witness_uses_sum_and_loo) ... ok
+test_zero_j_keeps_kl_and_denominator (test_diagnostics.DiagnosticsTests.test_zero_j_keeps_kl_and_denominator) ... ok
+test_changed_file_rejected (test_fork_loader.ForkTests.test_changed_file_rejected) ... skipped 'Set SATDOSE_NATIVE_SRC to the independently verified native source'
+test_exact_resume_restores_adam_scheduler_and_policy (test_fork_loader.ForkTests.test_exact_resume_restores_adam_scheduler_and_policy) ... skipped 'Set SATDOSE_NATIVE_SRC to the independently verified native source'
+test_failed_optimizer_rolls_back (test_fork_loader.ForkTests.test_failed_optimizer_rolls_back) ... skipped 'Set SATDOSE_NATIVE_SRC to the independently verified native source'
+test_non_lora_trainable_rejected (test_fork_loader.ForkTests.test_non_lora_trainable_rejected) ... skipped 'Set SATDOSE_NATIVE_SRC to the independently verified native source'
+test_reference_precedes_policy_and_old_adam_ignored (test_fork_loader.ForkTests.test_reference_precedes_policy_and_old_adam_ignored) ... skipped 'Set SATDOSE_NATIVE_SRC to the independently verified native source'
+test_resume_cannot_cross_arm (test_fork_loader.ForkTests.test_resume_cannot_cross_arm) ... skipped 'Set SATDOSE_NATIVE_SRC to the independently verified native source'
+test_resume_rejects_untrusted_commit_sha (test_fork_loader.ForkTests.test_resume_rejects_untrusted_commit_sha) ... skipped 'Set SATDOSE_NATIVE_SRC to the independently verified native source'
+test_shape_error_precedes_mutation (test_fork_loader.ForkTests.test_shape_error_precedes_mutation) ... skipped 'Set SATDOSE_NATIVE_SRC to the independently verified native source'
+test_two_arms_identical_policy_distinct_identity (test_fork_loader.ForkTests.test_two_arms_identical_policy_distinct_identity) ... skipped 'Set SATDOSE_NATIVE_SRC to the independently verified native source'
+test_wrong_parent_fails_without_mutation (test_fork_loader.ForkTests.test_wrong_parent_fails_without_mutation) ... skipped 'Set SATDOSE_NATIVE_SRC to the independently verified native source'
+test_wrong_source_identity_rejected (test_fork_loader.ForkTests.test_wrong_source_identity_rejected) ... skipped 'Set SATDOSE_NATIVE_SRC to the independently verified native source'
+
+----------------------------------------------------------------------
+Ran 41 tests in 1.752s
+
+OK (skipped=11)

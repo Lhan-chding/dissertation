@@ -1,0 +1,8 @@
+{
+  "third_pass_deleted_bytes": 9702203395,
+  "third_pass_new_preservation_bytes": 42467960,
+  "third_pass_net_logical_bytes_freed": 9659735435,
+  "first_pass_cache_deleted_bytes": 2025323,
+  "combined_net_logical_bytes_freed": 9661760758,
+  "note": "Logical file bytes, not user quota or global df change; original trees, unique history and required models/checkpoints retained"
+}

@@ -1,0 +1,31 @@
+{
+  "status": "PENDING_CONNECTION_RESTORE",
+  "at_utc": "2026-11-12T14:08:21.544034+00:00",
+  "project": "/projects/_ssd/varunssd/louis-ssvc",
+  "deleted_files": [],
+  "removed_bytes": 0,
+  "checks": [
+    {
+      "command": "ssh eee-cluster; targeted du of envs/sr_f6_operations/sr_f4_consolidated",
+      "result": "connect timeout before remote command"
+    },
+    {
+      "command": "ssh eee-cluster; find transport archives/temp files within depth 5",
+      "result": "connect timeout before remote command"
+    }
+  ],
+  "protected": [
+    "complete sr_ord_train_20261103/package_v2",
+    "two R24 policy checkpoints",
+    "original b0 reference",
+    "Qwen3.5-9B model",
+    "native source",
+    "unique scientific raw results/checkpoints"
+  ],
+  "local_evidence": {
+    "historical_zip": "/Users/louis/Documents/ChatGPT/dissertation-ntu/.worktrees/sr-ord-train-20261103/sr_ord_train/execution/final_delivery_20261111/SR_ORD_TRAIN_RESULTS_20261111.zip",
+    "member_count": 1100,
+    "diagnostic_tensor_backups": "not found by memory_diag/gpu_fullbatch/capacity member-name search; only GPU capacity stderr/stdout logs found"
+  },
+  "reason": "Cannot verify live references, bytes or redundant copies while SSH unavailable. No new deletion attempted."
+}
