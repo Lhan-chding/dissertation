@@ -1,0 +1,21 @@
+{
+  "status": "DEPLOYED_BYTES_VERIFIED_NO_MODEL_CALLS",
+  "code_commit": "86839fffbbbdb84d68fbce8995da8f19acc60bd9",
+  "server_root": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/code",
+  "files": {
+    "runtime/backend.py": "d2754602e06dc7ba44297dcc73e960f1079d11eb5154dd117978fce85cf5e66c",
+    "runtime/data_adapter.py": "a2c4c14b7ecef213180c189b9307c86de947869ed4fb5cc8b24077f706aca974",
+    "runtime/diagnostics.py": "3f2a5274427fd65bc84385824fadd09e47f94a896c180ab4819765cf3b17e8e5",
+    "runtime/dry_driver.py": "42f14813d06127691589e0181cdf16d18d4abcfbb09a45f0248d83302a38695e",
+    "runtime/fork_loader.py": "e5373d207f1f72eb644b5e1e183a6225311686b4a6fa5b75691e09d4a6d19890",
+    "runtime/native_runtime.py": "69d1c5429134546efca6a7e87e65f800d2948f255fee4d1a9b1ae34b52b7d0bb",
+    "runtime/registration.py": "4ba0d85999c3663897faf5fc5f784950bfb77f4a52f06e9919f2a3b6773bc0bf",
+    "supplied_package/config/experiment.json": "58841639b0f36a69ac77824bc8c683ef7fbeb5c50a41e9975b89b54880f4ecfe",
+    "supplied_package/config/source_bindings.json": "94827065f02e48be80be6596111f615d2c8a23af3107fd25b6549a6ad40ad2be",
+    "supplied_package/config/training_slots.jsonl": "5a9383d96c497c6ee03c6e1022b9140ad548d4a41a5bf889124d187e59ea1c18",
+    "supplied_package/config/training_slots.summary.json": "86a9c441beb0f5d68a06dea4ca7aef873b0dc9e1da841b8e2c3879e432c94c8d"
+  },
+  "mismatches": [],
+  "model_calls": 0,
+  "design_freeze": "PENDING_VISUAL_ACCEPTANCE"
+}

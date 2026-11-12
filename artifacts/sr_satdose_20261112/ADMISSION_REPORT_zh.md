@@ -27,7 +27,7 @@
 
 `/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112`：原输入包、已SHA验证历史包及解压副本、CPU审计、implementation_preflight、prepared_data_v1。
 
-`prepared_data_v1/runtime_source_lock.json` 为真实来源锁，尚不是DESIGN_FREEZE。临时部署的单文件预检工具不是最终执行版本；模型调用前必须部署已提交的完整runtime并核对其全集SHA。
+`prepared_data_v1/runtime_source_lock.json` 为真实来源锁，尚不是DESIGN_FREEZE。已将科学代码提交86839fffbbbdb84d68fbce8995da8f19acc60bd9的完整runtime与配置部署到prepared_data_v1/code，并独立逐文件验证SHA一致，见intake/IMPLEMENTATION_DEPLOYMENT.json。DESIGN_FREEZE仍待人工可视验收。
 
 ## 清理与Git
 
