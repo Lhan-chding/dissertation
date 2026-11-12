@@ -1,0 +1,22 @@
+{
+  "SR_ORD_TRAIN_RESULTS_20261111(1).zip": {
+    "bytes": 71366142,
+    "sha256": "b6a560fd0d74e9fbca0d0000b74dcc622b749c400e4f45fb211f6301e29d89d2"
+  },
+  "sr_ord_stage0_analysis_20261112.zip": {
+    "bytes": 1269596,
+    "sha256": "d84d37926452b7a8865616f4c1483f4b8a7c4a7344f852a8a00527d7394eabd8"
+  },
+  "evidence/CLAUDE_STAGE0_REPORT_zh.md": {
+    "bytes": 55882,
+    "sha256": "44ad179148458be88759db39c9662458a12bc771619e5b306d4f737caba2d573"
+  },
+  "evidence/CLAUDE_DEFINITIONS.md": {
+    "bytes": 8104,
+    "sha256": "902b8053d29d5ec2fa781ac83c40117192ff48823d0ddcd17995ec5fc41f1d2d"
+  },
+  "evidence/CLAUDE_TASKF_CODE_FACTS.md": {
+    "bytes": 21281,
+    "sha256": "8f9f01e5ad1d4b5b398e4d64d3eeeca0e35236fe81c32d3156f5992659c6e096"
+  }
+}

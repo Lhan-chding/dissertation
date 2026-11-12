@@ -1,0 +1,10 @@
+{
+  "status": "CPU_SCHEDULE_VALIDATED_NOT_GPU_AUTHORIZATION",
+  "paths": 4,
+  "updates": 96,
+  "groups": 1536,
+  "unique_train_roots": 768,
+  "responses": 12288,
+  "T1_conflict_groups_per_path": 288,
+  "schedule_content_sha256": "95ac2270d703960f62bd404051d4866bd735b877704db10c19e7df16a93e2b61"
+}

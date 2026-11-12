@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "zip_crc": "PASS",
+  "file_hashes": "PASS",
+  "fresh_extraction_test_count": 70,
+  "fresh_extraction_skipped": 0,
+  "fresh_extraction_schedule": "PASS",
+  "real_model_calls": 0,
+  "production_admission": false
+}

@@ -1,0 +1,165 @@
+{
+  "status": "LOCAL_HISTORICAL_AUDIT_PASS_NOT_GPU_ADMISSION",
+  "archive_files_verified": 1099,
+  "training_rows": 36864,
+  "training_groups": 4608,
+  "native_selection_witness_mismatches": 0,
+  "evaluation_rows": 26624,
+  "evaluation_selection_mismatches": 0,
+  "evaluation_geometry_rows": 24128,
+  "historical_J_positive": 31488,
+  "J1_selection_not_correct": 14,
+  "J1_selection_not_correct_request_ids": [
+    "OT1/TRAIN/b0/D/seed11031/s09/g07/d07",
+    "OT1/TRAIN/b0/D/seed11031/s11/g08/d06",
+    "OT1/TRAIN/b0/D/seed11031/s21/g14/d07",
+    "OT1/TRAIN/b0/G/seed11031/s09/g07/d07",
+    "OT1/TRAIN/b0/R/seed11031/s09/g07/d07",
+    "OT1/TRAIN/b0/D/seed11032/s23/g15/d03",
+    "OT1/TRAIN/b0/G/seed11032/s23/g15/d03",
+    "OT1/TRAIN/b1/D/seed11031/s10/g10/d04",
+    "OT1/TRAIN/b1/R/seed11031/s10/g10/d04",
+    "OT1/TRAIN/b1/R/seed11031/s24/g08/d00",
+    "OT1/TRAIN/b1/D/seed11032/s01/g00/d02",
+    "OT1/TRAIN/b1/D/seed11032/s20/g05/d07",
+    "OT1/TRAIN/b1/G/seed11032/s01/g00/d02",
+    "OT1/TRAIN/b1/R/seed11032/s01/g00/d02"
+  ],
+  "conflict_training_dose": [
+    {
+      "parent": "b0",
+      "arm": "D",
+      "channel": "LIST",
+      "groups": 32,
+      "signal_groups": 21,
+      "J0_source_mixed": 6,
+      "dose_sum": 50.37661662717802,
+      "dose_mean": 1.574269269599313
+    },
+    {
+      "parent": "b0",
+      "arm": "D",
+      "channel": "REPORT",
+      "groups": 32,
+      "signal_groups": 10,
+      "J0_source_mixed": 10,
+      "dose_sum": 24.96445075465316,
+      "dose_mean": 0.7801390860829113
+    },
+    {
+      "parent": "b0",
+      "arm": "G",
+      "channel": "LIST",
+      "groups": 19,
+      "signal_groups": 14,
+      "J0_source_mixed": 4,
+      "dose_sum": 32.468564457755456,
+      "dose_mean": 1.7088718135660765
+    },
+    {
+      "parent": "b0",
+      "arm": "G",
+      "channel": "REPORT",
+      "groups": 23,
+      "signal_groups": 6,
+      "J0_source_mixed": 9,
+      "dose_sum": 14.854760182826576,
+      "dose_mean": 0.6458591383837642
+    },
+    {
+      "parent": "b1",
+      "arm": "D",
+      "channel": "LIST",
+      "groups": 32,
+      "signal_groups": 23,
+      "J0_source_mixed": 1,
+      "dose_sum": 70.14355383130217,
+      "dose_mean": 2.191986057228193
+    },
+    {
+      "parent": "b1",
+      "arm": "D",
+      "channel": "REPORT",
+      "groups": 32,
+      "signal_groups": 19,
+      "J0_source_mixed": 5,
+      "dose_sum": 49.96829162806364,
+      "dose_mean": 1.5615091133769887
+    },
+    {
+      "parent": "b1",
+      "arm": "G",
+      "channel": "LIST",
+      "groups": 19,
+      "signal_groups": 16,
+      "J0_source_mixed": 1,
+      "dose_sum": 49.16181153623763,
+      "dose_mean": 2.5874637650651384
+    },
+    {
+      "parent": "b1",
+      "arm": "G",
+      "channel": "REPORT",
+      "groups": 23,
+      "signal_groups": 14,
+      "J0_source_mixed": 3,
+      "dose_sum": 36.5304977147009,
+      "dose_mean": 1.5882825093348216
+    }
+  ],
+  "authority8_R24": {
+    "11031:chart": {
+      "list": 15,
+      "chart": 8,
+      "other_admissible": 1
+    },
+    "11031:list": {
+      "list": 19,
+      "chart": 3,
+      "other_admissible": 1,
+      "unknown": 1
+    },
+    "11032:chart": {
+      "list": 13,
+      "chart": 8,
+      "other_admissible": 2,
+      "unknown": 1
+    },
+    "11032:list": {
+      "list": 16,
+      "chart": 5,
+      "other_admissible": 2,
+      "unknown": 1
+    }
+  },
+  "start_bindings": {
+    "11031": {
+      "policy_sha256": "bf54236906035d295d2616cc00d9ddf27094c6b572ddee8be3cc1b7c1a243fb6",
+      "state_sha256": "af1876069f9c9a5c7fc1d0b237162f5511b86b0462f3c796c13fbf3b8359bda1",
+      "reference_sha256": "0d7979e13ce408a0501fcd774a26c7643527433de10c64b2b199b695a66d1fb4",
+      "original_state_path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/run/paths/b0-11031-R/checkpoints/step-024/state.pt"
+    },
+    "11032": {
+      "policy_sha256": "0cea8f988f9fc99647bd8f8e1d8f733e20000e71ec26b504058b080cccb55ced",
+      "state_sha256": "a4fd2b6a85d1cf1b84f67ef4b4d76f8b7426c27a46a46fb0d37b1550a623f1a5",
+      "reference_sha256": "0d7979e13ce408a0501fcd774a26c7643527433de10c64b2b199b695a66d1fb4",
+      "original_state_path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/run/paths/b0-11032-R/checkpoints/step-024/state.pt"
+    }
+  },
+  "native_fixtures": {
+    "status": "HISTORICAL_NATIVE_CPU_FIXTURES_PASS",
+    "scorer": "srf6-native-measurement-v1",
+    "source_files_checked": 7,
+    "historical_kernel_sources_verified": false,
+    "generated_responses": 0,
+    "optimizer_updates": 0,
+    "new_server_binding": false
+  },
+  "gpu_model_calls": 0,
+  "optimizer_updates": 0,
+  "limitations": [
+    "No production adapter/objective file or model tensors are present in this bundle.",
+    "Historical scores are independently checked, not a prospective dry run.",
+    "A J-positive/wrong-selected response is allowed by the historical reward definition; never silently modify J."
+  ]
+}

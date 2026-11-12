@@ -1,0 +1,115 @@
+{
+  "schema": "source-bindings-v1",
+  "legacy_science_commit": "822f0f8ac059c83c6432a90e6d714b00abe43f77",
+  "legacy_binding_sha256": "814a197ef38365a835abe3c6b6f2d343f425b8f5b9711057fdca25a3b8baca91",
+  "remote_package_root": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2",
+  "remote_native_code_root": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_b7e7b06",
+  "model": {
+    "model_path": "/projects/_ssd/varunssd/louis-ssvc/cache/huggingface/hub/models--Qwen--Qwen3.5-9B/snapshots/c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+    "parents": {
+      "b0": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71001/adapter",
+      "b1": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_protocol_fix_20261016/selected_v2/parents/SRF2_J6_s71002/adapter"
+    },
+    "snapshot": "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+  },
+  "parent_tensor_sha256": "0d7979e13ce408a0501fcd774a26c7643527433de10c64b2b199b695a66d1fb4",
+  "new_run_root_proposed": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112",
+  "new_output_must_not_equal_legacy": true,
+  "local_source_scope": "uploaded bundles only; remote locations are historical references, not checked in this session",
+  "legacy_implementation_files": [
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/adapter/backend.py",
+      "sha256": "5929cff5d8e1b7175d204e4de1ea6ba2a8e9d9505ae8c20b0bb7ccce8c1b2d47"
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/adapter/driver.py",
+      "sha256": "794ca76465ca90ea90a015046f2870ac149d05b5e920aa08e1dbf4af93725722"
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/adapter/evaluation.py",
+      "sha256": "8dfe4ee5556e36dedc221496c3a58a705228d9f8b9db94c22124ea38f21e0b95"
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/adapter/freeze_binding.py",
+      "sha256": "fc928e4c56dbb9c1a0230c448cf7b56e4c470e4e78619e4f551a4df761d66f1d"
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/adapter/processor_review.py",
+      "sha256": "fc78f4a962a135e9b2e6cee39b89d930d0e21a18dc5aff872e434adbf197a631"
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/adapter/registration.py",
+      "sha256": "5e2b8ab7a7ec9f8d04e06e99e9c4a672d2e9fcc1cc25c972867554c7705e7be2"
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/adapter/seal_path.py",
+      "sha256": "a7e4938a16861cd2b9c0d225c9cab7bb5075dc6c7875da50f06bbe374d53a773"
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/adapter/seal_smoke.py",
+      "sha256": "b452bc2854bdce8524e45a7e578c73e68cd22ad39bb11e9764b36791aed55497"
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/adapter/server_preflight.py",
+      "sha256": "245d12d4479b98cb52ef48a5ed8c5ccdf2cb570e2ed889d2983189b607c88774"
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/adapter/training.py",
+      "sha256": "aac309a9cb1f3eee8e6371e4b588cc54154f7d1088282b8861f48dcf01fde3c7"
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/adapter/transactions.py",
+      "sha256": "155209e3940b0373fd121727d441cb04d62884e45d0da6d4ee88f9122541b530"
+    }
+  ],
+  "native_module_files": [
+    {
+      "bytes": 46736,
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_b7e7b06/src/sr_f3_ce/runtime.py",
+      "sha256": "27ca61c79c833be117cc723a11653bbeb2ab31cf0c8828c3844bd17a224b3272"
+    },
+    {
+      "bytes": 31621,
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_b7e7b06/src/sr_f3_ce/training.py",
+      "sha256": "fcca2f453f97814ee74e2da15339b016cd899310d9211aff6e247209755b0d94"
+    },
+    {
+      "bytes": 9164,
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_b7e7b06/src/sr_f6/credit.py",
+      "sha256": "bf44763453859daa0048128965e70351f29117cbdde4e12b50f0f34380c805f4"
+    },
+    {
+      "bytes": 4275,
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_b7e7b06/src/sr_f6/objective.py",
+      "sha256": "7be5b90a6d91261aa9f23803f217de8c42c30de6050157c23ccb7d3b2c880cea"
+    },
+    {
+      "bytes": 56748,
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_b7e7b06/src/sr_f6/runtime.py",
+      "sha256": "c71d490c75221a05a9b05516219bf57b592bacd45ea6bba057c462032f1bbcd4"
+    }
+  ],
+  "start_bindings": {
+    "11031": {
+      "policy_sha256": "bf54236906035d295d2616cc00d9ddf27094c6b572ddee8be3cc1b7c1a243fb6",
+      "state_sha256": "af1876069f9c9a5c7fc1d0b237162f5511b86b0462f3c796c13fbf3b8359bda1",
+      "reference_sha256": "0d7979e13ce408a0501fcd774a26c7643527433de10c64b2b199b695a66d1fb4",
+      "original_state_path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/run/paths/b0-11031-R/checkpoints/step-024/state.pt"
+    },
+    "11032": {
+      "policy_sha256": "0cea8f988f9fc99647bd8f8e1d8f733e20000e71ec26b504058b080cccb55ced",
+      "state_sha256": "a4fd2b6a85d1cf1b84f67ef4b4d76f8b7426c27a46a46fb0d37b1550a623f1a5",
+      "reference_sha256": "0d7979e13ce408a0501fcd774a26c7643527433de10c64b2b199b695a66d1fb4",
+      "original_state_path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/run/paths/b0-11032-R/checkpoints/step-024/state.pt"
+    }
+  },
+  "native_scorer_pins": {
+    "sr_f6/measurement.py": "90c26410af3f5526bce5b697138c72e0bf2d0cb58f3557d67fe42cf35db29a04",
+    "sr_f5/measurement.py": "1b8e8cb7749f213b3b1e993f7e881ba4016ab6a76e520de750cd6b76ad0a6adb",
+    "srf5_ref/measurement.py": "487c572e446c5ac48991477469cf6fef004ecdfc5c2b73eff67ada819f2e9621",
+    "srf5_ref/oracle.py": "16ee245806248092d8970ac84e3f75c3f3fc2fe8495c06257d150fa6a17daa36",
+    "srf6_ref/core.py": "9b0086b5cd4eea8ddd88669e0c2223c43b7b3a0aeb5c53cf27912caa887cf8bd",
+    "sr_f4/task_contract.py": "a98e73540165cc7c0daeb0f96375341184fd345d0010a052213dec17bbf1be72",
+    "sr_f3_ce/contract.py": "ef8862f340da0d932d878cddc76f398f25b53471218746d3120970ad4dbcce75"
+  }
+}

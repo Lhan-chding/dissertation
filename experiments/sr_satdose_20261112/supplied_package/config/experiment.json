@@ -1,0 +1,202 @@
+{
+  "schema": "sr-satdose-config-v1",
+  "experiment_id": "SR-SATDOSE-1-20261112",
+  "status": "CPU_SPEC_ONLY_GPU_ADMISSION_REQUIRED",
+  "parent": "b0",
+  "starts": [
+    11031,
+    11032
+  ],
+  "arms": [
+    "T0",
+    "T1"
+  ],
+  "model_snapshot": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+  "start_bindings": {
+    "11031": {
+      "policy_sha256": "bf54236906035d295d2616cc00d9ddf27094c6b572ddee8be3cc1b7c1a243fb6",
+      "state_sha256": "af1876069f9c9a5c7fc1d0b237162f5511b86b0462f3c796c13fbf3b8359bda1",
+      "reference_sha256": "0d7979e13ce408a0501fcd774a26c7643527433de10c64b2b199b695a66d1fb4",
+      "original_state_path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/run/paths/b0-11031-R/checkpoints/step-024/state.pt"
+    },
+    "11032": {
+      "policy_sha256": "0cea8f988f9fc99647bd8f8e1d8f733e20000e71ec26b504058b080cccb55ced",
+      "state_sha256": "a4fd2b6a85d1cf1b84f67ef4b4d76f8b7426c27a46a46fb0d37b1550a623f1a5",
+      "reference_sha256": "0d7979e13ce408a0501fcd774a26c7643527433de10c64b2b199b695a66d1fb4",
+      "original_state_path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/run/paths/b0-11032-R/checkpoints/step-024/state.pt"
+    }
+  },
+  "reward": "native_srf6_J_only",
+  "train_source_reward": false,
+  "train_prefix": false,
+  "train_authority": "chart",
+  "family": "TIES",
+  "categories": 8,
+  "steps": 24,
+  "groups_per_step": 16,
+  "draws_per_group": 8,
+  "T0_conflict_per_step": 0,
+  "T1_conflict_per_step": 12,
+  "checkpoints": [
+    0,
+    2,
+    8,
+    16,
+    24
+  ],
+  "optimizer": {
+    "name": "AdamW",
+    "fresh_at_fork": true,
+    "restore_on_resume": true,
+    "lr": 1e-05,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "eps": 1e-08,
+    "weight_decay": 0.0,
+    "foreach": false,
+    "scheduler": "constant",
+    "grad_clip_norm": 1.0
+  },
+  "reference": "original_b0_parent_not_R24",
+  "loss": {
+    "group_std": "population_no_epsilon",
+    "sequence_reduction": "token_mean_then_128_sequence_mean",
+    "kl_coefficient": 0.02,
+    "tis_cap": 2.0,
+    "aux": 0.0,
+    "epochs_per_batch": 1
+  },
+  "precision": {
+    "dtype": "float32",
+    "attention": "eager",
+    "deterministic": true,
+    "TF32": false,
+    "dropout": 0.0,
+    "microbatch_sequences": 1,
+    "expected_trainable_tensors": 496
+  },
+  "sampling": {
+    "temperature": 1.0,
+    "top_p": 1.0,
+    "top_k": 0,
+    "max_new_tokens": 1536,
+    "do_sample": true,
+    "num_beams": 1
+  },
+  "dry": {
+    "conflict_groups_per_start": 64,
+    "aligned_groups_per_start": 16,
+    "generated_responses": 1280,
+    "min_signal_groups": 32,
+    "min_dose_mean": 1.25,
+    "min_dose_lower95": 0.75,
+    "max_unknown_rate": 0.05,
+    "min_direction_fraction": 0.95,
+    "max_J1_source0_rate": 0.05,
+    "max_truncation_rate": 0.02,
+    "bootstrap_B": 10000
+  },
+  "final_primary": {
+    "metric": "exact_authorised_selected_set_all_assigned_denominator",
+    "panel": "list8",
+    "view": "conflict",
+    "step": 24,
+    "contrast": "T1_minus_T0",
+    "roots": 128,
+    "structures": 4,
+    "roots_per_structure": 32,
+    "draws": 2,
+    "bootstrap_B": 10000,
+    "SESOI": 0.1,
+    "absolute_gain_reference": 0.05,
+    "run_SD_sensitivity": [
+      0.0,
+      0.03,
+      0.05
+    ]
+  },
+  "final_panels": {
+    "list8": {
+      "roots": 128,
+      "views": [
+        "conflict",
+        "aligned",
+        "no_list"
+      ],
+      "draws": 2,
+      "rows_per_endpoint": 768
+    },
+    "swap8": {
+      "roots": 32,
+      "views": [
+        "p0l0",
+        "p0l1",
+        "p1l0",
+        "p1l1"
+      ],
+      "draws": 1,
+      "rows_per_endpoint": 128
+    },
+    "authority8": {
+      "roots": 96,
+      "views": [
+        "chart",
+        "list"
+      ],
+      "draws": 2,
+      "rows_per_endpoint": 384
+    },
+    "prefix10": {
+      "roots": 96,
+      "views": [
+        "p_stable",
+        "p_revtie",
+        "p_placebo"
+      ],
+      "draws": 2,
+      "rows_per_endpoint": 576
+    },
+    "retention8": {
+      "roots": 24,
+      "views_per_root": 4,
+      "draws": 1,
+      "rows_per_endpoint": 96,
+      "source": "historical_public_DEV_only"
+    }
+  },
+  "budget": {
+    "formal_training_paths": 4,
+    "formal_training_updates": 96,
+    "formal_training_responses": 12288,
+    "dry_responses": 1280,
+    "prefix_calibration_responses": 96,
+    "dev_monitor_responses": 1512,
+    "final_full_endpoints": 6,
+    "final_rows_per_full_endpoint": 1952,
+    "final_full_responses": 11712,
+    "intermediate_primary_endpoints": 8,
+    "intermediate_primary_responses": 2048,
+    "all_planned_generations": 28936,
+    "technical_replay_generations": 0,
+    "extra_technical_forward_backward_count_separately": true
+  },
+  "prohibited": [
+    "b1_or_b2",
+    "extra_training_arms",
+    "source_reward_training",
+    "report_channel_training",
+    "reverse_alphabet_primary",
+    "auto_change_lr_or_lambda",
+    "automatic_stage2",
+    "use_final_eval_for_adaptation",
+    "gpu_hour_scientific_stop",
+    "drop_unknown_or_allzero_groups"
+  ],
+  "confirmation": {
+    "main_evaluation_sealed_until_training_terminal": true,
+    "intermediate_no_efficacy_stop": true,
+    "stage2_requires_new_registration": true
+  }
+}

@@ -1,0 +1,33 @@
+EEE/ROSE Cluster 02
+Connecting to: login-1
+
+Relevant Guides:
+- https://github.com/NTUEEECluster/docs/blob/main/quickstart.md
+- https://github.com/NTUEEECluster/docs/blob/main/terms-n-conditions.md
+test_ci_uses_roots_equal_strata_not_draw_pseudoreplication (test_analyze.TestOrderAnalysis.test_ci_uses_roots_equal_strata_not_draw_pseudoreplication) ... ok
+test_complete_paired_result_and_manifest_missing (test_analyze.TestOrderAnalysis.test_complete_paired_result_and_manifest_missing) ... ok
+test_joint_unknown_and_not_applicable (test_analyze.TestOrderAnalysis.test_joint_unknown_and_not_applicable) ... ok
+test_pairing_not_unmatched_draws_and_no_seed_replication (test_analyze.TestOrderAnalysis.test_pairing_not_unmatched_draws_and_no_seed_replication) ... ok
+test_retention_without_equivalence (test_analyze.TestOrderAnalysis.test_retention_without_equivalence) ... ok
+test_scoring_and_seeds_fail_closed (test_analyze.TestOrderAnalysis.test_scoring_and_seeds_fail_closed) ... ok
+test_swap_uses_same_draw_only (test_analyze.TestOrderAnalysis.test_swap_uses_same_draw_only) ... ok
+test_2x2_prompt_factors_and_no_list (test_data_design.TestOrderData.test_2x2_prompt_factors_and_no_list) ... ok
+test_dual_oracles_exact_and_balanced (test_data_design.TestOrderData.test_dual_oracles_exact_and_balanced) ... ok
+test_native_scores_not_a_probe_substitute (test_data_design.TestOrderData.test_native_scores_not_a_probe_substitute) ... ok
+test_prompt_matching_treatment_is_real_and_outcome_blind (test_data_design.TestOrderData.test_prompt_matching_treatment_is_real_and_outcome_blind) ... ok
+test_reverse_alphabetic_transfer_is_constructed_not_screened (test_data_design.TestOrderData.test_reverse_alphabetic_transfer_is_constructed_not_screened) ... ok
+test_swap_factorial_graph_should_change_list_should_not (test_data_design.TestOrderData.test_swap_factorial_graph_should_change_list_should_not) ... ok
+test_numerical_gate_catches_reference_tail_independent_of_sampler_average (test_runtime_contract.TestRuntimeContract.test_numerical_gate_catches_reference_tail_independent_of_sampler_average) ... ok
+test_path_counts_on_policy_chain_and_commit_artifacts (test_runtime_contract.TestRuntimeContract.test_path_counts_on_policy_chain_and_commit_artifacts) ... ok
+test_real_native_differential_fixture (test_runtime_contract.TestRuntimeContract.test_real_native_differential_fixture) ... ok
+test_smoke_checks_frozen_slots_no_updates_and_no_extra_draw (test_runtime_contract.TestRuntimeContract.test_smoke_checks_frozen_slots_no_updates_and_no_extra_draw) ... ok
+test_asterisk_and_no_work_recovery (test_score_eval.TestScoreEval.test_asterisk_and_no_work_recovery) ... ok
+test_clarification_four_cells_matched (test_score_eval.TestScoreEval.test_clarification_four_cells_matched) ... ok
+test_native_gold_and_instrument (test_score_eval.TestScoreEval.test_native_gold_and_instrument) ... ok
+test_prefix_verifies_full_prefill_and_strict_eos_brace (test_score_eval.TestScoreEval.test_prefix_verifies_full_prefill_and_strict_eos_brace) ... ok
+test_reject_wrong_identity_and_list_authority_native (test_score_eval.TestScoreEval.test_reject_wrong_identity_and_list_authority_native) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 1.245s
+
+OK

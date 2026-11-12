@@ -1,0 +1,60 @@
+{
+  "status": "REQUIRED_HISTORICAL_RESULTS_BUNDLE_NOT_LOCATED",
+  "observed_at_utc": "2026-11-12T12:08:14.910482+00:00",
+  "requested_bundle": "SR_ORD_TRAIN_RESULTS_20261111(1).zip",
+  "required_layout": [
+    "SHA256SUMS.json",
+    "results/eval_raw.jsonl",
+    "results/eval_scores.jsonl",
+    "training/training_native_scores_projection.jsonl",
+    "training/path_receipts",
+    "frozen/private_cases.jsonl"
+  ],
+  "searches": [
+    {
+      "host": "eee-cluster",
+      "root": "/projects/_ssd/varunssd/louis-ssvc",
+      "maxdepth": 6,
+      "name_patterns": [
+        "*ORD*RESULT*",
+        "training_native_scores_projection.jsonl"
+      ],
+      "matches": []
+    },
+    {
+      "host": "eee-cluster",
+      "roots": [
+        "/projects/_ssd/varunssd/louis-ssvc/exports",
+        "/home/varun024"
+      ],
+      "maxdepth": 4,
+      "name_patterns": [
+        "*ORD*"
+      ],
+      "relevant_matches": []
+    },
+    {
+      "host": "local",
+      "root": "/Users/louis/Documents/ChatGPT",
+      "method": "rg --files path filtering",
+      "patterns": [
+        "sr_ord_train.*(export|deliver|pack)",
+        "SR_ORD_TRAIN_RESULTS"
+      ],
+      "matches": []
+    }
+  ],
+  "legacy_tests": {
+    "status": "PASS",
+    "count": 22,
+    "skipped": 0,
+    "command": "env PYTHONDONTWRITEBYTECODE=1 /projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python -m unittest discover -s /projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/tests -v",
+    "log": "server_legacy_tests.log",
+    "log_sha256": "e87ce6cbebdca1694955ca26b2bcfb0cdce3c913fc0a45ef39a325a3f95512a1"
+  },
+  "limitations": [
+    "Searches do not prove absence outside the listed roots or depths.",
+    "The historical results audit has not been run; legacy scorer/generator tests do not substitute for that audit.",
+    "No original bundle was reconstructed or new GPU calls made."
+  ]
+}

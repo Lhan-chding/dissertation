@@ -1,0 +1,152 @@
+[
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/adapter/backend.py",
+    "expected": "5929cff5d8e1b7175d204e4de1ea6ba2a8e9d9505ae8c20b0bb7ccce8c1b2d47",
+    "actual": "5929cff5d8e1b7175d204e4de1ea6ba2a8e9d9505ae8c20b0bb7ccce8c1b2d47",
+    "match": true
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/adapter/driver.py",
+    "expected": "794ca76465ca90ea90a015046f2870ac149d05b5e920aa08e1dbf4af93725722",
+    "actual": "794ca76465ca90ea90a015046f2870ac149d05b5e920aa08e1dbf4af93725722",
+    "match": true
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/adapter/evaluation.py",
+    "expected": "8dfe4ee5556e36dedc221496c3a58a705228d9f8b9db94c22124ea38f21e0b95",
+    "actual": "8dfe4ee5556e36dedc221496c3a58a705228d9f8b9db94c22124ea38f21e0b95",
+    "match": true
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/adapter/freeze_binding.py",
+    "expected": "fc928e4c56dbb9c1a0230c448cf7b56e4c470e4e78619e4f551a4df761d66f1d",
+    "actual": "fc928e4c56dbb9c1a0230c448cf7b56e4c470e4e78619e4f551a4df761d66f1d",
+    "match": true
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/adapter/processor_review.py",
+    "expected": "fc78f4a962a135e9b2e6cee39b89d930d0e21a18dc5aff872e434adbf197a631",
+    "actual": "fc78f4a962a135e9b2e6cee39b89d930d0e21a18dc5aff872e434adbf197a631",
+    "match": true
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/adapter/registration.py",
+    "expected": "5e2b8ab7a7ec9f8d04e06e99e9c4a672d2e9fcc1cc25c972867554c7705e7be2",
+    "actual": "5e2b8ab7a7ec9f8d04e06e99e9c4a672d2e9fcc1cc25c972867554c7705e7be2",
+    "match": true
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/adapter/seal_path.py",
+    "expected": "a7e4938a16861cd2b9c0d225c9cab7bb5075dc6c7875da50f06bbe374d53a773",
+    "actual": "a7e4938a16861cd2b9c0d225c9cab7bb5075dc6c7875da50f06bbe374d53a773",
+    "match": true
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/adapter/seal_smoke.py",
+    "expected": "b452bc2854bdce8524e45a7e578c73e68cd22ad39bb11e9764b36791aed55497",
+    "actual": "b452bc2854bdce8524e45a7e578c73e68cd22ad39bb11e9764b36791aed55497",
+    "match": true
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/adapter/server_preflight.py",
+    "expected": "245d12d4479b98cb52ef48a5ed8c5ccdf2cb570e2ed889d2983189b607c88774",
+    "actual": "245d12d4479b98cb52ef48a5ed8c5ccdf2cb570e2ed889d2983189b607c88774",
+    "match": true
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/adapter/training.py",
+    "expected": "aac309a9cb1f3eee8e6371e4b588cc54154f7d1088282b8861f48dcf01fde3c7",
+    "actual": "aac309a9cb1f3eee8e6371e4b588cc54154f7d1088282b8861f48dcf01fde3c7",
+    "match": true
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/adapter/transactions.py",
+    "expected": "155209e3940b0373fd121727d441cb04d62884e45d0da6d4ee88f9122541b530",
+    "actual": "155209e3940b0373fd121727d441cb04d62884e45d0da6d4ee88f9122541b530",
+    "match": true
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_b7e7b06/src/sr_f3_ce/runtime.py",
+    "expected": "27ca61c79c833be117cc723a11653bbeb2ab31cf0c8828c3844bd17a224b3272",
+    "actual": "27ca61c79c833be117cc723a11653bbeb2ab31cf0c8828c3844bd17a224b3272",
+    "match": true
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_b7e7b06/src/sr_f3_ce/training.py",
+    "expected": "fcca2f453f97814ee74e2da15339b016cd899310d9211aff6e247209755b0d94",
+    "actual": "fcca2f453f97814ee74e2da15339b016cd899310d9211aff6e247209755b0d94",
+    "match": true
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_b7e7b06/src/sr_f6/credit.py",
+    "expected": "bf44763453859daa0048128965e70351f29117cbdde4e12b50f0f34380c805f4",
+    "actual": "bf44763453859daa0048128965e70351f29117cbdde4e12b50f0f34380c805f4",
+    "match": true
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_b7e7b06/src/sr_f6/objective.py",
+    "expected": "7be5b90a6d91261aa9f23803f217de8c42c30de6050157c23ccb7d3b2c880cea",
+    "actual": "7be5b90a6d91261aa9f23803f217de8c42c30de6050157c23ccb7d3b2c880cea",
+    "match": true
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_b7e7b06/src/sr_f6/runtime.py",
+    "expected": "c71d490c75221a05a9b05516219bf57b592bacd45ea6bba057c462032f1bbcd4",
+    "actual": "c71d490c75221a05a9b05516219bf57b592bacd45ea6bba057c462032f1bbcd4",
+    "match": true
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_b7e7b06/src/sr_f6/measurement.py",
+    "expected": "90c26410af3f5526bce5b697138c72e0bf2d0cb58f3557d67fe42cf35db29a04",
+    "actual": "90c26410af3f5526bce5b697138c72e0bf2d0cb58f3557d67fe42cf35db29a04",
+    "match": true
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_b7e7b06/src/sr_f5/measurement.py",
+    "expected": "1b8e8cb7749f213b3b1e993f7e881ba4016ab6a76e520de750cd6b76ad0a6adb",
+    "actual": "1b8e8cb7749f213b3b1e993f7e881ba4016ab6a76e520de750cd6b76ad0a6adb",
+    "match": true
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_b7e7b06/src/srf5_ref/measurement.py",
+    "expected": "487c572e446c5ac48991477469cf6fef004ecdfc5c2b73eff67ada819f2e9621",
+    "actual": "487c572e446c5ac48991477469cf6fef004ecdfc5c2b73eff67ada819f2e9621",
+    "match": true
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_b7e7b06/src/srf5_ref/oracle.py",
+    "expected": "16ee245806248092d8970ac84e3f75c3f3fc2fe8495c06257d150fa6a17daa36",
+    "actual": "16ee245806248092d8970ac84e3f75c3f3fc2fe8495c06257d150fa6a17daa36",
+    "match": true
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_b7e7b06/src/srf6_ref/core.py",
+    "expected": "9b0086b5cd4eea8ddd88669e0c2223c43b7b3a0aeb5c53cf27912caa887cf8bd",
+    "actual": "9b0086b5cd4eea8ddd88669e0c2223c43b7b3a0aeb5c53cf27912caa887cf8bd",
+    "match": true
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_b7e7b06/src/sr_f4/task_contract.py",
+    "expected": "a98e73540165cc7c0daeb0f96375341184fd345d0010a052213dec17bbf1be72",
+    "actual": "a98e73540165cc7c0daeb0f96375341184fd345d0010a052213dec17bbf1be72",
+    "match": true
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f6_code_b7e7b06/src/sr_f3_ce/contract.py",
+    "expected": "ef8862f340da0d932d878cddc76f398f25b53471218746d3120970ad4dbcce75",
+    "actual": "ef8862f340da0d932d878cddc76f398f25b53471218746d3120970ad4dbcce75",
+    "match": true
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/run/paths/b0-11031-R/checkpoints/step-024/state.pt",
+    "expected": "af1876069f9c9a5c7fc1d0b237162f5511b86b0462f3c796c13fbf3b8359bda1",
+    "actual": "af1876069f9c9a5c7fc1d0b237162f5511b86b0462f3c796c13fbf3b8359bda1",
+    "match": true
+  },
+  {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/run/paths/b0-11032-R/checkpoints/step-024/state.pt",
+    "expected": "a4fd2b6a85d1cf1b84f67ef4b4d76f8b7426c27a46a46fb0d37b1550a623f1a5",
+    "actual": "a4fd2b6a85d1cf1b84f67ef4b4d76f8b7426c27a46a46fb0d37b1550a623f1a5",
+    "match": true
+  }
+]

@@ -1,0 +1,68 @@
+{
+  "schema": "sr-satdose-local-validation-v1",
+  "status": "LOCAL_CPU_PASS_REMOTE_GPU_NOT_RUN",
+  "recorded_utc": "2026-11-12T10:58:46.371193+00:00",
+  "environment": {
+    "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "torch": {
+      "version": "2.10.0+cpu",
+      "cuda_available": false
+    }
+  },
+  "command": "bash run_cpu_checks.sh /mnt/data/work_sr_satdose/raw /mnt/data/SR_SATDOSE_CODEX_PACKAGE_20261112/verification/end_to_end",
+  "unit_and_integration_tests": {
+    "count": 70,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "elapsed_seconds": 4.163,
+    "log": "verification/end_to_end/unit_tests.log",
+    "real_native_scorer_integration_fixture_is_synthetic": true,
+    "fixtures_not_model_outputs_and_not_production_admission": true
+  },
+  "python_source_compile": {
+    "status": "PASS",
+    "files": [
+      "tests/test_admission_integration.py",
+      "tests/test_configuration.py",
+      "tests/test_core.py",
+      "tools/analyze_primary.py",
+      "tools/audit_historical.py",
+      "tools/build_schedule.py",
+      "tools/check_admission.py",
+      "tools/satdose_core.py"
+    ]
+  },
+  "historical_audit": {
+    "archive_files_verified": 1099,
+    "training_rows": 36864,
+    "training_groups": 4608,
+    "evaluation_rows": 26624,
+    "J1_selection_not_correct": 14
+  },
+  "historical_scorer_original_test_suite": {
+    "status": "BLOCKED_MISSING_ARCHIVED_DEPENDENCY",
+    "module": "data_design",
+    "log": "verification/HISTORICAL_SCORER_TESTS.log",
+    "must_rerun_on_server_before_gpu": true
+  },
+  "fail_closed_cli": {
+    "expected_exit_code": 2,
+    "observed_exit_code": 2,
+    "report": "verification/FAIL_CLOSED_DEMO.json",
+    "permission": "NO_TRAINING"
+  },
+  "real_model_generation_count": 0,
+  "production_gpu_backward_count": 0,
+  "real_optimizer_updates": 0,
+  "not_validated_here": [
+    "actual R24 checkpoint and original b0 tensors",
+    "server production loss/adapter implementation",
+    "prospective dry-run signal thresholds",
+    "full-length GPU gradient equivalence",
+    "optimizer shadow replay and current-policy rollout freshness",
+    "production crash recovery/exactly-once commits",
+    "prospective effect size or efficacy"
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "status": "HOLD_TECHNICAL_OR_INCOMPLETE_EVIDENCE",
+  "permission": "NO_TRAINING",
+  "reason": "[Errno 2] No such file or directory: '/mnt/data/NOT_EXECUTED_GPU_ADMISSION_INPUTS.json'"
+}

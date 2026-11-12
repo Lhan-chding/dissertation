@@ -1,0 +1,148 @@
+{
+  "schema": "sr-satdose-gpu-verification-v1",
+  "mode": "PENDING_NOT_PRODUCTION",
+  "experiment_id": "SR-SATDOSE-1-20261112",
+  "config_sha256": "",
+  "registration_sha256": "",
+  "dry_optimizer_steps": null,
+  "dry_parameter_updates": null,
+  "shadow_optimizer_steps": null,
+  "checks": {
+    "start_and_reference_hash_verified": {
+      "passed": false,
+      "evidence": {
+        "path": "REPLACE_WITH_REAL_EVIDENCE/start_and_reference_hash_verified.json",
+        "sha256": ""
+      }
+    },
+    "native_scorer_golden_pass": {
+      "passed": false,
+      "evidence": {
+        "path": "REPLACE_WITH_REAL_EVIDENCE/native_scorer_golden_pass.json",
+        "sha256": ""
+      }
+    },
+    "disjoint_splits_checked": {
+      "passed": false,
+      "evidence": {
+        "path": "REPLACE_WITH_REAL_EVIDENCE/disjoint_splits_checked.json",
+        "sha256": ""
+      }
+    },
+    "gold_never_in_model_inputs": {
+      "passed": false,
+      "evidence": {
+        "path": "REPLACE_WITH_REAL_EVIDENCE/gold_never_in_model_inputs.json",
+        "sha256": ""
+      }
+    },
+    "native_loss_replay_equal": {
+      "passed": false,
+      "evidence": {
+        "path": "REPLACE_WITH_REAL_EVIDENCE/native_loss_replay_equal.json",
+        "sha256": ""
+      }
+    },
+    "production_gradient_hook_verified": {
+      "passed": false,
+      "evidence": {
+        "path": "REPLACE_WITH_REAL_EVIDENCE/production_gradient_hook_verified.json",
+        "sha256": ""
+      }
+    },
+    "sampler_teacher_gate": {
+      "passed": false,
+      "evidence": {
+        "path": "REPLACE_WITH_REAL_EVIDENCE/sampler_teacher_gate.json",
+        "sha256": ""
+      }
+    },
+    "raw_token_identity": {
+      "passed": false,
+      "evidence": {
+        "path": "REPLACE_WITH_REAL_EVIDENCE/raw_token_identity.json",
+        "sha256": ""
+      }
+    },
+    "same_runtime_backend": {
+      "passed": false,
+      "evidence": {
+        "path": "REPLACE_WITH_REAL_EVIDENCE/same_runtime_backend.json",
+        "sha256": ""
+      }
+    },
+    "long_sequence_fullbatch_pass": {
+      "passed": false,
+      "evidence": {
+        "path": "REPLACE_WITH_REAL_EVIDENCE/long_sequence_fullbatch_pass.json",
+        "sha256": ""
+      }
+    },
+    "allzero_pg_zero_kl_retained": {
+      "passed": false,
+      "evidence": {
+        "path": "REPLACE_WITH_REAL_EVIDENCE/allzero_pg_zero_kl_retained.json",
+        "sha256": ""
+      }
+    },
+    "shadow_adam_update_replay_pass": {
+      "passed": false,
+      "evidence": {
+        "path": "REPLACE_WITH_REAL_EVIDENCE/shadow_adam_update_replay_pass.json",
+        "sha256": ""
+      }
+    },
+    "evaluation_loader_policy_verified": {
+      "passed": false,
+      "evidence": {
+        "path": "REPLACE_WITH_REAL_EVIDENCE/evaluation_loader_policy_verified.json",
+        "sha256": ""
+      }
+    },
+    "dry_unchanged_policy": {
+      "passed": false,
+      "evidence": {
+        "path": "REPLACE_WITH_REAL_EVIDENCE/dry_unchanged_policy.json",
+        "sha256": ""
+      }
+    },
+    "prefix_calibration_pass": {
+      "passed": false,
+      "evidence": {
+        "path": "REPLACE_WITH_REAL_EVIDENCE/prefix_calibration_pass.json",
+        "sha256": ""
+      }
+    }
+  },
+  "gradient": {
+    "11031": {
+      "policy_before_sha256": "",
+      "policy_after_sha256": "",
+      "J_vs_source_pg_cosine": null,
+      "J_split_half_cosine": null,
+      "source_split_half_cosine": null,
+      "heldout_effect_half_1": null,
+      "heldout_effect_half_2": null,
+      "effect_repeat_error_floor": null,
+      "evidence": {
+        "path": "REPLACE_WITH_REAL_EVIDENCE/gradient_11031.json",
+        "sha256": ""
+      }
+    },
+    "11032": {
+      "policy_before_sha256": "",
+      "policy_after_sha256": "",
+      "J_vs_source_pg_cosine": null,
+      "J_split_half_cosine": null,
+      "source_split_half_cosine": null,
+      "heldout_effect_half_1": null,
+      "heldout_effect_half_2": null,
+      "effect_repeat_error_floor": null,
+      "evidence": {
+        "path": "REPLACE_WITH_REAL_EVIDENCE/gradient_11032.json",
+        "sha256": ""
+      }
+    }
+  },
+  "warning": "模板不是执行证据；不得复制单元测试的合成数值用于生产验收。"
+}

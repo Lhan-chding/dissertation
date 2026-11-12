@@ -1,0 +1,556 @@
+{
+  "at": "2026-11-12T12:09:04.067810+00:00",
+  "project": "/projects/_ssd/varunssd/louis-ssvc",
+  "scope": [
+    "cache/triton",
+    "cache/cuda",
+    "cache/torch/kernels",
+    "cache/matplotlib",
+    "cache/huggingface/xet/logs"
+  ],
+  "files": [
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/5X6NRPPSXSTLTNI3VYHYALKTWNNZHAPA6SS6FKRKAXY5UQUJMUUQ/_bmm_outer_product_kernel.source",
+      "bytes": 22396,
+      "mtime_ns": 1788956911891774077,
+      "inode": 4398119562553,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/5X6NRPPSXSTLTNI3VYHYALKTWNNZHAPA6SS6FKRKAXY5UQUJMUUQ/_bmm_outer_product_kernel.ttgir",
+      "bytes": 13975,
+      "mtime_ns": 1788956911910773649,
+      "inode": 4398119562557,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/5X6NRPPSXSTLTNI3VYHYALKTWNNZHAPA6SS6FKRKAXY5UQUJMUUQ/_bmm_outer_product_kernel.ttir",
+      "bytes": 12192,
+      "mtime_ns": 1788956911897773942,
+      "inode": 4398119562555,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/5X6NRPPSXSTLTNI3VYHYALKTWNNZHAPA6SS6FKRKAXY5UQUJMUUQ/__grp___bmm_outer_product_kernel.json",
+      "bytes": 1171,
+      "mtime_ns": 1788956912023771100,
+      "inode": 4398119562570,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/5X6NRPPSXSTLTNI3VYHYALKTWNNZHAPA6SS6FKRKAXY5UQUJMUUQ/_bmm_outer_product_kernel.cubin",
+      "bytes": 18312,
+      "mtime_ns": 1788956912013771325,
+      "inode": 4398119562566,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/5X6NRPPSXSTLTNI3VYHYALKTWNNZHAPA6SS6FKRKAXY5UQUJMUUQ/_bmm_outer_product_kernel.llir",
+      "bytes": 12619,
+      "mtime_ns": 1788956911927773265,
+      "inode": 4398119562559,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/5X6NRPPSXSTLTNI3VYHYALKTWNNZHAPA6SS6FKRKAXY5UQUJMUUQ/_bmm_outer_product_kernel.json",
+      "bytes": 1144,
+      "mtime_ns": 1788956912018771212,
+      "inode": 4398119562568,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/5X6NRPPSXSTLTNI3VYHYALKTWNNZHAPA6SS6FKRKAXY5UQUJMUUQ/_bmm_outer_product_kernel.ptx",
+      "bytes": 14401,
+      "mtime_ns": 1788956911940772972,
+      "inode": 4398119562561,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/SY5TYLUSXGBIMR6MU5JIRDR5SFJBOBAFD53LDISTKIJ6QVBU57DQ/_bmm_outer_product_kernel.source",
+      "bytes": 22532,
+      "mtime_ns": 1788849819927545945,
+      "inode": 4398125202111,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/SY5TYLUSXGBIMR6MU5JIRDR5SFJBOBAFD53LDISTKIJ6QVBU57DQ/_bmm_outer_product_kernel.ttgir",
+      "bytes": 8925,
+      "mtime_ns": 1788849819938545883,
+      "inode": 4398125202115,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/SY5TYLUSXGBIMR6MU5JIRDR5SFJBOBAFD53LDISTKIJ6QVBU57DQ/_bmm_outer_product_kernel.ttir",
+      "bytes": 7952,
+      "mtime_ns": 1788849819931545922,
+      "inode": 4398125202113,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/SY5TYLUSXGBIMR6MU5JIRDR5SFJBOBAFD53LDISTKIJ6QVBU57DQ/__grp___bmm_outer_product_kernel.json",
+      "bytes": 1171,
+      "mtime_ns": 1788849819980545651,
+      "inode": 4398125202128,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/SY5TYLUSXGBIMR6MU5JIRDR5SFJBOBAFD53LDISTKIJ6QVBU57DQ/_bmm_outer_product_kernel.cubin",
+      "bytes": 11952,
+      "mtime_ns": 1788849819974545684,
+      "inode": 4398125202124,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/SY5TYLUSXGBIMR6MU5JIRDR5SFJBOBAFD53LDISTKIJ6QVBU57DQ/_bmm_outer_product_kernel.llir",
+      "bytes": 5499,
+      "mtime_ns": 1788849819945545845,
+      "inode": 4398125202117,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/SY5TYLUSXGBIMR6MU5JIRDR5SFJBOBAFD53LDISTKIJ6QVBU57DQ/_bmm_outer_product_kernel.json",
+      "bytes": 1144,
+      "mtime_ns": 1788849819977545667,
+      "inode": 4398125202126,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/SY5TYLUSXGBIMR6MU5JIRDR5SFJBOBAFD53LDISTKIJ6QVBU57DQ/_bmm_outer_product_kernel.ptx",
+      "bytes": 10211,
+      "mtime_ns": 1788849819950545817,
+      "inode": 4398125202119,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/NRIVUM2EOGZDPMSGAWTDIWUAGSZM3OTXHGEEPQYK4ONYKK5C6XKQ/_bmm_outer_product_kernel.source",
+      "bytes": 23612,
+      "mtime_ns": 1788849861324316680,
+      "inode": 4398125202144,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/NRIVUM2EOGZDPMSGAWTDIWUAGSZM3OTXHGEEPQYK4ONYKK5C6XKQ/_bmm_outer_product_kernel.ttgir",
+      "bytes": 14930,
+      "mtime_ns": 1788849861341316586,
+      "inode": 4398125202148,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/NRIVUM2EOGZDPMSGAWTDIWUAGSZM3OTXHGEEPQYK4ONYKK5C6XKQ/_bmm_outer_product_kernel.ttir",
+      "bytes": 12856,
+      "mtime_ns": 1788849861329316653,
+      "inode": 4398125202146,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/NRIVUM2EOGZDPMSGAWTDIWUAGSZM3OTXHGEEPQYK4ONYKK5C6XKQ/__grp___bmm_outer_product_kernel.json",
+      "bytes": 1171,
+      "mtime_ns": 1788849861399316265,
+      "inode": 4398125202161,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/NRIVUM2EOGZDPMSGAWTDIWUAGSZM3OTXHGEEPQYK4ONYKK5C6XKQ/_bmm_outer_product_kernel.cubin",
+      "bytes": 21368,
+      "mtime_ns": 1788849861394316293,
+      "inode": 4398125202157,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/NRIVUM2EOGZDPMSGAWTDIWUAGSZM3OTXHGEEPQYK4ONYKK5C6XKQ/_bmm_outer_product_kernel.llir",
+      "bytes": 16824,
+      "mtime_ns": 1788849861356316503,
+      "inode": 4398125202150,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/NRIVUM2EOGZDPMSGAWTDIWUAGSZM3OTXHGEEPQYK4ONYKK5C6XKQ/_bmm_outer_product_kernel.json",
+      "bytes": 1146,
+      "mtime_ns": 1788849861397316276,
+      "inode": 4398125202159,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/NRIVUM2EOGZDPMSGAWTDIWUAGSZM3OTXHGEEPQYK4ONYKK5C6XKQ/_bmm_outer_product_kernel.ptx",
+      "bytes": 15866,
+      "mtime_ns": 1788849861364316459,
+      "inode": 4398125202152,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/MIH4X24CEAJDWYGXCZ4EKW6DTWSUG2ZBSBPV7NGI62HAUKJ7F7BQ/cuda_utils.cpython-312-x86_64-linux-gnu.so",
+      "bytes": 55832,
+      "mtime_ns": 1788849818634553105,
+      "inode": 4398125202088,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/G6U7ASYPJ454BVY4DZEGSSOG2BHIETHYI3ZGI5X4DAANQEW4AA5A/_bmm_outer_product_kernel.source",
+      "bytes": 23445,
+      "mtime_ns": 1788850066680199446,
+      "inode": 4398125202164,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/G6U7ASYPJ454BVY4DZEGSSOG2BHIETHYI3ZGI5X4DAANQEW4AA5A/_bmm_outer_product_kernel.ttgir",
+      "bytes": 14253,
+      "mtime_ns": 1788850066694199370,
+      "inode": 4398125202168,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/G6U7ASYPJ454BVY4DZEGSSOG2BHIETHYI3ZGI5X4DAANQEW4AA5A/_bmm_outer_product_kernel.ttir",
+      "bytes": 12733,
+      "mtime_ns": 1788850066684199424,
+      "inode": 4398125202166,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/G6U7ASYPJ454BVY4DZEGSSOG2BHIETHYI3ZGI5X4DAANQEW4AA5A/__grp___bmm_outer_product_kernel.json",
+      "bytes": 1171,
+      "mtime_ns": 1788850066747199086,
+      "inode": 4398125202181,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/G6U7ASYPJ454BVY4DZEGSSOG2BHIETHYI3ZGI5X4DAANQEW4AA5A/_bmm_outer_product_kernel.cubin",
+      "bytes": 16024,
+      "mtime_ns": 1788850066742199113,
+      "inode": 4398125202177,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/G6U7ASYPJ454BVY4DZEGSSOG2BHIETHYI3ZGI5X4DAANQEW4AA5A/_bmm_outer_product_kernel.llir",
+      "bytes": 9459,
+      "mtime_ns": 1788850066704199317,
+      "inode": 4398125202170,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/G6U7ASYPJ454BVY4DZEGSSOG2BHIETHYI3ZGI5X4DAANQEW4AA5A/_bmm_outer_product_kernel.json",
+      "bytes": 1144,
+      "mtime_ns": 1788850066744199102,
+      "inode": 4398125202179,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/G6U7ASYPJ454BVY4DZEGSSOG2BHIETHYI3ZGI5X4DAANQEW4AA5A/_bmm_outer_product_kernel.ptx",
+      "bytes": 12924,
+      "mtime_ns": 1788850066710199284,
+      "inode": 4398125202172,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/OVSKWZLJR5AFYRND2WJYW4GEZJ5QI6S5PJDBNDYLRKLSYKTMUNRQ/_bmm_outer_product_kernel.source",
+      "bytes": 23365,
+      "mtime_ns": 1788850066871198421,
+      "inode": 4398125202184,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/OVSKWZLJR5AFYRND2WJYW4GEZJ5QI6S5PJDBNDYLRKLSYKTMUNRQ/_bmm_outer_product_kernel.ttgir",
+      "bytes": 14214,
+      "mtime_ns": 1788850066886198340,
+      "inode": 4398125202188,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/OVSKWZLJR5AFYRND2WJYW4GEZJ5QI6S5PJDBNDYLRKLSYKTMUNRQ/_bmm_outer_product_kernel.ttir",
+      "bytes": 12697,
+      "mtime_ns": 1788850066876198394,
+      "inode": 4398125202186,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/OVSKWZLJR5AFYRND2WJYW4GEZJ5QI6S5PJDBNDYLRKLSYKTMUNRQ/__grp___bmm_outer_product_kernel.json",
+      "bytes": 1171,
+      "mtime_ns": 1788850066935198077,
+      "inode": 4398125202201,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/OVSKWZLJR5AFYRND2WJYW4GEZJ5QI6S5PJDBNDYLRKLSYKTMUNRQ/_bmm_outer_product_kernel.cubin",
+      "bytes": 14968,
+      "mtime_ns": 1788850066928198115,
+      "inode": 4398125202197,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/OVSKWZLJR5AFYRND2WJYW4GEZJ5QI6S5PJDBNDYLRKLSYKTMUNRQ/_bmm_outer_product_kernel.llir",
+      "bytes": 7906,
+      "mtime_ns": 1788850066895198292,
+      "inode": 4398125202190,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/OVSKWZLJR5AFYRND2WJYW4GEZJ5QI6S5PJDBNDYLRKLSYKTMUNRQ/_bmm_outer_product_kernel.json",
+      "bytes": 1144,
+      "mtime_ns": 1788850066932198094,
+      "inode": 4398125202199,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/OVSKWZLJR5AFYRND2WJYW4GEZJ5QI6S5PJDBNDYLRKLSYKTMUNRQ/_bmm_outer_product_kernel.ptx",
+      "bytes": 12184,
+      "mtime_ns": 1788850066902198255,
+      "inode": 4398125202192,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/IJUMIUAHZKXY4SSYPESVBE4QF5KUVZT4FB7GFBK732FDY4FAF2OQ/_bmm_outer_product_kernel.source",
+      "bytes": 23525,
+      "mtime_ns": 1788849819393548902,
+      "inode": 4398125202091,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/IJUMIUAHZKXY4SSYPESVBE4QF5KUVZT4FB7GFBK732FDY4FAF2OQ/_bmm_outer_product_kernel.ttgir",
+      "bytes": 14851,
+      "mtime_ns": 1788849819409548813,
+      "inode": 4398125202095,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/IJUMIUAHZKXY4SSYPESVBE4QF5KUVZT4FB7GFBK732FDY4FAF2OQ/_bmm_outer_product_kernel.ttir",
+      "bytes": 12769,
+      "mtime_ns": 1788849819398548874,
+      "inode": 4398125202093,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/IJUMIUAHZKXY4SSYPESVBE4QF5KUVZT4FB7GFBK732FDY4FAF2OQ/__grp___bmm_outer_product_kernel.json",
+      "bytes": 1171,
+      "mtime_ns": 1788849819486548387,
+      "inode": 4398125202108,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/IJUMIUAHZKXY4SSYPESVBE4QF5KUVZT4FB7GFBK732FDY4FAF2OQ/_bmm_outer_product_kernel.cubin",
+      "bytes": 30144,
+      "mtime_ns": 1788849819481548415,
+      "inode": 4398125202104,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/IJUMIUAHZKXY4SSYPESVBE4QF5KUVZT4FB7GFBK732FDY4FAF2OQ/_bmm_outer_product_kernel.llir",
+      "bytes": 28289,
+      "mtime_ns": 1788849819428548708,
+      "inode": 4398125202097,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/IJUMIUAHZKXY4SSYPESVBE4QF5KUVZT4FB7GFBK732FDY4FAF2OQ/_bmm_outer_product_kernel.json",
+      "bytes": 1144,
+      "mtime_ns": 1788849819483548403,
+      "inode": 4398125202106,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/IJUMIUAHZKXY4SSYPESVBE4QF5KUVZT4FB7GFBK732FDY4FAF2OQ/_bmm_outer_product_kernel.ptx",
+      "bytes": 20124,
+      "mtime_ns": 1788849819444548619,
+      "inode": 4398125202099,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/BBV2W6F6IQPXAY65VSUUMC5R2LH3KF3IG2YXGIFL3ISYSTXBFX4Q/_bmm_outer_product_kernel.source",
+      "bytes": 22483,
+      "mtime_ns": 1788956911516782537,
+      "inode": 4398119562533,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/BBV2W6F6IQPXAY65VSUUMC5R2LH3KF3IG2YXGIFL3ISYSTXBFX4Q/_bmm_outer_product_kernel.ttgir",
+      "bytes": 14061,
+      "mtime_ns": 1788956911536782086,
+      "inode": 4398119562537,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/BBV2W6F6IQPXAY65VSUUMC5R2LH3KF3IG2YXGIFL3ISYSTXBFX4Q/_bmm_outer_product_kernel.ttir",
+      "bytes": 12279,
+      "mtime_ns": 1788956911522782402,
+      "inode": 4398119562535,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/BBV2W6F6IQPXAY65VSUUMC5R2LH3KF3IG2YXGIFL3ISYSTXBFX4Q/__grp___bmm_outer_product_kernel.json",
+      "bytes": 1171,
+      "mtime_ns": 1788956911636779830,
+      "inode": 4398119562550,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/BBV2W6F6IQPXAY65VSUUMC5R2LH3KF3IG2YXGIFL3ISYSTXBFX4Q/_bmm_outer_product_kernel.cubin",
+      "bytes": 15240,
+      "mtime_ns": 1788956911630779966,
+      "inode": 4398119562546,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/BBV2W6F6IQPXAY65VSUUMC5R2LH3KF3IG2YXGIFL3ISYSTXBFX4Q/_bmm_outer_product_kernel.llir",
+      "bytes": 8983,
+      "mtime_ns": 1788956911552781725,
+      "inode": 4398119562539,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/BBV2W6F6IQPXAY65VSUUMC5R2LH3KF3IG2YXGIFL3ISYSTXBFX4Q/_bmm_outer_product_kernel.json",
+      "bytes": 1144,
+      "mtime_ns": 1788956911634779875,
+      "inode": 4398119562548,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/triton/BBV2W6F6IQPXAY65VSUUMC5R2LH3KF3IG2YXGIFL3ISYSTXBFX4Q/_bmm_outer_product_kernel.ptx",
+      "bytes": 12428,
+      "mtime_ns": 1788956911561781522,
+      "inode": 4398119562541,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/cuda/index",
+      "bytes": 80,
+      "mtime_ns": 1790511798407192529,
+      "inode": 4398125202130,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/cuda/8/6/84c73c058e5ba8",
+      "bytes": 5405,
+      "mtime_ns": 1790511798407192529,
+      "inode": 4398113215997,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/cuda/4/5/1f1d617e3171cd",
+      "bytes": 141632,
+      "mtime_ns": 1788849826785507962,
+      "inode": 4398125202140,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/cuda/f/b/eb9f9f4bfc5223",
+      "bytes": 184157,
+      "mtime_ns": 1788849826651508704,
+      "inode": 4398125202137,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/cuda/5/f/70fe490bccccb0",
+      "bytes": 5413,
+      "mtime_ns": 1788849826219511097,
+      "inode": 4398125202133,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/torch/kernels/reduction_prod_arch12.0_nvrtc13.0_sass_33258_0aa2ec641eb35f71ab614b6565d97d2309c4de35",
+      "bytes": 95312,
+      "mtime_ns": 1788849826785507962,
+      "inode": 4398125202141,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/matplotlib/fontlist-v3.11.0.json",
+      "bytes": 29302,
+      "mtime_ns": 1788849712985137803,
+      "inode": 4398107178332,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/huggingface/xet/logs/xet_20260908T064245192+0000_214403.log",
+      "bytes": 495748,
+      "mtime_ns": 1788849796424675978,
+      "inode": 4398125202025,
+      "deleted": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/cache/huggingface/xet/logs/xet_20260908T125810889+0000_1466022.log",
+      "bytes": 340465,
+      "mtime_ns": 1788872300769420641,
+      "inode": 4398126381897,
+      "deleted": true
+    }
+  ],
+  "errors": [],
+  "job_checks": [
+    {
+      "id": "1734953",
+      "detail_sha256": "4b9f1404dc6636277080eb6505721bd53969ec500f737ff0265a7d03efce856d",
+      "script_sha256": "ded6141bad4ac08b82c0734524187810e9b02c87ec414098f61767f379b1b7e1",
+      "script_read_returncode": 0,
+      "project_reference": false
+    },
+    {
+      "id": "1734965",
+      "detail_sha256": "9e5ef2c82637b39105917b664d2444e0bde8c2d14ee974e27733161f8a4b4c40",
+      "script_sha256": "26cb9ba40d83fdb46f7ad1015ad605e12bd9a3a7713dca5bc7a01ae7eb591be0",
+      "script_read_returncode": 0,
+      "project_reference": false
+    },
+    {
+      "id": "1734966",
+      "detail_sha256": "0d70b41549b0ab784727a044f4418d3ae4e3e096136464d9dffe9d55aa6bb98b",
+      "script_sha256": "26cb9ba40d83fdb46f7ad1015ad605e12bd9a3a7713dca5bc7a01ae7eb591be0",
+      "script_read_returncode": 0,
+      "project_reference": false
+    },
+    {
+      "id": "1734952",
+      "detail_sha256": "005a08479a002975642a2d716714122965ae8855661af1ca9e0abe9583639a7b",
+      "script_sha256": "ded6141bad4ac08b82c0734524187810e9b02c87ec414098f61767f379b1b7e1",
+      "script_read_returncode": 0,
+      "project_reference": false
+    }
+  ],
+  "status": "COMPLETE",
+  "before_files": 66,
+  "before_bytes": 2025323,
+  "removed_bytes": 2025323,
+  "after_files": 0,
+  "after_bytes": 0,
+  "storage_observations": {
+    "filesystem": "/projects",
+    "df_h": {
+      "size": "278T",
+      "used": "99T",
+      "available": "180T",
+      "use_percent": "36%"
+    },
+    "quota": "not obtained; df is shared filesystem availability, not user quota",
+    "partial_du": {
+      "cache_before": "19G",
+      "cache/huggingface/hub": "19G",
+      "tmp": "29M",
+      "sr_ord_train_20261103": "99G",
+      "sr_ord_train_20261103/package_v2/run/paths": "83G",
+      "sr_ord_train_20261103/package_v2/run/evaluation": "8.7G",
+      "sr_ord_train_20261103/package_v2/run/evaluation_submissions_v1": "4.7G",
+      "storage_audits": "1.2G",
+      "modeling_v4_20260916": "2.1G",
+      "sr_f3_ce_protocol_fix_20261016": "40G",
+      "sr_f6_semantic_factorial_20261027": "33G",
+      "sr_f4_consolidated_20261022": "25G",
+      "sr_f12_20261010": "23G",
+      "sr_f5_semantic_j_recipe_v2_20261026": "17G",
+      "sr_f5_semantic_j_20261025": "9.5G",
+      "sr_f4_c_local_pilot_20261024": "7.5G",
+      "sr_f4_c_fprime_pilot_20261023": "7.2G",
+      "modeling_v3_20260915": "6.0G",
+      "envs": "5.4G",
+      "prospective_selection_v2_20260924": "4.4G",
+      "sr_f3_ce_20261016": "3.9G",
+      "verified_discovery_transfer_20261006": "3.7G",
+      "modeling_contrast_v2_20260915": "3.3G"
+    },
+    "full_top_level_du": "Earlier slow inventory completed before stop request; total 320G; only largest entries recorded below",
+    "protected_findings": [
+      "HF hub contains Qwen3.5-9B and Qwen2.5-VL-3B-Instruct, not disposable download cache",
+      "No HF *.incomplete files found",
+      "tmp/U22_EXPOSURE_AUDIT.json is 28215598 bytes of unique audit evidence; retained",
+      "10 pairs of evaluation ADMISSION_INITIAL and ADMISSION_FINAL files have matching lengths but distinct SHA256; not duplicates; retained",
+      "Historical raw outputs, checkpoints, source deployments, audit receipts and active unrelated OpenVLA work retained"
+    ],
+    "project_total_du": "320G"
+  }
+}

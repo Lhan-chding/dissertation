@@ -1,0 +1,21 @@
+test_score_eval (unittest.loader._FailedTest.test_score_eval) ... ERROR
+
+======================================================================
+ERROR: test_score_eval (unittest.loader._FailedTest.test_score_eval)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_score_eval
+Traceback (most recent call last):
+  File "/usr/lib/python3.13/unittest/loader.py", line 396, in _find_test_path
+    module = self._get_module_from_name(name)
+  File "/usr/lib/python3.13/unittest/loader.py", line 339, in _get_module_from_name
+    __import__(name)
+    ~~~~~~~~~~^^^^^^
+  File "/mnt/data/work_sr_satdose/raw/tests/test_score_eval.py", line 10, in <module>
+    from data_design import make_world,build_context
+ModuleNotFoundError: No module named 'data_design'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)

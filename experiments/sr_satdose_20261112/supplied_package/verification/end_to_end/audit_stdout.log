@@ -1,0 +1,8 @@
+{
+  "status": "LOCAL_HISTORICAL_AUDIT_PASS_NOT_GPU_ADMISSION",
+  "archive_files_verified": 1099,
+  "training_rows": 36864,
+  "training_groups": 4608,
+  "evaluation_rows": 26624,
+  "J1_selection_not_correct": 14
+}
