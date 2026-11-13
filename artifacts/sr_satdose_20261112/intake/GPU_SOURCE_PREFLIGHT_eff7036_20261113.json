@@ -1,0 +1,22 @@
+{
+  "status": "GPU_RELEASE_SOURCE_PREFLIGHT_PASS_NO_MODEL_CALLS",
+  "checked_at": "2026-11-13T11:34:28.824236+00:00",
+  "runtime": {
+    "native_runtime.py": "69d1c5429134546efca6a7e87e65f800d2948f255fee4d1a9b1ae34b52b7d0bb",
+    "diagnostics.py": "3f2a5274427fd65bc84385824fadd09e47f94a896c180ab4819765cf3b17e8e5",
+    "backend.py": "d2754602e06dc7ba44297dcc73e960f1079d11eb5154dd117978fce85cf5e66c",
+    "data_adapter.py": "a2c4c14b7ecef213180c189b9307c86de947869ed4fb5cc8b24077f706aca974",
+    "fork_loader.py": "e5373d207f1f72eb644b5e1e183a6225311686b4a6fa5b75691e09d4a6d19890",
+    "dry_driver.py": "42f14813d06127691589e0181cdf16d18d4abcfbb09a45f0248d83302a38695e",
+    "registration.py": "4ba0d85999c3663897faf5fc5f784950bfb77f4a52f06e9919f2a3b6773bc0bf"
+  },
+  "source_lock_sha256": "70745bd49eec9fc8dbd3f4fb42db13c24ca37a84bc0289f775fb593c85fd8c76",
+  "help_import_exit_codes": {
+    "evaluation_probe": 0,
+    "backend_equivalence": 0,
+    "allzero_check": 0,
+    "diagnostic_worker": 0
+  },
+  "technical_binding_exists": false,
+  "model_calls": 0
+}
