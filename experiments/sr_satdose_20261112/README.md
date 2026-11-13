@@ -39,11 +39,20 @@ See the dated admission report for the most recent observed progress.
   fixed denominators and native score replay. Partial populations are refused.
   PREFIX readouts remain pending the user's interpretation of the protocol's
   strict-or-terminal-brace gate; no training permission is produced.
+- `execution/production.py`: independent native loss and gradient capture for
+  sixteen complete G8 groups. It preserves the original numerical checks and
+  captures gradients before and after clipping without accepting an optimizer.
+  CPU agreement with diagnostics is verified; actual GPU replay is outstanding.
 
 The formal training transaction publisher/driver, production gradient replay
 acceptance, canary/recovery integration and terminal MAIN runner are not yet
 implemented end-to-end. Do not invoke the old training CLI as a substitute.
 Do not manufacture DESIGN_FREEZE or GPU_VERIFICATION from test fixtures.
+The GPU diagnostic driver must bind the frozen root/group/request ordering,
+verify saved-tensor storage after backward, and use actual runtime accounting.
+Shadow acceptance still needs two independent R24 restores per start, GPU Adam
+on isolated tensors, and a global maximum of four actual shadow steps. Existing
+same-copy shadow repetition alone does not establish restored replay.
 
 ## CPU validation
 

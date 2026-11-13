@@ -27,6 +27,8 @@
 
 新增完成后CPU分析工具已通过完整90项本地测试、零跳过，日志为intake/calibration_analysis_cpu_tests_20261113.log。独立审查发现的源码锁与逐请求完成证据缺口已修复并增加拒绝测试；测试间原生模块污染已隔离，生产源码身份检查保留。没有读取当前部分raw来选择门槛，冻结runtime没有修改。PREFIX文档“严格或限定补括号后”在两套整套读法结论不同时存在歧义；已在任何PREFIX生成前向用户询问。澄清前分析器只报告两套结果与PENDING_PROTOCOL_CLARIFICATION，不授予准入。
 
+等待DRY期间新增execution/production.py独立原生数值核心，供后续生产事务与诊断比较共用生产路径。它没有optimizer能力，捕获裁剪前后梯度，保留原128等权累计和数值哨兵；独立审查已核对原实现。加入该模块后全套101项CPU测试通过、零跳过，见intake/production_core_cpu_tests_20261113.log。它尚未部署/运行GPU；不能把合成CPU一致性当作真实生产梯度GPU验收。真实两次恢复的影子Adam、短序列单卡/两卡对照、1536压力验收及完整GPU诊断driver仍待实现与执行。
+
 ## 服务器位置
 
 `/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112`：原输入包、已SHA验证历史包及解压副本、CPU审计、implementation_preflight、prepared_data_v1。
