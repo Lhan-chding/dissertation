@@ -1,0 +1,16 @@
+test_changed_arrays_or_original_order_are_recomputed_not_status (test_canary_audit.CanaryAuditTests.test_changed_arrays_or_original_order_are_recomputed_not_status) ... ok
+test_complete_synthetic_contract_actual_cpu_states_and_no_side_effects (test_canary_audit.CanaryAuditTests.test_complete_synthetic_contract_actual_cpu_states_and_no_side_effects) ... ok
+test_frozen_tensor_tamper_and_missing_parameter_refuse (test_canary_audit.CanaryAuditTests.test_frozen_tensor_tamper_and_missing_parameter_refuse) ... ok
+test_missing_exit_or_frozen_proofs_is_pending_never_positive (test_canary_audit.CanaryAuditTests.test_missing_exit_or_frozen_proofs_is_pending_never_positive) ... ok
+test_same_process_and_active_transaction_reject (test_canary_audit.CanaryAuditTests.test_same_process_and_active_transaction_reject) ... ok
+test_single_task_srun_binds_actual_worker_not_wrapper (test_canary_audit.CanaryAuditTests.test_single_task_srun_binds_actual_worker_not_wrapper) ... ok
+test_source_or_trusted_spec_tampering_refuses (test_canary_audit.CanaryAuditTests.test_source_or_trusted_spec_tampering_refuses) ... ok
+test_wrong_waited_pid_or_event_order_and_cpu_witness_refuse (test_canary_audit.CanaryAuditTests.test_wrong_waited_pid_or_event_order_and_cpu_witness_refuse) ... ok
+test_zero_delta_cannot_be_hidden_by_nonzero_metadata (test_canary_audit.CanaryAuditTests.test_zero_delta_cannot_be_hidden_by_nonzero_metadata) ... ok
+test_cpu_fingerprint_all_nonlora_only_and_no_rng_or_model_changes (test_canary_audit.FrozenFingerprintCPUHelpers.test_cpu_fingerprint_all_nonlora_only_and_no_rng_or_model_changes) ... ok
+test_nonlora_trainable_rejected_and_production_requires_actual_handle (test_canary_audit.FrozenFingerprintCPUHelpers.test_nonlora_trainable_rejected_and_production_requires_actual_handle) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 95.101s
+
+OK

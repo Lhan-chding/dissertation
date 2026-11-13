@@ -1,0 +1,44 @@
+{
+  "dev_manifest": {
+    "path": "/private/tmp/satdose_frozen_eval_manifests/dev_manifest.jsonl",
+    "sha256": "e92e22d9c2c9e76f13eea4962308b3b6989fe82744ff4c0533d71e7ed4f450d2",
+    "bytes": 702302,
+    "rows": 1512,
+    "first_row": {
+      "arm": "START",
+      "case_id": "f0ddeda16198f523f151ad0923e7151a6bdd3e093c738ee7f2a1418a2bc01fce",
+      "draw": 0,
+      "input_id": "cddc761504180914a2c6673a7f53cec8d800721c03290e3220aa60303066f091",
+      "panel": "list8",
+      "request_id": "SAT1/DEV/11031/START/s00/list8/OT1_SATDOSE_DEV_LIST_n8_00000_m2r1_ls_2026111201/aligned/d00",
+      "root_id": "OT1_SATDOSE_DEV_LIST_n8_00000_m2r1_ls_2026111201",
+      "seed": 8649486951908661492,
+      "split": "DEV",
+      "start_seed": 11031,
+      "step": 0,
+      "structure": "2_choose_1",
+      "view": "aligned"
+    }
+  },
+  "main_manifest": {
+    "path": "/private/tmp/satdose_frozen_eval_manifests/main_manifest.jsonl",
+    "sha256": "cf4c4fd307d90de3475c5e01885b92196dbf0e481c84461f626246befd77d884",
+    "bytes": 6447424,
+    "rows": 13760,
+    "first_row": {
+      "arm": "START",
+      "case_id": "a2c29b171f7d87429fcb8a90c029adb3365c7fe866b9da6881c3a8733f14c294",
+      "draw": 0,
+      "input_id": "1d439b40f441acfef4db2f375f3a7a183b453d9b3c2a1cac486a54acf1cd5327",
+      "panel": "list8",
+      "request_id": "SAT1/MAIN/11031/START/s00/list8/OT1_SATDOSE_MAIN_LIST_n8_00000_m2r1_ls_2026111201/aligned/d00",
+      "root_id": "OT1_SATDOSE_MAIN_LIST_n8_00000_m2r1_ls_2026111201",
+      "seed": 6391227574861901754,
+      "split": "MAIN",
+      "start_seed": 11031,
+      "step": 0,
+      "structure": "2_choose_1",
+      "view": "aligned"
+    }
+  }
+}

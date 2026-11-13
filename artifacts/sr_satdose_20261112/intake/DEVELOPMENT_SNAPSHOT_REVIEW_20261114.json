@@ -1,0 +1,23 @@
+{
+  "recorded_at_utc": "2026-11-13T16:19:57.627037+00:00",
+  "status": "UNDEPLOYED_DEVELOPMENT_SNAPSHOT_NOT_ADMISSION",
+  "scope": "bounded independent static review and syntax checks only",
+  "observations": [
+    "No hardcoded credentials or automatic task submission found in bounded review",
+    "No default production admission authority",
+    "evaluation_runtime behavior/integration tests not implemented"
+  ],
+  "targeted_tests": {
+    "evaluation_analysis": 17,
+    "canary_audit": 11,
+    "calibration_regression": 27
+  },
+  "real_GPU_validation": false,
+  "sources": {
+    "analysis/evaluation.py": "2c8826659ba9ab6221447bf2e3db4cea16487a22a19ba302ae437b4951bda69a",
+    "execution/canary_audit.py": "ae906899b7b459026fc864d365ef79a2b57887a4eb9327f45fc473cbcf96aa2c",
+    "execution/evaluation_runtime.py": "0dc7cda3e0c9a114e4b87302a4f811f2683981c38a549c9e1b2b2d1096ca32b1",
+    "tests/test_evaluation_analysis.py": "f94ba4ab5229c8872fe89da183a42000a07057d038d2ea5dab29a8b23512f70b",
+    "tests/test_canary_audit.py": "7d4db006232c6aa7c7b16caa21524e7a1752707b28bb89d7ce796a99d8f602e4"
+  }
+}

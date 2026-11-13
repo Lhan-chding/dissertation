@@ -1,0 +1,30 @@
+{
+  "schema": "sr-satdose-training-risk-clarification-v1",
+  "recorded_at_utc": "2026-11-13T16:18:27.906703+00:00",
+  "experiment_id": "SR-SATDOSE-1-20261112",
+  "user_answer": "按完整建议冻结：训练率只统计每窗 384 条冲突回答",
+  "authorization": "explicit_user_confirmation_before_any_TRAIN_generation",
+  "start_seeds": [
+    11031,
+    11032
+  ],
+  "arm": "T1",
+  "evaluate_each_path_independently": true,
+  "windows": "nonoverlapping steps 1-4, 5-8, 9-12, 13-16, 17-20, 21-24",
+  "per_window_conflict_g8_count": 48,
+  "per_window_conflict_response_count": 384,
+  "window_conditions_all_required": {
+    "mean_d_less_than": 0.75,
+    "exact_authorised_rate_less_than": 0.8,
+    "exact_authorised_denominator": "all 384 conflict responses only"
+  },
+  "consecutive_qualifying_windows": 2,
+  "additional_condition": {
+    "latest_same_path_DEV_conflict_response_count": 32,
+    "S_less_than": 0.8,
+    "at_steps_8_and_16": "complete current DEV before deciding"
+  },
+  "trigger": "any one T1 path satisfying all conditions causes global HOLD for all paths",
+  "scientific_thresholds_changed": false,
+  "training_permission": "NONE; this clarification does not replace admission, GPU, canary, source, or storage gates"
+}
