@@ -1,6 +1,6 @@
 # SR-SATDOSE-1 准入报告（2026-11-13，DRY通过／PREFIX已提交）
 
-当前状态：DRY_BOTH_PASS_PREFIX_SUBMITTED_PENDING_GPU_ADMISSION。截至13:15 UTC，PREFIX作业1737418为PENDING；DRY作业1736279已完整通过，两起点各640条。尚无GPU诊断或正式训练准入。下列段落保留历史观测及当时状态。
+当前状态：DRY_BOTH_PASS_PREFIX_SUBMITTED_PENDING_GPU_ADMISSION。截至14:15 UTC，PREFIX作业1737418为PENDING；DRY作业1736279已完整通过，两起点各640条。尚无GPU诊断或正式训练准入。下列段落保留历史观测及当时状态。
 
 早期观测：用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 
@@ -106,3 +106,5 @@ GPU有限检查的纯张量估算为58份496-FP32清单，共5020286976字节；
 13:33 UTC新增独立只读GPU证据审计器execution/gpu_evidence.py，必须以独立可信自身SHA及技术binding SHA运行，放在原eff7036 release之外。它核验实际十个完成槽、张量/原轨迹/计数/原生数值、四次影子Adam的冻结recipe和重放，以及含原1536行的11032完整128生产捕获。审查发现并修复Adam recipe、backend优势绑定、实际preclip1000上限三处校验缺口；独立22项专项及完整320项CPU测试通过、零跳过，见intake/gpu_evidence_full_cpu_tests_20261113.log。只输出NO_TRAINING，未运行真实GPU证据审计，不冒充未保存evaluation GPU张量的第二次观测，不虚构production显存峰值。
 
 13:34 UTC独立审计器61f74e7已部署至prepared_data_v1/independent_audit_code_61f74e7/gpu_evidence.py（37223字节，SHA cb3015f96a6d0149cd48cbbb0bd9283cf1f8eb83530af4dc59395ad90960a56e）；CLI帮助导入成功。独立发布回执GPU_AUDITOR_61f74e7.json的SHA5990b502396cb858dcbdcfd838f76de83f7bad3cc67c86dad64516f9213039e8，见intake/GPU_AUDITOR_DEPLOYMENT_61f74e7_20261113.json。未运行实际审计，TECHNICAL_EXECUTION_BINDING仍不存在，eff7036 GPU release清单未改。
+
+14:15 UTC（新加坡22:15）PREFIX1737418仍PENDING(Priority)。调度器预计StartTime=2026-11-16T12:28:18 UTC，即新加坡11月16日20:28（预测可变）。实际请求72h。14:17尝试将同一尚未开始作业时限改为6h，集群job_submit策略明确拒绝Updating TimeLimit is not allowed；复读确认作业仍PENDING、TimeLimit=3-00:00:00、原资源/ID不变，未重提。实际返回与完整前后记录见intake/PREFIX_TIME_LIMIT_UPDATE_20261113.json。已准备取消未启动作业并改6h提交的具体方案，但尚未获用户确认、尚未执行；见intake/PREFIX_PENDING_REPLACEMENT_PLAN_20261113.json。保留原作业继续监控。

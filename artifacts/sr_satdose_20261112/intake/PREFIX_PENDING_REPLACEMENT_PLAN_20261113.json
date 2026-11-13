@@ -1,0 +1,58 @@
+{
+  "schema": "sr-satdose-pending-job-replacement-plan-v1",
+  "status": "PREPARED_NOT_AUTHORIZED_NOT_EXECUTED",
+  "old_job_id": 1737418,
+  "old_job_state_last_observed": "PENDING",
+  "old_estimated_start_utc": "2026-11-16T12:28:18",
+  "reason": "Cluster rejects scontrol TimeLimit updates; shorter scheduling request may fit backfill but improvement is not guaranteed.",
+  "new_time_limit": "06:00:00",
+  "new_submission_args": [
+    "sbatch",
+    "--parsable",
+    "--job-name=LH-SATDOSE-PREFIX",
+    "--account=rose",
+    "--qos=rose",
+    "--partition=cluster02",
+    "--nodes=1",
+    "--ntasks=1",
+    "--cpus-per-task=8",
+    "--gpus-per-task=pro6000:2",
+    "--mem=66G",
+    "--time=06:00:00",
+    "--no-requeue",
+    "--chdir=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling",
+    "--output=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/prefix_short_submission_20261113/slurm-%j.out",
+    "--error=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/prefix_short_submission_20261113/slurm-%j.err",
+    "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/calibration_code_734e921/scheduling/run_prefix.sh",
+    "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/PREFIX_RELEASE_734e921.json",
+    "fd8f7a780af3e841f891cac95683a5c71e0151551dc89142afd696202a0b713d"
+  ],
+  "submission_directory": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/prefix_short_submission_20261113",
+  "mandatory_before_cancel": [
+    "Re-read old job state; it must still be PENDING with RunTime=0, Restarts=0.",
+    "Verify no PREFIX allocation/INTENT/control/run output exists and source release/freeze/config match.",
+    "Write cancellation intent, cancel only job1737418, then verify terminal CANCELLED and no model attempts before any submission."
+  ],
+  "mandatory_before_new_submit": [
+    "User must explicitly authorize replacement; no response means retain old job.",
+    "If cancellation/old activity is uncertain, stop read-only; never submit a possible duplicate.",
+    "One new immutable submission intent/result in distinct directory; never retry unknown sbatch result."
+  ],
+  "unchanged_science": {
+    "starts": [
+      11031,
+      11032
+    ],
+    "responses_per_start": 48,
+    "first_failed_gate_stops_second": true,
+    "new_samples": 0,
+    "extra_generation_budget": 0,
+    "freeze_sha256": "6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0",
+    "release_sha256": "fd8f7a780af3e841f891cac95683a5c71e0151551dc89142afd696202a0b713d",
+    "gpus": 2,
+    "cpus": 8,
+    "memory": "66G",
+    "no_requeue": true
+  },
+  "tradeoff": "Existing queue age/job identity is lost; new predicted start can be earlier or later. The six-hour scheduling cap is not a scientific stopping criterion; a timeout would be preserved for read-only audit, not auto-retried."
+}

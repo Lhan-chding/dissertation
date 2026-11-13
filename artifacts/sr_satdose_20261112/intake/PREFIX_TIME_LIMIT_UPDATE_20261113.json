@@ -1,0 +1,65 @@
+{
+  "intent": {
+    "schema": "sr-satdose-prefix-scheduling-update-v1",
+    "created_at": "2026-11-13T14:17:18.760255+00:00",
+    "job_id": 1737418,
+    "before": {
+      "args": [
+        "scontrol",
+        "show",
+        "job",
+        "-o",
+        "1737418"
+      ],
+      "returncode": 0,
+      "stdout": "JobId=1737418 JobName=LH-SATDOSE-PREFIX UserId=varun024(295800338) GroupId=varun024(295800338) MCS_label=N/A Priority=3 Nice=0 Account=rose QOS=rose JobState=PENDING Reason=Priority Dependency=(null) Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=00:00:00 TimeLimit=3-00:00:00 TimeMin=N/A SubmitTime=2026-11-13T11:14:38 EligibleTime=2026-11-13T11:14:38 AccrueTime=2026-11-13T11:14:38 StartTime=2026-11-16T12:28:18 EndTime=2026-11-19T12:28:18 Deadline=N/A SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-11-13T14:17:17 Scheduler=Main Partition=cluster02 AllocNode:Sid=login-2:1779727 ReqNodeList=(null) ExcNodeList=(null) NodeList= NumNodes=1-1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2 AllocTRES=(null) Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=8 MinMemoryNode=66G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null) Command=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/calibration_code_734e921/scheduling/run_prefix.sh WorkDir=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling StdErr=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/prefix_submission_20261113/slurm-1737418.err StdIn=/dev/null StdOut=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/prefix_submission_20261113/slurm-1737418.out Power= TresBind=gres/gpu:per_task:2 TresPerTask=cpu:8,gres/gpu:pro6000:2",
+      "stderr": ""
+    },
+    "old_time_limit": "3-00:00:00",
+    "new_time_limit": "06:00:00",
+    "reason": "Finite 96-response PREFIX; worst-case 147456 generated tokens vs completed DRY 636005 tokens in 05:30:49. Six hours retains substantial scheduling margin; no scientific time-based stopping rule.",
+    "unchanged": [
+      "job_id",
+      "source_release",
+      "scientific_config",
+      "requests",
+      "seeds",
+      "gates",
+      "gpu_count",
+      "cpu_count",
+      "memory",
+      "account",
+      "qos",
+      "no_requeue"
+    ],
+    "new_submissions": 0,
+    "new_generations": 0,
+    "status": "UPDATE_ATTEMPT_INTENT"
+  },
+  "update": {
+    "args": [
+      "scontrol",
+      "update",
+      "JobId=1737418",
+      "TimeLimit=06:00:00"
+    ],
+    "returncode": 1,
+    "stdout": "",
+    "stderr": "scontrol: error: slurm_job_submit: Updating TimeLimit is not allowed\nJob violates accounting/QOS policy (job submit limit, user's size and/or time limits) for job 1737418"
+  },
+  "after": {
+    "args": [
+      "scontrol",
+      "show",
+      "job",
+      "-o",
+      "1737418"
+    ],
+    "returncode": 0,
+    "stdout": "JobId=1737418 JobName=LH-SATDOSE-PREFIX UserId=varun024(295800338) GroupId=varun024(295800338) MCS_label=N/A Priority=3 Nice=0 Account=rose QOS=rose JobState=PENDING Reason=Priority Dependency=(null) Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=00:00:00 TimeLimit=3-00:00:00 TimeMin=N/A SubmitTime=2026-11-13T11:14:38 EligibleTime=2026-11-13T11:14:38 AccrueTime=2026-11-13T11:14:38 StartTime=2026-11-16T12:28:18 EndTime=2026-11-19T12:28:18 Deadline=N/A SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-11-13T14:17:17 Scheduler=Main Partition=cluster02 AllocNode:Sid=login-2:1779727 ReqNodeList=(null) ExcNodeList=(null) NodeList= NumNodes=1-1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2 AllocTRES=(null) Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=8 MinMemoryNode=66G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null) Command=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/calibration_code_734e921/scheduling/run_prefix.sh WorkDir=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling StdErr=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/prefix_submission_20261113/slurm-1737418.err StdIn=/dev/null StdOut=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/prefix_submission_20261113/slurm-1737418.out Power= TresBind=gres/gpu:per_task:2 TresPerTask=cpu:8,gres/gpu:pro6000:2",
+    "stderr": ""
+  },
+  "verified": false,
+  "status": "UPDATE_NOT_VERIFIED_REQUIRES_READ_ONLY_AUDIT",
+  "checked_at": "2026-11-13T14:17:18.771853+00:00"
+}
