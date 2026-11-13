@@ -51,6 +51,10 @@ See the dated admission report for the most recent observed progress.
   production slot requires CUDA, original R24 identity, independently recorded
   restore/capture evidence and one fresh native Adam step on isolated tensors.
   Unknown attempts cannot be automatically retried. CPU fixtures are separate.
+- `execution/diagnostic_worker.py`: one newly loaded runtime per process/slot,
+  a global worker lock, immutable capture relocation, complete runtime source
+  validation, measured accounting/storage and independent component replay.
+  It refuses HOLD or unresolved slots and emits no combined GPU admission.
 
 The formal training transaction publisher/driver, production gradient replay
 acceptance, canary/recovery integration and terminal MAIN runner are not yet

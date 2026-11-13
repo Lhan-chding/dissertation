@@ -35,6 +35,8 @@ PREFIX文档“严格或限定补括号后”在两套整套读法结论不同�
 
 随后补齐固定诊断输入适配和四槽shadow executor；两份完整DRY均通过后才准备GPU输入，严格使用冻结root/group/request顺序与native-known c。shadow生产入口强制CUDA/496 LoRA、单一技术绑定、固定四槽目录、独占claim和失败UNKNOWN不重试，trial1核验不同restore/capture实例及原梯度/实际Adam结果一致。实际恢复过程仍须外层driver日志证明。两模块经独立审查，合计全套124项CPU测试通过、零跳过，见intake/diagnostic_inputs_shadow_cpu_tests_20261113.log。尚无GPU执行或准入声明，原冻结runtime保持不变。
 
+单slot diagnostic_worker现已实现，独立进程重载R24，在新audit目录迁移原CAPTURE/BEGIN字节并记录SHA，执行真实生产捕获、独立组件/半集/witness重复、storage及实际accounting校验，最多调用一次受限shadow。全局锁和未完成slot阻断防止UNKNOWN后继续；模型构造前核验完整实际runtime源码及import路径。审查发现的源码覆盖和SIGKILL后未知slot缺口已修复并复核。全套137项CPU测试通过、零跳过，见intake/diagnostic_worker_cpu_tests_20261113.log。此为本地实现，尚未创建技术执行绑定或运行GPU诊断；短序列单/双GPU对照、1536压力、总GPU准入以及后续正式训练仍未完成。
+
 ## 服务器位置
 
 `/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112`：原输入包、已SHA验证历史包及解压副本、CPU审计、implementation_preflight、prepared_data_v1。
