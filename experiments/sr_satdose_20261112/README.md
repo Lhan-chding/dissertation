@@ -13,9 +13,10 @@ The historical replay passed locally and remotely. Server tensor audit verified
 both R24 checkpoints (496 tensors each) and the original b0 reference.
 
 `data_adapter` has prepared all 28,936 requests and 1,376 images on the server.
-This is **PREPARED_NOT_DESIGN_FROZEN**, not permission to call a model.
-The fixed 32-image review page is in the local evidence directory. AI inspection
-is recorded separately from the plan's human inspection requirement.
+The user authorized AI inspection of the fixed 32 images in place of human
+inspection. The immutable design freeze was then written before model calls.
+Job 1736279 is running zero-update DRY calibration; it grants no training admission.
+See the dated admission report for the most recent observed progress.
 
 ## Modules and limits
 
@@ -34,6 +35,10 @@ is recorded separately from the plan's human inspection requirement.
   gradients and isolated shadow Adam. Its output is never a GPU admission PASS.
 - `dry_driver`: finite zero-update generation entry point, subject to actual
   immutable freeze and source validation. CPU fixtures are not production data.
+- `analysis/calibration.py`: CPU analysis of completed DRY/PREFIX captures with
+  fixed denominators and native score replay. Partial populations are refused.
+  PREFIX readouts remain pending the user's interpretation of the protocol's
+  strict-or-terminal-brace gate; no training permission is produced.
 
 The formal training transaction publisher/driver, production gradient replay
 acceptance, canary/recovery integration and terminal MAIN runner are not yet
