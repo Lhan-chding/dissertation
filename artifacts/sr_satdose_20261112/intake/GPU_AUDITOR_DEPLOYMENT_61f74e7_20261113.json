@@ -1,0 +1,21 @@
+{
+  "receipt": {
+    "schema": "sr-satdose-independent-gpu-auditor-release-v1",
+    "status": "DEPLOYED_CPU_TESTED_NOT_EXECUTED_ON_GPU_EVIDENCE",
+    "permission": "NO_TRAINING",
+    "experiment_id": "SR-SATDOSE-1-20261112",
+    "code_commit": "61f74e7a4a08a8e19784f2120dbb7f22c6be8590",
+    "auditor_path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/independent_audit_code_61f74e7/gpu_evidence.py",
+    "auditor_sha256": "cb3015f96a6d0149cd48cbbb0bd9283cf1f8eb83530af4dc59395ad90960a56e",
+    "bytes": 37223,
+    "cpu_tests_passed": 320,
+    "cpu_tests_skipped": 0,
+    "help_import_exit_code": 0,
+    "gpu_release_receipt": "execution_releases/GPU_RELEASE_eff7036.json",
+    "gpu_release_receipt_sha256": "5460bb73f010b02ca53531466a573a474f120086c860e2d0109ef1f6c1d44b9a",
+    "created_at_utc": "2026-11-13T13:34:48.387600+00:00"
+  },
+  "receipt_path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/GPU_AUDITOR_61f74e7.json",
+  "receipt_sha256": "5990b502396cb858dcbdcfd838f76de83f7bad3cc67c86dad64516f9213039e8",
+  "technical_binding_exists": false
+}
