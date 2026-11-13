@@ -108,9 +108,17 @@ See the dated admission report for the most recent observed progress.
   caller RNG and cleanup are recorded. Shared gates reject failed/unknown slots;
   this does not verify future trained checkpoints or grant admission.
 
-The complete training launcher/admission authority, production gradient replay acceptance, real GPU
-canary/recovery integration and terminal MAIN runner are not yet implemented
-end-to-end. Do not invoke the old training CLI as a substitute.
+- `execution/gpu_evidence.py`: a separately SHA-pinned, read-only CPU auditor
+  outside the immutable GPU release. It verifies the ten completed fixed stages
+  against persisted tensors, original trajectories, accounting and source hashes.
+  It recomputes native numerical checks, fixed Adam recipe validation, actual
+  preclip bounds, backend advantages and replay/direction evidence. It produces
+  no training permission and does not claim a second observation of unsaved GPU
+  weights or unmeasured production peak memory.
+
+The complete training launcher/admission authority, real production GPU replay
+acceptance, canary/recovery integration and terminal MAIN runner are not yet
+completed end-to-end. Do not invoke the old training CLI as a substitute.
 Do not manufacture DESIGN_FREEZE or GPU_VERIFICATION from test fixtures.
 The GPU diagnostic driver must bind the frozen root/group/request ordering,
 verify saved-tensor storage after backward, and use actual runtime accounting.
@@ -118,9 +126,10 @@ Shadow acceptance still needs actual execution of two independent R24 restores
 per start, GPU Adam on isolated tensors, and a global maximum of four actual
 shadow steps. Existing same-copy shadow repetition alone does not establish
 restored replay; a JSON assertion alone does not establish a real reload.
-If complete DRY contains no original 1536-token trajectory, synthetic capacity
-tests cannot silently replace that acceptance condition. An explicit protocol
-clarification is needed before treating a separate synthetic test as sufficient.
+The complete 11032 DRY population contains original 1536-token trajectory
+`SAT1/DRY/11032/g004/d07` inside the frozen probe128. Its actual full-batch
+production replay remains to be verified; the 11031 probe maximum is 709.
+No extra or synthetic rollout is needed to select a long-capacity input.
 
 ## CPU validation
 

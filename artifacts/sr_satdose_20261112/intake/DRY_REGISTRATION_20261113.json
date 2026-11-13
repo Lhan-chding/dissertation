@@ -1,0 +1,87 @@
+{
+  "checked_at": "2026-11-13T13:17:15.686654+00:00",
+  "result": {
+    "status": "ADMISSION_INPUTS_BOUND_GPU_REPORT_STILL_REQUIRED",
+    "permission": "NO_TRAINING",
+    "registration": {
+      "path": "postcapture_20261113/registration/ADMISSION_INPUTS.json",
+      "sha256": "09da6c38b7149f37bdef0c50cf3532425040378a1b9a98bc7f4faa01867b5a3d"
+    },
+    "dry_status": {
+      "11031": "DRY_METRICS_PASS_GPU_CHECK_STILL_REQUIRED",
+      "11032": "DRY_METRICS_PASS_GPU_CHECK_STILL_REQUIRED"
+    }
+  },
+  "files": {
+    "DRY_METRICS_11032.json": {
+      "bytes": 1446763,
+      "sha256": "98335af6c4c888010221a7ac6eab55bf64f64b1d932c148986f1b0995b797eb2"
+    },
+    "DRY_METRICS_11031.json": {
+      "bytes": 1452878,
+      "sha256": "2933361d4179e1cac3eff6d3b439a7c355f05426edce3c16f34815350cf2de10"
+    },
+    "DRY_RAW.jsonl": {
+      "bytes": 63142529,
+      "sha256": "a7d3b76ca1eea67da5082851fb2ea1e29de7a192f90e67110c4607788bf215d3"
+    },
+    "ADMISSION_INPUTS.json": {
+      "bytes": 852,
+      "sha256": "09da6c38b7149f37bdef0c50cf3532425040378a1b9a98bc7f4faa01867b5a3d"
+    }
+  },
+  "registration": {
+    "schema": "sr-satdose-registration-v1",
+    "mode": "production",
+    "experiment_id": "SR-SATDOSE-1-20261112",
+    "config_sha256": "58841639b0f36a69ac77824bc8c683ef7fbeb5c50a41e9975b89b54880f4ecfe",
+    "artifacts": {
+      "calibration_groups": {
+        "path": "calibration_groups.jsonl",
+        "sha256": "64931bd59c556558e24e14ea528f4a52a675be17824ed9f342205a7dadeacd1d"
+      },
+      "private_cases": {
+        "path": "private_cases.jsonl",
+        "sha256": "f5e6cda919dc030110a1721713493b496208da79db3c77455514307d9642c713"
+      },
+      "design_freeze": {
+        "path": "DESIGN_FREEZE.json",
+        "sha256": "6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0"
+      },
+      "dry_raw": {
+        "path": "postcapture_20261113/registration/DRY_RAW.jsonl",
+        "sha256": "a7d3b76ca1eea67da5082851fb2ea1e29de7a192f90e67110c4607788bf215d3"
+      }
+    }
+  },
+  "storage_precheck": {
+    "raw_source_bytes": 63160457,
+    "required_bytes": 193429778,
+    "effective_available_bytes": 127868041564,
+    "observations": [
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/postcapture_20261113",
+        "quota": "ENODATA"
+      },
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1",
+        "quota": "ENODATA"
+      },
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112",
+        "quota": "ENODATA"
+      },
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc",
+        "quota": "ENODATA"
+      },
+      {
+        "path": "/projects/_ssd/varunssd",
+        "quota": 750000000000,
+        "used": 622131958436
+      }
+    ]
+  },
+  "model_calls": 0,
+  "formal_optimizer_steps": 0
+}
