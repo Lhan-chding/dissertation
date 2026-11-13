@@ -51,6 +51,10 @@ PREFIX文档“严格或限定补括号后”在两套整套读法结论不同�
 
 09:30 UTC实际只读源码预检发现控制器错误地假设冻结code包含辅助工具；在任何PREFIX尝试创建或模型调用前停止。已修正为核验原始上传ZIP中固定SHA256SUMS.json，再核对helper字节与SHA；source_bindings继续与冻结config比较。18项PREFIX回归测试通过。7d7b661部署保留为未执行记录，不能用其回执启动；后续使用新版本独立目录和回执。见intake/PREFIX_SOURCE_PREFLIGHT_7d7b661_20261113.json。
 
+09:36 UTC修复版734e921已独立部署并通过真实服务器源码预检：59文件、原包manifest/helper、冻结runtime/native/legacy来源均核验；零模型调用、未读partial raw。新PREFIX发布回执见intake/PREFIX_RELEASE_734e921_REMOTE_RECEIPT_20261113.json，旧7d7b661不得执行。
+
+新增独立storage_ready与training_step组件：前者只接受外部明确绑定预算，实时读取Ceph祖先配额与statvfs最小余量并作限定写/fsync探测；后者固定128条原始生成、native评分、一次postclip梯度应用、一次Adam/scheduler并原子提交。没有默认生产准入authority，不提供训练CLI。独立审查发现并修复NATIVE_UPDATE历史链遗漏、CAPTURE/BEGIN历史复验遗漏及可覆写源码检查三个缺口；完整240项CPU测试通过、零跳过，见intake/training_step_reviewed_cpu_tests_20261113.log。真实GPU/完整准入authority/step2新进程恢复canary/实际预算仍未验收，不因CPU通过开放训练。
+
 ## 服务器位置
 
 `/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112`：原输入包、已SHA验证历史包及解压副本、CPU审计、implementation_preflight、prepared_data_v1。
@@ -58,6 +62,8 @@ PREFIX文档“严格或限定补括号后”在两套整套读法结论不同�
 `prepared_data_v1/runtime_source_lock.json` 为真实来源锁，与DESIGN_FREEZE分开保存。已将科学代码提交86839fffbbbdb84d68fbce8995da8f19acc60bd9的完整runtime与配置部署到prepared_data_v1/code，并独立逐文件验证SHA一致，见intake/IMPLEMENTATION_DEPLOYMENT.json。DESIGN_FREEZE及AI替代授权现已闭合，GPU正在执行零更新DRY。
 
 ## 清理与Git
+
+09:35 UTC第四轮仅删除已重新正确映射并完整比对的sr_f3_ce_20261016/COMMITTED_SOURCE.tar（59607040字节）。2663个展开文件SHA全部相同，无链接问题或项目脚本引用；完整2851成员元数据与核验记录先保存。扣除1942858字节保全记录与723字节回执，净减少57663459字节；累计净清理9719424217字节（约9.72GB）。见intake/CLEANUP_FOURTH_PASS_20261113.json。
 
 第三轮实际删除9702203395字节冗余归档，净逻辑减少9659735435字节；此前缓存清理2025323字节另计。原9.25GB归档中的唯一历史RUN_REGISTRY、完整成员及链接元数据和恢复说明均先保存、独立SHA核验后才删除归档。清理各轮实际结果见 intake/CLEANUP_RECEIPT.json、CLEANUP_SECOND_PASS.json、CLEANUP_THIRD_PASS.json。第二轮VPN超时没有产生新增删除；后续恢复后继续核验和删除冗余归档。保留新实验所有依赖、唯一科研原始记录、必要检查点与模型。
 

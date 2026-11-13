@@ -303,6 +303,24 @@ class TrainingTransactionTests(unittest.TestCase):
                     self.assertEqual(case.calls,before)
                 finally:case.doCleanups()
 
+    def test_real_driver_identity_cannot_omit_native_update_contract(self):
+        # No native-driver field means this fixture only exercises transaction mechanics.
+        # Adding the actual TrainingHandle identity field makes native evidence mandatory.
+        self.identity['execution_sources_sha256']='a'*64
+        self.genesis_reference=self.genesis(self.identity)
+        self.store=t.TransactionStore(self.root,self.freeze,self.freeze_sha,self.identity,native=self.fixture.ops,
+            genesis_reference=self.genesis_reference)
+        with self.assertRaisesRegex(PermissionError,'missing NATIVE_UPDATE'):
+            self.store._native_update({'policy_sha256':'b'*64,'reference_sha256':'c'*64},{},1,'d'*64)
+
+    def test_explicit_native_update_is_validated_even_for_low_level_fixture(self):
+        path=self.root/'bad_native_update.json';dump(path,dict(schema='foreign',identity=self.identity,step=1))
+        marker=dict(native_update=t.reference(self.root,path),policy_sha256='b'*64,reference_sha256='c'*64)
+        with self.assertRaisesRegex(PermissionError,'native update identity'):
+            self.store._native_update(marker,{},1,'d'*64)
+        # Optional omission is exclusive to this low-level fixture interface.
+        self.store._native_update({}, {}, 1, 'd'*64)
+
     def test_inspect_committed_binds_sha_and_runs_no_update_callbacks(self):
         result=self.run_step();before=self.calls.copy()
         marker=self.store.inspect_committed(1,result['commit_sha256'])

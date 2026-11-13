@@ -1,0 +1,7 @@
+{
+  "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/PREFIX_RELEASE_734e921.json",
+  "sha256": "fd8f7a780af3e841f891cac95683a5c71e0151551dc89142afd696202a0b713d",
+  "status": "RELEASE_AND_SOURCE_VERIFIED_NO_MODEL_CALLS",
+  "model_calls": 0,
+  "partial_raw_reads": 0
+}

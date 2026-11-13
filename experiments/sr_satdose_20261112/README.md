@@ -74,7 +74,16 @@ See the dated admission report for the most recent observed progress.
   runtime, R24 fork and fresh native Adam. Live committed identity guards generation;
   the step-2 canary distinguishes the sampled step-1 and teacher step-2 endpoints.
 
-The formal training driver, production gradient replay acceptance, real GPU
+- `execution/storage_ready.py`: explicit SHA-bound space budget, live Ceph ancestor
+  quotas and filesystem minimum, with a scoped write/fsync probe. A point-in-time
+  observation does not reserve shared storage; no budget is invented here.
+- `execution/training_step.py`: non-CLI composition of exactly 128 original
+  captures, native scoring, production gradients and one durable native update.
+  Its admission authority must be independently authenticated and source-bound;
+  no production authority is provided. Historical validation rechecks original
+  CAPTURE/BEGIN bytes and the native update linked to the production capture.
+
+The complete training launcher/admission authority, production gradient replay acceptance, real GPU
 canary/recovery integration and terminal MAIN runner are not yet implemented
 end-to-end. Do not invoke the old training CLI as a substitute.
 Do not manufacture DESIGN_FREEZE or GPU_VERIFICATION from test fixtures.

@@ -185,6 +185,13 @@ class TransactionStore:
                     require(lookup[rid]['group_id'] == group['group_id'] and lookup[rid]['root_id'] == group['root_id'],
                             'frozen request/group disagreement')
             self.plans[step] = [lookup[rid] for rid in ids]
+        # Real TrainingHandle identities always bind their execution inventory.
+        # Such identities MUST supply native capture/update evidence. Identities
+        # without that field are the lower-level transaction/CPU fixture contract,
+        # never sufficient to enter training_step.run_step.
+        if 'execution_sources_sha256' in self.identity:
+            require(re.fullmatch('[0-9a-f]{64}',self.identity['execution_sources_sha256'] or '') is not None,
+                    'invalid native execution source identity')
         self.source_lock = freeze['artifacts']['source_lock']
         bound(self.root, self.source_lock)
         genesis = read_json(self._external(self.genesis_reference))
@@ -243,6 +250,8 @@ class TransactionStore:
                 'native scoring coverage differs')
         for original, row, score in zip(originals, raw, scored, strict=True):
             require(all(row.get(k) == v for k, v in original.items()), 'raw substitutes frozen request')
+            if 'execution_sources_sha256' in self.identity:
+                self._native_capture(row,step,policy_sha)
             origin = complete[row['request_id']]
             require(all(k in row and canonical(row[k]) == canonical(v) for k, v in origin.items()),
                     'raw changed original COMPLETE fields')
@@ -266,6 +275,52 @@ class TransactionStore:
                     (score['native_score']['known_mask']['S'] or score['exact_authorised'] == 0),
                     'invalid native-known scoring projection')
         return receipt
+
+    def _native_capture(self, row, step, policy_sha):
+        """Recheck original native bytes on every real-driver historical audit."""
+        rid=row['request_id'];stem=hashlib.sha256(rid.encode()).hexdigest()
+        capture=Path(row['native_capture_path'])
+        require(capture.is_absolute() and capture.is_relative_to(self.root) and
+                capture.name==stem+'.CAPTURE.json','foreign native CAPTURE path')
+        capture=self._external(dict(path=str(capture.relative_to(self.root)),sha256=row['native_capture_sha256']))
+        original=read_json(capture)
+        require(all(k in row and canonical(row[k])==canonical(v) for k,v in original.items()),
+                'raw changed original native CAPTURE fields')
+        require(all(k in original for k in ('tokens','raw_tokens','completion_token_count','sampler_logprobs',
+                'sampler_logprob_source','prompt_tensor_hash','prompt','model_input','seed','assistant_prefill',
+                'full_text','generated_text','finish_reason','generation_status','technical_validation_errors')),
+                'native CAPTURE lacks original token/input identity')
+        require(original['prompt']==original['model_input'].get('prompt')==row['prompt'],
+                'native CAPTURE prompt differs')
+        begin=capture.with_name(stem+'.BEGIN.json')
+        begin=self._external(dict(path=str(begin.relative_to(self.root)),sha256=row['native_begin_sha256']))
+        value=read_json(begin)
+        endpoint=dict(experiment_id=EXPERIMENT,start_seed=self.start,arm=self.arm,step=step-1,
+            policy_sha256=policy_sha,reference_sha256=self.identity['source_binding']['reference_sha256'])
+        require(value.get('request_id')==rid and value.get('seed')==row['seed'] and
+                value.get('endpoint')==endpoint and value.get('design_freeze_sha256')==self.freeze_sha and
+                value.get('status')=='ATTEMPTED_UNKNOWN','native BEGIN identity differs')
+
+    def _native_update(self, commit, precommit, step, policy_before):
+        """Native-driver evidence is mandatory, including on peer/idempotent reads."""
+        if 'execution_sources_sha256' not in self.identity and 'native_update' not in commit:
+            return  # Explicit low-level transaction-only interface, not a TRAIN driver.
+        require(isinstance(commit.get('native_update'),dict),'native driver COMMIT missing NATIVE_UPDATE reference')
+        value=read_json(self._external(commit['native_update']))
+        require(value.get('schema')=='sr-satdose-training-native-update-v1' and
+                value.get('status')=='UPDATED_UNCOMMITTED_NOT_ADMISSION' and
+                value.get('identity')==self.identity and type(value.get('step')) is int and value['step']==step and
+                value.get('policy_before_sha256')==policy_before and
+                value.get('policy_after_sha256')==commit['policy_sha256'] and
+                value.get('reference_sha256')==commit['reference_sha256'] and
+                all(type(value.get(k)) is int and value[k]==1 for k in ('optimizer_calls','scheduler_calls')),
+                'native update identity/policy/counter differs')
+        norm=value.get('parameter_update_norm')
+        require(type(norm) in (int,float) and math.isfinite(norm) and norm>=0,'invalid native update norm')
+        capture=value.get('production_capture')
+        require(isinstance(capture,dict) and capture==precommit.get('production_capture') and
+                capture in precommit['artifacts'],'native update production capture differs from PRECOMMIT')
+        self._external(capture)
 
     def _external(self, ref):
         path = bound(self.root, ref)
@@ -326,7 +381,7 @@ class TransactionStore:
                 data['step_intent']['request_ids'] == [r['request_id'] for r in self.plans[step]], 'original request/evidence chain differs')
         self._storage(data['storage']['value'])
         self._rollout(evidence['rollout_receipt'], step, policy)
-        self._precommit(evidence['precommit_reference'], evidence['rollout_receipt'], step)
+        precommit=self._precommit(evidence['precommit_reference'], evidence['rollout_receipt'], step)
         require(data['precommit']['value'] == read_json(bound(self.root, evidence['precommit_reference'])),
                 'PRECOMMIT copy differs')
         require(file_sha(directory/'state.pt') == commit['state_sha256'], 'committed state changed')
@@ -335,6 +390,7 @@ class TransactionStore:
                 commit['sampler_state'].get('generated_responses') == 128*step and
                 commit.get('reference_sha256') == self.identity['source_binding']['reference_sha256'],
                 'committed cursor/reference differs')
+        self._native_update(commit,precommit,step,policy)
         if decode_state:
             training_state.validate_checkpoint(directory, commit_sha, copy.deepcopy(self.identity), self.native)
         return commit_sha, commit

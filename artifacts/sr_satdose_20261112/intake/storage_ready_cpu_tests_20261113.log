@@ -1,0 +1,19 @@
+test_budget_requires_independent_sha_positive_bytes_and_fresh_utc (test_storage_ready.StorageReadyTests.test_budget_requires_independent_sha_positive_bytes_and_fresh_utc) ... ok
+test_capacity_drop_after_probe_is_rejected_without_probe_leftover (test_storage_ready.StorageReadyTests.test_capacity_drop_after_probe_is_rejected_without_probe_leftover) ... ok
+test_changed_quota_during_usage_read_is_rejected (test_storage_ready.StorageReadyTests.test_changed_quota_during_usage_read_is_rejected) ... ok
+test_enodata_only_is_no_local_limit_but_parent_limit_is_required (test_storage_ready.StorageReadyTests.test_enodata_only_is_no_local_limit_but_parent_limit_is_required) ... ok
+test_insufficient_quota_rejects_even_when_df_is_large (test_storage_ready.StorageReadyTests.test_insufficient_quota_rejects_even_when_df_is_large) ... ok
+test_live_positive_quota_write_fsync_and_receipt_are_bound (test_storage_ready.StorageReadyTests.test_live_positive_quota_write_fsync_and_receipt_are_bound) ... ok
+test_nearer_positive_quota_and_statvfs_each_limit_capacity (test_storage_ready.StorageReadyTests.test_nearer_positive_quota_and_statvfs_each_limit_capacity) ... ok
+test_no_xattr_api_or_malformed_statvfs_is_not_a_ready_result (test_storage_ready.StorageReadyTests.test_no_xattr_api_or_malformed_statvfs_is_not_a_ready_result) ... ok
+test_probe_permission_or_fsync_failure_cleans_only_own_probe (test_storage_ready.StorageReadyTests.test_probe_permission_or_fsync_failure_cleans_only_own_probe) ... ok
+test_slow_observation_and_stage_symlink_or_wrong_step_rejected (test_storage_ready.StorageReadyTests.test_slow_observation_and_stage_symlink_or_wrong_step_rejected) ... ok
+test_stale_measurement_or_tampered_receipt_is_rejected (test_storage_ready.StorageReadyTests.test_stale_measurement_or_tampered_receipt_is_rejected) ... ok
+test_write_once_measurement_is_never_overwritten (test_storage_ready.StorageReadyTests.test_write_once_measurement_is_never_overwritten) ... ok
+test_xattr_permissions_unsupported_or_missing_usage_fail_closed (test_storage_ready.StorageReadyTests.test_xattr_permissions_unsupported_or_missing_usage_fail_closed) ... ok
+test_zero_negative_nonfinite_and_malformed_quota_fail_closed (test_storage_ready.StorageReadyTests.test_zero_negative_nonfinite_and_malformed_quota_fail_closed) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.047s
+
+OK

@@ -1,0 +1,18 @@
+{
+  "status": "VERIFIED_DUPLICATE_ARCHIVE_DELETED",
+  "checked_at": "2026-11-13T09:35:32.722387+00:00",
+  "deleted_path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_20261016/COMMITTED_SOURCE.tar",
+  "deleted_bytes": 59607040,
+  "archive_sha256": "8271e50c394fe6140b2904f4b5cd4b82815c19e45fd799f493d604935f5e43de",
+  "retained_files_verified": 2663,
+  "retained_metadata_members": 2851,
+  "preservation": {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/storage_audits/cleanup_20261112_satdose/COMMITTED_SOURCE_PRESERVATION_20261113.json",
+    "bytes": 1942858,
+    "sha256": "340e0511af0b1b42249e3dbdfb89fda5134c3e04b7348a91d3fc798e9274e2a8"
+  },
+  "net_bytes_before_small_receipt": 57664182,
+  "archive_absent": true,
+  "remote_receipt_bytes": 723,
+  "net_logical_bytes_released": 57663459
+}
