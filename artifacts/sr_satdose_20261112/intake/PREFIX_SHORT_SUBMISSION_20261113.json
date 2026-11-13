@@ -1,0 +1,97 @@
+{
+  "checked_at": "2026-11-13T14:47:10.779134+00:00",
+  "intent": {
+    "created_at": "2026-11-13T14:47:10.745765+00:00",
+    "status": "SUBMISSION_ATTEMPT_INTENT_UNKNOWN_UNTIL_RECEIPT",
+    "scope": "PREFIX_CALIB_ONLY",
+    "replaces_cancelled_pending_job_id": 1737418,
+    "authorization_sha256": "be3a34098db1aa5f29fbd431d52c43f900a3dbea1ad6c42eb00a1b65327c8320",
+    "cancellation_sha256": "421e721a0f7edcc9a26bcb6db019117b20fb52beb571a57bc118891ebd61b1e7",
+    "old_zero_start_accounting": {
+      "args": [
+        "sacct",
+        "-j",
+        "1737418",
+        "-n",
+        "-P",
+        "--format=JobID,State,ExitCode,ElapsedRaw,Start,End"
+      ],
+      "returncode": 0,
+      "stdout": "1737418|CANCELLED by 295800338|0:0|0|None|2026-11-13T14:46:16",
+      "stderr": ""
+    },
+    "queue_before": {
+      "args": [
+        "squeue",
+        "-u",
+        "varun024",
+        "--name=LH-SATDOSE-PREFIX",
+        "-h",
+        "-o",
+        "%i|%T|%j"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "preflight_status": "READY_FOR_PREFIX_CALIB_ONLY",
+    "preflight_sha256": "2c8a896d36c7414ec9a391b351f8cf8495b03080256e66066e252a42017a875e",
+    "args": [
+      "sbatch",
+      "--parsable",
+      "--job-name=LH-SATDOSE-PREFIX",
+      "--account=rose",
+      "--qos=rose",
+      "--partition=cluster02",
+      "--nodes=1",
+      "--ntasks=1",
+      "--cpus-per-task=8",
+      "--gpus-per-task=pro6000:2",
+      "--mem=66G",
+      "--time=06:00:00",
+      "--no-requeue",
+      "--chdir=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling",
+      "--output=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/prefix_short_submission_20261113/slurm-%j.out",
+      "--error=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/prefix_short_submission_20261113/slurm-%j.err",
+      "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/calibration_code_734e921/scheduling/run_prefix.sh",
+      "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/PREFIX_RELEASE_734e921.json",
+      "fd8f7a780af3e841f891cac95683a5c71e0151551dc89142afd696202a0b713d"
+    ],
+    "starts": [
+      11031,
+      11032
+    ],
+    "responses_per_start": 48,
+    "first_failed_gate_stops_second": true,
+    "permission": "NO_TRAINING",
+    "extra_generation_budget": 0
+  },
+  "response": {
+    "args": [
+      "sbatch",
+      "--parsable",
+      "--job-name=LH-SATDOSE-PREFIX",
+      "--account=rose",
+      "--qos=rose",
+      "--partition=cluster02",
+      "--nodes=1",
+      "--ntasks=1",
+      "--cpus-per-task=8",
+      "--gpus-per-task=pro6000:2",
+      "--mem=66G",
+      "--time=06:00:00",
+      "--no-requeue",
+      "--chdir=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling",
+      "--output=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/prefix_short_submission_20261113/slurm-%j.out",
+      "--error=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/prefix_short_submission_20261113/slurm-%j.err",
+      "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/calibration_code_734e921/scheduling/run_prefix.sh",
+      "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/PREFIX_RELEASE_734e921.json",
+      "fd8f7a780af3e841f891cac95683a5c71e0151551dc89142afd696202a0b713d"
+    ],
+    "returncode": 0,
+    "stdout": "1737594",
+    "stderr": ""
+  },
+  "job_id": 1737594,
+  "status": "SUBMITTED_PREFIX_CALIB_ONLY"
+}

@@ -16,8 +16,11 @@ both R24 checkpoints (496 tensors each) and the original b0 reference.
 The user authorized AI inspection of the fixed 32 images in place of human
 inspection. The immutable design freeze was then written before model calls.
 Job 1736279 completed zero-update DRY calibration and both starts passed.
-PREFIX-only job 1737418 was submitted once on 2026-11-13; its latest recorded
-state is pending. Neither result grants training admission.
+PREFIX-only job 1737418 was cancelled while still pending with zero runtime
+and zero generation, after explicit user authorization. Its single replacement
+1737594 uses the identical fixed 96 requests and two GPUs with a six-hour
+scheduling limit; the latest recorded state is pending. Neither result grants
+training admission.
 See the dated admission report for the most recent observed progress.
 
 ## Modules and limits

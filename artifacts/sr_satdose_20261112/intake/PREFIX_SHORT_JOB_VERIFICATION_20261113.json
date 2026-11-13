@@ -1,0 +1,31 @@
+{
+  "checked_at": "2026-11-13T14:48:34.039758+00:00",
+  "job_id": 1737594,
+  "observations": [
+    {
+      "args": [
+        "scontrol",
+        "show",
+        "job",
+        "-o",
+        "1737594"
+      ],
+      "returncode": 0,
+      "stdout": "JobId=1737594 JobName=LH-SATDOSE-PREFIX UserId=varun024(295800338) GroupId=varun024(295800338) MCS_label=N/A Priority=1 Nice=0 Account=rose QOS=rose JobState=PENDING Reason=Priority Dependency=(null) Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=00:00:00 TimeLimit=06:00:00 TimeMin=N/A SubmitTime=2026-11-13T14:47:10 EligibleTime=2026-11-13T14:47:10 AccrueTime=2026-11-13T14:47:10 StartTime=2026-11-16T12:28:18 EndTime=2026-11-16T18:28:18 Deadline=N/A SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-11-13T14:48:20 Scheduler=Backfill:* Partition=cluster02 AllocNode:Sid=login-3:2085843 ReqNodeList=(null) ExcNodeList=(null) NodeList= NumNodes=1-1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2 AllocTRES=(null) Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=8 MinMemoryNode=66G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null) Command=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/calibration_code_734e921/scheduling/run_prefix.sh WorkDir=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling StdErr=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/prefix_short_submission_20261113/slurm-1737594.err StdIn=/dev/null StdOut=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/prefix_short_submission_20261113/slurm-1737594.out Power= TresBind=gres/gpu:per_task:2 TresPerTask=cpu:8,gres/gpu:pro6000:2",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "squeue",
+        "--start",
+        "-j",
+        "1737594",
+        "-o",
+        "%.18i %.12T %.19S %.30R"
+      ],
+      "returncode": 0,
+      "stdout": "JOBID        STATE          START_TIME               NODELIST(REASON)\n           1737594      PENDING 2026-11-16T12:28:18                     (Priority)",
+      "stderr": ""
+    }
+  ]
+}

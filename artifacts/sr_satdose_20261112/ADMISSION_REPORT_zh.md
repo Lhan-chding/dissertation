@@ -1,6 +1,6 @@
 # SR-SATDOSE-1 准入报告（2026-11-13，DRY通过／PREFIX已提交）
 
-当前状态：DRY_BOTH_PASS_PREFIX_SUBMITTED_PENDING_GPU_ADMISSION。截至14:15 UTC，PREFIX作业1737418为PENDING；DRY作业1736279已完整通过，两起点各640条。尚无GPU诊断或正式训练准入。下列段落保留历史观测及当时状态。
+当前状态：DRY_BOTH_PASS_PREFIX_SUBMITTED_PENDING_GPU_ADMISSION。截至14:47 UTC，PREFIX替换作业1737594为PENDING；旧1737418已由用户授权取消且零启动/生成；DRY作业1736279已完整通过，两起点各640条。尚无GPU诊断或正式训练准入。下列段落保留历史观测及当时状态。
 
 早期观测：用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 
@@ -108,3 +108,7 @@ GPU有限检查的纯张量估算为58份496-FP32清单，共5020286976字节；
 13:34 UTC独立审计器61f74e7已部署至prepared_data_v1/independent_audit_code_61f74e7/gpu_evidence.py（37223字节，SHA cb3015f96a6d0149cd48cbbb0bd9283cf1f8eb83530af4dc59395ad90960a56e）；CLI帮助导入成功。独立发布回执GPU_AUDITOR_61f74e7.json的SHA5990b502396cb858dcbdcfd838f76de83f7bad3cc67c86dad64516f9213039e8，见intake/GPU_AUDITOR_DEPLOYMENT_61f74e7_20261113.json。未运行实际审计，TECHNICAL_EXECUTION_BINDING仍不存在，eff7036 GPU release清单未改。
 
 14:15 UTC（新加坡22:15）PREFIX1737418仍PENDING(Priority)。调度器预计StartTime=2026-11-16T12:28:18 UTC，即新加坡11月16日20:28（预测可变）。实际请求72h。14:17尝试将同一尚未开始作业时限改为6h，集群job_submit策略明确拒绝Updating TimeLimit is not allowed；复读确认作业仍PENDING、TimeLimit=3-00:00:00、原资源/ID不变，未重提。实际返回与完整前后记录见intake/PREFIX_TIME_LIMIT_UPDATE_20261113.json。已准备取消未启动作业并改6h提交的具体方案，但尚未获用户确认、尚未执行；见intake/PREFIX_PENDING_REPLACEMENT_PLAN_20261113.json。保留原作业继续监控。
+
+14:44 UTC用户明确授权“授权取消未启动作业并按 6 小时重新提交”。14:46先完成完整source/DRY/PREFIX零尝试预检，再使用scancel --state=PENDING仅取消1737418。sacct确认CANCELLED、ElapsedRaw=0、Start=None，无子步骤/分配/PREFIX运行记录。取消回执和原始授权已保存，见intake/PREFIX_PENDING_CANCELLATION_20261113.json。
+
+14:47再次核对旧作业终态及零尝试、队列无同名活动任务后，只提交一次6h替换作业1737594；原734代码/release SHA、96条请求、种子/门槛/2pro6000/8CPU/66G/no-requeue均不变。新作业实测TimeLimit=06:00:00，PENDING(Priority)，预测仍为11月16日12:28 UTC（新加坡20:28），并未观察到提前。见intake/PREFIX_SHORT_SUBMISSION_20261113.json、PREFIX_SHORT_JOB_VERIFICATION_20261113.json和MONITOR_1737594_20261113T1447Z.json。继续每小时监控新作业，下一轮约15:47 UTC（新加坡23:47）。旧作业不可恢复或重提；本次授权替换已执行完毕，后续未知/失败不得自动重试。
