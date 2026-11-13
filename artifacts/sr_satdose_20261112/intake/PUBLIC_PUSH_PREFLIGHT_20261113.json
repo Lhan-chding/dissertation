@@ -1,0 +1,52 @@
+{
+  "status": "REVIEWED_OUTGOING_SATDOSE_COMMITS",
+  "checked_at": "2026-11-13T15:02:15.881524+00:00",
+  "reviewed_head": "5ea9f5b733165af18de8aaa2b7398eb6247f121d",
+  "outgoing_commits": 25,
+  "blobs": 297,
+  "archive_members_scanned": 298,
+  "largest_blobs": [
+    {
+      "path": "artifacts/sr_satdose_20261112/intake/CLEANUP_THIRD_PASS.json",
+      "bytes": 5683610,
+      "oid": "87f74e56537516721fceca2112a67ceb018d6581"
+    },
+    {
+      "path": "artifacts/sr_satdose_20261112/visual_review/private_cases.jsonl",
+      "bytes": 4072126,
+      "oid": "0b4f4ffc647240e8c126ef335967d5a03fa825e0"
+    },
+    {
+      "path": "artifacts/sr_satdose_20261112/intake/PREFIX_PREFLIGHT_20261113.json",
+      "bytes": 3371041,
+      "oid": "30cf5c048d731b5e82703b034158ad6daaf58800"
+    },
+    {
+      "path": "artifacts/sr_satdose_20261112/dry_calibration/11031/DRY_METRICS_11031.json",
+      "bytes": 1452878,
+      "oid": "557a30b80ff41a48533a034b06492cef008b8068"
+    },
+    {
+      "path": "artifacts/sr_satdose_20261112/dry_calibration/11032/DRY_METRICS_11032.json",
+      "bytes": 1446763,
+      "oid": "3fe51bbf5b3540c88ad0047062b16cd4f98d50d6"
+    },
+    {
+      "path": "experiments/sr_satdose_20261112/supplied_package/config/training_slots.jsonl",
+      "bytes": 1290726,
+      "oid": "3339d956018aa2dd6b4b35934d620214ed2a7f0f"
+    },
+    {
+      "path": "artifacts/sr_satdose_20261112/intake/CLEANUP_COMMITTED_SOURCE_DEPENDENCIES_20261113.json",
+      "bytes": 1059104,
+      "oid": "fd656d6c53a3d0cabda0219ba834ec128974ae9c"
+    },
+    {
+      "path": "artifacts/sr_satdose_20261112/intake/CLEANUP_COMMITTED_SOURCE_RECHECK_20261113.json",
+      "bytes": 765964,
+      "oid": "670c9b954f891212c208f2cd24d7859775f0266a"
+    }
+  ],
+  "recognized_credential_or_private_key_findings": [],
+  "limitations": "Pattern screen is not a proof of absence of all secret formats. Code changes also received scoped review. Server paths/logs/audit material are explicitly authorized for public publication; uncommitted/untracked files are excluded."
+}

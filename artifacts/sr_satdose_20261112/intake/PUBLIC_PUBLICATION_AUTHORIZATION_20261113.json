@@ -1,0 +1,16 @@
+{
+  "schema": "sr-satdose-public-publication-authorization-v1",
+  "recorded_at": "2026-11-13T15:02:57.744122+00:00",
+  "user_reply": "允许将当前分支及所含审计材料公开推送",
+  "repository": "https://github.com/Lhan-chding/dissertation",
+  "visibility_verified": "PUBLIC",
+  "branch": "codex/sr-satdose-20261112",
+  "scope": [
+    "current branch code",
+    "server paths",
+    "runtime logs",
+    "experiment audit material"
+  ],
+  "permission": "PUBLIC_PUSH_AUTHORIZED_BY_USER",
+  "not_yet_a_push_receipt": true
+}

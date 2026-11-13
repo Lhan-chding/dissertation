@@ -89,7 +89,7 @@ PREFIX文档“严格或限定补括号后”在两套整套读法结论不同�
 
 09:03 UTC只读核查Ceph实际目录配额：父目录/projects/_ssd/varunssd限额750000000000字节、递归占用622136470369字节、当时共享余量127863529631字节；本项目递归占用334169058141字节。项目自身quota属性不存在，不能将共享df容量当作可用额度。quota命令缺失、du在20秒限时内未完成，采用实际Ceph虚拟属性记录，见intake/STORAGE_QUOTA_20261113T0903Z.json。按已审计496 LoRA形状计算，96份policy+两份Adam moments仅数值张量约24.93GB，尚不含raw/其它证据；正式写入前须重新核验动态配额，不以这个估计代替总预算。
 
-Git远程已核实为PUBLIC。此前推送包含服务器路径/日志/审计证据的提交被自动审批拒绝，公开外发许可仍未得到明确答复；本次不绕过拒绝。代码和证据可本地提交，但不能称已推送。
+Git远程已核实为PUBLIC。此前推送包含服务器路径/日志/审计证据的提交被自动审批拒绝，当时公开外发许可未明确，因此只作本地提交。后续用户明确授权见下方记录；是否成功推送仍以真实远端SHA核验为准。
 
 11:32 UTC完成有限GPU launcher及独立审查：固定两起点各eval loader→backend→allzero→trial0→trial1，共10个新进程、最多4次影子Adam；每阶段独立校验release完整清单、Slurm spool字节、PREFIX以及绑定预算和实际Ceph/statvfs余量。补齐必需helper检查后，最终稳定源码完整298项CPU测试通过、零跳过，见intake/gpu_launcher_full_cpu_tests_20261113.log。先前全套测试与脚本修复并行造成旧fixture/新guard混用，且漏设native测试环境导致12项跳过；该次失败不作验收，已在停止编辑且设置正确源路径后完整重跑。尚未创建GPU技术绑定或调用GPU。
 
@@ -112,3 +112,5 @@ GPU有限检查的纯张量估算为58份496-FP32清单，共5020286976字节；
 14:44 UTC用户明确授权“授权取消未启动作业并按 6 小时重新提交”。14:46先完成完整source/DRY/PREFIX零尝试预检，再使用scancel --state=PENDING仅取消1737418。sacct确认CANCELLED、ElapsedRaw=0、Start=None，无子步骤/分配/PREFIX运行记录。取消回执和原始授权已保存，见intake/PREFIX_PENDING_CANCELLATION_20261113.json。
 
 14:47再次核对旧作业终态及零尝试、队列无同名活动任务后，只提交一次6h替换作业1737594；原734代码/release SHA、96条请求、种子/门槛/2pro6000/8CPU/66G/no-requeue均不变。新作业实测TimeLimit=06:00:00，PENDING(Priority)，预测仍为11月16日12:28 UTC（新加坡20:28），并未观察到提前。见intake/PREFIX_SHORT_SUBMISSION_20261113.json、PREFIX_SHORT_JOB_VERIFICATION_20261113.json和MONITOR_1737594_20261113T1447Z.json。继续每小时监控新作业，下一轮约15:47 UTC（新加坡23:47）。旧作业不可恢复或重提；本次授权替换已执行完毕，后续未知/失败不得自动重试。
+
+15:02 UTC已记录用户明确答复“允许将当前分支及所含审计材料公开推送”；远程Lhan-chding/dissertation通过gh只读核实为PUBLIC。公开范围包含当前分支代码、服务器路径、运行日志与实验审计材料，见intake/PUBLIC_PUBLICATION_AUTHORIZATION_20261113.json。推送前fetch核对远端同名分支不存在，待上传25个提交均为SR-SATDOSE任务；297个新blob及298个归档成员的常见私钥/凭证格式筛查无匹配，最大blob约5.68MB，见intake/PUBLIC_PUSH_PREFLIGHT_20261113.json。未提交的无关修改和96MB输入本地镜像不在推送范围。此条是授权与预检记录，不冒称已推送。
