@@ -1,0 +1,35 @@
+{
+  "status": "VERIFIED_DUPLICATE_ARCHIVES_DELETED",
+  "checked_at": "2026-11-13T09:58:58.241242+00:00",
+  "removed": [
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_20261016/NATIVE_DOCS_DEPLOY.tar",
+      "bytes": 33392640,
+      "sha256": "e5ac4ec57793f75322b0c2fafe1495faf7a4eeabaa2723543bf8f4e23552734c",
+      "absent": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_20261016/operations-4146e15.tar",
+      "bytes": 317440,
+      "sha256": "5b4be07ffd61dfb21e3704ded6bda06856032286fab5c01b243f97edab8bb312",
+      "absent": true
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_20261016/srf3ce-type-reviews-20261016.tar",
+      "bytes": 70707200,
+      "sha256": "3184f5ecd44d9283bfebdf461fc3524d3c16475e73e916e61d6877534f8a51db",
+      "absent": true
+    }
+  ],
+  "gross_deleted_bytes": 104417280,
+  "retained_files_verified": 397,
+  "discarded_reproducible_cache_members": 2,
+  "preservation": {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/storage_audits/cleanup_20261112_satdose/REMAINING_ARCHIVES_PRESERVATION_20261113.json",
+    "bytes": 223329,
+    "sha256": "feacb0a3176d0932e2db3a240af9b1be8dcc9026a08ab27c61ca9cc1119864fb"
+  },
+  "active_script_references": [],
+  "remote_receipt_bytes": 1253,
+  "net_logical_bytes_released": 104192698
+}

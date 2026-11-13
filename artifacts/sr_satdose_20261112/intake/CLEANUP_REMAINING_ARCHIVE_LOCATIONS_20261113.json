@@ -1,0 +1,10 @@
+{
+  "checked_at": "2026-11-13T09:55:18.174345+00:00",
+  "root": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_20261016",
+  "traversal_complete": true,
+  "found": [
+    "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_20261016/operations/4146e156ffa9a476b360daeb67503703faca138f/TRANSFER_MANIFEST.json",
+    "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_20261016/native_audit_code_v2/NATIVE_DOCS_SOURCE.json",
+    "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_20261016/type_audit_inputs/CHARTQA_BLIND_INPUT_RECEIPT.json"
+  ]
+}

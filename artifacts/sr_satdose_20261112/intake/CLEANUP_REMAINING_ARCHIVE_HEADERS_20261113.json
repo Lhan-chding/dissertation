@@ -1,0 +1,344 @@
+{
+  "checked_at": "2026-11-13T09:54:09.038234+00:00",
+  "archives": [
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_20261016/NATIVE_DOCS_DEPLOY.tar",
+      "bytes": 33392640,
+      "members": 290,
+      "files": 290,
+      "prefixes": {
+        "docs/sr_f1": 289,
+        "NATIVE_DOCS_SOURCE.json": 1
+      },
+      "sample": [
+        {
+          "name": "docs/sr_f1/BASELINE_PARALLEL_REPAIR_zh.md",
+          "size": 3240
+        },
+        {
+          "name": "docs/sr_f1/ENGINE_COMPUTE_PARALLEL_REPAIR_zh.md",
+          "size": 3966
+        },
+        {
+          "name": "docs/sr_f1/ENGINE_IO_REPAIR_zh.md",
+          "size": 4208
+        },
+        {
+          "name": "docs/sr_f1/ENGINE_MEMORY_REPAIR_zh.md",
+          "size": 4060
+        },
+        {
+          "name": "docs/sr_f1/ENGINE_MULTIGPU_REPAIR_zh.md",
+          "size": 4947
+        },
+        {
+          "name": "docs/sr_f1/ENGINE_STORAGE_REPAIR_zh.md",
+          "size": 3261
+        },
+        {
+          "name": "docs/sr_f1/EXECUTION_STATUS_zh.md",
+          "size": 61997
+        },
+        {
+          "name": "docs/sr_f1/FORMAT_GUARD_REPAIR_zh.md",
+          "size": 3479
+        },
+        {
+          "name": "docs/sr_f1/OPERATIONS_zh.md",
+          "size": 4201
+        },
+        {
+          "name": "docs/sr_f1/QOS_SCOPE_REPAIR_zh.md",
+          "size": 2451
+        },
+        {
+          "name": "docs/sr_f1/README_zh.md",
+          "size": 1881
+        },
+        {
+          "name": "docs/sr_f1/SR_F1_2_CHECKPOINT_STORAGE_zh.md",
+          "size": 2685
+        },
+        {
+          "name": "docs/sr_f1/SR_F1_2_EARLY_SEALED_EVALUATION_zh.md",
+          "size": 3587
+        },
+        {
+          "name": "docs/sr_f1/SR_F1_2_ROLLING_SCHEDULING_zh.md",
+          "size": 3245
+        },
+        {
+          "name": "docs/sr_f1/amendments/SR_F1_1_20261010/AMENDMENT_zh.md",
+          "size": 4791
+        },
+        {
+          "name": "docs/sr_f1/amendments/SR_F1_1_20261010/SR_F1_1.json",
+          "size": 6261
+        },
+        {
+          "name": "docs/sr_f1/amendments/SR_F1_1_20261010/USER_SOLUTION_zh.md",
+          "size": 19684
+        },
+        {
+          "name": "docs/sr_f1/amendments/SR_F1_2_20261010/AMENDMENT_zh.md",
+          "size": 5896
+        },
+        {
+          "name": "docs/sr_f1/amendments/SR_F1_2_20261010/SR_F1_2.json",
+          "size": 9333
+        },
+        {
+          "name": "docs/sr_f1/amendments/SR_F1_2_20261010/USER_SOLUTION_zh.md",
+          "size": 26493
+        },
+        {
+          "name": "docs/sr_f1/analysis/SR_F1_2_FINAL/ANALYSIS.json",
+          "size": 144018
+        },
+        {
+          "name": "docs/sr_f1/analysis/SR_F1_2_FINAL/CHARTQA_RESULTS.json",
+          "size": 17359
+        },
+        {
+          "name": "docs/sr_f1/analysis/SR_F1_2_FINAL/CHARTQA_SENSITIVITY_SECTION_zh.md",
+          "size": 1292
+        },
+        {
+          "name": "docs/sr_f1/analysis/SR_F1_2_FINAL/CHARTQA_WHITESPACE_SENSITIVITY.json",
+          "size": 18444
+        },
+        {
+          "name": "docs/sr_f1/analysis/SR_F1_2_FINAL/DELIVERY_RECEIPT.json",
+          "size": 1481
+        }
+      ],
+      "links": []
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_20261016/operations-4146e15.tar",
+      "bytes": 317440,
+      "members": 12,
+      "files": 12,
+      "prefixes": {
+        "TRANSFER_MANIFEST.json": 1,
+        "build_delivery.py": 1,
+        "dispatch_registered.py": 1,
+        "finalize_external_types.py": 1,
+        "validation/LOCAL_CHECKS.json": 1,
+        "validation/docs": 3,
+        "validation/tests": 3,
+        "validation/typed_cpu_submission_operator.py": 1
+      },
+      "sample": [
+        {
+          "name": "TRANSFER_MANIFEST.json",
+          "size": 2040
+        },
+        {
+          "name": "build_delivery.py",
+          "size": 95450
+        },
+        {
+          "name": "dispatch_registered.py",
+          "size": 47820
+        },
+        {
+          "name": "finalize_external_types.py",
+          "size": 28769
+        },
+        {
+          "name": "validation/LOCAL_CHECKS.json",
+          "size": 797
+        },
+        {
+          "name": "validation/docs/sr_f3_ce/DELIVERY.md",
+          "size": 8611
+        },
+        {
+          "name": "validation/docs/sr_f3_ce/OPERATIONS.md",
+          "size": 9682
+        },
+        {
+          "name": "validation/docs/sr_f3_ce/TYPED_AUDIT.md",
+          "size": 8400
+        },
+        {
+          "name": "validation/tests/sr_f3_ce/test_delivery.py",
+          "size": 36370
+        },
+        {
+          "name": "validation/tests/sr_f3_ce/test_dispatch_registered.py",
+          "size": 36320
+        },
+        {
+          "name": "validation/tests/sr_f3_ce/test_typed_finalize.py",
+          "size": 21883
+        },
+        {
+          "name": "validation/typed_cpu_submission_operator.py",
+          "size": 4457
+        }
+      ],
+      "links": []
+    },
+    {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_f3_ce_20261016/srf3ce-type-reviews-20261016.tar",
+      "bytes": 70707200,
+      "members": 97,
+      "files": 97,
+      "prefixes": {
+        "CHARTQAPRO_BLIND_INPUT_RECEIPT.json": 1,
+        "CHARTQA_BLIND_INPUT_RECEIPT.json": 1,
+        "LOCAL_CHARTQAPRO_SELECTION.json": 1,
+        "LOCAL_HISTORICAL_IMAGES.json": 1,
+        "chartqa-blind.jsonl": 1,
+        "chartqapro-blind.jsonl": 1,
+        "reviewer_a/CONTRACT_EXCERPT.md": 1,
+        "reviewer_a/PRO_CONTEXT_ADDENDUM.md": 1,
+        "reviewer_a/REVIEW_ALL.json": 1,
+        "reviewer_a/REVIEW_ALL.jsonl": 1,
+        "reviewer_a/REVIEW_ALL_RECEIPT.json": 1,
+        "reviewer_a/RULES.md": 1,
+        "reviewer_a/__pycache__": 1,
+        "reviewer_a/chartqa": 15,
+        "reviewer_a/chartqapro": 10,
+        "reviewer_a/finalize_chartqa.py": 1,
+        "reviewer_a/finalize_pro_and_all.py": 1,
+        "reviewer_a/rule_check.py": 1,
+        "reviewer_a/rule_check_pro.py": 1,
+        "reviewer_b/PLAN_SECTION_10_4.md": 1,
+        "reviewer_b/PRO_RULES.md": 1,
+        "reviewer_b/README.md": 1,
+        "reviewer_b/REVIEW_ALL.json": 1,
+        "reviewer_b/REVIEW_ALL_RECEIPT.json": 1,
+        "reviewer_b/RULES.md": 1,
+        "reviewer_b/__pycache__": 1,
+        "reviewer_b/audit_pro.py": 1,
+        "reviewer_b/audit_rules.py": 1,
+        "reviewer_b/chartqa_candidates.jsonl": 1,
+        "reviewer_b/chartqa_final_receipt.json": 1,
+        "reviewer_b/chartqa_images_needed.json": 1,
+        "reviewer_b/chartqa_review.json": 1,
+        "reviewer_b/chartqa_rule_receipt.json": 1,
+        "reviewer_b/chartqa_rule_review.json": 1,
+        "reviewer_b/chartqapro_candidates.jsonl": 1,
+        "reviewer_b/chartqapro_final_receipt.json": 1,
+        "reviewer_b/chartqapro_review.json": 1,
+        "reviewer_b/chartqapro_rule_receipt.json": 1,
+        "reviewer_b/chartqapro_rule_review.json": 1,
+        "reviewer_b/finalize_all.py": 1,
+        "reviewer_b/finalize_chartqa.py": 1,
+        "reviewer_b/make_review_sheets.py": 1,
+        "reviewer_b/pro_visible_sheet_index.json": 1,
+        "reviewer_b/pro_visible_sheets": 6,
+        "reviewer_b/pro_visual_annotations.jsonl": 1,
+        "reviewer_b/visible_sheet_index.json": 1,
+        "reviewer_b/visible_sheets": 22,
+        "reviewer_b/visual_annotations.jsonl": 1
+      },
+      "sample": [
+        {
+          "name": "CHARTQAPRO_BLIND_INPUT_RECEIPT.json",
+          "size": 422
+        },
+        {
+          "name": "CHARTQA_BLIND_INPUT_RECEIPT.json",
+          "size": 346
+        },
+        {
+          "name": "LOCAL_CHARTQAPRO_SELECTION.json",
+          "size": 187355
+        },
+        {
+          "name": "LOCAL_HISTORICAL_IMAGES.json",
+          "size": 1779242
+        },
+        {
+          "name": "chartqa-blind.jsonl",
+          "size": 958360
+        },
+        {
+          "name": "chartqapro-blind.jsonl",
+          "size": 173287
+        },
+        {
+          "name": "reviewer_a/CONTRACT_EXCERPT.md",
+          "size": 1177
+        },
+        {
+          "name": "reviewer_a/PRO_CONTEXT_ADDENDUM.md",
+          "size": 2247
+        },
+        {
+          "name": "reviewer_a/REVIEW_ALL.json",
+          "size": 6934210
+        },
+        {
+          "name": "reviewer_a/REVIEW_ALL.jsonl",
+          "size": 5757629
+        },
+        {
+          "name": "reviewer_a/REVIEW_ALL_RECEIPT.json",
+          "size": 6953
+        },
+        {
+          "name": "reviewer_a/RULES.md",
+          "size": 4921
+        },
+        {
+          "name": "reviewer_a/__pycache__/rule_check.cpython-312.pyc",
+          "size": 16372
+        },
+        {
+          "name": "reviewer_a/chartqa/AUDIT_SELF_CHECK.json",
+          "size": 2509
+        },
+        {
+          "name": "reviewer_a/chartqa/QUESTION_CANDIDATE_REVIEW.json",
+          "size": 88261
+        },
+        {
+          "name": "reviewer_a/chartqa/REQUESTED_IMAGES.json",
+          "size": 23987
+        },
+        {
+          "name": "reviewer_a/chartqa/REVIEW_FINAL.json",
+          "size": 5841341
+        },
+        {
+          "name": "reviewer_a/chartqa/REVIEW_FINAL.jsonl",
+          "size": 4824068
+        },
+        {
+          "name": "reviewer_a/chartqa/REVIEW_RECEIPT.json",
+          "size": 2522
+        },
+        {
+          "name": "reviewer_a/chartqa/REVIEW_RULE_CHECK.json",
+          "size": 5012372
+        },
+        {
+          "name": "reviewer_a/chartqa/RULE_CHECK.jsonl",
+          "size": 4078849
+        },
+        {
+          "name": "reviewer_a/chartqa/RULE_CHECK_RECEIPT.json",
+          "size": 1781
+        },
+        {
+          "name": "reviewer_a/chartqa/VISUAL_ANNOTATIONS.jsonl",
+          "size": 120496
+        },
+        {
+          "name": "reviewer_a/chartqa/VISUAL_CANDIDATES.json",
+          "size": 74510
+        },
+        {
+          "name": "reviewer_a/chartqa/VISUAL_NOTES_PART_01.json",
+          "size": 8667
+        }
+      ],
+      "links": []
+    }
+  ]
+}
