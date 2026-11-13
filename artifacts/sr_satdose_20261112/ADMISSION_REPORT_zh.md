@@ -114,3 +114,5 @@ GPU有限检查的纯张量估算为58份496-FP32清单，共5020286976字节；
 14:47再次核对旧作业终态及零尝试、队列无同名活动任务后，只提交一次6h替换作业1737594；原734代码/release SHA、96条请求、种子/门槛/2pro6000/8CPU/66G/no-requeue均不变。新作业实测TimeLimit=06:00:00，PENDING(Priority)，预测仍为11月16日12:28 UTC（新加坡20:28），并未观察到提前。见intake/PREFIX_SHORT_SUBMISSION_20261113.json、PREFIX_SHORT_JOB_VERIFICATION_20261113.json和MONITOR_1737594_20261113T1447Z.json。继续每小时监控新作业，下一轮约15:47 UTC（新加坡23:47）。旧作业不可恢复或重提；本次授权替换已执行完毕，后续未知/失败不得自动重试。
 
 15:02 UTC已记录用户明确答复“允许将当前分支及所含审计材料公开推送”；远程Lhan-chding/dissertation通过gh只读核实为PUBLIC。公开范围包含当前分支代码、服务器路径、运行日志与实验审计材料，见intake/PUBLIC_PUBLICATION_AUTHORIZATION_20261113.json。推送前fetch核对远端同名分支不存在，待上传25个提交均为SR-SATDOSE任务；297个新blob及298个归档成员的常见私钥/凭证格式筛查无匹配，最大blob约5.68MB，见intake/PUBLIC_PUSH_PREFLIGHT_20261113.json。未提交的无关修改和96MB输入本地镜像不在推送范围。此条是授权与预检记录，不冒称已推送。
+
+15:03 UTC公开推送成功，git ls-remote独立核验任务分支codex/sr-satdose-20261112与当时本地HEAD完全一致：65c25010f648536c48b6f54e60b0582413208dc9。未修改main，未上传未提交/未跟踪的无关文件。首次发布回执见intake/PUBLIC_PUSH_RECEIPT_20261113.json；此前公开推送审批阻塞因用户明确授权已解除。
