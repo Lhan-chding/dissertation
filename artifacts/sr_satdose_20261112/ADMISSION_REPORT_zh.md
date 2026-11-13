@@ -41,6 +41,8 @@ PREFIX文档“严格或限定补括号后”在两套整套读法结论不同�
 
 2026-11-13 07:21 UTC将已提交a2c1836的52文件、312414字节诊断包部署至独立prepared_data_v1/diagnostic_code_a2c1836，所有文件SHA核验，现有DRY代码未改。服务器CLI导入帮助成功，并以CPU核验实际7个runtime文件完整匹配冻结、PREFIX事前规则绑定有效；未读取raw或调用模型。部署回执为intake/DIAGNOSTIC_CODE_DEPLOYMENT_20261113.json。尚未创建TECHNICAL_EXECUTION_BINDING或提交诊断作业，须等待两起点完整DRY门禁。
 
+本地进一步完成backend_equivalence与PREFIX控制/launcher。短序列仅按原probe最短tokens及原顺序选行，沿用原G8优势、原sampler和native loss/128，对照单设备激活保留与两设备保存tensor；不冒称单可见GPU启动或1536压力通过。PREFIX两start各48条，完整DRY均PASS后方可运行；首start门槛失败即停第二start。共享全局锁覆盖阶段，跨PREFIX/GPU的HOLD及未知claim双向阻断；Slurm spool按实际脚本字节SHA校验。独立审查发现的跨阶段锁/UNKNOWN/source及spool路径问题已修复并复核，最终全套175项CPU测试通过、零跳过，见intake/prefix_backend_cpu_tests_20261113.log。此版尚未部署/提交PREFIX或GPU作业。完整DRY若无1536-token原始轨迹，独立合成容量测试能否替代长序列门禁需先澄清，不能自行填PASS。
+
 ## 服务器位置
 
 `/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112`：原输入包、已SHA验证历史包及解压副本、CPU审计、implementation_preflight、prepared_data_v1。

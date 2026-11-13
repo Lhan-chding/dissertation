@@ -55,6 +55,14 @@ See the dated admission report for the most recent observed progress.
   a global worker lock, immutable capture relocation, complete runtime source
   validation, measured accounting/storage and independent component replay.
   It refuses HOLD or unresolved slots and emits no combined GPU admission.
+- `execution/backend_equivalence.py`: a deterministic shortest original probe
+  row, its original G8 advantage and native loss compare single-device activation
+  retention against the two-device saved-tensor path. It makes no claim about
+  starting with only one visible GPU, full batches, or 1536-token pressure.
+- `execution/prefix_control.py` and `scheduling/run_prefix.sh`: both complete
+  passing DRY starts, the separately pinned release and the pre-recorded OR
+  interpretation are required before exactly 48 PREFIX calls per start. The
+  shared lock covers both stages; failed first-start measurement stops the second.
 
 The formal training transaction publisher/driver, production gradient replay
 acceptance, canary/recovery integration and terminal MAIN runner are not yet
@@ -66,6 +74,9 @@ Shadow acceptance still needs actual execution of two independent R24 restores
 per start, GPU Adam on isolated tensors, and a global maximum of four actual
 shadow steps. Existing same-copy shadow repetition alone does not establish
 restored replay; a JSON assertion alone does not establish a real reload.
+If complete DRY contains no original 1536-token trajectory, synthetic capacity
+tests cannot silently replace that acceptance condition. An explicit protocol
+clarification is needed before treating a separate synthetic test as sufficient.
 
 ## CPU validation
 

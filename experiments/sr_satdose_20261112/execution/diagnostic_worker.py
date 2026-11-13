@@ -61,8 +61,118 @@ def _bound(root, ref):
     return path
 
 
-def _no_holds(root, binding, *, current=None):
+def _prefix_gate(root, binding, *, current_prefix=False):
+    """Metadata/hash gate only; never read partial PREFIX raw or grant admission.
+
+    The active-prefix exemption is internal: the PREFIX controller alone uses
+    it after holding the global lock and exclusively writing its PREFLIGHT.
+    Existing HOLD or failed RESULT is never exempt. Public GPU APIs do not
+    expose this flag, and absent PREFIX evidence imposes no execution order.
+    """
+    control = root / 'prefix_control'
+    if not control.exists() and not control.is_symlink():
+        require(not current_prefix, 'Active PREFIX exemption requires its own claim')
+        return
+    require(control.is_dir() and control.resolve() == control and
+            not (control / 'HOLD.json').exists(), 'PREFIX HOLD/invalid control blocks GPU construction')
+    preflight_path = control / 'PREFLIGHT.json'
+    require(preflight_path.is_file() and not preflight_path.is_symlink(),
+            'PREFIX UNKNOWN missing PREFLIGHT blocks GPU construction')
+    preflight = shadow.read_json(preflight_path)
+    require(preflight.get('schema') == 'sr-satdose-prefix-preflight-v1' and
+            preflight.get('status') == 'READY_FOR_PREFIX_CALIB_ONLY' and
+            preflight.get('permission') == 'NO_TRAINING' and preflight.get('model_calls') == 0 and
+            preflight.get('starts') == [11031,11032] and preflight.get('responses_per_start') == 48 and
+            preflight.get('design_freeze_sha256') == binding['design_freeze']['sha256'] and
+            preflight.get('config_sha256') == binding['config']['sha256'],
+            'Invalid PREFIX preflight chain blocks GPU construction')
+    result_path = control / 'RESULT.json'
+    if not result_path.exists() and not result_path.is_symlink():
+        require(current_prefix, 'PREFIX UNKNOWN incomplete control blocks GPU construction')
+        return
+    require(result_path.is_file() and not result_path.is_symlink(), 'Invalid PREFIX RESULT')
+    result = shadow.read_json(result_path)
+    require(result.get('status') == 'PREFIX_METRICS_COMPLETE_GPU_CHECK_STILL_REQUIRED' and
+            result.get('permission') == 'NO_TRAINING' and result.get('responses') == 96 and
+            result.get('preflight_sha256') == diagnostic_inputs.core.object_sha(preflight) and
+            set(result.get('prefix_analyses', {})) == {'11031','11032'},
+            'PREFIX HOLD/incomplete RESULT blocks GPU construction')
+    for start in (11031,11032):
+        analysis_path = control / f'PREFIX_{start}_ANALYSIS.json'
+        require(analysis_path.is_file() and not analysis_path.is_symlink(), 'Missing PREFIX analysis')
+        analysis = shadow.read_json(analysis_path)
+        require(analysis == result['prefix_analyses'][str(start)] and
+                analysis.get('schema') == 'sr-satdose-prefix-calibration-analysis-v1' and
+                analysis.get('start_seed') == start and
+                analysis.get('status') == 'PREFIX_METRICS_PASS_GPU_CHECK_STILL_REQUIRED' and
+                analysis.get('permission') == 'NO_TRAINING' and analysis.get('candidate_gate_passed') is True and
+                analysis.get('candidate_decision_rule') == 'strict_complete_gate_OR_sensitivity_complete_gate' and
+                analysis.get('design_freeze_sha256') == binding['design_freeze']['sha256'] and
+                analysis.get('config_sha256') == binding['config']['sha256'] and
+                analysis.get('protocol_clarification') is not None and
+                analysis['protocol_clarification'] == preflight.get('protocol_clarification'),
+                'Both complete PREFIX starts must PASS before GPU construction')
+        checks = {'all_views_known_at_least_14','stable_correct_at_least_12','stable_minus_revtie_at_least_4'}
+        readouts = analysis.get('readouts', {})
+        require(set(readouts) == {'strict','sensitivity'} and
+                all(set(r.get('checks', {})) == checks for r in readouts.values()),
+                'Incomplete PREFIX readout gates')
+        qualifying = [name for name in ('strict','sensitivity')
+                      if all(value is True for value in readouts[name]['checks'].values())]
+        require(qualifying and analysis.get('qualifying_readouts') == qualifying and
+                all(readouts[name].get('passed') is (name in qualifying) for name in readouts),
+                'PREFIX whole-readout OR gate differs')
+        run = root / 'runs' / f'PREFIX_CALIB_{start}'
+        receipt_ref = analysis['completion_receipt']
+        require(receipt_ref['path'] == str((run/'CALIBRATION_COMPLETE.json').relative_to(root)),
+                'PREFIX completion receipt relocated')
+        receipt_path = _bound(root, receipt_ref)
+        receipt = shadow.read_json(receipt_path)
+        require(receipt.get('status') == 'CALIBRATION_CAPTURE_COMPLETE_NOT_GPU_ADMISSION' and
+                receipt.get('scope') == 'PREFIX_CALIB' and receipt.get('start_seed') == start and
+                receipt.get('responses') == 48 and receipt.get('optimizer_steps') == 0 and
+                receipt.get('parameter_updates') == 0 and receipt.get('optimizer_created') is False and
+                receipt.get('scheduler_created') is False and
+                receipt.get('design_freeze_sha256') == binding['design_freeze']['sha256'] and
+                receipt.get('source_lock_sha256') == binding['source_lock']['sha256'] and
+                not (run/'HOLD.json').exists() and not (run/'ERROR.json').exists() and
+                not any(run.glob('*.ERROR.json')), 'PREFIX completion is incomplete or failed')
+        # Hash raw bytes only AFTER a matching complete receipt is verified.
+        raw_ref = analysis['raw']
+        require(raw_ref['path'] == str((run/'PREFIX_RAW.jsonl').relative_to(root)) and
+                receipt.get('raw') == dict(path='PREFIX_RAW.jsonl',sha256=raw_ref['sha256']),
+                'PREFIX analysis/completion raw bindings differ')
+        _bound(root, raw_ref)
+
+
+def _no_holds(root, binding, *, current=None, binding_sha, current_prefix=False):
     """Reject HOLD and crash-left UNKNOWN slots; only the active internal slot is exempt."""
+    _prefix_gate(root, binding, current_prefix=current_prefix)
+    equivalence_slots = {str(start): f'backend_equivalence/start-{start}' for start in (11031,11032)}
+    require(binding.get('backend_equivalence_slots') == equivalence_slots and
+            binding.get('max_backend_equivalence_attempts') == 2,
+            'Technical binding must include fixed backend-equivalence slots/budget')
+    for start, relative in equivalence_slots.items():
+        path = root / relative
+        if path.exists() or path.is_symlink():
+            require(path.resolve() == path and not (path / 'HOLD.json').exists() and
+                    (path / 'COMPLETE.json').is_file(),
+                    'Backend-equivalence HOLD/UNKNOWN blocks diagnostic model construction')
+            complete = shadow.read_json(path / 'COMPLETE.json')
+            require(complete.get('schema') == 'sr-satdose-backend-equivalence-v1' and
+                    complete.get('status') == 'BACKEND_EQUIVALENCE_CAPTURED_NOT_GPU_ADMISSION' and
+                    complete.get('start_seed') == int(start) and complete.get('bit_exact') is True and
+                    complete.get('technical_binding_sha256') == binding_sha and
+                    complete.get('close', {}).get('closed') is True and
+                    complete.get('permission') == 'NO_TRAINING' and
+                    complete.get('optimizer_steps') == complete.get('new_generations') == 0,
+                    'Invalid backend-equivalence completion blocks diagnostics')
+            names = ('SELECTION.json','BASELINE.pt','TWO_DEVICE.pt','COMPARISON.json')
+            require(set(complete.get('evidence', {})) == set(names), 'Incomplete backend-equivalence evidence index')
+            for name in names:
+                ref = complete['evidence'][name]
+                require(ref['path'] == str((path / name).relative_to(root)), 'Relocated backend-equivalence evidence')
+                _bound(root, ref)
     for start in (11031, 11032):
         for trial in (0, 1):
             slot = binding['shadow_slots'][f'{start}/{trial}']
@@ -121,7 +231,7 @@ def _preflight(binding_sha, start, trial):
         actual = Path(module).resolve()
         require(Path(b['code'][name]['path']).resolve() == actual and
                 shadow.file_sha(actual) == b['code'][name]['sha256'], 'Unbound worker dependency: ' + name)
-    _no_holds(root, b)
+    _no_holds(root, b, binding_sha=binding_sha)
     freeze = shadow.read_json(_bound(root, b['design_freeze']))
     _verify_runtime_sources(freeze)
     lock = shadow.read_json(_bound(root, b['source_lock']))
@@ -222,7 +332,7 @@ def _before_shadow(captures, preclip):
 
 def _execute(ctx, start, trial, process):
     with _worker_lock(ctx['root']):
-        _no_holds(ctx['root'], ctx['binding'])
+        _no_holds(ctx['root'], ctx['binding'], binding_sha=ctx['binding_sha'])
         return _execute_locked(ctx, start, trial, process)
 
 
@@ -247,7 +357,7 @@ def _execute_locked(ctx, start, trial, process):
         require(complete['restore_sha256'] == shadow.file_sha(old / 'RESTORE.json'), 'Trial0 restore changed')
         previous_shadow = root / shadow.CLAIMS_NAME / f'start-{start}' / 'trial-0' / 'COMPLETE.json'
         require(shadow.file_sha(previous_shadow) == complete['shadow_complete_sha256'], 'Trial0 shadow incomplete')
-    _no_holds(root, b)
+    _no_holds(root, b, binding_sha=ctx['binding_sha'])
     destination.mkdir(exist_ok=False)
     shadow._sync_dir(parent)
     shadow.write_once(destination / 'WORKER_CLAIM.json', dict(status='RESERVED_NO_AUTOMATIC_RETRY',
@@ -318,7 +428,7 @@ def _execute_locked(ctx, start, trial, process):
             shadow.write_once(destination / 'COMPONENTS.json', component_files)
             shadow.write_once(destination / 'ACCOUNTING.json', stage_accounts)
             _before_shadow(captures, produced['preclip_gradients'])
-        _no_holds(root, b, current=(start, trial))
+        _no_holds(root, b, current=(start, trial), binding_sha=ctx['binding_sha'])
         if trial == 1:
             shadow.write_once(destination / 'ACCOUNTING.json', stage_accounts)
         input_receipt = dict(common, schema='sr-satdose-shadow-input-v1', start_seed=start, trial=trial,

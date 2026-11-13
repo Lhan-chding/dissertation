@@ -26,6 +26,8 @@ class WorkerTests(unittest.TestCase):
         self.endpoint = dict(experiment_id=w.shadow.EXPERIMENT,start_seed=11031,arm='START',step=0,
                              policy_sha256='a'*64,reference_sha256='b'*64)
         self.b = dict(shadow_slots=w.shadow.expected_slots(),design_freeze=dict(sha256='f'*64),
+                      backend_equivalence_slots={str(s):f'backend_equivalence/start-{s}' for s in (11031,11032)},
+                      max_backend_equivalence_attempts=2,
                       source_lock=dict(path='lock.json',sha256=''))
         (self.root/'lock.json').write_text('{}')
         self.b['source_lock']['sha256'] = w.shadow.file_sha(self.root/'lock.json')
@@ -145,7 +147,7 @@ class WorkerTests(unittest.TestCase):
         self.assertTrue(self.handles[0].closed)
         self.assertTrue((self.slot()/'HOLD.json').exists())
         with self.assertRaises((FileNotFoundError,PermissionError)):self.run_trial(1,dict(self.process,pid=2))
-        with self.assertRaisesRegex(PermissionError,'HOLD'):w._no_holds(self.root,self.b)
+        with self.assertRaisesRegex(PermissionError,'HOLD'):w._no_holds(self.root,self.b,binding_sha='c'*64)
 
     def test_post_shadow_direction_hold_blocks_retry(self):
         with patch.object(w.diagnostics,'direction_summary',return_value={'direction_checks_satisfied':False}):
@@ -251,6 +253,128 @@ class WorkerTests(unittest.TestCase):
         with patch.dict(sys.modules,{'runtime.backend':fake}):
             with self.assertRaisesRegex(PermissionError,'Shadowed imported runtime'):
                 w._verify_runtime_sources(freeze)
+
+
+    def test_equivalence_failed_or_unknown_blocks_diagnostic_model_constructor(self):
+        for status in ('empty','claim','hold','invalid_complete'):
+            with self.subTest(status=status),tempfile.TemporaryDirectory() as temp:
+                root=Path(temp).resolve()
+                path=root/'backend_equivalence/start-11031';path.mkdir(parents=True)
+                if status=='claim':(path/'CLAIM.json').write_text('{}')
+                if status=='hold':(path/'HOLD.json').write_text('{}')
+                if status=='invalid_complete':(path/'COMPLETE.json').write_text('{}')
+                with self.assertRaises(PermissionError):
+                    w._execute(dict(self.ctx,root=root),11032,0,self.process)
+                self.assertFalse(self.handles)
+
+    def test_missing_equivalence_budget_cannot_silently_bypass_gate(self):
+        binding=copy.deepcopy(self.b);del binding['backend_equivalence_slots']
+        with self.assertRaisesRegex(PermissionError,'fixed backend-equivalence'):
+            w._execute(dict(self.ctx,binding=binding),11031,0,self.process)
+        self.assertFalse(self.handles)
+
+
+    def prefix_fixture(self, *, complete=True):
+        self.b['config'] = dict(path='config.json',sha256='e'*64)
+        control=self.root/'prefix_control';control.mkdir()
+        protocol={'fixture':'独立前置澄清'}
+        preflight=dict(schema='sr-satdose-prefix-preflight-v1',status='READY_FOR_PREFIX_CALIB_ONLY',
+            permission='NO_TRAINING',model_calls=0,starts=[11031,11032],responses_per_start=48,
+            design_freeze_sha256='f'*64,config_sha256='e'*64,protocol_clarification=protocol)
+        (control/'PREFLIGHT.json').write_text(json.dumps(preflight))
+        if not complete:return control,preflight,None
+        analyses={}
+        for start in (11031,11032):
+            run=self.root/'runs'/f'PREFIX_CALIB_{start}';run.mkdir(parents=True)
+            raw=run/'PREFIX_RAW.jsonl';raw.write_text('synthetic completed raw fixture\n')
+            receipt=dict(status='CALIBRATION_CAPTURE_COMPLETE_NOT_GPU_ADMISSION',scope='PREFIX_CALIB',
+                start_seed=start,responses=48,optimizer_steps=0,parameter_updates=0,optimizer_created=False,
+                scheduler_created=False,design_freeze_sha256='f'*64,source_lock_sha256=self.b['source_lock']['sha256'],
+                raw=dict(path='PREFIX_RAW.jsonl',sha256=w.shadow.file_sha(raw)))
+            receipt_path=run/'CALIBRATION_COMPLETE.json';receipt_path.write_text(json.dumps(receipt))
+            checks=dict(all_views_known_at_least_14=True,stable_correct_at_least_12=True,
+                        stable_minus_revtie_at_least_4=True)
+            analysis=dict(schema='sr-satdose-prefix-calibration-analysis-v1',start_seed=start,
+                status='PREFIX_METRICS_PASS_GPU_CHECK_STILL_REQUIRED',permission='NO_TRAINING',
+                candidate_gate_passed=True,candidate_decision_rule='strict_complete_gate_OR_sensitivity_complete_gate',
+                design_freeze_sha256='f'*64,config_sha256='e'*64,protocol_clarification=protocol,
+                readouts={name:dict(checks=checks,passed=True) for name in ('strict','sensitivity')},
+                qualifying_readouts=['strict','sensitivity'],raw=w._ref(self.root,raw),
+                completion_receipt=w._ref(self.root,receipt_path))
+            (control/f'PREFIX_{start}_ANALYSIS.json').write_text(json.dumps(analysis))
+            analyses[str(start)]=analysis
+        result=dict(status='PREFIX_METRICS_COMPLETE_GPU_CHECK_STILL_REQUIRED',permission='NO_TRAINING',
+            responses=96,preflight_sha256=w.diagnostic_inputs.core.object_sha(preflight),prefix_analyses=analyses)
+        (control/'RESULT.json').write_text(json.dumps(result))
+        return control,preflight,result
+
+    def test_prefix_empty_or_claim_only_blocks_gpu_before_model(self):
+        control=self.root/'prefix_control';control.mkdir()
+        with self.assertRaisesRegex(PermissionError,'PREFIX UNKNOWN'):
+            self.run_trial()
+        self.assertFalse(self.handles)
+        control.rmdir()
+        self.prefix_fixture(complete=False)
+        with self.assertRaisesRegex(PermissionError,'PREFIX UNKNOWN'):
+            self.run_trial()
+        self.assertFalse(self.handles)
+
+    def test_prefix_current_exemption_is_internal_and_never_ignores_hold(self):
+        control,_,_=self.prefix_fixture(complete=False)
+        w._no_holds(self.root,self.b,binding_sha='c'*64,current_prefix=True)
+        (control/'RESULT.json').write_text(json.dumps({'status':'HOLD_PREFIX_CONTROL'}))
+        with self.assertRaisesRegex(PermissionError,'PREFIX HOLD'):
+            w._no_holds(self.root,self.b,binding_sha='c'*64,current_prefix=True)
+        with self.assertRaises(TypeError):
+            w.run_worker(start_seed=11031,trial=0,expected_binding_sha256='c'*64,current_prefix=True)
+        self.assertFalse(self.handles)
+
+    def test_prefix_complete_chain_allows_gpu_and_unicode_preflight_hash(self):
+        self.prefix_fixture()
+        result=self.run_trial()
+        self.assertEqual(result['status'],'DIAGNOSTIC_SLOT_COMPLETE_NOT_GPU_ADMISSION')
+        self.assertEqual(len(self.handles),1)
+
+    def test_prefix_raw_tamper_blocks_gpu_constructor(self):
+        self.prefix_fixture()
+        (self.root/'runs/PREFIX_CALIB_11032/PREFIX_RAW.jsonl').write_text('changed raw')
+        with self.assertRaisesRegex(PermissionError,'evidence changed'):
+            self.run_trial()
+        self.assertFalse(self.handles)
+
+    def test_prefix_preflight_or_analysis_chain_tamper_blocks_gpu(self):
+        control,preflight,_=self.prefix_fixture()
+        preflight['protocol_clarification']['fixture']='changed'
+        (control/'PREFLIGHT.json').write_text(json.dumps(preflight))
+        with self.assertRaisesRegex(PermissionError,'PREFIX HOLD/incomplete RESULT'):
+            self.run_trial()
+        self.assertFalse(self.handles)
+
+    def test_prefix_one_start_failed_even_with_result_complete_blocks_gpu(self):
+        control,_,result=self.prefix_fixture()
+        analysis=result['prefix_analyses']['11032'];analysis['status']='HOLD_PREFIX_MEASUREMENT'
+        (control/'PREFIX_11032_ANALYSIS.json').write_text(json.dumps(analysis))
+        (control/'RESULT.json').write_text(json.dumps(result))
+        with self.assertRaisesRegex(PermissionError,'Both complete PREFIX starts must PASS'):
+            self.run_trial()
+        self.assertFalse(self.handles)
+
+    def test_prefix_incomplete_receipt_rejected_before_raw_bytes_are_opened(self):
+        control,_,result=self.prefix_fixture()
+        receipt_path=self.root/'runs/PREFIX_CALIB_11031/CALIBRATION_COMPLETE.json'
+        receipt=json.loads(receipt_path.read_text());receipt['responses']=47
+        receipt_path.write_text(json.dumps(receipt))
+        analysis=result['prefix_analyses']['11031'];analysis['completion_receipt']=w._ref(self.root,receipt_path)
+        (control/'PREFIX_11031_ANALYSIS.json').write_text(json.dumps(analysis))
+        (control/'RESULT.json').write_text(json.dumps(result))
+        original=w._bound
+        def bound(root,ref):
+            self.assertFalse(ref['path'].endswith('PREFIX_RAW.jsonl'),'partial raw must not be read')
+            return original(root,ref)
+        with patch.object(w,'_bound',side_effect=bound):
+            with self.assertRaisesRegex(PermissionError,'completion is incomplete'):
+                self.run_trial()
+        self.assertFalse(self.handles)
 
 
 
