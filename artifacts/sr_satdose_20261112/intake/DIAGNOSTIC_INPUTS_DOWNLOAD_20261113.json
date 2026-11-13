@@ -1,0 +1,8 @@
+{
+  "schema": "sr-satdose-local-download-v1",
+  "remote_path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/postcapture_20261113/DIAGNOSTIC_INPUTS.json",
+  "local_path": "artifacts/sr_satdose_20261112/cpu_evidence/DIAGNOSTIC_INPUTS.json",
+  "sha256": "a953592bb29f2a2810f3e87611b66abb6e0ae4925eb68f06ca36ee8a1cfe017f",
+  "bytes": 96289791,
+  "status": "VERIFIED_EXACT_BYTES_NOT_GPU_ADMISSION"
+}

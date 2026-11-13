@@ -1,6 +1,8 @@
-# SR-SATDOSE-1 准入报告（2026-11-13，等待服务器补查）
+# SR-SATDOSE-1 准入报告（2026-11-13，DRY通过／PREFIX已提交）
 
-状态：DESIGN_FROZEN_DRY_RUNNING_PENDING_GPU_ADMISSION。用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
+当前状态：DRY_BOTH_PASS_PREFIX_SUBMITTED_PENDING_GPU_ADMISSION。截至11:15 UTC，PREFIX作业1737418为PENDING；DRY作业1736279已完整通过，两起点各640条。尚无GPU诊断或正式训练准入。下列段落保留历史观测及当时状态。
+
+早期观测：用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 
 06:50 UTC（新加坡14:50）小时检查：1736279仍RUNNING，elapsed01:40:34；11031逐请求完成文件及raw均为388条，11032尚未创建。总388/1280（30.3%），未见HOLD/完整校准回执或stderr致命标记。记录见intake/MONITOR_1736279_20261113T0650Z.json。共享文件系统可用空间数值不等于项目配额，不能据此推定用户项目空间已宽裕。
 
@@ -11,6 +13,12 @@
 09:51 UTC（新加坡17:51）小时检查：1736279仍RUNNING，第二起点454/640，合计1094/1280（85.5%）；未见HOLD或致命错误。下一轮常规检查约10:51 UTC，记录见intake/MONITOR_1736279_20261113T0951Z.json。
 
 10:52 UTC（新加坡18:52）小时巡检连续两次SSH连接超时（各15秒连接上限），当前作业状态未知，不能据此判定作业失败。最后成功观测仍为09:51 UTC的1094/1280、RUNNING。已向用户请求确认校园网/VPN恢复；未重提作业、未运行PREFIX/梯度/训练。见intake/MONITOR_1736279_20261113T1052Z_SSH_TIMEOUT.json。
+
+11:11 UTC（新加坡19:11）VPN恢复后补查：DRY作业1736279 COMPLETED/0:0，用时05:30:49，两起点均640/640，无HOLD。11032完整复评分通过：signal50/64、dose_mean2.1969172647、lower951.8474067003、direction1、unknown0.0078125、J1_source0=0.0066225166、length1/640。两起点均通过DRY门禁但尚未GPU准入。第二起点报告与回执已SHA校验下载至dry_calibration/11032。
+
+完整token审计发现11032冻结128探针含真实1536-token轨迹SAT1/DRY/11032/g004/d07；11031探针最长709。可在11032真实完整128生产回放中验证长序列容量，无须合成/替换/新增rollout；不声称11031也跑过1536行。原始审计回执SHA9bc43bbc658c18e4b83381d4d3c5665965bbcc47753c96c18cb103f88da940c9，见cpu_evidence/DRY_TOKEN_LENGTHS.json。
+
+11:14 UTC仅提交一次PREFIX校准作业1737418，rose账户/QoS、cluster02、2pro6000/8CPU/66G、no-requeue；固定11031后11032各48条，首起点HOLD立即停止第二起点。完整预检READY_FOR_PREFIX_CALIB_ONLY，permission=NO_TRAINING。提交后确认PENDING(Priority)，见intake/PREFIX_SUBMISSION_20261113.json；下一次常规巡检约12:15 UTC。当前不创建新版GPU TECHNICAL_EXECUTION_BINDING，避免运行中的734 PREFIX控制器与未来GPU worker源码不一致；须等PREFIX完整通过后再绑定。
 
 ## 已闭合的证据
 
@@ -82,3 +90,7 @@ PREFIX文档“严格或限定补括号后”在两套整套读法结论不同�
 09:03 UTC只读核查Ceph实际目录配额：父目录/projects/_ssd/varunssd限额750000000000字节、递归占用622136470369字节、当时共享余量127863529631字节；本项目递归占用334169058141字节。项目自身quota属性不存在，不能将共享df容量当作可用额度。quota命令缺失、du在20秒限时内未完成，采用实际Ceph虚拟属性记录，见intake/STORAGE_QUOTA_20261113T0903Z.json。按已审计496 LoRA形状计算，96份policy+两份Adam moments仅数值张量约24.93GB，尚不含raw/其它证据；正式写入前须重新核验动态配额，不以这个估计代替总预算。
 
 Git远程已核实为PUBLIC。此前推送包含服务器路径/日志/审计证据的提交被自动审批拒绝，公开外发许可仍未得到明确答复；本次不绕过拒绝。代码和证据可本地提交，但不能称已推送。
+
+11:32 UTC完成有限GPU launcher及独立审查：固定两起点各eval loader→backend→allzero→trial0→trial1，共10个新进程、最多4次影子Adam；每阶段独立校验release完整清单、Slurm spool字节、PREFIX以及绑定预算和实际Ceph/statvfs余量。补齐必需helper检查后，最终稳定源码完整298项CPU测试通过、零跳过，见intake/gpu_launcher_full_cpu_tests_20261113.log。先前全套测试与脚本修复并行造成旧fixture/新guard混用，且漏设native测试环境导致12项跳过；该次失败不作验收，已在停止编辑且设置正确源路径后完整重跑。尚未创建GPU技术绑定或调用GPU。
+
+GPU有限检查的纯张量估算为58份496-FP32清单，共5020286976字节；加等量序列化/临时余量和1GiB记录余量，明确预算建议11114315776字节。独立只读审查确认计数与输出范围；这是工程预留，非科学门槛，日志无严格上界。见cpu_evidence/GPU_STORAGE_ESTIMATE_20261113.json。完整DIAGNOSTIC_INPUTS已精确SHA校验下载（96289791字节，SHA a953592bb29f2a2810f3e87611b66abb6e0ae4925eb68f06ca36ee8a1cfe017f），大文件仅作本地镜像，不纳入本次Git提交；下载回执已保存。

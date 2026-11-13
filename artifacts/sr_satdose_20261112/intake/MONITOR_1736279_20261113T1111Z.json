@@ -1,0 +1,109 @@
+{
+  "checked_at": "2026-11-13T11:11:39.179055+00:00",
+  "job_id": 1736279,
+  "queue": {
+    "returncode": 1,
+    "stdout": "",
+    "stderr": "slurm_load_jobs error: Invalid job id specified"
+  },
+  "accounting": {
+    "returncode": 0,
+    "stdout": "1736279|COMPLETED|0:0|05:30:49|gpu-pro6000-9\n1736279.batch|COMPLETED|0:0|05:30:49|gpu-pro6000-9\n1736279.extern|COMPLETED|0:0|05:30:49|gpu-pro6000-9\n1736279.0|COMPLETED|0:0|02:43:42|gpu-pro6000-9\n1736279.1|COMPLETED|0:0|02:47:05|gpu-pro6000-9",
+    "stderr": ""
+  },
+  "runs": {
+    "11031": {
+      "exists": true,
+      "complete_files": 640,
+      "raw_rows": 640,
+      "CALIBRATION_COMPLETE.json": {
+        "design_freeze_sha256": "6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0",
+        "native_accounting": {
+          "completion_attempts": 640,
+          "generated_tokens": 314223
+        },
+        "no_training_authorized": true,
+        "optimizer_created": false,
+        "optimizer_steps": 0,
+        "parameter_updates": 0,
+        "policy_after": {
+          "arm": "START",
+          "closed": true,
+          "experiment_id": "SR-SATDOSE-1-20261112",
+          "optimizer_steps": 0,
+          "parameter_updates": 0,
+          "policy_sha256": "bf54236906035d295d2616cc00d9ddf27094c6b572ddee8be3cc1b7c1a243fb6",
+          "reference_sha256": "0d7979e13ce408a0501fcd774a26c7643527433de10c64b2b199b695a66d1fb4",
+          "start_seed": 11031,
+          "step": 0
+        },
+        "policy_before": {
+          "arm": "START",
+          "experiment_id": "SR-SATDOSE-1-20261112",
+          "policy_sha256": "bf54236906035d295d2616cc00d9ddf27094c6b572ddee8be3cc1b7c1a243fb6",
+          "reference_sha256": "0d7979e13ce408a0501fcd774a26c7643527433de10c64b2b199b695a66d1fb4",
+          "start_seed": 11031,
+          "step": 0
+        },
+        "raw": {
+          "path": "DRY_RAW.jsonl",
+          "sha256": "1d0e96ab942cf5ee53a51b1a120a03840761c31cf38e62e9d17436cb914bdc8c"
+        },
+        "responses": 640,
+        "scheduler_created": false,
+        "scope": "DRY",
+        "source_lock_sha256": "70745bd49eec9fc8dbd3f4fb42db13c24ca37a84bc0289f775fb593c85fd8c76",
+        "start_seed": 11031,
+        "status": "CALIBRATION_CAPTURE_COMPLETE_NOT_GPU_ADMISSION",
+        "receipt_sha256": "278ad90f8514aa461e3aa216d2dfa09b1f95d861c90296d62d30075dac34331c"
+      }
+    },
+    "11032": {
+      "exists": true,
+      "complete_files": 640,
+      "raw_rows": 640,
+      "CALIBRATION_COMPLETE.json": {
+        "design_freeze_sha256": "6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0",
+        "native_accounting": {
+          "completion_attempts": 640,
+          "generated_tokens": 321782
+        },
+        "no_training_authorized": true,
+        "optimizer_created": false,
+        "optimizer_steps": 0,
+        "parameter_updates": 0,
+        "policy_after": {
+          "arm": "START",
+          "closed": true,
+          "experiment_id": "SR-SATDOSE-1-20261112",
+          "optimizer_steps": 0,
+          "parameter_updates": 0,
+          "policy_sha256": "0cea8f988f9fc99647bd8f8e1d8f733e20000e71ec26b504058b080cccb55ced",
+          "reference_sha256": "0d7979e13ce408a0501fcd774a26c7643527433de10c64b2b199b695a66d1fb4",
+          "start_seed": 11032,
+          "step": 0
+        },
+        "policy_before": {
+          "arm": "START",
+          "experiment_id": "SR-SATDOSE-1-20261112",
+          "policy_sha256": "0cea8f988f9fc99647bd8f8e1d8f733e20000e71ec26b504058b080cccb55ced",
+          "reference_sha256": "0d7979e13ce408a0501fcd774a26c7643527433de10c64b2b199b695a66d1fb4",
+          "start_seed": 11032,
+          "step": 0
+        },
+        "raw": {
+          "path": "DRY_RAW.jsonl",
+          "sha256": "e154832935cc271e1c4a7f37adcafbf1c12dd0dba7d839f708c7a6579eea2f82"
+        },
+        "responses": 640,
+        "scheduler_created": false,
+        "scope": "DRY",
+        "source_lock_sha256": "70745bd49eec9fc8dbd3f4fb42db13c24ca37a84bc0289f775fb593c85fd8c76",
+        "start_seed": 11032,
+        "status": "CALIBRATION_CAPTURE_COMPLETE_NOT_GPU_ADMISSION",
+        "receipt_sha256": "9fdddaf4cd0328217567aeeb870daeb9d8a6ec1e73b604c71446ebb57fd0fa76"
+      }
+    }
+  },
+  "fatal_markers": []
+}

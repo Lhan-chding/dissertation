@@ -1,0 +1,12 @@
+{
+  "DRY_METRICS_11032.json": {
+    "remote_path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/postcapture_20261113/DRY_METRICS_11032.json",
+    "sha256": "98335af6c4c888010221a7ac6eab55bf64f64b1d932c148986f1b0995b797eb2",
+    "bytes": 1446763
+  },
+  "CALIBRATION_COMPLETE.json": {
+    "remote_path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/runs/DRY_11032/CALIBRATION_COMPLETE.json",
+    "sha256": "9fdddaf4cd0328217567aeeb870daeb9d8a6ec1e73b604c71446ebb57fd0fa76",
+    "bytes": 110068
+  }
+}

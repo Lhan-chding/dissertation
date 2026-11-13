@@ -1,0 +1,42 @@
+{
+  "schema": "sr-satdose-gpu-storage-estimate-v1",
+  "status": "CPU_ESTIMATE_NOT_EXECUTION_BINDING",
+  "scope": "GPU_DIAGNOSTICS_ONLY",
+  "parameter_count": 21639168,
+  "fp32_inventory_bytes": 86556672,
+  "inventory_counts": {
+    "production_preclip_postclip": 8,
+    "trial0_component_gradients": 24,
+    "shadow_delta_clipped_adam_moments": 16,
+    "allzero_gradients": 6,
+    "backend_equivalence_gradients": 4
+  },
+  "total_inventories": 58,
+  "numeric_tensor_bytes": 5020286976,
+  "serialization_and_temporary_reserve_bytes": 5020286976,
+  "trace_accounting_logs_and_small_tensor_reserve_bytes": 1073741824,
+  "proposed_required_bytes": 11114315776,
+  "notes": [
+    "Conservative engineering headroom, not measured consumption or a scientific acceptance threshold.",
+    "Includes all ten finite stages and four shadow results; no formal-training checkpoints.",
+    "Adam scalar step tensors, JSON traces, relocated original captures and accounting are covered by the separate 1 GiB allowance.",
+    "The identical numeric-size reserve covers serialization and temporary file allowance; these are explicit chosen margins.",
+    "Actual Ceph quota and statvfs must satisfy the bound budget before each stage. No space is reserved by an observation.",
+    "Create time-bounded trusted budget and technical binding only after both PREFIX starts pass.",
+    "Logs are not strictly byte-capped; 1 GiB is an engineering allowance, not a proven upper bound.",
+    "Extra archives, repeated downloads, model copies and formal training checkpoints are excluded."
+  ],
+  "independent_read_only_review": {
+    "full_inventory_count_verified": 58,
+    "major_pt_files": 42,
+    "adam_scalar_step_tensors": 1984,
+    "original_trajectories_relocated": 1026,
+    "capture_and_begin_copy_files": 2052,
+    "diagnostic_inputs_existing_bytes": 96289791,
+    "allzero_original_input_rows_estimated_bytes": 11946266,
+    "trace_token_visits_approx": 1678000,
+    "trace_float_vectors_json_estimated_bytes": 125900000,
+    "full_policy_reference_checkpoint_copies_created": 0,
+    "estimate_not_remote_file_measurement": true
+  }
+}

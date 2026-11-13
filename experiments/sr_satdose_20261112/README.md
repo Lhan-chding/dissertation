@@ -15,7 +15,9 @@ both R24 checkpoints (496 tensors each) and the original b0 reference.
 `data_adapter` has prepared all 28,936 requests and 1,376 images on the server.
 The user authorized AI inspection of the fixed 32 images in place of human
 inspection. The immutable design freeze was then written before model calls.
-Job 1736279 is running zero-update DRY calibration; it grants no training admission.
+Job 1736279 completed zero-update DRY calibration and both starts passed.
+PREFIX-only job 1737418 was submitted once on 2026-11-13; its latest recorded
+state is pending. Neither result grants training admission.
 See the dated admission report for the most recent observed progress.
 
 ## Modules and limits
@@ -63,6 +65,12 @@ See the dated admission report for the most recent observed progress.
   passing DRY starts, the separately pinned release and the pre-recorded OR
   interpretation are required before exactly 48 PREFIX calls per start. The
   shared lock covers both stages; failed first-start measurement stops the second.
+
+- `scheduling/run_gpu_checks.sh`: a bounded sequence of ten fresh GPU processes
+  for the two fixed starts. It verifies the independently pinned release, full
+  PREFIX evidence, explicit disk budget and live quota before each stage. It
+  stops on failure or an occupied slot and permits at most four isolated shadow
+  updates. It does not provide formal training admission.
 
 - `execution/training_state.py`: weights-only checkpoint codec with exact ordered
   optimizer parameter identity, safe native RNG serialization and trusted COMMIT

@@ -1,0 +1,87 @@
+{
+  "schema": "sr-satdose-complete-dry-token-lengths-v1",
+  "checked_at": "2026-11-13T11:12:30.282090+00:00",
+  "design_freeze_sha256": "6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0",
+  "probe_splits": {
+    "path": "PROBE_SPLITS.json",
+    "sha256": "df1d41a4972e23c17089994c346552d7ec1b37833270049b02f58f18337e230b"
+  },
+  "new_generations": 0,
+  "model_calls": 0,
+  "optimizer_steps": 0,
+  "starts": {
+    "11031": {
+      "all_dry": {
+        "rows": 640,
+        "min_tokens": 332,
+        "max_tokens": 1261,
+        "total_tokens": 314223,
+        "rows_at_1536": 0,
+        "request_ids_at_1536": [],
+        "finish_reasons": {
+          "balanced": 639,
+          "eos": 1
+        }
+      },
+      "fixed_probe": {
+        "rows": 128,
+        "min_tokens": 370,
+        "max_tokens": 709,
+        "total_tokens": 62788,
+        "rows_at_1536": 0,
+        "request_ids_at_1536": [],
+        "finish_reasons": {
+          "balanced": 128
+        }
+      },
+      "raw": {
+        "path": "runs/DRY_11031/DRY_RAW.jsonl",
+        "sha256": "1d0e96ab942cf5ee53a51b1a120a03840761c31cf38e62e9d17436cb914bdc8c"
+      },
+      "completion_receipt": {
+        "path": "runs/DRY_11031/CALIBRATION_COMPLETE.json",
+        "sha256": "278ad90f8514aa461e3aa216d2dfa09b1f95d861c90296d62d30075dac34331c"
+      }
+    },
+    "11032": {
+      "all_dry": {
+        "rows": 640,
+        "min_tokens": 365,
+        "max_tokens": 1536,
+        "total_tokens": 321782,
+        "rows_at_1536": 1,
+        "request_ids_at_1536": [
+          "SAT1/DRY/11032/g004/d07"
+        ],
+        "finish_reasons": {
+          "balanced": 639,
+          "length": 1
+        }
+      },
+      "fixed_probe": {
+        "rows": 128,
+        "min_tokens": 370,
+        "max_tokens": 1536,
+        "total_tokens": 66022,
+        "rows_at_1536": 1,
+        "request_ids_at_1536": [
+          "SAT1/DRY/11032/g004/d07"
+        ],
+        "finish_reasons": {
+          "balanced": 127,
+          "length": 1
+        }
+      },
+      "raw": {
+        "path": "runs/DRY_11032/DRY_RAW.jsonl",
+        "sha256": "e154832935cc271e1c4a7f37adcafbf1c12dd0dba7d839f708c7a6579eea2f82"
+      },
+      "completion_receipt": {
+        "path": "runs/DRY_11032/CALIBRATION_COMPLETE.json",
+        "sha256": "9fdddaf4cd0328217567aeeb870daeb9d8a6ec1e73b604c71446ebb57fd0fa76"
+      }
+    }
+  },
+  "remote_path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/cpu_evidence_20261113/DRY_TOKEN_LENGTHS.json",
+  "remote_sha256": "9bc43bbc658c18e4b83381d4d3c5665965bbcc47753c96c18cb103f88da940c9"
+}
