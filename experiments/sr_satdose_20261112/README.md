@@ -64,9 +64,19 @@ See the dated admission report for the most recent observed progress.
   interpretation are required before exactly 48 PREFIX calls per start. The
   shared lock covers both stages; failed first-start measurement stops the second.
 
-The formal training transaction publisher/driver, production gradient replay
-acceptance, canary/recovery integration and terminal MAIN runner are not yet
-implemented end-to-end. Do not invoke the old training CLI as a substitute.
+- `execution/training_state.py`: weights-only checkpoint codec with exact ordered
+  optimizer parameter identity, safe native RNG serialization and trusted COMMIT
+  restore; its 496-scalar CPU test is not a GPU reload acceptance.
+- `execution/training_transaction.py`: fixed-path, exclusive durable transactions,
+  mandatory live storage callback, write-ahead update intent and atomic checkpoint
+  publication. Unknown attempts block all paths; committed repeats only verify.
+- `execution/training_runtime.py`: a separate TRAIN adapter using the original
+  runtime, R24 fork and fresh native Adam. Live committed identity guards generation;
+  the step-2 canary distinguishes the sampled step-1 and teacher step-2 endpoints.
+
+The formal training driver, production gradient replay acceptance, real GPU
+canary/recovery integration and terminal MAIN runner are not yet implemented
+end-to-end. Do not invoke the old training CLI as a substitute.
 Do not manufacture DESIGN_FREEZE or GPU_VERIFICATION from test fixtures.
 The GPU diagnostic driver must bind the frozen root/group/request ordering,
 verify saved-tensor storage after backward, and use actual runtime accounting.

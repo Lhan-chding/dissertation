@@ -1,0 +1,27 @@
+{
+  "schema": "sr-satdose-storage-quota-observation-v1",
+  "checked_at": "2026-11-13T09:03:48.890046+00:00",
+  "filesystem": "ceph",
+  "quota_scope": "/projects/_ssd/varunssd",
+  "quota_max_bytes": 750000000000,
+  "quota_scope_recursive_bytes": 622136470369,
+  "quota_scope_remaining_bytes": 127863529631,
+  "project": "/projects/_ssd/varunssd/louis-ssvc",
+  "project_recursive_bytes": 334169058141,
+  "project_specific_quota_attribute": "ENODATA",
+  "source": "Read-only os.getxattr ceph.quota.max_bytes and ceph.dir.rbytes",
+  "shared_headroom": true,
+  "quota_command_available": false,
+  "du_result": "TIMEOUT_NO_MUTATION",
+  "limitations": [
+    "Point-in-time recursive metadata; other users can consume the parent quota.",
+    "Shared filesystem df free space is not project quota headroom."
+  ],
+  "checkpoint_numeric_estimate": {
+    "lora_parameters": 21639168,
+    "fp32_policy_bytes": 86556672,
+    "policy_plus_two_adam_moments_bytes": 259670016,
+    "all_96_states_numeric_bytes": 24928321536,
+    "not_a_total_experiment_storage_budget": true
+  }
+}

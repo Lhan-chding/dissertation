@@ -6,6 +6,8 @@
 
 07:50 UTC小时检查为631/1280、仍RUNNING且无致命标记；临近起点完成后核验到11031完整640条回执，已执行固定CPU复评分并通过全部DRY信号门槛：signal_groups=46/64、dose_mean=2.1085743106、dose_lower95=1.7422572904、direction_fraction=1、unknown_rate=0.00390625、J1_source0_rate=0.0131578947、length=0/640。完整报告及回执已SHA校验下载至dry_calibration/11031，分析报告SHA2933361d4179e1cac3eff6d3b439a7c355f05426edce3c16f34815350cf2de10。11032尚待完整校准；第一起点通过不等于GPU准入，更不代表正式训练已开始。
 
+08:51 UTC（新加坡16:51）小时检查：1736279仍RUNNING；第一起点子步骤已COMPLETED/0:0，第二起点已运行58分13秒，完成218/640。合计858/1280（67.0%），未见HOLD或致命错误。记录见intake/MONITOR_1736279_20261113T0851Z.json，下一轮常规监控约09:51 UTC。
+
 ## 已闭合的证据
 
 - 用户提供 `.worktrees/sr-ord-train-20261103/sr_ord_train/execution/final_delivery_20261111/SR_ORD_TRAIN_RESULTS_20261111.zip`，SHA256 为 `b6a560fd0d74e9fbca0d0000b74dcc622b749c400e4f45fb211f6301e29d89d2`，与执行包绑定完全吻合。原文件名中的 `(1)` 不影响身份。
@@ -43,6 +45,8 @@ PREFIX文档“严格或限定补括号后”在两套整套读法结论不同�
 
 本地进一步完成backend_equivalence与PREFIX控制/launcher。短序列仅按原probe最短tokens及原顺序选行，沿用原G8优势、原sampler和native loss/128，对照单设备激活保留与两设备保存tensor；不冒称单可见GPU启动或1536压力通过。PREFIX两start各48条，完整DRY均PASS后方可运行；首start门槛失败即停第二start。共享全局锁覆盖阶段，跨PREFIX/GPU的HOLD及未知claim双向阻断；Slurm spool按实际脚本字节SHA校验。独立审查发现的跨阶段锁/UNKNOWN/source及spool路径问题已修复并复核，最终全套175项CPU测试通过、零跳过，见intake/prefix_backend_cpu_tests_20261113.log。此版尚未部署/提交PREFIX或GPU作业。完整DRY若无1536-token原始轨迹，独立合成容量测试能否替代长序列门禁需先澄清，不能自行填PASS。
 
+新增training_state、training_transaction、training_runtime三个独立执行层，未改冻结runtime。状态codec绑定496个有序optimizer参数与原生RNG；事务层在唯一Adam调用前持久化UPDATE_INTENT并原子发布checkpoint，未知尝试阻断；TRAIN适配器区分已提交端点，step2 canary固定使用采样step1/teacher step2原tokens。独立审查完成，合计210项CPU测试通过、零跳过，日志intake/training_core_cpu_tests_20261113.log。此为CPU组件验收，真实模型构造、生成、GPU恢复/canary、实际准入driver均未完成，不能据此启动训练。
+
 ## 服务器位置
 
 `/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112`：原输入包、已SHA验证历史包及解压副本、CPU审计、implementation_preflight、prepared_data_v1。
@@ -52,5 +56,7 @@ PREFIX文档“严格或限定补括号后”在两套整套读法结论不同�
 ## 清理与Git
 
 第三轮实际删除9702203395字节冗余归档，净逻辑减少9659735435字节；此前缓存清理2025323字节另计。原9.25GB归档中的唯一历史RUN_REGISTRY、完整成员及链接元数据和恢复说明均先保存、独立SHA核验后才删除归档。清理各轮实际结果见 intake/CLEANUP_RECEIPT.json、CLEANUP_SECOND_PASS.json、CLEANUP_THIRD_PASS.json。第二轮VPN超时没有产生新增删除；后续恢复后继续核验和删除冗余归档。保留新实验所有依赖、唯一科研原始记录、必要检查点与模型。
+
+09:03 UTC只读核查Ceph实际目录配额：父目录/projects/_ssd/varunssd限额750000000000字节、递归占用622136470369字节、当时共享余量127863529631字节；本项目递归占用334169058141字节。项目自身quota属性不存在，不能将共享df容量当作可用额度。quota命令缺失、du在20秒限时内未完成，采用实际Ceph虚拟属性记录，见intake/STORAGE_QUOTA_20261113T0903Z.json。按已审计496 LoRA形状计算，96份policy+两份Adam moments仅数值张量约24.93GB，尚不含raw/其它证据；正式写入前须重新核验动态配额，不以这个估计代替总预算。
 
 Git远程已核实为PUBLIC。此前推送包含服务器路径/日志/审计证据的提交被自动审批拒绝，公开外发许可仍未得到明确答复；本次不绕过拒绝。代码和证据可本地提交，但不能称已推送。
