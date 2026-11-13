@@ -1,6 +1,6 @@
 # SR-SATDOSE-1 准入报告（2026-11-13，DRY通过／PREFIX已提交）
 
-当前状态：DRY_BOTH_PASS_PREFIX_SUBMITTED_PENDING_GPU_ADMISSION。截至14:47 UTC，PREFIX替换作业1737594为PENDING；旧1737418已由用户授权取消且零启动/生成；DRY作业1736279已完整通过，两起点各640条。尚无GPU诊断或正式训练准入。下列段落保留历史观测及当时状态。
+当前状态：DRY_BOTH_PASS_PREFIX_SUBMITTED_PENDING_GPU_ADMISSION。截至15:47 UTC，PREFIX替换作业1737594为PENDING；旧1737418已由用户授权取消且零启动/生成；DRY作业1736279已完整通过，两起点各640条。尚无GPU诊断或正式训练准入。下列段落保留历史观测及当时状态。
 
 早期观测：用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 
@@ -116,3 +116,5 @@ GPU有限检查的纯张量估算为58份496-FP32清单，共5020286976字节；
 15:02 UTC已记录用户明确答复“允许将当前分支及所含审计材料公开推送”；远程Lhan-chding/dissertation通过gh只读核实为PUBLIC。公开范围包含当前分支代码、服务器路径、运行日志与实验审计材料，见intake/PUBLIC_PUBLICATION_AUTHORIZATION_20261113.json。推送前fetch核对远端同名分支不存在，待上传25个提交均为SR-SATDOSE任务；297个新blob及298个归档成员的常见私钥/凭证格式筛查无匹配，最大blob约5.68MB，见intake/PUBLIC_PUSH_PREFLIGHT_20261113.json。未提交的无关修改和96MB输入本地镜像不在推送范围。此条是授权与预检记录，不冒称已推送。
 
 15:03 UTC公开推送成功，git ls-remote独立核验任务分支codex/sr-satdose-20261112与当时本地HEAD完全一致：65c25010f648536c48b6f54e60b0582413208dc9。未修改main，未上传未提交/未跟踪的无关文件。首次发布回执见intake/PUBLIC_PUSH_RECEIPT_20261113.json；此前公开推送审批阻塞因用户明确授权已解除。
+
+15:47 UTC（新加坡23:47）小时巡检：新PREFIX1737594仍PENDING(Priority)、无分配节点，两个运行目录及控制器回执均未创建；无致命日志。未重复提交、未增加生成/更新。下一轮约16:47 UTC（新加坡11月14日00:47），见intake/MONITOR_1737594_20261113T1547Z.json。
