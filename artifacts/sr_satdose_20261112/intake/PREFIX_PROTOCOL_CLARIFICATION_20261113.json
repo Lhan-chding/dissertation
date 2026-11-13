@@ -1,0 +1,18 @@
+{
+  "schema": "sr-satdose-prefix-protocol-clarification-v1",
+  "experiment_id": "SR-SATDOSE-1-20261112",
+  "config_sha256": "58841639b0f36a69ac77824bc8c683ef7fbeb5c50a41e9975b89b54880f4ecfe",
+  "design_freeze_sha256": "6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0",
+  "decision_rule": "strict_complete_gate_OR_sensitivity_complete_gate",
+  "decision_origin": "agent_interpretation_after_user_requested_judgment",
+  "user_explicit_option_approval": false,
+  "user_reply_verbatim": "你认为该如何选择",
+  "agent_decision": "按原文或解释：严格解析或限定EOS追加一个右大括号后的任一整套指标通过即可；不跨view或指标混选；两套结果全部报告。",
+  "pre_prefix_confirmation": {
+    "path": "protocol_clarifications/PRE_PREFIX_CONFIRMATION_20261113.json",
+    "sha256": "cd0ca568144bcd6f4058c9c09ec0dfc7c5345cfd6ee1916bfd6443b4e50100d8"
+  },
+  "created_at": "2026-11-13T06:28:44.285566+00:00",
+  "original_design_freeze_modified": false,
+  "training_permission": "NONE"
+}

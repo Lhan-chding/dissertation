@@ -1,0 +1,12 @@
+{
+  "schema": "sr-satdose-pre-prefix-confirmation-v1",
+  "experiment_id": "SR-SATDOSE-1-20261112",
+  "config_sha256": "58841639b0f36a69ac77824bc8c683ef7fbeb5c50a41e9975b89b54880f4ecfe",
+  "design_freeze_sha256": "6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0",
+  "status": "NO_PREFIX_ATTEMPTS_OBSERVED",
+  "prefix_attempts": 0,
+  "prefix_allocations": [],
+  "prefix_runs": [],
+  "checked_at": "2026-11-13T06:28:27.342693+00:00",
+  "scope": "Registered calibration allocation ledger and PREFIX run directories; no raw outputs read"
+}

@@ -155,7 +155,24 @@ class CalibrationTests(unittest.TestCase):
     def tearDown(self):self.tmp.cleanup()
     def receipt(self,scope='DRY',start=11031):return self.root/f'{scope}-{start}/CALIBRATION_COMPLETE.json'
     def dry(self,start=11031):return c.analyze_dry(self.root/'config.json',self.root/'DESIGN_FREEZE.json',self.root,self.receipt(start=start),start,NATIVE)
-    def prefix(self):return c.analyze_prefix(self.root/'config.json',self.root/'DESIGN_FREEZE.json',self.root,self.receipt('PREFIX_CALIB'),11031)
+    def prefix(self,clarification=None):
+        return c.analyze_prefix(self.root/'config.json',self.root/'DESIGN_FREEZE.json',self.root,
+                                self.receipt('PREFIX_CALIB'),11031,clarification=clarification)
+    def clarification(self):
+        """Synthetic provenance fixture, never evidence of real pre-call ordering."""
+        identity=dict(experiment_id=c.core.read_json(self.root/'config.json')['experiment_id'],
+                      config_sha256=c.core.file_sha(self.root/'config.json'),
+                      design_freeze_sha256=c.core.file_sha(self.root/'DESIGN_FREEZE.json'))
+        proof=self.root/'PRE_PREFIX_CONFIRMATION.json'
+        dump(proof,dict(schema='sr-satdose-pre-prefix-confirmation-v1',**identity,
+                        status='NO_PREFIX_ATTEMPTS_OBSERVED',prefix_attempts=0,prefix_allocations=[],
+                        checked_at='2026-11-13T00:00:00+08:00'))
+        path=self.root/'PREFIX_PROTOCOL_CLARIFICATION.json'
+        dump(path,dict(schema='sr-satdose-prefix-protocol-clarification-v1',**identity,
+                       decision_rule=c.PREFIX_RULE,decision_origin='agent_interpretation_after_user_requested_judgment',
+                       user_explicit_option_approval=False,
+                       pre_prefix_confirmation=dict(path=proof.name,sha256=c.core.file_sha(proof))))
+        return path
     def mutate(self,fn,scope='DRY',*,update_complete=True):
         path=self.root/f'{scope}-11031/raw.jsonl';rows=list(c.core.read_jsonl(path));fn(rows)
         receipt=c.core.read_json(self.receipt(scope))
@@ -307,6 +324,42 @@ class CalibrationTests(unittest.TestCase):
         self.assertEqual(report['readouts']['sensitivity']['stable_minus_revtie_count'],2)
         self.assertTrue(report['candidate_gate_passed'])
         self.assertEqual(report['status'],'PENDING_PROTOCOL_CLARIFICATION')
+        self.assertEqual(report['permission'],'NO_TRAINING')
+        clarified=self.prefix(self.clarification())
+        self.assertEqual(clarified['status'],'PREFIX_METRICS_PASS_GPU_CHECK_STILL_REQUIRED')
+        self.assertEqual(clarified['qualifying_readouts'],['strict'])
+        self.assertEqual(clarified['permission'],'NO_TRAINING')
+        self.assertFalse(clarified['protocol_clarification']['user_explicit_option_approval'])
+    def test_missing_or_wrong_identity_clarification_does_not_pass(self):
+        self.assertEqual(self.prefix()['status'],'PENDING_PROTOCOL_CLARIFICATION')
+        with self.assertRaises(FileNotFoundError):self.prefix(self.root/'missing.json')
+        path=self.clarification();original=c.core.read_json(path)
+        for field in ('config_sha256','design_freeze_sha256'):
+            with self.subTest(field=field):
+                changed=copy.deepcopy(original);changed[field]='0'*64;dump(path,changed)
+                with self.assertRaisesRegex(ValueError,'identity mismatch'):self.prefix(path)
+        dump(path,original)
+        proof=self.root/original['pre_prefix_confirmation']['path']
+        proof.write_text('{}\n')
+        with self.assertRaisesRegex(ValueError,'artifact hash mismatch'):self.prefix(path)
+    def test_clarification_cannot_claim_explicit_user_choice_or_ignore_attempts(self):
+        path=self.clarification();record=c.core.read_json(path)
+        record['user_explicit_option_approval']=True;dump(path,record)
+        with self.assertRaisesRegex(ValueError,'explicit user option approval'):self.prefix(path)
+        record['user_explicit_option_approval']=False
+        proof=self.root/record['pre_prefix_confirmation']['path'];confirmation=c.core.read_json(proof)
+        confirmation['prefix_attempts']=1;dump(proof,confirmation)
+        record['pre_prefix_confirmation']['sha256']=c.core.file_sha(proof);dump(path,record)
+        with self.assertRaisesRegex(ValueError,'zero-attempt confirmation'):self.prefix(path)
+    def test_both_complete_readouts_fail_under_valid_clarification(self):
+        def alter(rows):
+            for row in rows:
+                row['full_text']=row['assistant_prefill']+'"selected": []}'
+                row['suffix_text']=row['full_text'][len(row['assistant_prefill']):]
+        self.mutate(alter,'PREFIX_CALIB');report=self.prefix(self.clarification())
+        self.assertEqual(report['status'],'HOLD_PREFIX_MEASUREMENT')
+        self.assertFalse(report['candidate_gate_passed'])
+        self.assertEqual(report['qualifying_readouts'],[])
         self.assertEqual(report['permission'],'NO_TRAINING')
     def test_registration_binds_two_starts_without_gpu_report(self):
         result=c.build_registration(self.root/'config.json',self.root/'DESIGN_FREEZE.json',self.root,

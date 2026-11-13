@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 from collections import Counter
 from decimal import Decimal
+from datetime import datetime
 import hashlib
 import importlib
 import json
@@ -24,6 +25,7 @@ sys.path.pop(0)
 core.require(Path(core.__file__).resolve() == (TOOLS/'satdose_core.py').resolve(), 'Shadowed SATDOSE helper')
 
 VIEWS = ('p_stable', 'p_revtie', 'p_placebo')
+PREFIX_RULE = 'strict_complete_gate_OR_sensitivity_complete_gate'
 
 
 def implementation_identity():
@@ -281,7 +283,45 @@ def analyze_dry(config, freeze, root, receipt, start, native_src):
                 raw=_file_ref(root,raw_path),completion_receipt=_file_ref(root,receipt_path))
 
 
-def analyze_prefix(config, freeze, root, receipt, start):
+def prefix_protocol_identity(config, freeze, root, clarification):
+    """Validate the separately recorded decision and its pre-PREFIX receipt.
+
+    This binds an external, contemporaneously recorded confirmation. It neither
+    changes DESIGN_FREEZE nor infers pre-call chronology from a post-run scan.
+    The caller must create both write-once records before any PREFIX attempt.
+    """
+    if clarification is None:
+        return None
+    cfg,_,root=_freeze(config,freeze,root)
+    clarification=Path(clarification).resolve(strict=True)
+    core.require(clarification.is_relative_to(root), 'Protocol clarification outside evidence root')
+    record=core.read_json(clarification)
+    expected=dict(experiment_id=cfg['experiment_id'],config_sha256=core.file_sha(config),
+                  design_freeze_sha256=core.file_sha(freeze))
+    core.require(record.get('schema')=='sr-satdose-prefix-protocol-clarification-v1', 'Wrong prefix clarification schema')
+    core.require(all(record.get(k)==v for k,v in expected.items()), 'Prefix clarification config/freeze identity mismatch')
+    core.require(record.get('decision_rule')==PREFIX_RULE, 'Unsupported prefix decision rule')
+    core.require(record.get('decision_origin')=='agent_interpretation_after_user_requested_judgment' and
+                 record.get('user_explicit_option_approval') is False,
+                 'Clarification must not misstate the agent interpretation as explicit user option approval')
+    confirmation_path=core.check_artifact(root,record['pre_prefix_confirmation'])
+    confirmation=core.read_json(confirmation_path)
+    core.require(confirmation.get('schema')=='sr-satdose-pre-prefix-confirmation-v1' and
+                 all(confirmation.get(k)==v for k,v in expected.items()), 'Pre-PREFIX confirmation identity mismatch')
+    core.require(confirmation.get('status')=='NO_PREFIX_ATTEMPTS_OBSERVED' and
+                 type(confirmation.get('prefix_attempts')) is int and confirmation['prefix_attempts']==0 and
+                 confirmation.get('prefix_allocations')==[], 'Missing pre-PREFIX zero-attempt confirmation')
+    checked_at=datetime.fromisoformat(confirmation['checked_at'].replace('Z','+00:00'))
+    core.require(checked_at.tzinfo is not None and checked_at.utcoffset() is not None, 'Confirmation time must include timezone')
+    return dict(clarification=_file_ref(root,clarification),pre_prefix_confirmation=_file_ref(root,confirmation_path),
+                decision_rule=PREFIX_RULE,decision_origin=record['decision_origin'],
+                user_explicit_option_approval=False,checked_at=confirmation['checked_at'],
+                original_design_freeze_unchanged=True,
+                chronology_basis='separate_pre_prefix_confirmation_record_not_a_post_run_inference')
+
+
+def analyze_prefix(config, freeze, root, receipt, start, clarification=None):
+    protocol=prefix_protocol_identity(config,freeze,root,clarification)
     cfg,frozen,root,requests,raw,cases,inputs,raw_path,receipt_path = _completed(
         config,freeze,root,receipt,start,'PREFIX_CALIB')
     rows=[];root_views={};structures={}
@@ -322,14 +362,16 @@ def analyze_prefix(config, freeze, root, receipt, start):
                                contrast_missing_bounds=[stable['bounds'][0]-revtie['bounds'][1],stable['bounds'][1]-revtie['bounds'][0]],
                                checks=checks,passed=all(checks.values()))
     # Literal OR applies to two COMPLETE readouts, never cherry-picked per view
-    # or per metric. The phrase needs a recorded protocol clarification before
-    # this diagnostic can be turned into a prefix admission claim.
+    # or per metric. A separately bound pre-PREFIX clarification is mandatory.
     candidate_passed=any(summaries[variant]['passed'] for variant in ('strict','sensitivity'))
+    status=('PENDING_PROTOCOL_CLARIFICATION' if protocol is None else
+            'PREFIX_METRICS_PASS_GPU_CHECK_STILL_REQUIRED' if candidate_passed else 'HOLD_PREFIX_MEASUREMENT')
     return dict(schema='sr-satdose-prefix-calibration-analysis-v1',start_seed=start,
-                status='PENDING_PROTOCOL_CLARIFICATION',
-                permission='NO_TRAINING',candidate_decision_rule='strict_complete_gate_OR_sensitivity_complete_gate',
+                status=status,protocol_clarification=protocol,
+                permission='NO_TRAINING',candidate_decision_rule=PREFIX_RULE,
                 candidate_gate_passed=candidate_passed,
-                protocol_question='Does the prefix gate accept either complete readout, or require the terminal-brace sensitivity readout?',
+                qualifying_readouts=[variant for variant in ('strict','sensitivity') if summaries[variant]['passed']],
+                protocol_question='A bound pre-PREFIX clarification record is required' if protocol is None else None,
                 readouts=summaries,rows=rows,config_sha256=core.file_sha(config),design_freeze_sha256=core.file_sha(freeze),
                 implementation=implementation_identity(),
                 raw=_file_ref(root,raw_path),completion_receipt=_file_ref(root,receipt_path))
@@ -372,6 +414,8 @@ def main(argv=None):
     for name in ('config','freeze','evidence-root','output'):parser.add_argument('--'+name,type=Path,required=True)
     parser.add_argument('--native-src',type=Path)
     parser.add_argument('--receipt',type=Path)
+    parser.add_argument('--protocol-clarification',type=Path,
+                        help='Separate pre-PREFIX clarification JSON; absent leaves PREFIX status PENDING')
     parser.add_argument('--start',type=int,choices=core.STARTS)
     parser.add_argument('--receipt-11031',type=Path);parser.add_argument('--receipt-11032',type=Path)
     args=parser.parse_args(argv)
@@ -385,7 +429,8 @@ def main(argv=None):
         if args.command=='dry':
             core.require(args.native_src is not None, 'Pinned native source required')
             result=analyze_dry(args.config,args.freeze,args.evidence_root,args.receipt,args.start,args.native_src)
-        else:result=analyze_prefix(args.config,args.freeze,args.evidence_root,args.receipt,args.start)
+        else:result=analyze_prefix(args.config,args.freeze,args.evidence_root,args.receipt,args.start,
+                                  clarification=args.protocol_clarification)
         write_once(args.output,result)
     print(json.dumps({k:v for k,v in result.items() if k in ('status','permission','start_seed','registration')},indent=2))
     return 2 if result['status'].startswith(('HOLD','PENDING')) else 0

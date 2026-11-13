@@ -37,8 +37,9 @@ See the dated admission report for the most recent observed progress.
   immutable freeze and source validation. CPU fixtures are not production data.
 - `analysis/calibration.py`: CPU analysis of completed DRY/PREFIX captures with
   fixed denominators and native score replay. Partial populations are refused.
-  PREFIX readouts remain pending the user's interpretation of the protocol's
-  strict-or-terminal-brace gate; no training permission is produced.
+  PREFIX uses either complete strict or complete terminal-brace readout passing,
+  with no mixing of favorable metrics. A separate pre-PREFIX clarification and
+  zero-attempt confirmation are required; no training permission is produced.
 - `execution/production.py`: independent native loss and gradient capture for
   sixteen complete G8 groups. It preserves the original numerical checks and
   captures gradients before and after clipping without accepting an optimizer.
