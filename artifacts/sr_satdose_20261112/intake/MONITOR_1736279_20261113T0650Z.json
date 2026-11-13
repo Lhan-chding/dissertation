@@ -1,0 +1,31 @@
+{
+  "checked_at": "2026-11-13T06:50:12.349818+00:00",
+  "job_id": 1736279,
+  "queue": {
+    "returncode": 0,
+    "stdout": "1736279|RUNNING|1:40:34|gpu-pro6000-9|gpu-pro6000-9",
+    "stderr": ""
+  },
+  "accounting": {
+    "returncode": 0,
+    "stdout": "1736279|RUNNING|0:0|01:40:34|gpu-pro6000-9\n1736279.batch|RUNNING|0:0|01:40:34|gpu-pro6000-9\n1736279.extern|RUNNING|0:0|01:40:34|gpu-pro6000-9\n1736279.0|RUNNING|0:0|01:40:33|gpu-pro6000-9",
+    "stderr": ""
+  },
+  "runs": {
+    "11031": {
+      "exists": true,
+      "complete_files": 388,
+      "raw_rows": 388
+    },
+    "11032": {
+      "exists": false
+    }
+  },
+  "stderr_tail": [
+    "[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)",
+    "[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)",
+    "[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)"
+  ],
+  "fatal_markers": [],
+  "filesystem_available_bytes": 197712293134336
+}

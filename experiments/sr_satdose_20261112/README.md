@@ -44,6 +44,13 @@ See the dated admission report for the most recent observed progress.
   sixteen complete G8 groups. It preserves the original numerical checks and
   captures gradients before and after clipping without accepting an optimizer.
   CPU agreement with diagnostics is verified; actual GPU replay is outstanding.
+- `execution/diagnostic_inputs.py`: both complete passing DRY populations are
+  revalidated and rescored before projection to the frozen probe/witness groups.
+  It preserves original request order and uses native-known authorised c.
+- `execution/shadow_replay.py`: fixed four-slot, write-once shadow claims. Each
+  production slot requires CUDA, original R24 identity, independently recorded
+  restore/capture evidence and one fresh native Adam step on isolated tensors.
+  Unknown attempts cannot be automatically retried. CPU fixtures are separate.
 
 The formal training transaction publisher/driver, production gradient replay
 acceptance, canary/recovery integration and terminal MAIN runner are not yet
@@ -51,9 +58,10 @@ implemented end-to-end. Do not invoke the old training CLI as a substitute.
 Do not manufacture DESIGN_FREEZE or GPU_VERIFICATION from test fixtures.
 The GPU diagnostic driver must bind the frozen root/group/request ordering,
 verify saved-tensor storage after backward, and use actual runtime accounting.
-Shadow acceptance still needs two independent R24 restores per start, GPU Adam
-on isolated tensors, and a global maximum of four actual shadow steps. Existing
-same-copy shadow repetition alone does not establish restored replay.
+Shadow acceptance still needs actual execution of two independent R24 restores
+per start, GPU Adam on isolated tensors, and a global maximum of four actual
+shadow steps. Existing same-copy shadow repetition alone does not establish
+restored replay; a JSON assertion alone does not establish a real reload.
 
 ## CPU validation
 

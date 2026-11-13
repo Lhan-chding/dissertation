@@ -2,6 +2,8 @@
 
 状态：DESIGN_FROZEN_DRY_RUNNING_PENDING_GPU_ADMISSION。用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 
+最新小时检查：2026-11-13 06:50 UTC（新加坡14:50），1736279仍RUNNING，elapsed01:40:34；11031逐请求完成文件及raw均为388条，11032尚未创建。总388/1280（30.3%），未见HOLD/完整校准回执或stderr致命标记。记录见intake/MONITOR_1736279_20261113T0650Z.json。共享文件系统可用空间数值不等于项目配额，不能据此推定用户项目空间已宽裕。
+
 ## 已闭合的证据
 
 - 用户提供 `.worktrees/sr-ord-train-20261103/sr_ord_train/execution/final_delivery_20261111/SR_ORD_TRAIN_RESULTS_20261111.zip`，SHA256 为 `b6a560fd0d74e9fbca0d0000b74dcc622b749c400e4f45fb211f6301e29d89d2`，与执行包绑定完全吻合。原文件名中的 `(1)` 不影响身份。
@@ -30,6 +32,8 @@
 PREFIX文档“严格或限定补括号后”在两套整套读法结论不同时存在歧义；在任何PREFIX生成前询问后，用户回复“你认为该如何选择”。代理向用户说明并按原文“或”解释为：任一整套通过即可，不混view/指标，双套完整报告。这不是用户显式选择选项的批准，澄清记录明确区分。2026-11-13 06:28 UTC服务器两次确认PREFIX分配及运行目录均为空，随后将独立澄清文件write-once保存至prepared_data_v1/protocol_clarifications；原DESIGN_FREEZE未改。对应原始字节在本地protocol_clarifications镜像，远端写入回执在intake/PREFIX_PROTOCOL_REMOTE_RECEIPT_20261113.json。分析器须绑定此凭据才能判定PREFIX指标；缺失时PENDING，任何情况下均不直接授予训练许可。接入后全套104项CPU测试通过、零跳过，见intake/prefix_clarification_cpu_tests_20261113.log。
 
 等待DRY期间新增execution/production.py独立原生数值核心，供后续生产事务与诊断比较共用生产路径。它没有optimizer能力，捕获裁剪前后梯度，保留原128等权累计和数值哨兵；独立审查已核对原实现。加入该模块后全套101项CPU测试通过、零跳过，见intake/production_core_cpu_tests_20261113.log。它尚未部署/运行GPU；不能把合成CPU一致性当作真实生产梯度GPU验收。真实两次恢复的影子Adam、短序列单卡/两卡对照、1536压力验收及完整GPU诊断driver仍待实现与执行。
+
+随后补齐固定诊断输入适配和四槽shadow executor；两份完整DRY均通过后才准备GPU输入，严格使用冻结root/group/request顺序与native-known c。shadow生产入口强制CUDA/496 LoRA、单一技术绑定、固定四槽目录、独占claim和失败UNKNOWN不重试，trial1核验不同restore/capture实例及原梯度/实际Adam结果一致。实际恢复过程仍须外层driver日志证明。两模块经独立审查，合计全套124项CPU测试通过、零跳过，见intake/diagnostic_inputs_shadow_cpu_tests_20261113.log。尚无GPU执行或准入声明，原冻结runtime保持不变。
 
 ## 服务器位置
 
