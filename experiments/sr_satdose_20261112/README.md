@@ -83,6 +83,18 @@ See the dated admission report for the most recent observed progress.
   no production authority is provided. Historical validation rechecks original
   CAPTURE/BEGIN bytes and the native update linked to the production capture.
 
+- `execution/canary_replay.py`: fixed baseline/new-process reload phases over all
+  128 original step2 rows. A private read-only lease holds the real transaction
+  lock, with full-chain verification at both boundaries. No four-path aggregate
+  PASS, process launcher or step3 permission is supplied.
+- `execution/evaluation_loader.py`: source-bound load/audit-only START and committed
+  checkpoint branches. It copies only policy, preserves the original reference
+  and caller RNG, constructs no optimizer, and leaves generation/MAIN closed.
+- `execution/allzero_check.py`: two fixed GPU technical slots use the actual native
+  objective with explicitly zero diagnostic advantage, preserving original J and
+  all captured data. Three full128 passes record PG-zero, unweighted KL and total;
+  shared diagnostic gates reject failed or unknown slots. No Adam or generation.
+
 The complete training launcher/admission authority, production gradient replay acceptance, real GPU
 canary/recovery integration and terminal MAIN runner are not yet implemented
 end-to-end. Do not invoke the old training CLI as a substitute.

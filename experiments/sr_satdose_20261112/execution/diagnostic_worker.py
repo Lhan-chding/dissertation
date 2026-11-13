@@ -145,9 +145,53 @@ def _prefix_gate(root, binding, *, current_prefix=False):
         _bound(root, raw_ref)
 
 
+def _allzero_gate(root, binding, binding_sha):
+    """Bound optional technical branch; occupied slots always fail closed."""
+    directory = root / 'allzero_check'
+    slots = {str(start): f'allzero_check/start-{start}' for start in (11031,11032)}
+    if not directory.exists() and not directory.is_symlink() and not (
+            {'allzero_slots','max_allzero_attempts'} & set(binding)):
+        return  # Existing releases without this new, never-attempted branch.
+    require(binding.get('allzero_slots') == slots and binding.get('max_allzero_attempts') == 2,
+            'Allzero slot exists or is declared without its fixed technical binding')
+    if not directory.exists() and not directory.is_symlink():
+        return
+    require(directory.is_dir() and directory.resolve() == directory, 'Invalid allzero slot root')
+    require({p.name for p in directory.iterdir()} <= {'start-11031','start-11032'}, 'Unknown allzero slot')
+    names = ('ORIGINAL_INPUTS.json','PG_ZERO.pt','KL.pt','TOTAL.pt','COMPARISON.json','ACCOUNTING.json')
+    for start, relative in slots.items():
+        path = root / relative
+        if not path.exists() and not path.is_symlink():
+            continue
+        require(path.is_dir() and path.resolve() == path and not (path/'HOLD.json').exists() and
+                (path/'COMPLETE.json').is_file(), 'Allzero HOLD/UNKNOWN blocks diagnostic model construction')
+        complete = shadow.read_json(path/'COMPLETE.json')
+        require(complete.get('schema') == 'sr-satdose-allzero-check-v1' and
+                complete.get('status') == 'ALLZERO_CAPTURE_COMPLETE_NOT_GPU_ADMISSION' and
+                complete.get('start_seed') == int(start) and complete.get('technical_binding_sha256') == binding_sha and
+                complete.get('permission') == 'NO_TRAINING' and complete.get('close',{}).get('closed') is True and
+                complete.get('optimizer_steps') == complete.get('scheduler_steps') == complete.get('new_generations') == 0 and
+                complete.get('parameter_updates') == 0 and complete.get('explicit_diagnostic_advantage') == 0.0 and
+                complete.get('original_scores_unchanged') is True and complete.get('sequence_denominator') == 128 and
+                complete.get('trainable_tensors') == 496 and complete.get('measured_forward_sequences') ==
+                dict(training_policy=384,training_reference=384), 'Invalid allzero completion identity/counts')
+        comparison = complete.get('comparison',{})
+        require(comparison.get('pg_exact_zero') is True and comparison.get('kl_retained') is True and
+                type(comparison.get('recomposition_relative_l2')) in (int,float) and
+                math.isfinite(comparison['recomposition_relative_l2']) and
+                0 <= comparison['recomposition_relative_l2'] <= 1e-5, 'Invalid allzero comparison')
+        require(set(complete.get('evidence',{})) == set(names), 'Incomplete allzero evidence inventory')
+        for name in names:
+            ref = complete['evidence'][name]
+            require(ref['path'] == str((path/name).relative_to(root)), 'Relocated allzero evidence')
+            _bound(root,ref)
+        require(shadow.read_json(path/'COMPARISON.json') == comparison, 'Allzero comparison receipt differs')
+
+
 def _no_holds(root, binding, *, current=None, binding_sha, current_prefix=False):
     """Reject HOLD and crash-left UNKNOWN slots; only the active internal slot is exempt."""
     _prefix_gate(root, binding, current_prefix=current_prefix)
+    _allzero_gate(root, binding, binding_sha)
     equivalence_slots = {str(start): f'backend_equivalence/start-{start}' for start in (11031,11032)}
     require(binding.get('backend_equivalence_slots') == equivalence_slots and
             binding.get('max_backend_equivalence_attempts') == 2,

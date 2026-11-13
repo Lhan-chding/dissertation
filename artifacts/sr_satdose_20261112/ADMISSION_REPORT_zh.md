@@ -57,6 +57,8 @@ PREFIX文档“严格或限定补括号后”在两套整套读法结论不同�
 
 新增独立storage_ready与training_step组件：前者只接受外部明确绑定预算，实时读取Ceph祖先配额与statvfs最小余量并作限定写/fsync探测；后者固定128条原始生成、native评分、一次postclip梯度应用、一次Adam/scheduler并原子提交。没有默认生产准入authority，不提供训练CLI。独立审查发现并修复NATIVE_UPDATE历史链遗漏、CAPTURE/BEGIN历史复验遗漏及可覆写源码检查三个缺口；完整240项CPU测试通过、零跳过，见intake/training_step_reviewed_cpu_tests_20261113.log。真实GPU/完整准入authority/step2新进程恢复canary/实际预算仍未验收，不因CPU通过开放训练。
 
+随后补齐canary_replay、evaluation_loader、allzero_check：canary固定128条step2原轨迹，锁内只读lease并在首尾重验完整提交链，真实恢复入口强制新进程builder，仍不生成四路径总PASS；eval仅加载policy而无Adam或训练RNG恢复，生成/MAIN保持关闭；allzero每起点三个完整128回放（384policy+384reference），仅显式把诊断advantage置0，不改J/原始行，PG严格0、0.02KL重组沿用1e-5门槛，零Adam/生成。allzero失败/UNKNOWN已接共享GPU门禁。独立审查完成，完整275项CPU测试通过、零跳过，见intake/canary_eval_allzero_cpu_tests_20261113.log。以上尚未部署或真实GPU执行；仍缺实际1536压力方案/验收、GPU独立汇总、训练准入authority/进程launcher、四路径canary汇总及终态MAIN执行，不因CPU通过赋予准入。
+
 ## 服务器位置
 
 `/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112`：原输入包、已SHA验证历史包及解压副本、CPU审计、implementation_preflight、prepared_data_v1。

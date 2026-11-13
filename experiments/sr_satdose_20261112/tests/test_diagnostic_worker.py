@@ -376,6 +376,40 @@ class WorkerTests(unittest.TestCase):
                 self.run_trial()
         self.assertFalse(self.handles)
 
+    def test_allzero_unknown_or_hold_blocks_shadow_constructor(self):
+        self.b.update(allzero_slots={str(s):f'allzero_check/start-{s}' for s in (11031,11032)},max_allzero_attempts=2)
+        path=self.root/'allzero_check/start-11031';path.mkdir(parents=True)
+        with self.assertRaisesRegex(PermissionError,'Allzero HOLD/UNKNOWN'):self.run_trial()
+        (path/'HOLD.json').write_text('{"synthetic_cpu_only":true}')
+        with self.assertRaisesRegex(PermissionError,'Allzero HOLD/UNKNOWN'):self.run_trial()
+        self.assertFalse(self.handles);self.assertEqual(self.shadow_calls,0)
+
+    def test_allzero_occupied_directory_without_binding_never_bypasses_gate(self):
+        (self.root/'allzero_check/start-11031').mkdir(parents=True)
+        with self.assertRaisesRegex(PermissionError,'without its fixed technical binding'):self.run_trial()
+        self.assertFalse(self.handles);self.assertEqual(self.shadow_calls,0)
+
+    def test_allzero_complete_control_fixture_requires_all_bound_evidence(self):
+        # Control-schema fixture only: bytes are NOT real GPU tensor evidence.
+        self.b.update(allzero_slots={str(s):f'allzero_check/start-{s}' for s in (11031,11032)},max_allzero_attempts=2)
+        path=self.root/'allzero_check/start-11031';path.mkdir(parents=True)
+        comparison=dict(pg_exact_zero=True,kl_retained=True,recomposition_relative_l2=0.)
+        names=('ORIGINAL_INPUTS.json','PG_ZERO.pt','KL.pt','TOTAL.pt','COMPARISON.json','ACCOUNTING.json')
+        for name in names:(path/name).write_text(json.dumps(comparison) if name=='COMPARISON.json' else 'synthetic CPU control fixture')
+        complete=dict(schema='sr-satdose-allzero-check-v1',status='ALLZERO_CAPTURE_COMPLETE_NOT_GPU_ADMISSION',
+            start_seed=11031,technical_binding_sha256='c'*64,permission='NO_TRAINING',close=dict(closed=True),
+            optimizer_steps=0,scheduler_steps=0,new_generations=0,parameter_updates=0,explicit_diagnostic_advantage=0.,
+            original_scores_unchanged=True,sequence_denominator=128,trainable_tensors=496,
+            measured_forward_sequences=dict(training_policy=384,training_reference=384),comparison=comparison,
+            evidence={name:w._ref(self.root,path/name) for name in names})
+        (path/'COMPLETE.json').write_text(json.dumps(complete))
+        w._no_holds(self.root,self.b,binding_sha='c'*64)
+        with self.assertRaisesRegex(PermissionError,'identity/counts'):
+            w._no_holds(self.root,self.b,binding_sha='d'*64)
+        (path/'KL.pt').write_text('tampered')
+        with self.assertRaisesRegex(PermissionError,'evidence changed'):self.run_trial()
+        self.assertFalse(self.handles);self.assertEqual(self.shadow_calls,0)
+
 
 
 if __name__=='__main__':unittest.main()
