@@ -1,0 +1,24 @@
+{
+  "checked_at": "2026-11-13T10:53:57.845667+00:00",
+  "job_id": 1736279,
+  "status": "SSH_UNREACHABLE_JOB_STATE_UNKNOWN",
+  "attempts": 2,
+  "connection_timeout_seconds": 15,
+  "error": "ssh: connect to host 10.97.216.128 port 22: Operation timed out",
+  "local_registered_vpn_observation": {
+    "name": "SD-WAN",
+    "status": "Disconnected",
+    "limitation": "This does not independently identify the university VPN route"
+  },
+  "last_successful_observation": {
+    "checked_at": "2026-11-13T09:51:53.159221+00:00",
+    "job_state": "RUNNING",
+    "complete_responses": 1094,
+    "planned_responses": 1280,
+    "first_start_passed": true,
+    "second_start_completed": 454
+  },
+  "model_calls_triggered": 0,
+  "resubmitted": false,
+  "next_action": "User network recovery needed; then immediately verify current queue and full completion receipt"
+}
