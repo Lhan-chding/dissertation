@@ -29,6 +29,10 @@ FREEZE_SHA = '6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0'
 CONFIG_SHA = '58841639b0f36a69ac77824bc8c683ef7fbeb5c50a41e9975b89b54880f4ecfe'
 CLARIFICATION_SHA = 'eac7a44cffd2ba159c5b209faad6bc52eda05c1a843306d659dbdc38dada0337'
 PROOF_SHA = 'cd0ca568144bcd6f4058c9c09ec0dfc7c5345cfd6ee1916bfd6443b4e50100d8'
+# Original uploaded ZIP SHA256, independently matched to intake/PACKAGE_INTEGRITY.json:
+# 376398bb095147fac2ed921d5d7e070d5f9459b2c8c2cbc3ce38a0115e745527.
+# This pins that ZIP's manifest, not a newly generated technical-release manifest.
+ORIGINAL_PACKAGE_MANIFEST_SHA = '8aba3c1bb891279e48e087d3465a3be32349f793ff183df414e66d73c52e217b'
 STARTS = (11031, 11032)
 MANIFESTS = ('train', 'dry', 'dev', 'prefix_calib', 'main')
 
@@ -65,7 +69,7 @@ def verify_release(receipt_path, expected_sha):
     required = {'execution/prefix_control.py', 'execution/diagnostic_worker.py',
                 'scheduling/run_prefix.sh', 'analysis/calibration.py',
                 'supplied_package/tools/satdose_core.py', 'supplied_package/config/experiment.json',
-                'supplied_package/config/source_bindings.json'}
+                'supplied_package/config/source_bindings.json', 'supplied_package/SHA256SUMS.json'}
     actual = source_inventory(root)
     core.require(required <= set(actual) and actual == receipt.get('sources'),
                  'Deployed technical release full inventory/SHA differs')
@@ -102,9 +106,18 @@ def verify_deployment():
     spec = importlib.machinery.PathFinder.find_spec('runtime.dry_driver', [str(runtime)])
     core.require(spec is not None and Path(spec.origin).resolve() == runtime/'dry_driver.py',
                  'Frozen driver import path differs')
-    for rel in ('supplied_package/tools/satdose_core.py', 'supplied_package/config/source_bindings.json'):
-        core.require(core.file_sha(PACKAGE/rel) == core.file_sha(root/'code'/rel),
-                     'Release helper/scorer pins differ from frozen deployment')
+    # Frozen deployment contains runtime/config files, not tools. Authenticate
+    # the unchanged helper against the independently pinned uploaded manifest.
+    supplied = PACKAGE/'supplied_package'
+    manifest_path = supplied/'SHA256SUMS.json'
+    core.require(core.file_sha(manifest_path) == ORIGINAL_PACKAGE_MANIFEST_SHA,
+                 'Original package manifest SHA differs')
+    helper_ref = core.read_json(manifest_path)['tools/satdose_core.py']
+    helper = core.check_artifact(supplied, dict(path='tools/satdose_core.py', sha256=helper_ref['sha256']))
+    core.require(helper.stat().st_size == helper_ref['bytes'], 'Original helper byte count differs')
+    rel = 'supplied_package/config/source_bindings.json'
+    core.require(core.file_sha(PACKAGE/rel) == core.file_sha(root/'code'/rel),
+                 'Release scorer pins differ from frozen deployment')
     lock_path = core.check_artifact(root, frozen['artifacts']['source_lock'])
     lock = core.read_json(lock_path)
     for field, inventory in (('native_src', 'native_files'), ('legacy_root', 'legacy_files')):

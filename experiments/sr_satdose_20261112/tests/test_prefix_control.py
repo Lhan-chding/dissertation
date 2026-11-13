@@ -177,7 +177,7 @@ class PrefixBindingAndSequenceTests(unittest.TestCase):
         for relative in ('execution/prefix_control.py', 'execution/diagnostic_worker.py',
                          'scheduling/run_prefix.sh', 'analysis/calibration.py',
                          'supplied_package/tools/satdose_core.py', 'supplied_package/config/experiment.json',
-                         'supplied_package/config/source_bindings.json'):
+                         'supplied_package/config/source_bindings.json', 'supplied_package/SHA256SUMS.json'):
             target = release/relative; target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(PACKAGE/relative, target)
         record = dict(schema='sr-satdose-prefix-technical-release-v1', status='AUDITED_FOR_PREFIX_CALIB_ONLY',
@@ -385,8 +385,14 @@ class PrefixBindingAndSequenceTests(unittest.TestCase):
         shutil.copyfile(PACKAGE/'supplied_package/config/experiment.json', config)
         runtime = base/'code/runtime'; runtime.mkdir()
         (runtime/'dry_driver.py').write_text('# synthetic CPU import-origin fixture\n')
-        for rel in ('supplied_package/tools/satdose_core.py', 'supplied_package/config/source_bindings.json'):
-            target = base/'code'/rel; target.parent.mkdir(parents=True, exist_ok=True); shutil.copyfile(PACKAGE/rel, target)
+        rel = 'supplied_package/config/source_bindings.json'
+        shutil.copyfile(PACKAGE/rel, base/'code'/rel)
+        # Match the actual frozen deployment: tools were never deployed here.
+        self.assertFalse((base/'code/supplied_package/tools').exists())
+        release = self.root/'technical_release'
+        for rel in ('supplied_package/tools/satdose_core.py', 'supplied_package/SHA256SUMS.json',
+                    'supplied_package/config/source_bindings.json'):
+            target = release/rel; target.parent.mkdir(parents=True, exist_ok=True); shutil.copyfile(PACKAGE/rel, target)
         native = base/'native'; native.mkdir(); (native/'native.py').write_text('# native fixture\n')
         legacy = base/'legacy'; legacy.mkdir(); (legacy/'legacy.py').write_text('# legacy fixture\n')
         lock = base/'runtime_source_lock.json'
@@ -397,8 +403,24 @@ class PrefixBindingAndSequenceTests(unittest.TestCase):
             config_sha256=p.CONFIG_SHA, runtime_sources={'dry_driver.py': core.file_sha(runtime/'dry_driver.py')},
             artifacts={'source_lock': dict(path=lock.name, sha256=core.file_sha(lock)),
                        'runtime': dict(path='code/runtime/dry_driver.py', sha256=core.file_sha(runtime/'dry_driver.py'))}))
-        with patch.object(p, 'BASE', base), patch.object(p, 'FREEZE_SHA', core.file_sha(freeze)):
+        with patch.object(p, 'BASE', base), patch.object(p, 'FREEZE_SHA', core.file_sha(freeze)), \
+             patch.object(p, 'PACKAGE', release):
             self.assertEqual(p.verify_deployment()['native_src'], native)
+            helper = release/'supplied_package/tools/satdose_core.py'; original = helper.read_bytes()
+            helper.write_bytes(original+b'\n# tampered helper\n')
+            with self.assertRaisesRegex(ValueError, 'artifact hash mismatch'):
+                p.verify_deployment()
+            helper.write_bytes(original)
+            manifest = release/'supplied_package/SHA256SUMS.json'; original_manifest = manifest.read_bytes()
+            manifest.write_text('{}')
+            with self.assertRaisesRegex(ValueError, 'Original package manifest SHA'):
+                p.verify_deployment()
+            manifest.write_bytes(original_manifest)
+            pins = release/'supplied_package/config/source_bindings.json'; original_pins = pins.read_bytes()
+            pins.write_text('{}')
+            with self.assertRaisesRegex(ValueError, 'scorer pins differ'):
+                p.verify_deployment()
+            pins.write_bytes(original_pins)
             (native/'extra.py').write_text('# unexpected\n')
             with self.assertRaisesRegex(ValueError, 'Native source inventory'):
                 p.verify_deployment()

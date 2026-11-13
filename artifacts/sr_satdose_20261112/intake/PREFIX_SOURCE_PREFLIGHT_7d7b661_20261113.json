@@ -1,0 +1,9 @@
+{
+  "status": "SOURCE_PREFLIGHT_FAILED_BEFORE_MODEL_CALLS",
+  "release": "calibration_code_7d7b661",
+  "reason": "Frozen deployment intentionally has runtime/config but no supplied_package/tools/satdose_core.py; controller used wrong location",
+  "model_calls": 0,
+  "prefix_attempts_created": 0,
+  "training_permission": false,
+  "action": "Preserve existing release and issue new reviewed release binding original package manifest"
+}
