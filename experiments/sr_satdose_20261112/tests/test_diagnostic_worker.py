@@ -410,6 +410,23 @@ class WorkerTests(unittest.TestCase):
         with self.assertRaisesRegex(PermissionError,'evidence changed'):self.run_trial()
         self.assertFalse(self.handles);self.assertEqual(self.shadow_calls,0)
 
+    def test_unbound_evaluation_slot_blocks_shared_worker_before_build(self):
+        path=self.root/'evaluation_loader_checks/start-11031';path.mkdir(parents=True)
+        with self.assertRaisesRegex(PermissionError,'fixed technical binding'):self.run_trial()
+        self.assertFalse(self.handles)
+
+    def test_declared_evaluation_unknown_or_hold_blocks_shared_worker(self):
+        sources={name:dict(path='/synthetic/'+name+'.py',sha256='0'*64)
+                 for name in ('evaluation_loader','training_state','training_transaction')}
+        self.b.update(evaluation_loader_slots={str(s):f'evaluation_loader_checks/start-{s}' for s in (11031,11032)},
+            max_evaluation_loader_attempts=2,evaluation_execution_sources=sources,
+            expected_evaluation_execution_sources_sha256=w._sha_object(sources),code=sources)
+        path=self.root/'evaluation_loader_checks/start-11032';path.mkdir(parents=True)
+        with self.assertRaisesRegex(PermissionError,'HOLD/UNKNOWN'):self.run_trial()
+        (path/'HOLD.json').write_text('{}')
+        with self.assertRaisesRegex(PermissionError,'HOLD/UNKNOWN'):self.run_trial()
+        self.assertFalse(self.handles)
+
 
 
 if __name__=='__main__':unittest.main()

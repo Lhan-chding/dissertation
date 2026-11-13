@@ -59,6 +59,10 @@ PREFIX文档“严格或限定补括号后”在两套整套读法结论不同�
 
 随后补齐canary_replay、evaluation_loader、allzero_check：canary固定128条step2原轨迹，锁内只读lease并在首尾重验完整提交链，真实恢复入口强制新进程builder，仍不生成四路径总PASS；eval仅加载policy而无Adam或训练RNG恢复，生成/MAIN保持关闭；allzero每起点三个完整128回放（384policy+384reference），仅显式把诊断advantage置0，不改J/原始行，PG严格0、0.02KL重组沿用1e-5门槛，零Adam/生成。allzero失败/UNKNOWN已接共享GPU门禁。独立审查完成，完整275项CPU测试通过、零跳过，见intake/canary_eval_allzero_cpu_tests_20261113.log。以上尚未部署或真实GPU执行；仍缺实际1536压力方案/验收、GPU独立汇总、训练准入authority/进程launcher、四路径canary汇总及终态MAIN执行，不因CPU通过赋予准入。
 
+10:13 UTC服务器独立CPU核验全部28936条冻结请求，经实际FrozenRegistry逐条检查图片SHA、身份与public字段；模型输入仅prompt/image_file/image_sha256，未混入gold/world/native_score等私有元数据，原注册PREFIX强制证据仍按实验设计保留。零模型调用/生成/Adam。远端回执SHA5b4e0a3e2677f93b5fb83b9b498dcc0bbe4df5d3b71e2b67f7dc6a9cba0ab5b1，本地精确字节镜像cpu_evidence/FROZEN_PUBLIC_BOUNDARY.json已复核同SHA；不据此声称GPU准入。
+
+进一步补齐evaluation_probe固定两槽GPU入口，只有完整DRY与PREFIX均通过才允许调用START/R24只读loader一次；记录实际496FP32/GPU/源文件与caller RNG，零forward/生成/Adam，HOLD/UNKNOWN进入共享门禁。范围明确仅START/R24，不冒认训练后checkpoint的GPU加载。独立审查完成，完整288项CPU测试通过、零跳过，见intake/evaluation_probe_full_cpu_tests_20261113.log。尚未部署或运行真实GPU；等待DRY完成，不继续扩展未使用执行层。
+
 ## 服务器位置
 
 `/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112`：原输入包、已SHA验证历史包及解压副本、CPU审计、implementation_preflight、prepared_data_v1。

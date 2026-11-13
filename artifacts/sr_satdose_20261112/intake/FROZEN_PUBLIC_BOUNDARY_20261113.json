@@ -1,0 +1,40 @@
+{
+  "schema": "sr-satdose-frozen-public-boundary-audit-v1",
+  "status": "FROZEN_REQUEST_BOUNDARIES_VERIFIED_CPU_ONLY",
+  "permission": "NO_TRAINING",
+  "checked_at": "2026-11-13T10:13:58.450236+00:00",
+  "design_freeze_sha256": "6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0",
+  "backend_source_sha256": "d2754602e06dc7ba44297dcc73e960f1079d11eb5154dd117978fce85cf5e66c",
+  "request_counts": {
+    "TRAIN": 12288,
+    "DRY": 1280,
+    "DEV": 1512,
+    "PREFIX_CALIB": 96,
+    "MAIN": 13760
+  },
+  "total_requests": 28936,
+  "ordered_request_projection_sha256": "a94316268da48b21c5853689165300a98e519b3606dfcbb42693c3b32e326f9d",
+  "model_input_fields": [
+    "image_file",
+    "image_sha256",
+    "prompt"
+  ],
+  "private_metadata_fields_absent": [
+    "answer",
+    "authorised",
+    "gold",
+    "native_score",
+    "query",
+    "selected",
+    "unauthorised",
+    "witness",
+    "world"
+  ],
+  "images_verified_by_registered_requests": true,
+  "prefill_note": "Original registered forced PREFIX prefills remain intentional experimental inputs; no semantic claim that those contain no correct evidence",
+  "model_calls": 0,
+  "new_generations": 0,
+  "optimizer_steps": 0,
+  "remote_path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/cpu_evidence_20261113/FROZEN_PUBLIC_BOUNDARY.json",
+  "remote_sha256": "5b4e0a3e2677f93b5fb83b9b498dcc0bbe4df5d3b71e2b67f7dc6a9cba0ab5b1"
+}

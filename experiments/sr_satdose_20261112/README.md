@@ -95,6 +95,11 @@ See the dated admission report for the most recent observed progress.
   all captured data. Three full128 passes record PG-zero, unweighted KL and total;
   shared diagnostic gates reject failed or unknown slots. No Adam or generation.
 
+- `execution/evaluation_probe.py`: two fixed START/R24 GPU load-only slots after
+  both complete DRY gates and passing PREFIX. Actual inventory, source files,
+  caller RNG and cleanup are recorded. Shared gates reject failed/unknown slots;
+  this does not verify future trained checkpoints or grant admission.
+
 The complete training launcher/admission authority, production gradient replay acceptance, real GPU
 canary/recovery integration and terminal MAIN runner are not yet implemented
 end-to-end. Do not invoke the old training CLI as a substitute.

@@ -188,10 +188,114 @@ def _allzero_gate(root, binding, binding_sha):
         require(shadow.read_json(path/'COMPARISON.json') == comparison, 'Allzero comparison receipt differs')
 
 
+
+def _evaluation_loader_gate(root, binding, binding_sha):
+    """Optional fixed START-only branch; occupied unbound/UNKNOWN slots block all GPU work."""
+    directory = root / 'evaluation_loader_checks'
+    fields = {'evaluation_loader_slots','max_evaluation_loader_attempts',
+              'evaluation_execution_sources','expected_evaluation_execution_sources_sha256'}
+    if not directory.exists() and not directory.is_symlink() and not fields.intersection(binding):
+        return
+    slots = {str(start):f'evaluation_loader_checks/start-{start}' for start in (11031,11032)}
+    require(binding.get('evaluation_loader_slots') == slots and
+            binding.get('max_evaluation_loader_attempts') == 2,
+            'Evaluation-loader slot exists or is declared without fixed technical binding')
+    sources = binding.get('evaluation_execution_sources',{})
+    require(set(sources) == {'evaluation_loader','training_state','training_transaction'} and
+            _sha_object(sources) == binding.get('expected_evaluation_execution_sources_sha256') and
+            all(binding.get('code',{}).get(name) == ref for name,ref in sources.items()),
+            'Evaluation-loader execution source binding differs')
+    if not directory.exists() and not directory.is_symlink():
+        return
+    require(directory.is_dir() and directory.resolve() == directory, 'Invalid evaluation-loader slot root')
+    require({p.name for p in directory.iterdir()} <= {'start-11031','start-11032'}, 'Unknown evaluation-loader slot')
+    names = ('CLAIM.json','GPU_IDENTITY.json','TENSOR_INVENTORY.json','SOURCES.json',
+             'CALLER_STATE.json','LOAD_AUDIT.json','CLOSE.json','audit/EVALUATION_LOAD.json')
+    for start,relative in slots.items():
+        path = root / relative
+        if not path.exists() and not path.is_symlink():continue
+        require(path.is_dir() and path.resolve() == path and not (path/'HOLD.json').exists() and
+                (path/'COMPLETE.json').is_file(), 'Evaluation-loader HOLD/UNKNOWN blocks GPU construction')
+        complete = shadow.read_json(path/'COMPLETE.json')
+        require(complete.get('schema') == 'sr-satdose-evaluation-loader-check-v1' and
+                complete.get('status') == 'EVALUATION_START_LOAD_CAPTURE_COMPLETE_NOT_GPU_ADMISSION' and
+                complete.get('start_seed') == int(start) and complete.get('technical_binding_sha256') == binding_sha and
+                complete.get('evaluation_sources_sha256') == binding['expected_evaluation_execution_sources_sha256'] and
+                complete.get('permission') == 'NO_TRAINING' and complete.get('tested_scope') == 'START_R24_ONLY' and
+                complete.get('trained_checkpoint_gpu_verified') is False and complete.get('model_constructions') == 1 and
+                complete.get('trainable_tensors') == 496 and complete.get('caller_rng_preserved') is True and
+                complete.get('training_rng_restored') is False and all(type(complete.get(key)) is int and complete[key] == 0
+                for key in ('forward_sequences','backward_calls','new_generations','optimizer_steps','scheduler_steps','parameter_updates')),
+                'Invalid evaluation-loader completion scope/counts')
+        require(set(complete.get('evidence',{})) == set(names), 'Incomplete evaluation-loader evidence inventory')
+        for name in names:
+            ref = complete['evidence'][name]
+            require(ref['path'] == str((path/name).relative_to(root)), 'Relocated evaluation-loader evidence')
+            _bound(root,ref)
+        config = shadow.read_json(_bound(root,binding['config']))
+        source = config['start_bindings'][start]
+        audit = shadow.read_json(path/'LOAD_AUDIT.json')
+        expected = dict(experiment_id=shadow.EXPERIMENT,start_seed=int(start),arm='START',step=0,
+                        policy_sha256=source['policy_sha256'],reference_sha256=source['reference_sha256'])
+        require(all(audit.get(key) == value for key,value in expected.items()) and audit.get('model_calls') == 0 and
+                audit.get('optimizer_constructed') is False and audit.get('training_rng_restored') is False and
+                audit.get('permission') == 'LOAD_AUDIT_ONLY_NO_GENERATION_NO_MAIN_RELEASE' and
+                complete.get('policy_sha256') == expected['policy_sha256'] and
+                complete.get('reference_sha256') == expected['reference_sha256'], 'Evaluation-loader R24 endpoint differs')
+        close = shadow.read_json(path/'CLOSE.json')
+        require(close == dict(audit,closed=True) == complete.get('close'), 'Evaluation-loader close differs')
+        inventory = shadow.read_json(path/'TENSOR_INVENTORY.json')
+        require(inventory.get('trainable_tensors') == 496 and inventory.get('reference_tensors') == 496 and
+                inventory.get('reference_dtype') == 'torch.float32' and inventory.get('dtype') == 'torch.float32' and
+                inventory.get('device') == 'cuda:0' and inventory.get('policy_sha256') == expected['policy_sha256'] and
+                inventory.get('reference_sha256') == expected['reference_sha256'] and
+                inventory.get('optimizer_created') is False and inventory.get('scheduler_created') is False and
+                inventory.get('measured_forward_sequences') == inventory.get('measured_backward_calls') == 0 and
+                len(inventory.get('tensors',[])) == 496 and
+                len({row['name'] for row in inventory['tensors']}) == 496 and
+                all('lora_' in row['name'] and row['dtype'] == 'torch.float32' and row['device'] == 'cuda:0'
+                    for row in inventory['tensors']), 'Evaluation-loader tensor inventory differs')
+        caller = shadow.read_json(path/'CALLER_STATE.json')
+        require(caller.get('caller_rng_preserved') is True and caller.get('training_rng_restored') is False and
+                caller.get('optimizer_created') is False and caller.get('scheduler_created') is False and
+                isinstance(caller.get('rng_before_sha256'),str) and len(caller['rng_before_sha256']) == 64 and
+                all(c in '0123456789abcdef' for c in caller['rng_before_sha256']) and
+                caller.get('rng_before_sha256') == caller.get('rng_after_sha256'), 'Evaluation-loader caller state differs')
+        files = shadow.read_json(path/'SOURCES.json')
+        lock = shadow.read_json(_bound(root,binding['source_lock']))
+        original_files = {source['original_state_path']:source['state_sha256']}
+        original_files.update({str(Path(lock['parent_path'])/name):sha for name,sha in lock['parent_files'].items()})
+        require(files.get('unchanged') is True and files.get('before') == files.get('after') == original_files,
+                'Evaluation-loader source files changed')
+        execution = {name:binding['code'][name] for name in
+                     ('evaluation_probe','evaluation_loader','training_state','training_transaction')}
+        require(files.get('execution_before') == files.get('execution_after') == execution,
+                'Evaluation-loader execution source changed')
+        receipt = shadow.read_json(path/'audit/EVALUATION_LOAD.json')
+        require(receipt.get('schema') == 'sr-satdose-evaluation-loader-v1' and
+                receipt.get('selection') == {key:expected[key] for key in ('experiment_id','start_seed','arm','step')} and
+                receipt.get('original_files') == files['before'] and receipt.get('caller_rng_sha256') == caller['rng_before_sha256'] and
+                receipt.get('evaluation_sources_sha256') == binding['expected_evaluation_execution_sources_sha256'] and
+                receipt.get('design_freeze_sha256') == binding['design_freeze']['sha256'] and
+                receipt.get('source_lock_sha256') == binding['source_lock']['sha256'] and receipt.get('gpu_acceptance') is False,
+                'Evaluation-loader receipt chain differs')
+        claim = shadow.read_json(path/'CLAIM.json')
+        require(claim.get('status') == 'RESERVED_UNKNOWN_NO_RETRY' and claim.get('start_seed') == int(start) and
+                claim.get('technical_binding_sha256') == binding_sha and claim.get('endpoint_arm') == 'START' and
+                claim.get('endpoint_step') == 0 and claim.get('max_model_constructions') == 1 and all(claim.get(key) == 0
+                for key in ('max_new_generations','max_forward_sequences','max_backward_calls','max_optimizer_steps','max_scheduler_steps')),
+                'Evaluation-loader allocation claim differs')
+        gpu = shadow.read_json(path/'GPU_IDENTITY.json')
+        require(gpu == complete.get('actual_gpu_identity') and gpu.get('visible_gpu_count') == 2 and
+                gpu.get('arithmetic_device') == 0 and len(gpu.get('devices',[])) == 2,
+                'Evaluation-loader GPU identity differs')
+
+
 def _no_holds(root, binding, *, current=None, binding_sha, current_prefix=False):
     """Reject HOLD and crash-left UNKNOWN slots; only the active internal slot is exempt."""
     _prefix_gate(root, binding, current_prefix=current_prefix)
     _allzero_gate(root, binding, binding_sha)
+    _evaluation_loader_gate(root, binding, binding_sha)
     equivalence_slots = {str(start): f'backend_equivalence/start-{start}' for start in (11031,11032)}
     require(binding.get('backend_equivalence_slots') == equivalence_slots and
             binding.get('max_backend_equivalence_attempts') == 2,
