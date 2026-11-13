@@ -1,0 +1,17 @@
+{
+  "DRY_METRICS_11031.json": {
+    "bytes": 1452878,
+    "sha256": "2933361d4179e1cac3eff6d3b439a7c355f05426edce3c16f34815350cf2de10",
+    "server_path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/postcapture_20261113/DRY_METRICS_11031.json"
+  },
+  "CALIBRATION_COMPLETE.json": {
+    "bytes": 110068,
+    "sha256": "278ad90f8514aa461e3aa216d2dfa09b1f95d861c90296d62d30075dac34331c",
+    "server_path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/runs/DRY_11031/CALIBRATION_COMPLETE.json"
+  },
+  "analysis.log": {
+    "bytes": 114,
+    "sha256": "7d8f7b689de213674b7a9d96fb0fda415b287f2e6b69a129f23020bdeff516a7",
+    "server_path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/postcapture_20261113/DRY_METRICS_11031.log"
+  }
+}

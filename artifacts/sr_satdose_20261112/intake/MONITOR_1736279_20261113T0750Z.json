@@ -1,0 +1,25 @@
+{
+  "checked_at": "2026-11-13T07:50:47.106135+00:00",
+  "job_id": 1736279,
+  "queue": {
+    "returncode": 0,
+    "stdout": "1736279|RUNNING|2:41:09|gpu-pro6000-9|gpu-pro6000-9",
+    "stderr": ""
+  },
+  "accounting": {
+    "returncode": 0,
+    "stdout": "1736279|RUNNING|0:0|02:41:09|gpu-pro6000-9\n1736279.batch|RUNNING|0:0|02:41:09|gpu-pro6000-9\n1736279.extern|RUNNING|0:0|02:41:09|gpu-pro6000-9\n1736279.0|RUNNING|0:0|02:41:08|gpu-pro6000-9",
+    "stderr": ""
+  },
+  "runs": {
+    "11031": {
+      "exists": true,
+      "complete_files": 631,
+      "raw_rows": 631
+    },
+    "11032": {
+      "exists": false
+    }
+  },
+  "fatal_markers": []
+}

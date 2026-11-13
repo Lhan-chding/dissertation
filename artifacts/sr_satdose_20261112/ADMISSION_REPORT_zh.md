@@ -2,7 +2,9 @@
 
 状态：DESIGN_FROZEN_DRY_RUNNING_PENDING_GPU_ADMISSION。用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 
-最新小时检查：2026-11-13 06:50 UTC（新加坡14:50），1736279仍RUNNING，elapsed01:40:34；11031逐请求完成文件及raw均为388条，11032尚未创建。总388/1280（30.3%），未见HOLD/完整校准回执或stderr致命标记。记录见intake/MONITOR_1736279_20261113T0650Z.json。共享文件系统可用空间数值不等于项目配额，不能据此推定用户项目空间已宽裕。
+06:50 UTC（新加坡14:50）小时检查：1736279仍RUNNING，elapsed01:40:34；11031逐请求完成文件及raw均为388条，11032尚未创建。总388/1280（30.3%），未见HOLD/完整校准回执或stderr致命标记。记录见intake/MONITOR_1736279_20261113T0650Z.json。共享文件系统可用空间数值不等于项目配额，不能据此推定用户项目空间已宽裕。
+
+07:50 UTC小时检查为631/1280、仍RUNNING且无致命标记；临近起点完成后核验到11031完整640条回执，已执行固定CPU复评分并通过全部DRY信号门槛：signal_groups=46/64、dose_mean=2.1085743106、dose_lower95=1.7422572904、direction_fraction=1、unknown_rate=0.00390625、J1_source0_rate=0.0131578947、length=0/640。完整报告及回执已SHA校验下载至dry_calibration/11031，分析报告SHA2933361d4179e1cac3eff6d3b439a7c355f05426edce3c16f34815350cf2de10。11032尚待完整校准；第一起点通过不等于GPU准入，更不代表正式训练已开始。
 
 ## 已闭合的证据
 
@@ -36,6 +38,8 @@ PREFIX文档“严格或限定补括号后”在两套整套读法结论不同�
 随后补齐固定诊断输入适配和四槽shadow executor；两份完整DRY均通过后才准备GPU输入，严格使用冻结root/group/request顺序与native-known c。shadow生产入口强制CUDA/496 LoRA、单一技术绑定、固定四槽目录、独占claim和失败UNKNOWN不重试，trial1核验不同restore/capture实例及原梯度/实际Adam结果一致。实际恢复过程仍须外层driver日志证明。两模块经独立审查，合计全套124项CPU测试通过、零跳过，见intake/diagnostic_inputs_shadow_cpu_tests_20261113.log。尚无GPU执行或准入声明，原冻结runtime保持不变。
 
 单slot diagnostic_worker现已实现，独立进程重载R24，在新audit目录迁移原CAPTURE/BEGIN字节并记录SHA，执行真实生产捕获、独立组件/半集/witness重复、storage及实际accounting校验，最多调用一次受限shadow。全局锁和未完成slot阻断防止UNKNOWN后继续；模型构造前核验完整实际runtime源码及import路径。审查发现的源码覆盖和SIGKILL后未知slot缺口已修复并复核。全套137项CPU测试通过、零跳过，见intake/diagnostic_worker_cpu_tests_20261113.log。此为本地实现，尚未创建技术执行绑定或运行GPU诊断；短序列单/双GPU对照、1536压力、总GPU准入以及后续正式训练仍未完成。
+
+2026-11-13 07:21 UTC将已提交a2c1836的52文件、312414字节诊断包部署至独立prepared_data_v1/diagnostic_code_a2c1836，所有文件SHA核验，现有DRY代码未改。服务器CLI导入帮助成功，并以CPU核验实际7个runtime文件完整匹配冻结、PREFIX事前规则绑定有效；未读取raw或调用模型。部署回执为intake/DIAGNOSTIC_CODE_DEPLOYMENT_20261113.json。尚未创建TECHNICAL_EXECUTION_BINDING或提交诊断作业，须等待两起点完整DRY门禁。
 
 ## 服务器位置
 
