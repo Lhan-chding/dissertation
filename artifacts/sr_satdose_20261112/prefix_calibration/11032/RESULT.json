@@ -1,0 +1,2848 @@
+{
+  "claim": {
+    "path": "prefix_waiver_control/CLAIM.json",
+    "sha256": "5437a525ad05ce77ad5e9f2bdd5855d7384cb46f5b5119190f12ff503b0914c3"
+  },
+  "config_sha256": "58841639b0f36a69ac77824bc8c683ef7fbeb5c50a41e9975b89b54880f4ecfe",
+  "design_freeze_sha256": "6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0",
+  "gate_decision": "PASS_USER_OVERRIDE",
+  "new_responses": 48,
+  "original_release": {
+    "path": "execution_releases/PREFIX_RELEASE_734e921.json",
+    "sha256": "fd8f7a780af3e841f891cac95683a5c71e0151551dc89142afd696202a0b713d"
+  },
+  "original_result": {
+    "path": "prefix_control/RESULT.json",
+    "sha256": "d4027f82a6b4bdcdfe944dce9ee90912486fcc460503ff4da07c3fd3ac434ddd"
+  },
+  "permission": "NO_TRAINING",
+  "prefix_analyses": {
+    "11031": {
+      "candidate_decision_rule": "strict_complete_gate_OR_sensitivity_complete_gate",
+      "candidate_gate_passed": false,
+      "completion_receipt": {
+        "path": "runs/PREFIX_CALIB_11031/CALIBRATION_COMPLETE.json",
+        "sha256": "81de15772d6ae70b99eaea4de570beedd1b30d83d91e03e9edc985cc7375c5b4"
+      },
+      "config_sha256": "58841639b0f36a69ac77824bc8c683ef7fbeb5c50a41e9975b89b54880f4ecfe",
+      "design_freeze_sha256": "6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0",
+      "implementation": {
+        "analysis_sha256": "b795b4f077e877838be92523fbf484bb8077956d24c8d3a83cd390862c4d3481",
+        "helper_sha256": "7edd0e228adf02e6273a7bd62f8166003a7da4aa55628825d1b00e743e161e64"
+      },
+      "permission": "NO_TRAINING",
+      "protocol_clarification": {
+        "checked_at": "2026-11-13T06:28:27.342693+00:00",
+        "chronology_basis": "separate_pre_prefix_confirmation_record_not_a_post_run_inference",
+        "clarification": {
+          "path": "protocol_clarifications/PREFIX_PROTOCOL_CLARIFICATION_20261113.json",
+          "sha256": "eac7a44cffd2ba159c5b209faad6bc52eda05c1a843306d659dbdc38dada0337"
+        },
+        "decision_origin": "agent_interpretation_after_user_requested_judgment",
+        "decision_rule": "strict_complete_gate_OR_sensitivity_complete_gate",
+        "original_design_freeze_unchanged": true,
+        "pre_prefix_confirmation": {
+          "path": "protocol_clarifications/PRE_PREFIX_CONFIRMATION_20261113.json",
+          "sha256": "cd0ca568144bcd6f4058c9c09ec0dfc7c5345cfd6ee1916bfd6443b4e50100d8"
+        },
+        "user_explicit_option_approval": false
+      },
+      "protocol_question": null,
+      "qualifying_readouts": [],
+      "raw": {
+        "path": "runs/PREFIX_CALIB_11031/PREFIX_RAW.jsonl",
+        "sha256": "e577eae1a4ab138ec885806822ead19d545bdef0dfda762fe8ddbe2475f89204"
+      },
+      "readouts": {
+        "sensitivity": {
+          "checks": {
+            "all_views_known_at_least_14": false,
+            "stable_correct_at_least_12": true,
+            "stable_minus_revtie_at_least_4": true
+          },
+          "contrast_missing_bounds": [
+            0.6875,
+            0.9375
+          ],
+          "passed": false,
+          "stable_minus_revtie_count": 14,
+          "stable_minus_revtie_rate": 0.875,
+          "views": {
+            "p_placebo": {
+              "bounds": [
+                0.9375,
+                1.0
+              ],
+              "brace_eligible": 8,
+              "correct": 15,
+              "correct_rate": 0.9375,
+              "denominator": 16,
+              "known": 15,
+              "known_gate": true,
+              "length_count": 0,
+              "unknown": 1,
+              "unknown_rate": 0.0625
+            },
+            "p_revtie": {
+              "bounds": [
+                0.0625,
+                0.25
+              ],
+              "brace_eligible": 6,
+              "correct": 1,
+              "correct_rate": 0.0625,
+              "denominator": 16,
+              "known": 13,
+              "known_gate": false,
+              "length_count": 0,
+              "unknown": 3,
+              "unknown_rate": 0.1875
+            },
+            "p_stable": {
+              "bounds": [
+                0.9375,
+                1.0
+              ],
+              "brace_eligible": 7,
+              "correct": 15,
+              "correct_rate": 0.9375,
+              "denominator": 16,
+              "known": 15,
+              "known_gate": true,
+              "length_count": 0,
+              "unknown": 1,
+              "unknown_rate": 0.0625
+            }
+          }
+        },
+        "strict": {
+          "checks": {
+            "all_views_known_at_least_14": false,
+            "stable_correct_at_least_12": false,
+            "stable_minus_revtie_at_least_4": true
+          },
+          "contrast_missing_bounds": [
+            0.0,
+            1.0
+          ],
+          "passed": false,
+          "stable_minus_revtie_count": 8,
+          "stable_minus_revtie_rate": 0.5,
+          "views": {
+            "p_placebo": {
+              "bounds": [
+                0.4375,
+                1.0
+              ],
+              "brace_eligible": 8,
+              "correct": 7,
+              "correct_rate": 0.4375,
+              "denominator": 16,
+              "known": 7,
+              "known_gate": false,
+              "length_count": 0,
+              "unknown": 9,
+              "unknown_rate": 0.5625
+            },
+            "p_revtie": {
+              "bounds": [
+                0.0,
+                0.5
+              ],
+              "brace_eligible": 6,
+              "correct": 0,
+              "correct_rate": 0.0,
+              "denominator": 16,
+              "known": 8,
+              "known_gate": false,
+              "length_count": 0,
+              "unknown": 8,
+              "unknown_rate": 0.5
+            },
+            "p_stable": {
+              "bounds": [
+                0.5,
+                1.0
+              ],
+              "brace_eligible": 7,
+              "correct": 8,
+              "correct_rate": 0.5,
+              "denominator": 16,
+              "known": 8,
+              "known_gate": false,
+              "length_count": 0,
+              "unknown": 8,
+              "unknown_rate": 0.5
+            }
+          }
+        }
+      },
+      "rows": [
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0000/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0000",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Table",
+              "Vase",
+              "Lamp"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Table",
+              "Vase",
+              "Lamp"
+            ]
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0000/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0000",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 1,
+            "selected": null
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0000/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0000",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Table",
+              "Vase",
+              "Lamp"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Table",
+              "Vase",
+              "Lamp"
+            ]
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0001/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0001",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Shelf",
+              "Desk",
+              "Table"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Shelf",
+              "Desk",
+              "Table"
+            ]
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0001/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0001",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Shelf",
+              "Desk",
+              "Plate"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Shelf",
+              "Desk",
+              "Plate"
+            ]
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0001/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0001",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Shelf",
+              "Desk",
+              "Table"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Shelf",
+              "Desk",
+              "Table"
+            ]
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0002/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0002",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Table",
+              "Clock"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Table",
+              "Clock"
+            ]
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0002/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0002",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Table",
+              "Bowl"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Table",
+              "Bowl"
+            ]
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0002/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0002",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Table",
+              "Clock"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Table",
+              "Clock"
+            ]
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0003/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0003",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Bowl",
+              "Stool",
+              "Desk"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Bowl",
+              "Stool",
+              "Desk"
+            ]
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0003/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0003",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Bowl",
+              "Stool",
+              "Spoon"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0003/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0003",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Bowl",
+              "Stool",
+              "Desk"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Bowl",
+              "Stool",
+              "Desk"
+            ]
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0004/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0004",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Desk",
+              "Shelf"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0004/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0004",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Desk",
+              "Clock"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Desk",
+              "Clock"
+            ]
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0004/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0004",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Desk",
+              "Shelf"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0005/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0005",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Tray",
+              "Clock",
+              "Lamp"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Tray",
+              "Clock",
+              "Lamp"
+            ]
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0005/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0005",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Tray",
+              "Clock",
+              "Shelf"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Tray",
+              "Clock",
+              "Shelf"
+            ]
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0005/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0005",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Tray",
+              "Clock",
+              "Lamp"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Tray",
+              "Clock",
+              "Lamp"
+            ]
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0006/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0006",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Book",
+              "Bowl",
+              "Mug"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Book",
+              "Bowl",
+              "Mug"
+            ]
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0006/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0006",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Mug",
+              "Book",
+              "Vase"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0006/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0006",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Book",
+              "Bowl",
+              "Mug"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Book",
+              "Bowl",
+              "Mug"
+            ]
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0007/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0007",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Vase",
+              "Tray",
+              "Desk"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Vase",
+              "Tray",
+              "Desk"
+            ]
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0007/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0007",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Vase",
+              "Tray",
+              "Chair"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Vase",
+              "Tray",
+              "Chair"
+            ]
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0007/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0007",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Vase",
+              "Tray",
+              "Desk"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0008/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0008",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Vase",
+              "Watch",
+              "Clock",
+              "Desk"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Vase",
+              "Watch",
+              "Clock",
+              "Desk"
+            ]
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0008/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0008",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Vase",
+              "Watch",
+              "Stool",
+              "Desk"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Vase",
+              "Watch",
+              "Stool",
+              "Desk"
+            ]
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0008/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0008",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Vase",
+              "Watch",
+              "Clock",
+              "Desk"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Vase",
+              "Watch",
+              "Clock",
+              "Desk"
+            ]
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0009/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0009",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Tray",
+              "Vase",
+              "Stool"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0009/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0009",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Tray",
+              "Stool",
+              "Spoon"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Tray",
+              "Stool",
+              "Spoon"
+            ]
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0009/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0009",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Tray",
+              "Vase",
+              "Stool"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0010/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0010",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Desk",
+              "Shelf",
+              "Watch",
+              "Plate"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0010/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0010",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Desk",
+              "Shelf",
+              "Chair",
+              "Plate"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0010/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0010",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Desk",
+              "Shelf",
+              "Watch",
+              "Plate"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0011/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0011",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Desk",
+              "Spoon",
+              "Chair",
+              "Tray"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0011/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0011",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0011/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0011",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Desk",
+              "Spoon",
+              "Chair",
+              "Tray"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0012/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0012",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Shelf",
+              "Desk",
+              "Watch",
+              "Vase"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0012/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0012",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Shelf",
+              "Desk",
+              "Lamp",
+              "Stool"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Shelf",
+              "Desk",
+              "Lamp",
+              "Stool"
+            ]
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0012/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0012",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Shelf",
+              "Desk",
+              "Watch",
+              "Vase"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0013/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0013",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0013/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0013",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0013/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0013",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0014/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0014",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Shelf",
+              "Plate",
+              "Bowl",
+              "Spoon"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0014/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0014",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Shelf",
+              "Plate",
+              "Bowl",
+              "Stool"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0014/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0014",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Shelf",
+              "Plate",
+              "Bowl",
+              "Spoon"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0015/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0015",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Chair",
+              "Desk",
+              "Vase",
+              "Lamp"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0015/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0015",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Chair",
+              "Desk",
+              "Vase",
+              "Lamp"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0015/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0015",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Chair",
+              "Desk",
+              "Vase",
+              "Lamp"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_placebo"
+        }
+      ],
+      "schema": "sr-satdose-prefix-calibration-analysis-v1",
+      "start_seed": 11031,
+      "status": "HOLD_PREFIX_MEASUREMENT"
+    },
+    "11032": {
+      "candidate_decision_rule": "strict_complete_gate_OR_sensitivity_complete_gate",
+      "candidate_gate_passed": true,
+      "completion_receipt": {
+        "path": "runs/PREFIX_CALIB_11032/CALIBRATION_COMPLETE.json",
+        "sha256": "a12546d342ba3e403b33fd5fd81971bc0918bf1bef029e56beffe378331f6820"
+      },
+      "config_sha256": "58841639b0f36a69ac77824bc8c683ef7fbeb5c50a41e9975b89b54880f4ecfe",
+      "design_freeze_sha256": "6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0",
+      "implementation": {
+        "analysis_sha256": "b795b4f077e877838be92523fbf484bb8077956d24c8d3a83cd390862c4d3481",
+        "helper_sha256": "7edd0e228adf02e6273a7bd62f8166003a7da4aa55628825d1b00e743e161e64"
+      },
+      "permission": "NO_TRAINING",
+      "protocol_clarification": {
+        "checked_at": "2026-11-13T06:28:27.342693+00:00",
+        "chronology_basis": "separate_pre_prefix_confirmation_record_not_a_post_run_inference",
+        "clarification": {
+          "path": "protocol_clarifications/PREFIX_PROTOCOL_CLARIFICATION_20261113.json",
+          "sha256": "eac7a44cffd2ba159c5b209faad6bc52eda05c1a843306d659dbdc38dada0337"
+        },
+        "decision_origin": "agent_interpretation_after_user_requested_judgment",
+        "decision_rule": "strict_complete_gate_OR_sensitivity_complete_gate",
+        "original_design_freeze_unchanged": true,
+        "pre_prefix_confirmation": {
+          "path": "protocol_clarifications/PRE_PREFIX_CONFIRMATION_20261113.json",
+          "sha256": "cd0ca568144bcd6f4058c9c09ec0dfc7c5345cfd6ee1916bfd6443b4e50100d8"
+        },
+        "user_explicit_option_approval": false
+      },
+      "protocol_question": null,
+      "qualifying_readouts": [
+        "sensitivity"
+      ],
+      "raw": {
+        "path": "runs/PREFIX_CALIB_11032/PREFIX_RAW.jsonl",
+        "sha256": "17147427f34a535136b0e78e56fdbd472f3dc7986fb5917833cb6dc12276aab1"
+      },
+      "readouts": {
+        "sensitivity": {
+          "checks": {
+            "all_views_known_at_least_14": true,
+            "stable_correct_at_least_12": true,
+            "stable_minus_revtie_at_least_4": true
+          },
+          "contrast_missing_bounds": [
+            0.75,
+            0.9375
+          ],
+          "passed": true,
+          "stable_minus_revtie_count": 13,
+          "stable_minus_revtie_rate": 0.8125,
+          "views": {
+            "p_placebo": {
+              "bounds": [
+                0.875,
+                1.0
+              ],
+              "brace_eligible": 9,
+              "correct": 14,
+              "correct_rate": 0.875,
+              "denominator": 16,
+              "known": 14,
+              "known_gate": true,
+              "length_count": 0,
+              "unknown": 2,
+              "unknown_rate": 0.125
+            },
+            "p_revtie": {
+              "bounds": [
+                0.0625,
+                0.125
+              ],
+              "brace_eligible": 7,
+              "correct": 1,
+              "correct_rate": 0.0625,
+              "denominator": 16,
+              "known": 15,
+              "known_gate": true,
+              "length_count": 0,
+              "unknown": 1,
+              "unknown_rate": 0.0625
+            },
+            "p_stable": {
+              "bounds": [
+                0.875,
+                1.0
+              ],
+              "brace_eligible": 9,
+              "correct": 14,
+              "correct_rate": 0.875,
+              "denominator": 16,
+              "known": 14,
+              "known_gate": true,
+              "length_count": 0,
+              "unknown": 2,
+              "unknown_rate": 0.125
+            }
+          }
+        },
+        "strict": {
+          "checks": {
+            "all_views_known_at_least_14": false,
+            "stable_correct_at_least_12": false,
+            "stable_minus_revtie_at_least_4": true
+          },
+          "contrast_missing_bounds": [
+            -0.1875,
+            1.0
+          ],
+          "passed": false,
+          "stable_minus_revtie_count": 5,
+          "stable_minus_revtie_rate": 0.3125,
+          "views": {
+            "p_placebo": {
+              "bounds": [
+                0.3125,
+                1.0
+              ],
+              "brace_eligible": 9,
+              "correct": 5,
+              "correct_rate": 0.3125,
+              "denominator": 16,
+              "known": 5,
+              "known_gate": false,
+              "length_count": 0,
+              "unknown": 11,
+              "unknown_rate": 0.6875
+            },
+            "p_revtie": {
+              "bounds": [
+                0.0,
+                0.5
+              ],
+              "brace_eligible": 7,
+              "correct": 0,
+              "correct_rate": 0.0,
+              "denominator": 16,
+              "known": 8,
+              "known_gate": false,
+              "length_count": 0,
+              "unknown": 8,
+              "unknown_rate": 0.5
+            },
+            "p_stable": {
+              "bounds": [
+                0.3125,
+                1.0
+              ],
+              "brace_eligible": 9,
+              "correct": 5,
+              "correct_rate": 0.3125,
+              "denominator": 16,
+              "known": 5,
+              "known_gate": false,
+              "length_count": 0,
+              "unknown": 11,
+              "unknown_rate": 0.6875
+            }
+          }
+        }
+      },
+      "rows": [
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0000/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0000",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Table",
+              "Vase",
+              "Lamp"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Table",
+              "Vase",
+              "Lamp"
+            ]
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0000/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0000",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Table",
+              "Vase",
+              "Plate"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0000/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0000",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Table",
+              "Vase",
+              "Lamp"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Table",
+              "Vase",
+              "Lamp"
+            ]
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0001/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0001",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Shelf",
+              "Desk",
+              "Table"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Shelf",
+              "Desk",
+              "Table"
+            ]
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0001/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0001",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Shelf",
+              "Desk",
+              "Plate"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Shelf",
+              "Desk",
+              "Plate"
+            ]
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0001/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0001",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Shelf",
+              "Desk",
+              "Table"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Shelf",
+              "Desk",
+              "Table"
+            ]
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0002/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0002",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Table",
+              "Clock"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0002/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0002",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Table",
+              "Bowl"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Table",
+              "Bowl"
+            ]
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0002/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0002",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Table",
+              "Clock"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0003/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0003",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Bowl",
+              "Stool",
+              "Desk"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Bowl",
+              "Stool",
+              "Desk"
+            ]
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0003/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0003",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Bowl",
+              "Stool",
+              "Spoon"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0003/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0003",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Bowl",
+              "Stool",
+              "Desk"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Bowl",
+              "Stool",
+              "Desk"
+            ]
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0004/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0004",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Desk",
+              "Shelf"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0004/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0004",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Desk",
+              "Clock"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0004/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0004",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Desk",
+              "Shelf"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0005/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0005",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Tray",
+              "Clock",
+              "Lamp"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Tray",
+              "Clock",
+              "Lamp"
+            ]
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0005/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0005",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Tray",
+              "Clock",
+              "Shelf"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Tray",
+              "Clock",
+              "Shelf"
+            ]
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0005/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0005",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Tray",
+              "Clock",
+              "Lamp"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Tray",
+              "Clock",
+              "Lamp"
+            ]
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0006/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0006",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Book",
+              "Bowl",
+              "Mug"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Book",
+              "Bowl",
+              "Mug"
+            ]
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0006/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0006",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Mug",
+              "Book",
+              "Vase"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Mug",
+              "Book",
+              "Vase"
+            ]
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0006/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0006",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Book",
+              "Bowl",
+              "Mug"
+            ]
+          },
+          "strict": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Book",
+              "Bowl",
+              "Mug"
+            ]
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0007/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0007",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Vase",
+              "Tray",
+              "Desk"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0007/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0007",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Vase",
+              "Tray",
+              "Chair"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0007/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0007",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Vase",
+              "Tray",
+              "Desk"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0008/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0008",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Vase",
+              "Watch",
+              "Clock",
+              "Desk"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0008/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0008",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Vase",
+              "Watch",
+              "Stool",
+              "Desk"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0008/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0008",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Vase",
+              "Watch",
+              "Clock",
+              "Desk"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0009/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0009",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Tray",
+              "Vase",
+              "Stool"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0009/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0009",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Tray",
+              "Stool",
+              "Spoon"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Tray",
+              "Stool",
+              "Spoon"
+            ]
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0009/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0009",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Frame",
+              "Tray",
+              "Vase",
+              "Stool"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0010/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0010",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Desk",
+              "Shelf",
+              "Watch",
+              "Plate"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0010/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0010",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Desk",
+              "Shelf",
+              "Chair",
+              "Plate"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Desk",
+              "Shelf",
+              "Chair",
+              "Plate"
+            ]
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0010/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0010",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Desk",
+              "Shelf",
+              "Watch",
+              "Plate"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0011/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0011",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Desk",
+              "Spoon",
+              "Chair",
+              "Tray"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0011/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0011",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Desk",
+              "Spoon",
+              "Vase",
+              "Tray"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Desk",
+              "Spoon",
+              "Vase",
+              "Tray"
+            ]
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0011/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0011",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Desk",
+              "Spoon",
+              "Chair",
+              "Tray"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0012/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0012",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Shelf",
+              "Desk",
+              "Watch",
+              "Vase"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0012/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0012",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Shelf",
+              "Desk",
+              "Lamp",
+              "Stool"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Shelf",
+              "Desk",
+              "Lamp",
+              "Stool"
+            ]
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0012/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0012",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Shelf",
+              "Desk",
+              "Watch",
+              "Vase"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0013/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0013",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0013/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0013",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "balanced",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0013/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0013",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0014/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0014",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0014/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0014",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Shelf",
+              "Plate",
+              "Bowl",
+              "Stool"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": null,
+          "brace_eligible": 0,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0014/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0014",
+          "sensitivity": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_placebo"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0015/p_stable/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0015",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Chair",
+              "Desk",
+              "Vase",
+              "Lamp"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_stable"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0015/p_revtie/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0015",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Chair",
+              "Desk",
+              "Vase",
+              "Lamp"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_revtie"
+        },
+        {
+          "appended_char": "}",
+          "brace_eligible": 1,
+          "finish_reason": "eos",
+          "request_id": "SAT1/PREFIX_CALIB/11032/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0015/p_placebo/d00",
+          "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0015",
+          "sensitivity": {
+            "S_hit": 1,
+            "S_known": 1,
+            "json_valid": 1,
+            "selected": [
+              "Chair",
+              "Desk",
+              "Vase",
+              "Lamp"
+            ]
+          },
+          "strict": {
+            "S_hit": 0,
+            "S_known": 0,
+            "json_valid": 0,
+            "selected": null
+          },
+          "view": "p_placebo"
+        }
+      ],
+      "schema": "sr-satdose-prefix-calibration-analysis-v1",
+      "start_seed": 11032,
+      "status": "PREFIX_METRICS_PASS_GPU_CHECK_STILL_REQUIRED"
+    }
+  },
+  "preflight": {
+    "path": "prefix_waiver_control/PREFLIGHT.json",
+    "sha256": "b3c67509c4656ea841810c9ff87d7d11622a460f9b8d41386f0b5f8e6819882e"
+  },
+  "release": {
+    "path": "execution_releases/PREFIX_CONTINUATION_RELEASE_0e5ba19.json",
+    "sha256": "c41c6892403148de7027a4ad7085ddc95e22837605a4f85d202ce13e65ffafc2"
+  },
+  "resampled_responses": 0,
+  "responses": 96,
+  "schema": "sr-satdose-prefix-waiver-continuation-v1",
+  "source_inventory_sha256": "7136e75dc8eb5c8f89f7783904d5c543d5e4af4b7b8381b938aa9c0961f0d1a8",
+  "status": "PREFIX_CAPTURE_COMPLETE_WITH_AUTHORIZED_MEASUREMENT_WAIVER",
+  "waiver": {
+    "path": "protocol_clarifications/PREFIX_GATE_WAIVER_20261114.json",
+    "sha256": "36012b46494f4fcb3409f4816156406caad7ae1ad65c4688b972b75c83d73783"
+  }
+}

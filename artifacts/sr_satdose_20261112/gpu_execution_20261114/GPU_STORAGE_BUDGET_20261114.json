@@ -1,0 +1,12 @@
+{
+  "schema": "sr-satdose-storage-budget-v1",
+  "scope": "GPU_DIAGNOSTICS_ONLY",
+  "experiment_id": "SR-SATDOSE-1-20261112",
+  "evidence_root": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1",
+  "design_freeze_sha256": "6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0",
+  "required_bytes": 11114315776,
+  "created_at_utc": "2026-11-14T15:30:47.346499+00:00",
+  "expires_at_utc": "2026-11-21T15:30:47.346499+00:00",
+  "max_observation_age_seconds": 300,
+  "rationale": "58 fixed FP32 inventories plus equal serialization/temp allowance and 1 GiB records; engineering allowance, not reservation. Live Ceph/statvfs and fsync checks required before each of ten stages."
+}

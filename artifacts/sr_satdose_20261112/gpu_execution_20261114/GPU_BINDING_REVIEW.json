@@ -1,0 +1,13 @@
+{
+  "checked_at_utc": "2026-11-14T15:33:49.634355+00:00",
+  "status": "INDEPENDENT_GPU_BINDING_REVIEW_PASS",
+  "binding_sha256": "cf7da7f08e5cb11c5458cab1200fd5a2465a529a31d2258f6cc45cbe6efe73c5",
+  "budget_sha256": "4bcc7bc07d3c07aa263a937f3e6ddd265e23c8c76ffc8bfe0550ac0f6463bcd6",
+  "verified_code_pins": 14,
+  "verified_release_files": 69,
+  "fixed_stages": 10,
+  "max_shadow_optimizer_steps": 4,
+  "scope": "Local independent binding/source/slot/authorization/budget contract review; no GPU execution",
+  "blocking_findings": [],
+  "permission": "NO_TRAINING"
+}

@@ -1,0 +1,213 @@
+{
+  "status": "GPU_BINDING_DRAFT_AFTER_COMPLETE_PREFIX_AUDIT_NOT_PUBLISHED",
+  "checked_at_utc": "2026-11-14T15:30:47.346499+00:00",
+  "prefix_audit": {
+    "status": "PREFIX_WAIVER_CONTINUATION_AUDITED_NO_TRAINING",
+    "gate_decision": "PASS_USER_OVERRIDE",
+    "permission": "NO_TRAINING",
+    "waiver": {
+      "path": "protocol_clarifications/PREFIX_GATE_WAIVER_20261114.json",
+      "sha256": "36012b46494f4fcb3409f4816156406caad7ae1ad65c4688b972b75c83d73783"
+    },
+    "continuation": {
+      "path": "prefix_waiver_control/RESULT.json",
+      "sha256": "6bb7c58eb71d9211bec6a186d101ed74c85df2a6af6aa4c97cade9d4e687dfa6"
+    },
+    "responses": 96,
+    "new_responses": 48,
+    "resampled_responses": 0,
+    "original_measurements_preserved": true,
+    "candidate_gate_passed": {
+      "11031": false,
+      "11032": true
+    },
+    "other_gates_unchanged": true,
+    "main_confirmatory_claims": "must disclose post-outcome PREFIX calibration waiver; no claim of original preregistered calibration pass"
+  },
+  "binding": {
+    "schema": "sr-satdose-technical-execution-v1",
+    "mode": "production",
+    "experiment_id": "SR-SATDOSE-1-20261112",
+    "experiment_root": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1",
+    "design_freeze": {
+      "path": "DESIGN_FREEZE.json",
+      "sha256": "6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0"
+    },
+    "config": {
+      "path": "code/supplied_package/config/experiment.json",
+      "sha256": "58841639b0f36a69ac77824bc8c683ef7fbeb5c50a41e9975b89b54880f4ecfe"
+    },
+    "source_lock": {
+      "path": "runtime_source_lock.json",
+      "sha256": "70745bd49eec9fc8dbd3f4fb42db13c24ca37a84bc0289f775fb593c85fd8c76"
+    },
+    "prefix_result": {
+      "path": "prefix_control/RESULT.json",
+      "sha256": "d4027f82a6b4bdcdfe944dce9ee90912486fcc460503ff4da07c3fd3ac434ddd"
+    },
+    "prefix_waiver": {
+      "path": "protocol_clarifications/PREFIX_GATE_WAIVER_20261114.json",
+      "sha256": "36012b46494f4fcb3409f4816156406caad7ae1ad65c4688b972b75c83d73783"
+    },
+    "prefix_continuation": {
+      "path": "prefix_waiver_control/RESULT.json",
+      "sha256": "6bb7c58eb71d9211bec6a186d101ed74c85df2a6af6aa4c97cade9d4e687dfa6"
+    },
+    "diagnostic_inputs": {
+      "path": "postcapture_20261113/DIAGNOSTIC_INPUTS.json",
+      "sha256": "a953592bb29f2a2810f3e87611b66abb6e0ae4925eb68f06ca36ee8a1cfe017f"
+    },
+    "dry_receipts": {
+      "11031": {
+        "path": "runs/DRY_11031/CALIBRATION_COMPLETE.json",
+        "sha256": "278ad90f8514aa461e3aa216d2dfa09b1f95d861c90296d62d30075dac34331c"
+      },
+      "11032": {
+        "path": "runs/DRY_11032/CALIBRATION_COMPLETE.json",
+        "sha256": "9fdddaf4cd0328217567aeeb870daeb9d8a6ec1e73b604c71446ebb57fd0fa76"
+      }
+    },
+    "shadow_claims_root": "shadow_claims",
+    "max_shadow_optimizer_steps": 4,
+    "steps_per_slot": 1,
+    "shadow_slots": {
+      "11031/0": {
+        "input_receipt": "shadow_inputs/start-11031/trial-0/INPUT_RECEIPT.json",
+        "restore": "shadow_inputs/start-11031/trial-0/RESTORE.json",
+        "capture": "shadow_inputs/start-11031/trial-0/PRODUCTION_CAPTURE.pt"
+      },
+      "11031/1": {
+        "input_receipt": "shadow_inputs/start-11031/trial-1/INPUT_RECEIPT.json",
+        "restore": "shadow_inputs/start-11031/trial-1/RESTORE.json",
+        "capture": "shadow_inputs/start-11031/trial-1/PRODUCTION_CAPTURE.pt"
+      },
+      "11032/0": {
+        "input_receipt": "shadow_inputs/start-11032/trial-0/INPUT_RECEIPT.json",
+        "restore": "shadow_inputs/start-11032/trial-0/RESTORE.json",
+        "capture": "shadow_inputs/start-11032/trial-0/PRODUCTION_CAPTURE.pt"
+      },
+      "11032/1": {
+        "input_receipt": "shadow_inputs/start-11032/trial-1/INPUT_RECEIPT.json",
+        "restore": "shadow_inputs/start-11032/trial-1/RESTORE.json",
+        "capture": "shadow_inputs/start-11032/trial-1/PRODUCTION_CAPTURE.pt"
+      }
+    },
+    "backend_equivalence_slots": {
+      "11031": "backend_equivalence/start-11031",
+      "11032": "backend_equivalence/start-11032"
+    },
+    "max_backend_equivalence_attempts": 2,
+    "allzero_slots": {
+      "11031": "allzero_check/start-11031",
+      "11032": "allzero_check/start-11032"
+    },
+    "max_allzero_attempts": 2,
+    "evaluation_loader_slots": {
+      "11031": "evaluation_loader_checks/start-11031",
+      "11032": "evaluation_loader_checks/start-11032"
+    },
+    "max_evaluation_loader_attempts": 2,
+    "gpu_release": {
+      "path": "execution_releases/GPU_RELEASE_0e5ba19.json",
+      "sha256": "c8f0645f52ae8756bc312722a164c9b5bfe264db43ea23a048ffe0bfa074e05a"
+    },
+    "code": {
+      "shadow_replay": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19/execution/shadow_replay.py",
+        "sha256": "e42d45c2d580bb3f9a6c5e466babd9fc5f397500e3a7b37c81a8a715ff8385e8"
+      },
+      "production": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19/execution/production.py",
+        "sha256": "a32b9333388d487ff9e84c199c209bc86d2a938684a7b2c451bac335f1519258"
+      },
+      "diagnostic_worker": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19/execution/diagnostic_worker.py",
+        "sha256": "8424374a492ab92c65391bd445587afdde6265d82e19524db9dacf242ec9a756"
+      },
+      "diagnostic_inputs": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19/execution/diagnostic_inputs.py",
+        "sha256": "38a17c5237adf69afe791ad4369ab217f4262668e2f715067c39b3227e1211ac"
+      },
+      "backend_equivalence": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19/execution/backend_equivalence.py",
+        "sha256": "e3cb0ad25ee9370a7fad285ec939ec553eb70222eb06b028995c0b1a0a511daf"
+      },
+      "allzero_check": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19/execution/allzero_check.py",
+        "sha256": "cf327ad440c63b11b93d771d46c1e3dac8c82e399e1c5f8667c04ed5ccbb70ef"
+      },
+      "evaluation_probe": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19/execution/evaluation_probe.py",
+        "sha256": "185048f30f2d962491b67f50249663c7c9309a487cb067a47bf8f9141c0bc5c8"
+      },
+      "evaluation_loader": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19/execution/evaluation_loader.py",
+        "sha256": "effb744d366e7f3c651c83456063bbd07263e7496052e0cbeeb1a0b90039ccd1"
+      },
+      "training_state": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19/execution/training_state.py",
+        "sha256": "9a99de7d4cddddf2052b324bb75e5cfcd3e59b7a4114c7b1d8f705a06e07d0a0"
+      },
+      "training_transaction": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19/execution/training_transaction.py",
+        "sha256": "62c041a1c2dfdd64df165d3b80ce5136c086a9a75eb173984145aee320ca4c04"
+      },
+      "prefix_waiver": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19/execution/prefix_waiver.py",
+        "sha256": "a6b0273696010f11b2588ae2f101c6fa453a0e0804ed3a8de098a01aafb4733e"
+      },
+      "diagnostics": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19/runtime/diagnostics.py",
+        "sha256": "3f2a5274427fd65bc84385824fadd09e47f94a896c180ab4819765cf3b17e8e5"
+      },
+      "native_runtime": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19/runtime/native_runtime.py",
+        "sha256": "69d1c5429134546efca6a7e87e65f800d2948f255fee4d1a9b1ae34b52b7d0bb"
+      },
+      "gpu_launcher": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19/scheduling/run_gpu_checks.sh",
+        "sha256": "5d9ecaa957dd7b9fc1f69bf26c20b4945ba2dd5b850fb21c9b63c656dcf87186"
+      }
+    },
+    "evaluation_execution_sources": {
+      "evaluation_loader": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19/execution/evaluation_loader.py",
+        "sha256": "effb744d366e7f3c651c83456063bbd07263e7496052e0cbeeb1a0b90039ccd1"
+      },
+      "training_state": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19/execution/training_state.py",
+        "sha256": "9a99de7d4cddddf2052b324bb75e5cfcd3e59b7a4114c7b1d8f705a06e07d0a0"
+      },
+      "training_transaction": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19/execution/training_transaction.py",
+        "sha256": "62c041a1c2dfdd64df165d3b80ce5136c086a9a75eb173984145aee320ca4c04"
+      }
+    },
+    "expected_evaluation_execution_sources_sha256": "9ad2d409bafe56487a3ee5fa60df2e6e58e78d65321c8d7e6b05cf847a503fec",
+    "storage_budget": {
+      "path": "execution_releases/GPU_STORAGE_BUDGET_20261114.json",
+      "sha256": "4bcc7bc07d3c07aa263a937f3e6ddd265e23c8c76ffc8bfe0550ac0f6463bcd6"
+    }
+  },
+  "budget": {
+    "schema": "sr-satdose-storage-budget-v1",
+    "scope": "GPU_DIAGNOSTICS_ONLY",
+    "experiment_id": "SR-SATDOSE-1-20261112",
+    "evidence_root": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1",
+    "design_freeze_sha256": "6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0",
+    "required_bytes": 11114315776,
+    "created_at_utc": "2026-11-14T15:30:47.346499+00:00",
+    "expires_at_utc": "2026-11-21T15:30:47.346499+00:00",
+    "max_observation_age_seconds": 300,
+    "rationale": "58 fixed FP32 inventories plus equal serialization/temp allowance and 1 GiB records; engineering allowance, not reservation. Live Ceph/statvfs and fsync checks required before each of ten stages."
+  },
+  "storage": {
+    "quota_max_bytes": 750000000000,
+    "quota_used_bytes": 622222739183,
+    "quota_available_bytes": 127777260817,
+    "filesystem_available_bytes": 196191740493824,
+    "observation_not_reservation": true
+  },
+  "release_files": 69,
+  "binding_exists": false
+}

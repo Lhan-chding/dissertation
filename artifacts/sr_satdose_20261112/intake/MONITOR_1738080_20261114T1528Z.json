@@ -1,0 +1,296 @@
+{
+  "checked_at_utc": "2026-11-14T15:28:46.970112+00:00",
+  "job_id": 1738080,
+  "queue": {
+    "returncode": 1,
+    "stdout": "",
+    "stderr": "slurm_load_jobs error: Invalid job id specified"
+  },
+  "accounting": {
+    "returncode": 0,
+    "stdout": "1738080|COMPLETED|0:0|00:06:16|2026-11-14T05:15:40|2026-11-14T05:21:56|gpu-pro6000-4\n1738080.batch|COMPLETED|0:0|00:06:16|2026-11-14T05:15:40|2026-11-14T05:21:56|gpu-pro6000-4\n1738080.extern|COMPLETED|0:0|00:06:16|2026-11-14T05:15:40|2026-11-14T05:21:56|gpu-pro6000-4\n1738080.0|COMPLETED|0:0|00:05:57|2026-11-14T05:15:57|2026-11-14T05:21:54|gpu-pro6000-4",
+    "stderr": ""
+  },
+  "control": {
+    "RESULT.json": {
+      "status": "PREFIX_CAPTURE_COMPLETE_WITH_AUTHORIZED_MEASUREMENT_WAIVER",
+      "gate_decision": "PASS_USER_OVERRIDE",
+      "permission": "NO_TRAINING",
+      "error": null,
+      "responses": 96,
+      "sha256": "6bb7c58eb71d9211bec6a186d101ed74c85df2a6af6aa4c97cade9d4e687dfa6",
+      "analyses": {
+        "11031": {
+          "status": "HOLD_PREFIX_MEASUREMENT",
+          "candidate_gate_passed": false,
+          "readouts": {
+            "sensitivity": {
+              "checks": {
+                "all_views_known_at_least_14": false,
+                "stable_correct_at_least_12": true,
+                "stable_minus_revtie_at_least_4": true
+              },
+              "contrast_missing_bounds": [
+                0.6875,
+                0.9375
+              ],
+              "passed": false,
+              "stable_minus_revtie_count": 14,
+              "stable_minus_revtie_rate": 0.875,
+              "views": {
+                "p_placebo": {
+                  "bounds": [
+                    0.9375,
+                    1.0
+                  ],
+                  "brace_eligible": 8,
+                  "correct": 15,
+                  "correct_rate": 0.9375,
+                  "denominator": 16,
+                  "known": 15,
+                  "known_gate": true,
+                  "length_count": 0,
+                  "unknown": 1,
+                  "unknown_rate": 0.0625
+                },
+                "p_revtie": {
+                  "bounds": [
+                    0.0625,
+                    0.25
+                  ],
+                  "brace_eligible": 6,
+                  "correct": 1,
+                  "correct_rate": 0.0625,
+                  "denominator": 16,
+                  "known": 13,
+                  "known_gate": false,
+                  "length_count": 0,
+                  "unknown": 3,
+                  "unknown_rate": 0.1875
+                },
+                "p_stable": {
+                  "bounds": [
+                    0.9375,
+                    1.0
+                  ],
+                  "brace_eligible": 7,
+                  "correct": 15,
+                  "correct_rate": 0.9375,
+                  "denominator": 16,
+                  "known": 15,
+                  "known_gate": true,
+                  "length_count": 0,
+                  "unknown": 1,
+                  "unknown_rate": 0.0625
+                }
+              }
+            },
+            "strict": {
+              "checks": {
+                "all_views_known_at_least_14": false,
+                "stable_correct_at_least_12": false,
+                "stable_minus_revtie_at_least_4": true
+              },
+              "contrast_missing_bounds": [
+                0.0,
+                1.0
+              ],
+              "passed": false,
+              "stable_minus_revtie_count": 8,
+              "stable_minus_revtie_rate": 0.5,
+              "views": {
+                "p_placebo": {
+                  "bounds": [
+                    0.4375,
+                    1.0
+                  ],
+                  "brace_eligible": 8,
+                  "correct": 7,
+                  "correct_rate": 0.4375,
+                  "denominator": 16,
+                  "known": 7,
+                  "known_gate": false,
+                  "length_count": 0,
+                  "unknown": 9,
+                  "unknown_rate": 0.5625
+                },
+                "p_revtie": {
+                  "bounds": [
+                    0.0,
+                    0.5
+                  ],
+                  "brace_eligible": 6,
+                  "correct": 0,
+                  "correct_rate": 0.0,
+                  "denominator": 16,
+                  "known": 8,
+                  "known_gate": false,
+                  "length_count": 0,
+                  "unknown": 8,
+                  "unknown_rate": 0.5
+                },
+                "p_stable": {
+                  "bounds": [
+                    0.5,
+                    1.0
+                  ],
+                  "brace_eligible": 7,
+                  "correct": 8,
+                  "correct_rate": 0.5,
+                  "denominator": 16,
+                  "known": 8,
+                  "known_gate": false,
+                  "length_count": 0,
+                  "unknown": 8,
+                  "unknown_rate": 0.5
+                }
+              }
+            }
+          }
+        },
+        "11032": {
+          "status": "PREFIX_METRICS_PASS_GPU_CHECK_STILL_REQUIRED",
+          "candidate_gate_passed": true,
+          "readouts": {
+            "sensitivity": {
+              "checks": {
+                "all_views_known_at_least_14": true,
+                "stable_correct_at_least_12": true,
+                "stable_minus_revtie_at_least_4": true
+              },
+              "contrast_missing_bounds": [
+                0.75,
+                0.9375
+              ],
+              "passed": true,
+              "stable_minus_revtie_count": 13,
+              "stable_minus_revtie_rate": 0.8125,
+              "views": {
+                "p_placebo": {
+                  "bounds": [
+                    0.875,
+                    1.0
+                  ],
+                  "brace_eligible": 9,
+                  "correct": 14,
+                  "correct_rate": 0.875,
+                  "denominator": 16,
+                  "known": 14,
+                  "known_gate": true,
+                  "length_count": 0,
+                  "unknown": 2,
+                  "unknown_rate": 0.125
+                },
+                "p_revtie": {
+                  "bounds": [
+                    0.0625,
+                    0.125
+                  ],
+                  "brace_eligible": 7,
+                  "correct": 1,
+                  "correct_rate": 0.0625,
+                  "denominator": 16,
+                  "known": 15,
+                  "known_gate": true,
+                  "length_count": 0,
+                  "unknown": 1,
+                  "unknown_rate": 0.0625
+                },
+                "p_stable": {
+                  "bounds": [
+                    0.875,
+                    1.0
+                  ],
+                  "brace_eligible": 9,
+                  "correct": 14,
+                  "correct_rate": 0.875,
+                  "denominator": 16,
+                  "known": 14,
+                  "known_gate": true,
+                  "length_count": 0,
+                  "unknown": 2,
+                  "unknown_rate": 0.125
+                }
+              }
+            },
+            "strict": {
+              "checks": {
+                "all_views_known_at_least_14": false,
+                "stable_correct_at_least_12": false,
+                "stable_minus_revtie_at_least_4": true
+              },
+              "contrast_missing_bounds": [
+                -0.1875,
+                1.0
+              ],
+              "passed": false,
+              "stable_minus_revtie_count": 5,
+              "stable_minus_revtie_rate": 0.3125,
+              "views": {
+                "p_placebo": {
+                  "bounds": [
+                    0.3125,
+                    1.0
+                  ],
+                  "brace_eligible": 9,
+                  "correct": 5,
+                  "correct_rate": 0.3125,
+                  "denominator": 16,
+                  "known": 5,
+                  "known_gate": false,
+                  "length_count": 0,
+                  "unknown": 11,
+                  "unknown_rate": 0.6875
+                },
+                "p_revtie": {
+                  "bounds": [
+                    0.0,
+                    0.5
+                  ],
+                  "brace_eligible": 7,
+                  "correct": 0,
+                  "correct_rate": 0.0,
+                  "denominator": 16,
+                  "known": 8,
+                  "known_gate": false,
+                  "length_count": 0,
+                  "unknown": 8,
+                  "unknown_rate": 0.5
+                },
+                "p_stable": {
+                  "bounds": [
+                    0.3125,
+                    1.0
+                  ],
+                  "brace_eligible": 9,
+                  "correct": 5,
+                  "correct_rate": 0.3125,
+                  "denominator": 16,
+                  "known": 5,
+                  "known_gate": false,
+                  "length_count": 0,
+                  "unknown": 11,
+                  "unknown_rate": 0.6875
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "complete_responses": 48,
+  "run_exists": true,
+  "error_files": [],
+  "CALIBRATION_COMPLETE.json": {
+    "status": "CALIBRATION_CAPTURE_COMPLETE_NOT_GPU_ADMISSION",
+    "responses": 48,
+    "optimizer_steps": 0,
+    "parameter_updates": 0,
+    "completed_rows": null,
+    "error_type": null,
+    "error": null,
+    "sha256": "a12546d342ba3e403b33fd5fd81971bc0918bf1bef029e56beffe378331f6820"
+  },
+  "gpu_binding_exists": false
+}
