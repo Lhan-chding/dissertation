@@ -112,14 +112,34 @@ for name in ('evaluation_probe','evaluation_loader','backend_equivalence','allze
              'shadow_replay','production','training_state','training_transaction','diagnostic_inputs'):
     require(binding['code'][name]==dict(path=str(release/'execution'/(name+'.py')),
             sha256=actual['execution/'+name+'.py']),'Code pin does not belong to audited release: '+name)
-prefix=read(bound(binding['prefix_result']))
-require(binding['prefix_result']['path']=='prefix_control/RESULT.json' and
-        not (ROOT/'prefix_control/HOLD.json').exists() and
-        prefix.get('status')=='PREFIX_METRICS_COMPLETE_GPU_CHECK_STILL_REQUIRED' and
-        prefix.get('permission')=='NO_TRAINING' and prefix.get('responses')==96 and
-        set(prefix.get('prefix_analyses',{}))=={'11031','11032'} and
-        all(value.get('status')=='PREFIX_METRICS_PASS_GPU_CHECK_STILL_REQUIRED' and value.get('candidate_gate_passed') is True
-            for value in prefix['prefix_analyses'].values()),'Both PREFIX starts must PASS; module verifies full evidence chain')
+waiver_keys={'prefix_waiver','prefix_continuation'}
+if waiver_keys.intersection(binding) or 'prefix_waiver' in binding.get('code',{}):
+    require(waiver_keys<=set(binding) and 'prefix_waiver' in binding.get('code',{}),
+            'Incomplete source-bound PREFIX waiver binding')
+    relative='execution/prefix_waiver.py';source=ordinary(release/relative)
+    require(relative in actual and binding['code']['prefix_waiver']==dict(path=str(source),sha256=actual[relative]),
+            'PREFIX waiver code pin does not belong to audited release')
+    bound(binding['prefix_waiver']);bound(binding['prefix_continuation'])
+    # Only after the entire release and source pin have been authenticated.
+    import importlib.util
+    sys.path.insert(0,str(release))
+    spec=importlib.util.spec_from_file_location('execution._bound_prefix_waiver',source)
+    module=importlib.util.module_from_spec(spec);source_bytes=source.read_bytes()
+    require(hashlib.sha256(source_bytes).hexdigest()==actual[relative],'PREFIX waiver executable bytes differ')
+    exec(compile(source_bytes,str(source),'exec'),module.__dict__)
+    require(pathlib.Path(module.__file__)==source and sha(source)==actual[relative],
+            'PREFIX waiver source changed during import')
+    module.verify_completed(ROOT,binding)
+    require(sha(source)==actual[relative],'PREFIX waiver source changed during verification')
+else:
+    prefix=read(bound(binding['prefix_result']))
+    require(binding['prefix_result']['path']=='prefix_control/RESULT.json' and
+            not (ROOT/'prefix_control/HOLD.json').exists() and
+            prefix.get('status')=='PREFIX_METRICS_COMPLETE_GPU_CHECK_STILL_REQUIRED' and
+            prefix.get('permission')=='NO_TRAINING' and prefix.get('responses')==96 and
+            set(prefix.get('prefix_analyses',{}))=={'11031','11032'} and
+            all(value.get('status')=='PREFIX_METRICS_PASS_GPU_CHECK_STILL_REQUIRED' and value.get('candidate_gate_passed') is True
+                for value in prefix['prefix_analyses'].values()),'Both PREFIX starts must PASS; module verifies full evidence chain')
 
 # Explicit, independently hashed CPU storage budget; no invented free-space threshold.
 budget_path=bound(binding['storage_budget']);budget=read(budget_path)

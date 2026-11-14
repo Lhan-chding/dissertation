@@ -22,6 +22,7 @@ import copy
 from contextlib import contextmanager
 import fcntl
 import hashlib
+import importlib.util
 import json
 import math
 import os
@@ -66,9 +67,30 @@ def _prefix_gate(root, binding, *, current_prefix=False):
 
     The active-prefix exemption is internal: the PREFIX controller alone uses
     it after holding the global lock and exclusively writing its PREFLIGHT.
-    Existing HOLD or failed RESULT is never exempt. Public GPU APIs do not
-    expose this flag, and absent PREFIX evidence imposes no execution order.
+    Active work never exempts HOLD/UNKNOWN. A separately source-bound, complete
+    user-waiver continuation may preserve a failed measurement RESULT. Public
+    GPU APIs do not expose this flag; absent PREFIX imposes no execution order.
     """
+    waiver_keys = {'prefix_waiver', 'prefix_continuation'}
+    if waiver_keys.intersection(binding) or 'prefix_waiver' in binding.get('code', {}):
+        require(not current_prefix, 'Active PREFIX cannot use completed waiver exemption')
+        require(waiver_keys <= set(binding) and 'prefix_waiver' in binding.get('code', {}),
+                'Incomplete source-bound PREFIX waiver binding')
+        source = Path(__file__).resolve().with_name('prefix_waiver.py')
+        pin = binding['code']['prefix_waiver']
+        require(source.is_file() and not source.is_symlink() and source.resolve() == source and
+                pin == dict(path=str(source), sha256=shadow.file_sha(source)),
+                'PREFIX waiver source must match this execution release')
+        spec = importlib.util.spec_from_file_location(__package__ + '._bound_prefix_waiver', source)
+        module = importlib.util.module_from_spec(spec)
+        source_bytes = source.read_bytes()
+        require(hashlib.sha256(source_bytes).hexdigest() == pin['sha256'], 'PREFIX waiver executable bytes differ')
+        exec(compile(source_bytes, str(source), 'exec'), module.__dict__)
+        require(Path(module.__file__) == source and shadow.file_sha(source) == pin['sha256'],
+                'PREFIX waiver source changed during import')
+        module.verify_completed(root, binding)
+        require(shadow.file_sha(source) == pin['sha256'], 'PREFIX waiver source changed during verification')
+        return
     control = root / 'prefix_control'
     if not control.exists() and not control.is_symlink():
         require(not current_prefix, 'Active PREFIX exemption requires its own claim')

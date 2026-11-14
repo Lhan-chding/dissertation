@@ -1,0 +1,17 @@
+# PREFIX 人工放行后的执行口径
+
+用户已明确批准本次PREFIX测量门禁例外，并要求执行判定为通过。执行决定记为PASS_USER_OVERRIDE。原11031的13/16观测、原14/16门槛、strict/sensitivity全量评分、原HOLD和Slurm失败回执保留，不改为自动测量达标。原设计冻结及科学参数文件均不改写；本补充及授权通过独立SHA绑定。
+
+## 下一项有限执行
+
+仅执行原冻结manifest中尚未生成的11032起点48条PREFIX。11031不再生成、无替换、无新增样本；两起点合计仍为原定96条。沿用原BASE/code的runtime.dry_driver、原种子/生成参数/解析器/输入和2张pro6000资源。新独立控制目录prefix_waiver_control保留PREFLIGHT、一次性CLAIM、11032原评分及RESULT。
+
+旧734e921发布、prefix_control与11031完整输出在执行前后核对完整哈希。新源码独立部署，执行前校验新发布全部文件与实际Slurm脚本字节、原发布来源、授权SHA、两份完整DRY通过、11031原始完整结果和11032零尝试。全局诊断锁覆盖整个有限执行；任何已有11032尝试/未知claim/技术HOLD禁止重试。新生成技术错误不能由测量门禁例外覆盖。
+
+两起点均完整后，独立CPU验证96条BEGIN/CAPTURE/COMPLETE、源身份、原输入、token和原评分报告。完整续跑记录状态PREFIX_CAPTURE_COMPLETE_WITH_AUTHORIZED_MEASUREMENT_WAIVER，gate_decision为PASS_USER_OVERRIDE，各起点candidate_gate_passed及HOLD/PASS测量状态如实保留。
+
+## 后续GPU阶段
+
+GPU技术binding必须同时绑定原PREFIX结果、人工授权和完整续跑结果。新GPU发布只新增显式授权分支；没有授权的旧分支仍要求原整套PREFIX门禁。固定十个GPU阶段、四个影子Adam槽、原始128轨迹和全部其余数值/来源/存储/HOLD/UNKNOWN门禁不变。每阶段需实时可用空间检查，CPU估算11,114,315,776字节不是空间预约。
+
+完整GPU核验和独立审计未通过前，不得启动正式TRAIN。未来正式准入记录需明确区分PREFIX人工放行与实际技术检查通过；不得将旧工具prefix_calibration_pass项伪填为自动测量PASS。初始DEV、四路径前两步/恢复canary、风险停止与MAIN终态解封仍需原门禁。训练风险口径沿用用户已确认的每窗384冲突回答。

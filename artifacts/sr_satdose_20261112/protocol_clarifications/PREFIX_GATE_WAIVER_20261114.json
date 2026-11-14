@@ -1,0 +1,39 @@
+{
+  "schema": "sr-satdose-prefix-waiver-v1",
+  "status": "USER_AUTHORIZED_MEASUREMENT_GATE_WAIVER",
+  "experiment_id": "SR-SATDOSE-1-20261112",
+  "evidence_root": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1",
+  "created_at_utc": "2026-11-14T03:45:37.617963+00:00",
+  "authorization": {
+    "origin": "explicit_user_reply",
+    "question": "你希望按哪种方式继续？当前 PREFIX 实测仍为 13/16，原门槛为 14/16。",
+    "answer": "豁免本次 PREFIX 门禁，保留未达标结果，其余 GPU／训练门禁照常执行"
+  },
+  "scope": "PREFIX_CALIB_MEASUREMENT_GATE_ONLY",
+  "design_freeze_sha256": "6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0",
+  "config_sha256": "58841639b0f36a69ac77824bc8c683ef7fbeb5c50a41e9975b89b54880f4ecfe",
+  "original_result": {
+    "path": "prefix_control/RESULT.json",
+    "sha256": "d4027f82a6b4bdcdfe944dce9ee90912486fcc460503ff4da07c3fd3ac434ddd"
+  },
+  "original_job_id": 1737594,
+  "original_release": {
+    "path": "execution_releases/PREFIX_RELEASE_734e921.json",
+    "sha256": "fd8f7a780af3e841f891cac95683a5c71e0151551dc89142afd696202a0b713d"
+  },
+  "preserve_original_results": true,
+  "rewrite_measurement_pass": false,
+  "remaining_calibration": {
+    "start_seed": 11032,
+    "responses": 48,
+    "source": "original frozen PREFIX_CALIB manifest",
+    "repeat_11031": false,
+    "resampling": false,
+    "new_samples": 0
+  },
+  "require_both_complete_48_before_gpu": true,
+  "other_gates_unchanged": true,
+  "technical_failure_or_unknown_waived": false,
+  "main_confirmatory_claims": "must disclose post-outcome PREFIX calibration waiver; no claim of original preregistered calibration pass",
+  "permission": "NO_TRAINING"
+}

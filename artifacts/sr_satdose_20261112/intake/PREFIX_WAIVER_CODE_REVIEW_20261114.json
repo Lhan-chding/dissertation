@@ -1,0 +1,31 @@
+{
+  "checked_at_utc": "2026-11-14T03:56:53.625006+00:00",
+  "status": "SOURCE_REVIEW_AND_FULL_CPU_SUITE_PASS_PENDING_REMOTE_PREFLIGHT",
+  "scope": "PREFIX 11032 remainder and explicit user-authorized measurement waiver; other gates unchanged",
+  "independent_tests": {
+    "waiver_and_real_analysis_integration": 18,
+    "continuation": 16
+  },
+  "author_tests": {
+    "worker_regression": 29,
+    "launcher_regression": 12
+  },
+  "definite_blocking_findings": [],
+  "real_GPU_executed": false,
+  "permission": "NO_TRAINING",
+  "files": {
+    "execution/prefix_waiver.py": "a6b0273696010f11b2588ae2f101c6fa453a0e0804ed3a8de098a01aafb4733e",
+    "execution/prefix_continuation.py": "7420061cecfde78efc946db8a05c023c838eddd3168058bfef87e33ecde273e4",
+    "execution/diagnostic_worker.py": "8424374a492ab92c65391bd445587afdde6265d82e19524db9dacf242ec9a756",
+    "scheduling/run_prefix_continuation.sh": "ed3987cb7487b767cbed1311503880623e06b811e811df9a62ae314d710bc781",
+    "scheduling/run_gpu_checks.sh": "5d9ecaa957dd7b9fc1f69bf26c20b4945ba2dd5b850fb21c9b63c656dcf87186",
+    "tests/test_prefix_waiver.py": "ce8044f5f6e159d82fb45537a90207be69d4be89cffa9838a0768951c6bad8bf",
+    "tests/test_prefix_continuation.py": "59b41a2b13d607489ff59a62f298972fc8d8d5b8dd2e3c7957f3922b99eb3210",
+    "tests/test_prefix_waiver_integration.py": "2102f80976903c364d82ba2e4ec10a48a4620e2660bdbb38261bfca18eb9f3d8",
+    "tests/test_diagnostic_worker.py": "20cf559fe31bd01d7688af56b28956641274bec6ddc407b806d63398cf16ecf7",
+    "tests/test_gpu_checks_launcher.py": "1550861b605658cc934358a87b19bc6bd6f7d4126b2749989b777665f1f4bd10"
+  },
+  "full_cpu_tests_passed": 386,
+  "full_cpu_tests_skipped": 0,
+  "full_cpu_elapsed_seconds": 248.015
+}

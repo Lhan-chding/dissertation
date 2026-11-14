@@ -308,6 +308,29 @@ class WorkerTests(unittest.TestCase):
         (control/'RESULT.json').write_text(json.dumps(result))
         return control,preflight,result
 
+    def test_waiver_source_bound_completed_verifier_and_no_active_exemption(self):
+        # Explicit CPU stand-in tests dispatch/authentication, not waiver validity.
+        release=self.root/'cpu-release';release.mkdir()
+        worker_path=release/'diagnostic_worker.py';worker_path.write_text('# CPU worker location')
+        source=release/'prefix_waiver.py'
+        source.write_text("def verify_completed(root,binding):\n    if not (root/'CPU_COMPLETED').exists():\n        raise ValueError('CPU UNKNOWN continuation')\n")
+        self.b.update(prefix_waiver={'CPU':'waiver'},prefix_continuation={'CPU':'continuation'},
+                      code={'prefix_waiver':dict(path=str(source),sha256=w.shadow.file_sha(source))})
+        with patch.object(w,'__file__',str(worker_path)):
+            with self.assertRaisesRegex(ValueError,'UNKNOWN'):w._prefix_gate(self.root,self.b)
+            (self.root/'CPU_COMPLETED').touch();w._prefix_gate(self.root,self.b)
+            with self.assertRaisesRegex(PermissionError,'Active PREFIX'):w._prefix_gate(self.root,self.b,current_prefix=True)
+            source.write_text(source.read_text()+'# tamper')
+            with self.assertRaisesRegex(PermissionError,'this execution release'):w._prefix_gate(self.root,self.b)
+        self.assertFalse(self.handles)
+
+    def test_waiver_partial_or_foreign_code_cannot_bypass_original_gate(self):
+        self.b['prefix_waiver']={'CPU':'incomplete'}
+        with self.assertRaisesRegex(PermissionError,'Incomplete'):w._prefix_gate(self.root,self.b)
+        self.b.update(prefix_continuation={'CPU':'incomplete'},code={'prefix_waiver':dict(path='/foreign',sha256='0'*64)})
+        with self.assertRaisesRegex(PermissionError,'this execution release'):w._prefix_gate(self.root,self.b)
+        self.assertFalse(self.handles)
+
     def test_prefix_empty_or_claim_only_blocks_gpu_before_model(self):
         control=self.root/'prefix_control';control.mkdir()
         with self.assertRaisesRegex(PermissionError,'PREFIX UNKNOWN'):

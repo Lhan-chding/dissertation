@@ -98,10 +98,38 @@ class GPUChecksLauncherTests(unittest.TestCase):
         source=source.replace(ROOT_TEXT,str(self.root)).replace(ANCESTOR_TEXT,str(self.ancestor)).replace(FREEZE,self.freeze_sha)
         args=['-',str(self.root),expected or self.binding_sha,str(launcher or self.release/'scheduling/run_gpu_checks.sh'),str(start),stage]
         output=io.StringIO();errors=io.StringIO()
-        with patch.object(sys,'argv',args),patch.object(os,'getxattr',side_effect=self.xattr,create=True),\
+        with patch.object(sys,'path',list(sys.path)),patch.object(sys,'argv',args),patch.object(os,'getxattr',side_effect=self.xattr,create=True),\
              patch.object(os,'statvfs',return_value=self.space),redirect_stdout(output),redirect_stderr(errors):
             exec(compile(source,'CPU_ONLY_EXTRACTED_GPU_BOOTSTRAP','exec'),{'__name__':'__main__'})
         return output.getvalue().strip(),json.loads(errors.getvalue())
+
+    def waiver_fixture(self):
+        # CPU stand-in ensures bootstrap CALLS the bound verifier; no GPU/waiver claim.
+        source=self.release/'execution/prefix_waiver.py'
+        source.write_text("def verify_completed(root,binding):\n    if not (root/'CPU_COMPLETED').exists():\n        raise ValueError('CPU UNKNOWN continuation')\n")
+        for name in ('WAIVER.json','CONTINUATION.json'):dump(self.root/name,{'CPU_ONLY':True})
+        self.binding.update(prefix_waiver=self.ref(self.root/'WAIVER.json'),prefix_continuation=self.ref(self.root/'CONTINUATION.json'))
+        self.binding['code']['prefix_waiver']=dict(path=str(source),sha256=sha(source))
+        receipt=json.loads(self.receipt.read_text());receipt['sources']['execution/prefix_waiver.py']=sha(source)
+        dump(self.receipt,receipt);self.binding['gpu_release']=self.ref(self.receipt);self.bind()
+        return source
+
+    def test_waiver_requires_actual_completed_verification_and_release_pin(self):
+        source=self.waiver_fixture()
+        with self.assertRaisesRegex(ValueError,'UNKNOWN'):self.bootstrap()
+        (self.root/'CPU_COMPLETED').touch()
+        original_path=list(sys.path)
+        try:self.assertEqual(self.bootstrap()[0],str(self.release))
+        finally:sys.path[:]=original_path
+        self.binding['code']['prefix_waiver']['path']=str(self.temp/'foreign.py');self.bind()
+        with self.assertRaisesRegex(SystemExit,'audited release'):self.bootstrap()
+
+    def test_waiver_incomplete_binding_and_removed_inventory_refuse(self):
+        source=self.waiver_fixture();self.binding.pop('prefix_continuation');self.bind()
+        with self.assertRaisesRegex(SystemExit,'Incomplete source-bound'):self.bootstrap()
+        self.binding['prefix_continuation']=self.ref(self.root/'CONTINUATION.json');self.bind()
+        source.write_text(source.read_text()+'# tamper')
+        with self.assertRaisesRegex(SystemExit,'inventory/SHA'):self.bootstrap()
 
     def test_full_release_spooled_bytes_and_live_all_ancestor_space(self):
         root,observation=self.bootstrap();self.assertEqual(root,str(self.release))

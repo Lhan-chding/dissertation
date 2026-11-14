@@ -1,6 +1,6 @@
-# SR-SATDOSE-1 准入报告（2026-11-14，PREFIX门禁暂停）
+# SR-SATDOSE-1 准入报告（2026-11-14，PREFIX用户批准放行）
 
-当前状态：HOLD_PREFIX_MEASUREMENT / NO_TRAINING。2026-11-14 11:37新加坡时间实际补查：1737594已于当日07:56:22启动、08:06:27结束（服务器UTC已核验），用时10分05秒，Slurm FAILED/2:0。11031完整生成48/48，随后校准未通过，11032未启动。严格与限定补括号两套均未通过；敏感性口径p_revtie known=13/16，低于14/16门槛。两起点DRY1280条此前已通过。GPU技术绑定仍不存在，正式TRAIN/DEV/MAIN尚未开始。下文保留历史观测。
+当前执行门禁决定：PASS_USER_OVERRIDE（用户明确批准PREFIX测量门禁例外）。原始测量结果保持HOLD_PREFIX_MEASUREMENT：11031反向组限定口径13/16，原要求14/16；旧作业1737594已终止。用户要求保留未达标结果、其余GPU/训练门禁不变，随后要求将执行门禁标为通过。授权已在服务器独占保存并SHA核验。正在准备只补11032原48条的一次性续跑；不重采11031，不增加原96条预算。当前尚未提交续跑，GPU技术绑定及GPU槽均未创建，正式TRAIN/DEV/MAIN未开始。下文为历史观测。
 
 早期观测：用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 
@@ -129,3 +129,7 @@ GPU有限检查的纯张量估算为58份496-FP32清单，共5020286976字节；
 2026-11-14 03:37 UTC只读补查1737594：原PREFIX控制器RESULT精确SHA d4027f82a6b4bdcdfe944dce9ee90912486fcc460503ff4da07c3fd3ac434ddd已下载保存prefix_calibration/11031/PREFIX_CONTROL_RESULT_20261114.json。11031原始48条完整回执，0优化器/0参数更新，生成子步骤COMPLETED/0:0；控制器因测量门禁HOLD返回2，对应Slurm FAILED。严格known三视图8/8/7，stable正确8，差8；补括号known15/13/15，stable正确15，差14，仍因revtie可解析数13<14未通过。未重新提交或修改解析规则/阈值。03:38 UTC确认服务器UTC，runs仅DRY_11031、DRY_11032、PREFIX_CALIB_11031，GPU技术绑定不存在。详见intake/MONITOR_1737594_20261114T0337Z.json及PREFIX_TERMINAL_DETAILS_20261114.json。
 
 2026-11-14 11:41新加坡时间完成PREFIX只读诊断：原部署全量复算与原报告完全相同，独立解析48条与原strict/sensitivity逐字段一致；48条原BEGIN/CAPTURE/COMPLETE、token/sampler和冻结输入/种子核验通过。剩余5条unknown为缺selected1条、非法长work文本1条、root0013三个视图各仅生成右括号造成尾逗号非法JSON3条。独立原生停止源码复核及3项解析器测试通过，无新增模型调用/更新。未找到可恢复的实现错误，保留13/16<14/16的HOLD。完整报告prefix_calibration/11031/DIAGNOSIS_zh.md。
+
+2026-11-14 11:45新加坡时间明确用户授权：豁免本次PREFIX门禁，保留未达标结果，其余GPU／训练门禁照常执行。授权文件protocol_clarifications/PREFIX_GATE_WAIVER_20261114.json，SHA36012b46494f4fcb3409f4816156406caad7ae1ad65c4688b972b75c83d73783。追加“直接改写pass”记录为执行门禁PASS_USER_OVERRIDE，原测量HOLD/13/16及原14/16不改写；标签回执SHA377a444e380e3041e80e0f5ec7b1da1da6957e2d13a106e45c614d71e73dabe1。两文件已于03:48UTC保存服务器；原结果SHA不变，未生成的11032仍零attempt，所有GPU槽不存在，实际共享配额余127790723432字节。见intake/PREFIX_WAIVER_AUTHORIZATION_DEPLOYMENT_20261114.json。后续注册和报告必须明确事后人工门禁例外，不把原prefix_calibration_pass技术项伪填为真实科学PASS。
+
+人工放行有限执行实现已完成独立审查；386项完整CPU回归通过，零跳过（248.015秒），两份launcher shell语法检查通过。新续跑仅11032原48，GPU例外分支须完整96证据、实际source/原token/原评分复算；原失败结果与其余GPU门禁不变。尚未部署或提交作业，见intake/PREFIX_WAIVER_CODE_REVIEW_20261114.json和prefix_waiver_full_cpu_tests_20261114.log。
