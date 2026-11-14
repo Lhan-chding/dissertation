@@ -1,6 +1,6 @@
 # SR-SATDOSE-1 准入报告（2026-11-14，PREFIX用户批准放行）
 
-当前执行门禁决定：PASS_USER_OVERRIDE（用户明确批准PREFIX测量门禁例外）。原始测量结果保持HOLD_PREFIX_MEASUREMENT：11031反向组限定口径13/16，原要求14/16；旧作业1737594已终止。用户要求保留未达标结果、其余GPU/训练门禁不变，随后要求将执行门禁标为通过。授权已在服务器独占保存并SHA核验。正在准备只补11032原48条的一次性续跑；不重采11031，不增加原96条预算。当前尚未提交续跑，GPU技术绑定及GPU槽均未创建，正式TRAIN/DEV/MAIN未开始。下文为历史观测。
+Latest verified execution status (2026-11-14 12:02 Singapore): PASS_USER_OVERRIDE for the PREFIX measurement gate. Original 11031 measurement stays HOLD, 13/16 versus the original 14/16 requirement. Continuation job 1738080 was submitted once at 12:02 SGT; verified PENDING(Priority), 2 pro6000 / 8 CPU / 66G / 02:00:00 / no-requeue. It only completes the remaining original 11032 population of 48 responses; currently 0/48, no 11031 resampling. Scheduler forecast is today 21:11:32 SGT, subject to change. New 69-file release 0e5ba19 is deployed and actual server read-only preflight passed. No GPU binding, TRAIN, DEV or MAIN execution yet. Historical observations follow.
 
 早期观测：用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 
@@ -133,3 +133,8 @@ GPU有限检查的纯张量估算为58份496-FP32清单，共5020286976字节；
 2026-11-14 11:45新加坡时间明确用户授权：豁免本次PREFIX门禁，保留未达标结果，其余GPU／训练门禁照常执行。授权文件protocol_clarifications/PREFIX_GATE_WAIVER_20261114.json，SHA36012b46494f4fcb3409f4816156406caad7ae1ad65c4688b972b75c83d73783。追加“直接改写pass”记录为执行门禁PASS_USER_OVERRIDE，原测量HOLD/13/16及原14/16不改写；标签回执SHA377a444e380e3041e80e0f5ec7b1da1da6957e2d13a106e45c614d71e73dabe1。两文件已于03:48UTC保存服务器；原结果SHA不变，未生成的11032仍零attempt，所有GPU槽不存在，实际共享配额余127790723432字节。见intake/PREFIX_WAIVER_AUTHORIZATION_DEPLOYMENT_20261114.json。后续注册和报告必须明确事后人工门禁例外，不把原prefix_calibration_pass技术项伪填为真实科学PASS。
 
 人工放行有限执行实现已完成独立审查；386项完整CPU回归通过，零跳过（248.015秒），两份launcher shell语法检查通过。新续跑仅11032原48，GPU例外分支须完整96证据、实际source/原token/原评分复算；原失败结果与其余GPU门禁不变。尚未部署或提交作业，见intake/PREFIX_WAIVER_CODE_REVIEW_20261114.json和prefix_waiver_full_cpu_tests_20261114.log。
+
+
+2026-11-14 12:02 SGT: new 69-file release deployed to prepared_data_v1/waiver_code_0e5ba19; every SHA and all seven frozen runtime files verified, old releases preserved. PREFIX_CONTINUATION_RELEASE_0e5ba19.json SHA c41c6892403148de7027a4ad7085ddc95e22837605a4f85d202ce13e65ffafc2; GPU_RELEASE_0e5ba19.json SHA c8f0645f52ae8756bc312722a164c9b5bfe264db43ea23a048ffe0bfa074e05a. Actual server preflight READY_FOR_PREFIX_11032_ONLY, both full DRY gates passed, original 11031 failed measurement reproduced, 155 protected files fixed. Code commit 0e5ba1989e43e0e20adbb78327fbe66c5a2ad87d was publicly pushed and independently verified.
+
+Job 1738080 submitted exactly once at 04:02:13 UTC, original remaining 11032/48 only, 2 GPUs and a 2-hour limit. Original job 1737594 was terminal FAILED/2:0; no new continuation control, 11032 attempts or GPU binding existed before submission. Live shared quota available was 127788621497 bytes. At 04:02:40 UTC / 12:02:40 SGT, job PENDING(Priority), elapsed zero, no new responses or error logs; forecast 21:11:32 SGT is mutable. See intake/PREFIX_CONTINUATION_SUBMISSION_20261114.json and PREFIX_CONTINUATION_JOB_VERIFICATION_20261114.json. No background monitoring was configured; continuous polling stops per the user's prior preference.

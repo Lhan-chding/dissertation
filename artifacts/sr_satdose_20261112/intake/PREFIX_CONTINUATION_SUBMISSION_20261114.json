@@ -1,0 +1,99 @@
+{
+  "status": "PREFIX_11032_CONTINUATION_SUBMITTED",
+  "job_id": 1738080,
+  "intent": {
+    "created_at_utc": "2026-11-14T04:02:13.121554+00:00",
+    "status": "SUBMISSION_INTENT_UNKNOWN_UNTIL_RECEIPT",
+    "scope": "PREFIX_CALIB_11032_ORIGINAL_48_ONLY",
+    "gate_decision": "PASS_USER_OVERRIDE",
+    "original_11031_repeated": false,
+    "new_responses": 48,
+    "new_samples": 0,
+    "args": [
+      "sbatch",
+      "--parsable",
+      "--job-name=LH-SATDOSE-PREFIX-11032",
+      "--account=rose",
+      "--qos=rose",
+      "--partition=cluster02",
+      "--nodes=1",
+      "--ntasks=1",
+      "--cpus-per-task=8",
+      "--gpus=pro6000:2",
+      "--mem=66G",
+      "--time=02:00:00",
+      "--no-requeue",
+      "--chdir=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19",
+      "--output=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/prefix_continuation_20261114/slurm-%j.out",
+      "--error=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/prefix_continuation_20261114/slurm-%j.err",
+      "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19/scheduling/run_prefix_continuation.sh",
+      "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/PREFIX_CONTINUATION_RELEASE_0e5ba19.json",
+      "c41c6892403148de7027a4ad7085ddc95e22837605a4f85d202ce13e65ffafc2",
+      "36012b46494f4fcb3409f4816156406caad7ae1ad65c4688b972b75c83d73783"
+    ],
+    "authorization_sha256": "36012b46494f4fcb3409f4816156406caad7ae1ad65c4688b972b75c83d73783",
+    "release_sha256": "c41c6892403148de7027a4ad7085ddc95e22837605a4f85d202ce13e65ffafc2",
+    "queue_before": {
+      "args": [
+        "squeue",
+        "-u",
+        "varun024",
+        "--name=LH-SATDOSE-PREFIX-11032",
+        "-h",
+        "-o",
+        "%i|%T|%j"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "old_job": {
+      "args": [
+        "sacct",
+        "-j",
+        "1737594",
+        "-n",
+        "-P",
+        "--format=JobID,State,ExitCode"
+      ],
+      "returncode": 0,
+      "stdout": "1737594|FAILED|2:0\n1737594.batch|FAILED|2:0\n1737594.extern|COMPLETED|0:0\n1737594.0|COMPLETED|0:0",
+      "stderr": ""
+    },
+    "storage": {
+      "quota_max_bytes": 750000000000,
+      "quota_used_bytes": 622211378503,
+      "quota_available_bytes": 127788621497,
+      "filesystem_available_bytes": 196695862280192,
+      "observation_not_reservation": true
+    },
+    "permission": "NO_TRAINING"
+  },
+  "response": {
+    "args": [
+      "sbatch",
+      "--parsable",
+      "--job-name=LH-SATDOSE-PREFIX-11032",
+      "--account=rose",
+      "--qos=rose",
+      "--partition=cluster02",
+      "--nodes=1",
+      "--ntasks=1",
+      "--cpus-per-task=8",
+      "--gpus=pro6000:2",
+      "--mem=66G",
+      "--time=02:00:00",
+      "--no-requeue",
+      "--chdir=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19",
+      "--output=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/prefix_continuation_20261114/slurm-%j.out",
+      "--error=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/prefix_continuation_20261114/slurm-%j.err",
+      "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19/scheduling/run_prefix_continuation.sh",
+      "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/PREFIX_CONTINUATION_RELEASE_0e5ba19.json",
+      "c41c6892403148de7027a4ad7085ddc95e22837605a4f85d202ce13e65ffafc2",
+      "36012b46494f4fcb3409f4816156406caad7ae1ad65c4688b972b75c83d73783"
+    ],
+    "returncode": 0,
+    "stdout": "1738080",
+    "stderr": ""
+  }
+}
