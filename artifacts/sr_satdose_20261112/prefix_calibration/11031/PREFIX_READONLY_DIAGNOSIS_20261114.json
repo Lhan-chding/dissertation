@@ -1,0 +1,147 @@
+{
+  "checked_at_utc": "2026-11-14T03:41:33.724361+00:00",
+  "status": "READ_ONLY_PREFIX_DIAGNOSIS_COMPLETE_HOLD_UNCHANGED",
+  "permission": "NO_TRAINING",
+  "independent_stdlib_parser_all_48_rows_match": true,
+  "original_begin_capture_complete_chains_checked": 48,
+  "full_text_equals_original_capture_and_prefill_plus_generated_all_48": true,
+  "all_original_tokens_and_sampler_lengths_match": true,
+  "frozen_inputs_manifest_and_seeds_verified": true,
+  "readouts": {
+    "strict": {
+      "p_stable": {
+        "known": 8,
+        "correct": 8,
+        "denominator": 16
+      },
+      "p_revtie": {
+        "known": 8,
+        "correct": 0,
+        "denominator": 16
+      },
+      "p_placebo": {
+        "known": 7,
+        "correct": 7,
+        "denominator": 16
+      }
+    },
+    "sensitivity": {
+      "p_stable": {
+        "known": 15,
+        "correct": 15,
+        "denominator": 16
+      },
+      "p_revtie": {
+        "known": 13,
+        "correct": 1,
+        "denominator": 16
+      },
+      "p_placebo": {
+        "known": 15,
+        "correct": 15,
+        "denominator": 16
+      }
+    }
+  },
+  "finish_counts": {
+    "balanced": 26,
+    "eos": 22
+  },
+  "sensitivity_unknowns": [
+    {
+      "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0000/p_revtie/d00",
+      "view": "p_revtie",
+      "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0000",
+      "cause": "missing_selected_after_permitted_brace",
+      "finish_reason": "eos",
+      "tokens": 99,
+      "strict_error": "Expecting ',' delimiter: line 2 column 1 (char 1254)",
+      "append_one_brace_error": null,
+      "keys_after_permitted_brace": [
+        "evidence",
+        "bindings",
+        "work",
+        "aggregate",
+        "answer"
+      ],
+      "suffix_text": " \"bindings\": [{\"category\":\"Table\",\"operand\":54},{\"category\":\"Lamp\",\"operand\":84},{\"category\":\"Plate\",\"operand\":72}], \"work\": \"Selected categories: Table (Alpha=66), Lamp (Alpha=48), Plate (Alpha=48). Sum of Beta for these: 54 + 84 + 72 = 210\", \"aggregate\": \"sum\", \"answer\": 210\n",
+      "original_capture_sha256": "9b5e9d32ae583e71fc61cdb50217deb4f1dd5292a887a0ed557540f19ad7af0a",
+      "prompt_tensor_hash": "3ab0ba7203f2104545e7330f730800def3441d82e26768c23be9bf63e9b2a5f2",
+      "seed": 8593425639296263200,
+      "tokens_and_full_decoded_text_preserved": true
+    },
+    {
+      "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0011/p_revtie/d00",
+      "view": "p_revtie",
+      "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0011",
+      "cause": "malformed_work_string_and_embedded_second_object",
+      "finish_reason": "eos",
+      "tokens": 1234,
+      "strict_error": "Expecting ',' delimiter: line 1 column 1820 (char 1819)",
+      "append_one_brace_error": "Expecting ',' delimiter: line 1 column 1820 (char 1819)",
+      "keys_after_permitted_brace": null,
+      "suffix_text": " \"work\": \"Alpha values: Desk=30, Spoon=42, Vase=48, Tray=48, Chair=48, others higher. Ties at 48: Vase (leftmost among tied), Tray, Chair → but we need 4 smallest. So: Desk(30), Spoon(42), then among 48s: Vase, Tray, Chair — pick leftmost first: Vase, then Tray, then Chair. But we only need 4 smallest: so Desk, Spoon, Vase, Tray are the top 4. Note: Chair is also 48 but appears after Vase and Tray in x-axis order? Let’s check printed order: Frame, Shelf, Chair, Stool, Desk, Bowl, Tray, Spoon, Vase, Book. So among Alpha=48: Chair, Tray, Vase. Leftmost is Chair? Wait — no:Chair is at position 3, Tray at 7, Vase at 9. So leftmost among 48s is Chair. But wait — Desk is 30, Spoon is 42, then next is any of Chair/Tray/Vase all 48. We need 4 smallest: so we take Desk(30), Spoon(42), and then two from the 48s — which two? The problem says: \"Break ranking ties by printed left-to-right order.\" So for tie-breaking, we use left-to-right order to pick the next ones. So after Desk and Spoon, we have three categories with Alpha=48: Chair, Tray, Vase. In printed order: Chair comes first, then Tray, then Vase. So we should pick Chair and Tray as the next two? Wait — no: we are selecting the 4 categories with smallest Alpha values. The Alpha values sorted: 30(Desk), 42(Spoon), 48(Chair), 48(Tray), 48(Vase), 66(Stool/Bowl/Book)... so the four smallest are: Desk, Spoon, Chair, Tray. Because Chair is leftmost of the 48s, then Tray, then Vase — so we take Desk, Spoon, Chair, Tray. Yes. Now compute mean of Beta for these four: Chair Beta=30, Tray Beta=42, Desk Beta=60, Spoon Beta=78. Sum = 30+42+60+78 = 210. Mean = 210/4 = 52.5. But wait — let me double-check the chart: Chair: Alpha=48, Beta=30; Tray: Alpha=48, Beta=42; Desk: Alpha=30, Beta=60; Spoon: Alpha=42, Beta=78. Yes. So selected categories: [\"Desk\", \"Spoon\", \"Chair\", \"Tray\"]. Bindings: Desk:48? No — bindings should have operand as Beta value. So: {\"category\":\"Desk\",\"operand\":60}, {\"category\":\"Spoon\",\"operand\":78}, {\"category\":\"Chair\",\"operand\":30}, {\"category\":\"Tray\",\"operand\":42}. Aggregate: mean. Answer: 52.5. But 52.5 is exact finite decimal. However, let me confirm the ranking again. Alpha values: Frame=72, Shelf=84, Chair=48, Stool=66, Desk=30, Bowl=66, Tray=48, Spoon=42, Vase=48, Book=66. Sorted Alpha: 30(Desk), 42(Spoon), 48(Chair), 48(Tray), 48(Vase), 66(Stool), 66(Bowl), 66(Book), 72(Frame), 84(Shelf). So the four smallest: Desk, Spoon, Chair, Tray. Yes. Ties at 48: Chair, Tray, Vase — left-to-right: Chair (position 3), Tray (position 7), Vase (position 9) — so we pick Chair and Tray as the next two after Desk and Spoon. Correct. Beta values for these: Desk=60, Spoon=78, Chair=30, Tray=42. Sum=60+78+30+42=210. Mean=210/4=52.5. So final answer is 52.5.\n\n{\"evidence\":[{\"series\":\"Alpha\",\"category\":\"Desk\",\"value\":30},{\"series\":\"Alpha\",\"category\":\"Spoon\",\"value\":42},{\"series\":\"Alpha\",\"category\":\"Chair\",\"value\":48},{\"series\":\"Alpha\",\"category\":\"Tray\",\"value\":48},{\"series\":\"Beta\",\"category\":\"Desk\",\"value\":60},{\"series\":\"Beta\",\"category\":\"Spoon\",\"value\":78},{\"series\":\"Beta\",\"category\":\"Chair\",\"value\":30},{\"series\":\"Beta\",\"category\":\"Tray\",\"value\":42}], \"work\": \"Smallest Alpha: Desk(30), Spoon(42), then Chair(48) and Tray(48) as next two leftmost among 48s. Beta values: 60,78,30,42. Sum=210, mean=52.5\", \"selected\": [\"Desk\", \"Spoon\", \"Chair\", \"Tray\"], \"bindings\": [{\"category\":\"Desk\",\"operand\":60},{\"category\":\"Spoon\",\"operand\":78},{\"category\":\"Chair\",\"operand\":30},{\"category\":\"Tray\",\"operand\":42}], \"aggregate\": \"mean\", \"answer\": \"52.5\"}\n",
+      "original_capture_sha256": "61231fc45630fbe112e3e632cfa591bfafcb8bcd2bf77cfb299ebaec6d4543d9",
+      "prompt_tensor_hash": "33cb11a4ee4aeb7f26de605e023c1adf51e3e13ff731cdaafb713fed06e8d922",
+      "seed": 3699086677054623495,
+      "tokens_and_full_decoded_text_preserved": true
+    },
+    {
+      "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0013/p_placebo/d00",
+      "view": "p_placebo",
+      "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0013",
+      "cause": "single_closing_brace_after_trailing_comma_prefill",
+      "finish_reason": "balanced",
+      "tokens": 1,
+      "strict_error": "Expecting property name enclosed in double quotes: line 1 column 971 (char 970)",
+      "append_one_brace_error": null,
+      "keys_after_permitted_brace": null,
+      "suffix_text": "}",
+      "original_capture_sha256": "1452f448483e02b83f94fcf144e58d72f61a0ddd96d73b60732d46e3548a2d5c",
+      "prompt_tensor_hash": "56ecbe91608233c21f4fcd2e595c82daaf87ecbcc5823d20e742436127635bfa",
+      "seed": 3509144150366843410,
+      "tokens_and_full_decoded_text_preserved": true
+    },
+    {
+      "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0013/p_revtie/d00",
+      "view": "p_revtie",
+      "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0013",
+      "cause": "single_closing_brace_after_trailing_comma_prefill",
+      "finish_reason": "balanced",
+      "tokens": 1,
+      "strict_error": "Expecting property name enclosed in double quotes: line 1 column 971 (char 970)",
+      "append_one_brace_error": null,
+      "keys_after_permitted_brace": null,
+      "suffix_text": "}",
+      "original_capture_sha256": "5a67e17b231108149533323c70f0d7624bd8dbd6b4c8bb9a2baeab113089e5d7",
+      "prompt_tensor_hash": "9b5360d45764359246c13c965d6e89658a38c8af8652960231e8b4f0694a0c8f",
+      "seed": 3509144150366843410,
+      "tokens_and_full_decoded_text_preserved": true
+    },
+    {
+      "request_id": "SAT1/PREFIX_CALIB/11031/START/s00/prefix10/SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0013/p_stable/d00",
+      "view": "p_stable",
+      "root_id": "SATDOSE_PREFIX_CALIB_PREFIX_ORDER_0013",
+      "cause": "single_closing_brace_after_trailing_comma_prefill",
+      "finish_reason": "balanced",
+      "tokens": 1,
+      "strict_error": "Expecting property name enclosed in double quotes: line 1 column 971 (char 970)",
+      "append_one_brace_error": null,
+      "keys_after_permitted_brace": null,
+      "suffix_text": "}",
+      "original_capture_sha256": "abbf4f90052a5cc9038e8e2c6ea8084581e38dd4045070039d8ab2d6cca2bc09",
+      "prompt_tensor_hash": "7cd4b8ac3de68eff76b66afa866b21743da9e82ad0c3c9d06000a84a14ec3657",
+      "seed": 3509144150366843410,
+      "tokens_and_full_decoded_text_preserved": true
+    }
+  ],
+  "unknown_cause_counts": {
+    "missing_selected_after_permitted_brace": 1,
+    "malformed_work_string_and_embedded_second_object": 1,
+    "single_closing_brace_after_trailing_comma_prefill": 3
+  },
+  "raw_sha256": "e577eae1a4ab138ec885806822ead19d545bdef0dfda762fe8ddbe2475f89204",
+  "archive_sha256": "55e24dc67f0bdf2e2f49f877b5038c8993186a6b37b42f58a34737777ffadd1c",
+  "new_model_calls": 0,
+  "parameter_updates": 0
+}

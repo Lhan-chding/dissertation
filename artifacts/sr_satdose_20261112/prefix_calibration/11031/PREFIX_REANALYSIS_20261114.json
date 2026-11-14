@@ -1,0 +1,135 @@
+{
+  "checked_at_utc": "2026-11-14T03:40:00.651318+00:00",
+  "status": "COMPLETE_PREFIX_REANALYSIS_IDENTICAL",
+  "release_verified": true,
+  "deployment_verified": true,
+  "all_report_fields_identical": true,
+  "raw_sha256": "e577eae1a4ab138ec885806822ead19d545bdef0dfda762fe8ddbe2475f89204",
+  "readouts": {
+    "strict": {
+      "views": {
+        "p_stable": {
+          "denominator": 16,
+          "known": 8,
+          "correct": 8,
+          "unknown": 8,
+          "correct_rate": 0.5,
+          "unknown_rate": 0.5,
+          "known_gate": false,
+          "bounds": [
+            0.5,
+            1.0
+          ],
+          "length_count": 0,
+          "brace_eligible": 7
+        },
+        "p_revtie": {
+          "denominator": 16,
+          "known": 8,
+          "correct": 0,
+          "unknown": 8,
+          "correct_rate": 0.0,
+          "unknown_rate": 0.5,
+          "known_gate": false,
+          "bounds": [
+            0.0,
+            0.5
+          ],
+          "length_count": 0,
+          "brace_eligible": 6
+        },
+        "p_placebo": {
+          "denominator": 16,
+          "known": 7,
+          "correct": 7,
+          "unknown": 9,
+          "correct_rate": 0.4375,
+          "unknown_rate": 0.5625,
+          "known_gate": false,
+          "bounds": [
+            0.4375,
+            1.0
+          ],
+          "length_count": 0,
+          "brace_eligible": 8
+        }
+      },
+      "stable_minus_revtie_count": 8,
+      "stable_minus_revtie_rate": 0.5,
+      "contrast_missing_bounds": [
+        0.0,
+        1.0
+      ],
+      "checks": {
+        "all_views_known_at_least_14": false,
+        "stable_correct_at_least_12": false,
+        "stable_minus_revtie_at_least_4": true
+      },
+      "passed": false
+    },
+    "sensitivity": {
+      "views": {
+        "p_stable": {
+          "denominator": 16,
+          "known": 15,
+          "correct": 15,
+          "unknown": 1,
+          "correct_rate": 0.9375,
+          "unknown_rate": 0.0625,
+          "known_gate": true,
+          "bounds": [
+            0.9375,
+            1.0
+          ],
+          "length_count": 0,
+          "brace_eligible": 7
+        },
+        "p_revtie": {
+          "denominator": 16,
+          "known": 13,
+          "correct": 1,
+          "unknown": 3,
+          "correct_rate": 0.0625,
+          "unknown_rate": 0.1875,
+          "known_gate": false,
+          "bounds": [
+            0.0625,
+            0.25
+          ],
+          "length_count": 0,
+          "brace_eligible": 6
+        },
+        "p_placebo": {
+          "denominator": 16,
+          "known": 15,
+          "correct": 15,
+          "unknown": 1,
+          "correct_rate": 0.9375,
+          "unknown_rate": 0.0625,
+          "known_gate": true,
+          "bounds": [
+            0.9375,
+            1.0
+          ],
+          "length_count": 0,
+          "brace_eligible": 8
+        }
+      },
+      "stable_minus_revtie_count": 14,
+      "stable_minus_revtie_rate": 0.875,
+      "contrast_missing_bounds": [
+        0.6875,
+        0.9375
+      ],
+      "checks": {
+        "all_views_known_at_least_14": false,
+        "stable_correct_at_least_12": true,
+        "stable_minus_revtie_at_least_4": true
+      },
+      "passed": false
+    }
+  },
+  "model_calls": 0,
+  "parameter_updates": 0,
+  "permission": "NO_TRAINING"
+}

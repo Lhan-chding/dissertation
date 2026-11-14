@@ -1,6 +1,6 @@
-# SR-SATDOSE-1 准入报告（2026-11-13，DRY通过／PREFIX已提交）
+# SR-SATDOSE-1 准入报告（2026-11-14，PREFIX门禁暂停）
 
-当前状态：DRY_BOTH_PASS_PREFIX_SUBMITTED_PENDING_GPU_ADMISSION。截至15:47 UTC，PREFIX替换作业1737594为PENDING；旧1737418已由用户授权取消且零启动/生成；DRY作业1736279已完整通过，两起点各640条。尚无GPU诊断或正式训练准入。下列段落保留历史观测及当时状态。
+当前状态：HOLD_PREFIX_MEASUREMENT / NO_TRAINING。2026-11-14 11:37新加坡时间实际补查：1737594已于当日07:56:22启动、08:06:27结束（服务器UTC已核验），用时10分05秒，Slurm FAILED/2:0。11031完整生成48/48，随后校准未通过，11032未启动。严格与限定补括号两套均未通过；敏感性口径p_revtie known=13/16，低于14/16门槛。两起点DRY1280条此前已通过。GPU技术绑定仍不存在，正式TRAIN/DEV/MAIN尚未开始。下文保留历史观测。
 
 早期观测：用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 
@@ -124,3 +124,8 @@ GPU有限检查的纯张量估算为58份496-FP32清单，共5020286976字节；
 用户同时要求改为一小时监控、不要持续运行。本轮收束已有本地工作，停止新增开发和持续轮询；服务器1737594继续由Slurm管理。最近实际巡检仍为15:47 UTC的PENDING。尚未配置可在当前聊天结束后自动唤醒的小时任务，不能把计划的16:47 UTC检查记为已执行。恢复时先读取最新回执并补查，不重提作业、不越过完整PREFIX/GPU/训练门禁。
 
 本轮未部署开发快照：新增完整端点评分、四路径canary证据审计及尚未完成测试的evaluation_runtime草稿。限定静态独立审查和源码语法检查完成；完整CPU回归348项全部通过（249.158秒，零跳过），日志intake/development_snapshot_cpu_tests_20261114.log。此测试集不包含evaluation_runtime行为/集成测试，不能据此声称该草稿验收、GPU验收或训练/评估准入。收束交接见DEVELOPMENT_HANDOFF_20261114.md。
+
+
+2026-11-14 03:37 UTC只读补查1737594：原PREFIX控制器RESULT精确SHA d4027f82a6b4bdcdfe944dce9ee90912486fcc460503ff4da07c3fd3ac434ddd已下载保存prefix_calibration/11031/PREFIX_CONTROL_RESULT_20261114.json。11031原始48条完整回执，0优化器/0参数更新，生成子步骤COMPLETED/0:0；控制器因测量门禁HOLD返回2，对应Slurm FAILED。严格known三视图8/8/7，stable正确8，差8；补括号known15/13/15，stable正确15，差14，仍因revtie可解析数13<14未通过。未重新提交或修改解析规则/阈值。03:38 UTC确认服务器UTC，runs仅DRY_11031、DRY_11032、PREFIX_CALIB_11031，GPU技术绑定不存在。详见intake/MONITOR_1737594_20261114T0337Z.json及PREFIX_TERMINAL_DETAILS_20261114.json。
+
+2026-11-14 11:41新加坡时间完成PREFIX只读诊断：原部署全量复算与原报告完全相同，独立解析48条与原strict/sensitivity逐字段一致；48条原BEGIN/CAPTURE/COMPLETE、token/sampler和冻结输入/种子核验通过。剩余5条unknown为缺selected1条、非法长work文本1条、root0013三个视图各仅生成右括号造成尾逗号非法JSON3条。独立原生停止源码复核及3项解析器测试通过，无新增模型调用/更新。未找到可恢复的实现错误，保留13/16<14/16的HOLD。完整报告prefix_calibration/11031/DIAGNOSIS_zh.md。

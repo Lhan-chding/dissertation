@@ -19,3 +19,5 @@ Still required before TRAIN: concrete authenticated admission, actual GPU checks
 Bounded independent static review found no credentials or dangerous default activation; syntax checks passed. Canary targeted tests: 11 passed (95.101 seconds), using synthetic GPU/process evidence and actual small CPU Adam states. Evaluation runtime still has no behavior test coverage. See intake/DEVELOPMENT_SNAPSHOT_REVIEW_20261114.json.
 
 Final stable full CPU suite: 348 tests passed, zero skips, 249.158 seconds. Log: intake/development_snapshot_cpu_tests_20261114.log. This does not cover evaluation_runtime behavior/integration or actual GPU execution.
+
+Update 2026-11-14 11:41 SGT: job1737594 is terminal FAILED/2:0 from intentional HOLD_PREFIX_MEASUREMENT, not pending. 11031 completed48, 11032 never began. Read-only full reproduction and independent record/parser/stop audit agree. REVTIE sensitivity known13/16 below14/16; no implementation recovery found. Do not resume waiting for this job or submit training. Read prefix_calibration/11031/DIAGNOSIS_zh.md and latest ADMISSION_REPORT first.
