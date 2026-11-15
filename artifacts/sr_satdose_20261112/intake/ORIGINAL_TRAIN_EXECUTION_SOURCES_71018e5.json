@@ -1,0 +1,78 @@
+{
+  "first_two_control": {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/execution/first_two_control.py",
+    "sha256": "4deadcd3bf2ba16898d284ad828ab94d5ae94dda1821696e3b98f9dc7ab8f0f7"
+  },
+  "training_runtime": {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/execution/training_runtime.py",
+    "sha256": "670baaa44107bc9ce017910dcd301452822ed35738b96f3505998aa70af8c5a6"
+  },
+  "training_step": {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/execution/training_step.py",
+    "sha256": "b17554f059a42b671b63ad28b3c8c8388a66a1daf8af5f9fbce1d8a637da598b"
+  },
+  "training_state": {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/execution/training_state.py",
+    "sha256": "9a99de7d4cddddf2052b324bb75e5cfcd3e59b7a4114c7b1d8f705a06e07d0a0"
+  },
+  "training_transaction": {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/execution/training_transaction.py",
+    "sha256": "62c041a1c2dfdd64df165d3b80ce5136c086a9a75eb173984145aee320ca4c04"
+  },
+  "production": {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/execution/production.py",
+    "sha256": "a32b9333388d487ff9e84c199c209bc86d2a938684a7b2c451bac335f1519258"
+  },
+  "calibration": {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/analysis/calibration.py",
+    "sha256": "b795b4f077e877838be92523fbf484bb8077956d24c8d3a83cd390862c4d3481"
+  },
+  "satdose_core": {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/supplied_package/tools/satdose_core.py",
+    "sha256": "7edd0e228adf02e6273a7bd62f8166003a7da4aa55628825d1b00e743e161e64"
+  },
+  "scorer_bindings": {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/supplied_package/config/source_bindings.json",
+    "sha256": "94827065f02e48be80be6596111f615d2c8a23af3107fd25b6549a6ad40ad2be"
+  },
+  "admission_verifier": {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/execution/admission_authority.py",
+    "sha256": "cb444481f4aacc7d7002de244384de50defe4b48013a7710c6e985fccdfdca1a"
+  },
+  "canary_replay": {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/execution/canary_replay.py",
+    "sha256": "8b11ca6f334e87a5e81277feeb7d7b5d55959d4efe36d84336be0a4a17c05d54"
+  },
+  "frozen_fingerprint": {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/execution/canary_audit.py",
+    "sha256": "ae906899b7b459026fc864d365ef79a2b57887a4eb9327f45fc473cbcf96aa2c"
+  },
+  "storage_ready": {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/execution/storage_ready.py",
+    "sha256": "0f315e659826e6f060df2b4c016981869dcf43d15cd7b267acc9fb2e3315361f"
+  },
+  "evaluation_analysis": {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/analysis/evaluation.py",
+    "sha256": "2c8826659ba9ab6221447bf2e3db4cea16487a22a19ba302ae437b4951bda69a"
+  },
+  "canary_controller": {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/scheduling/first_two_launcher.py",
+    "sha256": "fd9131410151e1adc7cbd6789313b4d3211b25fe6ee5c3df68d2fc7b5ff08b85"
+  },
+  "continuation_verifier": {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/execution/continuation_authority.py",
+    "sha256": "78ddbff3bcfa624866eafbfbcdb74aff754946881133c4d8e1e304134bc2daea"
+  },
+  "risk_verifier": {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/analysis/risk.py",
+    "sha256": "e8696763be6a9a988ec74d02712fd324ab77cf63a540fb04427e865250c2deb2"
+  },
+  "trained_dev_control": {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/execution/trained_dev_control.py",
+    "sha256": "8aac2bb59e0f9c3c5450c3365ff1dd07320421a6ee127cfa9fb648c7dafb5b73"
+  },
+  "continuation_control": {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/execution/continuation_control.py",
+    "sha256": "fd1256510ec3e7759967748628212e5c6da3499d4e8cd5630aeebcd52ce37eea"
+  }
+}

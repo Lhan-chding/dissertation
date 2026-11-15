@@ -1,0 +1,109 @@
+{
+  "status": "FULL_ADMISSION_VERIFIED_AND_PUBLISHED",
+  "spec": {
+    "path": "execution_releases/FIRST_TWO_ADMISSION_SPEC_71018e5.json",
+    "sha256": "9ca67124a9ae4085499955f161c551adcf1cfe08790a997811186a21bfc610ac"
+  },
+  "admission": {
+    "path": "execution_releases/FIRST_TWO_ADMISSION_71018e5.json",
+    "sha256": "2bdc1a83502b565313ceba3fd278ec091e220c198e105d3d942a02793941a9c7"
+  },
+  "candidate": {
+    "schema": "sr-satdose-admission-v1",
+    "experiment_id": "SR-SATDOSE-1-20261112",
+    "config_sha256": "58841639b0f36a69ac77824bc8c683ef7fbeb5c50a41e9975b89b54880f4ecfe",
+    "registration_sha256": "09da6c38b7149f37bdef0c50cf3532425040378a1b9a98bc7f4faa01867b5a3d",
+    "status": "ADMITTED_FIRST_TWO_STEPS_ONLY",
+    "starts": {
+      "11031": {
+        "metrics": {
+          "groups": 64,
+          "responses": 512,
+          "signal_groups": 46,
+          "unknown_rate": 0.00390625,
+          "authorised_rate": 0.37109375,
+          "J1_source0_rate": 0.013157894736842105,
+          "q": 0.7894736842105263,
+          "dose_mean": 2.1085743106184456,
+          "dose_lower95": 1.7422572904240001,
+          "dose_upper95": 2.4520226982080957,
+          "direction_fraction": 1.0,
+          "zero_dose_groups": 18,
+          "planned_dose_point": 607.2694014581123,
+          "planned_dose_lower": 501.77009964211203,
+          "bootstrap": {
+            "mean": 2.1085743106184456,
+            "lower95": 1.7422572904240001,
+            "upper95": 2.4520226982080957,
+            "se": 0.18078566036507002,
+            "B": 10000,
+            "seed": 2026111207
+          },
+          "class_counts": {
+            "list": 256,
+            "chart": 190,
+            "inadmissible": 5,
+            "other_admissible": 59,
+            "unknown": 2
+          },
+          "truncation_rate_all_dry": 0.0
+        },
+        "failures": []
+      },
+      "11032": {
+        "metrics": {
+          "groups": 64,
+          "responses": 512,
+          "signal_groups": 50,
+          "unknown_rate": 0.0078125,
+          "authorised_rate": 0.376953125,
+          "J1_source0_rate": 0.006622516556291391,
+          "q": 0.7772020725388601,
+          "dose_mean": 2.1969172646739743,
+          "dose_lower95": 1.847406700342359,
+          "dose_upper95": 2.5258084371636067,
+          "direction_fraction": 1.0,
+          "zero_dose_groups": 14,
+          "planned_dose_point": 632.7121722261046,
+          "planned_dose_lower": 532.0531296985994,
+          "bootstrap": {
+            "mean": 2.1969172646739743,
+            "lower95": 1.847406700342359,
+            "upper95": 2.5258084371636067,
+            "se": 0.1736813675673641,
+            "B": 10000,
+            "seed": 2026111207
+          },
+          "class_counts": {
+            "chart": 193,
+            "list": 256,
+            "inadmissible": 4,
+            "other_admissible": 55,
+            "unknown": 4
+          },
+          "truncation_rate_all_dry": 0.0015625
+        },
+        "failures": []
+      }
+    },
+    "failures": [],
+    "permission": "FOUR_PATHS_MAX_STEP_2",
+    "gpu_report_sha256": "e592f4806c279544a4206b4dfb0318a8e0899b052924c4958fa932518efd5a0a",
+    "prefix_gate_decision": "PASS_USER_OVERRIDE",
+    "prefix_measurement_passed": false,
+    "prefix_waiver": {
+      "path": "protocol_clarifications/PREFIX_GATE_WAIVER_20261114.json",
+      "sha256": "36012b46494f4fcb3409f4816156406caad7ae1ad65c4688b972b75c83d73783"
+    },
+    "independent_audit": {
+      "path": "execution_releases/GPU_EVIDENCE_AUDIT_1740151.json",
+      "sha256": "fa87ca99a5dbe2c23adee24d19c2ab46ea87f3b6cb4d51880522573f23641f60"
+    },
+    "technical_binding_sha256": "cf7da7f08e5cb11c5458cab1200fd5a2465a529a31d2258f6cc45cbe6efe73c5",
+    "authority_source": {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/execution/admission_authority.py",
+      "sha256": "cb444481f4aacc7d7002de244384de50defe4b48013a7710c6e985fccdfdca1a"
+    }
+  },
+  "completed_at_utc": "2026-11-15T17:22:26.248520+00:00"
+}

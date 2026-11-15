@@ -1,0 +1,53 @@
+{
+  "status": "EXTERNAL_MAIN_AND_FINAL_ANALYSIS_CPU_REVIEW_COMPLETE_NOT_TERMINAL_ADMISSION",
+  "permission": "NO_TRAINING_OR_MAIN_EXECUTION_FROM_THIS_RECEIPT",
+  "tests": {
+    "count": 77,
+    "seconds": 60.08,
+    "passed": true,
+    "log": {
+      "path": "artifacts/sr_satdose_20261112/intake/external_main_analysis_cpu_tests_20261116.log",
+      "sha256": "d65f7763dc5d9eeb3fca0e6211f23a27cc35cd536642d265839426e32e467f9a"
+    }
+  },
+  "sources": {
+    "execution/main_control.py": "e30ae9b2bcbf02d1b1ff788cffbf951d5ca48696170fbba5107d799f1e226c97",
+    "execution/terminal_authority.py": "3c43517e537cb76c4637e940418599325d088ee957476575cc418a9c53d3d95f",
+    "execution/terminal_audit.py": "8ca1460a5af6fe6e2a3eb927fab5cae3439cf32fb823913e221bdc7e8ca28ebc",
+    "scheduling/run_main.sh": "a5a00c338fb36032d62ba1d9b93d8d799a156c22e43616821d2172fe3fbfdf35",
+    "analysis/final_analysis.py": "cfac6741734ff928a86c4d9d4ed24dd6f7b3c55b9e651fc9032378c0190e425a"
+  },
+  "independent_reviews": {
+    "terminal_audit": "24tests and staticreviewpassed",
+    "terminal_authority": "13tests and staticreviewpassed",
+    "main_control": "21tests and staticreviewpassed",
+    "final_analysis": "19tests and staticreviewpassed",
+    "main_launcher": "bash-n and source/schema/CLIreviewpassed"
+  },
+  "original_train_release_unchanged": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5",
+  "deployment_plan": {
+    "main_external_files": [
+      "execution/main_control.py",
+      "execution/terminal_authority.py",
+      "execution/terminal_audit.py",
+      "scheduling/run_main.sh"
+    ],
+    "analysis_external_files": [
+      "analysis/final_analysis.py"
+    ]
+  },
+  "scientific_population": {
+    "main_endpoints": 14,
+    "main_responses": 13760,
+    "primary_root_start_rows": 256,
+    "bootstrap_replicates": 10000,
+    "bootstrap_seed": 2026111219
+  },
+  "limits": [
+    "Actual96trainingCOMMITs and14DEV endpoints do not yet exist",
+    "No terminal or MAIN admission published",
+    "CPU synthetic captures are not production GPU results",
+    "No Stage2 authority",
+    "Observed extra attempt costs never create extra scored scientific samples"
+  ]
+}

@@ -146,9 +146,23 @@ See the dated admission report for the most recent observed progress.
   inventory must be frozen before the first GENESIS; future receipts bind actual
   checkpoints and completed barriers. Unknown attempts cannot be resumed blindly.
 
-The new training controls have CPU and independent review evidence; their actual
-GPU end-to-end acceptance is still pending. The terminal MAIN runner remains
-unimplemented. Do not invoke the old training CLI as a substitute.
+- Later `terminal_audit.py`, `terminal_authority.py` and `main_control.py` are
+  deployed separately from the immutable original TRAIN package. Standard-library
+  bootstrap verifies both inventories before importing the original TRAIN modules.
+  Terminal admission requires all96 genuine commits,14 completed DEV endpoints,
+  twelve completed continuation chunks and original canary/source/risk evidence.
+  The MAIN controller then permits only the fourteen fixed endpoints,13760 total
+  registered responses, in fresh processes with no optimizer or unknown retry.
+- Later `analysis/final_analysis.py` is a separate CPU-only consumer of fourteen
+  complete MAIN receipts. It reuses original scoring and the frozen10000-resample
+  paired-root bootstrap, keeps256 root/start contrasts and all13760 scored rows,
+  distinguishes strict/braced sensitivity and UNKNOWN/NA, and reports attempted
+  resource costs separately from registered scientific completions.
+
+The controls have CPU and independent review evidence; actual GPU end-to-end
+TRAIN/terminal/MAIN acceptance is still pending. Later external code must never
+be inserted into `train_code_71018e5` or change its nineteen-key execution identity.
+Do not invoke the old training CLI as a substitute.
 Do not manufacture DESIGN_FREEZE or GPU_VERIFICATION from test fixtures.
 The GPU diagnostic driver must bind the frozen root/group/request ordering,
 verify saved-tensor storage after backward, and use actual runtime accounting.
