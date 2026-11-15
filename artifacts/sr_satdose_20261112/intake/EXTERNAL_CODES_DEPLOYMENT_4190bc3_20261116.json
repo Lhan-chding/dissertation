@@ -1,0 +1,23 @@
+{
+  "status": "EXTERNAL_CODE_DEPLOYED_NO_TERMINAL_OR_MAIN_ADMISSION",
+  "git_commit": "4190bc30da4550f213279bf16372e41b9af03f16",
+  "original_train_root": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5",
+  "original_train_inventory_unchanged": true,
+  "releases": {
+    "main": {
+      "root": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/external_main_code_4190bc3",
+      "sources": {
+        "execution/main_control.py": "e30ae9b2bcbf02d1b1ff788cffbf951d5ca48696170fbba5107d799f1e226c97",
+        "execution/terminal_authority.py": "3c43517e537cb76c4637e940418599325d088ee957476575cc418a9c53d3d95f",
+        "execution/terminal_audit.py": "8ca1460a5af6fe6e2a3eb927fab5cae3439cf32fb823913e221bdc7e8ca28ebc",
+        "scheduling/run_main.sh": "a5a00c338fb36032d62ba1d9b93d8d799a156c22e43616821d2172fe3fbfdf35"
+      }
+    },
+    "analysis": {
+      "root": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/external_analysis_code_4190bc3",
+      "sources": {
+        "analysis/final_analysis.py": "cfac6741734ff928a86c4d9d4ed24dd6f7b3c55b9e651fc9032378c0190e425a"
+      }
+    }
+  }
+}
