@@ -59,7 +59,7 @@ def _absolute(reference):
 
 
 class _Observed:
-    def __init__(self,root):self.root=root;self.files={};self.directories={}
+    def __init__(self,root):self.root=root;self.files={};self.directories={};self.model_links={};self.model_directories={}
     def absolute(self,path,expected=None):
         path=Path(path)
         require(path.is_absolute() and path.resolve(strict=True)==path and path.is_file() and
@@ -83,12 +83,49 @@ class _Observed:
             if p.is_file():self.absolute(p)
             else:require(p.is_dir(),'Nonordinary protected entry')
         self.directories[path]=entries
+    def model_source_lock(self,lock):
+        """Accept only the frozen HF snapshot's direct links into its own blobs.
+
+        General evidence/source paths remain strictly canonical. Both original
+        link text/resolution and actual target bytes are checked at boundaries.
+        """
+        root=Path(lock['model_path'])
+        require(root.is_absolute() and root.resolve(strict=True)==root and root.is_dir() and
+                root.name==lock['snapshot'] and root.parent.name=='snapshots','Noncanonical model snapshot')
+        expected=set(lock['model_files']);entries={str(p.relative_to(root)) for p in root.rglob('*')}
+        require(expected and {str(p.relative_to(root)) for p in root.rglob('*') if p.is_file()}==expected,
+                'Model snapshot inventory differs')
+        for relative in entries-expected:
+            directory=root/relative
+            require(directory.is_dir() and directory.resolve(strict=True)==directory and not directory.is_symlink(),
+                    'Nonordinary model snapshot directory')
+        self.model_directories[root]=entries
+        blobs=root.parent.parent/'blobs'
+        for relative,digest in lock['model_files'].items():
+            rel=Path(relative)
+            require(not rel.is_absolute() and '..' not in rel.parts,'Model source escapes snapshot')
+            path=root/rel
+            require(path.parent.resolve(strict=True)==path.parent,'Model ancestor symlink')
+            if path.is_symlink():
+                link=path.readlink();target=path.resolve(strict=True)
+                require(blobs.resolve(strict=True)==blobs and target.parent==blobs and
+                        re.fullmatch(r'(?:[0-9a-f]{40}|[0-9a-f]{64})',target.name),'Model link escapes pinned repository blobs')
+                self.absolute(target,digest)
+                require(path.readlink()==link and path.resolve(strict=True)==target,'Model link changed while hashing')
+                self.model_links[path]=(link,target)
+            else:self.absolute(path,digest)
     def stable(self):
         for path,digest in self.files.items():self.absolute(path,digest)
         for path,entries in self.directories.items():
             require(path.resolve(strict=True)==path and
                     {str(p.relative_to(path)) for p in path.rglob('*')}==entries,
                     'Protected evidence directory changed: '+str(path))
+        for path,(link,target) in self.model_links.items():
+            require(path.is_symlink() and path.parent.resolve(strict=True)==path.parent and
+                    path.readlink()==link and path.resolve(strict=True)==target,'Frozen model link changed: '+str(path))
+        for path,entries in self.model_directories.items():
+            require(path.resolve(strict=True)==path and
+                    {str(p.relative_to(path)) for p in path.rglob('*')}==entries,'Model snapshot inventory changed')
 
 
 def _load(reference,name):
@@ -267,9 +304,9 @@ def _validate(spec):
     for reference in (binding['gpu_release'],waiver_document['original_release'],continuation['release']):
         release=e.json(reference);e.tree(Path(release['release_root']))
     lock=e.json(binding['source_lock'])
-    for directory,files in [('native_src','native_files'),('legacy_root','legacy_files'),
-                            ('model_path','model_files'),('parent_path','parent_files')]:
+    for directory,files in [('native_src','native_files'),('legacy_root','legacy_files'),('parent_path','parent_files')]:
         for relative,digest in lock[files].items():e.absolute(Path(lock[directory])/relative,digest)
+    e.model_source_lock(lock)
     # The helper imports its frozen native scorer and recomputes all 1,280 rows.
     dry=original.run(e.ref(refs['config']),e.ref(refs['registration']),root,Path(lock['native_src']))
     require(dry.get('status')=='DRY_METRICS_PASS_GPU_CHECK_STILL_REQUIRED' and dry.get('failures')==[],

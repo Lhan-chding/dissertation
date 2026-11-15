@@ -135,6 +135,47 @@ class GateTests(unittest.TestCase):
         self.assertEqual(module.REQUIRED_TECH,a.TECHNICAL+(a.PREFIX,))
 
 
+class FrozenModelLinkTests(unittest.TestCase):
+    def setUp(self):
+        self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup)
+        self.root=Path(self.temp.name).resolve();self.repo=self.root/'models--Qwen--Qwen3.5-9B'
+        self.model=self.repo/'snapshots'/('c'*40);self.model.mkdir(parents=True)
+        self.blobs=self.repo/'blobs';self.blobs.mkdir();self.target=self.blobs/('a'*64)
+        self.target.write_bytes(b'original model bytes');self.path=self.model/'weights.safetensors'
+        self.path.symlink_to('../../blobs/'+self.target.name)
+        self.lock=dict(model_path=str(self.model),snapshot=self.model.name,
+                       model_files={self.path.name:a.tx.file_sha(self.target)})
+        self.observed=a._Observed(self.root)
+    def test_frozen_snapshot_blob_link_and_content_verified(self):
+        self.observed.model_source_lock(self.lock);self.observed.stable()
+        self.assertEqual(self.observed.files[self.target],self.lock['model_files'][self.path.name])
+        with self.assertRaises(PermissionError):self.observed.absolute(self.path)
+    def test_blob_content_mutation_rejected(self):
+        self.observed.model_source_lock(self.lock);self.target.write_bytes(b'changed')
+        with self.assertRaises(PermissionError):self.observed.stable()
+    def test_same_bytes_repoint_or_link_text_change_rejected(self):
+        for mode in ('other_blob','same_target_absolute'):
+            with self.subTest(mode=mode):
+                self.path.unlink();self.path.symlink_to('../../blobs/'+self.target.name)
+                observed=a._Observed(self.root);observed.model_source_lock(self.lock)
+                other=self.blobs/('b'*64);other.write_bytes(self.target.read_bytes())
+                self.path.unlink();self.path.symlink_to(other if mode=='other_blob' else self.target)
+                with self.assertRaises(PermissionError):observed.stable()
+    def test_blob_escape_rejected_even_with_same_content(self):
+        outside=self.root/('d'*64);outside.write_bytes(self.target.read_bytes())
+        self.path.unlink();self.path.symlink_to(outside)
+        with self.assertRaises(PermissionError):self.observed.model_source_lock(self.lock)
+    def test_changed_or_extra_snapshot_file_rejected(self):
+        self.observed.model_source_lock(self.lock);(self.model/'extra').write_text('unexpected')
+        with self.assertRaises(PermissionError):self.observed.stable()
+        with self.assertRaises(PermissionError):a._Observed(self.root).model_source_lock(self.lock)
+    def test_wrong_snapshot_or_source_lock_sha_rejected(self):
+        bad=copy.deepcopy(self.lock);bad['snapshot']='d'*40
+        with self.assertRaises(PermissionError):self.observed.model_source_lock(bad)
+        bad=copy.deepcopy(self.lock);bad['model_files'][self.path.name]='0'*64
+        with self.assertRaises(PermissionError):self.observed.model_source_lock(bad)
+
+
 class AuthorityBoundaryTests(unittest.TestCase):
     """Explicit mocked full validation; tests scope/cache/bindings only."""
     def setUp(self):

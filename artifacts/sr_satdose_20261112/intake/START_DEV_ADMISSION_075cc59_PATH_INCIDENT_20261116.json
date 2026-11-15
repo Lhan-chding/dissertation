@@ -1,0 +1,14 @@
+{
+  "status": "CPU_ADMISSION_STOPPED_BEFORE_MODEL_CALLS",
+  "release_commit": "075cc59",
+  "authority_sha256": "d52ed7335a07403a14990de634ca974f53ef106735236722869ba04b6e14c6ca",
+  "started_at_utc": "2026-11-15T16:47:05.379579+00:00",
+  "error": "PermissionError: HOLD: Noncanonical observed artifact",
+  "location": "admission_authority.py:_validate source-lock loop line272 -> _Observed.absolute",
+  "observed_cause": "All13 model snapshot file paths are existing Hugging Face symlinks to the same frozen model repository blobs. Native, legacy and parent paths are canonical. Frozen native runtime already permits SHA-verified model links.",
+  "admission_published": false,
+  "model_calls": 0,
+  "formal_optimizer_steps": 0,
+  "resolution_status": "PENDING_TESTED_MODEL_LINK_AWARE_VERIFIER",
+  "preserve_old_release": true
+}
