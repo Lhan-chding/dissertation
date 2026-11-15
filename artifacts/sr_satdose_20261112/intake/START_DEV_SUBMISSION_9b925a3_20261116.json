@@ -1,0 +1,87 @@
+{
+  "status": "FIXED_START_DEV_SUBMITTED",
+  "job_id": 1740676,
+  "intent": {
+    "created_at_utc": "2026-11-15T16:56:55.563408+00:00",
+    "status": "SUBMISSION_INTENT_UNKNOWN_UNTIL_RECEIPT",
+    "scope": "START_DEV_ONLY_NO_TRAINING",
+    "responses": 216,
+    "release": {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/START_DEV_RELEASE_9b925a3.json",
+      "sha256": "22f82a3e504c8838ba3496eedf6b31d77addef5f07360fc6baba9024c8ca96c2"
+    },
+    "args": [
+      "sbatch",
+      "--parsable",
+      "--job-name=LH-SATDOSE-START-DEV",
+      "--account=rose",
+      "--qos=soujanya-poria-startfund-2026-03",
+      "--partition=cluster02",
+      "--nodes=1",
+      "--ntasks=1",
+      "--cpus-per-task=8",
+      "--gpus=pro6000:2",
+      "--mem=66G",
+      "--time=06:00:00",
+      "--no-requeue",
+      "--chdir=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/start_dev_code_9b925a3",
+      "--output=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/start_dev_9b925a3/slurm-%j.out",
+      "--error=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/start_dev_9b925a3/slurm-%j.err",
+      "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/start_dev_code_9b925a3/scheduling/run_start_dev.sh",
+      "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/START_DEV_RELEASE_9b925a3.json",
+      "22f82a3e504c8838ba3496eedf6b31d77addef5f07360fc6baba9024c8ca96c2"
+    ],
+    "prerequisite": {
+      "args": [
+        "sacct",
+        "-j",
+        "1740151",
+        "-n",
+        "-P",
+        "--format=JobID,State,ExitCode"
+      ],
+      "returncode": 0,
+      "stdout": "1740151|COMPLETED|0:0\n1740151.batch|COMPLETED|0:0\n1740151.extern|COMPLETED|0:0\n1740151.0|COMPLETED|0:0\n1740151.1|COMPLETED|0:0\n1740151.2|COMPLETED|0:0\n1740151.3|COMPLETED|0:0\n1740151.4|COMPLETED|0:0\n1740151.5|COMPLETED|0:0\n1740151.6|COMPLETED|0:0\n1740151.7|COMPLETED|0:0\n1740151.8|COMPLETED|0:0\n1740151.9|COMPLETED|0:0\n",
+      "stderr": ""
+    },
+    "queue_before": {
+      "args": [
+        "squeue",
+        "-u",
+        "varun024",
+        "-h",
+        "-o",
+        "%i|%j|%T|%q|%b|%R"
+      ],
+      "returncode": 0,
+      "stdout": "1740132|bottle-full-dual-pro|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:2|gpu-pro6000-7\n1740109|lift-full-pro-migrate|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:2|gpu-pro6000-6\n",
+      "stderr": ""
+    }
+  },
+  "response": {
+    "args": [
+      "sbatch",
+      "--parsable",
+      "--job-name=LH-SATDOSE-START-DEV",
+      "--account=rose",
+      "--qos=soujanya-poria-startfund-2026-03",
+      "--partition=cluster02",
+      "--nodes=1",
+      "--ntasks=1",
+      "--cpus-per-task=8",
+      "--gpus=pro6000:2",
+      "--mem=66G",
+      "--time=06:00:00",
+      "--no-requeue",
+      "--chdir=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/start_dev_code_9b925a3",
+      "--output=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/start_dev_9b925a3/slurm-%j.out",
+      "--error=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/start_dev_9b925a3/slurm-%j.err",
+      "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/start_dev_code_9b925a3/scheduling/run_start_dev.sh",
+      "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/START_DEV_RELEASE_9b925a3.json",
+      "22f82a3e504c8838ba3496eedf6b31d77addef5f07360fc6baba9024c8ca96c2"
+    ],
+    "returncode": 0,
+    "stdout": "1740676\n",
+    "stderr": ""
+  }
+}
