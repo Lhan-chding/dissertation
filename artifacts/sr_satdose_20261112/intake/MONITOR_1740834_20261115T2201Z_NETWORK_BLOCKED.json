@@ -1,0 +1,37 @@
+{
+  "status": "CURRENT_REMOTE_STATE_UNKNOWN_NETWORK_BLOCKED",
+  "recorded_at_utc": "2026-11-15T22:03:33.266345+00:00",
+  "job_id": 1740834,
+  "last_successful_observation": "2026-11-15T21:00:56.995765+00:00",
+  "last_successful_receipt": "intake/MONITOR_1740834_20261115T210056Z.json",
+  "failed_checks": [
+    {
+      "purpose": "hourly job monitor",
+      "returncode": 255,
+      "error": "ssh: connect to host 10.97.216.128 port 22: Operation timed out"
+    },
+    {
+      "purpose": "bounded read-only retry",
+      "returncode": 255,
+      "error": "ssh: connect to host 10.97.216.128 port 22: Operation timed out"
+    },
+    {
+      "purpose": "read-only connection probe after existing VPN start request",
+      "error": "ssh: connect to host 10.97.216.128 port 22: Operation timed out",
+      "returncode": 255
+    }
+  ],
+  "vpn": {
+    "observed_status": "Disconnected",
+    "existing_connection_start_request_returncode": 0,
+    "status_after_request": "Disconnected",
+    "configuration_modified": false
+  },
+  "computer_use": {
+    "outcome": "Mac locked; automatic unlock unavailable; native client inaccessible",
+    "user_action_required": "Unlock Mac and restore existing VPN/campus route"
+  },
+  "job_mutations": 0,
+  "resubmissions": 0,
+  "interpretation": "Network failure is not evidence that the server job failed or completed. Do not reset or retry any experiment attempt."
+}

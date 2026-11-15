@@ -1,6 +1,6 @@
 # SR-SATDOSE-1 准入报告（2026-11-14，PREFIX用户批准放行）
 
-Latest verified status (2026-11-16 05:00 Singapore): first-two job1740834 RUNNING on gpu-pro6000-12 under teacherQoS/2PRO6000, elapsed02:00:09 at21:00:56UTC. 11031/T0 step1 COMMIT exists; step2 active with53/128closed generations, cumulative182BEGIN/181CAPTURE/181COMPLETE. Other3paths notstarted; noHOLD/ERROR or parentstderr. This is a live progress observation, not independent canary acceptance. Fixed jobscope1024TRAIN/8formalupdates thenreadonlyfreshreload; canary/DEV2/step3+ andMAIN remain gated. BothSTARTDEV endpoints alreadycomplete/independentlyscored. OriginalPREFIXmeasurementfalse+explicitwaiver preserved. Historicalobservationsfollow.
+Latest connectivity status (2026-11-16 06:01–06:03 Singapore): hourly SSH and bounded retries timed out; local SD-WAN isDisconnected. Starting the existing VPN connection returned0 but did not restore it; Mac islocked and native VPN UI inaccessible. User asked to unlock and restore VPN. CURRENT1740834STATEUNKNOWN. Lastsuccessful21:00:56UTC: RUNNING,gpu-pro6000-12,11031/T0 step1COMMIT and53/128step2closed generations,cumulative181complete,other3pathsnotstarted,noHOLDobservedthen. Networkfailuredoesnotprovejobfailure/completion; noresubmissionorjobmutation. Onrestorationimmediatelymonitor1740834andcontinuegatedworkflow. Historicalobservationsfollow.
 
 早期观测：用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 

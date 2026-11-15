@@ -123,3 +123,7 @@ Job1740834 RUNNING on gpu-pro6000-12, elapsed00:59:52 at20:00:40UTC Nov15. Teach
 ## First-two hourly observation — 2026-11-16 05:00 SGT
 
 At21:00:56UTC job1740834 RUNNING elapsed02:00:09. 11031/T0 step1 COMMIT exists; step2 active53/128closed generations, cumulative181complete/182BEGIN. Other3paths notstarted. NoHOLD/ERROR; independentcanary notyetpossible. Receiptintake/MONITOR_1740834_20261115T210056Z.json. Nextregularcheck22:01UTC/06:01SGT.
+
+## Connectivity interruption — 2026-11-16 06:01–06:03 SGT
+
+Hourly1740834 monitor and bounded read-only retries timedout. Local scutil reportsSD-WAN Disconnected. Authorized attempt tostarttheexistingconnection returned0 butstatusremainedDisconnected; noVPNconfigurationchange. CUAinventory reportedMaclocked/automaticunlockunavailable; noUIactionsperformed. Userprompted to unlock/restoreVPN. CurrentremotejobstateUNKNOWN, lastsuccessful21:00:56UTC observationremains181closedTRAIN/1COMMIT on11031/T0. Nojobcancel/resubmit/retry. Onrestoration, immediatelyrun operations/satdose_monitor_firsttwo.py1740834 andcontinueactualcanary/DEVgatesonlywhencomplete. Receiptintake/MONITOR_1740834_20261115T2201Z_NETWORK_BLOCKED.json.
