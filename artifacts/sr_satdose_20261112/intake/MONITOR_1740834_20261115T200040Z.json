@@ -1,0 +1,67 @@
+{
+  "checked_at_utc": "2026-11-15T20:00:40.401134+00:00",
+  "job_id": 1740834,
+  "sacct": {
+    "returncode": 0,
+    "stdout": "1740834|RUNNING|00:59:52|0:0|gpu-pro6000-12\n1740834.batch|RUNNING|00:59:52|0:0|gpu-pro6000-12\n1740834.extern|RUNNING|00:59:52|0:0|gpu-pro6000-12\n1740834.0|RUNNING|00:59:51|0:0|gpu-pro6000-12\n",
+    "stderr": ""
+  },
+  "squeue": {
+    "returncode": 0,
+    "stdout": "1740834|RUNNING|59:52|1-00:00:00|soujanya-poria-startfund-2026-03|gpu-pro6000-12\n",
+    "stderr": ""
+  },
+  "paths": {
+    "11031/T0": {
+      "controller": {
+        "exists": true,
+        "generation_counts": {
+          "BEGIN": 113,
+          "CAPTURE": 112,
+          "COMPLETE": 112
+        },
+        "incidents": {},
+        "results": {}
+      },
+      "commits": [],
+      "staging": [
+        "training_transactions/start-11031/T0/.staging-step-001"
+      ]
+    },
+    "11031/T1": {
+      "controller": {
+        "exists": false
+      },
+      "commits": [],
+      "staging": []
+    },
+    "11032/T0": {
+      "controller": {
+        "exists": false
+      },
+      "commits": [],
+      "staging": []
+    },
+    "11032/T1": {
+      "controller": {
+        "exists": false
+      },
+      "commits": [],
+      "staging": []
+    }
+  },
+  "launcher": {
+    "exists": true,
+    "generation_counts": {
+      "BEGIN": 0,
+      "CAPTURE": 0,
+      "COMPLETE": 0
+    },
+    "incidents": {},
+    "results": {}
+  },
+  "log_tail": {
+    "scheduling/first_two_71018e5/slurm-1740834.err": "",
+    "scheduling/first_two_71018e5/slurm-1740834.out": ""
+  }
+}

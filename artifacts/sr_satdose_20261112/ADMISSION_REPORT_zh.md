@@ -1,6 +1,6 @@
 # SR-SATDOSE-1 准入报告（2026-11-14，PREFIX用户批准放行）
 
-Latest verified status (2026-11-16 03:00 Singapore): START DEV1740676 COMPLETED0:0 in01:54:56, both108/108 independently rescored. ConflictS11031=16/32 and11032=14/32; aligned+no_list59/64 and63/64; bothretention12/12/all108balanced. FIRST_TWO_RELEASE_71018e5 SHA22f3b7b260670628398154652455520cd25169234f66a827d3d117def924438f genuinelypassed original CPUpreflight. Uniquefirsttwo job1740834 submitted teacherQoS/2PRO6000/24h/no-requeue;19:00:23UTC PENDING(Priority), zeroTRAINattempts/COMMITs atthisobservation. Scope4paths×2steps=1024TRAIN/8formalupdates plusfreshread-onlyreload. Actualcanary/DEV2/step3+ andMAIN remain gated. OriginalPREFIXmeasurementfalse+explicitwaiver preserved. Historicalobservationsfollow.
+Latest verified status (2026-11-16 04:00 Singapore): first-two job1740834 RUNNING on gpu-pro6000-12 under teacherQoS/2PRO6000, elapsed00:59:52 at20:00:40UTC. 11031/T0 step1 has113BEGIN/112CAPTURE/112COMPLETE; active staging exists, zero committed formal updates yet. Other3paths notstarted; noHOLD/ERROR or parentstderr. Fixed jobscope1024TRAIN/8formalupdates thenreadonlyfreshreload; actualindependentcanary/DEV2/step3+ andMAIN remain gated. BothSTARTDEV endpoints alreadycomplete/independentlyscored. OriginalPREFIXmeasurementfalse+explicitwaiver preserved. Historicalobservationsfollow.
 
 早期观测：用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 
