@@ -119,3 +119,7 @@ Update 2026-11-14 23:35 SGT - current GPU execution handoff:
 ## First-two hourly observation — 2026-11-16 04:00 SGT
 
 Job1740834 RUNNING on gpu-pro6000-12, elapsed00:59:52 at20:00:40UTC Nov15. TeacherQoS unchanged. Firstpath11031/T0 step1 has113BEGIN/112CAPTURE/112COMPLETE, active .staging-step-001, zeroCOMMITs sofar. Active staging duringliveworker is notterminalUNKNOWN/failure. Otherthreepaths notstarted. NoHOLD/ERROR incontroller/launcher; parentlogs empty. Receiptintake/MONITOR_1740834_20261115T200040Z.json. Nextregularcheck21:00UTC/05:00SGT. Do notrerunrelease/submissionoroccupiedpath. Independentcanary onlyafteractualallfourpaths+all8workerscompleted.
+
+## First-two hourly observation — 2026-11-16 05:00 SGT
+
+At21:00:56UTC job1740834 RUNNING elapsed02:00:09. 11031/T0 step1 COMMIT exists; step2 active53/128closed generations, cumulative181complete/182BEGIN. Other3paths notstarted. NoHOLD/ERROR; independentcanary notyetpossible. Receiptintake/MONITOR_1740834_20261115T210056Z.json. Nextregularcheck22:01UTC/06:01SGT.
