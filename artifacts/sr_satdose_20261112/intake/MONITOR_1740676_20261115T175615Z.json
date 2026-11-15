@@ -1,0 +1,66 @@
+{
+  "checked_at_utc": "2026-11-15T17:56:15.280186+00:00",
+  "job_id": 1740676,
+  "sacct": {
+    "returncode": 0,
+    "stdout": "1740676|RUNNING|00:59:17|0:0|gpu-pro6000-12\n1740676.batch|RUNNING|00:59:17|0:0|gpu-pro6000-12\n1740676.extern|RUNNING|00:59:17|0:0|gpu-pro6000-12\n1740676.0|COMPLETED|00:56:02|0:0|gpu-pro6000-12\n1740676.1|RUNNING|00:03:14|0:0|gpu-pro6000-12\n",
+    "stderr": ""
+  },
+  "squeue": {
+    "returncode": 0,
+    "stdout": "1740676|RUNNING|59:17|6:00:00|soujanya-poria-startfund-2026-03|gpu-pro6000-12\n",
+    "stderr": ""
+  },
+  "starts": {
+    "11031": {
+      "exists": true,
+      "begun": 108,
+      "captured": 108,
+      "completed": 108,
+      "RESULT.json": {
+        "admission": {
+          "path": "execution_releases/START_DEV_ADMISSION_9b925a3.json",
+          "sha256": "9b92c278ced475c316bb528b81e308d1f575c0b7f10c8352b62110dd81525185"
+        },
+        "close": {
+          "path": "start_dev/start-11031/CLOSE.json",
+          "sha256": "803956df5f1538155f94e7bb8c03eda9ad22c73a671bfe5e76f0b10febc35cd4"
+        },
+        "design_freeze_sha256": "6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0",
+        "endpoint_binding": {
+          "path": "start_dev/start-11031/ENDPOINT_BINDING.json",
+          "sha256": "11ec5915eb024630beaa47985fc19c82613b3b3115f4da45268b3dff0ea50dac"
+        },
+        "permission": "NO_TRAINING",
+        "process_identity": {
+          "boot_id": "e86b4ca3-1758-4ce5-b1ac-78b3312ba38b",
+          "host": "gpu-pro6000-12.cluster02.eee.ntu.edu.sg",
+          "pid": 574348,
+          "start_ticks": "410673229"
+        },
+        "receipt": {
+          "path": "start_dev/start-11031/endpoint/RECEIPT.json",
+          "sha256": "2d2878c6540247c29391c622dbb2c1d3038165b2d86f2060dda3c153631ab0ae"
+        },
+        "release": {
+          "path": "execution_releases/START_DEV_RELEASE_9b925a3.json",
+          "sha256": "22f82a3e504c8838ba3496eedf6b31d77addef5f07360fc6baba9024c8ca96c2"
+        },
+        "responses": 108,
+        "schema": "sr-satdose-start-dev-result-v1",
+        "start_seed": 11031,
+        "status": "START_DEV_ENDPOINT_COMPLETE"
+      }
+    },
+    "11032": {
+      "exists": true,
+      "begun": 3,
+      "captured": 2,
+      "completed": 2
+    }
+  },
+  "log_tail": {
+    "slurm-1740676.out": "{\"admission\": {\"path\": \"execution_releases/START_DEV_ADMISSION_9b925a3.json\", \"sha256\": \"9b92c278ced475c316bb528b81e308d1f575c0b7f10c8352b62110dd81525185\"}, \"close\": {\"path\": \"start_dev/start-11031/CLOSE.json\", \"sha256\": \"803956df5f1538155f94e7bb8c03eda9ad22c73a671bfe5e76f0b10febc35cd4\"}, \"design_freeze_sha256\": \"6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0\", \"endpoint_binding\": {\"path\": \"start_dev/start-11031/ENDPOINT_BINDING.json\", \"sha256\": \"11ec5915eb024630beaa47985fc19c82613b3b3115f4da45268b3dff0ea50dac\"}, \"permission\": \"NO_TRAINING\", \"process_identity\": {\"boot_id\": \"e86b4ca3-1758-4ce5-b1ac-78b3312ba38b\", \"host\": \"gpu-pro6000-12.cluster02.eee.ntu.edu.sg\", \"pid\": 574348, \"start_ticks\": \"410673229\"}, \"receipt\": {\"path\": \"start_dev/start-11031/endpoint/RECEIPT.json\", \"sha256\": \"2d2878c6540247c29391c622dbb2c1d3038165b2d86f2060dda3c153631ab0ae\"}, \"release\": {\"path\": \"execution_releases/START_DEV_RELEASE_9b925a3.json\", \"sha256\": \"22f82a3e504c8838ba3496eedf6b31d77addef5f07360fc6baba9024c8ca96c2\"}, \"responses\": 108, \"schema\": \"sr-satdose-start-dev-result-v1\", \"start_seed\": 11031, \"status\": \"START_DEV_ENDPOINT_COMPLETE\"}\n",
+    "slurm-1740676.err": "for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\nsrun: Step created for StepId=1740676.1\n[transformers] The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d\n\nLoading weights:   0%|          | 0/760 [00:00<?, ?it/s]\nLoading weights:  42%|\u2588\u2588\u2588\u2588\u258f     | 320/760 [00:00<00:00, 3169.21it/s]\nLoading weights:  84%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258d | 637/760 [00:00<00:00, 2311.00it/s]\nLoading weights: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 760/760 [00:00<00:00, 2355.08it/s]\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n"
+  }
+}
