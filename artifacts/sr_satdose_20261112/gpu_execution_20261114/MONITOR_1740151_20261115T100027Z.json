@@ -1,0 +1,209 @@
+{
+  "checked_at_utc": "2026-11-15T10:00:26.972073+00:00",
+  "job_id": 1740151,
+  "permission": "NO_TRAINING",
+  "queue": {
+    "returncode": 0,
+    "stdout": "1740151|RUNNING|soujanya-poria-startfund-2026-03|4:07|N/A|gpu-pro6000-8|gpu-pro6000-8",
+    "stderr": ""
+  },
+  "accounting": {
+    "returncode": 0,
+    "stdout": "1740151|RUNNING|0:0|00:04:08|2026-11-15T09:56:19|Unknown|gpu-pro6000-8\n1740151.batch|RUNNING|0:0|00:04:08|2026-11-15T09:56:19|Unknown|gpu-pro6000-8\n1740151.extern|RUNNING|0:0|00:04:08|2026-11-15T09:56:19|Unknown|gpu-pro6000-8\n1740151.0|COMPLETED|0:0|00:01:24|2026-11-15T09:56:22|2026-11-15T09:57:46|gpu-pro6000-8\n1740151.1|COMPLETED|0:0|00:00:48|2026-11-15T09:57:47|2026-11-15T09:58:35|gpu-pro6000-8\n1740151.2|RUNNING|0:0|00:01:51|2026-11-15T09:58:36|Unknown|gpu-pro6000-8",
+    "stderr": ""
+  },
+  "stage_evidence": {
+    "evaluation_loader_checks": {
+      "exists": true,
+      "records": [
+        {
+          "path": "evaluation_loader_checks/start-11031/COMPLETE.json",
+          "sha256": "d188b5ebab1ebc3d3d53be4c129d9886b7b3558f49786c7ae418991054cef5b5",
+          "data": {
+            "actual_gpu_identity": {
+              "arithmetic_device": 0,
+              "cuda_version": "13.0",
+              "devices": [
+                {
+                  "index": 0,
+                  "major": 12,
+                  "minor": 0,
+                  "name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+                  "total_memory": 101975851008,
+                  "uuid": "ffbcbf8a-6b85-ea40-a822-2356c367e053"
+                },
+                {
+                  "index": 1,
+                  "major": 12,
+                  "minor": 0,
+                  "name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+                  "total_memory": 101975851008,
+                  "uuid": "e4696e59-c1e9-e513-0c83-fbd639a53cc3"
+                }
+              ],
+              "peer_0_to_1": true,
+              "peer_1_to_0": true,
+              "torch_version": "2.13.0+cu130",
+              "visible_gpu_count": 2
+            },
+            "backward_calls": 0,
+            "caller_rng_preserved": true,
+            "close": {
+              "arm": "START",
+              "closed": true,
+              "experiment_id": "SR-SATDOSE-1-20261112",
+              "model_calls": 0,
+              "optimizer_constructed": false,
+              "optimizer_steps": 0,
+              "permission": "LOAD_AUDIT_ONLY_NO_GENERATION_NO_MAIN_RELEASE",
+              "policy_sha256": "bf54236906035d295d2616cc00d9ddf27094c6b572ddee8be3cc1b7c1a243fb6",
+              "reference_sha256": "0d7979e13ce408a0501fcd774a26c7643527433de10c64b2b199b695a66d1fb4",
+              "start_seed": 11031,
+              "step": 0,
+              "training_rng_restored": false
+            },
+            "evaluation_sources_sha256": "9ad2d409bafe56487a3ee5fa60df2e6e58e78d65321c8d7e6b05cf847a503fec",
+            "evidence": {
+              "CALLER_STATE.json": {
+                "path": "evaluation_loader_checks/start-11031/CALLER_STATE.json",
+                "sha256": "784bd08795b7e2da1472996b94ab38f1584025f065c0855acac182204b9e248f"
+              },
+              "CLAIM.json": {
+                "path": "evaluation_loader_checks/start-11031/CLAIM.json",
+                "sha256": "c986a0e8567e642ff24a88c02b282e76f3152a2f36cc6f38663a886ee95838ba"
+              },
+              "CLOSE.json": {
+                "path": "evaluation_loader_checks/start-11031/CLOSE.json",
+                "sha256": "d1a1e008985804c927c4ee45365b72940d26ffd9abd97754ed3b035324cbadd7"
+              },
+              "GPU_IDENTITY.json": {
+                "path": "evaluation_loader_checks/start-11031/GPU_IDENTITY.json",
+                "sha256": "f024bdb3f671da25414718ec7a6cfc551227bd6d05481297872dba3a5086d5a9"
+              },
+              "LOAD_AUDIT.json": {
+                "path": "evaluation_loader_checks/start-11031/LOAD_AUDIT.json",
+                "sha256": "bd79ddaf103c9a62c1c2d50b4d5a80a7571dccbb28756c7c56e2675c47bda2c1"
+              },
+              "SOURCES.json": {
+                "path": "evaluation_loader_checks/start-11031/SOURCES.json",
+                "sha256": "e5ba41a3d2ede091aaa306e6fac29da28c01fdd2b656078c91855bac862d7427"
+              },
+              "TENSOR_INVENTORY.json": {
+                "path": "evaluation_loader_checks/start-11031/TENSOR_INVENTORY.json",
+                "sha256": "b64cb8ca0aac567d4b77af7a9eb195be54dffff9023f747e8d72d667274b8bcc"
+              },
+              "audit/EVALUATION_LOAD.json": {
+                "path": "evaluation_loader_checks/start-11031/audit/EVALUATION_LOAD.json",
+                "sha256": "57c379fa093cfd4317325d1fb57b7d248bbdcc9ad3677e60f372f886b184920e"
+              }
+            },
+            "forward_sequences": 0,
+            "model_constructions": 1,
+            "new_generations": 0,
+            "optimizer_steps": 0,
+            "parameter_updates": 0,
+            "permission": "NO_TRAINING",
+            "policy_sha256": "bf54236906035d295d2616cc00d9ddf27094c6b572ddee8be3cc1b7c1a243fb6",
+            "reference_sha256": "0d7979e13ce408a0501fcd774a26c7643527433de10c64b2b199b695a66d1fb4",
+            "scheduler_steps": 0,
+            "schema": "sr-satdose-evaluation-loader-check-v1",
+            "start_seed": 11031,
+            "status": "EVALUATION_START_LOAD_CAPTURE_COMPLETE_NOT_GPU_ADMISSION",
+            "technical_binding_sha256": "cf7da7f08e5cb11c5458cab1200fd5a2465a529a31d2258f6cc45cbe6efe73c5",
+            "tested_scope": "START_R24_ONLY",
+            "trainable_tensors": 496,
+            "trained_checkpoint_gpu_verified": false,
+            "training_rng_restored": false
+          }
+        }
+      ],
+      "accounting": []
+    },
+    "backend_equivalence": {
+      "exists": true,
+      "records": [
+        {
+          "path": "backend_equivalence/start-11031/COMPARISON.json",
+          "sha256": "57406ca54a3f5c8937a22da406a1dfb6bf79b0475fe5c0602243de11592604c8",
+          "data": {
+            "bit_exact": true,
+            "differences": []
+          }
+        },
+        {
+          "path": "backend_equivalence/start-11031/COMPLETE.json",
+          "sha256": "c100365afa76aea3d5accd3e4f1bf92842b07a576876e94448fbcf6ab484e817",
+          "data": {
+            "bit_exact": true,
+            "close": {
+              "arm": "START",
+              "closed": true,
+              "experiment_id": "SR-SATDOSE-1-20261112",
+              "optimizer_steps": 0,
+              "parameter_updates": 0,
+              "policy_sha256": "bf54236906035d295d2616cc00d9ddf27094c6b572ddee8be3cc1b7c1a243fb6",
+              "reference_sha256": "0d7979e13ce408a0501fcd774a26c7643527433de10c64b2b199b695a66d1fb4",
+              "start_seed": 11031,
+              "step": 0
+            },
+            "differences": [],
+            "evidence": {
+              "BASELINE.pt": {
+                "path": "backend_equivalence/start-11031/BASELINE.pt",
+                "sha256": "be15a7e3c598fca8d6a7e46d5bf1fc00e1a613685b656c64538231835d39d951"
+              },
+              "COMPARISON.json": {
+                "path": "backend_equivalence/start-11031/COMPARISON.json",
+                "sha256": "57406ca54a3f5c8937a22da406a1dfb6bf79b0475fe5c0602243de11592604c8"
+              },
+              "SELECTION.json": {
+                "path": "backend_equivalence/start-11031/SELECTION.json",
+                "sha256": "7b1c00bf70e5ccaf340aa2493646c2a45c173f94ca2b704ebbd97f31efc42e39"
+              },
+              "TWO_DEVICE.pt": {
+                "path": "backend_equivalence/start-11031/TWO_DEVICE.pt",
+                "sha256": "1a68c6dc4b7d0dcb812bb2a9ba26c3f7da7f798335187e6c109ec8d1b8d7aaf7"
+              }
+            },
+            "long_sequence_stress": "PENDING",
+            "new_generations": 0,
+            "one_visible_gpu_startup_verified": false,
+            "optimizer_steps": 0,
+            "permission": "NO_TRAINING",
+            "schema": "sr-satdose-backend-equivalence-v1",
+            "start_seed": 11031,
+            "status": "BACKEND_EQUIVALENCE_CAPTURED_NOT_GPU_ADMISSION",
+            "technical_binding_sha256": "cf7da7f08e5cb11c5458cab1200fd5a2465a529a31d2258f6cc45cbe6efe73c5",
+            "tested": "single_device_activation_retention_vs_two_device_saved_tensors_with_two_gpus_visible"
+          }
+        }
+      ],
+      "accounting": [
+        {
+          "path": "backend_equivalence/start-11031/audit/accounting.jsonl",
+          "lines": 4,
+          "last_line": "{\"count\": 1, \"kind\": \"extra_forward_sequences\", \"metadata\": {\"completion_tokens\": 370, \"purpose\": \"training_policy\"}}"
+        }
+      ]
+    },
+    "allzero_check": {
+      "exists": true,
+      "records": [],
+      "accounting": [
+        {
+          "path": "allzero_check/start-11031/audit/accounting.jsonl",
+          "lines": 24,
+          "last_line": "{\"count\": 1, \"kind\": \"extra_forward_sequences\", \"metadata\": {\"completion_tokens\": 428, \"purpose\": \"training_policy\"}}"
+        }
+      ]
+    },
+    "shadow_inputs": {
+      "exists": false
+    },
+    "shadow_claims": {
+      "exists": false
+    }
+  },
+  "holds": [],
+  "error_log_alert_lines": []
+}

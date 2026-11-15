@@ -1,8 +1,8 @@
 """Independent DEV/MAIN native sampler, with no production authority or CLI.
 
-DEVELOPMENT SNAPSHOT: behavior/integration tests are not yet implemented.
-Not deployed or accepted for model execution. Syntax checks alone are not
-evaluation admission; do not add this module to a production release yet.
+CPU behavior tests cover authorization and the durable generation boundary.
+They do not establish actual GPU evaluation or production authority. Deployment
+still requires an independently audited authority and source-bound controller.
 
 The caller independently authenticates the execution inventory and verifier
 source, owns the global control lock and GenerationBridge's durable no-retry
@@ -313,8 +313,12 @@ class EvaluationHandle:
             raise
         finally:
             self._generating = False
-            if native.state_hash(native.capture_rng()) != rng_sha:native.restore_rng(rng)
-            require(native.state_hash(native.capture_rng()) == rng_sha,'Caller evaluation draw RNG changed')
+            try:
+                if native.state_hash(native.capture_rng()) != rng_sha:native.restore_rng(rng)
+                require(native.state_hash(native.capture_rng()) == rng_sha,'Caller evaluation draw RNG changed')
+            except BaseException:
+                self._poisoned = True
+                raise
 
     def audit(self):
         endpoint = self.endpoint()
@@ -356,6 +360,8 @@ def build_evaluation_runtime(registry,source_lock_path,*,start_seed,arm,step,sco
     lock,native_root,legacy_root,model,parent = loader.verify_sources(registry,source_lock_path,loader_sources,object_sha(loader_sources))
     ops = fork_loader.load_native_ops(native_root,lock['native_files'])
     rng = ops.capture_rng(); rng_sha = ops.state_hash(rng)
+    original_sys_path = list(sys.path)
+    constructed = False
     runtime = result = None
     try:
         endpoint = _checkpoint_preflight(registry,selection,lock,ops,commit_store,expected_identity,expected_commit_sha256)
@@ -430,6 +436,7 @@ def build_evaluation_runtime(registry,source_lock_path,*,start_seed,arm,step,sco
         if ops.state_hash(ops.capture_rng()) != rng_sha:ops.restore_rng(rng)
         require(ops.state_hash(ops.capture_rng()) == rng_sha,'Caller load RNG preservation failed')
         write_once(output/'EVALUATION_RUNTIME.json',result.receipt)
+        constructed = True
         return result
     except BaseException:
         if runtime is not None:
@@ -437,5 +444,8 @@ def build_evaluation_runtime(registry,source_lock_path,*,start_seed,arm,step,sco
             runtime._vision_hook.remove()
         raise
     finally:
+        # A live native sampler can still perform lazy imports from these roots.
+        # Failed construction must not leave its temporary import path installed.
+        if not constructed:sys.path[:] = original_sys_path
         if ops.state_hash(ops.capture_rng()) != rng_sha:ops.restore_rng(rng)
         require(ops.state_hash(ops.capture_rng()) == rng_sha,'Caller load RNG preservation failed')

@@ -1,0 +1,28 @@
+{
+  "path": "execution_releases/START_DEV_STORAGE_BUDGET_20261116.json",
+  "sha256": "c8028e9137cf66c357f1ae84527fc9a86961265c5df4038b7a3c6ccd624d490a",
+  "budget": {
+    "schema": "sr-satdose-storage-budget-v1",
+    "scope": "START_DEV_ONLY",
+    "experiment_id": "SR-SATDOSE-1-20261112",
+    "evidence_root": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1",
+    "design_freeze_sha256": "6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0",
+    "required_bytes": 293601280,
+    "created_at_utc": "2026-11-15T16:40:44.650414+00:00",
+    "expires_at_utc": "2026-11-22T16:40:44.650414+00:00",
+    "max_observation_age_seconds": 300,
+    "rationale": "216 original START DEV requests. Per-request allowance=max(4 times the largest observed DRY BEGIN+CAPTURE+COMPLETE bytes,1MiB), plus64MiB fixed metadata. Includes RAW duplication and audit logs; conservative engineering allowance, not a proven upper bound or storage reservation. Live quota/statvfs/fsync checked at each endpoint.",
+    "sizing": {
+      "observed_dry_responses": 1280,
+      "observed_max_triplet_bytes": 232418,
+      "per_response_allowance_bytes": 1048576,
+      "responses": 216,
+      "fixed_metadata_bytes": 67108864
+    }
+  },
+  "quota_snapshot": {
+    "limit": 750000000000,
+    "used": 627372285853,
+    "available": 122627714147
+  }
+}

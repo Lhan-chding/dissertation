@@ -1,0 +1,128 @@
+{
+  "checked_at_utc": "2026-11-15T07:16:13.515312+00:00",
+  "queue": {
+    "args": [
+      "squeue",
+      "-u",
+      "varun024",
+      "-h",
+      "-o",
+      "%i|%T|%j|%a|%q|%M|%l|%b|%N|%R"
+    ],
+    "returncode": 0,
+    "stdout": "1739113|PENDING|LH-SATDOSE-GPU-CHECKS|rose|rose|0:00|1-00:00:00|N/A||(QOSMaxJobsPerUserLimit)\n1739727|RUNNING|lift_pot-80-eval|rose|soujanya-poria-startfund-2026-03|4:46:09|3-00:00:00|gres/gpu:pro6000:1|gpu-pro6000-2|gpu-pro6000-2\n1739726|RUNNING|stack_bowls_two-80-eval|rose|soujanya-poria-startfund-2026-03|4:46:12|3-00:00:00|gres/gpu:pro6000:1|gpu-pro6000-2|gpu-pro6000-2\n1739903|RUNNING|adjust_bottl-full-eval|rose|override-limits-but-killable|1:21|3-00:00:00|gres/gpu:6000ada:1|gpu-6000ada-3|gpu-6000ada-3\n1739931|RUNNING|lift-pot-full-eval|rose|override-limits-but-killable|5:21|3-00:00:00|gres/gpu:rtx5090:2|gpu-5090-4|gpu-5090-4\n1739776|RUNNING|bottle-80-eval|rose|override-limits-but-killable|13:22|3-00:00:00|gres/gpu:6000ada:1|gpu-6000ada-1|gpu-6000ada-1\n1738682|RUNNING|cabinet-scarce80-eval|rose|rose|19:34:17|3-00:00:00|gres/gpu:pro6000:1|gpu-pro6000-7|gpu-pro6000-7\n1738681|RUNNING|laptop-scarce80-eval|rose|rose|19:39:18|3-00:00:00|gres/gpu:pro6000:1|gpu-pro6000-4|gpu-pro6000-4",
+    "stderr": ""
+  },
+  "qos_limits": {
+    "args": [
+      "sacctmgr",
+      "-n",
+      "-P",
+      "show",
+      "qos",
+      "rose",
+      "format=Name,MaxJobsPU,MaxTRESPU,MaxWall"
+    ],
+    "returncode": 0,
+    "stdout": "rose|2|gres/gpu:6000ada=4,gres/gpu:a40=8,gres/gpu:a6000=4,gres/gpu:l40=4,gres/gpu:pro6000=8,gres/gpu:rtx5090=4|",
+    "stderr": ""
+  },
+  "running_job_details": {
+    "1739727": {
+      "args": [
+        "scontrol",
+        "show",
+        "job",
+        "1739727",
+        "-o"
+      ],
+      "returncode": 0,
+      "stdout": "JobId=1739727 JobName=lift_pot-80-eval UserId=varun024(295800338) GroupId=varun024(295800338) MCS_label=N/A Priority=101 Nice=0 Account=rose QOS=soujanya-poria-startfund-2026-03 JobState=RUNNING Reason=None Dependency=(null) Requeue=1 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=04:46:09 TimeLimit=3-00:00:00 TimeMin=N/A SubmitTime=2026-11-15T02:30:01 EligibleTime=2026-11-15T02:30:01 AccrueTime=2026-11-15T02:30:01 StartTime=2026-11-15T02:30:04 EndTime=2026-11-18T02:30:04 Deadline=N/A PreemptEligibleTime=2026-11-15T02:30:04 PreemptTime=None SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-11-15T02:30:04 Scheduler=Main Partition=cluster02 AllocNode:Sid=login-1:1846918 ReqNodeList=(null) ExcNodeList=(null) NodeList=gpu-pro6000-2 BatchHost=gpu-pro6000-2 NumNodes=1 NumCPUs=4 NumTasks=1 CPUs/Task=4 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=4,mem=33G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1 AllocTRES=cpu=4,mem=33G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1 Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=4 MinMemoryNode=33G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null) Command=/projects/varunhdd/openvla-oft-minghao/robotwin_lift_pot_scarce80_20261115/pipeline.sbatch WorkDir=/home/varun024 StdErr=/projects/varunhdd/openvla-oft-minghao/robotwin_lift_pot_scarce80_20261115/job-1739727.log StdIn=/dev/null StdOut=/projects/varunhdd/openvla-oft-minghao/robotwin_lift_pot_scarce80_20261115/job-1739727.log Power= TresPerNode=gres/gpu:pro6000:1 TresPerTask=cpu:4",
+      "stderr": ""
+    },
+    "1739726": {
+      "args": [
+        "scontrol",
+        "show",
+        "job",
+        "1739726",
+        "-o"
+      ],
+      "returncode": 0,
+      "stdout": "JobId=1739726 JobName=stack_bowls_two-80-eval UserId=varun024(295800338) GroupId=varun024(295800338) MCS_label=N/A Priority=101 Nice=0 Account=rose QOS=soujanya-poria-startfund-2026-03 JobState=RUNNING Reason=None Dependency=(null) Requeue=1 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=04:46:12 TimeLimit=3-00:00:00 TimeMin=N/A SubmitTime=2026-11-15T02:30:00 EligibleTime=2026-11-15T02:30:00 AccrueTime=2026-11-15T02:30:00 StartTime=2026-11-15T02:30:01 EndTime=2026-11-18T02:30:01 Deadline=N/A PreemptEligibleTime=2026-11-15T02:30:01 PreemptTime=None SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-11-15T02:30:01 Scheduler=Main Partition=cluster02 AllocNode:Sid=login-1:1846918 ReqNodeList=(null) ExcNodeList=(null) NodeList=gpu-pro6000-2 BatchHost=gpu-pro6000-2 NumNodes=1 NumCPUs=4 NumTasks=1 CPUs/Task=4 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=4,mem=33G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1 AllocTRES=cpu=4,mem=33G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1 Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=4 MinMemoryNode=33G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null) Command=/projects/varunhdd/openvla-oft-minghao/robotwin_stack_bowls_two_scarce80_20261115/pipeline.sbatch WorkDir=/home/varun024 StdErr=/projects/varunhdd/openvla-oft-minghao/robotwin_stack_bowls_two_scarce80_20261115/job-1739726.log StdIn=/dev/null StdOut=/projects/varunhdd/openvla-oft-minghao/robotwin_stack_bowls_two_scarce80_20261115/job-1739726.log Power= TresPerNode=gres/gpu:pro6000:1 TresPerTask=cpu:4",
+      "stderr": ""
+    },
+    "1739903": {
+      "args": [
+        "scontrol",
+        "show",
+        "job",
+        "1739903",
+        "-o"
+      ],
+      "returncode": 0,
+      "stdout": "JobId=1739903 JobName=adjust_bottl-full-eval UserId=varun024(295800338) GroupId=varun024(295800338) MCS_label=N/A Priority=1 Nice=0 Account=rose QOS=override-limits-but-killable JobState=RUNNING Reason=None Dependency=(null) Requeue=1 Restarts=1 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=00:01:21 TimeLimit=3-00:00:00 TimeMin=N/A SubmitTime=2026-11-15T06:34:21 EligibleTime=2026-11-15T06:36:22 AccrueTime=2026-11-15T06:36:22 StartTime=2026-11-15T07:14:52 EndTime=2026-11-18T07:14:52 Deadline=N/A PreemptEligibleTime=2026-11-15T07:14:52 PreemptTime=None SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-11-15T07:14:52 Scheduler=Backfill Partition=cluster02 AllocNode:Sid=login-3:3553695 ReqNodeList=(null) ExcNodeList=(null) NodeList=gpu-6000ada-3 BatchHost=gpu-6000ada-3 NumNodes=1 NumCPUs=4 NumTasks=1 CPUs/Task=4 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=4,mem=64G,node=1,billing=4,gres/gpu=1,gres/gpu:6000ada=1 AllocTRES=cpu=4,mem=64G,node=1,billing=4,gres/gpu=1,gres/gpu:6000ada=1 Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=4 MinMemoryNode=64G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null) Command=/projects/varunhdd/openvla-oft-minghao/robotwin_adjust_bottle_full_20261115/pipeline.sbatch WorkDir=/home/varun024 StdErr=/projects/varunhdd/openvla-oft-minghao/robotwin_adjust_bottle_full_20261115/job-1739903.log StdIn=/dev/null StdOut=/projects/varunhdd/openvla-oft-minghao/robotwin_adjust_bottle_full_20261115/job-1739903.log Power= TresPerNode=gres/gpu:6000ada:1 TresPerTask=cpu:4",
+      "stderr": ""
+    },
+    "1739931": {
+      "args": [
+        "scontrol",
+        "show",
+        "job",
+        "1739931",
+        "-o"
+      ],
+      "returncode": 0,
+      "stdout": "JobId=1739931 JobName=lift-pot-full-eval UserId=varun024(295800338) GroupId=varun024(295800338) MCS_label=N/A Priority=1 Nice=0 Account=rose QOS=override-limits-but-killable JobState=RUNNING Reason=None Dependency=(null) Requeue=1 Restarts=2 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=00:05:21 TimeLimit=3-00:00:00 TimeMin=N/A SubmitTime=2026-11-15T07:08:42 EligibleTime=2026-11-15T07:10:43 AccrueTime=2026-11-15T07:10:43 StartTime=2026-11-15T07:10:52 EndTime=2026-11-18T07:10:52 Deadline=N/A PreemptEligibleTime=2026-11-15T07:10:52 PreemptTime=None SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-11-15T07:10:52 Scheduler=Backfill Partition=cluster02 AllocNode:Sid=login-1:2314276 ReqNodeList=(null) ExcNodeList=(null) NodeList=gpu-5090-4 BatchHost=gpu-5090-4 NumNodes=1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=8,mem=96G,node=1,billing=12,gres/gpu=2,gres/gpu:rtx5090=2 AllocTRES=cpu=8,mem=96G,node=1,billing=12,gres/gpu=2,gres/gpu:rtx5090=2 Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=8 MinMemoryNode=96G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null) Command=/projects/varunhdd/openvla-oft-minghao/robotwin_lift_pot_full_20261115/speed_and_train.sbatch WorkDir=/home/varun024 StdErr=/projects/varunhdd/openvla-oft-minghao/robotwin_lift_pot_full_20261115/job-1739931.log StdIn=/dev/null StdOut=/projects/varunhdd/openvla-oft-minghao/robotwin_lift_pot_full_20261115/job-1739931.log Power= TresPerNode=gres/gpu:rtx5090:2 TresPerTask=cpu:8",
+      "stderr": ""
+    },
+    "1739776": {
+      "args": [
+        "scontrol",
+        "show",
+        "job",
+        "1739776",
+        "-o"
+      ],
+      "returncode": 0,
+      "stdout": "JobId=1739776 JobName=bottle-80-eval UserId=varun024(295800338) GroupId=varun024(295800338) MCS_label=N/A Priority=1 Nice=0 Account=rose QOS=override-limits-but-killable JobState=RUNNING Reason=None Dependency=(null) Requeue=1 Restarts=1 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=00:13:22 TimeLimit=3-00:00:00 TimeMin=N/A SubmitTime=2026-11-15T06:34:21 EligibleTime=2026-11-15T06:36:22 AccrueTime=2026-11-15T06:36:22 StartTime=2026-11-15T07:02:51 EndTime=2026-11-18T07:02:51 Deadline=N/A PreemptEligibleTime=2026-11-15T07:02:51 PreemptTime=None SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-11-15T07:02:51 Scheduler=Backfill Partition=cluster02 AllocNode:Sid=login-1:1967982 ReqNodeList=(null) ExcNodeList=(null) NodeList=gpu-6000ada-1 BatchHost=gpu-6000ada-1 NumNodes=1 NumCPUs=4 NumTasks=1 CPUs/Task=4 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=4,mem=64G,node=1,billing=4,gres/gpu=1,gres/gpu:6000ada=1 AllocTRES=cpu=4,mem=64G,node=1,billing=4,gres/gpu=1,gres/gpu:6000ada=1 Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=4 MinMemoryNode=64G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null) Command=/projects/varunhdd/openvla-oft-minghao/robotwin_adjust_bottle_scarce80_20261115/pipeline_ada.sbatch WorkDir=/home/varun024 StdErr=/projects/varunhdd/openvla-oft-minghao/robotwin_adjust_bottle_scarce80_20261115/job-1739776.log StdIn=/dev/null StdOut=/projects/varunhdd/openvla-oft-minghao/robotwin_adjust_bottle_scarce80_20261115/job-1739776.log Power= TresPerNode=gres/gpu:6000ada:1 TresPerTask=cpu:4",
+      "stderr": ""
+    },
+    "1738682": {
+      "args": [
+        "scontrol",
+        "show",
+        "job",
+        "1738682",
+        "-o"
+      ],
+      "returncode": 0,
+      "stdout": "JobId=1738682 JobName=cabinet-scarce80-eval UserId=varun024(295800338) GroupId=varun024(295800338) MCS_label=N/A Priority=1 Nice=0 Account=rose QOS=rose JobState=RUNNING Reason=None Dependency=(null) Requeue=1 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=19:34:17 TimeLimit=3-00:00:00 TimeMin=N/A SubmitTime=2026-11-14T11:36:35 EligibleTime=2026-11-14T11:36:35 AccrueTime=2026-11-14T11:36:35 StartTime=2026-11-14T11:41:56 EndTime=2026-11-17T11:41:56 Deadline=N/A PreemptEligibleTime=2026-11-14T11:41:56 PreemptTime=None SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-11-14T11:41:56 Scheduler=Backfill Partition=cluster02 AllocNode:Sid=login-2:268380 ReqNodeList=(null) ExcNodeList=(null) NodeList=gpu-pro6000-7 BatchHost=gpu-pro6000-7 NumNodes=1 NumCPUs=4 NumTasks=1 CPUs/Task=4 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=4,mem=33G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1 AllocTRES=cpu=4,mem=33G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1 Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=4 MinMemoryNode=33G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null) Command=/projects/varunhdd/openvla-oft-minghao/robotwin_cabinet_scarce80_20261114/pipeline.sbatch WorkDir=/home/varun024 StdErr=/projects/varunhdd/openvla-oft-minghao/robotwin_cabinet_scarce80_20261114/job-1738682.log StdIn=/dev/null StdOut=/projects/varunhdd/openvla-oft-minghao/robotwin_cabinet_scarce80_20261114/job-1738682.log Power= TresPerNode=gres/gpu:pro6000:1 TresPerTask=cpu:4",
+      "stderr": ""
+    },
+    "1738681": {
+      "args": [
+        "scontrol",
+        "show",
+        "job",
+        "1738681",
+        "-o"
+      ],
+      "returncode": 0,
+      "stdout": "JobId=1738681 JobName=laptop-scarce80-eval UserId=varun024(295800338) GroupId=varun024(295800338) MCS_label=N/A Priority=1 Nice=0 Account=rose QOS=rose JobState=RUNNING Reason=None Dependency=(null) Requeue=1 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=19:39:18 TimeLimit=3-00:00:00 TimeMin=N/A SubmitTime=2026-11-14T11:36:35 EligibleTime=2026-11-14T11:36:35 AccrueTime=2026-11-14T11:36:35 StartTime=2026-11-14T11:36:55 EndTime=2026-11-17T11:36:55 Deadline=N/A PreemptEligibleTime=2026-11-14T11:36:55 PreemptTime=None SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-11-14T11:36:55 Scheduler=Backfill Partition=cluster02 AllocNode:Sid=login-2:268380 ReqNodeList=(null) ExcNodeList=(null) NodeList=gpu-pro6000-4 BatchHost=gpu-pro6000-4 NumNodes=1 NumCPUs=4 NumTasks=1 CPUs/Task=4 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=4,mem=33G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1 AllocTRES=cpu=4,mem=33G,node=1,billing=8,gres/gpu=1,gres/gpu:pro6000=1 Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=4 MinMemoryNode=33G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null) Command=/projects/varunhdd/openvla-oft-minghao/robotwin_laptop_scarce80_20261114/pipeline.sbatch WorkDir=/home/varun024 StdErr=/projects/varunhdd/openvla-oft-minghao/robotwin_laptop_scarce80_20261114/job-1738681.log StdIn=/dev/null StdOut=/projects/varunhdd/openvla-oft-minghao/robotwin_laptop_scarce80_20261114/job-1738681.log Power= TresPerNode=gres/gpu:pro6000:1 TresPerTask=cpu:4",
+      "stderr": ""
+    }
+  },
+  "target": {
+    "args": [
+      "scontrol",
+      "show",
+      "job",
+      "1739113",
+      "-o"
+    ],
+    "returncode": 0,
+    "stdout": "JobId=1739113 JobName=LH-SATDOSE-GPU-CHECKS UserId=varun024(295800338) GroupId=varun024(295800338) MCS_label=N/A Priority=10 Nice=0 Account=rose QOS=rose JobState=PENDING Reason=QOSMaxJobsPerUserLimit Dependency=(null) Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=00:00:00 TimeLimit=1-00:00:00 TimeMin=N/A SubmitTime=2026-11-14T15:34:33 EligibleTime=2026-11-14T15:34:33 AccrueTime=2026-11-14T15:34:33 StartTime=Unknown EndTime=Unknown Deadline=N/A SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-11-15T07:15:53 Scheduler=Backfill:* Partition=cluster02 AllocNode:Sid=login-1:525163 ReqNodeList=(null) ExcNodeList=(null) NodeList= NumNodes=1-1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2 AllocTRES=(null) Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=8 MinMemoryNode=66G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null) Command=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19/scheduling/run_gpu_checks.sh WorkDir=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19 StdErr=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/gpu_checks_20261114/slurm-1739113.err StdIn=/dev/null StdOut=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/gpu_checks_20261114/slurm-1739113.out Power= TresPerJob=gres/gpu:pro6000:2 TresPerTask=cpu:8",
+    "stderr": ""
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "checked_at_utc": "2026-11-15T11:04:55.219152+00:00",
+  "job_id": 1740151,
+  "status": "OBSERVATION_BLOCKED_NETWORK_UNREACHABLE",
+  "ssh_attempts": 2,
+  "ssh_exit_code": 255,
+  "error": "ssh: connect to host 10.97.216.128 port 22: Network is unreachable",
+  "current_scheduler_state": "UNKNOWN",
+  "independent_audit_executed": false,
+  "remote_mutations": false,
+  "last_verified_observation": "2026-11-15T10:00:26.972073+00:00: RUNNING; 2/10 stages complete; third allzero stage running; no HOLD or error alerts"
+}

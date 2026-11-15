@@ -1,0 +1,53 @@
+{
+  "checked_at_utc": "2026-11-15T07:14:15.052688+00:00",
+  "job_id": 1739113,
+  "queue": {
+    "returncode": 0,
+    "stdout": "1739113|PENDING|0:00|(QOSMaxJobsPerUserLimit)|",
+    "stderr": ""
+  },
+  "accounting": {
+    "returncode": 0,
+    "stdout": "1739113|PENDING|0:0|00:00:00|Unknown|Unknown|None assigned",
+    "stderr": ""
+  },
+  "forecast": {
+    "returncode": 0,
+    "stdout": "1739113|PENDING|N/A|(QOSMaxJobsPerUserLimit)",
+    "stderr": ""
+  },
+  "slots": {
+    "evaluation_loader_checks": {
+      "exists": false,
+      "complete": [],
+      "holds": [],
+      "claims": []
+    },
+    "backend_equivalence": {
+      "exists": false,
+      "complete": [],
+      "holds": [],
+      "claims": []
+    },
+    "allzero_check": {
+      "exists": false,
+      "complete": [],
+      "holds": [],
+      "claims": []
+    },
+    "shadow_inputs": {
+      "exists": false,
+      "complete": [],
+      "holds": [],
+      "claims": []
+    },
+    "shadow_claims": {
+      "exists": false,
+      "complete": [],
+      "holds": [],
+      "claims": []
+    }
+  },
+  "stderr_tail": "",
+  "stdout_tail": ""
+}

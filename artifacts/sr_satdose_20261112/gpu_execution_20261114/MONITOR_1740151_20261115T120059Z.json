@@ -1,0 +1,390 @@
+{
+  "checked_at_utc": "2026-11-15T12:00:58.988385+00:00",
+  "job_id": 1740151,
+  "complete": [
+    {
+      "path": "evaluation_loader_checks/start-11031/COMPLETE.json",
+      "data": {
+        "actual_gpu_identity": {
+          "arithmetic_device": 0,
+          "cuda_version": "13.0",
+          "devices": [
+            {
+              "index": 0,
+              "major": 12,
+              "minor": 0,
+              "name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+              "total_memory": 101975851008,
+              "uuid": "ffbcbf8a-6b85-ea40-a822-2356c367e053"
+            },
+            {
+              "index": 1,
+              "major": 12,
+              "minor": 0,
+              "name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+              "total_memory": 101975851008,
+              "uuid": "e4696e59-c1e9-e513-0c83-fbd639a53cc3"
+            }
+          ],
+          "peer_0_to_1": true,
+          "peer_1_to_0": true,
+          "torch_version": "2.13.0+cu130",
+          "visible_gpu_count": 2
+        },
+        "backward_calls": 0,
+        "caller_rng_preserved": true,
+        "close": {
+          "arm": "START",
+          "closed": true,
+          "experiment_id": "SR-SATDOSE-1-20261112",
+          "model_calls": 0,
+          "optimizer_constructed": false,
+          "optimizer_steps": 0,
+          "permission": "LOAD_AUDIT_ONLY_NO_GENERATION_NO_MAIN_RELEASE",
+          "policy_sha256": "bf54236906035d295d2616cc00d9ddf27094c6b572ddee8be3cc1b7c1a243fb6",
+          "reference_sha256": "0d7979e13ce408a0501fcd774a26c7643527433de10c64b2b199b695a66d1fb4",
+          "start_seed": 11031,
+          "step": 0,
+          "training_rng_restored": false
+        },
+        "evaluation_sources_sha256": "9ad2d409bafe56487a3ee5fa60df2e6e58e78d65321c8d7e6b05cf847a503fec",
+        "evidence": {
+          "CALLER_STATE.json": {
+            "path": "evaluation_loader_checks/start-11031/CALLER_STATE.json",
+            "sha256": "784bd08795b7e2da1472996b94ab38f1584025f065c0855acac182204b9e248f"
+          },
+          "CLAIM.json": {
+            "path": "evaluation_loader_checks/start-11031/CLAIM.json",
+            "sha256": "c986a0e8567e642ff24a88c02b282e76f3152a2f36cc6f38663a886ee95838ba"
+          },
+          "CLOSE.json": {
+            "path": "evaluation_loader_checks/start-11031/CLOSE.json",
+            "sha256": "d1a1e008985804c927c4ee45365b72940d26ffd9abd97754ed3b035324cbadd7"
+          },
+          "GPU_IDENTITY.json": {
+            "path": "evaluation_loader_checks/start-11031/GPU_IDENTITY.json",
+            "sha256": "f024bdb3f671da25414718ec7a6cfc551227bd6d05481297872dba3a5086d5a9"
+          },
+          "LOAD_AUDIT.json": {
+            "path": "evaluation_loader_checks/start-11031/LOAD_AUDIT.json",
+            "sha256": "bd79ddaf103c9a62c1c2d50b4d5a80a7571dccbb28756c7c56e2675c47bda2c1"
+          },
+          "SOURCES.json": {
+            "path": "evaluation_loader_checks/start-11031/SOURCES.json",
+            "sha256": "e5ba41a3d2ede091aaa306e6fac29da28c01fdd2b656078c91855bac862d7427"
+          },
+          "TENSOR_INVENTORY.json": {
+            "path": "evaluation_loader_checks/start-11031/TENSOR_INVENTORY.json",
+            "sha256": "b64cb8ca0aac567d4b77af7a9eb195be54dffff9023f747e8d72d667274b8bcc"
+          },
+          "audit/EVALUATION_LOAD.json": {
+            "path": "evaluation_loader_checks/start-11031/audit/EVALUATION_LOAD.json",
+            "sha256": "57c379fa093cfd4317325d1fb57b7d248bbdcc9ad3677e60f372f886b184920e"
+          }
+        },
+        "forward_sequences": 0,
+        "model_constructions": 1,
+        "new_generations": 0,
+        "optimizer_steps": 0,
+        "parameter_updates": 0,
+        "permission": "NO_TRAINING",
+        "policy_sha256": "bf54236906035d295d2616cc00d9ddf27094c6b572ddee8be3cc1b7c1a243fb6",
+        "reference_sha256": "0d7979e13ce408a0501fcd774a26c7643527433de10c64b2b199b695a66d1fb4",
+        "scheduler_steps": 0,
+        "schema": "sr-satdose-evaluation-loader-check-v1",
+        "start_seed": 11031,
+        "status": "EVALUATION_START_LOAD_CAPTURE_COMPLETE_NOT_GPU_ADMISSION",
+        "technical_binding_sha256": "cf7da7f08e5cb11c5458cab1200fd5a2465a529a31d2258f6cc45cbe6efe73c5",
+        "tested_scope": "START_R24_ONLY",
+        "trainable_tensors": 496,
+        "trained_checkpoint_gpu_verified": false,
+        "training_rng_restored": false
+      }
+    },
+    {
+      "path": "backend_equivalence/start-11031/COMPLETE.json",
+      "data": {
+        "bit_exact": true,
+        "close": {
+          "arm": "START",
+          "closed": true,
+          "experiment_id": "SR-SATDOSE-1-20261112",
+          "optimizer_steps": 0,
+          "parameter_updates": 0,
+          "policy_sha256": "bf54236906035d295d2616cc00d9ddf27094c6b572ddee8be3cc1b7c1a243fb6",
+          "reference_sha256": "0d7979e13ce408a0501fcd774a26c7643527433de10c64b2b199b695a66d1fb4",
+          "start_seed": 11031,
+          "step": 0
+        },
+        "differences": [],
+        "evidence": {
+          "BASELINE.pt": {
+            "path": "backend_equivalence/start-11031/BASELINE.pt",
+            "sha256": "be15a7e3c598fca8d6a7e46d5bf1fc00e1a613685b656c64538231835d39d951"
+          },
+          "COMPARISON.json": {
+            "path": "backend_equivalence/start-11031/COMPARISON.json",
+            "sha256": "57406ca54a3f5c8937a22da406a1dfb6bf79b0475fe5c0602243de11592604c8"
+          },
+          "SELECTION.json": {
+            "path": "backend_equivalence/start-11031/SELECTION.json",
+            "sha256": "7b1c00bf70e5ccaf340aa2493646c2a45c173f94ca2b704ebbd97f31efc42e39"
+          },
+          "TWO_DEVICE.pt": {
+            "path": "backend_equivalence/start-11031/TWO_DEVICE.pt",
+            "sha256": "1a68c6dc4b7d0dcb812bb2a9ba26c3f7da7f798335187e6c109ec8d1b8d7aaf7"
+          }
+        },
+        "long_sequence_stress": "PENDING",
+        "new_generations": 0,
+        "one_visible_gpu_startup_verified": false,
+        "optimizer_steps": 0,
+        "permission": "NO_TRAINING",
+        "schema": "sr-satdose-backend-equivalence-v1",
+        "start_seed": 11031,
+        "status": "BACKEND_EQUIVALENCE_CAPTURED_NOT_GPU_ADMISSION",
+        "technical_binding_sha256": "cf7da7f08e5cb11c5458cab1200fd5a2465a529a31d2258f6cc45cbe6efe73c5",
+        "tested": "single_device_activation_retention_vs_two_device_saved_tensors_with_two_gpus_visible"
+      }
+    },
+    {
+      "path": "allzero_check/start-11031/COMPLETE.json",
+      "data": {
+        "close": {
+          "arm": "START",
+          "closed": true,
+          "experiment_id": "SR-SATDOSE-1-20261112",
+          "optimizer_steps": 0,
+          "parameter_updates": 0,
+          "policy_sha256": "bf54236906035d295d2616cc00d9ddf27094c6b572ddee8be3cc1b7c1a243fb6",
+          "reference_sha256": "0d7979e13ce408a0501fcd774a26c7643527433de10c64b2b199b695a66d1fb4",
+          "start_seed": 11031,
+          "step": 0
+        },
+        "comparison": {
+          "explicit_diagnostic_advantage": 0.0,
+          "interpretation": "explicit_zero_advantage_technical_branch_not_actual_all_zero_rewards",
+          "kl_coefficient": 0.02,
+          "kl_gradient_l2": 0.08394904215719966,
+          "kl_retained": true,
+          "kl_unweighted_mean": 0.002262837063653933,
+          "original_reference_sha256": "0d7979e13ce408a0501fcd774a26c7643527433de10c64b2b199b695a66d1fb4",
+          "original_scores_unchanged": true,
+          "pg_exact_zero": true,
+          "policy_sha256": "bf54236906035d295d2616cc00d9ddf27094c6b572ddee8be3cc1b7c1a243fb6",
+          "recomposition_bit_exact": false,
+          "recomposition_relative_l2": 1.283834422890151e-06,
+          "sequence_denominator": 128,
+          "total_gradient_l2": 0.0016789806598103763,
+          "weighted_kl_mean": 4.525674039967953e-05,
+          "zero_kl_is_allowed_when_native_math_is_zero": true
+        },
+        "evidence": {
+          "ACCOUNTING.json": {
+            "path": "allzero_check/start-11031/ACCOUNTING.json",
+            "sha256": "4e99eb24ddbc5c671066d5c2d44d47c63422d93067cd78b1b479396ac00dcbb2"
+          },
+          "COMPARISON.json": {
+            "path": "allzero_check/start-11031/COMPARISON.json",
+            "sha256": "f692468aa0e6614e2dffc2e86b39248863769fa5e8c26bd2af2fb4f611dea528"
+          },
+          "KL.pt": {
+            "path": "allzero_check/start-11031/KL.pt",
+            "sha256": "d739b16d3c2acdb46f0b7514d00255e0690c43a70d0b96d53b5c61eb7005d704"
+          },
+          "ORIGINAL_INPUTS.json": {
+            "path": "allzero_check/start-11031/ORIGINAL_INPUTS.json",
+            "sha256": "246e9af8fee7948ced79a8316de7607fbf1b74e8d879c6ab80147aeb76531ee9"
+          },
+          "PG_ZERO.pt": {
+            "path": "allzero_check/start-11031/PG_ZERO.pt",
+            "sha256": "04c4be34ce45ae45c6c881565b4bbf5c35f166d538f33861e30b6ad40e733560"
+          },
+          "TOTAL.pt": {
+            "path": "allzero_check/start-11031/TOTAL.pt",
+            "sha256": "03b73b1dd804b38eaaf7755f2b6f2d2a0d941d437f4d85456fbe9c73292a060a"
+          }
+        },
+        "explicit_diagnostic_advantage": 0.0,
+        "measured_forward_sequences": {
+          "training_policy": 384,
+          "training_reference": 384
+        },
+        "new_generations": 0,
+        "optimizer_steps": 0,
+        "original_scores_unchanged": true,
+        "parameter_updates": 0,
+        "permission": "NO_TRAINING",
+        "scheduler_steps": 0,
+        "schema": "sr-satdose-allzero-check-v1",
+        "sequence_denominator": 128,
+        "start_seed": 11031,
+        "status": "ALLZERO_CAPTURE_COMPLETE_NOT_GPU_ADMISSION",
+        "technical_binding_sha256": "cf7da7f08e5cb11c5458cab1200fd5a2465a529a31d2258f6cc45cbe6efe73c5",
+        "trainable_tensors": 496
+      }
+    }
+  ],
+  "holds": [],
+  "progress": [
+    {
+      "path": "backend_equivalence/start-11031/audit/accounting.jsonl",
+      "events": 4,
+      "mtime_utc": "2026-11-15T09:58:26.769170+00:00",
+      "counts": {
+        "('extra_forward_sequences', 'training_reference')": 2,
+        "('extra_forward_sequences', 'training_policy')": 2
+      },
+      "last": {
+        "count": 1,
+        "kind": "extra_forward_sequences",
+        "metadata": {
+          "completion_tokens": 370,
+          "purpose": "training_policy"
+        }
+      }
+    },
+    {
+      "path": "allzero_check/start-11031/audit/accounting.jsonl",
+      "events": 768,
+      "mtime_utc": "2026-11-15T10:40:31.697314+00:00",
+      "counts": {
+        "('extra_forward_sequences', 'training_reference')": 384,
+        "('extra_forward_sequences', 'training_policy')": 384
+      },
+      "last": {
+        "count": 1,
+        "kind": "extra_forward_sequences",
+        "metadata": {
+          "completion_tokens": 483,
+          "purpose": "training_policy"
+        }
+      }
+    },
+    {
+      "path": "shadow_inputs/start-11031/trial-0/audit/accounting.jsonl",
+      "events": 1466,
+      "mtime_utc": "2026-11-15T12:00:58.805899+00:00",
+      "counts": {
+        "('extra_forward_sequences', 'training_reference')": 733,
+        "('extra_forward_sequences', 'training_policy')": 733
+      },
+      "last": {
+        "count": 1,
+        "kind": "extra_forward_sequences",
+        "metadata": {
+          "completion_tokens": 592,
+          "purpose": "training_policy"
+        }
+      }
+    }
+  ],
+  "recent_files": [
+    {
+      "path": "evaluation_loader_checks/start-11031/LOAD_AUDIT.json",
+      "size": 410,
+      "mtime_utc": "2026-11-15T09:57:43.522276+00:00"
+    },
+    {
+      "path": "evaluation_loader_checks/start-11031/CLOSE.json",
+      "size": 424,
+      "mtime_utc": "2026-11-15T09:57:43.973275+00:00"
+    },
+    {
+      "path": "evaluation_loader_checks/start-11031/SOURCES.json",
+      "size": 3097,
+      "mtime_utc": "2026-11-15T09:57:44.166275+00:00"
+    },
+    {
+      "path": "evaluation_loader_checks/start-11031/CALLER_STATE.json",
+      "size": 285,
+      "mtime_utc": "2026-11-15T09:57:44.168275+00:00"
+    },
+    {
+      "path": "evaluation_loader_checks/start-11031/COMPLETE.json",
+      "size": 3042,
+      "mtime_utc": "2026-11-15T09:57:45.473272+00:00"
+    },
+    {
+      "path": "backend_equivalence/start-11031/BASELINE.pt",
+      "size": 86761595,
+      "mtime_utc": "2026-11-15T09:58:25.448174+00:00"
+    },
+    {
+      "path": "backend_equivalence/start-11031/audit/accounting.jsonl",
+      "size": 478,
+      "mtime_utc": "2026-11-15T09:58:26.769170+00:00"
+    },
+    {
+      "path": "backend_equivalence/start-11031/TWO_DEVICE.pt",
+      "size": 86762619,
+      "mtime_utc": "2026-11-15T09:58:33.192154+00:00"
+    },
+    {
+      "path": "backend_equivalence/start-11031/COMPARISON.json",
+      "size": 36,
+      "mtime_utc": "2026-11-15T09:58:33.235154+00:00"
+    },
+    {
+      "path": "backend_equivalence/start-11031/COMPLETE.json",
+      "size": 1417,
+      "mtime_utc": "2026-11-15T09:58:33.654153+00:00"
+    },
+    {
+      "path": "allzero_check/start-11031/audit/accounting.jsonl",
+      "size": 91776,
+      "mtime_utc": "2026-11-15T10:40:31.697314+00:00"
+    },
+    {
+      "path": "allzero_check/start-11031/TOTAL.pt",
+      "size": 88459231,
+      "mtime_utc": "2026-11-15T10:40:37.341300+00:00"
+    },
+    {
+      "path": "allzero_check/start-11031/COMPARISON.json",
+      "size": 721,
+      "mtime_utc": "2026-11-15T10:40:37.495300+00:00"
+    },
+    {
+      "path": "allzero_check/start-11031/ACCOUNTING.json",
+      "size": 455491,
+      "mtime_utc": "2026-11-15T10:40:37.500300+00:00"
+    },
+    {
+      "path": "allzero_check/start-11031/COMPLETE.json",
+      "size": 2427,
+      "mtime_utc": "2026-11-15T10:40:39.086296+00:00"
+    },
+    {
+      "path": "shadow_inputs/start-11031/trial-0/KL_ACCOUNTING.json",
+      "size": 151814,
+      "mtime_utc": "2026-11-15T11:51:00.620348+00:00"
+    },
+    {
+      "path": "shadow_inputs/start-11031/trial-0/KL.pt",
+      "size": 88445599,
+      "mtime_utc": "2026-11-15T11:51:00.680348+00:00"
+    },
+    {
+      "path": "shadow_inputs/start-11031/trial-0/J_half_1_ACCOUNTING.json",
+      "size": 75969,
+      "mtime_utc": "2026-11-15T11:57:57.004339+00:00"
+    },
+    {
+      "path": "shadow_inputs/start-11031/trial-0/J_half_1.pt",
+      "size": 87593055,
+      "mtime_utc": "2026-11-15T11:57:57.057339+00:00"
+    },
+    {
+      "path": "shadow_inputs/start-11031/trial-0/audit/accounting.jsonl",
+      "size": 175187,
+      "mtime_utc": "2026-11-15T12:00:58.805899+00:00"
+    }
+  ],
+  "sacct": {
+    "returncode": 0,
+    "stdout": "1740151|RUNNING|0:0|02:04:40|2026-11-15T09:56:19|Unknown\n1740151.batch|RUNNING|0:0|02:04:40|2026-11-15T09:56:19|Unknown\n1740151.extern|RUNNING|0:0|02:04:40|2026-11-15T09:56:19|Unknown\n1740151.0|COMPLETED|0:0|00:01:24|2026-11-15T09:56:22|2026-11-15T09:57:46\n1740151.1|COMPLETED|0:0|00:00:48|2026-11-15T09:57:47|2026-11-15T09:58:35\n1740151.2|COMPLETED|0:0|00:42:04|2026-11-15T09:58:36|2026-11-15T10:40:40\n1740151.3|RUNNING|0:0|01:20:16|2026-11-15T10:40:43|Unknown\n",
+    "stderr": ""
+  },
+  "error_alerts": []
+}
