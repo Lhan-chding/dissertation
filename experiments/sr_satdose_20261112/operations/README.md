@@ -1,0 +1,12 @@
+# SR-SATDOSE operator scripts
+
+These operator scripts are separate from the immutable 84-file `train_code_71018e5` release. Do not copy them into that server release or change its 19-key execution identity. They preserve existing samples, seeds, scoring, thresholds, and unknown/failed attempts.
+
+- `satdose_monitor_firsttwo.py JOB_ID`: read-only scheduler/progress inspection; saves a timestamped local receipt. It does not schedule monitoring.
+- `satdose_publish_actual_canary.py --help`: after the actual first-two job completes, independently audit all four paths, rerun the canary verifier, and publish only the resulting authentic report/spec. Default `--mode plan` is local only. Use `--mode download` after uncertain publication; never repeat `publish`.
+- `satdose_prepare_trained_dev.py --help`: prepare one DEV2/8/16 release using actual predecessor references and the original CPU preflight. Default is local-only checks; `--execute-preparation` enables one SSH preparation. No GPU submission.
+- `satdose_prepare_continuation.py --help`: prepare one original fixed TRAIN chunk3–8/9–16/17–24 using actual prior DEV, all four current COMMIT cursors, and original risk assessment. Default is local-only checks; `--execute` enables one SSH CPU preparation. No GPU submission.
+
+The preparation/publisher scripts retain their exact source bytes and raw subprocess logs before/during SSH. Existing intent or unknown attempt evidence must be inspected rather than bypassed. Source hashes and checked APIs bind the frozen original TRAIN release; current local README and external MAIN files are not a replacement source inventory. A storage observation is not a quota reservation, and the GPU controllers must repeat their own live checks.
+
+At archival time (2026-11-16 Singapore), these three preparation/publication scripts passed static/API review only, including independent review and local failure/log/no-retry checks where recorded. No real first-two/canary/continuation execution is implied. Future actual CPU preflights and GPU evidence remain mandatory. The original PREFIX measurement remains false with the separate authorized override.

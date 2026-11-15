@@ -101,3 +101,9 @@ Update 2026-11-14 23:35 SGT - current GPU execution handoff:
 - Actual analysis using originalTRAIN71018e5 completed17:56:50UTC. RESULTref start_dev/start-11031/RESULT.json SHA900ffd57cce3e1d217ab3e81c80c21f6d44e4762511d3ad609c6a4e196d3abb6; analysis execution_releases/START_DEV_ANALYSIS_71018e5_11031.json SHAdfe11d67863df16a4b8180680c945258f1079722f1ab5b6abb10603b02c072a2. Local exactbytes in start_dev_20261116/start-11031/{RESULT,ANALYSIS}.json withpublicationreceipt.
 - Baselineonly: S_hit87/108, conflict16/32, aligned+no_list59/64, retention12/12; all108balanced/jsonvalid, S_known108. These are starting riskbaselines, nottrainingeffects orGPUtrainingacceptance. Do notpeek/score incomplete11032.
 - Next hourlycheck due18:56UTC (02:56SGT). On complete11032 run /tmp/satdose_analyze_startdev.py 11032, then requirejob1740676COMPLETED0:0, publishfirsttwo release /tmp/satdose_first_two_release.py, CPUpreflight andunique submission scripts. No formalTRAIN yet.
+
+## Operator preparation scripts archived — 2026-11-16 02:19 SGT
+
+- `experiments/sr_satdose_20261112/operations/` now retains actual-canary publication, trained DEV preparation, continuation preparation and firsttwo read-only monitoring scripts. These are separate from immutable server TRAIN84 and its original19key source identity; do not deploy them into train_code_71018e5.
+- Static/API independent review passed. A real transaction-root `TRANSACTION.lock` inventory mismatch was corrected in the unexecuted DEV operator script before archival. Source bytes and original stdout/stderr are preserved around future SSH operations. See intake/OPERATOR_SCRIPTS_REVIEW_20261116.json for exact source hashes and limits.
+- No new server publication, formal TRAIN, GPU submission or canary PASS occurred during this preparation. Current job remains STARTDEV1740676 as last observed17:56UTC; next hourlycheck18:56UTC. Do not confuse static operator readiness with actual GPU acceptance.

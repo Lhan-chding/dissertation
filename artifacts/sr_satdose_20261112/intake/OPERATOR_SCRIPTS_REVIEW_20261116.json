@@ -1,0 +1,20 @@
+{
+  "status": "OPERATOR_SCRIPTS_STATICALLY_REVIEWED_NOT_SERVER_ACCEPTANCE",
+  "files": {
+    "satdose_prepare_trained_dev.py": "188b510417dd648971ee1216d6468a0fb5b0d4297fb5f95158cd1ac65b468b88",
+    "satdose_prepare_continuation.py": "737954eb256b1c29f5a381e864d3a1bc74a5fa1a8e95ab4a3373c2e66ad151c2",
+    "satdose_publish_actual_canary.py": "3e3f48b77db381fb5302a9088d11d379c5196d7e0924ccf1fe41b8cc4f079b11",
+    "satdose_monitor_firsttwo.py": "7beceea4405f9fbff7208dc54e88ddb0fca4e1f39efdfd8963ace085f753a365"
+  },
+  "checks": [
+    "Python syntax of local and embedded remote code",
+    "Canary publisher independent source/lock/authority review",
+    "Trained DEV independent API review; transaction root includes canonical TRANSACTION.lock",
+    "Trained DEV offline failure/raw log/source bytes/no-retry validation",
+    "Continuation local/remote syntax and original API review"
+  ],
+  "actual_ssh_calls": 0,
+  "actual_gpu_submissions": 0,
+  "immutable_train_source_files": 84,
+  "immutable_train_execution_source_keys": 19
+}
