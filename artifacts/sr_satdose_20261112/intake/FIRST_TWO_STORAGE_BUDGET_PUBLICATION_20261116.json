@@ -1,0 +1,65 @@
+{
+  "path": "execution_releases/FIRST_TWO_STORAGE_BUDGET_20261116.json",
+  "sha256": "cc81fc1689fb48cc6887df5895709bbb5cecd38535a10326132ea950e9d64f69",
+  "budget": {
+    "schema": "sr-satdose-storage-budget-v1",
+    "scope": "FIRST_TWO_AND_CANARY_ONLY",
+    "experiment_id": "SR-SATDOSE-1-20261112",
+    "evidence_root": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1",
+    "design_freeze_sha256": "6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0",
+    "required_bytes": 34359738368,
+    "created_at_utc": "2026-11-15T17:14:45.949121+00:00",
+    "expires_at_utc": "2026-11-22T17:14:45.949121+00:00",
+    "max_observation_age_seconds": 300,
+    "rationale": "Conservative engineering allowance for eight checkpoints plus four initial states, eight full production captures, original1024response artifacts and canary relocation. Twice observed-derived allowance plus1GiB; minimum32GiB. Not a proven upper bound or shared quota reservation. Live quota/statvfs/fsync checked before model/update.",
+    "sizing": {
+      "original_states": [
+        {
+          "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/run/paths/b0-11031-R/checkpoints/step-024/state.pt",
+          "sha256": "af1876069f9c9a5c7fc1d0b237162f5511b86b0462f3c796c13fbf3b8359bda1",
+          "bytes": 260286740
+        },
+        {
+          "path": "/projects/_ssd/varunssd/louis-ssvc/sr_ord_train_20261103/package_v2/run/paths/b0-11032-R/checkpoints/step-024/state.pt",
+          "sha256": "a4fd2b6a85d1cf1b84f67ef4b4d76f8b7426c27a46a46fb0d37b1550a623f1a5",
+          "bytes": 260285140
+        }
+      ],
+      "production_captures": [
+        {
+          "path": "shadow_inputs/start-11031/trial-0/PRODUCTION_CAPTURE.pt",
+          "sha256": "dc92bfffdd1d2e539f7e14e3b6d917192339d5f5a946e67e6528a7344aac76c2",
+          "bytes": 175324543
+        },
+        {
+          "path": "shadow_inputs/start-11031/trial-1/PRODUCTION_CAPTURE.pt",
+          "sha256": "72269f76e23b5fce41bdf1326af9bda4a926c1c5e40f8b91a0822e2cd8163c68",
+          "bytes": 175324543
+        },
+        {
+          "path": "shadow_inputs/start-11032/trial-0/PRODUCTION_CAPTURE.pt",
+          "sha256": "1a54c28d3c1809bac0f57192446e53be86dac341290d185604e7d2a2844188b5",
+          "bytes": 175420543
+        },
+        {
+          "path": "shadow_inputs/start-11032/trial-1/PRODUCTION_CAPTURE.pt",
+          "sha256": "a7cd327ba06728c3ed52a32a854159f8e5edc59db23e33106ee791bef4b75244",
+          "bytes": 175420543
+        }
+      ],
+      "observed_dry_responses": 1280,
+      "observed_max_triplet_bytes": 232418,
+      "per_response_allowance_bytes": 1048576,
+      "calculated_bytes": 16569803216,
+      "minimum_bytes": 34359738368,
+      "formal_responses": 1024,
+      "formal_updates": 8,
+      "canary_new_generations": 0
+    }
+  },
+  "quota_snapshot": {
+    "limit": 750000000000,
+    "used": 627380818773,
+    "available": 122619181227
+  }
+}

@@ -16,11 +16,13 @@ both R24 checkpoints (496 tensors each) and the original b0 reference.
 The user authorized AI inspection of the fixed 32 images in place of human
 inspection. The immutable design freeze was then written before model calls.
 Job 1736279 completed zero-update DRY calibration and both starts passed.
-PREFIX-only job 1737418 was cancelled while still pending with zero runtime
-and zero generation, after explicit user authorization. Its single replacement
-1737594 uses the identical fixed 96 requests and two GPUs with a six-hour
-scheduling limit; the latest recorded state is pending. Neither result grants
-training admission.
+The fixed 96 PREFIX responses are complete. The first start's original failed
+measurement remains false; an explicit user exception permits continuation with
+that result preserved. Job1740151 completed all ten GPU stages and four isolated
+shadow updates. Independent CPU tensor/source audits and fourteen technical checks
+passed. Full amended admission was recomputed on the server and published with
+the original first-two-step scope. Job1740676 is running the fixed216 START DEV
+responses under the teacher QoS; submission/running is not endpoint acceptance.
 See the dated admission report for the most recent observed progress.
 
 ## Modules and limits
@@ -48,7 +50,7 @@ See the dated admission report for the most recent observed progress.
 - `execution/production.py`: independent native loss and gradient capture for
   sixteen complete G8 groups. It preserves the original numerical checks and
   captures gradients before and after clipping without accepting an optimizer.
-  CPU agreement with diagnostics is verified; actual GPU replay is outstanding.
+  CPU agreement and actual fixed GPU replay are independently verified.
 - `execution/diagnostic_inputs.py`: both complete passing DRY populations are
   revalidated and rescored before projection to the frozen probe/witness groups.
   It preserves original request order and uses native-known authorised c.
@@ -91,7 +93,7 @@ See the dated admission report for the most recent observed progress.
 - `execution/training_step.py`: non-CLI composition of exactly 128 original
   captures, native scoring, production gradients and one durable native update.
   Its admission authority must be independently authenticated and source-bound;
-  no production authority is provided. Historical validation rechecks original
+  authority is supplied separately. Historical validation rechecks original
   CAPTURE/BEGIN bytes and the native update linked to the production capture.
 
 - `execution/canary_replay.py`: fixed baseline/new-process reload phases over all
@@ -119,19 +121,43 @@ See the dated admission report for the most recent observed progress.
   no training permission and does not claim a second observation of unsaved GPU
   weights or unmeasured production peak memory.
 
-The complete training launcher/admission authority, real production GPU replay
-acceptance, canary/recovery integration and terminal MAIN runner are not yet
-completed end-to-end. Do not invoke the old training CLI as a substitute.
+- `execution/admission_authority.py`: original fourteen technical gates, native
+  DRY recomputation and exact PREFIX exception; `FirstTwoStepAdmission` stays
+  limited to steps1–2. The same prebound source supplies a separate continuation
+  facade, preserving checkpoint execution identity when later gates pass.
+- `execution/start_dev_control.py` and `evaluation_runtime.py`: write-once,
+  independently source-bound evaluation; START DEV is exactly108 per start in
+  fresh processes. Durable BEGIN/CAPTURE/COMPLETE records and endpoint receipts
+  feed `analysis/evaluation.py`; no optimizer or MAIN authority is supplied.
+- `execution/first_two_control.py` and `scheduling/first_two_launcher.py`: four
+  original paths, two native updates each, actual frozen-parameter fingerprints,
+  original-token canary baseline and fresh-process reload. Direct child waits
+  supply real exit observations. Their completion is not a canary PASS.
+- `execution/canary_audit.py` and `continuation_authority.py`: independent exact
+  four-path step2 audit before publishing CANARY_RESUME_PASS. Later checks retain
+  original immutable evidence and full current COMMIT chains, without truncating
+  later chains to re-run the step2-only auditor.
+- `analysis/risk.py`: independently recomputes TRAIN/DEV from original captures.
+  It applies the user-frozen384-conflict-answer windows and original severe
+  regression rule, retaining pending DEV and historical STOP conditions. Run
+  outside the transaction lock; returned decisions never grant authority alone.
+- `execution/trained_dev_control.py` and `continuation_control.py`: fixed four-path
+  DEV barriers2/8/16 and one-path chunks3–8/9–16/17–24. Their complete source
+  inventory must be frozen before the first GENESIS; future receipts bind actual
+  checkpoints and completed barriers. Unknown attempts cannot be resumed blindly.
+
+The new training controls have CPU and independent review evidence; their actual
+GPU end-to-end acceptance is still pending. The terminal MAIN runner remains
+unimplemented. Do not invoke the old training CLI as a substitute.
 Do not manufacture DESIGN_FREEZE or GPU_VERIFICATION from test fixtures.
 The GPU diagnostic driver must bind the frozen root/group/request ordering,
 verify saved-tensor storage after backward, and use actual runtime accounting.
-Shadow acceptance still needs actual execution of two independent R24 restores
-per start, GPU Adam on isolated tensors, and a global maximum of four actual
-shadow steps. Existing same-copy shadow repetition alone does not establish
-restored replay; a JSON assertion alone does not establish a real reload.
+Actual shadow acceptance includes two independent R24 restores per start and
+four total GPU Adam calls on isolated tensors. This does not establish the later
+trained step2 process-reload canary; that requires its own actual evidence.
 The complete 11032 DRY population contains original 1536-token trajectory
 `SAT1/DRY/11032/g004/d07` inside the frozen probe128. Its actual full-batch
-production replay remains to be verified; the 11031 probe maximum is 709.
+production replay has passed; the 11031 probe maximum is709.
 No extra or synthetic rollout is needed to select a long-capacity input.
 
 ## CPU validation

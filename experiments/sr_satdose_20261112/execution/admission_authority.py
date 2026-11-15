@@ -17,6 +17,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import importlib.util
+import inspect
 import math
 from pathlib import Path
 import re
@@ -349,7 +350,8 @@ class FirstTwoStepAdmission(training_step.AuthenticatedAdmission):
         require(Path(root)==self._observed.root and design_freeze_sha256==self._binding['design_freeze']['sha256'],
                 'Foreign root/frozen design')
         require(not any((self._observed.root/name).exists() for name in
-                ('HOLD.json','ERROR.json','training_control/HOLD.json','training_control/ERROR.json')),
+                ('HOLD.json','ERROR.json','training_control/HOLD.json','training_control/ERROR.json',
+                 'first_two_launcher/HOLD.json','first_two_launcher/ERROR.json')),
                 'Global training HOLD/error exists')
         self._observed.stable()
         start=identity.get('train_seed');arm=identity.get('arm')
@@ -387,3 +389,47 @@ class FirstTwoStepAdmission(training_step.AuthenticatedAdmission):
                     target_step=target_step,sampled_endpoint=copy.deepcopy(sampled_endpoint),
                     admission=copy.deepcopy(self._admission),registration=copy.deepcopy(refs['registration']),
                     gpu_report=copy.deepcopy(refs['gpu_report']))
+
+
+class ContinuingAdmission(training_step.AuthenticatedAdmission):
+    """Same prebound verifier source, separate canary/risk authority above step2.
+
+    This class must exist before the original first-two execution inventory is
+    frozen. It never changes FirstTwoStepAdmission's scope or checkpoint identity.
+    """
+    def __init__(self,trusted_spec,*,admission,continuation_spec):
+        original=FirstTwoStepAdmission(trusted_spec,admission=admission)
+        super().__init__(copy.deepcopy(trusted_spec['sources']['authority']))
+        from . import continuation_authority
+        require(_absolute(continuation_spec['helper'])==Path(continuation_authority.__file__).resolve(),
+                'Shadowed continuation authority helper')
+        self._continuation=continuation_authority.ContinuationVerifier(original,continuation_spec)
+
+    def _helper(self):
+        from . import continuation_authority
+        value=self._continuation;reference=value.spec['helper'];path=_absolute(reference)
+        require(type(value) is continuation_authority.ContinuationVerifier and
+                path==Path(continuation_authority.__file__).resolve(),'Replaced continuation helper')
+        for name in ('verify','refresh_risk'):
+            method=getattr(value,name)
+            require(getattr(method,'__self__',None) is value and
+                    getattr(method,'__func__',None) is getattr(type(value),name) and
+                    Path(inspect.getsourcefile(method) or '').resolve()==path,
+                    'Continuation helper method replaced after source audit')
+        return value
+
+    def refresh_risk(self,risk_inputs):
+        """Call outside the transaction lock after each published COMMIT."""
+        training_step.AuthenticatedAdmission.check_source(self)
+        return self._helper().refresh_risk(risk_inputs)
+
+    def risk_snapshot(self):
+        """Return the current independent risk report without re-running it."""
+        training_step.AuthenticatedAdmission.check_source(self)
+        value=self._helper();require(value._risk_ready,'Missing/failed risk assessment')
+        return copy.deepcopy(value._risk_result)
+
+    def verify(self,*,root,identity,design_freeze_sha256,target_step,sampled_endpoint):
+        training_step.AuthenticatedAdmission.check_source(self)
+        return self._helper().verify(root=root,identity=identity,design_freeze_sha256=design_freeze_sha256,
+            target_step=target_step,sampled_endpoint=sampled_endpoint)
