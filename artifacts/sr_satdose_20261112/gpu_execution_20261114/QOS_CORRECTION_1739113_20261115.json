@@ -1,0 +1,56 @@
+{
+  "checked_at_utc": "2026-11-15T09:54:55.783824+00:00",
+  "job_id": 1739113,
+  "scope": "ONLY_CHANGE_QOS_OF_1739113",
+  "other_jobs_modified": false,
+  "before": {
+    "args": [
+      "scontrol",
+      "show",
+      "job",
+      "1739113",
+      "-o"
+    ],
+    "returncode": 0,
+    "stdout": "JobId=1739113 JobName=LH-SATDOSE-GPU-CHECKS UserId=varun024(295800338) GroupId=varun024(295800338) MCS_label=N/A Priority=12 Nice=0 Account=rose QOS=rose JobState=PENDING Reason=QOSMaxJobsPerUserLimit Dependency=(null) Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=00:00:00 TimeLimit=1-00:00:00 TimeMin=N/A SubmitTime=2026-11-14T15:34:33 EligibleTime=2026-11-14T15:34:33 AccrueTime=2026-11-14T15:34:33 StartTime=Unknown EndTime=Unknown Deadline=N/A SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-11-15T09:54:49 Scheduler=Main Partition=cluster02 AllocNode:Sid=login-1:525163 ReqNodeList=(null) ExcNodeList=(null) NodeList= NumNodes=1-1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2 AllocTRES=(null) Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=8 MinMemoryNode=66G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null) Command=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19/scheduling/run_gpu_checks.sh WorkDir=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19 StdErr=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/gpu_checks_20261114/slurm-1739113.err StdIn=/dev/null StdOut=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/gpu_checks_20261114/slurm-1739113.out Power= TresPerJob=gres/gpu:pro6000:2 TresPerTask=cpu:8",
+    "stderr": ""
+  },
+  "binding_sha256_before": "cf7da7f08e5cb11c5458cab1200fd5a2465a529a31d2258f6cc45cbe6efe73c5",
+  "update": {
+    "args": [
+      "scontrol",
+      "update",
+      "JobId=1739113",
+      "QOS=soujanya-poria-startfund-2026-03"
+    ],
+    "returncode": 1,
+    "stdout": "",
+    "stderr": "scontrol: error: slurm_job_submit: Changing qos of a submitted job is not allowed; cancel and resubmit\nJob violates accounting/QOS policy (job submit limit, user's size and/or time limits) for job 1739113"
+  },
+  "after": {
+    "args": [
+      "scontrol",
+      "show",
+      "job",
+      "1739113",
+      "-o"
+    ],
+    "returncode": 0,
+    "stdout": "JobId=1739113 JobName=LH-SATDOSE-GPU-CHECKS UserId=varun024(295800338) GroupId=varun024(295800338) MCS_label=N/A Priority=12 Nice=0 Account=rose QOS=rose JobState=PENDING Reason=QOSMaxJobsPerUserLimit Dependency=(null) Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=00:00:00 TimeLimit=1-00:00:00 TimeMin=N/A SubmitTime=2026-11-14T15:34:33 EligibleTime=2026-11-14T15:34:33 AccrueTime=2026-11-14T15:34:33 StartTime=Unknown EndTime=Unknown Deadline=N/A SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-11-15T09:54:49 Scheduler=Main Partition=cluster02 AllocNode:Sid=login-1:525163 ReqNodeList=(null) ExcNodeList=(null) NodeList= NumNodes=1-1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2 AllocTRES=(null) Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=8 MinMemoryNode=66G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null) Command=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19/scheduling/run_gpu_checks.sh WorkDir=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/waiver_code_0e5ba19 StdErr=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/gpu_checks_20261114/slurm-1739113.err StdIn=/dev/null StdOut=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/gpu_checks_20261114/slurm-1739113.out Power= TresPerJob=gres/gpu:pro6000:2 TresPerTask=cpu:8",
+    "stderr": ""
+  },
+  "binding_sha256_after": "cf7da7f08e5cb11c5458cab1200fd5a2465a529a31d2258f6cc45cbe6efe73c5",
+  "queue": {
+    "args": [
+      "squeue",
+      "-j",
+      "1739113",
+      "-h",
+      "-o",
+      "%i|%T|%q|%M|%b|%R"
+    ],
+    "returncode": 0,
+    "stdout": "1739113|PENDING|rose|0:00|N/A|(QOSMaxJobsPerUserLimit)",
+    "stderr": ""
+  }
+}
