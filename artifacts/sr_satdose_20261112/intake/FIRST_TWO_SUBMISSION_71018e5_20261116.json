@@ -1,0 +1,89 @@
+{
+  "status": "FOUR_FIRST_TWO_PATHS_AND_READONLY_RELOAD_SUBMITTED",
+  "job_id": 1740834,
+  "intent": {
+    "created_at_utc": "2026-11-15T19:00:09.714573+00:00",
+    "status": "SUBMISSION_INTENT_UNKNOWN_UNTIL_RECEIPT",
+    "scope": "FOUR_PATHS_MAX_STEP_2_NO_STEP3",
+    "train_responses": 1024,
+    "formal_optimizer_steps": 8,
+    "canary_new_generations": 0,
+    "release": {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/FIRST_TWO_RELEASE_71018e5.json",
+      "sha256": "22f3b7b260670628398154652455520cd25169234f66a827d3d117def924438f"
+    },
+    "args": [
+      "sbatch",
+      "--parsable",
+      "--job-name=LH-SATDOSE-FIRST-TWO",
+      "--account=rose",
+      "--qos=soujanya-poria-startfund-2026-03",
+      "--partition=cluster02",
+      "--nodes=1",
+      "--ntasks=1",
+      "--cpus-per-task=8",
+      "--gpus=pro6000:2",
+      "--mem=66G",
+      "--time=24:00:00",
+      "--no-requeue",
+      "--chdir=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5",
+      "--output=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/first_two_71018e5/slurm-%j.out",
+      "--error=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/first_two_71018e5/slurm-%j.err",
+      "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/scheduling/run_first_two.sh",
+      "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/FIRST_TWO_RELEASE_71018e5.json",
+      "22f3b7b260670628398154652455520cd25169234f66a827d3d117def924438f"
+    ],
+    "prerequisite": {
+      "args": [
+        "sacct",
+        "-j",
+        "1740676",
+        "-n",
+        "-P",
+        "--format=JobID,State,ExitCode"
+      ],
+      "returncode": 0,
+      "stdout": "1740676|COMPLETED|0:0\n1740676.batch|COMPLETED|0:0\n1740676.extern|COMPLETED|0:0\n1740676.0|COMPLETED|0:0\n1740676.1|COMPLETED|0:0\n",
+      "stderr": ""
+    },
+    "queue_before": {
+      "args": [
+        "squeue",
+        "-u",
+        "varun024",
+        "-h",
+        "-o",
+        "%i|%j|%T|%q|%b|%R"
+      ],
+      "returncode": 0,
+      "stdout": "1740787|lift-full-four-migrate|PENDING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:4|(Resources)\n1740804|lift_pot-50-four|PENDING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:4|(QOSGrpGRES)\n1740805|stack_bowls_two-50-four|PENDING|rose|gres/gpu:pro6000:4|(Priority)\n1740132|bottle-full-dual-pro|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:2|gpu-pro6000-7\n1740109|lift-full-pro-migrate|RUNNING|soujanya-poria-startfund-2026-03|gres/gpu:pro6000:2|gpu-pro6000-6\n",
+      "stderr": ""
+    }
+  },
+  "response": {
+    "args": [
+      "sbatch",
+      "--parsable",
+      "--job-name=LH-SATDOSE-FIRST-TWO",
+      "--account=rose",
+      "--qos=soujanya-poria-startfund-2026-03",
+      "--partition=cluster02",
+      "--nodes=1",
+      "--ntasks=1",
+      "--cpus-per-task=8",
+      "--gpus=pro6000:2",
+      "--mem=66G",
+      "--time=24:00:00",
+      "--no-requeue",
+      "--chdir=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5",
+      "--output=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/first_two_71018e5/slurm-%j.out",
+      "--error=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/first_two_71018e5/slurm-%j.err",
+      "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/scheduling/run_first_two.sh",
+      "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/FIRST_TWO_RELEASE_71018e5.json",
+      "22f3b7b260670628398154652455520cd25169234f66a827d3d117def924438f"
+    ],
+    "returncode": 0,
+    "stdout": "1740834\n",
+    "stderr": ""
+  }
+}

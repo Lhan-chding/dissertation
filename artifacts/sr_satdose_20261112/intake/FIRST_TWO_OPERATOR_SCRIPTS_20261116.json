@@ -1,0 +1,12 @@
+{
+  "status": "OPERATOR_SOURCE_ARCHIVAL",
+  "files": {
+    "satdose_first_two_release.py": "41f60746b02519e57c261892d392282bb13fc1ba3b1b6f0feb086cbe1112606b",
+    "satdose_first_two_preflight.py": "f56484469d746f9ee48521116dea1f6ef4cbd7fd69bd95f0f189e3fe4d8392b6",
+    "satdose_first_two_submit.py": "a5c726f28d9fca908ea0bd98c05fc4ae6374ec2de8e61e04a1f72ef44f09277c",
+    "satdose_analyze_startdev.py": "d31e1294fc908548e4213dce78c7e2646a1fa161f3d9e32403f8ed6c095fa803",
+    "satdose_monitor_startdev.py": "d8a4b0a8d19a720014375c4bf6b955a5afb3ce5032f3155e8e2b03cccf1d1033"
+  },
+  "correction": "Before firsttwo submission, aligned expected CPU preflight output with frozen first_two_control.main: FIRST_TWO_PREFLIGHT_COMPLETE_NO_MODEL_CALLS with start_seed/arm/phase. Old temporary comparison incorrectly used START DEV response fields. No server execution or source was changed by this correction.",
+  "validation": "Local and embedded remote Python syntax checked; actual CPU preflight pending at archival time."
+}

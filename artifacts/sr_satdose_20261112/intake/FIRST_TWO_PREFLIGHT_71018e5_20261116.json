@@ -1,0 +1,27 @@
+{
+  "started_at_utc": "2026-11-15T18:57:09.643382+00:00",
+  "finished_at_utc": "2026-11-15T18:59:53.367032+00:00",
+  "args": [
+    "/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python",
+    "-B",
+    "-m",
+    "execution.first_two_control",
+    "--release-receipt",
+    "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/FIRST_TWO_RELEASE_71018e5.json",
+    "--release-sha256",
+    "22f3b7b260670628398154652455520cd25169234f66a827d3d117def924438f",
+    "--start-seed",
+    "11031",
+    "--arm",
+    "T0",
+    "--phase",
+    "baseline"
+  ],
+  "returncode": 0,
+  "stdout": "{\"arm\":\"T0\",\"phase\":\"baseline\",\"start_seed\":11031,\"status\":\"FIRST_TWO_PREFLIGHT_COMPLETE_NO_MODEL_CALLS\"}\n",
+  "stderr": "EEE/ROSE Cluster 02\nConnecting to: login-2\n\nRelevant Guides:\n- https://github.com/NTUEEECluster/docs/blob/main/quickstart.md\n- https://github.com/NTUEEECluster/docs/blob/main/terms-n-conditions.md\n",
+  "release": {
+    "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/FIRST_TWO_RELEASE_71018e5.json",
+    "sha256": "22f3b7b260670628398154652455520cd25169234f66a827d3d117def924438f"
+  }
+}

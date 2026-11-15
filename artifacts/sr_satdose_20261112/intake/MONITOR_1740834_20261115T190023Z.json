@@ -1,0 +1,48 @@
+{
+  "checked_at_utc": "2026-11-15T19:00:23.716029+00:00",
+  "job_id": 1740834,
+  "sacct": {
+    "returncode": 0,
+    "stdout": "1740834|PENDING|00:00:00|0:0|None assigned\n",
+    "stderr": ""
+  },
+  "squeue": {
+    "returncode": 0,
+    "stdout": "1740834|PENDING|0:00|1-00:00:00|soujanya-poria-startfund-2026-03|(Priority)\n",
+    "stderr": ""
+  },
+  "paths": {
+    "11031/T0": {
+      "controller": {
+        "exists": false
+      },
+      "commits": [],
+      "staging": []
+    },
+    "11031/T1": {
+      "controller": {
+        "exists": false
+      },
+      "commits": [],
+      "staging": []
+    },
+    "11032/T0": {
+      "controller": {
+        "exists": false
+      },
+      "commits": [],
+      "staging": []
+    },
+    "11032/T1": {
+      "controller": {
+        "exists": false
+      },
+      "commits": [],
+      "staging": []
+    }
+  },
+  "launcher": {
+    "exists": false
+  },
+  "log_tail": {}
+}
