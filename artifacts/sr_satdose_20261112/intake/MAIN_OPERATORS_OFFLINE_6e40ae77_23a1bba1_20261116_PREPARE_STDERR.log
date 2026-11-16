@@ -1,0 +1,22 @@
+test_error_overrides_complete_status (__main__.PreparationEnvelope.test_error_overrides_complete_status) ... ok
+test_exact_terminal_download_envelope (__main__.PreparationEnvelope.test_exact_terminal_download_envelope) ... ok
+test_failed_download_rejected (__main__.PreparationEnvelope.test_failed_download_rejected) ... ok
+test_fixed_fourteen_order_and_exact_total (__main__.PreparationEnvelope.test_fixed_fourteen_order_and_exact_total) ... ok
+test_invalid_endpoint_rejected (__main__.PreparationEnvelope.test_invalid_endpoint_rejected) ... ok
+test_local_download_error_overrides_complete_status (__main__.PreparationEnvelope.test_local_download_error_overrides_complete_status) ... ok
+test_manifest_hash_mismatch_rejected (__main__.PreparationEnvelope.test_manifest_hash_mismatch_rejected) ... ok
+test_manifest_unknown_rejected (__main__.PreparationEnvelope.test_manifest_unknown_rejected) ... ok
+test_missing_receipt_never_accepted (__main__.PreparationEnvelope.test_missing_receipt_never_accepted) ... ok
+test_mutated_artifact_bytes_rejected (__main__.PreparationEnvelope.test_mutated_artifact_bytes_rejected) ... ok
+test_network_unknown_preserves_source_and_raw_bytes_no_retry (__main__.PreparationEnvelope.test_network_unknown_preserves_source_and_raw_bytes_no_retry) ... ok
+test_no_implicit_model_or_scheduler_calls (__main__.PreparationEnvelope.test_no_implicit_model_or_scheduler_calls) ... ok
+test_partial_spec_admission_never_enough (__main__.PreparationEnvelope.test_partial_spec_admission_never_enough) ... ok
+test_plan_no_network_or_output_write (__main__.PreparationEnvelope.test_plan_no_network_or_output_write) ... ok
+test_prefix_blocks_skip_or_occupied_target (__main__.PreparationEnvelope.test_prefix_blocks_skip_or_occupied_target) ... ok
+test_syntax_and_stable_publisher_pin (__main__.PreparationEnvelope.test_syntax_and_stable_publisher_pin) ... ok
+test_wrong_manifest_size_rejected (__main__.PreparationEnvelope.test_wrong_manifest_size_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.063s
+
+OK

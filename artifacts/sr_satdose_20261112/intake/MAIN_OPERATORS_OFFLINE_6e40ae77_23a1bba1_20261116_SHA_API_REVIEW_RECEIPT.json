@@ -1,0 +1,233 @@
+{
+  "schema": "sr-satdose-main-operators-offline-verification-v1",
+  "status": "OFFLINE_CHECKS_AND_INDEPENDENT_REVIEW_PASSED",
+  "created_at_utc": "2026-11-16T10:55:16.891598+00:00",
+  "sources": {
+    "satdose_prepare_main.py": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/experiments/sr_satdose_20261112/operations/satdose_prepare_main.py",
+      "sha256": "6e40ae7735fc5d6e2386cf0e996a4db4a3fa90d6eea79d13a8d14d03325302b5",
+      "bytes": 27018
+    },
+    "satdose_submit_main.py": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/experiments/sr_satdose_20261112/operations/satdose_submit_main.py",
+      "sha256": "23a1bba1cf35a0120b034005e9df66bb4bb0ac10eeb92c8e15af9d984b2e4c50",
+      "bytes": 20472
+    },
+    "tests/test_prepare_main.py": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/experiments/sr_satdose_20261112/operations/tests/test_prepare_main.py",
+      "sha256": "41d9d7b0ff9f83d4b09566a7fb3e94bde17ca1ddf13e22c0374bfe0ac05da05b",
+      "bytes": 9242
+    },
+    "tests/test_submit_main.py": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/experiments/sr_satdose_20261112/operations/tests/test_submit_main.py",
+      "sha256": "0c7730209f67c78db97526aef452faf712ad7c7bb9361c48f2eef120bc42321d",
+      "bytes": 14319
+    }
+  },
+  "runs": [
+    {
+      "command": [
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python",
+        "-B",
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/experiments/sr_satdose_20261112/operations/tests/test_prepare_main.py"
+      ],
+      "returncode": 0,
+      "checks": 17,
+      "stdout": {
+        "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/MAIN_OPERATORS_OFFLINE_6e40ae77_23a1bba1_20261116_PREPARE_STDOUT.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/MAIN_OPERATORS_OFFLINE_6e40ae77_23a1bba1_20261116_PREPARE_STDERR.log",
+        "sha256": "6cfe644a10a4bff530e72a10399b01ff7ee7a3f95758797b42402a152e3cc81c",
+        "bytes": 2077
+      }
+    },
+    {
+      "command": [
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python",
+        "-B",
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/experiments/sr_satdose_20261112/operations/tests/test_submit_main.py"
+      ],
+      "returncode": 0,
+      "checks": 22,
+      "stdout": {
+        "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/MAIN_OPERATORS_OFFLINE_6e40ae77_23a1bba1_20261116_SUBMIT_STDOUT.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/MAIN_OPERATORS_OFFLINE_6e40ae77_23a1bba1_20261116_SUBMIT_STDERR.log",
+        "sha256": "482801d5794563a6820676bdc9fb8483ebd7b7e9e4789674d234ed7e71461511",
+        "bytes": 2653
+      }
+    }
+  ],
+  "total_checks": 39,
+  "independent_review": {
+    "reviewer": "admission_review",
+    "result": "NO_REMAINING_RELEASE_BLOCKER",
+    "independently_reran_checks": 39,
+    "reported_diff_check": "PASS",
+    "source_sha256s": {
+      "satdose_prepare_main.py": "6e40ae7735fc5d6e2386cf0e996a4db4a3fa90d6eea79d13a8d14d03325302b5",
+      "satdose_submit_main.py": "23a1bba1cf35a0120b034005e9df66bb4bb0ac10eeb92c8e15af9d984b2e4c50",
+      "tests/test_prepare_main.py": "41d9d7b0ff9f83d4b09566a7fb3e94bde17ca1ddf13e22c0374bfe0ac05da05b",
+      "tests/test_submit_main.py": "0c7730209f67c78db97526aef452faf712ad7c7bb9361c48f2eef120bc42321d"
+    },
+    "reviewed_contracts": [
+      "Full terminal eleven-artifact manifest, successful exact-download receipt, PUBLICATION_RECEIPT and absence of ERROR",
+      "Separate external verifier namespaces and original TRAIN namespace source identities",
+      "Independent original84/execution19/external4 pins before prepared input authentication",
+      "Native main_control.preflight plus current quota/statvfs/fsync snapshot",
+      "Exactly one next endpoint in frozen14/13760 sequence",
+      "Held submit, verified durable accepted identity, unlock, final HOLD/terminal-envelope check, then release only the newly returned job once"
+    ]
+  },
+  "frozen_dependencies": {
+    "terminal_publisher_sha256": "49e1188ea76d5945ee21faad394b0ea06064bd18f1f8fe0b836e43940c783511",
+    "original_train_root": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5",
+    "external_main_root": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/external_main_code_4190bc3",
+    "original_source_files": 84,
+    "original_execution_source_keys": 19,
+    "external_source_files": 4,
+    "original_train_release": {
+      "path": "execution_releases/FIRST_TWO_RELEASE_71018e5.json",
+      "sha256": "22f3b7b260670628398154652455520cd25169234f66a827d3d117def924438f"
+    }
+  },
+  "actual_api_calls": [
+    "terminal publisher validate_publication(directory, manifest.files), only after successful full manifest/download envelope",
+    "terminal_authority.verify(published_terminal_spec) using distinct preverify namespace",
+    "main_control.preflight(release_path, release_sha, start, arm, step)",
+    "main_control.storage_check(preparation_directory, budget_ref)",
+    "run_main.sh release_path release_sha start_seed arm step"
+  ],
+  "required_terminal": {
+    "formal_optimizer_steps": 96,
+    "train_responses": 12288,
+    "dev_endpoints": 14,
+    "dev_responses": 1512,
+    "global_hold": false,
+    "pending_required_dev": []
+  },
+  "main_order": [
+    {
+      "start_seed": 11031,
+      "arm": "START",
+      "step": 0,
+      "responses": 1952
+    },
+    {
+      "start_seed": 11032,
+      "arm": "START",
+      "step": 0,
+      "responses": 1952
+    },
+    {
+      "start_seed": 11031,
+      "arm": "T0",
+      "step": 8,
+      "responses": 256
+    },
+    {
+      "start_seed": 11031,
+      "arm": "T0",
+      "step": 16,
+      "responses": 256
+    },
+    {
+      "start_seed": 11031,
+      "arm": "T0",
+      "step": 24,
+      "responses": 1952
+    },
+    {
+      "start_seed": 11031,
+      "arm": "T1",
+      "step": 8,
+      "responses": 256
+    },
+    {
+      "start_seed": 11031,
+      "arm": "T1",
+      "step": 16,
+      "responses": 256
+    },
+    {
+      "start_seed": 11031,
+      "arm": "T1",
+      "step": 24,
+      "responses": 1952
+    },
+    {
+      "start_seed": 11032,
+      "arm": "T0",
+      "step": 8,
+      "responses": 256
+    },
+    {
+      "start_seed": 11032,
+      "arm": "T0",
+      "step": 16,
+      "responses": 256
+    },
+    {
+      "start_seed": 11032,
+      "arm": "T0",
+      "step": 24,
+      "responses": 1952
+    },
+    {
+      "start_seed": 11032,
+      "arm": "T1",
+      "step": 8,
+      "responses": 256
+    },
+    {
+      "start_seed": 11032,
+      "arm": "T1",
+      "step": 16,
+      "responses": 256
+    },
+    {
+      "start_seed": 11032,
+      "arm": "T1",
+      "step": 24,
+      "responses": 1952
+    }
+  ],
+  "total_main_endpoints": 14,
+  "total_main_responses": 13760,
+  "scheduler": {
+    "account": "rose",
+    "qos": "soujanya-poria-startfund-2026-03",
+    "partition": "cluster02",
+    "gpus": "pro6000:2",
+    "cpus": 8,
+    "memory": "66G",
+    "no_requeue": true,
+    "walltime_by_response_count": {
+      "1952": "24:00:00",
+      "256": "06:00:00"
+    }
+  },
+  "actual_remote_activity_in_this_verification": {
+    "ssh_calls": 0,
+    "scheduler_calls": 0,
+    "server_publications": 0,
+    "gpu_submissions": 0,
+    "model_calls": 0
+  },
+  "actual_terminal_state": "NOT_OBSERVED_OR_PUBLISHED_BY_THIS_OFFLINE_VERIFICATION",
+  "limitations": [
+    "Tests fabricate clearly labeled offline envelopes and stub scheduler responses; these are not real terminal/MAIN experiment evidence.",
+    "Actual original source, terminal, checkpoint, prior MAIN and quota CPU checks still must pass on the real server.",
+    "Storage allowance uses observed sizes plus explicit headroom; it is not a proven upper bound or quota reservation.",
+    "Walltime is a scheduler ceiling, not a scientific stop rule or completion guarantee.",
+    "Uncertain submission/release preserves exact known job ID, source bytes, intent and raw logs; no retry or cancellation.",
+    "Each operator invocation handles exactly one selected fixed endpoint; no automatic loop, implicit successor or extra draw.",
+    "Original TRAIN84 and external4190 source files were not modified; no git commit or push performed by this subtask."
+  ]
+}

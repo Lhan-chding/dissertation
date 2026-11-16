@@ -1,0 +1,27 @@
+test_changed_job_identity_no_release (__main__.HeldSubmissionTail.test_changed_job_identity_no_release) ... ok
+test_foreign_cluster_no_release (__main__.HeldSubmissionTail.test_foreign_cluster_no_release) ... ok
+test_full_endpoint_one_submit_correct_five_args_and_handoff (__main__.HeldSubmissionTail.test_full_endpoint_one_submit_correct_five_args_and_handoff) ... ok
+test_global_hold_after_unlock_keeps_job_held (__main__.HeldSubmissionTail.test_global_hold_after_unlock_keeps_job_held) ... ok
+test_primary_endpoint_six_hour_limit (__main__.HeldSubmissionTail.test_primary_endpoint_six_hour_limit) ... ok
+test_release_failure_keeps_known_job_no_retry (__main__.HeldSubmissionTail.test_release_failure_keeps_known_job_no_retry) ... ok
+test_release_visibility_delay_preserves_unknown (__main__.HeldSubmissionTail.test_release_visibility_delay_preserves_unknown) ... ok
+test_sbatch_failure_no_release (__main__.HeldSubmissionTail.test_sbatch_failure_no_release) ... ok
+test_scheduler_environment_isolation (__main__.HeldSubmissionTail.test_scheduler_environment_isolation) ... ok
+test_terminal_error_after_unlock_keeps_job_held (__main__.HeldSubmissionTail.test_terminal_error_after_unlock_keeps_job_held) ... ok
+test_wrong_qos_no_release (__main__.HeldSubmissionTail.test_wrong_qos_no_release) ... ok
+test_wrong_walltime_no_release (__main__.HeldSubmissionTail.test_wrong_walltime_no_release) ... ok
+test_all_fourteen_plan_locally_and_fixed_walltimes (__main__.LocalSubmission.test_all_fourteen_plan_locally_and_fixed_walltimes) ... ok
+test_changed_prepare_dependency_rejected_before_execution (__main__.LocalSubmission.test_changed_prepare_dependency_rejected_before_execution) ... ok
+test_extra_draw_budget_rejected (__main__.LocalSubmission.test_extra_draw_budget_rejected) ... ok
+test_failed_preparation_not_accepted (__main__.LocalSubmission.test_failed_preparation_not_accepted) ... ok
+test_network_unknown_source_preserved_no_retry (__main__.LocalSubmission.test_network_unknown_source_preserved_no_retry) ... ok
+test_partial_preparation_manifest_rejected (__main__.LocalSubmission.test_partial_preparation_manifest_rejected) ... ok
+test_raw_output_mutation_rejected (__main__.LocalSubmission.test_raw_output_mutation_rejected) ... ok
+test_syntax_and_prepare_source_pin (__main__.LocalSubmission.test_syntax_and_prepare_source_pin) ... ok
+test_wrong_prefix_ordinal_rejected (__main__.LocalSubmission.test_wrong_prefix_ordinal_rejected) ... ok
+test_wrong_terminal_count_rejected (__main__.LocalSubmission.test_wrong_terminal_count_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 0.138s
+
+OK
