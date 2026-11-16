@@ -137,3 +137,7 @@ Hourly1740834 monitor and bounded read-only retries timedout. Local scutil repor
 ## Hourly observation — 2026-11-16 14:33 SGT
 
 At06:33:27UTC job1740834 RUNNING elapsed11:32:39; final11032/T1 step1 has125/128closed generations,126BEGIN,zeroCOMMITs. Firstthreepaths completebaseline/reload/actualexit and2COMMITseach. Total893/1024TRAIN,6/8COMMITs,noHOLD/ERROR. Nextcheck07:33UTC/15:33SGT. Receiptintake/MONITOR_1740834_20261116T063327Z.json.
+
+## Hourly observation — 2026-11-16 15:33 SGT
+
+At07:33:33UTC job1740834 RUNNING elapsed12:32:45; final11032/T1 step1COMMIT exists,step2has60/128closedgenerations,cumulative188complete/189BEGIN. Total956/1024TRAIN,7/8COMMITs,noHOLD/ERROR. Firstthreepaths baseline/reload/actualexitcomplete. Nextcheck08:33UTC/16:33SGT. Receiptintake/MONITOR_1740834_20261116T073333Z.json.
