@@ -1,0 +1,16 @@
+{
+  "checked_at_utc": "2026-11-16T10:23:52.350414+00:00",
+  "operation_source_sha256": "9375cbdf79b9c97a8810336b74bbb41a67b0cd3f78ebd3e4cf4eb67ac4694110",
+  "matching_processes": [
+    {
+      "pid": 2220262,
+      "status": [
+        "State:\tR (running)",
+        "VmRSS:\t  911008 kB",
+        "Threads:\t23"
+      ]
+    }
+  ],
+  "submission_directory_exists": false,
+  "submission_files": []
+}

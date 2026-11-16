@@ -1,6 +1,6 @@
 # SR-SATDOSE-1 准入报告（2026-11-14，PREFIX用户批准放行）
 
-Latest verified status (2026-11-16 17:46 Singapore): first-two1740834 COMPLETED0:0,13:56:17,all4paths1024TRAIN/8COMMITs/8freshworkerscomplete. Realindependentcanaryauditorran twicewithidenticalfullreport,2756files,all4pathsverified,pendingempty. CANARY_RESUME_PASS publishedandreverified SHAa195a4f80a4da2c0f52e6fe4d7260213e692b9c9bdb63fbeabfb54fc7bb1a655; CANARY_SPEC44a8db68c655bea987629ea210da1a32e268806f6e0c7b1506d6d77828d4b260. CPUaudit0model/optimizer/newgeneration. DEV2first11031/T0 preparationnowrunning; noDEV2GPUsubmittedyet. Step3+requiresallfourDEV2andriskgates; MAINremainssealed. Historicalobservationsfollow.
+最新实测（2026-11-16 18:29 新加坡）：first-two 作业1740834已COMPLETED/0:0，四路径1024条TRAIN、8次正式COMMIT和8个新进程退出全部完成。真实canary独立审核两次复算一致，已发布准入。首个step2 DEV（11031/T0、108条）实际准备与提交前核验通过，作业1741834已提交并放行，老师QoS、2PRO6000、3小时、no-requeue；当前PENDING(Resources)，0条生成。下一次常规巡检19:29。实际独立评分尚未执行；step3须四条DEV2全部完成并通过风险门禁，MAIN仍封存。下文保留历史观测。
 
 早期观测：用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 
