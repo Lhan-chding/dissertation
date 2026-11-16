@@ -203,3 +203,7 @@ At08:33:49UTC job1740834 RUNNING elapsed13:33:01. All1024TRAIN generationscomple
 - 13:58:11UTCactualsacctPENDING0:0/squeueResources,noendpointdirectory/attempts/incidents. Monitorintake/MONITOR_DEV_1742113_20261116T135811Z.json. Nexthourlycheck14:58UTC/22:58SGT: operations/satdose_monitor_trained_dev.py --job-id 1742113 --start-seed 11031 --arm T1 --step 2. Do notresubmit.
 - Onactualterminalcomplete108, useauditor7c29df29 withaboveabsoluteSUBMISSION.json/SHA,job1742113/start11031/T1/step2,newlocal sameendpoint/independent_audit,--execute. DefaultlocalplanwithactualreceiptalreadyPASS,noactualauditSSHyet. Ifdownloadunknownretainoldlocalerrorandusec168dcfcdownloadrecoveryagainstoriginalmanifestSHA,separatenewdir;donotrepublish/re-audit.
 - Afterrealindependentaudit/noHOLD,next11032/T0/2 then11032/T1/2,eachactualpreparation+submission+audit. Still8COMMIT/1024TRAIN; no step3orMAIN.
+
+## Hourly DEV observation — 2026-11-16 22:58 SGT
+
+At14:58:34UTCjob1742113stillPENDING(Priority),Elapsed0,noallocation/endpointdirectory/BEGIN/CAPTURE/COMPLETE/incidents. TeacherQoS/3h unchanged,notresubmitted. Receiptintake/MONITOR_DEV_1742113_20261116T145834Z.json. Nextregularcheck15:58UTC/23:58SGT. FirstDEV1741834independentlyaudited; remainingthreeDEV2pending. NoadditionalTRAINorMAIN. Prioractualsubmissionrecordcommitb6ad9cb13dc8d646e5a652d859543b649bc2519a pushedandremoteverified.

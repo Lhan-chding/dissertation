@@ -1,0 +1,44 @@
+{
+  "checked_at_utc": "2026-11-16T14:58:34.654587+00:00",
+  "job_id": 1742113,
+  "selection": {
+    "start_seed": 11031,
+    "arm": "T1",
+    "step": 2
+  },
+  "exists": false,
+  "sacct": {
+    "args": [
+      "sacct",
+      "-j",
+      "1742113",
+      "-n",
+      "-P",
+      "--format=JobID,State,Elapsed,ExitCode,NodeList"
+    ],
+    "returncode": 0,
+    "stdout": "1742113|PENDING|00:00:00|0:0|None assigned\n",
+    "stderr": ""
+  },
+  "squeue": {
+    "args": [
+      "squeue",
+      "-j",
+      "1742113",
+      "-h",
+      "-o",
+      "%i|%T|%M|%l|%q|%R"
+    ],
+    "returncode": 0,
+    "stdout": "1742113|PENDING|0:00|3:00:00|soujanya-poria-startfund-2026-03|(Priority)\n",
+    "stderr": ""
+  },
+  "generation_counts": {
+    "BEGIN": 0,
+    "CAPTURE": 0,
+    "COMPLETE": 0
+  },
+  "records": {},
+  "global_incidents": {},
+  "log_tail": {}
+}
