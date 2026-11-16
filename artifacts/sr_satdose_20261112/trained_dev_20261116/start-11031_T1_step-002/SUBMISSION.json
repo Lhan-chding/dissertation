@@ -1,0 +1,146 @@
+{
+  "raw_logs": {
+    "stderr": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/trained_dev_20261116/start-11031_T1_step-002/SUBMISSION.json.stderr.log",
+      "sha256": "a316b0cae0df18deb0e2f545685671be79a1658af03c8fd51d9ebc84e60fd370"
+    },
+    "stdout": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/trained_dev_20261116/start-11031_T1_step-002/SUBMISSION.json.stdout.log",
+      "sha256": "bc5a92a23854ecfc3056690f0beaa13bfda86099d9e3988c4bd08cfd8857a1cf"
+    }
+  },
+  "response": {
+    "receipt": {
+      "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/trained_dev_71018e5/start-11031/T1/step-002/RELEASE_RESULT.json",
+      "sha256": "9f16bbc5091f2cb84a03c56b8dc63e35b599f39bc20040a326352886b9cc43f2"
+    },
+    "result": {
+      "accounting": {
+        "argv": [
+          "sacct",
+          "-j",
+          "1742113",
+          "--noheader",
+          "--parsable2",
+          "--format=JobIDRaw,State%40,ExitCode,JobName%120,Account%40,QOS%80"
+        ],
+        "observed_at_utc": "2026-11-16T13:57:01.648821+00:00",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "accounting_parent_visible": false,
+      "completed_at_utc": "2026-11-16T13:57:01.649161+00:00",
+      "endpoint": {
+        "arm": "T1",
+        "responses": 108,
+        "start_seed": 11031,
+        "step": 2
+      },
+      "job_id": 1742113,
+      "job_name": "LH-SATDOSE-DEV-11031-T1-s02",
+      "other_jobs_modified": false,
+      "permission": "ONE_TRAINED_DEV_ENDPOINT_NO_TRAINING_OR_MAIN",
+      "release": {
+        "path": "execution_releases/TRAINED_DEV_71018e5_20261116_start-11031_T1_step-002_RELEASE.json",
+        "sha256": "920dc0f9b371ae92f617c2cbee0339b6eaf7e28ec407e22b9835245f8849e3f4"
+      },
+      "release_response": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/trained_dev_71018e5/start-11031/T1/step-002/RELEASE_RESPONSE.json",
+        "sha256": "9a1da583fa8da81e7c7d6b7328b604f456def21ddbbcf3735fdbcec5677e12af"
+      },
+      "scheduler": {
+        "fields": {
+          "Account": "rose",
+          "AccrueTime": "Unknown",
+          "AllocNode:Sid": "login-1:2732799",
+          "AllocTRES": "(null)",
+          "BatchFlag": "1",
+          "CPUs/Task": "8",
+          "Command": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/scheduling/run_trained_dev.sh",
+          "Contiguous": "0",
+          "CoreSpec": "*",
+          "Deadline": "N/A",
+          "DelayBoot": "00:00:00",
+          "Dependency": "(null)",
+          "EligibleTime": "Unknown",
+          "EndTime": "Unknown",
+          "ExcNodeList": "(null)",
+          "ExitCode": "0:0",
+          "Features": "(null)",
+          "GroupId": "varun024(295800338)",
+          "JobId": "1742113",
+          "JobName": "LH-SATDOSE-DEV-11031-T1-s02",
+          "JobState": "PENDING",
+          "LastSchedEval": "2026-11-16T13:57:01",
+          "Licenses": "(null)",
+          "MCS_label": "N/A",
+          "MinCPUsNode": "8",
+          "MinMemoryNode": "66G",
+          "MinTmpDiskNode": "0",
+          "Network": "(null)",
+          "Nice": "0",
+          "NodeList": "",
+          "NtasksPerN:B:S:C": "0:0:*:*",
+          "NumCPUs": "8",
+          "NumNodes": "1-1",
+          "NumTasks": "1",
+          "OverSubscribe": "OK",
+          "Partition": "cluster02",
+          "Power": "",
+          "Priority": "101",
+          "QOS": "soujanya-poria-startfund-2026-03",
+          "Reason": "None",
+          "Reboot": "0",
+          "ReqB:S:C:T": "0:0:*:*",
+          "ReqNodeList": "(null)",
+          "ReqTRES": "cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2",
+          "Requeue": "0",
+          "Restarts": "0",
+          "RunTime": "00:00:00",
+          "Scheduler": "Main",
+          "SecsPreSuspend": "0",
+          "Socks/Node": "*",
+          "StartTime": "Unknown",
+          "StdErr": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/trained_dev_71018e5/start-11031/T1/step-002/slurm-1742113.err",
+          "StdIn": "/dev/null",
+          "StdOut": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/trained_dev_71018e5/start-11031/T1/step-002/slurm-1742113.out",
+          "SubmitTime": "2026-11-16T13:57:01",
+          "SuspendTime": "None",
+          "TimeLimit": "03:00:00",
+          "TimeMin": "N/A",
+          "TresPerJob": "gres/gpu:pro6000:2",
+          "TresPerTask": "cpu:8",
+          "UserId": "varun024(295800338)",
+          "WorkDir": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5"
+        },
+        "observation": {
+          "argv": [
+            "scontrol",
+            "show",
+            "job",
+            "--oneliner",
+            "1742113"
+          ],
+          "observed_at_utc": "2026-11-16T13:57:01.562530+00:00",
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "JobId=1742113 JobName=LH-SATDOSE-DEV-11031-T1-s02 UserId=varun024(295800338) GroupId=varun024(295800338) MCS_label=N/A Priority=101 Nice=0 Account=rose QOS=soujanya-poria-startfund-2026-03 JobState=PENDING Reason=None Dependency=(null) Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=00:00:00 TimeLimit=03:00:00 TimeMin=N/A SubmitTime=2026-11-16T13:57:01 EligibleTime=Unknown AccrueTime=Unknown StartTime=Unknown EndTime=Unknown Deadline=N/A SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-11-16T13:57:01 Scheduler=Main Partition=cluster02 AllocNode:Sid=login-1:2732799 ReqNodeList=(null) ExcNodeList=(null) NodeList= NumNodes=1-1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2 AllocTRES=(null) Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=8 MinMemoryNode=66G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null) Command=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/scheduling/run_trained_dev.sh WorkDir=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5 StdErr=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/trained_dev_71018e5/start-11031/T1/step-002/slurm-1742113.err StdIn=/dev/null StdOut=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/trained_dev_71018e5/start-11031/T1/step-002/slurm-1742113.out Power= TresPerJob=gres/gpu:pro6000:2 TresPerTask=cpu:8 \n"
+        }
+      },
+      "status": "TRAINED_DEV_SUBMITTED_RELEASE_CONFIRMED",
+      "submission": {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/trained_dev_71018e5/start-11031/T1/step-002/SUBMISSION.json",
+        "sha256": "7333425312c4387cc5c175a28b7a9e0feef4612cd77975bfeb37a1557a7e24be"
+      }
+    }
+  },
+  "returncode": 0,
+  "source": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/trained_dev_20261116/start-11031_T1_step-002/SUBMISSION.json.source.py",
+    "sha256": "40c465fea1719dc13d31b390c7583180b00d5cd9d05e90addee7f04bcc307bf5"
+  },
+  "status": "SUBMISSION_RESPONSE_RETURNED",
+  "stderr": "EEE/ROSE Cluster 02\nConnecting to: login-1\n\nRelevant Guides:\n- https://github.com/NTUEEECluster/docs/blob/main/quickstart.md\n- https://github.com/NTUEEECluster/docs/blob/main/terms-n-conditions.md\n",
+  "stdout": "SATDOSE_SUBMIT_JSON={\"receipt\": {\"path\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/trained_dev_71018e5/start-11031/T1/step-002/RELEASE_RESULT.json\", \"sha256\": \"9f16bbc5091f2cb84a03c56b8dc63e35b599f39bc20040a326352886b9cc43f2\"}, \"result\": {\"accounting\": {\"argv\": [\"sacct\", \"-j\", \"1742113\", \"--noheader\", \"--parsable2\", \"--format=JobIDRaw,State%40,ExitCode,JobName%120,Account%40,QOS%80\"], \"observed_at_utc\": \"2026-11-16T13:57:01.648821+00:00\", \"returncode\": 0, \"stderr\": \"\", \"stdout\": \"\"}, \"accounting_parent_visible\": false, \"completed_at_utc\": \"2026-11-16T13:57:01.649161+00:00\", \"endpoint\": {\"arm\": \"T1\", \"responses\": 108, \"start_seed\": 11031, \"step\": 2}, \"job_id\": 1742113, \"job_name\": \"LH-SATDOSE-DEV-11031-T1-s02\", \"other_jobs_modified\": false, \"permission\": \"ONE_TRAINED_DEV_ENDPOINT_NO_TRAINING_OR_MAIN\", \"release\": {\"path\": \"execution_releases/TRAINED_DEV_71018e5_20261116_start-11031_T1_step-002_RELEASE.json\", \"sha256\": \"920dc0f9b371ae92f617c2cbee0339b6eaf7e28ec407e22b9835245f8849e3f4\"}, \"release_response\": {\"path\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/trained_dev_71018e5/start-11031/T1/step-002/RELEASE_RESPONSE.json\", \"sha256\": \"9a1da583fa8da81e7c7d6b7328b604f456def21ddbbcf3735fdbcec5677e12af\"}, \"scheduler\": {\"fields\": {\"Account\": \"rose\", \"AccrueTime\": \"Unknown\", \"AllocNode:Sid\": \"login-1:2732799\", \"AllocTRES\": \"(null)\", \"BatchFlag\": \"1\", \"CPUs/Task\": \"8\", \"Command\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/scheduling/run_trained_dev.sh\", \"Contiguous\": \"0\", \"CoreSpec\": \"*\", \"Deadline\": \"N/A\", \"DelayBoot\": \"00:00:00\", \"Dependency\": \"(null)\", \"EligibleTime\": \"Unknown\", \"EndTime\": \"Unknown\", \"ExcNodeList\": \"(null)\", \"ExitCode\": \"0:0\", \"Features\": \"(null)\", \"GroupId\": \"varun024(295800338)\", \"JobId\": \"1742113\", \"JobName\": \"LH-SATDOSE-DEV-11031-T1-s02\", \"JobState\": \"PENDING\", \"LastSchedEval\": \"2026-11-16T13:57:01\", \"Licenses\": \"(null)\", \"MCS_label\": \"N/A\", \"MinCPUsNode\": \"8\", \"MinMemoryNode\": \"66G\", \"MinTmpDiskNode\": \"0\", \"Network\": \"(null)\", \"Nice\": \"0\", \"NodeList\": \"\", \"NtasksPerN:B:S:C\": \"0:0:*:*\", \"NumCPUs\": \"8\", \"NumNodes\": \"1-1\", \"NumTasks\": \"1\", \"OverSubscribe\": \"OK\", \"Partition\": \"cluster02\", \"Power\": \"\", \"Priority\": \"101\", \"QOS\": \"soujanya-poria-startfund-2026-03\", \"Reason\": \"None\", \"Reboot\": \"0\", \"ReqB:S:C:T\": \"0:0:*:*\", \"ReqNodeList\": \"(null)\", \"ReqTRES\": \"cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2\", \"Requeue\": \"0\", \"Restarts\": \"0\", \"RunTime\": \"00:00:00\", \"Scheduler\": \"Main\", \"SecsPreSuspend\": \"0\", \"Socks/Node\": \"*\", \"StartTime\": \"Unknown\", \"StdErr\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/trained_dev_71018e5/start-11031/T1/step-002/slurm-1742113.err\", \"StdIn\": \"/dev/null\", \"StdOut\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/trained_dev_71018e5/start-11031/T1/step-002/slurm-1742113.out\", \"SubmitTime\": \"2026-11-16T13:57:01\", \"SuspendTime\": \"None\", \"TimeLimit\": \"03:00:00\", \"TimeMin\": \"N/A\", \"TresPerJob\": \"gres/gpu:pro6000:2\", \"TresPerTask\": \"cpu:8\", \"UserId\": \"varun024(295800338)\", \"WorkDir\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5\"}, \"observation\": {\"argv\": [\"scontrol\", \"show\", \"job\", \"--oneliner\", \"1742113\"], \"observed_at_utc\": \"2026-11-16T13:57:01.562530+00:00\", \"returncode\": 0, \"stderr\": \"\", \"stdout\": \"JobId=1742113 JobName=LH-SATDOSE-DEV-11031-T1-s02 UserId=varun024(295800338) GroupId=varun024(295800338) MCS_label=N/A Priority=101 Nice=0 Account=rose QOS=soujanya-poria-startfund-2026-03 JobState=PENDING Reason=None Dependency=(null) Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=00:00:00 TimeLimit=03:00:00 TimeMin=N/A SubmitTime=2026-11-16T13:57:01 EligibleTime=Unknown AccrueTime=Unknown StartTime=Unknown EndTime=Unknown Deadline=N/A SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-11-16T13:57:01 Scheduler=Main Partition=cluster02 AllocNode:Sid=login-1:2732799 ReqNodeList=(null) ExcNodeList=(null) NodeList= NumNodes=1-1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=8,mem=66G,node=1,billing=16,gres/gpu=2,gres/gpu:pro6000=2 AllocTRES=(null) Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=8 MinMemoryNode=66G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null) Command=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5/scheduling/run_trained_dev.sh WorkDir=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5 StdErr=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/trained_dev_71018e5/start-11031/T1/step-002/slurm-1742113.err StdIn=/dev/null StdOut=/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/trained_dev_71018e5/start-11031/T1/step-002/slurm-1742113.out Power= TresPerJob=gres/gpu:pro6000:2 TresPerTask=cpu:8 \\n\"}}, \"status\": \"TRAINED_DEV_SUBMITTED_RELEASE_CONFIRMED\", \"submission\": {\"path\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/trained_dev_71018e5/start-11031/T1/step-002/SUBMISSION.json\", \"sha256\": \"7333425312c4387cc5c175a28b7a9e0feef4612cd77975bfeb37a1557a7e24be\"}}}\n"
+}
