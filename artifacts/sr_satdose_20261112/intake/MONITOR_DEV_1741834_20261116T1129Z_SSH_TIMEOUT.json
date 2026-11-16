@@ -1,0 +1,50 @@
+{
+  "status": "SSH_CONNECTIVITY_BLOCKED_JOB_STATE_UNKNOWN",
+  "checked_at_utc": "2026-11-16T11:31:02.378243+00:00",
+  "job_id": 1741834,
+  "endpoint": {
+    "start_seed": 11031,
+    "arm": "T0",
+    "step": 2
+  },
+  "observations": [
+    {
+      "action": "Hourly monitor via satdose_monitor_trained_dev.py",
+      "returncode": 255,
+      "stderr": "ssh: connect to host 10.97.216.128 port 22: Operation timed out"
+    },
+    {
+      "action": "Read-only sacct retry",
+      "returncode": 255,
+      "stderr": "ssh: connect to host 10.97.216.128 port 22: Operation timed out"
+    },
+    {
+      "action": "scutil --nc list",
+      "service": "SD-WAN",
+      "state": "Disconnected"
+    },
+    {
+      "action": "scutil --nc start existing service",
+      "returncode": 0
+    },
+    {
+      "action": "scutil --nc status after start",
+      "state": "Disconnected"
+    },
+    {
+      "action": "CUA getState",
+      "error": "The Mac is locked and automatic unlock could not unlock it."
+    }
+  ],
+  "last_successful_job_observation": {
+    "path": "intake/MONITOR_DEV_1741834_20261116T102922Z.json",
+    "checked_at_utc": "2026-11-16T10:29:22.552117+00:00",
+    "scheduler_state": "PENDING",
+    "reason": "Resources",
+    "complete": 0
+  },
+  "meaning": "Connection failure only; not evidence of scheduler or experiment failure.",
+  "user_action_requested": "Unlock Mac and restore campus network/VPN, then reply restored.",
+  "job_mutations": 0,
+  "resubmissions": 0
+}
