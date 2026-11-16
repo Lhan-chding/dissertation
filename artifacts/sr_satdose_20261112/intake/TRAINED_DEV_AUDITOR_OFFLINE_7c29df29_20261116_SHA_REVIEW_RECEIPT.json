@@ -1,0 +1,58 @@
+{
+  "archived_test_source": {
+    "bytes": 7219,
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/TRAINED_DEV_AUDITOR_OFFLINE_7c29df29_20261116_TESTS.py",
+    "sha256": "0e01f7e118326c1cd5b933fa2a89648531e21fc4ed6465d8f41113986d7715b7"
+  },
+  "command": [
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python",
+    "-B",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/TRAINED_DEV_AUDITOR_OFFLINE_7c29df29_20261116_TESTS.py"
+  ],
+  "completed_at_utc": "2026-11-16T10:11:30.189019+00:00",
+  "cwd": "/Users/louis/Documents/ChatGPT/dissertation-ntu",
+  "expected_test_count": 18,
+  "independent_review": {
+    "reported_result": "No remaining blockers; independently reran all 18 offline tests successfully.",
+    "reported_reviewed_source_sha256": "7c29df29ab6115b322505c59e44bb666d1ef79bf0fe6048c111b25826e0227e7",
+    "scope": "Read-only static interface review and offline synthetic tests; no SSH or production audit.",
+    "source": "Collaboration message from /root/admission_review in current task"
+  },
+  "next_stage_authorized": false,
+  "observed_test_count": 18,
+  "operation_source": {
+    "bytes": 30854,
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/experiments/sr_satdose_20261112/operations/satdose_audit_trained_dev.py",
+    "sha256": "7c29df29ab6115b322505c59e44bb666d1ef79bf0fe6048c111b25826e0227e7"
+  },
+  "operation_source_unchanged": true,
+  "original_tmp_test_source": {
+    "bytes": 7219,
+    "path": "/tmp/satdose_audit_trained_dev_offline_tests.py",
+    "sha256": "0e01f7e118326c1cd5b933fa2a89648531e21fc4ed6465d8f41113986d7715b7"
+  },
+  "python_version": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+  "raw_logs": {
+    "stderr": {
+      "bytes": 2101,
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/TRAINED_DEV_AUDITOR_OFFLINE_7c29df29_20261116_STDERR.log",
+      "sha256": "c059fe6fa82db230830a9934865399b16b6b84aeac2e75b4196dcd79b37932d9"
+    },
+    "stdout": {
+      "bytes": 0,
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/TRAINED_DEV_AUDITOR_OFFLINE_7c29df29_20261116_STDOUT.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "returncode": 0,
+  "review_fixes": [
+    "Exact parent/.batch/.extern/unique .0 job-step allowlist; reject extra or duplicate model steps.",
+    "Verify canonical audit publication parent before mkdir.",
+    "Remove SLURM_CLUSTERS from read-only sacct environment.",
+    "Reject special files in original source inventory before import."
+  ],
+  "schema": "sr-satdose-dev-auditor-offline-test-evidence-v1",
+  "scope": "Synthetic local CPU boundary tests only; no SSH, scheduler access, server scoring, model generation, training, publication, or successor authority.",
+  "started_at_utc": "2026-11-16T10:11:30.137347+00:00",
+  "status": "OFFLINE_CHECKS_PASSED_NOT_SERVER_CERTIFICATION"
+}

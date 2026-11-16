@@ -1,0 +1,23 @@
+test_close_and_zero_optimizer_contract (__main__.Checks.test_close_and_zero_optimizer_contract) ... ok
+test_default_plan_has_no_subprocess (__main__.Checks.test_default_plan_has_no_subprocess) ... ok
+test_duplicate_or_nonfinite_json_rejected (__main__.Checks.test_duplicate_or_nonfinite_json_rejected) ... ok
+test_exact_worker_stdout_bound_even_for_negative (__main__.Checks.test_exact_worker_stdout_bound_even_for_negative) ... ok
+test_extra_or_duplicate_model_task_rejected (__main__.Checks.test_extra_or_duplicate_model_task_rejected) ... ok
+test_foreign_qos_job_or_endpoint_rejected (__main__.Checks.test_foreign_qos_job_or_endpoint_rejected) ... ok
+test_missing_task_step_rejected (__main__.Checks.test_missing_task_step_rejected) ... ok
+test_no_main_or_step24_endpoint (__main__.Checks.test_no_main_or_step24_endpoint) ... ok
+test_planned_exit2_scientific_hold_is_auditable (__main__.Checks.test_planned_exit2_scientific_hold_is_auditable) ... ok
+test_publication_symlink_rejected_before_mkdir (__main__.Checks.test_publication_symlink_rejected_before_mkdir) ... ok
+test_references_cannot_escape_or_use_short_hash (__main__.Checks.test_references_cannot_escape_or_use_short_hash) ... ok
+test_scheduler_cannot_be_redirected_by_slurm_clusters (__main__.Checks.test_scheduler_cannot_be_redirected_by_slurm_clusters) ... ok
+test_scientific_hold_does_not_waive_oom_or_signal (__main__.Checks.test_scientific_hold_does_not_waive_oom_or_signal) ... ok
+test_source_inventory_rejects_fifo_without_opening (__main__.Checks.test_source_inventory_rejects_fifo_without_opening) ... ok
+test_successful_normal_scheduler (__main__.Checks.test_successful_normal_scheduler) ... ok
+test_technical_worker_error_not_mislabeled_complete (__main__.Checks.test_technical_worker_error_not_mislabeled_complete) ... ok
+test_unexplained_exit2_rejected (__main__.Checks.test_unexplained_exit2_rejected) ... ok
+test_writeonce_keeps_original_negative_bytes (__main__.Checks.test_writeonce_keeps_original_negative_bytes) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 0.003s
+
+OK

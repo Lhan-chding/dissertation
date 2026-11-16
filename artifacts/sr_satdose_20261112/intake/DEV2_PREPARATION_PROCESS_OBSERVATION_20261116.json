@@ -1,0 +1,17 @@
+{
+  "status": "READ_ONLY_PROCESS_OBSERVATION_NOT_PREFLIGHT_RESULT",
+  "selection": {
+    "start_seed": 11031,
+    "arm": "T0",
+    "step": 2
+  },
+  "remote_code_sha256": "953e67fdab44589bd3c0e5e03ab3731ee97ed8c273278e888f91d0b3b11955d9",
+  "pid": 431106,
+  "state": "R (running)",
+  "threads": 23,
+  "rss_kib": 786184,
+  "elapsed_seconds": 522.2,
+  "cpu_seconds": 686.2,
+  "method": "Exact SHA match of the remote Python -c source, same UID; no other process details returned.",
+  "note": "Observed while preparation was pending. No termination, restart, source or environment change."
+}

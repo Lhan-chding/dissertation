@@ -1,0 +1,167 @@
+{
+  "response": {
+    "published": {
+      "OBSERVED_RISK": {
+        "path": "execution_releases/TRAINED_DEV_71018e5_20261116_start-11031_T0_step-002_OBSERVED_RISK.json",
+        "sha256": "03b4fdbda42f468c2a08f81b3cfae9da7bc5bac13448cf53e398b8e3c4611848"
+      },
+      "PREPARATION_CLAIM": {
+        "path": "execution_releases/TRAINED_DEV_71018e5_20261116_start-11031_T0_step-002_PREPARATION_CLAIM.json",
+        "sha256": "5f39959c636c86d5498a3ad7eafdcaf2c4538e813223f88bfbc7dd419bbef6b3"
+      },
+      "PREPARATION_RESULT": {
+        "path": "execution_releases/TRAINED_DEV_71018e5_20261116_start-11031_T0_step-002_PREPARATION_RESULT.json",
+        "sha256": "cea4a190f556c230154a8fd999d88982f4367404a9b3c0de178ac18221d6f7a9"
+      },
+      "RELEASE": {
+        "path": "execution_releases/TRAINED_DEV_71018e5_20261116_start-11031_T0_step-002_RELEASE.json",
+        "sha256": "c7931c9607d5090c52af76d052755ae8b68e7290a1b0a8b90e6c9b975767b61d"
+      },
+      "STORAGE_BUDGET": {
+        "path": "execution_releases/TRAINED_DEV_71018e5_20261116_start-11031_T0_step-002_STORAGE_BUDGET.json",
+        "sha256": "590329fe92aefb4738b576e52376f8bcd6df6bf75364e4773b2309cdd0caa08e"
+      }
+    },
+    "receipt": {
+      "path": "execution_releases/TRAINED_DEV_71018e5_20261116_start-11031_T0_step-002_PREPARATION_RESULT.json",
+      "sha256": "cea4a190f556c230154a8fd999d88982f4367404a9b3c0de178ac18221d6f7a9"
+    },
+    "result": {
+      "arm": "T0",
+      "committed_updates": 8,
+      "completed_at_utc": "2026-11-16T10:06:19.485871+00:00",
+      "completed_dev_endpoints": 2,
+      "observed_risk": {
+        "path": "execution_releases/TRAINED_DEV_71018e5_20261116_start-11031_T0_step-002_OBSERVED_RISK.json",
+        "sha256": "03b4fdbda42f468c2a08f81b3cfae9da7bc5bac13448cf53e398b8e3c4611848"
+      },
+      "original_execution_source_count": 19,
+      "original_source_count": 84,
+      "pending_required_dev": [
+        "11031/T0/2",
+        "11031/T1/2",
+        "11032/T0/2",
+        "11032/T1/2"
+      ],
+      "permission": "NO_MODEL_CALLS_OR_GPU_SUBMISSION",
+      "release": {
+        "path": "execution_releases/TRAINED_DEV_71018e5_20261116_start-11031_T0_step-002_RELEASE.json",
+        "sha256": "c7931c9607d5090c52af76d052755ae8b68e7290a1b0a8b90e6c9b975767b61d"
+      },
+      "responses": 108,
+      "start_seed": 11031,
+      "status": "TRAINED_DEV_RELEASE_CPU_PREFLIGHT_AND_STORAGE_OBSERVED",
+      "step": 2,
+      "storage": {
+        "budget": {
+          "path": "execution_releases/TRAINED_DEV_71018e5_20261116_start-11031_T0_step-002_STORAGE_BUDGET.json",
+          "sha256": "590329fe92aefb4738b576e52376f8bcd6df6bf75364e4773b2309cdd0caa08e"
+        },
+        "checked_at_utc": "2026-11-16T10:06:19.423095+00:00",
+        "observations": [
+          {
+            "effective_available_bytes": 118904400065,
+            "filesystem_available_bytes": 196404676919296,
+            "observed_at_utc": "2026-11-16T10:06:19.417936+00:00",
+            "quota_observations": [
+              {
+                "observed_at_utc": "2026-11-16T10:06:19.416762+00:00",
+                "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases",
+                "status": "NO_LOCAL_LIMIT_ENODATA"
+              },
+              {
+                "observed_at_utc": "2026-11-16T10:06:19.416995+00:00",
+                "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1",
+                "status": "NO_LOCAL_LIMIT_ENODATA"
+              },
+              {
+                "observed_at_utc": "2026-11-16T10:06:19.417130+00:00",
+                "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112",
+                "status": "NO_LOCAL_LIMIT_ENODATA"
+              },
+              {
+                "observed_at_utc": "2026-11-16T10:06:19.417250+00:00",
+                "path": "/projects/_ssd/varunssd/louis-ssvc",
+                "status": "NO_LOCAL_LIMIT_ENODATA"
+              },
+              {
+                "available_bytes": 118904400065,
+                "max_bytes": 750000000000,
+                "observed_at_utc": "2026-11-16T10:06:19.417366+00:00",
+                "path": "/projects/_ssd/varunssd",
+                "rbytes": 631095599935,
+                "status": "POSITIVE_QUOTA"
+              }
+            ]
+          },
+          {
+            "effective_available_bytes": 118904400065,
+            "filesystem_available_bytes": 196404676919296,
+            "observed_at_utc": "2026-11-16T10:06:19.423092+00:00",
+            "quota_observations": [
+              {
+                "observed_at_utc": "2026-11-16T10:06:19.422185+00:00",
+                "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases",
+                "status": "NO_LOCAL_LIMIT_ENODATA"
+              },
+              {
+                "observed_at_utc": "2026-11-16T10:06:19.422404+00:00",
+                "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1",
+                "status": "NO_LOCAL_LIMIT_ENODATA"
+              },
+              {
+                "observed_at_utc": "2026-11-16T10:06:19.422537+00:00",
+                "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112",
+                "status": "NO_LOCAL_LIMIT_ENODATA"
+              },
+              {
+                "observed_at_utc": "2026-11-16T10:06:19.422647+00:00",
+                "path": "/projects/_ssd/varunssd/louis-ssvc",
+                "status": "NO_LOCAL_LIMIT_ENODATA"
+              },
+              {
+                "available_bytes": 118904400065,
+                "max_bytes": 750000000000,
+                "observed_at_utc": "2026-11-16T10:06:19.422738+00:00",
+                "path": "/projects/_ssd/varunssd",
+                "rbytes": 631095599935,
+                "status": "POSITIVE_QUOTA"
+              }
+            ]
+          }
+        ],
+        "permission": "TRAINED_DEV_ONLY_NO_TRAINING_OR_MAIN",
+        "probe": {
+          "bytes_written": 44,
+          "directory_fsync": true,
+          "file_fsync": true,
+          "probe_removed": true
+        },
+        "schema": "sr-satdose-trained-dev-storage-v1"
+      },
+      "storage_budget": {
+        "path": "execution_releases/TRAINED_DEV_71018e5_20261116_start-11031_T0_step-002_STORAGE_BUDGET.json",
+        "sha256": "590329fe92aefb4738b576e52376f8bcd6df6bf75364e4773b2309cdd0caa08e"
+      },
+      "storage_limit": "Snapshot, not reservation. Future controller must rerun on actual endpoint directory.",
+      "storage_observation_directory": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases"
+    }
+  },
+  "returncode": 0,
+  "script_sha256": "188b510417dd648971ee1216d6468a0fb5b0d4297fb5f95158cd1ac65b468b88",
+  "source": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/trained_dev_20261116/start-11031_T0_step-002/PREPARATION.json.source.py",
+    "sha256": "188b510417dd648971ee1216d6468a0fb5b0d4297fb5f95158cd1ac65b468b88"
+  },
+  "status": "REMOTE_PREPARATION_RETURNED",
+  "stderr": "EEE/ROSE Cluster 02\nConnecting to: login-2\n\nRelevant Guides:\n- https://github.com/NTUEEECluster/docs/blob/main/quickstart.md\n- https://github.com/NTUEEECluster/docs/blob/main/terms-n-conditions.md\n",
+  "stderr_file": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/trained_dev_20261116/start-11031_T0_step-002/PREPARATION.json.stderr.log",
+    "sha256": "94a6025655c236a84f68a085ec442a2006ac62d606a74e8a9a483dce3d299705"
+  },
+  "stdout": "SATDOSE_PREPARE_JSON={\"published\": {\"OBSERVED_RISK\": {\"path\": \"execution_releases/TRAINED_DEV_71018e5_20261116_start-11031_T0_step-002_OBSERVED_RISK.json\", \"sha256\": \"03b4fdbda42f468c2a08f81b3cfae9da7bc5bac13448cf53e398b8e3c4611848\"}, \"PREPARATION_CLAIM\": {\"path\": \"execution_releases/TRAINED_DEV_71018e5_20261116_start-11031_T0_step-002_PREPARATION_CLAIM.json\", \"sha256\": \"5f39959c636c86d5498a3ad7eafdcaf2c4538e813223f88bfbc7dd419bbef6b3\"}, \"PREPARATION_RESULT\": {\"path\": \"execution_releases/TRAINED_DEV_71018e5_20261116_start-11031_T0_step-002_PREPARATION_RESULT.json\", \"sha256\": \"cea4a190f556c230154a8fd999d88982f4367404a9b3c0de178ac18221d6f7a9\"}, \"RELEASE\": {\"path\": \"execution_releases/TRAINED_DEV_71018e5_20261116_start-11031_T0_step-002_RELEASE.json\", \"sha256\": \"c7931c9607d5090c52af76d052755ae8b68e7290a1b0a8b90e6c9b975767b61d\"}, \"STORAGE_BUDGET\": {\"path\": \"execution_releases/TRAINED_DEV_71018e5_20261116_start-11031_T0_step-002_STORAGE_BUDGET.json\", \"sha256\": \"590329fe92aefb4738b576e52376f8bcd6df6bf75364e4773b2309cdd0caa08e\"}}, \"receipt\": {\"path\": \"execution_releases/TRAINED_DEV_71018e5_20261116_start-11031_T0_step-002_PREPARATION_RESULT.json\", \"sha256\": \"cea4a190f556c230154a8fd999d88982f4367404a9b3c0de178ac18221d6f7a9\"}, \"result\": {\"arm\": \"T0\", \"committed_updates\": 8, \"completed_at_utc\": \"2026-11-16T10:06:19.485871+00:00\", \"completed_dev_endpoints\": 2, \"observed_risk\": {\"path\": \"execution_releases/TRAINED_DEV_71018e5_20261116_start-11031_T0_step-002_OBSERVED_RISK.json\", \"sha256\": \"03b4fdbda42f468c2a08f81b3cfae9da7bc5bac13448cf53e398b8e3c4611848\"}, \"original_execution_source_count\": 19, \"original_source_count\": 84, \"pending_required_dev\": [\"11031/T0/2\", \"11031/T1/2\", \"11032/T0/2\", \"11032/T1/2\"], \"permission\": \"NO_MODEL_CALLS_OR_GPU_SUBMISSION\", \"release\": {\"path\": \"execution_releases/TRAINED_DEV_71018e5_20261116_start-11031_T0_step-002_RELEASE.json\", \"sha256\": \"c7931c9607d5090c52af76d052755ae8b68e7290a1b0a8b90e6c9b975767b61d\"}, \"responses\": 108, \"start_seed\": 11031, \"status\": \"TRAINED_DEV_RELEASE_CPU_PREFLIGHT_AND_STORAGE_OBSERVED\", \"step\": 2, \"storage\": {\"budget\": {\"path\": \"execution_releases/TRAINED_DEV_71018e5_20261116_start-11031_T0_step-002_STORAGE_BUDGET.json\", \"sha256\": \"590329fe92aefb4738b576e52376f8bcd6df6bf75364e4773b2309cdd0caa08e\"}, \"checked_at_utc\": \"2026-11-16T10:06:19.423095+00:00\", \"observations\": [{\"effective_available_bytes\": 118904400065, \"filesystem_available_bytes\": 196404676919296, \"observed_at_utc\": \"2026-11-16T10:06:19.417936+00:00\", \"quota_observations\": [{\"observed_at_utc\": \"2026-11-16T10:06:19.416762+00:00\", \"path\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases\", \"status\": \"NO_LOCAL_LIMIT_ENODATA\"}, {\"observed_at_utc\": \"2026-11-16T10:06:19.416995+00:00\", \"path\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1\", \"status\": \"NO_LOCAL_LIMIT_ENODATA\"}, {\"observed_at_utc\": \"2026-11-16T10:06:19.417130+00:00\", \"path\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112\", \"status\": \"NO_LOCAL_LIMIT_ENODATA\"}, {\"observed_at_utc\": \"2026-11-16T10:06:19.417250+00:00\", \"path\": \"/projects/_ssd/varunssd/louis-ssvc\", \"status\": \"NO_LOCAL_LIMIT_ENODATA\"}, {\"available_bytes\": 118904400065, \"max_bytes\": 750000000000, \"observed_at_utc\": \"2026-11-16T10:06:19.417366+00:00\", \"path\": \"/projects/_ssd/varunssd\", \"rbytes\": 631095599935, \"status\": \"POSITIVE_QUOTA\"}]}, {\"effective_available_bytes\": 118904400065, \"filesystem_available_bytes\": 196404676919296, \"observed_at_utc\": \"2026-11-16T10:06:19.423092+00:00\", \"quota_observations\": [{\"observed_at_utc\": \"2026-11-16T10:06:19.422185+00:00\", \"path\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases\", \"status\": \"NO_LOCAL_LIMIT_ENODATA\"}, {\"observed_at_utc\": \"2026-11-16T10:06:19.422404+00:00\", \"path\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1\", \"status\": \"NO_LOCAL_LIMIT_ENODATA\"}, {\"observed_at_utc\": \"2026-11-16T10:06:19.422537+00:00\", \"path\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112\", \"status\": \"NO_LOCAL_LIMIT_ENODATA\"}, {\"observed_at_utc\": \"2026-11-16T10:06:19.422647+00:00\", \"path\": \"/projects/_ssd/varunssd/louis-ssvc\", \"status\": \"NO_LOCAL_LIMIT_ENODATA\"}, {\"available_bytes\": 118904400065, \"max_bytes\": 750000000000, \"observed_at_utc\": \"2026-11-16T10:06:19.422738+00:00\", \"path\": \"/projects/_ssd/varunssd\", \"rbytes\": 631095599935, \"status\": \"POSITIVE_QUOTA\"}]}], \"permission\": \"TRAINED_DEV_ONLY_NO_TRAINING_OR_MAIN\", \"probe\": {\"bytes_written\": 44, \"directory_fsync\": true, \"file_fsync\": true, \"probe_removed\": true}, \"schema\": \"sr-satdose-trained-dev-storage-v1\"}, \"storage_budget\": {\"path\": \"execution_releases/TRAINED_DEV_71018e5_20261116_start-11031_T0_step-002_STORAGE_BUDGET.json\", \"sha256\": \"590329fe92aefb4738b576e52376f8bcd6df6bf75364e4773b2309cdd0caa08e\"}, \"storage_limit\": \"Snapshot, not reservation. Future controller must rerun on actual endpoint directory.\", \"storage_observation_directory\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases\"}}\n",
+  "stdout_file": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/trained_dev_20261116/start-11031_T0_step-002/PREPARATION.json.stdout.log",
+    "sha256": "fd6ed88cc18b981ded8c4b33a69751f579376affe9b1f45f0b7b2cc1c0969983"
+  }
+}
