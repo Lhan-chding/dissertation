@@ -1,0 +1,37 @@
+{
+  "checked_at_utc": "2026-11-16T19:04:44.118251+00:00",
+  "job_id": 1742309,
+  "endpoint": {
+    "start_seed": 11032,
+    "arm": "T0",
+    "step": 2
+  },
+  "current_job_state": "UNKNOWN_NETWORK_UNREACHABLE",
+  "failed_observation_at_utc": "2026-11-16T19:03Z",
+  "ssh_attempts": [
+    {
+      "operation": "satdose_monitor_trained_dev.py",
+      "exit_code": 255,
+      "stderr": "ssh: connect to host 10.97.216.128 port 22: Network is unreachable"
+    },
+    {
+      "operation": "read-only sacct retry",
+      "exit_code": 255,
+      "stderr": "ssh: connect to host 10.97.216.128 port 22: Network is unreachable"
+    }
+  ],
+  "vpn_service": "7098852B-CD75-448F-B1F5-3751311BD253",
+  "vpn_name": "SD-WAN",
+  "vpn_status_before": "Disconnected",
+  "existing_connection_start_exit_code": 0,
+  "vpn_status_after": "Disconnected",
+  "cua_observation": "The Mac is locked and automatic unlock could not unlock it.",
+  "last_successful_monitor": "MONITOR_DEV_1742309_20261116T180337Z.json",
+  "last_successful_state": "RUNNING",
+  "last_complete_responses": 19,
+  "required_responses": 108,
+  "job_mutations": false,
+  "audit_invoked": false,
+  "successor_submitted": false,
+  "user_requested_to_unlock_and_restore_vpn": true
+}

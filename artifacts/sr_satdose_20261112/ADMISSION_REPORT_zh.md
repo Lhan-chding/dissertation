@@ -1,6 +1,6 @@
 # SR-SATDOSE-1 准入报告（2026-11-14，PREFIX用户批准放行）
 
-Latest verified status (2026-11-17 01:03 SGT): SSH is available. Third DEV2 job1742309 (11032/T0/step2) was submitted and released once at01:00SGT, using teacher QoS,2PRO6000,3h,no-requeue. At01:03:49 it is PENDING(Priority),0/108 generations,no allocation or incidents. Two of four DEV2 endpoints are independently audited without HOLD;11032/T1/2 has not been submitted. The new exact-bundle audit driver passed its local plan against the actual1742309 submission receipt; actual audit awaits terminal completion. Still8/96 formal updates; no step3 or MAIN. Historical observations follow.
+Latest connection observation (2026-11-17 03:03 SGT): Two SSH attempts failed with Network is unreachable; SD-WAN remains Disconnected after starting the existing connection, and Maclocked prevents client operation. Current job1742309 state is UNKNOWN. Last successful observation02:03:37SGT: RUNNING on gpu-pro6000-5,19/108 complete(20BEGIN),no global incidents. Two of four DEV2 endpoints are independently audited without HOLD; third audit and fourth DEV2 not started. Still8/96 formal updates; no step3 or MAIN. Awaiting user VPN restoration; no job resubmission or cancellation. Historical observations follow.
 
 早期观测：用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 

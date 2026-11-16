@@ -234,3 +234,14 @@ At14:58:34UTCjob1742113stillPENDING(Priority),Elapsed0,noallocation/endpointdire
 - Actual submit40c465fe completed successfully, job1742309 for11032/T0/step2,108responses. TeacherQoS/rose/cluster02/2PRO6000/8CPU66G/3h/no-requeue. Exactlyoneheldsubmission and ownrelease at17:00:03UTC; nootherjobsmodified. LocalSUBMISSION.json SHA74f74df2a80467d2b37eadf867fa6f802ff91f19635c7f27f9c51b9fcf749e50. RemoteRELEASE_RESULT ca7efc22933776b2631e623136e05624f54b1deb48a573998c561c649366b28e.
 - Monitors17:00:32 and17:03:49UTC confirm PENDING(Priority),zeroBEGIN/CAPTURE/COMPLETE,noallocation/endpoint/incidents. Connectionavailable. Receiptsintake/MONITOR_DEV_1742309_20261116T170032Z.json and170349Z.json. Nextregularcheck18:03UTC/02:03SGT. Noresubmission.
 - New auditdriver a9c4dae3 defaultlocalplan passed with actualsubmission/SHA/job1742309,11032,T0,2; planned new local directory sameendpoint/independent_audit_bundle. NoactualauditSSH. Once108completeandallSlurmstepsterminalsuccess, execute this driver once; exact7c29originalaudit followedby c168singlebundle. Fullactualrisk/noHOLD then next11032/T1/2 preparation. All4DEV2 required beforecontinuation3-8.
+
+
+## Hourly DEV observation - 2026-11-17 02:03 SGT
+
+At18:03:37UTC job1742309 RUNNING on gpu-pro6000-5, elapsed00:17:38,teacherQoS unchanged. 20BEGIN/19CAPTURE/19COMPLETE of108, no globalincidents. Claim ATTEMPTED_UNKNOWN_NO_RETRY is the active attempt marker, not a completion record. Log tail contains min_new_tokens/min_length precedence warnings; no terminal error observed. Receipt intake/MONITOR_DEV_1742309_20261116T180337Z.json. Nextregularcheck19:03UTC/03:03SGT. Original audit not yet executed; no successor submitted.
+
+
+## VPN interruption - 2026-11-17 03:03 SGT
+
+- Hourly job1742309 monitor and separate read-only sacct both returned255/Network is unreachable. SD-WAN Disconnected; starting existing service returned0 but status remainedDisconnected. CUA confirmed Maclocked/automaticunlockfailed; CUA completion recorded. User asked via asyncquestion to unlock and restoreVPN. CurrentjobstateUNKNOWN, notfailure/completion. Lastsuccess18:03:37UTC RUNNING,19/108,20BEGIN,noincidents.
+- Evidence intake/MONITOR_DEV_1742309_20261116T1903Z_NETWORK_UNREACHABLE.json. Noaudit,successor,resubmission or cancellation. Onrestore run monitor --job-id1742309 --start-seed11032 --armT0 --step2 (spaces afterflags). Ifactual108completeandallSlurmstepsterminalsuccess, runnewdriver a9c4dae3 once withactualSUBMISSION.json SHA74f74df2a80467d2b37eadf867fa6f802ff91f19635c7f27f9c51b9fcf749e50 andNEW endpoint/independent_audit_bundle. Thenfullrisk/noHOLD before11032/T1/2 preparation.
