@@ -1,6 +1,6 @@
 # SR-SATDOSE-1 准入报告（2026-11-14，PREFIX用户批准放行）
 
-Latest verified status (2026-11-16 16:33 Singapore): job1740834 RUNNING on gpu-pro6000-12, teacherQoS/2PRO6000, elapsed13:33:01 at08:33:49UTC. All1024/1024TRAIN generationscomplete;7/8formalCOMMITs present. Final11032/T1 step2active staging remains withoutCOMMIT; itsbaseline/reload notyetcomplete. Firstthreepaths completedbothstepsandfreshreload/actualexit. NoHOLD/ERROR. Waitlastupdateandactualprocesscompletion beforeindependentfour-pathcanary; DEV2/step3+/MAIN remain gated. Historicalobservationsfollow.
+Latest verified status (2026-11-16 17:46 Singapore): first-two1740834 COMPLETED0:0,13:56:17,all4paths1024TRAIN/8COMMITs/8freshworkerscomplete. Realindependentcanaryauditorran twicewithidenticalfullreport,2756files,all4pathsverified,pendingempty. CANARY_RESUME_PASS publishedandreverified SHAa195a4f80a4da2c0f52e6fe4d7260213e692b9c9bdb63fbeabfb54fc7bb1a655; CANARY_SPEC44a8db68c655bea987629ea210da1a32e268806f6e0c7b1506d6d77828d4b260. CPUaudit0model/optimizer/newgeneration. DEV2first11031/T0 preparationnowrunning; noDEV2GPUsubmittedyet. Step3+requiresallfourDEV2andriskgates; MAINremainssealed. Historicalobservationsfollow.
 
 早期观测：用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 

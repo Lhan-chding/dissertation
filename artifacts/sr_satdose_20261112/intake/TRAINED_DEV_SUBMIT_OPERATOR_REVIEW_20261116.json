@@ -1,0 +1,26 @@
+{
+  "status": "OFFLINE_TESTS_PASSED_NO_REAL_SSH_OR_SCHEDULER",
+  "source": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/experiments/sr_satdose_20261112/operations/satdose_submit_trained_dev.py",
+    "sha256": "40c465fea1719dc13d31b390c7583180b00d5cd9d05e90addee7f04bcc307bf5"
+  },
+  "checks": [
+    "outer_and_remote_compile",
+    "default_plan_no_subprocess",
+    "default_plan_no_intent_write",
+    "source_bytes_and_intent_exist_before_mock_remote_call",
+    "mock_return255_preserved_unknown",
+    "stdout_original_invalid_utf8_bytes_preserved",
+    "stderr_original_bytes_preserved",
+    "receipt_source_sha_matches_final_script",
+    "same_intent_retry_rejected",
+    "mock_called_exactly_once"
+  ],
+  "real_ssh_calls": 0,
+  "real_scheduler_calls": 0,
+  "server_publications": 0,
+  "fixture_note": "Explicitly fabricated local test receipt only; never sent remotely or claimed as experiment evidence.",
+  "fake_preparation_path": "/private/var/folders/93/qfn6dtvs5bnf2dqq42_56y780000gn/T/satdose-submit-offline-only-llrobm7z/fake-preparation.json",
+  "mock_result_path": "/private/var/folders/93/qfn6dtvs5bnf2dqq42_56y780000gn/T/satdose-submit-final-offline-9f35kj2r/mock-submission.json",
+  "independent_review": "admission_review confirmed source SHA and offline scontrol identity/resource rejection checks; no remaining blocker"
+}
