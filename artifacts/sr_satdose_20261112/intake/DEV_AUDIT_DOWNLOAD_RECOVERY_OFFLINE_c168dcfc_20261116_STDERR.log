@@ -1,0 +1,23 @@
+test_bad_download_retains_full_raw_output_and_does_not_retry (__main__.Recovery.test_bad_download_retains_full_raw_output_and_does_not_retry) ... ok
+test_compile (__main__.Recovery.test_compile) ... ok
+test_complete_package_pending_and_unknown_preserved (__main__.Recovery.test_complete_package_pending_and_unknown_preserved) ... ok
+test_corrupt_bytes_and_base64_rejected (__main__.Recovery.test_corrupt_bytes_and_base64_rejected) ... ok
+test_default_plan_does_not_start_process_or_create_output (__main__.Recovery.test_default_plan_does_not_start_process_or_create_output) ... ok
+test_duplicate_and_nonfinite_json_rejected (__main__.Recovery.test_duplicate_and_nonfinite_json_rejected) ... ok
+test_interruption_retains_partial_streams_and_error_without_retry (__main__.Recovery.test_interruption_retains_partial_streams_and_error_without_retry) ... ok
+test_local_symlink_or_old_attempt_child_rejected_before_network (__main__.Recovery.test_local_symlink_or_old_attempt_child_rejected_before_network) ... ok
+test_manifest_escape_short_hash_boolean_length_rejected (__main__.Recovery.test_manifest_escape_short_hash_boolean_length_rejected) ... ok
+test_manifest_refs_and_complete_risk_objects_checked_after_hashes (__main__.Recovery.test_manifest_refs_and_complete_risk_objects_checked_after_hashes) ... ok
+test_manifest_wrong_hash_endpoint_job_missing_or_extra_file_rejected (__main__.Recovery.test_manifest_wrong_hash_endpoint_job_missing_or_extra_file_rejected) ... ok
+test_nonzero_exit_retains_raw_even_when_json_looks_valid (__main__.Recovery.test_nonzero_exit_retains_raw_even_when_json_looks_valid) ... ok
+test_remote_reader_exact_ten_no_write_or_subprocess (__main__.Recovery.test_remote_reader_exact_ten_no_write_or_subprocess) ... ok
+test_remote_symlink_and_fifo_rejected (__main__.Recovery.test_remote_symlink_and_fifo_rejected) ... ok
+test_scientific_hold_is_recovered_without_authority (__main__.Recovery.test_scientific_hold_is_recovered_without_authority) ... ok
+test_semantic_failure_retains_decoded_artifacts (__main__.Recovery.test_semantic_failure_retains_decoded_artifacts) ... ok
+test_single_read_only_call_complete_exact_download (__main__.Recovery.test_single_read_only_call_complete_exact_download) ... ok
+test_valid_bundle_with_bad_file_hash_retains_all_raw_bytes (__main__.Recovery.test_valid_bundle_with_bad_file_hash_retains_all_raw_bytes) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 0.044s
+
+OK

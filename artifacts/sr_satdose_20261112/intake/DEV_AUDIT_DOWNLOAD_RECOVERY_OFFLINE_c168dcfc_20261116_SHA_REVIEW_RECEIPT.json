@@ -1,0 +1,52 @@
+{
+  "command": [
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python",
+    "-B",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/experiments/sr_satdose_20261112/operations/tests/test_recover_dev_audit_download.py"
+  ],
+  "completed_at_utc": "2026-11-16T13:24:13.926396+00:00",
+  "cwd": "/Users/louis/Documents/ChatGPT/dissertation-ntu",
+  "expected_test_count": 18,
+  "independent_review": {
+    "reported_result": "Read-only source/interface review passed with no blockers; reviewer independently reran the original 15 tests and verified eight already-downloaded real files against the original manifest. Three additional failure-retention tests were added afterward without changing the operation source.",
+    "reported_reviewed_source_sha256": "c168dcfc27f351a49d31a38c4680e8772271b6c08dea184a10995175722d54de",
+    "scope": "No SSH; the missing RISK_REPLAY and SCHEDULER were not synthesized or restored by this review.",
+    "source": "Collaboration message from /root/admission_review in current task"
+  },
+  "next_stage_authorized": false,
+  "observed_test_count": 18,
+  "operation_source": {
+    "bytes": 23553,
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/experiments/sr_satdose_20261112/operations/satdose_recover_dev_audit_download.py",
+    "sha256": "c168dcfc27f351a49d31a38c4680e8772271b6c08dea184a10995175722d54de"
+  },
+  "original_auditor_modified": false,
+  "original_auditor_sha256": "7c29df29ab6115b322505c59e44bb666d1ef79bf0fe6048c111b25826e0227e7",
+  "python_version": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+  "raw_logs": {
+    "stderr": {
+      "bytes": 2473,
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/DEV_AUDIT_DOWNLOAD_RECOVERY_OFFLINE_c168dcfc_20261116_STDERR.log",
+      "sha256": "6715a3d5c594b0d557fece7d692c4c96d9e9e59381736187a00a446721af78ea"
+    },
+    "stdout": {
+      "bytes": 0,
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/DEV_AUDIT_DOWNLOAD_RECOVERY_OFFLINE_c168dcfc_20261116_STDOUT.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "returncode": 0,
+  "root_validation": {
+    "reported_result": "Parent independently reran all current 18 tests successfully before starting actual read-only recovery.",
+    "source": "Parent /root message in current task"
+  },
+  "schema": "sr-satdose-download-recovery-offline-evidence-v1",
+  "scope": "Synthetic offline CPU tests only. This archive invocation performed no SSH, server writes, audit rerun, model calls, training, or successor admission.",
+  "started_at_utc": "2026-11-16T13:24:13.829254+00:00",
+  "status": "OFFLINE_CHECKS_PASSED_NOT_SERVER_CERTIFICATION",
+  "test_source": {
+    "bytes": 16891,
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/experiments/sr_satdose_20261112/operations/tests/test_recover_dev_audit_download.py",
+    "sha256": "de3c71af9e59fe2c7a9f96359d530cb62ff7538b372c43fda30456dcae7790b2"
+  }
+}
