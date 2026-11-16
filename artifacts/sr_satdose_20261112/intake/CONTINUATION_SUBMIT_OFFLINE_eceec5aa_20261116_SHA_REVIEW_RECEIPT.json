@@ -1,0 +1,113 @@
+{
+  "schema": "sr-satdose-operator-offline-verification-v1",
+  "status": "OFFLINE_CHECKS_AND_INDEPENDENT_REVIEW_PASSED",
+  "created_at_utc": "2026-11-16T10:18:14.443264+00:00",
+  "operator": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/experiments/sr_satdose_20261112/operations/satdose_submit_continuation.py",
+    "sha256": "eceec5aab4de56b53d8e1483d2e49093e28f4048b2ef818302bb3db499fb0f94",
+    "bytes": 28948
+  },
+  "tests": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/experiments/sr_satdose_20261112/operations/tests/test_submit_continuation.py",
+    "sha256": "d7c5521f4aebb83da07b6e19b73c50d068335923af0a67a6ec40fe357b363869",
+    "bytes": 16072
+  },
+  "command": [
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python",
+    "-B",
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/experiments/sr_satdose_20261112/operations/tests/test_submit_continuation.py"
+  ],
+  "returncode": 0,
+  "checks": 21,
+  "stdout": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/CONTINUATION_SUBMIT_OFFLINE_eceec5aa_20261116_STDOUT.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "stderr": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/CONTINUATION_SUBMIT_OFFLINE_eceec5aa_20261116_STDERR.log",
+    "sha256": "145ba161ecb51cee58d4a29b1043840ed8458559c07665370cf28ff55372645e",
+    "bytes": 2524
+  },
+  "independent_review": {
+    "reviewer": "admission_review",
+    "result": "NO_REMAINING_RELEASE_BLOCKER",
+    "independently_reran_checks": 21,
+    "operator_sha256": "eceec5aab4de56b53d8e1483d2e49093e28f4048b2ef818302bb3db499fb0f94",
+    "tests_sha256": "d7c5521f4aebb83da07b6e19b73c50d068335923af0a67a6ec40fe357b363869",
+    "observed_message": "Independent read-only review confirmed actual preparer receipt shape, c.read(ref), preflight and authority.verify signatures, wrapper five arguments, prior DEV populations 6/10/14, future-pending risk semantics, and held durable submission handoff. Reviewer reported 21 tests passing and diff --check passing."
+  },
+  "frozen_api_bindings": {
+    "preparer_source_sha256": "737954eb256b1c29f5a381e864d3a1bc74a5fa1a8e95ab4a3373c2e66ad151c2",
+    "original_train_source_files": 84,
+    "original_execution_source_keys": 19,
+    "original_train_release": {
+      "path": "execution_releases/FIRST_TWO_RELEASE_71018e5.json",
+      "sha256": "22f3b7b260670628398154652455520cd25169234f66a827d3d117def924438f"
+    },
+    "original_code": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/train_code_71018e5",
+    "preparation_local_shape": "publication.report / publication.preflight / raw_logs / local_operation_source",
+    "calls": [
+      "continuation_control.read(root_reference)",
+      "continuation_control.preflight(release_path,release_sha,start,arm,first)",
+      "ContinuingAdmission.verify(root,identity,design_freeze_sha256,target_step,sampled_endpoint)",
+      "run_continuation.sh release_path release_sha start_seed arm first_step"
+    ]
+  },
+  "scope": {
+    "chunks": [
+      [
+        3,
+        8
+      ],
+      [
+        9,
+        16
+      ],
+      [
+        17,
+        24
+      ]
+    ],
+    "prior_dev_endpoint_counts": [
+      6,
+      10,
+      14
+    ],
+    "qos": "soujanya-poria-startfund-2026-03",
+    "account": "rose",
+    "partition": "cluster02",
+    "gpus": "pro6000:2",
+    "cpus": 8,
+    "memory": "66G",
+    "walltime": "24:00:00",
+    "requeue": false
+  },
+  "tested_boundaries": [
+    "Default plan makes no subprocess call or intent write",
+    "Only fixed chunk selections accepted",
+    "Failed/source-mutated/raw-mutated/missing-DEV preparation rejected",
+    "Exact local source bytes saved before mocked SSH",
+    "Raw invalid UTF8 stdout preserved after mocked SSH255; occupied local intent refuses retry",
+    "Actual remote submission tail exercised with offline scheduler stubs",
+    "One held sbatch, durable verified accepted identity, then unlock and only one own-job release",
+    "Wrong QoS/GPU/walltime/second identity and foreign cluster suffix reject",
+    "Release failure/visibility delay retains known job without resubmission",
+    "Completed nonzero exit never reported successful",
+    "SBATCH_* and SLURM_CLUSTERS removed; CPU empty CUDA mask not exported to job"
+  ],
+  "actual_remote_activity": {
+    "ssh_calls": 0,
+    "scheduler_calls": 0,
+    "server_publications": 0,
+    "gpu_submissions": 0,
+    "model_calls": 0
+  },
+  "limitations": [
+    "Offline only; no actual continuation preparation or submission was run.",
+    "Tests intentionally fabricate local fixtures and stub scheduler responses; these are not experimental evidence.",
+    "The original source, admission, checkpoint, canary and scientific risk CPU gates still must pass on the real server.",
+    "24h is a scheduler ceiling supported by earlier accepted allocation, not a guarantee or scientific stop threshold.",
+    "Network or post-release observation uncertainty preserves exact job ID/evidence and requires inspection; no retry or cancellation."
+  ]
+}
