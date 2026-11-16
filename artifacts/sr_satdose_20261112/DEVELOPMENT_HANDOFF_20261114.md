@@ -141,3 +141,7 @@ At06:33:27UTC job1740834 RUNNING elapsed11:32:39; final11032/T1 step1 has125/128
 ## Hourly observation — 2026-11-16 15:33 SGT
 
 At07:33:33UTC job1740834 RUNNING elapsed12:32:45; final11032/T1 step1COMMIT exists,step2has60/128closedgenerations,cumulative188complete/189BEGIN. Total956/1024TRAIN,7/8COMMITs,noHOLD/ERROR. Firstthreepaths baseline/reload/actualexitcomplete. Nextcheck08:33UTC/16:33SGT. Receiptintake/MONITOR_1740834_20261116T073333Z.json.
+
+## Hourly observation — 2026-11-16 16:33 SGT
+
+At08:33:49UTC job1740834 RUNNING elapsed13:33:01. All1024TRAIN generationscomplete;7COMMITs. Final11032/T1 step2stagingactive,nobaseline/reloadRESULTyet. Firstthreepaths remaincomplete;noHOLD/ERROR. Nextcheck09:33UTC/17:33SGT. Receiptintake/MONITOR_1740834_20261116T083349Z.json. Generationcompletiondoesnotmeaneighthupdateorcanarycomplete.

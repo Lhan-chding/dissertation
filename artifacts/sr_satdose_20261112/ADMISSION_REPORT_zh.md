@@ -1,6 +1,6 @@
 # SR-SATDOSE-1 准入报告（2026-11-14，PREFIX用户批准放行）
 
-Latest verified status (2026-11-16 15:33 Singapore): job1740834 RUNNING on gpu-pro6000-12, teacherQoS/2PRO6000, elapsed12:32:45 at07:33:33UTC. Firstthreepaths eachcompleted256TRAIN,2COMMITs andfreshreload/actualexit receipts. Final11032/T1 step1COMMIT exists; step2 has60/128closed generations,cumulative188complete/189BEGIN. Total956/1024TRAIN and7/8formalCOMMITs; noHOLD/ERROR. Fullfour-path independentcanary remains pending; DEV2/step3+ andMAIN remain gated. Historicalobservationsfollow.
+Latest verified status (2026-11-16 16:33 Singapore): job1740834 RUNNING on gpu-pro6000-12, teacherQoS/2PRO6000, elapsed13:33:01 at08:33:49UTC. All1024/1024TRAIN generationscomplete;7/8formalCOMMITs present. Final11032/T1 step2active staging remains withoutCOMMIT; itsbaseline/reload notyetcomplete. Firstthreepaths completedbothstepsandfreshreload/actualexit. NoHOLD/ERROR. Waitlastupdateandactualprocesscompletion beforeindependentfour-pathcanary; DEV2/step3+/MAIN remain gated. Historicalobservationsfollow.
 
 早期观测：用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 
