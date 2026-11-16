@@ -1,0 +1,37 @@
+{
+  "status": "LOCAL_TERMINAL_PLAN_ONLY_NO_NETWORK_NO_PUBLICATION",
+  "publisher_sha256": "49e1188ea76d5945ee21faad394b0ea06064bd18f1f8fe0b836e43940c783511",
+  "inputs": {
+    "train_intake": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/FIRST_TWO_CODE_DEPLOYMENT_71018e5_20261116.json",
+      "sha256": "de42793b8d839e7d72d8eb399d37c0fb9e842d02f838709cde5b1a0e3ebbbeb8"
+    },
+    "external_intake": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/EXTERNAL_CODES_DEPLOYMENT_4190bc3_20261116.json",
+      "sha256": "b585eaf9f3d8243c956ff79b152f5afbcb47aabb5ca72d42c663d11f25ce379b"
+    },
+    "original_release_record": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/FIRST_TWO_RELEASE_PUBLICATION_71018e5_20261116.json",
+      "sha256": "8f28b06a1015cddceba31a5cf76545e4f1d4762d74686c39fc1dcb3d8382f697"
+    },
+    "canary_copy": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/canary_1740834_20261116/CANARY_SPEC.json",
+      "sha256": "44a8db68c655bea987629ea210da1a32e268806f6e0c7b1506d6d77828d4b260"
+    }
+  },
+  "original_train_release_sha256": "22f3b7b260670628398154652455520cd25169234f66a827d3d117def924438f",
+  "canary": {
+    "path": "execution_releases/canary_job_1740834/CANARY_SPEC.json",
+    "sha256": "44a8db68c655bea987629ea210da1a32e268806f6e0c7b1506d6d77828d4b260"
+  },
+  "publication": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/terminal_4190bc3",
+  "required_actual_counts": {
+    "COMMIT": 96,
+    "TRAIN": 12288,
+    "DEV_endpoints": 14,
+    "DEV": 1512,
+    "chunks": 12
+  },
+  "actual_terminal_state": "NOT_OBSERVED_BY_LOCAL_PLAN",
+  "model_calls": 0
+}

@@ -1,0 +1,110 @@
+{
+  "schema": "sr-satdose-terminal-publisher-offline-review-v1",
+  "status": "OFFLINE_OPERATOR_TESTS_AND_INDEPENDENT_REVIEW_COMPLETE_NOT_TERMINAL_ADMISSION",
+  "created_at_utc": "2026-11-16T10:36:31.156156+00:00",
+  "publisher_sha256": "49e1188ea76d5945ee21faad394b0ea06064bd18f1f8fe0b836e43940c783511",
+  "files": {
+    "TERMINAL_PUBLISHER_OFFLINE_49e1188e_20261116_SOURCE.py": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/TERMINAL_PUBLISHER_OFFLINE_49e1188e_20261116_SOURCE.py",
+      "sha256": "49e1188ea76d5945ee21faad394b0ea06064bd18f1f8fe0b836e43940c783511",
+      "bytes": 30982
+    },
+    "TERMINAL_PUBLISHER_OFFLINE_49e1188e_20261116_TESTS.py": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/TERMINAL_PUBLISHER_OFFLINE_49e1188e_20261116_TESTS.py",
+      "sha256": "c436a1956081fb0021fea992f1125678ab289777f84f3b2dcf4f94deb7c0dff8",
+      "bytes": 20526
+    },
+    "TERMINAL_PUBLISHER_OFFLINE_49e1188e_20261116_TEST_STDOUT.log": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/TERMINAL_PUBLISHER_OFFLINE_49e1188e_20261116_TEST_STDOUT.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "TERMINAL_PUBLISHER_OFFLINE_49e1188e_20261116_TEST_STDERR.log": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/TERMINAL_PUBLISHER_OFFLINE_49e1188e_20261116_TEST_STDERR.log",
+      "sha256": "b5129d8e460c54b35709af6877b4af38194b21c61a25e931cbe005e507530d81",
+      "bytes": 121
+    },
+    "TERMINAL_PUBLISHER_OFFLINE_49e1188e_20261116_PLAN_STDOUT.log": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/TERMINAL_PUBLISHER_OFFLINE_49e1188e_20261116_PLAN_STDOUT.log",
+      "sha256": "373ef228ee00e413598bc4790b6829690e1d150a2e06ce7f0be029a0cbf72248",
+      "bytes": 1838
+    },
+    "TERMINAL_PUBLISHER_OFFLINE_49e1188e_20261116_PLAN_STDERR.log": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/TERMINAL_PUBLISHER_OFFLINE_49e1188e_20261116_PLAN_STDERR.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "commands": {
+    "TEST": {
+      "command": [
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python",
+        "-B",
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/TERMINAL_PUBLISHER_OFFLINE_49e1188e_20261116_TESTS.py"
+      ],
+      "returncode": 0,
+      "stdout": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/TERMINAL_PUBLISHER_OFFLINE_49e1188e_20261116_TEST_STDOUT.log",
+      "stderr": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/TERMINAL_PUBLISHER_OFFLINE_49e1188e_20261116_TEST_STDERR.log"
+    },
+    "PLAN": {
+      "command": [
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python",
+        "-B",
+        "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/TERMINAL_PUBLISHER_OFFLINE_49e1188e_20261116_SOURCE.py"
+      ],
+      "returncode": 0,
+      "stdout": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/TERMINAL_PUBLISHER_OFFLINE_49e1188e_20261116_PLAN_STDOUT.log",
+      "stderr": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/TERMINAL_PUBLISHER_OFFLINE_49e1188e_20261116_PLAN_STDERR.log"
+    }
+  },
+  "validation": {
+    "offline_tests": 22,
+    "actual_local_plan": "PASSED_WITH_RECORDED_INTAKE_AND_CANARY_PINS",
+    "independent_review": {
+      "agent": "/root/technical_report",
+      "status": "NO_REMAINING_BLOCKERS",
+      "tests": 22,
+      "elapsed_seconds": 0.339,
+      "publisher_sha256": "49e1188ea76d5945ee21faad394b0ea06064bd18f1f8fe0b836e43940c783511",
+      "findings": "Truncated receipt recovery fixed: remote and local complete envelope/ref/hash validation; partial remains downloadable with success=false"
+    }
+  },
+  "entrypoints": {
+    "plan": "python -B satdose_publish_actual_terminal.py",
+    "execute": "--execute --ssh-host HOST --local-dir NEW_DIR",
+    "recovery": "--download --ssh-host HOST --local-dir NEW_DIR"
+  },
+  "trusted_inputs": {
+    "train_intake": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/FIRST_TWO_CODE_DEPLOYMENT_71018e5_20261116.json",
+      "sha256": "de42793b8d839e7d72d8eb399d37c0fb9e842d02f838709cde5b1a0e3ebbbeb8"
+    },
+    "external_intake": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/EXTERNAL_CODES_DEPLOYMENT_4190bc3_20261116.json",
+      "sha256": "b585eaf9f3d8243c956ff79b152f5afbcb47aabb5ca72d42c663d11f25ce379b"
+    },
+    "original_release_record": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/FIRST_TWO_RELEASE_PUBLICATION_71018e5_20261116.json",
+      "sha256": "8f28b06a1015cddceba31a5cf76545e4f1d4762d74686c39fc1dcb3d8382f697"
+    },
+    "canary_copy": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/canary_1740834_20261116/CANARY_SPEC.json",
+      "sha256": "44a8db68c655bea987629ea210da1a32e268806f6e0c7b1506d6d77828d4b260"
+    }
+  },
+  "canary": {
+    "path": "execution_releases/canary_job_1740834/CANARY_SPEC.json",
+    "sha256": "44a8db68c655bea987629ea210da1a32e268806f6e0c7b1506d6d77828d4b260"
+  },
+  "future_publication": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/terminal_4190bc3",
+  "consumer": "Require successful LOCAL_DOWNLOAD_RECEIPT and REMOTE_MANIFEST, validate_publication against exact downloaded/server bytes, then frozen terminal_authority.verify; never accept intermediate SPEC/ADMISSION alone",
+  "limitations": [
+    "Offline only: no SSH, Slurm, GPU/model calls, server writes or real terminal publication performed.",
+    "CPU synthetic authority/auditor fixtures test orchestration, not real 96-step terminal evidence or native tensor acceptance.",
+    "Future actual 96 COMMIT / 12288 TRAIN / 14 DEV / 1512 DEV / 12 chunk evidence and two native audits remain mandatory.",
+    "Archived tests select the adjacent exact SOURCE copy; package scientific code remains unchanged."
+  ],
+  "future_terminal_pass": false,
+  "main_job_submitted": false,
+  "server_actions": 0
+}
