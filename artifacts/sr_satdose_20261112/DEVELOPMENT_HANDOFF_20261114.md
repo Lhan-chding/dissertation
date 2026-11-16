@@ -207,3 +207,11 @@ At08:33:49UTC job1740834 RUNNING elapsed13:33:01. All1024TRAIN generationscomple
 ## Hourly DEV observation — 2026-11-16 22:58 SGT
 
 At14:58:34UTCjob1742113stillPENDING(Priority),Elapsed0,noallocation/endpointdirectory/BEGIN/CAPTURE/COMPLETE/incidents. TeacherQoS/3h unchanged,notresubmitted. Receiptintake/MONITOR_DEV_1742113_20261116T145834Z.json. Nextregularcheck15:58UTC/23:58SGT. FirstDEV1741834independentlyaudited; remainingthreeDEV2pending. NoadditionalTRAINorMAIN. Prioractualsubmissionrecordcommitb6ad9cb13dc8d646e5a652d859543b649bc2519a pushedandremoteverified.
+
+## Second DEV2 audited; third preparation active - 2026-11-17 00:06 SGT
+
+- 15:58:19UTC actual1742113 COMPLETED0:0/allsteps0,00:33:08,gpu-pro6000-3,108/108,noHOLD. Monitor intake/MONITOR_DEV_1742113_20261116T155819Z.json.
+- Original auditor7c29 ran once. Actual auditSHA5eafcb8d911f4eb94efc893bfbbacbd5c7a1443888b9f453eaeb3eb36ad19c3c,analysis d616d641c9c70bb5efa9cc358b333cc8c3a199b549654a36da06f1ed64977348,POST/replay093caebcfe280423d2bcc8145ac7d058c767bcfc91271d76a457dc89cca70a14. S91/108,conflict18/32,aligned+nolist61/64,retention12/12,A90,J81;allbalanced/jsonvalid/known. NoHOLD;pending11032/T0/2,11032/T1/2.
+- Per-file download again failed at RISK_REPLAY; old8matchingfiles andLOCAL_ERROR retained. Existing c168 read-only bundle recovery succeeded for all10 exact files/fullrefs/POST==REPLAY. Originalmanifest79703bb3aed27557dd1c17168cc8d96a228a476de11852165065a047e37753c8;RECOVERY_RECEIPT80c92a1176cfae42193c0495800a5b625d033ee4a1f9e391e9e5da1e778385a2. No audit/model/risk rerun. See endpoint REPORT_zh.md and independent_audit_download_recovery.
+- Third11032/T0/step2 actualpreparation active execsession20264. Local trained_dev_20261116/start-11032_T0_step-002/PREPARATION.json notyetreturned; samepublicationtag71018e5_20261116,original22f3/canary44a8/source188b. Do notrerun. OnactualsuccesscomputeSHA,originalsubmit40c465fe plan thenexecuteonce withnewSUBMISSION.json;monitor returnedjob hourly.
+- risk_gate preparing separate futureauditdriver: exact originalauditor7c29 remote source once, then c168 single-bundle download. Oldauditor and original84/19/scoring/risk untouched. Driver notyetready/committed/executed. Currentaudits already complete; neverrerun.

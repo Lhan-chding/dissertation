@@ -1,6 +1,6 @@
 # SR-SATDOSE-1 准入报告（2026-11-14，PREFIX用户批准放行）
 
-最新实测（2026-11-16 22:58 新加坡）：首组DEV1741834已完成108/108及独立评分、风险复算，未触发HOLD；完整10文件已验证恢复，下载异常保留。第二组11031/T1/step2实际准备与提交前核验通过，已提交并放行作业1742113，老师QoS/2PRO6000/3小时/no-requeue；当前PENDING(Priority)、0生成，未发现异常。下一次常规巡检23:58。11032两组DEV2仍待执行；正式更新8/96，step3及MAIN未启动。下文保留历史观测。
+Latest verified status (2026-11-17 00:06 SGT): DEV1742113 COMPLETED0:0,108/108,00:33:08. Actual independent scoring and full risk replay passed without HOLD: conflict18/32, aligned+no_list61/64, retention12/12. Failed per-file download is preserved; exact ten-file bundle recovered against the original manifest. Two of four DEV2 endpoints are complete. Third11032/T0/2 actual CPU preparation is running;11032/T1/2 remains pending. Still8/96 formal updates; no step3 or MAIN. Historical observations follow.
 
 早期观测：用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 
