@@ -28,4 +28,12 @@ if r.returncode:print(r.stderr.decode());raise SystemExit(r.returncode)
 d=json.loads(r.stdout);tag=d['checked_at_utc'][:19].replace('-','').replace(':','')+'Z'
 p=pathlib.Path('artifacts/sr_satdose_20261112/intake')/('MONITOR_'+str(job)+'_'+tag+'.json')
 with p.open('x') as f:json.dump(d,f,indent=2);f.write('\n')
-print(json.dumps(d,indent=2))
+# Keep the complete observation on disk, but avoid printing repeated 496-tensor identities.
+def compact_results(values):
+ return {path:{key:value[key] for key in ('status','permission','start_seed','arm','train_responses','formal_optimizer_steps') if key in value} for path,value in values.items()}
+display=dict(receipt=str(p),checked_at_utc=d['checked_at_utc'],job_id=d['job_id'],sacct=d['sacct'],squeue=d['squeue'],paths={},log_tail=d['log_tail'])
+for key,value in d['paths'].items():
+ controller=value['controller']
+ display['paths'][key]=dict(exists=controller['exists'],generation_counts=controller.get('generation_counts'),incidents=controller.get('incidents',{}),results=compact_results(controller.get('results',{})),commits=value['commits'],staging=value['staging'])
+display['launcher']=dict(exists=d['launcher']['exists'],incidents=d['launcher'].get('incidents',{}),results=compact_results(d['launcher'].get('results',{})))
+print(json.dumps(display,indent=2))

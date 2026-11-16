@@ -127,3 +127,9 @@ At21:00:56UTC job1740834 RUNNING elapsed02:00:09. 11031/T0 step1 COMMIT exists; 
 ## Connectivity interruption — 2026-11-16 06:01–06:03 SGT
 
 Hourly1740834 monitor and bounded read-only retries timedout. Local scutil reportsSD-WAN Disconnected. Authorized attempt tostarttheexistingconnection returned0 butstatusremainedDisconnected; noVPNconfigurationchange. CUAinventory reportedMaclocked/automaticunlockunavailable; noUIactionsperformed. Userprompted to unlock/restoreVPN. CurrentremotejobstateUNKNOWN, lastsuccessful21:00:56UTC observationremains181closedTRAIN/1COMMIT on11031/T0. Nojobcancel/resubmit/retry. Onrestoration, immediatelyrun operations/satdose_monitor_firsttwo.py1740834 andcontinueactualcanary/DEVgatesonlywhencomplete. Receiptintake/MONITOR_1740834_20261115T2201Z_NETWORK_BLOCKED.json.
+
+## VPN restored; three first-two paths complete — 2026-11-16 13:33 SGT
+
+- At05:33:08UTC, actual1740834 RUNNING elapsed10:32:20 on gpu-pro6000-12. Firstthreepaths11031/T0,11031/T1,11032/T0 each256/256TRAIN,2COMMITs,baseline+reloadRESULTs andlauncherper-pathactualexitRESULT. Final11032/T1 active7complete/8BEGIN,zeroCOMMITs. Total775/1024closedTRAIN and6/8COMMITs. NoHOLD/ERROR. Full1,078,913-byte observation retained inintake/MONITOR_1740834_20261116T053308Z.json, SHA71cfc7ab455489bc1710b5a23cea63c4423600011d681b9870d6cb60494692f2.
+- Monitoring operator nowprintscompactstatus/counts/results withoutrepeated496tensoridentities; fullobservationfiles remainbyte-for-bytecomplete. Actualreceiptprojection verified775responses/6COMMITs,5214displaybytes,unchangedoriginalSHA; noSSH/runtimecodechangesforthisdisplayfix.
+- Nextregularcheck06:33UTC/14:33SGT. Continuecurrenttaskwithoutstopping. Actualfour-pathindependentauditandprepare_canary onlyafterfinalpath+launcher+jobcomplete. OriginalFIRST_TWO_RELEASE_71018e5 SHA22f3b7b260670628398154652455520cd25169234f66a827d3d117def924438f. Do notrepeatoccupiedfirsttwoattempts orresubmit1740834.

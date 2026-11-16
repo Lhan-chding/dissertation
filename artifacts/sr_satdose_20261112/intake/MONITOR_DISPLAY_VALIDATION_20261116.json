@@ -1,0 +1,17 @@
+{
+  "status": "ACTUAL_RECEIPT_DISPLAY_CHECK_PASSED",
+  "source_sha256": "0a9ff6be6af4466ae750eb054a8fa74848fa4eb029e561457c8ddfe499b2c52e",
+  "input": "MONITOR_1740834_20261116T053308Z.json",
+  "full_receipt_sha256": "71cfc7ab455489bc1710b5a23cea63c4423600011d681b9870d6cb60494692f2",
+  "full_receipt_bytes": 1078913,
+  "display_bytes": 5214,
+  "commits": 6,
+  "completed_responses": 775,
+  "raw_receipt_unchanged": true,
+  "checks": [
+    "local Python syntax",
+    "compact projection against real complete saved observation",
+    "original saved bytes unchanged"
+  ],
+  "remote_code_changed": false
+}
