@@ -397,3 +397,13 @@ Submiteceec5completedonce,1743680 submitted/released17:52:38UTC. LH-SATDOSE-TRAI
 Actualfirstmonitor17:54:37UTC PENDING(QOSGrpGRES),noallocation/slot/incidents;allsteps3-8zero. Receiptintake/MONITOR_CONTINUATION_1743680_20261117T175432565258Z/RECEIPT.json. Nextregular18:54UTC/02:54SGT. Exactmonitor: python3 -B experiments/sr_satdose_20261112/operations/satdose_monitor_continuation.py --submission-receipt /Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261118/start-11031_T1_chunk-003-008/SUBMISSION.json --submission-sha256 fcf9823037b56424a7365a069885605b6949f9c05e1139f99c5a5f4a4d70b8c0 --job-id 1743680 --start-seed 11031 --arm T1 --first-step 3 --execute
 
 Actualnewsubmission-boundv2localplanPASS (zeroSSH). Onfullcompletion6newCOMMIT/768responses/allSlurmrowsCOMPLETED0:0, .venv/bin/python -B experiments/sr_satdose_20261112/operations/satdose_audit_continuation_v2.py withsameactualreceipt/SHA/job/selection and--local-dir /Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261118/start-11031_T1_chunk-003-008/independent_audit --execute. Newremotecontinuation_audits_namespace_v2/start-11031/T1/chunk-003-008. Noactualaudituntilcomplete,neveruseoriginalnamespacebug937966orjob-specific1742958recovery. Afterfullactualaudit/noHOLD, prepare11032/T0/3-8,then11032/T1/3-8,thenall4DEV8. Noaheadpreparation. RootallSSHsessionscompleted;onlynewGPUjobqueued.
+
+
+## Hourly second continuation observation - 2026-11-18 02:54 SGT
+
+At18:54:02UTC job1743680 stillPENDING(QOSGrpGRES),noallocation/slot/incidents;allsteps3-8zeroBEGIN/CAPTURE/COMPLETE/COMMIT. Nojobmutation. Receiptintake/MONITOR_CONTINUATION_1743680_20261117T185357605574Z/RECEIPT.json. Nextregular19:54UTC/03:54SGT. Actualsubmission/preparation/initialmonitorcommittedandpushed40a239cbe0720deb296a79113788ea01fee5bfd5,remoteverified.
+
+
+## Hourly second continuation observation - 2026-11-18 03:54 SGT
+
+At19:54:22UTC job1743680 stillPENDING(QOSGrpGRES),noallocation/slot/incidents;allsteps3-8zeroBEGIN/CAPTURE/COMPLETE/COMMIT. Nojobmutation. Receiptintake/MONITOR_CONTINUATION_1743680_20261117T195420247891Z/RECEIPT.json. Nextregular20:54UTC/04:54SGT. Queuedelaynotfailure,nosupportedETA.
