@@ -1,0 +1,77 @@
+{
+  "checked_at_utc": "2026-11-17T06:14:36.543341+00:00",
+  "job_id": 1742662,
+  "selection": {
+    "start_seed": 11032,
+    "arm": "T1",
+    "step": 2
+  },
+  "exists": true,
+  "sacct": {
+    "args": [
+      "sacct",
+      "-j",
+      "1742662",
+      "-n",
+      "-P",
+      "--format=JobID,State,Elapsed,ExitCode,NodeList"
+    ],
+    "returncode": 0,
+    "stdout": "1742662|RUNNING|00:05:28|0:0|gpu-pro6000-11\n1742662.batch|RUNNING|00:05:28|0:0|gpu-pro6000-11\n1742662.extern|RUNNING|00:05:28|0:0|gpu-pro6000-11\n1742662.0|RUNNING|00:05:26|0:0|gpu-pro6000-11\n",
+    "stderr": ""
+  },
+  "squeue": {
+    "args": [
+      "squeue",
+      "-j",
+      "1742662",
+      "-h",
+      "-o",
+      "%i|%T|%M|%l|%q|%R"
+    ],
+    "returncode": 0,
+    "stdout": "1742662|RUNNING|5:28|3:00:00|soujanya-poria-startfund-2026-03|gpu-pro6000-11\n",
+    "stderr": ""
+  },
+  "generation_counts": {
+    "BEGIN": 0,
+    "CAPTURE": 0,
+    "COMPLETE": 0
+  },
+  "records": {
+    "CLAIM.json": {
+      "admission": {
+        "path": "execution_releases/FIRST_TWO_ADMISSION_71018e5.json",
+        "sha256": "2bdc1a83502b565313ceba3fd278ec091e220c198e105d3d942a02793941a9c7"
+      },
+      "arm": "T1",
+      "commit": {
+        "path": "training_transactions/start-11032/T1/step-002/COMMIT.json",
+        "sha256": "67c47bab4fd778ba4ec1fb244e06e6555634d772cae6e195e3814969e93800cc"
+      },
+      "design_freeze_sha256": "6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0",
+      "output": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/trained_dev/start-11032/T1/step-002/endpoint",
+      "process_identity": {
+        "boot_id": "069f1474-8a94-42d3-adb6-0b00c1dac735",
+        "host": "gpu-pro6000-11.cluster02.eee.ntu.edu.sg",
+        "pid": 3800973,
+        "start_ticks": 444630573
+      },
+      "release": {
+        "path": "execution_releases/TRAINED_DEV_71018e5_20261116_start-11032_T1_step-002_RELEASE.json",
+        "sha256": "0e97c8ca2dbda16aa3c0e5e3ad7480d6bfa5eb68f9cc86d58ea217516bfb891e"
+      },
+      "request_ids_sha256": "b95f05998e24abac301d04b28859aeabf19f3600f98c792d411990311af32bc5",
+      "responses": 108,
+      "schema": "sr-satdose-trained-dev-claim-v1",
+      "start_seed": 11032,
+      "status": "ATTEMPTED_UNKNOWN_NO_RETRY",
+      "step": 2
+    }
+  },
+  "global_incidents": {},
+  "log_tail": {
+    "slurm-1742662.err": "",
+    "slurm-1742662.out": ""
+  }
+}

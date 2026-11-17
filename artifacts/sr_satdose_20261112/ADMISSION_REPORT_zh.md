@@ -1,6 +1,6 @@
 # SR-SATDOSE-1 准入报告（2026-11-14，PREFIX用户批准放行）
 
-Latest verified status (2026-11-17 13:14 SGT): Fourth DEV2 job1742662 (11032/T1/step2) submitted/released once05:12:55UTC. At05:14:01UTC PENDING(Resources),0/108,teacherQoS/2PRO6000/3h/no-requeue,noincidents. Three of four DEV2 endpoints independently audited without HOLD; finalDEV audit awaits actual completion. Third1742309 retains one length-limited UNKNOWN in108 denominator. Still8/96 formal updates; no step3 or MAIN. Historical observations follow.
+Latest verified status (2026-11-17 15:19 SGT): All four DEV2 endpoints have completed actual independent audits and exact evidence downloads; full risk replay has noHOLD and no pendingDEV2. Fourth1742662 completed108/108,00:48:18;conflict20/32,aligned+no_list63/64,retention12/12,all108known. First continuation11031/T0/steps3-8 is now in actualCPU preparation; no continuation GPU job submitted yet. Still8/96 formal updates and1024TRAIN; MAIN remains sealed. ThirdDEV2 length-limitedUNKNOWN retained. Historical observations follow.
 
 早期观测：用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 
