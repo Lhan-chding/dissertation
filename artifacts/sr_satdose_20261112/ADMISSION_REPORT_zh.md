@@ -1,6 +1,6 @@
 # SR-SATDOSE-1 准入报告（2026-11-14，PREFIX用户批准放行）
 
-Latest verified status (2026-11-18 01:02 SGT): Job1742958 completed all768 responses/6updates, overall14/96COMMITs. First independent audit failed in modules_pinned at Path(None); full failure bundle verified and retained. Its RISK_REPLAY exactly matches original POST_RISK SHA cbd8e1f1..., PENDING_REQUIRED_DEV/global_holdfalse, but audit acceptance remains BLOCKED pending a narrowly scoped external-tool repair and complete CPU revalidation. Original frozen TRAIN/failed evidence unchanged, no regeneration or successor submission. Current recovery implementation and independent review are in progress. MAIN sealed. Historical observations follow.
+Latest verified status (2026-11-18 01:21 SGT): Job1742958 independently accepted after bounded namespace-tool recovery. Full16-member publication verified locally and independently;768responses/6newCOMMITs,overall14/96;currentprefix8/2/2/2. Fullriskreplay exact,noHOLD,pending11031/T0/8. Originalfailedaudit retained unchanged. Actual next-path11031/T1/3-8 CPUpreparation737954 nowrunning once(exec20143),notyetGPUsubmitted. OriginalTRAIN84/19 unchanged;normalfutureauditorv2 reviewed/tested/pushed755a599. Remainingpaths mustreach8 beforeall4DEV8. MAIN sealed. Historical observations follow.
 
 早期观测：用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 
