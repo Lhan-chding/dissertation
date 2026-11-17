@@ -1,0 +1,36 @@
+{
+  "status": "NETWORK_BLOCKED_JOB_STATE_UNKNOWN",
+  "recorded_at_utc": "2026-11-17T15:21:28.892694+00:00",
+  "job_id": 1742958,
+  "first_attempt_receipt": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/MONITOR_CONTINUATION_1742958_20261117T152005809572Z/RECEIPT.json",
+    "sha256": "87fe61716df2be51bc3e656799b213e445e1637b5b8ae93410b34b4fb69ba059"
+  },
+  "first_attempt_stderr": "ssh: connect to host 10.97.216.128 port 22: Network is unreachable\n",
+  "retry": {
+    "command": "ssh -o BatchMode=yes -o ConnectTimeout=15 -o ConnectionAttempts=1 eee-cluster 'date -u; squeue -h -j 1742958 -o \"%i|%j|%T|%R\"'",
+    "exit_code": 255,
+    "stderr": "ssh: connect to host 10.97.216.128 port 22: Operation timed out\r\n",
+    "evidence_origin": "tool exec session 29026, transcribed; separate retry raw file was not captured"
+  },
+  "vpn": {
+    "service_id": "7098852B-CD75-448F-B1F5-3751311BD253",
+    "before": "Disconnected\nExtended Status <dictionary> {\n  Status : 0\n}\n",
+    "start_exit_code": 0,
+    "after": "Disconnected\nExtended Status <dictionary> {\n  Status : 0\n}\n"
+  },
+  "native_ui_error": "The Mac is locked and automatic unlock could not unlock it. Ask the user to unlock the Mac manually before continuing.",
+  "last_successful_observation": {
+    "at_utc": "2026-11-17T14:20:04.179563+00:00",
+    "receipt": "intake/MONITOR_CONTINUATION_1742958_20261117T141959863782Z/RECEIPT.json",
+    "scheduler": "RUNNING",
+    "chunk_complete_responses": 561,
+    "chunk_commits": 4,
+    "overall_formal_commits": 12,
+    "total_formal_commits": 96
+  },
+  "user_action_requested": "Unlock Mac and restore campus VPN; reply when restored.",
+  "mutation_of_jobs": false,
+  "cancelled_or_resubmitted": false,
+  "independent_audit_started": false
+}
