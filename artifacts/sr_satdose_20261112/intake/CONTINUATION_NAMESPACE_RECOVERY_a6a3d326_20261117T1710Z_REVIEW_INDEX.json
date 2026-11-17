@@ -1,0 +1,48 @@
+{
+  "status": "OFFLINE_REVIEW_AND_TESTS_COMPLETE_NOT_ACTUAL_RECOVERY",
+  "recorded_at_utc": "2026-11-17T17:07:44.176758+00:00",
+  "fixed_job_id": 1742958,
+  "selection": {
+    "start_seed": 11031,
+    "arm": "T0",
+    "first_step": 3,
+    "last_step": 8
+  },
+  "original_auditor_sha256": "9379665201d95df4b7e0671779e19fe2d686a435e6f15e68e36203832db5e352",
+  "original_monitor_sha256": "eca7f3b66445171ea88d6bc732184b11d5cf20432b91acf2a0d4916ff6112824",
+  "failed_manifest_sha256": "4ad9830e8dcac87551462373d6f4c8d1c3e4646c6fc5850d3de3e133f6e68b1a",
+  "checks": {
+    "root_combined_tests": 66,
+    "new_tests": 21,
+    "prior_audit_tests": 32,
+    "prior_monitor_tests": 13,
+    "independent_reviewer_new_tests": 21,
+    "independent_reviewer": "admission_review",
+    "review_summary_origin": "Agent messages transcribed, no separate reviewer log artifact",
+    "root_code_and_test_review": true,
+    "local_plan_no_ssh": true,
+    "actual_recovery_invoked": false
+  },
+  "files": {
+    "SOURCE.py": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/CONTINUATION_NAMESPACE_RECOVERY_a6a3d326_20261117T1710Z_SOURCE.py",
+      "sha256": "a6a3d3265da51dad54f16f7027afd2b9cf8be2ce2af2bf23ceef863fd63fa4bd",
+      "bytes": 17879
+    },
+    "TEST_SOURCE.py": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/CONTINUATION_NAMESPACE_RECOVERY_a6a3d326_20261117T1710Z_TEST_SOURCE.py",
+      "sha256": "4a8ff97281240c992d70bfbac92308fff42fc51412007298c11ae2f56cd9e9d4",
+      "bytes": 12869
+    },
+    "TESTS.log": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/CONTINUATION_NAMESPACE_RECOVERY_a6a3d326_20261117T1710Z_TESTS.log",
+      "sha256": "68a6003879618952fe895577ae7f9609ee5fa3ff06c64810d8642563f488fc35",
+      "bytes": 12725
+    },
+    "LOCAL_PLAN.json": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/CONTINUATION_NAMESPACE_RECOVERY_a6a3d326_20261117T1710Z_LOCAL_PLAN.json",
+      "sha256": "ec5ce8bb900fcd958299d509227f6c2852caa100af78508b366db84bd6882a05",
+      "bytes": 444
+    }
+  }
+}
