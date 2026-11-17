@@ -1,0 +1,5 @@
+{
+  "returncode": 0,
+  "stdout": "{\"checked_at_utc\": \"2026-11-17T04:46:55.864847+00:00\", \"source_sha256\": \"953e67fdab44589bd3c0e5e03ab3731ee97ed8c273278e888f91d0b3b11955d9\", \"processes\": [{\"pid\": 403458, \"status\": [\"State:\\tR (running)\", \"VmRSS:\\t  833064 kB\", \"Threads:\\t23\"]}], \"files\": {\"TRAINED_DEV_71018e5_20261116_start-11032_T1_step-002_OBSERVED_RISK.json\": {\"bytes\": 1444834, \"mtime\": 1794890708.7110755}, \"TRAINED_DEV_71018e5_20261116_start-11032_T1_step-002_STORAGE_BUDGET.json\": {\"bytes\": 2121, \"mtime\": 1794890708.703076}, \"TRAINED_DEV_71018e5_20261116_start-11032_T1_step-002_PREPARATION_CLAIM.json\": {\"bytes\": 14751, \"mtime\": 1794890708.696076}, \"TRAINED_DEV_71018e5_20261116_start-11032_T1_step-002_RELEASE.json\": {\"bytes\": 13350, \"mtime\": 1794890708.7200754}}}\n",
+  "stderr": "EEE/ROSE Cluster 02\nConnecting to: login-1\n\nRelevant Guides:\n- https://github.com/NTUEEECluster/docs/blob/main/quickstart.md\n- https://github.com/NTUEEECluster/docs/blob/main/terms-n-conditions.md\n"
+}
