@@ -1,6 +1,6 @@
 # SR-SATDOSE-1 准入报告（2026-11-14，PREFIX用户批准放行）
 
-Latest verified status (2026-11-17 20:20 SGT): Job1742958 RUNNING on gpu-pro6000-4. Step3 COMMIT recorded and its risk has noHOLD. Step4 generated128/128 butnotcommitted;steps5-8notstarted. Chunk256/768generated,1/6updates;overall9/96formalCOMMITs observed. No incidents/unresolvedcaptures. Hourlymonitorisnotfullindependentchunkacceptance; audit follows completion. Nextregularmonitor13:20UTC/21:20SGT. MAIN sealed; unfavorable/UNKNOWNoutputs retained. Historical observations follow.
+Latest verified status (2026-11-17 22:20 SGT): Job 1742958 RUNNING on gpu-pro6000-4. Steps 3-6 COMMIT recorded, each with no scientific stop trigger/global_hold=false. Step 7 has 50 BEGIN, 49 CAPTURE and 49 COMPLETE; step 8 not started. Chunk 561/768 responses complete, 4/6 updates; overall 12/96 formal COMMITs observed. No incident files. Two unresolved paths belong to the same live step-7 BEGIN. This non-atomic live snapshot is not independent chunk acceptance. Next regular monitor 15:20 UTC/23:20 SGT; audit follows completion before any successor. MAIN sealed; unfavorable/UNKNOWN outputs retained. Historical observations follow.
 
 早期观测：用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 
