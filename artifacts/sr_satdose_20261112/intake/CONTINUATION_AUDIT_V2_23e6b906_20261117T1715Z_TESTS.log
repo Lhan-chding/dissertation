@@ -1,0 +1,21 @@
+test_any_previous_selected_slot_blocks_regardless_of_result (experiments.sr_satdose_20261112.operations.tests.test_audit_continuation_v2.AttemptGuards.test_any_previous_selected_slot_blocks_regardless_of_result) ... ok
+test_known_recovery_job_hard_excluded (experiments.sr_satdose_20261112.operations.tests.test_audit_continuation_v2.AttemptGuards.test_known_recovery_job_hard_excluded) ... ok
+test_new_normal_attempt_permitted_as_plan_guard (experiments.sr_satdose_20261112.operations.tests.test_audit_continuation_v2.AttemptGuards.test_new_normal_attempt_permitted_as_plan_guard) ... ok
+test_old_slot_never_allowed_by_current_created_flag (experiments.sr_satdose_20261112.operations.tests.test_audit_continuation_v2.AttemptGuards.test_old_slot_never_allowed_by_current_created_flag) ... ok
+test_only_current_created_slot_with_exact_source_intent_allowed_inside_audit (experiments.sr_satdose_20261112.operations.tests.test_audit_continuation_v2.AttemptGuards.test_only_current_created_slot_with_exact_source_intent_allowed_inside_audit) ... ok
+test_other_selected_chunks_do_not_block (experiments.sr_satdose_20261112.operations.tests.test_audit_continuation_v2.AttemptGuards.test_other_selected_chunks_do_not_block) ... ok
+test_recovery_payload_is_not_normal_admission (experiments.sr_satdose_20261112.operations.tests.test_audit_continuation_v2.AttemptGuards.test_recovery_payload_is_not_normal_admission) ... ok
+test_symlink_family_and_selected_ancestor_rejected (experiments.sr_satdose_20261112.operations.tests.test_audit_continuation_v2.AttemptGuards.test_symlink_family_and_selected_ancestor_rejected) ... ok
+test_missing_extra_mutated_or_foreign_dependency_rejected (experiments.sr_satdose_20261112.operations.tests.test_audit_continuation_v2.Dependencies.test_missing_extra_mutated_or_foreign_dependency_rejected) ... ok
+test_original_full_audit_and_main_functions_unchanged (experiments.sr_satdose_20261112.operations.tests.test_audit_continuation_v2.Dependencies.test_original_full_audit_and_main_functions_unchanged) ... ok
+test_sources_exact_pins_and_no_remote_source_file_needed (experiments.sr_satdose_20261112.operations.tests.test_audit_continuation_v2.Dependencies.test_sources_exact_pins_and_no_remote_source_file_needed) ... ok
+test_actual_1742958_submit_rejected_locally_without_ssh (experiments.sr_satdose_20261112.operations.tests.test_audit_continuation_v2.LocalDrivers.test_actual_1742958_submit_rejected_locally_without_ssh) ... ok
+test_changed_actual_job_or_selection_rejected_by_original_validator (experiments.sr_satdose_20261112.operations.tests.test_audit_continuation_v2.LocalDrivers.test_changed_actual_job_or_selection_rejected_by_original_validator) ... ok
+test_download_only_never_audits_and_transports_both_sources_on_stdin (experiments.sr_satdose_20261112.operations.tests.test_audit_continuation_v2.LocalDrivers.test_download_only_never_audits_and_transports_both_sources_on_stdin) ... ok
+test_success_manifest_requires_both_exact_archived_dependency_sources (experiments.sr_satdose_20261112.operations.tests.test_audit_continuation_v2.LocalDrivers.test_success_manifest_requires_both_exact_archived_dependency_sources) ... ok
+test_synthetic_local_plan_zero_subprocess_and_no_artifacts (experiments.sr_satdose_20261112.operations.tests.test_audit_continuation_v2.LocalDrivers.test_synthetic_local_plan_zero_subprocess_and_no_artifacts) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.194s
+
+OK

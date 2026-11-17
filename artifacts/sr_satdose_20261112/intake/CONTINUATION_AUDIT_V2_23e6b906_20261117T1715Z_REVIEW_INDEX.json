@@ -1,0 +1,33 @@
+{
+  "status": "OFFLINE_REVIEW_AND_TESTS_COMPLETE_NOT_ACTUAL_AUDIT",
+  "recorded_at_utc": "2026-11-17T17:14:58.081707+00:00",
+  "root_tests_passed": 16,
+  "independent_reviewer_tests_passed": 16,
+  "reviewer": "admission_review",
+  "review_summary_origin": "Agent messages transcribed; no separate reviewer log",
+  "root_reviewed_code_and_tests": true,
+  "original_auditor_sha256": "9379665201d95df4b7e0671779e19fe2d686a435e6f15e68e36203832db5e352",
+  "namespace_helper_sha256": "a6a3d3265da51dad54f16f7027afd2b9cf8be2ce2af2bf23ceef863fd63fa4bd",
+  "original_auditor_and_helper_unchanged": true,
+  "actual_future_submission_local_plan": false,
+  "actual_1742958_rejected_as_required": true,
+  "gpu_model_calls": 0,
+  "ssh_calls": 0,
+  "files": {
+    "SOURCE.py": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/CONTINUATION_AUDIT_V2_23e6b906_20261117T1715Z_SOURCE.py",
+      "sha256": "23e6b906c8d89947dfe86b56450c7bd9a8752e59b1bb6c0a10996520e0d2b593",
+      "bytes": 9107
+    },
+    "TEST_SOURCE.py": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/CONTINUATION_AUDIT_V2_23e6b906_20261117T1715Z_TEST_SOURCE.py",
+      "sha256": "7b9d5b95c7927bdc991a62e23b9c46d01f1cdd3cd6d9c073f40c3790f22e9346",
+      "bytes": 11621
+    },
+    "TESTS.log": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/CONTINUATION_AUDIT_V2_23e6b906_20261117T1715Z_TESTS.log",
+      "sha256": "b5d142b943aa5754b706d907f9f49cf50cf1e5c20a6e6baa378c61a222bee26c",
+      "bytes": 3481
+    }
+  }
+}
