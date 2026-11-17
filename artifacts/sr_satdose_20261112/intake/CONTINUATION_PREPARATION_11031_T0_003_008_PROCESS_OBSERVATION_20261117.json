@@ -1,0 +1,5 @@
+{
+  "returncode": 0,
+  "stdout": "{\"checked_at_utc\": \"2026-11-17T07:44:06.618953+00:00\", \"source_sha256\": \"e2943b599ac535bb615bf14735232369e1a37ef04605a855e59043a887a377cd\", \"processes\": [{\"pid\": 834732, \"status\": [\"State:\\tR (running)\", \"VmRSS:\\t  865364 kB\", \"Threads:\\t23\"]}], \"files\": {\"CONTINUATION_71018e5_s11031_T0_003_008_RELEASE.json\": {\"bytes\": 15220, \"mtime\": 1794901133.5144491}, \"CONTINUATION_71018e5_s11031_T0_003_008_BUDGET.json\": {\"bytes\": 1226, \"mtime\": 1794901133.5094492}, \"CONTINUATION_71018e5_s11031_T0_003_008_INTENT.json\": {\"bytes\": 4726, \"mtime\": 1794899983.8359303}}}\n",
+  "stderr": "EEE/ROSE Cluster 02\nConnecting to: login-1\n\nRelevant Guides:\n- https://github.com/NTUEEECluster/docs/blob/main/quickstart.md\n- https://github.com/NTUEEECluster/docs/blob/main/terms-n-conditions.md\n"
+}
