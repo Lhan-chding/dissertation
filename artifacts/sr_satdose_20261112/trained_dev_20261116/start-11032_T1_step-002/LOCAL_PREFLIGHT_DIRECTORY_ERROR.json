@@ -1,0 +1,7 @@
+{
+  "operation": "satdose_prepare_trained_dev.py",
+  "error": "FileNotFoundError: local receipt parent directory did not exist",
+  "phase": "local args.receipt.parent.resolve(strict=True), line 307, before intent or SSH",
+  "remote_call_occurred": false,
+  "resolution": "Create the new local endpoint directory, then invoke preparation once remotely."
+}
