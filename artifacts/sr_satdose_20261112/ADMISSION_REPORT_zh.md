@@ -1,6 +1,6 @@
 # SR-SATDOSE-1 准入报告（2026-11-14，PREFIX用户批准放行）
 
-Latest verified status (2026-11-18 00:47 SGT): Job1742958 COMPLETED0:0 and all expected Slurm steps0:0, actual end2026-11-17 15:50:09UTC. Chunk768/768responses and6/6updates, overall14/96COMMITs. Final risk PENDING_REQUIRED_DEV/global_holdfalse, no incidents/unresolved captures. Independent CPU auditor93796652 is now running once (execsession41035); not yet accepted. Frozen control requires remaining3paths to reach8 before all4DEV8; pendingDEV8 bars stepsabove8, not another path3-8. On actual audit success/noHOLD, prepare11031/T1/3-8. MAIN sealed. Historical observations follow.
+Latest verified status (2026-11-18 01:02 SGT): Job1742958 completed all768 responses/6updates, overall14/96COMMITs. First independent audit failed in modules_pinned at Path(None); full failure bundle verified and retained. Its RISK_REPLAY exactly matches original POST_RISK SHA cbd8e1f1..., PENDING_REQUIRED_DEV/global_holdfalse, but audit acceptance remains BLOCKED pending a narrowly scoped external-tool repair and complete CPU revalidation. Original frozen TRAIN/failed evidence unchanged, no regeneration or successor submission. Current recovery implementation and independent review are in progress. MAIN sealed. Historical observations follow.
 
 早期观测：用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 

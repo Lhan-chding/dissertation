@@ -1,0 +1,9 @@
+# 11031/T0 第3–8步：训练完成，独立审计技术修复中
+
+2026-11-18 01:02 SGT记录。作业1742958于11月17日15:50:09 UTC正常退出，运行05:12:09；主作业及batch/extern/0均COMPLETED、0:0。教师QoS、2张PRO6000、gpu-pro6000-4。768条固定回答、6次更新均已提交。全实验当前累计14/96次正式更新。
+
+首次独立CPU审计使用93796652版工具，未获得完整通过结论：在modules_pinned中将模块的__file__=None交给Path，触发TypeError。失败发生于最终来源复查；已得到的完整RISK_REPLAY与作业原POST_RISK的SHA完全相同（cbd8e1f1ed7a8c909970492c8121e33ae7a85f1fed687ab5842d58a2bf2c236b），状态PENDING_REQUIRED_DEV、global_hold=false、pending=[11031/T0/8]，但后续完整审计检查未完成，不能据此宣称独立验收通过。
+
+失败审计12个原始成员已全部按远端manifest逐个核验大小和SHA，并完整下载保留；manifest SHA4ad9830e8dcac87551462373d6f4c8d1c3e4646c6fc5850d3de3e133f6e68b1a，错误SHA d8567e00f9be83d0ad58f5f83aafc3ec0c751c238b6377ac0b9c0253c55d00cf，bundle SHA3e8c93105d20430aff6e3c4fea687e95a48bb5c3b4e3a43221c4930193daef59。原工具、失败目录、训练产物均保留不覆盖。修复仅针对外部审计工具，增加真实命名空间包回归检查和受限技术恢复入口；不得降低冻结科学门禁或重新生成/更新训练。
+
+下一条11031/T1第3–8步尚未准备或提交，等待完整独立CPU审计通过。冻结规则允许其他路径推进到8，要求四路径全部到8才执行DEV8，禁止未完成DEV8时进入第9步。MAIN仍封闭。此处不作最终科学效果判断。
