@@ -301,3 +301,13 @@ At06:14:36UTC job1742662 RUNNING,elapsed00:05:28,gpu-pro6000-11,teacherQoS uncha
 - Actualjob1742958 submitted/released08:18:50UTC, LH-SATDOSE-TRAIN-11031-T0-003-008. TeacherQoS/rose/cluster02/2PRO6000/8CPU66G/24h/no-requeue. Submiteceec5 return0,exactoneheldsbatch/ownrelease,nootherjobsmodified. Localcontinuation_20261117/start-11031_T0_chunk-003-008/SUBMISSION.json SHAef21d0d78b17338a93c7abf6c262e7835390d18437e811626ad4ac8c766388a9; remoteRELEASE_RESULTb002f4bc3b23dae6346fbf85bb9a7c9ba27b1e9c33f8aff4700d4f52acef14d7; remoteSUBMISSIONc85e87d7a42167103392a43c6e3f64d69d068f2503c8f54bed420a3c2e28b9d5.
 - Actualfirstmonitoreca7f3b6 at08:19:34UTC: PENDING(Resources),noallocation/slot/incidents,allsteps3-8 zeroBEGIN/CAPTURE/COMPLETE/COMMIT. Receiptintake/MONITOR_CONTINUATION_1742958_20261117T081931778423Z/RECEIPT.json. Nextregularcheck09:19UTC/17:19SGT. Exactcommand: python3 -B experiments/sr_satdose_20261112/operations/satdose_monitor_continuation.py --submission-receipt /Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261117/start-11031_T0_chunk-003-008/SUBMISSION.json --submission-sha256 ef21d0d78b17338a93c7abf6c262e7835390d18437e811626ad4ac8c766388a9 --job-id 1742958 --start-seed 11031 --arm T0 --first-step 3 --execute
 - MonitorANDaudit93796652 defaultlocalplans passedagainstactualsubmission. ActualauditorNOTyetinvoked. Oncompleteall6newCOMMIT/768responses+terminal0, invoke satdose_audit_continuation.py withsameactualreceipt/SHA/job/selection and--local-dir /Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261117/start-11031_T0_chunk-003-008/independent_audit --execute. Fullactualsuccessfulaudit/noHOLD precedes nextpath11031/T1/3-8 preparation. Do notstartanyotherpath/DEVbeforethisaudit; exactfinalriskreplayrequiresunchangedcurrentcursors/devset. NoMAIN.
+
+
+## Hourly continuation observation - 2026-11-17 17:20 SGT
+
+At09:20:32UTC job1742958 remainsPENDING(Resources),noallocation/slot/incidents. Allsteps3-8 zeroBEGIN/CAPTURE/COMPLETE/COMMIT. TeacherQoS/24h unchanged,noretry/resubmission. Receiptintake/MONITOR_CONTINUATION_1742958_20261117T092029498934Z/RECEIPT.json. Nextregularcheck10:20UTC/18:20SGT. Firstcontinuationactualsubmissionandinitialmonitorcommitted/pushed730ad14e6f195b4f9030de67e57bd2eac5f84261,remoteverified. No subsequentTRAIN/DEV/MAIN.
+
+
+## Hourly continuation observation - 2026-11-17 18:20 SGT
+
+At10:20:28UTC job1742958 stillPENDING(Resources),noallocation/slot/incidents. Allsteps3-8 remainzeroBEGIN/CAPTURE/COMPLETE/COMMIT. TeacherQoS/24h unchanged,nojobmutation. Receiptintake/MONITOR_CONTINUATION_1742958_20261117T102024966671Z/RECEIPT.json. Nextregularcheck11:20UTC/19:20SGT. Do notinferETAorcompletionfromqueuewait.
