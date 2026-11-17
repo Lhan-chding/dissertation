@@ -407,3 +407,10 @@ At18:54:02UTC job1743680 stillPENDING(QOSGrpGRES),noallocation/slot/incidents;al
 ## Hourly second continuation observation - 2026-11-18 03:54 SGT
 
 At19:54:22UTC job1743680 stillPENDING(QOSGrpGRES),noallocation/slot/incidents;allsteps3-8zeroBEGIN/CAPTURE/COMPLETE/COMMIT. Nojobmutation. Receiptintake/MONITOR_CONTINUATION_1743680_20261117T195420247891Z/RECEIPT.json. Nextregular20:54UTC/04:54SGT. Queuedelaynotfailure,nosupportedETA.
+
+
+## Network blocked again - 2026-11-18 04:55 SGT
+
+20:54UTCmonitoreca7for1743680 returnedMONITOR_UNKNOWN/SSHOperationtimedout. Oneboundedreadonlyretryexec58875alsoexit255/Operationtimedout. SD-WAN7098852B-CD75-448F-B1F5-3751311BD253Disconnectedbefore/afterstart(return0). CUAgetStateMaclocked;completion_summaryissued. Asyncaskedusertounlock/restoreVPNandreply. Evidenceintake/MONITOR_CONTINUATION_1743680_20261117T205410715781Z/RECEIPT.json/rawlogs+NETWORK_RECOVERY_OBSERVATION.json (retry/VPN/UItranscribednotraw). CurrentjobUNKNOWN;lastactual19:54:22UTC PENDINGQOSGrpGRES,allstep3-8zero/noincidents. Nojobmutation/resubmission/audit/successor. First1742958actualindependentauditfullyaccepted;overall14/96. Previous02:54/03:54observationscommitted+pushed/remoteverified644d2740270790a04a2818fe264b6f0174b1a99f.
+
+Onrestorationrunactualmonitor1743680withsubmissionSHAfcf9823037b56424a7365a069885605b6949f9c05e1139f99c5a5f4a4d70b8c0,11031/T1/first3,receiptpathcontinuation_20261118/start-11031_T1_chunk-003-008/SUBMISSION.json. Onterminal768responses6COMMIT/allSlurmrows0:0usecorrectedv2audit23e6(actualCLIin01:54entry),newindependent_auditdirectory;notold937966namespacebugnor1742958specifica6a3. Continuefullplanafteraudit;donotinferfailure/completionfromnetworkloss. Noactiveexecsessionsoragentworkremaining.

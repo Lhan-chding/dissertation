@@ -1,6 +1,6 @@
 # SR-SATDOSE-1 准入报告（2026-11-14，PREFIX用户批准放行）
 
-Latest verified status (2026-11-18 03:54 SGT): Job1743680 stillPENDING(QOSGrpGRES),noallocation/slot/incidents;allsteps3-8zeroBEGIN/CAPTURE/COMPLETE/COMMIT. TeacherQoS2PRO6000/24h unchanged. Firstchunk1742958 independently accepted,overall14/96formalupdates. Nextregularmonitor20:54UTC/04:54SGT;v2fullauditfollowsactualcompletionbeforeanysuccessor. Nootherjobsmodified/noresubmission. MAIN sealed. Historical observations follow.
+Latest verified status (2026-11-18 04:55 SGT): Current1743680 stateUNKNOWN:04:54monitorandboundedretrybothSSHtimedout. SD-WAN Disconnected before/afterstartingexistingservice;Maclocked,clientinaccessible;useraskedrestoreVPN. Lastsuccessful03:54SGT PENDING(QOSGrpGRES),zeroresponses/updates/noincidents. Firstchunk1742958 fullyacceptedafterboundednamespacefix,overall14/96formalupdates. Nojobmutation/resubmission/newaudit. Onrestoremonitor1743680,thenv2fullauditonlyafteractualcompletion. MAIN sealed. Historical observations follow.
 
 早期观测：用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 
