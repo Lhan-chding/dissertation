@@ -311,3 +311,13 @@ At09:20:32UTC job1742958 remainsPENDING(Resources),noallocation/slot/incidents. 
 ## Hourly continuation observation - 2026-11-17 18:20 SGT
 
 At10:20:28UTC job1742958 stillPENDING(Resources),noallocation/slot/incidents. Allsteps3-8 remainzeroBEGIN/CAPTURE/COMPLETE/COMMIT. TeacherQoS/24h unchanged,nojobmutation. Receiptintake/MONITOR_CONTINUATION_1742958_20261117T102024966671Z/RECEIPT.json. Nextregularcheck11:20UTC/19:20SGT. Do notinferETAorcompletionfromqueuewait.
+
+
+## Hourly continuation observation - 2026-11-17 19:20 SGT
+
+At11:20:13UTC job1742958 RUNNING,gpu-pro6000-4,actualsacctstart10:38:00UTC. Step3 has128BEGIN/CAPTURE/COMPLETE,COMMITnotyetpresent;steps4-8zero. No global/chunkincidents or unresolvedcaptures;stderr tailonlymin_new_tokens/min_lengthwarnings. Still8formalCOMMITs; generationcompletiondoesnotmeannewupdatecommit. Receiptintake/MONITOR_CONTINUATION_1742958_20261117T112009341116Z/RECEIPT.json. Nextregularcheck12:20UTC/20:20SGT. Previousqueueobservationscommitted/pushedf65442eb65466ddbe100fad15e1e6d12d8d1bb2c,remoteverified.
+
+
+## Hourly continuation observation - 2026-11-17 20:20 SGT
+
+At12:20:46UTC job1742958 RUNNING,gpu-pro6000-4. Step3COMMITpresent SHAe1d90b4ec94a0626b61cf31ff400af8ae55fe0589de284d37d9303f818ec84c3 withpostriskNO_SCIENTIFIC_STOP_TRIGGER_OBSERVED/global_holdfalse. Step4 has128BEGIN/CAPTURE/COMPLETE butnoCOMMIT;steps5-8zero. Chunktotal256/768generated,1/6newCOMMIT;overall9/96formalupdatesobserved. No incidents/unresolvedcaptures;fullindependentauditawaitschunkcompletion. Receiptintake/MONITOR_CONTINUATION_1742958_20261117T122039901206Z/RECEIPT.json. Nextregularcheck13:20UTC/21:20SGT.
