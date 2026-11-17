@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/Users/louis/Documents/ChatGPT/dissertation-ntu/.venv/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "experiments.sr_satdose_20261112.operations.tests.test_audit_continuation",
+    "experiments.sr_satdose_20261112.operations.tests.test_monitor_continuation"
+  ],
+  "returncode": 0,
+  "stdout": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/CONTINUATION_AUDITOR_OFFLINE_93796652_20261117T053204Z_TEST_STDOUT.log",
+  "stderr": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/CONTINUATION_AUDITOR_OFFLINE_93796652_20261117T053204Z_TEST_STDERR.log",
+  "ran_ssh": false,
+  "ran_gpu": false,
+  "ran_original_native_risk": false,
+  "fixture_limitation": "Offline boundary fixtures and source API review only; one inert bootstrap probe runs locally. Actual source/admission/native checkpoint/risk audit remains future server work."
+}

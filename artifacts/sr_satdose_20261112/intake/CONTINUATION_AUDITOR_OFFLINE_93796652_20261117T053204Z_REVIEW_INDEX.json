@@ -1,0 +1,197 @@
+{
+  "schema": "sr-satdose-continuation-operators-offline-review-v1",
+  "status": "LOCAL_IMPLEMENTATION_AND_INDEPENDENT_REVIEW_COMPLETE_NOT_SERVER_AUDIT",
+  "created_at_utc": "2026-11-17T05:33:42.815939+00:00",
+  "files": {
+    "satdose_audit_continuation.py": {
+      "working": {
+        "path": "experiments/sr_satdose_20261112/operations/satdose_audit_continuation.py",
+        "sha256": "9379665201d95df4b7e0671779e19fe2d686a435e6f15e68e36203832db5e352",
+        "bytes": 48710
+      },
+      "archive": {
+        "path": "artifacts/sr_satdose_20261112/intake/CONTINUATION_AUDITOR_OFFLINE_93796652_20261117T053204Z_AUDITOR_SOURCE.py",
+        "sha256": "9379665201d95df4b7e0671779e19fe2d686a435e6f15e68e36203832db5e352",
+        "bytes": 48710
+      }
+    },
+    "satdose_monitor_continuation.py": {
+      "working": {
+        "path": "experiments/sr_satdose_20261112/operations/satdose_monitor_continuation.py",
+        "sha256": "eca7f3b66445171ea88d6bc732184b11d5cf20432b91acf2a0d4916ff6112824",
+        "bytes": 10874
+      },
+      "archive": {
+        "path": "artifacts/sr_satdose_20261112/intake/CONTINUATION_AUDITOR_OFFLINE_93796652_20261117T053204Z_MONITOR_SOURCE.py",
+        "sha256": "eca7f3b66445171ea88d6bc732184b11d5cf20432b91acf2a0d4916ff6112824",
+        "bytes": 10874
+      }
+    },
+    "tests/test_audit_continuation.py": {
+      "working": {
+        "path": "experiments/sr_satdose_20261112/operations/tests/test_audit_continuation.py",
+        "sha256": "b944cd1cf8f596cf21158cdbf48bd359c7b61eeb8a95cb6c7094a941f7c6896e",
+        "bytes": 27715
+      },
+      "archive": {
+        "path": "artifacts/sr_satdose_20261112/intake/CONTINUATION_AUDITOR_OFFLINE_93796652_20261117T053204Z_AUDITOR_TESTS.py",
+        "sha256": "b944cd1cf8f596cf21158cdbf48bd359c7b61eeb8a95cb6c7094a941f7c6896e",
+        "bytes": 27715
+      }
+    },
+    "tests/test_monitor_continuation.py": {
+      "working": {
+        "path": "experiments/sr_satdose_20261112/operations/tests/test_monitor_continuation.py",
+        "sha256": "4de03b102d83749bdd8cd8e7edcfc834414f4b425e9dac8e3e787adf02c1fcdc",
+        "bytes": 7450
+      },
+      "archive": {
+        "path": "artifacts/sr_satdose_20261112/intake/CONTINUATION_AUDITOR_OFFLINE_93796652_20261117T053204Z_MONITOR_TESTS.py",
+        "sha256": "4de03b102d83749bdd8cd8e7edcfc834414f4b425e9dac8e3e787adf02c1fcdc",
+        "bytes": 7450
+      }
+    }
+  },
+  "usage": {
+    "path": "artifacts/sr_satdose_20261112/intake/CONTINUATION_AUDITOR_OFFLINE_93796652_20261117T053204Z_USAGE.md",
+    "sha256": "1e19b6dcec93160c285cbf0d9b787e8e9da9eada831513b7a28a5a3bd6d7234e",
+    "bytes": 4832
+  },
+  "final_test_logs": {
+    "TEST_STDOUT.log": {
+      "path": "artifacts/sr_satdose_20261112/intake/CONTINUATION_AUDITOR_OFFLINE_93796652_20261117T053204Z_TEST_STDOUT.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "TEST_STDERR.log": {
+      "path": "artifacts/sr_satdose_20261112/intake/CONTINUATION_AUDITOR_OFFLINE_93796652_20261117T053204Z_TEST_STDERR.log",
+      "sha256": "143c138ec9d52c53b605631a077133ed3cc030e7ec526a578c7e5f05add6c225",
+      "bytes": 8327
+    },
+    "TEST_RUN.json": {
+      "path": "artifacts/sr_satdose_20261112/intake/CONTINUATION_AUDITOR_OFFLINE_93796652_20261117T053204Z_TEST_RUN.json",
+      "sha256": "c1456566f511c87aebdc8c7639f600d79f549d8cc8cad821de88accba7a40605",
+      "bytes": 941
+    }
+  },
+  "prior_44_test_logs": {
+    "TEST_STDOUT.log": {
+      "path": "artifacts/sr_satdose_20261112/intake/CONTINUATION_AUDITOR_OFFLINE_a862b98f_20261117T052814Z_TEST_STDOUT.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "TEST_STDERR.log": {
+      "path": "artifacts/sr_satdose_20261112/intake/CONTINUATION_AUDITOR_OFFLINE_a862b98f_20261117T052814Z_TEST_STDERR.log",
+      "sha256": "8eda960da904fb1f5590c18ba254d925ca443e7698100c3d17388c2156c5175a",
+      "bytes": 8113
+    },
+    "TEST_RUN.json": {
+      "path": "artifacts/sr_satdose_20261112/intake/CONTINUATION_AUDITOR_OFFLINE_a862b98f_20261117T052814Z_TEST_RUN.json",
+      "sha256": "2ef4b230ae9f6243b74e0bbe9a7782e233c074df3e288b946016fbd088337101",
+      "bytes": 901
+    }
+  },
+  "tests": {
+    "final_passed": 45,
+    "audit": 32,
+    "monitor": 13,
+    "full_suite_returncode": 0,
+    "independent_prior_suite_passed": 44,
+    "independent_final_increment_passed": 1
+  },
+  "independent_review": {
+    "agent": "/root/admission_review",
+    "verdict": "NO_REMAINING_BLOCKER",
+    "final_auditor_sha256": "9379665201d95df4b7e0671779e19fe2d686a435e6f15e68e36203832db5e352",
+    "final_monitor_sha256": "eca7f3b66445171ea88d6bc732184b11d5cf20432b91acf2a0d4916ff6112824",
+    "scope": [
+      "Actual original APIs and 84/19 source identity; readonly existing locks; full current-risk replay, not occupied preflight",
+      "Exact committed capture populations and fresh CLAIM/RESULT/process/scheduler identity",
+      "Fixed evidence SHA recheck; original model symlink/directory/blob observation preservation",
+      "Exact cluster purged-job exception; all four scheduler rows must still finish 0:0",
+      "Write-once publication and complete bundle raw preservation; explicit download-only recovery",
+      "Monitor canonical-before-read, own-job paths, non-atomic observation limitation",
+      "Final stdin envelope delta: source SHA before exec, in-process argv remains compatible for audit/download/monitor; independent 250000-byte local bootstrap test passed"
+    ],
+    "final_message": "stdin envelope增量终审无阻断。独立运行新增本地短bootstrap处理250000bytes PASS；diffcheck PASS。此前独立44项PASS；未SSH/修改/git。"
+  },
+  "dependencies": {
+    "satdose_submit_continuation.py": {
+      "path": "experiments/sr_satdose_20261112/operations/satdose_submit_continuation.py",
+      "sha256": "eceec5aab4de56b53d8e1483d2e49093e28f4048b2ef818302bb3db499fb0f94",
+      "bytes": 28948
+    },
+    "satdose_prepare_continuation.py": {
+      "path": "experiments/sr_satdose_20261112/operations/satdose_prepare_continuation.py",
+      "sha256": "737954eb256b1c29f5a381e864d3a1bc74a5fa1a8e95ab4a3373c2e66ad151c2",
+      "bytes": 22409
+    },
+    "tests/test_submit_continuation.py": {
+      "path": "experiments/sr_satdose_20261112/operations/tests/test_submit_continuation.py",
+      "sha256": "d7c5521f4aebb83da07b6e19b73c50d068335923af0a67a6ec40fe357b363869",
+      "bytes": 16072
+    }
+  },
+  "original_api_sources": {
+    "execution/continuation_control.py": {
+      "path": "experiments/sr_satdose_20261112/execution/continuation_control.py",
+      "sha256": "fd1256510ec3e7759967748628212e5c6da3499d4e8cd5630aeebcd52ce37eea",
+      "bytes": 25641
+    },
+    "execution/continuation_authority.py": {
+      "path": "experiments/sr_satdose_20261112/execution/continuation_authority.py",
+      "sha256": "78ddbff3bcfa624866eafbfbcdb74aff754946881133c4d8e1e304134bc2daea",
+      "bytes": 21747
+    },
+    "execution/admission_authority.py": {
+      "path": "experiments/sr_satdose_20261112/execution/admission_authority.py",
+      "sha256": "cb444481f4aacc7d7002de244384de50defe4b48013a7710c6e985fccdfdca1a",
+      "bytes": 26892
+    },
+    "execution/training_transaction.py": {
+      "path": "experiments/sr_satdose_20261112/execution/training_transaction.py",
+      "sha256": "62c041a1c2dfdd64df165d3b80ce5136c086a9a75eb173984145aee320ca4c04",
+      "bytes": 33712
+    },
+    "analysis/risk.py": {
+      "path": "experiments/sr_satdose_20261112/analysis/risk.py",
+      "sha256": "e8696763be6a9a988ec74d02712fd324ab77cf63a540fb04427e865250c2deb2",
+      "bytes": 19830
+    },
+    "execution/training_step.py": {
+      "path": "experiments/sr_satdose_20261112/execution/training_step.py",
+      "sha256": "b17554f059a42b671b63ad28b3c8c8388a66a1daf8af5f9fbce1d8a637da598b",
+      "bytes": 26584
+    },
+    "execution/training_runtime.py": {
+      "path": "experiments/sr_satdose_20261112/execution/training_runtime.py",
+      "sha256": "670baaa44107bc9ce017910dcd301452822ed35738b96f3505998aa70af8c5a6",
+      "bytes": 27064
+    },
+    "scheduling/run_continuation.sh": {
+      "path": "experiments/sr_satdose_20261112/scheduling/run_continuation.sh",
+      "sha256": "7dc7cb0c14dce3ef18147cec812c77e9a38350c837ee9477fddee6eab027d8a9",
+      "bytes": 2685
+    }
+  },
+  "boundaries": {
+    "ssh_executed": false,
+    "actual_native_risk_executed": false,
+    "gpu_calls": 0,
+    "optimizer_calls": 0,
+    "training_updates": 0,
+    "scheduler_mutations": 0,
+    "git_mutations": false,
+    "other_jobs_modified": false,
+    "immutable_train_files_modified": false,
+    "next_stage_authorized": false
+  },
+  "limitations": [
+    "Offline tests do not simulate or certify actual original native checkpoint/admission/risk evidence. Server audit remains future work.",
+    "Full POST_RISK equality requires unchanged actual current four-path commits and original DEV endpoint set.",
+    "Intermediate risk files are not independently replayed historically.",
+    "Slurm+lease exit evidence is not direct compute-node process-death observation.",
+    "The new audit bundle includes the full audit publication and observed hashes, not large original model/raw/state bytes.",
+    "An unknown remote audit without a trusted returned manifest requires separate read-only inspection; this tool never reruns it."
+  ]
+}
