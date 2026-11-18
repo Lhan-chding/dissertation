@@ -531,3 +531,8 @@ Submit exec63129退出0，1744855于14:45:52UTC提交/释放，LH-SATDOSE-TRAIN-
 16:48:22UTC巡检SSH超时，随后只读重试亦255/超时。scutil显示SD-WAN Disconnected，start返回0/Connecting后再次Disconnected。Mac本次未锁屏；通过CUA打开已安装Netskyper，使用既有已保存登录信息尝试一次，客户端提示账号密码错误；未读取/记录密码，未改认证配置。scutil --nc list确认SD-WAN provider=com.subao.netskyper。CUA已completion_summary结束。用户收到恢复请求后立即回复恢复；16:52:16UTC补查成功，1744855仍PENDING/QOSGrpGRES，未分配节点，全计数0，无CLAIM/incident/未决capture。
 
 失败原始证据intake/MONITOR_CONTINUATION_1744855_20261118T164822300915Z/，另有明确转录来源、排除凭据的NETWORK_RECOVERY_OBSERVATION.json；成功补查intake/MONITOR_CONTINUATION_1744855_20261118T165213684205Z/。从未重提/取消/修改作业，当前网络阻塞已解除。下一次17:52UTC/01:52SGT，用同一actual submission a39c6dc9、job1744855、11032/T1/first3监控命令；完成后既定v2仅一次审计。最近提交b3a6462ef17cf92ef797dd4e6eea896b380027c9已推送核实。无活动本地exec/CUA/agent工作。
+
+
+## Hourly queue observation — 2026-11-19 01:52 SGT
+
+17:52:39UTC巡检SSH正常：1744855仍PENDING/QOSGrpGRES、未分配节点，3–8步计数均0，无CLAIM/incident/未决capture。原始证据intake/MONITOR_CONTINUATION_1744855_20261118T175235783573Z/。下一次18:52UTC/02:52SGT；保持实际submission a39c6dc9绑定，既定终态v2审计与DEV8顺序不变。上次网络恢复证据提交ab3583f2b9d763640b47d219e6dd4f25aa80d335已推送核实。无活动exec/CUA/agent，未改变调度或科学配置。
