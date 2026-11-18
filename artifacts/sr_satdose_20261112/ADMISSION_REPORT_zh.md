@@ -1,6 +1,6 @@
 # SR-SATDOSE-1 准入报告（2026-11-14，PREFIX用户批准放行）
 
-Latest verified status (2026-11-18 13:49 SGT): Job1743680 COMPLETED0:0/all3expectedsteps0:0,actualend05:32:23UTC,elapsed05:21:33. All768responses/6newCOMMITs complete;overall20/96formalupdates. FinalriskPENDING_REQUIRED_DEV/global_holdfalse,noincidents/unresolvedcaptures. Actualv2independentCPUaudit23e6nowrunningonce(exec75069);acceptancepending,notyetnextpathprepared. Onfullaudit/noHOLD prepare11032/T0/3-8 then11032/T1/3-8 thenall4DEV8. MAIN sealed. Historical observations follow.
+Latest verified status (2026-11-18 14:05 SGT): Job1743680 independently accepted by actualv2CPUaudit and complete16-member evidence review. Fullfinalriskexact,noHOLD,pendingboth11031pathsDEV8. Prefix8/8/2/2,overall20/96updates. Next11032/T0/3-8 original737954CPUpreparationnowrunningonce(exec24384);notyetGPUsubmitted. Noresampling/otherjobmutation. Remaining11032paths mustreach8 beforeall4DEV8. MAIN sealed. Historical observations follow.
 
 早期观测：用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 
