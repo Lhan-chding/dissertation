@@ -1,0 +1,36 @@
+{
+  "recorded_at_utc": "2026-11-18T21:55:42.600727+00:00",
+  "job_id": 1744855,
+  "provenance": "Transcription of tool results; original monitor raw logs and receipt retained separately. Retry/VPN/UI entries are not raw process captures.",
+  "first_monitor_error": "Operation timed out",
+  "ssh_retry": {
+    "exit_code": 255,
+    "error": "Operation timed out"
+  },
+  "vpn_service": "7098852B-CD75-448F-B1F5-3751311BD253",
+  "vpn_before": "Disconnected",
+  "vpn_start": {
+    "exit_code": 0,
+    "immediate_status": "Connecting",
+    "status_after": "Disconnected"
+  },
+  "computer_use_error": "The Mac is locked and automatic unlock could not unlock it. Ask the user to unlock the Mac manually before continuing.",
+  "cua_part_completed": true,
+  "latest_job_state": "UNKNOWN_DUE_TO_NETWORK",
+  "last_successful_observation_utc": "2026-11-18T20:53:24.793924+00:00",
+  "last_successful_observation": {
+    "state": "RUNNING",
+    "node": "gpu-pro6000-13",
+    "completed_responses": 384,
+    "assigned_responses": 768,
+    "committed_chunk_steps": [
+      3,
+      4
+    ],
+    "step_5_complete": 128,
+    "global_hold": false
+  },
+  "user_action_requested": "Unlock Mac and restore campus VPN, then reply restored.",
+  "resubmitted": false,
+  "other_jobs_modified": false
+}

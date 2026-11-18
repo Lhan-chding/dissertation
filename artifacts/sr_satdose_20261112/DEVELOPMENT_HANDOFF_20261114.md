@@ -557,3 +557,10 @@ Submit exec63129退出0，1744855于14:45:52UTC提交/释放，LH-SATDOSE-TRAIN-
 20:53:24UTC：1744855及全部子步骤RUNNING于gpu-pro6000-13。第3、4步均128/128/128及COMMIT齐全，风险PENDING_REQUIRED_DEV/global_hold=false；第5步128/128/128但未COMMIT，6–8未开始。384/768条回答、本批2/6更新、总观察28/96 COMMIT（完整验收仍26/96）。无incident/未决capture，日志尾部仅既有长度参数优先级提示。
 
 证据intake/MONITOR_CONTINUATION_1744855_20261118T205321104297Z/，JSON/敏感模式检查通过。下一次21:53UTC/05:53SGT；同一submission a39c6dc9，终态v2审计后才全路径DEV8。上次04eba14c2a53686146a60660c39fda1282e24865已推送核实。无活动本地exec/agent，未修改其它作业。
+
+
+## Network blocker — 2026-11-19 05:55 SGT
+
+21:53:55UTC小时巡检SSH超时，随后BatchMode/ConnectTimeout=15只读重试亦255/超时。SD-WAN显示Disconnected，start返回0/Connecting后仍Disconnected；CUA确认Mac锁屏、自动解锁失败，已completion_summary结束UI部分。已异步请求用户解锁及恢复校园网/VPN。没有重新尝试已知失败的客户端凭据，也未改认证配置。
+
+原始监控证据和标明转录来源的NETWORK_RECOVERY_OBSERVATION.json位于intake/MONITOR_CONTINUATION_1744855_20261118T215355423145Z/。1744855当前UNKNOWN，不是作业失败/完成。最后成功20:53:24UTC即04:53SGT：RUNNING于gpu-pro6000-13，384/768回答、2/6新增COMMIT，第5步128回答齐全待COMMIT，无HOLD/incident。未取消、重提或改动任何作业；没有后继DEV/审计/训练启动。收到恢复后立即用同一SUBMISSION SHA a39c6dc9c126389d8bcfa6ef4e50021e43ca6802edc5538099f69b60812845c9、job1744855、11032/T1/first3执行原监控。终态后v2独立审计及全四路径DEV8顺序不变。当前无活动exec/CUA/agent，最近成功巡检提交532dcc2f1f4547b6c4a4752d62567e007af2a097已推送且远程一致。
