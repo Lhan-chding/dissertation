@@ -454,3 +454,10 @@ Submiteceec5exec17303completed0. Actual1744276submitted/released07:13:31UTC,LH-S
 Actualfirstmonitor07:16:22UTC RUNNINGgpu-pro6000-7,Slurmstart07:13:32UTC;allsteps3-8zeroBEGIN/CAPTURE/COMPLETE/COMMIT,noCLAIM/slotyet,noincidents. Receiptintake/MONITOR_CONTINUATION_1744276_20261118T071620180594Z/RECEIPT.json. Nextregular08:16UTC/16:16SGT. Exactmonitor: python3 -B experiments/sr_satdose_20261112/operations/satdose_monitor_continuation.py --submission-receipt /Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261118/start-11032_T0_chunk-003-008/SUBMISSION.json --submission-sha256 e3b1d3f7ae1b1b8149ffa49d295f3a98eb0a407150a9f6eaa608408bbc513ff2 --job-id 1744276 --start-seed 11032 --arm T0 --first-step 3 --execute
 
 Actualv2localplanpassedagainstnewreceiptzeroSSH. Onterminal768responses6newCOMMIT/allSlurmrowsCOMPLETED0:0, .venv/bin/python -B experiments/sr_satdose_20261112/operations/satdose_audit_continuation_v2.py withsameactualreceipt/SHA/job/selection and--local-dir /Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261118/start-11032_T0_chunk-003-008/independent_audit --execute. Fullactualaudit+review/noHOLD precedeslast11032/T1/3-8prepare;thenall4DEV8. Noaheadpreparation. NoactiveCPUexecsessions/agentwork;currentGPUjob1744276running.
+
+
+## Hourly observation — 2026-11-18 16:16 SGT
+
+只读巡检08:16:19UTC：1744276及batch/extern/0均RUNNING，gpu-pro6000-7。第3步BEGIN/CAPTURE/COMPLETE各128且COMMIT存在（bc1e39faadf6cdda074adeab37e83562092403a05d2a556d5d56d8fe39b0e388）；第4步3/2/2，尚无COMMIT；5–8未开始。完成130/768条，本批1/6更新，观察到总21/96 COMMIT（完整独立验收仍20/96）。第3步风险PENDING_REQUIRED_DEV、global_hold=false；无incident。第4步一条在途BEGIN对应CAPTURE/COMPLETE缺失，不是终态失败。stderr尾部仅既有min_new_tokens/min_length优先级提示，stdout尾部为空。
+
+完整原始证据见intake/MONITOR_CONTINUATION_1744276_20261118T081615923745Z/。仅本地输出汇总误打印完整risk导致工具输出截断，原始监控回执/日志完整保存；已重新读取本地回执提取紧凑计数，无重复服务器巡检。下一次约09:16UTC/17:16SGT。完成后使用既定v2独立审计，前提和后续顺序不变。上次证据提交b1ac3b95a7dc4dc93f73a251ace3f998c8af4037已推送并核实远程一致。
