@@ -461,3 +461,10 @@ Actualv2localplanpassedagainstnewreceiptzeroSSH. Onterminal768responses6newCOMMI
 只读巡检08:16:19UTC：1744276及batch/extern/0均RUNNING，gpu-pro6000-7。第3步BEGIN/CAPTURE/COMPLETE各128且COMMIT存在（bc1e39faadf6cdda074adeab37e83562092403a05d2a556d5d56d8fe39b0e388）；第4步3/2/2，尚无COMMIT；5–8未开始。完成130/768条，本批1/6更新，观察到总21/96 COMMIT（完整独立验收仍20/96）。第3步风险PENDING_REQUIRED_DEV、global_hold=false；无incident。第4步一条在途BEGIN对应CAPTURE/COMPLETE缺失，不是终态失败。stderr尾部仅既有min_new_tokens/min_length优先级提示，stdout尾部为空。
 
 完整原始证据见intake/MONITOR_CONTINUATION_1744276_20261118T081615923745Z/。仅本地输出汇总误打印完整risk导致工具输出截断，原始监控回执/日志完整保存；已重新读取本地回执提取紧凑计数，无重复服务器巡检。下一次约09:16UTC/17:16SGT。完成后使用既定v2独立审计，前提和后续顺序不变。上次证据提交b1ac3b95a7dc4dc93f73a251ace3f998c8af4037已推送并核实远程一致。
+
+
+## Hourly observation — 2026-11-18 17:16 SGT
+
+09:16:44UTC只读巡检：1744276及batch/extern/0均RUNNING，gpu-pro6000-7。第3、4步均128/128/128且COMMIT存在，第5步30/30/30，6–8未开始。本批完成286/768条、2/6更新；观察到总22/96 COMMIT，完整独立验收仍20/96。已完成步骤均PENDING_REQUIRED_DEV、global_hold=false；incidents为空，unresolved_capture_paths为空。stderr尾部仍为既有min_new_tokens/min_length提示。
+
+原始证据intake/MONITOR_CONTINUATION_1744276_20261118T091640380645Z/，本地JSON读取及源文件SHA核对通过。下一次约10:16UTC/18:16SGT。v2终态独立审计及后续路径顺序保持既定口径；未运行后继训练、未改变任何作业。前次巡检提交85796decc203ec926b5304f6cccafe48ddb31d6b已推送并核实远程一致。
