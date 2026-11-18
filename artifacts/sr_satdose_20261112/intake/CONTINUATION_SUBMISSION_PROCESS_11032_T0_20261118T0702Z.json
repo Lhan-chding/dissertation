@@ -1,0 +1,8 @@
+{
+  "permission": "READ_ONLY_EXISTING_SUBMISSION_OBSERVATION_NO_RETRY",
+  "recorded_at_utc": "2026-11-18T07:01:59.132459+00:00",
+  "expected_remote_source_sha256": "80c367299fa36ff95fa09ec2b3958ba300ee8a6f9957bda1cdba5efff3838867",
+  "returncode": 0,
+  "stdout": "{\"observed_at_utc\": \"2026-11-18T07:01:59.119699+00:00\", \"matching_processes\": [{\"pid\": 185536, \"status\": {\"Name\": \"python\", \"State\": \"R (running)\", \"VmRSS\": \"852124 kB\", \"Threads\": \"23\"}, \"cpu_seconds\": 3896.01, \"elapsed_seconds\": 1711.9599999999627, \"source_sha256\": \"80c367299fa36ff95fa09ec2b3958ba300ee8a6f9957bda1cdba5efff3838867\"}], \"selected_schedule_exists\": false, \"selected_records\": {}}\n",
+  "stderr": "EEE/ROSE Cluster 02\nConnecting to: login-1\n\nRelevant Guides:\n- https://github.com/NTUEEECluster/docs/blob/main/quickstart.md\n- https://github.com/NTUEEECluster/docs/blob/main/terms-n-conditions.md\n"
+}
