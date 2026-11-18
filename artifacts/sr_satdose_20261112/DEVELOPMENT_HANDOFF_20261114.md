@@ -482,3 +482,10 @@ Actualv2localplanpassedagainstnewreceiptzeroSSH. Onterminal768responses6newCOMMI
 用户回复恢复后，11:41:52UTC只读补查成功：1744276及batch/extern/0均RUNNING，gpu-pro6000-7。第3–6步均128/128/128且COMMIT存在；第7步128/128/128但尚无COMMIT；第8步未开始。本批640/768条回答、4/6更新；观察到总24/96 COMMIT，完整独立验收仍20/96。已完成步骤风险均PENDING_REQUIRED_DEV、global_hold=false；无incident/未决capture。stderr尾部仍仅既有min_new_tokens/min_length提示，stdout尾部为空。
 
 完整证据intake/MONITOR_CONTINUATION_1744276_20261118T114147943110Z/，源文件SHA核对和JSON读取通过；未重提/修改任何作业。下一次约12:41UTC/20:41SGT。完成后按既定v2审计命令执行一次；独立验收后才准备11032/T1/3–8，全部四路径到8后再执行DEV8。此前网络中断证据提交b851ce7d87cc86f0d427c1cda744bff6315462d8已推送且远程一致。
+
+
+## All chunk updates committed; finalization pending — 2026-11-18 20:42 SGT
+
+12:42:14UTC巡检：1744276及batch/extern/0均RUNNING。第3–8步BEGIN/CAPTURE/COMPLETE各128、COMMIT齐全；768/768回答、6/6更新，总26/96 COMMIT。第8步风险记录及最终RESULT尚未生成；第3–7步风险global_hold=false。无incident/未决capture，尚不能认定作业完成或独立验收。完整独立验收仍20/96。
+
+原始证据intake/MONITOR_CONTINUATION_1744276_20261118T124209352105Z/，JSON读取、源文件SHA及敏感字段模式检查通过。下一次约13:42UTC/21:42SGT。终态Slurm四行COMPLETED0:0且RESULT齐全后才执行一次v2审计；当前无后续CPU审计/训练启动。此前恢复巡检提交069c8804c2ce2c31c6773cbda8529783e391dabf已推送并核实远程一致。
