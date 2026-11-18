@@ -519,3 +519,8 @@ Submit exec63129退出0，1744855于14:45:52UTC提交/释放，LH-SATDOSE-TRAIN-
 首次monitor14:47:51UTC：PENDING/QOSGrpGRES，3–8步均零BEGIN/CAPTURE/COMPLETE/COMMIT，无CLAIM/incident/未决capture，尚未分配节点。完整证据intake/MONITOR_CONTINUATION_1744855_20261118T144748548645Z/。下一次15:47UTC/23:47SGT。后续命令为.venv/bin/python -B experiments/sr_satdose_20261112/operations/satdose_monitor_continuation.py --submission-receipt /Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261118/start-11032_T1_chunk-003-008/SUBMISSION.json --submission-sha256 a39c6dc9c126389d8bcfa6ef4e50021e43ca6802edc5538099f69b60812845c9 --job-id 1744855 --start-seed 11032 --arm T1 --first-step 3 --execute。紧凑输出时只提取risk.status/global_hold，避免打印巨大observed_files。
 
 实际绑定v2本地计划已通过、零SSH。取得768回答/6COMMIT/RESULT及Slurm四行COMPLETED0:0后，使用satdose_audit_continuation_v2.py同一提交回执/SHA/job/selection，--local-dir /Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261118/start-11032_T1_chunk-003-008/independent_audit --execute仅一次。完整审计和二次复核通过后才准备全部四路径DEV8（各自原生准入），不进入第9步。当前无活动本地exec/agent工作，唯一待观察GPU作业1744855；最近准备证据提交e72a5cd809b513c0ed52c0bd3975132adf6f7823已推送核实。
+
+
+## Hourly queue observation — 2026-11-18 23:48 SGT
+
+15:48:01UTC只读巡检：1744855仍PENDING/QOSGrpGRES，未分配节点，所有3–8步计数为0，无CLAIM/incident/未决capture。完整证据intake/MONITOR_CONTINUATION_1744855_20261118T154758354684Z/，JSON及敏感模式检查通过。没有调度修改或重提。下一次16:48UTC/11月19日00:48SGT，使用同一提交SHA a39c6dc9与上一段命令。最近提交0068b692873b74498c3cb89dabe2bc2905dd0f71已推送核实。
