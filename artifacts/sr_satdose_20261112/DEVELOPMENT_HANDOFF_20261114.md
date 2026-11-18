@@ -543,3 +543,10 @@ Submit exec63129退出0，1744855于14:45:52UTC提交/释放，LH-SATDOSE-TRAIN-
 18:53:04UTC巡检确认1744855及batch/extern/0均RUNNING，实际18:15:58UTC启动于gpu-pro6000-13（老师QoS/2PRO6000）。第3步BEGIN112、CAPTURE/COMPLETE111，尚无COMMIT；4–8步未开始。已有匹配CLAIM，无incident，一条在途生成对应CAPTURE/COMPLETE未产生，不视为终态失败。当前本批111/768条，整体已验收26/96更新。
 
 完整证据intake/MONITOR_CONTINUATION_1744855_20261118T185300248019Z/，JSON和敏感模式检查通过。下一次19:53UTC/03:53SGT，仍用同一提交SHA a39c6dc9、job1744855、11032/T1/first3；终态完整后v2审计，不提前启动其它训练或DEV。前次提交bd0cf6381cf76a2877a7b792c5607f4bea7bbb2a已推送核实。无活动本地exec/agent。
+
+
+## Hourly training observation — 2026-11-19 03:53 SGT
+
+19:53:32UTC：1744855及全部子步骤RUNNING于gpu-pro6000-13。第3步128/128/128及COMMIT齐全，风险PENDING_REQUIRED_DEV/global_hold=false；第4步128/128/128但未COMMIT，5–8未开始。256/768条回答，本批1/6更新，总观察27/96 COMMIT（完整验收仍26/96）。incidents与unresolved_capture_paths为空，日志尾部仅既有transformers长度参数优先级提示。
+
+证据intake/MONITOR_CONTINUATION_1744855_20261118T195327188701Z/，JSON/敏感模式检查通过。下一次20:53UTC/04:53SGT；实际submission a39c6dc9绑定及终态v2审计/DEV8顺序不变。最近e7fa1dae04c2d2dd8260c51e7cd76a1cb805d1c7已推送核实。无其它活动本地exec/agent，未修改其它作业。
