@@ -1,0 +1,33 @@
+{
+  "recorded_at_utc": "2026-11-18T16:52:59.018364+00:00",
+  "job_id": 1744855,
+  "provenance": "Transcription of tool results, excluding credentials. Original monitor raw logs and receipt are separately retained.",
+  "first_monitor_error": "Operation timed out",
+  "ssh_retry": {
+    "exit_code": 255,
+    "error": "Operation timed out"
+  },
+  "vpn_service": "7098852B-CD75-448F-B1F5-3751311BD253",
+  "vpn_provider": "com.subao.netskyper",
+  "vpn_before": "Disconnected",
+  "vpn_start": {
+    "exit_code": 0,
+    "immediate_status": "Connecting",
+    "status_after": "Disconnected"
+  },
+  "mac_locked": false,
+  "client_recovery": {
+    "existing_saved_login_attempted_once": true,
+    "observed_result": "Login failed: incorrect account or password",
+    "credentials_recorded": false,
+    "cua_part_completed": true
+  },
+  "user_action_requested": "Restore VPN by signing in locally; do not send password in chat.",
+  "user_reported_restored": true,
+  "successful_followup_receipt": "artifacts/sr_satdose_20261112/intake/MONITOR_CONTINUATION_1744855_20261118T165213684205Z/RECEIPT.json",
+  "successful_observation_utc": "2026-11-18T16:52:16.444016+00:00",
+  "verified_job_state": "PENDING",
+  "reason": "QOSGrpGRES",
+  "resubmitted": false,
+  "other_jobs_modified": false
+}
