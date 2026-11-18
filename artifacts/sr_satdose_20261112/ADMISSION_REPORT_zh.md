@@ -1,6 +1,6 @@
 # SR-SATDOSE-1 准入报告（2026-11-14，PREFIX用户批准放行）
 
-Latest verified status (2026-11-18 20:42 SGT): 1744276（11032/T0，第3–8步）全部768条回答及6个COMMIT齐全；第8步风险/最终RESULT尚未生成，Slurm父作业及全部子步骤仍RUNNING。不能视为完整验收。观察到四路径COMMIT前缀8/8/8/2，总26/96更新；完整独立验收仍20/96。第3–7步global_hold=false，无incident/未决capture。下一次约21:42 SGT；取得完整终态后执行v2独立审计。MAIN仍封存。以下为历史观察。
+Latest verified status (2026-11-18 21:43 SGT): 1744276（11032/T0，第3–8步）于12:43:00UTC结束，父作业/batch/extern/0均COMPLETED0:0，耗时05:29:28。768条回答、6个COMMIT及CONTINUATION_CHUNK_COMPLETE回执齐全，全部步骤global_hold=false，无incident/未决capture。四路径COMMIT前缀8/8/8/2，共26/96更新；本批v2独立CPU审计已启动一次（exec73472），验收结果待定，禁止重试或启动后继路径。MAIN仍封存。以下为历史观察。
 
 早期观测：用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 

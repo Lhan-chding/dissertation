@@ -489,3 +489,10 @@ Actualv2localplanpassedagainstnewreceiptzeroSSH. Onterminal768responses6newCOMMI
 12:42:14UTC巡检：1744276及batch/extern/0均RUNNING。第3–8步BEGIN/CAPTURE/COMPLETE各128、COMMIT齐全；768/768回答、6/6更新，总26/96 COMMIT。第8步风险记录及最终RESULT尚未生成；第3–7步风险global_hold=false。无incident/未决capture，尚不能认定作业完成或独立验收。完整独立验收仍20/96。
 
 原始证据intake/MONITOR_CONTINUATION_1744276_20261118T124209352105Z/，JSON读取、源文件SHA及敏感字段模式检查通过。下一次约13:42UTC/21:42SGT。终态Slurm四行COMPLETED0:0且RESULT齐全后才执行一次v2审计；当前无后续CPU审计/训练启动。此前恢复巡检提交069c8804c2ce2c31c6773cbda8529783e391dabf已推送并核实远程一致。
+
+
+## Third continuation complete; independent audit active — 2026-11-18 21:43 SGT
+
+13:42:45UTC巡检确认1744276父作业/batch/extern/0均COMPLETED0:0，实际07:13:32–12:43:00UTC，05:29:28。squeue退出1且仅Invalid job id specified，匹配正常已清理队列项；sacct完整四行成功。3–8步均128条BEGIN/CAPTURE/COMPLETE和COMMIT，RESULT=CONTINUATION_CHUNK_COMPLETE、train_responses768、formal_optimizer_steps6；全部步骤风险global_hold=false，无incident/未决capture。
+
+完整原始证据intake/MONITOR_CONTINUATION_1744276_20261118T134237806083Z/。原提交回执e3b1d3f7ae1b1b8149ffa49d295f3a98eb0a407150a9f6eaa608408bbc513ff2、原选择11032/T0/first3绑定不变。已执行一次v2审计23e6b906（exec73472），输出目录continuation_20261118/start-11032_T0_chunk-003-008/independent_audit；当前等待结果，不得重复执行。完整16文件证据包核验和独立审查通过后才准备11032/T1/3–8。此前提交95fabc05a89631acff98a085ea0af3b69ec2e56e已推送且远程一致。
