@@ -468,3 +468,10 @@ Actualv2localplanpassedagainstnewreceiptzeroSSH. Onterminal768responses6newCOMMI
 09:16:44UTC只读巡检：1744276及batch/extern/0均RUNNING，gpu-pro6000-7。第3、4步均128/128/128且COMMIT存在，第5步30/30/30，6–8未开始。本批完成286/768条、2/6更新；观察到总22/96 COMMIT，完整独立验收仍20/96。已完成步骤均PENDING_REQUIRED_DEV、global_hold=false；incidents为空，unresolved_capture_paths为空。stderr尾部仍为既有min_new_tokens/min_length提示。
 
 原始证据intake/MONITOR_CONTINUATION_1744276_20261118T091640380645Z/，本地JSON读取及源文件SHA核对通过。下一次约10:16UTC/18:16SGT。v2终态独立审计及后续路径顺序保持既定口径；未运行后继训练、未改变任何作业。前次巡检提交85796decc203ec926b5304f6cccafe48ddb31d6b已推送并核实远程一致。
+
+
+## Network blocker — 2026-11-18 18:18 SGT
+
+10:16:53UTC小时巡检生成MONITOR_UNKNOWN，原始stderr为Network is unreachable。随后只读SSH重试（BatchMode/ConnectTimeout=15）退出255/Operation timed out；scutil显示既有SD-WAN服务Disconnected，start返回0且即时Connecting，随后仍Disconnected。CUA确认Mac锁屏、自动解锁失败，已发送completion_summary结束此次UI检查。已异步请求用户解锁并恢复VPN。
+
+全部监控原始文件和另行标明转录来源的NETWORK_RECOVERY_OBSERVATION.json保存在intake/MONITOR_CONTINUATION_1744276_20261118T101653440367Z/。1744276最新状态UNKNOWN；最后成功17:16 SGT为286/768、2/6新COMMIT、RUNNING，无HOLD。无重提、取消或其它作业修改，无后继训练/审核启动。收到恢复后立即使用上文同一提交回执/SHA/job/selection执行只读monitor；完成后只执行一次v2独立审计，再按既定顺序推进。没有活动本地exec/CUA会话。上次巡检提交a44c3167bf4c9074b727e9b31ea915a789955afa已推送且远程一致。
