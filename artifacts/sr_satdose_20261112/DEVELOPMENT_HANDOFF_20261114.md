@@ -536,3 +536,10 @@ Submit exec63129退出0，1744855于14:45:52UTC提交/释放，LH-SATDOSE-TRAIN-
 ## Hourly queue observation — 2026-11-19 01:52 SGT
 
 17:52:39UTC巡检SSH正常：1744855仍PENDING/QOSGrpGRES、未分配节点，3–8步计数均0，无CLAIM/incident/未决capture。原始证据intake/MONITOR_CONTINUATION_1744855_20261118T175235783573Z/。下一次18:52UTC/02:52SGT；保持实际submission a39c6dc9绑定，既定终态v2审计与DEV8顺序不变。上次网络恢复证据提交ab3583f2b9d763640b47d219e6dd4f25aa80d335已推送核实。无活动exec/CUA/agent，未改变调度或科学配置。
+
+
+## Fourth continuation started — 2026-11-19 02:53 SGT
+
+18:53:04UTC巡检确认1744855及batch/extern/0均RUNNING，实际18:15:58UTC启动于gpu-pro6000-13（老师QoS/2PRO6000）。第3步BEGIN112、CAPTURE/COMPLETE111，尚无COMMIT；4–8步未开始。已有匹配CLAIM，无incident，一条在途生成对应CAPTURE/COMPLETE未产生，不视为终态失败。当前本批111/768条，整体已验收26/96更新。
+
+完整证据intake/MONITOR_CONTINUATION_1744855_20261118T185300248019Z/，JSON和敏感模式检查通过。下一次19:53UTC/03:53SGT，仍用同一提交SHA a39c6dc9、job1744855、11032/T1/first3；终态完整后v2审计，不提前启动其它训练或DEV。前次提交bd0cf6381cf76a2877a7b792c5607f4bea7bbb2a已推送核实。无活动本地exec/agent。
