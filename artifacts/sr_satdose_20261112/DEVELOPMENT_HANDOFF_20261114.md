@@ -594,3 +594,8 @@ Submit exec79924完成0，1746695于06:17:57UTC提交并释放，LH-SATDOSE-DEV-
 首次只读monitor06:19:19UTC父作业/batch/extern/0均RUNNING，gpu-pro6000-6，elapsed1:18；BEGIN/CAPTURE/COMPLETE全0，尚未创建端点slot，无incident，日志空。证据intake/MONITOR_DEV_1746695_20261119T061919Z.json。下一次约07:19UTC/15:19SGT：.venv/bin/python -B experiments/sr_satdose_20261112/operations/satdose_monitor_trained_dev.py --job-id 1746695 --start-seed 11031 --arm T0 --step 8。该工具直接只读，不加--execute。
 
 Audit a9c4源SHA及绑定本次actual submission的本地计划通过，零SSH。取得108 COMPLETE+完整RESULT及Slurm全部COMPLETED0:0后，.venv/bin/python -B experiments/sr_satdose_20261112/operations/satdose_run_trained_dev_audit.py --submission-receipt /Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/trained_dev_20261119/start-11031_T0_step-008/SUBMISSION.json --submission-sha256 73106b592645321ca85ccee88f730d4d17638ab209940159b3307738d7bd1cfb --job-id 1746695 --start-seed 11031 --arm T0 --step 8 --local-dir /Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/trained_dev_20261119/start-11031_T0_step-008/independent_audit_bundle --execute，仅一次。原7c29审计+c168单bundle全10文件验收及二次复核/noHOLD之后再准备11031/T1 DEV8。当前无活动exec/agent，唯一活动GPU作业1746695；准备提交caa34dc33c84eb2b355ec82a6d8663ae2bf5d23c已推送核实。
+
+
+## DEV8 generation complete; controller still running — 2026-11-19 15:19 SGT
+
+07:19:32UTC只读巡检：1746695及batch/extern/0均RUNNING于gpu-pro6000-6，elapsed01:01:31；BEGIN/CAPTURE/COMPLETE=108/108/108，仅CLAIM存在，尚无RESULT/POST_RISK，无global_incidents。stderr尾部只有既有transformers长度优先级提示。证据intake/MONITOR_DEV_1746695_20261119T071932Z.json已JSON及敏感模式检查。回答齐全不等于控制器/调度完成；未启动独立审计或后继。下一次08:19UTC/16:19SGT，用上一节同一只读monitor命令。完整终态后a9c4一次审计及二次复核/noHOLD，后续DEV8顺序不变。最近提交c30ea7158f055b6b6b76a5af4732d7a7a92b589b已推送核实。无活动本地exec/agent。
