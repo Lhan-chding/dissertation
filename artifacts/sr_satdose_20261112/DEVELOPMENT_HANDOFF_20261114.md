@@ -687,3 +687,10 @@ Submit exec88676退出0，1747963于12:13:10UTC提交/释放，LH-SATDOSE-DEV-11
 15:14UTC巡检exec80969及一次只读sacct重试exec98557均255/Operation timed out。SD-WAN Disconnected，启动既有连接返回0但复查仍Disconnected。本次CUA确认Mac未锁屏，Netskyper现有窗口显示登录失败/账号密码错误；本轮未点击登录、未读取明文密码，未输入/保存/修改凭据，不能由当前弹窗推定错误最初出现时间。CUA completion_summary已完成。已async请求用户在客户端重新登录并恢复VPN，不要聊天发送密码。实际外部阻塞，无审批拒绝。
 
 intake/NETWORK_BLOCKER_DEV_1747963_20261119T1514Z.json明确标注工具输出及UI观察转录，非原始SSH文件；凭据与截图未存入仓库。1747963当前UNKNOWN，最后成功14:14:31UTC即22:14SGT仍PENDING/QOSGrpGRES、无节点/0回答/无incident。未重提/取消或改动任何作业，未运行后继/审计。恢复后用既定satdose_monitor_trained_dev.py --job-id 1747963 --start-seed 11032 --arm T0 --step 8补查；完整终态后actual submission SHA9871c2920213bc1706deab7b0859fb143e07780705b3c90f2fe19b106e721263绑定的a9c4审计一次及二次复核/noHOLD后才11032/T1 DEV8。当前无活动exec/CUA/agent；此前518d595a714d020cc77ebd8696e9e82cc48b9ff0已推送核实。
+
+
+## VPN restored; third DEV8 completed, audit active — 2026-11-19 23:31 SGT
+
+用户回复恢复1后15:30:31UTC补查成功：1747963及batch/extern/0均COMPLETED0:0，elapsed01:11:27，gpu-pro6000-6。108/108/108及RESULT=TRAINED_DEV_ENDPOINT_COMPLETE齐全，POST_RISK832a059579833422dc2815ef1f16bc39af4b95008c53a87660fdb8e2449fcf4f，global_hold=false，pending仅11032/T1/8，无incident。squeue本次rc0空。完整证据intake/MONITOR_DEV_1747963_20261119T153031Z.json通过JSON/终态/敏感模式检查。
+
+a9c4源SHA及新local审计目录不存在已核实。以actual submission SHA9871c2920213bc1706deab7b0859fb143e07780705b3c90f2fe19b106e721263、1747963、11032/T0/8启动既定satdose_run_trained_dev_audit.py --execute一次exec53066，目标trained_dev_20261119/start-11032_T0_step-008/independent_audit_bundle，不得重复。完整10文件/原始传输/来源pins/原生分析/POST_RISK全对象及二次复核通过/noHOLD后才准备最后11032/T1 DEV8。当前仅audit exec53066活动，无活动GPU作业/agent；最近网络阻塞提交231bf1d09b35381f705f296d17801dfd78a7d002已推送核实。
