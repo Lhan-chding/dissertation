@@ -1,6 +1,6 @@
 # SR-SATDOSE-1 准入报告（2026-11-14，PREFIX用户批准放行）
 
-Latest verified status (2026-11-20 04:17 SGT): 四组DEV8均已独立验收，最后11032/T1 S103/108、conflict27/32、aligned+no_list64/64、retention12/12，UNKNOWN0/length0；全局无HOLD、pendingDEV为空。训练32/96不变，11031/T0第9–16步CPU准备已启动一次exec32114，GPU尚未提交。以下为历史观察。
+Latest verified status (2026-11-20 04:30 SGT): 四组DEV8均已独立验收且无HOLD，训练32/96。11031/T0第9–16步CPU准备exec32114在04:28因No route/Broken pipe退出255；远端结果UNKNOWN，禁止重试。SSH复查Network is unreachable，SD-WAN仍断开且Mac锁屏；等待用户恢复网络后只读核实原准备结果，尚无新GPU提交。以下为历史观察。
 
 早期观测：用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 

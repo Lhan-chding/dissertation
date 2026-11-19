@@ -1,0 +1,41 @@
+{
+  "status": "SSH_CPU_PREPARATION_FAILED",
+  "started_at_utc": "2026-11-19T20:14:20.605863+00:00",
+  "finished_at_utc": "2026-11-19T20:28:10.052812+00:00",
+  "returncode": 255,
+  "stdout": "",
+  "stderr": "EEE/ROSE Cluster 02\nConnecting to: login-1\n\nRelevant Guides:\n- https://github.com/NTUEEECluster/docs/blob/main/quickstart.md\n- https://github.com/NTUEEECluster/docs/blob/main/terms-n-conditions.md\nRead from remote host 10.97.216.128: No route to host\r\nclient_loop: send disconnect: Broken pipe\r\n",
+  "summary": {
+    "mode": "WRITE_ONCE_CPU_PREPARATION",
+    "selection": {
+      "start_seed": 11031,
+      "arm": "T0",
+      "first_step": 9,
+      "last_step": 16
+    },
+    "original_train_release": {
+      "path": "execution_releases/FIRST_TWO_RELEASE_71018e5.json",
+      "sha256": "22f3b7b260670628398154652455520cd25169234f66a827d3d117def924438f"
+    },
+    "canary_spec": {
+      "path": "execution_releases/canary_job_1740834/CANARY_SPEC.json",
+      "sha256": "44a8db68c655bea987629ea210da1a32e268806f6e0c7b1506d6d77828d4b260"
+    },
+    "gpu_submission": false
+  },
+  "raw_logs": {
+    "stdout": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/CONTINUATION_PREPARATION_71018e5_s11031_T0_009_016_REMOTE_STDOUT.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/CONTINUATION_PREPARATION_71018e5_s11031_T0_009_016_REMOTE_STDERR.log",
+      "sha256": "27b8e25ec24ea1acc2777e8c1dac47538e844d41e856496ed237e4a1d346c44f"
+    }
+  },
+  "local_operation_source": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/CONTINUATION_PREPARATION_71018e5_s11031_T0_009_016_PREPARATION_SOURCE.py",
+    "sha256": "737954eb256b1c29f5a381e864d3a1bc74a5fa1a8e95ab4a3373c2e66ad151c2",
+    "bytes": 22409
+  }
+}

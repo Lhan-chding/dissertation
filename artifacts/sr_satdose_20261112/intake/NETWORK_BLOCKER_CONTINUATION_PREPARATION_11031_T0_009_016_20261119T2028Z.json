@@ -1,0 +1,33 @@
+{
+  "schema": "sr-satdose-network-blocker-observation-v1",
+  "evidence_type": "MANUAL_TRANSCRIPTION_OF_TOOL_AND_UI_OUTPUTS_NOT_RAW_COMMAND_CAPTURE",
+  "preparation_receipt": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/CONTINUATION_PREPARATION_71018e5_s11031_T0_009_016_LOCAL_RECEIPT.json",
+    "sha256": "7b6ef477b140c75ccb4e44717886258affdc6a75ae32787c39998d61dfd7535a"
+  },
+  "preparation_finished_at_utc": "2026-11-19T20:28:10.052812+00:00",
+  "preparation_returncode": 255,
+  "remote_preparation_outcome": "UNKNOWN_NO_RETRY",
+  "ssh_readonly_retry": {
+    "returncode": 255,
+    "stderr": "ssh: connect to host 10.97.216.128 port 22: Network is unreachable\r\n"
+  },
+  "vpn": {
+    "name": "SD-WAN",
+    "service_uuid": "7098852B-CD75-448F-B1F5-3751311BD253",
+    "before": "Disconnected",
+    "existing_connection_start_returncode": 0,
+    "after": "Disconnected"
+  },
+  "ui": {
+    "observation": "Mac locked; automatic unlock could not unlock it",
+    "credentials_read_or_entered": false,
+    "login_clicked": false,
+    "screenshot_saved": false
+  },
+  "latest_accepted_milestone": "ALL_FOUR_DEV8_INDEPENDENTLY_ACCEPTED_NO_HOLD",
+  "training_updates": 32,
+  "required_user_action": "Unlock Mac and restore campus network/VPN",
+  "next_action": "Read-only inspect the exact existing preparation process and publication; never repeat preparation or submit from an unknown receipt",
+  "other_jobs_modified": false
+}

@@ -740,3 +740,12 @@ exec87058退出0，20:12:29UTC原审计/20:12:34UTC驱动完整成功。root+adm
 11032/T1 S103/A103/J100，conflict27/32，aligned+no_list64/64，retention12/12；known/JSON108，UNKNOWN/length0。11032T1两窗mean d2.548582671954303/2.14654819629857，exact185/384、275/384，UNKNOWN0/2保留；11031T1两窗d1.8083395272396081/2.1976671516460957、exact207/384和256/384、UNKNOWN2/1保留。均无双低d窗口，最新冲突26/32与27/32也均>=.80；四路径DEV2/8均无连续严重回退。全四路径prefix8，10DEV齐全，pending[]、HOLDfalse、signals/regressions[]；训练32/96未增，DEV8 4/4验收。
 
 737954准备器source SHA及first9本地计划通过。实际satdose_prepare_continuation.py --start-seed11031 --armT0 --first-step9 --canary-spec-path execution_releases/canary_job_1740834/CANARY_SPEC.json --canary-spec-sha25644a8db68c655bea987629ea210da1a32e268806f6e0c7b1506d6d77828d4b260 --execute启动一次exec32114。目标intake/CONTINUATION_PREPARATION_71018e5_s11031_T0_009_016_LOCAL_RECEIPT.json，禁止重复。成功核对actual receipt/raw/source/10DEV/barrier/quota再用eceec5提交器先local-plan后actual一次，新的continuation_20261120/start-11031_T0_chunk-009-016/SUBMISSION.json，老师2PRO6000/8CPU66G/24h/norequeue。终态使用23e6b9 v2审计，不用旧937966直接执行。当前仅CPU prep32114活动，无GPU/agent。最新7cb9197712e902dead8366ad818c61b0af7a09b3已推送核实。
+
+
+## Network loss during first 9–16 preparation; remote outcome unknown — 2026-11-20 04:30 SGT
+
+exec32114实际started20:14:20UTC、finished20:28:10UTC退出255（上节04:17为记录标签，原收据起始时间为准）。远端连接报No route to host / Broken pipe，stdout为空；原准备LOCAL_RECEIPT状态SSH_CPU_PREPARATION_FAILED，SHA7b6ef477b140c75ccb4e44717886258affdc6a75ae32787c39998d61dfd7535a，stderr SHA27b8e25ec24ea1acc2777e8c1dac47538e844d41e856496ed237e4a1d346c44f；737954操作源及raw hashes全验证。该状态是连接失败，不证明远端准备失败或结束，远端结果UNKNOWN，不得再次运行准备器或改tag/换目录重试。没有进入GPU submit。
+
+只读SSH date重试返回Network is unreachable255。scutil SD-WAN UUID7098852B-CD75-448F-B1F5-3751311BD253断开；start现有连接rc0后仍Disconnected。CUA inventory显示Mac locked/automatic unlock failed，不能操作Netskyper；未点击登录、未读取/输入凭据、未保存截图，CUA completion已完成。人工转录工具/UI观察保存intake/NETWORK_BLOCKER_CONTINUATION_PREPARATION_11031_T0_009_016_20261119T2028Z.json，明确非rawcapture；原准备5文件保留。已请求用户解锁并恢复网络。全部DEV8的独立验收与无HOLD结论不变，训练32/96。
+
+恢复后第一步仅只读检查原CPU准备进程及execution_releases/CONTINUATION_71018e5_s11031_T0_009_016_*发布文件、原INTENT/RELEASE/BUDGET/RISK/PREFLIGHT是否完整且无ERROR/UNKNOWN；禁止重跑原准备器。若原准备确实已完成，需要精确下载验证原回执并保留本地失败证据，再准备经过审查的仅下载恢复流程；不伪造成功收据或跳过提交器验证。若远端仍活动则等待；若失败/残缺则按实际证据技术恢复，不能猜测。当前本地operator均已退出、无agent/CUA活动；唯一不确定的是远端CPU准备。最近全部DEV8验收提交fb6e4ae5a3b2972c42eabba366c5540dc243eca4已推送核实。
