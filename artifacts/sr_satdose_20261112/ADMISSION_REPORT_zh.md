@@ -1,6 +1,6 @@
 # SR-SATDOSE-1 准入报告（2026-11-14，PREFIX用户批准放行）
 
-Latest verified status (2026-11-19 16:20 SGT): 11031/T0 DEV8作业1746695及全部子步骤COMPLETED/0:0，耗时01:03:39，108条回答及RESULT/POST_RISK齐全，global_hold=false。独立CPU审计已启动一次exec24539，尚待完整证据核验；其余3组DEV8待完成。训练仍为已验收32/96更新，全四组DEV8完成且无HOLD后才继续第9步，MAIN仍封存。以下为历史观察。
+Latest verified status (2026-11-19 16:36 SGT): 1746695独立审计及二次只读复核通过，DEV8已验收1/4组。11031/T0 S92/108、conflict17/32、aligned+no_list63/64、retention12/12，UNKNOWN/length0；无HOLD。11031/T1 DEV8完整CPU准备已启动一次exec75052。训练仍为已验收32/96更新，全四组DEV8完成且无HOLD后才继续第9步，MAIN仍封存。以下为历史观察。
 
 早期观测：用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 

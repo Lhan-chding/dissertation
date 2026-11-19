@@ -606,3 +606,12 @@ Audit a9c4源SHA及绑定本次actual submission的本地计划通过，零SSH�
 08:19:40UTC巡检确认1746695及batch/extern/0全部COMPLETED0:0，elapsed01:03:39，gpu-pro6000-6；108/108/108及RESULT=TRAINED_DEV_ENDPOINT_COMPLETE齐全，POST_RISK94999b7c5fda9bfbf331ca1cf90916e8658767b8d96d5aba7b09c09f263d7027，global_hold=false，仍待11031/T1、11032/T0、11032/T1 DEV8。squeue已清理rc1/Invalid job id specified，sacct完整成功。intake/MONITOR_DEV_1746695_20261119T081940Z.json完整保存，JSON/终态/敏感模式检查通过。
 
 已用上一节固定submission SHA73106b59、job1746695、11031/T0/step8、local independent_audit_bundle启动a9c4 --execute一次，exec24539。等待原审计+单bundle下载；不得重复。完整10文件、原始SHA/发布/原生计分及POST_RISK全对象重算核验+二次复核通过/noHOLD后，才准备11031/T1 DEV8（188b准备、40c提交，原22f3 TRAIN/44a8 canary/tag71018e5_20261116不变）。当前仅audit exec24539活动，无活动GPU作业。最近提交d263ce9a48e69b4b773f72e7358dde1a9fb5f360已推送核实。
+
+
+## First DEV8 independently accepted; second preparation active — 2026-11-19 16:36 SGT
+
+Audit exec24539退出0，08:30:41UTC ORIGINAL_AUDIT_AND_EXACT_BUNDLE_COMPLETE。root及admission_review独立本地复核完整10文件、JSON/base64原始整包（非tar）、23本地引用/源码pins/发布/唯一原始manifest、108固定逐行聚合及全POST_RISK对象通过；remote原始评分/审计未重跑。AUDIT_REPORT581b34bcfec638641bd04af6ba005f28dcd3bf9b61107b2685ece4472da1e488；ANALYSISc8a89ac3607cce1d7aa5fcfb33f6f27f9023e844a4909b6ffd1f026440fe9cb6；manifest40e9151449aebd916a2ae92b58b33266f17c6b84f7ccbde3ab2ebdb9d43f6d3c；DRIVER8b9efbd6f9847014513bf3c1c46838d405a7f39ef98370d1c442f46e8a63982f；RECOVERY1f67672e6878620bc4ae8215aa9c4de1a0227d3afa3c768f8b5e9e7c7cd532fe；risk94999b7c5fda9bfbf331ca1cf90916e8658767b8d96d5aba7b09c09f263d7027。Audit observed16034/risk observed16019口径区分，原84/19不变；166外部引用包内一致而非本地重读远端大文件。见本端点REPORT_zh.md观察边界。
+
+11031/T0/8 S92/A90/J87，conflict S17/32，aligned+no_list63/64，retention12/12；known108、UNKNOWN0、length0，无HOLD。DEV8已验收1/4组；训练32/96不变。全四DEV8前不得第9步。
+
+11031/T1/8 prepare188b源SHA及本地计划通过，原22f3 TRAIN/44a8 canary/tag71018e5_20261116不变；新目录trained_dev_20261119/start-11031_T1_step-008已创建。实际--execute-preparation启动一次exec75052，目标绝对PREPARATION.json；不得重复。等完整CPU准备成功收据后核实SHA/发布/风险/空间，再40c465 submit先本地计划后--execute一次，目标同目录SUBMISSION.json，老师QoS2PRO6000/8CPU66G/3h/norequeue。后续按小时monitor、终态a9c4一次审计+二次复核后再11032/T0 DEV8。当前仅prep exec75052活动，无活动GPU作业/agent。最近d9040d35520c73dd1a4cf451f7e7d259de846d59已推送核实。

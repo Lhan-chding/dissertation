@@ -1,0 +1,13 @@
+{
+  "status": "EXACT_ORIGINAL_AUDIT_BUNDLE_RECOVERED",
+  "local_dir": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/trained_dev_20261119/start-11031_T0_step-008/independent_audit_bundle/download",
+  "job_id": 1746695,
+  "files": 10,
+  "global_scientific_hold": false,
+  "pending_required_dev": [
+    "11031/T1/8",
+    "11032/T0/8",
+    "11032/T1/8"
+  ],
+  "permission": "DOWNLOAD_RECOVERY_ONLY_NO_AUDIT_TRAINING_MAIN_OR_SUCCESSOR_AUTHORITY"
+}
