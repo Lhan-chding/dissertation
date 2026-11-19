@@ -645,3 +645,12 @@ Submit exec78090退出0，1747421于09:29:09UTC提交/释放，LH-SATDOSE-DEV-11
 用户恢复VPN后11:04:31UTC补查成功：1747421及batch/extern/0全部COMPLETED0:0，elapsed01:00:15，gpu-pro6000-11；108/108/108与RESULT=TRAINED_DEV_ENDPOINT_COMPLETE齐全，POST_RISK2408f2af61262edea5cf14f1af65fa5856d87067416c91492f404a4b32cc212f，global_hold=false，pending正好11032/T0/8及11032/T1/8。squeue已清理rc1/Invalid job id specified，但sacct完整四行成功。证据intake/MONITOR_DEV_1747421_20261119T110431Z.json，JSON/终态/敏感模式检查通过。此前网络中断未影响已提交作业的正常结束。
 
 已核对a9c4源SHA、确认新local audit目录不存在，以actual submission SHA708400124620e392ab06e465a91ca6dac363945b79b2eb011d1b564e07912664、job1747421、11031/T1/step8执行既定satdose_run_trained_dev_audit.py --execute一次，exec68960，目标trained_dev_20261119/start-11031_T1_step-008/independent_audit_bundle。不得重复。等完整10文件/原始传输/发布/来源pins/原生分析/POST_RISK全对象复核及二次审查通过/noHOLD后，才准备11032/T0 DEV8（原188b准备+40c提交，22f3TRAIN/44a8canary/tag71018e5_20261116不变）。当前仅audit exec68960活动，无活动GPU作业/agent。最近网络阻塞提交231a12ed8271c321065fb409041b101d779d9c34已推送核实。
+
+
+## Second DEV8 independently accepted; third preparation active — 2026-11-19 19:21 SGT
+
+Audit exec68960退出0，原审计11:17:31UTC/驱动11:17:40UTC成功。root+admission_review独立本地复核完整10文件、单JSON/base64原始传输、23本地引用、发布及7c29/a9c4/c168源pins、108唯一样本及固定START case次序、逐行聚合、全POST_RISK对象通过。AUDIT_REPORT2d3fe065d74e13a9900739a0c4446af6df0831ed1106a57c05f4cc37c4cf2959；ANALYSIS6506743d26e9caa6293fbe7c136908539f09d038cc5be96ff87e22fac65b250a；manifestf03dc17be4363a695b1cf9c3f1e72c7c96efd16c929171a8e740c9f4922cca70；DRIVER6c951a12bf788f90dd0a8352a8849a40a15d5adfc7e8875aadc447721fcb6bb7；RECOVERYc8a6cc824381631e75c2cb6d26cf2c8f04b6bd95dccd3f5fe5ead21f3103fbf2；risk2408f2af61262edea5cf14f1af65fa5856d87067416c91492f404a4b32cc212f；RESULTa364426a7d6058cfbcfbf3980a18c896330c3aa1126b982ab7d090a1b19dd62a。Audit observed16362/risk16347，168外部引用仅包内验证，未本地重读远端大文件。实际GPU09:29:10–10:29:25UTC，01:00:15。
+
+11031/T1 DEV8 S99/A97/J93，conflict26/32，aligned+no_list61/64，retention12/12；known108、UNKNOWN/length0。窗口d1.80834/2.19767均未低于.75，exact207/384及256/384，训练UNKNOWN2/1保留；最新DEV conflict.8125，整套停止规则未触发，无HOLD。DEV8已验收2/4，训练32/96不变。见本端点REPORT_zh.md；不提前第9步或MAIN。
+
+11032/T0/8 prepare188b源SHA及本地计划通过，原22f3 TRAIN/44a8 canary/tag71018e5_20261116不变；新目录trained_dev_20261119/start-11032_T0_step-008已创建。实际--execute-preparation启动一次exec19497，目标绝对PREPARATION.json；不得重复。成功后核对实际收据SHA/发布/空间/风险，再40c465先本地计划后actual submit一次至同目录SUBMISSION.json，老师QoS2PRO6000/8CPU66G/3h/norequeue。终态a9c4一次独立审计+二次复核/noHOLD后再11032/T1 DEV8。当前仅prep exec19497活动，无活动GPU作业/agent；最新终态证据a84c6618e5dc6b8130f750921bb209462f91f9e5已推送核实。
