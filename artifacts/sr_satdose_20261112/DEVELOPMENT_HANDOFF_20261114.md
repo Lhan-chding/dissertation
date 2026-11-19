@@ -719,3 +719,8 @@ admission_review完成有界只读第9–16就绪复核：737954/eceec5/23e6b9�
 exec16080退出0，18:01:23UTC提交器返回TRAINED_DEV_SUBMITTED_RELEASE_CONFIRMED。job1748313=11032/T1/8，LH-SATDOSE-DEV-11032-T1-s08；原40c465/source/raw单response及endpoint/resources全核实。SUBMISSION64ca049839cd6e72305177aa5324c6cb826df9180ed5c907268288aa6ab8410c，远端RELEASE_RESULT909bf499af9166a07d5f81ace634eb202bba9da8f8597cd808df1edb00ca7ee5、SUBMISSION47c36b74b8c89a6508baaea152b9d60e9446d46f469dff2782cb97d30c804312。held身份核验后仅释放本新job，other_jobs_modified=false；初始sacct未见父条目但release已scontrol核实，后继监控补齐。
 
 18:01:47UTC初查MONITOR_DEV_1748313_20261119T180147Z.json：父/batch/extern/0均RUNNING于gpu-pro6000-5，24秒，0生成、尚无端点目录，global_incidents空。运行不等于已完成/审计通过；后续约19:02UTC（03:02SGT）巡检，终态先a9c4审计，再root+admission_review全10包/原始JSON传输/POST_RISK复核。4/4DEV8验收且无HOLD后才first9准备，禁止重提。最新准备证据5bdbf7ad45e87602879867c4a26fa198102a820a已推送核实。
+
+
+## Final DEV8 108 responses captured; still running — 2026-11-20 03:02 SGT
+
+19:02:14UTC小时巡检MONITOR_DEV_1748313_20261119T190214Z.json，父/batch/extern/0仍RUNNING/0:0，01:00:51，gpu-pro6000-5；BEGIN/CAPTURE/COMPLETE各108，global_incidents空，仅CLAIM，无RESULT/POST_RISK。不能把回答生成齐全当终态或工程验收。继续按小时观察，约20:02UTC（04:02SGT）再查；终态后a9c4一次原审计和精确包下载，全部DEV8通过且无HOLD才准备first9。当前无活动本地operator/agent，唯一GPU1748313；不得重提。最新运行证据d0dd06adc40f603113939481800cff15db6ff085已推送核实。

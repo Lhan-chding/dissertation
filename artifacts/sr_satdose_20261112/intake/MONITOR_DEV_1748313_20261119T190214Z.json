@@ -1,0 +1,77 @@
+{
+  "checked_at_utc": "2026-11-19T19:02:14.846710+00:00",
+  "job_id": 1748313,
+  "selection": {
+    "start_seed": 11032,
+    "arm": "T1",
+    "step": 8
+  },
+  "exists": true,
+  "sacct": {
+    "args": [
+      "sacct",
+      "-j",
+      "1748313",
+      "-n",
+      "-P",
+      "--format=JobID,State,Elapsed,ExitCode,NodeList"
+    ],
+    "returncode": 0,
+    "stdout": "1748313|RUNNING|01:00:51|0:0|gpu-pro6000-5\n1748313.batch|RUNNING|01:00:51|0:0|gpu-pro6000-5\n1748313.extern|RUNNING|01:00:51|0:0|gpu-pro6000-5\n1748313.0|RUNNING|01:00:48|0:0|gpu-pro6000-5\n",
+    "stderr": ""
+  },
+  "squeue": {
+    "args": [
+      "squeue",
+      "-j",
+      "1748313",
+      "-h",
+      "-o",
+      "%i|%T|%M|%l|%q|%R"
+    ],
+    "returncode": 0,
+    "stdout": "1748313|RUNNING|1:00:51|3:00:00|soujanya-poria-startfund-2026-03|gpu-pro6000-5\n",
+    "stderr": ""
+  },
+  "generation_counts": {
+    "BEGIN": 108,
+    "CAPTURE": 108,
+    "COMPLETE": 108
+  },
+  "records": {
+    "CLAIM.json": {
+      "admission": {
+        "path": "execution_releases/FIRST_TWO_ADMISSION_71018e5.json",
+        "sha256": "2bdc1a83502b565313ceba3fd278ec091e220c198e105d3d942a02793941a9c7"
+      },
+      "arm": "T1",
+      "commit": {
+        "path": "training_transactions/start-11032/T1/step-008/COMMIT.json",
+        "sha256": "a5a58061b0ce307d52bf7c1874e1fc1e6d0fafe8b9f5ba65dd1232df2b74a4d3"
+      },
+      "design_freeze_sha256": "6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0",
+      "output": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/trained_dev/start-11032/T1/step-008/endpoint",
+      "process_identity": {
+        "boot_id": "da2942ef-9ebb-4cdb-955b-376cf55af35f",
+        "host": "gpu-pro6000-5.cluster02.eee.ntu.edu.sg",
+        "pid": 2291800,
+        "start_ticks": 466964670
+      },
+      "release": {
+        "path": "execution_releases/TRAINED_DEV_71018e5_20261116_start-11032_T1_step-008_RELEASE.json",
+        "sha256": "066a9fec96052bd3ee4a3796121722030b453adb967908a41c1e10b049d85986"
+      },
+      "request_ids_sha256": "ee2b22a73b70bb44dc0b435ebab7385b74acaa8ed37abe2018e33307398f6085",
+      "responses": 108,
+      "schema": "sr-satdose-trained-dev-claim-v1",
+      "start_seed": 11032,
+      "status": "ATTEMPTED_UNKNOWN_NO_RETRY",
+      "step": 8
+    }
+  },
+  "global_incidents": {},
+  "log_tail": {
+    "slurm-1748313.out": "",
+    "slurm-1748313.err": "refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n[transformers] Both `min_new_tokens` (=0) and `min_length`(=0) seem to have been set. `min_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)\n"
+  }
+}
