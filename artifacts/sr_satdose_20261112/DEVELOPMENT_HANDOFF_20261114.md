@@ -680,3 +680,10 @@ Submit exec88676退出0，1747963于12:13:10UTC提交/释放，LH-SATDOSE-DEV-11
 ## Third DEV8 hourly queue observation — 2026-11-19 22:14 SGT
 
 14:14:31UTC只读巡检：1747963仍PENDING/QOSGrpGRES，无节点，计数全0，无slot/records/global_incidents/logs。intake/MONITOR_DEV_1747963_20261119T141431Z.json完整保存并通过JSON/敏感模式检查。未改变调度或科学配置。下一次15:14UTC/23:14SGT，同一monitor和终态审计流程不变；最新953b2c54c3ca8b6a8015ad845de868c016590b8e已推送核实。无活动本地exec/agent。
+
+
+## VPN disconnected; client displays login failure — 2026-11-19 23:16 SGT
+
+15:14UTC巡检exec80969及一次只读sacct重试exec98557均255/Operation timed out。SD-WAN Disconnected，启动既有连接返回0但复查仍Disconnected。本次CUA确认Mac未锁屏，Netskyper现有窗口显示登录失败/账号密码错误；本轮未点击登录、未读取明文密码，未输入/保存/修改凭据，不能由当前弹窗推定错误最初出现时间。CUA completion_summary已完成。已async请求用户在客户端重新登录并恢复VPN，不要聊天发送密码。实际外部阻塞，无审批拒绝。
+
+intake/NETWORK_BLOCKER_DEV_1747963_20261119T1514Z.json明确标注工具输出及UI观察转录，非原始SSH文件；凭据与截图未存入仓库。1747963当前UNKNOWN，最后成功14:14:31UTC即22:14SGT仍PENDING/QOSGrpGRES、无节点/0回答/无incident。未重提/取消或改动任何作业，未运行后继/审计。恢复后用既定satdose_monitor_trained_dev.py --job-id 1747963 --start-seed 11032 --arm T0 --step 8补查；完整终态后actual submission SHA9871c2920213bc1706deab7b0859fb143e07780705b3c90f2fe19b106e721263绑定的a9c4审计一次及二次复核/noHOLD后才11032/T1 DEV8。当前无活动exec/CUA/agent；此前518d595a714d020cc77ebd8696e9e82cc48b9ff0已推送核实。

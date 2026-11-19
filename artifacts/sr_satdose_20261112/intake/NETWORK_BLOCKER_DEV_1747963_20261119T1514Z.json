@@ -1,0 +1,72 @@
+{
+  "schema": "sr-satdose-network-observation-v1",
+  "recorded_at_utc": "2026-11-19T15:16:10.868371+00:00",
+  "job_id": 1747963,
+  "selection": {
+    "start_seed": 11032,
+    "arm": "T0",
+    "step": 8
+  },
+  "status": "REMOTE_JOB_STATE_UNKNOWN_NETWORK_BLOCKED",
+  "evidence_origin": "Transcribed from tool outputs and visual UI observation in this chat, not retained raw SSH output. Failed monitor exits before normal receipt creation. Username/password and screenshot intentionally omitted.",
+  "observations": [
+    {
+      "tool": "exec_command/write_stdin",
+      "session_id": 80969,
+      "action": "satdose_monitor_trained_dev.py --job-id 1747963 --start-seed 11032 --arm T0 --step 8",
+      "returncode": 255,
+      "output": "ssh: connect to host 10.97.216.128 port 22: Operation timed out\n\n"
+    },
+    {
+      "tool": "exec_command/write_stdin",
+      "session_id": 98557,
+      "action": "one read-only SSH sacct retry for job1747963",
+      "returncode": 255,
+      "output": "ssh: connect to host 10.97.216.128 port 22: Operation timed out\r\n"
+    },
+    {
+      "tool": "exec_command",
+      "action": "scutil --nc status existing SD-WAN before start",
+      "returncode": 0,
+      "output": "Disconnected\nExtended Status <dictionary> {\n  Status : 0\n}\n"
+    },
+    {
+      "tool": "exec_command",
+      "action": "scutil --nc start existing SD-WAN",
+      "returncode": 0,
+      "output": ""
+    },
+    {
+      "tool": "exec_command",
+      "action": "scutil --nc status existing SD-WAN after start",
+      "returncode": 0,
+      "output": "Disconnected\nExtended Status <dictionary> {\n  Status : 0\n}\n"
+    },
+    {
+      "tool": "cua.getState/getApp/getScreenshot",
+      "result": "Mac unlocked; existing Netskyper window visibly displays login failed and account/password error. No login click or credential entry made this episode; this observation does not establish when the dialog first appeared."
+    }
+  ],
+  "last_success": {
+    "checked_at_utc": "2026-11-19T14:14:31.940320+00:00",
+    "receipt": "intake/MONITOR_DEV_1747963_20261119T141431Z.json",
+    "state": "PENDING",
+    "reason": "QOSGrpGRES",
+    "generation_counts": {
+      "BEGIN": 0,
+      "CAPTURE": 0,
+      "COMPLETE": 0
+    },
+    "incident_seen": false
+  },
+  "actions": {
+    "job_resubmitted": false,
+    "jobs_modified": false,
+    "successor_started": false,
+    "audit_started": false,
+    "login_retried": false,
+    "plaintext_password_read": false,
+    "credentials_changed": false
+  },
+  "next_action": "After user restores VPN, repeat only read-only monitor. On confirmed terminal completion run pinned audit once; never infer job failure/completion or resubmit from network loss."
+}
