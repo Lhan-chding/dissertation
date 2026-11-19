@@ -712,3 +712,10 @@ exec82744于17:42:33UTC完成0，PREPARATION a5c0a4fb1ca8fc347778dc87b1030428bd6
 40c465提交器源SHA与本地计划已核实，实际--execute一次exec16080，目标trained_dev_20261119/start-11032_T1_step-008/SUBMISSION.json。尚无作业ID，禁止重复提交；等待返回后核对新job身份、hold/release回执及源/raw logs，按小时监控。终态后a9c4独立审计+二次复核。训练32/96，DEV8已验收3/4；全部DEV8通过前不得第9步。上次第三组验收提交5def640664c18d0d6d93b137199c9f1dda00a7b4已推送核实。
 
 admission_review完成有界只读第9–16就绪复核：737954/eceec5/23e6b9等操作源未变，控制/authority/risk/启动脚本匹配原84清单，无3–8硬编码阻塞。first9要求恰好10DEV（2START+4DEV2+4DEV8）、目标cursor8/其它8或16、全部旧chunk完成且无HOLD；每路径8COMMIT/1024回答，须新准备，不沿用旧release。四路径到16后才DEV16。此次无SSH/测试/修改。
+
+
+## Final DEV8 submitted and running — 2026-11-20 02:02 SGT
+
+exec16080退出0，18:01:23UTC提交器返回TRAINED_DEV_SUBMITTED_RELEASE_CONFIRMED。job1748313=11032/T1/8，LH-SATDOSE-DEV-11032-T1-s08；原40c465/source/raw单response及endpoint/resources全核实。SUBMISSION64ca049839cd6e72305177aa5324c6cb826df9180ed5c907268288aa6ab8410c，远端RELEASE_RESULT909bf499af9166a07d5f81ace634eb202bba9da8f8597cd808df1edb00ca7ee5、SUBMISSION47c36b74b8c89a6508baaea152b9d60e9446d46f469dff2782cb97d30c804312。held身份核验后仅释放本新job，other_jobs_modified=false；初始sacct未见父条目但release已scontrol核实，后继监控补齐。
+
+18:01:47UTC初查MONITOR_DEV_1748313_20261119T180147Z.json：父/batch/extern/0均RUNNING于gpu-pro6000-5，24秒，0生成、尚无端点目录，global_incidents空。运行不等于已完成/审计通过；后续约19:02UTC（03:02SGT）巡检，终态先a9c4审计，再root+admission_review全10包/原始JSON传输/POST_RISK复核。4/4DEV8验收且无HOLD后才first9准备，禁止重提。最新准备证据5bdbf7ad45e87602879867c4a26fa198102a820a已推送核实。
