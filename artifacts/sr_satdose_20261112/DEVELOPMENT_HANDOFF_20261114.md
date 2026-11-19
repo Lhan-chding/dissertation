@@ -654,3 +654,10 @@ Audit exec68960退出0，原审计11:17:31UTC/驱动11:17:40UTC成功。root+adm
 11031/T1 DEV8 S99/A97/J93，conflict26/32，aligned+no_list61/64，retention12/12；known108、UNKNOWN/length0。窗口d1.80834/2.19767均未低于.75，exact207/384及256/384，训练UNKNOWN2/1保留；最新DEV conflict.8125，整套停止规则未触发，无HOLD。DEV8已验收2/4，训练32/96不变。见本端点REPORT_zh.md；不提前第9步或MAIN。
 
 11032/T0/8 prepare188b源SHA及本地计划通过，原22f3 TRAIN/44a8 canary/tag71018e5_20261116不变；新目录trained_dev_20261119/start-11032_T0_step-008已创建。实际--execute-preparation启动一次exec19497，目标绝对PREPARATION.json；不得重复。成功后核对实际收据SHA/发布/空间/风险，再40c465先本地计划后actual submit一次至同目录SUBMISSION.json，老师QoS2PRO6000/8CPU66G/3h/norequeue。终态a9c4一次独立审计+二次复核/noHOLD后再11032/T1 DEV8。当前仅prep exec19497活动，无活动GPU作业/agent；最新终态证据a84c6618e5dc6b8130f750921bb209462f91f9e5已推送核实。
+
+
+## Third DEV8 preparation accepted; submission pending — 2026-11-19 19:57 SGT
+
+Prep exec19497退出0，11:55:23UTC完整CPU准备成功。actual trained_dev_20261119/start-11032_T0_step-008/PREPARATION.json SHAe3d6a02dd58337ef85155f1f9bea7ef68d99f1237ef991d06805eae1a3e42e3c；remote PREPARATION_RESULT3075b3365de45a7046d78769553e7a36394e99ac8c2a92408d6af29ce3197bca；RELEASE5286c2f41941e16e9c7c1ee1be329ac8bcf39d1bcfcb920d36447d2c6f730a3f；BUDGET6dc84355c44ca15c020eb2801b0d0e3d68c124b1271c7c5e2a30d60eb5889c60；RISK2408f2af61262edea5cf14f1af65fa5856d87067416c91492f404a4b32cc212f。32COMMIT/8既有DEV，pending11032/T0/8及11032/T1/8；共享父级effectiveavailable107684527320bytes，file/directoryfsync通过，非预留。源/原始stdout/stderr SHA、原始响应/发布、JSON及敏感模式检查通过。
+
+40c465源SHA及本地计划通过；actual submit --execute启动一次exec88676，用上述actual preparation SHA，目标同目录绝对SUBMISSION.json，不得重复。等待原生准入复核/一次held-sbatch/verify-persist-unlock-release成功，核实jobID/完整raw和收据SHA后首次只读monitor、按小时巡检。老师QoS2PRO6000/8CPU66G/3h/norequeue。终态a9c4一次独立审计+二次复核/noHOLD后才11032/T1 DEV8。当前仅submit exec88676活动，尚无确认新jobID。最近完整验收提交0ce3abfa400ea025509759cb8ea5e0ffea8b876d已推送核实。
