@@ -1,0 +1,47 @@
+{
+  "checked_at_utc": "2026-11-19T09:30:30.963140+00:00",
+  "job_id": 1747421,
+  "selection": {
+    "start_seed": 11031,
+    "arm": "T1",
+    "step": 8
+  },
+  "exists": false,
+  "sacct": {
+    "args": [
+      "sacct",
+      "-j",
+      "1747421",
+      "-n",
+      "-P",
+      "--format=JobID,State,Elapsed,ExitCode,NodeList"
+    ],
+    "returncode": 0,
+    "stdout": "1747421|RUNNING|00:01:21|0:0|gpu-pro6000-11\n1747421.batch|RUNNING|00:01:21|0:0|gpu-pro6000-11\n1747421.extern|RUNNING|00:01:21|0:0|gpu-pro6000-11\n1747421.0|RUNNING|00:01:21|0:0|gpu-pro6000-11\n",
+    "stderr": ""
+  },
+  "squeue": {
+    "args": [
+      "squeue",
+      "-j",
+      "1747421",
+      "-h",
+      "-o",
+      "%i|%T|%M|%l|%q|%R"
+    ],
+    "returncode": 0,
+    "stdout": "1747421|RUNNING|1:21|3:00:00|soujanya-poria-startfund-2026-03|gpu-pro6000-11\n",
+    "stderr": ""
+  },
+  "generation_counts": {
+    "BEGIN": 0,
+    "CAPTURE": 0,
+    "COMPLETE": 0
+  },
+  "records": {},
+  "global_incidents": {},
+  "log_tail": {
+    "slurm-1747421.out": "",
+    "slurm-1747421.err": ""
+  }
+}
