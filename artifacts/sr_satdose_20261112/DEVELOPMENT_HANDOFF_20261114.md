@@ -638,3 +638,10 @@ Submit exec78090退出0，1747421于09:29:09UTC提交/释放，LH-SATDOSE-DEV-11
 10:30UTC小时monitor exec90211及一次只读sacct重试exec24437均SSH255/Operation timed out。scutil显示SD-WAN Disconnected，启动现有7098852B-CD75-448F-B1F5-3751311BD253返回0，但复查仍Disconnected。CUA getState确认Mac锁屏且自动解锁失败，无法操作VPN客户端；completion_summary已完成。未再尝试历史失败的已保存凭据。已通过async请求用户解锁Mac并恢复校园网/VPN。无审批拒绝，系实际网络及锁屏外部阻塞。
 
 证据intake/NETWORK_BLOCKER_DEV_1747421_20261119T1031Z.json明确标注从本轮工具输出转录，非原始SSH文件；失败monitor本身在写正常收据前返回。1747421当前UNKNOWN，不是作业失败/完成；最后成功09:30:30UTC即17:30SGT，RUNNING于gpu-pro6000-11，0/108，未见incident。未重提/取消/改动调度、未启动审计或后继。恢复后立即用上一节同一只读monitor补查，完整终态后以actual submission SHA708400124620e392ab06e465a91ca6dac363945b79b2eb011d1b564e07912664、job1747421、11031/T1/step8执行既定a9c4独立审计一次及二次复核。当前无活动exec/CUA/agent，唯一服务器作业1747421状态待查；最新运行证据c9f93a7b217860a5a3b6cb6e065819aafc15446f已推送核实。
+
+
+## VPN restored; second DEV8 complete, audit active — 2026-11-19 19:05 SGT
+
+用户恢复VPN后11:04:31UTC补查成功：1747421及batch/extern/0全部COMPLETED0:0，elapsed01:00:15，gpu-pro6000-11；108/108/108与RESULT=TRAINED_DEV_ENDPOINT_COMPLETE齐全，POST_RISK2408f2af61262edea5cf14f1af65fa5856d87067416c91492f404a4b32cc212f，global_hold=false，pending正好11032/T0/8及11032/T1/8。squeue已清理rc1/Invalid job id specified，但sacct完整四行成功。证据intake/MONITOR_DEV_1747421_20261119T110431Z.json，JSON/终态/敏感模式检查通过。此前网络中断未影响已提交作业的正常结束。
+
+已核对a9c4源SHA、确认新local audit目录不存在，以actual submission SHA708400124620e392ab06e465a91ca6dac363945b79b2eb011d1b564e07912664、job1747421、11031/T1/step8执行既定satdose_run_trained_dev_audit.py --execute一次，exec68960，目标trained_dev_20261119/start-11031_T1_step-008/independent_audit_bundle。不得重复。等完整10文件/原始传输/发布/来源pins/原生分析/POST_RISK全对象复核及二次审查通过/noHOLD后，才准备11032/T0 DEV8（原188b准备+40c提交，22f3TRAIN/44a8canary/tag71018e5_20261116不变）。当前仅audit exec68960活动，无活动GPU作业/agent。最近网络阻塞提交231a12ed8271c321065fb409041b101d779d9c34已推送核实。
