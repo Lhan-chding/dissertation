@@ -1,0 +1,70 @@
+{
+  "schema": "sr-satdose-network-observation-v1",
+  "recorded_at_utc": "2026-11-19T10:32:21.554057+00:00",
+  "job_id": 1747421,
+  "selection": {
+    "start_seed": 11031,
+    "arm": "T1",
+    "step": 8
+  },
+  "status": "REMOTE_JOB_STATE_UNKNOWN_NETWORK_BLOCKED",
+  "evidence_origin": "Transcribed from tool outputs in this chat; not a retained raw SSH stdout file. The read-only monitor returns before writing its normal receipt when SSH fails.",
+  "observations": [
+    {
+      "tool": "exec_command/write_stdin",
+      "session_id": 90211,
+      "action": "satdose_monitor_trained_dev.py --job-id 1747421 --start-seed 11031 --arm T1 --step 8",
+      "returncode": 255,
+      "output": "ssh: connect to host 10.97.216.128 port 22: Operation timed out\n\n"
+    },
+    {
+      "tool": "exec_command/write_stdin",
+      "session_id": 24437,
+      "action": "ssh -o BatchMode=yes -o ConnectTimeout=15 eee-cluster sacct -j 1747421 -n -P --format=JobID,State,Elapsed,ExitCode,NodeList",
+      "returncode": 255,
+      "output": "ssh: connect to host 10.97.216.128 port 22: Operation timed out\r\n"
+    },
+    {
+      "tool": "exec_command",
+      "action": "scutil --nc status existing SD-WAN",
+      "returncode": 0,
+      "output": "Disconnected\nExtended Status <dictionary> {\n  Status : 0\n}\n"
+    },
+    {
+      "tool": "exec_command",
+      "action": "scutil --nc start existing SD-WAN",
+      "returncode": 0,
+      "output": ""
+    },
+    {
+      "tool": "exec_command",
+      "action": "scutil --nc status existing SD-WAN after start",
+      "returncode": 0,
+      "output": "Disconnected\nExtended Status <dictionary> {\n  Status : 0\n}\n"
+    },
+    {
+      "tool": "cua.getState",
+      "result": "Native apps unavailable: Mac is locked and automatic unlock could not unlock it; user must unlock manually."
+    }
+  ],
+  "last_success": {
+    "checked_at_utc": "2026-11-19T09:30:30.963140+00:00",
+    "receipt": "intake/MONITOR_DEV_1747421_20261119T093030Z.json",
+    "state": "RUNNING",
+    "node": "gpu-pro6000-11",
+    "generation_counts": {
+      "BEGIN": 0,
+      "CAPTURE": 0,
+      "COMPLETE": 0
+    },
+    "incident_seen": false
+  },
+  "actions": {
+    "job_resubmitted": false,
+    "jobs_modified": false,
+    "successor_started": false,
+    "audit_started": false,
+    "credentials_read_or_changed": false
+  },
+  "next_action": "After user restores VPN, repeat only the read-only monitor. Audit once only after confirmed terminal completion; do not resubmit or infer job failure from network loss."
+}

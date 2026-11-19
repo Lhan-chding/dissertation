@@ -631,3 +631,10 @@ Submit exec78090退出0，1747421于09:29:09UTC提交/释放，LH-SATDOSE-DEV-11
 首次monitor09:30:30UTC父作业/batch/extern/0均RUNNING于gpu-pro6000-11，elapsed1:21；BEGIN/CAPTURE/COMPLETE全0，暂无slot/records/global_incidents，stdout/stderr空。证据intake/MONITOR_DEV_1747421_20261119T093030Z.json。下一次10:30UTC/18:30SGT：.venv/bin/python -B experiments/sr_satdose_20261112/operations/satdose_monitor_trained_dev.py --job-id 1747421 --start-seed 11031 --arm T1 --step 8（直接只读，不加--execute）。
 
 本次actual submission绑定的a9c4本地计划通过，零SSH。取得108 COMPLETE+完整RESULT/POST_RISK、全部SlurmCOMPLETED0:0后执行一次：.venv/bin/python -B experiments/sr_satdose_20261112/operations/satdose_run_trained_dev_audit.py --submission-receipt /Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/trained_dev_20261119/start-11031_T1_step-008/SUBMISSION.json --submission-sha256 708400124620e392ab06e465a91ca6dac363945b79b2eb011d1b564e07912664 --job-id 1747421 --start-seed 11031 --arm T1 --step 8 --local-dir /Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/trained_dev_20261119/start-11031_T1_step-008/independent_audit_bundle --execute。完整10文件核验及二次复核/noHOLD之后再准备11032/T0 DEV8。当前无活动exec/agent，唯一活动GPU作业1747421。前次3d46621838b9b9a64ae02731d434a4ebd8e010b9已推送核实。
+
+
+## Network blocker; awaiting user VPN restoration — 2026-11-19 18:32 SGT
+
+10:30UTC小时monitor exec90211及一次只读sacct重试exec24437均SSH255/Operation timed out。scutil显示SD-WAN Disconnected，启动现有7098852B-CD75-448F-B1F5-3751311BD253返回0，但复查仍Disconnected。CUA getState确认Mac锁屏且自动解锁失败，无法操作VPN客户端；completion_summary已完成。未再尝试历史失败的已保存凭据。已通过async请求用户解锁Mac并恢复校园网/VPN。无审批拒绝，系实际网络及锁屏外部阻塞。
+
+证据intake/NETWORK_BLOCKER_DEV_1747421_20261119T1031Z.json明确标注从本轮工具输出转录，非原始SSH文件；失败monitor本身在写正常收据前返回。1747421当前UNKNOWN，不是作业失败/完成；最后成功09:30:30UTC即17:30SGT，RUNNING于gpu-pro6000-11，0/108，未见incident。未重提/取消/改动调度、未启动审计或后继。恢复后立即用上一节同一只读monitor补查，完整终态后以actual submission SHA708400124620e392ab06e465a91ca6dac363945b79b2eb011d1b564e07912664、job1747421、11031/T1/step8执行既定a9c4独立审计一次及二次复核。当前无活动exec/CUA/agent，唯一服务器作业1747421状态待查；最新运行证据c9f93a7b217860a5a3b6cb6e065819aafc15446f已推送核实。
