@@ -670,3 +670,8 @@ Submit exec88676退出0，1747963于12:13:10UTC提交/释放，LH-SATDOSE-DEV-11
 首次只读monitor12:13:59UTC：PENDING/QOSGrpGRES，未分配节点，BEGIN/CAPTURE/COMPLETE全0，暂无slot/records/global_incidents，日志尚无。证据intake/MONITOR_DEV_1747963_20261119T121359Z.json。下一次13:14UTC/21:14SGT：.venv/bin/python -B experiments/sr_satdose_20261112/operations/satdose_monitor_trained_dev.py --job-id 1747963 --start-seed 11032 --arm T0 --step 8（直接只读，不加--execute）。排队不导致重提或干预他人作业。
 
 本次actual submission绑定的a9c4本地计划通过，零SSH。取得108 COMPLETE+完整RESULT/POST_RISK及全部SlurmCOMPLETED0:0后执行一次：.venv/bin/python -B experiments/sr_satdose_20261112/operations/satdose_run_trained_dev_audit.py --submission-receipt /Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/trained_dev_20261119/start-11032_T0_step-008/SUBMISSION.json --submission-sha256 9871c2920213bc1706deab7b0859fb143e07780705b3c90f2fe19b106e721263 --job-id 1747963 --start-seed 11032 --arm T0 --step 8 --local-dir /Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/trained_dev_20261119/start-11032_T0_step-008/independent_audit_bundle --execute。全10文件/原始包/全风险对象及二次复核通过/noHOLD后才11032/T1 DEV8。当前无活动exec/agent，唯一待观察GPU作业1747963；前次准备提交3428f1502f37b5e479b76610682dfd4c48805580已推送核实。
+
+
+## Third DEV8 hourly queue observation — 2026-11-19 21:14 SGT
+
+13:14:19UTC只读巡检：1747963仍PENDING/QOSGrpGRES，未分配节点；BEGIN/CAPTURE/COMPLETE全0，无slot/records/global_incidents/logs。完整证据intake/MONITOR_DEV_1747963_20261119T131419Z.json通过JSON及敏感模式检查。未重提或修改任何调度。下一次14:14UTC/22:14SGT，同上一节monitor命令；终态既定a9c4审计+二次复核后再最后一组DEV8。最新提交49907c25dad8f9ea9e2c136a5aa4c26dd1843253已推送核实。无活动本地exec/agent。
