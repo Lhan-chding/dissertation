@@ -675,3 +675,8 @@ Submit exec88676退出0，1747963于12:13:10UTC提交/释放，LH-SATDOSE-DEV-11
 ## Third DEV8 hourly queue observation — 2026-11-19 21:14 SGT
 
 13:14:19UTC只读巡检：1747963仍PENDING/QOSGrpGRES，未分配节点；BEGIN/CAPTURE/COMPLETE全0，无slot/records/global_incidents/logs。完整证据intake/MONITOR_DEV_1747963_20261119T131419Z.json通过JSON及敏感模式检查。未重提或修改任何调度。下一次14:14UTC/22:14SGT，同上一节monitor命令；终态既定a9c4审计+二次复核后再最后一组DEV8。最新提交49907c25dad8f9ea9e2c136a5aa4c26dd1843253已推送核实。无活动本地exec/agent。
+
+
+## Third DEV8 hourly queue observation — 2026-11-19 22:14 SGT
+
+14:14:31UTC只读巡检：1747963仍PENDING/QOSGrpGRES，无节点，计数全0，无slot/records/global_incidents/logs。intake/MONITOR_DEV_1747963_20261119T141431Z.json完整保存并通过JSON/敏感模式检查。未改变调度或科学配置。下一次15:14UTC/23:14SGT，同一monitor和终态审计流程不变；最新953b2c54c3ca8b6a8015ad845de868c016590b8e已推送核实。无活动本地exec/agent。
