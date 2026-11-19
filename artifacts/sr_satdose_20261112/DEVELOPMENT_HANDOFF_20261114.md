@@ -564,3 +564,10 @@ Submit exec63129退出0，1744855于14:45:52UTC提交/释放，LH-SATDOSE-TRAIN-
 21:53:55UTC小时巡检SSH超时，随后BatchMode/ConnectTimeout=15只读重试亦255/超时。SD-WAN显示Disconnected，start返回0/Connecting后仍Disconnected；CUA确认Mac锁屏、自动解锁失败，已completion_summary结束UI部分。已异步请求用户解锁及恢复校园网/VPN。没有重新尝试已知失败的客户端凭据，也未改认证配置。
 
 原始监控证据和标明转录来源的NETWORK_RECOVERY_OBSERVATION.json位于intake/MONITOR_CONTINUATION_1744855_20261118T215355423145Z/。1744855当前UNKNOWN，不是作业失败/完成。最后成功20:53:24UTC即04:53SGT：RUNNING于gpu-pro6000-13，384/768回答、2/6新增COMMIT，第5步128回答齐全待COMMIT，无HOLD/incident。未取消、重提或改动任何作业；没有后继DEV/审计/训练启动。收到恢复后立即用同一SUBMISSION SHA a39c6dc9c126389d8bcfa6ef4e50021e43ca6802edc5538099f69b60812845c9、job1744855、11032/T1/first3执行原监控。终态后v2独立审计及全四路径DEV8顺序不变。当前无活动exec/CUA/agent，最近成功巡检提交532dcc2f1f4547b6c4a4752d62567e007af2a097已推送且远程一致。
+
+
+## Fourth continuation complete; independent audit active — 2026-11-19 13:15 SGT
+
+用户恢复VPN后05:15:19UTC补查成功：1744855父作业/batch/extern/0均COMPLETED0:0，实际2026-11-18 18:15:58–23:51:12UTC（新加坡11月19日02:15:58–07:51:12），05:35:14。第3–8步各128组BEGIN/CAPTURE/COMPLETE及COMMIT齐全；RESULT=CONTINUATION_CHUNK_COMPLETE，768回答/6更新；各步global_hold=false，无incident/未决capture。squeue已清理，rc1且精确Invalid job id specified，sacct完整四行成功。四路径COMMIT前缀8/8/8/8，总32/96；完整独立验收仍26/96直至本次审计完成。
+
+完整证据intake/MONITOR_CONTINUATION_1744855_20261119T051514758478Z/。已使用同一actual submission SHA a39c6dc9c126389d8bcfa6ef4e50021e43ca6802edc5538099f69b60812845c9、job1744855、11032/T1/first3执行v2审计23e6b906 --execute一次，exec11997，输出continuation_20261118/start-11032_T1_chunk-003-008/independent_audit。等待结果，不得重复。审计完整16文件核验和二次复核通过后才逐路径准备DEV8；不得进入第9步。当前仅audit exec11997活动。此前网络阻塞证据239bec89117dcb8c6968141d5a1bd92a5c3c8fdb已推送核实。
