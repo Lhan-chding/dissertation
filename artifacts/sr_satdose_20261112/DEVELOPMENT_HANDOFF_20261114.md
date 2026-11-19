@@ -703,3 +703,12 @@ Audit exec53066退出0，15:41:49UTC原审计/15:41:55UTC驱动完整成功。ro
 11032/T0 DEV8 S92/A91/J86，conflict16/32，aligned+no_list64/64，retention12/12。JSON有效107、S/Bknown107、UNKNOWN1、length0，balanced108不等于JSON全部有效。未知请求SAT1/DEV/11032/T0/s08/list8/OT1_SATDOSE_DEV_LIST_n8_00019_m2r1_sm_2026111201/conflict/d00因JSON解析错误Expecting ',' delimiter line17 col3 char1547，S/Bnull、J0、S_hit0，保留固定108/32分母，未修补重试。无HOLD，pending仅11032/T1/8。DEV8验收3/4，训练32/96不变。
 
 11032/T1/8 prepare188b源SHA/本地计划通过，新目录trained_dev_20261119/start-11032_T1_step-008创建；原22f3TRAIN/44a8canary/tag71018e5_20261116不变。实际--execute-preparation启动一次exec82744，目标绝对PREPARATION.json，不得重复。成功后核对actual SHA/发布/风险/空间，再40c465先本地计划后actual submit一次至同目录SUBMISSION.json，老师QoS2PRO6000/8CPU66G/3h/norequeue。终态a9c4一次审计+二次复核/noHOLD，全部DEV8验收后才准备11031/T0第9–16步（不得提前）。当前仅prep exec82744活动，无GPU作业/agent；最新4d4fb03c192621504aa5c4258bd501d7d304d2d8已推送核实。
+
+
+## Final DEV8 CPU preparation accepted; submission active — 2026-11-20 01:44 SGT
+
+exec82744于17:42:33UTC完成0，PREPARATION a5c0a4fb1ca8fc347778dc87b1030428bd600490f2e6b2a494c1d8a7bb483d43；远端PREPARATION_RESULT3cc5e83b86463eeda95e3c091ce3c880a9da1333bdb91091c0677fd681097f89；RELEASE066a9fec96052bd3ee4a3796121722030b453adb967908a41c1e10b049d85986；风险832a059579833422dc2815ef1f16bc39af4b95008c53a87660fdb8e2449fcf4f。root核对本地源/原始response/全部引用、84/19、32COMMIT/9DEV、pending仅11032/T1/8、两次quota和fsync通过；shared available107642195551为快照非预留。准备近2小时，16:31与16:47UTC只读ps均显示同一CPU准备进程1155101仍计算，16:39UTC发布release/risk/budget；没有重试。
+
+40c465提交器源SHA与本地计划已核实，实际--execute一次exec16080，目标trained_dev_20261119/start-11032_T1_step-008/SUBMISSION.json。尚无作业ID，禁止重复提交；等待返回后核对新job身份、hold/release回执及源/raw logs，按小时监控。终态后a9c4独立审计+二次复核。训练32/96，DEV8已验收3/4；全部DEV8通过前不得第9步。上次第三组验收提交5def640664c18d0d6d93b137199c9f1dda00a7b4已推送核实。
+
+admission_review完成有界只读第9–16就绪复核：737954/eceec5/23e6b9等操作源未变，控制/authority/risk/启动脚本匹配原84清单，无3–8硬编码阻塞。first9要求恰好10DEV（2START+4DEV2+4DEV8）、目标cursor8/其它8或16、全部旧chunk完成且无HOLD；每路径8COMMIT/1024回答，须新准备，不沿用旧release。四路径到16后才DEV16。此次无SSH/测试/修改。
