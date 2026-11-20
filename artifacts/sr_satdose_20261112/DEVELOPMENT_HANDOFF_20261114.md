@@ -857,3 +857,10 @@ exec88518退出0，14:18:11.655801UTC CONTINUATION_SUBMITTED_RELEASE_CONFIRMED�
 ## 11031/T1 first9 hourly observation — 2026-11-21 01:19 SGT
 
 2026-11-20 17:19:16UTC 1749205仍RUNNING gpu-pro6000-12；step9全128及COMMIT，risk PENDING_REQUIRED_DEV/global_hold=false，仅原11031/T0/16待DEV。step10 BEGIN95/CAPTURE94/COMPLETE94、尚无COMMIT/risk，其余0；在途steme74743a3414717660a91f240578411cefad02301f0f63b771d46baa81a3b5a78仅BEGIN，incidents空，非原子活观察不判断失败。当前观察41/96（独立验收40/96）。证据intake/MONITOR_CONTINUATION_1749205_20261120T171913456437Z/RECEIPT.json SHAd313189cdcf87c4892daf376cc12efc3f5112584601f61410e1e1145dc907b88；全部refs/原stdout=snapshot/敏感模式通过。下一小时18:19UTC（02:19SGT）巡检，终态后23e6b9 v2一次审计+独立复核，不提前准备后继。最新ddefd8c7ba701e00de08a243e4d762198c527dc9已推送核实。
+
+
+## Hourly monitoring blocked by network — 2026-11-21 02:21 SGT
+
+2026-11-20 18:19巡检exec20347退出2，MONITOR_UNKNOWN，原STDERR SSH Operation timed out，STDOUT空。失败收据intake/MONITOR_CONTINUATION_1749205_20261120T181916378802Z/RECEIPT.json SHA87e41ebaa542cd211102335c3f487dacd0426e52c191739b7702614b2de8f088及全部refs已核；一次只读重试exec65040退出255也Operation timed out。SD-WAN先Disconnected，启动现有service退出0后仍Disconnected。CUA getState实见Mac锁屏无法自动解锁，未操作登录；按最新工具要求已发browser-complete。工具结果人工转录intake/NETWORK_BLOCKER_1749205_20261120T1819Z.json，明确非原始捕获，未保存屏幕/凭据。已异步请求解锁恢复VPN。一次本地临时解析在monitor仍运行且驱动输出为空时提前执行报JSONDecodeError，等待原进程退出后成功读取并核对失败收据，无远端改变。
+
+最近成功17:19:16UTC（01:19SGT）：1749205 RUNNING，11031/T1 step9 COMMIT/risk无HOLD（pending仅11031/T0/16），step10 COMPLETE94/128，观察41/96、独立验收40/96。当前状态未知，不推断失败/完成，不重提、不改作业。恢复后原SUBMISSION084cafc982f08a400844b3fbc6a984ae46611e75cfe07ca1d02d18c1516ea40d、job1749205、11031/T1 first9只读monitor --execute，驱动stdout重定向临时文件。终态后固定23e6b9 v2一次CPU审计+完整16文件及fullrisk独立复核；下一路径11032/T0 first9；其后11032/T1，四条都16后才DEV16。当前无活动本地operator/agent/CUA。最新c27ac2c8645589e0d691e8eb4d46717ec3d6104f已推送核实。
