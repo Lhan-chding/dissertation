@@ -1,0 +1,24 @@
+{
+  "created_at_utc": "2026-11-19T21:11:50.016563+00:00",
+  "design_freeze_sha256": "6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0",
+  "evidence_root": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1",
+  "experiment_id": "SR-SATDOSE-1-20261112",
+  "expires_at_utc": "2026-11-26T21:11:50.016563+00:00",
+  "max_observation_age_seconds": 300,
+  "rationale": "One fixed chunk only. Twice observed max checkpoint+production capture and128 response allowances per new step, plus one checkpoint and1GiB metadata; minimum16GiB. Per response=max(4x largest original triplet,1MiB). Engineering allowance, not an upper bound or quota reservation. Live quota/statvfs/fsync remains mandatory before model and every Adam.",
+  "required_bytes": 17179869184,
+  "schema": "sr-satdose-storage-budget-v1",
+  "scope": "CONTINUATION_FIXED_CHUNK_ONLY",
+  "sizing": {
+    "calculated_bytes": 10727766866,
+    "max_capture_bytes": 175409663,
+    "max_checkpoint_bytes": 261110377,
+    "max_triplet_bytes": 192816,
+    "minimum_bytes": 17179869184,
+    "new_responses": 1024,
+    "new_steps": 8,
+    "observed_checkpoints": 32,
+    "observed_responses": 4096,
+    "per_response_allowance_bytes": 1048576
+  }
+}

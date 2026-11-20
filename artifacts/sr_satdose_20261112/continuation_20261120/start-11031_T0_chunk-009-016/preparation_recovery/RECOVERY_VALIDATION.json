@@ -1,0 +1,14 @@
+{
+  "fresh_preflight_still_required": true,
+  "gpu_submission_authorized": false,
+  "original_ssh_returncode": 255,
+  "original_stdout_recovered": false,
+  "permission": "READ_ONLY_PREPARATION_PUBLICATION_RECOVERY_NO_MODEL_OR_GPU_SUBMISSION",
+  "receipt": {
+    "bytes": 12933057,
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261120/start-11031_T0_chunk-009-016/preparation_recovery/RECOVERED_PREPARATION_RECEIPT.json",
+    "sha256": "466f55bf673b4e7a354bbc80b4b1e65555b59a9f1a130f4a4e919b5e1ceca5df"
+  },
+  "recovery_ssh_returncode": 0,
+  "status": "COMPLETE_READ_ONLY_RECOVERY_LEGACY_FORMAT_VERIFIED"
+}

@@ -1,0 +1,11 @@
+# 11031/T0 第9–16步准备发布恢复
+
+原CPU准备于2026-11-20 04:14:20（新加坡）启动，本地SSH于04:28:10因No route to host/Broken pipe退出255，stdout为空。网络恢复后确认远端原准备继续完成，于06:15:44发布完整PREFLIGHT。原失败收据和日志完整保留，未重跑准备。
+
+08:54:22执行仅下载恢复，恢复连接退出0；此0仅属于恢复SSH，不改写原255。真实恢复stdout含原publication字段和明确的recovery_evidence；原准备stdout没有找回，也未伪造。精确恢复INTENT/BUDGET/RELEASE/RISK/PREFLIGHT五文件，字节和SHA与先前只读观察一致。root及admission_review独立核验全部引用、来源、时间、原失败状态和最终RECOVERY_VALIDATION通过，无RECOVERY_ERROR；旧eceec5提交器本地payload解析通过。
+
+原PREFLIGHT为10个DEV端点、4个已完成chunk、四路径各8COMMIT，原84源码/19执行键；没有HOLD或待完成DEV。16GiB预算仍为原版本，2026-11-27 05:11:50（新加坡）到期，未延长；原存储观察不替代后续新鲜空间检查。恢复只读核验75引用，持有既有DIAGNOSTIC排他锁及FIRST_TWO/TRANSACTION共享锁，首尾来源与文件稳定；没有prepare/preflight/risk重算、模型、优化器、存储探针、远端写入或GPU提交。
+
+恢复器8958b4b9a0da8a3a469434657902c6c88c5bd77b1a80b03982fa2dfd94a20944；root19恢复测试+21原提交器测试通过，独立复跑19通过。代码提交6cee54fdca8b2463c137e591900c02fef678619f已推送核实。恢复收据兼容旧提交格式，但新增恢复来源字段的验证来自独立恢复器和外部复核，不能声称旧提交器原生验证了这些字段。
+
+恢复收据SHA466f55bf673b4e7a354bbc80b4b1e65555b59a9f1a130f4a4e919b5e1ceca5df；最终validation SHA5625c78997833fe3c5bfec23aac6e4f6fcaf995ac82e30dea3f3e68259796ebc。原失败收据SHA7b6ef477b140c75ccb4e44717886258affdc6a75ae32787c39998d61dfd7535a。后续仍必须执行提交器真实CPU准入、风险和当前quota/fsync，不凭恢复结果单独授权GPU。
