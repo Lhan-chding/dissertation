@@ -1,6 +1,6 @@
 # SR-SATDOSE-1 准入报告（2026-11-14，PREFIX用户批准放行）
 
-Latest access status (2026-11-20 16:18 SGT): 16:16巡检SSH超时，重试Network is unreachable，SD-WAN启动后仍Disconnected，Mac锁屏阻止客户端操作；当前1748472状态UNKNOWN。最近成功观察15:16：第9–12步COMMIT，第13步103/128，观察36/96更新、无HOLD；此为历史状态，不代表当前完成度。等待用户恢复VPN后立即补查，未重提或修改任何作业。以下为历史观察。
+Latest verified status (2026-11-20 20:57 SGT): SSH补查成功；1748472于19:54:58SGT结束，Slurm父/batch/extern/0均COMPLETED0:0。11031/T0第9–16步8COMMIT/1024回答齐全，step16 PENDING_REQUIRED_DEV、无HOLD。当前观察40/96更新；23e6b9 v2独立审计已启动一次，尚待验收后继续11031/T1第9–16步。以下为历史观察。
 
 早期观测：用户已授权AI可视核验替代人工，事前冻结已完成。VPN恢复后于2026-11-13 05:48 UTC（新加坡13:48）补查：唯一DRY作业1736279在gpu-pro6000-9运行；随后计数为11031完成150/640、11032尚未开始，总150/1280。没有发现HOLD或完整校准回执。尚未执行影子Adam或正式更新。此为有时间戳的观测，不代表后续实时状态。
 

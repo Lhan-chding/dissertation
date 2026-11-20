@@ -814,3 +814,10 @@ exec75012退出0，01:15:09UTC CONTINUATION_SUBMITTED_RELEASE_CONFIRMED，job174
 08:16巡检exec18039退出2，MONITOR_UNKNOWN，原STDERR为SSH Operation timed out（65bytes），STDOUT空；失败收据intake/MONITOR_CONTINUATION_1748472_20261120T081617032478Z/RECEIPT.json SHAb1f36e5e562de6a75fb02efc8679b89bd0773c8f2ad17b8c561b4a3305b30e62及全部引用已核对。只读SSH重试exec86244退出255 Network is unreachable。SD-WAN7098852B-CD75-448F-B1F5-3751311BD253先Disconnected，scutil start退出0后仍Disconnected。CUA getState实见Mac锁屏、无法自动解锁；未登录客户端，completion_summary已完成。人工转录tool结果另存intake/NETWORK_BLOCKER_1748472_20261120T0816Z.json，明确不是原始捕获，未保存屏幕/凭据。已发异步问题请解锁恢复VPN。
 
 最近成功07:16:21UTC：第9–12步COMMIT、step13 COMPLETE103/128、观察36/96，无HOLD；当前状态未知，不依据网络错误推断作业失败/完成，不重提/改作业。恢复后使用原SUBMISSION SHA9e21ff17…只读monitor1748472（11031/T0 first9），终态后23e6b9 v2一次审计+独立复核，再继续11031/T1 first9；不要实际执行旧937966。当前无其他本地operator、agent或CUA活动。最新68f04f0f0e59584ea3b8e4d8e3388d13c4709cb5已推送核实。
+
+
+## First9 terminal observation; audit active — 2026-11-20 20:58 SGT
+
+用户继续后实际SSH成功，尽管本机scutil仍Disconnected，网络连通以实际SSH证据为准。12:56:56UTC monitor1748472：全部4行COMPLETED0:0，01:15:14–11:54:58UTC、gpu-pro6000-5。9–16各128回答和COMMIT，1024回答/8更新、incidents/unresolved空；9–15 risk无HOLD、16 PENDING_REQUIRED_DEV/global_hold=false。squeue退出1 Invalid job id specified是终态作业移出队列，sacct仍有完整记录。当前观察40/96、整批独立验收待定。终态monitor收据intake/MONITOR_CONTINUATION_1748472_20261120T125651500069Z/RECEIPT.json SHA9f6c8462b0e9e165db5f9dcb12362e43f7c4f8c91092076b450ac68d07ba65b6；全部refs和stdout=snapshot已验证。
+
+固定23e6b906c8d89947dfe86b56450c7bd9a8752e59b1bb6c0a10996520e0d2b593 v2 local plan通过，实际独立CPU审计启动一次exec87665，输出continuation_20261120/start-11031_T0_chunk-009-016/independent_audit_bundle，SUBMISSION9e21ff17…输入未变。不得重复审计；若中断仅按已存manifest下载恢复。admission_review已获只读复核任务，等待完整16文件后复核。审计和二次复核通过后才准备11031/T1 first9，再11032/T0/T1；四路径全部16后方可DEV16。
