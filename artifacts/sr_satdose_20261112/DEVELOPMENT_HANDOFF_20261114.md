@@ -807,3 +807,10 @@ exec75012退出0，01:15:09UTC CONTINUATION_SUBMITTED_RELEASE_CONFIRMED，job174
 ## First9 hourly observation — 2026-11-20 15:16 SGT
 
 07:16:21UTC 1748472仍RUNNING gpu-pro6000-5；step9–12各128及COMMIT、risk无HOLD；step13 BEGIN104/CAPTURE103/COMPLETE103、未COMMIT，其余0；在途stem3321d0e74ab3cbec0fbc3d4f814029571fea1d833a422572f1b07664c76a0762仅BEGIN，活作业非原子观察不判失败，incidents空。当前观察36/96更新，整批尚无独立验收。证据intake/MONITOR_CONTINUATION_1748472_20261120T071615975448Z/RECEIPT.json SHA89631feaf0a4e831fe50176a9f1aa57071d8692e1ed63b0250ff240e23017f71；全部引用SHA、原stdout=snapshot、敏感模式检查通过。下一小时08:16UTC（16:16SGT）巡检；终态23e6b9一次v2审计+独立复核，不提前准备后继。最新04fae7c94e6c85bbd97cfe9eb8626d4f612e9ab1已推送核实。
+
+
+## Network blocked at hourly check — 2026-11-20 16:18 SGT
+
+08:16巡检exec18039退出2，MONITOR_UNKNOWN，原STDERR为SSH Operation timed out（65bytes），STDOUT空；失败收据intake/MONITOR_CONTINUATION_1748472_20261120T081617032478Z/RECEIPT.json SHAb1f36e5e562de6a75fb02efc8679b89bd0773c8f2ad17b8c561b4a3305b30e62及全部引用已核对。只读SSH重试exec86244退出255 Network is unreachable。SD-WAN7098852B-CD75-448F-B1F5-3751311BD253先Disconnected，scutil start退出0后仍Disconnected。CUA getState实见Mac锁屏、无法自动解锁；未登录客户端，completion_summary已完成。人工转录tool结果另存intake/NETWORK_BLOCKER_1748472_20261120T0816Z.json，明确不是原始捕获，未保存屏幕/凭据。已发异步问题请解锁恢复VPN。
+
+最近成功07:16:21UTC：第9–12步COMMIT、step13 COMPLETE103/128、观察36/96，无HOLD；当前状态未知，不依据网络错误推断作业失败/完成，不重提/改作业。恢复后使用原SUBMISSION SHA9e21ff17…只读monitor1748472（11031/T0 first9），终态后23e6b9 v2一次审计+独立复核，再继续11031/T1 first9；不要实际执行旧937966。当前无其他本地operator、agent或CUA活动。最新68f04f0f0e59584ea3b8e4d8e3388d13c4709cb5已推送核实。

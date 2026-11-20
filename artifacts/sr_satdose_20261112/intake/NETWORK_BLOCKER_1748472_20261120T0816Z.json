@@ -1,0 +1,25 @@
+{
+  "status": "BLOCKED_NETWORK_AND_LOCKED_MAC",
+  "recorded_at_utc": "2026-11-20T08:17:54.749092+00:00",
+  "job_id": "1748472",
+  "evidence_kind": "MANUAL_TRANSCRIPTION_OF_TOOL_RESULTS_NOT_RAW_CAPTURE",
+  "monitor_receipt": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/MONITOR_CONTINUATION_1748472_20261120T081617032478Z/RECEIPT.json",
+  "monitor_receipt_sha256": "b1f36e5e562de6a75fb02efc8679b89bd0773c8f2ad17b8c561b4a3305b30e62",
+  "monitor_error": "SSH Operation timed out; MONITOR_UNKNOWN; no remote status obtained",
+  "retry": {
+    "exit_code": 255,
+    "stderr": "ssh: connect to host 10.97.216.128 port 22: Network is unreachable"
+  },
+  "vpn": {
+    "service_uuid": "7098852B-CD75-448F-B1F5-3751311BD253",
+    "before": "Disconnected",
+    "start_exit_code": 0,
+    "after": "Disconnected"
+  },
+  "cua": "Mac locked; automatic unlock could not unlock it. No client interaction or login performed. CUA completion summary sent.",
+  "last_successful_observation_utc": "2026-11-20T07:16:21.012731+00:00",
+  "last_observed_updates": 36,
+  "last_observation_not_current": true,
+  "no_job_changes": true,
+  "next_action": "After user restores VPN, read-only monitor 1748472. If terminal, independent v2 audit 23e6b9; do not resubmit."
+}
