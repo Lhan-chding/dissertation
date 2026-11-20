@@ -1,0 +1,245 @@
+{
+  "status": "CPU_PREPARATION_PUBLICATION_RECEIPT_CAPTURED",
+  "started_at_utc": "2026-11-20T13:18:18.823585+00:00",
+  "finished_at_utc": "2026-11-20T13:56:37.788615+00:00",
+  "returncode": 0,
+  "stdout": "{\"preflight\": {\"path\": \"execution_releases/CONTINUATION_71018e5_s11031_T1_009_016_PREFLIGHT.json\", \"sha256\": \"31287c0e48a34cd4f88cc5dde1f548bbd4a34d6545f9d756277a1d8c8ff1cc34\"}, \"release_path\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/CONTINUATION_71018e5_s11031_T1_009_016_RELEASE.json\", \"release_sha256\": \"da8efd5bb7f359972f8abe56cdb6bc4abde57721d44f2805dcefc3314f4275ba\", \"report\": {\"checked_at_utc\": \"2026-11-20T13:56:36.893905+00:00\", \"completed_chunks\": 5, \"completed_dev_endpoints\": 10, \"cursor\": {\"11031/T0\": 16, \"11031/T1\": 8, \"11032/T0\": 8, \"11032/T1\": 8}, \"final_quota_after\": {\"effective_available_bytes\": 103900006374, \"filesystem_available_bytes\": 194937408716800, \"observed_at_utc\": \"2026-11-20T13:56:36.855190+00:00\", \"quota_observations\": [{\"observed_at_utc\": \"2026-11-20T13:56:36.854135+00:00\", \"path\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases\", \"status\": \"NO_LOCAL_LIMIT_ENODATA\"}, {\"observed_at_utc\": \"2026-11-20T13:56:36.854289+00:00\", \"path\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1\", \"status\": \"NO_LOCAL_LIMIT_ENODATA\"}, {\"observed_at_utc\": \"2026-11-20T13:56:36.854441+00:00\", \"path\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112\", \"status\": \"NO_LOCAL_LIMIT_ENODATA\"}, {\"observed_at_utc\": \"2026-11-20T13:56:36.854579+00:00\", \"path\": \"/projects/_ssd/varunssd/louis-ssvc\", \"status\": \"NO_LOCAL_LIMIT_ENODATA\"}, {\"available_bytes\": 103900006374, \"max_bytes\": 750000000000, \"observed_at_utc\": \"2026-11-20T13:56:36.854715+00:00\", \"path\": \"/projects/_ssd/varunssd\", \"rbytes\": 646099993626, \"status\": \"POSITIVE_QUOTA\"}]}, \"final_quota_before\": {\"effective_available_bytes\": 103900006374, \"filesystem_available_bytes\": 194937408716800, \"observed_at_utc\": \"2026-11-20T13:56:36.849843+00:00\", \"quota_observations\": [{\"observed_at_utc\": \"2026-11-20T13:56:36.848189+00:00\", \"path\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases\", \"status\": \"NO_LOCAL_LIMIT_ENODATA\"}, {\"observed_at_utc\": \"2026-11-20T13:56:36.848452+00:00\", \"path\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1\", \"status\": \"NO_LOCAL_LIMIT_ENODATA\"}, {\"observed_at_utc\": \"2026-11-20T13:56:36.848693+00:00\", \"path\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112\", \"status\": \"NO_LOCAL_LIMIT_ENODATA\"}, {\"observed_at_utc\": \"2026-11-20T13:56:36.848915+00:00\", \"path\": \"/projects/_ssd/varunssd/louis-ssvc\", \"status\": \"NO_LOCAL_LIMIT_ENODATA\"}, {\"available_bytes\": 103900006374, \"max_bytes\": 750000000000, \"observed_at_utc\": \"2026-11-20T13:56:36.849144+00:00\", \"path\": \"/projects/_ssd/varunssd\", \"rbytes\": 646099993626, \"status\": \"POSITIVE_QUOTA\"}]}, \"final_writability_probe\": {\"bytes_written\": 44, \"directory_fsync\": true, \"file_fsync\": true, \"probe_removed\": true}, \"gpu_jobs_submitted\": 0, \"intent\": {\"path\": \"execution_releases/CONTINUATION_71018e5_s11031_T1_009_016_INTENT.json\", \"sha256\": \"85ffa2e8195d8d57397c3a76e63ce61f2626d3fd7edc1d1f4e88c488c4cb7944\"}, \"model_calls\": 0, \"observed_quota_after\": {\"effective_available_bytes\": 103900031183, \"filesystem_available_bytes\": 194930966265856, \"observed_at_utc\": \"2026-11-20T13:36:51.721113+00:00\", \"quota_observations\": [{\"observed_at_utc\": \"2026-11-20T13:36:51.720223+00:00\", \"path\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases\", \"status\": \"NO_LOCAL_LIMIT_ENODATA\"}, {\"observed_at_utc\": \"2026-11-20T13:36:51.720340+00:00\", \"path\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1\", \"status\": \"NO_LOCAL_LIMIT_ENODATA\"}, {\"observed_at_utc\": \"2026-11-20T13:36:51.720455+00:00\", \"path\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112\", \"status\": \"NO_LOCAL_LIMIT_ENODATA\"}, {\"observed_at_utc\": \"2026-11-20T13:36:51.720563+00:00\", \"path\": \"/projects/_ssd/varunssd/louis-ssvc\", \"status\": \"NO_LOCAL_LIMIT_ENODATA\"}, {\"available_bytes\": 103900031183, \"max_bytes\": 750000000000, \"observed_at_utc\": \"2026-11-20T13:36:51.720696+00:00\", \"path\": \"/projects/_ssd/varunssd\", \"rbytes\": 646099968817, \"status\": \"POSITIVE_QUOTA\"}]}, \"observed_quota_before\": {\"effective_available_bytes\": 103900031183, \"filesystem_available_bytes\": 194930966265856, \"observed_at_utc\": \"2026-11-20T13:36:51.716052+00:00\", \"quota_observations\": [{\"observed_at_utc\": \"2026-11-20T13:36:51.714874+00:00\", \"path\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases\", \"status\": \"NO_LOCAL_LIMIT_ENODATA\"}, {\"observed_at_utc\": \"2026-11-20T13:36:51.715109+00:00\", \"path\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1\", \"status\": \"NO_LOCAL_LIMIT_ENODATA\"}, {\"observed_at_utc\": \"2026-11-20T13:36:51.715231+00:00\", \"path\": \"/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112\", \"status\": \"NO_LOCAL_LIMIT_ENODATA\"}, {\"observed_at_utc\": \"2026-11-20T13:36:51.715343+00:00\", \"path\": \"/projects/_ssd/varunssd/louis-ssvc\", \"status\": \"NO_LOCAL_LIMIT_ENODATA\"}, {\"available_bytes\": 103900031183, \"max_bytes\": 750000000000, \"observed_at_utc\": \"2026-11-20T13:36:51.715453+00:00\", \"path\": \"/projects/_ssd/varunssd\", \"rbytes\": 646099968817, \"status\": \"POSITIVE_QUOTA\"}]}, \"optimizer_calls\": 0, \"original_train_release\": {\"path\": \"execution_releases/FIRST_TWO_RELEASE_71018e5.json\", \"sha256\": \"22f3b7b260670628398154652455520cd25169234f66a827d3d117def924438f\"}, \"permission\": \"NO_GPU_SUBMISSION\", \"preparation_script_sha256\": \"737954eb256b1c29f5a381e864d3a1bc74a5fa1a8e95ab4a3373c2e66ad151c2\", \"release\": {\"path\": \"execution_releases/CONTINUATION_71018e5_s11031_T1_009_016_RELEASE.json\", \"sha256\": \"da8efd5bb7f359972f8abe56cdb6bc4abde57721d44f2805dcefc3314f4275ba\"}, \"required_bytes\": 17179869184, \"risk\": {\"path\": \"execution_releases/CONTINUATION_71018e5_s11031_T1_009_016_RISK.json\", \"sha256\": \"f9dc8f7d32d9d58bf2cff93964885b49bf4142693c2da65edabfdcef8f638256\"}, \"selection\": {\"arm\": \"T1\", \"first_step\": 9, \"last_step\": 16, \"start_seed\": 11031}, \"status\": \"CONTINUATION_CPU_PREFLIGHT_COMPLETE_NO_MODEL_CALLS\", \"storage_budget\": {\"path\": \"execution_releases/CONTINUATION_71018e5_s11031_T1_009_016_BUDGET.json\", \"sha256\": \"327f266b2ff6ab65ea292f8637f1a4f905807bbdc03241afc6538f9d60947902\"}, \"writability_probe\": {\"bytes_written\": 44, \"directory_fsync\": true, \"file_fsync\": true, \"probe_removed\": true}}}\n",
+  "stderr": "EEE/ROSE Cluster 02\nConnecting to: login-3\n\nRelevant Guides:\n- https://github.com/NTUEEECluster/docs/blob/main/quickstart.md\n- https://github.com/NTUEEECluster/docs/blob/main/terms-n-conditions.md\n",
+  "summary": {
+    "mode": "WRITE_ONCE_CPU_PREPARATION",
+    "selection": {
+      "start_seed": 11031,
+      "arm": "T1",
+      "first_step": 9,
+      "last_step": 16
+    },
+    "original_train_release": {
+      "path": "execution_releases/FIRST_TWO_RELEASE_71018e5.json",
+      "sha256": "22f3b7b260670628398154652455520cd25169234f66a827d3d117def924438f"
+    },
+    "canary_spec": {
+      "path": "execution_releases/canary_job_1740834/CANARY_SPEC.json",
+      "sha256": "44a8db68c655bea987629ea210da1a32e268806f6e0c7b1506d6d77828d4b260"
+    },
+    "gpu_submission": false
+  },
+  "raw_logs": {
+    "stdout": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/CONTINUATION_PREPARATION_71018e5_s11031_T1_009_016_REMOTE_STDOUT.log",
+      "sha256": "0d18089ddd6fcdc04d18292fc406db4d75bf08ee4abfd88630b13840faf70825"
+    },
+    "stderr": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/CONTINUATION_PREPARATION_71018e5_s11031_T1_009_016_REMOTE_STDERR.log",
+      "sha256": "3cd8c81952bb5ea699e946df0e8f7e85d7183866e86fe008febf755ffa37cc10"
+    }
+  },
+  "local_operation_source": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/CONTINUATION_PREPARATION_71018e5_s11031_T1_009_016_PREPARATION_SOURCE.py",
+    "sha256": "737954eb256b1c29f5a381e864d3a1bc74a5fa1a8e95ab4a3373c2e66ad151c2",
+    "bytes": 22409
+  },
+  "publication": {
+    "preflight": {
+      "path": "execution_releases/CONTINUATION_71018e5_s11031_T1_009_016_PREFLIGHT.json",
+      "sha256": "31287c0e48a34cd4f88cc5dde1f548bbd4a34d6545f9d756277a1d8c8ff1cc34"
+    },
+    "release_path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/CONTINUATION_71018e5_s11031_T1_009_016_RELEASE.json",
+    "release_sha256": "da8efd5bb7f359972f8abe56cdb6bc4abde57721d44f2805dcefc3314f4275ba",
+    "report": {
+      "checked_at_utc": "2026-11-20T13:56:36.893905+00:00",
+      "completed_chunks": 5,
+      "completed_dev_endpoints": 10,
+      "cursor": {
+        "11031/T0": 16,
+        "11031/T1": 8,
+        "11032/T0": 8,
+        "11032/T1": 8
+      },
+      "final_quota_after": {
+        "effective_available_bytes": 103900006374,
+        "filesystem_available_bytes": 194937408716800,
+        "observed_at_utc": "2026-11-20T13:56:36.855190+00:00",
+        "quota_observations": [
+          {
+            "observed_at_utc": "2026-11-20T13:56:36.854135+00:00",
+            "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases",
+            "status": "NO_LOCAL_LIMIT_ENODATA"
+          },
+          {
+            "observed_at_utc": "2026-11-20T13:56:36.854289+00:00",
+            "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1",
+            "status": "NO_LOCAL_LIMIT_ENODATA"
+          },
+          {
+            "observed_at_utc": "2026-11-20T13:56:36.854441+00:00",
+            "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112",
+            "status": "NO_LOCAL_LIMIT_ENODATA"
+          },
+          {
+            "observed_at_utc": "2026-11-20T13:56:36.854579+00:00",
+            "path": "/projects/_ssd/varunssd/louis-ssvc",
+            "status": "NO_LOCAL_LIMIT_ENODATA"
+          },
+          {
+            "available_bytes": 103900006374,
+            "max_bytes": 750000000000,
+            "observed_at_utc": "2026-11-20T13:56:36.854715+00:00",
+            "path": "/projects/_ssd/varunssd",
+            "rbytes": 646099993626,
+            "status": "POSITIVE_QUOTA"
+          }
+        ]
+      },
+      "final_quota_before": {
+        "effective_available_bytes": 103900006374,
+        "filesystem_available_bytes": 194937408716800,
+        "observed_at_utc": "2026-11-20T13:56:36.849843+00:00",
+        "quota_observations": [
+          {
+            "observed_at_utc": "2026-11-20T13:56:36.848189+00:00",
+            "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases",
+            "status": "NO_LOCAL_LIMIT_ENODATA"
+          },
+          {
+            "observed_at_utc": "2026-11-20T13:56:36.848452+00:00",
+            "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1",
+            "status": "NO_LOCAL_LIMIT_ENODATA"
+          },
+          {
+            "observed_at_utc": "2026-11-20T13:56:36.848693+00:00",
+            "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112",
+            "status": "NO_LOCAL_LIMIT_ENODATA"
+          },
+          {
+            "observed_at_utc": "2026-11-20T13:56:36.848915+00:00",
+            "path": "/projects/_ssd/varunssd/louis-ssvc",
+            "status": "NO_LOCAL_LIMIT_ENODATA"
+          },
+          {
+            "available_bytes": 103900006374,
+            "max_bytes": 750000000000,
+            "observed_at_utc": "2026-11-20T13:56:36.849144+00:00",
+            "path": "/projects/_ssd/varunssd",
+            "rbytes": 646099993626,
+            "status": "POSITIVE_QUOTA"
+          }
+        ]
+      },
+      "final_writability_probe": {
+        "bytes_written": 44,
+        "directory_fsync": true,
+        "file_fsync": true,
+        "probe_removed": true
+      },
+      "gpu_jobs_submitted": 0,
+      "intent": {
+        "path": "execution_releases/CONTINUATION_71018e5_s11031_T1_009_016_INTENT.json",
+        "sha256": "85ffa2e8195d8d57397c3a76e63ce61f2626d3fd7edc1d1f4e88c488c4cb7944"
+      },
+      "model_calls": 0,
+      "observed_quota_after": {
+        "effective_available_bytes": 103900031183,
+        "filesystem_available_bytes": 194930966265856,
+        "observed_at_utc": "2026-11-20T13:36:51.721113+00:00",
+        "quota_observations": [
+          {
+            "observed_at_utc": "2026-11-20T13:36:51.720223+00:00",
+            "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases",
+            "status": "NO_LOCAL_LIMIT_ENODATA"
+          },
+          {
+            "observed_at_utc": "2026-11-20T13:36:51.720340+00:00",
+            "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1",
+            "status": "NO_LOCAL_LIMIT_ENODATA"
+          },
+          {
+            "observed_at_utc": "2026-11-20T13:36:51.720455+00:00",
+            "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112",
+            "status": "NO_LOCAL_LIMIT_ENODATA"
+          },
+          {
+            "observed_at_utc": "2026-11-20T13:36:51.720563+00:00",
+            "path": "/projects/_ssd/varunssd/louis-ssvc",
+            "status": "NO_LOCAL_LIMIT_ENODATA"
+          },
+          {
+            "available_bytes": 103900031183,
+            "max_bytes": 750000000000,
+            "observed_at_utc": "2026-11-20T13:36:51.720696+00:00",
+            "path": "/projects/_ssd/varunssd",
+            "rbytes": 646099968817,
+            "status": "POSITIVE_QUOTA"
+          }
+        ]
+      },
+      "observed_quota_before": {
+        "effective_available_bytes": 103900031183,
+        "filesystem_available_bytes": 194930966265856,
+        "observed_at_utc": "2026-11-20T13:36:51.716052+00:00",
+        "quota_observations": [
+          {
+            "observed_at_utc": "2026-11-20T13:36:51.714874+00:00",
+            "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases",
+            "status": "NO_LOCAL_LIMIT_ENODATA"
+          },
+          {
+            "observed_at_utc": "2026-11-20T13:36:51.715109+00:00",
+            "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1",
+            "status": "NO_LOCAL_LIMIT_ENODATA"
+          },
+          {
+            "observed_at_utc": "2026-11-20T13:36:51.715231+00:00",
+            "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112",
+            "status": "NO_LOCAL_LIMIT_ENODATA"
+          },
+          {
+            "observed_at_utc": "2026-11-20T13:36:51.715343+00:00",
+            "path": "/projects/_ssd/varunssd/louis-ssvc",
+            "status": "NO_LOCAL_LIMIT_ENODATA"
+          },
+          {
+            "available_bytes": 103900031183,
+            "max_bytes": 750000000000,
+            "observed_at_utc": "2026-11-20T13:36:51.715453+00:00",
+            "path": "/projects/_ssd/varunssd",
+            "rbytes": 646099968817,
+            "status": "POSITIVE_QUOTA"
+          }
+        ]
+      },
+      "optimizer_calls": 0,
+      "original_train_release": {
+        "path": "execution_releases/FIRST_TWO_RELEASE_71018e5.json",
+        "sha256": "22f3b7b260670628398154652455520cd25169234f66a827d3d117def924438f"
+      },
+      "permission": "NO_GPU_SUBMISSION",
+      "preparation_script_sha256": "737954eb256b1c29f5a381e864d3a1bc74a5fa1a8e95ab4a3373c2e66ad151c2",
+      "release": {
+        "path": "execution_releases/CONTINUATION_71018e5_s11031_T1_009_016_RELEASE.json",
+        "sha256": "da8efd5bb7f359972f8abe56cdb6bc4abde57721d44f2805dcefc3314f4275ba"
+      },
+      "required_bytes": 17179869184,
+      "risk": {
+        "path": "execution_releases/CONTINUATION_71018e5_s11031_T1_009_016_RISK.json",
+        "sha256": "f9dc8f7d32d9d58bf2cff93964885b49bf4142693c2da65edabfdcef8f638256"
+      },
+      "selection": {
+        "arm": "T1",
+        "first_step": 9,
+        "last_step": 16,
+        "start_seed": 11031
+      },
+      "status": "CONTINUATION_CPU_PREFLIGHT_COMPLETE_NO_MODEL_CALLS",
+      "storage_budget": {
+        "path": "execution_releases/CONTINUATION_71018e5_s11031_T1_009_016_BUDGET.json",
+        "sha256": "327f266b2ff6ab65ea292f8637f1a4f905807bbdc03241afc6538f9d60947902"
+      },
+      "writability_probe": {
+        "bytes_written": 44,
+        "directory_fsync": true,
+        "file_fsync": true,
+        "probe_removed": true
+      }
+    }
+  }
+}

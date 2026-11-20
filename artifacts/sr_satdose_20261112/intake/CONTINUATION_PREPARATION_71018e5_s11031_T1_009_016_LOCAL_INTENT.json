@@ -1,0 +1,26 @@
+{
+  "mode": "WRITE_ONCE_CPU_PREPARATION",
+  "selection": {
+    "start_seed": 11031,
+    "arm": "T1",
+    "first_step": 9,
+    "last_step": 16
+  },
+  "original_train_release": {
+    "path": "execution_releases/FIRST_TWO_RELEASE_71018e5.json",
+    "sha256": "22f3b7b260670628398154652455520cd25169234f66a827d3d117def924438f"
+  },
+  "canary_spec": {
+    "path": "execution_releases/canary_job_1740834/CANARY_SPEC.json",
+    "sha256": "44a8db68c655bea987629ea210da1a32e268806f6e0c7b1506d6d77828d4b260"
+  },
+  "gpu_submission": false,
+  "started_at_utc": "2026-11-20T13:18:18.823585+00:00",
+  "script_sha256": "737954eb256b1c29f5a381e864d3a1bc74a5fa1a8e95ab4a3373c2e66ad151c2",
+  "local_operation_source": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/CONTINUATION_PREPARATION_71018e5_s11031_T1_009_016_PREPARATION_SOURCE.py",
+    "sha256": "737954eb256b1c29f5a381e864d3a1bc74a5fa1a8e95ab4a3373c2e66ad151c2",
+    "bytes": 22409
+  },
+  "status": "LOCAL_INTENT_UNKNOWN_UNTIL_SSH_RECEIPT"
+}
