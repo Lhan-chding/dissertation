@@ -821,3 +821,10 @@ exec75012退出0，01:15:09UTC CONTINUATION_SUBMITTED_RELEASE_CONFIRMED，job174
 用户继续后实际SSH成功，尽管本机scutil仍Disconnected，网络连通以实际SSH证据为准。12:56:56UTC monitor1748472：全部4行COMPLETED0:0，01:15:14–11:54:58UTC、gpu-pro6000-5。9–16各128回答和COMMIT，1024回答/8更新、incidents/unresolved空；9–15 risk无HOLD、16 PENDING_REQUIRED_DEV/global_hold=false。squeue退出1 Invalid job id specified是终态作业移出队列，sacct仍有完整记录。当前观察40/96、整批独立验收待定。终态monitor收据intake/MONITOR_CONTINUATION_1748472_20261120T125651500069Z/RECEIPT.json SHA9f6c8462b0e9e165db5f9dcb12362e43f7c4f8c91092076b450ac68d07ba65b6；全部refs和stdout=snapshot已验证。
 
 固定23e6b906c8d89947dfe86b56450c7bd9a8752e59b1bb6c0a10996520e0d2b593 v2 local plan通过，实际独立CPU审计启动一次exec87665，输出continuation_20261120/start-11031_T0_chunk-009-016/independent_audit_bundle，SUBMISSION9e21ff17…输入未变。不得重复审计；若中断仅按已存manifest下载恢复。admission_review已获只读复核任务，等待完整16文件后复核。审计和二次复核通过后才准备11031/T1 first9，再11032/T0/T1；四路径全部16后方可DEV16。
+
+
+## First9 independent audit accepted; next preparation active — 2026-11-20 21:20 SGT
+
+exec87665退出0，LOCAL_RECEIPT AUDIT_BUNDLE_VERIFIED；root+admission_review验收16文件/原tar/解包/manifest raw marker/publication/localrefs/固定23e6+937966+a6a3 sources及实际提交绑定。AUDIT d5a79768e6ebf07457063c5a61d02cc9bac5d5673f3311ede2d8e99b6ed2a7b7；manifest4e5efc9dbe805b2a95eb55e8cf94f10aea1d33ab3ed2e6a81b1710471f2f7eb3；risk3fe174aef2c12909de8ef27d7d8c10b8b5fb1b49cafd70889d60a2097f108862。8COMMIT/1024三联记录、prefix16/8/8/8、10DEV、pending仅11031/T0/16，无HOLD；全risk=monitor完整对象=RESULT.post SHA，20331risk refs被29171audit observed同SHA覆盖。保留无直接/proc死亡观察与历史中间risk非逐步全重放限制；详细REPORT_zh.md与完整包在同chunk目录。
+
+下一11031/T1 first9 local-plan通过，固定737954eb256b1c29f5a381e864d3a1bc74a5fa1a8e95ab4a3373c2e66ad151c2 prepare实际执行一次exec6395。原canary44a8db…/原TRAIN22f3b7…未变。输出intake/CONTINUATION_PREPARATION_71018e5_s11031_T1_009_016_*，临时驱动stdout/private/tmp/satdose-prepare-11031-T1-first9-20261120.log。尚无准备终态，不可重跑。结束后核原source/raw/receipt/40COMMIT/10DEV/5prior_chunks/存储和无HOLD，再eceec5 submit teacher2PRO6000/8CPU66G/24h/no-requeue。此阶段不做DEV16、17或MAIN。最新终态证据2dcd64d52579191aceb7031ce50aabc040b4a93c已推送核实。
