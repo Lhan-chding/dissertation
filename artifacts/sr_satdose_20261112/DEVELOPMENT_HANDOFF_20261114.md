@@ -797,3 +797,8 @@ exec75012退出0，01:15:09UTC CONTINUATION_SUBMITTED_RELEASE_CONFIRMED，job174
 ## First9 hourly observation — 2026-11-20 13:16 SGT
 
 05:16:17UTC 1748472仍RUNNING gpu-pro6000-5；step9、10各128及COMMIT、risk无HOLD；step11 BEGIN/CAPTURE/COMPLETE各128，尚无COMMIT/risk，12–16全0。incidents及unresolved_capture_paths均空。生成完成不等于更新完成，观察仍34/96，整批待独立验收。证据intake/MONITOR_CONTINUATION_1748472_20261120T051612474792Z/RECEIPT.json SHAbe5d06f061d63fe6f2101838fa06677ed874859f3c1ce614084409c72ab958d1；全部引用SHA及原stdout=snapshot/敏感模式检查通过。下一小时06:16UTC（14:16SGT）巡检；终态仍23e6b9一次v2审计+独立复核，不提前准备后继。最新0986143af49576f75e14708db61ffa48c9f67845已推送核实。
+
+
+## First9 hourly observation — 2026-11-20 14:16 SGT
+
+06:16:25UTC 1748472仍RUNNING gpu-pro6000-5；step9–11各128及COMMIT、risk无HOLD；step12 BEGIN/CAPTURE/COMPLETE各128、尚无COMMIT/risk，13–16全0；incidents及unresolved_capture_paths均空。当前观察35/96更新，整批尚无独立验收。证据intake/MONITOR_CONTINUATION_1748472_20261120T061622522699Z/RECEIPT.json SHA3bd859c775b83c3f3d8b3d39efaa4d17d0f6c01e719ad381c07ce534c0cf59f0；全部引用SHA、原stdout=snapshot、敏感模式检查通过。下一小时07:16UTC（15:16SGT）巡检；完成后23e6b9 v2一次审计+二次复核，不提前准备其他路径。最新8b18b84c3b30e65e2afe601a63369783d8b2d8fc已推送核实。
