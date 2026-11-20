@@ -782,3 +782,8 @@ exec75012退出0，01:15:09UTC CONTINUATION_SUBMITTED_RELEASE_CONFIRMED，job174
 ## First9 hourly observation — 2026-11-20 10:16 SGT
 
 02:16:20UTC monitor1748472 RUNNING，gpu-pro6000-5，step9 BEGIN99/CAPTURE98/COMPLETE98、无COMMIT/risk；10–16全0，records仅CLAIM，incidents空。唯一在途request stem7bea1c2e053b103f684cc4bdc0d1b5608ea4f0c2190326cbd3e678250bc033f3有BEGIN，CAPTURE/COMPLETE未落盘，活作业非原子观察不得判断失败或重试。证据intake/MONITOR_CONTINUATION_1748472_20261120T021616006951Z/RECEIPT.json SHAb14ebd805eb5a0c514f6835fc75ce9b30c25ac621c8cefe376c11fa4535ccdf8；全部引用/原stdout=snapshot/JSON及敏感模式检查通过。训练仍32/96。下一次03:16UTC（11:16SGT）继续原只读monitor；终态仍用23e6b9审计，不提前准备后继。最近a8c9b93395f8feda79276a29813e99037640c6c8已推送核实。
+
+
+## First9 hourly observation — 2026-11-20 11:16 SGT
+
+03:16:21UTC 1748472仍RUNNING gpu-pro6000-5；step9 BEGIN/CAPTURE/COMPLETE各128、COMMIT已观察，risk NO_SCIENTIFIC_STOP_TRIGGER_OBSERVED/global_hold=false。step10 BEGIN54/CAPTURE53/COMPLETE53、未COMMIT，其余0；在途stem ee60ba6722359eb03886521cd3c35c9b0cb966b97bb7cabb91e8b3107471ca17仅BEGIN，非原子活作业观察不判失败，incidents空。当前观察33/96更新，整批尚无独立验收。证据intake/MONITOR_CONTINUATION_1748472_20261120T031618270962Z/RECEIPT.json SHA6ab8892d5b60bb0453115edfdde69bd7c98ee0e205f5267a5cc5a2d43a4b0adb；source/raw/JSON/敏感模式通过。下一小时04:16UTC（12:16SGT）巡检；后续monitor驱动stdout包含完整risk很大，调用时重定向到临时日志、只打印紧凑计数和状态，原完整证据仍在intake。最新3d806ecc720c03e6b445b06db497df700be037e9已推送核实。
