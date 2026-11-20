@@ -1,0 +1,26 @@
+{
+  "status": "LOCAL_PLAN_ONLY_NO_SSH",
+  "origin": "READ_ONLY_PUBLICATION_RECOVERY",
+  "selection": {
+    "start_seed": 11031,
+    "arm": "T0",
+    "first_step": 9,
+    "last_step": 16
+  },
+  "failed_receipt": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/CONTINUATION_PREPARATION_71018e5_s11031_T0_009_016_LOCAL_RECEIPT.json",
+    "sha256": "7b6ef477b140c75ccb4e44717886258affdc6a75ae32787c39998d61dfd7535a",
+    "bytes": 1978
+  },
+  "publication_hashes": {
+    "INTENT": "ec484da62c9edd1b4606399978c650d59c7506f1c546fe80efe75509b5f26c71",
+    "BUDGET": "e08304775261d2418aa2af926f5b5bdf9ea41fb4df9c80289782201ebd623745",
+    "RELEASE": "eda1f586dc7b69d1f04b132726856e1c8c282ab52b5deb520ef7134b2e36b9fd",
+    "RISK": "2414de5bf0736f9ac6690772853fcb9e0ea7c8c72758a09abae710ce67a10984",
+    "PREFLIGHT": "d0f2f8f7f5cd6cf680d4ba85d35cfa18179cdda23f3d6715c22591ae5fb6e165"
+  },
+  "recovery_downloads": 1,
+  "prepare_invocations": 0,
+  "preflight_invocations": 0,
+  "permission": "READ_ONLY_PREPARATION_PUBLICATION_RECOVERY_NO_MODEL_OR_GPU_SUBMISSION"
+}

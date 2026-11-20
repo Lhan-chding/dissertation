@@ -1,0 +1,26 @@
+test_all_fixed_chunk_plans_are_local_only (test_submit_continuation.LocalDriver.test_all_fixed_chunk_plans_are_local_only) ... ok
+test_cross_root_reference_rejected (test_submit_continuation.LocalDriver.test_cross_root_reference_rejected) ... ok
+test_failed_preparer_rejected (test_submit_continuation.LocalDriver.test_failed_preparer_rejected) ... ok
+test_invalid_chunk_rejected (test_submit_continuation.LocalDriver.test_invalid_chunk_rejected) ... ok
+test_missing_four_path_dev_barrier_rejected (test_submit_continuation.LocalDriver.test_missing_four_path_dev_barrier_rejected) ... ok
+test_mutated_raw_output_rejected (test_submit_continuation.LocalDriver.test_mutated_raw_output_rejected) ... ok
+test_network_failure_keeps_source_raw_logs_and_blocks_retry (test_submit_continuation.LocalDriver.test_network_failure_keeps_source_raw_logs_and_blocks_retry) ... ok
+test_original_release_rejected (test_submit_continuation.LocalDriver.test_original_release_rejected) ... ok
+test_outer_and_remote_compile (test_submit_continuation.LocalDriver.test_outer_and_remote_compile) ... ok
+test_wrong_preparer_source_rejected (test_submit_continuation.LocalDriver.test_wrong_preparer_source_rejected) ... ok
+test_completed_nonzero_exit_not_reported_success (test_submit_continuation.RemoteSubmissionTail.test_completed_nonzero_exit_not_reported_success) ... ok
+test_foreign_cluster_response_not_released (test_submit_continuation.RemoteSubmissionTail.test_foreign_cluster_response_not_released) ... ok
+test_post_release_visibility_delay_preserves_known_job (test_submit_continuation.RemoteSubmissionTail.test_post_release_visibility_delay_preserves_known_job) ... ok
+test_real_run_environment_sanitization_with_stub (test_submit_continuation.RemoteSubmissionTail.test_real_run_environment_sanitization_with_stub) ... ok
+test_release_failure_preserves_known_job_no_retry (test_submit_continuation.RemoteSubmissionTail.test_release_failure_preserves_known_job_no_retry) ... ok
+test_sbatch_failure_retained_no_release (test_submit_continuation.RemoteSubmissionTail.test_sbatch_failure_retained_no_release) ... ok
+test_second_identity_changed_no_release (test_submit_continuation.RemoteSubmissionTail.test_second_identity_changed_no_release) ... ok
+test_success_fixed_resources_five_wrapper_args_and_lock_handoff (test_submit_continuation.RemoteSubmissionTail.test_success_fixed_resources_five_wrapper_args_and_lock_handoff) ... ok
+test_wrong_gpu_not_released (test_submit_continuation.RemoteSubmissionTail.test_wrong_gpu_not_released) ... ok
+test_wrong_qos_not_released (test_submit_continuation.RemoteSubmissionTail.test_wrong_qos_not_released) ... ok
+test_wrong_walltime_not_released (test_submit_continuation.RemoteSubmissionTail.test_wrong_walltime_not_released) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 0.078s
+
+OK

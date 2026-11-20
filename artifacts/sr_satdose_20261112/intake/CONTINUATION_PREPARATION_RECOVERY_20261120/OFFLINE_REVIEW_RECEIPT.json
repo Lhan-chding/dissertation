@@ -1,0 +1,39 @@
+{
+  "status": "OFFLINE_RECOVERY_OPERATOR_REVIEW_COMPLETE_NO_SSH_EXECUTED",
+  "source": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/experiments/sr_satdose_20261112/operations/satdose_recover_continuation_preparation.py",
+    "sha256": "8958b4b9a0da8a3a469434657902c6c88c5bd77b1a80b03982fa2dfd94a20944"
+  },
+  "tests": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/experiments/sr_satdose_20261112/operations/tests/test_recover_continuation_preparation.py",
+    "sha256": "0468040b33c8ef55f81556d738dcf4d6128cfc72e9051dc663df976a8ed5be89"
+  },
+  "root_checks": {
+    "recovery_tests": 19,
+    "unchanged_submitter_tests": 21,
+    "all_pass": true,
+    "logs": [
+      {
+        "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/CONTINUATION_PREPARATION_RECOVERY_20261120/RECOVERY_TESTS.log",
+        "sha256": "63827e690675968938942a317f716ffc6876806c56273e89ffd372edcd2c737a"
+      },
+      {
+        "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/CONTINUATION_PREPARATION_RECOVERY_20261120/SUBMIT_COMPATIBILITY_TESTS.log",
+        "sha256": "3fa4d9b97879fd9acd53a4a1f9c270675dcce03cd514c8832fada1bdae96a10d"
+      }
+    ]
+  },
+  "independent_review": {
+    "agent": "admission_review",
+    "recovery_tests": 19,
+    "all_pass": true,
+    "remaining_blockers": []
+  },
+  "actual_local_plan": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/CONTINUATION_PREPARATION_RECOVERY_20261120/LOCAL_PLAN.json",
+    "sha256": "7042002b462c52e2fb071a383cb8ff23d66ee83e0b620bf73d6866502771ffe1"
+  },
+  "permission": "READ_ONLY_RECOVERY_READY_NO_TRAINING_OR_GPU_AUTHORITY",
+  "required_actual_gate": "RECOVERY_VALIDATION complete + exact receipt SHA + no RECOVERY_ERROR; old submitter must rerun native preflight",
+  "original_failure_preserved": true
+}
