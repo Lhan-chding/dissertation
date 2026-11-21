@@ -864,3 +864,10 @@ exec88518退出0，14:18:11.655801UTC CONTINUATION_SUBMITTED_RELEASE_CONFIRMED�
 2026-11-20 18:19巡检exec20347退出2，MONITOR_UNKNOWN，原STDERR SSH Operation timed out，STDOUT空。失败收据intake/MONITOR_CONTINUATION_1749205_20261120T181916378802Z/RECEIPT.json SHA87e41ebaa542cd211102335c3f487dacd0426e52c191739b7702614b2de8f088及全部refs已核；一次只读重试exec65040退出255也Operation timed out。SD-WAN先Disconnected，启动现有service退出0后仍Disconnected。CUA getState实见Mac锁屏无法自动解锁，未操作登录；按最新工具要求已发browser-complete。工具结果人工转录intake/NETWORK_BLOCKER_1749205_20261120T1819Z.json，明确非原始捕获，未保存屏幕/凭据。已异步请求解锁恢复VPN。一次本地临时解析在monitor仍运行且驱动输出为空时提前执行报JSONDecodeError，等待原进程退出后成功读取并核对失败收据，无远端改变。
 
 最近成功17:19:16UTC（01:19SGT）：1749205 RUNNING，11031/T1 step9 COMMIT/risk无HOLD（pending仅11031/T0/16），step10 COMPLETE94/128，观察41/96、独立验收40/96。当前状态未知，不推断失败/完成，不重提、不改作业。恢复后原SUBMISSION084cafc982f08a400844b3fbc6a984ae46611e75cfe07ca1d02d18c1516ea40d、job1749205、11031/T1 first9只读monitor --execute，驱动stdout重定向临时文件。终态后固定23e6b9 v2一次CPU审计+完整16文件及fullrisk独立复核；下一路径11032/T0 first9；其后11032/T1，四条都16后才DEV16。当前无活动本地operator/agent/CUA。最新c27ac2c8645589e0d691e8eb4d46717ec3d6104f已推送核实。
+
+
+## 1749205 terminal; independent audit active — 2026-11-21 13:25 SGT
+
+恢复后05:24:15UTC monitor成功，1749205全部4行COMPLETED0:0，2026-11-20 14:19:02–2026-11-21 05:20:34UTC（15:01:32），gpu-pro6000-12。9–16每步128条和COMMIT、共1024条/8更新，incidents/unresolved空，全部risk PENDING_REQUIRED_DEV/global_hold=false。当前观察48/96，独立验收仍40/96。证据intake/MONITOR_CONTINUATION_1749205_20261121T052409430535Z/RECEIPT.json SHA626dbaa62b0ba7ea5930b78990e67c599cda0d243cc066081ef5e7983418ab4e，全部引用SHA、原stdout=snapshot及敏感模式通过。
+
+固定23e6b906c8d89947dfe86b56450c7bd9a8752e59b1bb6c0a10996520e0d2b593 v2 local-plan通过，实际独立CPU审计一次启动exec4517，输出continuation_20261120/start-11031_T1_chunk-009-016/independent_audit_bundle；输入实际SUBMISSION SHA084cafc982f08a400844b3fbc6a984ae46611e75cfe07ca1d02d18c1516ea40d。驱动stdout/private/tmp/satdose-audit-1749205-result-20261121.json。不得重复审计，若未知仅按saved manifest下载恢复。admission_review已收到只读复核准备任务，包完成后再通知完整16文件/fullrisk复核。通过后下一11032/T0 first9，再11032/T1 first9；全部四路径16后才DEV16。当前唯一活动本地operator4517，无GPU新提交，最新4a9874afc658c109402287fd71c981f431863572已推送核实。
