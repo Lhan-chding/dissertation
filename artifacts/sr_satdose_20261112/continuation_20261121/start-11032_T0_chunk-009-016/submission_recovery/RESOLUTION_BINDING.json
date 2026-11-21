@@ -1,0 +1,12 @@
+{
+  "status": "NEW_ATTEMPT_NOT_YET_INVOKED",
+  "resolution": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/SUBMISSION_RESOLUTION.json",
+    "sha256": "1bafc3b4fa22999ee64e4c8b585861ebd2aace65efd80268604ecde252979898"
+  },
+  "original_unknown": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/SUBMISSION.json",
+    "sha256": "981c09318620272c0775b59d3c9ee663ba50a705fa0a6e8f0a9d423ed18ad5ae"
+  },
+  "new_receipt_path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/submission_recovery/SUBMISSION.json"
+}

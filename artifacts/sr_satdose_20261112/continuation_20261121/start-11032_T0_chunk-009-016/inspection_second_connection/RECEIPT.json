@@ -1,0 +1,27 @@
+{
+  "original_unknown_preserved": true,
+  "permission": "OBSERVATION_ONLY_NO_RESUBMISSION_TRAINING_OR_MAIN_AUTHORITY",
+  "raw_logs": {
+    "SSH_STDERR.raw": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/inspection_second_connection/SSH_STDERR.raw",
+      "sha256": "94a6025655c236a84f68a085ec442a2006ac62d606a74e8a9a483dce3d299705"
+    },
+    "SSH_STDOUT.raw": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/inspection_second_connection/SSH_STDOUT.raw",
+      "sha256": "8d6cb772d1ce47da2958f189a50edf099e458ac7d56b889c6c3bca6d10bdac09"
+    }
+  },
+  "report": {
+    "error_type": "ValueError",
+    "observations": {
+      "stage": "BOOTSTRAP"
+    },
+    "original_unknown_preserved": true,
+    "permission": "OBSERVATION_ONLY_NO_RESUBMISSION_TRAINING_OR_MAIN_AUTHORITY",
+    "reason": "Different login host; process scope UNKNOWN",
+    "status": "INSPECTION_FAILED_UNKNOWN"
+  },
+  "returncode": 2,
+  "source_sha256": "8e81bdc3725ad3eae170722a101794a9589ef83cd018e52bedd98e0662fd66cd",
+  "status": "INSPECTION_FAILED_UNKNOWN"
+}

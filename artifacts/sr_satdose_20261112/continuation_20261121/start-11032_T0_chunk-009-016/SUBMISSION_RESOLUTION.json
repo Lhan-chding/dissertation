@@ -1,0 +1,51 @@
+{
+  "status": "RESOLVED_NOT_SUBMITTED_BEFORE_SBATCH",
+  "created_at_utc": "2026-11-21T07:08:13.299409+00:00",
+  "decision_kind": "ROOT_MANUAL_EVIDENCE_RESOLUTION_WITH_INDEPENDENT_AGENT_REVIEW",
+  "selection": {
+    "start_seed": 11032,
+    "arm": "T0",
+    "first_step": 9,
+    "last_step": 16
+  },
+  "original_unknown": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/SUBMISSION.json",
+    "sha256": "981c09318620272c0775b59d3c9ee663ba50a705fa0a6e8f0a9d423ed18ad5ae"
+  },
+  "original_intent": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/SUBMISSION.json.intent.json",
+    "sha256": "cc22c61cc8482e6722a6cab4523bb4c6f04ab2ff39beee9d74445ae4f13fb0e3"
+  },
+  "original_source": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/SUBMISSION.json.source.py",
+    "sha256": "eceec5aab4de56b53d8e1483d2e49093e28f4048b2ef818302bb3db499fb0f94"
+  },
+  "successful_observation": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/inspection_uid_connection2/RECEIPT.json",
+    "sha256": "9527ae553e13622b73b0846677135545fa1b58c3b705753655cca7e6b588df72"
+  },
+  "review": "Root and admission_review independently verified complete bytes/raw logs, exact payload, seven refs/source84/19 keys, host/UID, two process censuses, stable existing SH/EX locks, absent exact slots, empty exact-name accounting and no matching queue job. Review is AI, not human review.",
+  "no_deletion_provenance": "Within this task, no action deleted, renamed or moved either exact scheduling/controller slot or prior submission evidence. After original SSH closure, all remote actions were read-only inspections. This is an operator activity attestation, not a filesystem-history audit.",
+  "inference": "The pinned original submitter persists and fsyncs the exact scheduling directory and INTENT before its only sbatch call. Stable-lock absence of that directory, no original candidate process on the banner-named login-2 host, and scheduler cross-checks support that the original invocation did not reach sbatch, conditional on the stated no-deletion and routing assumptions.",
+  "limits": [
+    "Host-specific snapshot, not global or future process absence.",
+    "Original SSH255 log names login-2, but no remote execution-host/boot-ID observation was recorded; continuity is not established.",
+    "Empty successful scheduler results are observations, not proof of accounting retention.",
+    "Absent slot inference assumes no deletion/move of prior evidence; operator does not establish history.",
+    "No automatic retry or resubmission permission. Original SSH255 remains UNKNOWN.",
+    "Original remote exit code and exact death time were not observed; local SSH255 is retained.",
+    "No scientific result, model invocation or optimizer update is inferred from this CPU-only inspection."
+  ],
+  "original_receipt_mutated": false,
+  "permission": "ONE_NEW_TECHNICAL_RECOVERY_INVOCATION_OF_UNCHANGED_SUBMITTER_AFTER_FRESH_FULL_PREFLIGHT",
+  "authority": "Existing user authorization to continue the frozen experiment; supplied docs/01_IMPLEMENTATION_AND_TESTS_zh.md requires UNKNOWN read-only disambiguation, completed above. No scientific gate waived.",
+  "new_receipt_path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/submission_recovery/SUBMISSION.json",
+  "new_attempt_constraints": [
+    "Exact original successful preparation receipt SHA4ba6cab119eaa7907971651edb0a495351226a723c53c3e19a8b7f8a269bace9",
+    "Original submitter SHAeceec5aab4de56b53d8e1483d2e49093e28f4048b2ef818302bb3db499fb0f94",
+    "Fresh original source/risk/cursor/DEV/storage/no-occupied-slot/no-same-job checks all required",
+    "Teacher QoS, two PRO6000, 8CPU/66G,24h,no-requeue",
+    "One held sbatch, persist and verify exact new identity, release only that job",
+    "Any new ambiguous or occupied attempt prohibits another automatic invocation; preserve all evidence"
+  ]
+}

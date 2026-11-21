@@ -1,0 +1,30 @@
+{
+  "original_unknown_preserved": true,
+  "permission": "OBSERVATION_ONLY_NO_RESUBMISSION_TRAINING_OR_MAIN_AUTHORITY",
+  "raw_logs": {
+    "SSH_STDERR.raw": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/inspection_uid_verified/SSH_STDERR.raw",
+      "sha256": "3cd8c81952bb5ea699e946df0e8f7e85d7183866e86fe008febf755ffa37cc10"
+    },
+    "SSH_STDOUT.raw": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/inspection_uid_verified/SSH_STDOUT.raw",
+      "sha256": "1a159152a4fbb13ea4114e5149aa3164bc4d339128c5ccf410937986a91004e8"
+    }
+  },
+  "report": {
+    "error_type": "ValueError",
+    "observations": {
+      "expected_hostname": "login-2.cluster02.eee.ntu.edu.sg",
+      "observed_hostname": "login-3.cluster02.eee.ntu.edu.sg",
+      "original_gateway_banner_alias": "login-2",
+      "stage": "BOOTSTRAP"
+    },
+    "original_unknown_preserved": true,
+    "permission": "OBSERVATION_ONLY_NO_RESUBMISSION_TRAINING_OR_MAIN_AUTHORITY",
+    "reason": "Different exact login FQDN; process scope UNKNOWN",
+    "status": "INSPECTION_FAILED_UNKNOWN"
+  },
+  "returncode": 2,
+  "source_sha256": "782d6765d2f0eacafa53d2d3cffeb427fcbfb1448864c3000013ece46e7533e8",
+  "status": "INSPECTION_FAILED_UNKNOWN"
+}

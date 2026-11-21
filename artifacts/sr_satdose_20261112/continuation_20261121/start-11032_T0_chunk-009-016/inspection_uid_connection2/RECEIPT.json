@@ -1,0 +1,311 @@
+{
+  "original_unknown_preserved": true,
+  "permission": "OBSERVATION_ONLY_NO_RESUBMISSION_TRAINING_OR_MAIN_AUTHORITY",
+  "raw_logs": {
+    "SSH_STDERR.raw": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/inspection_uid_connection2/SSH_STDERR.raw",
+      "sha256": "94a6025655c236a84f68a085ec442a2006ac62d606a74e8a9a483dce3d299705"
+    },
+    "SSH_STDOUT.raw": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/inspection_uid_connection2/SSH_STDOUT.raw",
+      "sha256": "a3b66560862ae607f250c6435ab6a242ea80f9238db0327aa33f4144c1e3d2d0"
+    }
+  },
+  "report": {
+    "absences_after": [
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/continuation_71018e5/start-11032/T0/chunk-009-016",
+        "state": "ABSENT_LEXISTS_FALSE"
+      },
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/continuation_control/start-11032/T0/chunk-009-016",
+        "state": "ABSENT_LEXISTS_FALSE"
+      },
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/HOLD.json",
+        "state": "ABSENT_LEXISTS_FALSE"
+      },
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/ERROR.json",
+        "state": "ABSENT_LEXISTS_FALSE"
+      }
+    ],
+    "absences_before": [
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/scheduling/continuation_71018e5/start-11032/T0/chunk-009-016",
+        "state": "ABSENT_LEXISTS_FALSE"
+      },
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/continuation_control/start-11032/T0/chunk-009-016",
+        "state": "ABSENT_LEXISTS_FALSE"
+      },
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/HOLD.json",
+        "state": "ABSENT_LEXISTS_FALSE"
+      },
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/ERROR.json",
+        "state": "ABSENT_LEXISTS_FALSE"
+      }
+    ],
+    "emitted_under_locks": true,
+    "failed_receipt_sha256": "981c09318620272c0775b59d3c9ee663ba50a705fa0a6e8f0a9d423ed18ad5ae",
+    "hostname": "login-2.cluster02.eee.ntu.edu.sg",
+    "inspector_sha256": "782d6765d2f0eacafa53d2d3cffeb427fcbfb1448864c3000013ece46e7533e8",
+    "job_name": "LH-SATDOSE-TRAIN-11032-T0-009-016",
+    "kernel_boot_id": "887548b6-32fd-4f48-b04b-42341e5921b2",
+    "limits": [
+      "Host-specific snapshot, not global or future process absence.",
+      "Original SSH255 log names login-2, but no remote execution-host/boot-ID observation was recorded; continuity is not established.",
+      "Empty successful scheduler results are observations, not proof of accounting retention.",
+      "Absent slot inference assumes no deletion/move of prior evidence; operator does not establish history.",
+      "No automatic retry or resubmission permission. Original SSH255 remains UNKNOWN."
+    ],
+    "locks": [
+      {
+        "device": 42,
+        "inode": 4398200116954,
+        "mode": "SHARED",
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/FIRST_TWO_LAUNCHER.lock"
+      },
+      {
+        "device": 42,
+        "inode": 4398228077888,
+        "mode": "EXCLUSIVE",
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/DIAGNOSTIC_WORKER.lock"
+      }
+    ],
+    "locks_after": [
+      {
+        "device": 42,
+        "inode": 4398200116954,
+        "mode": "SHARED",
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/FIRST_TWO_LAUNCHER.lock"
+      },
+      {
+        "device": 42,
+        "inode": 4398228077888,
+        "mode": "EXCLUSIVE",
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/DIAGNOSTIC_WORKER.lock"
+      }
+    ],
+    "observed_at_utc": "2026-11-21T07:06:15.379218+00:00",
+    "observed_refs": [
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/CONTINUATION_71018e5_s11032_T0_009_016_PREFLIGHT.json",
+        "sha256": "fdf08a525d11acfc8c9281bc340d473cb0c1f6f0f1c92fc5cc8227597e5a8302"
+      },
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/FIRST_TWO_RELEASE_71018e5.json",
+        "sha256": "22f3b7b260670628398154652455520cd25169234f66a827d3d117def924438f"
+      },
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/canary_job_1740834/CANARY_SPEC.json",
+        "sha256": "44a8db68c655bea987629ea210da1a32e268806f6e0c7b1506d6d77828d4b260"
+      },
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/CONTINUATION_71018e5_s11032_T0_009_016_INTENT.json",
+        "sha256": "d34eaab835e42611781e90627e22782c66571ad4fcf11d79afb5d192895eb07a"
+      },
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/CONTINUATION_71018e5_s11032_T0_009_016_RELEASE.json",
+        "sha256": "50896d5ae996eeb7913165e7d4e089c8f34146ce213dc590b534ab9c1deab904"
+      },
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/CONTINUATION_71018e5_s11032_T0_009_016_BUDGET.json",
+        "sha256": "e09d7b29a7d17b75e4975817630f44684eb6fe922c8875c3499ba756f4a89c1e"
+      },
+      {
+        "path": "/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112/prepared_data_v1/execution_releases/CONTINUATION_71018e5_s11032_T0_009_016_RISK.json",
+        "sha256": "413627894cf407251f8070777be71ed05256e8a8df19353c3d4f5f270de48322"
+      }
+    ],
+    "observed_refs_reverified_at_utc": "2026-11-21T07:06:15.379119+00:00",
+    "ordering": "Pinned original source acquires same locks, creates exact scheduling slot and INTENT before its sole sbatch.",
+    "original_gateway_banner_alias": "login-2",
+    "original_intent_sha256": "cc22c61cc8482e6722a6cab4523bb4c6f04ab2ff39beee9d74445ae4f13fb0e3",
+    "original_status": "SUBMISSION_UNKNOWN_NO_RETRY",
+    "original_unknown_preserved": true,
+    "permission": "OBSERVATION_ONLY_NO_RESUBMISSION_TRAINING_OR_MAIN_AUTHORITY",
+    "processes_after": {
+      "clock_ticks_per_second": 100,
+      "observed_at_utc": "2026-11-21T07:06:15.128929+00:00",
+      "processes": [
+        {
+          "candidate": false,
+          "cmdline_sha256": "3127082f907652bfa48e38fddcaf16c3e73b2da5a2d64602eafe88869c222925",
+          "command_basename": "systemd",
+          "inspector_self": false,
+          "original_remote_exact_match": false,
+          "pid": 4071112,
+          "ppid": 1,
+          "start_ticks": 410210285,
+          "state": "S"
+        },
+        {
+          "candidate": false,
+          "cmdline_sha256": "971490059d839d27af3ded30a476216b92689d837b0236a700723fb13640e370",
+          "command_basename": "(sd-pam)",
+          "inspector_self": false,
+          "original_remote_exact_match": false,
+          "pid": 4071114,
+          "ppid": 4071112,
+          "start_ticks": 410210290,
+          "state": "S"
+        },
+        {
+          "candidate": false,
+          "cmdline_sha256": "7ff61af9fae021b8b45a68df69900d9268943e20dcf77adbf038c4e1f525adda",
+          "command_basename": "sshd",
+          "inspector_self": false,
+          "original_remote_exact_match": false,
+          "pid": 4071127,
+          "ppid": 4071101,
+          "start_ticks": 410210308,
+          "state": "S"
+        },
+        {
+          "candidate": false,
+          "cmdline_sha256": "04927524663d0f04aeaa9f09834a628943bdb2164908d08cd1b8b314a9cfb548",
+          "command_basename": "python3",
+          "inspector_self": false,
+          "original_remote_exact_match": false,
+          "pid": 4071128,
+          "ppid": 4071127,
+          "start_ticks": 410210333,
+          "state": "S"
+        },
+        {
+          "candidate": false,
+          "cmdline_sha256": "6db7a2473ac57cc6b5f9240c91c772974cae265f367fbaf97a62a25a55c19ea2",
+          "command_basename": "python",
+          "inspector_self": true,
+          "original_remote_exact_match": false,
+          "pid": 4071144,
+          "ppid": 4071128,
+          "start_ticks": 410210425,
+          "state": "R"
+        }
+      ],
+      "scope": "THIS_HOST_OWN_UID_ONLY_NOT_GLOBAL_PROCESS_ABSENCE",
+      "self_pid": 4071144,
+      "uid": 295800338
+    },
+    "processes_before": {
+      "clock_ticks_per_second": 100,
+      "observed_at_utc": "2026-11-21T07:06:15.004030+00:00",
+      "processes": [
+        {
+          "candidate": false,
+          "cmdline_sha256": "3127082f907652bfa48e38fddcaf16c3e73b2da5a2d64602eafe88869c222925",
+          "command_basename": "systemd",
+          "inspector_self": false,
+          "original_remote_exact_match": false,
+          "pid": 4071112,
+          "ppid": 1,
+          "start_ticks": 410210285,
+          "state": "S"
+        },
+        {
+          "candidate": false,
+          "cmdline_sha256": "971490059d839d27af3ded30a476216b92689d837b0236a700723fb13640e370",
+          "command_basename": "(sd-pam)",
+          "inspector_self": false,
+          "original_remote_exact_match": false,
+          "pid": 4071114,
+          "ppid": 4071112,
+          "start_ticks": 410210290,
+          "state": "S"
+        },
+        {
+          "candidate": false,
+          "cmdline_sha256": "7ff61af9fae021b8b45a68df69900d9268943e20dcf77adbf038c4e1f525adda",
+          "command_basename": "sshd",
+          "inspector_self": false,
+          "original_remote_exact_match": false,
+          "pid": 4071127,
+          "ppid": 4071101,
+          "start_ticks": 410210308,
+          "state": "S"
+        },
+        {
+          "candidate": false,
+          "cmdline_sha256": "04927524663d0f04aeaa9f09834a628943bdb2164908d08cd1b8b314a9cfb548",
+          "command_basename": "python3",
+          "inspector_self": false,
+          "original_remote_exact_match": false,
+          "pid": 4071128,
+          "ppid": 4071127,
+          "start_ticks": 410210333,
+          "state": "S"
+        },
+        {
+          "candidate": false,
+          "cmdline_sha256": "6db7a2473ac57cc6b5f9240c91c772974cae265f367fbaf97a62a25a55c19ea2",
+          "command_basename": "python",
+          "inspector_self": true,
+          "original_remote_exact_match": false,
+          "pid": 4071144,
+          "ppid": 4071128,
+          "start_ticks": 410210425,
+          "state": "R"
+        }
+      ],
+      "scope": "THIS_HOST_OWN_UID_ONLY_NOT_GLOBAL_PROCESS_ABSENCE",
+      "self_pid": 4071144,
+      "uid": 295800338
+    },
+    "scheduler": [
+      {
+        "argv": [
+          "squeue",
+          "--user=varun024",
+          "--noheader",
+          "--format=%i|%200j|%T"
+        ],
+        "observed_at_utc": "2026-11-21T07:06:15.012410+00:00",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "1741293|lift_pot-50-four                                                                                                                                                                                        |PENDING\n1749733|Ctx-uniform                                                                                                                                                                                             |RUNNING\n1749734|Ctx-separate                                                                                                                                                                                            |RUNNING\n1748828|TrJoin-place                                                                                                                                                                                            |RUNNING\n1749879|can-random90                                                                                                                                                                                            |RUNNING\n"
+      },
+      {
+        "argv": [
+          "sacct",
+          "--user=varun024",
+          "--starttime=2026-11-12T00:00:00",
+          "--name=LH-SATDOSE-TRAIN-11032-T0-009-016",
+          "--noheader",
+          "--parsable2",
+          "--format=JobIDRaw,JobName%200,State%40"
+        ],
+        "observed_at_utc": "2026-11-21T07:06:15.103281+00:00",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      }
+    ],
+    "selection": {
+      "arm": "T0",
+      "first_step": 9,
+      "last_step": 16,
+      "start_seed": 11032
+    },
+    "sources": {
+      "file_count": 84,
+      "inventory_sha256": "361f53bce1282b99cb095de683c6f3111c68a0065a6fc1579906ddbc0527487b"
+    },
+    "sources_after": {
+      "file_count": 84,
+      "inventory_sha256": "361f53bce1282b99cb095de683c6f3111c68a0065a6fc1579906ddbc0527487b"
+    },
+    "stage": "COMPLETE_UNDER_LOCKS",
+    "started_at_utc": "2026-11-21T07:06:14.453551+00:00",
+    "status": "PRE_SUBMISSION_ABSENCE_VERIFIED",
+    "submitter_sha256": "eceec5aab4de56b53d8e1483d2e49093e28f4048b2ef818302bb3db499fb0f94",
+    "uid": 295800338,
+    "username": "varun024"
+  },
+  "returncode": 0,
+  "source_sha256": "782d6765d2f0eacafa53d2d3cffeb427fcbfb1448864c3000013ece46e7533e8",
+  "status": "OBSERVATION_CAPTURED"
+}
