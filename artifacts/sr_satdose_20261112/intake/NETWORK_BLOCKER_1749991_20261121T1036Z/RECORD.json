@@ -1,0 +1,57 @@
+{
+  "status": "MONITORING_BLOCKED_BY_NETWORK_REQUIRES_USER_VPN_RESTORE",
+  "recorded_at_utc": "2026-11-21T10:38:06.760614+00:00",
+  "job_id": 1749991,
+  "raw_files": {
+    "SSH_RETRY_STDOUT.log": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/NETWORK_BLOCKER_1749991_20261121T1036Z/SSH_RETRY_STDOUT.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "SSH_RETRY_STDERR.log": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/NETWORK_BLOCKER_1749991_20261121T1036Z/SSH_RETRY_STDERR.log",
+      "sha256": "f7c5ee18df78c7a051d1447ccd3bf50d2c4d100d1677e981a6f6ea33fd733ea3",
+      "bytes": 65
+    },
+    "SDWAN_STATUS.log": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/NETWORK_BLOCKER_1749991_20261121T1036Z/SDWAN_STATUS.log",
+      "sha256": "75581ef587d9364c9e014a3f84b18bcc0760ff2752842ca1ac76d75a528f92e5",
+      "bytes": 59
+    }
+  },
+  "failed_monitor_receipt": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/intake/MONITOR_CONTINUATION_1749991_20261121T103614197258Z/RECEIPT.json",
+    "sha256": "22148d225983921241d9a94daf623421c975f65bf8f3b216b6b5e1990a77225c"
+  },
+  "tool_observation_transcription": {
+    "kind": "MANUAL_TRANSCRIPTION_OF_TOOL_OUTPUT_NOT_RAW_CAPTURE",
+    "initial_monitor_exec_exit": 2,
+    "initial_monitor_stderr": "ssh: connect to host 10.97.216.128 port 22: Network is unreachable",
+    "retry_exec_exit": 255,
+    "sdwan_before_start": "Disconnected",
+    "sdwan_start_exit": 0,
+    "sdwan_after_start": "Disconnected",
+    "cua_getState": "The Mac is locked and automatic unlock could not unlock it. Ask the user to unlock the Mac manually before continuing.",
+    "cua_initial_attempt": "Kernel state reset after inactivity; code was not executed, then getState retried",
+    "cua_complete_directive_emitted": true
+  },
+  "last_successful_observation": {
+    "utc": "2026-11-21T09:36:28.983729+00:00",
+    "state": "RUNNING",
+    "step9_commit": true,
+    "step9_global_hold": false,
+    "step10_complete": 9,
+    "step10_total": 128,
+    "observed_updates": 49,
+    "independently_accepted_updates": 48,
+    "total_updates": 96
+  },
+  "actions_not_taken": [
+    "No job resubmission",
+    "No cancellation or release",
+    "No modification of any other job",
+    "No credential entry or capture",
+    "No inference of current job failure or completion"
+  ],
+  "user_action_requested": "Unlock Mac and restore campus network/VPN; reply restored for immediate read-only recheck"
+}

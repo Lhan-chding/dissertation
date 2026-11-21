@@ -923,3 +923,10 @@ exec11192退出0，07:35:49UTC原eceec5完整fresh preflight+held身份核验+�
 ## 1749991 hourly observation — 2026-11-21 17:36 SGT
 
 09:36:28.983729UTC全部4Slurm行RUNNING gpu-pro6000-5。step9全128及COMMIT，risk PENDING_REQUIRED_DEV/global_hold=false；step10 BEGIN10/CAPTURE9/COMPLETE9，无COMMIT/risk；11–16零。单个在途stem65b0c3af337af3e186bd8d586e8b628f14b151bce8a94925d0f9dc0d1c96cce4只有BEGIN，不将非原子活观察当失败；incidents空。观察49/96更新，独立验收48/96。intake/MONITOR_CONTINUATION_1749991_20261121T093622852070Z/RECEIPT.json SHAbe14edd27bbae739c58b8411dc5e2f1bef768158d5eae2df5e514e70080d078f，全部refs及原stdout=snapshot通过。另核本批17个已跟踪raw/log文件，Git HEAD blob与本地字节完全一致，含原CRLF未归一化。下一小时10:36UTC（18:36SGT），同新submission_recovery收据5a3f2a…/job1749991/11032 T0 first9只读监控；终态后固定v2一次审计+完整包独立复核，不提前准备后继。最新e394952100ccc20321943b08168ab98de77aff78已推送核实。
+
+
+## Hourly monitoring blocked by network — 2026-11-21 18:37 SGT
+
+10:36巡检exec97269退出2，MONITOR_UNKNOWN，原STDERR Network is unreachable、STDOUT空；intake/MONITOR_CONTINUATION_1749991_20261121T103614197258Z/RECEIPT.json SHA22148d225983921241d9a94daf623421c975f65bf8f3b216b6b5e1990a77225c及全部refs已核。只读重试exec85977实际退出255，Operation timed out。scutil先Disconnected，启动现有service退出0后仍Disconnected。CUA首次kernel因inactive reset未执行，第二次getState实见Mac锁屏，无法继续VPN客户端；已发browser-complete并异步请求用户解锁恢复。无登录/凭据操作、无保存屏幕。原重试流及status实际捕获、明确标注的工具输出人工转录保留intake/NETWORK_BLOCKER_1749991_20261121T1036Z。
+
+最近成功09:36:28.983729UTC（17:36SGT）：1749991 RUNNING gpu-pro6000-5，第9步128及COMMIT/risk无HOLD，第10步COMPLETE9/128（单请求在途），观察49/96、独立验收48/96。当前状态未知，不能推断失败或完成；未重提/取消/释放。恢复后仅原新submission_recovery/SUBMISSION.json SHA5a3f2a51950db52ef5e932473104255dbab93d7c15131bb72f00a58f9f80da24、job1749991、11032 T0 first9只读monitor --execute；驱动stdout重定向临时文件。终态后固定23e6v2一次CPU独立审计+完整16文件/fullrisk第二代理复核，再11032/T1 first9；四路径16后才DEV16。当前无活动operator/agent/CUA，用户VPN恢复是外部阻塞。最新70dcba5a0c89eac391e37f58e4e53ad35a10ea22已推送核实。
