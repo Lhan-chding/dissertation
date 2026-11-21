@@ -930,3 +930,6 @@ exec11192退出0，07:35:49UTC原eceec5完整fresh preflight+held身份核验+�
 10:36巡检exec97269退出2，MONITOR_UNKNOWN，原STDERR Network is unreachable、STDOUT空；intake/MONITOR_CONTINUATION_1749991_20261121T103614197258Z/RECEIPT.json SHA22148d225983921241d9a94daf623421c975f65bf8f3b216b6b5e1990a77225c及全部refs已核。只读重试exec85977实际退出255，Operation timed out。scutil先Disconnected，启动现有service退出0后仍Disconnected。CUA首次kernel因inactive reset未执行，第二次getState实见Mac锁屏，无法继续VPN客户端；已发browser-complete并异步请求用户解锁恢复。无登录/凭据操作、无保存屏幕。原重试流及status实际捕获、明确标注的工具输出人工转录保留intake/NETWORK_BLOCKER_1749991_20261121T1036Z。
 
 最近成功09:36:28.983729UTC（17:36SGT）：1749991 RUNNING gpu-pro6000-5，第9步128及COMMIT/risk无HOLD，第10步COMPLETE9/128（单请求在途），观察49/96、独立验收48/96。当前状态未知，不能推断失败或完成；未重提/取消/释放。恢复后仅原新submission_recovery/SUBMISSION.json SHA5a3f2a51950db52ef5e932473104255dbab93d7c15131bb72f00a58f9f80da24、job1749991、11032 T0 first9只读monitor --execute；驱动stdout重定向临时文件。终态后固定23e6v2一次CPU独立审计+完整16文件/fullrisk第二代理复核，再11032/T1 first9；四路径16后才DEV16。当前无活动operator/agent/CUA，用户VPN恢复是外部阻塞。最新70dcba5a0c89eac391e37f58e4e53ad35a10ea22已推送核实。
+
+
+2026-11-21 18:57 SGT 网络恢复后，1749991 仍在运行。第9、10步各提交一次更新，第11步完成30/128。巡检记录在 intake/MONITOR_CONTINUATION_1749991_20261121T105705244129Z/RECEIPT.json。当前聊天已启动此作业的小时巡检进程（会话11703）。如需接手，先检查已有进程和独立核验目录，避免重复执行核验。巡检遇异常即退出，确认调度完成且8步训练齐全后调用原 v2 审计一次。
