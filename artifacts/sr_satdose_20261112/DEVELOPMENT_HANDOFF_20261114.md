@@ -918,3 +918,8 @@ exec11192退出0，07:35:49UTC原eceec5完整fresh preflight+held身份核验+�
 ## 1749991 hourly observation — 2026-11-21 16:36 SGT
 
 08:36:22.203854UTC全部4Slurm行RUNNING，07:50:15UTC启动gpu-pro6000-5。11032/T0 step9 BEGIN49/CAPTURE48/COMPLETE48，无COMMIT/risk；10–16零。单个在途stema413f50667af643c5311b62a9f2797f65463a46b5aa45f26b821ba14669358be只有BEGIN，非原子活作业观察，不判断失败；incidents空。独立验收48/96未变。证据intake/MONITOR_CONTINUATION_1749991_20261121T083619152144Z/RECEIPT.json SHA53e16c236ae9c0c6d52e5b4cf46b28477d8f200b56b90c49ab766d9b357a0ac6；全部refs、原stdout=snapshot验证。下一小时09:36UTC（17:36SGT），使用新submission_recovery收据5a3f2a51950db52ef5e932473104255dbab93d7c15131bb72f00a58f9f80da24、job1749991、start11032 T0 first9。终态后23e6v2一次CPU独立审计并完整16文件/fullrisk第二代理复核，再11032/T1 first9。最新5112c901010bb80174263125b4650c728993e51c已推送核实。
+
+
+## 1749991 hourly observation — 2026-11-21 17:36 SGT
+
+09:36:28.983729UTC全部4Slurm行RUNNING gpu-pro6000-5。step9全128及COMMIT，risk PENDING_REQUIRED_DEV/global_hold=false；step10 BEGIN10/CAPTURE9/COMPLETE9，无COMMIT/risk；11–16零。单个在途stem65b0c3af337af3e186bd8d586e8b628f14b151bce8a94925d0f9dc0d1c96cce4只有BEGIN，不将非原子活观察当失败；incidents空。观察49/96更新，独立验收48/96。intake/MONITOR_CONTINUATION_1749991_20261121T093622852070Z/RECEIPT.json SHAbe14edd27bbae739c58b8411dc5e2f1bef768158d5eae2df5e514e70080d078f，全部refs及原stdout=snapshot通过。另核本批17个已跟踪raw/log文件，Git HEAD blob与本地字节完全一致，含原CRLF未归一化。下一小时10:36UTC（18:36SGT），同新submission_recovery收据5a3f2a…/job1749991/11032 T0 first9只读监控；终态后固定v2一次审计+完整包独立复核，不提前准备后继。最新e394952100ccc20321943b08168ab98de77aff78已推送核实。
