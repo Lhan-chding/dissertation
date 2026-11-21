@@ -901,3 +901,15 @@ admission_review确认原supplied docs/01_IMPLEMENTATION_AND_TESTS_zh.md:126要�
 Root+admission_review完整核验source/raw/原payload/7refs/source84及19key、exactFQDN login-2.cluster02.eee.ntu.edu.sg UID295800338、两次当前session5进程无候选、既有SH launcher/EX worker锁前后同inode、两精确slot及globalHOLD/ERROR不存在、队列无同名且sacct12日起精确名空。原eceec5在唯一sbatch前持久mkdir/fsync/INTENT；结合本任务未删除/迁移slot的活动记录，单独保存SUBMISSION_RESOLUTION.json为RESOLVED_NOT_SUBMITTED_BEFORE_SBATCH，保留无原host/boot/退出时间直接证据等限制及原UNKNOWN981c。这不是科学门禁豁免，也未把旧传输失败改写成功。
 
 下一次仅原eceec5完整fresh preflight之后一次held→核身份→release，输出新submission_recovery/SUBMISSION.json；RESOLUTION_BINDING单独关联决议SHA/原UNKNOWN。若新attempt不确定，禁止再自动重试。当前尚未调用新提交，无jobID，未触碰其他作业。
+
+
+## One recovery invocation active — 2026-11-21 15:09 SGT
+
+人工（root及AI独立复核）消歧决议SHA1bafc3b4fa22999ee64e4c8b585861ebd2aace65efd80268604ecde252979898已在新attempt前固定。原eceec5 local-plan完整通过；仅一次恢复实际调用已启动exec11192，原准备4ba6cab…，输出continuation_20261121/start-11032_T0_chunk-009-016/submission_recovery/SUBMISSION.json，驱动stdout/private/tmp/satdose-submit-11032-T0-recovery-20261121.json。新连接网关login-3，不影响对旧login-2断线attempt的已完成只读消歧；原提交器仍使用共享项目原锁和精确同名目录防重。当前原生CPU准入运行，尚无jobID，禁止重跑。源/intent/raw流已在新目录写入，RESOLUTION_BINDING关联旧UNKNOWN与决议，不修改原失败文件。代码/25tests/全部inspection及决议已推送并验证HEAD==remote111e5fd85bfc28ae1a644353c1480c2077b802d0。
+
+
+## 1749991 recovery submission confirmed — 2026-11-21 15:36 SGT
+
+exec11192退出0，07:35:49UTC原eceec5完整fresh preflight+held身份核验+释放新job1749991成功。新本地收据submission_recovery/SUBMISSION.json SHA5a3f2a51950db52ef5e932473104255dbab93d7c15131bb72f00a58f9f80da24，remote RELEASE_RESULT b66fd22d75d212ec72f767bcf6f64e2a5726f9779b9c03a03ab2d60428886319、SUBMISSION20dcb651c8d88d3e42c27578c0064fba744f85fc6857e4fca0517bea86000a3e。RELEASE50896d5…不变，teacher2PRO6000/8CPU66G/24h/norequeue；其他作业未改。原UNKNOWN981c及决议1bafc3b4逐字SHA保持。新source/raw全部验证，不能把旧receipt换成成功。
+
+初次只读monitor exec30949退出0，07:36:24.822594UTC PENDING(QOSGrpGRES)，Slurm parent可见0:0仅为排队默认非完成；slot不存在、9–16各BEGIN/CAPTURE/COMPLETE0，无COMMIT/risk，incidents/unresolved空。intake/MONITOR_CONTINUATION_1749991_20261121T073622175820Z/RECEIPT.json SHA63200b16efc5a8b66103289b22d57ee186727951e47733bacead116d5cc5287a，原stdout=snapshot及全部refs核验。下一轮08:36UTC/16:36SGT，使用新submission_recovery收据5a3f2a…、job1749991、start11032 T0 first9 --execute。终态后固定23e6v2一次审计、完整16文件/fullrisk第二代理核验；若UNKNOWN只读消歧，禁止重提或预备下一路径。当前无其他本地operator或GPU新调用；48/96验收不变，下一11032/T1 first9，四路径全16后DEV16。代码/核查证据已推送111e5fd85bfc28ae1a644353c1480c2077b802d0，本节及新提交/监控证据待本次归档。
