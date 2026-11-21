@@ -1,0 +1,21 @@
+{
+  "raw_logs": {
+    "stderr": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/SUBMISSION.json.stderr.log",
+      "sha256": "f1aa95e9483a98f59351e0b766fa229dcac78165ff07ffd5fea67e2b9ac8971b"
+    },
+    "stdout": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/SUBMISSION.json.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "response": null,
+  "returncode": 255,
+  "source": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/SUBMISSION.json.source.py",
+    "sha256": "eceec5aab4de56b53d8e1483d2e49093e28f4048b2ef818302bb3db499fb0f94"
+  },
+  "status": "SUBMISSION_UNKNOWN_NO_RETRY",
+  "stderr": "EEE/ROSE Cluster 02\nConnecting to: login-2\n\nRelevant Guides:\n- https://github.com/NTUEEECluster/docs/blob/main/quickstart.md\n- https://github.com/NTUEEECluster/docs/blob/main/terms-n-conditions.md\nConnection to 10.97.216.128 closed by remote host.\n",
+  "stdout": ""
+}

@@ -1,0 +1,72 @@
+{
+  "status": "PRELIMINARY_OBSERVATIONS_NOT_SUBMISSION_RECOVERY_AUTHORITY",
+  "created_at_utc": "2026-11-21T06:54:24.258836+00:00",
+  "failed_receipt_sha256": "981c09318620272c0775b59d3c9ee663ba50a705fa0a6e8f0a9d423ed18ad5ae",
+  "observations": [
+    {
+      "description": "Initial live read-only SSH: queue and exact scheduling path",
+      "files": {
+        "log": {
+          "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/interruption_inspection/inspection.log",
+          "sha256": "898cbab176a1ee24d11c3641cbccc0c017f8aa39ab0fbf9dcc65be44f2a1de1b",
+          "bytes": 250
+        },
+        "err": {
+          "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/interruption_inspection/inspection.err",
+          "sha256": "49bbeedaa7794f005b29303623262c13bbadd6ef450758f10c1d5d9bfd0800bf",
+          "bytes": 360
+        }
+      }
+    },
+    {
+      "description": "Sandbox-restricted SSH; Operation not permitted is not remote network evidence",
+      "files": {
+        "log": {
+          "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/interruption_inspection/inspection2.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        "err": {
+          "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/interruption_inspection/inspection2.err",
+          "sha256": "82ab1b3b56e1e77e9a5d508c418b8dd99a5c335a2713b5416dfd69c2ef72e434",
+          "bytes": 69
+        }
+      }
+    },
+    {
+      "description": "Sandbox-restricted SSH retry, not remote network evidence",
+      "files": {
+        "log": {
+          "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/interruption_inspection/retry.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        "err": {
+          "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/interruption_inspection/retry.err",
+          "sha256": "82ab1b3b56e1e77e9a5d508c418b8dd99a5c335a2713b5416dfd69c2ef72e434",
+          "bytes": 69
+        }
+      }
+    },
+    {
+      "description": "Escalated live SSH: own short process listing, exact-name accounting and exact paths",
+      "files": {
+        "log": {
+          "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/interruption_inspection/inspection3.log",
+          "sha256": "7d025ccfc1c199d778cd9c6f4da2233b13c896c236da5020f5b4b1fdf09f155a",
+          "bytes": 481
+        },
+        "err": {
+          "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/interruption_inspection/inspection3.err",
+          "sha256": "8bf32af0ad371278ebafc6504e091aa50db4297f39833a645da720819d966207",
+          "bytes": 529
+        }
+      }
+    }
+  ],
+  "limitations": [
+    "No complete host-bound process/lock proof yet",
+    "Empty scheduling query alone does not resolve UNKNOWN"
+  ],
+  "actions": "No resubmission, cancellation, release or deletion performed"
+}
