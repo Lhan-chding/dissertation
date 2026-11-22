@@ -1,0 +1,38 @@
+{
+  "status": "RESOLVED_NOT_SUBMITTED_BEFORE_SBATCH",
+  "observed_at_utc": "2026-11-22T15:03:47.277286+00:00",
+  "selection": {
+    "arm": "T1",
+    "first_step": 9,
+    "last_step": 16,
+    "start_seed": 11032
+  },
+  "original_unknown": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261122/start-11032_T1_chunk-009-016/SUBMISSION.json",
+    "sha256": "e1bb871f00c9ac57dc1cae494e6d3de966065221eeeea12056b42311d79000e8"
+  },
+  "original_intent": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261122/start-11032_T1_chunk-009-016/SUBMISSION.json.intent.json",
+    "sha256": "9b25b4a51e079fd15a01cfcee5ef46c35b9913088df63daa4f9adebf4f931e25"
+  },
+  "original_submitter": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261122/start-11032_T1_chunk-009-016/SUBMISSION.json.source.py",
+    "sha256": "eceec5aab4de56b53d8e1483d2e49093e28f4048b2ef818302bb3db499fb0f94"
+  },
+  "original_observations": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261122/start-11032_T1_chunk-009-016/inspection_shared_leases/EARLIER_PROCESS_OBSERVATIONS.json",
+    "sha256": "78d46c7c6c08bca105e3cc0b09224aba2467a49304f1f71e005afd912163ef10"
+  },
+  "locked_observation": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261122/start-11032_T1_chunk-009-016/inspection_shared_leases/RECEIPT.json",
+    "sha256": "98ca88d35863c88dd081a6902672a2afec9d59d8f04342fa052aace63ab2d20b"
+  },
+  "previous_shared_inode_observation": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261121/start-11032_T0_chunk-009-016/inspection_uid_connection2/RECEIPT.json",
+    "sha256": "9527ae553e13622b73b0846677135545fa1b58c3b705753655cca7e6b588df72"
+  },
+  "mount": "Kernel CephFS /projects (ssd_fs_cluster02), rw, recover_session=clean. Lock inodes stable on login-2 and login-3.",
+  "inference": "Original PID on login-1 had both lock file descriptors open while reading historical states inside preflight. The original code obtains the worker EX lock before this stage, holds it until durable submission or exit and persists INTENT before sbatch. Later locked double absence of both slots and successful scheduler/history checks therefore locate interruption before sbatch.",
+  "limits": "No direct final process census on login-1 or remote exit code. Inference assumes shared lock and evidence files were not replaced or removed. No such operation in this task. Local SSH exit 255 preserved.",
+  "authorization": "One recovery of the same original submitter, original CPU pass, teacher QoS and all gates; any ambiguous new attempt requires read-only resolution."
+}
