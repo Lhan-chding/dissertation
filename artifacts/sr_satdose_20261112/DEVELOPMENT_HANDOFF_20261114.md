@@ -936,3 +936,6 @@ exec11192退出0，07:35:49UTC原eceec5完整fresh preflight+held身份核验+�
 
 
 2026-11-22 1749991 独立验收完成。终态巡检为 intake/MONITOR_CONTINUATION_1749991_20261122T044855638398Z。v2 核验退出 0，报告和 16 成员证据包见 continuation_20261121/start-11032_T0_chunk-009-016/independent_audit_bundle。两次本地复核均通过。累计 56/96，四路径 16/16/16/8。上次小时巡检仅留存到昨晚20:57，今天补查并完成审计。后续 11032/T1 第9–16步的原生 CPU 准入检查已启动一次（会话 62818，输出 /private/tmp/satdose-prepare-11032-T1-first9-1122.json）。以实际准备收据为准；避免重复调用。
+
+
+2026-11-22 11032/T1 第9–16步。17:49 SGT 提交连接中断，SSH 返回 255，stderr 包含 No route to host 和 Broken pipe。stdout 为空。原提交收据状态 SUBMISSION_UNKNOWN_NO_RETRY，SHA-256 为 e1bb871f00c9ac57dc1cae494e6d3de966065221eeeea12056b42311d79000e8。后续只读 SSH 查询先返回网络不可达，再次查询超时。SD-WAN 重启后仍断开，Mac 已锁屏。恢复后应先查询完整作业名 LH-SATDOSE-TRAIN-11032-T1-009-016 的队列和 accounting、远端精确提交目录以及原 login-1 提交进程。CPU 准入已通过，GPU 提交结果未知。

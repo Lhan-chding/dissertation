@@ -1,0 +1,21 @@
+{
+  "raw_logs": {
+    "stderr": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261122/start-11032_T1_chunk-009-016/SUBMISSION.json.stderr.log",
+      "sha256": "27b8e25ec24ea1acc2777e8c1dac47538e844d41e856496ed237e4a1d346c44f"
+    },
+    "stdout": {
+      "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261122/start-11032_T1_chunk-009-016/SUBMISSION.json.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "response": null,
+  "returncode": 255,
+  "source": {
+    "path": "/Users/louis/Documents/ChatGPT/dissertation-ntu/artifacts/sr_satdose_20261112/continuation_20261122/start-11032_T1_chunk-009-016/SUBMISSION.json.source.py",
+    "sha256": "eceec5aab4de56b53d8e1483d2e49093e28f4048b2ef818302bb3db499fb0f94"
+  },
+  "status": "SUBMISSION_UNKNOWN_NO_RETRY",
+  "stderr": "EEE/ROSE Cluster 02\nConnecting to: login-1\n\nRelevant Guides:\n- https://github.com/NTUEEECluster/docs/blob/main/quickstart.md\n- https://github.com/NTUEEECluster/docs/blob/main/terms-n-conditions.md\nRead from remote host 10.97.216.128: No route to host\nclient_loop: send disconnect: Broken pipe\n",
+  "stdout": ""
+}
