@@ -1,0 +1,35 @@
+{
+  "actual_lane_requests": {
+    "11031": 6880,
+    "11032": 6880
+  },
+  "complete_row_bindings_verified": 14,
+  "coverage_receipt_sha256": "7df3f350e7230d670168c22d5b93d9c0dfd647c10987b873643684f2b4965df3",
+  "design_freeze_sha256": "6c4b948c533fdd736e089bf3836378f4dbcb76ac66f1d480fa979eaca56c84e0",
+  "duplicate_request_ids": 0,
+  "endpoint_count": 14,
+  "foreign_request_ids": 0,
+  "frozen_manifest": {
+    "path": "main_manifest.jsonl",
+    "sha256": "cf4c4fd307d90de3475c5e01885b92196dbf0e481c84461f626246befd77d884"
+  },
+  "gpu_submissions": 0,
+  "historical_draw_seeds_verified": 13760,
+  "historical_seed_helper_sha256": "9b0086b5cd4eea8ddd88669e0c2223c43b7b3a0aeb5c53cf27912caa887cf8bd",
+  "lane_intersection_request_ids": 0,
+  "manifest_bytes": 6447424,
+  "model_calls": 0,
+  "omitted_request_ids": 0,
+  "optimizer_calls": 0,
+  "original_controller_source_pins": {
+    "analysis/calibration.py": "b795b4f077e877838be92523fbf484bb8077956d24c8d3a83cd390862c4d3481",
+    "analysis/evaluation.py": "2c8826659ba9ab6221447bf2e3db4cea16487a22a19ba302ae437b4951bda69a",
+    "supplied_package/config/source_bindings.json": "94827065f02e48be80be6596111f615d2c8a23af3107fd25b6549a6ad40ad2be",
+    "supplied_package/tools/satdose_core.py": "7edd0e228adf02e6273a7bd62f8166003a7da4aa55628825d1b00e743e161e64"
+  },
+  "original_manifest_rows": 13760,
+  "plan_source_sha256": "3956432c29633b002b2245dabe1941118eac7afb6a7611040f8652d92bef48a7",
+  "schema": "sr-satdose-parallel-main-original-validator-check-v1",
+  "scope": "REQUESTS_ONLY",
+  "status": "CPU_FROZEN_COVERAGE_VERIFIED"
+}

@@ -1,0 +1,23 @@
+{
+  "status": "PARALLEL_MAIN_DEPLOYMENT_AND_WAIT_VERIFIED",
+  "observed_at_utc": "2026-11-23T11:51:43.179190+00:00",
+  "inventories": {
+    "external_parallel_main_v1": {
+      "count": 8,
+      "sha256": "f0d1defe659d26db17012d486c6d5d2eee9cf694b68a1efa73f308597778cc7f"
+    },
+    "train_code_71018e5": {
+      "count": 84,
+      "sha256": "361f53bce1282b99cb095de683c6f3111c68a0065a6fc1579906ddbc0527487b"
+    },
+    "external_main_code_4190bc3": {
+      "count": 4,
+      "sha256": "cb23d45e80f80f738025657aa727432fe568b33464838fa32f8fd62d49038750"
+    }
+  },
+  "terminal_published": false,
+  "parallel_release_exists": false,
+  "supervisor_first_observation": "2026-11-23T11:51:06.134222+00:00",
+  "outstanding_commits": 36,
+  "coverage_sha256": "7df3f350e7230d670168c22d5b93d9c0dfd647c10987b873643684f2b4965df3"
+}
