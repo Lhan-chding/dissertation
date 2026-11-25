@@ -160,6 +160,13 @@ class DetachedTransport(unittest.TestCase):
         self.assertEqual(receipt['raw_logs']['stderr']['sha256'],t.digest(b'fixture native submit failure'))
         self.assertEqual(receipt['source']['sha256'],t.SOURCE['submit'])
 
+    def test_private_directory_inherits_project_setgid(self):
+        self.dir.chmod(0o2700)
+        t.private_dir(self.dir)
+        self.dir.chmod(0o2750)
+        with self.assertRaisesRegex(RuntimeError, 'permissions'):
+            t.private_dir(self.dir)
+
     def test_claim_rejects_foreign_input_and_symlink(self):
         with patch.object(t,'BASE',self.dir):
             d=self.dir/'prepare'; d.mkdir(mode=0o700)

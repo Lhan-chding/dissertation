@@ -119,7 +119,7 @@ def save(path, raw):
 def private_dir(path):
     check(path.resolve(strict=True) == path and path.is_dir(), 'Noncanonical transport directory')
     st = path.stat()
-    check(st.st_uid == os.getuid() and stat.S_IMODE(st.st_mode) == 0o700, 'Transport directory permissions differ')
+    check(st.st_uid == os.getuid() and stat.S_IMODE(st.st_mode) in (0o700, 0o2700), 'Transport directory permissions differ')
 
 
 def validate(op, argv, stdin, code_sha):
