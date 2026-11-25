@@ -1,4 +1,4 @@
-"""Transport for the November 25 recovery of 11031/T1 DEV16 only.
+"""Slurm CPU transport for the November 25 recovery of 11031/T1 DEV16 only.
 
 Use: python THIS.py prepare|submit [--collect] -- <original native CLI arguments>.
 The native CLI creates its own intent, logs and receipt. --collect requires the
@@ -10,6 +10,7 @@ import base64
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import shlex
 import socket
@@ -22,7 +23,11 @@ from types import SimpleNamespace
 
 
 PROJECT = Path('/projects/_ssd/varunssd/louis-ssvc/sr_satdose_20261112')
-BASE = PROJECT / 'transport_trained_dev_11031_T1_s016_20261125_v1'
+BASE = PROJECT / 'transport_trained_dev_11031_T1_s016_20261125_cpu_v2'
+QOS = 'soujanya-poria-startfund-2026-03'
+USER = 'varun024'
+ACTIVE = {'PENDING','RUNNING','CONFIGURING','COMPLETING','SUSPENDED'}
+ACCOUNT_FIELDS = 'JobIDRaw,State%40,ExitCode,JobName%96,User,Account,QOS%80,Partition,ReqTRES%256,AllocTRES%256,TimelimitRaw,WorkDir%300'
 DATA = PROJECT / 'prepared_data_v1'
 PYTHON = '/projects/_ssd/varunssd/louis-ssvc/envs/ssvc-py312/bin/python'
 TAG = '71018e5_20261125_recovered'
@@ -86,6 +91,21 @@ def sync_dir(path):
         os.close(fd)
 
 
+def latest(path, raw):
+    check(path.parent.resolve(strict=True)==path.parent and not path.is_symlink(), 'Noncanonical local status path')
+    fd, temp = tempfile.mkstemp(dir=path.parent, prefix='.cpu-status-')
+    try:
+        with os.fdopen(fd,'wb') as out:
+            out.write(raw)
+            out.flush()
+            os.fsync(out.fileno())
+        os.replace(temp,path)
+        sync_dir(path.parent)
+    finally:
+        if os.path.lexists(temp):
+            os.unlink(temp)
+
+
 def save(path, raw):
     check(path.parent.resolve(strict=True) == path.parent, 'Noncanonical parent')
     # Never expose a partial JSON record, including when two clients reconnect
@@ -131,9 +151,15 @@ def new_log(path):
     return os.fdopen(os.open(path, os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW, 0o600), 'wb')
 
 
+def clean_environment():
+    # Do not export the CPU allocation's identity/resource selectors to the
+    # original submitter's nested GPU sbatch or leak array/requeue controls.
+    return {k:v for k,v in os.environ.items() if not k.startswith(('SLURM_', 'SLURMD_', 'SBATCH_', 'SRUN_'))}
+
+
 def run_child(d, argv, stdin):
     with new_log(d/'stdout.bin') as out, new_log(d/'stderr.bin') as err:
-        with subprocess.Popen(argv, stdin=subprocess.PIPE, stdout=out, stderr=err, close_fds=True) as child:
+        with subprocess.Popen(argv, stdin=subprocess.PIPE, stdout=out, stderr=err, close_fds=True, env=clean_environment()) as child:
             save(d/'NATIVE.json', encoded(identify(child.pid)))
             child.communicate(input=stdin)
             rc = child.returncode
@@ -153,11 +179,124 @@ def worker(op, key):
     argv = json.loads(read(d/'argv.json'))
     stdin = read(d/'stdin.bin')
     check(validate(op, argv, stdin, digest(read(SELF))) == claim, 'Worker inputs changed')
-    save(d/'WORKER.json', encoded(identify(os.getpid())))  # Single executor, including after a crash.
+    cpu_id = os.environ.get('SLURM_JOB_ID', '')
+    check(cpu_id.isdecimal() and int(cpu_id)>0 and os.environ.get('SLURM_RESTART_COUNT','0')=='0',
+          'Worker outside first Slurm CPU allocation')
+    verify_intent(d, op, key)
+    fields = live_identity(d, op, key, cpu_id, running=True)
+    candidates=scheduler_ids(d,op,key)
+    check(not candidates-{cpu_id}, 'Another CPU job has this wrapper identity')
+    if os.path.lexists(d/'SBATCH_RESPONSE.json'):
+        response=json.loads(read(d/'SBATCH_RESPONSE.json'))
+        if response['returncode']==0:
+            check(response['key']==key and unpack(response['stdout']).strip()==cpu_id.encode(),
+                  'CPU executor differs from accepted wrapper')
+    record = dict(job_id=cpu_id, key=key, identity=identify(os.getpid()), slurm=fields)
+    save(d/'WORKER.json', encoded(record))  # Even an unrequested requeue cannot re-run this native operation.
     rc = run_child(d, argv, stdin)
-    record = dict(key=key, returncode=rc, native=json.loads(read(d/'NATIVE.json')),
+    record = dict(key=key, cpu_job_id=cpu_id, returncode=rc, native=json.loads(read(d/'NATIVE.json')),
                   stdout_sha256=digest(read(d/'stdout.bin')), stderr_sha256=digest(read(d/'stderr.bin')))
     save(d/'WAIT.json', encoded(record))
+    return shell_exit(rc)
+
+
+def shell_exit(rc):
+    return 128-rc if rc < 0 else rc
+
+
+def scheduler(argv):
+    return RAW_RUN(argv, capture_output=True, check=False, env=clean_environment())
+
+
+class SchedulerUnavailable(Exception):
+    pass
+
+
+def query(argv):
+    result = scheduler(argv)
+    if result.returncode:
+        raise SchedulerUnavailable('Slurm query failed: '+result.stderr.decode(errors='replace')[-600:])
+    return result.stdout.decode()
+
+
+def job_name(op, key):
+    return f'LH-SATDOSE-CPU-{op}-11031-T1-s16-{key[:16]}'
+
+
+def cpu_script(d, op, key):
+    return ('#!/bin/sh\nset -eu\nexport CUDA_VISIBLE_DEVICES=\nexec ' +
+            shlex.join([PYTHON,'-I','-B',str(d/'TRANSPORT.py'),'--worker',op,key])+'\n').encode()
+
+
+def cpu_command(d, op, key):
+    return ['sbatch','--parsable','--account=rose','--partition=cluster02','--qos='+QOS,
+            '--job-name='+job_name(op,key),'--nodes=1','--ntasks=1','--cpus-per-task=2','--mem=6G',
+            '--time=04:00:00','--no-requeue','--export=ALL','--chdir='+str(d),
+            '--output='+str(d/'cpu-%j.out'),'--error='+str(d/'cpu-%j.err'),str(d/'CPU_WRAPPER.sh')]
+
+
+def verify_intent(d, op, key):
+    expected = dict(key=key, argv=cpu_command(d,op,key), script_sha256=digest(cpu_script(d,op,key)))
+    check(json.loads(read(d/'SBATCH_INTENT.json'))==expected and
+          digest(read(d/'CPU_WRAPPER.sh'))==expected['script_sha256'], 'CPU submission identity differs')
+
+
+def verify_tres(text):
+    entries = text.split(',')
+    tres = dict(item.split('=',1) for item in entries)
+    check(len(tres)==len(entries) and tres.get('cpu')=='2' and tres.get('node')=='1'
+          and tres.get('mem') in ('6G','6144M','6144','6291456K')
+          and all(int(v)==0 for k,v in tres.items() if k=='gres/gpu' or k.startswith('gres/gpu:')),
+          'Expected 2 CPUs, 6 GiB and zero GPUs for wrapper')
+
+
+def live_identity(d, op, key, jid, *, running=False):
+    text = query(['scontrol','show','job','--oneliner',jid])
+    fields = dict(part.split('=',1) for part in text.split() if '=' in part)
+    expected = dict(JobId=jid,JobName=job_name(op,key),Account='rose',QOS=QOS,Partition='cluster02',
+                    TimeLimit='04:00:00',Requeue='0',NumCPUs='2',NumTasks='1',WorkDir=str(d),
+                    Command=str(d/'CPU_WRAPPER.sh'),StdOut=str(d/f'cpu-{jid}.out'),StdErr=str(d/f'cpu-{jid}.err'))
+    check(all(fields.get(k)==v for k,v in expected.items()) and fields.get('UserId','').startswith(USER+'(')
+          and fields.get('NumNodes') in ('1','1-1'), 'Slurm CPU wrapper identity differs')
+    verify_tres(fields['ReqTRES'])
+    if running:
+        check(fields.get('JobState')=='RUNNING','Worker allocation is not RUNNING')
+        verify_tres(fields['AllocTRES'])
+    # Store only this CPU allocation's verified fields.
+    return {k:fields.get(k) for k in (*expected,'UserId','JobState','ReqTRES','AllocTRES')}
+
+
+def scheduler_ids(d, op, key):
+    name = job_name(op,key)
+    # squeue and sacct may briefly disagree. Every visible candidate must bind
+    # to this endpoint-specific name; ambiguous results never start another job.
+    commands = (['squeue','--user='+USER,'--name='+name,'--noheader','--format=%i|%200j'],
+                ['sacct','-X','--user='+USER,'--starttime=2026-11-25T00:00:00','--name='+name,
+                 '-nP','-o','JobIDRaw,JobName%160'])
+    ids=set()
+    for argv in commands:
+        for row in query(argv).splitlines():
+            jid, observed_name = (v.strip() for v in row.split('|'))
+            check(jid.isdecimal() and observed_name==name, 'Foreign Slurm identity on wrapper lookup')
+            ids.add(jid)
+    return ids
+
+
+def accounting(d, op, key, jid):
+    raw = query(['sacct','-nP','-j',jid,'-o',ACCOUNT_FIELDS])
+    result = {}
+    for line in raw.splitlines():
+        r = line.strip().split('|')
+        check(len(r)==12 and r[0] in (jid,jid+'.batch',jid+'.extern') and r[0] not in result,
+              'Unexpected Slurm CPU accounting row')
+        if r[0]==jid:
+            check(r[3:8]==[job_name(op,key),USER,'rose',QOS,'cluster02'] and r[10:12]==['240',str(d)],
+                  'CPU wrapper accounting identity changed')
+            verify_tres(r[8])
+            if r[9] and r[1]!='PENDING':
+                verify_tres(r[9])
+        result[r[0]] = r[1:3]
+    return result
 
 
 def launch(d, op, claim, argv, stdin, source):
@@ -174,9 +313,15 @@ def launch(d, op, claim, argv, stdin, source):
     save(d/'stdin.bin', stdin)
     script = d/'TRANSPORT.py'
     save(script, source)
-    with new_log(d/'worker.stderr') as err:
-        subprocess.Popen([PYTHON, '-I', '-B', str(script), '--worker', op, key], start_new_session=True,
-                         stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=err, close_fds=True)
+    command = cpu_command(d,op,key)
+    script = cpu_script(d,op,key)
+    save(d/'CPU_WRAPPER.sh',script)
+    save(d/'SBATCH_INTENT.json',encoded(dict(key=key,argv=command,script_sha256=digest(script))))
+    # The only wrapper submission. A disconnect before the response is persisted
+    # is reconciled by exact job name/claim/worker/accounting, never resubmitted.
+    response = scheduler(command)
+    save(d/'SBATCH_RESPONSE.json',encoded(dict(key=key,returncode=response.returncode,
+                                              stdout=pack(response.stdout),stderr=pack(response.stderr))))
 
 
 def observe(d, claim):
@@ -189,27 +334,61 @@ def observe(d, claim):
         return dict(state='INITIALIZING')
     request = read(d/'CLAIM.json')
     check(request == encoded(claim), 'Different attempt already owns this operation')
-    key = digest(request)
-    if os.path.lexists(d/'WAIT.json'):
-        wait = json.loads(read(d/'WAIT.json'))
-        check(wait['key'] == key and type(wait['returncode']) is int, 'Unexpected child wait record')
-        out, err = read(d/'stdout.bin'), read(d/'stderr.bin')
-        check(digest(out) == wait['stdout_sha256'] and digest(err) == wait['stderr_sha256'], 'Child result bytes changed')
-        return dict(state='FINISHED', wait=wait, stdout=pack(out), stderr=pack(err))
-    if not os.path.lexists(d/'WORKER.json'):
+    op,key=claim['op'],digest(request)
+    if not os.path.lexists(d/'SBATCH_INTENT.json'):
         return dict(state='INITIALIZING')
-    identity = json.loads(read(d/'WORKER.json'))
-    if identity['hostname'] == socket.gethostname():
-        try:
-            same = identify(identity['pid']) == identity
-        except (FileNotFoundError, ProcessLookupError):
-            same = False
-        if not same:
-            # WAIT is linked before normal exit. Close a race with its publication.
-            if os.path.lexists(d/'WAIT.json'):
-                return observe(d, claim)
-            return dict(state='WORKER_GONE_WITHOUT_WAIT', worker=identity)
-    return dict(state='PENDING', worker=identity)
+    verify_intent(d,op,key)
+    ids=scheduler_ids(d,op,key)
+    response=None
+    if os.path.lexists(d/'SBATCH_RESPONSE.json'):
+        response=json.loads(read(d/'SBATCH_RESPONSE.json'))
+        check(response['key']==key,'Foreign sbatch response')
+        raw_id=unpack(response['stdout']).strip()
+        if response['returncode']==0 and re.fullmatch(rb'[1-9][0-9]*',raw_id):
+            ids.add(raw_id.decode())
+    worker_record=None
+    if os.path.lexists(d/'WORKER.json'):
+        worker_record=json.loads(read(d/'WORKER.json'))
+        check(worker_record['key']==key and re.fullmatch('[1-9][0-9]*',worker_record['job_id']),
+              'Foreign CPU executor')
+        ids.add(worker_record['job_id'])
+    check(len(ids)<=1,'Conflicting CPU wrapper JobIDs')
+    if not ids:
+        return dict(state='INITIALIZING',sbatch_response=response)
+    jid=ids.pop()
+    rows=accounting(d,op,key,jid)
+    cpu=dict(job_id=jid,job_name=job_name(op,key),accounting=rows,sbatch_response=response)
+    parent=rows.get(jid)
+    if parent is None:
+        # A known job may predate accounting visibility. Require a matching
+        # live identity before reporting it as pending and never retry sbatch.
+        live=live_identity(d,op,key,jid)
+        return dict(state='PENDING',cpu=cpu,slurm_state=live['JobState'])
+    if parent[0] in ACTIVE:
+        return dict(state='PENDING',cpu=cpu,slurm_state=parent[0])
+    if parent[0] not in ('FAILED','COMPLETED') or not worker_record or not os.path.lexists(d/'WAIT.json'):
+        return dict(state='CPU_WRAPPER_TERMINATED_WITHOUT_CONFIRMED_NATIVE_WAIT',cpu=cpu)
+    wait=json.loads(read(d/'WAIT.json'))
+    check(wait['key']==key and wait['cpu_job_id']==jid and type(wait['returncode']) is int,
+          'Unexpected child wait record')
+    rc=wait['returncode']
+    expected=['COMPLETED','0:0'] if rc==0 else ['FAILED',str(shell_exit(rc))+':0']
+    check(parent==expected, 'CPU wrapper scheduler exit and real child wait disagree')
+    # Step accounting can arrive after the parent. Wait for the batch step.
+    if jid+'.batch' not in rows or rows[jid+'.batch'][0] in ACTIVE or rows.get(jid+'.extern',[''])[0] in ACTIVE:
+        return dict(state='PENDING',cpu=cpu,slurm_state='WAIT_FOR_BATCH_ACCOUNTING')
+    check(rows[jid+'.batch']==expected and (jid+'.extern' not in rows or
+          rows[jid+'.extern']==['COMPLETED','0:0']), 'Unsuccessful wrapper auxiliary step')
+    out,err=read(d/'stdout.bin'),read(d/'stderr.bin')
+    check(digest(out)==wait['stdout_sha256'] and digest(err)==wait['stderr_sha256'], 'Child result bytes changed')
+    if op=='submit' and rc==0:
+        marker=b'SATDOSE_SUBMIT_JSON='
+        results=[json.loads(line[len(marker):]) for line in out.splitlines() if line.startswith(marker)]
+        check(len(results)==1 and type(results[0]['result']['job_id']) is int and
+              results[0]['result']['job_id']>0 and str(results[0]['result']['job_id'])!=jid,
+              'Actual submitted GPU job ID missing or equal to CPU wrapper job')
+        cpu['native_submitted_gpu_job_id']=results[0]['result']['job_id']
+    return dict(state='FINISHED',wait=wait,cpu=cpu,stdout=pack(out),stderr=pack(err))
 
 
 def serve(action, op, claim, payload, source):
@@ -221,7 +400,10 @@ def serve(action, op, claim, payload, source):
         launch(d, op, claim, argv, stdin, source)
     else:
         check(action == 'observe', 'Unknown transport action')
-    return observe(d, claim)
+    try:
+        return observe(d, claim)
+    except SchedulerUnavailable as exc:
+        return dict(state='SCHEDULER_UNAVAILABLE',error=str(exc))
 
 
 BOOTSTRAP = """import json,sys,base64,hashlib
@@ -251,6 +433,7 @@ def relay(op, argv, stdin, stdout, stderr, receipt, collect, source):
     payload = {} if collect else dict(argv=argv, stdin=pack(stdin))
     missing_since = None
     last_network_error = None
+    previous_status = None
     while True:
         reply = exchange(action, op, claim, payload, source)
         first_launch = action == 'launch'
@@ -267,13 +450,20 @@ def relay(op, argv, stdin, stdout, stderr, receipt, collect, source):
             continue
         answer = json.loads(reply.stdout)
         state = answer['state']
+        status = {k:v for k,v in answer.items() if k not in ('stdout','stderr','wait')}
+        if status != previous_status:
+            latest(Path(str(prefix)+'.scheduler.json'), encoded(status))
+            previous_status=status
+        if state == 'SCHEDULER_UNAVAILABLE':
+            time.sleep(60)
+            continue
         if state == 'FINISHED':
             wait = answer['wait']
             out, err = unpack(answer['stdout']), unpack(answer['stderr'])
             check(wait['key'] == key and type(wait['returncode']) is int and
                   digest(out) == wait['stdout_sha256'] and digest(err) == wait['stderr_sha256'], 'Invalid returned wait/bytes')
             save(Path(str(prefix)+'.wait.json'), encoded(dict(wait=wait, provenance='REMOTE_NATIVE_CHILD_WAIT',
-                                                              final_collection_ssh_returncode=reply.returncode)))
+                                                              final_collection_ssh_returncode=reply.returncode, cpu=answer['cpu'])))
             stdout.write(out)
             stderr.write(err)
             return subprocess.CompletedProcess(argv, wait['returncode'])
@@ -328,8 +518,7 @@ def native(op, args, collect):
 def main(argv):
     if argv[:1] == ['--worker']:
         check(len(argv) == 3 and argv[1] in SOURCE and SELF == BASE/argv[1]/'TRANSPORT.py', 'Invalid worker entry')
-        worker(argv[1], argv[2])
-        return 0
+        return worker(argv[1], argv[2])
     check('--' in argv, 'Separate transport options and native CLI arguments with --')
     split = argv.index('--')
     parser = argparse.ArgumentParser(description=__doc__)

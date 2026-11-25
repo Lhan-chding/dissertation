@@ -46,8 +46,8 @@ def response(rc, value=None, error=b''):
 
 
 def finished(claim, stdout=b'test\r\n', stderr=b'\x00\xff', rc=17):
-    wait = dict(key=t.digest(t.encoded(claim)), returncode=rc, stdout_sha256=t.digest(stdout), stderr_sha256=t.digest(stderr))
-    return dict(state='FINISHED', wait=wait, stdout=t.pack(stdout), stderr=t.pack(stderr))
+    wait = dict(key=t.digest(t.encoded(claim)), cpu_job_id='3001',returncode=rc, stdout_sha256=t.digest(stdout), stderr_sha256=t.digest(stderr))
+    return dict(state='FINISHED', wait=wait, cpu=dict(job_id='3001'),stdout=t.pack(stdout), stderr=t.pack(stderr))
 
 
 class DetachedTransport(unittest.TestCase):
@@ -170,55 +170,170 @@ class DetachedTransport(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError,'Noncanonical'):
                 t.observe(d2,self.claim)
 
-    def test_worker_disappearance_does_not_return_wait(self):
-        with patch.object(t,'BASE',self.dir), patch.object(t,'identify',side_effect=ProcessLookupError):
-            d=self.dir/'prepare';d.mkdir(mode=0o700)
-            t.save(d/'CLAIM.json',t.encoded(self.claim))
-            t.save(d/'WORKER.json',t.encoded(dict(pid=12345,hostname=socket.gethostname())))
-            self.assertEqual(t.observe(d,self.claim)['state'],'WORKER_GONE_WITHOUT_WAIT')
+    def set_up_scheduler(self,op='prepare',stdin=None):
+        self.project=self.dir/'project'
+        self.project.mkdir()
+        base=self.project/'transport'
+        self.d=base/op
+        self.op=op
+        if stdin is not None:
+            self.raw=stdin
+            self.argv=t.NATIVE_PREFIX+[remote(op)]
+        self.claim=t.validate(op,self.argv,self.raw,t.digest(self.source))
+        self.key=t.digest(t.encoded(self.claim))
+        self.jid='3001'
+        self.state='PENDING'
+        self.exit='0:0'
+        self.visible=True
+        self.batch_visible=True
+        self.other_ids=[]
+        self.submitted=[]
+        self.command_sha=None
+        self.lose_ack=False
+        self.tres='billing=2,cpu=2,mem=6144M,node=1'
+        self.wrong_command=False
+        self.enter_patch(patch.object(t,'PROJECT',self.project))
+        self.enter_patch(patch.object(t,'BASE',base))
+        self.enter_patch(patch.object(t,'scheduler',side_effect=self.fake_scheduler))
+        self.enter_patch(patch.object(t,'identify',side_effect=lambda pid:dict(pid=pid,hostname=socket.gethostname())))
 
-    def test_detached_fixture_survives_client_exit_and_cannot_run_twice(self):
-        # Real subprocess/setsid, private files, wait, collect; replace only the
-        # production paths, the frozen Python payload and Linux /proc identity.
-        target = self.dir/'project';target.mkdir()
-        base = target/'transport'
-        stdin=self.raw
-        command = ("import os,sys,time; data=sys.stdin.buffer.read(); time.sleep(0.25); "
-                   "sys.stdout.buffer.write(data); sys.stderr.buffer.write(b'unclean\\x00\\xff'); "
-                   "sys.exit(14 if os.getsid(0)!=int(os.environ['TEST_LAUNCHER_SID']) else 15)")
-        prefix=[*t.NATIVE_PREFIX]; prefix[prefix.index(t.PYTHON)] = sys.executable
-        overrides=(f"\nPROJECT=Path({str(target)!r}); BASE=Path({str(base)!r}); PYTHON={sys.executable!r}\n"
-                   f"NATIVE_PREFIX={prefix!r}; REMOTE['prepare']={t.digest(command.encode())!r}\n"
-                   "def identify(pid):\n    os.kill(pid,0)\n    return dict(pid=pid,hostname=socket.gethostname(),boot_id='fixture',start_ticks=1)\n")
-        source=self.source.replace(b"if __name__ == '__main__':",overrides.encode()+b"\nif __name__ == '__main__':")
-        argv=prefix+[command]
-        claim=dict(self.claim,transport_source_sha256=t.digest(source),remote_source_sha256=t.digest(command.encode()),
-                   argv_sha256=t.digest(t.encoded(argv)))
-        def channel(action):
-            payload=dict(argv=argv,stdin=t.pack(stdin)) if action=='launch' else {}
-            message=dict(action=action,op='prepare',source=t.pack(source),claim=claim,payload=payload)
-            return subprocess.run([sys.executable,'-I','-B','-c',t.BOOTSTRAP,t.digest(source)],
-                                  input=t.encoded(message),capture_output=True,
-                                  env=dict(os.environ,TEST_LAUNCHER_SID=str(os.getsid(0))),timeout=5)
-        first=channel('launch')
-        self.assertEqual(first.returncode,0,first.stderr)
-        self.assertIn(json.loads(first.stdout)['state'],('INITIALIZING','PENDING'))
-        duplicate=channel('launch')
-        self.assertNotEqual(duplicate.returncode,0)
-        answer=None
-        for i in range(25):
-            observed=channel('observe')
-            self.assertEqual(observed.returncode,0,observed.stderr)
-            answer=json.loads(observed.stdout)
-            if answer['state']=='FINISHED':
-                break
-            time.sleep(0.04)
-        self.assertEqual(answer['state'],'FINISHED',answer)
-        self.assertEqual(answer['wait']['returncode'],14)
-        self.assertEqual(t.unpack(answer['stdout']),stdin)
-        self.assertEqual(t.unpack(answer['stderr']),b'unclean\x00\xff')
-        self.assertEqual((base/'prepare'/'stdin.bin').stat().st_mode & 0o777,0o600)
-        self.assertEqual(json.loads(channel('observe').stdout),answer)
+    def enter_patch(self,patcher):
+        obj=patcher.start()
+        self.addCleanup(patcher.stop)
+        return obj
+
+    def fake_scheduler(self,argv):
+        name=t.job_name(self.op,self.key)
+        cmd=argv[0]
+        if cmd=='sbatch':
+            self.submitted.append(argv)
+            if self.lose_ack:
+                raise OSError('simulated disconnect after submission and before acknowledgement')
+            return subprocess.CompletedProcess(argv,0,(self.jid+'\n').encode(),b'')
+        if cmd=='squeue' or '-X' in argv:
+            ids=[self.jid,*self.other_ids] if self.visible else []
+            raw=''.join(f'{j}|{name}\n' for j in ids)
+        elif cmd=='scontrol':
+            expected=dict(JobId=self.jid,JobName=name,Account='rose',QOS=t.QOS,Partition='cluster02',
+                          NumCPUs='2',NumTasks='1',NumNodes='1',TimeLimit='04:00:00',Requeue='0',
+                          Command=str(self.d/('WRONG' if self.wrong_command else 'CPU_WRAPPER.sh')),WorkDir=str(self.d),
+                          StdOut=str(self.d/'cpu-3001.out'),StdErr=str(self.d/'cpu-3001.err'),
+                          UserId='varun024(1)',ReqTRES=self.tres,AllocTRES=self.tres,JobState=self.state)
+            raw=' '.join(k+'='+v for k,v in expected.items())+'\n'
+        else:
+            self.assertEqual(cmd,'sacct')
+            if not self.visible:
+                raw=''
+            else:
+                raw='|'.join([self.jid,self.state,self.exit,name,t.USER,'rose',t.QOS,'cluster02',self.tres,
+                              self.tres if self.state!='PENDING' else '', '240',str(self.d)])+'\n'
+                if self.state!='PENDING' and self.batch_visible:
+                    raw+='|'.join([self.jid+'.batch',self.state,self.exit,'batch','','','','','','','',''])+'\n'
+        return subprocess.CompletedProcess(argv,0,raw.encode(),b'')
+
+    def launch(self):
+        return t.serve('launch',self.op,self.claim,dict(argv=self.argv,stdin=t.pack(self.raw)),self.source)
+
+    def observe(self):
+        return t.serve('observe',self.op,self.claim,{},self.source)
+
+    def run_fixture_child(self,stdout=None,rc=0):
+        actual=t.run_child
+        script=("import os,sys; data=sys.stdin.buffer.read(); assert not any(k.startswith(('SLURM_','SBATCH_','SRUN_')) for k in os.environ); "
+                +"sys.stdout.buffer.write("+("data" if stdout is None else repr(stdout))+"); "
+                +"sys.stderr.buffer.write(b'unclean\\x00\\xff'); sys.exit("+str(rc)+")")
+        def runner(directory,argv,stdin):
+            self.assertEqual(argv,self.argv)
+            return actual(directory,[sys.executable,'-I','-B','-c',script],stdin)
+        self.state='RUNNING'
+        with patch.dict(os.environ,SLURM_JOB_ID=self.jid,SBATCH_MEM='bad',SRUN_CPUS_PER_TASK='bad'),patch.object(t,'run_child',runner):
+            return t.worker(self.op,self.key)
+
+    def test_lost_sbatch_ack_never_resubmits_and_preserves_true_nonzero_exit(self):
+        self.set_up_scheduler()
+        self.lose_ack=True
+        with self.assertRaises(OSError):
+            self.launch()
+        self.assertFalse((self.d/'SBATCH_RESPONSE.json').exists())
+        self.assertEqual(self.observe()['cpu']['job_id'],self.jid)
+        with self.assertRaises(FileExistsError):
+            self.launch()
+        self.assertEqual(len(self.submitted),1)
+        args=self.submitted[0]
+        for v in ('--cpus-per-task=2','--mem=6G','--time=04:00:00','--no-requeue','--qos='+t.QOS):
+            self.assertIn(v,args)
+        self.assertFalse(any(a.startswith(('--gpu','--gres','--gpus')) for a in args))
+        self.assertEqual(self.run_fixture_child(rc=23),23)
+        self.assertEqual(self.observe()['state'],'PENDING')
+        self.state='FAILED';self.exit='23:0';self.batch_visible=False
+        self.assertEqual(self.observe()['slurm_state'],'WAIT_FOR_BATCH_ACCOUNTING')
+        self.batch_visible=True
+        result=self.observe()
+        self.assertEqual(result['wait']['returncode'],23)
+        self.assertEqual(t.unpack(result['stdout']),self.raw)
+        self.assertEqual(t.unpack(result['stderr']),b'unclean\x00\xff')
+        self.assertEqual(result['cpu']['accounting'][self.jid],['FAILED','23:0'])
+        self.assertIsNone(result['cpu']['sbatch_response'])
+        self.assertEqual(self.observe(),result)
+
+    def test_gpu_allocation_or_wrong_command_rejected_before_native_operation(self):
+        self.set_up_scheduler();self.launch();self.state='RUNNING'
+        with patch.dict(os.environ,SLURM_JOB_ID=self.jid),patch.object(t,'run_child') as child:
+            self.tres+=',gres/gpu=1'
+            with self.assertRaisesRegex(RuntimeError,'zero GPUs'):
+                t.worker('prepare',self.key)
+            self.tres='cpu=2,mem=6G,node=1'
+            self.wrong_command=True
+            with self.assertRaisesRegex(RuntimeError,'identity differs'):
+                t.worker('prepare',self.key)
+            self.assertFalse(child.called)
+        self.assertFalse((self.d/'WORKER.json').exists())
+
+    def test_cancelled_timeout_oom_and_missing_native_wait_remain_unknown(self):
+        self.set_up_scheduler();self.launch()
+        for self.state in ('CANCELLED by 1','TIMEOUT','OUT_OF_MEMORY','FAILED','COMPLETED'):
+            with self.subTest(state=self.state):
+                result=self.observe()
+                self.assertEqual(result['state'],'CPU_WRAPPER_TERMINATED_WITHOUT_CONFIRMED_NATIVE_WAIT')
+                self.assertNotIn('wait',result)
+        self.assertEqual(len(self.submitted),1)
+
+    def test_accounting_and_wait_disagreement_never_projects_success(self):
+        self.set_up_scheduler();self.launch()
+        self.assertEqual(self.run_fixture_child(rc=4),4)
+        self.state='COMPLETED'
+        with self.assertRaisesRegex(RuntimeError,'disagree'):
+            self.observe()
+        self.state='FAILED';self.exit='4:0'
+        self.assertEqual(self.observe()['wait']['returncode'],4)
+
+    def test_duplicate_or_requeued_wrapper_is_not_run(self):
+        self.set_up_scheduler();self.launch()
+        self.other_ids=['3002']
+        with self.assertRaisesRegex(RuntimeError,'Conflicting CPU wrapper'):
+            self.observe()
+        self.state='RUNNING'
+        with patch.dict(os.environ,SLURM_JOB_ID=self.jid,SLURM_RESTART_COUNT='1'),self.assertRaisesRegex(RuntimeError,'first Slurm'):
+            t.worker('prepare',self.key)
+        with patch.dict(os.environ,SLURM_JOB_ID=self.jid),self.assertRaisesRegex(RuntimeError,'Another CPU job'):
+            t.worker('prepare',self.key)
+        self.assertFalse((self.d/'WORKER.json').exists())
+
+    def test_real_native_gpu_and_cpu_job_ids_stay_separate(self):
+        p=json.loads((BASELINE/'start-11031_T0_step-016/SUBMISSION.json.intent.json').read_bytes())['payload']
+        p.update(start_seed=11031,arm='T1',step=16)
+        p['preparation'].update(start_seed=11031,arm='T1',step=16)
+        p['preparation_ref']['path']=t.RESULT
+        p['preparation']['release']['path']=t.RESULT.replace('_PREPARATION_RESULT.json','_RELEASE.json')
+        self.set_up_scheduler('submit',t.encoded(p));self.launch()
+        submitted=b'SATDOSE_SUBMIT_JSON={"result":{"job_id":4555}}\n'
+        self.assertEqual(self.run_fixture_child(submitted),0)
+        self.state='COMPLETED'
+        out=self.observe()
+        self.assertEqual(out['cpu']['job_id'],'3001')
+        self.assertEqual(out['cpu']['native_submitted_gpu_job_id'],4555)
+        self.assertEqual(t.unpack(out['stdout']),submitted)
+        self.assertEqual(len(self.submitted),1)
 
 
 if __name__ == '__main__':

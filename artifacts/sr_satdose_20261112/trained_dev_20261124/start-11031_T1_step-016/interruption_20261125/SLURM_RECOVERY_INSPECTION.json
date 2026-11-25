@@ -1,0 +1,51 @@
+{
+  "boot_id": "887548b6-32fd-4f48-b04b-42341e5921b2",
+  "exclusive_worker_idle": true,
+  "host": "login-2.cluster02.eee.ntu.edu.sg",
+  "observed_at_utc": "2026-11-25T15:31:25.497779+00:00",
+  "old_publication_sha256": {
+    "OBSERVED_RISK.json": "30de55d57398a9a8a60f5fbeac4a5095028dcd977f8eb900e5ad894ea1109ec8",
+    "PREPARATION_CLAIM.json": "b4eb6325dd73f08dd242090f91632cdc87be077ee38d236fc01cfb5331b4c6f5",
+    "RELEASE.json": "8d174c1e71b0a69a125afae3cc2723b3ee73f7c2ba07324c982fd0a00db23078",
+    "STORAGE_BUDGET.json": "bae245d3ec2e8434ddde50760bfd504b178cf5fdfa52595a6dadf496b1cf7129"
+  },
+  "old_side_files": {
+    "CPU_STARTED.json": {
+      "bytes": 921,
+      "sha256": "01bf19b421bad3054c971fc2166438eccc8e38a95a600776138b441edd2ac45f"
+    },
+    "INTENT.json": {
+      "bytes": 1051,
+      "sha256": "e58bcd78998598d98dce3f48c40810cbd2794c2a40976e1cdb54a3a6a9025303"
+    },
+    "ORIGINAL_INTENT.json": {
+      "bytes": 16681,
+      "sha256": "59c22aa67e618d018503c5f2735bf5d56bf1045b3522344ecd2607ab2fc9c1ae"
+    },
+    "RECOVERY_SOURCE.py": {
+      "bytes": 24038,
+      "sha256": "957c611fd0d9f1ed9824903b17d87324f4d82cc042be95f932b64648c5efc111"
+    },
+    "STARTED.json": {
+      "bytes": 149,
+      "sha256": "7dd95ceff95bc11e127ba7c55870dbeb1f3d03f48813e04dccfcf12d1e0d3a48"
+    },
+    "WORKER.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "WORKER.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "original_result_exists": false,
+  "proc_pid_exists": false,
+  "process": {
+    "boot_id": "887548b6-32fd-4f48-b04b-42341e5921b2",
+    "host": "login-2.cluster02.eee.ntu.edu.sg",
+    "pid": 316867,
+    "start_ticks": 447262966
+  },
+  "slot_exists": false
+}
