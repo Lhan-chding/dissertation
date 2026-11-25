@@ -1,0 +1,23 @@
+{
+  "boot_id": "54e9a9a5-0b43-419a-bc5b-010b70d2acc9",
+  "claim_process": {
+    "boot_id": "54e9a9a5-0b43-419a-bc5b-010b70d2acc9",
+    "host": "login-1.cluster02.eee.ntu.edu.sg",
+    "pid": 1946848,
+    "start_ticks": 345906020
+  },
+  "exclusive_worker_idle": true,
+  "host": "login-1.cluster02.eee.ntu.edu.sg",
+  "live_queue": "",
+  "original_local_receipt_sha256": "3e25317235b1414895af07dfc1689ff5edad77b135caefb03f88337ae6341ed9",
+  "original_pid_present": false,
+  "publication_sha256": {
+    "OBSERVED_RISK.json": "30de55d57398a9a8a60f5fbeac4a5095028dcd977f8eb900e5ad894ea1109ec8",
+    "PREPARATION_CLAIM.json": "b4eb6325dd73f08dd242090f91632cdc87be077ee38d236fc01cfb5331b4c6f5",
+    "RELEASE.json": "8d174c1e71b0a69a125afae3cc2723b3ee73f7c2ba07324c982fd0a00db23078",
+    "STORAGE_BUDGET.json": "bae245d3ec2e8434ddde50760bfd504b178cf5fdfa52595a6dadf496b1cf7129"
+  },
+  "scheduler_accounting": "",
+  "slot_present": false,
+  "time_utc": "2026-11-25T13:58:23.195712+00:00"
+}
